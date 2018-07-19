@@ -1,0 +1,76 @@
+{
+  "version": "1.0",
+  "name": "Simples Testrezept nur für Temperiermodul von Huber",
+  "author": "Markus Graube",
+  "modules": {
+    "M1": {
+      "endpoint": "opc.tcp://10.1.53.2:16664",
+      "name": "Temperiermodul Huber",
+      "services": {
+        "Dose": {
+          "name": "Dosieren",
+          "command": "ns=2;i=3125",
+          "status": "ns=2;i=3126",
+          "strategy": {
+            "nodeid": "ns=2;i=3127",
+            "value": 1
+          },
+          "parameter": {
+            "volume": "ns=2;i=3000"
+          }
+        }
+      }
+    }
+  },
+  "initial_step": "S1",
+  "steps": {
+    "S1": {
+      "name": "Heizen",
+      "operations": [
+        {
+          "module": "M1",
+          "service": "Dose",
+          "command": "start",
+          "parameter": {
+            "volume": 0.5
+          }
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "S2",
+          "condition": [
+            {
+              "module": "M1",
+              "service": "Dose",
+              "state": "completed"
+            }
+          ]
+        }
+      ]
+    },
+    "S2": {
+      "name": "Abkühlen",
+      "operations": [
+        {
+          "module": "M1",
+          "service": "Temper",
+          "command": "start",
+          "parameter": {
+            "temperature": "50°C"
+          }
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "finished",
+          "condition": [
+            {
+              "time": "15min"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

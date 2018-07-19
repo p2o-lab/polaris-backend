@@ -1,4 +1,4 @@
-# pfe-rae
+# pfe-ree-node
 
-PFE RezeptAusführungsEngine las NodeJs Applikation
+PFE Recipe Execution Engine als NodeJs Applikation
 

@@ -1,0 +1,99 @@
+{
+  "version": "1.0",
+  "name": "Simples Testrezept",
+  "author": "Markus Graube",
+  "modules": [
+    {
+      "id": "D1",
+      "endpoint": "opc.tcp://10.1.53.2:16664",
+      "name": "Dosiermodul 1 (Wasser)",
+      "services": [
+        {
+          "id": "Dose",
+          "name": "Dosieren",
+          "command": "ns=2;i=3125",
+          "status": "ns=2;i=3126",
+          "strategy": {
+              "nodeid": "ns=2;i=3127", "value": 1
+          },
+          "parameter": {
+              "volume": "ns=2;i=3000"
+          }
+        }
+      ]
+    },
+    {
+      "id": "D2",
+      "endpoint": "opc.tcp://10.1.53.3:16664",
+      "name": "Dosiermodul 2 (Wasser)",
+      "services": [
+        {
+          "id": "Dose",
+            "name": "Dosieren",
+            "command": "ns=2;i=3125",
+            "status": "ns=2;i=3126",
+            "strategy": {
+              "nodeid": "ns=2;i=3127", "value": 1
+            },
+            "parameter": {
+              "volume": "ns=2;i=3000"
+            }
+          }
+      ]
+    },
+    {
+      "id": "R1",
+        "endpoint": "opc.tcp://10.1.53.2:16664",
+        "name": "Dosiermodul 1 (Wasser)",
+        "services": [
+          { "id": "Dose",
+                "name": "Dosieren",
+                "command": "ns=2;i=3125",
+                "status": "ns=2;i=3126",
+                "strategy": {
+                    "nodeid": "ns=2;i=3127", "value": 1
+                },
+                "parameter": {
+                    "volume": "ns=2;i=3000"
+                }
+            }
+        ]
+    }
+	],
+	"initial_step": "S1",
+	"steps": [
+		{
+			"id": "S1",
+			"name": "Paralleles Dosieren",
+			"operations": [
+				{ "module": "D1", "service": "Dose", "command": "start", "parameter": { "volume": 0.5 }	},
+				{ "module": "D2", "service": "Dose", "command": "start", "parameter": { "volume": 0.5 }	}
+			],
+			"transition": [
+				{
+					"next_step": "S2",
+					"condition": [
+						{ "module": "D1", "service": "Dose", "state": "completed"},
+						{ "module": "D2", "service": "Dose", "state": "completed"}
+					]
+				}
+			]
+		},
+		{
+			"id": "S2",
+			"name": "Reaktion",
+			"operations": [
+				{ "module": "R1", "service": "Temper", "command": "start", "parameter": { "temperature": "50°C" }},
+				{ "module": "R1", "service": "Stirr",  "command": "start", "parameter": { "temperature": "50°C" }}
+			],
+			"transition": [
+				{
+					"next_step": "finished",
+					"condition": [
+						{ "time": "15min" }
+					]
+				}
+			]
+		}
+	]
+}
