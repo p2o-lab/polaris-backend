@@ -1,6 +1,5 @@
-import {TypedJSON} from "typedjson-npm";
 import * as fs from 'fs';
-import { Recipe} from "./model/Recipe";
+import {Recipe} from "./model/Recipe";
 
 fs.readFile('test/recipe_huber_only.json', (err, file) =>{
 
