@@ -1,30 +1,20 @@
 import {Step} from "./Step";
-import {Condition, StateCondition, TimeCondition, VariableCondition} from "./Condition";
+import {Condition} from "./condition/Condition";
+import {ConditionOptions} from "./condition/ConditionOptions";
+
+export interface TransitionOptions {
+    next_step: string;
+    condition: ConditionOptions;
+}
 
 export class Transition {
-    next_step: Step | string;
-    conditions: Condition[];
+    next_step: Step;
+    next_step_name: string;
+    condition: Condition;
 
     constructor(json, modules) {
-        this.next_step = json.next_step;
-        let conditions = json.condition;
-
-        this.conditions = [];
-        conditions.forEach((json_condition) => {
-
-            if (json_condition.hasOwnProperty("time")) {
-                this.conditions.push(new TimeCondition(json_condition));
-            }
-            if (json_condition.hasOwnProperty("service")) {
-                this.conditions.push(new StateCondition(json_condition, modules));
-            }
-            if (json_condition.hasOwnProperty("variable")) {
-                this.conditions.push(new VariableCondition(json_condition, modules));
-            }
-        });
-
-
-        console.log(this.conditions)
+        this.next_step_name = json.next_step;
+        this.condition = Condition.create(json.condition, modules);
     }
 }
 

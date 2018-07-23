@@ -1,15 +1,15 @@
+import {Step, StepOptions} from "./Step";
+import {Module, ModuleOptions} from "./Module";
+import {catRecipe} from "../config/logging";
 
-import {Step} from "./Step";
-import {Module} from "./Module";
 
-
-interface IRecipe {
+export interface RecipeOptions {
     version: string;
     name: string;
     author: string;
-    modules: object;
+    modules: Map<string, ModuleOptions>;
     initial_step: string;
-    steps: object;
+    steps: Map<string, StepOptions>;
 }
 
 
@@ -22,37 +22,34 @@ export class Recipe {
     initial_step: Step;
     steps: Map<string,Step>;
 
-    constructor(json: IRecipe) {
-        this.version = json.version;
-        this.name = json.name;
-        this.author = json.author;
+    constructor(options: RecipeOptions) {
+        this.version = options.version;
+        this.name = options.name;
+        this.author = options.author;
 
         this.modules = new Map<string, Module>();
-        Object.keys(json.modules).forEach( (key) => {
-            let json_module : Module = json.modules[key];
-            this.modules.set(key, new Module(json_module));
+        Object.keys(options.modules).forEach((key) => {
+            let option_module: Module = options.modules[key];
+            this.modules.set(key, new Module(option_module));
 
         });
 
         this.steps = new Map<string, Step>();
-        Object.keys(json.steps).forEach( (key) => {
-            let json_step: Step = json.steps[key];
+        Object.keys(options.steps).forEach((key) => {
+            let json_step: StepOptions = options.steps[key];
             this.steps.set(key, new Step(json_step, this.modules));
 
         });
 
         // Resolve next steps to appropriate objects
-        this.steps.forEach( (step: Step) => {
-           step.transitions.forEach( (transition) => {
-               transition.next_step = this.steps.get(<string> transition.next_step);
-           })
+        this.steps.forEach((step: Step) => {
+            step.transitions.forEach((transition) => {
+                transition.next_step = this.steps.get(transition.next_step_name);
+            })
         });
 
-        this.initial_step = this.steps.get(json.initial_step);
-    }
-
-    test() {
-        console.log(this.name + " " + this.version);
+        this.initial_step = this.steps.get(options.initial_step);
+        catRecipe.info("Recipe parsing finished")
     }
 
 }

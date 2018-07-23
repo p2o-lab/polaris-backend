@@ -1,18 +1,24 @@
 import {Module} from "./Module";
 import {Service} from "./Service";
 
+export interface OperationOptions {
+    module: string;
+    service: string;
+    command: string;
+    parameter: any;
+}
+
 export class Operation {
     module: Module;
     service: Service;
     command: string;
     parameter: any;
 
-    constructor(json, modules: Map<string, Module>) {
-        this.module = modules.get(json.module);
-        this.service = this.module.services.get(json.service);
-        this.command = json.command;
-        this.parameter = json.parameter;
+    constructor(options: OperationOptions, modules: Map<string, Module>) {
+        this.module = modules.get(options.module);
+        this.service = this.module.services.get(options.service);
+        this.command = options.command;
+        this.parameter = options.parameter;
     }
-
 
 }

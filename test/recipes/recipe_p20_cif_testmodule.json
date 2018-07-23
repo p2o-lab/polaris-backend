@@ -4,19 +4,19 @@
   "author": "Markus Graube",
   "modules": {
     "M1": {
-      "endpoint": "opc.tcp://10.1.53.2:16664",
+      "endpoint": "opc.tcp://localhost:53530/OPCUA/SimulationServer",
       "name": "Temperiermodul Huber",
       "services": {
         "Dose": {
           "name": "Dosieren",
-          "command": "ns=2;i=3125",
-          "status": "ns=2;i=3126",
+          "command": "ns=2;s=MyLevel",
+          "status": "ns=2;s=MyLevel",
           "strategy": {
-            "nodeid": "ns=2;i=3127",
+            "nodeid": "ns=2;s=MyLevel",
             "value": 1
           },
           "parameter": {
-            "volume": "ns=2;i=3000"
+            "volume": "ns=2;s=MyLevel"
           }
         }
       }

@@ -1,23 +1,52 @@
-import * as fs from 'fs';
-import {Recipe} from "./model/Recipe";
+import {RecipeManager} from "./model/RecipeManager";
 
-fs.readFile('test/recipe_huber_only.json', (err, file) =>{
+/*
+let condition = Condition.create({
+    type: "and",
+    conditions:[
+        { type: "time", duration: "4"},
+        { type: "time", duration: "2"},
+        { type: "or", conditions: [
+                {type: "time", duration: 3},
+                {type: "time", duration: 30}
+            ]}
+    ]
+});
+catRecipe.info(`Listening ${condition}`);
+condition.listen((status) => {
+    catRecipe.info(`Status: ${status}`)
+    if (status)
+        condition.clear();
+});
+*/
+
+let rm = new RecipeManager();
+
+rm.loadRecipeFromPath('test/recipes/recipe_time_local.json');
+
+rm.start();
+
+
+/*
+
+fs.readFile('test/recipes/recipe_p20_cif_testmodule.json', (err, file) =>{
 
     let json = JSON.parse(file.toString());
-    //console.log(json, "modules", json.modules);
 
     let recipe = new Recipe(json);
 
-    recipe.test();
+    recipe.modules.forEach(async module => {
+        try {
+            await module.connect();
 
-    console.log("Final Recipe", recipe.steps.get("S1").transitions[0]);
-    /*
-    let b = TypedJSON.parse(file.toString(), Recipe);
+            await module.check_services();
 
-    console.log(b);
+            await module.disconnect();
+        } catch (err) {
+            catRecipe.error("something bad", err);
+        }
 
-    b.test();
-    */
-
+    });
 });
 
+*/

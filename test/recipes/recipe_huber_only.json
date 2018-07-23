@@ -1,0 +1,75 @@
+{
+  "version": "1.0",
+  "name": "Simples Testrezept nur für Temperiermodul von Huber",
+  "author": "Markus Graube",
+  "modules": {
+    "M1": {
+      "endpoint": "opc.tcp://localhost:53530/OPCUA/SimulationServer",
+      "name": "Temperiermodul Huber",
+      "services": {
+        "Dose": {
+          "name": "Dosieren",
+          "command": "ns=2;s=MyLevel",
+          "status": "ns=2;s=MyLevel",
+          "strategy": {
+            "nodeid": "ns=2;s=MyLevel",
+            "value": 1
+          },
+          "parameter": {
+            "volume": "ns=2;s=MyLevel"
+          }
+        }
+      }
+    }
+  },
+  "initial_step": "S1",
+  "steps": {
+    "S1": {
+      "name": "Heizen",
+      "operations": [
+        {
+          "module": "M1",
+          "service": "Dose",
+          "command": "start",
+          "parameter": {
+            "volume": 0.5
+          }
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "S2",
+          "condition": {
+            "type": "state",
+            "module": "M1",
+            "service": "Dose",
+            "state": "completed"
+          }
+        }
+      ]
+    },
+    "S2": {
+      "name": "Abkühlen",
+      "operations": [
+        {
+          "module": "M1",
+          "service": "Temper",
+          "command": "start",
+          "parameter": {
+            "temperature": "50°C"
+          }
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "finished",
+          "condition":
+            {
+              "type": "time",
+              "duration": "10"
+            }
+        }
+      ]
+    }
+  }
+}

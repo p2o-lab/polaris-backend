@@ -1,0 +1,77 @@
+{
+  "version": "1.0",
+  "name": "Simples Testrezept",
+  "author": "Markus Graube",
+  "modules": {
+    "D1": {
+      "endpoint": "opc.tcp://10.1.53.2:16664",
+      "name": "Dosiermodul 1 (Wasser)",
+      "services": {
+        "Dose": {
+          "name": "Dosieren",
+          "command": "ns=2;i=3125",
+          "status": "ns=2;i=3126",
+          "strategy": {
+            "nodeid": "ns=2;i=3127",
+            "value": 1
+          },
+          "parameter": {
+            "volume": "ns=2;i=3000"
+          }
+        }
+      }
+    }
+  },
+  "initial_step": "S1",
+  "steps": {
+    "S1": {
+      "id": "S1",
+      "name": "S1",
+      "operations": [
+        {
+          "module": "D1",
+          "service": "Dose",
+          "command": "start",
+          "parameter": {
+            "volume": 0.5
+          }
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "S2",
+          "condition": {
+            "type": "time",
+            "duration": 2
+          }
+        }
+      ]
+    },
+    "S2": {
+      "name": "S2",
+      "operations": [],
+      "transitions": [
+        {
+          "next_step": "S3",
+          "condition": {
+            "type": "time",
+            "duration": 2
+          }
+        }
+      ]
+    },
+    "S3": {
+      "name": "S3",
+      "operations": [],
+      "transitions": [
+        {
+          "next_step": "finished",
+          "condition": {
+            "type": "time",
+            "duration": 2
+          }
+        }
+      ]
+    }
+  }
+}
