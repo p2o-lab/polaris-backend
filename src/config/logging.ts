@@ -5,7 +5,8 @@ import {Category, CategoryConfiguration, CategoryServiceFactory, LogLevel} from 
 CategoryServiceFactory.setDefaultConfiguration(new CategoryConfiguration(LogLevel.Trace));
 
 // Create categories, they will autoregister themselves
-export const catRecipe = new Category("recipe",);
+export const catRecipe = new Category("recipe");
+export const catRM = new Category("recipeManager");
 export const catOpc = new Category("opcua");
 export const catServer = new Category("server");
 

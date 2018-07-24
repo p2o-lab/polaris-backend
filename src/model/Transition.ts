@@ -1,6 +1,5 @@
 import {Step} from "./Step";
-import {Condition} from "./condition/Condition";
-import {ConditionOptions} from "./condition/ConditionOptions";
+import {Condition, ConditionOptions} from "./Condition";
 
 export interface TransitionOptions {
     next_step: string;

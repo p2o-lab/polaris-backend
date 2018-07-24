@@ -1,4 +1,4 @@
-import {DataType, VariantArrayType} from 'node-opcua';
+import {DataType, VariantArrayType} from 'node-opcua-client';
 import {Module} from "./Module";
 import {catOpc} from "../config/logging";
 import {SERVICE_COMMAND} from "./enum";
@@ -38,7 +38,27 @@ export class Service {
     }
 
     start() {
+
+        // 1) OpMode setzen auf Automatic External): -> 16 -> 64?
+        this.setToAutomaticOperationMode();
+
+        // 2) ConfigParameter setzen
+
+
+        // 3) CurrentStrategyParameter setzen
+
+
+        // 4) StrategyParameter setzen
+
+
+        // 5) ControlOp setzen (Command senden)
         this.sendCommand(SERVICE_COMMAND.START);
+    }
+
+    reset() {
+        this.sendCommand(SERVICE_COMMAND.RESET);
+        // OpMode auf Manual setzen
+        this.setToManualOperationMode();
     }
 
     private setToAutomaticOperationMode() {

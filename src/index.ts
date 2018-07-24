@@ -1,4 +1,4 @@
-import {RecipeManager} from "./model/RecipeManager";
+import {recipe_manager} from "./model/RecipeManager";
 
 /*
 let condition = Condition.create({
@@ -20,11 +20,12 @@ condition.listen((status) => {
 });
 */
 
-let rm = new RecipeManager();
+//const rm = new RecipeManager();
 
-rm.loadRecipeFromPath('test/recipes/recipe_time_local.json');
+recipe_manager.loadRecipeFromPath('test/recipes/recipe_time_local.json');
 
-rm.start();
+recipe_manager.start();
+
 
 
 /*

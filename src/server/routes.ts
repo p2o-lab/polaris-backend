@@ -1,4 +1,5 @@
 import * as express from 'express';
+import {recipe_manager} from '../model/RecipeManager';
 
 export default class Routes {
     static init(server): void {
@@ -11,9 +12,8 @@ export default class Routes {
          * @apiGroup Manager
          */
         server.app.get('/status', (req: express.Request, res: express.Response) => {
-            res.json({status: "io", version: "0.1.0"});
+            res.json(recipe_manager.getState());
         });
-
 
         /**
          * @api {get} /recipe    Post recipe
@@ -21,7 +21,7 @@ export default class Routes {
          * @apiGroup Recipe
          */
         server.app.get('/recipe', (req: express.Request, res: express.Response) => {
-            res.json({recipe: "abc", status: "idle", version: "0.1.0"});
+            res.json({recipe: 'abc', status: 'idle', version: '0.1.0'});
         });
 
         /**
@@ -31,7 +31,7 @@ export default class Routes {
          * @apiParam {Object} recipe  new recipe
          */
         server.app.post('/recipe', (req: express.Request, res: express.Response) => {
-            res.json({status: "io", version: "0.1.0"});
+            res.json({status: 'io', version: '0.1.0'});
         });
     }
 }

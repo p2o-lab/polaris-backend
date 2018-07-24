@@ -3,9 +3,9 @@
   "name": "Simples Testrezept nur für Temperiermodul von Huber",
   "author": "Markus Graube",
   "modules": {
-    "M1": {
-      "endpoint": "opc.tcp://localhost:53530/OPCUA/SimulationServer",
-      "name": "Temperiermodul Huber",
+    "CIF": {
+      "endpoint": "opc.tcp://10.6.51.200",
+      "name": "CIF Testmodul",
       "services": {
         "Dose": {
           "name": "Dosieren",

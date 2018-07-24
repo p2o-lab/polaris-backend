@@ -3,9 +3,12 @@
   "name": "Simples Testrezept",
   "author": "Markus Graube",
   "modules": {
-    "D1": {
-      "endpoint": "opc.tcp://10.1.53.2:16664",
-      "name": "Dosiermodul 1 (Wasser)",
+    "Sim": {
+      "endpoint": "opc.tcp://localhost:53530/OPCUA/SimulationServer",
+      "name": "Simulationserver",
+      "variables": {
+        "test": "ns=3;s=Int32"
+      },
       "services": {
         "Dose": {
           "name": "Dosieren",
@@ -29,7 +32,7 @@
       "name": "S1",
       "operations": [
         {
-          "module": "D1",
+          "module": "Sim",
           "service": "Dose",
           "command": "start",
           "parameter": {
@@ -54,8 +57,10 @@
         {
           "next_step": "S3",
           "condition": {
-            "type": "time",
-            "duration": 2
+            "type": "variable",
+            "module": "Sim",
+            "variable": "test",
+            "value": 22
           }
         }
       ]

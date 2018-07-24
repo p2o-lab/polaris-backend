@@ -1,5 +1,5 @@
 import {suite, test} from "mocha-typescript";
-import {Condition, StateCondition, TimeCondition} from "../src/model/condition/Condition";
+import {Condition, StateCondition, TimeCondition} from "../src/model/Condition";
 import * as assert from "assert";
 import {catRecipe} from "../src/config/logging";
 

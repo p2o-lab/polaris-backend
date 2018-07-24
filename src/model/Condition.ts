@@ -1,19 +1,45 @@
-import {catOpc, catRecipe} from "../../config/logging";
-import {ConditionType} from "../enum";
-import {
-    AndConditionOptions,
-    BaseConditionOptions,
-    ConditionOptions,
-    NotConditionOptions,
-    OrConditionOptions,
-    StateConditionOptions,
-    TimeConditionOptions,
-    VariableConditionOptions
-} from "./ConditionOptions";
-import {Module} from "../Module";
-import {Service} from "../Service";
-import {AttributeIds, ClientMonitoredItem, coerceNodeId} from "node-opcua";
+import {catOpc, catRecipe} from "../config/logging";
+import {ConditionType} from "./enum";
+import {Module} from "./Module";
+import {Service} from "./Service";
+import {AttributeIds, ClientMonitoredItem, coerceNodeId} from "node-opcua-client";
 
+export type ConditionOptions = AndConditionOptions | TimeConditionOptions | OrConditionOptions |
+    TimeConditionOptions | StateConditionOptions | VariableConditionOptions | NotConditionOptions;
+
+export interface BaseConditionOptions {
+    type: ConditionType;
+}
+
+export interface AndConditionOptions extends BaseConditionOptions {
+    conditions: ConditionOptions[];
+}
+
+export interface OrConditionOptions extends BaseConditionOptions {
+    conditions: ConditionOptions[];
+}
+
+export interface NotConditionOptions extends BaseConditionOptions {
+    condition: ConditionOptions;
+}
+
+export interface StateConditionOptions extends BaseConditionOptions {
+    module: string;
+    service: string;
+    serviceName: string;
+    state: string;
+}
+
+export interface TimeConditionOptions extends BaseConditionOptions {
+    duration: number;
+}
+
+export interface VariableConditionOptions extends BaseConditionOptions {
+    module: string;
+    variable: string;
+    value: string | number;
+    operator: string;
+}
 
 export abstract class Condition {
 
@@ -170,27 +196,46 @@ export class VariableCondition extends Condition {
         this.variable = options.variable;
         this.value = options.value;
         this.operator = options.operator;
-        if (modules)
+        if (modules) {
             this.resolve_module(modules);
+        }
     }
 
     /**
-     * TODO: Implement me
+     *
      */
     clear() {
+        this.module.clearListener(this.variable);
     }
 
     /**
-     * TODO: Implement me
+     *
      * @param {(boolean) => void} callback
      */
-    listen(callback) {
+    async listen(callback) {
+        const value = await this.module.readVariable(this.variable);
+
+        if (value.value.value === this.value) {
+            this._fulfilled = true;
+        } else {
+            this._fulfilled = false;
+        }
+        callback(this._fulfilled);
+
+
+        this.module.listenToVariable(this.variable, (value) => {
+            catOpc.debug(`value changed to ${value}`);
+            if (value === this.value) {
+                this._fulfilled = true;
+            } else {
+                this._fulfilled = false;
+            }
+            callback(this._fulfilled);
+        });
     }
 
     private resolve_module(modules: Map<string, Module>) {
-        if (typeof module === "string") {
-            this.module = modules.get(this.module_name);
-        }
+        this.module = modules.get(this.module_name);
     }
 }
 
