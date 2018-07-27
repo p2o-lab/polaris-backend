@@ -22,23 +22,18 @@
         "import-name": [
             false
         ],
-        "newline-before-return": true,
-        "ter-newline-after-var": [
-            true,
-            "always"
-        ],
         "no-unused-variable": true,
         "align": [
             false
         ],
         "typedef": [
             true,
-            "call-signature",
+            //"call-signature",
             "arrow-call-signature",
             "parameter",
             //"arrow-parameter",
             "property-declaration",
-            "variable-declaration",
+            //"variable-declaration",
             "member-variable-declaration",
             "object-destructuring",
             "array-destructuring"

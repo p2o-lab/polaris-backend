@@ -1,0 +1,173 @@
+{
+  "version": "1.0",
+  "name": "Simples Testrezept nur für Temperiermodul von Huber",
+  "author": "Markus Graube",
+  "modules": {
+    "CIF": {
+      "endpoint": "opc.tcp://10.6.51.200:4840",
+      "name": "CIF Testmodul",
+      "variables": {},
+      "services": {
+        "Dosieren": {
+          "name": "Dosieren",
+          "command": "ns=4;s=|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Dosieren.ControlOp",
+          "status": "ns=4;s=|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Dosieren.State.binary",
+          "opMode": "ns=4;s=|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Dosieren.OpMode.binary",
+          "configParameter": {
+            "strategy": {
+              "nodeid": "ns=4;s=|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Dosieren.StrategyOp",
+              "value": 1,
+              "datatype": "UInt32"
+            }
+          },
+          "parameter": {
+            "volume": {
+              "nodeid": "ns=2;s=MyLevel",
+              "datatype": "UInt32"
+            }
+          }
+        },
+        "Entleeren": {
+          "name": "Entleeren",
+          "command": "ns=4;s=|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Entleeren.ControlOp",
+          "status": "ns=4;s=|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Entleeren.State.binary",
+          "opMode": "ns=4;s=|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Entleeren.OpMode.binary",
+          "configParameter": {
+            "strategy": {
+              "nodeid": "ns=4;s=|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Entleeren.StrategyOp",
+              "value": 1,
+              "datatype": "UInt32"
+            }
+          },
+          "parameter": {
+            "volume": {
+              "nodeid": "ns=2;s=MyLevel",
+              "datatype": "UInt32"
+            }
+          }
+        },
+        "Nachfuellen": {
+          "name": "Nachfuellen",
+          "command": "ns=4;s=|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Nachfuellen.ControlOp",
+          "status": "ns=4;s=|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Nachfuellen.State.binary",
+          "opMode": "ns=4;s=|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Nachfuellen.OpMode.binary",
+          "configParameter": {
+            "strategy": {
+              "nodeid": "ns=4;s=|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Nachfuellen.StrategyOp",
+              "value": 1,
+              "datatype": "UInt32"
+            }
+          },
+          "parameter": {
+            "volume": {
+              "nodeid": "ns=2;s=MyLevel",
+              "datatype": "UInt32"
+            }
+          }
+        },
+        "Vorlegen": {
+          "name": "Vorlegen",
+          "command": "ns=4;s=|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Vorlegen.ControlOp",
+          "status": "ns=4;s=|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Vorlegen.State.binary",
+          "opMode": "ns=4;s=|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Vorlegen.OpMode.binary",
+          "configParameter": {
+            "strategy": {
+              "nodeid": "ns=4;s=|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Vorlegen.StrategyOp",
+              "value": 1,
+              "datatype": "UInt32"
+            }
+          },
+          "parameter": {
+            "volume": {
+              "nodeid": "ns=2;s=MyLevel",
+              "datatype": "UInt32"
+            }
+          }
+        },
+        "Service1": {
+          "name": "Service1",
+          "command": "ns=4;s=|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service1.ControlOp",
+          "status": "ns=4;s=|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service1.State.binary",
+          "opMode": "ns=4;s=|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service1.OpMode.binary",
+          "configParameter": {
+            "strategy": {
+              "nodeid": "ns=4;s=|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service1.StrategyOp",
+              "value": 1,
+              "datatype": "UInt32"
+            }
+          },
+          "parameter": {
+            "volume": {
+              "nodeid": "ns=2;s=MyLevel",
+              "datatype": "UInt32"
+            }
+          }
+        },
+        "Service2": {
+          "name": "Service2",
+          "command": "ns=4;s=|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service2.ControlOp",
+          "status": "ns=4;s=|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service2.State.binary",
+          "opMode": "ns=4;s=|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service2.OpMode.binary",
+          "configParameter": {
+            "strategy": {
+              "nodeid": "ns=4;s=|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service2.StrategyOp",
+              "value": 1,
+              "datatype": "UInt32"
+            }
+          },
+          "parameter": {
+            "volume": {
+              "nodeid": "ns=2;s=MyLevel",
+              "datatype": "UInt32"
+            }
+          }
+        }
+      }
+    }
+  },
+  "initial_step": "S1",
+  "steps": {
+    "S1": {
+      "name": "S1",
+      "operations": [
+        {
+          "module": "CIF",
+          "service": "Entleeren",
+          "command": "start",
+          "parameter": {
+            "volume": 3
+          }
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "finished",
+          "condition":
+            {
+              "type": "time",
+              "duration": 5
+            }
+        }
+      ]
+    },
+    "S2": {
+      "name": "S2",
+      "operations": [
+        {
+          "module": "CIF",
+          "service": "Entleeren",
+          "command": "stop"
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "finished",
+          "condition": {
+            "type": "time",
+            "duration": "15"
+            }
+        }
+      ]
+    }
+  }
+}

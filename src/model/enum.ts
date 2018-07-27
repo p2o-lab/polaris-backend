@@ -1,12 +1,11 @@
-export enum RECIPE_STATE {
-    IDLE,
-    RUNNING,
-    STOPPED,
-    COMPLETED
+export enum RecipeState {
+    idle,
+    running,
+    stopped,
+    completed
 }
 
-
-export enum SERVICE_STATE {
+export enum ServiceState {
     STOPPED = 4,
     STARTING = 8,
     IDLE = 16,
@@ -25,7 +24,7 @@ export enum SERVICE_STATE {
     COMPLETED = 131072
 }
 
-export enum SERVICE_COMMAND {
+export enum ServiceCommand {
     RESET = 2,
     START = 4,
     STOP = 8,
@@ -38,10 +37,17 @@ export enum SERVICE_COMMAND {
 }
 
 export enum ConditionType {
-    not = "not",
-    time = "time",
-    state = "state",
-    variable = "variable",
-    and = "and",
-    or = "or"
+    not = 'not',
+    time = 'time',
+    state = 'state',
+    variable = 'variable',
+    and = 'and',
+    or = 'or'
+}
+
+export enum OpMode {
+    stateAutAct = 256,
+    stateManOp = 16,
+    stateAutOp = 64,
+    stateManAct = 128
 }

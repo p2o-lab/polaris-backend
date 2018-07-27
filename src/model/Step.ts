@@ -29,7 +29,8 @@ export class Step {
 
     execute(callback: (step: Step) => void) {
         this.operations.forEach((operation) => {
-            catRecipe.info(`Start operation ${operation}`);
+            catRecipe.info(`Start operation ${operation.module.name} ${operation.service.name} ${operation.command} ${operation.parameter}`);
+            operation.execute();
         });
 
         this.transitions.forEach((transition) => {

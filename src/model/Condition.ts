@@ -1,8 +1,8 @@
-import {catOpc, catRecipe} from "../config/logging";
-import {ConditionType} from "./enum";
-import {Module} from "./Module";
-import {Service} from "./Service";
-import {AttributeIds, ClientMonitoredItem, coerceNodeId} from "node-opcua-client";
+import {catOpc, catRecipe} from '../config/logging';
+import {ConditionType} from './enum';
+import {Module} from './Module';
+import {Service} from './Service';
+import {AttributeIds, ClientMonitoredItem, coerceNodeId} from 'node-opcua-client';
 
 export type ConditionOptions = AndConditionOptions | TimeConditionOptions | OrConditionOptions |
     TimeConditionOptions | StateConditionOptions | VariableConditionOptions | NotConditionOptions;
@@ -12,18 +12,22 @@ export interface BaseConditionOptions {
 }
 
 export interface AndConditionOptions extends BaseConditionOptions {
+    type: ConditionType.and;
     conditions: ConditionOptions[];
 }
 
 export interface OrConditionOptions extends BaseConditionOptions {
+    type: ConditionType.or;
     conditions: ConditionOptions[];
 }
 
 export interface NotConditionOptions extends BaseConditionOptions {
+    type: ConditionType.not;
     condition: ConditionOptions;
 }
 
 export interface StateConditionOptions extends BaseConditionOptions {
+    type: ConditionType.state;
     module: string;
     service: string;
     serviceName: string;
@@ -31,10 +35,12 @@ export interface StateConditionOptions extends BaseConditionOptions {
 }
 
 export interface TimeConditionOptions extends BaseConditionOptions {
+    type: ConditionType.time;
     duration: number;
 }
 
 export interface VariableConditionOptions extends BaseConditionOptions {
+    type: ConditionType.variable;
     module: string;
     variable: string;
     value: string | number;
@@ -43,7 +49,7 @@ export interface VariableConditionOptions extends BaseConditionOptions {
 
 export abstract class Condition {
 
-    protected _fulfilled = false;
+    protected _fulfilled: boolean = false;
 
     get fulfilled(): boolean {
         return this._fulfilled;
@@ -53,30 +59,37 @@ export abstract class Condition {
      * Create Condition
      * @param {ConditionOptions} options
      * @param {Map<string,Module>} modules
-     * @returns {any}
-     */
-    static create(options: ConditionOptions, modules: Map<string, Module> = null) {
+     * @returns Condition
+     * */
+    static create(options: ConditionOptions, modules: Map<string, Module> = null): Condition {
         catRecipe.trace(`Create Condition: ${JSON.stringify(options)}`);
-        let type = (<BaseConditionOptions> options).type;
-        if (type == ConditionType.time)
+        const type: ConditionType = options.type;
+        if (type === ConditionType.time) {
             return new TimeCondition(<TimeConditionOptions> options);
-        if (type == ConditionType.and)
+        }
+        else if (type === ConditionType.and) {
             return new AndCondition(<AndConditionOptions> options);
-        if (type == ConditionType.state)
+        }
+        else if (type === ConditionType.state) {
             return new StateCondition(<StateConditionOptions> options, modules);
-        if (type == ConditionType.variable)
+        }
+        else if (type === ConditionType.variable) {
             return new VariableCondition(<VariableConditionOptions> options, modules);
-        if (type == ConditionType.or)
+        }
+        else if (type === ConditionType.or) {
             return new OrCondition(<OrConditionOptions> options);
-        if (type == ConditionType.not)
+        }
+        else if (type === ConditionType.not) {
             return new NotCondition(<NotConditionOptions> options);
+        }
+        else throw new Error(`No Condition found for ${options}`);
     }
 
     /**
      * Listen to any change in condition and inform via callback
      * @param {(boolean) => void} callback
      */
-    abstract listen(callback: (boolean) => void);
+    abstract listen(callback: (condition: boolean) => void): void | Promise<void>;
 
     /**
      * Clear listening on condition
@@ -91,16 +104,16 @@ export class OrCondition extends Condition {
         super();
         catRecipe.trace(`Add OrCondition: ${options}`);
         this.conditions = options.conditions.map((option) => {
-            return Condition.create(option)
+            return Condition.create(option);
         });
         this._fulfilled = false;
     }
 
     clear() {
-        this.conditions.forEach((cond) => cond.clear());
+        this.conditions.forEach(cond => cond.clear());
     }
 
-    listen(callback) {
+    listen(callback): void {
         this.conditions.forEach((condition) => {
             condition.listen(() => {
                 this._fulfilled = this.conditions.some((condition) => {
@@ -125,15 +138,16 @@ export class StateCondition extends Condition {
         this.moduleName = options.module;
         this.serviceName = options.service;
         this.state = options.state;
-        if (modules)
+        if (modules) {
             this.resolve_module(modules);
+        }
     }
 
     clear() {
         this.monitoredItem.terminate(() => catOpc.debug(`Subscription terminated: ${this.service}`));
     }
 
-    listen(callback) {
+    listen(callback): void {
         this.monitoredItem = this.service.parent.subscription.monitor({
                 nodeId: coerceNodeId(this.service.status),
                 attributeId: AttributeIds.Value
@@ -143,15 +157,14 @@ export class StateCondition extends Condition {
                 discardOldest: true,
                 queueSize: 10
             });
-        this.monitoredItem.on("changed", (dataValue) => {
+        this.monitoredItem.on('changed', (dataValue) => {
             console.log(`State Changed (${this.serviceName}) = ${dataValue.value.value.toString()}`);
             this._fulfilled = dataValue.value.value == this.state;
             callback(this._fulfilled);
         });
-
     }
 
-    private resolve_module(modules: Map<string, Module>) {
+    private resolve_module(modules: Map<string, Module>): void {
         this.module = modules.get(this.moduleName);
         this.service = this.module.services.get(this.serviceName);
     }
@@ -168,7 +181,7 @@ export class TimeCondition extends Condition {
         catRecipe.trace(`Add TimeCondition: ${JSON.stringify(options)}`);
     }
 
-    listen(callback) {
+    listen(callback): void {
         catRecipe.debug(`Start Timer: ${this.duration}`);
         this.timer = setTimeout(() => {
                 catRecipe.debug(`Timer finished: ${this.duration}`);
@@ -178,7 +191,7 @@ export class TimeCondition extends Condition {
             this.duration);
     }
 
-    clear() {
+    clear(): void {
         this.timer.unref();
     }
 }
@@ -204,7 +217,7 @@ export class VariableCondition extends Condition {
     /**
      *
      */
-    clear() {
+    clear(): void {
         this.module.clearListener(this.variable);
     }
 
@@ -212,7 +225,7 @@ export class VariableCondition extends Condition {
      *
      * @param {(boolean) => void} callback
      */
-    async listen(callback) {
+    async listen(callback): Promise<void> {
         const value = await this.module.readVariable(this.variable);
 
         if (value.value.value === this.value) {
@@ -222,19 +235,19 @@ export class VariableCondition extends Condition {
         }
         callback(this._fulfilled);
 
-
-        this.module.listenToVariable(this.variable, (value) => {
-            catOpc.debug(`value changed to ${value}`);
-            if (value === this.value) {
-                this._fulfilled = true;
-            } else {
-                this._fulfilled = false;
-            }
-            callback(this._fulfilled);
-        });
+        this.module.listenToVariable(this.variable)
+            .on('changed', (value) => {
+                catOpc.debug(`value changed to ${value}`);
+                if (value === this.value) {
+                    this._fulfilled = true;
+                } else {
+                    this._fulfilled = false;
+                }
+                callback(this._fulfilled);
+            });
     }
 
-    private resolve_module(modules: Map<string, Module>) {
+    private resolve_module(modules: Map<string, Module>): void {
         this.module = modules.get(this.module_name);
     }
 }
@@ -253,7 +266,7 @@ export class NotCondition extends Condition {
         this.condition.clear();
     }
 
-    listen(callback) {
+    listen(callback): void {
         this.condition.listen(() => {
             this._fulfilled = this.condition.fulfilled;
             callback(this._fulfilled);
@@ -269,7 +282,7 @@ export class AndCondition extends Condition {
         super();
         catRecipe.trace(`Add AndCondition: ${options}`);
         this.conditions = options.conditions.map((option) => {
-            return Condition.create(option)
+            return Condition.create(option);
         });
         this._fulfilled = false;
     }
@@ -289,7 +302,3 @@ export class AndCondition extends Condition {
         });
     }
 }
-
-
-
-
