@@ -1,5 +1,6 @@
 import * as express from 'express';
 import {recipe_manager} from '../model/RecipeManager';
+import {catServer} from "../config/logging";
 
 export default class Routes {
     static init(server): void {
@@ -11,17 +12,22 @@ export default class Routes {
          * @apiName GetStatus
          * @apiGroup Manager
          */
-        server.app.get('/status', (req: express.Request, res: express.Response) => {
-            res.json(recipe_manager.getState());
+        server.app.get('/status', async (req: express.Request, res: express.Response) => {
+            catServer.info("GET /status");
+            res.json({
+                recipe_status: recipe_manager.recipe.recipe_status,
+                service_states: await recipe_manager.getState()
+            });
         });
 
         /**
-         * @api {get} /recipe    Post recipe
+         * @api {get} /recipe    Get current recipe
          * @apiName GetRecipe
          * @apiGroup Recipe
          */
         server.app.get('/recipe', (req: express.Request, res: express.Response) => {
-            res.json({recipe: 'abc', status: 'idle', version: '0.1.0'});
+            catServer.info('GET /recipe');
+            res.json(recipe_manager.recipe_options);
         });
 
         /**
@@ -30,8 +36,23 @@ export default class Routes {
          * @apiGroup Recipe
          * @apiParam {Object} recipe  new recipe
          */
-        server.app.post('/recipe', (req: express.Request, res: express.Response) => {
-            res.json({status: 'io', version: '0.1.0'});
+        server.app.post('/recipe', async (req: express.Request, res: express.Response) => {
+            catServer.info(`POST /recipe. ${req.body.recipe}`);
+            recipe_manager.loadRecipe(req.body.recipe);
+            await recipe_manager.connect();
+            res.send("recipe successful loaded");
         });
+
+        /**
+         * @api {post} /recipe/start    Start recipe
+         * @apiName StartRecipe
+         * @apiGroup Recipe
+         */
+        server.app.post('/recipe/start', (req: express.Request, res: express.Response) => {
+            catServer.info('POST /recipe/start');
+            recipe_manager.start();
+            res.send("recipe successful started");
+        });
+
     }
 }
