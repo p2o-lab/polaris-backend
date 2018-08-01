@@ -1255,7 +1255,7 @@
               "name": "Energy consumption"
             }
           ],
-          "opcua_server_url": "opc.tcp://192.168.2.10:4840",
+          "opcua_server_url": "opc.tcp://192.168.2.35:4840",
           "rest_api_port": "1201",
           "services": [
             {

@@ -10,15 +10,15 @@
           "communication": {
             "control_op": {
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
-              "node_id": "s=|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Dosieren.ControlOp"
+              "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Dosieren.ControlOp"
             },
             "state": {
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
-              "node_id": "s=|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Dosieren.State.binary"
+              "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Dosieren.State.binary"
             },
             "op_mode": {
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
-              "node_id": "s=|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Dosieren.OpMode.binary"
+              "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Dosieren.OpMode.binary"
             }
           },
           "strategies": {}
@@ -28,15 +28,15 @@
           "communication": {
             "control_op": {
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
-              "node_id": "s=|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Entleeren.ControlOp"
+              "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Entleeren.ControlOp"
             },
             "state": {
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
-              "node_id": "s=|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Entleeren.State.binary"
+              "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Entleeren.State.binary"
             },
             "op_mode": {
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
-              "node_id": "s=|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Entleeren.OpMode.binary"
+              "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Entleeren.OpMode.binary"
             }
           },
           "strategies": {}
@@ -46,15 +46,15 @@
           "communication": {
             "control_op": {
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
-              "node_id": "s=|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Nachfuellen.ControlOp"
+              "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Nachfuellen.ControlOp"
             },
             "state": {
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
-              "node_id": "s=|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Nachfuellen.State.binary"
+              "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Nachfuellen.State.binary"
             },
             "op_mode": {
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
-              "node_id": "s=|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Nachfuellen.OpMode.binary"
+              "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Nachfuellen.OpMode.binary"
             }
           },
           "strategies": {}

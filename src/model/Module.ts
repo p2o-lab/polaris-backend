@@ -43,7 +43,6 @@ export class Module {
         if (options.process_values) {
             this.variables = options.process_values.map(variableOptions => new Variable(variableOptions));
         }
-        this.connect();
     }
 
     /**
@@ -89,13 +88,16 @@ export class Module {
                 // read namespace array
                 const result: DataValue = await this.session.readVariableValue('ns=0;i=2255');
                 this.namespaceArray = result.value.value;
+                catModule.debug(`Got namespace array for ${this.id}: ${JSON.stringify(this.namespaceArray)}`);
+                return Promise.resolve(this.session);
             } catch (err) {
-                catModule.warn(`Could not connect to module ${this.id} on ${this.endpoint}`)
+                catModule.warn(`Could not connect to module ${this.id} on ${this.endpoint}`);
+                return Promise.reject(`Could not connect to module ${this.id} on ${this.endpoint}`);
             }
         } else {
             catOpc.debug(`Already connected to module ${this.id}`);
+            return Promise.resolve(this.session);
         }
-        return this.session;
     }
 
     async getServiceStates(): Promise<object[]> {
@@ -128,7 +130,7 @@ export class Module {
     }
 
     resolveNodeId(variable: OpcUaNode) {
-        return coerceNodeId(`ns=${this.namespaceArray.indexOf(variable.namespace_index)};${variable.node_id}`);
+        return coerceNodeId(`ns=${this.namespaceArray.indexOf(variable.namespace_index)};s=${variable.node_id}`);
     }
 
     listenToVariable(dataStructureName: string, variableName: string): EventEmitter {

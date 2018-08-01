@@ -2,64 +2,6 @@
   "version": "1.0",
   "name": "Simples Testrezept",
   "author": "Markus Graube",
-  "modules": [
-    {
-      "id": "D1",
-      "endpoint": "opc.tcp://10.1.53.2:16664",
-      "name": "Dosiermodul 1 (Wasser)",
-      "services": [
-        {
-          "id": "Dose",
-          "name": "Dosieren",
-          "command": "ns=2;i=3125",
-          "status": "ns=2;i=3126",
-          "strategy": {
-              "nodeid": "ns=2;i=3127", "value": 1
-          },
-          "parameter": {
-              "volume": "ns=2;i=3000"
-          }
-        }
-      ]
-    },
-    {
-      "id": "D2",
-      "endpoint": "opc.tcp://10.1.53.3:16664",
-      "name": "Dosiermodul 2 (Wasser)",
-      "services": [
-        {
-          "id": "Dose",
-            "name": "Dosieren",
-            "command": "ns=2;i=3125",
-            "status": "ns=2;i=3126",
-            "strategy": {
-              "nodeid": "ns=2;i=3127", "value": 1
-            },
-            "parameter": {
-              "volume": "ns=2;i=3000"
-            }
-          }
-      ]
-    },
-    {
-      "id": "R1",
-        "endpoint": "opc.tcp://10.1.53.2:16664",
-        "name": "Dosiermodul 1 (Wasser)",
-        "services": [
-          { "id": "Dose",
-                "name": "Dosieren",
-                "command": "ns=2;i=3125",
-                "status": "ns=2;i=3126",
-                "strategy": {
-                    "nodeid": "ns=2;i=3127", "value": 1
-                },
-                "parameter": {
-                    "volume": "ns=2;i=3000"
-                }
-            }
-        ]
-    }
-	],
 	"initial_step": "S1",
 	"steps": [
 		{
