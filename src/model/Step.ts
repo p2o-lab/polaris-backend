@@ -13,23 +13,23 @@ export class Step {
     operations: Operation[];
     transitions: Transition[];
 
-    constructor(options: StepOptions, modules) {
+    constructor(options: StepOptions, modules, recipe) {
         this.name = options.name;
 
         this.operations = [];
         options.operations.forEach((json_operation: OperationOptions) => {
-            this.operations.push(new Operation(json_operation, modules));
+            this.operations.push(new Operation(json_operation, modules, recipe));
         });
 
         this.transitions = [];
         options.transitions.forEach((json_transition: TransitionOptions) => {
-            this.transitions.push(new Transition(json_transition, modules));
+            this.transitions.push(new Transition(json_transition, modules, recipe));
         });
     }
 
     execute(callback: (step: Step) => void) {
         this.operations.forEach((operation) => {
-            catRecipe.info(`Start operation ${operation.module.name} ${operation.service.name} ${operation.command} ${operation.parameter}`);
+            catRecipe.info(`Start operation ${operation.module.id} ${operation.service.name} ${operation.command} ${operation.parameter}`);
             operation.execute();
         });
 
@@ -45,5 +45,4 @@ export class Step {
             });
         });
     }
-
 }

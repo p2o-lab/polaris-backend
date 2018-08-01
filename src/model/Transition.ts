@@ -11,9 +11,9 @@ export class Transition {
     next_step_name: string;
     condition: Condition;
 
-    constructor(json, modules) {
+    constructor(json, modules, recipe) {
         this.next_step_name = json.next_step;
-        this.condition = Condition.create(json.condition, modules);
+        this.condition = Condition.create(json.condition, modules, recipe);
     }
 }
 

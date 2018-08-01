@@ -1,6 +1,7 @@
 import {Module} from './Module';
 import {Service} from './Service';
 import {catRecipe} from '../config/logging';
+import {Recipe} from "./Recipe";
 
 export interface OperationOptions {
     module: string;
@@ -15,9 +16,13 @@ export class Operation {
     command: string;
     parameter: { [param: string]: any };
 
-    constructor(options: OperationOptions, modules: Map<string, Module>) {
-        this.module = modules.get(options.module);
-        this.service = this.module.services.get(options.service);
+    constructor(options: OperationOptions, modules: Module[], recipe: Recipe) {
+        this.module = modules.find(module => module.id === options.module);
+        if (!this.module) {
+            throw new Error(`Could not find module ${options.module}`);
+        }
+        recipe.modules.add(this.module);
+        this.service = this.module.services.find(service => service.name === options.service);
         if (!this.service) {
             throw new Error(`Service ${options.service} not found in modules`);
         }
@@ -26,7 +31,7 @@ export class Operation {
     }
 
     execute() {
-        catRecipe.debug(`perform operation ${this.module.name} ${this.service.name}`);
+        catRecipe.debug(`perform operation ${this.module.id} ${this.service.name}`);
         if (this.command === 'start') {
             this.service.start(this.parameter);
         } else if (this.command === 'stop') {

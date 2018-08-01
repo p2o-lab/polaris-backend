@@ -6,6 +6,7 @@ CategoryServiceFactory.setDefaultConfiguration(new CategoryConfiguration(LogLeve
 
 // Create categories, they will autoregister themselves
 export const catRecipe = new Category("recipe");
+export const catModule = new Category("module");
 export const catService = new Category("service", catRecipe);
 export const catRM = new Category("recipeManager");
 export const catOpc = new Category("opcua");

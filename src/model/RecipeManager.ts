@@ -4,11 +4,37 @@ import {Step} from "./Step";
 import {RecipeState} from "./enum";
 import {catRM} from "../config/logging";
 import {EventEmitter} from "events";
+import {Module} from "./Module";
 
 export class RecipeManager {
 
+    // loaded recipe
     recipe: Recipe;
     recipe_options: RecipeOptions;
+
+    // loaded modules
+    modules: Module[] = [];
+
+
+    public loadModule(options): Module[] {
+        let newModules: Module[] = [];
+        if (options.subplants) {
+            options.subplants.forEach((subplant) => {
+                subplant.modules.forEach((module) => {
+                    newModules.push(new Module(module));
+                });
+            });
+        }
+        if (options.modules) {
+            options.modules.forEach((module) => {
+                newModules.push(new Module(module));
+            });
+        }
+        this.modules.push(...newModules);
+        return newModules;
+    }
+
+
 
     public loadRecipeFromPath(recipe_path) {
         if (this.recipe && this.recipe.recipe_status === RecipeState.running) {
@@ -16,7 +42,7 @@ export class RecipeManager {
         }
         let recipe_buffer = fs.readFileSync(recipe_path);
         let recipeOptions: RecipeOptions = JSON.parse(recipe_buffer.toString());
-        this.recipe = new Recipe(recipeOptions);
+        this.recipe = new Recipe(recipeOptions, this.modules);
         this.recipe_options = recipeOptions;
     }
 
@@ -24,15 +50,15 @@ export class RecipeManager {
         if (this.recipe && this.recipe.recipe_status === RecipeState.running) {
             return new Error("Another Recipe is currently running");
         }
-        this.recipe = new Recipe(options);
+        this.recipe = new Recipe(options, this.modules);
         this.recipe_options = options;
     }
 
-    public async getState() {
+    public async getServiceStates() {
         let tasks = [];
         this.recipe.modules.forEach((module) => {
             tasks.push(module.getServiceStates()
-                .then(data => Promise.resolve({module: module.name, services: data})));
+                .then(data => Promise.resolve({module: module.id, services: data})));
         });
         const states = await Promise.all(tasks);
         return states;

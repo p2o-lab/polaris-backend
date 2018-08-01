@@ -2,29 +2,6 @@
   "version": "1.0",
   "name": "Simples Testrezept",
   "author": "Markus Graube",
-  "modules": {
-    "Sim": {
-      "endpoint": "opc.tcp://localhost:53530/OPCUA/SimulationServer",
-      "name": "Simulationserver",
-      "variables": {
-        "test": "ns=3;s=Int32"
-      },
-      "services": {
-        "Dose": {
-          "name": "Dosieren",
-          "command": "ns=2;i=3125",
-          "status": "ns=2;i=3126",
-          "strategy": {
-            "nodeid": "ns=2;i=3127",
-            "value": 1
-          },
-          "parameter": {
-            "volume": "ns=2;i=3000"
-          }
-        }
-      }
-    }
-  },
   "initial_step": "S1",
   "steps": {
     "S1": {
@@ -32,8 +9,8 @@
       "name": "S1",
       "operations": [
         {
-          "module": "Sim",
-          "service": "Dose",
+          "module": "CIF",
+          "service": "Dosieren",
           "command": "start",
           "parameter": {
             "volume": 0.5
@@ -58,7 +35,8 @@
           "next_step": "S3",
           "condition": {
             "type": "variable",
-            "module": "Sim",
+            "module": "CIF",
+            "datastructure": "test",
             "variable": "test",
             "value": 22
           }

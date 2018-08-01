@@ -18,33 +18,23 @@ export class Recipe {
     version: string;
     name: string;
     author: string;
-    modules: Map<string, Module>;
+    // necessary modules
+    modules: Set<Module> = new Set<Module>();
     initial_step: Step;
-    steps: Map<string, Step>;
+    steps: Map<string, Step> = new Map<string, Step>();
 
     current_step: Step;
     recipe_status: RecipeState;
     eventEmitter: EventEmitter;
 
-    constructor(options: RecipeOptions) {
+    constructor(options: RecipeOptions, modules: Module[]) {
         this.version = options.version;
         this.name = options.name;
         this.author = options.author;
 
-        this.modules = new Map<string, Module>();
-        Object.keys(options.modules).forEach((key) => {
-            const option_module: Module = options.modules[key];
-
-            this.modules.set(key, new Module(option_module));
-
-        });
-
-        this.steps = new Map<string, Step>();
         Object.keys(options.steps).forEach((key) => {
             const stepOptions: StepOptions = options.steps[key];
-
-            this.steps.set(key, new Step(stepOptions, this.modules));
-
+            this.steps.set(key, new Step(stepOptions, modules, this));
         });
 
         // Resolve next steps to appropriate objects

@@ -1,4 +1,5 @@
 import {Service, ServiceOptions} from './Service';
+import {Variable} from './Variable';
 import {
     AttributeIds,
     ClientMonitoredItem,
@@ -7,41 +8,42 @@ import {
     coerceNodeId,
     OPCUAClient
 } from 'node-opcua-client';
-import {catOpc, catRecipe} from '../config/logging';
+import {catModule, catOpc, catRecipe} from '../config/logging';
 import {EventEmitter} from "events";
-import {ServiceState} from "./enum";
+import {OpMode, ServiceState} from "./enum";
+import {DataValue} from "node-opcua";
+import {OpcUaNode} from "./Interfaces";
 
 export interface ModuleOptions {
-    name: string;
+    id: string;
     endpoint: string;
     services: Map<string, ServiceOptions>;
     variables: Map<string, string>;
 }
 
 export class Module {
-    name: string;
+    id: string;
     endpoint: string;
-    services: Map<string, Service>;
-    variables: Map<string, string>;
+    services: Service[];
+    variables: Variable[];
 
     client: OPCUAClient;
     session: ClientSession;
     subscription: ClientSubscription;
     monitoredItems: Map<string, ClientMonitoredItem> = new Map<string, ClientMonitoredItem>();
+    namespaceArray: string[];
 
-    constructor(options: ModuleOptions) {
-        this.name = options.name;
-        this.endpoint = options.endpoint;
-        this.variables = new Map<string, string>();
-        Object.keys(options.variables).forEach((key) => {
-            this.variables.set(key, options.variables[key]);
-        });
-        this.services = new Map<string, Service>();
-        Object.keys(options.services).forEach((key) => {
-            const serviceOptions: ServiceOptions = options.services[key];
+    constructor(options) {
+        this.id = options.id;
+        this.endpoint = options.opcua_server_url;
 
-            this.services.set(key, new Service(serviceOptions, this));
-        });
+        if (options.services) {
+            this.services = options.services.map(serviceOption => new Service(serviceOption, this));
+        }
+        if (options.process_values) {
+            this.variables = options.process_values.map(variableOptions => new Variable(variableOptions));
+        }
+        this.connect();
     }
 
     /**
@@ -49,48 +51,63 @@ export class Module {
      * @returns {Promise<ClientSession>}
      */
     async connect(): Promise<ClientSession> {
-        catOpc.info(`connect module ${this.name} ${this.endpoint}`);
+        if (this.client === undefined) {
+            try {
+                catOpc.info(`connect module ${this.id} ${this.endpoint}`);
 
-        this.client = new OPCUAClient({
-            endpoint_must_exist: false,
-            connectionStrategy: {
-                maxRetry: 10
+                this.client = new OPCUAClient({
+                    endpoint_must_exist: false,
+                    connectionStrategy: {
+                        maxRetry: 10
+                    }
+                });
+
+                await this.client.connect(this.endpoint);
+
+                catOpc.debug(`module connected ${this.id} ${this.endpoint}`);
+
+                this.session = await this.client.createSession();
+
+                catOpc.debug(`session established ${this.id} ${this.endpoint}`);
+
+                this.subscription = new ClientSubscription(this.session, {
+                    requestedPublishingInterval: 1000,
+                    requestedLifetimeCount: 10,
+                    requestedMaxKeepAliveCount: 2,
+                    maxNotificationsPerPublish: 10,
+                    publishingEnabled: true,
+                    priority: 10
+                });
+
+                this.subscription
+                    .on('started', () => {
+                        catOpc.trace(`subscription started - subscriptionId=${this.subscription.subscriptionId}`);
+                    })
+                    // .on("keepalive", () => catOpc.trace("keepalive"))
+                    .on('terminated', () => catOpc.trace('subscription (Id=${this.subscription.subscriptionId}) terminated'));
+
+                // read namespace array
+                const result: DataValue = await this.session.readVariableValue('ns=0;i=2255');
+                this.namespaceArray = result.value.value;
+            } catch (err) {
+                catModule.warn(`Could not connect to module ${this.id} on ${this.endpoint}`)
             }
-        });
-
-        await this.client.connect(this.endpoint);
-
-        catOpc.trace(`module connected ${this.name} ${this.endpoint}`);
-
-        this.session = await this.client.createSession();
-
-        catOpc.trace(`session established ${this.name} ${this.endpoint}`);
-
-        this.subscription = new ClientSubscription(this.session, {
-            requestedPublishingInterval: 1000,
-            requestedLifetimeCount: 10,
-            requestedMaxKeepAliveCount: 2,
-            maxNotificationsPerPublish: 10,
-            publishingEnabled: true,
-            priority: 10
-        });
-
-        this.subscription
-            .on('started', () => {
-                catOpc.trace(`subscription started - subscriptionId=${this.subscription.subscriptionId}`);
-            })
-            // .on("keepalive", () => catOpc.trace("keepalive"))
-            .on('terminated', () => catOpc.trace('subscription (Id=${this.subscription.subscriptionId}) terminated'));
-
+        } else {
+            catOpc.debug(`Already connected to module ${this.id}`);
+        }
         return this.session;
     }
 
-    async getServiceStates(): Promise<any[]> {
+    async getServiceStates(): Promise<object[]> {
         catRecipe.trace('check services');
         const tasks: any[] = [];
         this.services.forEach((service) => {
-            tasks.push(service.getState()
-                .then((state: ServiceState) => Promise.resolve({service: service.name, state: ServiceState[state]})));
+            tasks.push(service.getOverview()
+                .then((result) => Promise.resolve(
+                    {service: service.name, opMode: OpMode[result.opMode], state: ServiceState[result.status]}
+                    )
+                )
+            );
         });
         return Promise.all(tasks);
     }
@@ -100,16 +117,26 @@ export class Module {
      *
      */
     async disconnect(): Promise<any> {
-        catRecipe.info(`Disconnect module ${this.name}`);
-        await this.session.close();
+        if (this.session) {
+            catRecipe.info(`Disconnect module ${this.id}`);
+            await this.session.close();
 
-        return this.client.disconnect();
+            return this.client.disconnect();
+        } else {
+            return Promise.resolve('Already disconnected');
+        }
     }
 
-    listenToVariable(variable: string): EventEmitter {
-        if (this.variables.has(variable)) {
+    resolveNodeId(variable: OpcUaNode) {
+        return coerceNodeId(`ns=${this.namespaceArray.indexOf(variable.namespace_index)};${variable.node_id}`);
+    }
+
+    listenToVariable(dataStructureName: string, variableName: string): EventEmitter {
+        const dataStructure = this.variables.find(variable => variable.name === dataStructureName);
+        if (dataStructure) {
+            const variable = dataStructure.communication[variableName];
             const monitoredItem: ClientMonitoredItem = this.subscription.monitor({
-                    nodeId: coerceNodeId(this.variables.get(variable)),
+                    nodeId: this.resolveNodeId(variable),
                     attributeId: AttributeIds.Value
                 },
                 {
@@ -120,10 +147,10 @@ export class Module {
 
             monitoredItem.emitter = new EventEmitter();
             monitoredItem.on('changed', (dataValue) => {
-                catOpc.debug(`Variable Changed (${variable}) = ${dataValue.value.value.toString()}`);
+                catOpc.debug(`Variable Changed (${dataStructureName}) = ${dataValue.value.value.toString()}`);
                 monitoredItem.emitter.emit('changed', dataValue.value.value);
             });
-            this.monitoredItems.set(variable, monitoredItem);
+            this.monitoredItems.set(dataStructureName, monitoredItem);
 
             return monitoredItem.emitter;
         } else {
@@ -139,7 +166,33 @@ export class Module {
         }
     }
 
-    readVariable(variable: string) {
-        return this.session.readVariableValue(coerceNodeId(this.variables.get(variable)));
+
+    readVariable(dataStructureName: string, variableName: string) {
+        const dataStructure = this.variables.find(variable => variable.name === dataStructureName);
+        if (dataStructure) {
+            const variable = dataStructure.communication[variableName];
+            return this.session.readVariableValue(this.resolveNodeId(variable));
+        }
+    }
+
+    json() {
+        return new Promise(async (resolve, reject) => {
+            if (this.session) {
+                const services = await this.getServiceStates();
+                resolve({
+                    id: this.id,
+                    endpoint: this.endpoint,
+                    connected: true,
+                    services: services
+                });
+            } else {
+                resolve({
+                    id: this.id,
+                    endpoint: this.endpoint,
+                    connected: false
+                });
+            }
+        });
+
     }
 }
