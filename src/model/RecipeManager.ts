@@ -34,8 +34,6 @@ export class RecipeManager {
         return newModules;
     }
 
-
-
     public loadRecipeFromPath(recipe_path) {
         if (this.recipe && this.recipe.recipe_status === RecipeState.running) {
             return new Error("Another Recipe is currently running");
@@ -56,27 +54,25 @@ export class RecipeManager {
 
     public async getServiceStates() {
         let tasks = [];
-        this.recipe.modules.forEach((module) => {
+        this.recipe.modules.forEach(async (module) => {
             tasks.push(module.getServiceStates()
-                .then(data => Promise.resolve({module: module.id, services: data})));
+                .then((data) => {
+                    return {module: module.id, services: data}
+                })
+                .catch((err) => {
+                    return {module: module.id, connected: false}
+                })
+            );
         });
         const states = await Promise.all(tasks);
         return states;
     }
 
-    connect(): Promise<any> {
+    async connect(): Promise<any> {
         catRM.info("Start connecting to all modules ...");
-        return new Promise((resolve, reject) => {
-            this.recipe.connectModules()
-                .then(() => {
-                    catRM.info("Successful connected to all modules.");
-                    resolve("Successful connected to all modules");
-                })
-                .catch((err) => {
-                    catRM.error(`Could not connect to all modules in recipe`, err);
-                    reject(err);
-                });
-        });
+        const result = await this.recipe.connectModules();
+        catRM.info("Connected to all modules necessary for loaded recipe");
+        return result;
     }
 
     close() {
@@ -85,6 +81,10 @@ export class RecipeManager {
     }
 
 
+    /**
+     * Start loaded recipe
+     * @returns {"events".internal.EventEmitter}
+     */
     start(): EventEmitter {
         if (this.recipe.recipe_status === RecipeState.idle) {
             catRM.info("Start recipe");
@@ -96,6 +96,32 @@ export class RecipeManager {
                     catRM.info(`Step finsished: ${step.name} - ${next_step.name}`)
                 });
         }
+    }
+
+    /**
+     * Abort all services from modules used in recipe
+     * @returns {Promise}
+     */
+    abortRecipe() {
+        let tasks = Array.from(this.recipe.modules).map((module) => {
+            return module.services.map((service) => {
+                return service.abort();
+            })
+        });
+        return Promise.all(tasks);
+    }
+
+    /**
+     * Abort all services from all loaded modules
+     * @returns {Promise}
+     */
+    abortAllModules() {
+        let tasks = this.modules.map(module =>
+            module.services.map(service =>
+                service.abort()
+            )
+        );
+        return Promise.all(tasks);
     }
 }
 

@@ -1,5 +1,5 @@
 import {Step, StepOptions} from './Step';
-import {Module, ModuleOptions} from './Module';
+import {Module} from './Module';
 import {catRecipe} from '../config/logging';
 import {RecipeState} from './enum';
 import {EventEmitter} from "events";
@@ -8,9 +8,8 @@ export interface RecipeOptions {
     version: string;
     name: string;
     author: string;
-    modules: Map<string, ModuleOptions>;
     initial_step: string;
-    steps: Map<string, StepOptions>;
+    steps: StepOptions[];
 }
 
 export class Recipe {
@@ -21,7 +20,7 @@ export class Recipe {
     // necessary modules
     modules: Set<Module> = new Set<Module>();
     initial_step: Step;
-    steps: Map<string, Step> = new Map<string, Step>();
+    steps: Step[];
 
     current_step: Step;
     recipe_status: RecipeState;
@@ -32,19 +31,16 @@ export class Recipe {
         this.name = options.name;
         this.author = options.author;
 
-        Object.keys(options.steps).forEach((key) => {
-            const stepOptions: StepOptions = options.steps[key];
-            this.steps.set(key, new Step(stepOptions, modules, this));
-        });
+        this.steps = options.steps.map(stepOptions => new Step(stepOptions, modules, this));
 
         // Resolve next steps to appropriate objects
         this.steps.forEach((step: Step) => {
             step.transitions.forEach((transition) => {
-                transition.next_step = this.steps.get(transition.next_step_name);
+                transition.next_step = this.steps.find(step => step.name === transition.next_step_name);
             });
         });
 
-        this.initial_step = this.steps.get(options.initial_step);
+        this.initial_step = this.steps.find(step => step.name === options.initial_step);
         this.recipe_status = RecipeState.idle;
         this.eventEmitter = new EventEmitter();
 
@@ -62,18 +58,12 @@ export class Recipe {
     }
 
     public connectModules(): Promise<any[]> {
-        const tasks: Promise<any>[] = [];
-        this.modules.forEach((module) => {
-            tasks.push(module.connect());
-        });
+        const tasks = Array.from(this.modules).map(module => module.connect());
         return Promise.all(tasks);
     }
 
     public disconnectModules(): Promise<any[]> {
-        const tasks: Promise<any>[] = [];
-        this.modules.forEach((module) => {
-            tasks.push(module.disconnect());
-        });
+        const tasks = Array.from(this.modules).map(module => module.disconnect());
         return Promise.all(tasks);
     }
 

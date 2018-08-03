@@ -1,19 +1,22 @@
-import * as express from 'express';
 import {recipe_manager} from '../model/RecipeManager';
 import {catServer} from '../config/logging';
+import {RecipeState} from "../model/enum";
+import {moduleRouter} from "./moduleRouter";
+import {Request, Response, Router} from "express";
 
-export const recipeRouter = express.Router();
+export const recipeRouter: Router = Router();
 
 /**
  * @api {get} /recipe    Get recipe
  * @apiName GetRecipe
  * @apiGroup Recipe
  */
-recipeRouter.get('', async (req: express.Request, res: express.Response) => {
+recipeRouter.get('', async (req: Request, res: Response) => {
     catServer.info('GET /recipe');
     res.json({
-        recipe_status: recipe_manager.recipe.recipe_status,
-        service_states: await recipe_manager.getServiceStates()
+        recipe_status: RecipeState[recipe_manager.recipe.recipe_status],
+        service_states: await recipe_manager.getServiceStates(),
+        current_step: recipe_manager.recipe.current_step
     });
 });
 
@@ -22,18 +25,18 @@ recipeRouter.get('', async (req: express.Request, res: express.Response) => {
  * @apiName GetRecipeOptions
  * @apiGroup Recipe
  */
-recipeRouter.get('/options', (req: express.Request, res: express.Response) => {
+recipeRouter.get('/options', (req: Request, res: Response) => {
     catServer.info('GET /recipe/options');
     res.json(recipe_manager.recipe_options);
 });
 
 /**
- * @api {post} /recipe    Post recipe
+ * @api {post} /recipe    Load recipe
  * @apiName PostRecipe
  * @apiGroup Recipe
  * @apiParam {Object} recipe  new recipe
  */
-recipeRouter.post('', async (req: express.Request, res: express.Response) => {
+recipeRouter.post('', async (req: Request, res: Response) => {
     catServer.info(`POST /recipe. ${req.body.recipe}`);
     recipe_manager.loadRecipe(req.body.recipe);
     await recipe_manager.connect();
@@ -45,8 +48,18 @@ recipeRouter.post('', async (req: express.Request, res: express.Response) => {
  * @apiName StartRecipe
  * @apiGroup Recipe
  */
-recipeRouter.post('/start', (req: express.Request, res: express.Response) => {
+recipeRouter.post('/start', (req: Request, res: Response) => {
     catServer.info('POST /recipe/start');
     recipe_manager.start();
     res.send('recipe successful started');
+});
+
+/**
+ * @api {post} /recipe/abort    Abort all services from modules used in recipe
+ * @apiName AbortServices
+ * @apiGroup Recipe
+ */
+moduleRouter.post('/abort', async (req: Request, res: Response) => {
+    catServer.info(`POST /recipe/abort`);
+    res.json(await recipe_manager.abortRecipe());
 });

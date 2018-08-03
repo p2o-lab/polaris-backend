@@ -8,17 +8,16 @@
       "name": "S1",
       "operations": [
         {
-          "module": "Temper",
-          "service": "Tempering",
-          "strategy": "ContinuousTempering",
-          "command": "start",
-          "parameter": [
-            {
-              "name": "Setpoint",
-              "variable": "VExt",
-              "value": "25"
-            }
-          ]
+          "module": "React",
+          "service": "Aerate_Service",
+          "strategy": "Aerate_Continous",
+          "command": "start"
+        },
+        {
+          "module": "React",
+          "service": "Stir_Service",
+          "strategy": "Stirring_Continous",
+          "command": "start"
         }
       ],
       "transitions": [
@@ -26,7 +25,7 @@
           "next_step": "S2",
           "condition": {
             "type": "time",
-            "duration": "120"
+            "duration": "10"
           }
         }
       ]
@@ -35,8 +34,14 @@
       "name": "S2",
       "operations": [
         {
-          "module": "Temper",
-          "service": "Tempering",
+          "module": "React",
+          "service": "Aerate_Service",
+          "command": "complete"
+        },
+        {
+          "module": "React",
+          "service": "Stir_Service",
+          "strategy": "Stirring_Continous",
           "command": "complete"
         }
       ],
@@ -45,8 +50,8 @@
           "next_step": "S3",
           "condition": {
             "type": "state",
-            "module": "Temper",
-            "service": "Tempering",
+            "module": "React",
+            "service": "Aerate_Service",
             "state": "completed"
           }
         }
@@ -56,8 +61,14 @@
       "name": "S3",
       "operations": [
         {
-          "module": "Temper",
-          "service": "Tempering",
+          "module": "React",
+          "service": "Aerate_Service",
+          "command": "reset"
+        },
+        {
+          "module": "React",
+          "service": "Stir_Service",
+          "strategy": "Stirring_Continous",
           "command": "reset"
         }
       ],
@@ -66,8 +77,8 @@
           "next_step": "finished",
           "condition": {
             "type": "state",
-            "module": "Temper",
-            "service": "Tempering",
+            "module": "React",
+            "service": "Aerate_Service",
             "state": "idle"
           }
         }

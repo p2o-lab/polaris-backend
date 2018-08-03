@@ -16,15 +16,8 @@ export class Step {
     constructor(options: StepOptions, modules, recipe) {
         this.name = options.name;
 
-        this.operations = [];
-        options.operations.forEach((json_operation: OperationOptions) => {
-            this.operations.push(new Operation(json_operation, modules, recipe));
-        });
-
-        this.transitions = [];
-        options.transitions.forEach((json_transition: TransitionOptions) => {
-            this.transitions.push(new Transition(json_transition, modules, recipe));
-        });
+        this.operations = options.operations.map(operationOptions => new Operation(operationOptions, modules, recipe));
+        this.transitions = options.transitions.map(transitionOptions => new Transition(transitionOptions, modules, recipe));
     }
 
     execute(callback: (step: Step) => void) {

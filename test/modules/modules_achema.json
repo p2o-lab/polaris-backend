@@ -34,7 +34,7 @@
               "name": "Energy consumption"
             }
           ],
-          "opcua_server_url": "opc.tcp://192.168.2.110:4840",
+          "opcua_server_url": "opc.tcp://192.168.2.110",
           "rest_api_port": "1200",
           "services": [
             {
@@ -89,83 +89,68 @@
                   "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Nachfuellen.CurrentStrategy"
                 }
               },
-              "strategies": {
-                "1": {
+              "strategies": [
+                {
+                  "id": "1",
                   "name": "Fill_conti",
                   "default": true,
                   "sc": false,
-                  "parameter": {}
+                  "parameters": []
                 },
-                "2": {
+                {
+                  "id": "2",
                   "name": "Fill_batch",
                   "default": false,
                   "sc": true,
-                  "parameter": {
-                    "SetVolume": {
-                      "VExt": {
-                        "value": {
+                  "parameters": [
+                    {
+                      "name": "SetVolume",
+                      "communication": {
+                        "VExt": {
                           "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                           "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Nachfuellen.SollVolumen.VExt"
-                        }
-                      },
-                      "OSLevel": {
-                        "value": {
+                        },
+                        "OSLevel": {
                           "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                           "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Nachfuellen.SollVolumen.OSLevel"
-                        }
-                      },
-                      "WQC": {
-                        "value": {
+                        },
+                        "WQC": {
                           "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                           "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Nachfuellen.SollVolumen.WQC"
-                        }
-                      },
-                      "VOut": {
-                        "value": {
+                        },
+                        "VOut": {
                           "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                           "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Nachfuellen.SollVolumen.VOut"
-                        }
-                      },
-                      "VRbk": {
-                        "value": {
+                        },
+                        "VRbk": {
                           "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                           "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Nachfuellen.SollVolumen.VRbk"
-                        }
-                      },
-                      "VMax": {
-                        "value": {
+                        },
+                        "VMax": {
                           "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                           "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Nachfuellen.SollVolumen.VMax"
-                        }
-                      },
-                      "VMin": {
-                        "value": {
+                        },
+                        "VMin": {
                           "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                           "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Nachfuellen.SollVolumen.VMin"
-                        }
-                      },
-                      "VUnit": {
-                        "value": {
+                        },
+                        "VUnit": {
                           "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                           "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Nachfuellen.SollVolumen.VUnit"
-                        }
-                      },
-                      "VSclMax": {
-                        "value": {
+                        },
+                        "VSclMax": {
                           "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                           "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Nachfuellen.SollVolumen.VSclMax"
-                        }
-                      },
-                      "VSclMin": {
-                        "value": {
+                        },
+                        "VSclMin": {
                           "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                           "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Nachfuellen.SollVolumen.VSclMin"
                         }
                       }
                     }
-                  }
+                  ]
                 }
-              }
+              ]
             },
             {
               "name": "DoseAmount",
@@ -219,139 +204,106 @@
                   "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Vorlegen.CurrentStrategy"
                 }
               },
-              "strategies": {
-                "1": {
+              "strategies": [
+                {
+                  "id": "1",
                   "name": "Dose_batch",
                   "default": true,
                   "sc": true,
-                  "parameter": {
-                    "SetVolume": {
-                      "VExt": {
-                        "value": {
+                  "parameters": [
+                    {
+                      "name": "SetVolume",
+                      "communication": {
+                        "VExt": {
                           "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                           "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Vorlegen.SollVolumen.VExt"
-                        }
-                      },
-                      "OSLevel": {
-                        "value": {
+                        },
+                        "OSLevel": {
                           "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                           "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Vorlegen.SollVolumen.OSLevel"
-                        }
-                      },
-                      "WQC": {
-                        "value": {
+                        },
+                        "WQC": {
                           "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                           "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Vorlegen.SollVolumen.WQC"
-                        }
-                      },
-                      "VOut": {
-                        "value": {
+                        },
+                        "VOut": {
                           "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                           "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Vorlegen.SollVolumen.VOut"
-                        }
-                      },
-                      "VRbk": {
-                        "value": {
+                        },
+                        "VRbk": {
                           "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                           "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Vorlegen.SollVolumen.VRbk"
-                        }
-                      },
-                      "VMax": {
-                        "value": {
+                        },
+                        "VMax": {
                           "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                           "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Vorlegen.SollVolumen.VMax"
-                        }
-                      },
-                      "VMin": {
-                        "value": {
+                        },
+                        "VMin": {
                           "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                           "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Vorlegen.SollVolumen.VMin"
-                        }
-                      },
-                      "VUnit": {
-                        "value": {
+                        },
+                        "VUnit": {
                           "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                           "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Vorlegen.SollVolumen.VUnit"
-                        }
-                      },
-                      "VSclMax": {
-                        "value": {
+                        },
+                        "VSclMax": {
                           "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                           "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Vorlegen.SollVolumen.VSclMax"
-                        }
-                      },
-                      "VSclMin": {
-                        "value": {
+                        },
+                        "VSclMin": {
                           "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                           "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Vorlegen.SollVolumen.VSclMin"
                         }
                       }
                     },
-                    "SetDuration": {
-                      "VExt": {
-                        "value": {
+                    {
+                      "name": "SetDuration",
+                      "communication": {
+                        "VExt": {
                           "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                           "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Vorlegen.SollDauer.VExt"
-                        }
-                      },
-                      "OSLevel": {
-                        "value": {
+                        },
+                        "OSLevel": {
                           "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                           "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Vorlegen.SollDauer.OSLevel"
-                        }
-                      },
-                      "WQC": {
-                        "value": {
+                        },
+                        "WQC": {
                           "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                           "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Vorlegen.SollDauer.WQC"
-                        }
-                      },
-                      "VOut": {
-                        "value": {
+                        },
+                        "VOut": {
                           "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                           "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Vorlegen.SollDauer.VOut"
-                        }
-                      },
-                      "VRbk": {
-                        "value": {
+                        },
+                        "VRbk": {
                           "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                           "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Vorlegen.SollDauer.VRbk"
-                        }
-                      },
-                      "VMax": {
-                        "value": {
+                        },
+                        "VMax": {
                           "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                           "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Vorlegen.SollDauer.VMax"
-                        }
-                      },
-                      "VMin": {
-                        "value": {
+                        },
+                        "VMin": {
                           "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                           "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Vorlegen.SollDauer.VMin"
-                        }
-                      },
-                      "VUnit": {
-                        "value": {
+                        },
+                        "VUnit": {
                           "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                           "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Vorlegen.SollDauer.VUnit"
-                        }
-                      },
-                      "VSclMax": {
-                        "value": {
+                        },
+                        "VSclMax": {
                           "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                           "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Vorlegen.SollDauer.VSclMax"
-                        }
-                      },
-                      "VSclMin": {
-                        "value": {
+                        },
+                        "VSclMin": {
                           "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                           "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Vorlegen.SollDauer.VSclMin"
                         }
                       }
                     }
-                  }
+                  ]
                 }
-              }
+              ]
             },
             {
               "name": "DoseConti",
@@ -405,77 +357,61 @@
                   "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Dosieren.CurrentStrategy"
                 }
               },
-              "strategies": {
-                "1": {
+              "strategies": [
+                {
+                  "id": "1",
                   "name": "Dose_conti",
                   "default": true,
                   "sc": false,
-                  "parameter": {
-                    "SetVolumeFlow": {
-                      "VExt": {
-                        "value": {
+                  "parameters": [
+                    {
+                      "name": "SetVolumeFlow",
+                      "communication": {
+                        "VExt": {
                           "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                           "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Dosieren.SollVolumenStrom.VExt"
-                        }
-                      },
-                      "OSLevel": {
-                        "value": {
+                        },
+                        "OSLevel": {
                           "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                           "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Dosieren.SollVolumenStrom.OSLevel"
-                        }
-                      },
-                      "WQC": {
-                        "value": {
+                        },
+                        "WQC": {
                           "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                           "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Dosieren.SollVolumenStrom.WQC"
-                        }
-                      },
-                      "VOut": {
-                        "value": {
+                        },
+                        "VOut": {
                           "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                           "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Dosieren.SollVolumenStrom.VOut"
-                        }
-                      },
-                      "VRbk": {
-                        "value": {
+                        },
+                        "VRbk": {
                           "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                           "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Dosieren.SollVolumenStrom.VRbk"
-                        }
-                      },
-                      "VMax": {
-                        "value": {
+                        },
+                        "VMax": {
                           "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                           "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Dosieren.SollVolumenStrom.VMax"
-                        }
-                      },
-                      "VMin": {
-                        "value": {
+                        },
+                        "VMin": {
                           "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                           "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Dosieren.SollVolumenStrom.VMin"
-                        }
-                      },
-                      "VUnit": {
-                        "value": {
+                        },
+                        "VUnit": {
                           "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                           "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Dosieren.SollVolumenStrom.VUnit"
-                        }
-                      },
-                      "VSclMax": {
-                        "value": {
+                        },
+                        "VSclMax": {
                           "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                           "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Dosieren.SollVolumenStrom.VSclMax"
-                        }
-                      },
-                      "VSclMin": {
-                        "value": {
+                        },
+                        "VSclMin": {
                           "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                           "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Dosieren.SollVolumenStrom.VSclMin"
                         }
                       }
                     }
-                  }
+                  ]
                 }
-              }
+              ]
             },
             {
               "name": "Empty",
@@ -529,191 +465,204 @@
                   "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Entleeren.CurrentStrategy"
                 }
               },
-              "strategies": {
-                "1": {
+              "strategies": [
+                {
+                  "id": "1",
                   "name": "Empty_batch",
                   "default": true,
                   "sc": true,
-                  "parameter": {}
+                  "parameters": []
                 }
-              }
+              ]
             }
           ],
           "process_values": [
             {
-              "name": "MFH03_BinVlv",
+              "name": "Aktoren.V001",
               "communication": {
-                "OpenLi": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"OpenLi\""
-                },
-                "CloseLi": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"CloseLi\""
-                },
-                "Ctrl": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"Ctrl\""
+                "OSLevel": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.V001.OSLevel"
                 },
                 "WQC": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"WQC\""
-                },
-                "SafePos": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"SafePos\""
-                },
-                "OpenFbkEn": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"OpenFbkEn\""
-                },
-                "CloseFbkEn": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"CloseFbkEn\""
-                },
-                "OpenFbk": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"OpenFbk\""
-                },
-                "CloseFbk": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"CloseFbk\""
-                },
-                "OSLevel": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"OSLevel\""
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.V001.WQC"
                 },
                 "OpMode": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"OpMode\""
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.V001.OpMode.binary"
+                },
+                "SafePos": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.V001.SafePos"
+                },
+                "OpenFbkEn": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.V001.OpenFbkEn"
+                },
+                "CloseFbkEn": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.V001.CloseFbkEn"
                 },
                 "OpenOp": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"OpenOp\""
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.V001.OpenOp"
                 },
                 "CloseOp": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"CloseOp\""
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.V001.CloseOp"
+                },
+                "OpenLi": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.V001.OpenLi"
+                },
+                "CloseLi": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.V001.CloseLi"
+                },
+                "Ctrl": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.V001.Ctrl"
+                },
+                "OpenFbk": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.V001.OpenFbk"
+                },
+                "CloseFbk": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.V001.CloseFbk"
                 }
               }
             },
             {
-              "name": "MFH03_BinVlv",
+              "name": "Aktoren.V002",
               "communication": {
-                "OpenLi": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"OpenLi\""
-                },
-                "CloseLi": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"CloseLi\""
-                },
-                "Ctrl": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"Ctrl\""
+                "OSLevel": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.V002.OSLevel"
                 },
                 "WQC": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"WQC\""
-                },
-                "SafePos": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"SafePos\""
-                },
-                "OpenFbkEn": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"OpenFbkEn\""
-                },
-                "CloseFbkEn": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"CloseFbkEn\""
-                },
-                "OpenFbk": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"OpenFbk\""
-                },
-                "CloseFbk": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"CloseFbk\""
-                },
-                "OSLevel": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"OSLevel\""
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.V002.WQC"
                 },
                 "OpMode": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"OpMode\""
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.V002.OpMode.binary"
+                },
+                "SafePos": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.V002.SafePos"
+                },
+                "OpenFbkEn": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.V002.OpenFbkEn"
+                },
+                "CloseFbkEn": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.V002.CloseFbkEn"
                 },
                 "OpenOp": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"OpenOp\""
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.V002.OpenOp"
                 },
                 "CloseOp": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"CloseOp\""
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.V002.CloseOp"
+                },
+                "OpenLi": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.V002.OpenLi"
+                },
+                "CloseLi": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.V002.CloseLi"
+                },
+                "Ctrl": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.V002.Ctrl"
+                },
+                "OpenFbk": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.V002.OpenFbk"
+                },
+                "CloseFbk": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.V002.CloseFbk"
                 }
               }
             },
             {
-              "name": "MFH03_BinVlv",
+              "name": "Aktoren.V003",
               "communication": {
-                "OpenLi": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"OpenLi\""
-                },
-                "CloseLi": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"CloseLi\""
-                },
-                "Ctrl": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"Ctrl\""
+                "OSLevel": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.V003.OSLevel"
                 },
                 "WQC": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"WQC\""
-                },
-                "SafePos": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"SafePos\""
-                },
-                "OpenFbkEn": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"OpenFbkEn\""
-                },
-                "CloseFbkEn": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"CloseFbkEn\""
-                },
-                "OpenFbk": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"OpenFbk\""
-                },
-                "CloseFbk": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"CloseFbk\""
-                },
-                "OSLevel": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"OSLevel\""
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.V003.WQC"
                 },
                 "OpMode": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"OpMode\""
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.V003.OpMode.binary"
+                },
+                "SafePos": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.V003.SafePos"
+                },
+                "OpenFbkEn": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.V003.OpenFbkEn"
+                },
+                "CloseFbkEn": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.V003.CloseFbkEn"
                 },
                 "OpenOp": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"OpenOp\""
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.V003.OpenOp"
                 },
                 "CloseOp": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"CloseOp\""
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.V003.CloseOp"
+                },
+                "OpenLi": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.V003.OpenLi"
+                },
+                "CloseLi": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.V003.CloseLi"
+                },
+                "Ctrl": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.V003.Ctrl"
+                },
+                "OpenFbk": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.V003.OpenFbk"
+                },
+                "CloseFbk": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.V003.CloseFbk"
                 }
               }
             },
             {
               "name": "Aktoren.P001_PID",
               "communication": {
+                "OSLevel": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.P001_PID.OSLevel"
+                },
+                "WQC": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.P001_PID.WQC"
+                },
+                "OpMode": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.P001_PID.OpMode.binary"
+                },
                 "PV": {
                   "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                   "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.P001_PID.PV"
@@ -730,69 +679,9 @@
                   "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                   "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.P001_PID.PVUnit"
                 },
-                "SPInt": {
-                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
-                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.P001_PID.SPInt"
-                },
-                "SPExt": {
-                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
-                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.P001_PID.SPExt"
-                },
-                "SPIntMin": {
-                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
-                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.P001_PID.SPIntMin"
-                },
-                "SPIntMax": {
-                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
-                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.P001_PID.SPIntMax"
-                },
-                "SPExtMin": {
-                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
-                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.P001_PID.SPExtMin"
-                },
-                "SPExtMax": {
-                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
-                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.P001_PID.SPExtMax"
-                },
                 "SP": {
                   "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                   "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.P001_PID.SP"
-                },
-                "OpMode": {
-                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
-                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.P001_PID.OpMode.binary"
-                },
-                "MVOp": {
-                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
-                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.P001_PID.MVOp"
-                },
-                "MV": {
-                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
-                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.P001_PID.MV"
-                },
-                "MVUnit": {
-                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
-                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.P001_PID.MVUnit"
-                },
-                "MVSclMin": {
-                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
-                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.P001_PID.MVSclMin"
-                },
-                "MVSclMax": {
-                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
-                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.P001_PID.MVSclMax"
-                },
-                "P": {
-                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
-                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.P001_PID.P"
-                },
-                "Ts": {
-                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
-                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.P001_PID.Ts"
-                },
-                "Td": {
-                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
-                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.P001_PID.Td"
                 },
                 "SPSclMin": {
                   "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
@@ -806,6 +695,38 @@
                   "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                   "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.P001_PID.SPUnit"
                 },
+                "SPExtMin": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.P001_PID.SPExtMin"
+                },
+                "SPExtMax": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.P001_PID.SPExtMax"
+                },
+                "SPExt": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.P001_PID.SPExt"
+                },
+                "SPIntMin": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.P001_PID.SPIntMin"
+                },
+                "SPIntMax": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.P001_PID.SPIntMax"
+                },
+                "SPInt": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.P001_PID.SPInt"
+                },
+                "MVOp": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.P001_PID.MVOp"
+                },
+                "MV": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.P001_PID.MV"
+                },
                 "MVMin": {
                   "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                   "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.P001_PID.MVMin"
@@ -814,412 +735,430 @@
                   "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                   "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.P001_PID.MVMax"
                 },
-                "WQC": {
+                "MVSclMin": {
                   "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
-                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.P001_PID.WQC"
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.P001_PID.MVSclMin"
                 },
-                "OSLevel": {
+                "MVSclMax": {
                   "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
-                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.P001_PID.OSLevel"
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.P001_PID.MVSclMax"
+                },
+                "MVUnit": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.P001_PID.MVUnit"
+                },
+                "P": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.P001_PID.P"
+                },
+                "Ts": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.P001_PID.Ts"
+                },
+                "Td": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.P001_PID.Td"
                 }
               }
             },
             {
-              "name": "Pump",
+              "name": "Aktoren.P001",
               "communication": {
-                "StopOp": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:hmi:Pump:StopOp"
+                "OSLevel": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.P001.OSLevel"
                 },
-                "FwdOp": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:hmi:Pump:FwdOp"
-                },
-                "RevOp": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:hmi:Pump:RevOp"
-                },
-                "StopLi": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:hmi:Pump:StopLi"
-                },
-                "FwdLi": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:hmi:Pump:FwdLi"
-                },
-                "RevLi": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:hmi:Pump:RevLi"
-                },
-                "FwdCtrl": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:hmi:Pump:FwdCtrl"
-                },
-                "RevCtrl": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:hmi:Pump:RevCtrl"
+                "WQC": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.P001.WQC"
                 },
                 "OpMode": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:hmi:Pump:OpMode"
-                },
-                "RevFbk": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:hmi:Pump:RevFbk"
-                },
-                "FwdFbk": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:hmi:Pump:FwdFbk"
-                },
-                "RevFbkEn": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:hmi:Pump:RevFbkEn"
-                },
-                "FwdFbkEn": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:hmi:Pump:FwdFbkEn"
-                },
-                "Trip": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:hmi:Pump:Trip"
-                },
-                "WQC": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:hmi:Pump:WQC"
-                },
-                "OSLevel": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:hmi:Pump:OSLevel"
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.P001.OpMode.binary"
                 },
                 "FwdEn": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:hmi:Pump:FwdEn"
+                  "namespace_index": null,
+                  "node_id": null
                 },
                 "RevEn": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:hmi:Pump:revEn"
+                  "namespace_index": null,
+                  "node_id": null
+                },
+                "StopOp": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.P001.StopOp"
+                },
+                "FwdOp": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.P001.FwdOp"
+                },
+                "RevOp": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.P001.RevOp"
+                },
+                "StopLi": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.P001.StopLi"
+                },
+                "FwdLi": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.P001.FwdLi"
+                },
+                "RevLi": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.P001.RevLi"
+                },
+                "FwdCtrl": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.P001.FwdCtrl"
+                },
+                "RevCtrl": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.P001.RevCtrl"
+                },
+                "FwdFbkEn": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.P001.FwdFbkEn"
+                },
+                "FwdFbk": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.P001.FwdFbk"
+                },
+                "RevFbkEn": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.P001.RevFbkEn"
+                },
+                "RevFbk": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.P001.RevFbk"
+                },
+                "Trip": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.P001.Trip"
                 }
               }
             },
             {
-              "name": "MCT04_AnaView",
+              "name": "Sensoren.L001",
               "communication": {
-                "V": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCT04\".\"MTP_AnaView\".\"V\""
+                "OSLevel": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Sensoren.L001.OSLevel"
                 },
                 "WQC": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCT04\".\"MTP_AnaView\".\"WQC\""
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Sensoren.L001.WQC"
+                },
+                "V": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Sensoren.L001.V"
                 },
                 "VSclMin": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCT04\".\"MTP_AnaView\".\"VSclMin\""
+                  "value": "0"
                 },
                 "VSclMax": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCT04\".\"MTP_AnaView\".\"VSclMax\""
+                  "value": "30"
                 },
                 "VUnit": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCT04\".\"MTP_AnaView\".\"VUnit\""
-                },
-                "OSLevel": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCT04\".\"MTP_AnaView\".\"OSLevel\""
+                  "value": "1038"
                 }
               }
             },
             {
-              "name": "MCT04_AnaView",
+              "name": "Sensoren.F001",
               "communication": {
-                "V": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCT04\".\"MTP_AnaView\".\"V\""
+                "OSLevel": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Sensoren.F001.OSLevel"
                 },
                 "WQC": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCT04\".\"MTP_AnaView\".\"WQC\""
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Sensoren.F001.WQC"
+                },
+                "V": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Sensoren.F001.V"
                 },
                 "VSclMin": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCT04\".\"MTP_AnaView\".\"VSclMin\""
+                  "value": "0"
                 },
                 "VSclMax": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCT04\".\"MTP_AnaView\".\"VSclMax\""
+                  "value": "2"
                 },
                 "VUnit": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCT04\".\"MTP_AnaView\".\"VUnit\""
-                },
-                "OSLevel": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCT04\".\"MTP_AnaView\".\"OSLevel\""
+                  "value": "1352"
                 }
               }
             },
             {
-              "name": "MCL02_BinView",
+              "name": "Sensoren.L002",
               "communication": {
+                "OSLevel": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Sensoren.L002.OSLevel"
+                },
+                "WQC": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Sensoren.L002.WQC"
+                },
                 "V": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCL02\".\"MTP_BinView\".\"V\""
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Sensoren.L002.V"
                 },
                 "VState0": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCL02\".\"MTP_BinView\".\"VState0\""
+                  "value": "OK"
                 },
                 "VState1": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCL02\".\"MTP_BinView\".\"VState1\""
-                },
-                "WQC": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCL02\".\"MTP_BinView\".\"WQC\""
-                },
-                "OSLevel": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCL02\".\"MTP_BinView\".\"OSLevel\""
+                  "value": "Voll"
                 }
               }
             },
             {
-              "name": "MCL02_BinView",
+              "name": "Sensoren.L003",
               "communication": {
+                "OSLevel": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Sensoren.L003.OSLevel"
+                },
+                "WQC": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Sensoren.L003.WQC"
+                },
                 "V": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCL02\".\"MTP_BinView\".\"V\""
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Sensoren.L003.V"
                 },
                 "VState0": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCL02\".\"MTP_BinView\".\"VState0\""
+                  "value": "Leer"
                 },
                 "VState1": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCL02\".\"MTP_BinView\".\"VState1\""
-                },
-                "WQC": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCL02\".\"MTP_BinView\".\"WQC\""
-                },
-                "OSLevel": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCL02\".\"MTP_BinView\".\"OSLevel\""
+                  "value": "OK"
                 }
               }
             },
             {
-              "name": "MCL02_BinView",
+              "name": "Sensoren.M001",
               "communication": {
+                "OSLevel": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Sensoren.M001.OSLevel"
+                },
+                "WQC": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Sensoren.M001.WQC"
+                },
                 "V": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCL02\".\"MTP_BinView\".\"V\""
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Sensoren.M001.V"
                 },
                 "VState0": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCL02\".\"MTP_BinView\".\"VState0\""
+                  "value": "Leckage"
                 },
                 "VState1": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCL02\".\"MTP_BinView\".\"VState1\""
-                },
-                "WQC": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCL02\".\"MTP_BinView\".\"WQC\""
-                },
-                "OSLevel": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCL02\".\"MTP_BinView\".\"OSLevel\""
+                  "value": "OK"
                 }
               }
             },
             {
-              "name": "MCL02_BinView",
+              "name": "Sensoren.NOTHALT",
               "communication": {
+                "OSLevel": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Sensoren.NOTHALT.OSLevel"
+                },
+                "WQC": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Sensoren.NOTHALT.WQC"
+                },
                 "V": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCL02\".\"MTP_BinView\".\"V\""
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Sensoren.NOTHALT.V"
                 },
                 "VState0": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCL02\".\"MTP_BinView\".\"VState0\""
+                  "value": "Nothalt ausgel\u00f6st"
                 },
                 "VState1": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCL02\".\"MTP_BinView\".\"VState1\""
-                },
-                "WQC": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCL02\".\"MTP_BinView\".\"WQC\""
-                },
-                "OSLevel": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCL02\".\"MTP_BinView\".\"OSLevel\""
+                  "value": "OK"
                 }
               }
             },
             {
-              "name": "Tempering.RampEndtemperature",
+              "name": "Services.Fill.SetVolume",
               "communication": {
-                "VSclMin": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:services:tempering:config:vDeviceMin"
-                },
-                "VSclMax": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:services:tempering:config:vDeviceMax"
-                },
-                "VUnit": {
-                  "value": "1001"
-                },
-                "VMin": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:services:tempering:config:vMinSP"
-                },
-                "VMax": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:services:tempering:config:vMaxSP"
-                },
-                "VRbk": {
-                  "value": "0"
-                },
-                "VOut": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:services:tempering:strategy:vRampEndtemp\n"
+                "OSLevel": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Nachfuellen.SollVolumen.OSLevel"
                 },
                 "WQC": {
-                  "value": "16#FF"
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Nachfuellen.SollVolumen.WQC"
                 },
-                "OSLevel": {
-                  "value": "0"
+                "VOut": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Nachfuellen.SollVolumen.VOut"
+                },
+                "VSclMin": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Nachfuellen.SollVolumen.VSclMin"
+                },
+                "VSclMax": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Nachfuellen.SollVolumen.VSclMax"
+                },
+                "VUnit": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Nachfuellen.SollVolumen.VUnit"
+                },
+                "VMin": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Nachfuellen.SollVolumen.VMin"
+                },
+                "VMax": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Nachfuellen.SollVolumen.VMax"
                 },
                 "VExt": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:services:tempering:strategy:vRampEndtemp\n"
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Nachfuellen.SollVolumen.VExt"
+                },
+                "VRbk": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Nachfuellen.SollVolumen.VRbk"
                 }
               }
             },
             {
-              "name": "Tempering.RampEndtemperature",
+              "name": "Services.DoseAmount.SetVolume",
               "communication": {
-                "VSclMin": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:services:tempering:config:vDeviceMin"
-                },
-                "VSclMax": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:services:tempering:config:vDeviceMax"
-                },
-                "VUnit": {
-                  "value": "1001"
-                },
-                "VMin": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:services:tempering:config:vMinSP"
-                },
-                "VMax": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:services:tempering:config:vMaxSP"
-                },
-                "VRbk": {
-                  "value": "0"
-                },
-                "VOut": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:services:tempering:strategy:vRampEndtemp\n"
+                "OSLevel": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Vorlegen.SollVolumen.OSLevel"
                 },
                 "WQC": {
-                  "value": "16#FF"
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Vorlegen.SollVolumen.WQC"
                 },
-                "OSLevel": {
-                  "value": "0"
+                "VOut": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Vorlegen.SollVolumen.VOut"
+                },
+                "VSclMin": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Vorlegen.SollVolumen.VSclMin"
+                },
+                "VSclMax": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Vorlegen.SollVolumen.VSclMax"
+                },
+                "VUnit": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Vorlegen.SollVolumen.VUnit"
+                },
+                "VMin": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Vorlegen.SollVolumen.VMin"
+                },
+                "VMax": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Vorlegen.SollVolumen.VMax"
                 },
                 "VExt": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:services:tempering:strategy:vRampEndtemp\n"
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Vorlegen.SollVolumen.VExt"
+                },
+                "VRbk": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Vorlegen.SollVolumen.VRbk"
                 }
               }
             },
             {
-              "name": "Tempering.RampEndtemperature",
+              "name": "Services.DoseAmount.SetDuration",
               "communication": {
-                "VSclMin": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:services:tempering:config:vDeviceMin"
-                },
-                "VSclMax": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:services:tempering:config:vDeviceMax"
-                },
-                "VUnit": {
-                  "value": "1001"
-                },
-                "VMin": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:services:tempering:config:vMinSP"
-                },
-                "VMax": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:services:tempering:config:vMaxSP"
-                },
-                "VRbk": {
-                  "value": "0"
-                },
-                "VOut": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:services:tempering:strategy:vRampEndtemp\n"
+                "OSLevel": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Vorlegen.SollDauer.OSLevel"
                 },
                 "WQC": {
-                  "value": "16#FF"
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Vorlegen.SollDauer.WQC"
                 },
-                "OSLevel": {
-                  "value": "0"
+                "VOut": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Vorlegen.SollDauer.VOut"
+                },
+                "VSclMin": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Vorlegen.SollDauer.VSclMin"
+                },
+                "VSclMax": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Vorlegen.SollDauer.VSclMax"
+                },
+                "VUnit": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Vorlegen.SollDauer.VUnit"
+                },
+                "VMin": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Vorlegen.SollDauer.VMin"
+                },
+                "VMax": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Vorlegen.SollDauer.VMax"
                 },
                 "VExt": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:services:tempering:strategy:vRampEndtemp\n"
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Vorlegen.SollDauer.VExt"
+                },
+                "VRbk": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Vorlegen.SollDauer.VRbk"
                 }
               }
             },
             {
-              "name": "Tempering.RampEndtemperature",
+              "name": "Services.DoseConti.SetVolumeFlow",
               "communication": {
-                "VSclMin": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:services:tempering:config:vDeviceMin"
-                },
-                "VSclMax": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:services:tempering:config:vDeviceMax"
-                },
-                "VUnit": {
-                  "value": "1001"
-                },
-                "VMin": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:services:tempering:config:vMinSP"
-                },
-                "VMax": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:services:tempering:config:vMaxSP"
-                },
-                "VRbk": {
-                  "value": "0"
-                },
-                "VOut": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:services:tempering:strategy:vRampEndtemp\n"
+                "OSLevel": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Dosieren.SollVolumenStrom.OSLevel"
                 },
                 "WQC": {
-                  "value": "16#FF"
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Dosieren.SollVolumenStrom.WQC"
                 },
-                "OSLevel": {
-                  "value": "0"
+                "VOut": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Dosieren.SollVolumenStrom.VOut"
+                },
+                "VSclMin": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Dosieren.SollVolumenStrom.VSclMin"
+                },
+                "VSclMax": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Dosieren.SollVolumenStrom.VSclMax"
+                },
+                "VUnit": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Dosieren.SollVolumenStrom.VUnit"
+                },
+                "VMin": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Dosieren.SollVolumenStrom.VMin"
+                },
+                "VMax": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Dosieren.SollVolumenStrom.VMax"
                 },
                 "VExt": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:services:tempering:strategy:vRampEndtemp\n"
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Dosieren.SollVolumenStrom.VExt"
+                },
+                "VRbk": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Dosieren.SollVolumenStrom.VRbk"
                 }
               }
             }
@@ -1310,20 +1249,22 @@
                   "node_id": "\"Fill_Service\".\"MTP\".\"CurrentStrategy\""
                 }
               },
-              "strategies": {
-                "1": {
+              "strategies": [
+                {
+                  "id": "1",
                   "name": "Fill_Clearance_NB",
                   "default": true,
                   "sc": false,
-                  "parameter": {}
+                  "parameters": []
                 },
-                "2": {
+                {
+                  "id": "2",
                   "name": "Fill_Level_SB",
                   "default": false,
                   "sc": true,
-                  "parameter": {}
+                  "parameters": []
                 }
-              }
+              ]
             },
             {
               "name": "Aerate_Service",
@@ -1377,20 +1318,22 @@
                   "node_id": "\"Aerate_Service\".\"MTP\".\"CurrentStrategy\""
                 }
               },
-              "strategies": {
-                "1": {
+              "strategies": [
+                {
+                  "id": "1",
                   "name": "Aerate_Continous",
                   "default": true,
                   "sc": false,
-                  "parameter": {}
+                  "parameters": []
                 },
-                "0": {
+                {
+                  "id": "0",
                   "name": "Strategy 1",
                   "default": false,
                   "sc": false,
-                  "parameter": {}
+                  "parameters": []
                 }
-              }
+              ]
             },
             {
               "name": "Stir_Service",
@@ -1444,14 +1387,22 @@
                   "node_id": "\"Stir_Service\".\"MTP\".\"CurrentStrategy\""
                 }
               },
-              "strategies": {
-                "0": {
+              "strategies": [
+                {
+                  "id": "1",
+                  "name": "Stirring_Continous",
+                  "default": true,
+                  "sc": false,
+                  "parameters": []
+                },
+                {
+                  "id": "0",
                   "name": "Strategy 1",
                   "default": false,
                   "sc": false,
-                  "parameter": {}
+                  "parameters": []
                 }
-              }
+              ]
             },
             {
               "name": "Empty_Service",
@@ -1505,26 +1456,36 @@
                   "node_id": "\"Empty_Service\".\"MTP\".\"CurrentStrategy\""
                 }
               },
-              "strategies": {
-                "1": {
+              "strategies": [
+                {
+                  "id": "1",
                   "name": "Empty_Full",
                   "default": false,
                   "sc": false,
-                  "parameter": {}
+                  "parameters": []
                 },
-                "2": {
+                {
+                  "id": "2",
                   "name": "Empty_VolFlow",
                   "default": false,
                   "sc": false,
-                  "parameter": {}
+                  "parameters": []
                 }
-              }
+              ]
             }
           ],
           "process_values": [
             {
               "name": "AEM01_AnaDrv",
               "communication": {
+                "OSLevel": {
+                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
+                  "node_id": "\"AEM01\".\"MTP_AnaDrv\".\"OSLevel\""
+                },
+                "WQC": {
+                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
+                  "node_id": "\"AEM01\".\"MTP_AnaDrv\".\"WQC\""
+                },
                 "OpMode": {
                   "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                   "node_id": "\"AEM01\".\"MTP_AnaDrv\".\"OpMode\""
@@ -1624,14 +1585,6 @@
                 "RpmRbk": {
                   "value": null
                 },
-                "WQC": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"AEM01\".\"MTP_AnaDrv\".\"WQC\""
-                },
-                "OSLevel": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"AEM01\".\"MTP_AnaDrv\".\"OSLevel\""
-                },
                 "RpmFbk": {
                   "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                   "node_id": "\"AEM01\".\"MTP_AnaDrv\".\"RpmFbk\""
@@ -1639,8 +1592,70 @@
               }
             },
             {
+              "name": "AUT01_BinView",
+              "communication": {
+                "OSLevel": {
+                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
+                  "node_id": "\"AUT01\".\"MTP_BinView\".\"OSLevel\""
+                },
+                "WQC": {
+                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
+                  "node_id": "\"AUT01\".\"MTP_BinView\".\"WQC\""
+                },
+                "V": {
+                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
+                  "node_id": "\"AUT01\".\"MTP_BinView\".\"V\""
+                },
+                "VState0": {
+                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
+                  "node_id": "\"AUT01\".\"MTP_BinView\".\"VState0\""
+                },
+                "VState1": {
+                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
+                  "node_id": "\"AUT01\".\"MTP_BinView\".\"VState1\""
+                }
+              }
+            },
+            {
+              "name": "MCL01_AnaView",
+              "communication": {
+                "OSLevel": {
+                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
+                  "node_id": "\"MCL01\".\"MTP_AnaView\".\"OSLevel\""
+                },
+                "WQC": {
+                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
+                  "node_id": "\"MCL01\".\"MTP_AnaView\".\"WQC\""
+                },
+                "V": {
+                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
+                  "node_id": "\"MCL01\".\"MTP_AnaView\".\"V\""
+                },
+                "VSclMin": {
+                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
+                  "node_id": "\"MCL01\".\"MTP_AnaView\".\"VSclMin\""
+                },
+                "VSclMax": {
+                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
+                  "node_id": "\"MCL01\".\"MTP_AnaView\".\"VSclMax\""
+                },
+                "VUnit": {
+                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
+                  "node_id": "\"MCL01\".\"MTP_AnaView\".\"VUnit\""
+                }
+              }
+            },
+            {
               "name": "MCL02_BinView",
               "communication": {
+                "OSLevel": {
+                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
+                  "node_id": "\"MCL02\".\"MTP_BinView\".\"OSLevel\""
+                },
+                "WQC": {
+                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
+                  "node_id": "\"MCL02\".\"MTP_BinView\".\"WQC\""
+                },
                 "V": {
                   "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                   "node_id": "\"MCL02\".\"MTP_BinView\".\"V\""
@@ -1652,27 +1667,110 @@
                 "VState1": {
                   "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                   "node_id": "\"MCL02\".\"MTP_BinView\".\"VState1\""
+                }
+              }
+            },
+            {
+              "name": "MCT01_AnaView",
+              "communication": {
+                "OSLevel": {
+                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
+                  "node_id": "\"MCT01\".\"MTP_AnaView\".\"OSLevel\""
                 },
                 "WQC": {
                   "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCL02\".\"MTP_BinView\".\"WQC\""
+                  "node_id": "\"MCT01\".\"MTP_AnaView\".\"WQC\""
                 },
+                "V": {
+                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
+                  "node_id": "\"MCT01\".\"MTP_AnaView\".\"V\""
+                },
+                "VSclMin": {
+                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
+                  "node_id": "\"MCT01\".\"MTP_AnaView\".\"VSclMin\""
+                },
+                "VSclMax": {
+                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
+                  "node_id": "\"MCT01\".\"MTP_AnaView\".\"VSclMax\""
+                },
+                "VUnit": {
+                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
+                  "node_id": "\"MCT01\".\"MTP_AnaView\".\"VUnit\""
+                }
+              }
+            },
+            {
+              "name": "MCT02_AnaView",
+              "communication": {
                 "OSLevel": {
                   "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCL02\".\"MTP_BinView\".\"OSLevel\""
+                  "node_id": "\"MCT02\".\"MTP_AnaView\".\"OSLevel\""
+                },
+                "WQC": {
+                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
+                  "node_id": "\"MCT02\".\"MTP_AnaView\".\"WQC\""
+                },
+                "V": {
+                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
+                  "node_id": "\"MCT02\".\"MTP_AnaView\".\"V\""
+                },
+                "VSclMin": {
+                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
+                  "node_id": "\"MCT02\".\"MTP_AnaView\".\"VSclMin\""
+                },
+                "VSclMax": {
+                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
+                  "node_id": "\"MCT02\".\"MTP_AnaView\".\"VSclMax\""
+                },
+                "VUnit": {
+                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
+                  "node_id": "\"MCT02\".\"MTP_AnaView\".\"VUnit\""
+                }
+              }
+            },
+            {
+              "name": "MCT03_AnaView",
+              "communication": {
+                "OSLevel": {
+                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
+                  "node_id": "\"MCT03\".\"MTP_AnaView\".\"OSLevel\""
+                },
+                "WQC": {
+                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
+                  "node_id": "\"MCT03\".\"MTP_AnaView\".\"WQC\""
+                },
+                "V": {
+                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
+                  "node_id": "\"MCT03\".\"MTP_AnaView\".\"V\""
+                },
+                "VSclMin": {
+                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
+                  "node_id": "\"MCT03\".\"MTP_AnaView\".\"VSclMin\""
+                },
+                "VSclMax": {
+                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
+                  "node_id": "\"MCT03\".\"MTP_AnaView\".\"VSclMax\""
+                },
+                "VUnit": {
+                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
+                  "node_id": "\"MCT03\".\"MTP_AnaView\".\"VUnit\""
                 }
               }
             },
             {
               "name": "MCT04_AnaView",
               "communication": {
-                "V": {
+                "OSLevel": {
                   "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCT04\".\"MTP_AnaView\".\"V\""
+                  "node_id": "\"MCT04\".\"MTP_AnaView\".\"OSLevel\""
                 },
                 "WQC": {
                   "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                   "node_id": "\"MCT04\".\"MTP_AnaView\".\"WQC\""
+                },
+                "V": {
+                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
+                  "node_id": "\"MCT04\".\"MTP_AnaView\".\"V\""
                 },
                 "VSclMin": {
                   "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
@@ -1685,172 +1783,137 @@
                 "VUnit": {
                   "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                   "node_id": "\"MCT04\".\"MTP_AnaView\".\"VUnit\""
-                },
-                "OSLevel": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCT04\".\"MTP_AnaView\".\"OSLevel\""
                 }
               }
             },
             {
-              "name": "MCL02_BinView",
+              "name": "MFH01_BinVlv",
               "communication": {
-                "V": {
+                "OSLevel": {
                   "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCL02\".\"MTP_BinView\".\"V\""
-                },
-                "VState0": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCL02\".\"MTP_BinView\".\"VState0\""
-                },
-                "VState1": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCL02\".\"MTP_BinView\".\"VState1\""
+                  "node_id": "\"MFH01\".\"MTP_BinVlv\".\"OSLevel\""
                 },
                 "WQC": {
                   "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCL02\".\"MTP_BinView\".\"WQC\""
+                  "node_id": "\"MFH01\".\"MTP_BinVlv\".\"WQC\""
                 },
-                "OSLevel": {
+                "OpMode": {
                   "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCL02\".\"MTP_BinView\".\"OSLevel\""
+                  "node_id": "\"MFH01\".\"MTP_BinVlv\".\"OpMode\""
+                },
+                "SafePos": {
+                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
+                  "node_id": "\"MFH01\".\"MTP_BinVlv\".\"SafePos\""
+                },
+                "OpenFbkEn": {
+                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
+                  "node_id": "\"MFH01\".\"MTP_BinVlv\".\"OpenFbkEn\""
+                },
+                "CloseFbkEn": {
+                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
+                  "node_id": "\"MFH01\".\"MTP_BinVlv\".\"CloseFbkEn\""
+                },
+                "OpenOp": {
+                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
+                  "node_id": "\"MFH01\".\"MTP_BinVlv\".\"OpenOp\""
+                },
+                "CloseOp": {
+                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
+                  "node_id": "\"MFH01\".\"MTP_BinVlv\".\"CloseOp\""
+                },
+                "OpenLi": {
+                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
+                  "node_id": "\"MFH01\".\"MTP_BinVlv\".\"OpenLi\""
+                },
+                "CloseLi": {
+                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
+                  "node_id": "\"MFH01\".\"MTP_BinVlv\".\"CloseLi\""
+                },
+                "Ctrl": {
+                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
+                  "node_id": "\"MFH01\".\"MTP_BinVlv\".\"Ctrl\""
+                },
+                "OpenFbk": {
+                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
+                  "node_id": "\"MFH01\".\"MTP_BinVlv\".\"OpenFbk\""
+                },
+                "CloseFbk": {
+                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
+                  "node_id": "\"MFH01\".\"MTP_BinVlv\".\"CloseFbk\""
                 }
               }
             },
             {
-              "name": "MCT04_AnaView",
+              "name": "MFH02_BinVlv",
               "communication": {
-                "V": {
+                "OSLevel": {
                   "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCT04\".\"MTP_AnaView\".\"V\""
+                  "node_id": "\"MFH02\".\"MTP_BinVlv\".\"OSLevel\""
                 },
                 "WQC": {
                   "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCT04\".\"MTP_AnaView\".\"WQC\""
+                  "node_id": "\"MFH02\".\"MTP_BinVlv\".\"WQC\""
                 },
-                "VSclMin": {
+                "OpMode": {
                   "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCT04\".\"MTP_AnaView\".\"VSclMin\""
+                  "node_id": "\"MFH02\".\"MTP_BinVlv\".\"OpMode\""
                 },
-                "VSclMax": {
+                "SafePos": {
                   "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCT04\".\"MTP_AnaView\".\"VSclMax\""
+                  "node_id": "\"MFH02\".\"MTP_BinVlv\".\"SafePos\""
                 },
-                "VUnit": {
+                "OpenFbkEn": {
                   "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCT04\".\"MTP_AnaView\".\"VUnit\""
+                  "node_id": "\"MFH02\".\"MTP_BinVlv\".\"OpenFbkEn\""
                 },
-                "OSLevel": {
+                "CloseFbkEn": {
                   "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCT04\".\"MTP_AnaView\".\"OSLevel\""
-                }
-              }
-            },
-            {
-              "name": "MCT04_AnaView",
-              "communication": {
-                "V": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCT04\".\"MTP_AnaView\".\"V\""
+                  "node_id": "\"MFH02\".\"MTP_BinVlv\".\"CloseFbkEn\""
                 },
-                "WQC": {
+                "OpenOp": {
                   "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCT04\".\"MTP_AnaView\".\"WQC\""
+                  "node_id": "\"MFH02\".\"MTP_BinVlv\".\"OpenOp\""
                 },
-                "VSclMin": {
+                "CloseOp": {
                   "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCT04\".\"MTP_AnaView\".\"VSclMin\""
+                  "node_id": "\"MFH02\".\"MTP_BinVlv\".\"CloseOp\""
                 },
-                "VSclMax": {
+                "OpenLi": {
                   "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCT04\".\"MTP_AnaView\".\"VSclMax\""
+                  "node_id": "\"MFH02\".\"MTP_BinVlv\".\"OpenLi\""
                 },
-                "VUnit": {
+                "CloseLi": {
                   "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCT04\".\"MTP_AnaView\".\"VUnit\""
+                  "node_id": "\"MFH02\".\"MTP_BinVlv\".\"CloseLi\""
                 },
-                "OSLevel": {
+                "Ctrl": {
                   "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCT04\".\"MTP_AnaView\".\"OSLevel\""
-                }
-              }
-            },
-            {
-              "name": "MCT04_AnaView",
-              "communication": {
-                "V": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCT04\".\"MTP_AnaView\".\"V\""
+                  "node_id": "\"MFH02\".\"MTP_BinVlv\".\"Ctrl\""
                 },
-                "WQC": {
+                "OpenFbk": {
                   "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCT04\".\"MTP_AnaView\".\"WQC\""
+                  "node_id": "\"MFH02\".\"MTP_BinVlv\".\"OpenFbk\""
                 },
-                "VSclMin": {
+                "CloseFbk": {
                   "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCT04\".\"MTP_AnaView\".\"VSclMin\""
-                },
-                "VSclMax": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCT04\".\"MTP_AnaView\".\"VSclMax\""
-                },
-                "VUnit": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCT04\".\"MTP_AnaView\".\"VUnit\""
-                },
-                "OSLevel": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCT04\".\"MTP_AnaView\".\"OSLevel\""
-                }
-              }
-            },
-            {
-              "name": "MCT04_AnaView",
-              "communication": {
-                "V": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCT04\".\"MTP_AnaView\".\"V\""
-                },
-                "WQC": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCT04\".\"MTP_AnaView\".\"WQC\""
-                },
-                "VSclMin": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCT04\".\"MTP_AnaView\".\"VSclMin\""
-                },
-                "VSclMax": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCT04\".\"MTP_AnaView\".\"VSclMax\""
-                },
-                "VUnit": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCT04\".\"MTP_AnaView\".\"VUnit\""
-                },
-                "OSLevel": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MCT04\".\"MTP_AnaView\".\"OSLevel\""
+                  "node_id": "\"MFH02\".\"MTP_BinVlv\".\"CloseFbk\""
                 }
               }
             },
             {
               "name": "MFH03_BinVlv",
               "communication": {
-                "OpenLi": {
+                "OSLevel": {
                   "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"OpenLi\""
-                },
-                "CloseLi": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"CloseLi\""
-                },
-                "Ctrl": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"Ctrl\""
+                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"OSLevel\""
                 },
                 "WQC": {
                   "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                   "node_id": "\"MFH03\".\"MTP_BinVlv\".\"WQC\""
+                },
+                "OpMode": {
+                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
+                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"OpMode\""
                 },
                 "SafePos": {
                   "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
@@ -1864,22 +1927,6 @@
                   "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                   "node_id": "\"MFH03\".\"MTP_BinVlv\".\"CloseFbkEn\""
                 },
-                "OpenFbk": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"OpenFbk\""
-                },
-                "CloseFbk": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"CloseFbk\""
-                },
-                "OSLevel": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"OSLevel\""
-                },
-                "OpMode": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"OpMode\""
-                },
                 "OpenOp": {
                   "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                   "node_id": "\"MFH03\".\"MTP_BinVlv\".\"OpenOp\""
@@ -1887,12 +1934,7 @@
                 "CloseOp": {
                   "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                   "node_id": "\"MFH03\".\"MTP_BinVlv\".\"CloseOp\""
-                }
-              }
-            },
-            {
-              "name": "MFH03_BinVlv",
-              "communication": {
+                },
                 "OpenLi": {
                   "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                   "node_id": "\"MFH03\".\"MTP_BinVlv\".\"OpenLi\""
@@ -1905,22 +1947,6 @@
                   "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                   "node_id": "\"MFH03\".\"MTP_BinVlv\".\"Ctrl\""
                 },
-                "WQC": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"WQC\""
-                },
-                "SafePos": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"SafePos\""
-                },
-                "OpenFbkEn": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"OpenFbkEn\""
-                },
-                "CloseFbkEn": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"CloseFbkEn\""
-                },
                 "OpenFbk": {
                   "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                   "node_id": "\"MFH03\".\"MTP_BinVlv\".\"OpenFbk\""
@@ -1928,79 +1954,6 @@
                 "CloseFbk": {
                   "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                   "node_id": "\"MFH03\".\"MTP_BinVlv\".\"CloseFbk\""
-                },
-                "OSLevel": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"OSLevel\""
-                },
-                "OpMode": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"OpMode\""
-                },
-                "OpenOp": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"OpenOp\""
-                },
-                "CloseOp": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"CloseOp\""
-                }
-              }
-            },
-            {
-              "name": "MFH03_BinVlv",
-              "communication": {
-                "OpenLi": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"OpenLi\""
-                },
-                "CloseLi": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"CloseLi\""
-                },
-                "Ctrl": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"Ctrl\""
-                },
-                "WQC": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"WQC\""
-                },
-                "SafePos": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"SafePos\""
-                },
-                "OpenFbkEn": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"OpenFbkEn\""
-                },
-                "CloseFbkEn": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"CloseFbkEn\""
-                },
-                "OpenFbk": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"OpenFbk\""
-                },
-                "CloseFbk": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"CloseFbk\""
-                },
-                "OSLevel": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"OSLevel\""
-                },
-                "OpMode": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"OpMode\""
-                },
-                "OpenOp": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"OpenOp\""
-                },
-                "CloseOp": {
-                  "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                  "node_id": "\"MFH03\".\"MTP_BinVlv\".\"CloseOp\""
                 }
               }
             }
@@ -2088,14 +2041,15 @@
                   "node_id": "mtp:services:circulation:control:CurrentStrategy"
                 }
               },
-              "strategies": {
-                "1": {
+              "strategies": [
+                {
+                  "id": "1",
                   "name": "ContinuousCirculation",
                   "default": true,
                   "sc": false,
-                  "parameter": {}
+                  "parameters": []
                 }
-              }
+              ]
             },
             {
               "name": "Tempering",
@@ -2149,166 +2103,169 @@
                   "node_id": "mtp:services:tempering:control:CurrentStrategy"
                 }
               },
-              "strategies": {
-                "2": {
+              "strategies": [
+                {
+                  "id": "2",
                   "name": "SetpointRampTempering",
                   "default": false,
                   "sc": false,
-                  "parameter": {
-                    "RampEndtemperature": {
-                      "VRbk": {
-                        "value": "0"
-                      },
-                      "VMax": {
-                        "value": {
+                  "parameters": [
+                    {
+                      "name": "RampEndtemperature",
+                      "communication": {
+                        "VRbk": {
+                          "value": "0"
+                        },
+                        "VMax": {
                           "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                           "node_id": "mtp:services:tempering:config:vMaxSP"
-                        }
-                      },
-                      "VMin": {
-                        "value": {
+                        },
+                        "VMin": {
                           "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                           "node_id": "mtp:services:tempering:config:vMinSP"
-                        }
-                      },
-                      "VExt": {
-                        "value": {
+                        },
+                        "VExt": {
                           "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                           "node_id": "mtp:services:tempering:strategy:vRampEndtemp\n"
-                        }
-                      },
-                      "VUnit": {
-                        "value": "1001"
-                      },
-                      "VSclMax": {
-                        "value": {
+                        },
+                        "VUnit": {
+                          "value": "1001"
+                        },
+                        "VSclMax": {
                           "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                           "node_id": "mtp:services:tempering:config:vDeviceMax"
-                        }
-                      },
-                      "VSclMin": {
-                        "value": {
+                        },
+                        "VSclMin": {
                           "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                           "node_id": "mtp:services:tempering:config:vDeviceMin"
-                        }
-                      },
-                      "VOut": {
-                        "value": {
+                        },
+                        "VOut": {
                           "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                           "node_id": "mtp:services:tempering:strategy:vRampEndtemp\n"
+                        },
+                        "WQC": {
+                          "value": "16#FF"
+                        },
+                        "OSLevel": {
+                          "value": "0"
                         }
-                      },
-                      "WQC": {
-                        "value": "16#FF"
-                      },
-                      "OSLevel": {
-                        "value": "0"
                       }
                     },
-                    "RampDuration": {
-                      "VRbk": {
-                        "value": "1"
-                      },
-                      "VMax": {
-                        "value": "180000"
-                      },
-                      "VMin": {
-                        "value": "0"
-                      },
-                      "VExt": {
-                        "value": {
+                    {
+                      "name": "RampDuration",
+                      "communication": {
+                        "VRbk": {
+                          "value": "1"
+                        },
+                        "VMax": {
+                          "value": "180000"
+                        },
+                        "VMin": {
+                          "value": "0"
+                        },
+                        "VExt": {
                           "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                           "node_id": "mtp:services:tempering:strategy:vRampDuration"
-                        }
-                      },
-                      "VUnit": {
-                        "value": "1054"
-                      },
-                      "VSclMax": {
-                        "value": "180000"
-                      },
-                      "VSclMin": {
-                        "value": "0"
-                      },
-                      "VOut": {
-                        "value": {
+                        },
+                        "VUnit": {
+                          "value": "1054"
+                        },
+                        "VSclMax": {
+                          "value": "180000"
+                        },
+                        "VSclMin": {
+                          "value": "0"
+                        },
+                        "VOut": {
                           "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                           "node_id": "mtp:services:tempering:strategy:vRampDuration"
+                        },
+                        "WQC": {
+                          "value": "16#FF"
+                        },
+                        "OSLevel": {
+                          "value": "0"
                         }
-                      },
-                      "WQC": {
-                        "value": "16#FF"
-                      },
-                      "OSLevel": {
-                        "value": "0"
                       }
                     }
-                  }
+                  ]
                 },
-                "1": {
+                {
+                  "id": "1",
                   "name": "ContinuousTempering",
                   "default": true,
                   "sc": false,
-                  "parameter": {
-                    "Setpoint": {
-                      "VRbk": {
-                        "value": "0"
-                      },
-                      "VMax": {
-                        "value": {
+                  "parameters": [
+                    {
+                      "name": "Setpoint",
+                      "communication": {
+                        "VRbk": {
+                          "value": "0"
+                        },
+                        "VMax": {
                           "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                           "node_id": "mtp:services:tempering:config:vMaxSP"
-                        }
-                      },
-                      "VMin": {
-                        "value": {
+                        },
+                        "VMin": {
                           "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                           "node_id": "mtp:services:tempering:config:vMinSP"
-                        }
-                      },
-                      "VExt": {
-                        "value": {
+                        },
+                        "VExt": {
                           "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                           "node_id": "mtp:services:tempering:strategy:vSP"
-                        }
-                      },
-                      "VUnit": {
-                        "value": "1001"
-                      },
-                      "VSclMax": {
-                        "value": {
+                        },
+                        "VUnit": {
+                          "value": "1001"
+                        },
+                        "VSclMax": {
                           "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                           "node_id": "mtp:services:tempering:config:vDeviceMax"
-                        }
-                      },
-                      "VSclMin": {
-                        "value": {
+                        },
+                        "VSclMin": {
                           "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                           "node_id": "mtp:services:tempering:config:vDeviceMin"
-                        }
-                      },
-                      "VOut": {
-                        "value": {
+                        },
+                        "VOut": {
                           "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                           "node_id": "mtp:services:tempering:strategy:vSP"
+                        },
+                        "WQC": {
+                          "value": "16#FF"
+                        },
+                        "OSLevel": {
+                          "value": "0"
                         }
-                      },
-                      "WQC": {
-                        "value": "16#FF"
-                      },
-                      "OSLevel": {
-                        "value": "0"
                       }
                     }
-                  }
+                  ]
                 }
-              }
+              ]
             }
           ],
           "process_values": [
             {
               "name": "Pump",
               "communication": {
+                "OSLevel": {
+                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+                  "node_id": "mtp:hmi:Pump:OSLevel"
+                },
+                "WQC": {
+                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+                  "node_id": "mtp:hmi:Pump:WQC"
+                },
+                "OpMode": {
+                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+                  "node_id": "mtp:hmi:Pump:OpMode"
+                },
+                "FwdEn": {
+                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+                  "node_id": "mtp:hmi:Pump:FwdEn"
+                },
+                "RevEn": {
+                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+                  "node_id": "mtp:hmi:Pump:revEn"
+                },
                 "StopOp": {
                   "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                   "node_id": "mtp:hmi:Pump:StopOp"
@@ -2341,13 +2298,9 @@
                   "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                   "node_id": "mtp:hmi:Pump:RevCtrl"
                 },
-                "OpMode": {
+                "FwdFbkEn": {
                   "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:hmi:Pump:OpMode"
-                },
-                "RevFbk": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:hmi:Pump:RevFbk"
+                  "node_id": "mtp:hmi:Pump:FwdFbkEn"
                 },
                 "FwdFbk": {
                   "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
@@ -2357,35 +2310,144 @@
                   "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                   "node_id": "mtp:hmi:Pump:RevFbkEn"
                 },
-                "FwdFbkEn": {
+                "RevFbk": {
                   "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:hmi:Pump:FwdFbkEn"
+                  "node_id": "mtp:hmi:Pump:RevFbk"
                 },
                 "Trip": {
                   "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                   "node_id": "mtp:hmi:Pump:Trip"
+                }
+              }
+            },
+            {
+              "name": "TI",
+              "communication": {
+                "OSLevel": {
+                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+                  "node_id": "mtp:hmi:TI:OSLevel"
                 },
                 "WQC": {
                   "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:hmi:Pump:WQC"
+                  "node_id": "mtp:hmi:TI:WQC"
                 },
-                "OSLevel": {
+                "V": {
                   "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:hmi:Pump:OSLevel"
+                  "node_id": "mtp:hmi:TI:V"
                 },
-                "FwdEn": {
+                "VSclMin": {
                   "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:hmi:Pump:FwdEn"
+                  "node_id": "mtp:hmi:TI:VSclMin"
                 },
-                "RevEn": {
+                "VSclMax": {
                   "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:hmi:Pump:revEn"
+                  "node_id": "mtp:hmi:TI:VSclMax"
+                },
+                "VUnit": {
+                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+                  "node_id": "mtp:hmi:TI:Vunit"
+                },
+                "VAHEn": {
+                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+                  "node_id": "mtp:hmi:TI:VAHEn"
+                },
+                "VAHLim": {
+                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+                  "node_id": "mtp:hmi:TI:VAHLim"
+                },
+                "VAHAct": {
+                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+                  "node_id": "mtp:hmi:TI:VAHAct"
+                },
+                "VWHEn": {
+                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+                  "node_id": "mtp:hmi:TI:VWHEn"
+                },
+                "VWHLim": {
+                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+                  "node_id": "mtp:hmi:TI:VWHLim"
+                },
+                "VWHAct": {
+                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+                  "node_id": "mtp:hmi:TI:VWHAct"
+                },
+                "VTHEn": {
+                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+                  "node_id": "mtp:hmi:TI:VTHEn"
+                },
+                "VTHLim": {
+                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+                  "node_id": "mtp:hmi:TI:VTHLim"
+                },
+                "VTHAct": {
+                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+                  "node_id": "mtp:hmi:TI:VTHAct"
+                },
+                "VTLEn": {
+                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+                  "node_id": "mtp:hmi:TI:VTLEn"
+                },
+                "VTLLim": {
+                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+                  "node_id": "mtp:hmi:TI:VTLLim"
+                },
+                "VTLAct": {
+                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+                  "node_id": "mtp:hmi:TI:VTLAct"
+                },
+                "VWLEn": {
+                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+                  "node_id": "mtp:hmi:TI:VWLEn"
+                },
+                "VWLLim": {
+                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+                  "node_id": "mtp:hmi:TI:VWLLim"
+                },
+                "VWLAct": {
+                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+                  "node_id": "mtp:hmi:TI:VWLAct"
+                },
+                "VALEn": {
+                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+                  "node_id": "mtp:hmi:TI:VALEn"
+                },
+                "VALLim": {
+                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+                  "node_id": "mtp:hmi:TI:VALLim"
+                },
+                "VALAct": {
+                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+                  "node_id": "mtp:hmi:TI:VALAct"
                 }
               }
             },
             {
               "name": "TE",
               "communication": {
+                "OSLevel": {
+                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+                  "node_id": "mtp:hmi:TE:OSLevel"
+                },
+                "WQC": {
+                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+                  "node_id": "mtp:hmi:TE:WQC"
+                },
+                "V": {
+                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+                  "node_id": "mtp:hmi:TE:V"
+                },
+                "VSclMin": {
+                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+                  "node_id": "mtp:hmi:TE:VSclMin"
+                },
+                "VSclMax": {
+                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+                  "node_id": "mtp:hmi:TE:VSclMax"
+                },
+                "VUnit": {
+                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+                  "node_id": "mtp:hmi:TE:Vunit"
+                },
                 "VAHEn": {
                   "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                   "node_id": "mtp:hmi:TE:VAHEn"
@@ -2457,137 +2519,96 @@
                 "VALAct": {
                   "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                   "node_id": "mtp:hmi:TE:VALAct"
-                },
-                "V": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:hmi:TE:V"
-                },
-                "VSclMin": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:hmi:TE:VSclMin"
-                },
-                "VSclMax": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:hmi:TE:VSclMax"
-                },
-                "VUnit": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:hmi:TE:Vunit"
-                },
-                "OSLevel": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:hmi:TE:OSLevel"
-                },
-                "WQC": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:hmi:TE:WQC"
                 }
               }
             },
             {
-              "name": "TE",
+              "name": "Tempering.RampDuration",
               "communication": {
-                "VAHEn": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:hmi:TE:VAHEn"
-                },
-                "VAHLim": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:hmi:TE:VAHLim"
-                },
-                "VAHAct": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:hmi:TE:VAHAct"
-                },
-                "VWHEn": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:hmi:TE:VWHEn"
-                },
-                "VWHLim": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:hmi:TE:VWHLim"
-                },
-                "VWHAct": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:hmi:TE:VWHAct"
-                },
-                "VTHEn": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:hmi:TE:VTHEn"
-                },
-                "VTHLim": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:hmi:TE:VTHLim"
-                },
-                "VTHAct": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:hmi:TE:VTHAct"
-                },
-                "VTLEn": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:hmi:TE:VTLEn"
-                },
-                "VTLLim": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:hmi:TE:VTLLim"
-                },
-                "VTLAct": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:hmi:TE:VTLAct"
-                },
-                "VWLEn": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:hmi:TE:VWLEn"
-                },
-                "VWLLim": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:hmi:TE:VWLLim"
-                },
-                "VWLAct": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:hmi:TE:VWLAct"
-                },
-                "VALEn": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:hmi:TE:VALEn"
-                },
-                "VALLim": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:hmi:TE:VALLim"
-                },
-                "VALAct": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:hmi:TE:VALAct"
-                },
-                "V": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:hmi:TE:V"
-                },
-                "VSclMin": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:hmi:TE:VSclMin"
-                },
-                "VSclMax": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:hmi:TE:VSclMax"
-                },
-                "VUnit": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:hmi:TE:Vunit"
-                },
                 "OSLevel": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:hmi:TE:OSLevel"
+                  "value": "0"
                 },
                 "WQC": {
+                  "value": "16#FF"
+                },
+                "VOut": {
                   "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:hmi:TE:WQC"
+                  "node_id": "mtp:services:tempering:strategy:vRampDuration"
+                },
+                "VSclMin": {
+                  "value": "0"
+                },
+                "VSclMax": {
+                  "value": "180000"
+                },
+                "VUnit": {
+                  "value": "1054"
+                },
+                "VMin": {
+                  "value": "0"
+                },
+                "VMax": {
+                  "value": "180000"
+                },
+                "VExt": {
+                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+                  "node_id": "mtp:services:tempering:strategy:vRampDuration"
+                },
+                "VRbk": {
+                  "value": "1"
                 }
               }
             },
             {
-              "name": "Tempering.RampEndtemperature",
+              "name": "Tempering.InternalTempSource",
               "communication": {
+                "OSLevel": {
+                  "value": "0"
+                },
+                "WQC": {
+                  "value": "16#FF"
+                },
+                "VOut": {
+                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+                  "node_id": "mtp:services:tempering:config:vCITM"
+                },
+                "VSclMin": {
+                  "value": "0"
+                },
+                "VSclMax": {
+                  "value": "3"
+                },
+                "VUnit": {
+                  "value": null
+                },
+                "VMin": {
+                  "value": "0"
+                },
+                "VMax": {
+                  "value": "3"
+                },
+                "VExt": {
+                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+                  "node_id": "mtp:services:tempering:config:vCITM"
+                },
+                "VRbk": {
+                  "value": "0"
+                }
+              }
+            },
+            {
+              "name": "Tempering.Setpoint",
+              "communication": {
+                "OSLevel": {
+                  "value": "0"
+                },
+                "WQC": {
+                  "value": "16#FF"
+                },
+                "VOut": {
+                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+                  "node_id": "mtp:services:tempering:strategy:vSP"
+                },
                 "VSclMin": {
                   "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                   "node_id": "mtp:services:tempering:config:vDeviceMin"
@@ -2607,27 +2628,17 @@
                   "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                   "node_id": "mtp:services:tempering:config:vMaxSP"
                 },
-                "VRbk": {
-                  "value": "0"
-                },
-                "VOut": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:services:tempering:strategy:vRampEndtemp\n"
-                },
-                "WQC": {
-                  "value": "16#FF"
-                },
-                "OSLevel": {
-                  "value": "0"
-                },
                 "VExt": {
                   "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:services:tempering:strategy:vRampEndtemp\n"
+                  "node_id": "mtp:services:tempering:strategy:vSP"
+                },
+                "VRbk": {
+                  "value": "0"
                 }
               }
             },
             {
-              "name": "Tempering.ProcessTempSource",
+              "name": "Tempering.TemperatureControlModeParam",
               "communication": {
                 "OSLevel": {
                   "value": "0"
@@ -2637,104 +2648,26 @@
                 },
                 "VOut": {
                   "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:services:tempering:config:vCETM"
+                  "node_id": "mtp:services:tempering:config:vTmpMode"
                 },
                 "VSclMin": {
                   "value": "0"
                 },
                 "VSclMax": {
-                  "value": "3"
+                  "value": "1"
                 },
                 "VUnit": {
                   "value": null
                 },
-                "VExt": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:services:tempering:config:vCETM"
-                },
                 "VMin": {
                   "value": "0"
                 },
                 "VMax": {
-                  "value": "3"
-                },
-                "VRbk": {
-                  "value": "0"
-                }
-              }
-            },
-            {
-              "name": "Tempering.RampEndtemperature",
-              "communication": {
-                "VSclMin": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:services:tempering:config:vDeviceMin"
-                },
-                "VSclMax": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:services:tempering:config:vDeviceMax"
-                },
-                "VUnit": {
-                  "value": "1001"
-                },
-                "VMin": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:services:tempering:config:vMinSP"
-                },
-                "VMax": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:services:tempering:config:vMaxSP"
-                },
-                "VRbk": {
-                  "value": "0"
-                },
-                "VOut": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:services:tempering:strategy:vRampEndtemp\n"
-                },
-                "WQC": {
-                  "value": "16#FF"
-                },
-                "OSLevel": {
-                  "value": "0"
+                  "value": "1"
                 },
                 "VExt": {
                   "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:services:tempering:strategy:vRampEndtemp\n"
-                }
-              }
-            },
-            {
-              "name": "Tempering.ProcessTempSource",
-              "communication": {
-                "OSLevel": {
-                  "value": "0"
-                },
-                "WQC": {
-                  "value": "16#FF"
-                },
-                "VOut": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:services:tempering:config:vCETM"
-                },
-                "VSclMin": {
-                  "value": "0"
-                },
-                "VSclMax": {
-                  "value": "3"
-                },
-                "VUnit": {
-                  "value": null
-                },
-                "VExt": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:services:tempering:config:vCETM"
-                },
-                "VMin": {
-                  "value": "0"
-                },
-                "VMax": {
-                  "value": "3"
+                  "node_id": "mtp:services:tempering:config:vTmpMode"
                 },
                 "VRbk": {
                   "value": "0"
@@ -2763,15 +2696,15 @@
                 "VUnit": {
                   "value": null
                 },
-                "VExt": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:services:tempering:config:vCETM"
-                },
                 "VMin": {
                   "value": "0"
                 },
                 "VMax": {
                   "value": "3"
+                },
+                "VExt": {
+                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+                  "node_id": "mtp:services:tempering:config:vCETM"
                 },
                 "VRbk": {
                   "value": "0"
@@ -2781,6 +2714,16 @@
             {
               "name": "Tempering.RampEndtemperature",
               "communication": {
+                "OSLevel": {
+                  "value": "0"
+                },
+                "WQC": {
+                  "value": "16#FF"
+                },
+                "VOut": {
+                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+                  "node_id": "mtp:services:tempering:strategy:vRampEndtemp\n"
+                },
                 "VSclMin": {
                   "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                   "node_id": "mtp:services:tempering:config:vDeviceMin"
@@ -2800,22 +2743,12 @@
                   "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                   "node_id": "mtp:services:tempering:config:vMaxSP"
                 },
-                "VRbk": {
-                  "value": "0"
-                },
-                "VOut": {
-                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
-                  "node_id": "mtp:services:tempering:strategy:vRampEndtemp\n"
-                },
-                "WQC": {
-                  "value": "16#FF"
-                },
-                "OSLevel": {
-                  "value": "0"
-                },
                 "VExt": {
                   "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                   "node_id": "mtp:services:tempering:strategy:vRampEndtemp\n"
+                },
+                "VRbk": {
+                  "value": "0"
                 }
               }
             }

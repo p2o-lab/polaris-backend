@@ -2,6 +2,7 @@
   "name": "pfe-ree-node",
   "version": "0.1.0",
   "main": "./build/index.js",
+  "types": "./build.index.d.ts",
   "description": "Server backend for PFE recipe execution engine",
   "author": "Markus Graube <markus.graube@tu-dresden.de>",
   "private": true,
@@ -10,7 +11,8 @@
     "server": "ts-node ./src/startServer.ts",
     "start": "ts-node ./src/index.ts",
     "test": "mocha -r ts-node/register test/*.ts",
-    "apidoc": "apidoc -i src/server/  -o apidoc"
+    "apidoc": "apidoc -i src/server/  -o apidoc",
+    "build": "tsc"
   },
   "files": [
     "src"
@@ -25,7 +27,6 @@
     "express-winston": "^2.5.1",
     "mocha": "^5.2.0",
     "mocha-typescript": "^1.1.16",
-    "node-opcua": "^0.4.1",
     "node-opcua-client": "^0.4.1",
     "ts-node": "^6.1.1",
     "typescript-logging": "^0.6.2"
@@ -40,10 +41,5 @@
     "tslint": "5.8.0",
     "tslint-config-airbnb": "^5.9.2",
     "typescript": "2.6.2"
-  },
-  "apidoc": {
-    "title": "PFE-RAE API",
-    "url": "http://localhost:3000",
-    "sampleUrl": "http://localhost:3000"
   }
 }

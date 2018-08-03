@@ -21,7 +21,7 @@
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Dosieren.OpMode.binary"
             }
           },
-          "strategies": {}
+          "strategies": []
         },
         {
           "name": "Entleeren",
@@ -39,7 +39,7 @@
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Entleeren.OpMode.binary"
             }
           },
-          "strategies": {}
+          "strategies": []
         },
         {
           "name": "Nachfuellen",
@@ -57,7 +57,7 @@
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Nachfuellen.OpMode.binary"
             }
           },
-          "strategies": {}
+          "strategies": []
         }
       ]
     }

@@ -1,5 +1,5 @@
 import {catOpc, catRecipe} from '../config/logging';
-import {ConditionType} from './enum';
+import {ConditionType, ServiceState} from './enum';
 import {Module} from './Module';
 import {Service} from './Service';
 import {AttributeIds, ClientMonitoredItem, coerceNodeId} from 'node-opcua-client';
@@ -151,7 +151,7 @@ export class StateCondition extends Condition {
 
     listen(callback): void {
         this.monitoredItem = this.service.parent.subscription.monitor({
-                nodeId: coerceNodeId(this.service.status),
+                nodeId: this.service.parent.resolveNodeId(this.service.status),
                 attributeId: AttributeIds.Value
             },
             {
@@ -160,8 +160,10 @@ export class StateCondition extends Condition {
                 queueSize: 10
             });
         this.monitoredItem.on('changed', (dataValue) => {
-            console.log(`State Changed (${this.serviceName}) = ${dataValue.value.value.toString()}`);
-            this._fulfilled = dataValue.value.value === this.state;
+            let state: ServiceState = dataValue.value.value;
+            catOpc.debug(`State Changed (${this.serviceName}) = ${state} (${ServiceState[state]}) - compare to ${this.state}`);
+            this._fulfilled = state.toString()
+                .localeCompare(this.state, 'en', {usage: "search", sensitivity: "base"}) === 0;
             callback(this._fulfilled);
         });
     }

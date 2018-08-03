@@ -1,4 +1,4 @@
-export class Variable {
+export class ProcessValue {
 
     name: string;
     communication: any[];

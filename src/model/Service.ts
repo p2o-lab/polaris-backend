@@ -1,44 +1,39 @@
-import {DataType, VariantArrayType} from 'node-opcua-client';
+import {DataType, DataValue, Variant, VariantArrayType} from 'node-opcua-client';
 import {Module} from './Module';
 import {catOpc, catService} from '../config/logging';
 import {OpMode, ServiceCommand, ServiceState} from './enum';
-import {DataValue, Variant} from 'node-opcua';
-import {OpcUaNode} from "./Interfaces";
+import {OpcUaNode, Parameter, Strategy} from "./Interfaces";
 
 export interface ServiceOptions {
     name: string;
-    controlOp: OpcUaNode;
-    status: OpcUaNode;
-    opMode: OpcUaNode;
-    configParameter: {
-        [key: string]: { nodeid: string, value: any, datatype: string }
+    communication: {
+        op_mode: OpcUaNode,
+        control_op: OpcUaNode,
+        state: OpcUaNode,
+        strategy_op: OpcUaNode
     };
-    parameter: { [key: string]: { nodeid: string, datatype: string } };
+    strategies: Strategy[];
 }
 
 export class Service {
-    parameter: { [key: string]: { nodeid: string, datatype: string } };
-
     name: string;
-    controlOp: OpcUaNode;
+    command: OpcUaNode;
     status: OpcUaNode;
     opMode: OpcUaNode;
-    strategies: any[];
-    configParameter: {
-        [key: string]: { nodeid: string, value: any, datatype: string }
-    };
+    strategyOp: OpcUaNode;
+    strategies: Strategy[];
+
     parent: Module;
 
-    constructor(serviceOptions, parent: Module) {
+    constructor(serviceOptions: ServiceOptions, parent: Module) {
         this.name = serviceOptions.name;
 
         this.opMode = serviceOptions.communication.op_mode;
-        this.controlOp = serviceOptions.communication.control_op;
+        this.command = serviceOptions.communication.control_op;
         this.status = serviceOptions.communication.state;
+        this.strategyOp = serviceOptions.communication.strategy_op;
 
-        //this.configParameter = serviceOptions.configParameter;
-        //this.parameter = serviceOptions.parameter;
-
+        this.strategies = serviceOptions.strategies;
         this.parent = parent;
     }
 
@@ -60,32 +55,24 @@ export class Service {
     }
 
     async getOverview(): Promise<any> {
-        return new Promise<object>((resolve, reject) => {
-            const opMode = this.getOpMode();
-            const state = this.getServiceState();
-            Promise.all([opMode, state]).then((data) => {
-                resolve({opMode: data[0], status: data[1]});
-            }).catch((err) => {
-                reject(err)
+        const opMode = this.getOpMode();
+        const state = this.getServiceState();
+        return Promise.all([opMode, state])
+            .then((data) => {
+                return {opMode: data[0], status: data[1]};
             });
-        });
-
     }
 
-    async start(parameter: { [param: string]: any }): Promise<any> {
+    async start(strategy: Strategy, parameter: Parameter[]): Promise<any> {
         // 1) OpMode setzen auf Automatic External)
-        let result = await this.setToAutomaticOperationMode();
+        let result = await this.setToManualOperationMode();
         catService.debug(`AutomaticMode Result: ${result}`);
 
-        // 2) ConfigParameter und StrategyParameter setzen
-        // result = await this.setConfigParameter();
-        // catService.debug(`Config Result: ${result}`);
+        // 2) Parameter setzen (incl. strategy)
+        result = await this.setParameter(strategy, parameter);
+        catService.debug(`Parameter Result: ${result}`);
 
-        // 3) Parameter setzen
-        // result = await this.setParameter(parameter);
-        // catService.debug(`Parameter Result: ${result}`);
-
-        // 4) ControlOp setzen (Command senden)
+        // 3) ControlOp setzen (Command senden)
         result = await this.sendCommand(ServiceCommand.START);
         catService.debug(`Command Result: ${result}`);
     }
@@ -107,62 +94,52 @@ export class Service {
         return this.sendCommand(ServiceCommand.ABORT);
     }
 
+    private async setParameter(strategy: Strategy, parameter: Parameter[]): Promise<any[]> {
+        // set strategy
+        await this.parent.session.writeSingleNode(this.parent.resolveNodeId(this.strategyOp),
+            {
+                dataType: DataType.UInt32,
+                value: strategy.id,
+                arrayType: VariantArrayType.Scalar,
+                dimensions: null
+            });
+
+
+        catOpc.debug(`Should write parameters ${JSON.stringify(parameter)}`);
+        const tasks = [];
+        if (parameter) {
+            parameter.forEach((param) => {
+                const serviceParam = strategy.parameters.find((obj) => obj.name === param.name);
+                const variable = serviceParam.communication[param.variable];
+                const nodeid = this.parent.resolveNodeId(variable);
+                const dataValue: Variant = {
+                    dataType: DataType.Float,
+                    value: parseFloat(param.value),
+                    arrayType: VariantArrayType.Scalar,
+                    dimensions: null
+                };
+                tasks.push(this.parent.session.writeSingleNode(nodeid, dataValue));
+            });
+        }
+        return Promise.all(tasks);
+    }
+
     private async setToAutomaticOperationMode(): Promise<any> {
         const opMode: OpMode = await this.getOpMode();
         if (opMode !== OpMode.stateAutAct) {
-            await this.parent.session.writeSingleNode(this.parent.resolveNodeId(this.opMode),
-                {
-                    dataType: DataType.UInt32,
-                    value: OpMode.stateManOp,
-                    arrayType: VariantArrayType.Scalar,
-                });
-
-            return await this.parent.session.writeSingleNode(this.parent.resolveNodeId(this.opMode),
+            return this.parent.session.writeSingleNode(this.parent.resolveNodeId(this.opMode),
                 {
                     dataType: DataType.UInt32,
                     value: OpMode.stateAutOp,
                     arrayType: VariantArrayType.Scalar,
                 });
+        } else {
+            return Promise.resolve('Already in automatic');
         }
-        return Promise.resolve('Already in automatic');
     }
 
-    private setConfigParameter(): Promise<any> {
-        const tasks = [];
-        Object.keys(this.configParameter).forEach(async (key) => {
-            const param = this.configParameter[key];
-            catService.trace(`Set Config Parameter: ${param}`);
-            tasks.push(this.parent.session.writeSingleNode(param.nodeid,
-                {
-                    dataType: param.datatype,
-                    value: param.value,
-                    arrayType: VariantArrayType.Scalar,
-                }));
-        });
-        return Promise.all(tasks);
-    }
-
-    private setParameter(parameter: { [param: string]: any }): Promise<any[]> {
-        catOpc.debug(`Should write parameters ${JSON.stringify(parameter)} to ${JSON.stringify(this.parameter)}`);
-        const tasks = [];
-        Object.keys(parameter).forEach((key) => {
-            const paramValue = parameter[key];
-            const paramOption = this.parameter[key];
-
-            const dataValue: Variant = {
-                dataType: <DataType> paramOption.datatype,
-                value: paramValue,
-                arrayType: VariantArrayType.Scalar,
-                dimensions: null
-            };
-            catOpc.trace(`Parameter - ${key}: ${paramValue} -> ${JSON.stringify(paramOption)} = ${dataValue.dataType}`);
-            tasks.push(this.parent.session.writeSingleNode(paramOption.nodeid, dataValue));
-        });
-        return Promise.all(tasks);
-    }
-
-    private setToManualOperationMode(): Promise<void> {
-        return this.parent.session.writeSingleNode(this.opMode,
+    private setToManualOperationMode(): Promise<any> {
+        return this.parent.session.writeSingleNode(this.parent.resolveNodeId(this.opMode),
             {
                 dataType: DataType.UInt32,
                 value: OpMode.stateManOp,
@@ -174,7 +151,7 @@ export class Service {
         catOpc.debug(`Send command ${ServiceCommand[command]} (${command}) to service "${this.name}"`);
 
         const result = await this.parent.session.writeSingleNode(
-            this.parent.resolveNodeId(this.controlOp),
+            this.parent.resolveNodeId(this.command),
             {
                 dataType: DataType.UInt32,
                 value: command,

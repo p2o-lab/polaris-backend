@@ -3,8 +3,8 @@
   "name": "Simples Testrezept",
   "author": "Markus Graube",
   "initial_step": "S1",
-  "steps": {
-    "S1": {
+  "steps": [
+    {
       "id": "S1",
       "name": "S1",
       "operations": [
@@ -27,7 +27,7 @@
         }
       ]
     },
-    "S2": {
+    {
       "name": "S2",
       "operations": [],
       "transitions": [
@@ -40,7 +40,7 @@
         }
       ]
     },
-    "S3": {
+    {
       "name": "S3",
       "operations": [],
       "transitions": [
@@ -53,5 +53,5 @@
         }
       ]
     }
-  }
+  ]
 }

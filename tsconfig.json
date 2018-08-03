@@ -5,10 +5,11 @@
     "outDir": "./build/",
     "module": "commonjs",
     "lib": [
-      "es5",
       "es6"
     ],
-    "target": "es5",
+    "target": "es6",
+    "declaration": true,
+    "strict": false,
     "sourceMap": true,
     "plugins": [
       {

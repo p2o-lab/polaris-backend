@@ -4,14 +4,10 @@ import * as fs from "fs";
 
 async function main() {
 
-
-    //recipe_manager.loadRecipeFromPath('test/recipes/recipe_p2o_cif_testmodule.json');
-
-
-    //let modulesOptions = JSON.parse(fs.readFileSync('test/modules/modules_achema.json').toString());
-    //recipe_manager.loadModule(modulesOptions);
-    let modulesOptionsCif = JSON.parse(fs.readFileSync('test/modules/module_cif.json').toString());
-    recipe_manager.loadModule(modulesOptionsCif);
+    let modulesOptions = JSON.parse(fs.readFileSync('test/modules/modules_achema.json').toString());
+    recipe_manager.loadModule(modulesOptions);
+    //let modulesOptionsCif = JSON.parse(fs.readFileSync('test/modules/module_cif.json').toString());
+    //recipe_manager.loadModule(modulesOptionsCif);
 
     catMain.info(`Loaded modules ${recipe_manager.modules.map(module => module.id)}`);
 
@@ -19,11 +15,14 @@ async function main() {
     // catMain.info("All modules connected");
 
     //recipe_manager.loadRecipeFromPath('test/recipes/recipe_dosierer_only.json');
-    recipe_manager.loadRecipeFromPath('test/recipes/recipe_time_local.json');
+    recipe_manager.loadRecipeFromPath('test/recipes/recipe_reactor_only.json');
+    //recipe_manager.loadRecipeFromPath('test/recipes/recipe_huber_only.json');
+    //recipe_manager.loadRecipeFromPath('test/recipes/recipe_time_local.json');
 
     await recipe_manager.connect();
+
     let state = await recipe_manager.getServiceStates();
-    catMain.info(`States of services: JSON.stringify(state)`);
+    catMain.info(`States of services: ${JSON.stringify(state)}`);
 
 
     catMain.info(`Start recipe ...`);

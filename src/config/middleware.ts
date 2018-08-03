@@ -6,7 +6,7 @@ export default class Middleware {
 
         // express middleware
         server.app.use(express.json());
-        server.app.use(express.urlencoded());
+        // server.app.use(express.urlencoded());
         server.app.use(cors());
 
         // cors
