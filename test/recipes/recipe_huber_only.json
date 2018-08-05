@@ -15,7 +15,6 @@
           "parameter": [
             {
               "name": "Setpoint",
-              "variable": "VExt",
               "value": "25"
             }
           ]

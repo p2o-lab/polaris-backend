@@ -169,7 +169,7 @@ export class Module {
         const monitoredItem = this.monitoredItems.get(variable);
 
         if (monitoredItem) {
-            monitoredItem.terminate((err => catOpc.trace(`Listener ${variable} terminated`)));
+            monitoredItem.terminate(() => catOpc.trace(`Listener ${variable} terminated`));
         }
     }
 

@@ -24,7 +24,7 @@ export enum ServiceState {
     COMPLETED = 131072
 }
 
-export enum ServiceCommand {
+export enum ServiceMtpCommand {
     RESET = 2,
     START = 4,
     STOP = 8,
@@ -35,6 +35,17 @@ export enum ServiceCommand {
     RESTART = 512,
     COMPLETE = 1024
 }
+
+export type ServiceCommand =
+    "reset"
+    | "start"
+    | "stop"
+    | "unhold"
+    | "pause"
+    | "resume"
+    | "abort"
+    | "restart"
+    | "complete"
 
 export enum ConditionType {
     not = 'not',

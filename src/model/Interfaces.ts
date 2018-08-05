@@ -6,14 +6,17 @@ export interface OpcUaNode {
 export interface ServiceParameter {
     name: string,
     communication: {
-        VExt: OpcUaNode
+        VExt: OpcUaNode,
+        VOut: OpcUaNode,
+        VMin: OpcUaNode,
+        VMax: OpcUaNode,
+        VSclMax: OpcUaNode,
+        VSclMin: OpcUaNode,
+        VRbk: { value: any },
+        VUnit: { value: any },
+        WQC: { value: any },
+        OSLevel: { value: any }
     }
-}
-
-export interface Parameter {
-    name: string;
-    variable: string;
-    value: any;
 }
 
 export interface Strategy {

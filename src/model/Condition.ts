@@ -29,9 +29,9 @@ export interface NotConditionOptions extends BaseConditionOptions {
 
 export interface StateConditionOptions extends BaseConditionOptions {
     type: ConditionType.state;
-    module: string;
+    // module id (can be ommited if only one module is registered)
+    module?: string;
     service: string;
-    serviceName: string;
     state: string;
 }
 
@@ -129,20 +129,21 @@ export class OrCondition extends Condition {
 
 export class StateCondition extends Condition {
     module: Module;
-    moduleName: string;
     service: Service;
-    serviceName: string;
     state: string;
     private monitoredItem: ClientMonitoredItem;
 
     constructor(options: StateConditionOptions, modules: Module[], recipe: Recipe) {
         super();
-        this.moduleName = options.module;
-        this.serviceName = options.service;
-        this.state = options.state;
-        if (modules) {
-            this.resolve_module(modules, recipe);
+        if (options.module) {
+            this.module = modules.find(module => module.id === options.module);
+        } else if (modules.length === 1) {
+            this.module = modules[0];
         }
+        recipe.modules.add(this.module);
+        this.service = this.module.services.find(service => service.name === options.service);
+
+        this.state = options.state;
     }
 
     clear() {
@@ -161,17 +162,11 @@ export class StateCondition extends Condition {
             });
         this.monitoredItem.on('changed', (dataValue) => {
             let state: ServiceState = dataValue.value.value;
-            catOpc.debug(`State Changed (${this.serviceName}) = ${state} (${ServiceState[state]}) - compare to ${this.state}`);
+            catOpc.debug(`State Changed (${this.service.name}) = ${state} (${ServiceState[state]}) - compare to ${this.state}`);
             this._fulfilled = state.toString()
                 .localeCompare(this.state, 'en', {usage: "search", sensitivity: "base"}) === 0;
             callback(this._fulfilled);
         });
-    }
-
-    private resolve_module(modules: Module[], recipe: Recipe): void {
-        this.module = modules.find(module => module.id === this.moduleName);
-        recipe.modules.add(this.module);
-        this.service = this.module.services.find(service => service.name === this.serviceName);
     }
 }
 
@@ -203,7 +198,6 @@ export class TimeCondition extends Condition {
 
 export class VariableCondition extends Condition {
     module: Module;
-    module_name: string;
     dataStructure: string;
     variable: string;
     value: string | number;
@@ -211,14 +205,17 @@ export class VariableCondition extends Condition {
 
     constructor(options: VariableConditionOptions, modules: Module[], recipe: Recipe) {
         super();
-        this.module_name = options.module;
+        if (options.module) {
+            this.module = modules.find(module => module.id === options.module);
+        } else if (modules.length === 1) {
+            this.module = modules[0];
+        }
+        recipe.modules.add(this.module);
+
         this.dataStructure = options.dataStructure;
         this.variable = options.variable;
         this.value = options.value;
         this.operator = options.operator;
-        if (modules) {
-            this.resolve_module(modules, recipe);
-        }
     }
 
     /**
@@ -252,11 +249,6 @@ export class VariableCondition extends Condition {
                 }
                 callback(this._fulfilled);
             });
-    }
-
-    private resolve_module(modules: Module[], recipe: Recipe): void {
-        this.module = modules.find(module => module.id === this.module_name);
-        recipe.modules.add(this.module);
     }
 }
 

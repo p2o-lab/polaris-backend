@@ -4,7 +4,7 @@ import {Step} from "./Step";
 import {RecipeState} from "./enum";
 import {catRM} from "../config/logging";
 import {EventEmitter} from "events";
-import {Module} from "./Module";
+import {Module, ModuleOptions} from "./Module";
 
 export class RecipeManager {
 
@@ -15,19 +15,32 @@ export class RecipeManager {
     // loaded modules
     modules: Module[] = [];
 
-
+    /**
+     * Load modules from JSON according to TopologyGenerator output or to simplified JSON
+     * Skip module if already a module with same id is registered
+     * @param options
+     * @returns {Module[]}
+     */
     public loadModule(options): Module[] {
         let newModules: Module[] = [];
         if (options.subplants) {
-            options.subplants.forEach((subplant) => {
-                subplant.modules.forEach((module) => {
-                    newModules.push(new Module(module));
+            options.subplants.forEach((subplantOptions) => {
+                subplantOptions.modules.forEach((moduleOptions: ModuleOptions) => {
+                    if (this.modules.find(module => module.id === moduleOptions.id)) {
+                        catRM.warn(`Module ${moduleOptions.id} already in registered modules`);
+                    } else {
+                        newModules.push(new Module(moduleOptions));
+                    }
                 });
             });
         }
         if (options.modules) {
-            options.modules.forEach((module) => {
-                newModules.push(new Module(module));
+            options.modules.forEach((moduleOptions) => {
+                if (this.modules.find(module => module.id === moduleOptions.id)) {
+                    catRM.warn(`Module ${moduleOptions.id} already in registered modules`);
+                } else {
+                    newModules.push(new Module(moduleOptions));
+                }
             });
         }
         this.modules.push(...newModules);

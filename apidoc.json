@@ -4,5 +4,13 @@
   "sampleUrl": "http://localhost:3000",
   "template": {
     "withCompare": false
-  }
+  },
+  "order": [
+    "GetModules",
+    "PostModule",
+    "DeleteModule",
+    "AbortAllServices",
+    "GetModule",
+    "CallService"
+  ]
 }
