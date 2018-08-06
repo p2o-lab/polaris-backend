@@ -60,7 +60,7 @@ export class Service {
         const state = this.getServiceState();
         return Promise.all([opMode, state])
             .then((data) => {
-                return {opMode: data[0], status: data[1]};
+                return {opMode: OpMode[data[0]], status: ServiceState[data[1]]};
             });
     }
 

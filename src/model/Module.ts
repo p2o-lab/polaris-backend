@@ -11,7 +11,6 @@ import {
 } from 'node-opcua-client';
 import {catModule, catOpc, catRecipe} from '../config/logging';
 import {EventEmitter} from 'events';
-import {OpMode, ServiceState} from './enum';
 import {OpcUaNode} from './Interfaces';
 
 export interface ModuleOptions {
@@ -110,8 +109,8 @@ export class Module {
                 .then((result) => {
                     return {
                         service: service.name,
-                        opMode: OpMode[result.opMode],
-                        state: ServiceState[result.status]
+                        opMode: result.opMode,
+                        state: result.status
                     };
                 });
         });

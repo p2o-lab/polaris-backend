@@ -147,7 +147,7 @@ export class StateCondition extends Condition {
     }
 
     clear() {
-        this.monitoredItem.terminate(() => catOpc.debug(`Subscription terminated: ${this.service}`));
+        this.monitoredItem.terminate(() => catOpc.debug(`Subscription terminated: ${this.service.name}`));
     }
 
     listen(callback): void {
@@ -163,7 +163,7 @@ export class StateCondition extends Condition {
         this.monitoredItem.on('changed', (dataValue) => {
             let state: ServiceState = dataValue.value.value;
             catOpc.debug(`State Changed (${this.service.name}) = ${state} (${ServiceState[state]}) - compare to ${this.state}`);
-            this._fulfilled = state.toString()
+            this._fulfilled = ServiceState[state]
                 .localeCompare(this.state, 'en', {usage: "search", sensitivity: "base"}) === 0;
             callback(this._fulfilled);
         });

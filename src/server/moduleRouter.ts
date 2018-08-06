@@ -15,7 +15,6 @@ export const moduleRouter: Router = Router();
  * @apiGroup Module
  */
 moduleRouter.get('', asyncHandler(async (req: Request, res: Response) => {
-    catServer.info('GET /module/');
     const tasks = recipe_manager.modules.map(module => module.json());
     res.json(await Promise.all(tasks));
 }));
@@ -27,7 +26,6 @@ moduleRouter.get('', asyncHandler(async (req: Request, res: Response) => {
  * @apiParam {string} id    Module id
  */
 moduleRouter.get('/:id', asyncHandler(async (req: Request, res: Response) => {
-    catServer.info(`GET /module/${req.params.id}`);
     res.json(await recipe_manager.modules.find(module => module.id === req.params.id).json());
 }));
 
@@ -38,7 +36,7 @@ moduleRouter.get('/:id', asyncHandler(async (req: Request, res: Response) => {
  * @apiParam {object} modules    Modules to be added
  */
 moduleRouter.post('', asyncHandler(async (req: Request, res: Response) => {
-    catServer.info(`POST /module/ - ${JSON.stringify(req.body)}`);
+    catServer.debug(`POST /module/ - ${JSON.stringify(req.body)}`);
     const newModules = recipe_manager.loadModule(req.body);
     res.json(await Promise.all(newModules.map(module => module.json())));
 }));
@@ -50,7 +48,6 @@ moduleRouter.post('', asyncHandler(async (req: Request, res: Response) => {
  * @apiParam {string} id    Module id to be deleted
  */
 moduleRouter.delete('/:id', asyncHandler(async (req: Request, res: Response) => {
-    catServer.info(`Delete /module/${req.params.id}`);
     const module = recipe_manager.modules.find(module => module.id === req.params.id);
     await module.disconnect();
     const index = recipe_manager.modules.indexOf(module, 0);
@@ -84,7 +81,6 @@ moduleRouter.post('/abort', asyncHandler(async (req: Request, res: Response) => 
  * @apiParam {Object[]} [parameters]    Parameters for *start* or *restart*
  */
 moduleRouter.post('/:moduleId/service/:serviceName/:command', asyncHandler(async (req: Request, res: Response) => {
-    catServer.info(`Call service ${req.params.moduleId}`);
     const module = await recipe_manager.modules.find(module => module.id === req.params.moduleId);
     const service = await module.services.find(service => service.name === req.params.serviceName);
     const command: ServiceCommand = req.params.command;
@@ -114,7 +110,6 @@ moduleRouter.post('/:moduleId/service/:serviceName/:command', asyncHandler(async
  * @apiParam {string} serviceName   Name of service
  */
 moduleRouter.get('/:moduleId/service/:serviceName', asyncHandler(async (req: Request, res: Response) => {
-    catServer.info(`Call service ${req.params.moduleId}`);
     const module = await recipe_manager.modules.find(module => module.id === req.params.moduleId);
     if (!module) {
         throw new Error(`Module with id ${req.params.moduleId} not registered`);

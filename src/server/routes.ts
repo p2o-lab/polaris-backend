@@ -9,7 +9,7 @@ export default class Routes {
 
         // Logging all requests
         server.app.use((req: Request, res, next) => {
-            catServer.info(`${req.method} ${req.url}}`);
+            catServer.info(`${req.method} ${req.url}`);
             next();
         });
 

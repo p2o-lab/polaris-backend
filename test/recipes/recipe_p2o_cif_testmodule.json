@@ -3,48 +3,68 @@
   "name": "Simples Testrezept nur für Temperiermodul von Huber",
   "author": "Markus Graube",
   "initial_step": "S1",
-  "steps": {
-    "S1": {
+  "steps": [
+    {
       "name": "S1",
       "operations": [
         {
           "module": "CIF",
-          "service": "Entleeren",
-          "command": "start",
-          "parameter": {
-            "volume": 3
-          }
+          "service": "Dosieren",
+          "command": "start"
         }
       ],
       "transitions": [
         {
-          "next_step": "finished",
+          "next_step": "S2",
           "condition":
             {
               "type": "time",
-              "duration": 5
+              "duration": 3
             }
         }
       ]
     },
-    "S2": {
+    {
       "name": "S2",
       "operations": [
         {
           "module": "CIF",
-          "service": "Entleeren",
-          "command": "stop"
+          "service": "Dosieren",
+          "command": "complete"
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "S3",
+          "condition": {
+            "type": "state",
+            "module": "CIF",
+            "service": "Dosieren",
+            "state": "completed"
+            }
+        }
+      ]
+    },
+    {
+      "name": "S3",
+      "operations": [
+        {
+          "module": "CIF",
+          "service": "Dosieren",
+          "command": "reset"
         }
       ],
       "transitions": [
         {
           "next_step": "finished",
           "condition": {
-            "type": "time",
-            "duration": "15"
-            }
+            "type": "state",
+            "module": "CIF",
+            "service": "Dosieren",
+            "state": "idle"
+          }
         }
       ]
     }
-  }
+  ]
 }

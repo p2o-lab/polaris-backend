@@ -57,8 +57,19 @@ export enum ConditionType {
 }
 
 export enum OpMode {
-    stateAutAct = 256,
+    stateLiOp = 1,
+    stateOffLi = 2,
+    stateOffOp = 4,
+    stateManLi = 8,
     stateManOp = 16,
+    stateAutLi = 32,
     stateAutOp = 64,
-    stateManAct = 128
+    stateManAct = 128,
+    stateAutAct = 256,
+    srcLiOp = 512,
+    srcExtLi = 1024,
+    srcIntLi = 2048,
+    srcIntOp = 4096,
+    srcExtOp = 8192,
+    srcIntAct = 16384
 }
