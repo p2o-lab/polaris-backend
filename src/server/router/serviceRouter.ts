@@ -1,10 +1,10 @@
-import {recipe_manager} from '../model/RecipeManager';
-import {ServiceCommand} from "../model/enum";
+import {recipe_manager} from '../../model/RecipeManager';
+import {ServiceCommand} from "../../model/enum";
 import {moduleRouter} from "./moduleRouter";
 import {Request, Response, Router} from "express";
 import * as asyncHandler from 'express-async-handler';
-import {Strategy} from "../model/Interfaces";
-import {Parameter} from "../model/Parameter";
+import {Strategy} from "../../model/Interfaces";
+import {Parameter} from "../../model/Parameter";
 
 export const serviceRouter: Router = Router();
 

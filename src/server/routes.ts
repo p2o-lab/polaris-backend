@@ -1,9 +1,9 @@
 import * as express from 'express';
 import {Request} from 'express';
-import {moduleRouter} from "./moduleRouter";
-import {recipeRouter} from "./recipeRouter";
+import {moduleRouter} from "./router/moduleRouter";
+import {recipeRouter} from "./router/recipeRouter";
 import {catServer} from "../config/logging";
-import {serviceRouter} from "./serviceRouter";
+import {serviceRouter} from "./router/serviceRouter";
 
 export default class Routes {
     static init(server): void {

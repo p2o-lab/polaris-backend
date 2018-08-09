@@ -1,5 +1,5 @@
-import {recipe_manager} from '../model/RecipeManager';
-import {catServer} from '../config/logging';
+import {recipe_manager} from '../../model/RecipeManager';
+import {catServer} from '../../config/logging';
 import {moduleRouter} from "./moduleRouter";
 import {Request, Response, Router} from "express";
 import * as asyncHandler from 'express-async-handler';
