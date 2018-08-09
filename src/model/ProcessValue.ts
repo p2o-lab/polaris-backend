@@ -1,7 +1,9 @@
+import {OpcUaNode} from "./Interfaces";
+
 export class ProcessValue {
 
     name: string;
-    communication: any[];
+    communication: OpcUaNode[];
 
     constructor(variableOptions: any) {
         this.name = variableOptions.name;

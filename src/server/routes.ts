@@ -3,6 +3,7 @@ import {Request} from 'express';
 import {moduleRouter} from "./moduleRouter";
 import {recipeRouter} from "./recipeRouter";
 import {catServer} from "../config/logging";
+import {serviceRouter} from "./serviceRouter";
 
 export default class Routes {
     static init(server): void {
@@ -16,6 +17,7 @@ export default class Routes {
 
         server.app.use('/doc', express.static('apidoc'));
         server.app.use('/module', moduleRouter);
+        server.app.use('/module', serviceRouter);
         server.app.use('/recipe', recipeRouter);
 
 

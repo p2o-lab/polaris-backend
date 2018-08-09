@@ -1,6 +1,7 @@
 import {Operation, OperationOptions} from "./Operation";
 import {Transition, TransitionOptions} from "./Transition";
 import {catRecipe} from "../config/logging";
+import {recipe_manager} from "./RecipeManager";
 
 export interface StepOptions {
     name: string;
@@ -21,6 +22,8 @@ export class Step {
     }
 
     execute(callback: (step: Step) => void) {
+        catRecipe.info(`Start step ${this.name}`);
+        recipe_manager.eventEmitter.emit('refresh', `new step ${this.name}`);
         this.operations.forEach((operation) => {
             catRecipe.info(`Start operation ${operation.module.id} ${operation.service.name} ${operation.command} ${operation.parameter}`);
             operation.execute();

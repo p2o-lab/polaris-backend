@@ -51,7 +51,7 @@ export class Service {
         const opMode: number = result.value.value;
         const opModeString: string = OpMode[opMode];
 
-        catOpc.debug(`Read OpMode ${this.name} - ${opMode} (${opModeString})`);
+        catOpc.trace(`Read OpMode ${this.name} - ${opMode} (${opModeString})`);
         return opMode;
     }
 

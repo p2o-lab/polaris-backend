@@ -15,6 +15,8 @@ export class RecipeManager {
     // loaded modules
     modules: Module[] = [];
 
+    eventEmitter: EventEmitter = new EventEmitter();
+
     /**
      * Load modules from JSON according to TopologyGenerator output or to simplified JSON
      * Skip module if already a module with same id is registered
@@ -70,7 +72,7 @@ export class RecipeManager {
         this.recipe.modules.forEach(async (module) => {
             tasks.push(module.getServiceStates()
                 .then((data) => {
-                    return {module: module.id, services: data}
+                    return {module: module.id, connected: true, services: data}
                 })
                 .catch((err) => {
                     return {module: module.id, connected: false}
@@ -103,11 +105,22 @@ export class RecipeManager {
             catRM.info("Start recipe");
             return this.recipe.start()
                 .on('completed', () => {
-                    catRM.info(`Recipe finsished`)
+                    catRM.info(`Recipe finsished`);
+                    this.eventEmitter.emit('refresh');
                 })
                 .on('step_finished', (step: Step, next_step: Step) => {
                     catRM.info(`Step finsished: ${step.name} - ${next_step.name}`)
+                    this.eventEmitter.emit('refresh', step, next_step);
                 });
+        }
+    }
+
+    reset() {
+        if (this.recipe.recipe_status === RecipeState.completed || this.recipe.recipe_status === RecipeState.stopped) {
+            this.recipe.reset();
+            this.eventEmitter.emit('refresh', 'recipe resetted');
+        } else {
+            throw new Error('Recipe not in completed or stopped');
         }
     }
 
@@ -135,6 +148,15 @@ export class RecipeManager {
             )
         );
         return Promise.all(tasks);
+    }
+
+    async json() {
+        return {
+            recipe_status: RecipeState[recipe_manager.recipe.recipe_status],
+            service_states: await recipe_manager.getServiceStates(),
+            current_step: recipe_manager.recipe.current_step ? recipe_manager.recipe.current_step.name : 'not started yet',
+            options: recipe_manager.recipe_options
+        };
     }
 }
 

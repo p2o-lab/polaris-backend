@@ -7,16 +7,7 @@
     {
       "id": "S1",
       "name": "S1",
-      "operations": [
-        {
-          "module": "CIF",
-          "service": "Dosieren",
-          "command": "start",
-          "parameter": {
-            "volume": 0.5
-          }
-        }
-      ],
+      "operations": [],
       "transitions": [
         {
           "next_step": "S2",

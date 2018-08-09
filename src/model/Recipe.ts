@@ -39,22 +39,32 @@ export class Recipe {
                 transition.next_step = this.steps.find(step => step.name === transition.next_step_name);
             });
         });
-
         this.initial_step = this.steps.find(step => step.name === options.initial_step);
-        this.recipe_status = RecipeState.idle;
+
+        this.initRecipe();
         this.eventEmitter = new EventEmitter();
 
         catRecipe.info('Recipe parsing finished');
+    }
+
+    reset() {
+        this.initRecipe();
     }
 
     start(): EventEmitter {
         this.current_step = this.initial_step;
         this.recipe_status = RecipeState.running;
         this.executeStep(() => {
+            this.recipe_status = RecipeState.completed;
             catRecipe.info(`Recipe completed ${this.modules}`);
             this.eventEmitter.emit('completed', 'succesful');
         });
         return this.eventEmitter;
+    }
+
+    private initRecipe() {
+        this.current_step = undefined;
+        this.recipe_status = RecipeState.idle;
     }
 
     public connectModules(): Promise<any[]> {
@@ -77,7 +87,6 @@ export class Recipe {
                 this.executeStep(callback_recipe_completed);
             } else {
                 catRecipe.info('Last step finished.');
-                this.recipe_status = RecipeState.completed;
                 callback_recipe_completed();
             }
         });

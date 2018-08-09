@@ -1,6 +1,5 @@
 import {recipe_manager} from '../model/RecipeManager';
 import {catServer} from '../config/logging';
-import {RecipeState} from "../model/enum";
 import {moduleRouter} from "./moduleRouter";
 import {Request, Response, Router} from "express";
 import * as asyncHandler from 'express-async-handler';
@@ -14,11 +13,8 @@ export const recipeRouter: Router = Router();
  */
 recipeRouter.get('', asyncHandler(async (req: Request, res: Response) => {
     catServer.info('GET /recipe');
-    res.json({
-        recipe_status: RecipeState[recipe_manager.recipe.recipe_status],
-        service_states: await recipe_manager.getServiceStates(),
-        current_step: recipe_manager.recipe.current_step
-    });
+    const result = await recipe_manager.json();
+    res.json(result);
 }));
 
 /**
@@ -54,6 +50,17 @@ recipeRouter.post('/start', asyncHandler((req: Request, res: Response) => {
     catServer.info('POST /recipe/start');
     recipe_manager.start();
     res.send('recipe successful started');
+}));
+
+
+/**
+ * @api {post} /recipe/reset    Reset recipe
+ * @apiName ResetRecipe
+ * @apiGroup Recipe
+ */
+recipeRouter.post('/reset', asyncHandler((req: Request, res: Response) => {
+    recipe_manager.reset();
+    res.send('recipe successful resetted');
 }));
 
 /**

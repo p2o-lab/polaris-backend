@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "name": "Simples Testrezept nur für Temperiermodul von Huber",
+  "name": "Simples Testrezept für CIF Modul",
   "author": "Markus Graube",
   "initial_step": "S1",
   "steps": [
@@ -9,7 +9,7 @@
       "operations": [
         {
           "module": "CIF",
-          "service": "Dosieren",
+          "service": "Entleeren",
           "command": "start"
         }
       ],
@@ -19,7 +19,7 @@
           "condition":
             {
               "type": "time",
-              "duration": 3
+              "duration": 5
             }
         }
       ]
@@ -29,7 +29,7 @@
       "operations": [
         {
           "module": "CIF",
-          "service": "Dosieren",
+          "service": "Entleeren",
           "command": "complete"
         }
       ],
@@ -39,7 +39,7 @@
           "condition": {
             "type": "state",
             "module": "CIF",
-            "service": "Dosieren",
+            "service": "Entleeren",
             "state": "completed"
             }
         }
@@ -50,7 +50,7 @@
       "operations": [
         {
           "module": "CIF",
-          "service": "Dosieren",
+          "service": "Entleeren",
           "command": "reset"
         }
       ],
@@ -60,7 +60,7 @@
           "condition": {
             "type": "state",
             "module": "CIF",
-            "service": "Dosieren",
+            "service": "Entleeren",
             "state": "idle"
           }
         }

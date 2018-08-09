@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "name": "Simples Testrezept nur für Temperiermodul von Huber",
+  "name": "Simples Testrezept nur für Reaktor von Merck",
   "author": "Markus Graube",
   "initial_step": "S1",
   "steps": [
@@ -11,13 +11,26 @@
           "module": "React",
           "service": "Aerate_Service",
           "strategy": "Aerate_Continous",
-          "command": "start"
+          "command": "start",
+          "parameter": [
+            {
+              "name": "Aerate_Period",
+              "value": 10
+            }
+          ]
+
         },
         {
           "module": "React",
           "service": "Stir_Service",
           "strategy": "Stirring_Continous",
-          "command": "start"
+          "command": "start",
+          "parameter": [
+            {
+              "name": "Stir_Rotation",
+              "value": 100
+            }
+          ]
         }
       ],
       "transitions": [

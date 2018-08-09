@@ -12,6 +12,7 @@ import {
 import {catModule, catOpc, catRecipe} from '../config/logging';
 import {EventEmitter} from 'events';
 import {OpcUaNode} from './Interfaces';
+import {recipe_manager} from "./RecipeManager";
 
 export interface ModuleOptions {
     id: string;
@@ -89,13 +90,18 @@ export class Module {
                 this.namespaceArray = result.value.value;
                 catModule.debug(`Got namespace array for ${this.id}: ${JSON.stringify(this.namespaceArray)}`);
 
+
                 // store everything
                 this.client = client;
                 this.session = session;
                 this.subscription = subscription;
 
+                // subscribe to all services
+                this.subscribeToAllServices();
+
                 return this.session;
             } catch (err) {
+                catModule.error('Error conecctin', err);
                 catModule.warn(`Could not connect to module ${this.id} on ${this.endpoint}`);
                 throw new Error(`Could not connect to module ${this.id} on ${this.endpoint}`);
             }
@@ -138,30 +144,44 @@ export class Module {
     }
 
     listenToVariable(dataStructureName: string, variableName: string): EventEmitter {
-        const dataStructure = this.variables.find(variable => variable.name === dataStructureName);
+        const dataStructure: ProcessValue = this.variables.find(variable => variable.name === dataStructureName);
         if (dataStructure) {
-            const variable = dataStructure.communication[variableName];
-            const monitoredItem: ClientMonitoredItem = this.subscription.monitor({
-                    nodeId: this.resolveNodeId(variable),
-                    attributeId: AttributeIds.Value
-                },
-                {
-                    samplingInterval: 1000,
-                    discardOldest: true,
-                    queueSize: 10
-                });
-
-            monitoredItem.emitter = new EventEmitter();
-            monitoredItem.on('changed', (dataValue) => {
-                catOpc.debug(`Variable Changed (${dataStructureName}) = ${dataValue.value.value.toString()}`);
-                monitoredItem.emitter.emit('changed', dataValue.value.value);
-            });
-            this.monitoredItems.set(dataStructureName, monitoredItem);
-
-            return monitoredItem.emitter;
+            const variable: OpcUaNode = dataStructure.communication[variableName];
+            return this.listenToOpcUaNode(variable);
         } else {
             throw new Error('ProcessValue is not specified for module');
         }
+    }
+
+    listenToOpcUaNode(node: OpcUaNode): EventEmitter {
+        const monitoredItem: ClientMonitoredItem = this.subscription.monitor({
+                nodeId: this.resolveNodeId(node),
+                attributeId: AttributeIds.Value
+            },
+            {
+                samplingInterval: 1000,
+                discardOldest: true,
+                queueSize: 10
+            });
+
+        monitoredItem.emitter = new EventEmitter();
+        monitoredItem.on('changed', (dataValue) => {
+            catOpc.debug(`Variable Changed (${this.resolveNodeId(node)}) = ${dataValue.value.value.toString()}`);
+            monitoredItem.emitter.emit('changed', dataValue.value.value);
+        });
+        this.monitoredItems.set(this.resolveNodeId(node), monitoredItem);
+
+        return monitoredItem.emitter;
+    }
+
+    private subscribeToAllServices() {
+        this.services.forEach((service) => {
+            this.listenToOpcUaNode(service.status)
+                .on('changed', (data) => {
+                    catModule.debug(`state changed: ${data}`);
+                    recipe_manager.eventEmitter.emit('refresh', data);
+                });
+        });
     }
 
     clearListener(variable: string) {
@@ -205,4 +225,6 @@ export class Module {
             };
         }
     }
+
+
 }
