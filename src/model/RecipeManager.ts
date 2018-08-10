@@ -5,6 +5,7 @@ import {RecipeState} from "./enum";
 import {catRM} from "../config/logging";
 import {EventEmitter} from "events";
 import {Module, ModuleOptions} from "./Module";
+import {RecipeManagerInterface} from "./Interfaces";
 
 export class RecipeManager {
 
@@ -150,7 +151,7 @@ export class RecipeManager {
         return Promise.all(tasks);
     }
 
-    async json() {
+    async json(): Promise<RecipeManagerInterface> {
         return {
             recipe_status: RecipeState[recipe_manager.recipe.recipe_status],
             service_states: await recipe_manager.getServiceStates(),
