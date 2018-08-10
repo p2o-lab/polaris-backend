@@ -3,9 +3,9 @@
   "name": "Simples Testrezept nur für Temperiermodul von Huber",
   "author": "Markus Graube",
   "initial_step": "S1",
-  "steps": {
-    "S1": {
-      "name": "Heizen",
+  "steps": [
+    {
+      "name": "S1",
       "operations": [
         {
           "module": "Dose",
@@ -23,8 +23,8 @@
         }
       ]
     },
-    "S2": {
-      "name": "Abkühlen",
+    {
+      "name": "S2",
       "operations": [
         {
           "module": "Dose",
@@ -42,8 +42,8 @@
         }
       ]
     },
-    "S3": {
-      "name": "Abkühlen",
+    {
+      "name": "S3",
       "operations": [
         {
           "module": "Dose",
@@ -61,5 +61,5 @@
         }
       ]
     }
-  }
+  ]
 }

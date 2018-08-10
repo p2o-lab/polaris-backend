@@ -1,0 +1,84 @@
+{
+  "version": "1.0",
+  "name": "Rezept ACHEMA",
+  "author": "Markus Graube",
+	"initial_step": "S1",
+	"steps": [
+		{
+          "name": "Startup.Init",
+			"operations": [
+              {
+                "module": "React",
+                "service": "Empty",
+                "command": "start"
+              }
+			],
+			"transition": [
+				{
+                  "next_step": "Running.Vorlegen.1",
+                  "condition": {
+                    "type": "and",
+                    "conditions": [
+                      {
+                        "type": "state",
+                        "module": "React",
+                        "service": "Empty",
+                        "state": "completed"
+                      },
+                      {
+                        "type": "variable",
+                        "module": "Dose",
+                        "service": "Dose",
+                        "variable": "Sensoren.L001",
+                        "value": 10
+                      }
+                    ]
+                  }
+				}
+			]
+		},
+		{
+          "name": "Running.Vorlegen.1",
+			"operations": [
+              {
+                "module": "Dose",
+                "service": "DoseAmount",
+                "command": "start",
+                "parameter": [
+                  {
+                    "name": "SetVolume",
+                    "value": 1
+                  },
+                  {
+                    "name": "SetDuration",
+                    "value": 30
+                  }
+                ]
+              },
+              {
+                "module": "React",
+                "service": "Stir_Service",
+                "strategy": "Stir_Continous",
+                "command": "start",
+                "parameter": [
+                  {
+                    "name": "Stir_Rotation",
+                    "value": 100
+                  }
+                ]
+              }
+			],
+			"transition": [
+				{
+                  "next_step": "Running.Vorlegen.2",
+                  "condition": {
+                    "type": "state",
+                    "module": "Dose",
+                    "service": "DoseAmount",
+                    "state": "completed"
+                  }
+				}
+			]
+		}
+	]
+}
