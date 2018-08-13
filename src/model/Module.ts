@@ -13,6 +13,7 @@ import {catModule, catOpc, catRecipe} from '../config/logging';
 import {EventEmitter} from 'events';
 import {OpcUaNode} from './Interfaces';
 import {recipe_manager} from "./RecipeManager";
+import {ServiceState} from "./enum";
 
 export interface ModuleOptions {
     id: string;
@@ -101,7 +102,7 @@ export class Module {
 
                 return this.session;
             } catch (err) {
-                catModule.error('Error conecctin', err);
+                catModule.error('Error connecting', err);
                 catModule.warn(`Could not connect to module ${this.id} on ${this.endpoint}`);
                 throw new Error(`Could not connect to module ${this.id} on ${this.endpoint}`);
             }
@@ -113,11 +114,8 @@ export class Module {
         const tasks = this.services.map((service) => {
             return service.getOverview()
                 .then((result) => {
-                    return {
-                        service: service.name,
-                        opMode: result.opMode,
-                        state: result.status
-                    };
+                    result.name = service.name;
+                    return result;
                 });
         });
         return Promise.all(tasks);
@@ -176,9 +174,12 @@ export class Module {
 
     private subscribeToAllServices() {
         this.services.forEach((service) => {
+            if (service.status === undefined) {
+                throw new Error(`ÒPC UA variable for status of service ${service.name} not defined`);
+            }
             this.listenToOpcUaNode(service.status)
                 .on('changed', (data) => {
-                    catModule.debug(`state changed: ${data}`);
+                    catModule.debug(`state changed: ${service.name} = ${ServiceState[data]}`);
                     recipe_manager.eventEmitter.emit('refresh', data);
                 });
         });

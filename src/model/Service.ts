@@ -8,10 +8,10 @@ import {Parameter} from "./Parameter";
 export interface ServiceOptions {
     name: string;
     communication: {
-        op_mode: OpcUaNode,
-        control_op: OpcUaNode,
-        state: OpcUaNode,
-        strategy_op: OpcUaNode
+        OpMode: OpcUaNode,
+        ControlOp: OpcUaNode,
+        State: OpcUaNode,
+        StrategyOp: OpcUaNode
     };
     strategies: Strategy[];
 }
@@ -29,10 +29,10 @@ export class Service {
     constructor(serviceOptions: ServiceOptions, parent: Module) {
         this.name = serviceOptions.name;
 
-        this.opMode = serviceOptions.communication.op_mode;
-        this.command = serviceOptions.communication.control_op;
-        this.status = serviceOptions.communication.state;
-        this.strategyOp = serviceOptions.communication.strategy_op;
+        this.opMode = serviceOptions.communication.OpMode;
+        this.command = serviceOptions.communication.ControlOp;
+        this.status = serviceOptions.communication.State;
+        this.strategyOp = serviceOptions.communication.StrategyOp;
 
         this.strategies = serviceOptions.strategies;
         this.parent = parent;
@@ -42,7 +42,7 @@ export class Service {
         const result: DataValue = await this.parent.session.readVariableValue(this.parent.resolveNodeId(this.status));
         const state: ServiceState = <ServiceState> result.value.value;
         const stateString: string = ServiceState[state];
-        catOpc.debug(`Read state ${this.name}: ${state} (${stateString})`);
+        catOpc.trace(`Read state ${this.name}: ${state} (${stateString})`);
         return state;
     }
 
@@ -51,17 +51,49 @@ export class Service {
         const opMode: number = result.value.value;
         const opModeString: string = OpMode[opMode];
 
-        catOpc.trace(`Read OpMode ${this.name} - ${opMode} (${opModeString})`);
+        catOpc.info(`Read OpMode ${this.name} - ${opMode} (${opModeString})`);
         return opMode;
     }
 
     async getOverview(): Promise<any> {
         const opMode = this.getOpMode();
         const state = this.getServiceState();
-        return Promise.all([opMode, state])
+        const strategies = this.getStrategies();
+        return Promise.all([opMode, state, strategies])
             .then((data) => {
-                return {opMode: OpMode[data[0]], status: ServiceState[data[1]]};
+                return {
+                    opMode: OpMode[data[0]] || data[0],
+                    status: ServiceState[data[1]] || data[1],
+                    strategies: data[2]
+                };
             });
+    }
+
+    async getStrategies() {
+        return await Promise.all(this.strategies.map(async (strategy) => {
+            return {
+                id: strategy.id,
+                name: strategy.name,
+                default: strategy.default,
+                parameters: await this.getCurrentParameter(strategy)
+            }
+        }));
+    }
+
+    async getCurrentParameter(strategy: Strategy) {
+        return await Promise.all(strategy.parameters.map(async (param) => {
+            if (this.parent.isConnected()) {
+                const value = await this.parent.session.readVariableValue(this.parent.resolveNodeId(param.communication.VExt));
+                return {
+                    name: param.name,
+                    value: value.value.value
+                }
+            }
+            return {
+                name: param.name,
+                value: "not connected"
+            }
+        }));
     }
 
     executeCommand(command: ServiceCommand, strategy: Strategy, parameter: Parameter[]) {

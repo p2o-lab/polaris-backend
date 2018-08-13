@@ -30,6 +30,7 @@ modulesOptions = JSON.parse(fs.readFileSync('test/modules/module_cif.json').toSt
 recipe_manager.loadModule(modulesOptions);
 
 //recipe_manager.loadRecipeFromPath('test/recipes/recipe_time_local.json');
-recipe_manager.loadRecipeFromPath('test/recipes/recipe_p2o_cif_testmodule.json');
+//recipe_manager.loadRecipeFromPath('test/recipes/recipe_p2o_cif_testmodule.json');
+recipe_manager.loadRecipeFromPath('test/recipes/recipe_reactor_only.json');
 
 recipe_manager.connect();

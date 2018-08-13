@@ -37,7 +37,12 @@ moduleRouter.post('/:moduleId/service/:serviceName/:command', asyncHandler(async
     }
 
     const result = await service.executeCommand(command, strategy, parameters);
-    res.send("Command succesfully send: " + result);
+    res.json({
+        module: module.id,
+        service: service.name,
+        command: req.params.command,
+        status: "Command succesfully send"
+    });
 }));
 
 

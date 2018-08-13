@@ -1,5 +1,4 @@
 import {recipe_manager} from '../../model/RecipeManager';
-import {catServer} from '../../config/logging';
 import {Request, Response, Router} from "express";
 
 import * as asyncHandler from 'express-async-handler';
@@ -33,7 +32,6 @@ moduleRouter.get('/:id', asyncHandler(async (req: Request, res: Response) => {
  * @apiParam {object} modules    Modules to be added
  */
 moduleRouter.post('', asyncHandler(async (req: Request, res: Response) => {
-    catServer.debug(`POST /module/ - ${JSON.stringify(req.body)}`);
     const newModules = recipe_manager.loadModule(req.body);
     res.json(await Promise.all(newModules.map(module => module.json())));
 }));
@@ -64,7 +62,7 @@ moduleRouter.delete('/:id', asyncHandler(async (req: Request, res: Response) => 
 moduleRouter.post('/:id/connect', asyncHandler(async (req: Request, res: Response) => {
     const module = recipe_manager.modules.find(module => module.id === req.params.id);
     await module.connect();
-    res.send(`Succesfully connected to ${req.params.id}`);
+    res.json({module: module.id, status: "Succesfully connected"});
 }));
 
 
@@ -76,7 +74,8 @@ moduleRouter.post('/:id/connect', asyncHandler(async (req: Request, res: Respons
  */
 moduleRouter.post('/:id/disconnect', asyncHandler(async (req: Request, res: Response) => {
     const module = recipe_manager.modules.find(module => module.id === req.params.id);
-    res.send(await module.disconnect());
+    await module.disconnect();
+    res.json({module: module.id, status: "Succesfully disconnected"});
 }));
 
 
@@ -87,6 +86,7 @@ moduleRouter.post('/:id/disconnect', asyncHandler(async (req: Request, res: Resp
  * @apiGroup Module
  */
 moduleRouter.post('/abort', asyncHandler(async (req: Request, res: Response) => {
-    res.json(await recipe_manager.abortAllModules());
+    await recipe_manager.abortAllModules();
+    res.json({status: "aborted all services from all modules"});
 }));
 

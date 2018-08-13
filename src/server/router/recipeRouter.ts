@@ -38,7 +38,7 @@ recipeRouter.post('', asyncHandler(async (req: Request, res: Response) => {
     catServer.info(`POST /recipe. ${req.body.recipe}`);
     recipe_manager.loadRecipe(req.body.recipe);
     await recipe_manager.connect();
-    res.send('recipe successful loaded');
+    res.json({status: 'recipe successful loaded'});
 }));
 
 /**
@@ -49,7 +49,7 @@ recipeRouter.post('', asyncHandler(async (req: Request, res: Response) => {
 recipeRouter.post('/start', asyncHandler((req: Request, res: Response) => {
     catServer.info('POST /recipe/start');
     recipe_manager.start();
-    res.send('recipe successful started');
+    res.json({status: 'recipe successful started'});
 }));
 
 
@@ -60,7 +60,7 @@ recipeRouter.post('/start', asyncHandler((req: Request, res: Response) => {
  */
 recipeRouter.post('/reset', asyncHandler((req: Request, res: Response) => {
     recipe_manager.reset();
-    res.send('recipe successful resetted');
+    res.json({status: 'recipe successful resetted'});
 }));
 
 /**

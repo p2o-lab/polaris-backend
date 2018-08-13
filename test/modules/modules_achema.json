@@ -34,68 +34,68 @@
                             "name": "Energy consumption"
                         }
                     ],
-                    "opcua_server_url": "opc.tcp://192.168.2.110",
+                    "opcua_server_url": "opc.tcp://10.6.51.21:4840",
                     "rest_api_port": "1200",
                     "services": [
                         {
                             "name": "Fill",
                             "communication": {
-                                "os_level": {
+                                "OSLevel": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                     "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Nachfuellen.OSLevel",
                                     "data_type": "Byte"
                                 },
-                                "wqc": {
+                                "WQC": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                     "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Nachfuellen.WQC",
                                     "data_type": "Byte"
                                 },
-                                "op_mode": {
+                                "OpMode": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                     "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Nachfuellen.OpMode.binary",
                                     "data_type": "UInt64"
                                 },
-                                "control_op": {
+                                "ControlOp": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                     "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Nachfuellen.ControlOp",
                                     "data_type": "UInt64"
                                 },
-                                "strategy_op": {
+                                "StrategyOp": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                     "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Nachfuellen.StrategyOp",
                                     "data_type": "UInt64"
                                 },
-                                "control_int": {
+                                "ControlInt": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                     "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Nachfuellen.ControlInt",
                                     "data_type": "UInt64"
                                 },
-                                "strategy_int": {
+                                "StrategyInt": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                     "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Nachfuellen.StrategyInt",
                                     "data_type": "UInt64"
                                 },
-                                "control_ext": {
+                                "ControlExt": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                     "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Nachfuellen.ControlExt",
                                     "data_type": "UInt64"
                                 },
-                                "strategy_ext": {
+                                "StrategyExt": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                     "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Nachfuellen.StrategyExt",
                                     "data_type": "UInt64"
                                 },
-                                "state": {
+                                "State": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                     "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Nachfuellen.State.binary",
                                     "data_type": "UInt64"
                                 },
-                                "control_enable": {
+                                "ControlEnable": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                     "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Nachfuellen.ControlEnable.binary",
                                     "data_type": "UInt64"
                                 },
-                                "current_strategy": {
+                                "CurrentStrategy": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                     "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Nachfuellen.CurrentStrategy",
                                     "data_type": "UInt64"
@@ -117,6 +117,7 @@
                                     "parameters": [
                                         {
                                             "name": "SetVolume",
+                                            "interface_class": "ExtAnaOp",
                                             "communication": {
                                                 "OSLevel": {
                                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
@@ -177,62 +178,62 @@
                         {
                             "name": "DoseAmount",
                             "communication": {
-                                "os_level": {
+                                "OSLevel": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                     "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Vorlegen.OSLevel",
                                     "data_type": "Byte"
                                 },
-                                "wqc": {
+                                "WQC": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                     "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Vorlegen.WQC",
                                     "data_type": "Byte"
                                 },
-                                "op_mode": {
+                                "OpMode": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                     "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Vorlegen.OpMode.binary",
                                     "data_type": "UInt64"
                                 },
-                                "control_op": {
+                                "ControlOp": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                     "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Vorlegen.ControlOp",
                                     "data_type": "UInt64"
                                 },
-                                "strategy_op": {
+                                "StrategyOp": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                     "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Vorlegen.StrategyOp",
                                     "data_type": "UInt64"
                                 },
-                                "control_int": {
+                                "ControlInt": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                     "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Vorlegen.ControlInt",
                                     "data_type": "UInt64"
                                 },
-                                "strategy_int": {
+                                "StrategyInt": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                     "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Vorlegen.StrategyInt",
                                     "data_type": "UInt64"
                                 },
-                                "control_ext": {
+                                "ControlExt": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                     "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Vorlegen.ControlExt",
                                     "data_type": "UInt64"
                                 },
-                                "strategy_ext": {
+                                "StrategyExt": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                     "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Vorlegen.StrategyExt",
                                     "data_type": "UInt64"
                                 },
-                                "state": {
+                                "State": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                     "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Vorlegen.State.binary",
                                     "data_type": "UInt64"
                                 },
-                                "control_enable": {
+                                "ControlEnable": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                     "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Vorlegen.ControlEnable.binary",
                                     "data_type": "UInt64"
                                 },
-                                "current_strategy": {
+                                "CurrentStrategy": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                     "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Vorlegen.CurrentStrategy",
                                     "data_type": "UInt64"
@@ -247,6 +248,7 @@
                                     "parameters": [
                                         {
                                             "name": "SetVolume",
+                                            "interface_class": "ExtAnaOp",
                                             "communication": {
                                                 "OSLevel": {
                                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
@@ -302,6 +304,7 @@
                                         },
                                         {
                                             "name": "SetDuration",
+                                            "interface_class": "ExtAnaOp",
                                             "communication": {
                                                 "OSLevel": {
                                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
@@ -362,62 +365,62 @@
                         {
                             "name": "DoseConti",
                             "communication": {
-                                "os_level": {
+                                "OSLevel": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                     "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Dosieren.OSLevel",
                                     "data_type": "Byte"
                                 },
-                                "wqc": {
+                                "WQC": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                     "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Dosieren.WQC",
                                     "data_type": "Byte"
                                 },
-                                "op_mode": {
+                                "OpMode": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                     "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Dosieren.OpMode.binary",
                                     "data_type": "UInt64"
                                 },
-                                "control_op": {
+                                "ControlOp": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                     "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Dosieren.ControlOp",
                                     "data_type": "UInt64"
                                 },
-                                "strategy_op": {
+                                "StrategyOp": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                     "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Dosieren.StrategyOp",
                                     "data_type": "UInt64"
                                 },
-                                "control_int": {
+                                "ControlInt": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                     "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Dosieren.ControlInt",
                                     "data_type": "UInt64"
                                 },
-                                "strategy_int": {
+                                "StrategyInt": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                     "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Dosieren.StrategyInt",
                                     "data_type": "UInt64"
                                 },
-                                "control_ext": {
+                                "ControlExt": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                     "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Dosieren.ControlExt",
                                     "data_type": "UInt64"
                                 },
-                                "strategy_ext": {
+                                "StrategyExt": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                     "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Dosieren.StrategyExt",
                                     "data_type": "UInt64"
                                 },
-                                "state": {
+                                "State": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                     "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Dosieren.State.binary",
                                     "data_type": "UInt64"
                                 },
-                                "control_enable": {
+                                "ControlEnable": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                     "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Dosieren.ControlEnable.binary",
                                     "data_type": "UInt64"
                                 },
-                                "current_strategy": {
+                                "CurrentStrategy": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                     "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Dosieren.CurrentStrategy",
                                     "data_type": "UInt64"
@@ -432,6 +435,7 @@
                                     "parameters": [
                                         {
                                             "name": "SetVolumeFlow",
+                                            "interface_class": "ExtAnaOp",
                                             "communication": {
                                                 "OSLevel": {
                                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
@@ -492,62 +496,62 @@
                         {
                             "name": "Empty",
                             "communication": {
-                                "os_level": {
+                                "OSLevel": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                     "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Entleeren.OSLevel",
                                     "data_type": "Byte"
                                 },
-                                "wqc": {
+                                "WQC": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                     "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Entleeren.WQC",
                                     "data_type": "Byte"
                                 },
-                                "op_mode": {
+                                "OpMode": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                     "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Entleeren.OpMode.binary",
                                     "data_type": "UInt64"
                                 },
-                                "control_op": {
+                                "ControlOp": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                     "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Entleeren.ControlOp",
                                     "data_type": "UInt64"
                                 },
-                                "strategy_op": {
+                                "StrategyOp": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                     "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Entleeren.StrategyOp",
                                     "data_type": "UInt64"
                                 },
-                                "control_int": {
+                                "ControlInt": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                     "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Entleeren.ControlInt",
                                     "data_type": "UInt64"
                                 },
-                                "strategy_int": {
+                                "StrategyInt": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                     "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Entleeren.StrategyInt",
                                     "data_type": "UInt64"
                                 },
-                                "control_ext": {
+                                "ControlExt": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                     "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Entleeren.ControlExt",
                                     "data_type": "UInt64"
                                 },
-                                "strategy_ext": {
+                                "StrategyExt": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                     "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Entleeren.StrategyExt",
                                     "data_type": "UInt64"
                                 },
-                                "state": {
+                                "State": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                     "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Entleeren.State.binary",
                                     "data_type": "UInt64"
                                 },
-                                "control_enable": {
+                                "ControlEnable": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                     "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Entleeren.ControlEnable.binary",
                                     "data_type": "UInt64"
                                 },
-                                "current_strategy": {
+                                "CurrentStrategy": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                     "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Entleeren.CurrentStrategy",
                                     "data_type": "UInt64"
@@ -1424,68 +1428,68 @@
                             "name": "Energy consumption"
                         }
                     ],
-                    "opcua_server_url": "opc.tcp://192.168.2.10:4840",
+                    "opcua_server_url": "opc.tcp://10.6.51.22:4840",
                     "rest_api_port": "1201",
                     "services": [
                         {
                             "name": "Fill_Service",
                             "communication": {
-                                "os_level": {
+                                "OSLevel": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                                     "node_id": "\"Fill_Service\".\"MTP\".\"OSLevel\"",
                                     "data_type": "Byte"
                                 },
-                                "wqc": {
+                                "WQC": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                                     "node_id": "\"Fill_Service\".\"MTP\".\"WQC\"",
                                     "data_type": "Byte"
                                 },
-                                "op_mode": {
+                                "OpMode": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                                     "node_id": "\"Fill_Service\".\"MTP\".\"OpMode\"",
                                     "data_type": "UInt64"
                                 },
-                                "control_op": {
+                                "ControlOp": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                                     "node_id": "\"Fill_Service\".\"MTP\".\"ControlOp\"",
                                     "data_type": "UInt64"
                                 },
-                                "strategy_op": {
+                                "StrategyOp": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                                     "node_id": "\"Fill_Service\".\"MTP\".\"StrategyOp\"",
                                     "data_type": "UInt64"
                                 },
-                                "control_int": {
+                                "ControlInt": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                                     "node_id": "\"Fill_Service\".\"MTP\".\"ControlInt\"",
                                     "data_type": "UInt64"
                                 },
-                                "strategy_int": {
+                                "StrategyInt": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                                     "node_id": "\"Fill_Service\".\"MTP\".\"StrategyInt\"",
                                     "data_type": "UInt64"
                                 },
-                                "control_ext": {
+                                "ControlExt": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                                     "node_id": "\"Fill_Service\".\"MTP\".\"ControlExt\"",
                                     "data_type": "UInt64"
                                 },
-                                "strategy_ext": {
+                                "StrategyExt": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                                     "node_id": "\"Fill_Service\".\"MTP\".\"StrategyExt\"",
                                     "data_type": "UInt64"
                                 },
-                                "state": {
+                                "State": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                                     "node_id": "\"Fill_Service\".\"MTP\".\"State\"",
                                     "data_type": "UInt64"
                                 },
-                                "control_enable": {
+                                "ControlEnable": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                                     "node_id": "\"Fill_Service\".\"MTP\".\"ControlEnable\"",
                                     "data_type": "UInt64"
                                 },
-                                "current_strategy": {
+                                "CurrentStrategy": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                                     "node_id": "\"Fill_Service\".\"MTP\".\"CurrentStrategy\"",
                                     "data_type": "UInt64"
@@ -1511,62 +1515,62 @@
                         {
                             "name": "Aerate_Service",
                             "communication": {
-                                "os_level": {
+                                "OSLevel": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                                     "node_id": "\"Aerate_Service\".\"MTP\".\"OSLevel\"",
                                     "data_type": "Byte"
                                 },
-                                "wqc": {
+                                "WQC": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                                     "node_id": "\"Aerate_Service\".\"MTP\".\"WQC\"",
                                     "data_type": "Byte"
                                 },
-                                "op_mode": {
+                                "OpMode": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                                     "node_id": "\"Aerate_Service\".\"MTP\".\"OpMode\"",
                                     "data_type": "UInt64"
                                 },
-                                "control_op": {
+                                "ControlOp": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                                     "node_id": "\"Aerate_Service\".\"MTP\".\"ControlOp\"",
                                     "data_type": "UInt64"
                                 },
-                                "strategy_op": {
+                                "StrategyOp": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                                     "node_id": "\"Aerate_Service\".\"MTP\".\"StrategyOp\"",
                                     "data_type": "UInt64"
                                 },
-                                "control_int": {
+                                "ControlInt": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                                     "node_id": "\"Aerate_Service\".\"MTP\".\"ControlInt\"",
                                     "data_type": "UInt64"
                                 },
-                                "strategy_int": {
+                                "StrategyInt": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                                     "node_id": "\"Aerate_Service\".\"MTP\".\"StrategyInt\"",
                                     "data_type": "UInt64"
                                 },
-                                "control_ext": {
+                                "ControlExt": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                                     "node_id": "\"Aerate_Service\".\"MTP\".\"ControlExt\"",
                                     "data_type": "UInt64"
                                 },
-                                "strategy_ext": {
+                                "StrategyExt": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                                     "node_id": "\"Aerate_Service\".\"MTP\".\"StrategyExt\"",
                                     "data_type": "UInt64"
                                 },
-                                "state": {
+                                "State": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                                     "node_id": "\"Aerate_Service\".\"MTP\".\"State\"",
                                     "data_type": "UInt64"
                                 },
-                                "control_enable": {
+                                "ControlEnable": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                                     "node_id": "\"Aerate_Service\".\"MTP\".\"ControlEnable\"",
                                     "data_type": "UInt64"
                                 },
-                                "current_strategy": {
+                                "CurrentStrategy": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                                     "node_id": "\"Aerate_Service\".\"MTP\".\"CurrentStrategy\"",
                                     "data_type": "UInt64"
@@ -1581,6 +1585,7 @@
                                     "parameters": [
                                         {
                                             "name": "Aerate_Period",
+                                            "interface_class": "ExtAnaOp",
                                             "communication": {
                                                 "OSLevel": {
                                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
@@ -1648,62 +1653,62 @@
                         {
                             "name": "Stir_Service",
                             "communication": {
-                                "os_level": {
+                                "OSLevel": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                                     "node_id": "\"Stir_Service\".\"MTP\".\"OSLevel\"",
                                     "data_type": "Byte"
                                 },
-                                "wqc": {
+                                "WQC": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                                     "node_id": "\"Stir_Service\".\"MTP\".\"WQC\"",
                                     "data_type": "Byte"
                                 },
-                                "op_mode": {
+                                "OpMode": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                                     "node_id": "\"Stir_Service\".\"MTP\".\"OpMode\"",
                                     "data_type": "UInt64"
                                 },
-                                "control_op": {
+                                "ControlOp": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                                     "node_id": "\"Stir_Service\".\"MTP\".\"ControlOp\"",
                                     "data_type": "UInt64"
                                 },
-                                "strategy_op": {
+                                "StrategyOp": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                                     "node_id": "\"Stir_Service\".\"MTP\".\"StrategyOp\"",
                                     "data_type": "UInt64"
                                 },
-                                "control_int": {
+                                "ControlInt": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                                     "node_id": "\"Stir_Service\".\"MTP\".\"ControlInt\"",
                                     "data_type": "UInt64"
                                 },
-                                "strategy_int": {
+                                "StrategyInt": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                                     "node_id": "\"Stir_Service\".\"MTP\".\"StrategyInt\"",
                                     "data_type": "UInt64"
                                 },
-                                "control_ext": {
+                                "ControlExt": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                                     "node_id": "\"Stir_Service\".\"MTP\".\"ControlExt\"",
                                     "data_type": "UInt64"
                                 },
-                                "strategy_ext": {
+                                "StrategyExt": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                                     "node_id": "\"Stir_Service\".\"MTP\".\"StrategyExt\"",
                                     "data_type": "UInt64"
                                 },
-                                "state": {
+                                "State": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                                     "node_id": "\"Stir_Service\".\"MTP\".\"State\"",
                                     "data_type": "UInt64"
                                 },
-                                "control_enable": {
+                                "ControlEnable": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                                     "node_id": "\"Stir_Service\".\"MTP\".\"ControlEnable\"",
                                     "data_type": "UInt64"
                                 },
-                                "current_strategy": {
+                                "CurrentStrategy": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                                     "node_id": "\"Stir_Service\".\"MTP\".\"CurrentStrategy\"",
                                     "data_type": "UInt64"
@@ -1718,6 +1723,7 @@
                                     "parameters": [
                                         {
                                             "name": "Stir_Rotation",
+                                            "interface_class": "ExtAnaOp",
                                             "communication": {
                                                 "OSLevel": {
                                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
@@ -1785,62 +1791,62 @@
                         {
                             "name": "Empty_Service",
                             "communication": {
-                                "os_level": {
+                                "OSLevel": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                                     "node_id": "\"Empty_Service\".\"MTP\".\"OSLevel\"",
                                     "data_type": "Byte"
                                 },
-                                "wqc": {
+                                "WQC": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                                     "node_id": "\"Empty_Service\".\"MTP\".\"WQC\"",
                                     "data_type": "Byte"
                                 },
-                                "op_mode": {
+                                "OpMode": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                                     "node_id": "\"Empty_Service\".\"MTP\".\"OpMode\"",
                                     "data_type": "UInt64"
                                 },
-                                "control_op": {
+                                "ControlOp": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                                     "node_id": "\"Empty_Service\".\"MTP\".\"ControlOp\"",
                                     "data_type": "UInt64"
                                 },
-                                "strategy_op": {
+                                "StrategyOp": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                                     "node_id": "\"Empty_Service\".\"MTP\".\"StrategyOp\"",
                                     "data_type": "UInt64"
                                 },
-                                "control_int": {
+                                "ControlInt": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                                     "node_id": "\"Empty_Service\".\"MTP\".\"ControlInt\"",
                                     "data_type": "UInt64"
                                 },
-                                "strategy_int": {
+                                "StrategyInt": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                                     "node_id": "\"Empty_Service\".\"MTP\".\"StrategyInt\"",
                                     "data_type": "UInt64"
                                 },
-                                "control_ext": {
+                                "ControlExt": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                                     "node_id": "\"Empty_Service\".\"MTP\".\"ControlExt\"",
                                     "data_type": "UInt64"
                                 },
-                                "strategy_ext": {
+                                "StrategyExt": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                                     "node_id": "\"Empty_Service\".\"MTP\".\"StrategyExt\"",
                                     "data_type": "UInt64"
                                 },
-                                "state": {
+                                "State": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                                     "node_id": "\"Empty_Service\".\"MTP\".\"State\"",
                                     "data_type": "UInt64"
                                 },
-                                "control_enable": {
+                                "ControlEnable": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                                     "node_id": "\"Empty_Service\".\"MTP\".\"ControlEnable\"",
                                     "data_type": "UInt64"
                                 },
-                                "current_strategy": {
+                                "CurrentStrategy": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                                     "node_id": "\"Empty_Service\".\"MTP\".\"CurrentStrategy\"",
                                     "data_type": "UInt64"
@@ -1855,6 +1861,7 @@
                                     "parameters": [
                                         {
                                             "name": "Empty_VolFlow",
+                                            "interface_class": "ExtAnaOp",
                                             "communication": {
                                                 "OSLevel": {
                                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
@@ -1918,6 +1925,7 @@
                                     "parameters": [
                                         {
                                             "name": "Empty_VolFlow",
+                                            "interface_class": "ExtAnaOp",
                                             "communication": {
                                                 "OSLevel": {
                                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
@@ -3139,68 +3147,68 @@
                             "name": "Energy consumption"
                         }
                     ],
-                    "opcua_server_url": "opc.tcp://192.168.2.115:4840",
+                    "opcua_server_url": "opc.tcp://10.6.51.23:4840",
                     "rest_api_port": "1202",
                     "services": [
                         {
                             "name": "Circulation",
                             "communication": {
-                                "os_level": {
+                                "OSLevel": {
                                     "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                                     "node_id": "mtp:services:circulation:control:OSLevel",
                                     "data_type": "Byte"
                                 },
-                                "wqc": {
+                                "WQC": {
                                     "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                                     "node_id": "mtp:services:circulation:control:WQC",
                                     "data_type": "Byte"
                                 },
-                                "op_mode": {
+                                "OpMode": {
                                     "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                                     "node_id": "mtp:services:circulation:control:OpMode",
                                     "data_type": "UInt64"
                                 },
-                                "control_op": {
+                                "ControlOp": {
                                     "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                                     "node_id": "mtp:services:circulation:control:ControlOp",
                                     "data_type": "UInt64"
                                 },
-                                "strategy_op": {
+                                "StrategyOp": {
                                     "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                                     "node_id": "mtp:services:circulation:control:StrategyOp",
                                     "data_type": "UInt64"
                                 },
-                                "control_int": {
+                                "ControlInt": {
                                     "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                                     "node_id": "mtp:services:circulation:control:ControlInt",
                                     "data_type": "UInt64"
                                 },
-                                "strategy_int": {
+                                "StrategyInt": {
                                     "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                                     "node_id": "mtp:services:circulation:control:StrategyInt",
                                     "data_type": "UInt64"
                                 },
-                                "control_ext": {
+                                "ControlExt": {
                                     "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                                     "node_id": "mtp:services:circulation:control:ControlExt",
                                     "data_type": "UInt64"
                                 },
-                                "strategy_ext": {
+                                "StrategyExt": {
                                     "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                                     "node_id": "mtp:services:circulation:control:StrategyExt",
                                     "data_type": "UInt64"
                                 },
-                                "state": {
+                                "State": {
                                     "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                                     "node_id": "mtp:services:circulation:control:State",
                                     "data_type": "UInt64"
                                 },
-                                "control_enable": {
+                                "ControlEnable": {
                                     "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                                     "node_id": "mtp:services:circulation:control:ControlEnable",
                                     "data_type": "UInt64"
                                 },
-                                "current_strategy": {
+                                "CurrentStrategy": {
                                     "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                                     "node_id": "mtp:services:circulation:control:CurrentStrategy",
                                     "data_type": "UInt64"
@@ -3219,62 +3227,62 @@
                         {
                             "name": "Tempering",
                             "communication": {
-                                "os_level": {
+                                "OSLevel": {
                                     "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                                     "node_id": "mtp:services:tempering:control:OSLevel",
                                     "data_type": "Byte"
                                 },
-                                "wqc": {
+                                "WQC": {
                                     "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                                     "node_id": "mtp:services:tempering:control:WQC",
                                     "data_type": "Byte"
                                 },
-                                "op_mode": {
+                                "OpMode": {
                                     "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                                     "node_id": "mtp:services:tempering:control:OpMode",
                                     "data_type": "UInt64"
                                 },
-                                "control_op": {
+                                "ControlOp": {
                                     "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                                     "node_id": "mtp:services:tempering:control:ControlOp",
                                     "data_type": "UInt64"
                                 },
-                                "strategy_op": {
+                                "StrategyOp": {
                                     "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                                     "node_id": "mtp:services:tempering:control:StrategyOp",
                                     "data_type": "UInt64"
                                 },
-                                "control_int": {
+                                "ControlInt": {
                                     "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                                     "node_id": "mtp:services:tempering:control:ControlInt",
                                     "data_type": "UInt64"
                                 },
-                                "strategy_int": {
+                                "StrategyInt": {
                                     "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                                     "node_id": "mtp:services:tempering:control:StrategyInt",
                                     "data_type": "UInt64"
                                 },
-                                "control_ext": {
+                                "ControlExt": {
                                     "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                                     "node_id": "mtp:services:tempering:control:ControlExt",
                                     "data_type": "UInt64"
                                 },
-                                "strategy_ext": {
+                                "StrategyExt": {
                                     "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                                     "node_id": "mtp:services:tempering:control:StrategyExt",
                                     "data_type": "UInt64"
                                 },
-                                "state": {
+                                "State": {
                                     "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                                     "node_id": "mtp:services:tempering:control:State",
                                     "data_type": "UInt64"
                                 },
-                                "control_enable": {
+                                "ControlEnable": {
                                     "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                                     "node_id": "mtp:services:tempering:control:ControlEnable",
                                     "data_type": "UInt64"
                                 },
-                                "current_strategy": {
+                                "CurrentStrategy": {
                                     "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                                     "node_id": "mtp:services:tempering:control:CurrentStrategy",
                                     "data_type": "UInt64"
@@ -3289,6 +3297,7 @@
                                     "parameters": [
                                         {
                                             "name": "RampEndtemperature",
+                                            "interface_class": "ExtAnaOp",
                                             "communication": {
                                                 "OSLevel": {
                                                     "value": "0"
@@ -3336,6 +3345,7 @@
                                         },
                                         {
                                             "name": "RampDuration",
+                                            "interface_class": "ExtAnaOp",
                                             "communication": {
                                                 "OSLevel": {
                                                     "value": "0"
@@ -3383,6 +3393,7 @@
                                     "parameters": [
                                         {
                                             "name": "Setpoint",
+                                            "interface_class": "ExtAnaOp",
                                             "communication": {
                                                 "OSLevel": {
                                                     "value": "0"

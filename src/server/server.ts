@@ -25,7 +25,7 @@ export class Server {
 
 
         recipe_manager.eventEmitter.on('refresh', (data) => {
-            catServer.debug(`WS refresh published ${data}`);
+            catServer.trace(`WS refresh published ${data}`);
             this.wss.clients.forEach((client) => {
                 if (client.readyState === WebSocket.OPEN) {
                     client.send('refresh', data);
