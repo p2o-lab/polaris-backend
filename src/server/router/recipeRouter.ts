@@ -17,16 +17,6 @@ recipeRouter.get('', asyncHandler(async (req: Request, res: Response) => {
     res.json(result);
 }));
 
-/**
- * @api {get} /recipe/options    Get recipe options
- * @apiName GetRecipeOptions
- * @apiDescription Get JSON which has ben ued to instantiate the current recipe
- * @apiGroup Recipe
- */
-recipeRouter.get('/options', asyncHandler((req: Request, res: Response) => {
-    catServer.info('GET /recipe/options');
-    res.json(recipe_manager.recipe_options);
-}));
 
 /**
  * @api {post} /recipe    Load recipe
@@ -35,9 +25,9 @@ recipeRouter.get('/options', asyncHandler((req: Request, res: Response) => {
  * @apiParam {Object} recipe  new recipe
  */
 recipeRouter.post('', asyncHandler(async (req: Request, res: Response) => {
-    catServer.info(`POST /recipe. ${req.body.recipe}`);
-    recipe_manager.loadRecipe(req.body.recipe);
-    await recipe_manager.connect();
+    catServer.info(`POST /recipe. ${JSON.stringify(req.body)}`);
+    recipe_manager.loadRecipe(req.body);
+    recipe_manager.connect();
     res.json({status: 'recipe successful loaded'});
 }));
 

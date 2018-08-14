@@ -46,12 +46,13 @@ export interface VariableConditionOptions extends BaseConditionOptions {
     variable: string;
     dataStructure: string;
     value: string | number;
-    operator: string;
+    operator: "==" | "<=" | ">=" | ">" | "<";
 }
 
 export abstract class Condition {
 
     protected _fulfilled: boolean = false;
+    private options: ConditionOptions;
 
     get fulfilled(): boolean {
         return this._fulfilled;
@@ -97,13 +98,21 @@ export abstract class Condition {
      * Clear listening on condition
      */
     abstract clear();
+
+    constructor(options) {
+        this.options = options;
+    }
+
+    json() {
+        return this.options;
+    }
 }
 
 export class OrCondition extends Condition {
     conditions: Condition[];
 
     constructor(options: OrConditionOptions, modules, recipe) {
-        super();
+        super(options);
         catRecipe.trace(`Add OrCondition: ${options}`);
         this.conditions = options.conditions.map((option) => {
             return Condition.create(option, modules, recipe);
@@ -134,7 +143,7 @@ export class StateCondition extends Condition {
     private monitoredItem: ClientMonitoredItem;
 
     constructor(options: StateConditionOptions, modules: Module[], recipe: Recipe) {
-        super();
+        super(options);
         if (options.module) {
             this.module = modules.find(module => module.id === options.module);
         } else if (modules.length === 1) {
@@ -175,7 +184,7 @@ export class TimeCondition extends Condition {
     private duration: number;
 
     constructor(options: TimeConditionOptions) {
-        super();
+        super(options);
         this.duration = options.duration * 1000;
         this._fulfilled = false;
         catRecipe.trace(`Add TimeCondition: ${JSON.stringify(options)}`);
@@ -201,10 +210,10 @@ export class VariableCondition extends Condition {
     dataStructure: string;
     variable: string;
     value: string | number;
-    operator: string;
+    operator: "==" | "<" | ">" | "<=" | ">=";
 
     constructor(options: VariableConditionOptions, modules: Module[], recipe: Recipe) {
-        super();
+        super(options);
         if (options.module) {
             this.module = modules.find(module => module.id === options.module);
         } else if (modules.length === 1) {
@@ -215,7 +224,7 @@ export class VariableCondition extends Condition {
         this.dataStructure = options.dataStructure;
         this.variable = options.variable;
         this.value = options.value;
-        this.operator = options.operator;
+        this.operator = options.operator || "==";
     }
 
     /**
@@ -242,10 +251,36 @@ export class VariableCondition extends Condition {
         this.module.listenToVariable(this.dataStructure, this.variable)
             .on('changed', (value) => {
                 catOpc.debug(`value changed to ${value}`);
-                if (value === this.value) {
-                    this._fulfilled = true;
-                } else {
-                    this._fulfilled = false;
+                if (this.operator === "==") {
+                    if (value === this.value) {
+                        this._fulfilled = true;
+                    } else {
+                        this._fulfilled = false;
+                    }
+                } else if (this.operator === "<=") {
+                    if (value <= this.value) {
+                        this._fulfilled = true;
+                    } else {
+                        this._fulfilled = false;
+                    }
+                } else if (this.operator === ">=") {
+                    if (value >= this.value) {
+                        this._fulfilled = true;
+                    } else {
+                        this._fulfilled = false;
+                    }
+                } else if (this.operator === "<") {
+                    if (value < this.value) {
+                        this._fulfilled = true;
+                    } else {
+                        this._fulfilled = false;
+                    }
+                } else if (this.operator === ">") {
+                    if (value > this.value) {
+                        this._fulfilled = true;
+                    } else {
+                        this._fulfilled = false;
+                    }
                 }
                 callback(this._fulfilled);
             });
@@ -256,7 +291,7 @@ export class NotCondition extends Condition {
     condition: Condition;
 
     constructor(options: NotConditionOptions, modules, recipe) {
-        super();
+        super(options);
         catRecipe.trace(`Add NotCondition: ${options}`);
         this.condition = Condition.create(options.condition, modules, recipe);
         this._fulfilled = false;
@@ -279,7 +314,7 @@ export class AndCondition extends Condition {
     conditions: Condition[] = [];
 
     constructor(options: AndConditionOptions, modules, recipe) {
-        super();
+        super(options);
         catRecipe.trace(`Add AndCondition: ${options}`);
         this.conditions = options.conditions.map((option) => {
             return Condition.create(option, modules, recipe);

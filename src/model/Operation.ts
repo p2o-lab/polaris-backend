@@ -57,4 +57,13 @@ export class Operation {
         return this.service.executeCommand(this.command, this.strategy, this.parameter);
     }
 
+    json() {
+        return {
+            module: this.module.id,
+            service: this.service.name,
+            strategy: this.strategy ? this.strategy.name : undefined,
+            command: this.command,
+            parameter: this.parameter
+        }
+    }
 }

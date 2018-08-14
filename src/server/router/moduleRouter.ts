@@ -2,6 +2,7 @@ import {recipe_manager} from '../../model/RecipeManager';
 import {Request, Response, Router} from "express";
 
 import * as asyncHandler from 'express-async-handler';
+import {catServer} from "../../config/logging";
 
 export const moduleRouter: Router = Router();
 
@@ -32,6 +33,7 @@ moduleRouter.get('/:id', asyncHandler(async (req: Request, res: Response) => {
  * @apiParam {object} modules    Modules to be added
  */
 moduleRouter.post('', asyncHandler(async (req: Request, res: Response) => {
+    catServer.info(`Load module ${JSON.stringify(req.body)}`);
     const newModules = recipe_manager.loadModule(req.body);
     res.json(await Promise.all(newModules.map(module => module.json())));
 }));

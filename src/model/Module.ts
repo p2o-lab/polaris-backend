@@ -99,6 +99,7 @@ export class Module {
 
                 // subscribe to all services
                 this.subscribeToAllServices();
+                recipe_manager.eventEmitter.emit('refresh', this);
 
                 return this.session;
             } catch (err) {
@@ -175,7 +176,7 @@ export class Module {
     private subscribeToAllServices() {
         this.services.forEach((service) => {
             if (service.status === undefined) {
-                throw new Error(`ÒPC UA variable for status of service ${service.name} not defined`);
+                throw new Error(`OPC UA variable for status of service ${service.name} not defined`);
             }
             this.listenToOpcUaNode(service.status)
                 .on('changed', (data) => {

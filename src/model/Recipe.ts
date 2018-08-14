@@ -92,4 +92,19 @@ export class Recipe {
         });
     }
 
+    public stepJson(): any {
+        if (this.current_step) {
+            return {
+                name: this.current_step.name,
+                transitions: this.current_step.transitions.map(transition => transition.json()),
+                operations: this.current_step.operations.map(operation => operation.json())
+            }
+        }
+        else {
+            return {
+                name: 'not started yet'
+            }
+        }
+    }
+
 }

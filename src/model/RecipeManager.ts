@@ -153,12 +153,13 @@ export class RecipeManager {
 
     async json(): Promise<RecipeManagerInterface> {
         return {
-            recipe_status: RecipeState[recipe_manager.recipe.recipe_status],
-            service_states: await recipe_manager.getServiceStates(),
-            current_step: recipe_manager.recipe.current_step ? recipe_manager.recipe.current_step.name : 'not started yet',
-            options: recipe_manager.recipe_options
+            recipe_status: RecipeState[this.recipe.recipe_status],
+            service_states: await this.getServiceStates(),
+            current_step: this.recipe.stepJson(),
+            options: this.recipe_options
         };
     }
+
 }
 
 export const recipe_manager: RecipeManager = new RecipeManager();

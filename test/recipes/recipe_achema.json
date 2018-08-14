@@ -2,7 +2,7 @@
   "version": "1.0",
   "name": "Rezept ACHEMA",
   "author": "Markus Graube",
-	"initial_step": "S1",
+  "initial_step": "Startup.Init",
 	"steps": [
 		{
           "name": "Startup.Init",
@@ -30,6 +30,7 @@
                         "module": "Dose",
                         "service": "Dose",
                         "variable": "Sensoren.L001",
+                        "operator": ">=",
                         "value": 10
                       }
                     ]

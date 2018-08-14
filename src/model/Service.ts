@@ -10,8 +10,10 @@ export interface ServiceOptions {
     communication: {
         OpMode: OpcUaNode,
         ControlOp: OpcUaNode,
+        ControlExt: OpcUaNode,
         State: OpcUaNode,
-        StrategyOp: OpcUaNode
+        StrategyOp: OpcUaNode,
+        StrategyExt: OpcUaNode
     };
     strategies: Strategy[];
 }
@@ -21,7 +23,7 @@ export class Service {
     command: OpcUaNode;
     status: OpcUaNode;
     opMode: OpcUaNode;
-    strategyOp: OpcUaNode;
+    strategy: OpcUaNode;
     strategies: Strategy[];
 
     parent: Module;
@@ -30,9 +32,9 @@ export class Service {
         this.name = serviceOptions.name;
 
         this.opMode = serviceOptions.communication.OpMode;
-        this.command = serviceOptions.communication.ControlOp;
+        this.command = serviceOptions.communication.ControlExt;
         this.status = serviceOptions.communication.State;
-        this.strategyOp = serviceOptions.communication.StrategyOp;
+        this.strategy = serviceOptions.communication.StrategyExt;
 
         this.strategies = serviceOptions.strategies;
         this.parent = parent;
@@ -47,7 +49,9 @@ export class Service {
     }
 
     async getOpMode(): Promise<OpMode> {
-        const result: any = await this.parent.session.readVariableValue(this.parent.resolveNodeId(this.opMode));
+        const nodeId = this.parent.resolveNodeId(this.opMode);
+        catOpc.trace(`OpMode NodeId: ${nodeId}`);
+        const result: any = await this.parent.session.readVariableValue(nodeId);
         const opMode: number = result.value.value;
         const opModeString: string = OpMode[opMode];
 
@@ -122,17 +126,17 @@ export class Service {
 
     async start(strategy: Strategy, parameter: Parameter[]): Promise<any> {
         // 1) OpMode setzen auf Automatic External)
-        let result = await this.setToManualOperationMode();
+        let result = await this.setToAutomaticOperationMode();
         catService.debug(`AutomaticMode Result: ${result}`);
 
         // 2) Parameter setzen (incl. strategy)
-        result = await this.setParameter(strategy, parameter);
-        catService.debug(`Parameter Result: ${result}`);
+        let result2 = await this.setParameter(strategy, parameter);
+        catService.debug(`Parameter Result: ${result2}`);
 
         // 3) ControlOp setzen (Command senden)
-        result = await this.sendCommand(ServiceMtpCommand.START);
-        catService.debug(`Command Result: ${result}`);
-        return result;
+        let result3 = await this.sendCommand(ServiceMtpCommand.START);
+        catService.debug(`Command Result: ${result3}`);
+        return result3;
     }
 
     stop(): Promise<any> {
@@ -171,7 +175,7 @@ export class Service {
     private async setParameter(strategy: Strategy, parameter: Parameter[]): Promise<any[]> {
         // set strategy
         if (strategy) {
-            await this.parent.session.writeSingleNode(this.parent.resolveNodeId(this.strategyOp),
+            await this.parent.session.writeSingleNode(this.parent.resolveNodeId(this.strategy),
                 {
                     dataType: DataType.UInt32,
                     value: strategy.id,
@@ -179,7 +183,6 @@ export class Service {
                     dimensions: null
                 });
         }
-
 
         const tasks = [];
         if (strategy && parameter) {
@@ -203,17 +206,25 @@ export class Service {
         return Promise.all(tasks);
     }
 
-    private async setToAutomaticOperationMode(): Promise<any> {
+    /**
+     * Set service to automatic operation mode and source to external source
+     * @returns {Promise<boolean>}
+     */
+    private async setToAutomaticOperationMode(): Promise<boolean> {
         const opMode: OpMode = await this.getOpMode();
-        if (opMode !== OpMode.stateAutAct) {
+        if (opMode !== OpMode.stateAutAct + OpMode.srcExtOp) {
             return this.parent.session.writeSingleNode(this.parent.resolveNodeId(this.opMode),
                 {
                     dataType: DataType.UInt32,
-                    value: OpMode.stateAutOp,
+                    value: OpMode.stateAutOp + OpMode.srcExtOp,
                     arrayType: VariantArrayType.Scalar,
+                })
+                .then(result => {
+                    catOpc.debug(`OpMode writen: ${JSON.stringify(result)}`);
+                    return true;
                 });
         } else {
-            return Promise.resolve('Already in automatic');
+            return Promise.resolve(true);
         }
     }
 

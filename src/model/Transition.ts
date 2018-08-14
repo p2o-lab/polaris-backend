@@ -15,5 +15,12 @@ export class Transition {
         this.next_step_name = json.next_step;
         this.condition = Condition.create(json.condition, modules, recipe);
     }
+
+    json() {
+        return {
+            next_step: this.next_step_name,
+            condition: this.condition.json()
+        }
+    }
 }
 
