@@ -9,7 +9,7 @@
       "operations": [
         {
           "module": "CIF",
-          "service": "Entleeren",
+          "service": "Test_Service.Entleeren",
           "command": "start"
         }
       ],
@@ -29,7 +29,7 @@
       "operations": [
         {
           "module": "CIF",
-          "service": "Entleeren",
+          "service": "Test_Service.Entleeren",
           "command": "complete"
         }
       ],
@@ -39,7 +39,7 @@
           "condition": {
             "type": "state",
             "module": "CIF",
-            "service": "Entleeren",
+            "service": "Test_Service.Entleeren",
             "state": "completed"
             }
         }
@@ -50,7 +50,7 @@
       "operations": [
         {
           "module": "CIF",
-          "service": "Entleeren",
+          "service": "Test_Service.Entleeren",
           "command": "reset"
         }
       ],
@@ -60,7 +60,7 @@
           "condition": {
             "type": "state",
             "module": "CIF",
-            "service": "Entleeren",
+            "service": "Test_Service.Entleeren",
             "state": "idle"
           }
         }

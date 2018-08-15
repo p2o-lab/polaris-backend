@@ -101,6 +101,7 @@ export class Service {
     }
 
     executeCommand(command: ServiceCommand, strategy: Strategy, parameter: Parameter[]) {
+        catService.info(`trigger service ${this.name} - ${command} - ${strategy} - ${JSON.stringify(parameter)}`);
         if (command === 'start') {
             return this.start(strategy, parameter);
         } else if (command === 'stop') {
@@ -173,6 +174,7 @@ export class Service {
     }
 
     private async setParameter(strategy: Strategy, parameter: Parameter[]): Promise<any[]> {
+        catService.debug(`Set parameter: ${strategy} - ${JSON.stringify(parameter)}`);
         // set strategy
         if (strategy) {
             await this.parent.session.writeSingleNode(this.parent.resolveNodeId(this.strategy),
@@ -189,7 +191,8 @@ export class Service {
             catOpc.debug(`Should write parameters ${JSON.stringify(parameter)}`);
 
             if (parameter) {
-                parameter.forEach((param) => {
+                parameter.forEach((param: Parameter) => {
+                    param.variable = param.variable || "VExt";
                     const serviceParam = strategy.parameters.find((obj) => obj.name === param.name);
                     const variable = serviceParam.communication[param.variable];
                     const nodeid = this.parent.resolveNodeId(variable);

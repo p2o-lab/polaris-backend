@@ -5,6 +5,7 @@ import {Request, Response, Router} from "express";
 import * as asyncHandler from 'express-async-handler';
 import {Strategy} from "../../model/Interfaces";
 import {Parameter} from "../../model/Parameter";
+import {catServer} from "../../config/logging";
 
 export const serviceRouter: Router = Router();
 
@@ -15,7 +16,7 @@ export const serviceRouter: Router = Router();
  * @apiGroup Service
  * @apiParam {string} moduleId      Module id
  * @apiParam {string} serviceName   Name of service
- * @apiParam {string="start","stop","abort","complete"} command       Command name
+ * @apiParam {string="start","stop","abort","complete","pause","unhold","reset"} command       Command name
  * @apiParam {string} [strategy]    Strategy name
  * @apiParam {Object[]} [parameters]    Parameters for *start* or *restart*
  */
@@ -24,16 +25,17 @@ moduleRouter.post('/:moduleId/service/:serviceName/:command', asyncHandler(async
     const service = await module.services.find(service => service.name === req.params.serviceName);
     const command: ServiceCommand = req.params.command;
 
+    catServer.info(`Call service: ${JSON.stringify(req.params)} - ${JSON.stringify(req.body)}`);
     let strategy: Strategy = null;
     let parameters: Parameter[] = [];
-    if (req.params.strategy) {
-        strategy = service.strategies.find(strat => strat.name === req.params.strategy);
+    if (req.body.strategy) {
+        strategy = service.strategies.find(strat => strat.name === req.body.strategy);
     } else {
         strategy = service.strategies.find(strat => strat.default === true);
     }
 
-    if (req.params.parameters) {
-        parameters = req.params.parameters;
+    if (req.body.parameters) {
+        parameters = req.body.parameters;
     }
 
     const result = await service.executeCommand(command, strategy, parameters);
