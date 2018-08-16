@@ -9,11 +9,11 @@
 			"operations": [
               {
                 "module": "React",
-                "service": "Empty",
+                "service": "Empty_Service",
                 "command": "start"
               }
 			],
-			"transition": [
+          "transitions": [
 				{
                   "next_step": "Running.Vorlegen.1",
                   "condition": {
@@ -22,7 +22,7 @@
                       {
                         "type": "state",
                         "module": "React",
-                        "service": "Empty",
+                        "service": "Empty_Service",
                         "state": "completed"
                       },
                       {
@@ -69,7 +69,7 @@
                 ]
               }
 			],
-			"transition": [
+          "transitions": [
 				{
                   "next_step": "Running.Vorlegen.2",
                   "condition": {

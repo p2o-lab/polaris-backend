@@ -28,7 +28,15 @@ export class Server {
             catServer.trace(`WS refresh published ${data}`);
             this.wss.clients.forEach((client) => {
                 if (client.readyState === WebSocket.OPEN) {
-                    client.send('refresh', data);
+                    client.send('refresh');
+                }
+            });
+        });
+
+        recipe_manager.eventEmitter.on('recipeCompleted', () => {
+            this.wss.clients.forEach((client) => {
+                if (client.readyState === WebSocket.OPEN) {
+                    client.send('recipeCompleted');
                 }
             });
         });

@@ -12,7 +12,6 @@ export const recipeRouter: Router = Router();
  * @apiGroup Recipe
  */
 recipeRouter.get('', asyncHandler(async (req: Request, res: Response) => {
-    catServer.info('GET /recipe');
     const result = await recipe_manager.json();
     res.json(result);
 }));
@@ -25,7 +24,7 @@ recipeRouter.get('', asyncHandler(async (req: Request, res: Response) => {
  * @apiParam {Object} recipe  new recipe
  */
 recipeRouter.post('', asyncHandler(async (req: Request, res: Response) => {
-    catServer.info(`POST /recipe. ${JSON.stringify(req.body)}`);
+    catServer.debug(`POST /recipe. ${JSON.stringify(req.body)}`);
     recipe_manager.loadRecipe(req.body);
     recipe_manager.connect();
     res.json({status: 'recipe successful loaded'});
@@ -37,7 +36,6 @@ recipeRouter.post('', asyncHandler(async (req: Request, res: Response) => {
  * @apiGroup Recipe
  */
 recipeRouter.post('/start', asyncHandler((req: Request, res: Response) => {
-    catServer.info('POST /recipe/start');
     recipe_manager.start();
     res.json({status: 'recipe successful started'});
 }));
@@ -60,6 +58,5 @@ recipeRouter.post('/reset', asyncHandler((req: Request, res: Response) => {
  * @apiGroup Recipe
  */
 moduleRouter.post('/abort', asyncHandler(async (req: Request, res: Response) => {
-    catServer.info(`POST /recipe/abort`);
     res.json(await recipe_manager.abortRecipe());
 }));

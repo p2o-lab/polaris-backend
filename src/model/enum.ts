@@ -71,5 +71,26 @@ export enum OpMode {
     srcIntLi = 2048,
     srcIntOp = 4096,
     srcExtOp = 8192,
-    srcIntAct = 16384
+    srcExtAct = 16384
+}
+
+export function isOffState(opMode): boolean {
+    return (opMode & (OpMode.stateAutAct | opMode.stateManAct)) === 0;
+}
+
+
+export function isAutomaticState(opMode): boolean {
+    return (opMode & OpMode.stateAutAct) === OpMode.stateAutAct;
+}
+
+export function isManualState(opMode): boolean {
+    return (opMode & OpMode.stateManAct) === OpMode.stateManAct;
+}
+
+export function isExtSource(opMode): boolean {
+    return (opMode & OpMode.srcExtAct) === OpMode.srcExtAct;
+}
+
+export function isIntSource(opMode): boolean {
+    return (opMode & OpMode.srcExtAct) === 0;
 }

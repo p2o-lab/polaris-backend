@@ -1,7 +1,16 @@
 import {DataType, DataValue, Variant, VariantArrayType} from 'node-opcua-client';
 import {Module} from './Module';
 import {catOpc, catService} from '../config/logging';
-import {OpMode, ServiceCommand, ServiceMtpCommand, ServiceState} from './enum';
+import {
+    isAutomaticState,
+    isExtSource,
+    isManualState,
+    isOffState,
+    OpMode,
+    ServiceCommand,
+    ServiceMtpCommand,
+    ServiceState
+} from './enum';
 import {OpcUaNode, Strategy} from "./Interfaces";
 import {Parameter} from "./Parameter";
 
@@ -55,7 +64,7 @@ export class Service {
         const opMode: number = result.value.value;
         const opModeString: string = OpMode[opMode];
 
-        catOpc.info(`Read OpMode ${this.name} - ${opMode} (${opModeString})`);
+        catOpc.trace(`Read OpMode ${this.name} - ${opMode} (${opModeString})`);
         return opMode;
     }
 
@@ -126,25 +135,15 @@ export class Service {
     }
 
     async start(strategy: Strategy, parameter: Parameter[]): Promise<any> {
-        // 1) OpMode setzen auf Automatic External)
-        let result = await this.setToAutomaticOperationMode();
-        catService.debug(`AutomaticMode Result: ${result}`);
-
-        // 2) Parameter setzen (incl. strategy)
-        let result2 = await this.setParameter(strategy, parameter);
-        catService.debug(`Parameter Result: ${result2}`);
-
-        // 3) ControlOp setzen (Command senden)
-        let result3 = await this.sendCommand(ServiceMtpCommand.START);
-        catService.debug(`Command Result: ${result3}`);
-        return result3;
+        await this.setParameter(strategy, parameter);
+        return await this.sendCommand(ServiceMtpCommand.START);
     }
 
     stop(): Promise<any> {
         return this.sendCommand(ServiceMtpCommand.STOP);
     }
 
-    reset(): Promise<any> {
+    async reset(): Promise<any> {
         return this.sendCommand(ServiceMtpCommand.RESET);
     }
 
@@ -209,39 +208,76 @@ export class Service {
         return Promise.all(tasks);
     }
 
+    private writeOpMode(opMode) {
+        return this.parent.session.writeSingleNode(this.parent.resolveNodeId(this.opMode),
+            {
+                dataType: DataType.UInt32,
+                value: opMode,
+                arrayType: VariantArrayType.Scalar,
+            });
+    }
+
     /**
      * Set service to automatic operation mode and source to external source
      * @returns {Promise<boolean>}
      */
-    private async setToAutomaticOperationMode(): Promise<boolean> {
-        const opMode: OpMode = await this.getOpMode();
-        if (opMode !== OpMode.stateAutAct + OpMode.srcExtOp) {
-            return this.parent.session.writeSingleNode(this.parent.resolveNodeId(this.opMode),
-                {
-                    dataType: DataType.UInt32,
-                    value: OpMode.stateAutOp + OpMode.srcExtOp,
-                    arrayType: VariantArrayType.Scalar,
+    private async setToAutomaticOperationMode(): Promise<any> {
+        let opMode: OpMode = await this.getOpMode();
+
+        if (isOffState(opMode)) {
+            catService.trace("First go to Manual state");
+            await this.writeOpMode(OpMode.stateManOp);
+            await new Promise((resolve, reject) => {
+                this.parent.listenToOpcUaNode(this.opMode).on('changed', (value) => {
+                    if (isManualState(value)) {
+                        catService.trace(`finally in ManualMode`);
+                        opMode = value;
+                        resolve(true);
+                    }
                 })
-                .then(result => {
-                    catOpc.debug(`OpMode writen: ${JSON.stringify(result)}`);
-                    return true;
+            });
+        }
+
+        if (isManualState(opMode)) {
+            catService.trace("Go to Automatic state");
+            await this.writeOpMode(OpMode.stateAutOp);
+            await new Promise((resolve, reject) => {
+                this.parent.listenToOpcUaNode(this.opMode).on('changed', (value) => {
+                    catOpc.trace(`OpMode changed: ${value}`);
+                    if (isAutomaticState(value)) {
+                        catService.trace(`finally in AutomaticMode`);
+                        opMode = value;
+                        resolve(true);
+                    }
                 });
+            });
+        }
+
+        if (!isExtSource(opMode)) {
+            catService.trace("Go to External source");
+            await this.writeOpMode(OpMode.srcExtOp);
+            return new Promise((resolve, reject) => {
+                this.parent.listenToOpcUaNode(this.opMode).on('changed', (value) => {
+                    catService.trace(`OpMode changed: ${value}`);
+                    if (isExtSource(value)) {
+                        catService.trace(`finally in ExtSource`);
+                        resolve(true);
+                    }
+                });
+            });
         } else {
             return Promise.resolve(true);
         }
     }
 
     private setToManualOperationMode(): Promise<any> {
-        return this.parent.session.writeSingleNode(this.parent.resolveNodeId(this.opMode),
-            {
-                dataType: DataType.UInt32,
-                value: OpMode.stateManOp,
-                arrayType: VariantArrayType.Scalar,
-            });
+        return this.writeOpMode(OpMode.stateManOp);
     }
 
     private async sendCommand(command: ServiceMtpCommand): Promise<any> {
-        catOpc.debug(`Send command ${ServiceMtpCommand[command]} (${command}) to service "${this.name}"`);
+        catService.debug(`Send command ${ServiceMtpCommand[command]} (${command}) to service "${this.name}"`);
+
+        await this.setToAutomaticOperationMode();
 
         const result = await this.parent.session.writeSingleNode(
             this.parent.resolveNodeId(this.command),
@@ -250,7 +286,7 @@ export class Service {
                 value: command,
                 arrayType: VariantArrayType.Scalar
             });
-        catOpc.debug(`Command ${command} written to ${this.name}: ${JSON.stringify(result)}`);
+        catService.debug(`Command ${command} written to ${this.name}: ${JSON.stringify(result)}`);
 
         return result;
     }

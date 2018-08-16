@@ -44,6 +44,7 @@ export class Module {
         if (options.process_values) {
             this.variables = options.process_values.map(variableOptions => new ProcessValue(variableOptions));
         }
+        this.connect();
     }
 
     /**

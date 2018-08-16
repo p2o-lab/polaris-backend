@@ -106,11 +106,11 @@ export class RecipeManager {
             catRM.info("Start recipe");
             return this.recipe.start()
                 .on('completed', () => {
-                    catRM.info(`Recipe finsished`);
-                    this.eventEmitter.emit('refresh');
+                    catRM.info(`Recipe finished`);
+                    this.eventEmitter.emit('recipeCompleted');
                 })
                 .on('step_finished', (step: Step, next_step: Step) => {
-                    catRM.info(`Step finsished: ${step.name} - ${next_step.name}`)
+                    catRM.info(`Step finished: ${step.name} - ${next_step.name}`)
                     this.eventEmitter.emit('refresh', step, next_step);
                 });
         }
