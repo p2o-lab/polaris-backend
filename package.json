@@ -7,7 +7,6 @@
   "author": "Markus Graube <markus.graube@tu-dresden.de>",
   "scripts": {
     "dev": "nodemon",
-    "server": "ts-node ./src/startServer.ts",
     "start": "ts-node ./src/index.ts",
     "test": "mocha -r ts-node/register test/*.ts",
     "apidoc": "apidoc -i src/server/  -o apidoc",

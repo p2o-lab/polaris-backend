@@ -107,11 +107,11 @@ export class RecipeManager {
             return this.recipe.start()
                 .on('completed', () => {
                     catRM.info(`Recipe finished`);
-                    this.eventEmitter.emit('recipeCompleted');
+                    this.eventEmitter.emit('refresh', 'recipe', 'completed');
                 })
                 .on('step_finished', (step: Step, next_step: Step) => {
                     catRM.info(`Step finished: ${step.name} - ${next_step.name}`)
-                    this.eventEmitter.emit('refresh', step, next_step);
+                    this.eventEmitter.emit('refresh', 'recipe', 'stepFinished', step, next_step);
                 });
         }
     }
@@ -119,7 +119,7 @@ export class RecipeManager {
     reset() {
         if (this.recipe.recipe_status === RecipeState.completed || this.recipe.recipe_status === RecipeState.stopped) {
             this.recipe.reset();
-            this.eventEmitter.emit('refresh', 'recipe resetted');
+            this.eventEmitter.emit('refresh', 'recipe', 'reset');
         } else {
             throw new Error('Recipe not in completed or stopped');
         }

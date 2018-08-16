@@ -24,19 +24,11 @@ export class Server {
         });
 
 
-        recipe_manager.eventEmitter.on('refresh', (data) => {
+        recipe_manager.eventEmitter.on('refresh', (data, action) => {
             catServer.trace(`WS refresh published ${data}`);
             this.wss.clients.forEach((client) => {
                 if (client.readyState === WebSocket.OPEN) {
-                    client.send('refresh');
-                }
-            });
-        });
-
-        recipe_manager.eventEmitter.on('recipeCompleted', () => {
-            this.wss.clients.forEach((client) => {
-                if (client.readyState === WebSocket.OPEN) {
-                    client.send('recipeCompleted');
+                    client.send(JSON.stringify({msg: 'refresh', data: data, action: action}));
                 }
             });
         });

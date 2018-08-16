@@ -100,7 +100,7 @@ export class Module {
 
                 // subscribe to all services
                 this.subscribeToAllServices();
-                recipe_manager.eventEmitter.emit('refresh', this);
+                recipe_manager.eventEmitter.emit('refresh', 'module');
 
                 return this.session;
             } catch (err) {
@@ -132,8 +132,11 @@ export class Module {
         if (this.session) {
             catRecipe.info(`Disconnect module ${this.id}`);
             await this.session.close();
-
-            return this.client.disconnect();
+            this.session = undefined;
+            await this.client.disconnect();
+            this.client = undefined;
+            recipe_manager.eventEmitter.emit('refresh', 'module');
+            return 'Disconnected'
         } else {
             return Promise.resolve('Already disconnected');
         }
@@ -182,7 +185,7 @@ export class Module {
             this.listenToOpcUaNode(service.status)
                 .on('changed', (data) => {
                     catModule.debug(`state changed: ${service.name} = ${ServiceState[data]}`);
-                    recipe_manager.eventEmitter.emit('refresh', data);
+                    recipe_manager.eventEmitter.emit('refresh', 'module');
                 });
         });
     }

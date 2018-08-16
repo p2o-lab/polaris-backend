@@ -35,6 +35,7 @@ moduleRouter.get('/:id', asyncHandler(async (req: Request, res: Response) => {
 moduleRouter.post('', asyncHandler(async (req: Request, res: Response) => {
     catServer.info(`Load module ${JSON.stringify(req.body)}`);
     const newModules = recipe_manager.loadModule(req.body);
+    recipe_manager.eventEmitter.emit('refresh', 'module');
     res.json(await Promise.all(newModules.map(module => module.json())));
 }));
 
@@ -51,6 +52,7 @@ moduleRouter.delete('/:id', asyncHandler(async (req: Request, res: Response) => 
     if (index > -1) {
         recipe_manager.modules.splice(index, 1);
     }
+    recipe_manager.eventEmitter.emit('refresh', 'module');
     res.send({status: 'Successful deleted', id: req.params.id});
 }));
 
