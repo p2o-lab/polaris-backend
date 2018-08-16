@@ -1,39 +1,37 @@
+import * as debug from 'debug';
+import * as http from 'http';
+import {Server} from './server/server';
+import * as serverHandlers from './server/serverHandlers';
 import {recipe_manager} from "./model/RecipeManager";
-import {catMain,} from "./config/logging";
 import * as fs from "fs";
 
-async function main() {
+debug('ts-express:server');
 
-    let modulesOptions = JSON.parse(fs.readFileSync('test/modules/modules_achema.json').toString());
-    recipe_manager.loadModule(modulesOptions);
-    let modulesOptionsCif = JSON.parse(fs.readFileSync('test/modules/module_cif.json').toString());
-    recipe_manager.loadModule(modulesOptionsCif);
+const port: number | string | boolean = serverHandlers.normalizePort(process.env.PORT || 3000);
 
-    catMain.info(`Loaded modules ${recipe_manager.modules.map(module => module.id)}`);
+const appServer = new Server();
+appServer.app.set('port', port);
+console.log(`Server listening on port ${port}`);
 
-    // await Promise.all(recipe_manager.modules.map(module => module.connect()));
-    // catMain.info("All modules connected");
+const server: http.Server = http.createServer(appServer.app);
 
-    //recipe_manager.loadRecipeFromPath('test/recipes/recipe_dosierer_only.json');
-    //recipe_manager.loadRecipeFromPath('test/recipes/recipe_reactor_only.json');
-    //recipe_manager.loadRecipeFromPath('test/recipes/recipe_huber_only.json');
-    //recipe_manager.loadRecipeFromPath('test/recipes/recipe_time_local.json');
-    recipe_manager.loadRecipeFromPath('test/recipes/recipe_p2o_cif_testmodule.json');
+//initialize the WebSocket server instance
+appServer.initSocketServer(server);
 
-        await recipe_manager.connect();
-
-        let state = await recipe_manager.getServiceStates();
-        catMain.info(`States of services: ${JSON.stringify(state)}`);
+server.listen(port);
+server.on('error', error => serverHandlers.onError(error, port));
+server.on('listening', serverHandlers.onListening.bind(server));
 
 
-        catMain.info(`Start recipe ...`);
-        recipe_manager.start()
-            .on('completed', async () => {
-                state = await recipe_manager.getServiceStates();
-                catMain.info(`Final state of recipe ${JSON.stringify(state)}`);
-                await recipe_manager.close();
-            });
+let modulesOptions = JSON.parse(fs.readFileSync('test/modules/modules_achema.json').toString());
+recipe_manager.loadModule(modulesOptions);
 
-}
+modulesOptions = JSON.parse(fs.readFileSync('test/modules/module_cif.json').toString());
+recipe_manager.loadModule(modulesOptions);
 
-main();
+//recipe_manager.loadRecipeFromPath('test/recipes/recipe_time_local.json');
+recipe_manager.loadRecipeFromPath('test/recipes/recipe_p2o_cif_testmodule.json');
+//recipe_manager.loadRecipeFromPath('test/recipes/recipe_reactor_only.json');
+//recipe_manager.loadRecipeFromPath('test/recipes/recipe_achema.json');
+
+recipe_manager.connect();
