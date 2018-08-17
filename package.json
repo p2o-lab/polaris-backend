@@ -5,6 +5,8 @@
   "types": "./build.index.d.ts",
   "description": "Server backend for PFE recipe execution engine",
   "author": "Markus Graube <markus.graube@tu-dresden.de>",
+  "repository": "svn@dev.plt.et.tu-dresden.de:modulare-automation/pfe-ree-node.git",
+  "homepage": "https://dev.plt.et.tu-dresden.de/modulare-automation/pfe-ree-node",
   "scripts": {
     "dev": "nodemon",
     "start": "ts-node ./src/index.ts",
