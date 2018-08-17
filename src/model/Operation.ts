@@ -3,15 +3,15 @@ import {Service} from './Service';
 import {catRecipe} from '../config/logging';
 import {Recipe} from "./Recipe";
 import {Strategy} from "./Interfaces";
-import {ServiceCommand} from "./enum";
+import {ServiceCommand} from "pfe-interface";
 import {Parameter, ParameterOptions} from "./Parameter";
 
 export interface OperationOptions {
-    // module id (can be ommited if only one module is registered)
+    // module id (can be omitted if only one module is registered)
     module?: string;
     // service name
     service: string;
-    // strategy kann weggelassen werden, dann wird die Default-Strategy genommen
+    // strategy can be omitted; then default strategy is chosen
     strategy?: string;
     // command name
     command: ServiceCommand;

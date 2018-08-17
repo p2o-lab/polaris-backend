@@ -14,6 +14,7 @@ import {EventEmitter} from 'events';
 import {OpcUaNode} from './Interfaces';
 import {recipe_manager} from "./RecipeManager";
 import {ServiceState} from "./enum";
+import {ModuleInterface, ServiceInterface} from "pfe-interface";
 
 export interface ModuleOptions {
     id: string;
@@ -111,17 +112,10 @@ export class Module {
         }
     }
 
-    async getServiceStates(): Promise<object[]> {
+    async getServiceStates(): Promise<ServiceInterface[]> {
         catRecipe.trace('check services');
-        const tasks = this.services.map((service) => {
-            return service.getOverview()
-                .then((result) => {
-                    result.name = service.name;
-                    return result;
-                });
-        });
+        const tasks = this.services.map(service => service.getOverview());
         return Promise.all(tasks);
-
     }
 
     /**
@@ -212,9 +206,9 @@ export class Module {
 
     /**
      *
-     * @returns {Promise<any>}
+     * @returns {Promise<ModuleInterface>}
      */
-    async json() {
+    async json(): Promise<ModuleInterface> {
         if (this.isConnected()) {
             const services = await this.getServiceStates();
             return {

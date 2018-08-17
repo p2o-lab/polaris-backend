@@ -1,53 +1,15 @@
 import {catOpc, catRecipe} from '../config/logging';
-import {ConditionType, ServiceState} from './enum';
+import {ServiceState} from './enum';
 import {Module} from './Module';
 import {Service} from './Service';
 import {AttributeIds, ClientMonitoredItem, coerceNodeId} from 'node-opcua-client';
 import {Recipe} from "./Recipe";
-
-export type ConditionOptions = AndConditionOptions | TimeConditionOptions | OrConditionOptions |
-    TimeConditionOptions | StateConditionOptions | VariableConditionOptions | NotConditionOptions;
-
-export interface BaseConditionOptions {
-    type: ConditionType;
-}
-
-export interface AndConditionOptions extends BaseConditionOptions {
-    type: ConditionType.and;
-    conditions: ConditionOptions[];
-}
-
-export interface OrConditionOptions extends BaseConditionOptions {
-    type: ConditionType.or;
-    conditions: ConditionOptions[];
-}
-
-export interface NotConditionOptions extends BaseConditionOptions {
-    type: ConditionType.not;
-    condition: ConditionOptions;
-}
-
-export interface StateConditionOptions extends BaseConditionOptions {
-    type: ConditionType.state;
-    // module id (can be ommited if only one module is registered)
-    module?: string;
-    service: string;
-    state: string;
-}
-
-export interface TimeConditionOptions extends BaseConditionOptions {
-    type: ConditionType.time;
-    duration: number;
-}
-
-export interface VariableConditionOptions extends BaseConditionOptions {
-    type: ConditionType.variable;
-    module: string;
-    variable: string;
-    dataStructure: string;
-    value: string | number;
-    operator: "==" | "<=" | ">=" | ">" | "<";
-}
+import {
+    AndConditionOptions, ConditionOptions, ConditionType, NotConditionOptions, OrConditionOptions,
+    StateConditionOptions,
+    TimeConditionOptions,
+    VariableConditionOptions
+} from 'pfe-interface';
 
 export abstract class Condition {
 

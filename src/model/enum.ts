@@ -36,26 +36,6 @@ export enum ServiceMtpCommand {
     COMPLETE = 1024
 }
 
-export type ServiceCommand =
-    "reset"
-    | "start"
-    | "stop"
-    | "unhold"
-    | "pause"
-    | "resume"
-    | "abort"
-    | "restart"
-    | "complete"
-
-export enum ConditionType {
-    not = 'not',
-    time = 'time',
-    state = 'state',
-    variable = 'variable',
-    and = 'and',
-    or = 'or'
-}
-
 export enum OpMode {
     stateLiOp = 1,
     stateOffLi = 2,

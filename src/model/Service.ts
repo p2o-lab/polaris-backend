@@ -7,12 +7,12 @@ import {
     isManualState,
     isOffState,
     OpMode,
-    ServiceCommand,
     ServiceMtpCommand,
     ServiceState
 } from './enum';
 import {OpcUaNode, Strategy} from "./Interfaces";
 import {Parameter} from "./Parameter";
+import {ServiceCommand, ServiceInterface} from "pfe-interface";
 
 export interface ServiceOptions {
     name: string;
@@ -68,13 +68,14 @@ export class Service {
         return opMode;
     }
 
-    async getOverview(): Promise<any> {
+    async getOverview(): Promise<ServiceInterface> {
         const opMode = this.getOpMode();
         const state = this.getServiceState();
         const strategies = this.getStrategies();
         return Promise.all([opMode, state, strategies])
             .then((data) => {
                 return {
+                    name: this.name,
                     opMode: OpMode[data[0]] || data[0],
                     status: ServiceState[data[1]] || data[1],
                     strategies: data[2]
