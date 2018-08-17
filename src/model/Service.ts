@@ -12,7 +12,7 @@ import {
 } from './enum';
 import {OpcUaNode, Strategy} from "./Interfaces";
 import {Parameter} from "./Parameter";
-import {ServiceCommand, ServiceInterface} from "pfe-interface";
+import {ParameterInterface, ServiceCommand, ServiceInterface, StrategyInterface} from "pfe-interface";
 
 export interface ServiceOptions {
     name: string;
@@ -83,29 +83,44 @@ export class Service {
             });
     }
 
-    async getStrategies() {
+    async getStrategies(): Promise<StrategyInterface[]> {
         return await Promise.all(this.strategies.map(async (strategy) => {
             return {
                 id: strategy.id,
                 name: strategy.name,
                 default: strategy.default,
-                parameters: await this.getCurrentParameter(strategy)
+                parameters: await this.getCurrentParameters(strategy)
             }
         }));
     }
 
-    async getCurrentParameter(strategy: Strategy) {
+    async getCurrentParameters(strategy: Strategy): Promise<ParameterInterface[]> {
         return await Promise.all(strategy.parameters.map(async (param) => {
             if (this.parent.isConnected()) {
                 const value = await this.parent.session.readVariableValue(this.parent.resolveNodeId(param.communication.VExt));
+                let max, min;
+                try {
+                    let result = await this.parent.session.readVariableValue(this.parent.resolveNodeId(param.communication.VMax));
+                    max = result.value.value;
+                } catch {
+                    max = undefined;
+                }
+                try {
+                    let result = await this.parent.session.readVariableValue(this.parent.resolveNodeId(param.communication.VMin));
+                    min = result.value.value;
+                } catch {
+                    min = undefined;
+                }
                 return {
                     name: param.name,
-                    value: value.value.value
+                    value: value.value.value,
+                    max: max,
+                    min: min
                 }
-            }
-            return {
-                name: param.name,
-                value: "not connected"
+            } else {
+                return {
+                    name: param.name
+                }
             }
         }));
     }
