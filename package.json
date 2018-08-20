@@ -11,7 +11,7 @@
     "dev": "nodemon",
     "start": "ts-node ./src/index.ts",
     "test": "mocha -r ts-node/register test/*.ts",
-    "apidoc": "apidoc -i src/server/  -o apidoc",
+    "apidoc": "apidoc -i src/server/ -o apidoc",
     "build": "tsc && npm run apidoc",
     "predeploy": "npm run build"
   },

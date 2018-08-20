@@ -5,7 +5,11 @@ import {Service} from './Service';
 import {AttributeIds, ClientMonitoredItem, coerceNodeId} from 'node-opcua-client';
 import {Recipe} from "./Recipe";
 import {
-    AndConditionOptions, ConditionOptions, ConditionType, NotConditionOptions, OrConditionOptions,
+    AndConditionOptions,
+    ConditionOptions,
+    ConditionType,
+    NotConditionOptions,
+    OrConditionOptions,
     StateConditionOptions,
     TimeConditionOptions,
     VariableConditionOptions

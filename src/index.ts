@@ -21,15 +21,15 @@ server.on('error', error => serverHandlers.onError(error, port));
 server.on('listening', serverHandlers.onListening.bind(server));
 
 
-/** Load some configuratoin at startup */
+/** Load some configuration at startup */
 
-//let modulesOptions = JSON.parse(fs.readFileSync('test/modules/modules_achema.json').toString());
+//let modulesOptions = JSON.parse(fs.readFileSync('assets/modules/modules_achema.json').toString());
 //recipe_manager.loadModule(modulesOptions);
 
-//modulesOptions = JSON.parse(fs.readFileSync('test/modules/module_cif.json').toString());
+//modulesOptions = JSON.parse(fs.readFileSync('assets/modules/module_cif.json').toString());
 //recipe_manager.loadModule(modulesOptions);
 
-//recipe_manager.loadRecipeFromPath('test/recipes/recipe_time_local.json');
-//recipe_manager.loadRecipeFromPath('test/recipes/recipe_p2o_cif_testmodule.json');
-//recipe_manager.loadRecipeFromPath('test/recipes/recipe_reactor_only.json');
-//recipe_manager.loadRecipeFromPath('test/recipes/recipe_achema.json');
+//recipe_manager.loadRecipeFromPath('assets/recipes/recipe_time_local.json');
+//recipe_manager.loadRecipeFromPath('assets/recipes/recipe_p2o_cif_testmodule.json');
+//recipe_manager.loadRecipeFromPath('assets/recipes/recipe_reactor_only.json');
+//recipe_manager.loadRecipeFromPath('assets/recipes/recipe_achema.json');

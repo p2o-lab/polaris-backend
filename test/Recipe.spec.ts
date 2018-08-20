@@ -9,9 +9,9 @@ import * as assert from "assert";
 class RecipeTest {
     @test create() {
 
-        fs.readFile('test/recipes/recipe_huber_only.json', (err, file) => {
-            let json = JSON.parse(file.toString());
-            let recipe = new Recipe(json);
+        fs.readFile('assets/recipes/recipe_huber_only.json', (err, file) => {
+            let options = JSON.parse(file.toString());
+            let recipe = new Recipe(options, undefined);
 
             assert.equal(recipe.modules.size, 1);
 

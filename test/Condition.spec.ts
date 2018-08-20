@@ -1,12 +1,13 @@
 import {suite, test} from "mocha-typescript";
-import {Condition, StateCondition, TimeCondition} from "../src/model/Condition";
+import {Condition, TimeCondition} from "../src/model/Condition";
 import * as assert from "assert";
 import {catRecipe} from "../src/config/logging";
+import {ConditionType} from "pfe-interface";
 
 @suite
 class ConditionTest {
     @test TimeCondition() {
-        let cond = new TimeCondition(2000);
+        let cond = new TimeCondition({type: ConditionType.time, duration: 3});
 
         assert.equal(cond.fulfilled, false);
 
@@ -17,23 +18,15 @@ class ConditionTest {
         assert.equal(cond.fulfilled, false);
     }
 
-    @test StateCondition() {
-        let cond = new StateCondition({});
-
-        cond.listen(() => {
-            console.log("condition fulfilled")
-        });
-    }
-
     @test
     AndCondition() {
         let condition = Condition.create({
-            type: "and",
+            type: ConditionType.and,
             conditions: [
-                {type: "time", delay: "2"},
-                {type: "time", delay: "0.5"}
+                {type: ConditionType.time, duration: 2},
+                {type: ConditionType.time, duration: 0.5}
             ]
-        });
+        }, undefined, undefined);
         condition.listen((status) => catRecipe.info(`Status: ${status}`));
     }
 
