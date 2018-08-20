@@ -1,11 +1,10 @@
 {
-  "version": "1.0",
-  "name": "Simples Testrezept",
+  "version": "1.0.0",
+  "name": "Simples lokales Testrezept ohne Ansteuerung von Modulen",
   "author": "Markus Graube",
   "initial_step": "S1",
   "steps": [
     {
-      "id": "S1",
       "name": "S1",
       "operations": [],
       "transitions": [

@@ -27,19 +27,35 @@ export class Recipe {
     eventEmitter: EventEmitter;
 
     constructor(options: RecipeOptions, modules: Module[]) {
-        this.version = options.version;
-        this.name = options.name;
+        if (options.version) {
+            this.version = options.version;
+        } else {
+            throw new Error('Version property of recipe is missing');
+        }
+        if (options.name) {
+            this.name = options.name;
+        } else {
+            throw new Error('Version property of recipe is missing');
+        }
         this.author = options.author;
 
-        this.steps = options.steps.map(stepOptions => new Step(stepOptions, modules, this));
+        if (options.steps) {
+            this.steps = options.steps.map(stepOptions => new Step(stepOptions, modules, this));
 
-        // Resolve next steps to appropriate objects
-        this.steps.forEach((step: Step) => {
-            step.transitions.forEach((transition) => {
-                transition.next_step = this.steps.find(step => step.name === transition.next_step_name);
+            // Resolve next steps to appropriate objects
+            this.steps.forEach((step: Step) => {
+                step.transitions.forEach((transition) => {
+                    transition.next_step = this.steps.find(step => step.name === transition.next_step_name);
+                });
             });
-        });
-        this.initial_step = this.steps.find(step => step.name === options.initial_step);
+        } else {
+            throw new Error('steps array is missing in recipe');
+        }
+        if (options.initial_step) {
+            this.initial_step = this.steps.find(step => step.name === options.initial_step);
+        } else {
+            throw new Error('"initial_step" property is missing in recipe');
+        }
 
         this.initRecipe();
         this.eventEmitter = new EventEmitter();

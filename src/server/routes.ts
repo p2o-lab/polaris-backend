@@ -23,8 +23,8 @@ export default class Routes {
 
         // Error handling
         server.app.use(function (err, req, res, next) {
-            catServer.error("An Error occured", err);
-            res.status(500).send({status: 'Something broke!', error: err.toString(), stack: err.stack});
+            catServer.warn(`An Error occured: ${err.toString()}`);
+            res.status(500).send({status: 'error', error: err.toString(), stack: err.stack});
         });
 
     }

@@ -35,7 +35,8 @@ recipeRouter.post('', asyncHandler(async (req: Request, res: Response) => {
  * @apiName StartRecipe
  * @apiGroup Recipe
  */
-recipeRouter.post('/start', asyncHandler((req: Request, res: Response) => {
+recipeRouter.post('/start', asyncHandler(async (req: Request, res: Response) => {
+    await recipe_manager.connect();
     recipe_manager.start();
     res.json({status: 'recipe successful started'});
 }));

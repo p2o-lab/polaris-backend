@@ -15,6 +15,7 @@ import {OpcUaNode} from './Interfaces';
 import {recipe_manager} from "./RecipeManager";
 import {ServiceState} from "./enum";
 import {ModuleInterface, ServiceInterface} from "pfe-interface";
+import {promiseTimeout} from "../timeout-promise";
 
 export interface ModuleOptions {
     id: string;
@@ -66,7 +67,7 @@ export class Module {
                     }
                 });
 
-                await client.connect(this.endpoint);
+                await promiseTimeout(5000, client.connect(this.endpoint));
                 catOpc.debug(`module connected ${this.id} ${this.endpoint}`);
 
                 const session = await client.createSession();
@@ -105,7 +106,6 @@ export class Module {
 
                 return this.session;
             } catch (err) {
-                catModule.error('Error connecting', err);
                 catModule.warn(`Could not connect to module ${this.id} on ${this.endpoint}`);
                 throw new Error(`Could not connect to module ${this.id} on ${this.endpoint}`);
             }

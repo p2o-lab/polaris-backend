@@ -1,6 +1,6 @@
 {
-  "version": "1.0",
-  "name": "Simples Testrezept nur für Dosierer@P2O",
+  "version": "1.0.0",
+  "name": "Simples Testrezept nur für Dosierer von PLT/SVT",
   "author": "Markus Graube",
   "initial_step": "S1",
   "steps": [

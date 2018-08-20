@@ -6,6 +6,7 @@ export enum RecipeState {
 }
 
 export enum ServiceState {
+    UNDEFINED = 1,
     STOPPED = 4,
     STARTING = 8,
     IDLE = 16,

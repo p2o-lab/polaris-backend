@@ -66,6 +66,7 @@ export class RecipeManager {
         }
         this.recipe = new Recipe(options, this.modules);
         this.recipe_options = options;
+        recipe_manager.eventEmitter.emit('refresh', 'recipe', 'new');
     }
 
     public async getServiceStates() {

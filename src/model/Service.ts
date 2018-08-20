@@ -59,12 +59,11 @@ export class Service {
 
     async getOpMode(): Promise<OpMode> {
         const nodeId = this.parent.resolveNodeId(this.opMode);
-        catOpc.trace(`OpMode NodeId: ${nodeId}`);
         const result: any = await this.parent.session.readVariableValue(nodeId);
         const opMode: number = result.value.value;
         const opModeString: string = OpMode[opMode];
 
-        catOpc.trace(`Read OpMode ${this.name} - ${opMode} (${opModeString})`);
+        catOpc.debug(`OpMode ${this.name}: ${opMode} (${opModeString})`);
         return opMode;
     }
 

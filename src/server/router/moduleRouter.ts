@@ -6,6 +6,9 @@ import {catServer} from "../../config/logging";
 
 export const moduleRouter: Router = Router();
 
+const multer = require('multer');
+const upload = multer({ storage: multer.memoryStorage() })
+
 /**
  * @api {get} /module/    Get all modules
  * @apiName GetModules
@@ -35,6 +38,21 @@ moduleRouter.get('/:id', asyncHandler(async (req: Request, res: Response) => {
 moduleRouter.post('', asyncHandler(async (req: Request, res: Response) => {
     catServer.info(`Load module ${JSON.stringify(req.body)}`);
     const newModules = recipe_manager.loadModule(req.body);
+    recipe_manager.eventEmitter.emit('refresh', 'module');
+    res.json(await Promise.all(newModules.map(module => module.json())));
+}));
+
+
+/**
+ * @api {post} /module/new    Add module
+ * @apiName PostModule
+ * @apiGroup Module
+ * @apiParam {file} modules    Modules to be added
+ */
+moduleRouter.post('/new', upload.single('file'), asyncHandler(async (req, res) => {
+    catServer.info(`Load module ${JSON.stringify(req.body)}`);
+    const moduleOptions = JSON.parse(req.file.buffer.toString());
+    const newModules = recipe_manager.loadModule(moduleOptions);
     recipe_manager.eventEmitter.emit('refresh', 'module');
     res.json(await Promise.all(newModules.map(module => module.json())));
 }));

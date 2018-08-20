@@ -1,5 +1,6 @@
 import {Step} from "./Step";
-import {Condition, ConditionOptions} from "./Condition";
+import {Condition} from "./Condition";
+import {ConditionOptions} from "pfe-interface";
 
 export interface TransitionOptions {
     next_step: string;
@@ -11,9 +12,17 @@ export class Transition {
     next_step_name: string;
     condition: Condition;
 
-    constructor(json, modules, recipe) {
-        this.next_step_name = json.next_step;
-        this.condition = Condition.create(json.condition, modules, recipe);
+    constructor(options, modules, recipe) {
+        if (options.next_step) {
+            this.next_step_name = options.next_step;
+        } else {
+            throw new Error(`"next_step" property is missing in ${JSON.stringify(options)}`);
+        }
+        if (options.condition) {
+            this.condition = Condition.create(options.condition, modules, recipe);
+        } else {
+            throw new Error(`"condition" property is missing in ${JSON.stringify(options)}`);
+        }
     }
 
     json() {

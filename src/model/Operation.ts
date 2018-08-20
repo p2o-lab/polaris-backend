@@ -48,7 +48,11 @@ export class Operation {
         } else {
             this.strategy = this.service.strategies.find(strategy => strategy.default === true);
         }
-        this.command = options.command;
+        if (options.command){
+            this.command = options.command;
+        } else {
+            throw new Error(`"command" property is missing in ${JSON.stringify(options)}`);
+        }
         this.parameter = options.parameter;
     }
 

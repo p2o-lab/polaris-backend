@@ -15,10 +15,21 @@ export class Step {
     transitions: Transition[];
 
     constructor(options: StepOptions, modules, recipe) {
-        this.name = options.name;
-
-        this.operations = options.operations.map(operationOptions => new Operation(operationOptions, modules, recipe));
-        this.transitions = options.transitions.map(transitionOptions => new Transition(transitionOptions, modules, recipe));
+        if (options.name) {
+            this.name = options.name;
+        } else {
+            throw new Error(`"name" property is missing in ${JSON.stringify(options)}`);
+        }
+        if (options.operations) {
+            this.operations = options.operations.map(operationOptions => new Operation(operationOptions, modules, recipe));
+        } else {
+            throw new Error(`"operations" array is missing in ${JSON.stringify(options)}`);
+        }
+        if (options.transitions){
+            this.transitions = options.transitions.map(transitionOptions => new Transition(transitionOptions, modules, recipe));
+        } else {
+            throw new Error(`"transitions" array is missing in ${JSON.stringify(options)}`);
+        }
     }
 
     execute(callback: (step: Step) => void) {
