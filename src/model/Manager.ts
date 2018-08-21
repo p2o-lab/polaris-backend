@@ -2,21 +2,43 @@ import {Recipe, RecipeOptions} from "./Recipe";
 import * as fs from "fs";
 import {Step} from "./Step";
 import {RecipeState} from "./enum";
-import {catRM} from "../config/logging";
+import {catRecipe, catRM} from "../config/logging";
 import {EventEmitter} from "events";
 import {Module, ModuleOptions} from "./Module";
-import {RecipeManagerInterface} from "./Interfaces";
+import {Service} from "./Service";
+import {ManagerInterface} from "pfe-ree-interface";
 
-export class RecipeManager {
+export class Manager {
 
     // loaded recipe
     recipe: Recipe;
-    recipe_options: RecipeOptions;
 
     // loaded modules
     modules: Module[] = [];
 
+    // autoreset determines if a service is automatically reset when
+    private _autoreset: boolean = true;
+
+    // general event emitter
     eventEmitter: EventEmitter = new EventEmitter();
+
+    constructor() {
+        this.eventEmitter.on('serviceCompleted', (service: Service) => {
+            catRM.debug(`Service ${service.name} completed (autoreset: ${this._autoreset})`);
+            if (this._autoreset) {
+                service.reset();
+            }
+        });
+    }
+
+    get autoreset(): boolean {
+        return this._autoreset;
+    }
+
+    set autoreset(value: boolean) {
+        catRM.info(`Set AutoReset to ${value}`);
+        this._autoreset = value;
+    }
 
     /**
      * Load modules from JSON according to TopologyGenerator output or to simplified JSON
@@ -36,8 +58,7 @@ export class RecipeManager {
                     }
                 });
             });
-        }
-        if (options.modules) {
+        } else if (options.modules) {
             options.modules.forEach((moduleOptions) => {
                 if (this.modules.find(module => module.id === moduleOptions.id)) {
                     catRM.warn(`Module ${moduleOptions.id} already in registered modules`);
@@ -45,44 +66,28 @@ export class RecipeManager {
                     newModules.push(new Module(moduleOptions));
                 }
             });
+        } else {
+            throw new Error('No modules defined in supplied options');
         }
         this.modules.push(...newModules);
         return newModules;
     }
 
     public loadRecipeFromPath(recipe_path) {
-        if (this.recipe && this.recipe.recipe_status === RecipeState.running) {
+        if (this.recipe && this.recipe.status === RecipeState.running) {
             return new Error("Another Recipe is currently running");
         }
         let recipe_buffer = fs.readFileSync(recipe_path);
         let recipeOptions: RecipeOptions = JSON.parse(recipe_buffer.toString());
         this.recipe = new Recipe(recipeOptions, this.modules);
-        this.recipe_options = recipeOptions;
     }
 
     public loadRecipe(options: RecipeOptions) {
-        if (this.recipe && this.recipe.recipe_status === RecipeState.running) {
+        if (this.recipe && this.recipe.status === RecipeState.running) {
             return new Error("Another Recipe is currently running");
         }
         this.recipe = new Recipe(options, this.modules);
-        this.recipe_options = options;
-        recipe_manager.eventEmitter.emit('refresh', 'recipe', 'new');
-    }
-
-    public async getServiceStates() {
-        let tasks = [];
-        this.recipe.modules.forEach(async (module) => {
-            tasks.push(module.getServiceStates()
-                .then((data) => {
-                    return {module: module.id, connected: true, services: data}
-                })
-                .catch((err) => {
-                    return {module: module.id, connected: false}
-                })
-            );
-        });
-        const states = await Promise.all(tasks);
-        return states;
+        manager.eventEmitter.emit('refresh', 'recipe', 'new');
     }
 
     async connect(): Promise<any> {
@@ -93,7 +98,7 @@ export class RecipeManager {
     }
 
     close() {
-        catRM.info("Close RecipeManager ...");
+        catRM.info("Close Manager ...");
         return this.recipe.disconnectModules();
     }
 
@@ -103,7 +108,7 @@ export class RecipeManager {
      * @returns {"events".internal.EventEmitter}
      */
     start(): EventEmitter {
-        if (this.recipe.recipe_status === RecipeState.idle) {
+        if (this.recipe.status === RecipeState.idle) {
             catRM.info("Start recipe");
             return this.recipe.start()
                 .on('completed', () => {
@@ -118,7 +123,7 @@ export class RecipeManager {
     }
 
     reset() {
-        if (this.recipe.recipe_status === RecipeState.completed || this.recipe.recipe_status === RecipeState.stopped) {
+        if (this.recipe.status === RecipeState.completed || this.recipe.status === RecipeState.stopped) {
             this.recipe.reset();
             this.eventEmitter.emit('refresh', 'recipe', 'reset');
         } else {
@@ -152,15 +157,17 @@ export class RecipeManager {
         return Promise.all(tasks);
     }
 
-    async json(): Promise<RecipeManagerInterface> {
+    json(): ManagerInterface {
+        let recipe = this.recipe? {status: RecipeState[this.recipe.status], name: this.recipe.name } : undefined;
         return {
-            recipe_status: RecipeState[this.recipe.recipe_status],
-            service_states: await this.getServiceStates(),
-            current_step: this.recipe.stepJson(),
-            options: this.recipe_options
+            recipe: recipe,
+            modules: this.modules.map(module => module.id),
+            autoReset: this.autoreset
         };
     }
 
+
+
 }
 
-export const recipe_manager: RecipeManager = new RecipeManager();
+export const manager: Manager = new Manager();

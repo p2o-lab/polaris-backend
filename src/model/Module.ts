@@ -12,9 +12,9 @@ import {
 import {catModule, catOpc, catRecipe} from '../config/logging';
 import {EventEmitter} from 'events';
 import {OpcUaNode} from './Interfaces';
-import {recipe_manager} from "./RecipeManager";
+import {manager} from "./Manager";
 import {ServiceState} from "./enum";
-import {ModuleInterface, ServiceInterface} from "pfe-interface";
+import {ModuleInterface, ServiceInterface} from "pfe-ree-interface";
 import {promiseTimeout} from "../timeout-promise";
 
 export interface ModuleOptions {
@@ -102,7 +102,7 @@ export class Module {
 
                 // subscribe to all services
                 this.subscribeToAllServices();
-                recipe_manager.eventEmitter.emit('refresh', 'module');
+                manager.eventEmitter.emit('refresh', 'module');
 
                 return this.session;
             } catch (err) {
@@ -129,7 +129,7 @@ export class Module {
             this.session = undefined;
             await this.client.disconnect();
             this.client = undefined;
-            recipe_manager.eventEmitter.emit('refresh', 'module');
+            manager.eventEmitter.emit('refresh', 'module');
             return 'Disconnected'
         } else {
             return Promise.resolve('Already disconnected');
@@ -179,7 +179,10 @@ export class Module {
             this.listenToOpcUaNode(service.status)
                 .on('changed', (data) => {
                     catModule.debug(`state changed: ${service.name} = ${ServiceState[data]}`);
-                    recipe_manager.eventEmitter.emit('refresh', 'module');
+                    manager.eventEmitter.emit('refresh', 'module');
+                    if (data === ServiceState.COMPLETED || data) {
+                        manager.eventEmitter.emit('serviceCompleted', service);
+                    }
                 });
         });
     }

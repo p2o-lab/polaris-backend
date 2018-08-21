@@ -1,4 +1,4 @@
-import {recipe_manager} from '../../model/RecipeManager';
+import {manager} from '../../model/Manager';
 import {catServer} from '../../config/logging';
 import {moduleRouter} from "./moduleRouter";
 import {Request, Response, Router} from "express";
@@ -12,8 +12,12 @@ export const recipeRouter: Router = Router();
  * @apiGroup Recipe
  */
 recipeRouter.get('', asyncHandler(async (req: Request, res: Response) => {
-    const result = await recipe_manager.json();
-    res.json(result);
+    if (manager.recipe) {
+        const result = await manager.recipe.json();
+        res.json(result);
+    } else {
+        res.json({});
+    }
 }));
 
 
@@ -25,8 +29,8 @@ recipeRouter.get('', asyncHandler(async (req: Request, res: Response) => {
  */
 recipeRouter.post('', asyncHandler(async (req: Request, res: Response) => {
     catServer.debug(`POST /recipe. ${JSON.stringify(req.body)}`);
-    recipe_manager.loadRecipe(req.body);
-    recipe_manager.connect();
+    manager.loadRecipe(req.body);
+    manager.connect();
     res.json({status: 'recipe successful loaded'});
 }));
 
@@ -36,8 +40,8 @@ recipeRouter.post('', asyncHandler(async (req: Request, res: Response) => {
  * @apiGroup Recipe
  */
 recipeRouter.post('/start', asyncHandler(async (req: Request, res: Response) => {
-    await recipe_manager.connect();
-    recipe_manager.start();
+    await manager.connect();
+    manager.start();
     res.json({status: 'recipe successful started'});
 }));
 
@@ -48,9 +52,10 @@ recipeRouter.post('/start', asyncHandler(async (req: Request, res: Response) => 
  * @apiGroup Recipe
  */
 recipeRouter.post('/reset', asyncHandler((req: Request, res: Response) => {
-    recipe_manager.reset();
-    res.json({status: 'recipe successful resetted'});
+    manager.reset();
+    res.json({status: 'recipe successful reset'});
 }));
+
 
 /**
  * @api {post} /recipe/abort    Abort all services
@@ -59,5 +64,5 @@ recipeRouter.post('/reset', asyncHandler((req: Request, res: Response) => {
  * @apiGroup Recipe
  */
 moduleRouter.post('/abort', asyncHandler(async (req: Request, res: Response) => {
-    res.json(await recipe_manager.abortRecipe());
+    res.json(await manager.abortRecipe());
 }));

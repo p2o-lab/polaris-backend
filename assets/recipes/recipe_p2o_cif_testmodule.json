@@ -1,70 +1,70 @@
-{
-  "version": "1.0.0",
-  "name": "Simples Testrezept für CIF Modul",
-  "author": "Markus Graube",
-  "initial_step": "S1",
-  "steps": [
+
     {
-      "name": "S1",
-      "operations": [
+      "version": "1.0.0",
+      "name": "Simples Testrezept für CIF Modul",
+      "author": "Markus Graube",
+      "initial_step": "S1",
+      "steps": [
         {
-          "module": "CIF",
-          "service": "Test_Service.Entleeren",
-          "command": "start"
-        }
-      ],
-      "transitions": [
-        {
-          "next_step": "S2",
-          "condition":
+          "name": "S1",
+          "operations": [
             {
-              "type": "time",
-              "duration": 5
+              "module": "CIF",
+              "service": "Test_Service.Entleeren",
+              "command": "start"
             }
-        }
-      ]
-    },
-    {
-      "name": "S2",
-      "operations": [
-        {
-          "module": "CIF",
-          "service": "Test_Service.Entleeren",
-          "command": "complete"
-        }
-      ],
-      "transitions": [
-        {
-          "next_step": "S3",
-          "condition": {
-            "type": "state",
-            "module": "CIF",
-            "service": "Test_Service.Entleeren",
-            "state": "completed"
+          ],
+          "transitions": [
+            {
+              "next_step": "S2",
+              "condition": {
+                "type": "time",
+                "duration": 5
+              }
             }
-        }
-      ]
-    },
-    {
-      "name": "S3",
-      "operations": [
+          ]
+        },
         {
-          "module": "CIF",
-          "service": "Test_Service.Entleeren",
-          "command": "reset"
-        }
-      ],
-      "transitions": [
+          "name": "S2",
+          "operations": [
+            {
+              "module": "CIF",
+              "service": "Test_Service.Entleeren",
+              "command": "complete"
+            }
+          ],
+          "transitions": [
+            {
+              "next_step": "S3",
+              "condition": {
+                "type": "state",
+                "module": "CIF",
+                "service": "Test_Service.Entleeren",
+                "state": "completed"
+              }
+            }
+          ]
+        },
         {
-          "next_step": "finished",
-          "condition": {
-            "type": "state",
-            "module": "CIF",
-            "service": "Test_Service.Entleeren",
-            "state": "idle"
-          }
+          "name": "S3",
+          "operations": [
+            {
+              "module": "CIF",
+              "service": "Test_Service.Entleeren",
+              "command": "reset"
+            }
+          ],
+          "transitions": [
+            {
+              "next_step": "finished",
+              "condition": {
+                "type": "state",
+                "module": "CIF",
+                "service": "Test_Service.Entleeren",
+                "state": "idle"
+              }
+            }
+          ]
         }
       ]
     }
-  ]
-}

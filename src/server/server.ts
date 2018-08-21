@@ -2,7 +2,7 @@ import * as express from 'express';
 import Routes from './routes';
 import Middleware from '../config/middleware';
 import * as WebSocket from 'ws';
-import {recipe_manager} from '../model/RecipeManager';
+import {manager} from '../model/Manager';
 import {catServer} from "../config/logging";
 
 export class Server {
@@ -24,7 +24,7 @@ export class Server {
         });
 
 
-        recipe_manager.eventEmitter.on('refresh', (data, action) => {
+        manager.eventEmitter.on('refresh', (data, action) => {
             catServer.trace(`WS refresh published ${data}`);
             this.wss.clients.forEach((client) => {
                 if (client.readyState === WebSocket.OPEN) {

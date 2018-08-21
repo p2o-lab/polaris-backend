@@ -15,7 +15,7 @@ npm start
 ```
 
 ## Publish
-*pfe-ree-node* is provided via our private NPM registry (http://registry.plt.et.tu-dresden.de:4873
+*pfe-ree-node* is provided via our private NPM registry (https://registry.plt.et.tu-dresden.de:4873
 ```
 npm publish
 ``` 
@@ -27,15 +27,6 @@ Use docker ready image (from our private docker registry [http://registry.plt.et
 docker pull registry.plt.et.tu-dresden.de:5000/pfe-ree-node
 docker run -d -p 3000:3000 registry.plt.et.tu-dresden.de:5000/pfe-ree-node
 ```
-
-Since our Docker registry has no valid SSL certificate yet, you have to enable the insecure access in `/etc/docker/daemon.json`:
-```
-{
-  "insecure-registries" : ["registry.plt.et.tu-dresden.de:5000"]
-}
-```
-and then restart docker (`service docker restart`).
-
 
 Update docker image
 ```

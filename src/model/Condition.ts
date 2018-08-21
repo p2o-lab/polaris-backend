@@ -13,7 +13,7 @@ import {
     StateConditionOptions,
     TimeConditionOptions,
     VariableConditionOptions
-} from 'pfe-interface';
+} from 'pfe-ree-interface';
 
 export abstract class Condition {
 

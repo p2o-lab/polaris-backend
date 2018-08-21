@@ -1,5 +1,5 @@
-import {recipe_manager} from '../../model/RecipeManager';
-import {ServiceCommand} from "pfe-interface";
+import {manager} from '../../model/Manager';
+import {ServiceCommand} from "pfe-ree-interface";
 import {moduleRouter} from "./moduleRouter";
 import {Request, Response, Router} from "express";
 import * as asyncHandler from 'express-async-handler';
@@ -21,7 +21,7 @@ export const serviceRouter: Router = Router();
  * @apiParam {Object[]} [parameters]    Parameters for *start* or *restart*
  */
 moduleRouter.post('/:moduleId/service/:serviceName/:command', asyncHandler(async (req: Request, res: Response) => {
-    const module = await recipe_manager.modules.find(module => module.id === req.params.moduleId);
+    const module = await manager.modules.find(module => module.id === req.params.moduleId);
     const service = await module.services.find(service => service.name === req.params.serviceName);
     const command: ServiceCommand = req.params.command;
 
@@ -56,7 +56,7 @@ moduleRouter.post('/:moduleId/service/:serviceName/:command', asyncHandler(async
  * @apiParam {string} serviceName   Name of service
  */
 moduleRouter.get('/:moduleId/service/:serviceName', asyncHandler(async (req: Request, res: Response) => {
-    const module = await recipe_manager.modules.find(module => module.id === req.params.moduleId);
+    const module = await manager.modules.find(module => module.id === req.params.moduleId);
     if (!module) {
         throw new Error(`Module with id ${req.params.moduleId} not registered`);
     }

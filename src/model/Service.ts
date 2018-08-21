@@ -12,7 +12,7 @@ import {
 } from './enum';
 import {OpcUaNode, Strategy} from "./Interfaces";
 import {Parameter} from "./Parameter";
-import {ParameterInterface, ServiceCommand, ServiceInterface, StrategyInterface} from "pfe-interface";
+import {ParameterInterface, ServiceCommand, ServiceInterface, StrategyInterface} from "pfe-ree-interface";
 
 export interface ServiceOptions {
     name: string;

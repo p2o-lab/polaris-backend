@@ -1,6 +1,6 @@
 import {Step} from "./Step";
 import {Condition} from "./Condition";
-import {ConditionOptions} from "pfe-interface";
+import {ConditionOptions} from "pfe-ree-interface";
 
 export interface TransitionOptions {
     next_step: string;

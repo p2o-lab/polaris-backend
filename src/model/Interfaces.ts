@@ -1,5 +1,3 @@
-import {RecipeOptions} from "./Recipe";
-
 export interface OpcUaNode {
     namespace_index: string;
     node_id: string;
@@ -27,11 +25,4 @@ export interface Strategy {
     default: boolean;
     sc: boolean;
     parameters: ServiceParameter[];
-}
-
-export interface RecipeManagerInterface {
-    recipe_status: string;
-    service_states: object[];
-    current_step: any;
-    options: RecipeOptions;
 }

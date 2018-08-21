@@ -4,6 +4,7 @@ import {moduleRouter} from "./router/moduleRouter";
 import {recipeRouter} from "./router/recipeRouter";
 import {catServer} from "../config/logging";
 import {serviceRouter} from "./router/serviceRouter";
+import {coreRouter} from "./router/coreRouter";
 
 export default class Routes {
     static init(server): void {
@@ -19,11 +20,12 @@ export default class Routes {
         server.app.use('/module', moduleRouter);
         server.app.use('/module', serviceRouter);
         server.app.use('/recipe', recipeRouter);
+        server.app.use('/', coreRouter);
 
 
         // Error handling
         server.app.use(function (err, req, res, next) {
-            catServer.warn(`An Error occured: ${err.toString()}`);
+            catServer.error(`An Error occured: ${err.toString()}`, err);
             res.status(500).send({status: 'error', error: err.toString(), stack: err.stack});
         });
 

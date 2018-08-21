@@ -3,6 +3,7 @@ import {Module} from './Module';
 import {catRecipe} from '../config/logging';
 import {RecipeState} from './enum';
 import {EventEmitter} from "events";
+import {RecipeInterface} from "pfe-ree-interface";
 
 export interface RecipeOptions {
     version: string;
@@ -23,8 +24,10 @@ export class Recipe {
     steps: Step[];
 
     current_step: Step;
-    recipe_status: RecipeState;
+    status: RecipeState;
     eventEmitter: EventEmitter;
+
+    options: RecipeOptions;
 
     constructor(options: RecipeOptions, modules: Module[]) {
         if (options.version) {
@@ -57,6 +60,7 @@ export class Recipe {
             throw new Error('"initial_step" property is missing in recipe');
         }
 
+        this.options = options;
         this.initRecipe();
         this.eventEmitter = new EventEmitter();
 
@@ -69,9 +73,9 @@ export class Recipe {
 
     start(): EventEmitter {
         this.current_step = this.initial_step;
-        this.recipe_status = RecipeState.running;
+        this.status = RecipeState.running;
         this.executeStep(() => {
-            this.recipe_status = RecipeState.completed;
+            this.status = RecipeState.completed;
             catRecipe.info(`Recipe completed ${this.modules}`);
             this.eventEmitter.emit('completed', 'succesful');
         });
@@ -80,7 +84,7 @@ export class Recipe {
 
     private initRecipe() {
         this.current_step = undefined;
-        this.recipe_status = RecipeState.idle;
+        this.status = RecipeState.idle;
     }
 
     public connectModules(): Promise<any[]> {
@@ -120,6 +124,31 @@ export class Recipe {
             return {
                 name: 'not started yet'
             }
+        }
+    }
+
+    public async getServiceStates() {
+        let tasks = [];
+        this.modules.forEach(async (module) => {
+            tasks.push(module.getServiceStates()
+                .then((data) => {
+                    return {module: module.id, connected: true, services: data}
+                })
+                .catch((err) => {
+                    return {module: module.id, connected: false}
+                })
+            );
+        });
+        const states = await Promise.all(tasks);
+        return states;
+    }
+
+    public async json(): Promise<RecipeInterface> {
+        return {
+            modules: await this.getServiceStates(),
+            status: RecipeState[this.status],
+            currentStep: this.stepJson(),
+            options: this.options
         }
     }
 

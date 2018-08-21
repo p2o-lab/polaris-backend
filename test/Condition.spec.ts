@@ -2,7 +2,7 @@ import {suite, test} from "mocha-typescript";
 import {Condition, TimeCondition} from "../src/model/Condition";
 import * as assert from "assert";
 import {catRecipe} from "../src/config/logging";
-import {ConditionType} from "pfe-interface";
+import {ConditionType} from "pfe-ree-interface";
 
 @suite
 class ConditionTest {

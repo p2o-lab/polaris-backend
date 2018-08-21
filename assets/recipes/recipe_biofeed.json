@@ -1,0 +1,270 @@
+{
+  "version": "0.1.0",
+  "name": "Rezept BioFeed Nährmittelansatz XYZ",
+  "author": "Markus Graube <markus.graube@tu-dresden.de>",
+  "initial_step": "S1.AddWater",
+  "steps": [
+    {
+      "name": "S1.AddWater",
+      "operations": [
+        {
+          "service": "Feed_Water",
+          "command": "start",
+          "parameter": [
+            {"name": "feed_volume", "value": 4000}
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "S1.AddWaterReset",
+          "condition":
+          {
+            "type": "state",
+            "service": "Feed_Water",
+            "state": "completed"
+          }
+        }
+      ]
+    },
+    {
+      "name": "S1.AddWaterReset",
+      "operations": [
+        {
+          "service": "Feed_Water",
+          "command": "reset"
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "S2.AddPowder",
+          "condition":
+          {
+            "type": "state",
+            "service": "Feed_Water",
+            "state": "idle"
+          }
+        }
+      ]
+    },
+    {
+      "name": "S2.AddPowder",
+      "operations": [
+        {
+          "service": "Feed_Powder",
+          "command": "start",
+          "parameter": [
+            {"name": "feed_mass", "value": 143},
+            {"name": "feed_duration", "value": 60}
+          ]
+        },
+        {
+          "service": "Stirring",
+          "command": "start",
+          "parameter": [
+            {"name": "stirring_duration", "value": 0}
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "S2.AddPowderReset",
+          "condition": {
+            "type": "and",
+            "conditions": [
+              {
+                "type": "time",
+                "duration": 1500
+              },
+              {
+                "type": "state",
+                "service": "Feed_Powder",
+                "state": "finished"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "S2.AddPowderReset",
+      "operations": [
+        {
+          "service": "Feed_Powder",
+          "command": "reset"
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "S3.pH4.5",
+          "condition":
+          {
+            "type": "state",
+            "service": "Feed_Powder",
+            "state": "idle"
+          }
+        }
+      ]
+    },
+    {
+      "name": "S3.pH4.5",
+      "operations": [
+        {
+          "service": "ph_Adjustment",
+          "command": "start",
+          "parameter": [
+            {"name": "ph_value", "value": 4.5}
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "S3.pH4.5Reset",
+          "condition":
+          {
+            "type": "state",
+            "service": "ph_Adjustment",
+            "state": "completed"
+          }
+        }
+      ]
+    },
+    {
+      "name": "S3.pH4.5Reset",
+      "operations": [
+        {
+          "service": "ph_Adjustment",
+          "command": "reset"
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "S4.addBicarb",
+          "condition":
+          {
+            "type": "state",
+            "service": "ph_Adjustment",
+            "state": "idle"
+          }
+        }
+      ]
+    },
+    {
+      "name": "S4.addBicarb",
+      "operations": [
+        {
+          "service": "Feed_Buffer_Solution",
+          "command": "start",
+          "parameter": [
+            {"name": "feed_volume", "value": "???"}
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "S5.ph9",
+          "condition":
+          {
+            "type": "state",
+            "service": "Feed_Buffer_Solution",
+            "state": "completed"
+          }
+        }
+      ]
+    },
+    {
+      "name": "S5.ph9",
+      "operations": [
+        {
+          "service": "Feed_Buffer_Solution",
+          "command": "reset"
+        },
+        {
+          "service": "ph_Adjustment",
+          "command": "start",
+          "parameter": [
+            {"name": "ph_value", "value": 9 }
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "S5.ph9.Reset",
+          "condition":
+          {
+            "type": "state",
+            "service": "ph_Adjustment",
+            "state": "completed"
+          }
+        }
+      ]
+    },
+    {
+      "name": "S5.ph9.Reset",
+      "operations": [
+        {
+          "service": "ph_Adjustment",
+          "command": "reset"
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "S6.ph7",
+          "condition":
+          {
+            "type": "state",
+            "service": "ph_Adjustment",
+            "state": "idle"
+          }
+        }
+      ]
+    },
+    {
+      "name": "S6.ph7",
+      "operations": [
+        {
+          "service": "ph_Adjustment",
+          "command": "start",
+          "parameter": [
+            {"name": "ph_value", "value": 5000}
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "S7.FinalVolume",
+          "condition":
+          {
+            "type": "state",
+            "service": "ph_Adjustment",
+            "state": "idle"
+          }
+        }
+      ]
+    },
+    {
+      "name": "S7.FinalVolume",
+      "operations": [
+        {
+          "service": "Feed_water",
+          "command": "start",
+          "parameter": [
+            {"name": "feed_volume", "value": 7.3}
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "finished",
+          "condition":
+          {
+            "type": "state",
+            "service": "Feed_water",
+            "state": "completed"
+          }
+        }
+      ]
+    }
+
+  ]
+}

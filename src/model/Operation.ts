@@ -3,7 +3,7 @@ import {Service} from './Service';
 import {catRecipe} from '../config/logging';
 import {Recipe} from "./Recipe";
 import {Strategy} from "./Interfaces";
-import {ServiceCommand} from "pfe-interface";
+import {ServiceCommand} from "pfe-ree-interface";
 import {Parameter, ParameterOptions} from "./Parameter";
 
 export interface OperationOptions {
