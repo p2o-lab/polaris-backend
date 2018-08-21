@@ -17,32 +17,12 @@
       ],
       "transitions": [
         {
-          "next_step": "S1.AddWaterReset",
-          "condition":
-          {
-            "type": "state",
-            "service": "Feed_Water",
-            "state": "completed"
-          }
-        }
-      ]
-    },
-    {
-      "name": "S1.AddWaterReset",
-      "operations": [
-        {
-          "service": "Feed_Water",
-          "command": "reset"
-        }
-      ],
-      "transitions": [
-        {
           "next_step": "S2.AddPowder",
           "condition":
           {
             "type": "state",
             "service": "Feed_Water",
-            "state": "idle"
+            "state": "completed"
           }
         }
       ]
@@ -68,7 +48,7 @@
       ],
       "transitions": [
         {
-          "next_step": "S2.AddPowderReset",
+          "next_step": "S3.pH4.5",
           "condition": {
             "type": "and",
             "conditions": [
@@ -79,29 +59,9 @@
               {
                 "type": "state",
                 "service": "Feed_Powder",
-                "state": "finished"
+                "state": "completed"
               }
             ]
-          }
-        }
-      ]
-    },
-    {
-      "name": "S2.AddPowderReset",
-      "operations": [
-        {
-          "service": "Feed_Powder",
-          "command": "reset"
-        }
-      ],
-      "transitions": [
-        {
-          "next_step": "S3.pH4.5",
-          "condition":
-          {
-            "type": "state",
-            "service": "Feed_Powder",
-            "state": "idle"
           }
         }
       ]
@@ -119,32 +79,12 @@
       ],
       "transitions": [
         {
-          "next_step": "S3.pH4.5Reset",
-          "condition":
-          {
-            "type": "state",
-            "service": "ph_Adjustment",
-            "state": "completed"
-          }
-        }
-      ]
-    },
-    {
-      "name": "S3.pH4.5Reset",
-      "operations": [
-        {
-          "service": "ph_Adjustment",
-          "command": "reset"
-        }
-      ],
-      "transitions": [
-        {
           "next_step": "S4.addBicarb",
           "condition":
           {
             "type": "state",
             "service": "ph_Adjustment",
-            "state": "idle"
+            "state": "completed"
           }
         }
       ]
@@ -189,32 +129,12 @@
       ],
       "transitions": [
         {
-          "next_step": "S5.ph9.Reset",
-          "condition":
-          {
-            "type": "state",
-            "service": "ph_Adjustment",
-            "state": "completed"
-          }
-        }
-      ]
-    },
-    {
-      "name": "S5.ph9.Reset",
-      "operations": [
-        {
-          "service": "ph_Adjustment",
-          "command": "reset"
-        }
-      ],
-      "transitions": [
-        {
           "next_step": "S6.ph7",
           "condition":
           {
             "type": "state",
             "service": "ph_Adjustment",
-            "state": "idle"
+            "state": "completed"
           }
         }
       ]
@@ -265,6 +185,5 @@
         }
       ]
     }
-
   ]
 }
