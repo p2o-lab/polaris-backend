@@ -10,7 +10,7 @@
       "rest_api_port": "1200",
       "services": [
         {
-          "name": "Main_04.Feed_Water",
+          "name": "Feed_Water",
           "communication": {
             "OSLevel": {
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
@@ -84,7 +84,7 @@
           ]
         },
         {
-          "name": "Main_02.Feed_Buffer_Solution",
+          "name": "Feed_Buffer_Solution",
           "communication": {
             "OSLevel": {
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
@@ -158,7 +158,7 @@
           ]
         },
         {
-          "name": "Main_04.Stirring",
+          "name": "Stirring",
           "communication": {
             "OSLevel": {
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
@@ -232,7 +232,7 @@
           ]
         },
         {
-          "name": "Main_03.Feed_Base_Solution",
+          "name": "Feed_Base_Solution",
           "communication": {
             "OSLevel": {
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
@@ -306,7 +306,7 @@
           ]
         },
         {
-          "name": "Main_03.Feed_Acid_Solution",
+          "name": "Feed_Acid_Solution",
           "communication": {
             "OSLevel": {
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
@@ -380,7 +380,7 @@
           ]
         },
         {
-          "name": "Main_04.Emptying",
+          "name": "Emptying",
           "communication": {
             "OSLevel": {
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
@@ -454,7 +454,7 @@
           ]
         },
         {
-          "name": "Main_04.Filtration_To_Storage",
+          "name": "Filtration_To_Storage",
           "communication": {
             "OSLevel": {
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
@@ -528,7 +528,7 @@
           ]
         },
         {
-          "name": "Main_04.pH_Adjustment",
+          "name": "pH_Adjustment",
           "communication": {
             "OSLevel": {
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
@@ -602,7 +602,7 @@
           ]
         },
         {
-          "name": "Main_04.Cond_Adjustment",
+          "name": "Cond_Adjustment",
           "communication": {
             "OSLevel": {
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
@@ -676,7 +676,7 @@
           ]
         },
         {
-          "name": "Main_04.Filtration_To_Waste",
+          "name": "Filtration_To_Waste",
           "communication": {
             "OSLevel": {
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
