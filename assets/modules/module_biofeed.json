@@ -2,7 +2,7 @@
   "modules": [
     {
       "id": "Biofeed",
-      "opcua_server_url": "opc.tcp://10.0.51.9:4840",
+      "opcua_server_url": "opc.tcp://10.6.51.42:4840",
       "services": [
         {
           "name": "Feed_Water",
@@ -74,7 +74,64 @@
               "name": "Strategy 1",
               "default": true,
               "sc": false,
-              "parameters": []
+              "parameters": [
+                {
+                  "name": "Feed_Volume",
+                  "interface_class": "ExtAnaOp",
+                  "communication": {
+                    "WQC": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Feed_Water.Feed_Volume.WQC",
+                      "data_type": "Byte"
+                    },
+                    "OSLevel": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Feed_Water.Feed_Volume.OSLevel",
+                      "data_type": "Byte"
+                    },
+                    "VOut": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Feed_Water.Feed_Volume.VOut",
+                      "data_type": "Float"
+                    },
+                    "VSclMin": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Feed_Water.Feed_Volume.VSclMin",
+                      "data_type": "Float"
+                    },
+                    "VSclMax": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Feed_Water.Feed_Volume.VSclMax",
+                      "data_type": "Float"
+                    },
+                    "VUnit": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Feed_Water.Feed_Volume.VUnit",
+                      "data_type": "Int16"
+                    },
+                    "VMin": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Feed_Water.Feed_Volume.VMin",
+                      "data_type": "Float"
+                    },
+                    "VMax": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Feed_Water.Feed_Volume.VMax",
+                      "data_type": "Float"
+                    },
+                    "VExt": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Feed_Water.Feed_Volume.VExt",
+                      "data_type": "Float"
+                    },
+                    "VRbk": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Feed_Water.Feed_Volume.VRbk",
+                      "data_type": "Float"
+                    }
+                  }
+                }
+              ]
             }
           ]
         },
@@ -222,7 +279,120 @@
               "name": "Strategy 1",
               "default": true,
               "sc": false,
-              "parameters": []
+              "parameters": [
+                {
+                  "name": "Stirring_Rotation_Speed",
+                  "interface_class": "ExtAnaOp",
+                  "communication": {
+                    "WQC": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Stirring.Stirring_Rotation_Speed.WQC",
+                      "data_type": "Byte"
+                    },
+                    "OSLevel": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Stirring.Stirring_Rotation_Speed.OSLevel",
+                      "data_type": "Byte"
+                    },
+                    "VOut": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Stirring.Stirring_Rotation_Speed.VOut",
+                      "data_type": "Float"
+                    },
+                    "VSclMin": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Stirring.Stirring_Rotation_Speed.VSclMin",
+                      "data_type": "Float"
+                    },
+                    "VSclMax": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Stirring.Stirring_Rotation_Speed.VSclMax",
+                      "data_type": "Float"
+                    },
+                    "VUnit": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Stirring.Stirring_Rotation_Speed.VUnit",
+                      "data_type": "Int16"
+                    },
+                    "VMin": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Stirring.Stirring_Rotation_Speed.VMin",
+                      "data_type": "Float"
+                    },
+                    "VMax": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Stirring.Stirring_Rotation_Speed.VMax",
+                      "data_type": "Float"
+                    },
+                    "VExt": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Stirring.Stirring_Rotation_Speed.VExt",
+                      "data_type": "Float"
+                    },
+                    "VRbk": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Stirring.Stirring_Rotation_Speed.VRbk",
+                      "data_type": "Float"
+                    }
+                  }
+                },
+                {
+                  "name": "Stirring_Duration",
+                  "interface_class": "ExtAnaOp",
+                  "communication": {
+                    "WQC": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Stirring.Stirring_Duration.WQC",
+                      "data_type": "Byte"
+                    },
+                    "OSLevel": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Stirring.Stirring_Duration.OSLevel",
+                      "data_type": "Byte"
+                    },
+                    "VOut": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Stirring.Stirring_Duration.VOut",
+                      "data_type": "Float"
+                    },
+                    "VSclMin": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Stirring.Stirring_Duration.VSclMin",
+                      "data_type": "Float"
+                    },
+                    "VSclMax": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Stirring.Stirring_Duration.VSclMax",
+                      "data_type": "Float"
+                    },
+                    "VUnit": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Stirring.Stirring_Duration.VUnit",
+                      "data_type": "Int16"
+                    },
+                    "VMin": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Stirring.Stirring_Duration.VMin",
+                      "data_type": "Float"
+                    },
+                    "VMax": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Stirring.Stirring_Duration.VMax",
+                      "data_type": "Float"
+                    },
+                    "VExt": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Stirring.Stirring_Duration.VExt",
+                      "data_type": "Float"
+                    },
+                    "VRbk": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Stirring.Stirring_Duration.VRbk",
+                      "data_type": "Float"
+                    }
+                  }
+                }
+              ]
             }
           ]
         },
@@ -449,6 +619,113 @@
           ]
         },
         {
+          "name": "Feed_Powder",
+          "communication": {
+            "OSLevel": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_01.Feed_Powder.OSLevel",
+              "data_type": "Byte"
+            },
+            "WQC": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_01.Feed_Powder.WQC",
+              "data_type": "Byte"
+            },
+            "OpMode": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_01.Feed_Powder.OpMode.binary",
+              "data_type": "UInt32"
+            },
+            "ControlOp": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_01.Feed_Powder.ControlOp",
+              "data_type": "UInt32"
+            },
+            "StrategyOp": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_01.Feed_Powder.StrategyOp",
+              "data_type": "UInt32"
+            },
+            "ControlInt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_01.Feed_Powder.ControlInt",
+              "data_type": "UInt32"
+            },
+            "StrategyInt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_01.Feed_Powder.StrategyInt",
+              "data_type": "UInt32"
+            },
+            "ControlExt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_01.Feed_Powder.ControlExt",
+              "data_type": "UInt32"
+            },
+            "StrategyExt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_01.Feed_Powder.StrategyExt",
+              "data_type": "UInt32"
+            },
+            "State": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_01.Feed_Powder.State.binary",
+              "data_type": "UInt32"
+            },
+            "ControlEnable": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_01.Feed_Powder.ControlEnable.binary",
+              "data_type": "UInt32"
+            },
+            "CurrentStrategy": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_01.Feed_Powder.CurrentStrategy",
+              "data_type": "UInt32"
+            }
+          },
+          "strategies": [
+            {
+              "id": "1",
+              "name": "Strategy 1",
+              "default": true,
+              "sc": false,
+              "parameters": [
+                {
+                  "name": "button",
+                  "interface_class": "ExtBinOp",
+                  "communication": {
+                    "WQC": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_01.Feed_Powder.button.WQC",
+                      "data_type": "Byte"
+                    },
+                    "OSLevel": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_01.Feed_Powder.button.OSLevel",
+                      "data_type": "Byte"
+                    },
+                    "VOut": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_01.Feed_Powder.button.VOut",
+                      "data_type": "Boolean"
+                    },
+                    "VState0": {
+                      "value": "TODO"
+                    },
+                    "VState1": {
+                      "value": "TODO"
+                    },
+                    "VExt": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_01.Feed_Powder.button.VExt",
+                      "data_type": "Boolean"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
           "name": "Filtration_To_Storage",
           "communication": {
             "OSLevel": {
@@ -518,7 +795,64 @@
               "name": "Strategy 1",
               "default": true,
               "sc": false,
-              "parameters": []
+              "parameters": [
+                {
+                  "name": "Flow_Rate",
+                  "interface_class": "ExtAnaOp",
+                  "communication": {
+                    "WQC": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Filtration_To_Storage.Flow_Rate.WQC",
+                      "data_type": "Byte"
+                    },
+                    "OSLevel": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Filtration_To_Storage.Flow_Rate.OSLevel",
+                      "data_type": "Byte"
+                    },
+                    "VOut": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Filtration_To_Storage.Flow_Rate.VOut",
+                      "data_type": "Float"
+                    },
+                    "VSclMin": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Filtration_To_Storage.Flow_Rate.VSclMin",
+                      "data_type": "Float"
+                    },
+                    "VSclMax": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Filtration_To_Storage.Flow_Rate.VSclMax",
+                      "data_type": "Float"
+                    },
+                    "VUnit": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Filtration_To_Storage.Flow_Rate.VUnit",
+                      "data_type": "Int16"
+                    },
+                    "VMin": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Filtration_To_Storage.Flow_Rate.VMin",
+                      "data_type": "Float"
+                    },
+                    "VMax": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Filtration_To_Storage.Flow_Rate.VMax",
+                      "data_type": "Float"
+                    },
+                    "VExt": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Filtration_To_Storage.Flow_Rate.VExt",
+                      "data_type": "Float"
+                    },
+                    "VRbk": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Filtration_To_Storage.Flow_Rate.VRbk",
+                      "data_type": "Float"
+                    }
+                  }
+                }
+              ]
             }
           ]
         },
@@ -592,7 +926,176 @@
               "name": "Strategy 1",
               "default": true,
               "sc": false,
-              "parameters": []
+              "parameters": [
+                {
+                  "name": "Pump_Flow_Rate",
+                  "interface_class": "ExtAnaOp",
+                  "communication": {
+                    "WQC": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.Pump_Flow_Rate.WQC",
+                      "data_type": "Byte"
+                    },
+                    "OSLevel": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.Pump_Flow_Rate.OSLevel",
+                      "data_type": "Byte"
+                    },
+                    "VOut": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.Pump_Flow_Rate.VOut",
+                      "data_type": "Float"
+                    },
+                    "VSclMin": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.Pump_Flow_Rate.VSclMin",
+                      "data_type": "Float"
+                    },
+                    "VSclMax": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.Pump_Flow_Rate.VSclMax",
+                      "data_type": "Float"
+                    },
+                    "VUnit": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.Pump_Flow_Rate.VUnit",
+                      "data_type": "Int16"
+                    },
+                    "VMin": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.Pump_Flow_Rate.VMin",
+                      "data_type": "Float"
+                    },
+                    "VMax": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.Pump_Flow_Rate.VMax",
+                      "data_type": "Float"
+                    },
+                    "VExt": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.Pump_Flow_Rate.VExt",
+                      "data_type": "Float"
+                    },
+                    "VRbk": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.Pump_Flow_Rate.VRbk",
+                      "data_type": "Float"
+                    }
+                  }
+                },
+                {
+                  "name": "Feed_Volume",
+                  "interface_class": "ExtAnaOp",
+                  "communication": {
+                    "WQC": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.Feed_Volume.WQC",
+                      "data_type": "Byte"
+                    },
+                    "OSLevel": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.Feed_Volume.OSLevel",
+                      "data_type": "Byte"
+                    },
+                    "VOut": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.Feed_Volume.VOut",
+                      "data_type": "Float"
+                    },
+                    "VSclMin": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.Feed_Volume.VSclMin",
+                      "data_type": "Float"
+                    },
+                    "VSclMax": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.Feed_Volume.VSclMax",
+                      "data_type": "Float"
+                    },
+                    "VUnit": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.Feed_Volume.VUnit",
+                      "data_type": "Int16"
+                    },
+                    "VMin": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.Feed_Volume.VMin",
+                      "data_type": "Float"
+                    },
+                    "VMax": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.Feed_Volume.VMax",
+                      "data_type": "Float"
+                    },
+                    "VExt": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.Feed_Volume.VExt",
+                      "data_type": "Float"
+                    },
+                    "VRbk": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.Feed_Volume.VRbk",
+                      "data_type": "Float"
+                    }
+                  }
+                },
+                {
+                  "name": "pH_Value",
+                  "interface_class": "ExtAnaOp",
+                  "communication": {
+                    "WQC": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.pH_Value.WQC",
+                      "data_type": "Byte"
+                    },
+                    "OSLevel": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.pH_Value.OSLevel",
+                      "data_type": "Byte"
+                    },
+                    "VOut": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.pH_Value.VOut",
+                      "data_type": "Float"
+                    },
+                    "VSclMin": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.pH_Value.VSclMin",
+                      "data_type": "Float"
+                    },
+                    "VSclMax": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.pH_Value.VSclMax",
+                      "data_type": "Float"
+                    },
+                    "VUnit": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.pH_Value.VUnit",
+                      "data_type": "Int16"
+                    },
+                    "VMin": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.pH_Value.VMin",
+                      "data_type": "Float"
+                    },
+                    "VMax": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.pH_Value.VMax",
+                      "data_type": "Float"
+                    },
+                    "VExt": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.pH_Value.VExt",
+                      "data_type": "Float"
+                    },
+                    "VRbk": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.pH_Value.VRbk",
+                      "data_type": "Float"
+                    }
+                  }
+                }
+              ]
             }
           ]
         },
@@ -666,7 +1169,176 @@
               "name": "Strategy 1",
               "default": true,
               "sc": false,
-              "parameters": []
+              "parameters": [
+                {
+                  "name": "Pump_Flow_Rate",
+                  "interface_class": "ExtAnaOp",
+                  "communication": {
+                    "WQC": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Pump_Flow_Rate.WQC",
+                      "data_type": "Byte"
+                    },
+                    "OSLevel": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Pump_Flow_Rate.OSLevel",
+                      "data_type": "Byte"
+                    },
+                    "VOut": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Pump_Flow_Rate.VOut",
+                      "data_type": "Float"
+                    },
+                    "VSclMin": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Pump_Flow_Rate.VSclMin",
+                      "data_type": "Float"
+                    },
+                    "VSclMax": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Pump_Flow_Rate.VSclMax",
+                      "data_type": "Float"
+                    },
+                    "VUnit": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Pump_Flow_Rate.VUnit",
+                      "data_type": "Int16"
+                    },
+                    "VMin": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Pump_Flow_Rate.VMin",
+                      "data_type": "Float"
+                    },
+                    "VMax": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Pump_Flow_Rate.VMax",
+                      "data_type": "Float"
+                    },
+                    "VExt": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Pump_Flow_Rate.VExt",
+                      "data_type": "Float"
+                    },
+                    "VRbk": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Pump_Flow_Rate.VRbk",
+                      "data_type": "Float"
+                    }
+                  }
+                },
+                {
+                  "name": "Feed_Volume",
+                  "interface_class": "ExtAnaOp",
+                  "communication": {
+                    "WQC": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Feed_Volume.WQC",
+                      "data_type": "Byte"
+                    },
+                    "OSLevel": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Feed_Volume.OSLevel",
+                      "data_type": "Byte"
+                    },
+                    "VOut": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Feed_Volume.VOut",
+                      "data_type": "Float"
+                    },
+                    "VSclMin": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Feed_Volume.VSclMin",
+                      "data_type": "Float"
+                    },
+                    "VSclMax": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Feed_Volume.VSclMax",
+                      "data_type": "Float"
+                    },
+                    "VUnit": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Feed_Volume.VUnit",
+                      "data_type": "Int16"
+                    },
+                    "VMin": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Feed_Volume.VMin",
+                      "data_type": "Float"
+                    },
+                    "VMax": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Feed_Volume.VMax",
+                      "data_type": "Float"
+                    },
+                    "VExt": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Feed_Volume.VExt",
+                      "data_type": "Float"
+                    },
+                    "VRbk": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Feed_Volume.VRbk",
+                      "data_type": "Float"
+                    }
+                  }
+                },
+                {
+                  "name": "Conductivity",
+                  "interface_class": "ExtAnaOp",
+                  "communication": {
+                    "WQC": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Conductivity.WQC",
+                      "data_type": "Byte"
+                    },
+                    "OSLevel": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Conductivity.OSLevel",
+                      "data_type": "Byte"
+                    },
+                    "VOut": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Conductivity.VOut",
+                      "data_type": "Float"
+                    },
+                    "VSclMin": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Conductivity.VSclMin",
+                      "data_type": "Float"
+                    },
+                    "VSclMax": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Conductivity.VSclMax",
+                      "data_type": "Float"
+                    },
+                    "VUnit": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Conductivity.VUnit",
+                      "data_type": "Int16"
+                    },
+                    "VMin": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Conductivity.VMin",
+                      "data_type": "Float"
+                    },
+                    "VMax": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Conductivity.VMax",
+                      "data_type": "Float"
+                    },
+                    "VExt": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Conductivity.VExt",
+                      "data_type": "Float"
+                    },
+                    "VRbk": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Conductivity.VRbk",
+                      "data_type": "Float"
+                    }
+                  }
+                }
+              ]
             }
           ]
         },
@@ -740,12 +1412,706 @@
               "name": "Strategy 1",
               "default": true,
               "sc": false,
-              "parameters": []
+              "parameters": [
+                {
+                  "name": "Flow_Rate",
+                  "interface_class": "ExtAnaOp",
+                  "communication": {
+                    "WQC": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Filtration_To_Waste.Flow_Rate.WQC",
+                      "data_type": "Byte"
+                    },
+                    "OSLevel": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Filtration_To_Waste.Flow_Rate.OSLevel",
+                      "data_type": "Byte"
+                    },
+                    "VOut": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Filtration_To_Waste.Flow_Rate.VOut",
+                      "data_type": "Float"
+                    },
+                    "VSclMin": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Filtration_To_Waste.Flow_Rate.VSclMin",
+                      "data_type": "Float"
+                    },
+                    "VSclMax": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Filtration_To_Waste.Flow_Rate.VSclMax",
+                      "data_type": "Float"
+                    },
+                    "VUnit": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Filtration_To_Waste.Flow_Rate.VUnit",
+                      "data_type": "Int16"
+                    },
+                    "VMin": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Filtration_To_Waste.Flow_Rate.VMin",
+                      "data_type": "Float"
+                    },
+                    "VMax": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Filtration_To_Waste.Flow_Rate.VMax",
+                      "data_type": "Float"
+                    },
+                    "VExt": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Filtration_To_Waste.Flow_Rate.VExt",
+                      "data_type": "Float"
+                    },
+                    "VRbk": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Filtration_To_Waste.Flow_Rate.VRbk",
+                      "data_type": "Float"
+                    }
+                  }
+                }
+              ]
             }
           ]
         }
       ],
-      "process_values": []
+      "process_values": [
+        {
+          "name": "Feed_Water.Feed_Volume",
+          "communication": {
+            "WQC": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Feed_Water.Feed_Volume.WQC",
+              "data_type": "Byte"
+            },
+            "OSLevel": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Feed_Water.Feed_Volume.OSLevel",
+              "data_type": "Byte"
+            },
+            "VOut": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Feed_Water.Feed_Volume.VOut",
+              "data_type": "Float"
+            },
+            "VSclMin": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Feed_Water.Feed_Volume.VSclMin",
+              "data_type": "Float"
+            },
+            "VSclMax": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Feed_Water.Feed_Volume.VSclMax",
+              "data_type": "Float"
+            },
+            "VUnit": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Feed_Water.Feed_Volume.VUnit",
+              "data_type": "Int16"
+            },
+            "VMin": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Feed_Water.Feed_Volume.VMin",
+              "data_type": "Float"
+            },
+            "VMax": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Feed_Water.Feed_Volume.VMax",
+              "data_type": "Float"
+            },
+            "VExt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Feed_Water.Feed_Volume.VExt",
+              "data_type": "Float"
+            },
+            "VRbk": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Feed_Water.Feed_Volume.VRbk",
+              "data_type": "Float"
+            }
+          }
+        },
+        {
+          "name": "Stirring.Stirring_Rotation_Speed",
+          "communication": {
+            "WQC": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Stirring.Stirring_Rotation_Speed.WQC",
+              "data_type": "Byte"
+            },
+            "OSLevel": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Stirring.Stirring_Rotation_Speed.OSLevel",
+              "data_type": "Byte"
+            },
+            "VOut": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Stirring.Stirring_Rotation_Speed.VOut",
+              "data_type": "Float"
+            },
+            "VSclMin": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Stirring.Stirring_Rotation_Speed.VSclMin",
+              "data_type": "Float"
+            },
+            "VSclMax": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Stirring.Stirring_Rotation_Speed.VSclMax",
+              "data_type": "Float"
+            },
+            "VUnit": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Stirring.Stirring_Rotation_Speed.VUnit",
+              "data_type": "Int16"
+            },
+            "VMin": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Stirring.Stirring_Rotation_Speed.VMin",
+              "data_type": "Float"
+            },
+            "VMax": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Stirring.Stirring_Rotation_Speed.VMax",
+              "data_type": "Float"
+            },
+            "VExt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Stirring.Stirring_Rotation_Speed.VExt",
+              "data_type": "Float"
+            },
+            "VRbk": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Stirring.Stirring_Rotation_Speed.VRbk",
+              "data_type": "Float"
+            }
+          }
+        },
+        {
+          "name": "Stirring.Stirring_Duration",
+          "communication": {
+            "WQC": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Stirring.Stirring_Duration.WQC",
+              "data_type": "Byte"
+            },
+            "OSLevel": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Stirring.Stirring_Duration.OSLevel",
+              "data_type": "Byte"
+            },
+            "VOut": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Stirring.Stirring_Duration.VOut",
+              "data_type": "Float"
+            },
+            "VSclMin": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Stirring.Stirring_Duration.VSclMin",
+              "data_type": "Float"
+            },
+            "VSclMax": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Stirring.Stirring_Duration.VSclMax",
+              "data_type": "Float"
+            },
+            "VUnit": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Stirring.Stirring_Duration.VUnit",
+              "data_type": "Int16"
+            },
+            "VMin": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Stirring.Stirring_Duration.VMin",
+              "data_type": "Float"
+            },
+            "VMax": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Stirring.Stirring_Duration.VMax",
+              "data_type": "Float"
+            },
+            "VExt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Stirring.Stirring_Duration.VExt",
+              "data_type": "Float"
+            },
+            "VRbk": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Stirring.Stirring_Duration.VRbk",
+              "data_type": "Float"
+            }
+          }
+        },
+        {
+          "name": "Feed_Powder.button",
+          "communication": {
+            "WQC": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_01.Feed_Powder.button.WQC",
+              "data_type": "Byte"
+            },
+            "OSLevel": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_01.Feed_Powder.button.OSLevel",
+              "data_type": "Byte"
+            },
+            "VOut": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_01.Feed_Powder.button.VOut",
+              "data_type": "Boolean"
+            },
+            "VState0": {
+              "value": "TODO"
+            },
+            "VState1": {
+              "value": "TODO"
+            },
+            "VExt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_01.Feed_Powder.button.VExt",
+              "data_type": "Boolean"
+            }
+          }
+        },
+        {
+          "name": "Filtration_To_Storage.Flow_Rate",
+          "communication": {
+            "WQC": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Filtration_To_Storage.Flow_Rate.WQC",
+              "data_type": "Byte"
+            },
+            "OSLevel": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Filtration_To_Storage.Flow_Rate.OSLevel",
+              "data_type": "Byte"
+            },
+            "VOut": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Filtration_To_Storage.Flow_Rate.VOut",
+              "data_type": "Float"
+            },
+            "VSclMin": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Filtration_To_Storage.Flow_Rate.VSclMin",
+              "data_type": "Float"
+            },
+            "VSclMax": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Filtration_To_Storage.Flow_Rate.VSclMax",
+              "data_type": "Float"
+            },
+            "VUnit": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Filtration_To_Storage.Flow_Rate.VUnit",
+              "data_type": "Int16"
+            },
+            "VMin": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Filtration_To_Storage.Flow_Rate.VMin",
+              "data_type": "Float"
+            },
+            "VMax": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Filtration_To_Storage.Flow_Rate.VMax",
+              "data_type": "Float"
+            },
+            "VExt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Filtration_To_Storage.Flow_Rate.VExt",
+              "data_type": "Float"
+            },
+            "VRbk": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Filtration_To_Storage.Flow_Rate.VRbk",
+              "data_type": "Float"
+            }
+          }
+        },
+        {
+          "name": "pH_Adjustment.Pump_Flow_Rate",
+          "communication": {
+            "WQC": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.Pump_Flow_Rate.WQC",
+              "data_type": "Byte"
+            },
+            "OSLevel": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.Pump_Flow_Rate.OSLevel",
+              "data_type": "Byte"
+            },
+            "VOut": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.Pump_Flow_Rate.VOut",
+              "data_type": "Float"
+            },
+            "VSclMin": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.Pump_Flow_Rate.VSclMin",
+              "data_type": "Float"
+            },
+            "VSclMax": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.Pump_Flow_Rate.VSclMax",
+              "data_type": "Float"
+            },
+            "VUnit": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.Pump_Flow_Rate.VUnit",
+              "data_type": "Int16"
+            },
+            "VMin": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.Pump_Flow_Rate.VMin",
+              "data_type": "Float"
+            },
+            "VMax": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.Pump_Flow_Rate.VMax",
+              "data_type": "Float"
+            },
+            "VExt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.Pump_Flow_Rate.VExt",
+              "data_type": "Float"
+            },
+            "VRbk": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.Pump_Flow_Rate.VRbk",
+              "data_type": "Float"
+            }
+          }
+        },
+        {
+          "name": "pH_Adjustment.Feed_Volume",
+          "communication": {
+            "WQC": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.Feed_Volume.WQC",
+              "data_type": "Byte"
+            },
+            "OSLevel": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.Feed_Volume.OSLevel",
+              "data_type": "Byte"
+            },
+            "VOut": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.Feed_Volume.VOut",
+              "data_type": "Float"
+            },
+            "VSclMin": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.Feed_Volume.VSclMin",
+              "data_type": "Float"
+            },
+            "VSclMax": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.Feed_Volume.VSclMax",
+              "data_type": "Float"
+            },
+            "VUnit": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.Feed_Volume.VUnit",
+              "data_type": "Int16"
+            },
+            "VMin": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.Feed_Volume.VMin",
+              "data_type": "Float"
+            },
+            "VMax": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.Feed_Volume.VMax",
+              "data_type": "Float"
+            },
+            "VExt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.Feed_Volume.VExt",
+              "data_type": "Float"
+            },
+            "VRbk": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.Feed_Volume.VRbk",
+              "data_type": "Float"
+            }
+          }
+        },
+        {
+          "name": "pH_Adjustment.pH_Value",
+          "communication": {
+            "WQC": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.pH_Value.WQC",
+              "data_type": "Byte"
+            },
+            "OSLevel": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.pH_Value.OSLevel",
+              "data_type": "Byte"
+            },
+            "VOut": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.pH_Value.VOut",
+              "data_type": "Float"
+            },
+            "VSclMin": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.pH_Value.VSclMin",
+              "data_type": "Float"
+            },
+            "VSclMax": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.pH_Value.VSclMax",
+              "data_type": "Float"
+            },
+            "VUnit": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.pH_Value.VUnit",
+              "data_type": "Int16"
+            },
+            "VMin": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.pH_Value.VMin",
+              "data_type": "Float"
+            },
+            "VMax": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.pH_Value.VMax",
+              "data_type": "Float"
+            },
+            "VExt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.pH_Value.VExt",
+              "data_type": "Float"
+            },
+            "VRbk": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.pH_Adjustment.pH_Value.VRbk",
+              "data_type": "Float"
+            }
+          }
+        },
+        {
+          "name": "Cond_Adjustment.Pump_Flow_Rate",
+          "communication": {
+            "WQC": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Pump_Flow_Rate.WQC",
+              "data_type": "Byte"
+            },
+            "OSLevel": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Pump_Flow_Rate.OSLevel",
+              "data_type": "Byte"
+            },
+            "VOut": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Pump_Flow_Rate.VOut",
+              "data_type": "Float"
+            },
+            "VSclMin": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Pump_Flow_Rate.VSclMin",
+              "data_type": "Float"
+            },
+            "VSclMax": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Pump_Flow_Rate.VSclMax",
+              "data_type": "Float"
+            },
+            "VUnit": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Pump_Flow_Rate.VUnit",
+              "data_type": "Int16"
+            },
+            "VMin": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Pump_Flow_Rate.VMin",
+              "data_type": "Float"
+            },
+            "VMax": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Pump_Flow_Rate.VMax",
+              "data_type": "Float"
+            },
+            "VExt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Pump_Flow_Rate.VExt",
+              "data_type": "Float"
+            },
+            "VRbk": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Pump_Flow_Rate.VRbk",
+              "data_type": "Float"
+            }
+          }
+        },
+        {
+          "name": "Cond_Adjustment.Feed_Volume",
+          "communication": {
+            "WQC": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Feed_Volume.WQC",
+              "data_type": "Byte"
+            },
+            "OSLevel": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Feed_Volume.OSLevel",
+              "data_type": "Byte"
+            },
+            "VOut": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Feed_Volume.VOut",
+              "data_type": "Float"
+            },
+            "VSclMin": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Feed_Volume.VSclMin",
+              "data_type": "Float"
+            },
+            "VSclMax": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Feed_Volume.VSclMax",
+              "data_type": "Float"
+            },
+            "VUnit": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Feed_Volume.VUnit",
+              "data_type": "Int16"
+            },
+            "VMin": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Feed_Volume.VMin",
+              "data_type": "Float"
+            },
+            "VMax": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Feed_Volume.VMax",
+              "data_type": "Float"
+            },
+            "VExt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Feed_Volume.VExt",
+              "data_type": "Float"
+            },
+            "VRbk": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Feed_Volume.VRbk",
+              "data_type": "Float"
+            }
+          }
+        },
+        {
+          "name": "Cond_Adjustment.Conductivity",
+          "communication": {
+            "WQC": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Conductivity.WQC",
+              "data_type": "Byte"
+            },
+            "OSLevel": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Conductivity.OSLevel",
+              "data_type": "Byte"
+            },
+            "VOut": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Conductivity.VOut",
+              "data_type": "Float"
+            },
+            "VSclMin": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Conductivity.VSclMin",
+              "data_type": "Float"
+            },
+            "VSclMax": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Conductivity.VSclMax",
+              "data_type": "Float"
+            },
+            "VUnit": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Conductivity.VUnit",
+              "data_type": "Int16"
+            },
+            "VMin": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Conductivity.VMin",
+              "data_type": "Float"
+            },
+            "VMax": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Conductivity.VMax",
+              "data_type": "Float"
+            },
+            "VExt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Conductivity.VExt",
+              "data_type": "Float"
+            },
+            "VRbk": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Cond_Adjustment.Conductivity.VRbk",
+              "data_type": "Float"
+            }
+          }
+        },
+        {
+          "name": "Filtration_To_Waste.Flow_Rate",
+          "communication": {
+            "WQC": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Filtration_To_Waste.Flow_Rate.WQC",
+              "data_type": "Byte"
+            },
+            "OSLevel": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Filtration_To_Waste.Flow_Rate.OSLevel",
+              "data_type": "Byte"
+            },
+            "VOut": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Filtration_To_Waste.Flow_Rate.VOut",
+              "data_type": "Float"
+            },
+            "VSclMin": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Filtration_To_Waste.Flow_Rate.VSclMin",
+              "data_type": "Float"
+            },
+            "VSclMax": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Filtration_To_Waste.Flow_Rate.VSclMax",
+              "data_type": "Float"
+            },
+            "VUnit": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Filtration_To_Waste.Flow_Rate.VUnit",
+              "data_type": "Int16"
+            },
+            "VMin": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Filtration_To_Waste.Flow_Rate.VMin",
+              "data_type": "Float"
+            },
+            "VMax": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Filtration_To_Waste.Flow_Rate.VMax",
+              "data_type": "Float"
+            },
+            "VExt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Filtration_To_Waste.Flow_Rate.VExt",
+              "data_type": "Float"
+            },
+            "VRbk": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.Application.Main_04.Filtration_To_Waste.Flow_Rate.VRbk",
+              "data_type": "Float"
+            }
+          }
+        }
+      ]
     }
   ]
 }

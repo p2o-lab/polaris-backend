@@ -1,6 +1,6 @@
 {
   "version": "0.1.0",
-  "name": "Rezept BioFeed Nährmittelansatz XYZ",
+  "name": "Media preparation for medium 88370C",
   "author": "Markus Graube <markus.graube@tu-dresden.de>",
   "initial_step": "S1.AddWater",
   "steps": [
@@ -11,7 +11,10 @@
           "service": "Feed_Water",
           "command": "start",
           "parameter": [
-            {"name": "feed_volume", "value": 4000}
+            {
+              "name": "Feed_Volume",
+              "value": 4000
+            }
           ]
         }
       ],
@@ -34,15 +37,28 @@
           "service": "Feed_Powder",
           "command": "start",
           "parameter": [
-            {"name": "feed_mass", "value": 143},
-            {"name": "feed_duration", "value": 60}
+            {
+              "name": "Feed_Mass",
+              "value": 143
+            },
+            {
+              "name": "Feed_Furation",
+              "value": 60
+            }
           ]
         },
         {
           "service": "Stirring",
           "command": "start",
           "parameter": [
-            {"name": "stirring_duration", "value": 0}
+            {
+              "name": "Stirring_Rotation_Speed",
+              "value": 400
+            },
+            {
+              "name": "Stirring_Duration",
+              "value": 0
+            }
           ]
         }
       ],
@@ -70,10 +86,21 @@
       "name": "S3.pH4.5",
       "operations": [
         {
-          "service": "ph_Adjustment",
+          "service": "pH_Adjustment",
           "command": "start",
           "parameter": [
-            {"name": "ph_value", "value": 4.5}
+            {
+              "name": "Pump_Flow_Rate",
+              "value": 11
+            },
+            {
+              "name": "Feed_Volume",
+              "value": 11
+            },
+            {
+              "name": "pH_Value",
+              "value": 4.5
+            }
           ]
         }
       ],
@@ -83,7 +110,7 @@
           "condition":
           {
             "type": "state",
-            "service": "ph_Adjustment",
+            "service": "pH_Adjustment",
             "state": "completed"
           }
         }
@@ -96,7 +123,10 @@
           "service": "Feed_Buffer_Solution",
           "command": "start",
           "parameter": [
-            {"name": "feed_volume", "value": "???"}
+            {
+              "name": "Feed_Volume",
+              "value": "???"
+            }
           ]
         }
       ],
@@ -116,11 +146,7 @@
       "name": "S5.ph9",
       "operations": [
         {
-          "service": "Feed_Buffer_Solution",
-          "command": "reset"
-        },
-        {
-          "service": "ph_Adjustment",
+          "service": "pH_Adjustment",
           "command": "start",
           "parameter": [
             {"name": "ph_value", "value": 9 }
@@ -133,7 +159,7 @@
           "condition":
           {
             "type": "state",
-            "service": "ph_Adjustment",
+            "service": "pH_Adjustment",
             "state": "completed"
           }
         }
@@ -143,7 +169,7 @@
       "name": "S6.ph7",
       "operations": [
         {
-          "service": "ph_Adjustment",
+          "service": "pH_Adjustment",
           "command": "start",
           "parameter": [
             {"name": "ph_value", "value": 5000}
@@ -156,7 +182,7 @@
           "condition":
           {
             "type": "state",
-            "service": "ph_Adjustment",
+            "service": "pH_Adjustment",
             "state": "idle"
           }
         }
@@ -166,7 +192,7 @@
       "name": "S7.FinalVolume",
       "operations": [
         {
-          "service": "Feed_water",
+          "service": "Feed_Water",
           "command": "start",
           "parameter": [
             {"name": "feed_volume", "value": 7.3}
@@ -179,7 +205,7 @@
           "condition":
           {
             "type": "state",
-            "service": "Feed_water",
+            "service": "Feed_Water",
             "state": "completed"
           }
         }
