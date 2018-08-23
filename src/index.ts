@@ -2,34 +2,70 @@ import * as debug from 'debug';
 import * as http from 'http';
 import {Server} from './server/server';
 import * as serverHandlers from './server/serverHandlers';
+import * as commandLineArgs from 'command-line-args';
+import * as fs from "fs";
+import {manager} from "./model/Manager";
 
-debug('ts-express:server');
+const optionDefinitions = [
+    {
+        name: 'module', alias: 'm', type: String, multiple: true, defaultOption: true,
+        typeLabel: '{underline modulePath[]}', description: 'path to module.json which should be loaded at startup'
+    },
+    {
+        name: 'recipe',
+        alias: 'r',
+        type: String,
+        typeLabel: '{underline recipePath}',
+        description: 'path to recipe.json which should be loaded at startup'
+    },
+    {name: 'help', alias: 'h', type: Boolean, description: 'Print this usage guide.'}
+];
+const options = commandLineArgs(optionDefinitions);
+if (options.help) {
 
-const port: number | string | boolean = serverHandlers.normalizePort(process.env.PORT || 3000);
+    const commandLineUsage = require('command-line-usage');
 
-const appServer = new Server();
-appServer.app.set('port', port);
-console.log(`Server listening on port ${port}`);
+    const sections = [
+        {
+            header: 'pfe-ree-node',
+            content: 'Starts recipe execution engine for controlling services of modules.'
+        },
+        {
+            header: 'Options',
+            optionList: optionDefinitions
+        }
+    ];
+    const usage = commandLineUsage(sections);
+    console.log(usage);
+} else {
+    debug('ts-express:server');
 
-const server: http.Server = http.createServer(appServer.app);
+    const port: number | string | boolean = serverHandlers.normalizePort(process.env.PORT || 3000);
+
+    const appServer = new Server();
+    appServer.app.set('port', port);
+    console.log(`Server listening on port ${port}`);
+
+    const server: http.Server = http.createServer(appServer.app);
 
 //initialize the WebSocket server instance
-appServer.initSocketServer(server);
+    appServer.initSocketServer(server);
 
-server.listen(port);
-server.on('error', error => serverHandlers.onError(error, port));
-server.on('listening', serverHandlers.onListening.bind(server));
+    server.listen(port);
+    server.on('error', error => serverHandlers.onError(error, port));
+    server.on('listening', serverHandlers.onListening.bind(server));
 
 
-/** Load some configuration at startup */
+    /** Load some configuration at startup */
+    if (options.module) {
+        options.module.forEach((module) => {
+            const modulesOptions = JSON.parse(fs.readFileSync(module).toString());
+            manager.loadModule(modulesOptions);
+        });
+    }
 
-//let modulesOptions = JSON.parse(fs.readFileSync('assets/modules/modules_achema.json').toString());
-//manager.loadModule(modulesOptions);
-
-//modulesOptions = JSON.parse(fs.readFileSync('assets/modules/module_cif.json').toString());
-//manager.loadModule(modulesOptions);
-
-//manager.loadRecipeFromPath('assets/recipes/recipe_time_local.json');
-//manager.loadRecipeFromPath('assets/recipes/recipe_p2o_cif_testmodule.json');
-//manager.loadRecipeFromPath('assets/recipes/recipe_reactor_only.json');
-//manager.loadRecipeFromPath('assets/recipes/recipe_achema.json');
+    if (options.recipe) {
+        const recipeOptions = JSON.parse(fs.readFileSync(options.recipe).toString());
+        manager.loadRecipe(recipeOptions);
+    }
+}
