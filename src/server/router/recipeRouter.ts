@@ -16,7 +16,7 @@ recipeRouter.get('', asyncHandler(async (req: Request, res: Response) => {
         const result = await manager.recipe.json();
         res.json(result);
     } else {
-        res.json({});
+        throw new Error('No recipe loaded yet');
     }
 }));
 
