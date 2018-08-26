@@ -137,7 +137,12 @@ export class Module {
     }
 
     resolveNodeId(variable: OpcUaNode) {
-        return coerceNodeId(`ns=${this.namespaceArray.indexOf(variable.namespace_index)};s=${variable.node_id}`);
+        if (this.namespaceArray) {
+            return coerceNodeId(`ns=${this.namespaceArray.indexOf(variable.namespace_index)};s=${variable.node_id}`);
+        }
+        else {
+            throw new Error(`No namespace array read for module ${this.id}`);
+        }
     }
 
     listenToVariable(dataStructureName: string, variableName: string): EventEmitter {
