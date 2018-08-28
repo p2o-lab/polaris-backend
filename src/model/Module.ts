@@ -67,10 +67,16 @@ export class Module {
                     }
                 });
 
+                client.on("backoff", () => catOpc.debug("retrying connection"));
+
                 await promiseTimeout(5000, client.connect(this.endpoint));
                 catOpc.debug(`module connected ${this.id} ${this.endpoint}`);
 
                 const session = await client.createSession();
+                session.on('session_closed', (statusCode) => {
+                    catOpc.warn(`Session of ${this.id} closed by server`);
+                    //this.disconnect();
+                });
                 catOpc.debug(`session established ${this.id} ${this.endpoint}`);
 
                 const subscription = new ClientSubscription(session, {
@@ -136,6 +142,11 @@ export class Module {
         }
     }
 
+    /**
+     * Resolves nodeId of variable from module JSON using the namespace array
+     * @param {OpcUaNode} variable
+     * @returns {any}
+     */
     resolveNodeId(variable: OpcUaNode) {
         if (this.namespaceArray) {
             return coerceNodeId(`ns=${this.namespaceArray.indexOf(variable.namespace_index)};s=${variable.node_id}`);

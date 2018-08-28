@@ -14,6 +14,7 @@ import {
     TimeConditionOptions,
     VariableConditionOptions
 } from 'pfe-ree-interface';
+import EventEmitter = NodeJS.EventEmitter;
 
 export abstract class Condition {
 
@@ -137,9 +138,9 @@ export class StateCondition extends Condition {
             });
         this.monitoredItem.on('changed', (dataValue) => {
             let state: ServiceState = dataValue.value.value;
-            catOpc.debug(`State Changed (${this.service.name}) = ${state} (${ServiceState[state]}) - compare to ${this.state}`);
             this._fulfilled = ServiceState[state]
                 .localeCompare(this.state, 'en', {usage: "search", sensitivity: "base"}) === 0;
+            catRecipe.info(`State Changed (${this.service.name}) = ${state} (${ServiceState[state]}) - compare to ${this.state} -> ${this._fulfilled}`);
             callback(this._fulfilled);
         });
     }
@@ -177,6 +178,7 @@ export class VariableCondition extends Condition {
     variable: string;
     value: string | number;
     operator: "==" | "<" | ">" | "<=" | ">=";
+    private listener: EventEmitter;
 
     constructor(options: VariableConditionOptions, modules: Module[], recipe: Recipe) {
         super(options);
@@ -197,7 +199,7 @@ export class VariableCondition extends Condition {
      *
      */
     clear(): void {
-        this.module.clearListener(this.variable);
+        this.listener.removeAllListeners();
     }
 
     /**
@@ -214,9 +216,9 @@ export class VariableCondition extends Condition {
         }
         callback(this._fulfilled);
 
-        this.module.listenToVariable(this.dataStructure, this.variable)
+        this.listener = this.module.listenToVariable(this.dataStructure, this.variable)
             .on('changed', (value) => {
-                catOpc.debug(`value changed to ${value}`);
+                catOpc.info(`value changed to ${value} -  (${this.operator}) compare against ${this.value}`);
                 if (this.operator === "==") {
                     if (value === this.value) {
                         this._fulfilled = true;

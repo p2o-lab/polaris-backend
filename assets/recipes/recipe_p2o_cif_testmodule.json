@@ -1,7 +1,7 @@
 
     {
       "version": "1.0.0",
-      "name": "Simples Testrezept für CIF Modul",
+      "name": "Testrezept für CIF Modul",
       "author": "Markus Graube",
       "initial_step": "S1",
       "steps": [

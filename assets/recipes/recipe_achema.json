@@ -2,39 +2,60 @@
   "version": "0.1.0",
   "name": "Rezept ACHEMA",
   "author": "Markus Graube",
-  "initial_step": "Startup.Init",
+  "initial_step": "Startup.Init.1",
   "steps": [
     {
-      "name": "Startup.Init",
+      "name": "Startup.Init.1",
       "operations": [
         {
-          "module": "React",
-          "service": "Empty_Service",
+          "module": "Dose",
+          "service": "Fill",
           "command": "start"
         }
       ],
       "transitions": [
         {
-          "next_step": "Running.Vorlegen",
+          "next_step": "Startup.Init.2",
           "condition": {
-            "type": "and",
-            "conditions": [
-              {
-                "type": "state",
-                "module": "React",
-                "service": "Empty_Service",
-                "state": "completed"
-              },
-              {
-                "type": "variable",
-                "module": "Dose",
-                "service": "Dose",
-                "variable": "Sensoren.L001",
-                "operator": ">=",
-                "value": 10
-              }
-            ]
+            "type": "state",
+            "module": "Dose",
+            "service": "Fill",
+            "state": "running"
           }
+        }
+      ]
+    },
+    {
+      "name": "Startup.Init.2",
+      "operations": [
+        {
+          "module": "React",
+          "service": "Empty_Service",
+          "strategy": "Empty_Full",
+          "command": "start",
+          "parameter": [
+            {
+              "name": "Empty_Level_Tank_DeadBand",
+              "value": 0.1
+            },
+            {
+              "name": "Empty_VolFlow",
+              "value": 3
+            }
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "condition": {
+            "type": "variable",
+            "module": "React",
+            "dataStructure": "MCL01_AnaView",
+            "variable": "V",
+            "operator": "<=",
+            "value": "0.1"
+          },
+          "next_step": "Running.Vorlegen"
         }
       ]
     },
@@ -58,6 +79,17 @@
         },
         {
           "module": "React",
+          "service": "Fill_Service",
+          "command": "start",
+          "parameters": [
+            {
+              "name": "Fill_Level_Max",
+              "value": 1.5
+            }
+          ]
+        },
+        {
+          "module": "React",
           "service": "Stir_Service",
           "strategy": "Stir_Continous",
           "command": "start",
@@ -76,7 +108,7 @@
             "type": "state",
             "module": "Dose",
             "service": "DoseAmount",
-            "state": "idle"
+            "state": "completed"
           }
         }
       ]
@@ -91,11 +123,11 @@
           "parameter": [
             {
               "name": "SetVolume",
-              "value": 1
+              "value": "1"
             },
             {
               "name": "SetDuration",
-              "value": 60
+              "value": "60"
             }
           ]
         },

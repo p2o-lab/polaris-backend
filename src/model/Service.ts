@@ -10,7 +10,7 @@ import {
     ServiceMtpCommand,
     ServiceState
 } from './enum';
-import {OpcUaNode, Strategy} from "./Interfaces";
+import {OpcUaNode, ServiceParameter, Strategy} from "./Interfaces";
 import {Parameter} from "./Parameter";
 import {ParameterInterface, ServiceCommand, ServiceInterface, StrategyInterface} from "pfe-ree-interface";
 
@@ -25,6 +25,7 @@ export interface ServiceOptions {
         StrategyExt: OpcUaNode
     };
     strategies: Strategy[];
+    parameters: ServiceParameter[];
 }
 
 export class Service {
@@ -34,6 +35,7 @@ export class Service {
     opMode: OpcUaNode;
     strategy: OpcUaNode;
     strategies: Strategy[];
+    parameters: ServiceParameter[];
 
     parent: Module;
 
@@ -46,25 +48,36 @@ export class Service {
         this.strategy = serviceOptions.communication.StrategyExt;
 
         this.strategies = serviceOptions.strategies;
+        this.parameters = serviceOptions.parameters;
         this.parent = parent;
     }
 
     async getServiceState(): Promise<ServiceState> {
-        const result: DataValue = await this.parent.session.readVariableValue(this.parent.resolveNodeId(this.status));
-        const state: ServiceState = <ServiceState> result.value.value;
-        const stateString: string = ServiceState[state];
-        catOpc.trace(`Read state ${this.name}: ${state} (${stateString})`);
-        return state;
+        try {
+            const result: DataValue = await this.parent.session.readVariableValue(this.parent.resolveNodeId(this.status));
+            const state: ServiceState = <ServiceState> result.value.value;
+            const stateString: string = ServiceState[state];
+            catOpc.trace(`Read state ${this.name}: ${state} (${stateString})`);
+            return state;
+        } catch (err) {
+            catOpc.error("Error reading opMode", err);
+            return undefined;
+        }
     }
 
     async getOpMode(): Promise<OpMode> {
-        const nodeId = this.parent.resolveNodeId(this.opMode);
-        const result: any = await this.parent.session.readVariableValue(nodeId);
-        const opMode: number = result.value.value;
-        const opModeString: string = OpMode[opMode];
+        try {
+            const nodeId = this.parent.resolveNodeId(this.opMode);
+            const result: any = await this.parent.session.readVariableValue(nodeId);
+            const opMode: number = result.value.value;
+            const opModeString: string = OpMode[opMode];
 
-        catOpc.debug(`OpMode ${this.name}: ${opMode} (${opModeString})`);
-        return opMode;
+            catOpc.trace(`OpMode ${this.name}: ${opMode} (${opModeString})`);
+            return opMode;
+        } catch (err) {
+            catOpc.error("Error reading opMode", err);
+            return undefined;
+        }
     }
 
     async getOverview(): Promise<ServiceInterface> {
@@ -72,12 +85,13 @@ export class Service {
         const state = this.getServiceState();
         const strategies = this.getStrategies();
         return Promise.all([opMode, state, strategies])
-            .then((data) => {
+            .then(async (data) => {
                 return {
                     name: this.name,
                     opMode: OpMode[data[0]] || data[0],
                     status: ServiceState[data[1]] || data[1],
-                    strategies: data[2]
+                    strategies: data[2],
+                    parameters: await this.getCurrentParameters().catch(reason => undefined)
                 };
             });
     }
@@ -88,13 +102,21 @@ export class Service {
                 id: strategy.id,
                 name: strategy.name,
                 default: strategy.default,
-                parameters: await this.getCurrentParameters(strategy)
+                sc: strategy.sc,
+                parameters: await this.getCurrentParameters(strategy).catch(reason => undefined)
             }
         }));
     }
 
-    async getCurrentParameters(strategy: Strategy): Promise<ParameterInterface[]> {
-        return await Promise.all(strategy.parameters.map(async (param) => {
+
+    async getCurrentParameters(strategy?: Strategy): Promise<ParameterInterface[]> {
+        let params: ServiceParameter[] = [];
+        if (strategy) {
+            params = strategy.parameters;
+        } else {
+            params = this.parameters;
+        }
+        return await Promise.all(params.map(async (param) => {
             if (this.parent.isConnected()) {
                 const value = await this.parent.session.readVariableValue(this.parent.resolveNodeId(param.communication.VExt));
                 let max, min;
@@ -125,7 +147,7 @@ export class Service {
     }
 
     executeCommand(command: ServiceCommand, strategy: Strategy, parameter: Parameter[]) {
-        catService.info(`trigger service ${this.name} - ${command} - ${strategy} - ${JSON.stringify(parameter)}`);
+        catService.info(`trigger service ${this.name} - ${command} - ${strategy ? strategy.name : ''} - ${JSON.stringify(parameter)}`);
         if (command === 'start') {
             return this.start(strategy, parameter);
         } else if (command === 'stop') {
@@ -188,7 +210,7 @@ export class Service {
     }
 
     private async setParameter(strategy: Strategy, parameter: Parameter[]): Promise<any[]> {
-        catService.debug(`Set parameter: ${strategy} - ${JSON.stringify(parameter)}`);
+        catService.debug(`Set parameter: ${strategy.name} - ${JSON.stringify(parameter)}`);
         // set strategy
         if (strategy) {
             await this.parent.session.writeSingleNode(this.parent.resolveNodeId(this.strategy),
@@ -207,7 +229,9 @@ export class Service {
             if (parameter) {
                 parameter.forEach((param: Parameter) => {
                     param.variable = param.variable || "VExt";
-                    const serviceParam = strategy.parameters.find((obj) => obj.name === param.name);
+                    const params = this.parameters.concat(strategy.parameters);
+
+                    const serviceParam = params.find((obj) => obj.name === param.name);
                     const variable = serviceParam.communication[param.variable];
                     const nodeid = this.parent.resolveNodeId(variable);
                     const dataValue: Variant = {

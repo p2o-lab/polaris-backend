@@ -57,7 +57,7 @@ export class Operation {
     }
 
     execute() {
-        catRecipe.debug(`Perform operation ${this.module.id} ${this.service.name}`);
+        catRecipe.debug(`Perform operation ${this.module.id} ${this.service.name} (Strategy: ${this.strategy ? this.strategy.name : ''}) - ${JSON.stringify(this.parameter)}`);
         return this.service.executeCommand(this.command, this.strategy, this.parameter);
     }
 

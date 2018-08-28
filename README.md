@@ -25,13 +25,21 @@ npm publish
 
 Use docker ready image (from our private docker registry [http://registry.plt.et.tu-dresden.de](http://registry.plt.et.tu-dresden.de))
 ```
-docker pull registry.plt.et.tu-dresden.de:443/pfe-ree-node
-docker run -d -p 3000:3000 registry.plt.et.tu-dresden.de:443/pfe-ree-node
+docker pull registry.plt.et.tu-dresden.de/pfe-ree-node
+docker run -d -p 3000:3000 registry.plt.et.tu-dresden.de/pfe-ree-node
 ```
 
 Update docker image
 ```
-docker build -t pfe-ree-node .
-docker tag pfe-ree-node registry.plt.et.tu-dresden.de:443/pfe-ree-node
-docker push registry.plt.et.tu-dresden.de:443/pfe-ree-node 
+docker build -t pfe-ree-node/arm -f Dockerfile.arm .
+docker tag pfe-ree-node/arm registry.plt.et.tu-dresden.de/pfe-ree-node/arm
+docker push registry.plt.et.tu-dresden.de/pfe-ree-node 
 ```
+
+Update docker image for raspberry
+```
+docker build -t pfe-ree-node .
+docker tag pfe-ree-node registry.plt.et.tu-dresden.de/pfe-ree-node/arm
+docker push registry.plt.et.tu-dresden.de/pfe-ree-node/arm 
+```
+

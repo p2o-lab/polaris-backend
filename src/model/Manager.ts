@@ -1,8 +1,7 @@
 import {Recipe, RecipeOptions} from "./Recipe";
-import * as fs from "fs";
 import {Step} from "./Step";
 import {RecipeState} from "./enum";
-import {catRecipe, catRM} from "../config/logging";
+import {catRM} from "../config/logging";
 import {EventEmitter} from "events";
 import {Module, ModuleOptions} from "./Module";
 import {Service} from "./Service";
@@ -10,11 +9,14 @@ import {ManagerInterface} from "pfe-ree-interface";
 
 export class Manager {
 
-    // loaded recipe
-    recipe: Recipe;
+    // loaded activeRecipe
+    activeRecipe: Recipe;
+    recipes: Recipe[] = [];
 
     // loaded modules
     modules: Module[] = [];
+
+    queue: Recipe;
 
     // autoreset determines if a service is automatically reset when
     private _autoreset: boolean = true;
@@ -73,58 +75,42 @@ export class Manager {
         return newModules;
     }
 
-    public loadRecipeFromPath(recipe_path) {
-        if (this.recipe && this.recipe.status === RecipeState.running) {
+    public activateRecipe(recipeId: string) {
+        if (this.activeRecipe && this.activeRecipe.status === RecipeState.running) {
             return new Error("Another Recipe is currently running");
+        } else {
+            this.activeRecipe = this.recipes.find(recipe => recipe.id === recipeId);
         }
-        let recipe_buffer = fs.readFileSync(recipe_path);
-        let recipeOptions: RecipeOptions = JSON.parse(recipe_buffer.toString());
-        this.recipe = new Recipe(recipeOptions, this.modules);
     }
 
-    public loadRecipe(options: RecipeOptions) {
-        if (this.recipe && this.recipe.status === RecipeState.running) {
-            return new Error("Another Recipe is currently running");
-        }
-        this.recipe = new Recipe(options, this.modules);
-        manager.eventEmitter.emit('refresh', 'recipe', 'new');
-    }
-
-    async connect(): Promise<any> {
-        catRM.info("Start connecting to all modules ...");
-        const result = await this.recipe.connectModules();
-        catRM.info("Connected to all modules necessary for loaded recipe");
-        return result;
-    }
-
-    close() {
-        catRM.info("Close Manager ...");
-        return this.recipe.disconnectModules();
+    public loadRecipe(options: RecipeOptions): Recipe {
+        const newRecipe = new Recipe(options, this.modules);
+        this.recipes.push(newRecipe);
+        manager.eventEmitter.emit('refresh', 'recipes');
+        return newRecipe;
     }
 
 
     /**
-     * Start loaded recipe
-     * @returns {"events".internal.EventEmitter}
+     * Start loaded activeRecipe
+     * @returns {EventEmitter}
      */
-    start(): EventEmitter {
-        if (this.recipe.status === RecipeState.idle) {
-            catRM.info("Start recipe");
-            return this.recipe.start()
-                .on('completed', () => {
+    async start() {
+        if (this.activeRecipe.status === RecipeState.idle) {
+            catRM.info("Start activeRecipe");
+            (await this.activeRecipe.start())
+                .on('recipe_completed', () => {
                     catRM.info(`Recipe finished`);
-                    this.eventEmitter.emit('refresh', 'recipe', 'completed');
                 })
                 .on('step_finished', (step: Step, next_step: Step) => {
-                    catRM.info(`Step finished: ${step.name} - ${next_step.name}`)
-                    this.eventEmitter.emit('refresh', 'recipe', 'stepFinished', step, next_step);
+                    catRM.info(`Step finished: ${step.name} -> ${next_step ? next_step.name : 'none'}`);
                 });
         }
     }
 
     reset() {
-        if (this.recipe.status === RecipeState.completed || this.recipe.status === RecipeState.stopped) {
-            this.recipe.reset();
+        if (this.activeRecipe.status === RecipeState.completed || this.activeRecipe.status === RecipeState.stopped) {
+            this.activeRecipe.reset();
             this.eventEmitter.emit('refresh', 'recipe', 'reset');
         } else {
             throw new Error('Recipe not in completed or stopped');
@@ -132,11 +118,11 @@ export class Manager {
     }
 
     /**
-     * Abort all services from modules used in recipe
+     * Abort all services from modules used in activeRecipe
      * @returns {Promise}
      */
     abortRecipe() {
-        let tasks = Array.from(this.recipe.modules).map((module) => {
+        let tasks = Array.from(this.activeRecipe.modules).map((module) => {
             return module.services.map((service) => {
                 return service.abort();
             })
@@ -158,9 +144,12 @@ export class Manager {
     }
 
     json(): ManagerInterface {
-        let recipe = this.recipe? {status: RecipeState[this.recipe.status], name: this.recipe.name } : undefined;
+        let recipe = this.activeRecipe ? {
+            status: RecipeState[this.activeRecipe.status],
+            name: this.activeRecipe.name
+        } : undefined;
         return {
-            recipe: recipe,
+            activeRecipe: recipe,
             modules: this.modules.map(module => module.id),
             autoReset: this.autoreset
         };

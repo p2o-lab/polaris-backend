@@ -4,6 +4,9 @@ import {catRecipe} from '../config/logging';
 import {RecipeState} from './enum';
 import {EventEmitter} from "events";
 import {RecipeInterface} from "pfe-ree-interface";
+import {v4} from 'uuid';
+import {Transition} from "./Transition";
+import {manager} from "./Manager";
 
 export interface RecipeOptions {
     version: string;
@@ -15,6 +18,7 @@ export interface RecipeOptions {
 
 export class Recipe {
 
+    id: string;
     version: string;
     name: string;
     author: string;
@@ -30,6 +34,8 @@ export class Recipe {
     options: RecipeOptions;
 
     constructor(options: RecipeOptions, modules: Module[]) {
+
+        this.id = v4();
         if (options.version) {
             this.version = options.version;
         } else {
@@ -52,12 +58,12 @@ export class Recipe {
                 });
             });
         } else {
-            throw new Error('steps array is missing in recipe');
+            throw new Error('steps array is missing in activeRecipe');
         }
         if (options.initial_step) {
             this.initial_step = this.steps.find(step => step.name === options.initial_step);
         } else {
-            throw new Error('"initial_step" property is missing in recipe');
+            throw new Error('"initial_step" property is missing in activeRecipe');
         }
 
         this.options = options;
@@ -71,15 +77,15 @@ export class Recipe {
         this.initRecipe();
     }
 
-    start(): EventEmitter {
+    public async start(): Promise<EventEmitter> {
+        await this.connectModules();
         this.current_step = this.initial_step;
         this.status = RecipeState.running;
-        this.executeStep(() => {
-            this.status = RecipeState.completed;
-            catRecipe.info(`Recipe completed ${this.modules}`);
-            this.eventEmitter.emit('completed', 'succesful');
-        });
-        return this.eventEmitter;
+        return this.executeStep()
+            .on('recipe_finished', () => {
+                this.status = RecipeState.completed;
+                catRecipe.info(`Recipe completed ${this.name}`);
+            });
     }
 
     private initRecipe() {
@@ -87,9 +93,14 @@ export class Recipe {
         this.status = RecipeState.idle;
     }
 
-    public connectModules(): Promise<any[]> {
-        const tasks = Array.from(this.modules).map(module => module.connect());
-        return Promise.all(tasks);
+    public async json(): Promise<RecipeInterface> {
+        return {
+            id: this.id,
+            modules: await this.getServiceStates(),
+            status: RecipeState[this.status],
+            currentStep: this.stepJson(),
+            options: this.options
+        }
     }
 
     public disconnectModules(): Promise<any[]> {
@@ -97,19 +108,9 @@ export class Recipe {
         return Promise.all(tasks);
     }
 
-    private executeStep(callback_recipe_completed): void {
-        catRecipe.info(`Start step: ${this.current_step.name}`);
-        this.current_step.execute((step: Step) => {
-            if (step) {
-                catRecipe.info(`Step finished. New step is ${step.name}`);
-                this.eventEmitter.emit('step_finished', this.current_step, step);
-                this.current_step = step;
-                this.executeStep(callback_recipe_completed);
-            } else {
-                catRecipe.info('Last step finished.');
-                callback_recipe_completed();
-            }
-        });
+    private connectModules(): Promise<any[]> {
+        const tasks = Array.from(this.modules).map(module => module.connect());
+        return Promise.all(tasks);
     }
 
     public stepJson(): any {
@@ -143,13 +144,26 @@ export class Recipe {
         return states;
     }
 
-    public async json(): Promise<RecipeInterface> {
-        return {
-            modules: await this.getServiceStates(),
-            status: RecipeState[this.status],
-            currentStep: this.stepJson(),
-            options: this.options
-        }
+    private executeStep(): EventEmitter {
+        catRecipe.info(`Start step: ${this.current_step.name}`);
+        this.current_step.execute()
+            .on('completed', (step: Step, transition: Transition) => {
+                if (step !== this.current_step) {
+                    catRecipe.warn(`not correct step. Current Step: ${this.current_step.name}. Reported step: ${step.name}`);
+                }
+                catRecipe.info(`Step ${step.name} finished. New step is ${transition.next_step_name}`);
+                this.eventEmitter.emit('step_finished', this.current_step, transition.next_step);
+                manager.eventEmitter.emit('refresh', 'recipe', 'stepFinished');
+                if (transition.next_step) {
+                    this.current_step = transition.next_step;
+                    this.executeStep();
+                } else {
+                    catRecipe.info('Last step finished.');
+                    this.eventEmitter.emit('recipe_finished', this);
+                    manager.eventEmitter.emit('refresh', 'recipe', 'completed');
+                }
+            });
+        return this.eventEmitter;
     }
 
 }

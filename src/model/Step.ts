@@ -2,6 +2,7 @@ import {Operation, OperationOptions} from "./Operation";
 import {Transition, TransitionOptions} from "./Transition";
 import {catRecipe} from "../config/logging";
 import {manager} from "./Manager";
+import {EventEmitter} from "events";
 
 export interface StepOptions {
     name: string;
@@ -13,6 +14,8 @@ export class Step {
     name: string;
     operations: Operation[];
     transitions: Transition[];
+
+    private eventEmitter: EventEmitter = new EventEmitter();
 
     constructor(options: StepOptions, modules, recipe) {
         if (options.name) {
@@ -32,24 +35,25 @@ export class Step {
         }
     }
 
-    execute(callback: (step: Step) => void) {
-        catRecipe.info(`Start step ${this.name}`);
-        manager.eventEmitter.emit('refresh', 'recipe', 'stepStarted', this.name);
+    execute() {
+        manager.eventEmitter.emit('refresh', 'recipe', 'stepStarted');
         this.operations.forEach((operation) => {
-            catRecipe.info(`Start operation ${operation.module.id} ${operation.service.name} ${operation.command} ${operation.parameter}`);
+            catRecipe.info(`Start operation ${operation.module.id} ${operation.service.name} ${JSON.stringify(operation.command)} ${JSON.stringify(operation.parameter)}`);
             operation.execute();
         });
 
         this.transitions.forEach((transition) => {
             transition.condition.listen((status) => {
-                catRecipe.info(`Status: ${status}`);
+                catRecipe.info(`Status of step ${this.name} for transition to ${transition.next_step_name}: ${status}`);
                 if (status) {
+                    // clear up all conditions
                     this.transitions.forEach((transition) => {
                         transition.condition.clear();
                     });
-                    callback(transition.next_step);
+                    this.eventEmitter.emit('completed', this, transition);
                 }
             });
         });
+        return this.eventEmitter;
     }
 }
