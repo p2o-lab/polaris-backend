@@ -3,8 +3,9 @@ import {Service} from './Service';
 import {catRecipe} from '../config/logging';
 import {Recipe} from "./Recipe";
 import {Strategy} from "./Interfaces";
-import {ServiceCommand} from "pfe-ree-interface";
-import {Parameter, ParameterOptions} from "./Parameter";
+import {Parameter} from "./Parameter";
+import {OperationInterface} from "pfe-ree-interface/dist/interfaces";
+import {ParameterOptions, ServiceCommand} from "pfe-ree-interface";
 
 export interface OperationOptions {
     // module id (can be omitted if only one module is registered)
@@ -33,7 +34,7 @@ export class Operation {
                 throw new Error(`Could not find module ${options.module}`);
             }
         } else if (modules.length === 1) {
-            this.module == modules[0];
+            this.module = modules[0];
         } else {
             throw new Error('No module specified');
         }
@@ -61,7 +62,7 @@ export class Operation {
         return this.service.executeCommand(this.command, this.strategy, this.parameter);
     }
 
-    json() {
+    json(): OperationInterface {
         return {
             module: this.module.id,
             service: this.service.name,

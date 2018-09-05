@@ -60,45 +60,15 @@ recipeRouter.put('', asyncHandler(async (req: Request, res: Response) => {
     res.json({status: 'recipe successful loaded'});
 }));
 
-/**
- * @api {post} /recipe/:recipeId/active    Activate recipe
- * @apiName PutRecipe
- * @apiGroup Recipe
- * @apiParam {string} recipeId  id of recipe to be activated
- */
-recipeRouter.post('/:recipeId/active', asyncHandler(async (req: Request, res: Response) => {
-    manager.activateRecipe(req.params.recipeId);
-    res.json({status: `recipe ${req.params.recipeId} successfully activated`});
-}));
 
-/**
- * @api {post} /recipe/start    Start recipe
- * @apiName StartRecipe
- * @apiGroup Recipe
- */
-recipeRouter.post('/start', asyncHandler(async (req: Request, res: Response) => {
-    await manager.start();
-    res.json({status: 'activeRecipe successful started'});
-}));
-
-
-/**
- * @api {post} /activeRecipe/reset    Reset activeRecipe
- * @apiName ResetRecipe
- * @apiGroup Recipe
- */
-recipeRouter.post('/reset', asyncHandler((req: Request, res: Response) => {
-    manager.reset();
-    res.json({status: 'activeRecipe successful reset'});
-}));
 
 
 /**
  * @api {post} /activeRecipe/abort    Abort all services
  * @apiName AbortServices
- * @apiDescription Abort all services from modules used in activeRecipe
+ * @apiDescription Abort all services from all connected modules
  * @apiGroup Recipe
  */
 moduleRouter.post('/abort', asyncHandler(async (req: Request, res: Response) => {
-    res.json(await manager.abortRecipe());
+    res.json(await manager.abortAllServices());
 }));

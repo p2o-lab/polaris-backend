@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "name": "Lokales Testrezept ohne Ansteuerung von Modulen",
+  "name": "3 steps (2s, 3s, 2s) ohne Ansteuerung von Modulen",
   "author": "Markus Graube",
   "initial_step": "S1",
   "steps": [

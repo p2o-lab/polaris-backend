@@ -3,6 +3,7 @@ import {Transition, TransitionOptions} from "./Transition";
 import {catRecipe} from "../config/logging";
 import {manager} from "./Manager";
 import {EventEmitter} from "events";
+import {StepInterface} from "pfe-ree-interface/dist/interfaces";
 
 export interface StepOptions {
     name: string;
@@ -55,5 +56,13 @@ export class Step {
             });
         });
         return this.eventEmitter;
+    }
+
+    public json(): StepInterface {
+        return {
+            name: this.name,
+            transitions: this.transitions.map(transition => transition.json()),
+            operations: this.operations.map(operation => operation.json())
+        }
     }
 }

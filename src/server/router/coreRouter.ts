@@ -16,20 +16,6 @@ coreRouter.get('/', asyncHandler(async (req: Request, res: Response) => {
     res.json(result);
 }));
 
-/**
- * @api {get} /activeRecipe    Get active Recipe
- * @apiName GetActiveRecipe
- * @apiGroup Manager
- */
-coreRouter.get('/activeRecipe', asyncHandler(async (req, res) => {
-    if (manager.activeRecipe) {
-        const result = await manager.activeRecipe.json();
-        res.json(result);
-    } else {
-        throw new Error('No recipe active');
-    }
-}));
-
 
 /**
  * @api {get} /autoReset    Get status of autoReset

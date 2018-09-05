@@ -13,7 +13,7 @@ export interface ServiceParameter {
         VSclMax: OpcUaNode,
         VSclMin: OpcUaNode,
         VRbk: { value: any },
-        VUnit: { value: any },
+        VUnit: OpcUaNode,
         WQC: { value: any },
         OSLevel: { value: any }
     }
@@ -26,3 +26,5 @@ export interface Strategy {
     sc: boolean;
     parameters: ServiceParameter[];
 }
+
+

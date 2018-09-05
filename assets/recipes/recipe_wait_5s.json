@@ -1,0 +1,21 @@
+{
+  "version": "1.0.0",
+  "name": "Wait 5s",
+  "author": "Markus Graube",
+  "initial_step": "Wait",
+  "steps": [
+    {
+      "name": "Wait",
+      "operations": [],
+      "transitions": [
+        {
+          "next_step": "finished",
+          "condition": {
+            "type": "time",
+            "duration": 5
+          }
+        }
+      ]
+    }
+  ]
+}

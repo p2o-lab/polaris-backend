@@ -13,6 +13,7 @@ import {
 import {OpcUaNode, ServiceParameter, Strategy} from "./Interfaces";
 import {Parameter} from "./Parameter";
 import {ParameterInterface, ServiceCommand, ServiceInterface, StrategyInterface} from "pfe-ree-interface";
+import {Unit} from "./Unit";
 
 export interface ServiceOptions {
     name: string;
@@ -91,7 +92,7 @@ export class Service {
                     opMode: OpMode[data[0]] || data[0],
                     status: ServiceState[data[1]] || data[1],
                     strategies: data[2],
-                    parameters: await this.getCurrentParameters().catch(reason => undefined)
+                    parameters: await this.getCurrentParameters().catch(() => undefined)
                 };
             });
     }
@@ -103,7 +104,7 @@ export class Service {
                 name: strategy.name,
                 default: strategy.default,
                 sc: strategy.sc,
-                parameters: await this.getCurrentParameters(strategy).catch(reason => undefined)
+                parameters: await this.getCurrentParameters(strategy).catch(() => undefined)
             }
         }));
     }
@@ -119,7 +120,7 @@ export class Service {
         return await Promise.all(params.map(async (param) => {
             if (this.parent.isConnected()) {
                 const value = await this.parent.session.readVariableValue(this.parent.resolveNodeId(param.communication.VExt));
-                let max, min;
+                let max, min, unit;
                 try {
                     let result = await this.parent.session.readVariableValue(this.parent.resolveNodeId(param.communication.VMax));
                     max = result.value.value;
@@ -132,11 +133,19 @@ export class Service {
                 } catch {
                     min = undefined;
                 }
+                try {
+                    let result = await this.parent.session.readVariableValue(this.parent.resolveNodeId(param.communication.VUnit));
+                    let unitItem = Unit.find(item => item.value === result.value.value);
+                    unit = unitItem.unit;
+                } catch {
+                    unit = undefined;
+                }
                 return {
                     name: param.name,
                     value: value.value.value,
                     max: max,
-                    min: min
+                    min: min,
+                    unit: unit
                 }
             } else {
                 return {
@@ -229,7 +238,7 @@ export class Service {
             if (parameter) {
                 parameter.forEach((param: Parameter) => {
                     param.variable = param.variable || "VExt";
-                    const params = this.parameters.concat(strategy.parameters);
+                    const params = [].concat(strategy.parameters, this.parameters);
 
                     const serviceParam = params.find((obj) => obj.name === param.name);
                     const variable = serviceParam.communication[param.variable];
@@ -266,7 +275,7 @@ export class Service {
         if (isOffState(opMode)) {
             catService.trace("First go to Manual state");
             await this.writeOpMode(OpMode.stateManOp);
-            await new Promise((resolve, reject) => {
+            await new Promise((resolve) => {
                 this.parent.listenToOpcUaNode(this.opMode).on('changed', (value) => {
                     if (isManualState(value)) {
                         catService.trace(`finally in ManualMode`);
@@ -280,7 +289,7 @@ export class Service {
         if (isManualState(opMode)) {
             catService.trace("Go to Automatic state");
             await this.writeOpMode(OpMode.stateAutOp);
-            await new Promise((resolve, reject) => {
+            await new Promise((resolve) => {
                 this.parent.listenToOpcUaNode(this.opMode).on('changed', (value) => {
                     catOpc.trace(`OpMode changed: ${value}`);
                     if (isAutomaticState(value)) {
@@ -295,7 +304,7 @@ export class Service {
         if (!isExtSource(opMode)) {
             catService.trace("Go to External source");
             await this.writeOpMode(OpMode.srcExtOp);
-            return new Promise((resolve, reject) => {
+            return new Promise((resolve) => {
                 this.parent.listenToOpcUaNode(this.opMode).on('changed', (value) => {
                     catService.trace(`OpMode changed: ${value}`);
                     if (isExtSource(value)) {

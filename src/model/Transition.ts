@@ -1,6 +1,7 @@
 import {Step} from "./Step";
 import {Condition} from "./Condition";
 import {ConditionOptions} from "pfe-ree-interface";
+import {TransitionInterface} from "pfe-ree-interface/dist/interfaces";
 
 export interface TransitionOptions {
     next_step: string;
@@ -25,7 +26,7 @@ export class Transition {
         }
     }
 
-    json() {
+    json(): TransitionInterface {
         return {
             next_step: this.next_step_name,
             condition: this.condition.json()

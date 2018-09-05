@@ -74,7 +74,7 @@ export class Module {
 
                 const session = await client.createSession();
                 session.on('session_closed', (statusCode) => {
-                    catOpc.warn(`Session of ${this.id} closed by server`);
+                    catOpc.warn(`Session of ${this.id} closed by server (statusCode: ${statusCode})`);
                     //this.disconnect();
                 });
                 catOpc.debug(`session established ${this.id} ${this.endpoint}`);
@@ -167,24 +167,26 @@ export class Module {
     }
 
     listenToOpcUaNode(node: OpcUaNode): EventEmitter {
-        const monitoredItem: ClientMonitoredItem = this.subscription.monitor({
-                nodeId: this.resolveNodeId(node),
-                attributeId: AttributeIds.Value
-            },
-            {
-                samplingInterval: 1000,
-                discardOldest: true,
-                queueSize: 10
+        const nodeId = this.resolveNodeId(node);
+        if (!this.monitoredItems.has(nodeId)) {
+            const monitoredItem: ClientMonitoredItem = this.subscription.monitor({
+                    nodeId: nodeId,
+                    attributeId: AttributeIds.Value
+                },
+                {
+                    samplingInterval: 1000,
+                    discardOldest: true,
+                    queueSize: 10
+                });
+
+            monitoredItem.emitter = new EventEmitter();
+            monitoredItem.on('changed', (dataValue) => {
+                catOpc.debug(`Variable Changed (${this.resolveNodeId(node)}) = ${dataValue.value.value.toString()}`);
+                monitoredItem.emitter.emit('changed', dataValue.value.value);
             });
-
-        monitoredItem.emitter = new EventEmitter();
-        monitoredItem.on('changed', (dataValue) => {
-            catOpc.debug(`Variable Changed (${this.resolveNodeId(node)}) = ${dataValue.value.value.toString()}`);
-            monitoredItem.emitter.emit('changed', dataValue.value.value);
-        });
-        this.monitoredItems.set(this.resolveNodeId(node), monitoredItem);
-
-        return monitoredItem.emitter;
+            this.monitoredItems.set(nodeId, monitoredItem);
+        }
+        return this.monitoredItems.get(nodeId).emitter;
     }
 
     private subscribeToAllServices() {
@@ -245,5 +247,37 @@ export class Module {
         }
     }
 
+    /**
+     * Abort all services in module
+     */
+    abort() {
+        const tasks = this.services.map(service => service.abort());
+        return Promise.all(tasks);
+    }
 
+
+    /**
+     * Pause all services in module
+     */
+    pause() {
+        const tasks = this.services.map(service => service.pause());
+        return Promise.all(tasks);
+    }
+
+    /**
+     * Resume all services in module
+     */
+    resume() {
+        const tasks = this.services.map(service => service.resume());
+        return Promise.all(tasks);
+    }
+
+
+    /**
+     * Stop all services in module
+     */
+    stop() {
+        const tasks = this.services.map(service => service.stop());
+        return Promise.all(tasks);
+    }
 }

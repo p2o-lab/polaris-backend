@@ -1,10 +1,3 @@
-export enum RecipeState {
-    idle,
-    running,
-    stopped,
-    completed
-}
-
 export enum ServiceState {
     UNDEFINED = 1,
     STOPPED = 4,

@@ -1,20 +1,11 @@
-import {Step, StepOptions} from './Step';
+import {Step} from './Step';
 import {Module} from './Module';
 import {catRecipe} from '../config/logging';
-import {RecipeState} from './enum';
 import {EventEmitter} from "events";
-import {RecipeInterface} from "pfe-ree-interface";
 import {v4} from 'uuid';
 import {Transition} from "./Transition";
 import {manager} from "./Manager";
-
-export interface RecipeOptions {
-    version: string;
-    name: string;
-    author: string;
-    initial_step: string;
-    steps: StepOptions[];
-}
+import {RecipeInterface, RecipeOptions, RecipeState, StepInterface} from "pfe-ree-interface";
 
 export class Recipe {
 
@@ -77,14 +68,20 @@ export class Recipe {
         this.initRecipe();
     }
 
-    public async start(): Promise<EventEmitter> {
-        await this.connectModules();
-        this.current_step = this.initial_step;
-        this.status = RecipeState.running;
-        return this.executeStep()
-            .on('recipe_finished', () => {
-                this.status = RecipeState.completed;
-                catRecipe.info(`Recipe completed ${this.name}`);
+    public start(): Promise<EventEmitter> {
+        return this.connectModules()
+            .then(() => {
+                this.current_step = this.initial_step;
+                this.status = RecipeState.running;
+                return this.executeStep()
+                    .on('recipe_finished', () => {
+                        this.status = RecipeState.completed;
+                        catRecipe.info(`Recipe completed ${this.name}`);
+                    });
+            })
+            .catch(() => {
+                catRecipe.warn('Could not connect to all modules. Thus start of recipe not possible.');
+                throw new Error('Could not connect to all modules. Thus start of recipe not possible.')
             });
     }
 
@@ -97,7 +94,7 @@ export class Recipe {
         return {
             id: this.id,
             modules: await this.getServiceStates(),
-            status: RecipeState[this.status],
+            status: this.status,
             currentStep: this.stepJson(),
             options: this.options
         }
@@ -113,18 +110,12 @@ export class Recipe {
         return Promise.all(tasks);
     }
 
-    public stepJson(): any {
+    public stepJson(): StepInterface {
         if (this.current_step) {
-            return {
-                name: this.current_step.name,
-                transitions: this.current_step.transitions.map(transition => transition.json()),
-                operations: this.current_step.operations.map(operation => operation.json())
-            }
+            return this.current_step.json();
         }
         else {
-            return {
-                name: 'not started yet'
-            }
+            return undefined;
         }
     }
 
@@ -135,13 +126,12 @@ export class Recipe {
                 .then((data) => {
                     return {module: module.id, connected: true, services: data}
                 })
-                .catch((err) => {
+                .catch(() => {
                     return {module: module.id, connected: false}
                 })
             );
         });
-        const states = await Promise.all(tasks);
-        return states;
+        return await Promise.all(tasks);
     }
 
     private executeStep(): EventEmitter {

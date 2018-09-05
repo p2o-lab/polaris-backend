@@ -70,7 +70,7 @@ export abstract class Condition {
         this.options = options;
     }
 
-    json() {
+    json(): ConditionOptions {
         return this.options;
     }
 }

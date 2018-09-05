@@ -5,6 +5,7 @@ import {recipeRouter} from "./router/recipeRouter";
 import {catServer} from "../config/logging";
 import {serviceRouter} from "./router/serviceRouter";
 import {coreRouter} from "./router/coreRouter";
+import {playerRouter} from "./router/playerRouter";
 
 export default class Routes {
     static init(server): void {
@@ -20,6 +21,7 @@ export default class Routes {
         server.app.use('/module', moduleRouter);
         server.app.use('/module', serviceRouter);
         server.app.use('/recipe', recipeRouter);
+        server.app.use('/player', playerRouter);
         server.app.use('/', coreRouter);
 
 
