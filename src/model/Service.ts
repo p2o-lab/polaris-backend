@@ -14,6 +14,7 @@ import {OpcUaNode, ServiceParameter, Strategy} from "./Interfaces";
 import {Parameter} from "./Parameter";
 import {ParameterInterface, ServiceCommand, ServiceInterface, StrategyInterface} from "pfe-ree-interface";
 import {Unit} from "./Unit";
+import {manager} from "./Manager";
 
 export interface ServiceOptions {
     name: string;
@@ -44,9 +45,9 @@ export class Service {
         this.name = serviceOptions.name;
 
         this.opMode = serviceOptions.communication.OpMode;
-        this.command = serviceOptions.communication.ControlExt;
         this.status = serviceOptions.communication.State;
-        this.strategy = serviceOptions.communication.StrategyExt;
+        this.command = manager.automaticMode ? serviceOptions.communication.ControlExt : serviceOptions.communication.ControlOp;
+        this.strategy = manager.automaticMode ? serviceOptions.communication.StrategyExt : serviceOptions.communication.StrategyOp;
 
         this.strategies = serviceOptions.strategies;
         this.parameters = serviceOptions.parameters;
@@ -300,7 +301,6 @@ export class Service {
                 });
             });
         }
-
         if (!isExtSource(opMode)) {
             catService.trace("Go to External source");
             await this.writeOpMode(OpMode.srcExtOp);
@@ -324,8 +324,11 @@ export class Service {
 
     private async sendCommand(command: ServiceMtpCommand): Promise<any> {
         catService.debug(`Send command ${ServiceMtpCommand[command]} (${command}) to service "${this.name}"`);
-
-        await this.setToAutomaticOperationMode();
+        if (manager.automaticMode) {
+            await this.setToAutomaticOperationMode();
+        } else {
+            await this.setToManualOperationMode();
+        }
 
         const result = await this.parent.session.writeSingleNode(
             this.parent.resolveNodeId(this.command),
