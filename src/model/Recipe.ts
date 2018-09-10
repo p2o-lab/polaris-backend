@@ -68,21 +68,26 @@ export class Recipe {
         this.initRecipe();
     }
 
-    public start(): Promise<EventEmitter> {
-        return this.connectModules()
+    public start(): EventEmitter {
+        this.connectModules()
             .then(() => {
                 this.current_step = this.initial_step;
                 this.status = RecipeState.running;
-                return this.executeStep()
-                    .on('recipe_finished', () => {
-                        this.status = RecipeState.completed;
-                        catRecipe.info(`Recipe completed ${this.name}`);
-                    });
+                this.executeStep();
             })
             .catch(() => {
                 catRecipe.warn('Could not connect to all modules. Thus start of recipe not possible.');
                 throw new Error('Could not connect to all modules. Thus start of recipe not possible.')
             });
+        return this.eventEmitter;
+    }
+
+    public stepJson(): StepInterface {
+        let result = undefined;
+        if (this.current_step) {
+            result = this.current_step.json();
+        }
+        return result;
     }
 
     private initRecipe() {
@@ -110,17 +115,8 @@ export class Recipe {
         return Promise.all(tasks);
     }
 
-    public stepJson(): StepInterface {
-        if (this.current_step) {
-            return this.current_step.json();
-        }
-        else {
-            return undefined;
-        }
-    }
-
     public async getServiceStates() {
-        let tasks = [];
+        const tasks = [];
         this.modules.forEach(async (module) => {
             tasks.push(module.getServiceStates()
                 .then((data) => {
@@ -135,22 +131,26 @@ export class Recipe {
     }
 
     private executeStep(): EventEmitter {
-        catRecipe.info(`Start step: ${this.current_step.name}`);
+        catRecipe.debug(`Start step: ${this.current_step.name}`);
         this.current_step.execute()
-            .on('completed', (step: Step, transition: Transition) => {
-                if (step !== this.current_step) {
-                    catRecipe.warn(`not correct step. Current Step: ${this.current_step.name}. Reported step: ${step.name}`);
-                }
-                catRecipe.info(`Step ${step.name} finished. New step is ${transition.next_step_name}`);
-                this.eventEmitter.emit('step_finished', this.current_step, transition.next_step);
-                manager.eventEmitter.emit('refresh', 'recipe', 'stepFinished');
-                if (transition.next_step) {
-                    this.current_step = transition.next_step;
-                    this.executeStep();
+            .on('completed', (finishedStep: Step, transition: Transition) => {
+                if (finishedStep !== this.current_step) {
+                    catRecipe.warn(`not correct step. Current Step: ${this.current_step.name}. Reported step: ${finishedStep.name}`);
                 } else {
-                    catRecipe.info('Last step finished.');
-                    this.eventEmitter.emit('recipe_finished', this);
-                    manager.eventEmitter.emit('refresh', 'recipe', 'completed');
+                    this.eventEmitter.emit('step_finished', this.current_step, transition.next_step);
+                    manager.eventEmitter.emit('refresh', 'recipe', 'stepFinished');
+                    if (transition.next_step) {
+                        catRecipe.info(`Step ${finishedStep.name} finished. New step is ${transition.next_step_name}`);
+                        this.current_step = transition.next_step;
+                        this.executeStep();
+                    } else {
+                        catRecipe.info(`Recipe completed: ${this.name}`);
+                        this.current_step = this.initial_step;
+                        this.status = RecipeState.completed;
+                        this.eventEmitter.emit('recipe_finished', this);
+                        manager.eventEmitter.emit('refresh', 'recipe', 'completed');
+                        this.eventEmitter.removeAllListeners();
+                    }
                 }
             });
         return this.eventEmitter;

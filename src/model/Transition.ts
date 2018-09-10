@@ -1,7 +1,9 @@
-import {Step} from "./Step";
-import {Condition} from "./Condition";
-import {ConditionOptions} from "pfe-ree-interface";
-import {TransitionInterface} from "pfe-ree-interface/dist/interfaces";
+import {Step} from './Step';
+import {Condition} from './Condition';
+import {ConditionOptions} from 'pfe-ree-interface';
+import {TransitionInterface} from 'pfe-ree-interface/dist/interfaces';
+import {Module} from './Module';
+import {Recipe} from './Recipe';
 
 export interface TransitionOptions {
     next_step: string;
@@ -13,7 +15,7 @@ export class Transition {
     next_step_name: string;
     condition: Condition;
 
-    constructor(options, modules, recipe) {
+    constructor(options: TransitionOptions, modules: Module[], recipe: Recipe) {
         if (options.next_step) {
             this.next_step_name = options.next_step;
         } else {
@@ -30,7 +32,6 @@ export class Transition {
         return {
             next_step: this.next_step_name,
             condition: this.condition.json()
-        }
+        };
     }
 }
-

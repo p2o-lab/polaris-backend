@@ -24,7 +24,7 @@ export class Server {
 
 
         manager.eventEmitter.on('refresh', (data, action) => {
-            catServer.info(`WS refresh published ${data} ${action}`);
+            catServer.trace(`WS refresh published ${data} ${action}`);
             this.wss.clients.forEach((client) => {
                 if (client.readyState === WebSocket.OPEN) {
                     client.send(JSON.stringify({msg: 'refresh', data: data, action: action}));

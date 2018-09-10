@@ -27,16 +27,6 @@ playerRouter.post('/start', asyncHandler(async (req: Request, res: Response) => 
 }));
 
 /**
- * @api {post} /player/resume    resume Player
- * @apiName ResumePlayer
- * @apiGroup Player
- */
-playerRouter.post('/resume', asyncHandler(async (req: Request, res: Response) => {
-    const result = await manager.player.resume();
-    res.json(result);
-}));
-
-/**
  * @api {post} /player/pause    pause Player
  * @apiName PausePlayer
  * @apiGroup Player

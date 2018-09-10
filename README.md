@@ -1,27 +1,30 @@
 # pfe-ree-node
 
-PFE Recipe Execution Engine as NodeJs application
+PFE Recipe Execution Engine as NodeJs application.  *pfe-ree-node* is controlled via REST. Its documentation is served by the application under the path **/doc** (e.g. http://localhost:3000/doc)
+
+A HTML user interface for this project is provided via the pfe-ree-viz project. 
 
 
-## Dependencies
+## Installation and Deployment
+### Dependencies
 All dependencies are installed via NPM
 ```
 npm install
 ```
 
-## Start
+### Start
 ```bash
 npm start
 ```
 
-## Publish
+### Publish
 *pfe-ree-node* is provided via our private NPM registry (https://registry.plt.et.tu-dresden.de:4873)
 ```
 npm publish
 ``` 
 
 
-## Docker
+### Docker
 
 Use docker ready image (from our private docker registry [http://registry.plt.et.tu-dresden.de](http://registry.plt.et.tu-dresden.de))
 ```
@@ -42,4 +45,3 @@ docker build -t pfe-ree-node .
 docker tag pfe-ree-node registry.plt.et.tu-dresden.de/pfe-ree-node/arm
 docker push registry.plt.et.tu-dresden.de/pfe-ree-node/arm 
 ```
-

@@ -15,6 +15,10 @@ import {Parameter} from "./Parameter";
 import {ParameterInterface, ServiceCommand, ServiceInterface, StrategyInterface} from "pfe-ree-interface";
 import {Unit} from "./Unit";
 import {manager} from "./Manager";
+import {OpcUaNode, ServiceParameter, Strategy} from './Interfaces';
+import {Parameter} from './Parameter';
+import {ParameterInterface, ServiceCommand, ServiceInterface, StrategyInterface} from 'pfe-ree-interface';
+import {Unit} from './Unit';
 
 export interface ServiceOptions {
     name: string;
@@ -62,7 +66,7 @@ export class Service {
             catOpc.trace(`Read state ${this.name}: ${state} (${stateString})`);
             return state;
         } catch (err) {
-            catOpc.error("Error reading opMode", err);
+            catOpc.error('Error reading opMode', err);
             return undefined;
         }
     }
@@ -77,7 +81,7 @@ export class Service {
             catOpc.trace(`OpMode ${this.name}: ${opMode} (${opModeString})`);
             return opMode;
         } catch (err) {
-            catOpc.error("Error reading opMode", err);
+            catOpc.error('Error reading opMode', err);
             return undefined;
         }
     }
@@ -106,10 +110,9 @@ export class Service {
                 default: strategy.default,
                 sc: strategy.sc,
                 parameters: await this.getCurrentParameters(strategy).catch(() => undefined)
-            }
+            };
         }));
     }
-
 
     async getCurrentParameters(strategy?: Strategy): Promise<ParameterInterface[]> {
         let params: ServiceParameter[] = [];
@@ -118,42 +121,50 @@ export class Service {
         } else {
             params = this.parameters;
         }
-        return await Promise.all(params.map(async (param) => {
-            if (this.parent.isConnected()) {
-                const value = await this.parent.session.readVariableValue(this.parent.resolveNodeId(param.communication.VExt));
-                let max, min, unit;
-                try {
-                    let result = await this.parent.session.readVariableValue(this.parent.resolveNodeId(param.communication.VMax));
-                    max = result.value.value;
-                } catch {
-                    max = undefined;
+        return await Promise.all(
+            params.map(async (param) => {
+                if (this.parent.isConnected()) {
+                    const value = await this.parent.session
+                        .readVariableValue(this.parent.resolveNodeId(param.communication.VExt));
+                    let max;
+                    let min;
+                    let unit;
+                    try {
+                        const result = await this.parent.session
+                            .readVariableValue(this.parent.resolveNodeId(param.communication.VMax));
+                        max = result.value.value;
+                    } catch {
+                        max = undefined;
+                    }
+                    try {
+                        const result = await this.parent.session
+                            .readVariableValue(this.parent.resolveNodeId(param.communication.VMin));
+                        min = result.value.value;
+                    } catch {
+                        min = undefined;
+                    }
+                    try {
+                        const result = await this.parent.session
+                            .readVariableValue(this.parent.resolveNodeId(param.communication.VUnit));
+                        const unitItem = Unit.find(item => item.value === result.value.value);
+                        unit = unitItem.unit;
+                    } catch {
+                        unit = undefined;
+                    }
+                    return {
+                        name: param.name,
+                        value: value.value.value,
+                        max,
+                        min,
+                        unit
+                    };
+                } else {
+                    return {
+                        name: param.name
+                    };
                 }
-                try {
-                    let result = await this.parent.session.readVariableValue(this.parent.resolveNodeId(param.communication.VMin));
-                    min = result.value.value;
-                } catch {
-                    min = undefined;
-                }
-                try {
-                    let result = await this.parent.session.readVariableValue(this.parent.resolveNodeId(param.communication.VUnit));
-                    let unitItem = Unit.find(item => item.value === result.value.value);
-                    unit = unitItem.unit;
-                } catch {
-                    unit = undefined;
-                }
-                return {
-                    name: param.name,
-                    value: value.value.value,
-                    max: max,
-                    min: min,
-                    unit: unit
-                }
-            } else {
-                return {
-                    name: param.name
-                }
-            }
-        }));
+            })
+        );
     }
 
     executeCommand(command: ServiceCommand, strategy: Strategy, parameter: Parameter[]) {
@@ -238,7 +249,7 @@ export class Service {
 
             if (parameter) {
                 parameter.forEach((param: Parameter) => {
-                    param.variable = param.variable || "VExt";
+                    param.variable = param.variable || 'VExt';
                     const params = [].concat(strategy.parameters, this.parameters);
 
                     const serviceParam = params.find((obj) => obj.name === param.name);
@@ -257,7 +268,12 @@ export class Service {
         return Promise.all(tasks);
     }
 
-    private writeOpMode(opMode) {
+    /**
+     * Write OpMode to service
+     * @param {OpMode} opMode
+     * @returns {any}
+     */
+    private writeOpMode(opMode: OpMode) {
         return this.parent.session.writeSingleNode(this.parent.resolveNodeId(this.opMode),
             {
                 dataType: DataType.UInt32,
@@ -274,7 +290,7 @@ export class Service {
         let opMode: OpMode = await this.getOpMode();
 
         if (isOffState(opMode)) {
-            catService.trace("First go to Manual state");
+            catService.trace('First go to Manual state');
             await this.writeOpMode(OpMode.stateManOp);
             await new Promise((resolve) => {
                 this.parent.listenToOpcUaNode(this.opMode).on('changed', (value) => {
@@ -283,12 +299,12 @@ export class Service {
                         opMode = value;
                         resolve(true);
                     }
-                })
+                });
             });
         }
 
         if (isManualState(opMode)) {
-            catService.trace("Go to Automatic state");
+            catService.trace('Go to Automatic state');
             await this.writeOpMode(OpMode.stateAutOp);
             await new Promise((resolve) => {
                 this.parent.listenToOpcUaNode(this.opMode).on('changed', (value) => {
@@ -302,7 +318,7 @@ export class Service {
             });
         }
         if (!isExtSource(opMode)) {
-            catService.trace("Go to External source");
+            catService.trace('Go to External source');
             await this.writeOpMode(OpMode.srcExtOp);
             return new Promise((resolve) => {
                 this.parent.listenToOpcUaNode(this.opMode).on('changed', (value) => {
