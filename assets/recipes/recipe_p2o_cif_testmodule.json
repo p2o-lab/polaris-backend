@@ -1,70 +1,95 @@
-
+{
+  "version": "1.0.0",
+  "name": "Testrezept für CIF Modul",
+  "author": "Markus Graube",
+  "initial_step": "S1",
+  "steps": [
     {
-      "version": "1.0.0",
-      "name": "Testrezept für CIF Modul",
-      "author": "Markus Graube",
-      "initial_step": "S1",
-      "steps": [
+      "name": "S1",
+      "operations": [
         {
-          "name": "S1",
-          "operations": [
-            {
-              "module": "CIF",
-              "service": "Test_Service.Entleeren",
-              "command": "start"
-            }
-          ],
-          "transitions": [
-            {
-              "next_step": "S2",
-              "condition": {
-                "type": "time",
-                "duration": 5
-              }
-            }
-          ]
+          "module": "CIF",
+          "service": "Test_Service.Entleeren",
+          "command": "start"
         },
         {
-          "name": "S2",
-          "operations": [
+          "module": "CIF",
+          "service": "Test_Service.Vorlegen",
+          "command": "start",
+          "parameter": [
             {
-              "module": "CIF",
-              "service": "Test_Service.Entleeren",
-              "command": "complete"
-            }
-          ],
-          "transitions": [
+              "name": "SollVolumen",
+              "value": "3+a+2*b",
+              "scope": [
+                {
+                  "name": "a",
+                  "module": "CIF",
+                  "dataAssembly": "Test_AnaView.L004",
+                  "variable": "V"
+                },
+                {
+                  "name": "b",
+                  "module": "CIF",
+                  "dataAssembly": "Test_PIDCtrl.FC103",
+                  "variable": "PV"
+                }
+              ]
+            },
             {
-              "next_step": "S3",
-              "condition": {
-                "type": "state",
-                "module": "CIF",
-                "service": "Test_Service.Entleeren",
-                "state": "completed"
-              }
-            }
-          ]
-        },
-        {
-          "name": "S3",
-          "operations": [
-            {
-              "module": "CIF",
-              "service": "Test_Service.Entleeren",
-              "command": "reset"
-            }
-          ],
-          "transitions": [
-            {
-              "next_step": "finished",
-              "condition": {
-                "type": "state",
-                "module": "CIF",
-                "service": "Test_Service.Entleeren",
-                "state": "idle"
-              }
+              "name": "SollDauer",
+              "value": "5^2"
             }
           ]
         }
+      ],
+      "transitions": [
+        {
+          "next_step": "S2",
+          "condition": {
+            "type": "and",
+            "conditions": [
+              {
+                "type": "time",
+                "duration": 5
+              },
+              {
+                "type": "variable",
+                "module": "CIF",
+                "dataAssembly": "Test_AnaView.L004",
+                "variable": "OSLevel",
+                "operator": "==",
+                "value": 22
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "S2",
+      "operations": [
+        {
+          "module": "CIF",
+          "service": "Test_Service.Entleeren",
+          "command": "complete"
+        },
+        {
+          "module": "CIF",
+          "service": "Test_Service.Dosieren",
+          "command": "complete"
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "finished",
+          "condition": {
+            "type": "state",
+            "module": "CIF",
+            "service": "Test_Service.Entleeren",
+            "state": "completed"
+          }
+        }
       ]
     }
+  ]
+}

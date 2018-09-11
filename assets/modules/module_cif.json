@@ -1176,12 +1176,12 @@
             },
             "OSLevel": {
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
-              "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_AnaView.L004.OSLevel",
+              "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_AnaView.L001.rPV_ScaleHigh",
               "data_type": "Byte"
             },
             "V": {
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
-              "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_AnaView.L004.V",
+              "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_AnaView.L001.V",
               "data_type": "Double"
             },
             "VSclMin": {
