@@ -1,8 +1,33 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2018 Markus Graube <markus.graube@tu.dresden.de>,
+ * Chair for Process Control Systems, Technische Universität Dresden
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 import {manager} from '../../model/Manager';
-import {Request, Response, Router} from "express";
+import {Request, Response, Router} from 'express';
 
 import * as asyncHandler from 'express-async-handler';
-import {catServer} from "../../config/logging";
+import {catServer} from '../../config/logging';
 import * as multer from 'multer';
 
 export const moduleRouter: Router = Router();
@@ -60,7 +85,6 @@ moduleRouter.delete('/:id', asyncHandler(async (req: Request, res: Response) => 
     res.send({status: 'Successful deleted', id: req.params.id});
 }));
 
-
 /**
  * @api {post} /module/:id/connect    Connect module
  * @apiName ConnectModule
@@ -70,9 +94,8 @@ moduleRouter.delete('/:id', asyncHandler(async (req: Request, res: Response) => 
 moduleRouter.post('/:id/connect', asyncHandler(async (req: Request, res: Response) => {
     const module = manager.modules.find(module => module.id === req.params.id);
     await module.connect();
-    res.json({module: module.id, status: "Succesfully connected"});
+    res.json({module: module.id, status: 'Succesfully connected'});
 }));
-
 
 /**
  * @api {post} /module/:id/disconnect    Disconnect module
@@ -83,9 +106,8 @@ moduleRouter.post('/:id/connect', asyncHandler(async (req: Request, res: Respons
 moduleRouter.post('/:id/disconnect', asyncHandler(async (req: Request, res: Response) => {
     const module = manager.modules.find(module => module.id === req.params.id);
     await module.disconnect();
-    res.json({module: module.id, status: "Succesfully disconnected"});
+    res.json({module: module.id, status: 'Succesfully disconnected'});
 }));
-
 
 /**
  * @api {post} /module/abort    Abort all services
@@ -95,6 +117,5 @@ moduleRouter.post('/:id/disconnect', asyncHandler(async (req: Request, res: Resp
  */
 moduleRouter.post('/abort', asyncHandler(async (req: Request, res: Response) => {
     await manager.abortAllModules();
-    res.json({status: "aborted all services from all modules"});
+    res.json({status: 'aborted all services from all modules'});
 }));
-

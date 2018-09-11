@@ -1,3 +1,28 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2018 Markus Graube <markus.graube@tu.dresden.de>,
+ * Chair for Process Control Systems, Technische Universität Dresden
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 import {Service, ServiceOptions} from './Service';
 import {ProcessValue} from './ProcessValue';
 import {
@@ -12,10 +37,10 @@ import {
 import {catModule, catOpc, catRecipe} from '../config/logging';
 import {EventEmitter} from 'events';
 import {OpcUaNode} from './Interfaces';
-import {manager} from "./Manager";
-import {ServiceState} from "./enum";
-import {ModuleInterface, ServiceInterface} from "pfe-ree-interface";
-import {promiseTimeout} from "../timeout-promise";
+import {manager} from './Manager';
+import {ServiceState} from './enum';
+import {ModuleInterface, ServiceInterface} from 'pfe-ree-interface';
+import {promiseTimeout} from '../timeout-promise';
 
 export interface ModuleOptions {
     id: string;
@@ -67,7 +92,7 @@ export class Module {
                     }
                 });
 
-                client.on("backoff", () => catOpc.debug("retrying connection"));
+                client.on('backoff', () => catOpc.debug('retrying connection'));
 
                 await promiseTimeout(5000, client.connect(this.endpoint));
                 catOpc.debug(`module connected ${this.id} ${this.endpoint}`);
@@ -99,7 +124,6 @@ export class Module {
                 const result: DataValue = await session.readVariableValue('ns=0;i=2255');
                 this.namespaceArray = result.value.value;
                 catModule.debug(`Got namespace array for ${this.id}: ${JSON.stringify(this.namespaceArray)}`);
-
 
                 // store everything
                 this.client = client;
@@ -136,33 +160,9 @@ export class Module {
             await this.client.disconnect();
             this.client = undefined;
             manager.eventEmitter.emit('refresh', 'module');
-            return 'Disconnected'
+            return 'Disconnected';
         } else {
             return Promise.resolve('Already disconnected');
-        }
-    }
-
-    /**
-     * Resolves nodeId of variable from module JSON using the namespace array
-     * @param {OpcUaNode} variable
-     * @returns {any}
-     */
-    resolveNodeId(variable: OpcUaNode) {
-        if (this.namespaceArray) {
-            return coerceNodeId(`ns=${this.namespaceArray.indexOf(variable.namespace_index)};s=${variable.node_id}`);
-        }
-        else {
-            throw new Error(`No namespace array read for module ${this.id}`);
-        }
-    }
-
-    listenToVariable(dataStructureName: string, variableName: string): EventEmitter {
-        const dataStructure: ProcessValue = this.variables.find(variable => variable.name === dataStructureName);
-        if (dataStructure) {
-            const variable: OpcUaNode = dataStructure.communication[variableName];
-            return this.listenToOpcUaNode(variable);
-        } else {
-            throw new Error('ProcessValue is not specified for module');
         }
     }
 
@@ -170,7 +170,7 @@ export class Module {
         const nodeId = this.resolveNodeId(node);
         if (!this.monitoredItems.has(nodeId)) {
             const monitoredItem: ClientMonitoredItem = this.subscription.monitor({
-                    nodeId: nodeId,
+                    nodeId,
                     attributeId: AttributeIds.Value
                 },
                 {
@@ -189,6 +189,35 @@ export class Module {
         return this.monitoredItems.get(nodeId).emitter;
     }
 
+    listenToVariable(dataStructureName: string, variableName: string): EventEmitter {
+        const dataStructure: ProcessValue = this.variables.find(variable => variable.name === dataStructureName);
+        if (dataStructure) {
+            const variable: OpcUaNode = dataStructure.communication[variableName];
+            return this.listenToOpcUaNode(variable);
+        } else {
+            throw new Error('ProcessValue is not specified for module');
+        }
+    }
+
+    clearListener(node: OpcUaNode) {
+        const nodeId = this.resolveNodeId(node);
+        const monitoredItem = this.monitoredItems.get(nodeId);
+
+        if (monitoredItem) {
+            monitoredItem.terminate(() => catOpc.trace(`Listener ${nodeId} terminated`));
+        }
+    }
+
+    public readVariable(dataStructureName: string, variableName: string) {
+        const dataStructure = this.variables.find(variable => variable.name === dataStructureName);
+        if (dataStructure) {
+            const variable = dataStructure.communication[variableName];
+            return this.readVariableNode(variable);
+        } else {
+            throw new Error(`Datastructure ${dataStructureName} not found in module ${this.id}`);
+        }
+    }
+
     private subscribeToAllServices() {
         this.services.forEach((service) => {
             if (service.status === undefined) {
@@ -205,24 +234,12 @@ export class Module {
         });
     }
 
-    clearListener(variable: string) {
-        const monitoredItem = this.monitoredItems.get(variable);
-
-        if (monitoredItem) {
-            monitoredItem.terminate(() => catOpc.trace(`Listener ${variable} terminated`));
-        }
+    public readVariableNode(node: OpcUaNode) {
+        return this.session.readVariableValue(this.resolveNodeId(node));
     }
 
-    readVariable(dataStructureName: string, variableName: string) {
-        const dataStructure = this.variables.find(variable => variable.name === dataStructureName);
-        if (dataStructure) {
-            const variable = dataStructure.communication[variableName];
-            return this.session.readVariableValue(this.resolveNodeId(variable));
-        }
-    }
-
-    isConnected(): boolean {
-        return this.session;
+    public writeNode(node: OpcUaNode, value: object) {
+        return this.session.writeSingleNode(this.resolveNodeId(node), value);
     }
 
     /**
@@ -236,7 +253,7 @@ export class Module {
                 id: this.id,
                 endpoint: this.endpoint,
                 connected: true,
-                services: services
+                services
             };
         } else {
             return {
@@ -247,6 +264,24 @@ export class Module {
         }
     }
 
+    isConnected(): boolean {
+        return this.session;
+    }
+
+    /**
+     * Resolves nodeId of variable from module JSON using the namespace array
+     * @param {OpcUaNode} variable
+     * @returns {any}
+     */
+    private resolveNodeId(variable: OpcUaNode) {
+        if (this.namespaceArray) {
+            return coerceNodeId(`ns=${this.namespaceArray.indexOf(variable.namespace_index)};s=${variable.node_id}`);
+        }
+        else {
+            throw new Error(`No namespace array read for module ${this.id}`);
+        }
+    }
+
     /**
      * Abort all services in module
      */
@@ -254,7 +289,6 @@ export class Module {
         const tasks = this.services.map(service => service.abort());
         return Promise.all(tasks);
     }
-
 
     /**
      * Pause all services in module
@@ -272,7 +306,6 @@ export class Module {
         return Promise.all(tasks);
     }
 
-
     /**
      * Stop all services in module
      */
@@ -280,4 +313,5 @@ export class Module {
         const tasks = this.services.map(service => service.stop());
         return Promise.all(tasks);
     }
+
 }

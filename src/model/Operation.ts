@@ -1,11 +1,36 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2018 Markus Graube <markus.graube@tu.dresden.de>,
+ * Chair for Process Control Systems, Technische Universität Dresden
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 import {Module} from './Module';
 import {Service} from './Service';
 import {catRecipe} from '../config/logging';
-import {Recipe} from "./Recipe";
-import {Strategy} from "./Interfaces";
-import {Parameter} from "./Parameter";
-import {OperationInterface} from "pfe-ree-interface/dist/interfaces";
-import {ParameterOptions, ServiceCommand} from "pfe-ree-interface";
+import {Recipe} from './Recipe';
+import {Strategy} from './Interfaces';
+import {Parameter} from './Parameter';
+import {OperationInterface} from 'pfe-ree-interface/dist/interfaces';
+import {ParameterOptions, ServiceCommand} from 'pfe-ree-interface';
 
 export interface OperationOptions {
     // module id (can be omitted if only one module is registered)
@@ -41,7 +66,7 @@ export class Operation {
 
         recipe.modules.add(this.module);
         this.service = this.module.services.find(service => service.name === options.service);
-        if (this.service == undefined) {
+        if (this.service === undefined) {
             throw new Error(`Service ${options.service} (${this.module.id}) not found in modules`);
         }
         if (options.strategy) {
@@ -49,12 +74,14 @@ export class Operation {
         } else {
             this.strategy = this.service.strategies.find(strategy => strategy.default === true);
         }
-        if (options.command){
+        if (options.command) {
             this.command = options.command;
         } else {
             throw new Error(`"command" property is missing in ${JSON.stringify(options)}`);
         }
-        this.parameter = options.parameter;
+        if (options.parameter) {
+            this.parameter = options.parameter.map(paramOptions => new Parameter(paramOptions));
+        }
     }
 
     execute() {
@@ -69,6 +96,6 @@ export class Operation {
             strategy: this.strategy ? this.strategy.name : undefined,
             command: this.command,
             parameter: this.parameter
-        }
+        };
     }
 }

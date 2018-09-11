@@ -1,3 +1,28 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2018 Markus Graube <markus.graube@tu.dresden.de>,
+ * Chair for Process Control Systems, Technische Universität Dresden
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 import {DataType, DataValue, Variant, VariantArrayType} from 'node-opcua-client';
 import {Module} from './Module';
 import {catOpc, catService} from '../config/logging';
@@ -10,25 +35,27 @@ import {
     ServiceMtpCommand,
     ServiceState
 } from './enum';
-import {OpcUaNode, ServiceParameter, Strategy} from "./Interfaces";
-import {Parameter} from "./Parameter";
-import {ParameterInterface, ServiceCommand, ServiceInterface, StrategyInterface} from "pfe-ree-interface";
-import {Unit} from "./Unit";
-import {manager} from "./Manager";
 import {OpcUaNode, ServiceParameter, Strategy} from './Interfaces';
 import {Parameter} from './Parameter';
-import {ParameterInterface, ServiceCommand, ServiceInterface, StrategyInterface} from 'pfe-ree-interface';
+import {
+    ParameterInterface,
+    ParameterOptions,
+    ServiceCommand,
+    ServiceInterface,
+    StrategyInterface
+} from 'pfe-ree-interface';
 import {Unit} from './Unit';
+import {manager} from './Manager';
 
 export interface ServiceOptions {
     name: string;
     communication: {
-        OpMode: OpcUaNode,
-        ControlOp: OpcUaNode,
-        ControlExt: OpcUaNode,
-        State: OpcUaNode,
-        StrategyOp: OpcUaNode,
-        StrategyExt: OpcUaNode
+        OpMode: OpcUaNode;
+        ControlOp: OpcUaNode;
+        ControlExt: OpcUaNode;
+        State: OpcUaNode;
+        StrategyOp: OpcUaNode;
+        StrategyExt: OpcUaNode;
     };
     strategies: Strategy[];
     parameters: ServiceParameter[];
@@ -50,8 +77,10 @@ export class Service {
 
         this.opMode = serviceOptions.communication.OpMode;
         this.status = serviceOptions.communication.State;
-        this.command = manager.automaticMode ? serviceOptions.communication.ControlExt : serviceOptions.communication.ControlOp;
-        this.strategy = manager.automaticMode ? serviceOptions.communication.StrategyExt : serviceOptions.communication.StrategyOp;
+        this.command = manager.automaticMode ?
+            serviceOptions.communication.ControlExt : serviceOptions.communication.ControlOp;
+        this.strategy = manager.automaticMode ?
+            serviceOptions.communication.StrategyExt : serviceOptions.communication.StrategyOp;
 
         this.strategies = serviceOptions.strategies;
         this.parameters = serviceOptions.parameters;
@@ -60,7 +89,7 @@ export class Service {
 
     async getServiceState(): Promise<ServiceState> {
         try {
-            const result: DataValue = await this.parent.session.readVariableValue(this.parent.resolveNodeId(this.status));
+            const result: DataValue = await this.parent.readVariableNode(this.status);
             const state: ServiceState = <ServiceState> result.value.value;
             const stateString: string = ServiceState[state];
             catOpc.trace(`Read state ${this.name}: ${state} (${stateString})`);
@@ -73,8 +102,7 @@ export class Service {
 
     async getOpMode(): Promise<OpMode> {
         try {
-            const nodeId = this.parent.resolveNodeId(this.opMode);
-            const result: any = await this.parent.session.readVariableValue(nodeId);
+            const result: any = await this.parent.readVariableNode(this.opMode);
             const opMode: number = result.value.value;
             const opModeString: string = OpMode[opMode];
 
@@ -90,14 +118,15 @@ export class Service {
         const opMode = this.getOpMode();
         const state = this.getServiceState();
         const strategies = this.getStrategies();
-        return Promise.all([opMode, state, strategies])
+        const params = this.getCurrentParameters();
+        return Promise.all([opMode, state, strategies, params])
             .then(async (data) => {
                 return {
                     name: this.name,
                     opMode: OpMode[data[0]] || data[0],
                     status: ServiceState[data[1]] || data[1],
                     strategies: data[2],
-                    parameters: await this.getCurrentParameters().catch(() => undefined)
+                    parameters: data[3]
                 };
             });
     }
@@ -121,54 +150,53 @@ export class Service {
         } else {
             params = this.parameters;
         }
-        return await Promise.all(
-            params.map(async (param) => {
-                if (this.parent.isConnected()) {
-                    const value = await this.parent.session
-                        .readVariableValue(this.parent.resolveNodeId(param.communication.VExt));
-                    let max;
-                    let min;
-                    let unit;
-                    try {
-                        const result = await this.parent.session
-                            .readVariableValue(this.parent.resolveNodeId(param.communication.VMax));
-                        max = result.value.value;
-                    } catch {
-                        max = undefined;
-                    }
-                    try {
-                        const result = await this.parent.session
-                            .readVariableValue(this.parent.resolveNodeId(param.communication.VMin));
-                        min = result.value.value;
-                    } catch {
-                        min = undefined;
-                    }
-                    try {
-                        const result = await this.parent.session
-                            .readVariableValue(this.parent.resolveNodeId(param.communication.VUnit));
-                        const unitItem = Unit.find(item => item.value === result.value.value);
-                        unit = unitItem.unit;
-                    } catch {
-                        unit = undefined;
-                    }
-                    return {
-                        name: param.name,
-                        value: value.value.value,
-                        max,
-                        min,
-                        unit
-                    };
-                } else {
-                    return {
-                        name: param.name
-                    };
+        let tasks = [];
+        if (params) {
+            tasks = params.map(async (param) => {
+                const name = param.name;
+                let value;
+                let max;
+                let min;
+                let unit;
+                try {
+                    const result = await this.parent.readVariableNode(param.communication.VExt);
+                    value = result.value.value;
+                } catch {
+                    value = undefined;
                 }
-            })
-        );
+                try {
+                    const result = await this.parent.readVariableNode(param.communication.VMax);
+                    max = result.value.value;
+                } catch {
+                    max = undefined;
+                }
+                try {
+                    const result = await this.parent.readVariableNode(param.communication.VMin);
+                    min = result.value.value;
+                } catch {
+                    min = undefined;
+                }
+                try {
+                    const result = await this.parent.readVariableNode(param.communication.VUnit);
+                    const unitItem = Unit.find(item => item.value === result.value.value);
+                    unit = unitItem.unit;
+                } catch {
+                    unit = undefined;
+                }
+                return {
+                    name,
+                    value,
+                    max,
+                    min,
+                    unit
+                };
+            });
+        }
+        return await Promise.all(tasks);
     }
 
     executeCommand(command: ServiceCommand, strategy: Strategy, parameter: Parameter[]) {
-        catService.info(`trigger service ${this.name} - ${command} - ${strategy ? strategy.name : ''} - ${JSON.stringify(parameter)}`);
+        catService.info(`${command} service ${this.name}(${strategy ? strategy.name : ''}) - ${JSON.stringify(parameter)}`);
         if (command === 'start') {
             return this.start(strategy, parameter);
         } else if (command === 'stop') {
@@ -230,11 +258,35 @@ export class Service {
         return this.sendCommand(ServiceMtpCommand.RESTART);
     }
 
+    /**
+     * Set service parameters for adaption to environment
+     * @param {ParameterOptions[]} parameter
+     * @returns {Promise<any[]>}
+     */
+    async setServiceParameter(parameter: ParameterOptions[]): Promise<any[]> {
+        catService.debug(`Set service parameters: ${JSON.stringify(parameter)}`);
+        const tasks = [];
+        parameter.forEach(async (paramOptions: ParameterOptions) => {
+            const param = <Parameter> paramOptions;
+            const serviceParam = this.parameters.find(obj => obj.name === param.name);
+            const variable = serviceParam.communication[param.variable];
+            const dataValue: Variant = {
+                dataType: DataType.Float,
+                value: await param.getValue(),
+                arrayType: VariantArrayType.Scalar,
+                dimensions: null
+            };
+            tasks.push(this.parent.writeNode(variable, dataValue));
+        });
+        return Promise.all(tasks);
+    }
+
     private async setParameter(strategy: Strategy, parameter: Parameter[]): Promise<any[]> {
-        catService.debug(`Set parameter: ${strategy.name} - ${JSON.stringify(parameter)}`);
+
         // set strategy
+        catService.debug(`Set strategy "${strategy.name}" for service ${this.name}`);
         if (strategy) {
-            await this.parent.session.writeSingleNode(this.parent.resolveNodeId(this.strategy),
+            await this.parent.writeNode(this.strategy,
                 {
                     dataType: DataType.UInt32,
                     value: strategy.id,
@@ -243,27 +295,23 @@ export class Service {
                 });
         }
 
+        // set parameter
         const tasks = [];
         if (strategy && parameter) {
-            catOpc.debug(`Should write parameters ${JSON.stringify(parameter)}`);
-
-            if (parameter) {
-                parameter.forEach((param: Parameter) => {
-                    param.variable = param.variable || 'VExt';
-                    const params = [].concat(strategy.parameters, this.parameters);
-
-                    const serviceParam = params.find((obj) => obj.name === param.name);
-                    const variable = serviceParam.communication[param.variable];
-                    const nodeid = this.parent.resolveNodeId(variable);
-                    const dataValue: Variant = {
-                        dataType: DataType.Float,
-                        value: parseFloat(param.value),
-                        arrayType: VariantArrayType.Scalar,
-                        dimensions: null
-                    };
-                    tasks.push(this.parent.session.writeSingleNode(nodeid, dataValue));
-                });
-            }
+            parameter.forEach(async (param: Parameter) => {
+                const params = [].concat(strategy.parameters, this.parameters);
+                const serviceParam = params.find(obj => obj.name === param.name);
+                const variable = serviceParam.communication[param.variable];
+                const paramValue = await param.getValue();
+                catService.debug(`Set parameter "${param.name}[${param.variable}]" for ${this.name} = ${paramValue}`);
+                const dataValue: Variant = {
+                    dataType: DataType.Float,
+                    value: paramValue,
+                    arrayType: VariantArrayType.Scalar,
+                    dimensions: null
+                };
+                tasks.push(this.parent.writeNode(variable, dataValue));
+            });
         }
         return Promise.all(tasks);
     }
@@ -274,7 +322,7 @@ export class Service {
      * @returns {any}
      */
     private writeOpMode(opMode: OpMode) {
-        return this.parent.session.writeSingleNode(this.parent.resolveNodeId(this.opMode),
+        return this.parent.writeNode(this.opMode,
             {
                 dataType: DataType.UInt32,
                 value: opMode,
@@ -321,13 +369,14 @@ export class Service {
             catService.trace('Go to External source');
             await this.writeOpMode(OpMode.srcExtOp);
             return new Promise((resolve) => {
-                this.parent.listenToOpcUaNode(this.opMode).on('changed', (value) => {
-                    catService.trace(`OpMode changed: ${value}`);
-                    if (isExtSource(value)) {
-                        catService.trace(`finally in ExtSource`);
-                        resolve(true);
-                    }
-                });
+                this.parent.listenToOpcUaNode(this.opMode)
+                    .on('changed', (value) => {
+                        catService.trace(`OpMode changed: ${value}`);
+                        if (isExtSource(value)) {
+                            catService.trace(`finally in ExtSource`);
+                            resolve(true);
+                        }
+                    });
             });
         } else {
             return Promise.resolve(true);
@@ -346,8 +395,7 @@ export class Service {
             await this.setToManualOperationMode();
         }
 
-        const result = await this.parent.session.writeSingleNode(
-            this.parent.resolveNodeId(this.command),
+        const result = await this.parent.writeNode(this.command,
             {
                 dataType: DataType.UInt32,
                 value: command,

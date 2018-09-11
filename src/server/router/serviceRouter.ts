@@ -1,3 +1,28 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2018 Markus Graube <markus.graube@tu.dresden.de>,
+ * Chair for Process Control Systems, Technische Universität Dresden
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 import {manager} from '../../model/Manager';
 import {ServiceCommand} from "pfe-ree-interface";
 import {moduleRouter} from "./moduleRouter";
@@ -35,7 +60,7 @@ moduleRouter.post('/:moduleId/service/:serviceName/:command', asyncHandler(async
     }
 
     if (req.body.parameters) {
-        parameters = req.body.parameters;
+        parameters = req.body.parameters.map(parameterOptions => new Parameter(parameterOptions));
     }
 
     const result = await service.executeCommand(command, strategy, parameters);
@@ -61,5 +86,23 @@ moduleRouter.get('/:moduleId/service/:serviceName', asyncHandler(async (req: Req
         throw new Error(`Module with id ${req.params.moduleId} not registered`);
     }
     const service = await module.services.find(service => service.name === req.params.serviceName);
+    res.json(await service.getOverview());
+}));
+
+/**
+ * @api {post} /module/:moduleId/service/:serviceName/configure    Configure Service
+ * @apiName ConfigureService
+ * @apiDescription Configure service parameters
+ * @apiGroup Service
+ * @apiParam {string} id    Module id
+ * @apiParam {object} parameters    Module Service Parameters
+ */
+moduleRouter.post('/:moduleId/service/:serviceName/configure', asyncHandler(async (req: Request, res: Response) => {
+    const module = await manager.modules.find(module => module.id === req.params.moduleId);
+    if (!module) {
+        throw new Error(`Module with id ${req.params.moduleId} not registered`);
+    }
+    const service = await module.services.find(service => service.name === req.params.serviceName);
+    await service.setServiceParameter(req.body.parameters);
     res.json(await service.getOverview());
 }));

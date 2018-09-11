@@ -1,11 +1,36 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2018 Markus Graube <markus.graube@tu.dresden.de>,
+ * Chair for Process Control Systems, Technische Universität Dresden
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 import {Step} from './Step';
 import {Module} from './Module';
 import {catRecipe} from '../config/logging';
-import {EventEmitter} from "events";
+import {EventEmitter} from 'events';
 import {v4} from 'uuid';
-import {Transition} from "./Transition";
-import {manager} from "./Manager";
-import {RecipeInterface, RecipeOptions, RecipeState, StepInterface} from "pfe-ree-interface";
+import {Transition} from './Transition';
+import {manager} from './Manager';
+import {RecipeInterface, RecipeOptions, RecipeState, StepInterface} from 'pfe-ree-interface';
 
 export class Recipe {
 
@@ -61,7 +86,7 @@ export class Recipe {
         this.initRecipe();
         this.eventEmitter = new EventEmitter();
 
-        catRecipe.info('Recipe parsing finished');
+        catRecipe.info(`Recipe ${this.name} successfully parsed`);
     }
 
     reset() {
@@ -76,8 +101,8 @@ export class Recipe {
                 this.executeStep();
             })
             .catch(() => {
-                catRecipe.warn('Could not connect to all modules. Thus start of recipe not possible.');
-                throw new Error('Could not connect to all modules. Thus start of recipe not possible.')
+                catRecipe.warn(`Could not connect to all modules for recipe ${this.name}. Thus start of recipe not possible.`);
+                throw new Error(`Could not connect to all modules for recipe ${this.name}. Thus start of recipe not possible.`);
             });
         return this.eventEmitter;
     }
@@ -102,7 +127,7 @@ export class Recipe {
             status: this.status,
             currentStep: this.stepJson(),
             options: this.options
-        }
+        };
     }
 
     public disconnectModules(): Promise<any[]> {
@@ -120,10 +145,10 @@ export class Recipe {
         this.modules.forEach(async (module) => {
             tasks.push(module.getServiceStates()
                 .then((data) => {
-                    return {module: module.id, connected: true, services: data}
+                    return {module: module.id, connected: true, services: data};
                 })
                 .catch(() => {
-                    return {module: module.id, connected: false}
+                    return {module: module.id, connected: false};
                 })
             );
         });
