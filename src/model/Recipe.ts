@@ -35,9 +35,8 @@ import {RecipeInterface, RecipeOptions, RecipeState, StepInterface} from 'pfe-re
 export class Recipe {
 
     id: string;
-    version: string;
     name: string;
-    author: string;
+
     // necessary modules
     modules: Set<Module> = new Set<Module>();
     initial_step: Step;
@@ -52,17 +51,11 @@ export class Recipe {
     constructor(options: RecipeOptions, modules: Module[]) {
 
         this.id = v4();
-        if (options.version) {
-            this.version = options.version;
-        } else {
-            throw new Error('Version property of recipe is missing');
-        }
         if (options.name) {
             this.name = options.name;
         } else {
             throw new Error('Version property of recipe is missing');
         }
-        this.author = options.author;
 
         if (options.steps) {
             this.steps = options.steps.map(stepOptions => new Step(stepOptions, modules, this));

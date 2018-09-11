@@ -1,6 +1,7 @@
 {
   "version": "0.1.0",
   "name": "Media preparation for medium 88370C",
+  "description": "This recipe uses the biofeed module for preparing medium 88370C in 9 steps. This recipe approximately lasts 45min?.",
   "author": "Markus Graube <markus.graube@tu-dresden.de>",
   "initial_step": "S1.AddWater",
   "steps": [

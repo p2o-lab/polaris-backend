@@ -267,7 +267,7 @@ export class Service {
         catService.debug(`Set service parameters: ${JSON.stringify(parameter)}`);
         const tasks = [];
         parameter.forEach(async (paramOptions: ParameterOptions) => {
-            const param = <Parameter> paramOptions;
+            const param: Parameter = new Parameter(paramOptions);
             const serviceParam = this.parameters.find(obj => obj.name === param.name);
             const variable = serviceParam.communication[param.variable];
             const dataValue: Variant = {
@@ -401,7 +401,7 @@ export class Service {
                 value: command,
                 arrayType: VariantArrayType.Scalar
             });
-        catService.debug(`Command ${command} written to ${this.name}: ${JSON.stringify(result)}`);
+        catService.trace(`Command ${command} written to ${this.name}: ${JSON.stringify(result)}`);
 
         return result;
     }
