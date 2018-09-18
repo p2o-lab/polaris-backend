@@ -46,6 +46,7 @@ import {
 } from 'pfe-ree-interface';
 import {Unit} from './Unit';
 import {manager} from './Manager';
+import {EventEmitter} from 'events';
 
 export interface ServiceOptions {
     name: string;
@@ -70,7 +71,8 @@ export class Service {
     strategies: Strategy[];
     parameters: ServiceParameter[];
 
-    parent: Module;
+    private parent: Module;
+    private listeners: EventEmitter[];
 
     constructor(serviceOptions: ServiceOptions, parent: Module) {
         this.name = serviceOptions.name;
@@ -84,7 +86,9 @@ export class Service {
 
         this.strategies = serviceOptions.strategies;
         this.parameters = serviceOptions.parameters;
+
         this.parent = parent;
+        this.listeners = [];
     }
 
     async getServiceState(): Promise<ServiceState> {
@@ -105,14 +109,11 @@ export class Service {
             const result: any = await this.parent.readVariableNode(this.opMode);
             catService.debug(`OpMode: ${JSON.stringify(this.opMode)} -> ${result}`);
             if (result.value) {
-
                 const opMode: number = result.value.value;
                 const opModeString: string = OpMode[opMode];
 
                 catOpc.trace(`OpMode ${this.name}: ${opMode} (${opModeString})`);
                 return opMode;
-            } else {
-                return undefined;
             }
         } catch (err) {
             catOpc.error('Error reading opMode', err);
@@ -201,10 +202,10 @@ export class Service {
         return await Promise.all(tasks);
     }
 
-    executeCommand(command: ServiceCommand, strategy: Strategy, parameter: Parameter[]) {
-        catService.info(`${command} service ${this.name}(${strategy ? strategy.name : ''}) - ${JSON.stringify(parameter)}`);
+    executeCommand(command: ServiceCommand, strategy: Strategy, parameters: Parameter[]) {
+        catService.info(`${command} service ${this.name}(${strategy ? strategy.name : ''}) - ${JSON.stringify(parameters)}`);
         if (command === 'start') {
-            return this.start(strategy, parameter);
+            return this.start(strategy, parameters);
         } else if (command === 'stop') {
             return this.stop();
         } else if (command === 'reset') {
@@ -220,18 +221,19 @@ export class Service {
         } else if (command === 'resume') {
             return this.resume();
         } else if (command === 'restart') {
-            return this.restart(strategy, parameter);
+            return this.restart(strategy, parameters);
         } else {
             throw new Error(`Command ${command} can not be interpreted`);
         }
     }
 
-    async start(strategy: Strategy, parameter: Parameter[]): Promise<any> {
-        await this.setParameter(strategy, parameter);
+    async start(strategy: Strategy, parameters: Parameter[]): Promise<any> {
+        await this.setParameterSet(strategy, parameters);
         return await this.sendCommand(ServiceMtpCommand.START);
     }
 
     stop(): Promise<any> {
+        this.clearListeners();
         return this.sendCommand(ServiceMtpCommand.STOP);
     }
 
@@ -240,10 +242,12 @@ export class Service {
     }
 
     complete(): Promise<any> {
+        this.clearListeners();
         return this.sendCommand(ServiceMtpCommand.COMPLETE);
     }
 
     abort(): Promise<any> {
+        this.clearListeners();
         return this.sendCommand(ServiceMtpCommand.ABORT);
     }
 
@@ -260,19 +264,19 @@ export class Service {
     }
 
     async restart(strategy: Strategy, parameter: Parameter[]): Promise<any> {
-        await this.setParameter(strategy, parameter);
+        await this.setParameterSet(strategy, parameter);
         return this.sendCommand(ServiceMtpCommand.RESTART);
     }
 
     /**
      * Set service parameters for adaption to environment
-     * @param {ParameterOptions[]} parameter
+     * @param {ParameterOptions[]} parameters
      * @returns {Promise<any[]>}
      */
-    async setServiceParameter(parameter: ParameterOptions[]): Promise<any[]> {
-        catService.debug(`Set service parameters: ${JSON.stringify(parameter)}`);
+    async setServiceParameter(parameters: ParameterOptions[]): Promise<any[]> {
+        catService.debug(`Set service parameters: ${JSON.stringify(parameters)}`);
         const tasks = [];
-        parameter.forEach(async (paramOptions: ParameterOptions) => {
+        parameters.forEach(async (paramOptions: ParameterOptions) => {
             const param: Parameter = new Parameter(paramOptions);
             const serviceParam = this.parameters.find(obj => obj.name === param.name);
             const variable = serviceParam.communication[param.variable];
@@ -287,8 +291,7 @@ export class Service {
         return Promise.all(tasks);
     }
 
-    private async setParameter(strategy: Strategy, parameter: Parameter[]): Promise<any[]> {
-
+    private async setParameterSet(strategy: Strategy, parameters: Parameter[]): Promise<boolean> {
         // set strategy
         catService.debug(`Set strategy "${strategy.name}" for service ${this.name}`);
         if (strategy) {
@@ -301,25 +304,50 @@ export class Service {
                 });
         }
 
-        // set parameter
+        // set parameter (both configuration and strategy parameters)
         const tasks = [];
-        if (strategy && parameter) {
-            parameter.forEach(async (param: Parameter) => {
+        if (strategy && parameters) {
+            parameters.forEach(async (param: Parameter) => {
                 const params = [].concat(strategy.parameters, this.parameters);
                 const serviceParam = params.find(obj => obj.name === param.name);
-                const variable = serviceParam.communication[param.variable];
+                const variable: OpcUaNode = serviceParam.communication[param.variable];
                 const paramValue = await param.getValue();
                 catService.debug(`Set parameter "${param.name}[${param.variable}]" for ${this.name} = ${paramValue}`);
-                const dataValue: Variant = {
-                    dataType: DataType.Float,
-                    value: paramValue,
-                    arrayType: VariantArrayType.Scalar,
-                    dimensions: null
-                };
-                tasks.push(this.parent.writeNode(variable, dataValue));
+                tasks.push(this.setParameter(variable, paramValue));
             });
         }
-        return Promise.all(tasks);
+
+        this.listenToParameters(parameters);
+
+        return Promise.all(tasks)
+            .then(data => true);
+    }
+
+    private listenToParameters(parameters: Parameter[]) {
+        parameters.forEach((param) => {
+            if (param.continuous) {
+                const serviceParam = this.parameters.find(obj => obj.name === param.name);
+                const variable: OpcUaNode = serviceParam.communication[param.variable];
+                const listener: EventEmitter = param.listenToParameter()
+                    .on('refresh', updatedValue => this.setParameter(variable, updatedValue));
+                this.listeners.push(listener);
+            }
+        });
+    }
+
+    private clearListeners() {
+        this.listeners.forEach(listener => listener.removeAllListeners());
+    }
+
+    private setParameter(variable: OpcUaNode, value: any): Promise<any> {
+        const dataValue: Variant = {
+            dataType: DataType.Float,
+            value,
+            arrayType: VariantArrayType.Scalar,
+            dimensions: null
+        };
+        catService.debug(`Set Parameter: ${this.name} - ${variable} -> ${dataValue}`);
+        return this.parent.writeNode(variable, dataValue);
     }
 
     /**

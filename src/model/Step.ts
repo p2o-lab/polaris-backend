@@ -66,7 +66,7 @@ export class Step {
     execute() {
         manager.eventEmitter.emit('refresh', 'recipe', 'stepStarted');
         this.operations.forEach((operation) => {
-            catRecipe.info(`Start operation ${operation.module.id} ${operation.service.name} ${JSON.stringify(operation.command)} ${JSON.stringify(operation.parameter)}`);
+            catRecipe.info(`Start operation ${operation.module.id} ${operation.service.name} ${JSON.stringify(operation.command)} ${JSON.stringify(operation.parameters)}`);
             operation.execute();
         });
 

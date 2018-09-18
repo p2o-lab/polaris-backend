@@ -166,6 +166,11 @@ export class Module {
         }
     }
 
+    /**
+     * Listen to OPC UA node and return event listener which is triggered by any value change
+     * @param {OpcUaNode} node
+     * @returns {"events".internal.EventEmitter} "changed" event
+     */
     listenToOpcUaNode(node: OpcUaNode): EventEmitter {
         const nodeId = this.resolveNodeId(node);
         if (!this.monitoredItems.has(nodeId)) {
@@ -191,12 +196,13 @@ export class Module {
 
     listenToVariable(dataStructureName: string, variableName: string): EventEmitter {
         const dataStructure: ProcessValue = this.variables.find(variable => variable.name === dataStructureName);
-        if (dataStructure) {
+        if (!dataStructure) {
+            throw new Error(`ProcessValue ${dataStructureName} is not specified for module ${this.id}`);
+        } else {
             const variable: OpcUaNode = dataStructure.communication[variableName];
             return this.listenToOpcUaNode(variable);
-        } else {
-            throw new Error('ProcessValue is not specified for module');
         }
+
     }
 
     clearListener(node: OpcUaNode) {
@@ -252,7 +258,7 @@ export class Module {
     async json(): Promise<ModuleInterface> {
         if (this.isConnected()) {
             const serviceStates = await this.getServiceStates();
-            console.log("service state", serviceStates);
+            console.log('service state', serviceStates);
             return {
                 id: this.id,
                 endpoint: this.endpoint,

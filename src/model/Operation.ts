@@ -30,27 +30,14 @@ import {Recipe} from './Recipe';
 import {Strategy} from './Interfaces';
 import {Parameter} from './Parameter';
 import {OperationInterface} from 'pfe-ree-interface/dist/interfaces';
-import {ParameterOptions, ServiceCommand} from 'pfe-ree-interface';
-
-export interface OperationOptions {
-    // module id (can be omitted if only one module is registered)
-    module?: string;
-    // service name
-    service: string;
-    // strategy can be omitted; then default strategy is chosen
-    strategy?: string;
-    // command name
-    command: ServiceCommand;
-    // optional parameters for start or restart
-    parameter?: ParameterOptions[];
-}
+import {OperationOptions, ServiceCommand} from 'pfe-ree-interface';
 
 export class Operation {
     module: Module;
     service: Service;
     strategy: Strategy;
     command: ServiceCommand;
-    parameter: Parameter[];
+    parameters: Parameter[];
 
     constructor(options: OperationOptions, modules: Module[], recipe: Recipe) {
         if (options.module) {
@@ -80,13 +67,13 @@ export class Operation {
             throw new Error(`"command" property is missing in ${JSON.stringify(options)}`);
         }
         if (options.parameter) {
-            this.parameter = options.parameter.map(paramOptions => new Parameter(paramOptions));
+            this.parameters = options.parameter.map(paramOptions => new Parameter(paramOptions));
         }
     }
 
     execute() {
-        catRecipe.debug(`Perform operation ${this.module.id} ${this.service.name} (Strategy: ${this.strategy ? this.strategy.name : ''}) - ${JSON.stringify(this.parameter)}`);
-        return this.service.executeCommand(this.command, this.strategy, this.parameter);
+        catRecipe.debug(`Perform operation ${this.module.id} ${this.service.name} (Strategy: ${this.strategy ? this.strategy.name : ''}) - ${JSON.stringify(this.parameters)}`);
+        return this.service.executeCommand(this.command, this.strategy, this.parameters);
     }
 
     json(): OperationInterface {
@@ -95,7 +82,7 @@ export class Operation {
             service: this.service.name,
             strategy: this.strategy ? this.strategy.name : undefined,
             command: this.command,
-            parameter: this.parameter
+            parameter: this.parameters
         };
     }
 }

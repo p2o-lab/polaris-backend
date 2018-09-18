@@ -24,21 +24,42 @@
  */
 
 import {ParameterOptions, ScopeOptions} from 'pfe-ree-interface';
-import {Parser} from 'expr-eval';
+import {Expression, Parser} from 'expr-eval';
 import {manager} from './Manager';
 import {catService} from '../config/logging';
+import {EventEmitter} from "events";
 
 export class Parameter {
     name: string;
     variable: string;
     value: any;
     scope: ScopeOptions[];
+    continuous: boolean;
+    private expression: Expression;
 
     constructor(parameterOptions: ParameterOptions) {
         this.name = parameterOptions.name;
         this.variable = parameterOptions.variable || 'VExt';
         this.value = parameterOptions.value;
-        this.scope = parameterOptions.scope;
+        this.scope = parameterOptions.scope || [];
+        this.continuous = parameterOptions.continuous || false;
+
+        const parser: Parser = new Parser();
+        this.expression = parser.parse(this.value.toString());
+    }
+
+
+    public listenToParameter() {
+        const eventEmitter = new EventEmitter();
+        this.scope.forEach(async (item: ScopeOptions) => {
+            const module = manager.modules.find(module => module.id === item.module);
+            module.listenToVariable(item.dataAssembly, item.variable)
+                .on('refresh', async (data) => {
+                    const value = await this.getValue();
+                    eventEmitter.emit('refresh', value);
+                });
+        });
+        return eventEmitter;
     }
 
     public toString() {
@@ -46,22 +67,19 @@ export class Parameter {
     }
 
     public async getValue(): Promise<any> {
-        const parser: Parser = new Parser();
         // get current variables
         const scope = {};
         const tasks = [];
-        if (this.scope) {
-            this.scope.forEach(async (item: ScopeOptions) => {
-                const module = manager.modules.find(module => module.id === item.module);
-                tasks.push(
-                    module.readVariable(item.dataAssembly, item.variable)
-                        .then(value => scope[item.name] = value.value.value)
-                );
-            });
-            await Promise.all(tasks);
-        }
+        this.scope.forEach(async (item: ScopeOptions) => {
+            const module = manager.modules.find(module => module.id === item.module);
+            tasks.push(
+                module.readVariable(item.dataAssembly, item.variable)
+                    .then(value => scope[item.name] = value.value.value)
+            );
+        });
+        await Promise.all(tasks);
         catService.trace(`Scope: ${JSON.stringify(scope)} <- ${JSON.stringify(this.scope)}`);
-        const result = parser.evaluate(this.value.toString(), scope);
+        const result = this.expression.evaluate(scope);
         catService.info(`Specific parameters: ${this.name} = ${this.value}(${JSON.stringify(scope)}) = ${result}`);
         return result;
     }
