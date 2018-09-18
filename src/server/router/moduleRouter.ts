@@ -40,7 +40,7 @@ const upload = multer({ storage: multer.memoryStorage() });
  * @apiGroup Module
  */
 moduleRouter.get('', asyncHandler(async (req: Request, res: Response) => {
-    const tasks = manager.modules.map(module => module.json());
+    const tasks = manager.modules.map(async module => await module.json());
     res.json(await Promise.all(tasks));
 }));
 

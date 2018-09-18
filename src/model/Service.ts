@@ -103,11 +103,17 @@ export class Service {
     async getOpMode(): Promise<OpMode> {
         try {
             const result: any = await this.parent.readVariableNode(this.opMode);
-            const opMode: number = result.value.value;
-            const opModeString: string = OpMode[opMode];
+            catService.debug(`OpMode: ${JSON.stringify(this.opMode)} -> ${result}`);
+            if (result.value) {
 
-            catOpc.trace(`OpMode ${this.name}: ${opMode} (${opModeString})`);
-            return opMode;
+                const opMode: number = result.value.value;
+                const opModeString: string = OpMode[opMode];
+
+                catOpc.trace(`OpMode ${this.name}: ${opMode} (${opModeString})`);
+                return opMode;
+            } else {
+                return undefined;
+            }
         } catch (err) {
             catOpc.error('Error reading opMode', err);
             return undefined;

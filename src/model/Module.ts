@@ -235,7 +235,10 @@ export class Module {
     }
 
     public readVariableNode(node: OpcUaNode) {
-        return this.session.readVariableValue(this.resolveNodeId(node));
+        const nodeId = this.resolveNodeId(node);
+        const result = this.session.readVariableValue(nodeId);
+        catOpc.debug(`Read Variable: ${JSON.stringify(node)} -> ${nodeId} = ${result}`);
+        return result;
     }
 
     public writeNode(node: OpcUaNode, value: object) {
@@ -248,12 +251,13 @@ export class Module {
      */
     async json(): Promise<ModuleInterface> {
         if (this.isConnected()) {
-            const services = await this.getServiceStates();
+            const serviceStates = await this.getServiceStates();
+            console.log("service state", serviceStates);
             return {
                 id: this.id,
                 endpoint: this.endpoint,
                 connected: true,
-                services
+                services: serviceStates
             };
         } else {
             return {
@@ -275,9 +279,10 @@ export class Module {
      */
     private resolveNodeId(variable: OpcUaNode) {
         if (this.namespaceArray) {
-            return coerceNodeId(`ns=${this.namespaceArray.indexOf(variable.namespace_index)};s=${variable.node_id}`);
-        }
-        else {
+            const nodeIdString = `ns=${this.namespaceArray.indexOf(variable.namespace_index)};s=${variable.node_id}`;
+            catOpc.debug(`nodeIdString ${nodeIdString}`);
+            return coerceNodeId(nodeIdString);
+        } else {
             throw new Error(`No namespace array read for module ${this.id}`);
         }
     }
