@@ -23,11 +23,11 @@
  * SOFTWARE.
  */
 
-import {Recipe} from "./Recipe";
-import {catRM} from "../config/logging";
-import {EventEmitter} from "events";
-import {PlayerInterface, RecipeState, Repeat} from "pfe-ree-interface";
-import {manager} from "./Manager";
+import { Recipe } from './Recipe';
+import { catRM } from '../config/logging';
+import { EventEmitter } from 'events';
+import { PlayerInterface, RecipeState, Repeat } from 'pfe-ree-interface';
+import { manager } from './Manager';
 
 export class Player {
     public repeat: Repeat = Repeat.none;

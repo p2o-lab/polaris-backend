@@ -23,12 +23,11 @@
  * SOFTWARE.
  */
 
-import {Step} from './Step';
-import {Condition} from './Condition';
-import {ConditionOptions} from 'pfe-ree-interface';
-import {TransitionInterface} from 'pfe-ree-interface/dist/interfaces';
-import {Module} from './Module';
-import {Recipe} from './Recipe';
+import { Step } from './Step';
+import { Condition } from './Condition';
+import { ConditionOptions, TransitionInterface } from 'pfe-ree-interface';
+import { Module } from './Module';
+import { Recipe } from './Recipe';
 
 export interface TransitionOptions {
     next_step: string;

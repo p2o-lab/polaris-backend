@@ -137,6 +137,11 @@ export class Manager {
         return Promise.all(tasks);
     }
 
+    /**
+     * get ManagerInterface as JSON
+     *
+     * @returns {Promise<ManagerInterface>}
+     */
     async json(): Promise<ManagerInterface> {
         let recipe = await this.player.getCurrentRecipe().json();
         return {

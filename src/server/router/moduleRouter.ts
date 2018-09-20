@@ -23,11 +23,11 @@
  * SOFTWARE.
  */
 
-import {manager} from '../../model/Manager';
-import {Request, Response, Router} from 'express';
+import { manager } from '../../model/Manager';
+import { Request, Response, Router } from 'express';
 
 import * as asyncHandler from 'express-async-handler';
-import {catServer} from '../../config/logging';
+import { catServer } from '../../config/logging';
 import * as multer from 'multer';
 
 export const moduleRouter: Router = Router();
@@ -82,7 +82,7 @@ moduleRouter.delete('/:id', asyncHandler(async (req: Request, res: Response) => 
         manager.modules.splice(index, 1);
     }
     manager.eventEmitter.emit('refresh', 'module');
-    res.send({status: 'Successful deleted', id: req.params.id});
+    res.send({ status: 'Successful deleted', id: req.params.id });
 }));
 
 /**
@@ -94,7 +94,7 @@ moduleRouter.delete('/:id', asyncHandler(async (req: Request, res: Response) => 
 moduleRouter.post('/:id/connect', asyncHandler(async (req: Request, res: Response) => {
     const module = manager.modules.find(module => module.id === req.params.id);
     await module.connect();
-    res.json({module: module.id, status: 'Succesfully connected'});
+    res.json({ module: module.id, status: 'Succesfully connected' });
 }));
 
 /**
@@ -106,7 +106,7 @@ moduleRouter.post('/:id/connect', asyncHandler(async (req: Request, res: Respons
 moduleRouter.post('/:id/disconnect', asyncHandler(async (req: Request, res: Response) => {
     const module = manager.modules.find(module => module.id === req.params.id);
     await module.disconnect();
-    res.json({module: module.id, status: 'Succesfully disconnected'});
+    res.json({ module: module.id, status: 'Succesfully disconnected' });
 }));
 
 /**
@@ -117,5 +117,5 @@ moduleRouter.post('/:id/disconnect', asyncHandler(async (req: Request, res: Resp
  */
 moduleRouter.post('/abort', asyncHandler(async (req: Request, res: Response) => {
     await manager.abortAllModules();
-    res.json({status: 'aborted all services from all modules'});
+    res.json({ status: 'aborted all services from all modules' });
 }));

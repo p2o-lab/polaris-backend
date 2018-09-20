@@ -23,8 +23,8 @@
  * SOFTWARE.
  */
 
-import {Service, ServiceOptions} from './Service';
-import {ProcessValue} from './ProcessValue';
+import { Service, ServiceOptions } from './Service';
+import { ProcessValue } from './ProcessValue';
 import {
     AttributeIds,
     ClientMonitoredItem,
@@ -32,15 +32,17 @@ import {
     ClientSubscription,
     coerceNodeId,
     DataValue,
-    OPCUAClient
+    NodeId,
+    OPCUAClient,
+    Variant
 } from 'node-opcua-client';
-import {catModule, catOpc, catRecipe} from '../config/logging';
-import {EventEmitter} from 'events';
-import {OpcUaNode} from './Interfaces';
-import {manager} from './Manager';
-import {ServiceState} from './enum';
-import {ModuleInterface, ServiceInterface} from 'pfe-ree-interface';
-import {promiseTimeout} from '../timeout-promise';
+import { catModule, catOpc, catRecipe } from '../config/logging';
+import { EventEmitter } from 'events';
+import { OpcUaNode } from './Interfaces';
+import { manager } from './Manager';
+import { ServiceState } from './enum';
+import { ModuleInterface, ServiceInterface } from 'pfe-ree-interface';
+import { promiseTimeout } from '../timeout-promise';
 
 export interface ModuleOptions {
     id: string;
@@ -58,7 +60,7 @@ export class Module {
     session: ClientSession;
     private client: OPCUAClient;
     subscription: ClientSubscription;
-    private monitoredItems: Map<string, ClientMonitoredItem> = new Map<string, ClientMonitoredItem>();
+    private monitoredItems: Map<NodeId, {monitoredItem: ClientMonitoredItem, emitter: EventEmitter}>;
     private namespaceArray: string[];
 
     constructor(options: ModuleOptions) {
@@ -71,7 +73,10 @@ export class Module {
         if (options.process_values) {
             this.variables = options.process_values.map(variableOptions => new ProcessValue(variableOptions));
         }
-        this.connect();
+
+        this.monitoredItems = new Map<NodeId, {monitoredItem: ClientMonitoredItem, emitter: EventEmitter}>();
+        this.connect()
+            .catch(reason => catModule.warn(reason));
     }
 
     /**
@@ -81,7 +86,6 @@ export class Module {
     async connect(): Promise<ClientSession> {
         if (this.session) {
             catOpc.debug(`Already connected to module ${this.id}`);
-            return this.session;
         } else {
             try {
                 catOpc.info(`connect module ${this.id} ${this.endpoint}`);
@@ -98,10 +102,6 @@ export class Module {
                 catOpc.debug(`module connected ${this.id} ${this.endpoint}`);
 
                 const session = await client.createSession();
-                session.on('session_closed', (statusCode) => {
-                    catOpc.warn(`Session of ${this.id} closed by server (statusCode: ${statusCode})`);
-                    //this.disconnect();
-                });
                 catOpc.debug(`session established ${this.id} ${this.endpoint}`);
 
                 const subscription = new ClientSubscription(session, {
@@ -118,7 +118,9 @@ export class Module {
                         catOpc.trace(`subscription started - subscriptionId=${subscription.subscriptionId}`);
                     })
                     // .on("keepalive", () => catOpc.trace("keepalive"))
-                    .on('terminated', () => catOpc.trace('subscription (Id=${subscription.subscriptionId}) terminated'));
+                    .on('terminated', () => {
+                        catOpc.trace(`subscription (Id=${subscription.subscriptionId}) terminated`);
+                    });
 
                 // read namespace array
                 const result: DataValue = await session.readVariableValue('ns=0;i=2255');
@@ -133,13 +135,11 @@ export class Module {
                 // subscribe to all services
                 this.subscribeToAllServices();
                 manager.eventEmitter.emit('refresh', 'module');
-
-                return this.session;
             } catch (err) {
-                catModule.warn(`Could not connect to module ${this.id} on ${this.endpoint}`);
-                throw new Error(`Could not connect to module ${this.id} on ${this.endpoint}`);
+                return Promise.reject(`Could not connect to module ${this.id} on ${this.endpoint}: ${err.toString()}`);
             }
         }
+        return this.session;
     }
 
     async getServiceStates(): Promise<ServiceInterface[]> {
@@ -152,18 +152,20 @@ export class Module {
      * Close session and disconnect from server
      *
      */
-    async disconnect(): Promise<any> {
-        if (this.session) {
-            catRecipe.info(`Disconnect module ${this.id}`);
-            await this.session.close();
-            this.session = undefined;
-            await this.client.disconnect();
-            this.client = undefined;
-            manager.eventEmitter.emit('refresh', 'module');
-            return 'Disconnected';
-        } else {
-            return Promise.resolve('Already disconnected');
-        }
+    disconnect(): Promise<any> {
+        return new Promise(async (resolve) => {
+            if (this.session) {
+                catRecipe.info(`Disconnect module ${this.id}`);
+                await this.session.close();
+                this.session = undefined;
+                await this.client.disconnect();
+                this.client = undefined;
+                manager.eventEmitter.emit('refresh', 'module');
+                resolve('Disconnected');
+            } else {
+                resolve('Already disconnected');
+            }
+        });
     }
 
     /**
@@ -175,21 +177,21 @@ export class Module {
         const nodeId = this.resolveNodeId(node);
         if (!this.monitoredItems.has(nodeId)) {
             const monitoredItem: ClientMonitoredItem = this.subscription.monitor({
-                    nodeId,
-                    attributeId: AttributeIds.Value
-                },
+                nodeId,
+                attributeId: AttributeIds.Value
+            },
                 {
                     samplingInterval: 1000,
                     discardOldest: true,
                     queueSize: 10
                 });
 
-            monitoredItem.emitter = new EventEmitter();
+            const emitter = new EventEmitter();
             monitoredItem.on('changed', (dataValue) => {
                 catOpc.debug(`Variable Changed (${this.resolveNodeId(node)}) = ${dataValue.value.value.toString()}`);
-                monitoredItem.emitter.emit('changed', dataValue.value.value);
+                emitter.emit('changed', dataValue.value.value);
             });
-            this.monitoredItems.set(nodeId, monitoredItem);
+            this.monitoredItems.set(nodeId, { monitoredItem, emitter });
         }
         return this.monitoredItems.get(nodeId).emitter;
     }
@@ -207,20 +209,25 @@ export class Module {
 
     clearListener(node: OpcUaNode) {
         const nodeId = this.resolveNodeId(node);
-        const monitoredItem = this.monitoredItems.get(nodeId);
+        const monitoredItem = this.monitoredItems.get(nodeId).monitoredItem;
+        const emitter = this.monitoredItems.get(nodeId).emitter;
 
         if (monitoredItem) {
-            monitoredItem.terminate(() => catOpc.trace(`Listener ${nodeId} terminated`));
+            monitoredItem.terminate(() => catOpc.trace(`Listener ${JSON.stringify(nodeId)} terminated`));
         }
+        if (emitter) {
+            emitter.removeAllListeners();
+        }
+        this.monitoredItems.delete(nodeId);
     }
 
     public readVariable(dataStructureName: string, variableName: string) {
         const dataStructure = this.variables.find(variable => variable.name === dataStructureName);
-        if (dataStructure) {
+        if (!dataStructure) {
+            throw new Error(`Datastructure ${dataStructureName} not found in module ${this.id}`);
+        } else {
             const variable = dataStructure.communication[variableName];
             return this.readVariableNode(variable);
-        } else {
-            throw new Error(`Datastructure ${dataStructureName} not found in module ${this.id}`);
         }
     }
 
@@ -247,35 +254,28 @@ export class Module {
         return result;
     }
 
-    public writeNode(node: OpcUaNode, value: object) {
-        return this.session.writeSingleNode(this.resolveNodeId(node), value);
+    public async writeNode(node: OpcUaNode, value: Variant) {
+        const result = await this.session.writeSingleNode(this.resolveNodeId(node), value);
+        catModule.debug(`Write result for ${this.id}.${JSON.stringify(node)}=${value} -> ${JSON.stringify(result)}`);
+        return result;
     }
 
     /**
+     * Get JSON serialisation of module
      *
      * @returns {Promise<ModuleInterface>}
      */
     async json(): Promise<ModuleInterface> {
-        if (this.isConnected()) {
-            const serviceStates = await this.getServiceStates();
-            console.log('service state', serviceStates);
-            return {
-                id: this.id,
-                endpoint: this.endpoint,
-                connected: true,
-                services: serviceStates
-            };
-        } else {
-            return {
-                id: this.id,
-                endpoint: this.endpoint,
-                connected: false
-            };
-        }
+        return {
+            id: this.id,
+            endpoint: this.endpoint,
+            connected: true,
+            services: this.isConnected() ? await this.getServiceStates() : undefined
+        };
     }
 
     isConnected(): boolean {
-        return this.session;
+        return !!this.session;
     }
 
     /**
@@ -284,12 +284,12 @@ export class Module {
      * @returns {any}
      */
     private resolveNodeId(variable: OpcUaNode) {
-        if (this.namespaceArray) {
-            const nodeIdString = `ns=${this.namespaceArray.indexOf(variable.namespace_index)};s=${variable.node_id}`;
-            catOpc.debug(`nodeIdString ${nodeIdString}`);
-            return coerceNodeId(nodeIdString);
-        } else {
+        if (!this.namespaceArray) {
             throw new Error(`No namespace array read for module ${this.id}`);
+        } else {
+            const nodeIdString = `ns=${this.namespaceArray.indexOf(variable.namespace_index)};s=${variable.node_id}`;
+            catOpc.debug(`resolveNodeId ${JSON.stringify(variable)} -> ${nodeIdString}`);
+            return coerceNodeId(nodeIdString);
         }
     }
 

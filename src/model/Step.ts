@@ -23,14 +23,14 @@
  * SOFTWARE.
  */
 
-import {Operation, OperationOptions} from './Operation';
-import {Transition, TransitionOptions} from './Transition';
-import {catRecipe} from '../config/logging';
-import {manager} from './Manager';
-import {EventEmitter} from 'events';
-import {StepInterface} from 'pfe-ree-interface/dist/interfaces';
-import {Module} from './Module';
-import {Recipe} from './Recipe';
+import { Operation } from './Operation';
+import { Transition, TransitionOptions } from './Transition';
+import { catRecipe } from '../config/logging';
+import { manager } from './Manager';
+import { EventEmitter } from 'events';
+import { Module } from './Module';
+import { Recipe } from './Recipe';
+import { OperationOptions, StepInterface } from 'pfe-ree-interface';
 
 export interface StepOptions {
     name: string;
@@ -52,12 +52,16 @@ export class Step {
             throw new Error(`"name" property is missing in ${JSON.stringify(options)}`);
         }
         if (options.operations) {
-            this.operations = options.operations.map(operationOptions => new Operation(operationOptions, modules, recipe));
+            this.operations = options.operations.map(
+                operationOptions => new Operation(operationOptions, modules, recipe)
+            );
         } else {
             throw new Error(`"operations" array is missing in ${JSON.stringify(options)}`);
         }
         if (options.transitions) {
-            this.transitions = options.transitions.map(transitionOptions => new Transition(transitionOptions, modules, recipe));
+            this.transitions = options.transitions.map(
+                transitionOptions => new Transition(transitionOptions, modules, recipe)
+            );
         } else {
             throw new Error(`"transitions" array is missing in ${JSON.stringify(options)}`);
         }
@@ -66,14 +70,16 @@ export class Step {
     execute() {
         manager.eventEmitter.emit('refresh', 'recipe', 'stepStarted');
         this.operations.forEach((operation) => {
-            catRecipe.info(`Start operation ${operation.module.id} ${operation.service.name} ${JSON.stringify(operation.command)} ${JSON.stringify(operation.parameters)}`);
+            catRecipe.info(`Start operation ${operation.module.id} ${operation.service.name} ` +
+                `${JSON.stringify(operation.command)} ${JSON.stringify(operation.parameters)}`);
             operation.execute();
         });
 
         this.transitions.forEach((transition) => {
             const events = transition.condition.listen();
             events.on('state_changed', (status) => {
-                catRecipe.trace(`Status of step ${this.name} for transition to ${transition.next_step_name}: ${status}`);
+                catRecipe.trace(`Status of step ${this.name} for transition to ${transition.next_step_name}: ` +
+                    `${status}`);
                 if (status) {
                     // clear up all conditions
                     this.transitions.forEach((transition) => {

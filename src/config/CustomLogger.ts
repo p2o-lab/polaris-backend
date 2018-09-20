@@ -23,11 +23,11 @@
  * SOFTWARE.
  */
 
-import {AbstractCategoryLogger, Category, CategoryLogMessage, RuntimeSettings} from "typescript-logging";
+import { AbstractCategoryLogger, Category, CategoryLogMessage, RuntimeSettings } from 'typescript-logging';
 
 export class CustomLogger extends AbstractCategoryLogger {
 
-    private messages: string[] = [];
+    public messages: string[] = [];
 
     // The first two parameters are required, the 3rd is our parameter
     // where we give this logger an array and log all messages to that array.

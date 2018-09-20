@@ -23,14 +23,14 @@
  * SOFTWARE.
  */
 
-import {Step} from './Step';
-import {Module} from './Module';
-import {catRecipe} from '../config/logging';
-import {EventEmitter} from 'events';
-import {v4} from 'uuid';
-import {Transition} from './Transition';
-import {manager} from './Manager';
-import {RecipeInterface, RecipeOptions, RecipeState, StepInterface} from 'pfe-ree-interface';
+import { Step } from './Step';
+import { Module } from './Module';
+import { catRecipe } from '../config/logging';
+import { EventEmitter } from 'events';
+import { v4 } from 'uuid';
+import { Transition } from './Transition';
+import { manager } from './Manager';
+import { RecipeInterface, ModuleInterface, RecipeOptions, RecipeState, StepInterface } from 'pfe-ree-interface';
 
 export class Recipe {
 
@@ -94,8 +94,10 @@ export class Recipe {
                 this.executeStep();
             })
             .catch(() => {
-                catRecipe.warn(`Could not connect to all modules for recipe ${this.name}. Thus start of recipe not possible.`);
-                throw new Error(`Could not connect to all modules for recipe ${this.name}. Thus start of recipe not possible.`);
+                catRecipe.warn(`Could not connect to all modules for recipe ${this.name}. ` +
+                    `Start of recipe not possible.`);
+                throw new Error(`Could not connect to all modules for recipe ${this.name}. ` +
+                    `Start of recipe not possible.`);
             });
         return this.eventEmitter;
     }
@@ -116,7 +118,7 @@ export class Recipe {
     public async json(): Promise<RecipeInterface> {
         return {
             id: this.id,
-            modules: await this.getServiceStates(),
+            modules: await this.getModulesInRecipe(),
             status: this.status,
             currentStep: this.stepJson(),
             options: this.options
@@ -133,17 +135,9 @@ export class Recipe {
         return Promise.all(tasks);
     }
 
-    public async getServiceStates() {
-        const tasks = [];
-        this.modules.forEach(async (module) => {
-            tasks.push(module.getServiceStates()
-                .then((data) => {
-                    return {module: module.id, connected: true, services: data};
-                })
-                .catch(() => {
-                    return {module: module.id, connected: false};
-                })
-            );
+    public async getModulesInRecipe(): Promise<ModuleInterface[]> {
+        const tasks = Array.from(this.modules).map((module) => {
+            return module.json();
         });
         return await Promise.all(tasks);
     }
@@ -153,7 +147,8 @@ export class Recipe {
         this.current_step.execute()
             .on('completed', (finishedStep: Step, transition: Transition) => {
                 if (finishedStep !== this.current_step) {
-                    catRecipe.warn(`not correct step. Current Step: ${this.current_step.name}. Reported step: ${finishedStep.name}`);
+                    catRecipe.warn(`Not correct step. Current Step: ${this.current_step.name}. ` +
+                        `Reported step: ${finishedStep.name}`);
                 } else {
                     this.eventEmitter.emit('step_finished', this.current_step, transition.next_step);
                     manager.eventEmitter.emit('refresh', 'recipe', 'stepFinished');

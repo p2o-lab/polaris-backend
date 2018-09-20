@@ -23,12 +23,11 @@
  * SOFTWARE.
  */
 
-import {catOpc, catRecipe} from '../config/logging';
-import {ServiceState} from './enum';
-import {Module} from './Module';
-import {Service} from './Service';
-import {AttributeIds, ClientMonitoredItem, coerceNodeId} from 'node-opcua-client';
-import {Recipe} from './Recipe';
+import { catOpc, catRecipe } from '../config/logging';
+import { ServiceState } from './enum';
+import { Module } from './Module';
+import { Service } from './Service';
+import { Recipe } from './Recipe';
 import {
     AndConditionOptions,
     ConditionOptions,
@@ -39,7 +38,7 @@ import {
     TimeConditionOptions,
     VariableConditionOptions
 } from 'pfe-ree-interface';
-import {EventEmitter} from 'events';
+import { EventEmitter } from 'events';
 
 export abstract class Condition {
 
@@ -55,6 +54,7 @@ export abstract class Condition {
      * Create Condition
      * @param {ConditionOptions} options
      * @param {Map<string,Module>} modules
+     * @param recipe
      * @returns Condition
      * */
     static create(options: ConditionOptions, modules: Module[], recipe: Recipe): Condition {
@@ -87,7 +87,7 @@ export abstract class Condition {
      */
     abstract clear();
 
-    constructor(options) {
+    constructor(options: ConditionOptions) {
         this.options = options;
     }
 
@@ -100,7 +100,7 @@ export class StateCondition extends Condition {
     module: Module;
     service: Service;
     state: string;
-    private monitoredItem: ClientMonitoredItem;
+    private monitoredItem: EventEmitter;
 
     constructor(options: StateConditionOptions, modules: Module[], recipe: Recipe) {
         super(options);
@@ -125,8 +125,9 @@ export class StateCondition extends Condition {
         this.monitoredItem.on('changed', (dataValue) => {
             const state: ServiceState = dataValue;
             this._fulfilled = ServiceState[state]
-                .localeCompare(this.state, 'en', {usage: 'search', sensitivity: 'base'}) === 0;
-            catRecipe.info(`State Changed (${this.service.name}) = ${state} (${ServiceState[state]}) - compare to ${this.state} -> ${this._fulfilled}`);
+                .localeCompare(this.state, 'en', { usage: 'search', sensitivity: 'base' }) === 0;
+            catRecipe.info(`State Changed (${this.service.name}) = ${state} (${ServiceState[state]})` +
+                `- compare to ${this.state} -> ${this._fulfilled}`);
             this.eventEmitter.emit('state_changed', this._fulfilled);
         });
         return this.eventEmitter;
@@ -147,10 +148,10 @@ export class TimeCondition extends Condition {
     listen(): EventEmitter {
         catRecipe.debug(`Start Timer: ${this.duration}`);
         this.timer = setTimeout(() => {
-                catRecipe.debug(`Timer finished: ${this.duration}`);
-                this._fulfilled = true;
-                this.eventEmitter.emit('state_changed', this._fulfilled);
-            },
+            catRecipe.debug(`Timer finished: ${this.duration}`);
+            this._fulfilled = true;
+            this.eventEmitter.emit('state_changed', this._fulfilled);
+        },
             this.duration);
         return this.eventEmitter;
     }

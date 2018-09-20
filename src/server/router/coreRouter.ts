@@ -23,10 +23,10 @@
  * SOFTWARE.
  */
 
-import {manager} from '../../model/Manager';
-import {Request, Response, Router} from 'express';
+import { manager } from '../../model/Manager';
+import { Request, Response, Router } from 'express';
 import * as asyncHandler from 'express-async-handler';
-import {messages} from '../../config/logging';
+import { messages } from '../../config/logging';
 
 export const coreRouter: Router = Router();
 
@@ -48,7 +48,7 @@ coreRouter.get('/', asyncHandler(async (req: Request, res: Response) => {
 
  */
 coreRouter.get('/autoReset', asyncHandler(async (req: Request, res: Response) => {
-    res.json({autoReset: manager.autoreset});
+    res.json({ autoReset: manager.autoreset });
 }));
 
 /**
@@ -60,7 +60,7 @@ coreRouter.get('/autoReset', asyncHandler(async (req: Request, res: Response) =>
  */
 coreRouter.post('/autoReset', asyncHandler(async (req: Request, res: Response) => {
     manager.autoreset = isTrue(req.body.autoReset);
-    res.json({autoReset: manager.autoreset});
+    res.json({ autoReset: manager.autoreset });
 }));
 
 /**
@@ -80,14 +80,14 @@ function isTrue(value: any) {
         valueTmp = value;
     }
     switch (valueTmp) {
-        case true:
-        case 'true':
-        case 1:
-        case '1':
-        case 'on':
-        case 'yes':
-            return true;
-        default:
-            return false;
+    case true:
+    case 'true':
+    case 1:
+    case '1':
+    case 'on':
+    case 'yes':
+        return true;
+    default:
+        return false;
     }
 }

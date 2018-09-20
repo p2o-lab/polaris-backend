@@ -71,7 +71,7 @@ export class Service {
     strategies: Strategy[];
     parameters: ServiceParameter[];
 
-    private parent: Module;
+    public parent: Module;
     private listeners: EventEmitter[];
 
     constructor(serviceOptions: ServiceOptions, parent: Module) {
@@ -203,7 +203,8 @@ export class Service {
     }
 
     executeCommand(command: ServiceCommand, strategy: Strategy, parameters: Parameter[]) {
-        catService.info(`${command} service ${this.name}(${strategy ? strategy.name : ''}) - ${JSON.stringify(parameters)}`);
+        catService.info(`${command} service ${this.name}(${strategy ? strategy.name : ''}) ` +
+            `- ${JSON.stringify(parameters)}`);
         if (command === 'start') {
             return this.start(strategy, parameters);
         } else if (command === 'stop') {
@@ -228,7 +229,7 @@ export class Service {
     }
 
     async start(strategy: Strategy, parameters: Parameter[]): Promise<any> {
-        await this.setParameterSet(strategy, parameters);
+        await this.setStrategyParameters(strategy, parameters);
         return await this.sendCommand(ServiceMtpCommand.START);
     }
 
@@ -264,34 +265,31 @@ export class Service {
     }
 
     async restart(strategy: Strategy, parameter: Parameter[]): Promise<any> {
-        await this.setParameterSet(strategy, parameter);
+        await this.setStrategyParameters(strategy, parameter);
         return this.sendCommand(ServiceMtpCommand.RESTART);
     }
 
     /**
-     * Set service parameters for adaption to environment
+     * Set service configuration parameters for adaption to environment. Can set also process values
      * @param {ParameterOptions[]} parameters
      * @returns {Promise<any[]>}
      */
-    async setServiceParameter(parameters: ParameterOptions[]): Promise<any[]> {
+    async setServiceParameters(parameters: ParameterOptions[]): Promise<any[]> {
         catService.debug(`Set service parameters: ${JSON.stringify(parameters)}`);
-        const tasks = [];
-        parameters.forEach(async (paramOptions: ParameterOptions) => {
-            const param: Parameter = new Parameter(paramOptions);
-            const serviceParam = this.parameters.find(obj => obj.name === param.name);
-            const variable = serviceParam.communication[param.variable];
-            const dataValue: Variant = {
-                dataType: DataType.Float,
-                value: await param.getValue(),
-                arrayType: VariantArrayType.Scalar,
-                dimensions: null
-            };
-            tasks.push(this.parent.writeNode(variable, dataValue));
+        const tasks = parameters.map((paramOptions: ParameterOptions) => {
+            const param: Parameter = new Parameter(paramOptions, this, this.parameters);
+            return param.updateValueOnModule();
         });
         return Promise.all(tasks);
     }
 
-    private async setParameterSet(strategy: Strategy, parameters: Parameter[]): Promise<boolean> {
+    /** can set also configuration parameter or process values
+     *
+     * @param {Strategy} strategy
+     * @param {Parameter[]} parameters
+     * @returns {Promise<boolean>}
+     */
+    private async setStrategyParameters(strategy: Strategy, parameters: Parameter[]): Promise<boolean> {
         // set strategy
         catService.debug(`Set strategy "${strategy.name}" for service ${this.name}`);
         if (strategy) {
@@ -305,31 +303,23 @@ export class Service {
         }
 
         // set parameter (both configuration and strategy parameters)
-        const tasks = [];
+
         if (strategy && parameters) {
-            parameters.forEach(async (param: Parameter) => {
-                const params = [].concat(strategy.parameters, this.parameters);
-                const serviceParam = params.find(obj => obj.name === param.name);
-                const variable: OpcUaNode = serviceParam.communication[param.variable];
-                const paramValue = await param.getValue();
-                catService.debug(`Set parameter "${param.name}[${param.variable}]" for ${this.name} = ${paramValue}`);
-                tasks.push(this.setParameter(variable, paramValue));
-            });
+            const tasks = parameters.map((param: Parameter) => param.updateValueOnModule());
+            const paramResults = await Promise.all(tasks);
+            catService.debug(`Set Parameter Promises: ${JSON.stringify(paramResults)}`);
+
+            this.listenToServiceParameters(parameters);
         }
 
-        this.listenToParameters(parameters);
-
-        return Promise.all(tasks)
-            .then(data => true);
+        return Promise.resolve(true);
     }
 
-    private listenToParameters(parameters: Parameter[]) {
+    private listenToServiceParameters(parameters: Parameter[]) {
         parameters.forEach((param) => {
             if (param.continuous) {
-                const serviceParam = this.parameters.find(obj => obj.name === param.name);
-                const variable: OpcUaNode = serviceParam.communication[param.variable];
                 const listener: EventEmitter = param.listenToParameter()
-                    .on('refresh', updatedValue => this.setParameter(variable, updatedValue));
+                    .on('refresh', () => param.updateValueOnModule());
                 this.listeners.push(listener);
             }
         });
@@ -339,15 +329,15 @@ export class Service {
         this.listeners.forEach(listener => listener.removeAllListeners());
     }
 
-    private setParameter(variable: OpcUaNode, value: any): Promise<any> {
+    async setParameter(opcUaNode: OpcUaNode, dataType: DataType, paramValue: any): Promise<any> {
         const dataValue: Variant = {
-            dataType: DataType.Float,
-            value,
+            dataType,
+            value: paramValue,
             arrayType: VariantArrayType.Scalar,
             dimensions: null
         };
-        catService.debug(`Set Parameter: ${this.name} - ${variable} -> ${dataValue}`);
-        return this.parent.writeNode(variable, dataValue);
+        catService.info(`Set Parameter: ${this.name} - ${JSON.stringify(opcUaNode)} -> ${JSON.stringify(dataValue)}`);
+        return await this.parent.writeNode(opcUaNode, dataValue);
     }
 
     /**
@@ -361,6 +351,7 @@ export class Service {
                 dataType: DataType.UInt32,
                 value: opMode,
                 arrayType: VariantArrayType.Scalar,
+                dimensions: null
             });
     }
 

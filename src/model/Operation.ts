@@ -23,14 +23,13 @@
  * SOFTWARE.
  */
 
-import {Module} from './Module';
-import {Service} from './Service';
-import {catRecipe} from '../config/logging';
-import {Recipe} from './Recipe';
-import {Strategy} from './Interfaces';
-import {Parameter} from './Parameter';
-import {OperationInterface} from 'pfe-ree-interface/dist/interfaces';
-import {OperationOptions, ServiceCommand} from 'pfe-ree-interface';
+import { Module } from './Module';
+import { Service } from './Service';
+import { catRecipe } from '../config/logging';
+import { Recipe } from './Recipe';
+import { ServiceParameter, Strategy } from './Interfaces';
+import { Parameter } from './Parameter';
+import { OperationInterface, OperationOptions, ServiceCommand } from 'pfe-ree-interface';
 
 export class Operation {
     module: Module;
@@ -67,12 +66,14 @@ export class Operation {
             throw new Error(`"command" property is missing in ${JSON.stringify(options)}`);
         }
         if (options.parameter) {
-            this.parameters = options.parameter.map(paramOptions => new Parameter(paramOptions));
+            const params: ServiceParameter[] = [].concat(this.strategy.parameters, this.service.parameters);
+            this.parameters = options.parameter.map(paramOptions => new Parameter(paramOptions, this.service, params));
         }
     }
 
     execute() {
-        catRecipe.debug(`Perform operation ${this.module.id} ${this.service.name} (Strategy: ${this.strategy ? this.strategy.name : ''}) - ${JSON.stringify(this.parameters)}`);
+        catRecipe.debug(`Perform operation ${this.module.id} ${this.service.name} ` +
+            `(Strategy: ${this.strategy ? this.strategy.name : ''}) - ${JSON.stringify(this.parameters)}`);
         return this.service.executeCommand(this.command, this.strategy, this.parameters);
     }
 

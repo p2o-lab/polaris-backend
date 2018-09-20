@@ -23,14 +23,13 @@
  * SOFTWARE.
  */
 
-import {manager} from '../../model/Manager';
-import {catServer} from '../../config/logging';
-import {moduleRouter} from "./moduleRouter";
-import {Request, Response, Router} from "express";
+import { manager } from '../../model/Manager';
+import { catServer } from '../../config/logging';
+import { moduleRouter } from './moduleRouter';
+import { Request, Response, Router } from 'express';
 import * as asyncHandler from 'express-async-handler';
 
 export const recipeRouter: Router = Router();
-
 
 /**
  * @api {get} /recipe    Get recipe list
@@ -39,11 +38,10 @@ export const recipeRouter: Router = Router();
  */
 recipeRouter.get('/', asyncHandler(async (req: Request, res: Response) => {
     const result = manager.recipes.map((recipe) => {
-        return {id: recipe.id, options: recipe.options};
+        return { id: recipe.id, options: recipe.options };
     });
     res.json(result);
 }));
-
 
 /**
  * @api {get} /recipe/:recipeId    Get recipe
@@ -69,9 +67,8 @@ recipeRouter.delete('/:recipeId', asyncHandler(async (req: Request, res: Respons
         manager.recipes.splice(index, 1);
     }
     manager.eventEmitter.emit('refresh', 'recipes');
-    res.send({status: 'Successful deleted', id: req.params.id});
+    res.send({ status: 'Successful deleted', id: req.params.id });
 }));
-
 
 /**
  * @api {put} /recipe    Load recipe
@@ -82,9 +79,8 @@ recipeRouter.delete('/:recipeId', asyncHandler(async (req: Request, res: Respons
 recipeRouter.put('', asyncHandler(async (req: Request, res: Response) => {
     catServer.debug(`PUT /recipe. ${JSON.stringify(req.body)}`);
     manager.loadRecipe(req.body);
-    res.json({status: 'recipe successful loaded'});
+    res.json({ status: 'recipe successful loaded' });
 }));
-
 
 /**
  * @api {post} /activeRecipe/abort    Abort all services

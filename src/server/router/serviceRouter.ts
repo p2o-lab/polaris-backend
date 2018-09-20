@@ -23,17 +23,16 @@
  * SOFTWARE.
  */
 
-import {manager} from '../../model/Manager';
-import {ServiceCommand} from "pfe-ree-interface";
-import {moduleRouter} from "./moduleRouter";
-import {Request, Response, Router} from "express";
+import { manager } from '../../model/Manager';
+import { ServiceCommand } from 'pfe-ree-interface';
+import { moduleRouter } from './moduleRouter';
+import { Request, Response, Router } from 'express';
 import * as asyncHandler from 'express-async-handler';
-import {Strategy} from "../../model/Interfaces";
-import {Parameter} from "../../model/Parameter";
-import {catServer} from "../../config/logging";
+import { Strategy } from '../../model/Interfaces';
+import { Parameter } from '../../model/Parameter';
+import { catServer } from '../../config/logging';
 
 export const serviceRouter: Router = Router();
-
 
 /**
  * @api {post} /module/:moduleId/service/:serviceName/:command    Call service
@@ -60,7 +59,9 @@ moduleRouter.post('/:moduleId/service/:serviceName/:command', asyncHandler(async
     }
 
     if (req.body.parameters) {
-        parameters = req.body.parameters.map(parameterOptions => new Parameter(parameterOptions));
+        parameters = req.body.parameters.map(
+            parameterOptions => new Parameter(parameterOptions, service, service.parameters)
+        );
     }
 
     const result = await service.executeCommand(command, strategy, parameters);
@@ -68,10 +69,9 @@ moduleRouter.post('/:moduleId/service/:serviceName/:command', asyncHandler(async
         module: module.id,
         service: service.name,
         command: req.params.command,
-        status: "Command succesfully send"
+        status: 'Command succesfully send'
     });
 }));
-
 
 /**
  * @api {get} /module/:moduleId/service/:serviceName/    Get service status
@@ -103,6 +103,6 @@ moduleRouter.post('/:moduleId/service/:serviceName/configure', asyncHandler(asyn
         throw new Error(`Module with id ${req.params.moduleId} not registered`);
     }
     const service = await module.services.find(service => service.name === req.params.serviceName);
-    await service.setServiceParameter(req.body.parameters);
+    await service.setServiceParameters(req.body.parameters);
     res.json(await service.getOverview());
 }));

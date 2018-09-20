@@ -23,9 +23,9 @@
  * SOFTWARE.
  */
 
-import {Request, Response, Router} from 'express';
+import { Request, Response, Router } from 'express';
 import * as asyncHandler from 'express-async-handler';
-import {manager} from '../../model/Manager';
+import { manager } from '../../model/Manager';
 
 export const playerRouter: Router = Router();
 

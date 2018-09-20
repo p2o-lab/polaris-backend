@@ -24,11 +24,11 @@
  */
 
 import * as http from 'http';
-import {Server} from './server/server';
+import { Server } from './server/server';
 import * as serverHandlers from './server/serverHandlers';
 import * as commandLineArgs from 'command-line-args';
-import * as fs from "fs";
-import {manager} from "./model/Manager";
+import * as fs from 'fs';
+import { manager } from './model/Manager';
 
 const optionDefinitions = [
     {
@@ -87,7 +87,6 @@ if (options.help) {
     server.listen(port);
     server.on('error', error => serverHandlers.onError(error, port));
     server.on('listening', serverHandlers.onListening.bind(server));
-
 
     /** Load some configuration at startup */
     if (options.module) {

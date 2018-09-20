@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import {OpcUaNode} from "./Interfaces";
+import { OpcUaNode } from './Interfaces';
 
 export class ProcessValue {
 

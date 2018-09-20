@@ -32,7 +32,7 @@ import {
     LogLevel,
     RuntimeSettings
 } from 'typescript-logging';
-import {CustomLogger} from './CustomLogger';
+import { CustomLogger } from './CustomLogger';
 
 // Create categories, they will autoregister themselves
 const catLogging = new Category('logger');
@@ -56,5 +56,5 @@ CategoryServiceFactory.setDefaultConfiguration(config);
 catRecipe.trace('start logging');
 catModule.trace('start logging');
 
-CategoryServiceFactory.setDefaultConfiguration(new CategoryConfiguration(LogLevel.Info), false);
 CategoryServiceFactory.setConfigurationCategory(new CategoryConfiguration(LogLevel.Debug), catServer);
+CategoryServiceFactory.setDefaultConfiguration(new CategoryConfiguration(LogLevel.Info),);
