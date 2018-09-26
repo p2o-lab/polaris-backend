@@ -77,7 +77,6 @@ if (options.help) {
 
     const appServer = new Server();
     appServer.app.set('port', port);
-    console.log(`Server listening on port ${port}`);
 
     const server: http.Server = http.createServer(appServer.app);
 

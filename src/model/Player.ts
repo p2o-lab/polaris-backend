@@ -24,7 +24,7 @@
  */
 
 import { Recipe } from './Recipe';
-import { catRM } from '../config/logging';
+import { catManager } from '../config/logging';
 import { EventEmitter } from 'events';
 import { PlayerInterface, RecipeState, Repeat } from 'pfe-ree-interface';
 import { manager } from './Manager';
@@ -49,11 +49,11 @@ export class Player {
 
     constructor() {
         this.eventEmitter.on('recipe_finished', () => {
-            catRM.info(`recipe finished ${this.currentItem}/${this.playlist.length} (${this.status})`);
+            catManager.info(`recipe finished ${this.currentItem}/${this.playlist.length} (${this.status})`);
             if (this._status === RecipeState.running) {
                 this._currentItem = this._currentItem + 1;
                 if (this._currentItem < this._playlist.length) {
-                    catRM.info(`Go to next recipe (${this.currentItem + 1}/${this.playlist.length})`);
+                    catManager.info(`Go to next recipe (${this.currentItem + 1}/${this.playlist.length})`);
                     this.runCurrentRecipe();
                 } else {
                     this._status = RecipeState.completed;
@@ -83,7 +83,7 @@ export class Player {
      * @param {number} index in playlist
      */
     public remove(index: number) {
-        catRM.info(`Delete recipe ${index} from playlist`);
+        catManager.info(`Delete recipe ${index} from playlist`);
         this._playlist.splice(index, 1);
     }
 

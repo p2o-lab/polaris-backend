@@ -40,7 +40,7 @@ export const catRecipe = new Category('recipe', catLogging);
 export const catModule = new Category('module', catLogging);
 export const catService = new Category('service');
 
-export const catRM = new Category('manager');
+export const catManager = new Category('manager');
 export const catOpc = new Category('opcua');
 export const catServer = new Category('server');
 
@@ -52,9 +52,15 @@ const config = new CategoryConfiguration(
     (category: Category, runtimeSettings: RuntimeSettings) => new CustomLogger(category, runtimeSettings, messages)
 );
 CategoryServiceFactory.setDefaultConfiguration(config);
-//CategoryServiceFactory.setConfigurationCategory(config, catLogging);
+catLogging.trace('start logging');
 catRecipe.trace('start logging');
 catModule.trace('start logging');
 
+CategoryServiceFactory.setDefaultConfiguration(new CategoryConfiguration(LogLevel.Info), false);
 CategoryServiceFactory.setConfigurationCategory(new CategoryConfiguration(LogLevel.Debug), catServer);
-CategoryServiceFactory.setDefaultConfiguration(new CategoryConfiguration(LogLevel.Info),);
+CategoryServiceFactory.setConfigurationCategory(new CategoryConfiguration(LogLevel.Info), catOpc);
+
+catService.trace('test trace');
+catOpc.trace('test trace');
+catServer.trace('test trace');
+catManager.trace('test trace');

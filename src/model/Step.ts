@@ -71,14 +71,14 @@ export class Step {
         manager.eventEmitter.emit('refresh', 'recipe', 'stepStarted');
         this.operations.forEach((operation) => {
             catRecipe.info(`Start operation ${operation.module.id} ${operation.service.name} ` +
-                `${JSON.stringify(operation.command)} ${JSON.stringify(operation.parameters)}`);
+                `${JSON.stringify(operation.command)}`);
             operation.execute();
         });
 
         this.transitions.forEach((transition) => {
             const events = transition.condition.listen();
             events.on('state_changed', (status) => {
-                catRecipe.trace(`Status of step ${this.name} for transition to ${transition.next_step_name}: ` +
+                catRecipe.info(`Status of step ${this.name} for transition to ${transition.next_step_name}: ` +
                     `${status}`);
                 if (status) {
                     // clear up all conditions

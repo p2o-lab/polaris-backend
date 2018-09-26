@@ -26,11 +26,11 @@
 import { ParameterOptions, ScopeOptions } from 'pfe-ree-interface';
 import { Expression, Parser } from 'expr-eval';
 import { manager } from './Manager';
-import { catService } from '../config/logging';
+import {catRecipe, catService} from '../config/logging';
 import { EventEmitter } from 'events';
 import { DataType } from 'node-opcua-client';
 import { Service } from './Service';
-import { OpcUaNode, ServiceParameter } from './Interfaces';
+import {OpcUaNode, ServiceParameter, Strategy} from './Interfaces';
 
 export class Parameter {
 
@@ -44,7 +44,9 @@ export class Parameter {
     private _opcUaDataType: DataType;
     private _opcUaNode: OpcUaNode;
 
-    constructor(parameterOptions: ParameterOptions, service: Service, parameterList: ServiceParameter[]) {
+    constructor(parameterOptions: ParameterOptions, service: Service, strategy?: Strategy) {
+        catRecipe.trace(`Create Parameter: ${JSON.stringify(parameterOptions)}`);
+
         this.name = parameterOptions.name;
         this.variable = parameterOptions.variable || 'VExt';
         this.value = parameterOptions.value;
@@ -52,8 +54,20 @@ export class Parameter {
         this.continuous = parameterOptions.continuous || false;
 
         this.service = service;
-        this._opcUaNode = parameterList.find(obj => obj.name === this.name).communication[this.variable];
-
+        let parameterList = [];
+        if (service && service.parameters) {
+            parameterList = parameterList.concat(service.parameters);
+        } else {
+            catService.trace(`No service parameters ${this.service.name}`);
+        }
+        if (strategy && strategy.parameters) {
+            parameterList = parameterList.concat(strategy.parameters);
+        }
+        try {
+            this._opcUaNode = parameterList.find(obj => obj.name === this.name).communication[this.variable];
+        } catch {
+            throw new Error(`Could not find parameter "${this.name}" in ${service.name}`);
+        }
         const parser: Parser = new Parser();
         this.expression = parser.parse(this.value.toString());
     }
@@ -61,6 +75,7 @@ export class Parameter {
     public async getDataType(): Promise<DataType> {
         if (!this._opcUaDataType) {
             const value = await this.service.parent.readVariableNode(this._opcUaNode);
+            catService.info(`Datatype for ${this.service.name}.${this.name}.${this.variable} - ${this._opcUaNode.node_id} = ${JSON.stringify(value)}`)
             this._opcUaDataType = value.value.dataType;
             catService.info(`Get datatype for ${this.service.name}.${this.name} = ${this._opcUaDataType.toString()}`);
         }
@@ -101,7 +116,7 @@ export class Parameter {
     }
 
     async updateValueOnModule(): Promise<any> {
-        const value = this.getValue();
+        const value = await this.getValue();
         catService.debug(`Set parameter "${this.service.name}[${this.variable}]" for ${this.name} = ${value}`);
         return this.service.setParameter(
             this._opcUaNode,

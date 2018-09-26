@@ -35,6 +35,24 @@ import { catServer } from '../../config/logging';
 export const serviceRouter: Router = Router();
 
 /**
+ * @api {post} /module/:moduleId/service/:serviceName/configure    Configure Service
+ * @apiName ConfigureService
+ * @apiDescription Configure service parameters
+ * @apiGroup Service
+ * @apiParam {string} id    Module id
+ * @apiParam {object} parameters    Module Service Parameters
+ */
+moduleRouter.post('/:moduleId/service/:serviceName/configure', asyncHandler(async (req: Request, res: Response) => {
+    const module = await manager.modules.find(module => module.id === req.params.moduleId);
+    if (!module) {
+        throw new Error(`Module with id ${req.params.moduleId} not registered`);
+    }
+    const service = await module.services.find(service => service.name === req.params.serviceName);
+    await service.setServiceParameters(req.body.parameters);
+    res.json(await service.getOverview());
+}));
+
+/**
  * @api {post} /module/:moduleId/service/:serviceName/:command    Call service
  * @apiName CallService
  * @apiGroup Service
@@ -60,7 +78,7 @@ moduleRouter.post('/:moduleId/service/:serviceName/:command', asyncHandler(async
 
     if (req.body.parameters) {
         parameters = req.body.parameters.map(
-            parameterOptions => new Parameter(parameterOptions, service, service.parameters)
+            parameterOptions => new Parameter(parameterOptions, service, strategy)
         );
     }
 
@@ -89,20 +107,3 @@ moduleRouter.get('/:moduleId/service/:serviceName', asyncHandler(async (req: Req
     res.json(await service.getOverview());
 }));
 
-/**
- * @api {post} /module/:moduleId/service/:serviceName/configure    Configure Service
- * @apiName ConfigureService
- * @apiDescription Configure service parameters
- * @apiGroup Service
- * @apiParam {string} id    Module id
- * @apiParam {object} parameters    Module Service Parameters
- */
-moduleRouter.post('/:moduleId/service/:serviceName/configure', asyncHandler(async (req: Request, res: Response) => {
-    const module = await manager.modules.find(module => module.id === req.params.moduleId);
-    if (!module) {
-        throw new Error(`Module with id ${req.params.moduleId} not registered`);
-    }
-    const service = await module.services.find(service => service.name === req.params.serviceName);
-    await service.setServiceParameters(req.body.parameters);
-    res.json(await service.getOverview());
-}));

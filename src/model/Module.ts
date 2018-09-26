@@ -155,10 +155,10 @@ export class Module {
     disconnect(): Promise<any> {
         return new Promise(async (resolve) => {
             if (this.session) {
-                catRecipe.info(`Disconnect module ${this.id}`);
-                await this.session.close();
+                catModule.info(`Disconnect module ${this.id}`);
+                await promiseTimeout(1000, this.session.close());
                 this.session = undefined;
-                await this.client.disconnect();
+                await promiseTimeout(1000, this.client.disconnect());
                 this.client = undefined;
                 manager.eventEmitter.emit('refresh', 'module');
                 resolve('Disconnected');
@@ -209,22 +209,23 @@ export class Module {
 
     clearListener(node: OpcUaNode) {
         const nodeId = this.resolveNodeId(node);
-        const monitoredItem = this.monitoredItems.get(nodeId).monitoredItem;
-        const emitter = this.monitoredItems.get(nodeId).emitter;
+        if (this.monitoredItems.has(nodeId)) {
+            const {monitoredItem, emitter} = this.monitoredItems.get(nodeId);
 
-        if (monitoredItem) {
-            monitoredItem.terminate(() => catOpc.trace(`Listener ${JSON.stringify(nodeId)} terminated`));
+            if (monitoredItem) {
+                monitoredItem.terminate(() => catOpc.trace(`Listener ${JSON.stringify(nodeId)} terminated`));
+            }
+            if (emitter) {
+                emitter.removeAllListeners();
+            }
+            this.monitoredItems.delete(nodeId);
         }
-        if (emitter) {
-            emitter.removeAllListeners();
-        }
-        this.monitoredItems.delete(nodeId);
     }
 
     public readVariable(dataStructureName: string, variableName: string) {
         const dataStructure = this.variables.find(variable => variable.name === dataStructureName);
         if (!dataStructure) {
-            throw new Error(`Datastructure ${dataStructureName} not found in module ${this.id}`);
+            throw new Error(`Datastructure ${dataStructureName}.${variableName} not found in module ${this.id}`);
         } else {
             const variable = dataStructure.communication[variableName];
             return this.readVariableNode(variable);
@@ -238,9 +239,9 @@ export class Module {
             }
             this.listenToOpcUaNode(service.status)
                 .on('changed', (data) => {
-                    catModule.debug(`state changed: ${service.name} = ${ServiceState[data]}`);
+                    catModule.info(`state changed: ${this.id}.${service.name} = ${ServiceState[data]}`);
                     manager.eventEmitter.emit('refresh', 'module');
-                    if (data === ServiceState.COMPLETED || data) {
+                    if (data === ServiceState.COMPLETED) {
                         manager.eventEmitter.emit('serviceCompleted', service);
                     }
                 });
@@ -256,7 +257,7 @@ export class Module {
 
     public async writeNode(node: OpcUaNode, value: Variant) {
         const result = await this.session.writeSingleNode(this.resolveNodeId(node), value);
-        catModule.debug(`Write result for ${this.id}.${JSON.stringify(node)}=${value} -> ${JSON.stringify(result)}`);
+        catModule.debug(`Write result for ${this.id}.${node.node_id}=${value.value} -> ${result.name}`);
         return result;
     }
 
@@ -269,7 +270,7 @@ export class Module {
         return {
             id: this.id,
             endpoint: this.endpoint,
-            connected: true,
+            connected: this.isConnected(),
             services: this.isConnected() ? await this.getServiceStates() : undefined
         };
     }

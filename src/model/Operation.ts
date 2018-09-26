@@ -25,7 +25,7 @@
 
 import { Module } from './Module';
 import { Service } from './Service';
-import { catRecipe } from '../config/logging';
+import {catOpc, catRecipe, catServer} from '../config/logging';
 import { Recipe } from './Recipe';
 import { ServiceParameter, Strategy } from './Interfaces';
 import { Parameter } from './Parameter';
@@ -60,20 +60,24 @@ export class Operation {
         } else {
             this.strategy = this.service.strategies.find(strategy => strategy.default === true);
         }
+        if (!this.strategy) {
+            throw new Error(`Strategy "${options.strategy}" could not be found in ${this.service.name}.`);
+        }
         if (options.command) {
             this.command = options.command;
         } else {
             throw new Error(`"command" property is missing in ${JSON.stringify(options)}`);
         }
         if (options.parameter) {
-            const params: ServiceParameter[] = [].concat(this.strategy.parameters, this.service.parameters);
-            this.parameters = options.parameter.map(paramOptions => new Parameter(paramOptions, this.service, params));
+            this.parameters = options.parameter.map(
+                paramOptions => new Parameter(paramOptions, this.service, this.strategy)
+            );
         }
     }
 
     execute() {
         catRecipe.debug(`Perform operation ${this.module.id} ${this.service.name} ` +
-            `(Strategy: ${this.strategy ? this.strategy.name : ''}) - ${JSON.stringify(this.parameters)}`);
+            `(Strategy: ${this.strategy ? this.strategy.name : ''})`);
         return this.service.executeCommand(this.command, this.strategy, this.parameters);
     }
 

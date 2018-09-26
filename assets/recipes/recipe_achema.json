@@ -1,6 +1,7 @@
 {
   "version": "0.1.0",
   "name": "Rezept ACHEMA",
+  "description": "Ursprungsrezept zur ACHEMA 2018",
   "author": "Markus Graube",
   "initial_step": "Startup.Init.1",
   "steps": [
@@ -50,7 +51,7 @@
           "condition": {
             "type": "variable",
             "module": "React",
-            "dataStructure": "MCL01_AnaView",
+            "dataAssembly": "MCL01_AnaView",
             "variable": "V",
             "operator": "<=",
             "value": "0.1"
@@ -91,7 +92,7 @@
         {
           "module": "React",
           "service": "Stir_Service",
-          "strategy": "Stir_Continous",
+          "strategy": "Stirring_Continous",
           "command": "start",
           "parameter": [
             {
@@ -134,7 +135,7 @@
         {
           "module": "React",
           "service": "Stir_Service",
-          "strategy": "Stir_Continous",
+          "strategy": "Stirring_Continous",
           "command": "restart",
           "parameter": [
             {
@@ -160,7 +161,7 @@
               "value": 80
             },
             {
-              "name": "RampEndTemperature",
+              "name": "RampEndtemperature",
               "value": 15
             }
           ]
@@ -181,7 +182,7 @@
               {
                 "type": "variable",
                 "module": "Temper",
-                "variable": "TI",
+                "dataAssembly": "TI",
                 "operator": "<=",
                 "value": 15
               }
@@ -238,7 +239,7 @@
               "value": 80
             },
             {
-              "name": "RampEndTemperature",
+              "name": "RampEndtemperature",
               "value": 20
             }
           ]
@@ -250,7 +251,7 @@
           "condition": {
             "type": "variable",
             "module": "Temper",
-            "variable": "TI",
+            "dataAssembly": "TI",
             "operator": ">=",
             "value": 20
           }
@@ -321,6 +322,7 @@
         {
           "module": "React",
           "service": "Empty_Service",
+          "strategy": "Empty_Full",
           "command": "start"
         }
       ],

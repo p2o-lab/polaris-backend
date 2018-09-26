@@ -33,16 +33,17 @@ import {
     OPCUAClient,
     VariantArrayType
 } from 'node-opcua-client';
+import { catOpc } from './config/logging';
 
 let session;
 
-async function fixModule(endpoint: string, nodeIds: string[] = undefined, values: number[] = undefined) {
+async function fixModule(endpoint: string, nodeIds: string[] = undefined, values = undefined) {
 
     const client: OPCUAClient = new OPCUAClient({
         endpoint_must_exist: false
     });
 
-    console.log('Connect to', endpoint);
+    catOpc.info('Connect to ' + endpoint);
     await client.connect(endpoint);
 
     session = await client.createSession();
@@ -50,14 +51,15 @@ async function fixModule(endpoint: string, nodeIds: string[] = undefined, values
         const tasks = nodeIds.map(value => setOpModeToAutomatic(value));
 
         Promise.all(tasks).then(() => {
-            console.log('all OpModes set');
+            catOpc.info('all OpModes set');
         }).catch((reason) => {
-            console.log('something happened', reason);
+            catOpc.error('something happened', reason);
         }).then(() => {
             client.disconnect();
         });
     }
 
+    catOpc.info('Write Values');
     if (values) {
         values.forEach(async (item) => {
             const result = await session.writeSingleNode(
@@ -69,6 +71,7 @@ async function fixModule(endpoint: string, nodeIds: string[] = undefined, values
                     dimensions: null
                 }
             );
+            catOpc.info('value written' + item + result);
         });
     }
 }
@@ -82,7 +85,7 @@ async function wait() {
 async function setOpModeToAutomatic(nodeId) {
 
     let result = await session.readVariableValue(nodeId);
-    console.log('Read OpMode', nodeId.toString(), result.value);
+    catOpc.debug('Read OpMode' + nodeId.toString() + result.value);
 
     result = await session.writeSingleNode(
         nodeId,
@@ -93,7 +96,7 @@ async function setOpModeToAutomatic(nodeId) {
             dimensions: null
         }
     );
-    console.log('Write OpMode', nodeId.toString(), 16, result);
+    //console.log('Write OpMode', nodeId.toString(), 16, result);
 
     await wait();
 
@@ -106,12 +109,11 @@ async function setOpModeToAutomatic(nodeId) {
             dimensions: null
         }
     );
-    console.log('Write OpMode', nodeId.toString(), 64, result);
 
     await wait();
 
     result = await session.readVariableValue(nodeId);
-    console.log('Read OpMode', nodeId.toString(), result.value);
+    catOpc.info('Read OpMode ' + nodeId.toString() + result.value);
 }
 
 const nodeIdsReactor = [
@@ -123,11 +125,15 @@ const nodeIdsReactor = [
 const valuesReactor = [
     ['ns=3;s="Fill_Level_Max"."MTP"."VExt"', 1.5],
     ['ns=3;s="Stir_Level_Min"."MTP"."VExt"', 0.5],
+    ['ns=3;s="Stir_Period"."MTP"."VExt"', 0.5],
+    ['ns=3;s="Stir_Period"."MTP"."VOp"', 0.5],
+    ['ns=3;s="Empty_Level_Tank_Deadband"."MTP"."VExt"', 0.5],
 ];
-
+export function fixReactor() {
 // reactor
 // fixModule("opc.tcp://192.168.2.35:4840", nodeIdsReactor);
-fixModule('opc.tcp://10.6.51.22:4840', nodeIdsReactor, valuesReactor);
+    fixModule('opc.tcp://10.6.51.22:4840', nodeIdsReactor, valuesReactor);
+}
 
 const nodeIdsDosierer = [
     'ns=4;s=|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Aktoren.P001.OpMode.binary',

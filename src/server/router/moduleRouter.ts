@@ -62,7 +62,7 @@ moduleRouter.get('/:id', asyncHandler(async (req: Request, res: Response) => {
  */
 moduleRouter.put('', upload.single('file'), asyncHandler(async (req, res) => {
     const moduleOptions = JSON.parse(req.file.buffer.toString());
-    catServer.debug(`Load module. ${JSON.stringify(moduleOptions)}`);
+    catServer.debug(`Load module: ${JSON.stringify(moduleOptions)}`);
     const newModules = manager.loadModule(moduleOptions);
     manager.eventEmitter.emit('refresh', 'module');
     res.json(await Promise.all(newModules.map(module => module.json())));

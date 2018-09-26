@@ -71,8 +71,9 @@ export class Recipe {
         }
         if (options.initial_step) {
             this.initial_step = this.steps.find(step => step.name === options.initial_step);
-        } else {
-            throw new Error('"initial_step" property is missing in activeRecipe');
+        }
+        if (!this.initial_step) {
+            throw new Error(`"initial_step" property '${options.initial_step}' is missing in activeRecipe`);
         }
 
         this.options = options;
@@ -93,12 +94,10 @@ export class Recipe {
                 this.status = RecipeState.running;
                 this.executeStep();
             })
-            .catch(() => {
-                catRecipe.warn(`Could not connect to all modules for recipe ${this.name}. ` +
-                    `Start of recipe not possible.`);
+            /*.catch((reason) => {
                 throw new Error(`Could not connect to all modules for recipe ${this.name}. ` +
-                    `Start of recipe not possible.`);
-            });
+                    `Start of recipe not possible: ${reason.toString()}`);
+            });*/
         return this.eventEmitter;
     }
 
@@ -120,7 +119,7 @@ export class Recipe {
             id: this.id,
             modules: await this.getModulesInRecipe(),
             status: this.status,
-            currentStep: this.stepJson(),
+            currentStep: this.current_step ? this.current_step.name : undefined,
             options: this.options
         };
     }

@@ -68,8 +68,8 @@ coreRouter.post('/autoReset', asyncHandler(async (req: Request, res: Response) =
  * @apiName GetLogs
  * @apiGroup Manager
  */
-coreRouter.get('/logs', asyncHandler(async (req: Request, res: Response) => {
-    res.json(messages);
+coreRouter.get('/logs(.json)?', asyncHandler(async (req: Request, res: Response) => {
+    res.attachment().json(messages);
 }));
 
 function isTrue(value: any) {

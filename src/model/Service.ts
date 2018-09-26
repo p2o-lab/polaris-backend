@@ -107,7 +107,7 @@ export class Service {
     async getOpMode(): Promise<OpMode> {
         try {
             const result: any = await this.parent.readVariableNode(this.opMode);
-            catService.debug(`OpMode: ${JSON.stringify(this.opMode)} -> ${result}`);
+            catService.trace(`OpMode: ${JSON.stringify(this.opMode)} -> ${result}`);
             if (result.value) {
                 const opMode: number = result.value.value;
                 const opModeString: string = OpMode[opMode];
@@ -203,8 +203,8 @@ export class Service {
     }
 
     executeCommand(command: ServiceCommand, strategy: Strategy, parameters: Parameter[]) {
-        catService.info(`${command} service ${this.name}(${strategy ? strategy.name : ''}) ` +
-            `- ${JSON.stringify(parameters)}`);
+        //catService.info(`${command} service ${this.name}(${strategy ? strategy.name : ''}) ` +
+        //    `- ${JSON.stringify(parameters)}`);
         if (command === 'start') {
             return this.start(strategy, parameters);
         } else if (command === 'stop') {
@@ -231,6 +231,11 @@ export class Service {
     async start(strategy: Strategy, parameters: Parameter[]): Promise<any> {
         await this.setStrategyParameters(strategy, parameters);
         return await this.sendCommand(ServiceMtpCommand.START);
+    }
+
+    async restart(strategy: Strategy, parameter: Parameter[]): Promise<any> {
+        await this.setStrategyParameters(strategy, parameter);
+        return this.sendCommand(ServiceMtpCommand.RESTART);
     }
 
     stop(): Promise<any> {
@@ -264,20 +269,15 @@ export class Service {
         return this.sendCommand(ServiceMtpCommand.RESUME);
     }
 
-    async restart(strategy: Strategy, parameter: Parameter[]): Promise<any> {
-        await this.setStrategyParameters(strategy, parameter);
-        return this.sendCommand(ServiceMtpCommand.RESTART);
-    }
-
     /**
      * Set service configuration parameters for adaption to environment. Can set also process values
      * @param {ParameterOptions[]} parameters
      * @returns {Promise<any[]>}
      */
     async setServiceParameters(parameters: ParameterOptions[]): Promise<any[]> {
-        catService.debug(`Set service parameters: ${JSON.stringify(parameters)}`);
+        catService.info(`Set service parameters: ${JSON.stringify(parameters)}`);
         const tasks = parameters.map((paramOptions: ParameterOptions) => {
-            const param: Parameter = new Parameter(paramOptions, this, this.parameters);
+            const param: Parameter = new Parameter(paramOptions, this);
             return param.updateValueOnModule();
         });
         return Promise.all(tasks);

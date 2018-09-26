@@ -77,7 +77,7 @@ recipeRouter.delete('/:recipeId', asyncHandler(async (req: Request, res: Respons
  * @apiParam {Object} recipe  new recipe
  */
 recipeRouter.put('', asyncHandler(async (req: Request, res: Response) => {
-    catServer.debug(`PUT /recipe. ${JSON.stringify(req.body)}`);
+    catServer.debug(`PUT /recipe: ${JSON.stringify(req.body)}`);
     manager.loadRecipe(req.body);
     res.json({ status: 'recipe successful loaded' });
 }));

@@ -24,12 +24,13 @@
  */
 
 import {Recipe} from "./Recipe";
-import {catRM} from "../config/logging";
+import {catManager} from "../config/logging";
 import {EventEmitter} from "events";
 import {Module, ModuleOptions} from "./Module";
 import {Service} from "./Service";
 import {ManagerInterface, RecipeOptions} from "pfe-ree-interface";
 import {Player} from "./Player";
+import undefinedError = Mocha.utils.undefinedError;
 
 export class Manager {
 
@@ -54,9 +55,11 @@ export class Manager {
 
     constructor() {
         this.eventEmitter.on('serviceCompleted', (service: Service) => {
-            catRM.debug(`Service ${service.name} completed (autoreset: ${this._autoreset})`);
             if (this._autoreset) {
-                service.reset();
+                setTimeout(() => {
+                    catManager.debug(`Service ${service.parent.id}.${service.name} completed. Now perform autoreset`);
+                    service.reset();
+                }, 2000);
             }
         });
     }
@@ -66,7 +69,7 @@ export class Manager {
     }
 
     set autoreset(value: boolean) {
-        catRM.info(`Set AutoReset to ${value}`);
+        catManager.info(`Set AutoReset to ${value}`);
         this._autoreset = value;
     }
 
@@ -82,16 +85,16 @@ export class Manager {
             options.subplants.forEach((subplantOptions) => {
                 subplantOptions.modules.forEach((moduleOptions: ModuleOptions) => {
                     if (this.modules.find(module => module.id === moduleOptions.id)) {
-                        catRM.warn(`Module ${moduleOptions.id} already in registered modules`);
+                        catManager.warn(`Module ${moduleOptions.id} already in registered modules`);
                     } else {
                         newModules.push(new Module(moduleOptions));
                     }
                 });
             });
         } else if (options.modules) {
-            options.modules.forEach((moduleOptions) => {
+            options.modules.forEach((moduleOptions: ModuleOptions) => {
                 if (this.modules.find(module => module.id === moduleOptions.id)) {
-                    catRM.warn(`Module ${moduleOptions.id} already in registered modules`);
+                    catManager.warn(`Module ${moduleOptions.id} already in registered modules`);
                 } else {
                     newModules.push(new Module(moduleOptions));
                 }

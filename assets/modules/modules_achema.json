@@ -2010,13 +2010,6 @@
                                             }
                                         }
                                     ]
-                                },
-                                {
-                                    "id": "0",
-                                    "name": "Strategy 1",
-                                    "default": false,
-                                    "sc": false,
-                                    "parameters": []
                                 }
                             ],
                           "parameters": []
@@ -2087,7 +2080,7 @@
                             },
                             "strategies": [
                                 {
-                                    "id": "0",
+                                    "id": "1",
                                     "name": "Stirring_Continous",
                                     "default": true,
                                     "sc": false,
@@ -2138,7 +2131,7 @@
                                                 },
                                                 "VExt": {
                                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                                                    "node_id": "\"Stir_Rotation\".\"MTP\".\"VExt\"",
+                                                    "node_id": "\"Stir_Rotation\".\"MTP\".\"VOp\"",
                                                   "data_type": "Float"
                                                 },
                                                 "VRbk": {
@@ -2149,13 +2142,6 @@
                                             }
                                         }
                                     ]
-                                },
-                                {
-                                    "id": "0",
-                                    "name": "Strategy 1",
-                                    "default": false,
-                                    "sc": false,
-                                    "parameters": []
                                 }
                             ],
                           "parameters": [
@@ -2285,7 +2271,7 @@
                                 {
                                     "id": "1",
                                     "name": "Empty_Full",
-                                    "default": false,
+                                    "default": true,
                                     "sc": false,
                                     "parameters": [
                                         {
@@ -2398,7 +2384,7 @@
                                                 },
                                                 "VExt": {
                                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                                                    "node_id": "\"Empty_VolFlow\".\"MTP\".\"VExt\"",
+                                                    "node_id": "\"Empty_VolFlow\".\"MTP\".\"VOp\"",
                                                   "data_type": "Float"
                                                 },
                                                 "VRbk": {
@@ -2850,7 +2836,7 @@
                                 },
                                 "VExt": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                                    "node_id": "\"Empty_VolFlow\".\"MTP\".\"VExt\"",
+                                    "node_id": "\"Empty_VolFlow\".\"MTP\".\"VOp\"",
                                   "data_type": "Float"
                                 },
                                 "VRbk": {
