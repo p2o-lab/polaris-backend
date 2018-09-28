@@ -33,7 +33,7 @@ export class Player {
     public repeat: Repeat = Repeat.none;
     private eventEmitter: EventEmitter = new EventEmitter();
 
-    private _currentItem: number = 0;
+    private _currentItem: number;
 
     private _playlist: Recipe[] = [];
 
@@ -49,14 +49,15 @@ export class Player {
 
     constructor() {
         this.eventEmitter.on('recipe_finished', () => {
-            catManager.info(`recipe finished ${this.currentItem}/${this.playlist.length} (${this.status})`);
+            catManager.info(`recipe finished ${this.currentItem + 1}/${this.playlist.length} (player ${this.status})`);
             if (this._status === RecipeState.running) {
-                this._currentItem = this._currentItem + 1;
-                if (this._currentItem < this._playlist.length) {
+                if (this._currentItem + 1 < this._playlist.length) {
+                    this._currentItem = this._currentItem + 1;
                     catManager.info(`Go to next recipe (${this.currentItem + 1}/${this.playlist.length})`);
                     this.runCurrentRecipe();
                 } else {
                     this._status = RecipeState.completed;
+                    this._currentItem = undefined;
                 }
             }
         });
@@ -100,6 +101,7 @@ export class Player {
     public async start() {
         if (this.status === RecipeState.idle || this.status === RecipeState.stopped) {
             this._status = RecipeState.running;
+            this._currentItem = 0;
             manager.eventEmitter.emit('refresh', 'recipe');
             this.runCurrentRecipe();
         } else if (this.status === RecipeState.paused) {
@@ -114,7 +116,7 @@ export class Player {
 
     public reset() {
         if (this.status === RecipeState.completed || this.status === RecipeState.stopped) {
-            this._currentItem = 0;
+            this._currentItem = undefined;
             this._status = RecipeState.idle;
             manager.eventEmitter.emit('refresh', 'recipe');
         }
@@ -136,16 +138,20 @@ export class Player {
     public stop() {
         if (this.status === RecipeState.running) {
             this._status = RecipeState.stopped;
+            this.getCurrentRecipe().current_step.transitions.map(trans => trans.condition.clear());
             this.getCurrentRecipe().modules.forEach((module) => {
-                module.stop();
+                //module.stop();
             });
         }
     }
 
     private runCurrentRecipe() {
         const events = this.getCurrentRecipe().start();
-        events.on('recipe_finished', (data) => {
-            this.eventEmitter.emit('recipe_finished', data);
+        events.on('recipe_finished', (finishedRecipe) => {
+            console.log('internal runCurrentRecipe');
+            events.removeAllListeners('recipe_finished');
+            this.eventEmitter.emit('recipe_finished', finishedRecipe);
         });
     }
+
 }

@@ -12,6 +12,22 @@
           "module": "Dose",
           "service": "Fill",
           "command": "start"
+        },
+        {
+          "module": "Temper",
+          "service": "Tempering",
+          "strategy": "SetpointRampTempering",
+          "command": "start",
+          "parameter": [
+            {
+              "name": "RampDuration",
+              "value": 60
+            },
+            {
+              "name": "RampEndtemperature",
+              "value": 20
+            }
+          ]
         }
       ],
       "transitions": [
@@ -71,6 +87,12 @@
       "name": "Running.Vorlegen",
       "operations": [
         {
+          "module": "React",
+          "service": "Empty_Service",
+          "strategy": "Empty_Full",
+          "command": "reset"
+        },
+        {
           "module": "Dose",
           "service": "Fill",
           "command": "complete"
@@ -118,10 +140,21 @@
         {
           "next_step": "Running.Reagieren",
           "condition": {
-            "type": "state",
-            "module": "Dose",
-            "service": "DoseAmount",
-            "state": "completed"
+            "type": "and",
+            "conditions": [
+              {
+                "type": "state",
+                "module": "Dose",
+                "service": "DoseAmount",
+                "state": "completed"
+              },
+              {
+                "type": "state",
+                "module": "Temper",
+                "service": "Tempering",
+                "state": "running"
+              }
+            ]
           }
         }
       ]
@@ -166,15 +199,15 @@
           "module": "Temper",
           "service": "Tempering",
           "strategy": "SetpointRampTempering",
-          "command": "start",
+          "command": "restart",
           "parameter": [
             {
               "name": "RampDuration",
-              "value": 30
+              "value": 60
             },
             {
               "name": "RampEndtemperature",
-              "value": 20
+              "value": 21
             }
           ]
         }
@@ -195,8 +228,8 @@
                 "type": "variable",
                 "module": "Temper",
                 "dataAssembly": "TI",
-                "operator": "<=",
-                "value": 20
+                "operator": ">=",
+                "value": 20.95
               }
             ]
           }
@@ -205,13 +238,13 @@
     },
     {
       "name": "Running.Ruhen",
-      "operations": [],
+      "operations": [ ],
       "transitions": [
         {
           "next_step": "Running.Ruhen.Stop",
           "condition": {
             "type": "time",
-            "duration": 30
+            "duration": 20
           }
         }
       ]
@@ -227,7 +260,7 @@
       ],
       "transitions": [
         {
-          "next_step": "Running.Aufheizen",
+          "next_step": "Running.Abkühlen",
           "condition": {
             "type": "state",
             "module": "React",
@@ -238,40 +271,40 @@
       ]
     },
     {
-      "name": "Running.Aufheizen",
+      "name": "Running.Abkühlen",
       "operations": [
         {
           "module": "Temper",
           "service": "Tempering",
           "strategy": "SetpointRampTempering",
-          "command": "start",
+          "command": "restart",
           "parameter": [
             {
               "name": "RampDuration",
-              "value": 30
+              "value": 60
             },
             {
               "name": "RampEndtemperature",
-              "value": 25
+              "value": 20
             }
           ]
         }
       ],
       "transitions": [
         {
-          "next_step": "Running.Aufheizen.Stop",
+          "next_step": "Running.Abkühlen.Stop",
           "condition": {
             "type": "variable",
             "module": "Temper",
             "dataAssembly": "TI",
-            "operator": ">=",
-            "value": 25
+            "operator": "<=",
+            "value": 20.1
           }
         }
       ]
     },
     {
-      "name": "Running.Aufheizen.Stop",
+      "name": "Running.Abkühlen.Stop",
       "operations": [
         {
           "module": "Temper",
@@ -288,21 +321,10 @@
         {
           "next_step": "Shutdown.Entleeren.Start",
           "condition": {
-            "type": "and",
-            "conditions": [
-              {
-                "type": "state",
-                "module": "Temper",
-                "service": "Tempering",
-                "state": "idle"
-              },
-              {
-                "type": "state",
-                "module": "React",
-                "service": "Stir_Service",
-                "state": "idle"
-              }
-            ]
+            "type": "state",
+            "module": "React",
+            "service": "Stir_Service",
+            "state": "idle"
           }
         }
       ]

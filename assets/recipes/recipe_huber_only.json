@@ -25,7 +25,7 @@
           "next_step": "S2",
           "condition": {
             "type": "time",
-            "duration": "120"
+            "duration": "30"
           }
         }
       ]
@@ -36,17 +36,26 @@
         {
           "module": "Temper",
           "service": "Tempering",
-          "command": "complete"
+          "strategy": "SetpointRampTempering",
+          "command": "restart",
+          "parameter": [
+            {
+              "name": "RampDuration",
+              "value": 60
+            },
+            {
+              "name": "RampEndtemperature",
+              "value": 20
+            }
+          ]
         }
       ],
       "transitions": [
         {
           "next_step": "S3",
           "condition": {
-            "type": "state",
-            "module": "Temper",
-            "service": "Tempering",
-            "state": "completed"
+            "type": "time",
+            "duration": 60
           }
         }
       ]
@@ -57,7 +66,37 @@
         {
           "module": "Temper",
           "service": "Tempering",
-          "command": "reset"
+          "strategy": "SetpointRampTempering",
+          "command": "restart",
+          "parameter": [
+            {
+              "name": "RampDuration",
+              "value": 60
+            },
+            {
+              "name": "RampEndtemperature",
+              "value": 22
+            }
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "S4",
+          "condition": {
+            "type": "time",
+            "duration": 60
+          }
+        }
+      ]
+    },
+    {
+      "name": "S4",
+      "operations": [
+        {
+          "module": "Temper",
+          "service": "Tempering",
+          "command": "complete"
         }
       ],
       "transitions": [

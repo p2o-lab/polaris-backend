@@ -2320,7 +2320,7 @@
                                                 },
                                                 "VExt": {
                                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                                                    "node_id": "\"Empty_VolFlow\".\"MTP\".\"VExt\"",
+                                                    "node_id": "\"Empty_VolFlow\".\"MTP\".\"VOp\"",
                                                   "data_type": "Float"
                                                 },
                                                 "VRbk": {

@@ -128,6 +128,11 @@ const valuesReactor = [
     ['ns=3;s="Stir_Period"."MTP"."VExt"', 0.5],
     ['ns=3;s="Stir_Period"."MTP"."VOp"', 0.5],
     ['ns=3;s="Empty_Level_Tank_Deadband"."MTP"."VExt"', 0.5],
+    ['ns=3;s="Empty_Level_Tank_Deadband"."MTP"."VExt"', 0.5],
+    ['ns=3;s="Empty_Level_Tank"."MTP"."VExt"', 0.5],
+    ['ns=3;s="Empty_Level_Tank"."MTP"."VOp"', 0.5],
+    ['ns=3;s="Empty_Vol_Flow"."MTP"."VOp"', 2.5],
+    ['ns=3;s="Empty_Vol_Flow"."MTP"."VExt"', 2.5],
 ];
 export function fixReactor() {
 // reactor

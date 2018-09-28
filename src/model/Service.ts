@@ -202,7 +202,7 @@ export class Service {
         return await Promise.all(tasks);
     }
 
-    executeCommand(command: ServiceCommand, strategy: Strategy, parameters: Parameter[]) {
+    executeCommand(command: ServiceCommand, strategy: Strategy, parameters: Parameter[]): Promise<boolean> {
         //catService.info(`${command} service ${this.name}(${strategy ? strategy.name : ''}) ` +
         //    `- ${JSON.stringify(parameters)}`);
         if (command === 'start') {
@@ -228,44 +228,44 @@ export class Service {
         }
     }
 
-    async start(strategy: Strategy, parameters: Parameter[]): Promise<any> {
+    async start(strategy: Strategy, parameters: Parameter[]): Promise<boolean> {
         await this.setStrategyParameters(strategy, parameters);
         return await this.sendCommand(ServiceMtpCommand.START);
     }
 
-    async restart(strategy: Strategy, parameter: Parameter[]): Promise<any> {
+    async restart(strategy: Strategy, parameter: Parameter[]): Promise<boolean> {
         await this.setStrategyParameters(strategy, parameter);
         return this.sendCommand(ServiceMtpCommand.RESTART);
     }
 
-    stop(): Promise<any> {
+    stop(): Promise<boolean> {
         this.clearListeners();
         return this.sendCommand(ServiceMtpCommand.STOP);
     }
 
-    async reset(): Promise<any> {
+    reset(): Promise<boolean> {
         return this.sendCommand(ServiceMtpCommand.RESET);
     }
 
-    complete(): Promise<any> {
+    complete(): Promise<boolean> {
         this.clearListeners();
         return this.sendCommand(ServiceMtpCommand.COMPLETE);
     }
 
-    abort(): Promise<any> {
+    abort(): Promise<boolean> {
         this.clearListeners();
         return this.sendCommand(ServiceMtpCommand.ABORT);
     }
 
-    unhold(): Promise<any> {
+    unhold(): Promise<boolean> {
         return this.sendCommand(ServiceMtpCommand.UNHOLD);
     }
 
-    pause(): Promise<any> {
+    pause(): Promise<boolean> {
         return this.sendCommand(ServiceMtpCommand.PAUSE);
     }
 
-    resume(): Promise<any> {
+    resume(): Promise<boolean> {
         return this.sendCommand(ServiceMtpCommand.RESUME);
     }
 
@@ -345,14 +345,15 @@ export class Service {
      * @param {OpMode} opMode
      * @returns {any}
      */
-    private writeOpMode(opMode: OpMode) {
-        return this.parent.writeNode(this.opMode,
+    private async writeOpMode(opMode: OpMode): Promise<boolean> {
+        const result = await this.parent.writeNode(this.opMode,
             {
                 dataType: DataType.UInt32,
                 value: opMode,
                 arrayType: VariantArrayType.Scalar,
                 dimensions: null
             });
+        return result.value === 0;
     }
 
     /**
@@ -408,11 +409,11 @@ export class Service {
         }
     }
 
-    private setToManualOperationMode(): Promise<any> {
+    private setToManualOperationMode(): Promise<boolean> {
         return this.writeOpMode(OpMode.stateManOp);
     }
 
-    private async sendCommand(command: ServiceMtpCommand): Promise<any> {
+    private async sendCommand(command: ServiceMtpCommand): Promise<boolean> {
         catService.debug(`Send command ${ServiceMtpCommand[command]} (${command}) to service "${this.name}"`);
         if (manager.automaticMode) {
             await this.setToAutomaticOperationMode();
@@ -428,7 +429,7 @@ export class Service {
             });
         catService.trace(`Command ${command} written to ${this.name}: ${JSON.stringify(result)}`);
 
-        return result;
+        return result.value === 0;
     }
 
 }

@@ -94,10 +94,10 @@ export class Recipe {
                 this.status = RecipeState.running;
                 this.executeStep();
             })
-            /*.catch((reason) => {
+            .catch((reason) => {
                 throw new Error(`Could not connect to all modules for recipe ${this.name}. ` +
                     `Start of recipe not possible: ${reason.toString()}`);
-            });*/
+            });
         return this.eventEmitter;
     }
 
@@ -157,11 +157,10 @@ export class Recipe {
                         this.executeStep();
                     } else {
                         catRecipe.info(`Recipe completed: ${this.name}`);
-                        this.current_step = this.initial_step;
+                        this.current_step = undefined;
                         this.status = RecipeState.completed;
                         this.eventEmitter.emit('recipe_finished', this);
                         manager.eventEmitter.emit('refresh', 'recipe', 'completed');
-                        this.eventEmitter.removeAllListeners();
                     }
                 }
             });

@@ -9,7 +9,7 @@
       "operations": [
         {
           "module": "CIF",
-          "service": "Test_Service.Entleeren",
+          "service": "Test_Service.Service1",
           "command": "start"
         },
         {
@@ -51,14 +51,6 @@
               {
                 "type": "time",
                 "duration": 5
-              },
-              {
-                "type": "variable",
-                "module": "CIF",
-                "dataAssembly": "Test_AnaView.L004",
-                "variable": "OSLevel",
-                "operator": "==",
-                "value": 22
               }
             ]
           }
@@ -75,7 +67,7 @@
         },
         {
           "module": "CIF",
-          "service": "Test_Service.Dosieren",
+          "service": "Test_Service.Service1",
           "command": "complete"
         }
       ],
