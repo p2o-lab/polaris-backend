@@ -15,10 +15,16 @@
     "test": "mocha -r ts-node/register test/*.ts",
     "apidoc": "apidoc -i src/server/ -o apidoc",
     "build": "tsc && npm run apidoc",
-    "predeploy": "npm run build"
+    "predeploy": "npm run build",
+    "deploy": "docker-deploy"
   },
   "publishConfig": {
     "registry": "https://registry.plt.et.tu-dresden.de:4873"
+  },
+  "config": {
+    "docker": {
+      "imageName": "registry.plt.et.tu-dresden.de/pfe-ree-node"
+    }
   },
   "files": [
     "src"
@@ -55,6 +61,7 @@
     "@types/uuid": "^3.4.3",
     "@types/ws": "^5.1.2",
     "chai-http": "^4.0.0",
+    "docker-deploy": "0.0.2",
     "nyc": "^12.0.2",
     "tslint": "5.8.0",
     "tslint-config-airbnb": "^5.9.2",

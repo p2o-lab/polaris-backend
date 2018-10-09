@@ -33,6 +33,10 @@ docker run -d -p 3000:3000 registry.plt.et.tu-dresden.de/pfe-ree-node
 ```
 
 Update docker image
+```bash
+docker run deploy
+```
+or make it manually
 ```
 docker build -t pfe-ree-node .
 docker tag pfe-ree-node registry.plt.et.tu-dresden.de/pfe-ree-node
