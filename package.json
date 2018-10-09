@@ -16,7 +16,8 @@
     "apidoc": "apidoc -i src/server/ -o apidoc",
     "build": "tsc && npm run apidoc",
     "predeploy": "npm run build",
-    "deploy": "docker-deploy"
+    "deploy": "docker-deploy",
+    "postversion": "npm run deploy"
   },
   "publishConfig": {
     "registry": "https://registry.plt.et.tu-dresden.de:4873"
