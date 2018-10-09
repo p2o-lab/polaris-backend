@@ -44,6 +44,7 @@ export enum ServiceState {
 }
 
 export enum ServiceMtpCommand {
+    UNDEFINED = 0,
     RESET = 2,
     START = 4,
     STOP = 8,

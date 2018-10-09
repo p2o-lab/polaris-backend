@@ -202,30 +202,46 @@ export class Service {
         return await Promise.all(tasks);
     }
 
-    executeCommand(command: ServiceCommand, strategy: Strategy, parameters: Parameter[]): Promise<boolean> {
-        //catService.info(`${command} service ${this.name}(${strategy ? strategy.name : ''}) ` +
-        //    `- ${JSON.stringify(parameters)}`);
+    /**
+     * Exeute command by writing parameters and ControlOp/ControlExt
+     * Set ControlOp/ControlExt back after 500ms
+     *
+     * @param {ServiceCommand} command
+     * @param {Strategy} strategy
+     * @param {Parameter[]} parameters
+     * @returns {Promise<boolean>}
+     */
+    async executeCommand(command: ServiceCommand, strategy: Strategy, parameters: Parameter[]): Promise<boolean> {
+        catService.info(`${command} service ${this.name}(${strategy ? strategy.name : ''})`);
+        let result;
         if (command === 'start') {
-            return this.start(strategy, parameters);
+            result = this.start(strategy, parameters);
         } else if (command === 'stop') {
-            return this.stop();
+            result = this.stop();
         } else if (command === 'reset') {
-            return this.reset();
+            result = this.reset();
         } else if (command === 'complete') {
-            return this.complete();
+            result = this.complete();
         } else if (command === 'abort') {
-            return this.abort();
+            result = this.abort();
         } else if (command === 'unhold') {
-            return this.unhold();
+            result = this.unhold();
         } else if (command === 'pause') {
-            return this.pause();
+            result = this.pause();
         } else if (command === 'resume') {
-            return this.resume();
+            result = this.resume();
         } else if (command === 'restart') {
-            return this.restart(strategy, parameters);
+            result = this.restart(strategy, parameters);
         } else {
             throw new Error(`Command ${command} can not be interpreted`);
         }
+        await result;
+        setTimeout(() => this.clearCommand(), 500);
+        return result;
+    }
+
+    async clearCommand(): Promise<boolean> {
+        return await this.sendCommand(ServiceMtpCommand.UNDEFINED);
     }
 
     async start(strategy: Strategy, parameters: Parameter[]): Promise<boolean> {
