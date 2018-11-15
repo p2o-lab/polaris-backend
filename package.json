@@ -17,7 +17,8 @@
     "build": "tsc && npm run apidoc",
     "predeploy": "npm run build",
     "deploy": "docker-deploy",
-    "postversion": "npm run deploy"
+    "postversion": "npm run deploy",
+    "flagwatcher": "ts-node ./src/flagWatcher.ts"
   },
   "publishConfig": {
     "registry": "https://registry.plt.et.tu-dresden.de:4873"
@@ -46,6 +47,7 @@
     "node-opcua": "^0.4.5",
     "node-opcua-client": "^0.4.1",
     "pfe-ree-interface": "^1.8.0",
+    "request": "^2.88.0",
     "ts-node": "^6.1.1",
     "typescript-logging": "^0.6.2",
     "uuid": "^3.3.2",

@@ -153,17 +153,21 @@ export class Module {
      *
      */
     disconnect(): Promise<any> {
-        return new Promise(async (resolve) => {
+        return new Promise(async (resolve, reject) => {
             if (this.session) {
                 catModule.info(`Disconnect module ${this.id}`);
-                await promiseTimeout(1000, this.session.close());
-                this.session = undefined;
-                await promiseTimeout(1000, this.client.disconnect());
-                this.client = undefined;
-                manager.eventEmitter.emit('refresh', 'module');
-                resolve('Disconnected');
+                try {
+                    await promiseTimeout(1000, this.session.close());
+                    this.session = undefined;
+                    await promiseTimeout(1000, this.client.disconnect());
+                    this.client = undefined;
+                    manager.eventEmitter.emit('refresh', 'module');
+                    resolve(`Module ${this.id} disconnected`);
+                } catch (err) {
+                    reject(err);
+                }
             } else {
-                resolve('Already disconnected');
+                resolve(`Module ${this.id} already disconnected`);
             }
         });
     }

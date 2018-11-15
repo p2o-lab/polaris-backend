@@ -57,6 +57,7 @@ export interface ServiceOptions {
         State: OpcUaNode;
         StrategyOp: OpcUaNode;
         StrategyExt: OpcUaNode;
+        ErrorMessage: OpcUaNode;
     };
     strategies: Strategy[];
     parameters: ServiceParameter[];
@@ -68,6 +69,7 @@ export class Service {
     status: OpcUaNode;
     opMode: OpcUaNode;
     strategy: OpcUaNode;
+    errorMessage: OpcUaNode;
     strategies: Strategy[];
     parameters: ServiceParameter[];
 
@@ -83,6 +85,8 @@ export class Service {
             serviceOptions.communication.ControlExt : serviceOptions.communication.ControlOp;
         this.strategy = manager.automaticMode ?
             serviceOptions.communication.StrategyExt : serviceOptions.communication.StrategyOp;
+
+        this.errorMessage = serviceOptions.communication.ErrorMessage;
 
         this.strategies = serviceOptions.strategies;
         this.parameters = serviceOptions.parameters;
@@ -100,6 +104,17 @@ export class Service {
             return state;
         } catch (err) {
             catOpc.error('Error reading opMode', err);
+            return undefined;
+        }
+    }
+
+    async getErrorString(): Promise<string> {
+        try {
+            const result: DataValue = await this.parent.readVariableNode(this.errorMessage);
+            catOpc.trace(`Read error string ${this.name}: ${result}`);
+            return result.value.value;
+        } catch (err) {
+            catOpc.error('Error reading ErrorString', err);
             return undefined;
         }
     }
@@ -122,20 +137,19 @@ export class Service {
     }
 
     async getOverview(): Promise<ServiceInterface> {
-        const opMode = this.getOpMode();
-        const state = this.getServiceState();
-        const strategies = this.getStrategies();
-        const params = this.getCurrentParameters();
-        return Promise.all([opMode, state, strategies, params])
-            .then(async (data) => {
-                return {
-                    name: this.name,
-                    opMode: OpMode[data[0]] || data[0],
-                    status: ServiceState[data[1]] || data[1],
-                    strategies: data[2],
-                    parameters: data[3]
-                };
-            });
+        const opMode = await this.getOpMode();
+        const state = await this.getServiceState();
+        const strategies = await this.getStrategies();
+        const params = await this.getCurrentParameters();
+        const errorString = await this.getErrorString();
+        return {
+            name: this.name,
+            opMode: OpMode[opMode] || opMode,
+            status: ServiceState[state] || state,
+            strategies: await strategies,
+            parameters: await params,
+            error: await errorString
+        };
     }
 
     async getStrategies(): Promise<StrategyInterface[]> {

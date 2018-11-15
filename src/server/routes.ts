@@ -42,6 +42,7 @@ export default class Routes {
         });
 
         server.app.use('/doc', express.static('apidoc'));
+        server.app.use('/dashboard', express.static('dashboard'));
         server.app.use('/module', moduleRouter);
         server.app.use('/module', serviceRouter);
         server.app.use('/recipe', recipeRouter);
