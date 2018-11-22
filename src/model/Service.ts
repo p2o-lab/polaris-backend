@@ -114,7 +114,7 @@ export class Service {
             catOpc.trace(`Read error string ${this.name}: ${result}`);
             return result.value.value;
         } catch (err) {
-            catOpc.error('Error reading ErrorString', err);
+            catOpc.warn('Error reading ErrorString', err.toString());
             return undefined;
         }
     }
@@ -250,6 +250,7 @@ export class Service {
             throw new Error(`Command ${command} can not be interpreted`);
         }
         await result;
+        // reset ControlOp variable after 500ms
         setTimeout(() => this.clearCommand(), 500);
         return result;
     }

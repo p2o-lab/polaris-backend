@@ -42,12 +42,12 @@ export default class Routes {
         });
 
         server.app.use('/doc', express.static('apidoc'));
-        server.app.use('/dashboard', express.static('dashboard'));
-        server.app.use('/module', moduleRouter);
-        server.app.use('/module', serviceRouter);
-        server.app.use('/recipe', recipeRouter);
-        server.app.use('/player', playerRouter);
-        server.app.use('/', coreRouter);
+        server.app.use('/api/module', moduleRouter);
+        server.app.use('/api/module', serviceRouter);
+        server.app.use('/api/recipe', recipeRouter);
+        server.app.use('/api/player', playerRouter);
+        server.app.use('/api', coreRouter);
+        server.app.use('/', express.static('../pfe-ree-viz/dist/'));
 
         // Error handling
         server.app.use(function (err, req, res, next) {
