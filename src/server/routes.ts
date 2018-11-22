@@ -23,34 +23,39 @@
  * SOFTWARE.
  */
 
-import * as express from 'express';
-import { Request } from 'express';
+import { static as expressStatic, Request, Response, NextFunction } from 'express';
 import { moduleRouter } from './router/moduleRouter';
 import { recipeRouter } from './router/recipeRouter';
 import { catServer } from '../config/logging';
 import { serviceRouter } from './router/serviceRouter';
 import { coreRouter } from './router/coreRouter';
 import { playerRouter } from './router/playerRouter';
+import { join } from 'path';
 
 export default class Routes {
     static init(server): void {
 
         // Logging all requests
-        server.app.use((req: Request, res, next) => {
+        server.app.use((req: Request, res: Response, next: NextFunction) => {
             catServer.info(`${req.method} ${req.url}`);
             next();
         });
 
-        server.app.use('/doc', express.static('apidoc'));
+        server.app.use('/doc', expressStatic('apidoc'));
         server.app.use('/api/module', moduleRouter);
         server.app.use('/api/module', serviceRouter);
         server.app.use('/api/recipe', recipeRouter);
         server.app.use('/api/player', playerRouter);
         server.app.use('/api', coreRouter);
-        server.app.use('/', express.static('../pfe-ree-viz/dist/'));
+        server.app.use('/', expressStatic('dist'));
+
+        // default route to index.html
+        server.app.use((req: Request, res: Response) => {
+            res.sendFile('index.html', { root: join(__dirname, '../../dist') });
+        });
 
         // Error handling
-        server.app.use(function (err, req, res, next) {
+        server.app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
             catServer.error(`An Error occured: ${err.toString()}`, err);
             res.status(500).send({ status: 'error', error: err.toString(), stack: err.stack });
         });

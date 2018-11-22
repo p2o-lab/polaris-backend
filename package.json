@@ -15,6 +15,7 @@
     "test": "mocha -r ts-node/register test/*.ts",
     "apidoc": "apidoc -i src/server/ -o apidoc",
     "build": "tsc && npm run apidoc",
+    "ui": "cp -r ../pfe-ree-viz/dist .",
     "predeploy": "npm run build",
     "deploy": "docker-deploy",
     "postversion": "npm run deploy",
