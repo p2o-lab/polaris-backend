@@ -1,0 +1,216 @@
+{
+  "version": "0.2.0",
+  "name": "Media preparation for medium 88370C",
+  "description": "This recipe uses the biofeed module for preparing medium 88370C in 9 steps. This recipe approximately lasts 45min?.",
+  "author": "Markus Graube <markus.graube@tu-dresden.de>",
+  "initial_step": "S1.AddWater",
+  "steps": [
+    {
+      "name": "S1.AddWater",
+      "operations": [
+        {
+          "service": "Feed_Water",
+          "command": "start",
+          "parameter": [
+            {
+              "name": "Feed_Volume",
+              "value": 4000
+            }
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "S2.AddPowder",
+          "condition":
+          {
+            "type": "state",
+            "service": "Feed_Water",
+            "state": "completed"
+          }
+        }
+      ]
+    },
+    {
+      "name": "S2.AddPowder",
+      "operations": [
+        {
+          "service": "Feed_Powder",
+          "command": "start",
+          "parameter": [
+            {
+              "name": "Feed_Mass",
+              "value": 143
+            },
+            {
+              "name": "Feed_Furation",
+              "value": 60
+            }
+          ]
+        },
+        {
+          "service": "Stirring",
+          "command": "start",
+          "parameter": [
+            {
+              "name": "Stirring_Rotation_Speed",
+              "value": 400
+            },
+            {
+              "name": "Stirring_Duration",
+              "value": 0
+            }
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "S3.pH4.5",
+          "condition": {
+            "type": "and",
+            "conditions": [
+              {
+                "type": "time",
+                "duration": 1500
+              },
+              {
+                "type": "state",
+                "service": "Feed_Powder",
+                "state": "completed"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "S3.pH4.5",
+      "operations": [
+        {
+          "service": "pH_Adjustment",
+          "command": "start",
+          "parameter": [
+            {
+              "name": "Pump_Flow_Rate",
+              "value": 11
+            },
+            {
+              "name": "Feed_Volume",
+              "value": 11
+            },
+            {
+              "name": "pH_Value",
+              "value": 4.5
+            }
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "S4.addBicarb",
+          "condition":
+          {
+            "type": "state",
+            "service": "pH_Adjustment",
+            "state": "completed"
+          }
+        }
+      ]
+    },
+    {
+      "name": "S4.addBicarb",
+      "operations": [
+        {
+          "service": "Feed_Buffer_Solution",
+          "command": "start",
+          "parameter": [
+            {
+              "name": "Feed_Volume",
+              "value": "???"
+            }
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "S5.ph9",
+          "condition":
+          {
+            "type": "state",
+            "service": "Feed_Buffer_Solution",
+            "state": "completed"
+          }
+        }
+      ]
+    },
+    {
+      "name": "S5.ph9",
+      "operations": [
+        {
+          "service": "pH_Adjustment",
+          "command": "start",
+          "parameter": [
+            {"name": "ph_value", "value": 9 }
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "S6.ph7",
+          "condition":
+          {
+            "type": "state",
+            "service": "pH_Adjustment",
+            "state": "completed"
+          }
+        }
+      ]
+    },
+    {
+      "name": "S6.ph7",
+      "operations": [
+        {
+          "service": "pH_Adjustment",
+          "command": "start",
+          "parameter": [
+            {"name": "ph_value", "value": 5000}
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "S7.FinalVolume",
+          "condition":
+          {
+            "type": "state",
+            "service": "pH_Adjustment",
+            "state": "idle"
+          }
+        }
+      ]
+    },
+    {
+      "name": "S7.FinalVolume",
+      "operations": [
+        {
+          "service": "Feed_Water",
+          "command": "start",
+          "parameter": [
+            {"name": "feed_volume", "value": 7.3}
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "finished",
+          "condition":
+          {
+            "type": "state",
+            "service": "Feed_Water",
+            "state": "completed"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -12,14 +12,15 @@
     "dev": "nodemon",
     "start": "ts-node ./src/index.ts",
     "automaticMode": "ts-node ./src/automaticMode.ts",
+    "flagwatcher": "ts-node ./src/flagWatcher.ts",
+    "postversion": "npm run deploy",
     "test": "mocha -r ts-node/register test/*.ts",
     "apidoc": "apidoc -i src/server/ -o apidoc",
-    "build": "tsc && npm run apidoc && npm run ui",
+    "build": "tsc",
     "ui": "cp -r ../pfe-ree-viz/dist .",
-    "predeploy": "npm run build",
-    "deploy": "docker-deploy",
-    "postversion": "npm run deploy",
-    "flagwatcher": "ts-node ./src/flagWatcher.ts"
+    "build-all": "npm run build && npm run apidoc && npm run ui",
+    "predepoly": "npm run ui",
+    "deploy": "docker-deploy"
   },
   "publishConfig": {
     "registry": "https://registry.plt.et.tu-dresden.de:4873"
