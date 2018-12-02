@@ -14,7 +14,7 @@
           "parameter": [
             {
               "name": "TargetVolume",
-              "value": 4000
+              "value": 3500
             }
           ]
         }
@@ -53,11 +53,68 @@
           "parameter": [
             {
               "name": "StirringRotationSpeed",
-              "value": 100
+              "value": 400
             },
             {
               "name": "StirringDuration",
-              "value": 1800
+              "value": 0
+            }
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "S2.1",
+          "condition": {
+                "type": "state",
+                "service": "FeedWater",
+                "state": "completed"
+          }
+        }
+      ]
+    },
+    {
+      "name": "S2.1",
+      "operations": [
+        {
+          "service": "Stirring",
+          "command": "complete"
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "S2.AddAdditionalWater",
+          "condition": {
+            "type": "time",
+            "duration": 30
+          }
+        }
+      ]
+    },
+    {
+      "name": "S2.AddAdditionalWater",
+      "operations": [
+        {
+          "service": "Stirring",
+          "command": "start",
+          "parameter": [
+            {
+              "name": "StirringRotationSpeed",
+              "value": 400
+            },
+            {
+              "name": "StirringDuration",
+              "value": 60
+            }
+          ]
+        },
+        {
+          "service": "FeedWater",
+          "command": "start",
+          "parameter": [
+            {
+              "name": "TargetVolume",
+              "value": 4000
             }
           ]
         }
@@ -66,9 +123,9 @@
         {
           "next_step": "S3.pH4.5",
           "condition": {
-                "type": "state",
-                "service": "Stirring",
-                "state": "completed"
+            "type": "state",
+            "service": "Stirring",
+            "state": "completed"
           }
         }
       ]
