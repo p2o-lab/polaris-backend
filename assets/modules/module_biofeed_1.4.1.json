@@ -67,6 +67,11 @@
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.FeedWater.CurrentStrategy",
               "data_type": "UInt32"
+            },
+            "ErrorMessage": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.FeedWater.ErrorMsg.sOut",
+              "data_type": "String"
             }
           },
           "strategies": [
@@ -195,6 +200,11 @@
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.FeedBufferSolution.CurrentStrategy",
               "data_type": "UInt32"
+            },
+            "ErrorMessage": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.FeedBufferSolution.ErrorMsg.sOut",
+              "data_type": "String"
             }
           },
           "strategies": [
@@ -427,6 +437,11 @@
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.Stirring.CurrentStrategy",
               "data_type": "UInt32"
+            },
+            "ErrorMessage": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.Stirring.ErrorMsg.sOut",
+              "data_type": "String"
             }
           },
           "strategies": [
@@ -607,6 +622,11 @@
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.FeedBaseSolution.CurrentStrategy",
               "data_type": "UInt32"
+            },
+            "ErrorMessage": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.FeedBaseSolution.ErrorMsg.sOut",
+              "data_type": "String"
             }
           },
           "strategies": [
@@ -839,6 +859,11 @@
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.FeedAcidSolution.CurrentStrategy",
               "data_type": "UInt32"
+            },
+            "ErrorMessage": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.FeedAcidSolution.ErrorMsg.sOut",
+              "data_type": "String"
             }
           },
           "strategies": [
@@ -1071,6 +1096,11 @@
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.Emptying.CurrentStrategy",
               "data_type": "UInt32"
+            },
+            "ErrorMessage": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.Emptying.ErrorMsg.sOut",
+              "data_type": "String"
             }
           },
           "strategies": [
@@ -1153,6 +1183,11 @@
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.FeedPowder.CurrentStrategy",
               "data_type": "UInt32"
+            },
+            "ErrorMessage": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.FeedPowder.ErrorMsg.sOut",
+              "data_type": "String"
             }
           },
           "strategies": [
@@ -1333,6 +1368,11 @@
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.FiltrationToStorage.CurrentStrategy",
               "data_type": "UInt32"
+            },
+            "ErrorMessage": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.FiltrationToStorage.ErrorMsg.sOut",
+              "data_type": "String"
             }
           },
           "strategies": [
@@ -1521,6 +1561,11 @@
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.pHAdjustment.CurrentStrategy",
               "data_type": "UInt32"
+            },
+            "ErrorMessage": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.pHAdjustment.ErrorMsg.sOut",
+              "data_type": "String"
             }
           },
           "strategies": [
@@ -1909,6 +1954,11 @@
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.CondAdjustment.CurrentStrategy",
               "data_type": "UInt32"
+            },
+            "ErrorMessage": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.CondAdjustment.ErrorMsg.sOut",
+              "data_type": "String"
             }
           },
           "strategies": [
@@ -2297,6 +2347,11 @@
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.FiltrationToWaste.CurrentStrategy",
               "data_type": "UInt32"
+            },
+            "ErrorMessage": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.FiltrationToWaste.ErrorMsg.sOut",
+              "data_type": "String"
             }
           },
           "strategies": [
@@ -2485,6 +2540,11 @@
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.FiltrationToStorageQualityBased.CurrentStrategy",
               "data_type": "UInt32"
+            },
+            "ErrorMessage": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.FiltrationToStorageQualityBased.ErrorMsg.sOut",
+              "data_type": "String"
             }
           },
           "strategies": [
