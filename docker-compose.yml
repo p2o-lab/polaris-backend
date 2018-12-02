@@ -1,0 +1,6 @@
+version: '3'
+services:
+  pfe-ree-node:
+    image: "registry.plt.et.tu-dresden.de/pfe-ree-node"
+    ports:
+     - "3000:80"
