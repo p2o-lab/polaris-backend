@@ -63,9 +63,13 @@ export class Module {
     private monitoredItems: Map<NodeId, {monitoredItem: ClientMonitoredItem, emitter: EventEmitter}>;
     private namespaceArray: string[];
 
-    constructor(options: ModuleOptions) {
+    // module is protected and can't be deleted by the user
+    protected: boolean = false;
+
+    constructor(options: ModuleOptions, protectedModule: boolean = false) {
         this.id = options.id;
         this.endpoint = options.opcua_server_url;
+        this.protected = protectedModule;
 
         if (options.services) {
             this.services = options.services.map(serviceOption => new Service(serviceOption, this));
@@ -275,7 +279,8 @@ export class Module {
             id: this.id,
             endpoint: this.endpoint,
             connected: this.isConnected(),
-            services: this.isConnected() ? await this.getServiceStates() : undefined
+            services: this.isConnected() ? await this.getServiceStates() : undefined,
+            protected: this.protected
         };
     }
 

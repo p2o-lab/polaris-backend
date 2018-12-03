@@ -38,7 +38,7 @@ export const recipeRouter: Router = Router();
  */
 recipeRouter.get('/', asyncHandler(async (req: Request, res: Response) => {
     const result = manager.recipes.map((recipe) => {
-        return { id: recipe.id, options: recipe.options };
+        return { id: recipe.id, options: recipe.options, protected: recipe.protected };
     });
     res.json(result);
 }));
@@ -62,12 +62,16 @@ recipeRouter.get('/:recipeId', asyncHandler(async (req: Request, res: Response) 
  */
 recipeRouter.delete('/:recipeId', asyncHandler(async (req: Request, res: Response) => {
     const recipe = await manager.recipes.find(recipe => recipe.id === req.params.recipeId);
-    const index = manager.recipes.indexOf(recipe, 0);
-    if (index > -1) {
-        manager.recipes.splice(index, 1);
+    if (recipe.protected) {
+        res.status(404).send(`Recipe ${this.id} is protected. Can not be deleted`);
+    } else {
+        const index = manager.recipes.indexOf(recipe, 0);
+        if (index > -1) {
+            manager.recipes.splice(index, 1);
+        }
+        manager.eventEmitter.emit('refresh', 'recipes');
+        res.send({ status: 'Successful deleted', id: req.params.id });
     }
-    manager.eventEmitter.emit('refresh', 'recipes');
-    res.send({ status: 'Successful deleted', id: req.params.id });
 }));
 
 /**

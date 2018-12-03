@@ -79,7 +79,7 @@ export class Manager {
      * @param options
      * @returns {Module[]}
      */
-    public loadModule(options): Module[] {
+    public loadModule(options, protectedModules: boolean = false): Module[] {
         let newModules: Module[] = [];
         if (options.subplants) {
             options.subplants.forEach((subplantOptions) => {
@@ -87,7 +87,7 @@ export class Manager {
                     if (this.modules.find(module => module.id === moduleOptions.id)) {
                         catManager.warn(`Module ${moduleOptions.id} already in registered modules`);
                     } else {
-                        newModules.push(new Module(moduleOptions));
+                        newModules.push(new Module(moduleOptions, protectedModules));
                     }
                 });
             });
@@ -96,7 +96,7 @@ export class Manager {
                 if (this.modules.find(module => module.id === moduleOptions.id)) {
                     catManager.warn(`Module ${moduleOptions.id} already in registered modules`);
                 } else {
-                    newModules.push(new Module(moduleOptions));
+                    newModules.push(new Module(moduleOptions, protectedModules));
                 }
             });
         } else {
@@ -106,8 +106,8 @@ export class Manager {
         return newModules;
     }
 
-    public loadRecipe(options: RecipeOptions): Recipe {
-        const newRecipe = new Recipe(options, this.modules);
+    public loadRecipe(options: RecipeOptions, protectedRecipe: boolean = false): Recipe {
+        const newRecipe = new Recipe(options, this.modules, protectedRecipe);
         this.recipes.push(newRecipe);
         manager.eventEmitter.emit('refresh', 'recipes');
         return newRecipe;

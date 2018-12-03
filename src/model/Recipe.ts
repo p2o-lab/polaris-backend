@@ -47,8 +47,9 @@ export class Recipe {
     eventEmitter: EventEmitter;
 
     options: RecipeOptions;
+    protected: boolean;
 
-    constructor(options: RecipeOptions, modules: Module[]) {
+    constructor(options: RecipeOptions, modules: Module[], protectedRecipe: boolean = false) {
 
         this.id = v4();
         if (options.name) {
@@ -77,6 +78,7 @@ export class Recipe {
         }
 
         this.options = options;
+        this.protected = protectedRecipe;
         this.initRecipe();
         this.eventEmitter = new EventEmitter();
 
@@ -120,7 +122,8 @@ export class Recipe {
             modules: await this.getModulesInRecipe(),
             status: this.status,
             currentStep: this.current_step ? this.current_step.name : undefined,
-            options: this.options
+            options: this.options,
+            protected: this.protected
         };
     }
 

@@ -119,14 +119,14 @@ if (options) {
         if (options.module) {
             options.module.forEach((module) => {
                 const modulesOptions = JSON.parse(fs.readFileSync(module).toString());
-                manager.loadModule(modulesOptions);
+                manager.loadModule(modulesOptions, true);
             });
         }
 
         if (options.recipe) {
             options.recipe.forEach((recipe) => {
                 const recipeOptions = JSON.parse(fs.readFileSync(recipe).toString());
-                manager.loadRecipe(recipeOptions);
+                manager.loadRecipe(recipeOptions, true);
             });
         }
 

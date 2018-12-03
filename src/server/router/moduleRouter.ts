@@ -76,13 +76,17 @@ moduleRouter.put('', upload.single('file'), asyncHandler(async (req, res) => {
  */
 moduleRouter.delete('/:id', asyncHandler(async (req: Request, res: Response) => {
     const module = manager.modules.find(module => module.id === req.params.id);
-    await module.disconnect();
-    const index = manager.modules.indexOf(module, 0);
-    if (index > -1) {
-        manager.modules.splice(index, 1);
+    if (module.protected) {
+        res.status(404).send(`Module {$id} is protected and can't be deleted`);
+    } else {
+        await module.disconnect();
+        const index = manager.modules.indexOf(module, 0);
+        if (index > -1) {
+            manager.modules.splice(index, 1);
+        }
+        manager.eventEmitter.emit('refresh', 'module');
+        res.send({ status: 'Successful deleted', id: req.params.id });
     }
-    manager.eventEmitter.emit('refresh', 'module');
-    res.send({ status: 'Successful deleted', id: req.params.id });
 }));
 
 /**
