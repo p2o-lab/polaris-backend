@@ -15,4 +15,5 @@ RUN  npm install && npm run build && npm run apidoc
 
 # Start the server
 ENTRYPOINT ["node", "build/"]
+CMD [""]
 

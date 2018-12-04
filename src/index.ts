@@ -85,7 +85,7 @@ const sections = [
         content: [
             {
                 desc: 'Watching a OPC UA server',
-                example: '$ node src/index.js --watch opc.tcp://127.0.0.1:53530/OPCUA/SimulationServer "ns=3;s=BooleanDataItem" 127.0.0.1:3000/api/startRecipe'
+                example: '$ node src/index.js --watch opc.tcp://127.0.0.1:53530/OPCUA/SimulationServer "ns=3;s=BooleanDataItem" http://127.0.0.1:3000/api/player/start'
             }]
     }
 ];
@@ -117,6 +117,7 @@ if (options) {
 
         /** Load some configuration at startup */
         if (options.module) {
+            console.log(`Load modules from ${options.module}`);
             options.module.forEach((module) => {
                 const modulesOptions = JSON.parse(fs.readFileSync(module).toString());
                 manager.loadModule(modulesOptions, true);
@@ -124,6 +125,7 @@ if (options) {
         }
 
         if (options.recipe) {
+            console.log(`Load recipe from ${options.recipe}`);
             options.recipe.forEach((recipe) => {
                 const recipeOptions = JSON.parse(fs.readFileSync(recipe).toString());
                 manager.loadRecipe(recipeOptions, true);

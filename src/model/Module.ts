@@ -138,6 +138,8 @@ export class Module {
 
                 // subscribe to all services
                 this.subscribeToAllServices();
+                this.subscribeToAllVariables();
+
                 manager.eventEmitter.emit('refresh', 'module');
             } catch (err) {
                 return Promise.reject(`Could not connect to module ${this.id} on ${this.endpoint}: ${err.toString()}`);
@@ -238,6 +240,22 @@ export class Module {
             const variable = dataStructure.communication[variableName];
             return this.readVariableNode(variable);
         }
+    }
+
+    private subscribeToAllVariables() {
+        this.variables.forEach((variable: ProcessValue) => {
+            if (variable.communication['V']) {
+                if ( variable.communication['V'].node_id != null ) {
+                    this.listenToOpcUaNode(variable.communication['V'])
+                        .on('changed', (data) => {
+                            catModule.info(`variable changed: ${this.id}.${variable.name} = ${data}`);
+                            //manager.eventEmitter.emit('refresh', 'module');
+                        });
+                }
+            } else {
+                catModule.warn(`OPC UA variable for variable ${variable.name} not defined`);
+            }
+        });
     }
 
     private subscribeToAllServices() {
