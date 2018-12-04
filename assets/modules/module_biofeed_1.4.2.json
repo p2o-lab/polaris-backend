@@ -3107,6 +3107,503 @@
             }
           ],
           "parameters": []
+        },
+        {
+          "name": "RinsingQualityBased",
+          "communication": {
+            "OSLevel": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.OSLevel",
+              "data_type": "Byte"
+            },
+            "WQC": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.WQC",
+              "data_type": "Byte"
+            },
+            "OpMode": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.OpMode.binary",
+              "data_type": "UInt32"
+            },
+            "ControlOp": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.ControlOp",
+              "data_type": "UInt32"
+            },
+            "StrategyOp": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.StrategyOp",
+              "data_type": "UInt32"
+            },
+            "ControlInt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.ControlInt",
+              "data_type": "UInt32"
+            },
+            "StrategyInt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.StrategyInt",
+              "data_type": "UInt32"
+            },
+            "ControlExt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.ControlExt",
+              "data_type": "UInt32"
+            },
+            "StrategyExt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.StrategyExt",
+              "data_type": "UInt32"
+            },
+            "State": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.State.binary",
+              "data_type": "UInt32"
+            },
+            "ControlEnable": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.ControlEnable.binary",
+              "data_type": "UInt32"
+            },
+            "CurrentStrategy": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.CurrentStrategy",
+              "data_type": "UInt32"
+            },
+            "ErrorMessage": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.ErrorMsg.sOut",
+              "data_type": "String"
+            }
+          },
+          "strategies": [
+            {
+              "id": "1",
+              "name": "Strategy 1",
+              "default": true,
+              "sc": true,
+              "parameters": [
+                {
+                  "name": "TargetVolume",
+                  "interface_class": "ExtAnaOp",
+                  "communication": {
+                    "WQC": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.TargetVolume.WQC",
+                      "data_type": "Byte"
+                    },
+                    "OSLevel": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.TargetVolume.OSLevel",
+                      "data_type": "Byte"
+                    },
+                    "VOut": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.TargetVolume.VOut",
+                      "data_type": "Float"
+                    },
+                    "VSclMin": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.TargetVolume.VSclMin",
+                      "data_type": "Float"
+                    },
+                    "VSclMax": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.TargetVolume.VSclMax",
+                      "data_type": "Float"
+                    },
+                    "VUnit": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.TargetVolume.VUnit",
+                      "data_type": "Int16"
+                    },
+                    "VMin": {
+                      "value": "MISSING ASSIGNMENT"
+                    },
+                    "VMax": {
+                      "value": "MISSING ASSIGNMENT"
+                    },
+                    "VExt": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.TargetVolume.VExt",
+                      "data_type": "Float"
+                    },
+                    "VRbk": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.TargetVolume.VRbk",
+                      "data_type": "Float"
+                    }
+                  }
+                },
+                {
+                  "name": "FlowRate",
+                  "interface_class": "ExtAnaOp",
+                  "communication": {
+                    "WQC": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.FlowRate.WQC",
+                      "data_type": "Byte"
+                    },
+                    "OSLevel": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.FlowRate.OSLevel",
+                      "data_type": "Byte"
+                    },
+                    "VOut": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.FlowRate.VOut",
+                      "data_type": "Float"
+                    },
+                    "VSclMin": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.FlowRate.VSclMin",
+                      "data_type": "Float"
+                    },
+                    "VSclMax": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.FlowRate.VSclMax",
+                      "data_type": "Float"
+                    },
+                    "VUnit": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.FlowRate.VUnit",
+                      "data_type": "Int16"
+                    },
+                    "VMin": {
+                      "value": "MISSING ASSIGNMENT"
+                    },
+                    "VMax": {
+                      "value": "MISSING ASSIGNMENT"
+                    },
+                    "VExt": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.FlowRate.VExt",
+                      "data_type": "Float"
+                    },
+                    "VRbk": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.FlowRate.VRbk",
+                      "data_type": "Float"
+                    }
+                  }
+                },
+                {
+                  "name": "TimeWithoutFiltration",
+                  "interface_class": "ExtAnaOp",
+                  "communication": {
+                    "WQC": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.TimeWithoutFiltration.WQC",
+                      "data_type": "Byte"
+                    },
+                    "OSLevel": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.TimeWithoutFiltration.OSLevel",
+                      "data_type": "Byte"
+                    },
+                    "VOut": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.TimeWithoutFiltration.VOut",
+                      "data_type": "Float"
+                    },
+                    "VSclMin": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.TimeWithoutFiltration.VSclMin",
+                      "data_type": "Float"
+                    },
+                    "VSclMax": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.TimeWithoutFiltration.VSclMax",
+                      "data_type": "Float"
+                    },
+                    "VUnit": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.TimeWithoutFiltration.VUnit",
+                      "data_type": "Int16"
+                    },
+                    "VMin": {
+                      "value": "MISSING ASSIGNMENT"
+                    },
+                    "VMax": {
+                      "value": "MISSING ASSIGNMENT"
+                    },
+                    "VExt": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.TimeWithoutFiltration.VExt",
+                      "data_type": "Float"
+                    },
+                    "VRbk": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.TimeWithoutFiltration.VRbk",
+                      "data_type": "Float"
+                    }
+                  }
+                },
+                {
+                  "name": "StirringDuration",
+                  "interface_class": "ExtAnaOp",
+                  "communication": {
+                    "WQC": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.StirringDuration.WQC",
+                      "data_type": "Byte"
+                    },
+                    "OSLevel": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.StirringDuration.OSLevel",
+                      "data_type": "Byte"
+                    },
+                    "VOut": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.StirringDuration.VOut",
+                      "data_type": "Float"
+                    },
+                    "VSclMin": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.StirringDuration.VSclMin",
+                      "data_type": "Float"
+                    },
+                    "VSclMax": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.StirringDuration.VSclMax",
+                      "data_type": "Float"
+                    },
+                    "VUnit": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.StirringDuration.VUnit",
+                      "data_type": "Int16"
+                    },
+                    "VMin": {
+                      "value": "MISSING ASSIGNMENT"
+                    },
+                    "VMax": {
+                      "value": "MISSING ASSIGNMENT"
+                    },
+                    "VExt": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.StirringDuration.VExt",
+                      "data_type": "Float"
+                    },
+                    "VRbk": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.StirringDuration.VRbk",
+                      "data_type": "Float"
+                    }
+                  }
+                },
+                {
+                  "name": "StirringRotationSpeed",
+                  "interface_class": "ExtAnaOp",
+                  "communication": {
+                    "WQC": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.StirringRotationSpeed.WQC",
+                      "data_type": "Byte"
+                    },
+                    "OSLevel": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.StirringRotationSpeed.OSLevel",
+                      "data_type": "Byte"
+                    },
+                    "VOut": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.StirringRotationSpeed.VOut",
+                      "data_type": "Float"
+                    },
+                    "VSclMin": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.StirringRotationSpeed.VSclMin",
+                      "data_type": "Float"
+                    },
+                    "VSclMax": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.StirringRotationSpeed.VSclMax",
+                      "data_type": "Float"
+                    },
+                    "VUnit": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.StirringRotationSpeed.VUnit",
+                      "data_type": "Int16"
+                    },
+                    "VMin": {
+                      "value": "MISSING ASSIGNMENT"
+                    },
+                    "VMax": {
+                      "value": "MISSING ASSIGNMENT"
+                    },
+                    "VExt": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.StirringRotationSpeed.VExt",
+                      "data_type": "Float"
+                    },
+                    "VRbk": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.StirringRotationSpeed.VRbk",
+                      "data_type": "Float"
+                    }
+                  }
+                },
+                {
+                  "name": "PumpFlowRate",
+                  "interface_class": "ExtAnaOp",
+                  "communication": {
+                    "WQC": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.PumpFlowRate.WQC",
+                      "data_type": "Byte"
+                    },
+                    "OSLevel": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.PumpFlowRate.OSLevel",
+                      "data_type": "Byte"
+                    },
+                    "VOut": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.PumpFlowRate.VOut",
+                      "data_type": "Float"
+                    },
+                    "VSclMin": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.PumpFlowRate.VSclMin",
+                      "data_type": "Float"
+                    },
+                    "VSclMax": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.PumpFlowRate.VSclMax",
+                      "data_type": "Float"
+                    },
+                    "VUnit": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.PumpFlowRate.VUnit",
+                      "data_type": "Int16"
+                    },
+                    "VMin": {
+                      "value": "MISSING ASSIGNMENT"
+                    },
+                    "VMax": {
+                      "value": "MISSING ASSIGNMENT"
+                    },
+                    "VExt": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.PumpFlowRate.VExt",
+                      "data_type": "Float"
+                    },
+                    "VRbk": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.PumpFlowRate.VRbk",
+                      "data_type": "Float"
+                    }
+                  }
+                },
+                {
+                  "name": "VolumeFraction",
+                  "interface_class": "ExtAnaOp",
+                  "communication": {
+                    "WQC": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.VolumeFraction.WQC",
+                      "data_type": "Byte"
+                    },
+                    "OSLevel": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.VolumeFraction.OSLevel",
+                      "data_type": "Byte"
+                    },
+                    "VOut": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.VolumeFraction.VOut",
+                      "data_type": "Float"
+                    },
+                    "VSclMin": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.VolumeFraction.VSclMin",
+                      "data_type": "Float"
+                    },
+                    "VSclMax": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.VolumeFraction.VSclMax",
+                      "data_type": "Float"
+                    },
+                    "VUnit": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.VolumeFraction.VUnit",
+                      "data_type": "Int16"
+                    },
+                    "VMin": {
+                      "value": "MISSING ASSIGNMENT"
+                    },
+                    "VMax": {
+                      "value": "MISSING ASSIGNMENT"
+                    },
+                    "VExt": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.VolumeFraction.VExt",
+                      "data_type": "Float"
+                    },
+                    "VRbk": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.VolumeFraction.VRbk",
+                      "data_type": "Float"
+                    }
+                  }
+                },
+                {
+                  "name": "CondLimit",
+                  "interface_class": "ExtAnaOp",
+                  "communication": {
+                    "WQC": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.CondLimit.WQC",
+                      "data_type": "Byte"
+                    },
+                    "OSLevel": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.CondLimit.OSLevel",
+                      "data_type": "Byte"
+                    },
+                    "VOut": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.CondLimit.VOut",
+                      "data_type": "Float"
+                    },
+                    "VSclMin": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.CondLimit.VSclMin",
+                      "data_type": "Float"
+                    },
+                    "VSclMax": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.CondLimit.VSclMax",
+                      "data_type": "Float"
+                    },
+                    "VUnit": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.CondLimit.VUnit",
+                      "data_type": "Int16"
+                    },
+                    "VMin": {
+                      "value": "MISSING ASSIGNMENT"
+                    },
+                    "VMax": {
+                      "value": "MISSING ASSIGNMENT"
+                    },
+                    "VExt": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.CondLimit.VExt",
+                      "data_type": "Float"
+                    },
+                    "VRbk": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.RinsingQualityBased.CondLimit.VRbk",
+                      "data_type": "Float"
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "parameters": []
         }
       ],
       "process_values": [

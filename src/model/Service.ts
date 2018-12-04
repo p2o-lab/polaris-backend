@@ -23,9 +23,9 @@
  * SOFTWARE.
  */
 
-import {DataType, DataValue, Variant, VariantArrayType} from 'node-opcua-client';
-import {Module} from './Module';
-import {catOpc, catService} from '../config/logging';
+import { DataType, DataValue, Variant, VariantArrayType } from 'node-opcua-client';
+import { Module } from './Module';
+import { catOpc, catService } from '../config/logging';
 import {
     isAutomaticState,
     isExtSource,
@@ -35,8 +35,8 @@ import {
     ServiceMtpCommand,
     ServiceState
 } from './enum';
-import {OpcUaNode, ServiceParameter, Strategy} from './Interfaces';
-import {Parameter} from './Parameter';
+import { OpcUaNode, ServiceParameter, Strategy } from './Interfaces';
+import { Parameter } from './Parameter';
 import {
     ParameterInterface,
     ParameterOptions,
@@ -44,9 +44,10 @@ import {
     ServiceInterface,
     StrategyInterface
 } from 'pfe-ree-interface';
-import {Unit} from './Unit';
-import {manager} from './Manager';
-import {EventEmitter} from 'events';
+import { Unit } from './Unit';
+import { manager } from './Manager';
+import { EventEmitter } from 'events';
+import { serviceArchive } from '../logging/archive';
 
 export interface ServiceOptions {
     name: string;
@@ -227,6 +228,16 @@ export class Service {
      */
     async executeCommand(command: ServiceCommand, strategy: Strategy, parameters: Parameter[]): Promise<boolean> {
         catService.info(`${command} service ${this.name}(${strategy ? strategy.name : ''})`);
+        serviceArchive.push({
+            datetime: new Date(),
+            module: this.parent.id,
+            service: this.name,
+            strategy: strategy.name,
+            command: command.toString(),
+            parameter: parameters.map((param) => {
+                return { name:param.name, value: param.value };
+            })
+        });
         let result;
         if (command === 'start') {
             result = this.start(strategy, parameters);

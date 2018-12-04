@@ -27,6 +27,7 @@ import { manager } from '../../model/Manager';
 import { Request, Response, Router } from 'express';
 import * as asyncHandler from 'express-async-handler';
 import { messages } from '../../config/logging';
+import {serviceArchive, variableArchive} from "../../logging/archive";
 
 export const coreRouter: Router = Router();
 
@@ -70,6 +71,24 @@ coreRouter.post('/autoReset', asyncHandler(async (req: Request, res: Response) =
  */
 coreRouter.get('/logs(.json)?', asyncHandler(async (req: Request, res: Response) => {
     res.attachment().json(messages);
+}));
+
+/**
+ * @api {get} /logs/variables   Get variable logs
+ * @apiName GetVariableLogs
+ * @apiGroup Manager
+ */
+coreRouter.get('/logs/variables(.json)?', asyncHandler(async (req: Request, res: Response) => {
+    res.attachment().json(variableArchive.slice(-1000));
+}));
+
+/**
+ * @api {get} /logs/services   Get services logs
+ * @apiName GetServicesLogs
+ * @apiGroup Manager
+ */
+coreRouter.get('/logs/services(.json)?', asyncHandler(async (req: Request, res: Response) => {
+    res.attachment().json(serviceArchive.slice(-1000));
 }));
 
 function isTrue(value: any) {

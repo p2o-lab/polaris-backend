@@ -43,6 +43,7 @@ import { manager } from './Manager';
 import { ServiceState } from './enum';
 import { ModuleInterface, ServiceInterface } from 'pfe-ree-interface';
 import { promiseTimeout } from '../timeout-promise';
+import { serviceArchive, variableArchive } from '../logging/archive';
 
 export interface ModuleOptions {
     id: string;
@@ -220,7 +221,7 @@ export class Module {
     clearListener(node: OpcUaNode) {
         const nodeId = this.resolveNodeId(node);
         if (this.monitoredItems.has(nodeId)) {
-            const {monitoredItem, emitter} = this.monitoredItems.get(nodeId);
+            const { monitoredItem, emitter } = this.monitoredItems.get(nodeId);
 
             if (monitoredItem) {
                 monitoredItem.terminate(() => catOpc.trace(`Listener ${JSON.stringify(nodeId)} terminated`));
@@ -244,16 +245,18 @@ export class Module {
 
     private subscribeToAllVariables() {
         this.variables.forEach((variable: ProcessValue) => {
-            if (variable.communication['V']) {
-                if ( variable.communication['V'].node_id != null ) {
-                    this.listenToOpcUaNode(variable.communication['V'])
-                        .on('changed', (data) => {
-                            catModule.info(`variable changed: ${this.id}.${variable.name} = ${data}`);
-                            //manager.eventEmitter.emit('refresh', 'module');
-                        });
-                }
+            if (variable.communication['V'] && variable.communication['V'].node_id != null) {
+                this.listenToOpcUaNode(variable.communication['V'])
+                    .on('changed', (data) => {
+                        catModule.debug(`variable changed: ${this.id}.${variable.name} = ${data}`);
+                        variableArchive.push({
+                            datetime: new Date(),
+                            module: this.id,
+                            variable: variable.name,
+                            value: data });
+                    });
             } else {
-                catModule.warn(`OPC UA variable for variable ${variable.name} not defined`);
+                catModule.debug(`OPC UA variable for variable ${variable.name} not defined`);
             }
         });
     }
@@ -266,6 +269,11 @@ export class Module {
             this.listenToOpcUaNode(service.status)
                 .on('changed', (data) => {
                     catModule.info(`state changed: ${this.id}.${service.name} = ${ServiceState[data]}`);
+                    serviceArchive.push({
+                        datetime: new Date(),
+                        module: this.id,
+                        service: service.name,
+                        state: ServiceState[data]});
                     manager.eventEmitter.emit('refresh', 'module');
                     if (data === ServiceState.COMPLETED) {
                         manager.eventEmitter.emit('serviceCompleted', service);

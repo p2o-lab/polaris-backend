@@ -48,7 +48,7 @@ export const catServer = new Category('server');
 export const messages: string[] = [];
 // Configure to use our custom logger, note the callback which returns our CustomLogger from above.
 const config = new CategoryConfiguration(
-    LogLevel.Debug, LoggerType.Custom, new CategoryLogFormat(),
+    LogLevel.Info, LoggerType.Custom, new CategoryLogFormat(),
     (category: Category, runtimeSettings: RuntimeSettings) => new CustomLogger(category, runtimeSettings, messages)
 );
 CategoryServiceFactory.setDefaultConfiguration(config);
@@ -57,7 +57,7 @@ catRecipe.trace('start logging');
 catModule.trace('start logging');
 
 CategoryServiceFactory.setDefaultConfiguration(new CategoryConfiguration(LogLevel.Info), false);
-CategoryServiceFactory.setConfigurationCategory(new CategoryConfiguration(LogLevel.Debug), catServer);
+CategoryServiceFactory.setConfigurationCategory(new CategoryConfiguration(LogLevel.Info), catServer);
 CategoryServiceFactory.setConfigurationCategory(new CategoryConfiguration(LogLevel.Info), catOpc);
 
 catService.trace('test trace');
