@@ -3454,8 +3454,8 @@
               "data_type": "Byte"
             },
             "V": {
-              "namespace_index": null,
-              "node_id": null,
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.P001.V",
               "data_type": "Float"
             },
             "VSclMin": {
@@ -3489,8 +3489,8 @@
               "data_type": "Byte"
             },
             "V": {
-              "namespace_index": null,
-              "node_id": null,
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.P002.V",
               "data_type": "Float"
             },
             "VSclMin": {
@@ -3524,8 +3524,8 @@
               "data_type": "Byte"
             },
             "V": {
-              "namespace_index": null,
-              "node_id": null,
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.Q003.V",
               "data_type": "Float"
             },
             "VSclMin": {
@@ -3559,8 +3559,8 @@
               "data_type": "Byte"
             },
             "V": {
-              "namespace_index": null,
-              "node_id": null,
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.Q004.V",
               "data_type": "Float"
             },
             "VSclMin": {
@@ -4204,8 +4204,8 @@
               "data_type": "Byte"
             },
             "V": {
-              "namespace_index": null,
-              "node_id": null,
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.L001.V",
               "data_type": "Float"
             },
             "VSclMin": {
