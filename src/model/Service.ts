@@ -251,7 +251,7 @@ export class Service {
         }
         await result;
         // reset ControlOp variable after 500ms
-        setTimeout(() => this.clearCommand(), 500);
+        setTimeout(() => this.clearCommand(), 1000);
         return result;
     }
 
