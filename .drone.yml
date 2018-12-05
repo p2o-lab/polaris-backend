@@ -1,0 +1,24 @@
+clone:
+  git:
+    image: plugins/git
+    skip_verify: true
+
+
+pipeline:
+  build:
+    image: node:latest
+    commands:
+      - npm install
+      - npm run-script apidoc build
+      - npm run test
+
+  notify:
+    image: drillster/drone-email
+    host: mail.zih.tu-dresden.de
+    username: plt
+    password: $EMAIL_PASSWORD
+    secrets: [ email_password ]
+    from: plt@mailbox.tu-dresden.de
+    recipients: [ markus.graube@tu-dresden.de ]
+    when:
+      status: [ changed, failure ]

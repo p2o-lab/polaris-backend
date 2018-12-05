@@ -23,38 +23,29 @@
  * SOFTWARE.
  */
 
-import { Condition, TimeCondition } from '../src/model/Condition';
 import * as assert from 'assert';
-import { catRecipe } from '../src/config/logging';
-import { ConditionType } from 'pfe-ree-interface';
+import * as fs from 'fs';
+import { Module } from '../src/model/Module';
 
-describe('Condition', () => {
+describe('Module', () => {
+    describe('constructor', () => {
 
-    it('should listen to a time condition of 0.4s', (done) => {
-        const cond = new TimeCondition({ type: ConditionType.time, duration: 0.4 });
-
-        assert.equal(cond.fulfilled, false);
-
-        cond.listen().on('state_changed', () => {
-            assert.equal(cond.fulfilled, true);
-            done();
+        it('should load the biofeed module json', (done) => {
+            fs.readFile('assets/modules/module_biofeed_1.4.2.json', (err, file) => {
+                    const module = new Module(JSON.parse(file.toString()).modules[0]);
+                assert.equal(module.id, 'BioFeed');
+                assert.equal(module.services.length, 14);
+                done();
+            });
         });
 
-        assert.equal(cond.fulfilled, false);
-    });
-
-    it('should listen to a and condition of two time conditions', (done) => {
-        const condition = Condition.create({
-            type: ConditionType.and,
-            conditions: [
-                { type: ConditionType.time, duration: 2 },
-                { type: ConditionType.time, duration: 0.5 }
-            ]
-        }, undefined, undefined);
-        condition.listen().on('state_changed', (status) => {
-            catRecipe.info(`Status: ${status}`)
-            done();
+        it('should load the cif module json', (done) => {
+            fs.readFile('assets/modules/module_cif.json', (err, file) => {
+                const module = new Module(JSON.parse(file.toString()).modules[0]);
+                assert.equal(module.id, 'CIF');
+                assert.equal(module.services.length, 6);
+                done();
+            });
         });
     });
-
 });

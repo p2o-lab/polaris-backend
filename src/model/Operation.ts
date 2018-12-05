@@ -39,15 +39,19 @@ export class Operation {
     parameters: Parameter[];
 
     constructor(options: OperationOptions, modules: Module[], recipe: Recipe) {
-        if (options.module) {
-            this.module = modules.find(module => module.id === options.module);
-            if (!this.module) {
-                throw new Error(`Could not find module ${options.module}`);
+        if (modules) {
+            if (options.module) {
+                this.module = modules.find(module => module.id === options.module);
+                if (!this.module) {
+                    throw new Error(`Could not find module ${options.module}`);
+                }
+            } else if (modules.length === 1) {
+                this.module = modules[0];
+            } else {
+                throw new Error('No standard module specified');
             }
-        } else if (modules.length === 1) {
-            this.module = modules[0];
-        } else {
-            throw new Error('No module specified');
+        }else {
+            throw new Error('No modules specified');
         }
 
         recipe.modules.add(this.module);
