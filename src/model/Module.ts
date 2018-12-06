@@ -264,6 +264,11 @@ export class Module {
             if (service.status === undefined) {
                 throw new Error(`OPC UA variable for status of service ${service.name} not defined`);
             }
+
+            this.listenToOpcUaNode(service.errorMessage)
+                .on('changed', (data) => {
+                    manager.eventEmitter.emit('refresh', 'module');
+                });
             this.listenToOpcUaNode(service.status)
                 .on('changed', (data) => {
                     catModule.info(`state changed: ${this.id}.${service.name} = ${ServiceState[data]}`);
