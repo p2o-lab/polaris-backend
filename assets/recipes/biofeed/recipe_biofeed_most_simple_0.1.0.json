@@ -8,11 +8,11 @@
       "name": "S1.AddWater",
       "operations": [
         {
-          "service": "Feed_Water",
+          "service": "FeedWater",
           "command": "start",
           "parameter": [
             {
-              "name": "Feed_Volume",
+              "name": "FeedVolume",
               "value": 4000
             }
           ]
@@ -23,7 +23,7 @@
           "next_step": "S2.AddPowder",
           "condition": {
             "type": "state",
-            "service": "Feed_Water",
+            "service": "FeedWater",
             "state": "completed"
           }
         }
@@ -33,15 +33,15 @@
       "name": "S2.AddPowder",
       "operations": [
         {
-          "service": "Feed_Powder",
+          "service": "FeedPowder",
           "command": "start",
           "parameter": [
             {
-              "name": "Feed_Mass",
+              "name": "FeedMass",
               "value": 143
             },
             {
-              "name": "Feed_Furation",
+              "name": "FeedDuration",
               "value": 60
             }
           ]
@@ -51,11 +51,11 @@
           "command": "start",
           "parameter": [
             {
-              "name": "Stirring_Rotation_Speed",
+              "name": "StirringRotationSpeed",
               "value": 400
             },
             {
-              "name": "Stirring_Duration",
+              "name": "StirringDuration",
               "value": 0
             }
           ]
@@ -63,7 +63,7 @@
       ],
       "transitions": [
         {
-          "next_step": "S3.pH4.5",
+          "next_step": "S3.pH7",
           "condition": {
             "type": "and",
             "conditions": [
@@ -73,7 +73,7 @@
               },
               {
                 "type": "state",
-                "service": "Feed_Powder",
+                "service": "FeedPowder",
                 "state": "completed"
               }
             ]
@@ -82,22 +82,22 @@
       ]
     },
     {
-      "name": "S3.pH4.5",
+      "name": "S3.pH7",
       "operations": [
         {
-          "service": "pH_Adjustment",
+          "service": "pHAdjustment",
           "command": "start",
           "parameter": [
             {
-              "name": "Pump_Flow_Rate",
+              "name": "PumpFlowRate",
               "value": 11
             },
             {
-              "name": "Feed_Volume",
+              "name": "TargetVolume",
               "value": 11
             },
             {
-              "name": "pH_Value",
+              "name": "pHValue",
               "value": 4.5
             }
           ]
@@ -105,100 +105,63 @@
       ],
       "transitions": [
         {
-          "next_step": "S4.addBicarb",
+          "next_step": "S4.stopStirr",
           "condition": {
             "type": "state",
-            "service": "pH_Adjustment",
+            "service": "pHAdjustment",
             "state": "completed"
           }
         }
       ]
     },
     {
-      "name": "S4.addBicarb",
+      "name": "S4.stopStirr",
       "operations": [
         {
-          "service": "Feed_Buffer_Solution",
-          "command": "start",
-          "parameter": [
-            {
-              "name": "Feed_Volume",
-              "value": "???"
-            }
-          ]
+          "service": "Stirring",
+          "command": "complete"
         }
       ],
       "transitions": [
         {
-          "next_step": "S5.ph9",
+          "next_step": "S4.stopStirrIdle",
           "condition": {
             "type": "state",
-            "service": "Feed_Buffer_Solution",
+            "service": "Stirring",
             "state": "completed"
           }
         }
       ]
     },
     {
-      "name": "S5.ph9",
+      "name": "S4.stopStirrIdle",
       "operations": [
         {
-          "service": "pH_Adjustment",
-          "command": "start",
-          "parameter": [
-            {
-              "name": "ph_value",
-              "value": 9
-            }
-          ]
+          "service": "Stirring",
+          "command": "reset"
         }
       ],
       "transitions": [
         {
-          "next_step": "S6.ph7",
+          "next_step": "S5.FinalVolume",
           "condition": {
             "type": "state",
-            "service": "pH_Adjustment",
-            "state": "completed"
-          }
-        }
-      ]
-    },
-    {
-      "name": "S6.ph7",
-      "operations": [
-        {
-          "service": "pH_Adjustment",
-          "command": "start",
-          "parameter": [
-            {
-              "name": "ph_value",
-              "value": 5000
-            }
-          ]
-        }
-      ],
-      "transitions": [
-        {
-          "next_step": "S7.FinalVolume",
-          "condition": {
-            "type": "state",
-            "service": "pH_Adjustment",
+            "service": "Stirring",
             "state": "idle"
           }
         }
       ]
     },
     {
-      "name": "S7.FinalVolume",
+      "name": "S5.FinalVolume",
       "operations": [
         {
-          "service": "Feed_Water",
+          "service": "FeedWater",
           "command": "start",
           "parameter": [
             {
-              "name": "feed_volume",
-              "value": 7.3
+              "name": "TargetVolume",
+              "value": 5000
             }
           ]
         }
@@ -208,7 +171,7 @@
           "next_step": "finished",
           "condition": {
             "type": "state",
-            "service": "Feed_Water",
+            "service": "FeedWater",
             "state": "completed"
           }
         }
