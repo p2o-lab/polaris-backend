@@ -33,7 +33,7 @@ describe('Recipe', () => {
     let modules_achema = [];
     let module_biofeed;
 
-    before(() => {
+    before((done) => {
         fs.readFile('assets/modules/module_biofeed_1.4.2.json', (err, file) => {
             module_biofeed = new Module(JSON.parse(file.toString()).modules[0]);
         });
@@ -42,6 +42,7 @@ describe('Recipe', () => {
             modules_achema.push(new Module(options.modules[0]));
             modules_achema.push(new Module(options.modules[1]));
             modules_achema.push(new Module(options.modules[2]));
+            done();
         });
     });
 
