@@ -19,6 +19,8 @@
     "build": "tsc",
     "ui": "cp -r ../pfe-ree-viz/dist .",
     "build-all": "npm run build && npm run apidoc && npm run ui",
+    "docker-pi": "docker build -f Dockerfile.arm -t registry.plt.et.tu-dresden.de/pfe-ree-node/arm .",
+    "docker-pi": "docker build -t registry.plt.et.tu-dresden.de/pfe-ree-node .",
     "predepoly": "npm run ui",
     "deploy": "docker-deploy"
   },
