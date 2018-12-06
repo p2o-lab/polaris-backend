@@ -4,7 +4,7 @@ PFE Recipe Execution Engine as NodeJs application.  *pfe-ree-node* is controlled
 
 A HTML user interface for this project is provided via the pfe-ree-viz project.
 
-Current Build status: http://dev.plt.et.tu-dresden.de:8000/modulare-automation/pfe-ree-node
+![http://dev.plt.et.tu-dresden.de:8000/modulare-automation/pfe-ree-node](http://dev.plt.et.tu-dresden.de:8000/api/badges/modulare-automation/pfe-ree-node/status.svg) 
 
 
 ## Installation and Deployment
