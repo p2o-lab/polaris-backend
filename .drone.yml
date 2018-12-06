@@ -12,6 +12,11 @@ pipeline:
       - npm run-script apidoc build
       - npm run test
 
+  docker:
+    image: plugins/docker
+    repo: registry.plt.et.tu-dresden.de/pfe-ree-node
+    registry: registry.plt.et.tu-dresden.de
+
   notify:
     image: drillster/drone-email
     host: mail.zih.tu-dresden.de
