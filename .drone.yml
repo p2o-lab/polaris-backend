@@ -17,6 +17,12 @@ pipeline:
     repo: registry.plt.et.tu-dresden.de/pfe-ree-node
     registry: registry.plt.et.tu-dresden.de
 
+  docker-arm:
+      image: plugins/docker
+      repo: registry.plt.et.tu-dresden.de/pfe-ree-node/arm
+      registry: registry.plt.et.tu-dresden.de
+      dockerfile: Dockerfile.arm
+
   notify:
     image: drillster/drone-email
     host: mail.zih.tu-dresden.de
