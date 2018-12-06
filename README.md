@@ -2,7 +2,9 @@
 
 PFE Recipe Execution Engine as NodeJs application.  *pfe-ree-node* is controlled via REST. Its documentation is served by the application under the path **/doc** (e.g. http://localhost:3000/doc)
 
-A HTML user interface for this project is provided via the pfe-ree-viz project. 
+A HTML user interface for this project is provided via the pfe-ree-viz project.
+
+Current Build status: http://dev.plt.et.tu-dresden.de:8000/modulare-automation/pfe-ree-node
 
 
 ## Installation and Deployment
