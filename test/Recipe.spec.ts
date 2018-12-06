@@ -23,7 +23,6 @@
  * SOFTWARE.
  */
 
-
 import { Recipe } from '../src/model/Recipe';
 import * as fs from 'fs';
 import * as assert from 'assert';

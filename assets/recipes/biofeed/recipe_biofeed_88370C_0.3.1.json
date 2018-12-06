@@ -99,7 +99,7 @@
         {
           "service": "Stirring", "command": "start",
           "parameter": [
-            { "name": "StirringRotationSpeed", "value": 100},
+            { "name": "StirringRotationSpeed", "value": 300},
             { "name": "StirringDuration", "value": 600}
           ]
         }
@@ -162,7 +162,7 @@
         {
           "service": "Stirring", "command": "start",
           "parameter": [
-            { "name": "StirringRotationSpeed", "value": 100 },
+            { "name": "StirringRotationSpeed", "value": 300 },
             { "name": "StirringDuration", "value": 600 }
           ]
         }
@@ -198,7 +198,7 @@
         {
           "service": "Stirring", "command": "start",
           "parameter": [
-            { "name": "StirringRotationSpeed", "value": 100 },
+            { "name": "StirringRotationSpeed", "value": 300 },
             { "name": "StirringDuration", "value": 0 }
           ]
         }
@@ -230,7 +230,7 @@
         {
           "service": "Stirring", "command": "start",
           "parameter": [
-            { "name": "StirringRotationSpeed", "value": 100 },
+            { "name": "StirringRotationSpeed", "value": 300 },
             { "name": "StirringDuration", "value": 600 }
           ]
         }
@@ -266,7 +266,7 @@
         {
           "service": "Stirring", "command": "start",
           "parameter": [
-            { "name": "StirringRotationSpeed", "value": 100 },
+            { "name": "StirringRotationSpeed", "value": 300 },
             { "name": "StirringDuration", "value": 0 }
           ]
         }

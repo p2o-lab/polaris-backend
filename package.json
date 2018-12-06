@@ -14,7 +14,7 @@
     "automaticMode": "ts-node ./src/automaticMode.ts",
     "flagwatcher": "ts-node ./src/flagWatcher.ts",
     "postversion": "npm run deploy",
-    "test": "mocha -r ts-node/register test/*.ts",
+    "test": "nyc mocha -r ts-node/register test/*.ts",
     "apidoc": "apidoc -i src/server/ -o apidoc",
     "build": "tsc",
     "ui": "cp -r ../pfe-ree-viz/dist .",

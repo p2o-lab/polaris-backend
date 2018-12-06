@@ -27,7 +27,7 @@ import { manager } from '../../model/Manager';
 import { Request, Response, Router } from 'express';
 
 import * as asyncHandler from 'express-async-handler';
-import { catServer } from '../../config/logging';
+import {catModule, catServer} from '../../config/logging';
 import * as multer from 'multer';
 
 export const moduleRouter: Router = Router();
@@ -64,6 +64,7 @@ moduleRouter.put('', upload.single('file'), asyncHandler(async (req, res) => {
     const moduleOptions = JSON.parse(req.file.buffer.toString());
     catServer.debug(`Load module: ${JSON.stringify(moduleOptions)}`);
     const newModules = manager.loadModule(moduleOptions);
+    newModules.forEach(module => module.connect().catch(reason => catModule.warn(reason)));
     manager.eventEmitter.emit('refresh', 'module');
     res.json(await Promise.all(newModules.map(module => module.json())));
 }));

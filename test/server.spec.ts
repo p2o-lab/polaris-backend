@@ -23,38 +23,26 @@
  * SOFTWARE.
  */
 
-import * as express from 'express';
-import Routes from './routes';
-import Middleware from '../config/middleware';
-import * as WebSocket from 'ws';
-import { manager } from '../model/Manager';
-import { catServer } from '../config/logging';
-import {fixReactor} from "./automaticMode";
+import { Condition, TimeCondition } from '../src/model/Condition';
+import * as assert from 'assert';
+import { catRecipe } from '../src/config/logging';
+import { ConditionType } from 'pfe-ree-interface';
+import {Server} from "../src/server/server";
+import * as http from "http";
 
-export class Server {
+describe('Server', () => {
 
-    public app: express.Application;
-    public wss: WebSocket.Server;
+    it('should start the server and close it after a while', async () => {
 
-    constructor() {
-        this.app = express();
-        Middleware.init(this);
-        Routes.init(this);
-    }
+        const appServer = new Server();
+        appServer.app.set('port', 3000);
 
-    initSocketServer(server) {
-        this.wss = new WebSocket.Server({ server });
-        this.wss.on('connection', (ws: WebSocket) => {
-            catServer.info('WS Client connected');
-        });
+        const server: http.Server = http.createServer(appServer.app);
 
-        manager.eventEmitter.on('refresh', (data, action) => {
-            catServer.trace(`WS refresh published ${data} ${action}`);
-            this.wss.clients.forEach((client) => {
-                if (client.readyState === WebSocket.OPEN) {
-                    client.send(JSON.stringify({ msg: 'refresh', data, action }));
-                }
-            });
-        });
-    }
-}
+        // initialize the WebSocket server instance
+        await appServer.initSocketServer(server);
+
+        server.close();
+
+    });
+});

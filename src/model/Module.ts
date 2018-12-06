@@ -80,8 +80,6 @@ export class Module {
         }
 
         this.monitoredItems = new Map<NodeId, {monitoredItem: ClientMonitoredItem, emitter: EventEmitter}>();
-        this.connect()
-            .catch(reason => catModule.warn(reason));
     }
 
     /**
