@@ -358,7 +358,10 @@
       "name": "S7.Stirr1MinIdle",
       "operations":
 	  [
-	  "service": "Stirring", "command": "reset"
+        {
+          "service": "Stirring",
+          "command": "reset"
+        }
 	  ],
       "transitions": [
         {
