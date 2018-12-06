@@ -25,16 +25,28 @@
 
 import * as assert from 'assert';
 import * as fs from 'fs';
-import { Module } from '../src/model/Module';
+import {Module} from '../src/model/Module';
 
 describe('Module', () => {
     describe('constructor', () => {
 
         it('should load the biofeed module json', (done) => {
-            fs.readFile('assets/modules/module_biofeed_1.4.2.json', (err, file) => {
-                    const module = new Module(JSON.parse(file.toString()).modules[0]);
+            fs.readFile('assets/modules/module_biofeed_1.4.2.json', async (err, file) => {
+                const module = new Module(JSON.parse(file.toString()).modules[0]);
                 assert.equal(module.id, 'BioFeed');
                 assert.equal(module.services.length, 14);
+                assert.equal(module.isConnected(), false);
+
+                module.json()
+                    .then((json) => {
+                        assert.deepEqual(json, {
+                            id: 'BioFeed',
+                            endpoint: 'opc.tcp://10.6.51.42:4840',
+                            connected: false,
+                            services: undefined,
+                            protected: false
+                        });
+                    });
                 done();
             });
         });

@@ -8,7 +8,6 @@ pipeline:
   build:
     image: node:latest
     commands:
-      - npm set registry https://registry.plt.et.tu-dresden.de:4873
       - npm install
       - npm run-script apidoc build
       - npm run test

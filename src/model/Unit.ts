@@ -23,6 +23,10 @@
  * SOFTWARE.
  */
 
+/**
+ * physical unit as they are used in MTP
+ * @type {{value: number; unit: string; name: string}[]}
+ */
 export const Unit = [
     { value: 1000, unit: 'K', name: 'Kelvin' },
     { value: 1001, unit: '°C', name: 'Grad Celsius' },
