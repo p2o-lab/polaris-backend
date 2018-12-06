@@ -14,14 +14,9 @@ pipeline:
 
   docker:
     image: plugins/docker
+    auto_tag: true
     repo: registry.plt.et.tu-dresden.de/pfe-ree-node
     registry: registry.plt.et.tu-dresden.de
-
-  docker-arm:
-      image: plugins/docker
-      repo: registry.plt.et.tu-dresden.de/pfe-ree-node/arm
-      registry: registry.plt.et.tu-dresden.de
-      dockerfile: Dockerfile.arm
 
   notify:
     image: drillster/drone-email
