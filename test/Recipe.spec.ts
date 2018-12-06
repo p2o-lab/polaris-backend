@@ -26,11 +26,12 @@
 import { Recipe } from '../src/model/Recipe';
 import * as fs from 'fs';
 import * as assert from 'assert';
-import {Module} from "../src/model/Module";
+import { Module } from '../src/model/Module';
+import { RecipeInterface } from 'pfe-ree-interface';
 
 describe('Recipe', () => {
 
-    let modules_achema = [];
+    const modules_achema = [];
     let module_biofeed;
 
     before((done) => {
@@ -56,10 +57,17 @@ describe('Recipe', () => {
     });
 
     it('should load the biofeed recipe json', (done) => {
-        fs.readFile('assets/recipes/biofeed/recipe_biofeed_88370C_0.3.1.json', (err, file) => {
+        fs.readFile('assets/recipes/biofeed/recipe_biofeed_88370C_0.3.1.json', async (err, file) => {
             const options = JSON.parse(file.toString());
             const recipe = new Recipe(options, [module_biofeed]);
             assert.equal(recipe.modules.size, 1);
+
+            const json: RecipeInterface = await recipe.json();
+            assert.equal(json.protected, false);
+            assert.deepEqual(json.modules, [{ id:'BioFeed', endpoint:'opc.tcp://10.6.51.42:4840', connected:false, protected:false, services: undefined }]);
+            assert.equal(json.options.initial_step, 'S1.AddWater');
+            assert.equal(json.status, 'idle');
+
             done();
         });
     });

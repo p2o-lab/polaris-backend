@@ -96,7 +96,6 @@ export abstract class Condition {
     }
 }
 
-
 export class NotCondition extends Condition {
     condition: Condition;
 

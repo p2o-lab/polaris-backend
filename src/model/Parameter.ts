@@ -75,7 +75,7 @@ export class Parameter {
     public async getDataType(): Promise<DataType> {
         if (!this._opcUaDataType) {
             const value = await this.service.parent.readVariableNode(this._opcUaNode);
-            catService.info(`Datatype for ${this.service.name}.${this.name}.${this.variable} - ${this._opcUaNode.node_id} = ${JSON.stringify(value)}`)
+            catService.info(`Datatype for ${this.service.name}.${this.name}.${this.variable} - ${this._opcUaNode.node_id} = ${JSON.stringify(value)}`);
             this._opcUaDataType = value.value.dataType;
             catService.info(`Get datatype for ${this.service.name}.${this.name} = ${this._opcUaDataType.toString()}`);
         }
@@ -115,6 +115,10 @@ export class Parameter {
         return result;
     }
 
+    /**
+     * calculate value from current scope and write it down to module
+     * @returns {Promise<any>}
+     */
     async updateValueOnModule(): Promise<any> {
         const value = await this.getValue();
         catService.debug(`Set parameter "${this.service.name}[${this.variable}]" for ${this.name} = ${value}`);
