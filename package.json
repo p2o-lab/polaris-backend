@@ -19,7 +19,6 @@
     "build": "tsc",
     "ui": "cp -r ../pfe-ree-viz/dist .",
     "build-all": "npm run build && npm run apidoc && npm run ui",
-    "docker-pi": "docker build -f Dockerfile.arm -t registry.plt.et.tu-dresden.de/pfe-ree-node/arm .",
     "docker-pi": "docker build -t registry.plt.et.tu-dresden.de/pfe-ree-node .",
     "predepoly": "npm run ui",
     "deploy": "docker-deploy"
@@ -50,7 +49,7 @@
     "multer": "^1.3.1",
     "node-opcua": "^0.4.5",
     "node-opcua-client": "^0.4.1",
-    "pfe-ree-interface": "^1.11.0",
+    "pfe-ree-interface": "https://registry.plt.et.tu-dresden.de:4873/pfe-ree-interface/-/pfe-ree-interface-1.11.0.tgz",
     "request": "^2.88.0",
     "ts-node": "^6.1.1",
     "typescript-logging": "^0.6.2",
