@@ -42,7 +42,7 @@
       ],
       "transitions": [
         {
-          "next_step": "RinsingWithWater3",
+          "next_step": "RinsingWithWater1",
           "condition": {
             "type": "state",
             "service": "Rinsing",
