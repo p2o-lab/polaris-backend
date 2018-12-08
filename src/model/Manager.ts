@@ -41,8 +41,6 @@ export class Manager {
     // loaded modules
     modules: Module[] = [];
 
-    queue: Recipe;
-
     player: Player = new Player();
 
     automaticMode: boolean = false;

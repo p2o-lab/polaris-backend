@@ -1,0 +1,30 @@
+@startuml
+
+package "module (PEA)" {
+    [PLC] -- [OPC UA Server]
+    [PLC] -- (Services)
+}
+
+node "Process Orchestation Layer (POL)" {
+    package "pfe-ree-node" {
+        [NodeJS] -- [OPC UA Client]
+    }
+
+    package "pfe-ree-viz" {
+        [Angular] -- [NodeJS] : HTTP, Websocket
+    }
+
+    package "pfe-ree-interface" {
+        () interface as if
+    }
+}
+
+if .. [NodeJS] : import
+if .. [Angular] : import
+
+[OPC UA Server] <--> [OPC UA Client] : OPC UA
+
+[MTP] <.. (Services)
+[MTP] ..> [NodeJS]
+
+@enduml

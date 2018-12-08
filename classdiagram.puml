@@ -1,0 +1,79 @@
+@startuml
+
+top to bottom direction
+
+class Manager
+class Module {
+    id
+    endpoint
+    client: OPCUAClient
+}
+class Operation
+class Parameter
+class Player
+class Recipe {
+    name
+    initial_step: Recipe
+}
+class Service {
+    name: string
+    parameters: ServiceParameter[]
+}
+class ProcessValue
+class Strategy
+class Condition{
+    {static} create()
+    {abstract} listen()
+    {abstract} clear()
+    json()
+}
+
+class NotCondition
+class AndCondition
+class OrCondition
+class StateCondition
+class VariableCondition
+class TimeCondition {
+    duration
+}
+
+NotCondition --|> Condition
+AndCondition --|> Condition
+OrCondition --|> Condition
+TimeCondition --|> Condition
+VariableCondition --|> Condition
+StateCondition --|> Condition
+
+
+together {
+    class Step
+    class Transition
+    class Condition
+}
+
+enum Unit {
+    DAYS
+    HOURS
+    MINUTES
+}
+
+Manager --> Module : modules
+Manager --> Recipe : recipes
+Manager --> Player
+
+Module --> Service: services
+Module --> ProcessValue : variables
+
+Service --> Strategy : strategies
+
+Recipe --> Step: steps
+Step --> Operation : operations
+Step --> Transition: transitions
+
+Transition --> Step : next_step
+Transition --> Condition: condition
+
+Operation --> Service
+Operation --> Parameter
+
+@enduml
