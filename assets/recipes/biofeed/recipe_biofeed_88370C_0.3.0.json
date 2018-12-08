@@ -9,7 +9,7 @@
       "name": "S0.Rinsing",
       "operations": [
         {
-          "service": "Rinsing_Quality_Based",
+          "service": "RinsingQualityBased",
           "command": "start",
           "parameter": [
             {
@@ -24,7 +24,7 @@
           "next_step": "S1.AddWater",
           "condition": {
             "type": "state",
-            "service": "Rinsing_Quality_Based",
+            "service": "RinsingQualityBased",
             "state": "completed"
           }
         }
@@ -110,7 +110,7 @@
               "value": 5
             },
             {
-              "name": "FeedVolume",
+              "name": "TargetVolume",
               "value": 1
             },
             {
@@ -139,7 +139,7 @@
           "command": "start",
           "parameter": [
             {
-              "name": "Feed_Volume",
+              "name": "TargetVolume",
               "value": 83
             }
           ]
@@ -182,7 +182,7 @@
               "value": 9
             },
             {
-              "name": "FeedVolume",
+              "name": "TargetVolume",
               "value": 1
             },
             {
@@ -229,7 +229,7 @@
               "value": 7.3
             },
             {
-              "name": "FeedVolume",
+              "name": "TargetVolume",
               "value": 1
             },
             {

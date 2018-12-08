@@ -23,37 +23,30 @@
  * SOFTWARE.
  */
 
-import { Recipe } from '../src/model/Recipe';
+import {Recipe} from '../src/model/Recipe';
 import * as fs from 'fs';
 import * as assert from 'assert';
-import { Module } from '../src/model/Module';
-import { RecipeInterface } from 'pfe-ree-interface';
+import {Module} from '../src/model/Module';
+import {RecipeInterface} from 'pfe-ree-interface';
 
 describe('Recipe', () => {
 
-    const modules_achema = [];
+    const modules = [];
     let module_biofeed;
 
-    before((done) => {
-        fs.readFile('assets/modules/module_biofeed_1.4.2.json', (err, file) => {
-            module_biofeed = new Module(JSON.parse(file.toString()).modules[0]);
-        });
-        fs.readFile('assets/modules/modules_achema.json', (err, file) => {
-            const options = JSON.parse(file.toString()).subplants[0];
-            modules_achema.push(new Module(options.modules[0]));
-            modules_achema.push(new Module(options.modules[1]));
-            modules_achema.push(new Module(options.modules[2]));
-            done();
-        });
-    });
+    before(() => {
+        let file = fs.readFileSync('assets/modules/module_biofeed_1.4.2.json');
+        module_biofeed = new Module(JSON.parse(file.toString()).modules[0]);
 
-    it('should load the huber recipe json', (done) => {
-        fs.readFile('assets/recipes/recipe_huber_only.json', (err, file) => {
-            const options = JSON.parse(file.toString());
-            const recipe = new Recipe(options, modules_achema);
-            assert.equal(recipe.modules.size, 1);
-            done();
-        });
+        file = fs.readFileSync('assets/modules/modules_achema.json');
+        let options = JSON.parse(file.toString()).subplants[0];
+        modules.push(new Module(options.modules[0]));
+        modules.push(new Module(options.modules[1]));
+        modules.push(new Module(options.modules[2]));
+
+        file = fs.readFileSync('assets/modules/module_cif.json');
+        options = JSON.parse(file.toString());
+        modules.push(new Module(options.modules[0]));
     });
 
     it('should load the biofeed recipe json', (done) => {
@@ -64,10 +57,55 @@ describe('Recipe', () => {
 
             const json: RecipeInterface = await recipe.json();
             assert.equal(json.protected, false);
-            assert.deepEqual(json.modules, [{ id:'BioFeed', endpoint:'opc.tcp://10.6.51.42:4840', connected:false, protected:false, services: undefined }]);
+            assert.deepEqual(json.modules, [{
+                id: 'BioFeed',
+                endpoint: 'opc.tcp://10.6.51.42:4840',
+                connected: false,
+                protected: false,
+                services: undefined
+            }]);
             assert.equal(json.options.initial_step, 'S1.AddWater');
             assert.equal(json.status, 'idle');
 
+            done();
+        });
+    });
+
+    describe('should load all recipes', () => {
+        let path = 'assets/recipes/';
+        fs.readdirSync(path).forEach((filename) => {
+            const completePath = path + filename;
+            if (fs.statSync(completePath).isFile()) {
+                it(`should load recipe ${completePath}`, (done) => {
+                    const file = fs.readFileSync(completePath);
+                    const options = JSON.parse(file.toString());
+                    const recipe = new Recipe(options, modules);
+                    done();
+                });
+            }
+        });
+
+        path = 'assets/recipes/biofeed/';
+        fs.readdirSync(path).forEach((filename) => {
+            const completePath = path + filename;
+            if (fs.statSync(completePath).isFile()) {
+                it(`should load recipe ${completePath}`, (done) => {
+                    fs.readFile(completePath, (err, file) => {
+                        const options = JSON.parse(file.toString());
+                        const recipe = new Recipe(options, [module_biofeed]);
+                        done();
+                    });
+                });
+            }
+        });
+
+    });
+
+    it('should load the huber recipe json', (done) => {
+        fs.readFile('assets/recipes/recipe_huber_only.json', (err, file) => {
+            const options = JSON.parse(file.toString());
+            const recipe = new Recipe(options, modules);
+            assert.equal(recipe.modules.size, 1);
             done();
         });
     });
