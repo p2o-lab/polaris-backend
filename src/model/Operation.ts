@@ -25,7 +25,7 @@
 
 import { Module } from './Module';
 import { Service } from './Service';
-import {catOpc, catRecipe, catServer} from '../config/logging';
+import { catOpc, catRecipe, catServer } from '../config/logging';
 import { Recipe } from './Recipe';
 import { ServiceParameter, Strategy } from './Interfaces';
 import { Parameter } from './Parameter';
@@ -48,7 +48,8 @@ export class Operation {
             } else if (modules.length === 1) {
                 this.module = modules[0];
             } else {
-                throw new Error('No standard module specified');
+                throw new Error(`Operation ${JSON.stringify(options)} has no module specified ` +
+                `and there is more than one module loaded`);
             }
         }else {
             throw new Error('No modules specified');
@@ -57,7 +58,7 @@ export class Operation {
         recipe.modules.add(this.module);
         this.service = this.module.services.find(service => service.name === options.service);
         if (this.service === undefined) {
-            throw new Error(`Service ${options.service} (${this.module.id}) not found in modules`);
+            throw new Error(`Service ${ options.service }(${ this.module.id }) not found in modules`);
         }
         if (options.strategy) {
             this.strategy = this.service.strategies.find(strategy => strategy.name === options.strategy);
@@ -65,12 +66,12 @@ export class Operation {
             this.strategy = this.service.strategies.find(strategy => strategy.default === true);
         }
         if (!this.strategy) {
-            throw new Error(`Strategy "${options.strategy}" could not be found in ${this.service.name}.`);
+            throw new Error(`Strategy '${options.strategy}' could not be found in ${ this.service.name }.`);
         }
         if (options.command) {
             this.command = options.command;
         } else {
-            throw new Error(`"command" property is missing in ${JSON.stringify(options)}`);
+            throw new Error(`'command' property is missing in ${ JSON.stringify(options) }`);
         }
         if (options.parameter) {
             this.parameters = options.parameter.map(
@@ -80,8 +81,8 @@ export class Operation {
     }
 
     execute() {
-        catRecipe.info(`Perform operation ${this.module.id} ${this.service.name} ${this.command} ` +
-            `(Strategy: ${this.strategy ? this.strategy.name : ''})`);
+        catRecipe.info(`Perform operation ${ this.module.id } ${ this.service.name } ${ this.command } ` +
+            `(Strategy: ${ this.strategy ? this.strategy.name : '' })`);
         return this.service.executeCommand(this.command, this.strategy, this.parameters);
     }
 
