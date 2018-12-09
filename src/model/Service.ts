@@ -262,7 +262,7 @@ export class Service {
         }
         await result;
         // reset ControlOp variable after 500ms
-        setTimeout(() => this.clearCommand(), 1000);
+        setTimeout(() => this.clearCommand(), 500);
         return result;
     }
 
@@ -270,7 +270,7 @@ export class Service {
         return await this.sendCommand(ServiceMtpCommand.UNDEFINED);
     }
 
-    async start(strategy: Strategy, parameters: Parameter[]): Promise<boolean> {
+    async start(strategy?: Strategy, parameters?: Parameter[]): Promise<boolean> {
         await this.setStrategyParameters(strategy, parameters);
         return await this.sendCommand(ServiceMtpCommand.START);
     }
@@ -285,8 +285,8 @@ export class Service {
         return this.sendCommand(ServiceMtpCommand.STOP);
     }
 
-    reset(): Promise<boolean> {
-        return this.sendCommand(ServiceMtpCommand.RESET);
+    async reset(): Promise<boolean> {
+        return await this.sendCommand(ServiceMtpCommand.RESET);
     }
 
     complete(): Promise<boolean> {
@@ -331,10 +331,10 @@ export class Service {
      * @param {Parameter[]} parameters
      * @returns {Promise<boolean>}
      */
-    private async setStrategyParameters(strategy: Strategy, parameters: Parameter[]): Promise<boolean> {
+    private async setStrategyParameters(strategy?: Strategy, parameters?: Parameter[]): Promise<boolean> {
         // set strategy
-        catService.debug(`Set strategy "${strategy.name}" for service ${this.name}`);
         if (strategy) {
+            catService.debug(`Set strategy "${strategy.name}" for service ${this.name}`);
             await this.parent.writeNode(this.strategy,
                 {
                     dataType: DataType.UInt32,
@@ -345,7 +345,6 @@ export class Service {
         }
 
         // set parameter (both configuration and strategy parameters)
-
         if (strategy && parameters) {
             const tasks = parameters.map((param: Parameter) => param.updateValueOnModule());
             const paramResults = await Promise.all(tasks);

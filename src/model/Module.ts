@@ -307,9 +307,13 @@ export class Module {
     }
 
     public async writeNode(node: OpcUaNode, value: Variant) {
-        const result = await this.session.writeSingleNode(this.resolveNodeId(node), value);
-        catModule.debug(`Write result for ${this.id}.${node.node_id}=${value.value} -> ${result.name}`);
-        return result;
+        if (!this.session) {
+            throw new Error(`Can not write node since OPC UA connection to module ${this.id} is not establieshed`);
+        } else {
+            const result = await this.session.writeSingleNode(this.resolveNodeId(node), value);
+            catModule.debug(`Write result for ${this.id}.${node.node_id}=${value.value} -> ${result.name}`);
+            return result;
+        }
     }
 
     /**

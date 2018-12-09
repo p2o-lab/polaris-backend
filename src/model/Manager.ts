@@ -57,7 +57,7 @@ export class Manager {
                 setTimeout(() => {
                     catManager.debug(`Service ${service.parent.id}.${service.name} completed. Now perform autoreset`);
                     service.reset();
-                }, 2000);
+                }, 1000);
             }
         });
     }

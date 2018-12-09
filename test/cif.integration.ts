@@ -29,6 +29,7 @@ import { catRecipe } from '../src/config/logging';
 import { ConditionType } from 'pfe-ree-interface';
 import * as fs from "fs";
 import {Module} from "../src/model/Module";
+import {ServiceState} from "../src/model/enum";
 
 describe('Integration test with CIF test PLC', () => {
 
@@ -38,6 +39,12 @@ describe('Integration test with CIF test PLC', () => {
         const file = fs.readFileSync('assets/modules/module_cif.json');
         module = new Module(JSON.parse(file.toString()).modules[0]);
     });
+
+    function later(delay) {
+        return new Promise(function(resolve) {
+            setTimeout(resolve, delay);
+        });
+    }
 
     it('should connect to CIF', async function() {
         this.timeout(10000);
@@ -50,9 +57,39 @@ describe('Integration test with CIF test PLC', () => {
         assert.equal(json.connected, true);
         assert.equal(json.services.length, 6);
 
+        const serviceStates = await module.getServiceStates();
+
+        const service = module.services[5];
+        assert.equal(service.name, 'Test_Service.Vorlegen');
+
+        await service.abort();
+        await later(100);
+        await service.reset();
+        await later(100);
+
+        let state =  await service.getServiceState();
+        assert.equal(ServiceState[state], 'IDLE');
+        await service.start(service.strategies[0], undefined);
+        await later(200);
+        state =  await service.getServiceState();
+        assert.equal(ServiceState[state], 'RUNNING');
+
+        await service.complete();
+        await later(10);
+        state =  await service.getServiceState();
+        assert.equal(ServiceState[state], 'COMPLETING');
+
+        await later(100);
+        state =  await service.getServiceState();
+        assert.equal(ServiceState[state], 'COMPLETED');
+
+        await service.reset();
+        await later(500);
+
         await module.disconnect();
         json = await module.json();
         assert.equal(json.connected, false);
+        return json;
     });
 
 });
