@@ -57,13 +57,7 @@ describe('Recipe', () => {
 
             const json: RecipeInterface = await recipe.json();
             assert.equal(json.protected, false);
-            assert.deepEqual(json.modules, [{
-                id: 'BioFeed',
-                endpoint: 'opc.tcp://10.6.51.42:4840',
-                connected: false,
-                protected: false,
-                services: undefined
-            }]);
+            assert.deepEqual(json.modules, ['BioFeed']);
             assert.equal(json.options.initial_step, 'S1.AddWater');
             assert.equal(json.status, 'idle');
 
