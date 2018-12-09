@@ -31,9 +31,9 @@ import { ConditionType } from 'pfe-ree-interface';
 describe('Condition', () => {
 
     it('should listen to a time condition of 0.4s', (done) => {
-        const cond = new TimeCondition({ type: ConditionType.time, duration: 0.4 });
+        const cond = new TimeCondition({ type: ConditionType.time, duration: 0.2 });
 
-        assert.deepEqual(cond.json(), { type: 'time', duration: 0.4 });
+        assert.deepEqual(cond.json(), { type: 'time', duration: 0.2 });
 
         assert.equal(cond.fulfilled, false);
 
@@ -49,15 +49,15 @@ describe('Condition', () => {
         const condition = Condition.create({
             type: ConditionType.and,
             conditions: [
-                { type: ConditionType.time, duration: 2 },
-                { type: ConditionType.time, duration: 0.5 }
+                { type: ConditionType.time, duration: 0.5 },
+                { type: ConditionType.time, duration: 0.3 }
             ]
         }, undefined, undefined);
         assert.deepEqual(condition.json(), {
             type: 'and',
             conditions:
-            [{ type: 'time', duration: 2 },
-                    { type: 'time', duration: 0.5 }]
+            [{ type: 'time', duration: 0.5 },
+                    { type: 'time', duration: 0.3 }]
         });
         condition.listen().on('state_changed', (status) => {
             catRecipe.info(`Status: ${status}`);
@@ -88,9 +88,9 @@ describe('Condition', () => {
     it('should listen to a NOT condition', () => {
         const condition = new NotCondition({
             type: ConditionType.not,
-            condition: { type: ConditionType.time, duration: 1 }
+            condition: { type: ConditionType.time, duration: 0.5 }
         }, undefined, undefined);
-        assert.deepEqual(condition.json(), { type: 'not', condition: { type: 'time', duration: 1 } });
+        assert.deepEqual(condition.json(), { type: 'not', condition: { type: 'time', duration: 0.5 } });
 
     });
 
