@@ -40,7 +40,7 @@ describe('Integration test with CIF test PLC', () => {
     });
 
     it('should connect to CIF', async function() {
-        this.timeout(5000);
+        this.timeout(10000);
         await module.connect();
 
         let json = await module.json();
