@@ -88,10 +88,9 @@ export class Player {
         this._playlist.splice(index, 1);
     }
 
-    public async json(): Promise<PlayerInterface> {
-        const pl = this._playlist.map(recipe => recipe.json());
+    public json(): PlayerInterface {
         return {
-            playlist: await Promise.all(pl),
+            playlist: this._playlist.map(recipe => recipe.json()),
             currentItem: this._currentItem,
             repeat: this.repeat,
             status: this.status

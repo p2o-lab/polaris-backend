@@ -141,12 +141,11 @@ export class Manager {
     /**
      * get ManagerInterface as JSON
      *
-     * @returns {Promise<ManagerInterface>}
+     * @returns {ManagerInterface}
      */
-    async json(): Promise<ManagerInterface> {
-        let recipe = await this.player.getCurrentRecipe().json();
+    json(): ManagerInterface {
         return {
-            activeRecipe: recipe,
+            activeRecipe: this.player.getCurrentRecipe().json(),
             modules: this.modules.map(module => module.id),
             autoReset: this.autoreset
         };

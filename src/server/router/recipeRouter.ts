@@ -49,10 +49,10 @@ recipeRouter.get('/', asyncHandler(async (req: Request, res: Response) => {
  * @apiGroup Recipe
  * @apiParam recipeId
  */
-recipeRouter.get('/:recipeId', asyncHandler(async (req: Request, res: Response) => {
-    const result = await manager.recipes.find(recipe => recipe.id === req.params.recipeId).json();
+recipeRouter.get('/:recipeId', async (req: Request, res: Response) => {
+    const result = manager.recipes.find(recipe => recipe.id === req.params.recipeId).json();
     res.json(result);
-}));
+});
 
 /**
  * @api {delete} /recipe/:recipeId    Delete recipe

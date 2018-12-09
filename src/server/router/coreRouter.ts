@@ -36,10 +36,10 @@ export const coreRouter: Router = Router();
  * @apiName GetManager
  * @apiGroup Manager
  */
-coreRouter.get('/', asyncHandler(async (req: Request, res: Response) => {
+coreRouter.get('/', (req: Request, res: Response) => {
     const result = manager.json();
     res.json(result);
-}));
+});
 
 /**
  * @api {get} /autoReset    Get autoReset

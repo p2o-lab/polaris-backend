@@ -34,10 +34,10 @@ export const playerRouter: Router = Router();
  * @apiName GetPlayer
  * @apiGroup Player
  */
-playerRouter.get('/', asyncHandler(async (req: Request, res: Response) => {
-    const result = await manager.player.json();
+playerRouter.get('/', async (req: Request, res: Response) => {
+    const result = manager.player.json();
     res.json(result);
-}));
+});
 
 /**
  * @api {post} /player/start    Start Player
@@ -85,15 +85,15 @@ playerRouter.post('/reset', asyncHandler(async (req: Request, res: Response) => 
  * @apiGroup Player
  * @apiParam recipeId   id of recipe to be added to playlist
  */
-playerRouter.post('/enqueue', asyncHandler(async (req: Request, res: Response) => {
+playerRouter.post('/enqueue', async (req: Request, res: Response) => {
     const recipe = manager.recipes.find(recipe => recipe.id === req.body.recipeId);
     if (recipe) {
         manager.player.enqueue(recipe);
-        res.json(await manager.player.json());
+        res.json(manager.player.json());
     } else {
         throw new Error(`Could not find recipe with id ${req.body.recipeId}`);
     }
-}));
+});
 
 /**
  * @api {post} /player/remove    Remove Recipe
@@ -101,7 +101,7 @@ playerRouter.post('/enqueue', asyncHandler(async (req: Request, res: Response) =
  * @apiGroup Player
  * @apiParam index   index of recipe in playlist to be removed
  */
-playerRouter.post('/remove', asyncHandler(async (req: Request, res: Response) => {
+playerRouter.post('/remove', async (req: Request, res: Response) => {
     manager.player.remove(req.body.index);
-    res.json(await manager.player.json());
-}));
+    res.json(manager.player.json());
+});

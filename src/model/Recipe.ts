@@ -116,10 +116,14 @@ export class Recipe {
         this.status = RecipeState.idle;
     }
 
-    public async json(): Promise<RecipeInterface> {
+    /** Get JSON description of recipe
+     *
+     * @returns {RecipeInterface}
+     */
+    public json(): RecipeInterface {
         return {
             id: this.id,
-            modules: await this.getModulesInRecipe(),
+            modules: this.getModulesInRecipe(),
             status: this.status,
             currentStep: this.current_step ? this.current_step.name : undefined,
             options: this.options,
@@ -137,11 +141,8 @@ export class Recipe {
         return Promise.all(tasks);
     }
 
-    public async getModulesInRecipe(): Promise<ModuleInterface[]> {
-        const tasks = Array.from(this.modules).map((module) => {
-            return module.json();
-        });
-        return await Promise.all(tasks);
+    public getModulesInRecipe(): string[] {
+        return Array.from(this.modules).map(module => module.id);
     }
 
     private executeStep(): EventEmitter {
