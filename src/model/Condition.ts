@@ -103,7 +103,7 @@ export class NotCondition extends Condition {
         super(options);
         catRecipe.trace(`Add NotCondition: ${options}`);
         this.condition = Condition.create(options.condition, modules, recipe);
-        this._fulfilled = false;
+        this._fulfilled = !this.condition.fulfilled;
     }
 
     clear() {
@@ -148,11 +148,11 @@ export class AndCondition extends AggregateCondition {
         this.conditions.forEach((condition) => {
             condition.listen().on('state_changed', (state) => {
                 catRecipe.info(`AndCondition: ${JSON.stringify(this.conditions.map(item => item.fulfilled))}`);
-                const newState = this.conditions.every(condition => condition.fulfilled);
-                if (newState !== this._fulfilled) {
-                    this.eventEmitter.emit('state_changed', newState);
+                const oldState = this._fulfilled;
+                this._fulfilled = this.conditions.every(condition => condition.fulfilled);
+                if (oldState !== this._fulfilled) {
+                    this.eventEmitter.emit('state_changed', this._fulfilled);
                 }
-                this._fulfilled = newState;
             });
         });
         return this.eventEmitter;
@@ -169,11 +169,11 @@ export class OrCondition extends AggregateCondition {
     listen(): EventEmitter {
         this.conditions.forEach((condition) => {
             condition.listen().on('state_changed', (status) => {
-                const newState = this.conditions.some(condition => condition.fulfilled);
-                if (newState !== this._fulfilled) {
-                    this.eventEmitter.emit('state_changed', newState);
+                const oldState = this._fulfilled;
+                this._fulfilled = this.conditions.some(condition => condition.fulfilled);
+                if (oldState !== this._fulfilled) {
+                    this.eventEmitter.emit('state_changed', this._fulfilled);
                 }
-                this._fulfilled = newState;
             });
         });
         return this.eventEmitter;

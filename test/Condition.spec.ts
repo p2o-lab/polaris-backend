@@ -28,24 +28,30 @@ import * as assert from 'assert';
 import { catRecipe } from '../src/config/logging';
 import { ConditionType } from 'pfe-ree-interface';
 
+function later(delay) {
+    return new Promise(function(resolve) {
+        setTimeout(resolve, delay);
+    });
+}
+
 describe('Condition', () => {
 
     it('should listen to a time condition of 0.4s', (done) => {
-        const cond = new TimeCondition({ type: ConditionType.time, duration: 0.2 });
+        const condition = new TimeCondition({ type: ConditionType.time, duration: 0.2 });
 
-        assert.deepEqual(cond.json(), { type: 'time', duration: 0.2 });
+        assert.deepEqual(condition.json(), { type: 'time', duration: 0.2 });
 
-        assert.equal(cond.fulfilled, false);
+        assert.equal(condition.fulfilled, false);
 
-        cond.listen().on('state_changed', () => {
-            assert.equal(cond.fulfilled, true);
+        condition.listen().on('state_changed', () => {
+            assert.equal(condition.fulfilled, true);
             done();
         });
 
-        assert.equal(cond.fulfilled, false);
+        assert.equal(condition.fulfilled, false);
     });
 
-    it('should listen to an AND condition of two time conditions', (done) => {
+    it('should listen to an AND condition of two time conditions', async() => {
         const condition = Condition.create({
             type: ConditionType.and,
             conditions: [
@@ -60,9 +66,14 @@ describe('Condition', () => {
                     { type: 'time', duration: 0.3 }]
         });
         condition.listen().on('state_changed', (status) => {
-            catRecipe.info(`Status: ${status}`);
-            done();
+            assert.equal(condition.fulfilled, true);
         });
+        assert.equal(condition.fulfilled, false);
+        await later(400);
+        assert.equal(condition.fulfilled, false);
+        await later(110);
+        assert.equal(condition.fulfilled, true);
+
     });
 
     it('should listen to a OR condition of two time conditions', (done) => {
@@ -80,18 +91,24 @@ describe('Condition', () => {
                     { type: 'time', duration: 0.5 }]
         });
         condition.listen().on('state_changed', (status) => {
-            catRecipe.info(`Status: ${status}`);
+            assert.equal(condition.fulfilled, true);
             done();
         });
+        assert.equal(condition.fulfilled, false);
     });
 
-    it('should listen to a NOT condition', () => {
+    it('should listen to a NOT condition', async () => {
         const condition = new NotCondition({
             type: ConditionType.not,
             condition: { type: ConditionType.time, duration: 0.5 }
         }, undefined, undefined);
         assert.deepEqual(condition.json(), { type: 'not', condition: { type: 'time', duration: 0.5 } });
 
+        condition.listen();
+        await later(10);
+        assert.equal(condition.fulfilled, true);
+        await later(500);
+        assert.equal(condition.fulfilled, false);
     });
 
 });
