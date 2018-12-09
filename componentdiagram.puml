@@ -1,17 +1,19 @@
 @startuml
 
+
+
 package "module (PEA)" {
-    [PLC] -- [OPC UA Server]
-    [PLC] -- (Services)
+    [Services] -- [OPC UA Server]
 }
 
 node "Process Orchestation Layer (POL)" {
     package "pfe-ree-node" {
-        [NodeJS] -- [OPC UA Client]
+        [Express] -- [Manager/Module/Service]
+        [Manager/Module/Service] -- [OPC UA Client]
     }
 
     package "pfe-ree-viz" {
-        [Angular] -- [NodeJS] : HTTP, Websocket
+        [Angular] -right- [Express] : HTTP, Websocket
     }
 
     package "pfe-ree-interface" {
@@ -19,12 +21,12 @@ node "Process Orchestation Layer (POL)" {
     }
 }
 
-if .. [NodeJS] : import
-if .. [Angular] : import
+if .down. [Express] : import
+if .down. [Angular] : import
 
-[OPC UA Server] <--> [OPC UA Client] : OPC UA
+[OPC UA Server] <-left-> [OPC UA Client] : OPC UA
 
-[MTP] <.. (Services)
-[MTP] ..> [NodeJS]
+(MTP) <.down. [Services]
+(MTP) .down.> [Manager/Module/Service]
 
 @enduml
