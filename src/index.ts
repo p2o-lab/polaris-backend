@@ -131,7 +131,12 @@ if (options) {
                 const modulesOptions = JSON.parse(fs.readFileSync(module).toString());
                 manager.loadModule(modulesOptions, true);
             });
-            manager.modules.forEach(module => module.connect().catch(reason => catModule.warn(reason)));
+            manager.modules.forEach(module =>
+                module.connect()
+                    .catch(reason =>
+                        catModule.warn(`Could not connect to module ${module.id}: ${reason}`)
+                        )
+            );
         }
 
         if (options.recipe) {

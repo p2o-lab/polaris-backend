@@ -61,7 +61,7 @@ export class Module {
     session: ClientSession;
     private client: OPCUAClient;
     subscription: ClientSubscription;
-    private monitoredItems: Map<NodeId, {monitoredItem: ClientMonitoredItem, emitter: EventEmitter}>;
+    private monitoredItems: Map<NodeId, { monitoredItem: ClientMonitoredItem, emitter: EventEmitter }>;
     private namespaceArray: string[];
 
     // module is protected and can't be deleted by the user
@@ -79,7 +79,7 @@ export class Module {
             this.variables = options.process_values.map(variableOptions => new ProcessValue(variableOptions));
         }
 
-        this.monitoredItems = new Map<NodeId, {monitoredItem: ClientMonitoredItem, emitter: EventEmitter}>();
+        this.monitoredItems = new Map<NodeId, { monitoredItem: ClientMonitoredItem, emitter: EventEmitter }>();
     }
 
     /**
@@ -136,8 +136,16 @@ export class Module {
                 this.subscription = subscription;
 
                 // subscribe to all services
-                this.subscribeToAllServices();
-                this.subscribeToAllVariables();
+                try {
+                    this.subscribeToAllServices();
+                } catch (err) {
+                    catModule.warn('Could not connect to all services:' + err);
+                }
+                try {
+                    this.subscribeToAllVariables();
+                } catch (err) {
+                    catModule.warn('Could not connect to all variables:' + err);
+                }
 
                 manager.eventEmitter.emit('refresh', 'module');
             } catch (err) {
@@ -251,7 +259,8 @@ export class Module {
                             datetime: new Date(),
                             module: this.id,
                             variable: variable.name,
-                            value: data });
+                            value: data
+                        });
                     });
             } else {
                 catModule.debug(`OPC UA variable for variable ${variable.name} not defined`);
@@ -261,27 +270,32 @@ export class Module {
 
     private subscribeToAllServices() {
         this.services.forEach((service) => {
-            if (service.status === undefined) {
+            if (service.errorMessage) {
+                this.listenToOpcUaNode(service.errorMessage)
+                    .on('changed', () => {
+                        manager.eventEmitter.emit('refresh', 'module');
+                    });
+            } else {
+                catModule.warn(`Service ${service.name} from module ${this.id} does not have a errorMessage variable`);
+            }
+            if (service.status) {
+                this.listenToOpcUaNode(service.status)
+                    .on('changed', (data) => {
+                        catModule.info(`state changed: ${this.id}.${service.name} = ${ServiceState[data]}`);
+                        serviceArchive.push({
+                            datetime: new Date(),
+                            module: this.id,
+                            service: service.name,
+                            state: ServiceState[data]
+                        });
+                        manager.eventEmitter.emit('refresh', 'module');
+                        if (data === ServiceState.COMPLETED) {
+                            manager.eventEmitter.emit('serviceCompleted', service);
+                        }
+                    });
+            } else {
                 throw new Error(`OPC UA variable for status of service ${service.name} not defined`);
             }
-
-            this.listenToOpcUaNode(service.errorMessage)
-                .on('changed', (data) => {
-                    manager.eventEmitter.emit('refresh', 'module');
-                });
-            this.listenToOpcUaNode(service.status)
-                .on('changed', (data) => {
-                    catModule.info(`state changed: ${this.id}.${service.name} = ${ServiceState[data]}`);
-                    serviceArchive.push({
-                        datetime: new Date(),
-                        module: this.id,
-                        service: service.name,
-                        state: ServiceState[data]});
-                    manager.eventEmitter.emit('refresh', 'module');
-                    if (data === ServiceState.COMPLETED) {
-                        manager.eventEmitter.emit('serviceCompleted', service);
-                    }
-                });
         });
     }
 
@@ -323,7 +337,9 @@ export class Module {
      * @returns {any}
      */
     private resolveNodeId(variable: OpcUaNode) {
-        if (!this.namespaceArray) {
+        if (!variable) {
+            throw new Error('No variable specified to resolve nodeid');
+        } else if (!this.namespaceArray) {
             throw new Error(`No namespace array read for module ${this.id}`);
         } else {
             const nodeIdString = `ns=${this.namespaceArray.indexOf(variable.namespace_index)};s=${variable.node_id}`;

@@ -115,7 +115,7 @@ export class Service {
             catOpc.trace(`Read error string ${this.name}: ${result}`);
             return result.value.value;
         } catch (err) {
-            catOpc.warn('Error reading ErrorString', err.toString());
+            catOpc.warn(`Error reading ErrorString for service ${this.name}: ${err.toString()}`);
             return undefined;
         }
     }

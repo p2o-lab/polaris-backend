@@ -64,7 +64,9 @@ moduleRouter.put('', upload.single('file'), asyncHandler(async (req, res) => {
     const moduleOptions = JSON.parse(req.file.buffer.toString());
     catServer.debug(`Load module: ${JSON.stringify(moduleOptions)}`);
     const newModules = manager.loadModule(moduleOptions);
-    newModules.forEach(module => module.connect().catch(reason => catModule.warn(reason)));
+    newModules.forEach(module =>
+        module.connect().catch(reason => catModule.warn('Could not connect to module: ' + reason))
+    );
     manager.eventEmitter.emit('refresh', 'module');
     res.json(await Promise.all(newModules.map(module => module.json())));
 }));
