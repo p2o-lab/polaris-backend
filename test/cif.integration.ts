@@ -39,7 +39,8 @@ describe('Integration test with CIF test PLC', () => {
         module = new Module(JSON.parse(file.toString()).modules[0]);
     });
 
-    it('should connect to CIF', async () => {
+    it('should connect to CIF', async function() {
+        this.timeout(5000);
         await module.connect();
 
         let json = await module.json();
