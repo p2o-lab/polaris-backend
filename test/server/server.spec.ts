@@ -23,11 +23,11 @@
  * SOFTWARE.
  */
 
-import { Condition, TimeCondition } from '../src/model/Condition';
+import { Condition, TimeCondition } from '../../src/model/Condition';
 import * as assert from 'assert';
-import { catRecipe } from '../src/config/logging';
+import { catRecipe } from '../../src/config/logging';
 import { ConditionType } from 'pfe-ree-interface';
-import {Server} from "../src/server/server";
+import {Server} from "../../src/server/server";
 import * as http from "http";
 
 describe('Server', () => {

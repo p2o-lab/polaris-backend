@@ -23,10 +23,10 @@
  * SOFTWARE.
  */
 
-import { Condition, NotCondition, TimeCondition } from '../src/model/Condition';
+import { Condition, NotCondition, TimeCondition } from '../../src/model/Condition';
 import * as assert from 'assert';
-import { catRecipe } from '../src/config/logging';
 import { ConditionType } from 'pfe-ree-interface';
+import { expect } from 'chai';
 
 function later(delay) {
     return new Promise(function(resolve) {
@@ -109,6 +109,10 @@ describe('Condition', () => {
         assert.equal(condition.fulfilled, true);
         await later(500);
         assert.equal(condition.fulfilled, false);
+    });
+
+    it('should fail with wrong parameter', () => {
+        expect(() => Condition.create({type: ConditionType.time, duration: -10 }, undefined, undefined)).to.throw();
     });
 
 });

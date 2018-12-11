@@ -186,6 +186,9 @@ export class TimeCondition extends Condition {
 
     constructor(options: TimeConditionOptions) {
         super(options);
+        if (options.duration <= 0) {
+            throw new Error('Duration is negative');
+        }
         this.duration = options.duration * 1000;
         this._fulfilled = false;
         catRecipe.trace(`Add TimeCondition: ${JSON.stringify(options)}`);

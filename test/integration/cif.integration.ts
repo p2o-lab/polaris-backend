@@ -25,10 +25,11 @@
 
 import * as assert from 'assert';
 import * as fs from 'fs';
-import { Module } from '../src/model/Module';
-import { ServiceState } from '../src/model/enum';
-import { promiseTimeout } from '../src/timeout-promise';
-import {manager} from "../src/model/Manager";
+import { Module } from '../../src/model/Module';
+import { ServiceState } from '../../src/model/enum';
+import { promiseTimeout } from '../../src/timeout-promise';
+import {manager} from "../../src/model/Manager";
+import { expect } from 'chai';
 
 
 
@@ -74,11 +75,12 @@ describe('Integration test with CIF test PLC', () => {
         await module.connect();
 
         let json = await module.json();
+        expect(json).to.have.property('id', 'CIF');
         assert.equal(json.id, 'CIF');
         assert.equal(json.endpoint, 'opc.tcp://10.6.51.200:4840');
         assert.equal(json.protected, false);
         assert.equal(json.connected, true);
-        assert.equal(json.services.length, 6);
+        expect(json.services).to.have.lengthOf(6);
 
         const serviceStates = await module.getServiceStates();
 
