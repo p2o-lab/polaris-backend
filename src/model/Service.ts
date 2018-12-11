@@ -76,6 +76,7 @@ export class Service {
 
     public parent: Module;
     private listeners: EventEmitter[];
+    private eventEmitter: EventEmitter;
 
     constructor(serviceOptions: ServiceOptions, parent: Module) {
         this.name = serviceOptions.name;
@@ -115,7 +116,7 @@ export class Service {
             catOpc.trace(`Read error string ${this.name}: ${result}`);
             return result.value.value;
         } catch (err) {
-            catOpc.warn(`Error reading ErrorString for service ${this.name}: ${err.toString()}`);
+            catOpc.debug(`Error reading ErrorString for service ${this.name}: ${err.toString()}`);
             return undefined;
         }
     }
@@ -471,6 +472,37 @@ export class Service {
         catService.trace(`Command ${command} written to ${this.name}: ${JSON.stringify(result)}`);
 
         return result.value === 0;
+    }
+
+    /**
+     * Listen to state and error of service and emits specific events for them
+     *
+     * @returns {"events".internal.EventEmitter} emits 'errorMessage' and 'state' events
+     */
+    public subscribeToService() {
+        if (!this.eventEmitter) {
+            this.eventEmitter = new EventEmitter();
+            if (this.errorMessage) {
+                this.parent.listenToOpcUaNode(this.errorMessage)
+                    .on('changed', (data) => {
+                        this.eventEmitter.emit('errorMessage', data);
+                    });
+            } else {
+                catService.warn(`Service ${this.name} from module ${this.parent.id} does not have a errorMessage variable`);
+            }
+            if (this.status) {
+                this.parent.listenToOpcUaNode(this.status)
+                    .on('changed', (data) => {
+                        catService.debug(`${this.name} = ${ServiceState[data]}`);
+                        this.eventEmitter.emit('state', data);
+                    });
+            } else {
+                throw new Error(`OPC UA variable for status of service ${this.name} not defined`);
+            }
+        } else {
+            catService.info('already subscribed, provide existing emitter');
+        }
+        return this.eventEmitter;
     }
 
 }

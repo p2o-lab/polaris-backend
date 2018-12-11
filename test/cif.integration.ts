@@ -23,13 +23,14 @@
  * SOFTWARE.
  */
 
-import { Condition, NotCondition, TimeCondition } from '../src/model/Condition';
 import * as assert from 'assert';
-import { catRecipe } from '../src/config/logging';
-import { ConditionType } from 'pfe-ree-interface';
-import * as fs from "fs";
-import {Module} from "../src/model/Module";
-import {ServiceState} from "../src/model/enum";
+import * as fs from 'fs';
+import { Module } from '../src/model/Module';
+import { ServiceState } from '../src/model/enum';
+import { promiseTimeout } from '../src/timeout-promise';
+import {manager} from "../src/model/Manager";
+
+
 
 describe('Integration test with CIF test PLC', () => {
 
@@ -40,14 +41,36 @@ describe('Integration test with CIF test PLC', () => {
         module = new Module(JSON.parse(file.toString()).modules[0]);
     });
 
-    function later(delay) {
-        return new Promise(function(resolve) {
+    /** wait
+     *
+     * @param {number} delay in milliseconds
+     * @returns {Promise<any>}
+     */
+    function later(delay: number) {
+        return new Promise((resolve) => {
             setTimeout(resolve, delay);
         });
     }
 
-    it('should connect to CIF', async function() {
+    async function testForStateChange(listener, expectedState: string) {
+        try {
+            await promiseTimeout(1000, new Promise((resolve) => {
+                    listener.on('state', (state) => {
+                        //assert.equal(ServiceState[state], expectedState);
+                        if (ServiceState[state] === expectedState) {
+                            resolve();
+                        }
+                    });
+            })
+            );
+        } catch (err) {
+            assert.fail(expectedState);
+        }
+    }
+
+    it('should connect to CIF', async function () {
         this.timeout(10000);
+        manager.autoreset = true;
         await module.connect();
 
         let json = await module.json();
@@ -62,30 +85,30 @@ describe('Integration test with CIF test PLC', () => {
         const service = module.services[5];
         assert.equal(service.name, 'Test_Service.Vorlegen');
 
-        await service.abort();
-        await later(100);
-        await service.reset();
-        await later(100);
+        const listener = service.subscribeToService();
+        // listener.on('state', state => console.log(ServiceState[state]));
 
-        let state =  await service.getServiceState();
-        assert.equal(ServiceState[state], 'IDLE');
+        // bring service to IDLE
+        if (await service.getServiceState() !== ServiceState.ABORTED) {
+            await service.abort();
+            await testForStateChange(listener, 'ABORTED');
+        }
+
+
+        await service.reset();
+        await testForStateChange(listener, 'IDLE');
+
         await service.start(service.strategies[0], undefined);
-        await later(200);
-        state =  await service.getServiceState();
-        assert.equal(ServiceState[state], 'RUNNING');
+        await testForStateChange(listener, 'RUNNING');
 
         await service.complete();
-        await later(10);
-        state =  await service.getServiceState();
-        assert.equal(ServiceState[state], 'COMPLETING');
+        await testForStateChange(listener, 'COMPLETED');
 
-        await later(100);
-        state =  await service.getServiceState();
-        assert.equal(ServiceState[state], 'COMPLETED');
+        // test auto reset
+        // await service.reset();
+        await testForStateChange(listener, 'IDLE');
 
-        await service.reset();
         await later(500);
-
         await module.disconnect();
         json = await module.json();
         assert.equal(json.connected, false);

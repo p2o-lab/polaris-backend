@@ -47,17 +47,19 @@ export class Manager {
 
     // autoreset determines if a service is automatically reset when
     private _autoreset: boolean = true;
+    private _autoreset_timeout = 500;
 
     // general event emitter
     eventEmitter: EventEmitter = new EventEmitter();
+
 
     constructor() {
         this.eventEmitter.on('serviceCompleted', (service: Service) => {
             if (this._autoreset) {
                 setTimeout(() => {
-                    catManager.debug(`Service ${service.parent.id}.${service.name} completed. Now perform autoreset`);
+                    catManager.info(`Service ${service.parent.id}.${service.name} completed. Now perform autoreset`);
                     service.reset();
-                }, 1000);
+                }, this._autoreset_timeout);
             }
         });
     }

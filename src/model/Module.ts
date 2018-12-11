@@ -108,7 +108,7 @@ export class Module {
                 catOpc.debug(`session established ${this.id} ${this.endpoint}`);
 
                 const subscription = new ClientSubscription(session, {
-                    requestedPublishingInterval: 1000,
+                    requestedPublishingInterval: 100,
                     requestedLifetimeCount: 10,
                     requestedMaxKeepAliveCount: 2,
                     maxNotificationsPerPublish: 10,
@@ -198,7 +198,7 @@ export class Module {
                 attributeId: AttributeIds.Value
             },
                 {
-                    samplingInterval: 1000,
+                    samplingInterval: 100,
                     discardOldest: true,
                     queueSize: 10
                 });
@@ -308,7 +308,7 @@ export class Module {
 
     public async writeNode(node: OpcUaNode, value: Variant) {
         if (!this.session) {
-            throw new Error(`Can not write node since OPC UA connection to module ${this.id} is not establieshed`);
+            throw new Error(`Can not write node since OPC UA connection to module ${this.id} is not established`);
         } else {
             const result = await this.session.writeSingleNode(this.resolveNodeId(node), value);
             catModule.debug(`Write result for ${this.id}.${node.node_id}=${value.value} -> ${result.name}`);
