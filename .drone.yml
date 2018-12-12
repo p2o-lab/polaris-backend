@@ -12,6 +12,23 @@ pipeline:
       - npm run-script apidoc build
       - npm test
 
+  gitea_release:
+    image: plugins/gitea-release
+    api_key: 457b766b1fddc3832abc1ab47f39c74efa951f50
+    base_url: https://dev.plt.et.tu-dresden.de
+    files:
+      - build/*
+      - apidoc/*
+    checksum:
+      - md5
+      - sha1
+      - sha256
+      - sha512
+      - adler32
+      - crc32
+    when:
+      event: [ tag ]
+
   docker:
     image: plugins/docker
     auto_tag: true
@@ -29,19 +46,3 @@ pipeline:
     when:
       status: [ changed, failure ]
 
-  gitea_release:
-    image: plugins/gitea-release
-    api_key: 457b766b1fddc3832abc1ab47f39c74efa951f50
-    base_url: https://dev.plt.et.tu-dresden.de
-    files:
-      - build/*
-      - apidoc/*
-    checksum:
-      - md5
-      - sha1
-      - sha256
-      - sha512
-      - adler32
-      - crc32
-    when:
-      status: [ success ]
