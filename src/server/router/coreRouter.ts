@@ -70,7 +70,8 @@ coreRouter.post('/autoReset', asyncHandler(async (req: Request, res: Response) =
  * @apiGroup Manager
  */
 coreRouter.get('/logs(.json)?', asyncHandler(async (req: Request, res: Response) => {
-    res.attachment().json(messages);
+    res.contentType('application/json').attachment()
+        .send(JSON.stringify(messages, null, 4));
 }));
 
 /**
@@ -79,7 +80,8 @@ coreRouter.get('/logs(.json)?', asyncHandler(async (req: Request, res: Response)
  * @apiGroup Manager
  */
 coreRouter.get('/logs/variables(.json)?', asyncHandler(async (req: Request, res: Response) => {
-    res.attachment().json(variableArchive.slice(-1000));
+    res.contentType('application/json').attachment()
+        .send(JSON.stringify(variableArchive.slice(-1000), null, 4));
 }));
 
 /**
@@ -88,7 +90,8 @@ coreRouter.get('/logs/variables(.json)?', asyncHandler(async (req: Request, res:
  * @apiGroup Manager
  */
 coreRouter.get('/logs/services(.json)?', asyncHandler(async (req: Request, res: Response) => {
-    res.attachment().json(serviceArchive.slice(-1000));
+    res.contentType('application/json').attachment()
+        .send(JSON.stringify(serviceArchive.slice(-1000), null, 4));
 }));
 
 function isTrue(value: any) {
