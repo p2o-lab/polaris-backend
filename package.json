@@ -11,7 +11,6 @@
   "scripts": {
     "dev": "nodemon",
     "start": "ts-node ./src/index.ts",
-    "automaticMode": "ts-node ./src/automaticMode.ts",
     "flagwatcher": "ts-node ./src/flagWatcher.ts",
     "postversion": "npm run deploy",
     "test": "nyc mocha -r ts-node/register test/**/*.ts",
@@ -49,7 +48,7 @@
     "multer": "^1.3.1",
     "node-opcua": "^0.4.5",
     "node-opcua-client": "^0.4.1",
-    "pfe-ree-interface": "https://registry.plt.et.tu-dresden.de:4873/pfe-ree-interface/-/pfe-ree-interface-1.12.1.tgz",
+    "pfe-ree-interface": "https://registry.plt.et.tu-dresden.de:4873/pfe-ree-interface/-/pfe-ree-interface-1.12.3.tgz",
     "request": "^2.88.0",
     "ts-node": "^6.1.1",
     "typescript-logging": "^0.6.2",
