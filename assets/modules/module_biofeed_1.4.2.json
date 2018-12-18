@@ -4,6 +4,7 @@
       "id": "BioFeed",
       "opcua_server_url": "opc.tcp://10.6.51.42:4840",
       "rest_api_port": "1200",
+      "hmi_url": "http://10.6.51.42",
       "services": [
         {
           "name": "FeedWater",
