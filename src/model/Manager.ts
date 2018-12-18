@@ -30,7 +30,6 @@ import {Module, ModuleOptions} from "./Module";
 import {Service} from "./Service";
 import {ManagerInterface, RecipeOptions} from "pfe-ree-interface";
 import {Player} from "./Player";
-import undefinedError = Mocha.utils.undefinedError;
 
 export class Manager {
 
@@ -55,12 +54,7 @@ export class Manager {
 
     constructor() {
         this.eventEmitter.on('serviceCompleted', (service: Service) => {
-            if (this._autoreset) {
-                setTimeout(() => {
-                    catManager.info(`Service ${service.parent.id}.${service.name} completed. Now perform autoreset`);
-                    service.reset();
-                }, this._autoreset_timeout);
-            }
+            this.performAutoReset(service);
         });
     }
 
@@ -109,7 +103,7 @@ export class Manager {
     public loadRecipe(options: RecipeOptions, protectedRecipe: boolean = false): Recipe {
         const newRecipe = new Recipe(options, this.modules, protectedRecipe);
         this.recipes.push(newRecipe);
-        manager.eventEmitter.emit('refresh', 'recipes');
+        this.eventEmitter.emit('refresh', 'recipes');
         return newRecipe;
     }
 
@@ -151,6 +145,20 @@ export class Manager {
             modules: this.modules.map(module => module.id),
             autoReset: this.autoreset
         };
+    }
+
+    /**
+     * Perform autoreset for service (bring it automatically from completed to idle)
+     * @param {Service} service
+     */
+    performAutoReset(service: Service) {
+        if (this.autoreset) {
+            catManager.info(`Service ${service.parent.id}.${service.name} completed. Short waiting time (${this._autoreset_timeout}) to autoreset`);
+            setTimeout(() => {
+                catManager.info(`Service ${service.parent.id}.${service.name} completed. Now perform autoreset`);
+                service.reset();
+            }, this._autoreset_timeout);
+        }
     }
 
 }
