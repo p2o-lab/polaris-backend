@@ -11,7 +11,6 @@
   "scripts": {
     "dev": "nodemon",
     "start": "ts-node ./src/index.ts",
-    "automaticMode": "ts-node ./src/automaticMode.ts",
     "flagwatcher": "ts-node ./src/flagWatcher.ts",
     "postversion": "npm run deploy",
     "test": "nyc mocha -r ts-node/register test/**/*.ts",
