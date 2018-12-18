@@ -28,10 +28,8 @@ import * as fs from 'fs';
 import { Module } from '../../src/model/Module';
 import { ServiceState } from '../../src/model/enum';
 import { promiseTimeout } from '../../src/timeout-promise';
-import {manager} from "../../src/model/Manager";
+import { manager } from '../../src/model/Manager';
 import { expect } from 'chai';
-
-
 
 describe('Integration test with CIF test PLC', () => {
 
@@ -56,16 +54,14 @@ describe('Integration test with CIF test PLC', () => {
     async function testForStateChange(listener, expectedState: string) {
         try {
             await promiseTimeout(1000, new Promise((resolve) => {
-                    listener.on('state', (state) => {
-                        //assert.equal(ServiceState[state], expectedState);
-                        if (ServiceState[state] === expectedState) {
-                            resolve();
-                        }
-                    });
-            })
-            );
+                listener.on('state', (state) => {
+                    if (ServiceState[state] === expectedState) {
+                        resolve();
+                    }
+                });
+            }));
         } catch (err) {
-            assert.fail(expectedState);
+            assert.fail(`Failed to reach ${expectedState} within 1000ms`);
         }
     }
 
@@ -95,7 +91,6 @@ describe('Integration test with CIF test PLC', () => {
             await service.abort();
             await testForStateChange(listener, 'ABORTED');
         }
-
 
         await service.reset();
         await testForStateChange(listener, 'IDLE');
