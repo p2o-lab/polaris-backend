@@ -1181,7 +1181,7 @@
             },
             "V": {
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
-              "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_AnaView.L001.V",
+              "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_AnaView.L001_PV.rPV",
               "data_type": "Double"
             },
             "VSclMin": {

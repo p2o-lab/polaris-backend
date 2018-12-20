@@ -23,11 +23,8 @@
  * SOFTWARE.
  */
 
-import { Recipe } from '../../src/model/Recipe';
 import * as fs from 'fs';
-import * as assert from 'assert';
 import { Module } from '../../src/model/Module';
-import { RecipeInterface } from 'pfe-ree-interface';
 import { Parameter } from '../../src/model/Parameter';
 import {expect} from 'chai';
 

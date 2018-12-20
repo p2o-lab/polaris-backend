@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "name": "Wait 5s",
+  "name": "Wait 0.5s",
   "author": "Markus Graube",
   "initial_step": "Wait",
   "steps": [
@@ -12,7 +12,7 @@
           "next_step": "finished",
           "condition": {
             "type": "time",
-            "duration": 5
+            "duration": 0.5
           }
         }
       ]

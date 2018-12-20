@@ -65,10 +65,9 @@ export async function watchFlag(endpoint: string, nodeId: string, httpURL: strin
             discardOldest: true,
             queueSize: 10
         });
-    console.log('-------------------------------------');
 
     monitoredItem.on('changed', (dataValue) => {
-        console.log(' % flag is ', dataValue.value.value);
+        catOpc.info(`flag is ${dataValue.value.value}`);
         if (dataValue.value.value) {
             httpPost();
         }
@@ -76,13 +75,12 @@ export async function watchFlag(endpoint: string, nodeId: string, httpURL: strin
     });
 
     function httpPost() {
-        console.log('make post');
         post(
             httpURL,
             { json: { key: 'value' } },
             (err, res, body) => {
                 if (!err && res.statusCode === 200) {
-                    console.log(body);
+                    catOpc.info(`HTTP Post successful ${body}`);
                 }
             }
         );

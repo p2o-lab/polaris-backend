@@ -23,44 +23,53 @@
  * SOFTWARE.
  */
 
-import { Recipe } from './Recipe';
-import { catManager } from '../config/logging';
-import { EventEmitter } from 'events';
-import { PlayerInterface, RecipeState, Repeat } from 'pfe-ree-interface';
-import { manager } from './Manager';
+import {Recipe} from './Recipe';
+import {catManager} from '../config/logging';
+import {EventEmitter} from 'events';
+import {PlayerInterface, RecipeState, Repeat} from 'pfe-ree-interface';
+import {RecipeRun} from "./RecipeRun";
 
-export class Player {
-    public repeat: Repeat = Repeat.none;
-    private eventEmitter: EventEmitter = new EventEmitter();
+export class Player extends EventEmitter{
+    public repeat: Repeat;
 
     private _currentItem: number;
 
-    private _playlist: Recipe[] = [];
+    private _playlist: Recipe[];
+
+    recipeRuns: RecipeRun[];
+    private currentRecipeRun: RecipeRun;
 
     get playlist(): Recipe[] {
         return this._playlist;
     }
 
-    private _status: RecipeState = RecipeState.idle;
+    private _status: RecipeState;
 
     get currentItem(): number {
         return this._currentItem;
     }
 
     constructor() {
-        this.eventEmitter.on('recipe_finished', () => {
-            catManager.info(`recipe finished ${this.currentItem + 1}/${this.playlist.length} (player ${this.status})`);
-            if (this._status === RecipeState.running) {
-                if (this._currentItem + 1 < this._playlist.length) {
-                    this._currentItem = this._currentItem + 1;
-                    catManager.info(`Go to next recipe (${this.currentItem + 1}/${this.playlist.length})`);
-                    this.runCurrentRecipe();
-                } else {
-                    this._status = RecipeState.completed;
-                    this._currentItem = undefined;
-                }
+        super();
+        this._playlist = [];
+        this._status = RecipeState.idle;
+        this.currentRecipeRun = undefined;
+        this.recipeRuns = [];
+    }
+
+    private onRecipeFinished() {
+        catManager.info(`recipe finished ${this.currentItem + 1}/${this._playlist.length} (player ${this.status})`);
+        if (this._status === RecipeState.running) {
+            if (this._currentItem + 1 < this._playlist.length) {
+                this._currentItem = this._currentItem + 1;
+                catManager.info(`Go to next recipe (${this.currentItem + 1}/${this.playlist.length})`);
+                this.runCurrentRecipe();
+            } else {
+                this._status = RecipeState.completed;
+                this._currentItem = undefined;
+                this.emit('completed');
             }
-        });
+        }
     }
 
     get status() {
@@ -93,7 +102,8 @@ export class Player {
             playlist: this._playlist.map(recipe => recipe.json()),
             currentItem: this._currentItem,
             repeat: this.repeat,
-            status: this.status
+            status: this.status,
+            currentRecipeRun: this.currentRecipeRun ? this.currentRecipeRun.json() : undefined
         };
     }
 
@@ -101,7 +111,6 @@ export class Player {
         if (this.status === RecipeState.idle || this.status === RecipeState.stopped) {
             this._status = RecipeState.running;
             this._currentItem = 0;
-            manager.eventEmitter.emit('refresh', 'recipe');
             this.runCurrentRecipe();
         } else if (this.status === RecipeState.paused) {
             this._status = RecipeState.running;
@@ -117,7 +126,6 @@ export class Player {
         if (this.status === RecipeState.completed || this.status === RecipeState.stopped) {
             this._currentItem = undefined;
             this._status = RecipeState.idle;
-            manager.eventEmitter.emit('refresh', 'recipe');
         }
     }
 
@@ -145,12 +153,16 @@ export class Player {
     }
 
     private runCurrentRecipe() {
-        const events = this.getCurrentRecipe().start();
-        events.on('recipe_finished', (finishedRecipe) => {
-            console.log('internal runCurrentRecipe');
-            events.removeAllListeners('recipe_finished');
-            this.eventEmitter.emit('recipe_finished', finishedRecipe);
+        this.currentRecipeRun = new RecipeRun(this.getCurrentRecipe());
+        this.recipeRuns.push(this.currentRecipeRun);
+        const events = this.currentRecipeRun.start();
+        events.once('recipe_finished', (finishedRecipe) => {
+            this.emit('recipe_finished', finishedRecipe);
+            this.onRecipeFinished();
         });
+        events.on('step_finished', () => {
+                this.emit('refresh', 'recipe', 'stepFinished');
+            });
     }
 
 }
