@@ -40,8 +40,9 @@ export class Manager {
     // loaded modules
     modules: Module[] = [];
 
-    player: Player = new Player();
+    player: Player;
 
+    // use ControlExt (true) or ControlOp (false)
     automaticMode: boolean = false;
 
     // autoreset determines if a service is automatically reset when
@@ -49,10 +50,12 @@ export class Manager {
     private _autoreset_timeout = 500;
 
     // general event emitter
-    eventEmitter: EventEmitter = new EventEmitter();
+    eventEmitter: EventEmitter;
 
 
     constructor() {
+        this.player = new Player();
+        this.eventEmitter =  new EventEmitter();
         this.eventEmitter.on('serviceCompleted', (service: Service) => {
             this.performAutoReset(service);
         });

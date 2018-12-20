@@ -9,29 +9,18 @@
       "operations": [
         {
           "module": "CIF",
-          "service": "Test_Service.Service1",
-          "command": "start"
-        },
-        {
-          "module": "CIF",
           "service": "Test_Service.Vorlegen",
           "command": "start",
           "parameter": [
             {
               "name": "SollVolumen",
-              "value": "3+a+2*b",
+              "value": "2.1*a",
               "scope": [
                 {
                   "name": "a",
                   "module": "CIF",
                   "dataAssembly": "Test_AnaView.L004",
                   "variable": "V"
-                },
-                {
-                  "name": "b",
-                  "module": "CIF",
-                  "dataAssembly": "Test_PIDCtrl.FC103",
-                  "variable": "PV"
                 }
               ]
             },
@@ -62,12 +51,7 @@
       "operations": [
         {
           "module": "CIF",
-          "service": "Test_Service.Entleeren",
-          "command": "complete"
-        },
-        {
-          "module": "CIF",
-          "service": "Test_Service.Service1",
+          "service": "Test_Service.Vorlegen",
           "command": "complete"
         }
       ],
@@ -77,7 +61,7 @@
           "condition": {
             "type": "state",
             "module": "CIF",
-            "service": "Test_Service.Entleeren",
+            "service": "Test_Service.Vorlegen",
             "state": "completed"
           }
         }

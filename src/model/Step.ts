@@ -38,6 +38,9 @@ export interface StepOptions {
     transitions: TransitionOptions[];
 }
 
+/**
+ * Executable step from recipe
+ */
 export class Step {
     name: string;
     operations: Operation[];
@@ -68,14 +71,9 @@ export class Step {
     }
 
     execute() {
-        manager.eventEmitter.emit('refresh', 'recipe', 'stepStarted');
-        this.operations.forEach((operation) => {
-            catRecipe.info(`Start operation ${operation.module.id} ${operation.service.name} ` +
-                `${JSON.stringify(operation.command)}`);
-            operation.execute();
-        });
-
+        // first start listening to transitions of step
         this.transitions.forEach((transition) => {
+            catRecipe.info(`Start listening for transition ${JSON.stringify(transition.json())}`);
             const events = transition.condition.listen();
             events.on('state_changed', (status) => {
                 catRecipe.info(`Status of step ${this.name} for transition to ${transition.next_step_name}: ` +
@@ -85,11 +83,20 @@ export class Step {
                     this.transitions.forEach((transition) => {
                         transition.condition.clear();
                     });
+
                     this.eventEmitter.emit('completed', this, transition);
                     this.eventEmitter.removeAllListeners();
                 }
             });
         });
+
+        // execute operations for step
+        this.operations.forEach((operation) => {
+            catRecipe.info(`Start operation ${operation.module.id} ${operation.service.name} ` +
+                `${JSON.stringify(operation.command)}`);
+            operation.execute();
+        });
+
         return this.eventEmitter;
     }
 

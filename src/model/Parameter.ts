@@ -54,17 +54,15 @@ export class Parameter {
         this.continuous = parameterOptions.continuous || false;
 
         this.service = service;
-        if (service && service.parameters) {
-            const strategyUsed = strategy || service.strategies.find(strategy => strategy.default);
-            const parameterList = [].concat(service.parameters, strategyUsed.parameters);
-            try {
-                this._opcUaNode = parameterList.find(obj => obj.name === this.name).communication[this.variable];
-            } catch {
-                throw new Error(`Could not find parameter "${this.name}" in ${service.name}`);
-            }
-        } else {
-            catService.trace(`No service parameters ${this.service.name}`);
+        const strategyUsed = strategy || service.strategies.find(strategy => strategy.default);
+        const parameterList = [].concat(service.parameters, strategyUsed.parameters);
+        try {
+            this._opcUaNode = parameterList.find(obj => (obj && obj.name === this.name))
+                .communication[this.variable];
+        } catch {
+            throw new Error(`Could not find parameter "${this.name}" in ${service.name}`);
         }
+
         const parser: Parser = new Parser();
         this.expression = parser.parse(this.value.toString());
     }
@@ -73,8 +71,8 @@ export class Parameter {
         if (!this._opcUaDataType) {
             const value = await this.service.parent.readVariableNode(this._opcUaNode);
             catService.info(`Datatype for ${this.service.name}.${this.name}.${this.variable} - ${this._opcUaNode.node_id} = ${JSON.stringify(value)}`);
-            this._opcUaDataType = value.value.dataType;
-            catService.info(`Get datatype for ${this.service.name}.${this.name} = ${this._opcUaDataType.toString()}`);
+            this._opcUaDataType = value.value ? value.value.dataType : undefined;
+            catService.info(`Get datatype for ${this.service.name}.${this.name} = ${this._opcUaDataType}`);
         }
         return this._opcUaDataType;
     }

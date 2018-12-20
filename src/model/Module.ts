@@ -48,15 +48,17 @@ import { serviceArchive, variableArchive } from '../logging/archive';
 export interface ModuleOptions {
     id: string;
     opcua_server_url: string;
+    hmi_url?: string;
     services: ServiceOptions[];
     process_values: object[];
 }
 
 export class Module {
-    id: string;
-    endpoint: string;
+    readonly id: string;
+    readonly endpoint: string;
     services: Service[];
     variables: ProcessValue[];
+    readonly hmiUrl: string;
 
     session: ClientSession;
     private client: OPCUAClient;
@@ -77,6 +79,9 @@ export class Module {
         }
         if (options.process_values) {
             this.variables = options.process_values.map(variableOptions => new ProcessValue(variableOptions));
+        }
+        if (options.hmi_url){
+            this.hmiUrl = options.hmi_url;
         }
 
         this.monitoredItems = new Map<NodeId, { monitoredItem: ClientMonitoredItem, emitter: EventEmitter }>();
@@ -270,39 +275,30 @@ export class Module {
 
     private subscribeToAllServices() {
         this.services.forEach((service) => {
-            if (service.errorMessage) {
-                this.listenToOpcUaNode(service.errorMessage)
-                    .on('changed', () => {
-                        manager.eventEmitter.emit('refresh', 'module');
+            service.subscribeToService()
+                .on('errorMessage', (errorMessage) => {
+                    manager.eventEmitter.emit('refresh', 'module');
+                })
+                .on('state', (state) => {
+                    catModule.info(`state changed: ${this.id}.${service.name} = ${ServiceState[state]}`);
+                    serviceArchive.push({
+                        datetime: new Date(),
+                        module: this.id,
+                        service: service.name,
+                        state: ServiceState[state]
                     });
-            } else {
-                catModule.warn(`Service ${service.name} from module ${this.id} does not have a errorMessage variable`);
-            }
-            if (service.status) {
-                this.listenToOpcUaNode(service.status)
-                    .on('changed', (data) => {
-                        catModule.info(`state changed: ${this.id}.${service.name} = ${ServiceState[data]}`);
-                        serviceArchive.push({
-                            datetime: new Date(),
-                            module: this.id,
-                            service: service.name,
-                            state: ServiceState[data]
-                        });
-                        manager.eventEmitter.emit('refresh', 'module');
-                        if (data === ServiceState.COMPLETED) {
-                            manager.eventEmitter.emit('serviceCompleted', service);
-                        }
-                    });
-            } else {
-                throw new Error(`OPC UA variable for status of service ${service.name} not defined`);
-            }
+                    manager.eventEmitter.emit('refresh', 'module');
+                    if (state === ServiceState.COMPLETED) {
+                        manager.eventEmitter.emit('serviceCompleted', service);
+                    }
+                });
         });
     }
 
     public readVariableNode(node: OpcUaNode) {
         const nodeId = this.resolveNodeId(node);
         const result = this.session.readVariableValue(nodeId);
-        catOpc.debug(`Read Variable: ${JSON.stringify(node)} -> ${nodeId} = ${result}`);
+        catOpc.info(`Read Variable: ${JSON.stringify(node)} -> ${nodeId} = ${result}`);
         return result;
     }
 
@@ -325,6 +321,7 @@ export class Module {
         return {
             id: this.id,
             endpoint: this.endpoint,
+            hmiUrl: this.hmiUrl,
             connected: this.isConnected(),
             services: this.isConnected() ? await this.getServiceStates() : undefined,
             protected: this.protected

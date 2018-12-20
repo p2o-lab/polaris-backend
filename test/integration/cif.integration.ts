@@ -31,7 +31,7 @@ import { promiseTimeout } from '../../src/timeout-promise';
 import { manager } from '../../src/model/Manager';
 import { expect } from 'chai';
 
-describe('Integration test with CIF test PLC', () => {
+describe('Integration test with CIF test PLC', function () {
 
     let module: Module;
 
@@ -65,7 +65,7 @@ describe('Integration test with CIF test PLC', () => {
         }
     }
 
-    it('should connect to CIF', async function () {
+    it.skip('should connect to CIF', async function () {
         this.timeout(10000);
         manager.autoreset = true;
         await module.connect();

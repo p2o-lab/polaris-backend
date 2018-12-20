@@ -77,6 +77,7 @@ export class Service {
     public parent: Module;
     private listeners: EventEmitter[];
     private eventEmitter: EventEmitter;
+    private lastChange: Date;
 
     constructor(serviceOptions: ServiceOptions, parent: Module) {
         this.name = serviceOptions.name;
@@ -100,6 +101,7 @@ export class Service {
     async getServiceState(): Promise<ServiceState> {
         try {
             const result: DataValue = await this.parent.readVariableNode(this.status);
+            console.log(this.status, result)
             const state: ServiceState = <ServiceState> result.value.value;
             const stateString: string = ServiceState[state];
             catOpc.trace(`Read state ${this.name}: ${state} (${stateString})`);
@@ -150,7 +152,8 @@ export class Service {
             status: ServiceState[state] || state,
             strategies: await strategies,
             parameters: await params,
-            error: await errorString
+            error: await errorString,
+            lastChange: this.lastChange
         };
     }
 
@@ -219,7 +222,7 @@ export class Service {
     }
 
     /**
-     * Exeute command by writing parameters and ControlOp/ControlExt
+     * Execute command by writing parameters and ControlOp/ControlExt
      * Set ControlOp/ControlExt back after 500ms
      *
      * @param {ServiceCommand} command
@@ -235,9 +238,9 @@ export class Service {
             service: this.name,
             strategy: strategy.name,
             command: command.toString(),
-            parameter: parameters.map((param) => {
+            parameter: parameters ? parameters.map((param) => {
                 return { name:param.name, value: param.value };
-            })
+            }) : undefined
         });
         let result;
         if (command === 'start') {
@@ -262,8 +265,8 @@ export class Service {
             throw new Error(`Command ${command} can not be interpreted`);
         }
         await result;
-        // reset ControlOp variable after 500ms
-        setTimeout(() => this.clearCommand(), 500);
+        // reset ControlOp variable after 100ms
+        setTimeout(() => this.clearCommand(), 100);
         return result;
     }
 
@@ -488,12 +491,14 @@ export class Service {
                         this.eventEmitter.emit('errorMessage', data);
                     });
             } else {
-                catService.warn(`Service ${this.name} from module ${this.parent.id} does not have a errorMessage variable`);
+                catService.warn(`Service ${this.name} from module ${this.parent.id}` +
+                    ` does not have a errorMessage variable`);
             }
             if (this.status) {
                 this.parent.listenToOpcUaNode(this.status)
                     .on('changed', (data) => {
-                        catService.debug(`${this.name} = ${ServiceState[data]}`);
+                        this.lastChange = new Date();
+                        catService.info(`${this.name} = ${ServiceState[data]} ${this.lastChange}`);
                         this.eventEmitter.emit('state', data);
                     });
             } else {
