@@ -64,7 +64,14 @@ export interface ServiceOptions {
     parameters: ServiceParameter[];
 }
 
+
+/**
+ * service of a module
+ * after connection to a real PEA, commands can be triggered and states can be retrieved
+ *
+ */
 export class Service {
+
     name: string;
     command: OpcUaNode;
     status: OpcUaNode;
@@ -140,6 +147,10 @@ export class Service {
         }
     }
 
+    /**
+     * get JSON output of service status
+     * @returns {Promise<ServiceInterface>}
+     */
     async getOverview(): Promise<ServiceInterface> {
         const opMode = await this.getOpMode();
         const state = await this.getServiceState();
@@ -388,7 +399,7 @@ export class Service {
     /**
      * Write OpMode to service
      * @param {OpMode} opMode
-     * @returns {any}
+     * @returns {boolean}
      */
     private async writeOpMode(opMode: OpMode): Promise<boolean> {
         const result = await this.parent.writeNode(this.opMode,
@@ -480,9 +491,14 @@ export class Service {
     /**
      * Listen to state and error of service and emits specific events for them
      *
-     * @returns {"events".internal.EventEmitter} emits 'errorMessage' and 'state' events
+     * <uml>
+     *     Caller->Service : subscribeToService
+     *     Caller <-Service : emit "state"
+     *     Caller <-Service : emit "errorMessage"
+     * </uml>
+     * @returns {EventEmitter} emits 'errorMessage' and 'state' events
      */
-    public subscribeToService() {
+    public subscribeToService(): EventEmitter {
         if (!this.eventEmitter) {
             this.eventEmitter = new EventEmitter();
             if (this.errorMessage) {
