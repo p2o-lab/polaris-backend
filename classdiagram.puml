@@ -9,9 +9,11 @@ class Module {
 class Operation
 class Parameter
 class Player
+
+Player --> Recipe : playlist[]
 class Recipe {
     name
-    initial_step: Recipe
+    initial_step: Step
 }
 class Service {
     name: string
@@ -42,18 +44,6 @@ TimeCondition --|> Condition
 VariableCondition --|> Condition
 StateCondition --|> Condition
 
-
-together {
-    class Step
-    class Transition
-    class Condition
-}
-
-enum Unit {
-    DAYS
-    HOURS
-    MINUTES
-}
 
 Manager --> Module : modules
 Manager --> Recipe : recipes
