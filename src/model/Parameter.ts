@@ -31,7 +31,12 @@ import { EventEmitter } from 'events';
 import { DataType } from 'node-opcua-client';
 import { Service } from './Service';
 import {OpcUaNode, ServiceParameter, Strategy} from './Interfaces';
+import {Module} from './Module';
 
+/**
+ * Parameter of an operation. Can be static or dynamic. Dynamic parameters can depend on variables of the same or
+ * other modules.
+ */
 export class Parameter {
 
     name: string;
@@ -43,8 +48,9 @@ export class Parameter {
     private service: Service;
     private _opcUaDataType: DataType;
     private _opcUaNode: OpcUaNode;
+    private modules: Module[];
 
-    constructor(parameterOptions: ParameterOptions, service: Service, strategy?: Strategy) {
+    constructor(parameterOptions: ParameterOptions, service: Service, strategy?: Strategy, modules?: Module[]) {
         catRecipe.trace(`Create Parameter: ${JSON.stringify(parameterOptions)}`);
 
         this.name = parameterOptions.name;
@@ -63,6 +69,8 @@ export class Parameter {
             throw new Error(`Could not find parameter "${this.name}" in ${service.name}`);
         }
 
+        this.modules = modules || undefined;
+
         const parser: Parser = new Parser();
         this.expression = parser.parse(this.value.toString());
     }
@@ -80,7 +88,7 @@ export class Parameter {
     public listenToParameter() {
         const eventEmitter = new EventEmitter();
         this.scope.forEach(async (item: ScopeOptions) => {
-            const module = manager.modules.find(module => module.id === item.module);
+            const module = this.modules.find(module => module.id === item.module);
             module.listenToVariable(item.dataAssembly, item.variable)
                 .on('refresh', () => eventEmitter.emit('refresh'));
         });
@@ -95,7 +103,7 @@ export class Parameter {
         // get current variables
         const scope = {};
         const tasks = this.scope.map(async (item: ScopeOptions) => {
-            const module = manager.modules.find(module => module.id === item.module);
+            const module = this.modules.find(module => module.id === item.module);
             return module.readVariable(item.dataAssembly, item.variable)
                     .then(value => scope[item.name] = value.value.value);
         });

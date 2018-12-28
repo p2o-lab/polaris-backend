@@ -75,7 +75,7 @@ export class Operation {
         }
         if (options.parameter) {
             this.parameters = options.parameter.map(
-                paramOptions => new Parameter(paramOptions, this.service, this.strategy)
+                paramOptions => new Parameter(paramOptions, this.service, this.strategy, modules)
             );
         }
     }
