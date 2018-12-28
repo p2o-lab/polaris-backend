@@ -14,6 +14,7 @@
     "flagwatcher": "ts-node ./src/flagWatcher.ts",
     "postversion": "npm run deploy",
     "test": "nyc mocha -r ts-node/register test/**/*.ts",
+    "typedoc": "typedoc --out typedoc/ --target ES6 src/",
     "apidoc": "apidoc -i src/server/ -o apidoc",
     "build": "tsc",
     "ui": "cp -r ../pfe-ree-viz/dist .",
@@ -72,6 +73,8 @@
     "nyc": "^12.0.2",
     "tslint": "5.8.0",
     "tslint-config-airbnb": "^5.9.2",
+    "typedoc": "^0.13.0",
+    "typedoc-plantuml": "^1.4.1",
     "typescript": "^2.6.2"
   },
   "nyc": {
