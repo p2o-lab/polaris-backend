@@ -117,16 +117,15 @@ export class Manager {
      */
     abortAllServices() {
         let tasks = Array.from(this.activeRecipe.modules).map((module) => {
-            return module.services.map((service) => {
-                return service.abort();
-            })
+            Promise.all(module.services.map((service) => {
+                service.abort();
+            }));
         });
         return Promise.all(tasks);
     }
 
     /**
      * Abort all services from all loaded modules
-     * @returns {Promise}
      */
     abortAllModules() {
         let tasks = this.modules.map(module =>
