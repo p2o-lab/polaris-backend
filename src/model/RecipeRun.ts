@@ -23,14 +23,14 @@
  * SOFTWARE.
  */
 
-import {RecipeState, StepInterface} from 'pfe-ree-interface';
-import { Step } from './Step';
+import {RecipeInterface} from 'pfe-ree-interface';
 import { Recipe } from './Recipe';
 import { v4 } from 'uuid';
 import { EventEmitter } from 'events';
-import { Transition } from './Transition';
-import { catRecipe } from '../config/logging';
 
+/** One specific recipe run with all logs
+ *
+ */
 export class RecipeRun {
 
     id: string;
@@ -38,70 +38,32 @@ export class RecipeRun {
     endTime: Date;
     recipe: Recipe;
 
-    current_step: Step;
-    status: RecipeState = RecipeState.idle;
     eventEmitter: EventEmitter;
 
     constructor(recipe: Recipe) {
         this.id = v4();
         this.recipe = recipe;
         this.eventEmitter = new EventEmitter();
-        this.initRecipe();
     }
 
-    public json(): { id: string; status: RecipeState; startTime: Date; endTime: Date; currentStep: StepInterface } {
+    public json(): { id: string; startTime: Date; endTime: Date; recipe: RecipeInterface } {
         return {
             id: this.id,
-            status: this.status,
             startTime: this.startTime,
             endTime: this.endTime,
-            currentStep: this.current_step.json()
+            recipe: this.recipe.json()
         };
     }
 
-    private initRecipe() {
-        this.current_step = undefined;
-        this.status = RecipeState.idle;
-    }
-
-    public start(): EventEmitter {
+    /** Starts the linked recipe
+     *
+     */
+    public start() {
         this.startTime = new Date();
-        this.recipe.connectModules()
-            .catch((reason) => {
-                throw new Error(`Could not connect to all modules for recipe ${this.recipe.name}. ` +
-                    `Start of recipe not possible: ${reason.toString()}`);
-            })
-            .then(() => {
-                this.eventEmitter.emit('started');
-                this.current_step = this.recipe.initial_step;
-                this.status = RecipeState.running;
-                this.executeStep();
+        return this.recipe.start()
+            .on('recipe_finished', () => {
+                this.endTime = new Date();
             });
-        return this.eventEmitter;
-    }
 
-    private executeStep() {
-        catRecipe.debug(`Start step: ${this.current_step.name}`);
-        //manager.eventEmitter.emit('refresh', 'recipe', 'stepStarted');
-        this.current_step.execute()
-            .on('completed', (finishedStep: Step, transition: Transition) => {
-                if (finishedStep !== this.current_step) {
-                    catRecipe.warn(`Not correct step. Current Step: ${this.current_step.name}. ` +
-                        `Reported step: ${finishedStep.name}`);
-                } else {
-                    this.eventEmitter.emit('step_finished', this.current_step, transition.next_step);
-                    if (transition.next_step) {
-                        catRecipe.info(`Step ${finishedStep.name} finished. New step is ${transition.next_step_name}`);
-                        this.current_step = transition.next_step;
-                        this.executeStep();
-                    } else {
-                        this.endTime = new Date();
-                        catRecipe.info(`Recipe completed: ${this.recipe.name}`);
-                        this.current_step = undefined;
-                        this.status = RecipeState.completed;
-                        this.eventEmitter.emit('recipe_finished', this);
-                    }
-                }
-            });
     }
 }
