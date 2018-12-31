@@ -65,7 +65,7 @@ describe('Integration test with CIF test PLC', function () {
         }
     }
 
-    it.skip('should connect to CIF', async function () {
+    it('should connect to CIF', async function () {
         this.timeout(10000);
         manager.autoreset = true;
         await module.connect();
