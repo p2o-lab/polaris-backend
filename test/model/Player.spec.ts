@@ -79,7 +79,7 @@ describe('Player', function () {
                 modules);
         });
 
-        it.skip('should run Player with CIF test recipes', (done) => {
+        it('should run Player with CIF test recipes', (done) => {
             let player = new Player();
 
             player.enqueue(recipeCif);
@@ -91,6 +91,7 @@ describe('Player', function () {
                 done();
             });
         });
+
     });
 
 });
