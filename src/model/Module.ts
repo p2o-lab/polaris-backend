@@ -89,9 +89,9 @@ export class Module {
 
     /**
      * Opens connection to server and establish session
-     * @returns {Promise<ClientSession>}
+     * @returns {Promise<void>}
      */
-    async connect(): Promise<ClientSession> {
+    async connect(): Promise<void> {
         if (this.session) {
             catOpc.debug(`Already connected to module ${this.id}`);
         } else {
@@ -157,7 +157,6 @@ export class Module {
                 return Promise.reject(`Could not connect to module ${this.id} on ${this.endpoint}: ${err.toString()}`);
             }
         }
-        return this.session;
     }
 
     async getServiceStates(): Promise<ServiceInterface[]> {
@@ -302,6 +301,12 @@ export class Module {
         return result;
     }
 
+    /** writes value to opc ua node
+     *
+     * @param {OpcUaNode} node
+     * @param {} value
+     * @returns {Promise<any>}
+     */
     public async writeNode(node: OpcUaNode, value: Variant) {
         if (!this.session) {
             throw new Error(`Can not write node since OPC UA connection to module ${this.id} is not established`);

@@ -29,6 +29,14 @@ import {EventEmitter} from 'events';
 import {PlayerInterface, RecipeState, Repeat} from 'pfe-ree-interface';
 import {RecipeRun} from "./RecipeRun";
 
+/**
+ * Player can play recipes in a playlist
+ * Only one recipe is active at one point in time
+ *
+ * @fires recipe_finished
+ * @fires completed
+ *
+ */
 export class Player extends EventEmitter{
     public repeat: Repeat;
 
@@ -160,9 +168,6 @@ export class Player extends EventEmitter{
             this.emit('recipe_finished', finishedRecipe);
             this.onRecipeFinished();
         });
-        events.on('step_finished', () => {
-                this.emit('refresh', 'recipe', 'stepFinished');
-            });
     }
 
 }

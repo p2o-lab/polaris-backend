@@ -32,26 +32,36 @@ import { Transition } from './Transition';
 import { manager } from './Manager';
 import { RecipeInterface, ModuleInterface, RecipeOptions, RecipeState, StepInterface } from 'pfe-ree-interface';
 
-/** Static description of recipe
+/** Recipe which can be started.
+ * It is parsed from RecipeOptions
+ *
+ * A Recipe has the following states and emits following events
+ * @startuml
+ * [*] --> idle
+ * idle --> running : start()
+ * running --> paused : pause()
+ * running --> running : -> step_completed
+ * paused --> running : resume()
+ * running --> idle : -> recipe_completed
+ * @enduml
  *
  */
 export class Recipe {
 
     id: string;
     name: string;
+    options: RecipeOptions;
+    protected: boolean;
 
     // necessary modules
     modules: Set<Module> = new Set<Module>();
     initial_step: Step;
     steps: Step[];
 
-    // dynamic properties (should be moved to RecipeRun)
+    // dynamic properties
     current_step: Step;
     status: RecipeState;
     eventEmitter: EventEmitter;
-
-    options: RecipeOptions;
-    protected: boolean;
 
     constructor(options: RecipeOptions, modules: Module[], protectedRecipe: boolean = false) {
 
@@ -103,7 +113,7 @@ export class Recipe {
     public json(): RecipeInterface {
         return {
             id: this.id,
-            modules: this.getModulesInRecipe(),
+            modules: Array.from(this.modules).map(module => module.id),
             status: this.status,
             currentStep: this.current_step ? this.current_step.name : undefined,
             options: this.options,
@@ -111,12 +121,11 @@ export class Recipe {
         };
     }
 
-    public disconnectModules(): Promise<any[]> {
-        const tasks = Array.from(this.modules).map(module => module.disconnect());
-        return Promise.all(tasks);
-    }
-
-    public connectModules(): Promise<any[]> {
+    /** Connect to all modules necessary for this recipe
+     *
+     * @returns {Promise<void[]>}
+     */
+    public connectModules(): Promise<void[]> {
         let promise;
         const tasks = Array.from(this.modules).map(module => module.connect());
         if (tasks.length > 0) {
@@ -127,8 +136,48 @@ export class Recipe {
         return promise;
     }
 
-    private getModulesInRecipe(): string[] {
-        return Array.from(this.modules).map(module => module.id);
+    /** start recipe
+     *
+     * @returns {"events".internal.EventEmitter} "recipe_finished" and "step_finished"
+     */
+    public start(): EventEmitter {
+        this.current_step = undefined;
+        this.status = RecipeState.idle;
+        this.connectModules()
+            .catch((reason) => {
+                throw new Error(`Could not connect to all modules for recipe ${this.name}. ` +
+                    `Start of recipe not possible: ${reason.toString()}`);
+            })
+            .then(() => {
+                this.eventEmitter.emit('started');
+                this.current_step = this.initial_step;
+                this.status = RecipeState.running;
+                this.executeStep();
+            });
+        return this.eventEmitter;
+    }
+
+    private executeStep() {
+        catRecipe.debug(`Start step: ${this.current_step.name}`);
+        this.current_step.execute()
+            .on('completed', (finishedStep: Step, transition: Transition) => {
+                if (finishedStep !== this.current_step) {
+                    catRecipe.warn(`Not correct step. Current Step: ${this.current_step.name}. ` +
+                        `Reported step: ${finishedStep.name}`);
+                } else {
+                    this.eventEmitter.emit('step_finished', this.current_step, transition.next_step);
+                    if (transition.next_step) {
+                        catRecipe.info(`Step ${finishedStep.name} finished. New step is ${transition.next_step_name}`);
+                        this.current_step = transition.next_step;
+                        this.executeStep();
+                    } else {
+                        catRecipe.info(`Recipe completed: ${this.name}`);
+                        this.current_step = undefined;
+                        this.status = RecipeState.completed;
+                        this.eventEmitter.emit('recipe_finished', this);
+                    }
+                }
+            });
     }
 
 }
