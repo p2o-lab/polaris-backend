@@ -15,6 +15,8 @@ class Recipe {
     name
     initial_step: Step
 }
+class RecipeRun
+RecipeRun --> Recipe
 class Service {
     name: string
     parameters: ServiceParameter[]
