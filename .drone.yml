@@ -6,8 +6,9 @@ clone:
 
 pipeline:
   build:
-    image: node:latest
+    image: node:alpine
     commands:
+      - npm install --registry https://registry.plt.et.tu-dresden.de:4873 pfe-ree-interface
       - npm install
       - npm run-script apidoc build
       - npm test
