@@ -32,6 +32,7 @@ import {expect} from 'chai';
 import {later, testForStateChange} from '../helper';
 import {Service} from '../../src/model/core/Service';
 import {Parameter} from '../../src/model/recipe/Parameter';
+import {ServiceCommand} from '@plt/pfe-ree-interface';
 
 describe('Integration test with CIF test PLC', function () {
 
@@ -84,15 +85,15 @@ describe('Integration test with CIF test PLC', function () {
     it('should provide correct control enable in IDLE state', async () => {
         const controlEnable = await service.getControlEnable();
         expect(controlEnable).to.deep.equal({
-            "abort": true,
-            "complete": false,
-            "pause": false,
-            "reset": false,
-            "restart": false,
-            "resume": false,
-            "start": true,
-            "stop": true,
-            "unhold": false
+            'abort': true,
+            'complete': false,
+            'pause': false,
+            'reset': false,
+            'restart': false,
+            'resume': false,
+            'start': true,
+            'stop': true,
+            'unhold': false
         });
     });
 
@@ -107,8 +108,8 @@ describe('Integration test with CIF test PLC', function () {
         assert.equal(service.name, 'Test_Service.Dosieren');
 
         const listener = service.subscribeToService();
-        let param = new Parameter({name: "SollVolumenStrom", value: 1.3}, service);
-        await service.start(service.strategies[0], [param]);
+        let param = new Parameter({name: 'SollVolumenStrom', value: 1.3}, service);
+        await service.executeCommand(ServiceCommand.start, service.strategies[0], [param]);
         await testForStateChange(listener, 'STARTING');
         await testForStateChange(listener, 'RUNNING');
 

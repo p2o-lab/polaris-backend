@@ -366,6 +366,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
     }
 
     async clearCommand(): Promise<boolean> {
+        catService.info(`command ${this.name} reset`);
         return await this.sendCommand(ServiceMtpCommand.UNDEFINED);
     }
 
@@ -571,7 +572,12 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
                 value: command,
                 arrayType: VariantArrayType.Scalar
             });
-        catService.trace(`Command ${command} written to ${this.name}: ${JSON.stringify(result)}`);
+        catService.info(`Command ${command} written to ${this.name}: ${JSON.stringify(result)}`);
+
+        this.parent.listenToOpcUaNode(this.command)
+            .on('changed', (data) => {
+                catService.info(`command ${this.name} changed: ${JSON.stringify(data)}`);
+            });
 
         return result.value === 0;
     }
