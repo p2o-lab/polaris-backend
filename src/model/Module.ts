@@ -178,6 +178,7 @@ export class Module {
                     this.session = undefined;
                     await promiseTimeout(1000, this.client.disconnect());
                     this.client = undefined;
+                    catModule.debug(`Module ${this.id} disconnected`);
                     manager.eventEmitter.emit('refresh', 'module');
                     resolve(`Module ${this.id} disconnected`);
                 } catch (err) {
@@ -297,7 +298,7 @@ export class Module {
     public readVariableNode(node: OpcUaNode) {
         const nodeId = this.resolveNodeId(node);
         const result = this.session.readVariableValue(nodeId);
-        catOpc.info(`Read Variable: ${JSON.stringify(node)} -> ${nodeId} = ${result}`);
+        catOpc.debug(`Read Variable: ${JSON.stringify(node)} -> ${nodeId} = ${result}`);
         return result;
     }
 
