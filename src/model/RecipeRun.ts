@@ -23,20 +23,21 @@
  * SOFTWARE.
  */
 
-import {RecipeInterface} from 'pfe-ree-interface';
 import { Recipe } from './Recipe';
 import { v4 } from 'uuid';
 import { EventEmitter } from 'events';
+import {RecipeRunInterface} from 'pfe-ree-interface';
+
 
 /** One specific recipe run with all logs
  *
  */
 export class RecipeRun {
 
-    id: string;
+    readonly id: string;
     startTime: Date;
     endTime: Date;
-    recipe: Recipe;
+    readonly recipe: Recipe;
 
     eventEmitter: EventEmitter;
 
@@ -46,7 +47,7 @@ export class RecipeRun {
         this.eventEmitter = new EventEmitter();
     }
 
-    public json(): { id: string; startTime: Date; endTime: Date; recipe: RecipeInterface } {
+    public json(): RecipeRunInterface {
         return {
             id: this.id,
             startTime: this.startTime,
