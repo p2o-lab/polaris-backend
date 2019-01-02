@@ -47,7 +47,7 @@ describe('Player', function () {
                 [], false);
         });
 
-        it('should load run Player with three local recipes', (done) => {
+        it('should load run Player with three local waiting recipes', (done) => {
             let player = new Player();
 
             player.enqueue(recipeWait5s);
@@ -73,6 +73,7 @@ describe('Player', function () {
 
         let modules;
         let recipeCif;
+
         before(() => {
             modules = manager.loadModule(JSON.parse(fs.readFileSync('assets/modules/module_cif.json').toString()));
             recipeCif = new Recipe(JSON.parse(fs.readFileSync('assets/recipes/recipe_cif_test.json').toString()),
@@ -87,7 +88,8 @@ describe('Player', function () {
             player.on('recipe_finished', (recipe) => {
                 expect(recipe).to.have.property('status', 'completed');
             });
-            player.on('completed', () => {
+            player.on('completed', async () => {
+                await Promise.all(manager.modules.map(module => module.disconnect()));
                 done();
             });
         });
