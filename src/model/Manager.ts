@@ -157,8 +157,10 @@ export class Manager {
         if (this.autoreset) {
             catManager.info(`Service ${service.parent.id}.${service.name} completed. Short waiting time (${this._autoreset_timeout}) to autoreset`);
             setTimeout(() => {
-                catManager.info(`Service ${service.parent.id}.${service.name} completed. Now perform autoreset`);
-                service.reset();
+                if (service.parent.isConnected()) {
+                    catManager.info(`Service ${service.parent.id}.${service.name} completed. Now perform autoreset`);
+                    service.reset();
+                }
             }, this._autoreset_timeout);
         }
     }
