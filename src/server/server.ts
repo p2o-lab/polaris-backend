@@ -40,6 +40,7 @@ export class Server {
         this.app = express();
         Middleware.init(this);
         Routes.init(this);
+        manager.server = this;
     }
 
     initSocketServer(server) {
@@ -47,14 +48,19 @@ export class Server {
         this.wss.on('connection', (ws: WebSocket) => {
             catServer.info('WS Client connected');
         });
+    }
 
-        manager.eventEmitter.on('refresh', (data, action) => {
-            catServer.trace(`WS refresh published ${data} ${action}`);
-            this.wss.clients.forEach((client) => {
-                if (client.readyState === WebSocket.OPEN) {
-                    client.send(JSON.stringify({ msg: 'refresh', data, action }));
-                }
-            });
+    /** Notify all clients via websocket about refresh of data
+     *
+     * @param message "module", "recipes", "player", "action"
+     * @param data
+     */
+    notifyClients(message: string, data: any) {
+        catServer.trace(`WS refresh published ${message} ${data}`);
+        this.wss.clients.forEach((client) => {
+            if (client.readyState === WebSocket.OPEN) {
+                client.send(JSON.stringify({ message, data }));
+            }
         });
     }
 }

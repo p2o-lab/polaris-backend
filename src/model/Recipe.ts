@@ -157,6 +157,14 @@ export class Recipe {
         return this.eventEmitter;
     }
 
+    /**
+     * Stops recipe
+     */
+    public stop () {
+        this.status = RecipeState.stopped;
+        this.current_step.transitions.map(trans => trans.condition.clear())
+    }
+
     private executeStep() {
         catRecipe.debug(`Start step: ${this.current_step.name}`);
         this.current_step.execute()

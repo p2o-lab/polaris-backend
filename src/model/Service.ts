@@ -70,7 +70,7 @@ export interface ServiceOptions {
  * after connection to a real PEA, commands can be triggered and states can be retrieved
  *
  */
-export class Service {
+export class Service extends EventEmitter {
 
     name: string;
     command: OpcUaNode;
@@ -82,11 +82,11 @@ export class Service {
     parameters: ServiceParameter[];
 
     public parent: Module;
-    private listeners: EventEmitter[];
-    private eventEmitter: EventEmitter;
+    private serviceParametersEventEmitters: EventEmitter[];
     private lastChange: Date;
 
     constructor(serviceOptions: ServiceOptions, parent: Module) {
+        super();
         this.name = serviceOptions.name;
 
         this.opMode = serviceOptions.communication.OpMode;
@@ -102,13 +102,12 @@ export class Service {
         this.parameters = serviceOptions.parameters;
 
         this.parent = parent;
-        this.listeners = [];
+        this.serviceParametersEventEmitters = [];
     }
 
     async getServiceState(): Promise<ServiceState> {
         try {
             const result: DataValue = await this.parent.readVariableNode(this.status);
-            console.log(this.status, result)
             const state: ServiceState = <ServiceState> result.value.value;
             const stateString: string = ServiceState[state];
             catOpc.trace(`Read state ${this.name}: ${state} (${stateString})`);
@@ -376,13 +375,13 @@ export class Service {
             if (param.continuous) {
                 const listener: EventEmitter = param.listenToParameter()
                     .on('refresh', () => param.updateValueOnModule());
-                this.listeners.push(listener);
+                this.serviceParametersEventEmitters.push(listener);
             }
         });
     }
 
     private clearListeners() {
-        this.listeners.forEach(listener => listener.removeAllListeners());
+        this.serviceParametersEventEmitters.forEach(listener => listener.removeAllListeners());
     }
 
     async setParameter(opcUaNode: OpcUaNode, dataType: DataType, paramValue: any): Promise<any> {
@@ -492,38 +491,34 @@ export class Service {
      * Listen to state and error of service and emits specific events for them
      *
      * <uml>
-     *     Caller->Service : subscribeToService
-     *     Caller <-Service : emit "state"
-     *     Caller <-Service : emit "errorMessage"
+     *     Caller -> Service : subscribeToService
+     *     ...
+     *     Caller <- Service : emit "state"
+     *     Caller <- Service : emit "errorMessage"
      * </uml>
-     * @returns {EventEmitter} emits 'errorMessage' and 'state' events
+     * @returns {Service} emits 'errorMessage' and 'state' events
      */
-    public subscribeToService(): EventEmitter {
-        if (!this.eventEmitter) {
-            this.eventEmitter = new EventEmitter();
-            if (this.errorMessage) {
-                this.parent.listenToOpcUaNode(this.errorMessage)
-                    .on('changed', (data) => {
-                        this.eventEmitter.emit('errorMessage', data);
-                    });
-            } else {
-                catService.warn(`Service ${this.name} from module ${this.parent.id}` +
-                    ` does not have a errorMessage variable`);
-            }
-            if (this.status) {
-                this.parent.listenToOpcUaNode(this.status)
-                    .on('changed', (data) => {
-                        this.lastChange = new Date();
-                        catService.info(`${this.name} = ${ServiceState[data]} ${this.lastChange}`);
-                        this.eventEmitter.emit('state', data);
-                    });
-            } else {
-                throw new Error(`OPC UA variable for status of service ${this.name} not defined`);
-            }
+    public subscribeToService(): Service {
+        if (this.errorMessage) {
+            this.parent.listenToOpcUaNode(this.errorMessage)
+                .on('changed', (data) => {
+                    this.emit('errorMessage', data);
+                });
         } else {
-            catService.info('already subscribed, provide existing emitter');
+            catService.warn(`Service ${this.name} from module ${this.parent.id}` +
+                ` does not have a errorMessage variable`);
         }
-        return this.eventEmitter;
+        if (this.status) {
+            this.parent.listenToOpcUaNode(this.status)
+                .on('changed', (data) => {
+                    this.lastChange = new Date();
+                    catService.info(`${this.name} = ${ServiceState[data]} ${this.lastChange}`);
+                    this.emit('state', data);
+                });
+        } else {
+            throw new Error(`OPC UA variable for status of service ${this.name} not defined`);
+        }
+        return this;
     }
 
 }

@@ -67,7 +67,7 @@ moduleRouter.put('', upload.single('file'), asyncHandler(async (req, res) => {
     newModules.forEach(module =>
         module.connect().catch(reason => catModule.warn('Could not connect to module: ' + reason))
     );
-    manager.eventEmitter.emit('refresh', 'module');
+    manager.notifyClients('module', newModules);
     res.json(await Promise.all(newModules.map(module => module.json())));
 }));
 
@@ -87,7 +87,7 @@ moduleRouter.delete('/:id', asyncHandler(async (req: Request, res: Response) => 
         if (index > -1) {
             manager.modules.splice(index, 1);
         }
-        manager.eventEmitter.emit('refresh', 'module');
+        manager.notifyClients('module');
         res.send({ status: 'Successful deleted', id: req.params.id });
     }
 }));
