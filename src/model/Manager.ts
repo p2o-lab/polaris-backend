@@ -55,7 +55,12 @@ export class Manager {
 
 
     constructor() {
-        this.player = new Player();
+        this.player = new Player()
+            .on('started', () => this.notifyClients('player', this.player.json()))
+            .on('recipeStarted', () => this.notifyClients('player', this.player.json()))
+            .on('stepFinished', () => this.notifyClients('player', this.player.json()))
+            .on('recipeFinished', () => this.notifyClients('player', this.player.json()))
+            .on('completed', () => this.notifyClients('player', this.player.json()));
     }
 
     get autoreset(): boolean {
@@ -108,10 +113,10 @@ export class Manager {
                     this.notifyClients('module', {module: service.parent.id, service: service.name, state: ServiceState[state]});
                 })
                 .on('serviceCompleted', (service: Service) => {
-                    this.notifyClients('module');
                     this.performAutoReset(service);
                 })
         });
+        this.notifyClients('module');
         return newModules;
     }
 

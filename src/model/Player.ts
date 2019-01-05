@@ -28,12 +28,16 @@ import {catManager} from '../config/logging';
 import {EventEmitter} from 'events';
 import {PlayerInterface, RecipeState, Repeat} from 'pfe-ree-interface';
 import {RecipeRun} from "./RecipeRun";
+import {manager} from './Manager';
+import * as assert from 'assert';
 
 /**
  * Player can play recipes in a playlist
  * Only one recipe is active at one point in time
  *
  * @event started
+ * @event recipeStarted
+ * @event stepFinished
  * @event recipeFinished
  * @event completed
  *
@@ -64,22 +68,6 @@ export class Player extends EventEmitter{
         this._status = RecipeState.idle;
         this.currentRecipeRun = undefined;
         this.recipeRuns = [];
-    }
-
-    private onRecipeFinished(recipe: Recipe) {
-        this.emit('recipeFinished', recipe);
-        catManager.info(`recipe finished ${this.currentItem + 1}/${this._playlist.length} (player ${this.status})`);
-        if (this._status === RecipeState.running) {
-            if (this._currentItem + 1 < this._playlist.length) {
-                this._currentItem = this._currentItem + 1;
-                catManager.info(`Go to next recipe (${this.currentItem + 1}/${this.playlist.length})`);
-                this.runCurrentRecipe();
-            } else {
-                this._status = RecipeState.completed;
-                this._currentItem = undefined;
-                this.emit('completed');
-            }
-        }
     }
 
     get status() {
@@ -172,10 +160,23 @@ export class Player extends EventEmitter{
     private runCurrentRecipe() {
         this.currentRecipeRun = new RecipeRun(this.getCurrentRecipe());
         this.recipeRuns.push(this.currentRecipeRun);
-        const events = this.currentRecipeRun.start();
-        events.once('recipe_finished', (finishedRecipe) => {
-            this.onRecipeFinished(finishedRecipe);
-        });
+        this.currentRecipeRun.start()
+            .once('started', () => this.emit('recipeStarted'))
+            .on('stepFinished', () => this.emit('stepFinished'))
+            .once('completed', (finishedRecipe) => {
+                this.emit('recipeFinished', finishedRecipe);
+                catManager.info(`recipe finished ${this.currentItem + 1}/${this._playlist.length} (player ${this.status})`);
+                assert.equal(this._status, RecipeState.running);
+                if (this._currentItem + 1 < this._playlist.length) {
+                    this._currentItem = this._currentItem + 1;
+                    catManager.info(`Go to next recipe (${this.currentItem + 1}/${this.playlist.length})`);
+                    this.runCurrentRecipe();
+                } else {
+                    this._status = RecipeState.completed;
+                    this._currentItem = undefined;
+                    this.emit('completed');
+                }
+            });
     }
 
 }

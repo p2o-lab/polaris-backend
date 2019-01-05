@@ -31,6 +31,7 @@ import { v4 } from 'uuid';
 import { Transition } from './Transition';
 import { manager } from './Manager';
 import { RecipeInterface, ModuleInterface, RecipeOptions, RecipeState, StepInterface } from 'pfe-ree-interface';
+import * as assert from 'assert';
 
 /** Recipe which can be started.
  * It is parsed from RecipeOptions
@@ -45,8 +46,12 @@ import { RecipeInterface, ModuleInterface, RecipeOptions, RecipeState, StepInter
  * running --> idle : -> recipe_completed
  * @enduml
  *
+ * @event started
+ * @event stepFinished
+ * @event completed
+ *
  */
-export class Recipe {
+export class Recipe extends EventEmitter{
 
     id: string;
     name: string;
@@ -61,10 +66,9 @@ export class Recipe {
     // dynamic properties
     current_step: Step;
     status: RecipeState;
-    eventEmitter: EventEmitter;
 
     constructor(options: RecipeOptions, modules: Module[], protectedRecipe: boolean = false) {
-
+        super();
         this.id = v4();
         if (options.name) {
             this.name = options.name;
@@ -93,7 +97,6 @@ export class Recipe {
 
         this.options = options;
         this.protected = protectedRecipe;
-        this.eventEmitter = new EventEmitter();
 
         catRecipe.info(`Recipe ${this.name} successfully parsed`);
     }
@@ -138,10 +141,10 @@ export class Recipe {
 
     /** start recipe
      *
-     * @returns {"events".internal.EventEmitter} "recipe_finished" and "step_finished"
+     * @returns {Recipe} "recipe_finished" and "step_finished"
      */
-    public start(): EventEmitter {
-        this.current_step = undefined;
+    public start(): Recipe {
+        this.current_step = this.initial_step;
         this.status = RecipeState.idle;
         this.connectModules()
             .catch((reason) => {
@@ -149,12 +152,12 @@ export class Recipe {
                     `Start of recipe not possible: ${reason.toString()}`);
             })
             .then(() => {
-                this.eventEmitter.emit('started');
                 this.current_step = this.initial_step;
                 this.status = RecipeState.running;
                 this.executeStep();
+                this.emit('started');
             });
-        return this.eventEmitter;
+        return this;
     }
 
     /**
@@ -168,23 +171,19 @@ export class Recipe {
     private executeStep() {
         catRecipe.debug(`Start step: ${this.current_step.name}`);
         this.current_step.execute()
-            .on('completed', (finishedStep: Step, transition: Transition) => {
-                if (finishedStep !== this.current_step) {
-                    catRecipe.warn(`Not correct step. Current Step: ${this.current_step.name}. ` +
-                        `Reported step: ${finishedStep.name}`);
+            .once('completed', (transition: Transition) => {
+                assert.notEqual(transition.next_step_name, this.current_step.name);
+                if (transition.next_step) {
+                    catRecipe.info(`Step ${this.current_step.name} finished. New step is ${transition.next_step_name}`);
+                    this.current_step = transition.next_step;
+                    this.executeStep();
                 } else {
-                    this.eventEmitter.emit('step_finished', this.current_step, transition.next_step);
-                    if (transition.next_step) {
-                        catRecipe.info(`Step ${finishedStep.name} finished. New step is ${transition.next_step_name}`);
-                        this.current_step = transition.next_step;
-                        this.executeStep();
-                    } else {
-                        catRecipe.info(`Recipe completed: ${this.name}`);
-                        this.current_step = undefined;
-                        this.status = RecipeState.completed;
-                        this.eventEmitter.emit('recipe_finished', this);
-                    }
+                    catRecipe.info(`Recipe completed: ${this.name}`);
+                    this.current_step = undefined;
+                    this.status = RecipeState.completed;
+                    this.emit('completed');
                 }
+                this.emit('stepFinished', this.current_step, transition.next_step);
             });
     }
 

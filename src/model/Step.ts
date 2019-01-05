@@ -84,8 +84,7 @@ export class Step {
                         transition.condition.clear();
                     });
 
-                    this.eventEmitter.emit('completed', this, transition);
-                    this.eventEmitter.removeAllListeners();
+                    this.eventEmitter.emit('completed', transition);
                 }
             });
         });
