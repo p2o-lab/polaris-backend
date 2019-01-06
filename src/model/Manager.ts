@@ -163,13 +163,13 @@ export class Manager extends EventEmitter {
     }
 
     /**
-     * get ManagerInterface as JSON
+     * get ManagerInterfacie as JSON
      *
      * @returns {ManagerInterface}
      */
     json(): ManagerInterface {
         return {
-            activeRecipe: this.player.getCurrentRecipe().json(),
+            activeRecipe: this.player.getCurrentRecipe()? this.player.getCurrentRecipe().json() : undefined,
             modules: this.modules.map(module => module.id),
             autoReset: this.autoreset
         };

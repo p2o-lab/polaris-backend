@@ -60,4 +60,8 @@ describe('Manager', () => {
         expect(modules).to.have.lengthOf(3);
     });
 
+    it('should provide JSON output', () => {
+       expect(manager.json().autoReset).to.equal(true);
+    });
+
 });
