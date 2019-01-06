@@ -28,8 +28,6 @@ import {catManager} from '../config/logging';
 import {EventEmitter} from 'events';
 import {PlayerInterface, RecipeState, Repeat} from 'pfe-ree-interface';
 import {RecipeRun} from "./RecipeRun";
-import {manager} from './Manager';
-import * as assert from 'assert';
 
 /**
  * Player can play recipes in a playlist
@@ -95,6 +93,10 @@ export class Player extends EventEmitter{
         this._playlist.splice(index, 1);
     }
 
+    /**
+     * Get JSON serialisation of player
+     * @returns {PlayerInterface}
+     */
     public json(): PlayerInterface {
         return {
             playlist: this._playlist.map(recipe => recipe.json()),
@@ -108,10 +110,9 @@ export class Player extends EventEmitter{
     /**
      * Start recipe
      *
-     * @fires Player#started
-     * @returns {Promise<void>}
+     * @returns Player
      */
-    public async start() {
+    public start(): Player {
         if (this.status === RecipeState.idle || this.status === RecipeState.stopped) {
             this._status = RecipeState.running;
             this._currentItem = 0;
@@ -125,6 +126,7 @@ export class Player extends EventEmitter{
         } else {
             throw new Error('Player currently already running');
         }
+        return this;
     }
 
     public reset() {
@@ -157,7 +159,8 @@ export class Player extends EventEmitter{
         }
     }
 
-    private runCurrentRecipe() {
+
+    private runCurrentRecipe(): Player {
         this.currentRecipeRun = new RecipeRun(this.getCurrentRecipe());
         this.recipeRuns.push(this.currentRecipeRun);
         this.currentRecipeRun.start()
@@ -166,7 +169,6 @@ export class Player extends EventEmitter{
             .once('completed', () => {
                 this.emit('recipeFinished', this.currentRecipeRun.recipe);
                 catManager.info(`recipe finished ${this.currentItem + 1}/${this._playlist.length} (player ${this.status})`);
-                assert.equal(this._status, RecipeState.running);
                 if (this._currentItem + 1 < this._playlist.length) {
                     this._currentItem = this._currentItem + 1;
                     catManager.info(`Go to next recipe (${this.currentItem + 1}/${this.playlist.length})`);
@@ -177,6 +179,7 @@ export class Player extends EventEmitter{
                     this.emit('completed');
                 }
             });
+        return this;
     }
 
 }
