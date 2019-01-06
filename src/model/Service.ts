@@ -469,6 +469,9 @@ export class Service extends EventEmitter {
     }
 
     private async sendCommand(command: ServiceMtpCommand): Promise<boolean> {
+        if (!this.parent.isConnected()) {
+            return Promise.reject('Module is not connected');
+        }
         catService.debug(`Send command ${ServiceMtpCommand[command]} (${command}) to service "${this.name}"`);
         if (manager.automaticMode) {
             await this.setToAutomaticOperationMode();

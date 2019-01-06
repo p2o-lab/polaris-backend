@@ -27,13 +27,12 @@ import {Player} from '../../src/model/Player';
 import * as fs from 'fs';
 import {Recipe} from '../../src/model/Recipe';
 import {expect} from 'chai';
-import {Module} from '../../src/model/Module';
 import {manager} from '../../src/model/Manager';
+import {later} from '../helper';
 
 describe('Player', function () {
 
     this.timeout(10000);
-
 
     describe('local', () => {
         let recipeWait5s;
@@ -57,16 +56,15 @@ describe('Player', function () {
             expect(player.playlist).to.has.length(3);
 
             let completedRecipes = [];
-            player.start();
-            player.on('recipeFinished', (recipe) => {
-                console.log(recipe)
-                expect(recipe).to.have.property('status', 'completed');
-                completedRecipes.push(recipe);
-            });
-            player.on('completed', () => {
-                expect(completedRecipes).to.has.length(3);
-                done();
-            });
+            player.start()
+                .on('recipeFinished', (recipe) => {
+                    expect(recipe).to.have.property('status', 'completed');
+                    completedRecipes.push(recipe);
+                })
+                .on('completed', () => {
+                    expect(completedRecipes).to.has.length(3);
+                    done();
+                });
         });
     });
 
@@ -77,22 +75,23 @@ describe('Player', function () {
 
         before(() => {
             modules = manager.loadModule(JSON.parse(fs.readFileSync('assets/modules/module_cif.json').toString()));
-            recipeCif = new Recipe(JSON.parse(fs.readFileSync('assets/recipes/recipe_cif_test.json').toString()),
-                modules);
+            recipeCif = manager.loadRecipe(JSON.parse(fs.readFileSync('assets/recipes/recipe_cif_test.json').toString()));
         });
 
         it('should run Player with CIF test recipes', (done) => {
             let player = new Player();
 
             player.enqueue(recipeCif);
-            player.start();
-            player.on('recipe_finished', (recipe) => {
-                expect(recipe).to.have.property('status', 'completed');
-            });
-            player.on('completed', async () => {
-                await Promise.all(manager.modules.map(module => module.disconnect()));
-                done();
-            });
+            player.start()
+                .on('recipeFinished', (recipe) => {
+                    expect(recipe).to.have.property('status', 'completed');
+                })
+                .on('completed', async () => {
+                    /* wait for auto reset */
+                    await later(750);
+                    await Promise.all(manager.modules.map(module => module.disconnect()));
+                    done();
+                });
         });
 
     });

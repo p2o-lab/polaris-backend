@@ -75,9 +75,11 @@ export class Player extends EventEmitter{
     /**
      * Add recipe to playlist
      * @param {Recipe} recipe
+     * @return Player
      */
-    public enqueue(recipe: Recipe) {
+    public enqueue(recipe: Recipe): Player {
         this._playlist.push(recipe);
+        return this;
     }
 
     public getCurrentRecipe(): Recipe {
@@ -87,10 +89,12 @@ export class Player extends EventEmitter{
     /**
      * Remove recipe from playlist
      * @param {number} index in playlist
+     * @return Player
      */
-    public remove(index: number) {
+    public remove(index: number): Player {
         catManager.info(`Delete recipe ${index} from playlist`);
         this._playlist.splice(index, 1);
+        return this;
     }
 
     /**

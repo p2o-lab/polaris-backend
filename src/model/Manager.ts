@@ -49,6 +49,7 @@ export class Manager extends EventEmitter {
 
     // autoreset determines if a service is automatically reset when
     private _autoreset: boolean = true;
+    // autoreset timeout in milliseconds
     private _autoreset_timeout = 500;
 
     constructor() {

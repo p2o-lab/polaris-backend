@@ -30,6 +30,7 @@ import { ServiceState } from '../../src/model/enum';
 import { promiseTimeout } from '../../src/timeout-promise';
 import { manager } from '../../src/model/Manager';
 import { expect } from 'chai';
+import {later, testForStateChange} from '../helper';
 
 describe('Integration test with CIF test PLC', function () {
 
@@ -40,30 +41,6 @@ describe('Integration test with CIF test PLC', function () {
         module = manager.loadModule(JSON.parse(file.toString()))[0];
     });
 
-    /** wait
-     *
-     * @param {number} delay in milliseconds
-     * @returns {Promise<any>}
-     */
-    function later(delay: number) {
-        return new Promise((resolve) => {
-            setTimeout(resolve, delay);
-        });
-    }
-
-    async function testForStateChange(listener, expectedState: string) {
-        try {
-            await promiseTimeout(1000, new Promise((resolve) => {
-                listener.on('state', (state) => {
-                    if (ServiceState[state] === expectedState) {
-                        resolve();
-                    }
-                });
-            }));
-        } catch (err) {
-            assert.fail(`Failed to reach ${expectedState} within 1000ms`);
-        }
-    }
 
     it('should connect to CIF', async function () {
         this.timeout(10000);

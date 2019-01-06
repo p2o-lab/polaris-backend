@@ -39,7 +39,7 @@
             "conditions": [
               {
                 "type": "time",
-                "duration": 5
+                "duration": 1
               }
             ]
           }
