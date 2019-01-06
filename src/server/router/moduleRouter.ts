@@ -122,6 +122,28 @@ moduleRouter.post('/:id/disconnect', asyncHandler(async (req: Request, res: Resp
  * @apiGroup Module
  */
 moduleRouter.post('/abort', asyncHandler(async (req: Request, res: Response) => {
-    await manager.abortAllModules();
+    await manager.abortAllServices();
     res.json({ status: 'aborted all services from all modules' });
+}));
+
+/**
+ * @api {post} /module/stop    Stop all services
+ * @apiName StopAllServices
+ * @apiDescription Abort all services from all modules
+ * @apiGroup Module
+ */
+moduleRouter.post('/stop', asyncHandler(async (req: Request, res: Response) => {
+    await manager.stopAllServices();
+    res.json({ status: 'stopped all services from all modules' });
+}));
+
+/**
+ * @api {post} /module/reset    Reset all services
+ * @apiName ResetAllServices
+ * @apiDescription Reset all services from all modules
+ * @apiGroup Module
+ */
+moduleRouter.post('/reset', asyncHandler(async (req: Request, res: Response) => {
+    await manager.resetAllServices();
+    res.json({ status: 'reset all services from all modules' });
 }));
