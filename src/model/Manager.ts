@@ -35,14 +35,13 @@ import {ServiceState} from './enum';
 
 export class Manager extends EventEmitter {
 
-    // loaded activeRecipe
-    activeRecipe: Recipe;
-    recipes: Recipe[] = [];
+    // loaded recipes
+    readonly recipes: Recipe[] = [];
 
     // loaded modules
-    modules: Module[] = [];
+    readonly modules: Module[] = [];
 
-    player: Player;
+    readonly player: Player;
 
     // use ControlExt (true) or ControlOp (false)
     automaticMode: boolean = false;
@@ -74,8 +73,9 @@ export class Manager extends EventEmitter {
     /**
      * Load modules from JSON according to TopologyGenerator output or to simplified JSON
      * Skip module if already a module with same id is registered
-     * @param options
-     * @returns {Module[]}
+     * @param options           options for creating modules
+     * @param protectedModules  should modules be protected from being deleted
+     * @returns {Module[]}  created modules
      */
     public loadModule(options, protectedModules: boolean = false): Module[] {
         let newModules: Module[] = [];
@@ -126,27 +126,37 @@ export class Manager extends EventEmitter {
         return newRecipe;
     }
 
-
     /**
-     * Abort all services from modules used in activeRecipe
-     * @returns {Promise}
+     * Abort all services from all loaded modules
      */
     abortAllServices() {
-        let tasks = Array.from(this.activeRecipe.modules).map((module) => {
-            Promise.all(module.services.map((service) => {
-                service.abort();
-            }));
-        });
+        let tasks = this.modules.map(module =>
+            module.services.map(service =>
+                service.abort()
+            )
+        );
         return Promise.all(tasks);
     }
 
     /**
-     * Abort all services from all loaded modules
+     * Stop all services from all loaded modules
      */
-    abortAllModules() {
+    stopAllServices() {
         let tasks = this.modules.map(module =>
             module.services.map(service =>
-                service.abort()
+                service.stop()
+            )
+        );
+        return Promise.all(tasks);
+    }
+
+    /**
+     * Reset all services from all loaded modules
+     */
+    resetAllServices() {
+        let tasks = this.modules.map(module =>
+            module.services.map(service =>
+                service.reset()
             )
         );
         return Promise.all(tasks);

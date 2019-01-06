@@ -80,13 +80,3 @@ recipeRouter.put('', asyncHandler(async (req: Request, res: Response) => {
     manager.loadRecipe(req.body);
     res.json({ status: 'recipe successful loaded' });
 }));
-
-/**
- * @api {post} /activeRecipe/abort    Abort all services
- * @apiName AbortServices
- * @apiDescription Abort all services from all connected modules
- * @apiGroup Recipe
- */
-moduleRouter.post('/abort', asyncHandler(async (req: Request, res: Response) => {
-    res.json(await manager.abortAllServices());
-}));

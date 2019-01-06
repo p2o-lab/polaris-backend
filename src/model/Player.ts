@@ -33,6 +33,7 @@ import {RecipeRun} from "./RecipeRun";
  * Player can play recipes in a playlist
  * Only one recipe is active at one point in time
  *
+ * Following events are emitted
  * @event started
  * @event recipeStarted
  * @event stepFinished
@@ -47,7 +48,7 @@ export class Player extends EventEmitter{
 
     private _playlist: Recipe[];
 
-    recipeRuns: RecipeRun[];
+    readonly recipeRuns: RecipeRun[];
     private currentRecipeRun: RecipeRun;
 
     get playlist(): Recipe[] {
@@ -185,5 +186,4 @@ export class Player extends EventEmitter{
             });
         return this;
     }
-
 }

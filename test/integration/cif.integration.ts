@@ -43,7 +43,7 @@ describe('Integration test with CIF test PLC', function () {
 
 
     it('should connect to CIF', async function () {
-        this.timeout(10000);
+
         manager.autoreset = true;
         await module.connect();
 
@@ -56,21 +56,26 @@ describe('Integration test with CIF test PLC', function () {
         expect(json.services).to.have.lengthOf(6);
 
         const serviceStates = await module.getServiceStates();
+    });
 
+    it('should bring everything to idle', async () => {
+       await manager.stopAllServices();
+       await later(500);
+
+       await manager.resetAllServices();
+       await later(500);
+
+       const state = await module.services[5].getServiceState();
+       expect(state).to.equal(ServiceState.IDLE)
+
+    });
+
+    it('perform a service cycle', async function() {
+        this.timeout(10000);
         const service = module.services[5];
         assert.equal(service.name, 'Test_Service.Vorlegen');
 
         const listener = service.subscribeToService();
-
-        // bring service to IDLE
-        if (await service.getServiceState() !== ServiceState.ABORTED) {
-            await service.abort();
-            await testForStateChange(listener, 'ABORTED');
-        }
-
-        await service.reset();
-        await testForStateChange(listener, 'IDLE');
-
         await service.start(service.strategies[0], undefined);
         await testForStateChange(listener, 'RUNNING');
 
@@ -83,7 +88,7 @@ describe('Integration test with CIF test PLC', function () {
 
         await later(500);
         await module.disconnect();
-        json = await module.json();
+        const json = await module.json();
         assert.equal(json.connected, false);
         return json;
     });
