@@ -162,9 +162,9 @@ export class Player extends EventEmitter{
         this.recipeRuns.push(this.currentRecipeRun);
         this.currentRecipeRun.start()
             .once('started', () => this.emit('recipeStarted'))
-            .on('stepFinished', () => this.emit('stepFinished'))
-            .once('completed', (finishedRecipe) => {
-                this.emit('recipeFinished', finishedRecipe);
+            .on('stepFinished', (step) => this.emit('stepFinished', step))
+            .once('completed', () => {
+                this.emit('recipeFinished', this.currentRecipeRun.recipe);
                 catManager.info(`recipe finished ${this.currentItem + 1}/${this._playlist.length} (player ${this.status})`);
                 assert.equal(this._status, RecipeState.running);
                 if (this._currentItem + 1 < this._playlist.length) {

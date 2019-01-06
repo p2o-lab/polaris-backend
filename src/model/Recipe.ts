@@ -39,16 +39,16 @@ import * as assert from 'assert';
  * A Recipe has the following states and emits following events
  * @startuml
  * [*] --> idle
- * idle --> running : start()
+ * idle --> running : start() -> started
  * running --> paused : pause()
- * running --> running : -> step_completed
+ * running --> running : -> stepFinished
  * paused --> running : resume()
- * running --> idle : -> recipe_completed
+ * running --> idle : -> completed
  * @enduml
  *
- * @event started
- * @event stepFinished
- * @event completed
+ * @event started       when recipe has started
+ * @event stepFinished  when step is finished: (finishedStep:Step, nextStep:Step) => void
+ * @event completed     when recipe has completed
  *
  */
 export class Recipe extends EventEmitter{

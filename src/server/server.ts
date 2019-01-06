@@ -40,7 +40,7 @@ export class Server {
         this.app = express();
         Middleware.init(this);
         Routes.init(this);
-        manager.server = this;
+        manager.on('notify', (message, data) => this.notifyClients(message, data));
     }
 
     initSocketServer(server) {
@@ -50,12 +50,12 @@ export class Server {
         });
     }
 
-    /** Notify all clients via websocket about refresh of data
+    /** Notify all clients via websockets about refresh of data
      *
      * @param message "module", "recipes", "player", "action"
      * @param data
      */
-    notifyClients(message: string, data: any) {
+    private notifyClients(message: string, data: any) {
         catServer.trace(`WS refresh published ${message} ${data}`);
         this.wss.clients.forEach((client) => {
             if (client.readyState === WebSocket.OPEN) {

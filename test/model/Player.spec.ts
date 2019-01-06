@@ -58,7 +58,8 @@ describe('Player', function () {
 
             let completedRecipes = [];
             player.start();
-            player.on('recipe_finished', (recipe) => {
+            player.on('recipeFinished', (recipe) => {
+                console.log(recipe)
                 expect(recipe).to.have.property('status', 'completed');
                 completedRecipes.push(recipe);
             });

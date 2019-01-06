@@ -33,7 +33,7 @@ import {Player} from "./Player";
 import {Server} from '../server/server';
 import {ServiceState} from './enum';
 
-export class Manager {
+export class Manager extends EventEmitter {
 
     // loaded activeRecipe
     activeRecipe: Recipe;
@@ -51,16 +51,14 @@ export class Manager {
     private _autoreset: boolean = true;
     private _autoreset_timeout = 500;
 
-    server: Server;
-
-
     constructor() {
+        super();
         this.player = new Player()
-            .on('started', () => this.notifyClients('player', this.player.json()))
-            .on('recipeStarted', () => this.notifyClients('player', this.player.json()))
-            .on('stepFinished', () => this.notifyClients('player', this.player.json()))
-            .on('recipeFinished', () => this.notifyClients('player', this.player.json()))
-            .on('completed', () => this.notifyClients('player', this.player.json()));
+            .on('started', () => this.emit('notify', 'player', this.player.json()))
+            .on('recipeStarted', () => this.emit('notify', 'player', this.player.json()))
+            .on('stepFinished', () => this.emit('notify', 'player', this.player.json()))
+            .on('recipeFinished', () => this.emit('notify', 'player', this.player.json()))
+            .on('completed', () => this.emit('notify', 'player', this.player.json()));
     }
 
     get autoreset(): boolean {
@@ -104,26 +102,26 @@ export class Manager {
         this.modules.push(...newModules);
         newModules.forEach((module: Module) => {
             module
-                .on('connected', () => this.notifyClients('module'))
-                .on('disconnected', () => this.notifyClients('module'))
+                .on('connected', () => this.emit('notify', 'module'))
+                .on('disconnected', () => this.emit('notify', 'module'))
                 .on('errorMessage', (service: Service, errorMessage) => {
-                    this.notifyClients('module', {module: service.parent.id, service: service.name, errorMessage: errorMessage});
+                    this.emit('notify', 'module', {module: service.parent.id, service: service.name, errorMessage: errorMessage});
                 })
                 .on('stateChanged', (service: Service, state: ServiceState) => {
-                    this.notifyClients('module', {module: service.parent.id, service: service.name, state: ServiceState[state]});
+                    this.emit('notify', 'module', {module: service.parent.id, service: service.name, state: ServiceState[state]});
                 })
                 .on('serviceCompleted', (service: Service) => {
                     this.performAutoReset(service);
                 })
         });
-        this.notifyClients('module');
+        this.emit('notify', 'module');
         return newModules;
     }
 
     public loadRecipe(options: RecipeOptions, protectedRecipe: boolean = false): Recipe {
         const newRecipe = new Recipe(options, this.modules, protectedRecipe);
         this.recipes.push(newRecipe);
-        this.notifyClients('recipes');
+        this.emit('notify', 'recipes');
         return newRecipe;
     }
 
@@ -180,10 +178,6 @@ export class Manager {
                 }
             }, this._autoreset_timeout);
         }
-    }
-
-    notifyClients(message: string, data?: any) {
-        this.server.notifyClients(message, data);
     }
 
 }

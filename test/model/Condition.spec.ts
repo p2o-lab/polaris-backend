@@ -34,6 +34,9 @@ function later(delay) {
     });
 }
 
+/**
+ * Test for [[Condition]]
+ */
 describe('Condition', () => {
 
     it('should listen to a time condition of 0.4s', (done) => {
@@ -98,7 +101,7 @@ describe('Condition', () => {
     });
 
     it('should listen to a NOT condition', async () => {
-        const condition = new NotCondition({
+        const condition = Condition.create({
             type: ConditionType.not,
             condition: { type: ConditionType.time, duration: 0.5 }
         }, undefined, undefined);

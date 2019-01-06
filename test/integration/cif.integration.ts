@@ -37,7 +37,7 @@ describe('Integration test with CIF test PLC', function () {
 
     before(() => {
         const file = fs.readFileSync('assets/modules/module_cif.json');
-        module = new Module(JSON.parse(file.toString()).modules[0]);
+        module = manager.loadModule(JSON.parse(file.toString()))[0];
     });
 
     /** wait
@@ -84,7 +84,6 @@ describe('Integration test with CIF test PLC', function () {
         assert.equal(service.name, 'Test_Service.Vorlegen');
 
         const listener = service.subscribeToService();
-        // listener.on('state', state => console.log(ServiceState[state]));
 
         // bring service to IDLE
         if (await service.getServiceState() !== ServiceState.ABORTED) {
