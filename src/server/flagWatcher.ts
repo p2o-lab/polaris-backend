@@ -25,7 +25,7 @@
 
 import { series } from 'async';
 import { post } from 'request';
-import { AttributeIds, ClientSubscription, OPCUAClient, resolveNodeId } from 'node-opcua';
+import {AttributeIds, ClientSession, ClientSubscription, OPCUAClient, resolveNodeId} from 'node-opcua';
 import { catOpc } from '../config/logging';
 
 /** options
@@ -34,55 +34,58 @@ import { catOpc } from '../config/logging';
  let httpURL = 'http://www.google.de';        // http POST destination
  */
 
-export async function watchFlag(endpoint: string, nodeId: string, httpURL: string) {
+export class ExternalTrigger {
+    private endpoint: string;
+    private nodeId: string;
+    private client: OPCUAClient;
+    private session: ClientSession;
 
-    const client = new OPCUAClient({
-        endpoint_must_exist: false,
-        connectionStrategy: {
-            maxRetry: 5
-        }
-    });
-    catOpc.info('Connect to ' + endpoint);
-    await client.connect(endpoint);
 
-    const the_session = await client.createSession();
-    const the_subscription = new ClientSubscription(the_session, {
-        requestedPublishingInterval: 1000,
-        requestedLifetimeCount: 10,
-        requestedMaxKeepAliveCount: 2,
-        maxNotificationsPerPublish: 10,
-        publishingEnabled: true,
-        priority: 10
-    });
+    constructor(endpoint: string, nodeId: string) {
+        this.endpoint = endpoint;
+        this.nodeId = nodeId;
+        this.client = new OPCUAClient({
+            endpoint_must_exist: false,
+            connectionStrategy: {
+                maxRetry: 5
+            }
+        });
+        this.startMonitoring();
+    }
 
-    // install monitored item
-    const monitoredItem = the_subscription.monitor({
-        nodeId: resolveNodeId(nodeId),
-        attributeId: AttributeIds.Value
-    },
-        {
-            samplingInterval: 100,
-            discardOldest: true,
-            queueSize: 10
+    private async startMonitoring() {
+                catOpc.info('Connect to ' + this.endpoint);
+        await this.client.connect(this.endpoint);
+
+        this.session = await this.client.createSession();
+        const the_subscription = new ClientSubscription(this.session, {
+            requestedPublishingInterval: 1000,
+            requestedLifetimeCount: 10,
+            requestedMaxKeepAliveCount: 2,
+            maxNotificationsPerPublish: 10,
+            publishingEnabled: true,
+            priority: 10
         });
 
-    monitoredItem.on('changed', (dataValue) => {
-        catOpc.info(`flag is ${dataValue.value.value}`);
-        if (dataValue.value.value) {
-            httpPost();
-        }
+        // install monitored item
+        const monitoredItem = the_subscription.monitor({
+                nodeId: resolveNodeId(nodeId),
+                attributeId: AttributeIds.Value
+            },
+            {
+                samplingInterval: 100,
+                discardOldest: true,
+                queueSize: 10
+            });
 
-    });
-
-    function httpPost() {
-        post(
-            httpURL,
-            { json: { key: 'value' } },
-            (err, res, body) => {
-                if (!err && res.statusCode === 200) {
-                    catOpc.info(`HTTP Post successful ${body}`);
-                }
+        monitoredItem.on('changed', (dataValue) => {
+            catOpc.info(`flag is ${dataValue.value.value}`);
+            if (dataValue.value.value) {
+                manager.player.start();
             }
-        );
+
+        });
+
+
     }
 }

@@ -65,12 +65,12 @@ const optionDefinitions = [
         description: 'Print this usage guide.'
     },
     {
-        name: 'watch',
-        alias: 'w',
+        name: 'externalTrigger',
+        alias: 'e',
         type: String,
         multiple: true,
-        typeLabel: '{underline opcuaEndpoint} {underline opcuaNodeid} {underline httpUri}',
-        description: 'Monitors an OPC UA node (specified via {underline opcuaNodeId}) on the OPC UA server (specified by {underline opcuaEndpoint}. If the node changes its value, a HTTP POST request is sent to {underline httpURI}.'
+        typeLabel: '{underline opcuaEndpoint} {underline opcuaNodeid}',
+        description: 'Monitors an OPC UA node (specified via {underline opcuaNodeId}) on the OPC UA server (specified by {underline opcuaEndpoint}. If the node changes to true or is true when the player completes, the player start from the first recipe.'
     }
 ];
 const sections = [
@@ -81,7 +81,7 @@ const sections = [
     {
         header: 'Synopsis',
         content: [
-            '$ node build/index.js [{bold --module} {underline modulePath}] [{bold --recipe} {underline recipePath}] [{bold --watch} {underline opcuaEndpoint} {underline opcuaNodeid} {underline httpUri}]'
+            '$ node build/index.js [{bold --module} {underline modulePath}] [{bold --recipe} {underline recipePath}] [{bold --watch} {underline opcuaEndpoint} {underline opcuaNodeid}]'
         ]
     },
     {
@@ -93,7 +93,7 @@ const sections = [
         content: [
             {
                 desc: 'Watching a OPC UA server',
-                example: '$ node src/index.js --watch opc.tcp://127.0.0.1:53530/OPCUA/SimulationServer "ns=3;s=BooleanDataItem" http://127.0.0.1:3000/api/player/start'
+                example: '$ node src/index.js --watch opc.tcp://127.0.0.1:53530/OPCUA/SimulationServer "ns=3;s=BooleanDataItem"'
             }]
     }
 ];
@@ -151,13 +151,12 @@ if (options) {
         }
 
         /** Start OPC UA flag watcher **/
-        if (options.watch) {
-            console.log('watch', options.watch);
-            const endpoint = options.watch[0];
-            const nodeid = options.watch[1];
-            const httpuri = options.watch[2];
+        if (options.externalTrigger) {
+            console.log('External Trigger:', options.watch);
+            const endpoint = options.externalTrigger[0];
+            const nodeid = options.externalTrigger[1];
 
-            watchFlag(endpoint, nodeid, httpuri);
+            watchFlag(endpoint, nodeid);
         }
     }
 }
