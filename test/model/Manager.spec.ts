@@ -23,12 +23,14 @@
  * SOFTWARE.
  */
 
-import {manager} from '../../src/model/Manager';
+import {Manager} from '../../src/model/Manager';
 import * as fs from 'fs';
 import {expect} from 'chai';
 
 
 describe('Manager', () => {
+
+    let manager  = new Manager();
 
     it('should load the biofeed module', () => {
         let modules = manager.loadModule(
@@ -37,7 +39,7 @@ describe('Manager', () => {
         expect(modules).to.have.lengthOf(1);
     });
 
-    it('should load the biofeed recipe', () => {
+    it('should load biofeed recipe', () => {
         manager.loadRecipe(
             JSON.parse(fs.readFileSync('assets/recipes/biofeed/recipe_biofeed_88370C_0.3.1.json').toString()),
             true);
@@ -58,19 +60,4 @@ describe('Manager', () => {
         expect(modules).to.have.lengthOf(3);
     });
 
-    /*
-    fs.readFile('assets/recipes/biofeed/recipe_biofeed_88370C_0.3.1.json', async (err, file) => {
-        const options = JSON.parse(file.toString());
-        const recipe = new Recipe(options, [module_biofeed]);
-        assert.equal(recipe.modules.size, 1);
-
-        const json: RecipeInterface = await recipe.json();
-        assert.equal(json.protected, false);
-        assert.deepEqual(json.modules, ['BioFeed']);
-        assert.equal(json.options.initial_step, 'S1.AddWater');
-        assert.equal(json.status, undefined);
-
-        done();
-    });
-*/
 });
