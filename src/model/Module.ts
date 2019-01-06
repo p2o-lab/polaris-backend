@@ -99,7 +99,6 @@ export class Module extends EventEmitter {
 
     /**
      * Opens connection to server and establish session
-     * @fires connected
      * @returns {Promise<void>}
      */
     async connect(): Promise<void> {
@@ -115,7 +114,8 @@ export class Module extends EventEmitter {
                     }
                 });
 
-                client.on('backoff', () => catOpc.debug('retrying connection'));
+                client.on('close', () => catOpc.warn('Closing OPC UA client connection'));
+                client.on('time_out_request', () => catOpc.debug('time out request - retrying connection'));
 
                 await promiseTimeout(5000, client.connect(this.endpoint));
                 catOpc.debug(`module connected ${this.id} ${this.endpoint}`);
@@ -125,8 +125,8 @@ export class Module extends EventEmitter {
 
                 const subscription = new ClientSubscription(session, {
                     requestedPublishingInterval: 100,
-                    requestedLifetimeCount: 10,
-                    requestedMaxKeepAliveCount: 2,
+                    requestedLifetimeCount: 1000,
+                    requestedMaxKeepAliveCount: 12,
                     maxNotificationsPerPublish: 10,
                     publishingEnabled: true,
                     priority: 10
@@ -163,7 +163,6 @@ export class Module extends EventEmitter {
                     catModule.warn('Could not connect to all variables:' + err);
                 }
                 this.emit('connected');
-                this.emit('refresh', 'module', module);
             } catch (err) {
                 return Promise.reject(`Could not connect to module ${this.id} on ${this.endpoint}: ${err.toString()}`);
             }
@@ -191,7 +190,6 @@ export class Module extends EventEmitter {
                     this.client = undefined;
                     catModule.debug(`Module ${this.id} disconnected`);
                     this.emit('disconnected');
-                    this.emit('refresh', 'module');
                     resolve(`Module ${this.id} disconnected`);
                 } catch (err) {
                     reject(err);
