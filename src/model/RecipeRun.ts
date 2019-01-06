@@ -25,8 +25,7 @@
 
 import { Recipe } from './Recipe';
 import { v4 } from 'uuid';
-import { EventEmitter } from 'events';
-import {RecipeRunInterface} from 'pfe-ree-interface';
+import { RecipeRunInterface } from 'pfe-ree-interface';
 
 
 /** One specific recipe run with all logs
@@ -39,12 +38,9 @@ export class RecipeRun {
     endTime: Date;
     readonly recipe: Recipe;
 
-    eventEmitter: EventEmitter;
-
     constructor(recipe: Recipe) {
         this.id = v4();
         this.recipe = recipe;
-        this.eventEmitter = new EventEmitter();
     }
 
     public json(): RecipeRunInterface {
@@ -62,7 +58,7 @@ export class RecipeRun {
     public start() {
         this.startTime = new Date();
         return this.recipe.start()
-            .on('recipe_finished', () => {
+            .once('completed', () => {
                 this.endTime = new Date();
             });
 

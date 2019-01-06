@@ -52,9 +52,9 @@ export abstract class Condition {
 
     /**
      * Create Condition
-     * @param {ConditionOptions} options
-     * @param {Map<string,Module>} modules
-     * @param recipe
+     * @param {ConditionOptions} options    options for creating Condition
+     * @param {Module[]} modules    modules to be used for evaluatin module name in expressions
+     * @param {Recipe} recipe   recipe using this condition. It will be updated according to the used modules
      * @returns Condition
      * */
     static create(options: ConditionOptions, modules: Module[], recipe: Recipe): Condition {

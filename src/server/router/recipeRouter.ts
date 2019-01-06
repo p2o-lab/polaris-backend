@@ -69,7 +69,7 @@ recipeRouter.delete('/:recipeId', asyncHandler(async (req: Request, res: Respons
         if (index > -1) {
             manager.recipes.splice(index, 1);
         }
-        manager.eventEmitter.emit('refresh', 'recipes');
+        manager.notifyClients('recipes');
         res.send({ status: 'Successful deleted', id: req.params.id });
     }
 }));

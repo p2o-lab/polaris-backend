@@ -30,8 +30,10 @@ import {Module, ModuleOptions} from "./Module";
 import {Service} from "./Service";
 import {ManagerInterface, RecipeOptions} from "pfe-ree-interface";
 import {Player} from "./Player";
+import {Server} from '../server/server';
+import {ServiceState} from './enum';
 
-export class Manager {
+export class Manager extends EventEmitter {
 
     // loaded activeRecipe
     activeRecipe: Recipe;
@@ -49,16 +51,14 @@ export class Manager {
     private _autoreset: boolean = true;
     private _autoreset_timeout = 500;
 
-    // general event emitter
-    eventEmitter: EventEmitter;
-
-
     constructor() {
-        this.player = new Player();
-        this.eventEmitter =  new EventEmitter();
-        this.eventEmitter.on('serviceCompleted', (service: Service) => {
-            this.performAutoReset(service);
-        });
+        super();
+        this.player = new Player()
+            .on('started', () => this.emit('notify', 'player', this.player.json()))
+            .on('recipeStarted', () => this.emit('notify', 'player', this.player.json()))
+            .on('stepFinished', () => this.emit('notify', 'player', this.player.json()))
+            .on('recipeFinished', () => this.emit('notify', 'player', this.player.json()))
+            .on('completed', () => this.emit('notify', 'player', this.player.json()));
     }
 
     get autoreset(): boolean {
@@ -100,13 +100,28 @@ export class Manager {
             throw new Error('No modules defined in supplied options');
         }
         this.modules.push(...newModules);
+        newModules.forEach((module: Module) => {
+            module
+                .on('connected', () => this.emit('notify', 'module'))
+                .on('disconnected', () => this.emit('notify', 'module'))
+                .on('errorMessage', (service: Service, errorMessage) => {
+                    this.emit('notify', 'module', {module: service.parent.id, service: service.name, errorMessage: errorMessage});
+                })
+                .on('stateChanged', (service: Service, state: ServiceState) => {
+                    this.emit('notify', 'module', {module: service.parent.id, service: service.name, state: ServiceState[state]});
+                })
+                .on('serviceCompleted', (service: Service) => {
+                    this.performAutoReset(service);
+                })
+        });
+        this.emit('notify', 'module');
         return newModules;
     }
 
     public loadRecipe(options: RecipeOptions, protectedRecipe: boolean = false): Recipe {
         const newRecipe = new Recipe(options, this.modules, protectedRecipe);
         this.recipes.push(newRecipe);
-        this.eventEmitter.emit('refresh', 'recipes');
+        this.emit('notify', 'recipes');
         return newRecipe;
     }
 
@@ -153,7 +168,7 @@ export class Manager {
      * Perform autoreset for service (bring it automatically from completed to idle)
      * @param {Service} service
      */
-    performAutoReset(service: Service) {
+    private performAutoReset(service: Service) {
         if (this.autoreset) {
             catManager.info(`Service ${service.parent.id}.${service.name} completed. Short waiting time (${this._autoreset_timeout}) to autoreset`);
             setTimeout(() => {

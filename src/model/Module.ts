@@ -53,7 +53,16 @@ export interface ModuleOptions {
     process_values: object[];
 }
 
-export class Module {
+/**
+ * Module (PEA)
+ *
+ * @event connected         when module successfully connects to PEA
+ * @event disconnected      when module is disconnected from PEA
+ * @event errorMessage      when errorMessage of son eservice changes
+ * @event stateChanged
+ * @event serviceCompleted
+ */
+export class Module extends EventEmitter {
     readonly id: string;
     readonly endpoint: string;
     services: Service[];
@@ -70,6 +79,7 @@ export class Module {
     protected: boolean = false;
 
     constructor(options: ModuleOptions, protectedModule: boolean = false) {
+        super();
         this.id = options.id;
         this.endpoint = options.opcua_server_url;
         this.protected = protectedModule;
@@ -104,7 +114,8 @@ export class Module {
                     }
                 });
 
-                client.on('backoff', () => catOpc.debug('retrying connection'));
+                client.on('close', () => catOpc.warn('Closing OPC UA client connection'));
+                client.on('time_out_request', () => catOpc.debug('time out request - retrying connection'));
 
                 await promiseTimeout(5000, client.connect(this.endpoint));
                 catOpc.debug(`module connected ${this.id} ${this.endpoint}`);
@@ -114,8 +125,8 @@ export class Module {
 
                 const subscription = new ClientSubscription(session, {
                     requestedPublishingInterval: 100,
-                    requestedLifetimeCount: 10,
-                    requestedMaxKeepAliveCount: 2,
+                    requestedLifetimeCount: 1000,
+                    requestedMaxKeepAliveCount: 12,
                     maxNotificationsPerPublish: 10,
                     publishingEnabled: true,
                     priority: 10
@@ -151,8 +162,7 @@ export class Module {
                 } catch (err) {
                     catModule.warn('Could not connect to all variables:' + err);
                 }
-
-                manager.eventEmitter.emit('refresh', 'module');
+                this.emit('connected');
             } catch (err) {
                 return Promise.reject(`Could not connect to module ${this.id} on ${this.endpoint}: ${err.toString()}`);
             }
@@ -179,7 +189,7 @@ export class Module {
                     await promiseTimeout(1000, this.client.disconnect());
                     this.client = undefined;
                     catModule.debug(`Module ${this.id} disconnected`);
-                    manager.eventEmitter.emit('refresh', 'module');
+                    this.emit('disconnected');
                     resolve(`Module ${this.id} disconnected`);
                 } catch (err) {
                     reject(err);
@@ -277,7 +287,7 @@ export class Module {
         this.services.forEach((service) => {
             service.subscribeToService()
                 .on('errorMessage', (errorMessage) => {
-                    manager.eventEmitter.emit('refresh', 'module');
+                    this.emit('errorMessage', service, errorMessage);
                 })
                 .on('state', (state) => {
                     catModule.info(`state changed: ${this.id}.${service.name} = ${ServiceState[state]}`);
@@ -287,9 +297,9 @@ export class Module {
                         service: service.name,
                         state: ServiceState[state]
                     });
-                    manager.eventEmitter.emit('refresh', 'module');
+                    this.emit('stateChanged', service, state);
                     if (state === ServiceState.COMPLETED) {
-                        manager.eventEmitter.emit('serviceCompleted', service);
+                        this.emit('serviceCompleted', service);
                     }
                 });
         });
