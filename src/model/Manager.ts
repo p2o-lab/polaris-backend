@@ -181,6 +181,21 @@ export class Manager extends EventEmitter {
         }
     }
 
+    public removeRecipe(recipeId: string) {
+        catManager.debug(`Remove recipe ${recipeId}`);
+        const recipe = this.recipes.find(recipe => recipe.id === recipeId);
+        if (!recipe) {
+            throw new Error(`Recipe ${recipeId} not available.`);
+        }
+        if (recipe.protected) {
+            throw new Error(`Recipe ${recipeId} can not be deleted since it is protected.`);
+        } else {
+            const index = manager.recipes.indexOf(recipe, 0);
+            if (index > -1) {
+                manager.recipes.splice(index, 1);
+            }
+        }
+    }
 }
 
 export const manager: Manager = new Manager();

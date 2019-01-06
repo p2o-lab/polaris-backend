@@ -58,19 +58,14 @@ recipeRouter.get('/:recipeId', async (req: Request, res: Response) => {
  * @api {delete} /recipe/:recipeId    Delete recipe
  * @apiName DeleteRecipe
  * @apiGroup Recipe
- * @apiParam recipeId
+ * @apiParam recipeId   id of recipe to be deleted
  */
 recipeRouter.delete('/:recipeId', asyncHandler(async (req: Request, res: Response) => {
-    const recipe = await manager.recipes.find(recipe => recipe.id === req.params.recipeId);
-    if (recipe.protected) {
-        res.status(404).send(`Recipe ${this.id} is protected. Can not be deleted`);
-    } else {
-        const index = manager.recipes.indexOf(recipe, 0);
-        if (index > -1) {
-            manager.recipes.splice(index, 1);
-        }
-        manager.notifyClients('recipes');
-        res.send({ status: 'Successful deleted', id: req.params.id });
+    try {
+        manager.removeRecipe(req.params.recipeId);
+        res.send({ status: 'Successful deleted', id: req.params.recipeId });
+    } catch (err) {
+        res.status(400).send(err.toString());
     }
 }));
 
