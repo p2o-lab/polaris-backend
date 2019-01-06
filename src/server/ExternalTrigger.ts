@@ -25,25 +25,24 @@
 
 import { series } from 'async';
 import { post } from 'request';
-import {AttributeIds, ClientSession, ClientSubscription, OPCUAClient, resolveNodeId} from 'node-opcua';
+import {AttributeIds, ClientSession, ClientSubscription, NodeId, OPCUAClient, resolveNodeId} from 'node-opcua';
 import { catOpc } from '../config/logging';
-
-/** options
- let endpointUrl = 'opc.tcp://127.0.0.1:53530/OPCUA/SimulationServer';    // OPC-UA Server
- let nodeId = 'ns=3;s=BooleanDataItem'; // "ns=[0-9];[i,s]=[0-9/a-z]"
- let httpURL = 'http://www.google.de';        // http POST destination
- */
+import {manager} from '../model/Manager';
 
 export class ExternalTrigger {
     private endpoint: string;
-    private nodeId: string;
+    private nodeId: NodeId;
     private client: OPCUAClient;
-    private session: ClientSession;
+    private session: ClientSession;string
 
 
+    /** options
+     let endpointUrl = 'opc.tcp://127.0.0.1:53530/OPCUA/SimulationServer';    // OPC-UA Server
+     let nodeId = 'ns=3;s=BooleanDataItem'; // "ns=[0-9];[i,s]=[0-9/a-z]"
+     */
     constructor(endpoint: string, nodeId: string) {
         this.endpoint = endpoint;
-        this.nodeId = nodeId;
+        this.nodeId = resolveNodeId(nodeId);
         this.client = new OPCUAClient({
             endpoint_must_exist: false,
             connectionStrategy: {
@@ -54,7 +53,8 @@ export class ExternalTrigger {
     }
 
     private async startMonitoring() {
-                catOpc.info('Connect to ' + this.endpoint);
+
+        catOpc.info('Connect to ' + this.endpoint);
         await this.client.connect(this.endpoint);
 
         this.session = await this.client.createSession();
@@ -69,7 +69,7 @@ export class ExternalTrigger {
 
         // install monitored item
         const monitoredItem = the_subscription.monitor({
-                nodeId: resolveNodeId(nodeId),
+                nodeId: this.nodeId,
                 attributeId: AttributeIds.Value
             },
             {
@@ -83,9 +83,10 @@ export class ExternalTrigger {
             if (dataValue.value.value) {
                 manager.player.start();
             }
-
         });
+    }
 
-
+    async getValue() {
+        return (await this.session.readVariableValue(this.nodeId)).value.value;
     }
 }

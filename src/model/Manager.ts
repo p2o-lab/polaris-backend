@@ -58,11 +58,22 @@ export class Manager extends EventEmitter {
     constructor() {
         super();
         this.player = new Player()
-            .on('started', () => this.emit('notify', 'player', this.player.json()))
-            .on('recipeStarted', () => this.emit('notify', 'player', this.player.json()))
-            .on('stepFinished', () => this.emit('notify', 'player', this.player.json()))
-            .on('recipeFinished', () => this.emit('notify', 'player', this.player.json()))
-            .on('completed', () => this.emit('notify', 'player', this.player.json()));
+            .on('started', () => {
+                this.emit('notify', 'player', this.player.json())
+            })
+            .on('recipeStarted', () => {
+                this.emit('notify', 'player', this.player.json())
+            })
+            .on('stepFinished', () => {
+                this.emit('notify', 'player', this.player.json())
+            })
+            .on('recipeFinished', () => {
+                this.emit('recipeFinished');
+                this.emit('notify', 'player', this.player.json())
+            })
+            .on('completed', () => {
+                this.emit('notify', 'player', this.player.json())
+            });
     }
 
     get autoreset(): boolean {

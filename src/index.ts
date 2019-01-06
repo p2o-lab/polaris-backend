@@ -29,7 +29,7 @@ import * as serverHandlers from './server/serverHandlers';
 import * as commandLineArgs from 'command-line-args';
 import * as fs from 'fs';
 import {manager} from './model/Manager';
-import {watchFlag} from './server/flagWatcher';
+import {ExternalTrigger, watchFlag} from './server/ExternalTrigger';
 import commandLineUsage = require('command-line-usage');
 import {catModule} from "./config/logging";
 import {fixReactor} from "./server/automaticMode";
@@ -150,13 +150,20 @@ if (options) {
             fixReactor();
         }
 
-        /** Start OPC UA flag watcher **/
+        /* Start OPC UA external trigger */
         if (options.externalTrigger) {
             console.log('External Trigger:', options.watch);
             const endpoint = options.externalTrigger[0];
             const nodeid = options.externalTrigger[1];
 
-            watchFlag(endpoint, nodeid);
+            const et = new ExternalTrigger(endpoint, nodeid);
+            manager.on('recipeFinished', () => {
+                const value = et.getValue();
+                console.log('external trigger', value);
+                if (value) {
+                    manager.player.start();
+                }
+            });
         }
     }
 }
