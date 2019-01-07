@@ -21,6 +21,9 @@
     "predepoly": "npm run ui",
     "deploy": "docker-deploy"
   },
+  "bin": {
+    "pfe-ree-node": "./bin/pfe-ree-node"
+  },
   "publishConfig": {
     "registry": "https://registry.plt.et.tu-dresden.de:4873"
   },
