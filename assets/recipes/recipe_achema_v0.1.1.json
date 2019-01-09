@@ -3,16 +3,11 @@
   "name": "Rezept ACHEMA",
   "description": "Verbessertes Rezept zur ACHEMA 2018",
   "author": "Markus Graube",
-  "initial_step": "Startup.Init.1",
+  "initial_step": "Startup.Init",
   "steps": [
     {
-      "name": "Startup.Init.1",
+      "name": "Startup.Init",
       "operations": [
-        {
-          "module": "Dose",
-          "service": "Fill",
-          "command": "start"
-        },
         {
           "module": "Temper",
           "service": "Tempering",
@@ -28,23 +23,7 @@
               "value": 20
             }
           ]
-        }
-      ],
-      "transitions": [
-        {
-          "next_step": "Startup.Init.2",
-          "condition": {
-            "type": "state",
-            "module": "Dose",
-            "service": "Fill",
-            "state": "running"
-          }
-        }
-      ]
-    },
-    {
-      "name": "Startup.Init.2",
-      "operations": [
+        },
         {
           "module": "React",
           "service": "Empty_Service",
@@ -64,20 +43,11 @@
       ],
       "transitions": [
         {
-          "condition": {
-            "type": "and",
-            "conditions": [
-              {
-                "type": "state",
-                "module": "React",
-                "service": "Empty_Service",
-                "state": "idle"
-              },
-              {
-                "type": "time",
-                "duration": 4
-              }
-              ]
+          "condition":  {
+              "type": "state",
+              "module": "Temper",
+              "service": "Tempering",
+              "state": "running"
           },
           "next_step": "Running.Vorlegen"
         }
@@ -89,13 +59,7 @@
         {
           "module": "React",
           "service": "Empty_Service",
-          "strategy": "Empty_Full",
           "command": "reset"
-        },
-        {
-          "module": "Dose",
-          "service": "Fill",
-          "command": "complete"
         },
         {
           "module": "Dose",
@@ -238,7 +202,13 @@
     },
     {
       "name": "Running.Ruhen",
-      "operations": [ ],
+      "operations": [
+        {
+          "module": "React",
+          "service": "Fill_Service",
+          "command": "complete"
+        }
+      ],
       "transitions": [
         {
           "next_step": "Running.Ruhen.Stop",
@@ -319,7 +289,7 @@
       ],
       "transitions": [
         {
-          "next_step": "Shutdown.Entleeren.Start",
+          "next_step": "Shutdown.Entleeren",
           "condition": {
             "type": "state",
             "module": "React",
@@ -330,28 +300,7 @@
       ]
     },
     {
-      "name": "Shutdown.Entleeren.Start",
-      "operations": [
-        {
-          "module": "Dose",
-          "service": "Fill",
-          "command": "start"
-        }
-      ],
-      "transitions": [
-        {
-          "next_step": "Shutdown.Entleeren.Running",
-          "condition": {
-            "type": "state",
-            "module": "Dose",
-            "service": "Fill",
-            "state": "running"
-          }
-        }
-      ]
-    },
-    {
-      "name": "Shutdown.Entleeren.Running",
+      "name": "Shutdown.Entleeren",
       "operations": [
         {
           "module": "React",
@@ -362,33 +311,12 @@
       ],
       "transitions": [
         {
-          "next_step": "Shutdown.Entleeren.Stop",
+          "next_step": "completed",
           "condition": {
             "type": "state",
             "module": "React",
             "service": "Empty_Service",
             "state": "completed"
-          }
-        }
-      ]
-    },
-    {
-      "name": "Shutdown.Entleeren.Stop",
-      "operations": [
-        {
-          "module": "Dose",
-          "service": "Fill",
-          "command": "complete"
-        }
-      ],
-      "transitions": [
-        {
-          "next_step": "finished",
-          "condition": {
-            "type": "state",
-            "module": "Dose",
-            "service": "Fill",
-            "state": "idle"
           }
         }
       ]
