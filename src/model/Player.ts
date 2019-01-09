@@ -202,7 +202,7 @@ export class Player extends (EventEmitter as { new(): PlayerEmitter }) {
         this.recipeRuns.push(this.currentRecipeRun);
         this.currentRecipeRun.start()
             .once('started', () => this.emit('recipeStarted', this.currentRecipeRun.recipe))
-            .on('stepFinished', (step) => this.emit('stepFinished', step))
+            .on('stepFinished', ({finishedStep, nextStep}) => this.emit('stepFinished', finishedStep))
             .once('completed', () => {
                 this.emit('recipeFinished', this.currentRecipeRun.recipe);
                 catManager.info(`recipe finished ${this.currentItem + 1}/${this._playlist.length} (player ${this.status})`);
