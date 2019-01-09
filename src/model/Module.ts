@@ -45,6 +45,7 @@ import { ModuleInterface, ServiceInterface } from '@plt/pfe-ree-interface';
 import { promiseTimeout } from '../timeout-promise';
 import { serviceArchive, variableArchive } from '../logging/archive';
 import StrictEventEmitter from 'strict-event-emitter-types';
+import {TimestampsToReturn} from 'node-opcua';
 
 export interface ModuleOptions {
     id: string;
@@ -262,12 +263,13 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
                     samplingInterval: 100,
                     discardOldest: true,
                     queueSize: 10
-                });
+                }, TimestampsToReturn.Both);
 
             const emitter: StrictEventEmitter<EventEmitter, OpcUaNodeEvents> = new EventEmitter();;
             monitoredItem.on('changed', (dataValue) => {
                 catOpc.debug(`Variable Changed (${this.resolveNodeId(node)}) = ${dataValue.value.value.toString()}`);
-                emitter.emit('changed', dataValue.value.value);
+                catOpc.info('variable changed', dataValue);
+                emitter.emit('changed', dataValue.value.value, dataValue.);
             });
             this.monitoredItems.set(nodeId, { monitoredItem, emitter });
         }
@@ -314,9 +316,10 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
             if (variable.communication['V'] && variable.communication['V'].node_id != null) {
                 this.listenToOpcUaNode(variable.communication['V'])
                     .on('changed', (data) => {
-                        catModule.debug(`variable changed: ${this.id}.${variable.name} = ${data}`);
+                        catModule.info(`variable changed: ${this.id}.${variable.name} = ${data}`);
                         variableArchive.push({
                             datetime: new Date(),
+                            datetime_module: data,
                             module: this.id,
                             variable: variable.name,
                             value: data
