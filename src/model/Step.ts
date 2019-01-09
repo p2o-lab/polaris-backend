@@ -31,6 +31,7 @@ import { EventEmitter } from 'events';
 import { Module } from './Module';
 import { Recipe } from './Recipe';
 import { OperationOptions, StepInterface } from 'pfe-ree-interface';
+import StrictEventEmitter from 'strict-event-emitter-types';
 
 export interface StepOptions {
     name: string;
@@ -39,14 +40,24 @@ export interface StepOptions {
 }
 
 /**
- * Executable step from recipe
+ * Events emitted by [[Step]]
+ */
+interface StepEvents {
+    /**
+     * when step is completed
+     * @event
+     */
+    completed: Transition;
+}
+
+/**
+ * Executable [[Step]] from [[Recipe]]
  */
 export class Step {
     name: string;
     operations: Operation[];
     transitions: Transition[];
-
-    private eventEmitter: EventEmitter = new EventEmitter();
+    private eventEmitter: StrictEventEmitter<EventEmitter, StepEvents> = new EventEmitter();
 
     constructor(options: StepOptions, modules: Module[], recipe: Recipe) {
         if (options.name) {
