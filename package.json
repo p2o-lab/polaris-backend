@@ -13,7 +13,7 @@
     "start": "ts-node ./src/index.ts",
     "start-dist": "node ./build/index.js",
     "test": "nyc mocha -r ts-node/register test/**/*.ts",
-    "typedoc": "typedoc --mode file --module commonjs --out typedoc/ --target ES6 --excludePrivate src/",
+    "typedoc": "typedoc --mode file --module commonjs --out typedoc/ --target ES6 --excludePrivate --readme none src/",
     "apidoc": "apidoc -i src/server/ -o apidoc",
     "build": "rm -rf build/ && tsc",
     "ui": "cp -r ../pfe-ree-viz/dist .",
@@ -50,6 +50,7 @@
     "node-opcua-client": "^0.4.1",
     "pfe-ree-interface": "^1.13.0",
     "request": "^2.88.0",
+    "strict-event-emitter-types": "^2.0.0",
     "ts-node": "^6.1.1",
     "typescript-logging": "^0.6.2",
     "uuid": "^3.3.2",
@@ -74,7 +75,7 @@
     "tslint-config-airbnb": "^5.9.2",
     "typedoc": "^0.13.0",
     "typedoc-plantuml": "^1.4.1",
-    "typescript": "^2.6.2"
+    "typescript": "^3.2.2"
   },
   "nyc": {
     "include": [
