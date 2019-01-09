@@ -81,8 +81,8 @@ export class Step {
         // start listening to transitions of step
         this.transitions.forEach((transition) => {
             catRecipe.info(`Start listening for transition ${JSON.stringify(transition.json())}`);
-            const events = transition.condition.listen();
-            events.on('state_changed', (status) => {
+            const events = transition.condition.listen()
+                .on('stateChanged', (status) => {
                 catRecipe.info(`Status of step ${this.name} for transition to ${transition.next_step_name}: ` +
                     `${status}`);
                 if (status) {
