@@ -46,7 +46,7 @@ describe('Condition', () => {
 
         assert.equal(condition.fulfilled, false);
 
-        condition.listen().on('state_changed', () => {
+        condition.listen().on('stateChanged', () => {
             assert.equal(condition.fulfilled, true);
             done();
         });
@@ -68,7 +68,7 @@ describe('Condition', () => {
             [{ type: 'time', duration: 0.5 },
                     { type: 'time', duration: 0.3 }]
         });
-        condition.listen().on('state_changed', (status) => {
+        condition.listen().on('stateChanged', (status) => {
             assert.equal(condition.fulfilled, true);
         });
         assert.equal(condition.fulfilled, false);
@@ -93,7 +93,7 @@ describe('Condition', () => {
             [{ type: 'time', duration: 2 },
                     { type: 'time', duration: 0.5 }]
         });
-        condition.listen().on('state_changed', (status) => {
+        condition.listen().on('stateChanged', (status) => {
             assert.equal(condition.fulfilled, true);
             done();
         });
