@@ -147,7 +147,7 @@ export class AndCondition extends AggregateCondition {
     listen(): EventEmitter {
         this.conditions.forEach((condition) => {
             condition.listen().on('state_changed', (state) => {
-                catRecipe.info(`AndCondition: ${JSON.stringify(this.conditions.map(item => item.fulfilled))}`);
+                catRecipe.debug(`AndCondition: ${JSON.stringify(this.conditions.map(item => item.fulfilled))}`);
                 const oldState = this._fulfilled;
                 this._fulfilled = this.conditions.every(condition => condition.fulfilled);
                 if (oldState !== this._fulfilled) {
@@ -287,7 +287,7 @@ export class VariableCondition extends ModuleCondition {
         this.module.readVariable(this.dataStructure, this.variable).then((value) => {
             this._fulfilled = this.compare(value.value.value);
             this.eventEmitter.emit('state_changed', this._fulfilled);
-            catOpc.info(`VariableCondition ${this.dataStructure}: ${value.value.value} ${this.operator} ${this.value} = ${this._fulfilled}`);
+            catOpc.debug(`VariableCondition ${this.dataStructure}: ${value.value.value} ${this.operator} ${this.value} = ${this._fulfilled}`);
         });
 
         this.listener = this.module.listenToVariable(this.dataStructure, this.variable)
@@ -295,7 +295,7 @@ export class VariableCondition extends ModuleCondition {
                 catOpc.info(`value changed to ${value} -  (${this.operator}) compare against ${this.value}`);
                 this._fulfilled = this.compare(value);
                 this.eventEmitter.emit('state_changed', this._fulfilled);
-                catOpc.info(`VariableCondition ${this.dataStructure}: ${value} ${this.operator} ${this.value} = ${this._fulfilled}`);
+                catOpc.debug(`VariableCondition ${this.dataStructure}: ${value} ${this.operator} ${this.value} = ${this._fulfilled}`);
             });
         return this.eventEmitter;
     }

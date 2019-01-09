@@ -78,9 +78,9 @@ export class Parameter {
     public async getDataType(): Promise<DataType> {
         if (!this._opcUaDataType) {
             const value = await this.service.parent.readVariableNode(this._opcUaNode);
-            catService.info(`Datatype for ${this.service.name}.${this.name}.${this.variable} - ${this._opcUaNode.node_id} = ${JSON.stringify(value)}`);
+            catService.debug(`Datatype for ${this.service.name}.${this.name}.${this.variable} - ${this._opcUaNode.node_id} = ${JSON.stringify(value)}`);
             this._opcUaDataType = value.value ? value.value.dataType : undefined;
-            catService.info(`Get datatype for ${this.service.name}.${this.name} = ${this._opcUaDataType}`);
+            catService.debug(`Get datatype for ${this.service.name}.${this.name} = ${this._opcUaDataType}`);
         }
         return this._opcUaDataType;
     }
