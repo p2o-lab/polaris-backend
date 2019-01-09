@@ -42,6 +42,7 @@ export enum ServiceState {
     COMPLETING = 65536,
     COMPLETED = 131072
 }
+export type ServiceControlEnable = ServiceMtpCommand;
 
 export enum ServiceMtpCommand {
     UNDEFINED = 0,

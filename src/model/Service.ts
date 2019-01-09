@@ -31,7 +31,7 @@ import {
     isExtSource,
     isManualState,
     isOffState,
-    OpMode,
+    OpMode, ServiceControlEnable,
     ServiceMtpCommand,
     ServiceState
 } from './enum';
@@ -55,6 +55,7 @@ export interface ServiceOptions {
         OpMode: OpcUaNode;
         ControlOp: OpcUaNode;
         ControlExt: OpcUaNode;
+        ControlEnable: OpcUaNode;
         State: OpcUaNode;
         StrategyOp: OpcUaNode;
         StrategyExt: OpcUaNode;
@@ -75,6 +76,7 @@ export class Service extends EventEmitter {
     name: string;
     command: OpcUaNode;
     status: OpcUaNode;
+    controlEnable: OpcUaNode;
     opMode: OpcUaNode;
     strategy: OpcUaNode;
     errorMessage: OpcUaNode;
@@ -91,6 +93,7 @@ export class Service extends EventEmitter {
 
         this.opMode = serviceOptions.communication.OpMode;
         this.status = serviceOptions.communication.State;
+        this.controlEnable = serviceOptions.communication.ControlEnable;
         this.command = manager.automaticMode ?
             serviceOptions.communication.ControlExt : serviceOptions.communication.ControlOp;
         this.strategy = manager.automaticMode ?
@@ -114,6 +117,23 @@ export class Service extends EventEmitter {
             return state;
         } catch (err) {
             catOpc.error('Error reading opMode', err);
+            return undefined;
+        }
+    }
+
+    /**
+     * Reads current ControlEnable from [[Module]]
+     * @returns {Promise<ServiceControlEnable>}
+     */
+    async getControlEnable(): Promise<ServiceControlEnable> {
+        try {
+            const result: DataValue = await this.parent.readVariableNode(this.controlEnable);
+            const controlEnable: ServiceControlEnable = <ServiceControlEnable> result.value.value;
+            const controlEnableString: string = ServiceControlEnable[controlEnable];
+            catOpc.trace(`Read ControlEnable ${this.name}: ${controlEnable} (${controlEnableString})`);
+            return ServiceControlEnable;
+        } catch (err) {
+            catOpc.error('Error reading controlEnable', err);
             return undefined;
         }
     }
@@ -151,18 +171,20 @@ export class Service extends EventEmitter {
      * @returns {Promise<ServiceInterface>}
      */
     async getOverview(): Promise<ServiceInterface> {
-        const opMode = await this.getOpMode();
-        const state = await this.getServiceState();
-        const strategies = await this.getStrategies();
-        const params = await this.getCurrentParameters();
-        const errorString = await this.getErrorString();
+        const opMode = this.getOpMode();
+        const state = this.getServiceState();
+        const strategies = this.getStrategies();
+        const params = this.getCurrentParameters();
+        const errorString = this.getErrorString();
+        const controlEnable = this.getControlEnable();
         return {
             name: this.name,
             opMode: OpMode[opMode] || opMode,
-            status: ServiceState[state] || state,
+            status: ServiceState[await state],
             strategies: await strategies,
             parameters: await params,
             error: await errorString,
+            controlEnable: await ServiceControlEnable[controlEnable],
             lastChange: this.lastChange
         };
     }
