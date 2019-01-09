@@ -66,6 +66,7 @@ export class Recipe extends EventEmitter{
     // dynamic properties
     current_step: Step;
     status: RecipeState;
+    lastChange: Date;
 
     constructor(options: RecipeOptions, modules: Module[], protectedRecipe: boolean = false) {
         super();
@@ -120,7 +121,8 @@ export class Recipe extends EventEmitter{
             status: this.status,
             currentStep: this.current_step ? this.current_step.name : undefined,
             options: this.options,
-            protected: this.protected
+            protected: this.protected,
+            lastChange: this.lastChange
         };
     }
 
@@ -170,6 +172,7 @@ export class Recipe extends EventEmitter{
 
     private executeStep() {
         catRecipe.debug(`Start step: ${this.current_step.name}`);
+        this.lastChange = new Date();
         this.current_step.execute()
             .once('completed', (transition: Transition) => {
                 assert.notEqual(transition.next_step_name, this.current_step.name);

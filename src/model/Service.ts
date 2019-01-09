@@ -83,7 +83,7 @@ export class Service extends EventEmitter {
 
     public parent: Module;
     private serviceParametersEventEmitters: EventEmitter[];
-    private lastChange: Date;
+    lastChange: Date;
 
     constructor(serviceOptions: ServiceOptions, parent: Module) {
         super();
