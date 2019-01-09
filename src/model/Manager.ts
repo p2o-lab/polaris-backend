@@ -105,10 +105,10 @@ export class Manager extends EventEmitter {
             module
                 .on('connected', () => this.emit('notify', 'module'))
                 .on('disconnected', () => this.emit('notify', 'module'))
-                .on('errorMessage', (service: Service, errorMessage) => {
+                .on('errorMessage', ({service, errorMessage}) => {
                     this.emit('notify', 'module', {module: service.parent.id, service: service.name, errorMessage: errorMessage});
                 })
-                .on('stateChanged', (service: Service, state: ServiceState) => {
+                .on('stateChanged', ({service, state}) => {
                     this.emit('notify', 'module', {module: service.parent.id, service: service.name, state: ServiceState[state], lastChange: service.lastChange});
                 })
                 .on('serviceCompleted', (service: Service) => {

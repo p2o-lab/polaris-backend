@@ -44,6 +44,7 @@ import { ServiceState } from './enum';
 import { ModuleInterface, ServiceInterface } from 'pfe-ree-interface';
 import { promiseTimeout } from '../timeout-promise';
 import { serviceArchive, variableArchive } from '../logging/archive';
+import StrictEventEmitter from 'strict-event-emitter-types';
 
 export interface ModuleOptions {
     id: string;
@@ -54,15 +55,45 @@ export interface ModuleOptions {
 }
 
 /**
- * Module (PEA)
- *
- * @event connected         when module successfully connects to PEA
- * @event disconnected      when module is disconnected from PEA
- * @event errorMessage      when errorMessage of son eservice changes
- * @event stateChanged
- * @event serviceCompleted
+ * Events emitted by [[Module]]
  */
-export class Module extends EventEmitter {
+interface ModuleEvents {
+    /**
+     * when module successfully connects to PEA
+     * @event
+     */
+    connected: void;
+    /**
+     * when module is disconnected from PEA
+     * @event
+    */
+    disconnected: void;
+    /**
+     * when errorMessage of one service changes
+     * @event
+     */
+    errorMessage: {service: Service, errorMessage: string};
+    /**
+     * Notify when a service changes its state
+     * @event
+     */
+    stateChanged: {service: Service, state: ServiceState};
+    /**
+     * when one service goes to *completed*
+     * @event
+     */
+    serviceCompleted: Service;
+}
+
+type ModuleEmitter = StrictEventEmitter<EventEmitter, ModuleEvents>;
+
+/**
+ * Module (PEA) with its services and variables
+ *
+ * in order to interact with a module, you must first [[connect]] to it
+ *
+ */
+export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
     readonly id: string;
     readonly endpoint: string;
     services: Service[];
@@ -75,7 +106,9 @@ export class Module extends EventEmitter {
     private monitoredItems: Map<NodeId, { monitoredItem: ClientMonitoredItem, emitter: EventEmitter }>;
     private namespaceArray: string[];
 
-    // module is protected and can't be deleted by the user
+    /**
+     * module is protected and can't be deleted by the user
+     */
     protected: boolean = false;
 
     constructor(options: ModuleOptions, protectedModule: boolean = false) {
@@ -288,7 +321,7 @@ export class Module extends EventEmitter {
         this.services.forEach((service) => {
             service.subscribeToService()
                 .on('errorMessage', (errorMessage) => {
-                    this.emit('errorMessage', service, errorMessage);
+                    this.emit('errorMessage', {service, errorMessage} );
                 })
                 .on('state', (state) => {
                     catModule.info(`state changed: ${this.id}.${service.name} = ${ServiceState[state]}`);
@@ -298,7 +331,7 @@ export class Module extends EventEmitter {
                         service: service.name,
                         state: ServiceState[state]
                     });
-                    this.emit('stateChanged', service, state);
+                    this.emit('stateChanged', {service, state});
                     if (state === ServiceState.COMPLETED) {
                         this.emit('serviceCompleted', service);
                     }

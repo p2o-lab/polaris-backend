@@ -48,6 +48,7 @@ import { Unit } from './Unit';
 import { manager } from './Manager';
 import { EventEmitter } from 'events';
 import { serviceArchive } from '../logging/archive';
+import StrictEventEmitter from 'strict-event-emitter-types';
 
 export interface ServiceOptions {
     name: string;
@@ -64,13 +65,31 @@ export interface ServiceOptions {
     parameters: ServiceParameter[];
 }
 
+/**
+ * Events emitted by [[Service]]
+ */
+interface ServiceEvents {
+    /**
+     * when errorMessage of the [[Service]] changes
+     * @event
+     */
+    errorMessage: string;
+    /**
+     * Notify when the [[Service] changes its state
+     * @event
+     */
+    state: ServiceState;
+}
+
+type ServiceEmitter = StrictEventEmitter<EventEmitter, ServiceEvents>;
 
 /**
- * service of a module
+ * Service of a [[Module]]
+ *
  * after connection to a real PEA, commands can be triggered and states can be retrieved
  *
  */
-export class Service extends EventEmitter {
+export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
 
     name: string;
     command: OpcUaNode;
