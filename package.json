@@ -11,10 +11,11 @@
   "scripts": {
     "dev": "nodemon",
     "start": "ts-node ./src/index.ts",
+    "start-dist": "node ./build/index.js",
     "test": "nyc mocha -r ts-node/register test/**/*.ts",
     "typedoc": "typedoc --mode file --module commonjs --out typedoc/ --target ES6 --excludePrivate src/",
     "apidoc": "apidoc -i src/server/ -o apidoc",
-    "build": "tsc",
+    "build": "rm -rf build/ && tsc",
     "ui": "cp -r ../pfe-ree-viz/dist .",
     "build-all": "npm run build && npm run apidoc && npm run ui",
     "docker-pi": "docker build -t registry.plt.et.tu-dresden.de/pfe-ree-node .",
