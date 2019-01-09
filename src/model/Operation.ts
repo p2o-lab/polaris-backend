@@ -31,6 +31,9 @@ import { ServiceParameter, Strategy } from './Interfaces';
 import { Parameter } from './Parameter';
 import { OperationInterface, OperationOptions, ServiceCommand } from 'pfe-ree-interface';
 
+/** Operation used in a [[Step]] of a [[Recipe]]
+ *
+ */
 export class Operation {
     module: Module;
     service: Service;
