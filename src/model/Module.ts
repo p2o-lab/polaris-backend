@@ -104,6 +104,7 @@ export class Module extends EventEmitter {
     async connect(): Promise<void> {
         if (this.session) {
             catOpc.debug(`Already connected to module ${this.id}`);
+            return Promise.resolve();
         } else {
             try {
                 catOpc.info(`connect module ${this.id} ${this.endpoint}`);
