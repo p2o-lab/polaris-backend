@@ -71,7 +71,14 @@ export class Step {
     }
 
     execute() {
-        // first start listening to transitions of step
+        // execute operations for step
+        this.operations.forEach((operation) => {
+            catRecipe.info(`Start operation ${operation.module.id} ${operation.service.name} ` +
+                `${JSON.stringify(operation.command)}`);
+            operation.execute();
+        });
+
+        // start listening to transitions of step
         this.transitions.forEach((transition) => {
             catRecipe.info(`Start listening for transition ${JSON.stringify(transition.json())}`);
             const events = transition.condition.listen();
@@ -87,13 +94,6 @@ export class Step {
                     this.eventEmitter.emit('completed', transition);
                 }
             });
-        });
-
-        // execute operations for step
-        this.operations.forEach((operation) => {
-            catRecipe.info(`Start operation ${operation.module.id} ${operation.service.name} ` +
-                `${JSON.stringify(operation.command)}`);
-            operation.execute();
         });
 
         return this.eventEmitter;
