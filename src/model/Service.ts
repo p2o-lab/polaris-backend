@@ -391,7 +391,7 @@ export class Service extends EventEmitter {
             arrayType: VariantArrayType.Scalar,
             dimensions: null
         };
-        catService.info(`Set Parameter: ${this.name} - ${JSON.stringify(opcUaNode)} -> ${JSON.stringify(dataValue)}`);
+        catService.debug(`Set Parameter: ${this.name} - ${JSON.stringify(opcUaNode)} -> ${JSON.stringify(dataValue)}`);
         return await this.parent.writeNode(opcUaNode, dataValue);
     }
 
@@ -472,7 +472,7 @@ export class Service extends EventEmitter {
         if (!this.parent.isConnected()) {
             return Promise.reject('Module is not connected');
         }
-        catService.debug(`Send command ${ServiceMtpCommand[command]} (${command}) to service "${this.name}"`);
+        catService.info(`Send command ${ServiceMtpCommand[command]} (${command}) to service "${this.name}"`);
         if (manager.automaticMode) {
             await this.setToAutomaticOperationMode();
         } else {
