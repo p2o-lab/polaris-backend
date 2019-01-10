@@ -32,10 +32,16 @@ import { RecipeRunInterface } from 'pfe-ree-interface';
  *
  */
 export class RecipeRun {
+    get startTime(): Date {
+        return this._startTime;
+    }
+    get endTime(): Date {
+        return this._endTime;
+    }
 
     readonly id: string;
-    startTime: Date;
-    endTime: Date;
+    private _startTime: Date;
+    private _endTime: Date;
     readonly recipe: Recipe;
 
     constructor(recipe: Recipe) {
@@ -46,8 +52,8 @@ export class RecipeRun {
     public json(): RecipeRunInterface {
         return {
             id: this.id,
-            startTime: this.startTime,
-            endTime: this.endTime,
+            startTime: this._startTime,
+            endTime: this._endTime,
             recipe: this.recipe.json()
         };
     }
@@ -56,10 +62,10 @@ export class RecipeRun {
      *
      */
     public start() {
-        this.startTime = new Date();
+        this._startTime = new Date();
         return this.recipe.start()
             .once('completed', () => {
-                this.endTime = new Date();
+                this._endTime = new Date();
             });
 
     }
