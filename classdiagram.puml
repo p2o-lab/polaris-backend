@@ -65,5 +65,24 @@ Transition --> Condition: condition
 
 Operation --> Service
 Operation --> Parameter
+Operation --> FunctionBlock
 
+class FunctionBlock {
+}
+
+class Timer {
+duration: number
+}
+
+class Clock {
+}
+
+class Storage {
+}
+class PIDController {
+}
+Timer --|> FunctionBlock
+Clock --|> FunctionBlock
+Storage --|> FunctionBlock
+PIDController --> FunctionBlock
 @enduml
