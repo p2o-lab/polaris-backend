@@ -31,18 +31,25 @@ import { EventEmitter } from 'events';
 import { DataType } from 'node-opcua-client';
 import { Service } from './Service';
 import {OpcUaNode, ServiceParameter, Strategy} from './Interfaces';
-import {Module} from './Module';
+import {Module, OpcUaNodeEvents} from './Module';
+import StrictEventEmitter from 'strict-event-emitter-types';
 
 /**
- * Parameter of an operation. Can be static or dynamic. Dynamic parameters can depend on variables of the same or
- * other modules.
+ * Parameter of an [[Operation]]. Can be static or dynamic. Dynamic parameters can depend on variables of the same or
+ * other modules. These can also be continuously updated (specified via continuous property)
  */
 export class Parameter {
 
+    /**
+     * name of parameter
+     */
     name: string;
     variable: string;
     value: any;
     scope: ScopeOptions[];
+    /**
+     * should parameter continuously be updated
+     */
     continuous: boolean;
     private expression: Expression;
     private service: Service;
@@ -86,11 +93,11 @@ export class Parameter {
     }
 
     public listenToParameter() {
-        const eventEmitter = new EventEmitter();
+        const eventEmitter: StrictEventEmitter<EventEmitter, OpcUaNodeEvents> = new EventEmitter();
         this.scope.forEach(async (item: ScopeOptions) => {
             const module = this.modules.find(module => module.id === item.module);
             module.listenToVariable(item.dataAssembly, item.variable)
-                .on('refresh', () => eventEmitter.emit('refresh'));
+                .on('changed', (data) => eventEmitter.emit('changed', data));
         });
         return eventEmitter;
     }

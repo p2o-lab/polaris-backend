@@ -55,6 +55,17 @@ export interface ModuleOptions {
 }
 
 /**
+ * Events emitted by [[OpcUaNode]]
+ */
+export interface OpcUaNodeEvents {
+    /**
+     * when OpcUaNode changes its value
+     * @event
+     */
+    changed: number;
+}
+
+/**
  * Events emitted by [[Module]]
  */
 interface ModuleEvents {
@@ -103,7 +114,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
     session: ClientSession;
     private client: OPCUAClient;
     subscription: ClientSubscription;
-    private monitoredItems: Map<NodeId, { monitoredItem: ClientMonitoredItem, emitter: EventEmitter }>;
+    private monitoredItems: Map<NodeId, { monitoredItem: ClientMonitoredItem, emitter: StrictEventEmitter<EventEmitter, OpcUaNodeEvents> }>;
     private namespaceArray: string[];
 
     /**
@@ -234,6 +245,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
         });
     }
 
+
     /**
      * Listen to OPC UA node and return event listener which is triggered by any value change
      * @param {OpcUaNode} node
@@ -252,7 +264,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
                     queueSize: 10
                 });
 
-            const emitter = new EventEmitter();
+            const emitter: StrictEventEmitter<EventEmitter, OpcUaNodeEvents> = new EventEmitter();;
             monitoredItem.on('changed', (dataValue) => {
                 catOpc.debug(`Variable Changed (${this.resolveNodeId(node)}) = ${dataValue.value.value.toString()}`);
                 emitter.emit('changed', dataValue.value.value);
@@ -262,7 +274,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
         return this.monitoredItems.get(nodeId).emitter;
     }
 
-    listenToVariable(dataStructureName: string, variableName: string): EventEmitter {
+    listenToVariable(dataStructureName: string, variableName: string): StrictEventEmitter<EventEmitter, OpcUaNodeEvents> {
         const dataStructure: ProcessValue = this.variables.find(variable => variable.name === dataStructureName);
         if (!dataStructure) {
             throw new Error(`ProcessValue ${dataStructureName} is not specified for module ${this.id}`);
@@ -270,7 +282,6 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
             const variable: OpcUaNode = dataStructure.communication[variableName];
             return this.listenToOpcUaNode(variable);
         }
-
     }
 
     clearListener(node: OpcUaNode) {
