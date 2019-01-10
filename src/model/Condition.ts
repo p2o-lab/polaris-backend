@@ -307,7 +307,7 @@ export class VariableCondition extends ModuleCondition {
 
         this.listener = this.module.listenToVariable(this.dataStructure, this.variable)
             .on('changed', (value) => {
-                catOpc.info(`value changed to ${value} -  (${this.operator}) compare against ${this.value}`);
+                catOpc.debug(`value changed to ${value} -  (${this.operator}) compare against ${this.value}`);
                 this._fulfilled = this.compare(value);
                 this.emit('stateChanged', this._fulfilled);
                 catOpc.debug(`VariableCondition ${this.dataStructure}: ${value} ${this.operator} ${this.value} = ${this._fulfilled}`);

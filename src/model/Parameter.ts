@@ -120,7 +120,7 @@ export class Parameter {
      */
     async updateValueOnModule(): Promise<any> {
         const value = await this.getValue();
-        catService.debug(`Set parameter "${this.service.name}[${this.variable}]" for ${this.name} = ${value}`);
+        catService.info(`Set parameter "${this.service.name}[${this.variable}]" for ${this.name} = ${value}`);
         return this.service.setParameter(
             this._opcUaNode,
             await this.getDataType(),

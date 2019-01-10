@@ -295,7 +295,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
         }
         await result;
         // reset ControlOp variable after 100ms
-        setTimeout(() => this.clearCommand(), 100);
+        // setTimeout(() => this.clearCommand(), 100);
         return result;
     }
 
@@ -367,7 +367,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
     private async setStrategyParameters(strategy?: Strategy, parameters?: Parameter[]): Promise<boolean> {
         // set strategy
         if (strategy) {
-            catService.debug(`Set strategy "${strategy.name}" for service ${this.name}`);
+            catService.info(`Set strategy "${strategy.name}" for service ${this.name}`);
             await this.parent.writeNode(this.strategy,
                 {
                     dataType: DataType.UInt32,
@@ -381,7 +381,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
         if (strategy && parameters) {
             const tasks = parameters.map((param: Parameter) => param.updateValueOnModule());
             const paramResults = await Promise.all(tasks);
-            catService.debug(`Set Parameter Promises: ${JSON.stringify(paramResults)}`);
+            catService.info(`Set Parameter Promises: ${JSON.stringify(paramResults)}`);
 
             this.listenToServiceParameters(parameters);
         }
@@ -393,7 +393,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
         parameters.forEach((param) => {
             if (param.continuous) {
                 const listener: EventEmitter = param.listenToParameter()
-                    .on('refresh', () => param.updateValueOnModule());
+                    .on('changed', (data) => param.updateValueOnModule());
                 this.serviceParametersEventEmitters.push(listener);
             }
         });
@@ -410,7 +410,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
             arrayType: VariantArrayType.Scalar,
             dimensions: null
         };
-        catService.debug(`Set Parameter: ${this.name} - ${JSON.stringify(opcUaNode)} -> ${JSON.stringify(dataValue)}`);
+        catService.info(`Set Parameter: ${this.name} - ${JSON.stringify(opcUaNode)} -> ${JSON.stringify(dataValue)}`);
         return await this.parent.writeNode(opcUaNode, dataValue);
     }
 
