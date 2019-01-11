@@ -25,12 +25,11 @@
 
 import { ParameterOptions, ScopeOptions } from 'pfe-ree-interface';
 import { Expression, Parser } from 'expr-eval';
-import { manager } from './Manager';
 import {catRecipe, catService} from '../config/logging';
 import { EventEmitter } from 'events';
 import { DataType } from 'node-opcua-client';
 import { Service } from './Service';
-import {OpcUaNode, ServiceParameter, Strategy} from './Interfaces';
+import {OpcUaNode, Strategy} from './Interfaces';
 import {Module, OpcUaNodeEvents} from './Module';
 import StrictEventEmitter from 'strict-event-emitter-types';
 
