@@ -619,6 +619,14 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
         } else {
             throw new Error(`OPC UA variable for status of service ${this.name} not defined`);
         }
+        this.parent.listenToOpcUaNode(this.command)
+            .on('changed', (data) => {
+                catOpc.info(`ControlOp: ${data}`);
+            });
+        this.parent.listenToOpcUaNode(this.status)
+            .on('changed', (data) => {
+                catOpc.info(`ControlOp: ${data}`);
+            });
         return this;
     }
 
