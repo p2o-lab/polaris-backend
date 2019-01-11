@@ -1,5 +1,5 @@
 # Docker Parent Image with Node and Typescript
-FROM node:alpine
+FROM node:current
 
 # Create Directory for the Container
 WORKDIR /app
