@@ -25,25 +25,27 @@
 
 import * as assert from 'assert';
 import * as fs from 'fs';
-import { Module } from '../../src/model/Module';
-import { ServiceState } from '../../src/model/enum';
-import { promiseTimeout } from '../../src/timeout-promise';
-import { manager } from '../../src/model/Manager';
-import { expect } from 'chai';
+import {Module} from '../../src/model/Module';
+import {ServiceState} from '../../src/model/enum';
+import {manager} from '../../src/model/Manager';
+import {expect} from 'chai';
 import {later, testForStateChange} from '../helper';
+import {Service} from '../../src/model/Service';
 
 describe('Integration test with CIF test PLC', function () {
 
     let module: Module;
+    let service: Service;
 
     before(() => {
         const file = fs.readFileSync('assets/modules/module_cif.json');
         module = manager.loadModule(JSON.parse(file.toString()))[0];
+        service = module.services[5];
     });
 
 
     it('should connect to CIF', async function () {
-
+        this.timeout(5000);
         manager.autoreset = true;
         await module.connect();
 
@@ -56,23 +58,36 @@ describe('Integration test with CIF test PLC', function () {
         expect(json.services).to.have.lengthOf(6);
 
         const serviceStates = await module.getServiceStates();
+        expect(serviceStates).to.have.lengthOf(6);
     });
 
     it('should bring everything to idle', async () => {
-       await manager.stopAllServices();
-       await later(500);
+        await manager.stopAllServices();
+        await later(500);
 
-       await manager.resetAllServices();
-       await later(500);
+        await manager.resetAllServices();
+        await later(500);
 
-       const state = await module.services[5].getServiceState();
-       expect(state).to.equal(ServiceState.IDLE)
+        const state = await service.getServiceState();
+        expect(state).to.equal(ServiceState.IDLE);
+        const controlEnable = await service.getControlEnable();
+        expect(controlEnable).to.deep.equal({
+            "abort": true,
+            "complete": false,
+            "pause": false,
+            "reset": false,
+            "restart": false,
+            "resume": false,
+            "start": true,
+            "stop": true,
+            "unhold": false
+        });
 
     });
 
-    it('perform a service cycle', async function() {
+    it('perform a service cycle', async function () {
         this.timeout(10000);
-        const service = module.services[5];
+
         assert.equal(service.name, 'Test_Service.Vorlegen');
 
         const listener = service.subscribeToService();

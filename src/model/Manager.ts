@@ -101,15 +101,15 @@ export class Manager extends EventEmitter {
             throw new Error('No modules defined in supplied options');
         }
         this.modules.push(...newModules);
-        newModules.forEach((module: Module) => {
+        newModules.forEach(async (module: Module) => {
             module
                 .on('connected', () => this.emit('notify', 'module'))
                 .on('disconnected', () => this.emit('notify', 'module'))
                 .on('errorMessage', (service: Service, errorMessage) => {
                     this.emit('notify', 'module', {module: service.parent.id, service: service.name, errorMessage: errorMessage});
                 })
-                .on('stateChanged', (service: Service, state: ServiceState) => {
-                    this.emit('notify', 'module', {module: service.parent.id, service: service.name, state: ServiceState[state]});
+                .on('stateChanged', async (service: Service, state: ServiceState) => {
+                    this.emit('notify', 'module', {module: service.parent.id, service: service.name, state: ServiceState[state], controlEnable: await service.getControlEnable()});
                 })
                 .on('serviceCompleted', (service: Service) => {
                     this.performAutoReset(service);

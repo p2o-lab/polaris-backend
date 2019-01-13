@@ -42,7 +42,8 @@ import {
     ParameterOptions,
     ServiceCommand,
     ServiceInterface,
-    StrategyInterface
+    StrategyInterface,
+    ControlEnableInterface
 } from 'pfe-ree-interface';
 import { Unit } from './Unit';
 import { manager } from './Manager';
@@ -125,13 +126,22 @@ export class Service extends EventEmitter {
      * Reads current ControlEnable from [[Module]]
      * @returns {Promise<ServiceControlEnable>}
      */
-    async getControlEnable(): Promise<ServiceControlEnable> {
+    async getControlEnable(): Promise<ControlEnableInterface> {
         try {
             const result: DataValue = await this.parent.readVariableNode(this.controlEnable);
             const controlEnable: ServiceControlEnable = <ServiceControlEnable> result.value.value;
-            const controlEnableString: string = ServiceControlEnable[controlEnable];
-            catOpc.trace(`Read ControlEnable ${this.name}: ${controlEnable} (${controlEnableString})`);
-            return ServiceControlEnable;
+            catOpc.trace(`Read ControlEnable ${this.name}: ${controlEnable}`);
+            return {
+                start: (controlEnable & ServiceControlEnable.START) !== 0,
+                restart: (controlEnable & ServiceControlEnable.RESTART) !== 0,
+                pause: (controlEnable & ServiceControlEnable.PAUSE) !== 0,
+                resume: (controlEnable & ServiceControlEnable.RESUME) !== 0,
+                complete: (controlEnable & ServiceControlEnable.COMPLETE) !== 0,
+                unhold: (controlEnable & ServiceControlEnable.UNHOLD) !== 0,
+                stop: (controlEnable & ServiceControlEnable.STOP) !== 0,
+                abort: (controlEnable & ServiceControlEnable.ABORT) !== 0,
+                reset: (controlEnable & ServiceControlEnable.RESET) !== 0
+            };
         } catch (err) {
             catOpc.error('Error reading controlEnable', err);
             return undefined;
@@ -171,7 +181,7 @@ export class Service extends EventEmitter {
      * @returns {Promise<ServiceInterface>}
      */
     async getOverview(): Promise<ServiceInterface> {
-        const opMode = this.getOpMode();
+        const opMode = await this.getOpMode();
         const state = this.getServiceState();
         const strategies = this.getStrategies();
         const params = this.getCurrentParameters();
@@ -184,7 +194,7 @@ export class Service extends EventEmitter {
             strategies: await strategies,
             parameters: await params,
             error: await errorString,
-            controlEnable: await ServiceControlEnable[controlEnable],
+            controlEnable: await controlEnable,
             lastChange: this.lastChange
         };
     }
