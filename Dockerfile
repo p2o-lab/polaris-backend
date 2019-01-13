@@ -12,7 +12,8 @@ ADD package.json /app/
 ADD package-lock.json /app/
 
 # Grab dependencies
-RUN npm install --prod
+RUN npm --registry https://registry.plt.et.tu-dresden.de:4873 install --prod
+
 
 # Expose the port outside of the container
 EXPOSE 3000
