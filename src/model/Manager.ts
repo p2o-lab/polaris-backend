@@ -101,7 +101,7 @@ export class Manager extends EventEmitter {
             throw new Error('No modules defined in supplied options');
         }
         this.modules.push(...newModules);
-        newModules.forEach((module: Module) => {
+        newModules.forEach(async (module: Module) => {
             module
                 .on('connected', () => this.emit('notify', 'module'))
                 .on('disconnected', () => this.emit('notify', 'module'))
