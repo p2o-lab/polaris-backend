@@ -8,7 +8,7 @@ pipeline:
   build:
     image: node:8-jessie
     commands:
-      - npm install -d --registry https://registry.plt.et.tu-dresden.de:4873 pfe-ree-interface
+      - npm config set @plt:registry https://registry.plt.et.tu-dresden.de:4873 
       - npm install -d
       - npm run-script apidoc build
       - npm test
