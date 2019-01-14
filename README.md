@@ -14,11 +14,16 @@ A HTML user interface for this project is provided via the pfe-ree-viz project.
 All dependencies are installed via NPM
 ```
 npm install
+npm run build
 ```
 
 ### Start
 ```bash
 npm start
+```
+or use ready binary (which should also be installed globally and in modules)
+```
+./bin/pfe-ree-node
 ```
 
 ### Publish
