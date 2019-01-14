@@ -1,6 +1,6 @@
 {
   "name": "@plt/pfe-ree-node",
-  "version": "1.3.2",
+  "version": "1.4.0",
   "main": "./build/index.js",
   "types": "./build.index.d.ts",
   "description": "Server backend for PFE recipe execution engine",
