@@ -25,7 +25,7 @@
 
 import {Transition} from '../../src/model/Transition';
 import {expect} from 'chai';
-import {ConditionType} from 'pfe-ree-interface/dist/enum';
+import {ConditionType} from '@plt/pfe-ree-interface';
 
 describe('Transition', () => {
 
