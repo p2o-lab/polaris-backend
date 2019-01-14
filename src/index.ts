@@ -40,7 +40,6 @@ const optionDefinitions = [
         alias: 'm',
         type: String,
         multiple: true,
-        defaultOption: true,
         typeLabel: '{underline modulePath[]}',
         description: 'path to module.json which should be loaded at startup'
     },
@@ -125,7 +124,7 @@ if (options) {
         server.on('listening', serverHandlers.onListening.bind(server));
 
         /** Load some configuration at startup */
-        if (options.module) {
+        if (options.module && options.module.length > 0) {
             console.log(`Load modules from ${options.module}`);
             options.module.forEach((module) => {
                 const modulesOptions = JSON.parse(fs.readFileSync(module).toString());
@@ -139,7 +138,7 @@ if (options) {
             );
         }
 
-        if (options.recipe) {
+        if (options.recipe && options.recipe.length > 0) {
             console.log(`Load recipe from ${options.recipe}`);
             options.recipe.forEach((recipe) => {
                 const recipeOptions = JSON.parse(fs.readFileSync(recipe).toString());

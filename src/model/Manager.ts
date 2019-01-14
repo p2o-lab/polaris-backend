@@ -109,7 +109,7 @@ export class Manager extends EventEmitter {
                     this.emit('notify', 'module', {module: service.parent.id, service: service.name, errorMessage: errorMessage});
                 })
                 .on('stateChanged', async ({service, state}) => {
-                    this.emit('notify', 'module', {module: service.parent.id, service: service.name, state: ServiceState[state], controlEnable: await service.getControlEnable()});
+                    this.emit('notify', 'module', {module: service.parent.id, service: service.name, state: ServiceState[state], lastChange: service.lastChange, controlEnable: await service.getControlEnable()});
                 })
                 .on('serviceCompleted', (service: Service) => {
                     this.performAutoReset(service);
