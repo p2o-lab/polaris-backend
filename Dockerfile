@@ -1,5 +1,5 @@
 # Docker Parent Image with Node and Typescript
-FROM node:current
+FROM node:8-jessie
 
 # Create Directory for the Container
 WORKDIR /app
