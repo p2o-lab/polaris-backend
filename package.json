@@ -32,7 +32,8 @@
     }
   },
   "files": [
-    "src"
+    "build",
+    "assets"
   ],
   "dependencies": {
     "@plt/pfe-ree-interface": "^1.15.2",
