@@ -30,7 +30,7 @@ import { EventEmitter } from 'events';
 import { v4 } from 'uuid';
 import { Transition } from './Transition';
 import { manager } from './Manager';
-import { RecipeInterface, ModuleInterface, RecipeOptions, RecipeState, StepInterface } from 'pfe-ree-interface';
+import { RecipeInterface, ModuleInterface, RecipeOptions, RecipeState, StepInterface } from '@plt/pfe-ree-interface';
 import * as assert from 'assert';
 import StrictEventEmitter from 'strict-event-emitter-types';
 

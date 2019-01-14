@@ -29,7 +29,7 @@ import { catOpc, catRecipe, catServer } from '../config/logging';
 import { Recipe } from './Recipe';
 import { ServiceParameter, Strategy } from './Interfaces';
 import { Parameter } from './Parameter';
-import { OperationInterface, OperationOptions, ServiceCommand } from 'pfe-ree-interface';
+import { OperationInterface, OperationOptions, ServiceCommand } from '@plt/pfe-ree-interface';
 
 /** Operation used in a [[Step]] of a [[Recipe]]
  *

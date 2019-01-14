@@ -26,7 +26,7 @@
 import { Condition, TimeCondition } from '../../src/model/Condition';
 import * as assert from 'assert';
 import { catRecipe } from '../../src/config/logging';
-import { ConditionType } from 'pfe-ree-interface';
+import { ConditionType } from '@plt/pfe-ree-interface';
 import {Server} from "../../src/server/server";
 import * as http from "http";
 

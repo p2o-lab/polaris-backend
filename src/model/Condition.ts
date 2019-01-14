@@ -37,7 +37,7 @@ import {
     StateConditionOptions,
     TimeConditionOptions,
     VariableConditionOptions
-} from 'pfe-ree-interface';
+} from '@plt/pfe-ree-interface';
 import { EventEmitter } from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 

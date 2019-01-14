@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import { ParameterOptions, ScopeOptions } from 'pfe-ree-interface';
+import { ParameterOptions, ScopeOptions } from '@plt/pfe-ree-interface';
 import { Expression, Parser } from 'expr-eval';
 import {catRecipe, catService} from '../config/logging';
 import { EventEmitter } from 'events';

@@ -28,7 +28,7 @@ import {catManager} from "../config/logging";
 import {EventEmitter} from "events";
 import {Module, ModuleOptions} from "./Module";
 import {Service} from "./Service";
-import {ManagerInterface, RecipeOptions} from "pfe-ree-interface";
+import {ManagerInterface, RecipeOptions} from '@plt/pfe-ree-interface';
 import {Player} from "./Player";
 import {Server} from '../server/server';
 import {ServiceState} from './enum';

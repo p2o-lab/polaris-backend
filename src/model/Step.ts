@@ -26,11 +26,10 @@
 import { Operation } from './Operation';
 import { Transition, TransitionOptions } from './Transition';
 import { catRecipe } from '../config/logging';
-import { manager } from './Manager';
 import { EventEmitter } from 'events';
 import { Module } from './Module';
 import { Recipe } from './Recipe';
-import { OperationOptions, StepInterface } from 'pfe-ree-interface';
+import { OperationOptions, StepInterface } from '@plt/pfe-ree-interface';
 import StrictEventEmitter from 'strict-event-emitter-types';
 
 export interface StepOptions {

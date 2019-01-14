@@ -16,7 +16,7 @@ node "Process Orchestation Layer (POL)" {
         [Angular] -right- [Express] : HTTP, Websocket
     }
 
-    package "pfe-ree-interface" {
+    package '@plt/pfe-ree-interface' {
         () interface as if
     }
 }

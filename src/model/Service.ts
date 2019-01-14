@@ -44,7 +44,7 @@ import {
     ServiceInterface,
     StrategyInterface,
     ControlEnableInterface
-} from 'pfe-ree-interface';
+} from '@plt/pfe-ree-interface';
 import { Unit } from './Unit';
 import { manager } from './Manager';
 import { EventEmitter } from 'events';

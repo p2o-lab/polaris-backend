@@ -25,7 +25,7 @@
 
 import { Recipe } from './Recipe';
 import { v4 } from 'uuid';
-import { RecipeRunInterface } from 'pfe-ree-interface';
+import { RecipeRunInterface } from '@plt/pfe-ree-interface';
 
 
 /** One specific recipe run with all logs

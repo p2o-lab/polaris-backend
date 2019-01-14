@@ -41,7 +41,7 @@ import { EventEmitter } from 'events';
 import { OpcUaNode } from './Interfaces';
 import { manager } from './Manager';
 import { ServiceState } from './enum';
-import { ModuleInterface, ServiceInterface } from 'pfe-ree-interface';
+import { ModuleInterface, ServiceInterface } from '@plt/pfe-ree-interface';
 import { promiseTimeout } from '../timeout-promise';
 import { serviceArchive, variableArchive } from '../logging/archive';
 import StrictEventEmitter from 'strict-event-emitter-types';

@@ -25,7 +25,7 @@
 
 import { Condition, NotCondition, TimeCondition } from '../../src/model/Condition';
 import * as assert from 'assert';
-import { ConditionType } from 'pfe-ree-interface';
+import { ConditionType } from '@plt/pfe-ree-interface';
 import { expect } from 'chai';
 
 function later(delay) {

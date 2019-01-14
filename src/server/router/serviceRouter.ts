@@ -24,7 +24,7 @@
  */
 
 import { manager } from '../../model/Manager';
-import { ServiceCommand } from 'pfe-ree-interface';
+import { ServiceCommand } from '@plt/pfe-ree-interface';
 import { moduleRouter } from './moduleRouter';
 import { Request, Response, Router } from 'express';
 import * as asyncHandler from 'express-async-handler';

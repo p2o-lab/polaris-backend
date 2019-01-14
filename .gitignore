@@ -62,3 +62,4 @@ typings/
 /build/
 /dist/
 /typedoc/
+.vscode
