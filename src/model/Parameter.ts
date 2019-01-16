@@ -23,26 +23,32 @@
  * SOFTWARE.
  */
 
-import { ParameterOptions, ScopeOptions } from 'pfe-ree-interface';
+import { ParameterOptions, ScopeOptions } from '@plt/pfe-ree-interface';
 import { Expression, Parser } from 'expr-eval';
-import { manager } from './Manager';
 import {catRecipe, catService} from '../config/logging';
 import { EventEmitter } from 'events';
 import { DataType } from 'node-opcua-client';
 import { Service } from './Service';
-import {OpcUaNode, ServiceParameter, Strategy} from './Interfaces';
-import {Module} from './Module';
+import {OpcUaNode, Strategy} from './Interfaces';
+import {Module, OpcUaNodeEvents} from './Module';
+import StrictEventEmitter from 'strict-event-emitter-types';
 
 /**
- * Parameter of an operation. Can be static or dynamic. Dynamic parameters can depend on variables of the same or
- * other modules.
+ * Parameter of an [[Operation]]. Can be static or dynamic. Dynamic parameters can depend on variables of the same or
+ * other modules. These can also be continuously updated (specified via continuous property)
  */
 export class Parameter {
 
+    /**
+     * name of parameter
+     */
     name: string;
     variable: string;
     value: any;
     scope: ScopeOptions[];
+    /**
+     * should parameter continuously be updated
+     */
     continuous: boolean;
     private expression: Expression;
     private service: Service;
@@ -78,19 +84,19 @@ export class Parameter {
     public async getDataType(): Promise<DataType> {
         if (!this._opcUaDataType) {
             const value = await this.service.parent.readVariableNode(this._opcUaNode);
-            catService.info(`Datatype for ${this.service.name}.${this.name}.${this.variable} - ${this._opcUaNode.node_id} = ${JSON.stringify(value)}`);
+            catService.debug(`Datatype for ${this.service.name}.${this.name}.${this.variable} - ${this._opcUaNode.node_id} = ${JSON.stringify(value)}`);
             this._opcUaDataType = value.value ? value.value.dataType : undefined;
-            catService.info(`Get datatype for ${this.service.name}.${this.name} = ${this._opcUaDataType}`);
+            catService.debug(`Get datatype for ${this.service.name}.${this.name} = ${this._opcUaDataType}`);
         }
         return this._opcUaDataType;
     }
 
     public listenToParameter() {
-        const eventEmitter = new EventEmitter();
+        const eventEmitter: StrictEventEmitter<EventEmitter, OpcUaNodeEvents> = new EventEmitter();
         this.scope.forEach(async (item: ScopeOptions) => {
             const module = this.modules.find(module => module.id === item.module);
             module.listenToVariable(item.dataAssembly, item.variable)
-                .on('refresh', () => eventEmitter.emit('refresh'));
+                .on('changed', (data) => eventEmitter.emit('changed', data));
         });
         return eventEmitter;
     }
@@ -120,7 +126,7 @@ export class Parameter {
      */
     async updateValueOnModule(): Promise<any> {
         const value = await this.getValue();
-        catService.debug(`Set parameter "${this.service.name}[${this.variable}]" for ${this.name} = ${value}`);
+        catService.info(`Set parameter "${this.service.name}[${this.variable}]" for ${this.name} = ${value}`);
         return this.service.setParameter(
             this._opcUaNode,
             await this.getDataType(),

@@ -26,11 +26,11 @@
 import { Operation } from './Operation';
 import { Transition, TransitionOptions } from './Transition';
 import { catRecipe } from '../config/logging';
-import { manager } from './Manager';
 import { EventEmitter } from 'events';
 import { Module } from './Module';
 import { Recipe } from './Recipe';
-import { OperationOptions, StepInterface } from 'pfe-ree-interface';
+import { OperationOptions, StepInterface } from '@plt/pfe-ree-interface';
+import StrictEventEmitter from 'strict-event-emitter-types';
 
 export interface StepOptions {
     name: string;
@@ -39,14 +39,24 @@ export interface StepOptions {
 }
 
 /**
- * Executable step from recipe
+ * Events emitted by [[Step]]
+ */
+interface StepEvents {
+    /**
+     * when step is completed
+     * @event
+     */
+    completed: Transition;
+}
+
+/**
+ * Executable [[Step]] from [[Recipe]]
  */
 export class Step {
     name: string;
     operations: Operation[];
     transitions: Transition[];
-
-    private eventEmitter: EventEmitter = new EventEmitter();
+    private eventEmitter: StrictEventEmitter<EventEmitter, StepEvents> = new EventEmitter();
 
     constructor(options: StepOptions, modules: Module[], recipe: Recipe) {
         if (options.name) {
@@ -71,11 +81,18 @@ export class Step {
     }
 
     execute() {
-        // first start listening to transitions of step
+        // execute operations for step
+        this.operations.forEach((operation) => {
+            catRecipe.info(`Start operation ${operation.module.id} ${operation.service.name} ` +
+                `${JSON.stringify(operation.command)}`);
+            operation.execute();
+        });
+
+        // start listening to transitions of step
         this.transitions.forEach((transition) => {
             catRecipe.info(`Start listening for transition ${JSON.stringify(transition.json())}`);
-            const events = transition.condition.listen();
-            events.on('state_changed', (status) => {
+            const events = transition.condition.listen()
+                .on('stateChanged', (status) => {
                 catRecipe.info(`Status of step ${this.name} for transition to ${transition.next_step_name}: ` +
                     `${status}`);
                 if (status) {
@@ -87,13 +104,6 @@ export class Step {
                     this.eventEmitter.emit('completed', transition);
                 }
             });
-        });
-
-        // execute operations for step
-        this.operations.forEach((operation) => {
-            catRecipe.info(`Start operation ${operation.module.id} ${operation.service.name} ` +
-                `${JSON.stringify(operation.command)}`);
-            operation.execute();
         });
 
         return this.eventEmitter;

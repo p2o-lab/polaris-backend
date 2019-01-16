@@ -37,14 +37,28 @@ import {
     StateConditionOptions,
     TimeConditionOptions,
     VariableConditionOptions
-} from 'pfe-ree-interface';
+} from '@plt/pfe-ree-interface';
 import { EventEmitter } from 'events';
+import StrictEventEmitter from 'strict-event-emitter-types';
 
-export abstract class Condition {
+
+/**
+ * Events emitted by [[Condition]]
+ */
+interface ConditionEvents {
+    /**
+     * Notify when the condition changes its state. Parameter is a boolean representing if condition is fulfilled.
+     * @event
+     */
+    stateChanged: boolean;
+}
+
+type ConditionEmitter = StrictEventEmitter<EventEmitter, ConditionEvents>;
+
+export abstract class Condition extends (EventEmitter as { new(): ConditionEmitter }) {
 
     protected _fulfilled: boolean = false;
     private options: ConditionOptions;
-    protected eventEmitter: EventEmitter = new EventEmitter;
 
     get fulfilled(): boolean {
         return this._fulfilled;
@@ -78,9 +92,9 @@ export abstract class Condition {
     }
 
     /**
-     * Listen to any change in condition and inform via 'state_change' event
+     * Listen to any change in condition and inform via 'stateChanged' event
      */
-    abstract listen(): EventEmitter;
+    abstract listen(): Condition;
 
     /**
      * Clear listening on condition
@@ -88,6 +102,7 @@ export abstract class Condition {
     abstract clear();
 
     constructor(options: ConditionOptions) {
+        super();
         this.options = options;
     }
 
@@ -107,16 +122,16 @@ export class NotCondition extends Condition {
     }
 
     clear() {
-        this.eventEmitter.removeAllListeners();
+        this.removeAllListeners();
         this.condition.clear();
     }
 
-    listen(): EventEmitter {
-        this.condition.listen().on('state_changed', (state) => {
+    listen(): Condition {
+        this.condition.listen().on('stateChanged', (state) => {
             this._fulfilled = !state;
-            this.eventEmitter.emit('state_changed', this._fulfilled);
+            this.emit('stateChanged', this._fulfilled);
         });
-        return this.eventEmitter;
+        return this;
     }
 }
 
@@ -132,7 +147,7 @@ export abstract class AggregateCondition extends Condition {
     }
 
     clear() {
-        this.eventEmitter.removeAllListeners();
+        this.removeAllListeners();
         this.conditions.forEach(cond => cond.clear());
     }
 }
@@ -144,18 +159,18 @@ export class AndCondition extends AggregateCondition {
         catRecipe.trace(`Add AndCondition: ${options}`);
     }
 
-    listen(): EventEmitter {
+    listen(): Condition {
         this.conditions.forEach((condition) => {
-            condition.listen().on('state_changed', (state) => {
-                catRecipe.info(`AndCondition: ${JSON.stringify(this.conditions.map(item => item.fulfilled))}`);
+            condition.listen().on('stateChanged', (state) => {
+                catRecipe.debug(`AndCondition: ${JSON.stringify(this.conditions.map(item => item.fulfilled))}`);
                 const oldState = this._fulfilled;
                 this._fulfilled = this.conditions.every(condition => condition.fulfilled);
                 if (oldState !== this._fulfilled) {
-                    this.eventEmitter.emit('state_changed', this._fulfilled);
+                    this.emit('stateChanged', this._fulfilled);
                 }
             });
         });
-        return this.eventEmitter;
+        return this;
     }
 }
 
@@ -166,17 +181,17 @@ export class OrCondition extends AggregateCondition {
         catRecipe.trace(`Add OrCondition: ${options}`);
     }
 
-    listen(): EventEmitter {
+    listen(): Condition {
         this.conditions.forEach((condition) => {
-            condition.listen().on('state_changed', (status) => {
+            condition.listen().on('stateChanged', (status) => {
                 const oldState = this._fulfilled;
                 this._fulfilled = this.conditions.some(condition => condition.fulfilled);
                 if (oldState !== this._fulfilled) {
-                    this.eventEmitter.emit('state_changed', this._fulfilled);
+                    this.emit('stateChanged', this._fulfilled);
                 }
             });
         });
-        return this.eventEmitter;
+        return this;
     }
 }
 
@@ -194,19 +209,19 @@ export class TimeCondition extends Condition {
         catRecipe.trace(`Add TimeCondition: ${JSON.stringify(options)}`);
     }
 
-    listen(): EventEmitter {
+    listen(): Condition {
         catRecipe.debug(`Start Timer: ${this.duration}`);
         this.timer = setTimeout(() => {
             catRecipe.debug(`TimeCondition finished: ${this.duration}`);
             this._fulfilled = true;
-            this.eventEmitter.emit('state_changed', this._fulfilled);
+            this.emit('stateChanged', this._fulfilled);
         },
             this.duration);
-        return this.eventEmitter;
+        return this;
     }
 
     clear(): void {
-        this.eventEmitter.removeAllListeners();
+        this.removeAllListeners();
         this.timer.unref();
     }
 }
@@ -238,21 +253,21 @@ export class StateCondition extends ModuleCondition {
     }
 
     clear() {
-        this.eventEmitter.removeAllListeners();
+        this.removeAllListeners();
         this.service.parent.clearListener(this.service.status);
     }
 
-    listen(): EventEmitter {
-        this.monitoredItem = this.service.parent.listenToOpcUaNode(this.service.status);
-        this.monitoredItem.on('changed', (dataValue) => {
-            const state: ServiceState = dataValue;
-            this._fulfilled = ServiceState[state]
-                .localeCompare(this.state, 'en', { usage: 'search', sensitivity: 'base' }) === 0;
-            catRecipe.info(`StateCondition: ${this.module.id}.${this.service.name}) = (${ServiceState[state]})` +
-                `- ?= ${this.state} -> ${this._fulfilled}`);
-            this.eventEmitter.emit('state_changed', this._fulfilled);
-        });
-        return this.eventEmitter;
+    listen(): Condition {
+        this.monitoredItem = this.service.parent.listenToOpcUaNode(this.service.status)
+            .on('changed', ({value, serverTimestamp}) => {
+                const state: ServiceState = value;
+                this._fulfilled = ServiceState[state]
+                    .localeCompare(this.state, 'en', { usage: 'search', sensitivity: 'base' }) === 0;
+                catRecipe.info(`StateCondition: ${this.module.id}.${this.service.name}) = (${ServiceState[state]})` +
+                    `- ?= ${this.state} -> ${this._fulfilled}`);
+                this.emit('stateChanged', this._fulfilled);
+            });
+        return this;
     }
 }
 
@@ -278,26 +293,26 @@ export class VariableCondition extends ModuleCondition {
      *
      */
     clear(): void {
-        this.eventEmitter.removeAllListeners();
+        this.removeAllListeners();
         this.listener.removeAllListeners();
     }
 
-    listen(): EventEmitter {
+    listen(): Condition {
         catRecipe.info(`Listen to ${this.dataStructure}.${this.variable}`);
         this.module.readVariable(this.dataStructure, this.variable).then((value) => {
             this._fulfilled = this.compare(value.value.value);
-            this.eventEmitter.emit('state_changed', this._fulfilled);
-            catOpc.info(`VariableCondition ${this.dataStructure}: ${value.value.value} ${this.operator} ${this.value} = ${this._fulfilled}`);
+            this.emit('stateChanged', this._fulfilled);
+            catOpc.debug(`VariableCondition ${this.dataStructure}: ${value.value.value} ${this.operator} ${this.value} = ${this._fulfilled}`);
         });
 
         this.listener = this.module.listenToVariable(this.dataStructure, this.variable)
-            .on('changed', (value) => {
-                catOpc.info(`value changed to ${value} -  (${this.operator}) compare against ${this.value}`);
+            .on('changed', ({value, serverTimestamp}: {value: number, serverTimestamp: Date}) => {
+                catOpc.debug(`value changed to ${value} -  (${this.operator}) compare against ${this.value}`);
                 this._fulfilled = this.compare(value);
-                this.eventEmitter.emit('state_changed', this._fulfilled);
-                catOpc.info(`VariableCondition ${this.dataStructure}: ${value} ${this.operator} ${this.value} = ${this._fulfilled}`);
+                this.emit('stateChanged', this._fulfilled);
+                catOpc.debug(`VariableCondition ${this.dataStructure}: ${value} ${this.operator} ${this.value} = ${this._fulfilled}`);
             });
-        return this.eventEmitter;
+        return this;
     }
 
     private compare(value: number): boolean {

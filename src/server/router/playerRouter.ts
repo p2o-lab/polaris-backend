@@ -45,8 +45,8 @@ playerRouter.get('/', async (req: Request, res: Response) => {
  * @apiGroup Player
  */
 playerRouter.post('/start', asyncHandler(async (req: Request, res: Response) => {
-    const result = await manager.player.start();
-    res.json(result);
+    const player = await manager.player.start();
+    res.json(player.json());
 }));
 
 /**

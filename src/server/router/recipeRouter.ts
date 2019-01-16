@@ -25,7 +25,6 @@
 
 import { manager } from '../../model/Manager';
 import { catServer } from '../../config/logging';
-import { moduleRouter } from './moduleRouter';
 import { Request, Response, Router } from 'express';
 import * as asyncHandler from 'express-async-handler';
 

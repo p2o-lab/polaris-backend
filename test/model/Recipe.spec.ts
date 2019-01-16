@@ -27,7 +27,7 @@ import {Recipe} from '../../src/model/Recipe';
 import * as fs from 'fs';
 import * as assert from 'assert';
 import {Module} from '../../src/model/Module';
-import {RecipeInterface} from 'pfe-ree-interface';
+import {RecipeInterface} from '@plt/pfe-ree-interface';
 
 describe('Recipe', () => {
 

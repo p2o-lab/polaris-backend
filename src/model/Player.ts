@@ -26,22 +26,52 @@
 import {Recipe} from './Recipe';
 import {catManager} from '../config/logging';
 import {EventEmitter} from 'events';
-import {PlayerInterface, RecipeState, Repeat} from 'pfe-ree-interface';
+import {PlayerInterface, RecipeState, Repeat} from '@plt/pfe-ree-interface';
 import {RecipeRun} from "./RecipeRun";
+import StrictEventEmitter from 'strict-event-emitter-types';
+import {Step} from './Step';
+
+/**
+ * Events emitted by [[Player]]
+ */
+interface PlayerEvents {
+    /**
+     * when player has successfully started
+     * @event
+     */
+    started: void;
+    /**
+     * when player has started a recipe
+     * @event
+     */
+    recipeStarted: Recipe;
+    /**
+     * when a step is finished in the player
+     * @event
+     */
+    stepFinished: Step;
+    /**
+     * Notify when a recipe is completed
+     * @event
+     */
+    recipeFinished: Recipe;
+    /**
+     * when player completes
+     * @event
+     */
+    completed: void;
+}
+
+type PlayerEmitter = StrictEventEmitter<EventEmitter, PlayerEvents>;
 
 /**
  * Player can play recipes in a playlist
  * Only one recipe is active at one point in time
  *
- * Following events are emitted
- * @event started
- * @event recipeStarted
- * @event stepFinished
- * @event recipeFinished
  * @event completed
  *
  */
-export class Player extends EventEmitter{
+export class Player extends (EventEmitter as { new(): PlayerEmitter }) {
     public repeat: Repeat;
 
     private _currentItem: number;
@@ -49,7 +79,7 @@ export class Player extends EventEmitter{
     private _playlist: Recipe[];
 
     readonly recipeRuns: RecipeRun[];
-    private currentRecipeRun: RecipeRun;
+    currentRecipeRun: RecipeRun;
 
     get playlist(): Recipe[] {
         return this._playlist;
@@ -108,7 +138,12 @@ export class Player extends EventEmitter{
             currentItem: this._currentItem,
             repeat: this.repeat,
             status: this.status,
-            currentRecipeRun: this.currentRecipeRun ? this.currentRecipeRun.json() : undefined
+            recipeRuns: this.recipeRuns.slice(-10).map((rr) => {return {
+                id: rr.id,
+                name: rr.recipe.name,
+                startTime: rr.startTime,
+                endTime: rr.endTime
+            }})
         };
     }
 
@@ -169,8 +204,8 @@ export class Player extends EventEmitter{
         this.currentRecipeRun = new RecipeRun(this.getCurrentRecipe());
         this.recipeRuns.push(this.currentRecipeRun);
         this.currentRecipeRun.start()
-            .once('started', () => this.emit('recipeStarted'))
-            .on('stepFinished', (step) => this.emit('stepFinished', step))
+            .once('started', () => this.emit('recipeStarted', this.currentRecipeRun.recipe))
+            .on('stepFinished', ({finishedStep, nextStep}) => this.emit('stepFinished', finishedStep))
             .once('completed', () => {
                 this.emit('recipeFinished', this.currentRecipeRun.recipe);
                 catManager.info(`recipe finished ${this.currentItem + 1}/${this._playlist.length} (player ${this.status})`);

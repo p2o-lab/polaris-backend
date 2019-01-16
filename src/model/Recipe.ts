@@ -30,8 +30,32 @@ import { EventEmitter } from 'events';
 import { v4 } from 'uuid';
 import { Transition } from './Transition';
 import { manager } from './Manager';
-import { RecipeInterface, ModuleInterface, RecipeOptions, RecipeState, StepInterface } from 'pfe-ree-interface';
+import { RecipeInterface, ModuleInterface, RecipeOptions, RecipeState, StepInterface } from '@plt/pfe-ree-interface';
 import * as assert from 'assert';
+import StrictEventEmitter from 'strict-event-emitter-types';
+
+/**
+ * Events emitted by [[Recipe]]
+ */
+interface RecipeEvents {
+    /**
+     * when recipe has successfully started
+     * @event
+     */
+    started: void;
+    /**
+     * when a step is finished in the recipe
+     * @event
+     */
+    stepFinished: {finishedStep: Step, nextStep: Step};
+    /**
+     * when recipe completes
+     * @event
+     */
+    completed: void;
+}
+
+type RecipeEmitter = StrictEventEmitter<EventEmitter, RecipeEvents>;
 
 /** Recipe which can be started.
  * It is parsed from RecipeOptions
@@ -46,12 +70,8 @@ import * as assert from 'assert';
  * running --> idle : -> completed
  * @enduml
  *
- * @event started       when recipe has started
- * @event stepFinished  when step is finished: (finishedStep:Step, nextStep:Step) => void
- * @event completed     when recipe has completed
- *
  */
-export class Recipe extends EventEmitter{
+export class Recipe extends (EventEmitter as { new(): RecipeEmitter }) {
 
     id: string;
     name: string;
@@ -66,6 +86,7 @@ export class Recipe extends EventEmitter{
     // dynamic properties
     current_step: Step;
     status: RecipeState;
+    lastChange: Date;
 
     constructor(options: RecipeOptions, modules: Module[], protectedRecipe: boolean = false) {
         super();
@@ -120,7 +141,8 @@ export class Recipe extends EventEmitter{
             status: this.status,
             currentStep: this.current_step ? this.current_step.name : undefined,
             options: this.options,
-            protected: this.protected
+            protected: this.protected,
+            lastChange: this.lastChange
         };
     }
 
@@ -170,6 +192,7 @@ export class Recipe extends EventEmitter{
 
     private executeStep() {
         catRecipe.debug(`Start step: ${this.current_step.name}`);
+        this.lastChange = new Date();
         this.current_step.execute()
             .once('completed', (transition: Transition) => {
                 assert.notEqual(transition.next_step_name, this.current_step.name);
@@ -183,7 +206,7 @@ export class Recipe extends EventEmitter{
                     this.status = RecipeState.completed;
                     this.emit('completed');
                 }
-                this.emit('stepFinished', this.current_step, transition.next_step);
+                this.emit('stepFinished', {finishedStep: this.current_step, nextStep: transition.next_step});
             });
     }
 

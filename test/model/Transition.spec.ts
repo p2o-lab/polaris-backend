@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018 Markus Graube <markus.graube@tu.dresden.de>,
+ * Copyright (c) 2019 Markus Graube <markus.graube@tu.dresden.de>,
  * Chair for Process Control Systems, Technische Universität Dresden
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,26 +23,17 @@
  * SOFTWARE.
  */
 
-import { Condition, TimeCondition } from '../../src/model/Condition';
-import * as assert from 'assert';
-import { catRecipe } from '../../src/config/logging';
-import { ConditionType } from '@plt/pfe-ree-interface';
-import {Server} from "../../src/server/server";
-import * as http from "http";
+import {Transition} from '../../src/model/Transition';
+import {expect} from 'chai';
+import {ConditionType} from '@plt/pfe-ree-interface';
 
-describe('Server', () => {
+describe('Transition', () => {
 
-    it('should start the server and close it after a while', async () => {
 
-        const appServer = new Server();
-        appServer.app.set('port', 3000);
+    it('should load from options', () => {
+        let t = new Transition({next_step: "nextStep", condition: {type: ConditionType.time, duration: 1}}, [], undefined);
 
-        const server: http.Server = http.createServer(appServer.app);
-
-        // initialize the WebSocket server instance
-        await appServer.initSocketServer(server);
-
-        server.close();
-
+        const json = t.json();
+        expect(json).to.haveOwnProperty('next_step', 'nextStep');
     });
 });

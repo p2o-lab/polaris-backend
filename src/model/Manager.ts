@@ -28,10 +28,10 @@ import {catManager} from "../config/logging";
 import {EventEmitter} from "events";
 import {Module, ModuleOptions} from "./Module";
 import {Service} from "./Service";
-import {ManagerInterface, RecipeOptions} from "pfe-ree-interface";
+import {ManagerInterface, RecipeOptions, ServiceCommand} from '@plt/pfe-ree-interface';
 import {Player} from "./Player";
-import {Server} from '../server/server';
 import {ServiceState} from './enum';
+import {VariableLogEntry,ServiceLogEntry } from '../logging/archive';
 
 export class Manager extends EventEmitter {
 
@@ -42,6 +42,10 @@ export class Manager extends EventEmitter {
     readonly modules: Module[] = [];
 
     readonly player: Player;
+
+    variableArchive: VariableLogEntry[] = [];
+
+    serviceArchive: ServiceLogEntry[] = [];
 
     // use ControlExt (true) or ControlOp (false)
     automaticMode: boolean = false;
@@ -101,15 +105,54 @@ export class Manager extends EventEmitter {
             throw new Error('No modules defined in supplied options');
         }
         this.modules.push(...newModules);
-        newModules.forEach((module: Module) => {
+        newModules.forEach(async (module: Module) => {
             module
                 .on('connected', () => this.emit('notify', 'module'))
                 .on('disconnected', () => this.emit('notify', 'module'))
-                .on('errorMessage', (service: Service, errorMessage) => {
+                .on('errorMessage', ({service, errorMessage}) => {
                     this.emit('notify', 'module', {module: service.parent.id, service: service.name, errorMessage: errorMessage});
                 })
-                .on('stateChanged', (service: Service, state: ServiceState) => {
-                    this.emit('notify', 'module', {module: service.parent.id, service: service.name, state: ServiceState[state]});
+                .on('variableChanged', async (data) => {
+                    const logEntry: VariableLogEntry = {
+                        timestampPfe: data.timestampPfe,
+                        timestampModule: data.timestampModule,
+                        module: module.id,
+                        value: data.value,
+                        variable: data.variable
+                    };
+                    this.variableArchive.push(logEntry);
+                    if (this.player.currentRecipeRun) {
+                        this.player.currentRecipeRun.variableLog.push(logEntry);
+                    }
+                })
+                .on('commandExecuted', (data) => {
+                    const logEntry: ServiceLogEntry = {
+                        timestampPfe: data.timestampPfe,
+                        module: module.id,
+                        service: data.service.name,
+                        strategy: data.strategy.name,
+                        command:  ServiceCommand[data.command],
+                        parameter: data.parameter ? data.parameter.map((param) => {
+                            return { name:param.name, value: param.value };
+                        }) : undefined
+                    };
+                    this.serviceArchive.push(logEntry);
+                    if (this.player.currentRecipeRun) {
+                        this.player.currentRecipeRun.serviceLog.push(logEntry);
+                    }
+                })
+                .on('stateChanged', async ({service, state}) => {
+                    const logEntry: ServiceLogEntry = {
+                        timestampPfe: new Date(),
+                        module: module.id,
+                        service: service.name,
+                        state: ServiceState[state]
+                    };
+                    this.serviceArchive.push(logEntry);
+                    if (this.player.currentRecipeRun) {
+                        this.player.currentRecipeRun.serviceLog.push(logEntry);
+                    }
+                    this.emit('notify', 'module', {module: module.id, service: service.name, state: ServiceState[state], lastChange: service.lastChange, controlEnable: await service.getControlEnable()});
                 })
                 .on('serviceCompleted', (service: Service) => {
                     this.performAutoReset(service);

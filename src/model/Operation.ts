@@ -25,12 +25,15 @@
 
 import { Module } from './Module';
 import { Service } from './Service';
-import { catOpc, catRecipe, catServer } from '../config/logging';
+import { catRecipe} from '../config/logging';
 import { Recipe } from './Recipe';
-import { ServiceParameter, Strategy } from './Interfaces';
+import { Strategy } from './Interfaces';
 import { Parameter } from './Parameter';
-import { OperationInterface, OperationOptions, ServiceCommand } from 'pfe-ree-interface';
+import { OperationInterface, OperationOptions, ServiceCommand } from '@plt/pfe-ree-interface';
 
+/** Operation used in a [[Step]] of a [[Recipe]]
+ *
+ */
 export class Operation {
     module: Module;
     service: Service;

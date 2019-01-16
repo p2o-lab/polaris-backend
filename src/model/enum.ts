@@ -43,6 +43,19 @@ export enum ServiceState {
     COMPLETED = 131072
 }
 
+export enum ServiceControlEnable {
+    UNDEFINED = 0,
+    RESET = 2,
+    START = 4,
+    STOP = 8,
+    UNHOLD = 32,
+    PAUSE = 64,
+    RESUME = 128,
+    ABORT = 256,
+    RESTART = 512,
+    COMPLETE = 1024
+}
+
 export enum ServiceMtpCommand {
     UNDEFINED = 0,
     RESET = 2,
