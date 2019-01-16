@@ -161,9 +161,10 @@ export class Recipe extends (EventEmitter as { new(): RecipeEmitter }) {
         return promise;
     }
 
-    /** start recipe
+    /** 
+     * Starts recipe
      *
-     * @returns {Recipe} "recipe_finished" and "step_finished"
+     * @returns {Recipe}    current Recipe
      */
     public start(): Recipe {
         this.current_step = this.initial_step;
