@@ -1,5 +1,5 @@
 {
-  "name": "@plt/pfe-ree-node",
+  "name": "pfe-ree-node",
   "version": "1.4.0",
   "main": "./build/index.js",
   "types": "./build.index.d.ts",
