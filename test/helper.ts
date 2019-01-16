@@ -47,7 +47,7 @@ export function later(delay: number) {
 export async function testForStateChange(listener, expectedState: string) {
     try {
         await promiseTimeout(1000, new Promise((resolve) => {
-            listener.on('state', (state) => {
+            listener.on('state', ({state, serverTimestamp}) => {
                 if (ServiceState[state] === expectedState) {
                     resolve();
                 }
