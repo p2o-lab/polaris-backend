@@ -34,14 +34,10 @@
       "transitions": [
         {
           "next_step": "S2",
-          "condition": {
-            "type": "and",
-            "conditions": [
-              {
+          "condition":{
                 "type": "time",
                 "duration": 1
-              }
-            ]
+
           }
         }
       ]

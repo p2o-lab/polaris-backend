@@ -24,6 +24,7 @@
  */
 
 import { Service, ServiceOptions } from './Service';
+import {Parameter} from './Parameter';
 import { ProcessValue } from './ProcessValue';
 import {
     AttributeIds,
@@ -36,14 +37,14 @@ import {
     OPCUAClient,
     Variant
 } from 'node-opcua-client';
+import {TimestampsToReturn} from 'node-opcua-service-read';
 import { catModule, catOpc, catRecipe } from '../config/logging';
 import { EventEmitter } from 'events';
-import { OpcUaNode } from './Interfaces';
-import { manager } from './Manager';
+import { OpcUaNode, Strategy } from './Interfaces';
 import { ServiceState } from './enum';
-import { ModuleInterface, ServiceInterface } from '@plt/pfe-ree-interface';
+import { ModuleInterface, ServiceInterface, ServiceCommand } from '@plt/pfe-ree-interface';
 import { promiseTimeout } from '../timeout-promise';
-import { serviceArchive, variableArchive } from '../logging/archive';
+import { VariableLogEntry, ServiceLogEntry } from '../logging/archive';
 import StrictEventEmitter from 'strict-event-emitter-types';
 
 export interface ModuleOptions {
@@ -62,7 +63,7 @@ export interface OpcUaNodeEvents {
      * when OpcUaNode changes its value
      * @event
      */
-    changed: number;
+    changed: {value: any, serverTimestamp: Date};
 }
 
 /**
@@ -88,7 +89,27 @@ interface ModuleEvents {
      * Notify when a service changes its state
      * @event
      */
-    stateChanged: {service: Service, state: ServiceState};
+    stateChanged: {
+        timestampPfe: Date,
+        timestampModule: Date,
+        service: Service,
+        state: ServiceState};
+    /**
+     * Notify when a variable inside a module changes
+     * @event
+     */
+    variableChanged: VariableLogEntry;
+    /**
+     * whenever a command is executed from the PFE
+     * @event
+     */
+    commandExecuted: {
+        service: Service,
+        timestampPfe: Date,
+        strategy: Strategy,
+        command: ServiceCommand,
+        parameter: Parameter[]
+    };
     /**
      * when one service goes to *completed*
      * @event
@@ -251,7 +272,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
      * @param {OpcUaNode} node
      * @returns {"events".internal.EventEmitter} "changed" event
      */
-    listenToOpcUaNode(node: OpcUaNode): EventEmitter {
+    listenToOpcUaNode(node: OpcUaNode): StrictEventEmitter<EventEmitter, OpcUaNodeEvents> {
         const nodeId = this.resolveNodeId(node);
         if (!this.monitoredItems.has(nodeId)) {
             const monitoredItem: ClientMonitoredItem = this.subscription.monitor({
@@ -262,12 +283,12 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
                     samplingInterval: 100,
                     discardOldest: true,
                     queueSize: 10
-                });
+                }, TimestampsToReturn.Both);
 
             const emitter: StrictEventEmitter<EventEmitter, OpcUaNodeEvents> = new EventEmitter();;
             monitoredItem.on('changed', (dataValue) => {
                 catOpc.debug(`Variable Changed (${this.resolveNodeId(node)}) = ${dataValue.value.value.toString()}`);
-                emitter.emit('changed', dataValue.value.value);
+                emitter.emit('changed', {value: dataValue.value.value, serverTimestamp: dataValue.serverTimestamp});
             });
             this.monitoredItems.set(nodeId, { monitoredItem, emitter });
         }
@@ -313,14 +334,16 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
         this.variables.forEach((variable: ProcessValue) => {
             if (variable.communication['V'] && variable.communication['V'].node_id != null) {
                 this.listenToOpcUaNode(variable.communication['V'])
-                    .on('changed', (data) => {
-                        catModule.debug(`variable changed: ${this.id}.${variable.name} = ${data}`);
-                        variableArchive.push({
-                            datetime: new Date(),
+                    .on('changed', ({value, serverTimestamp}) => {
+                        catModule.debug(`variable changed: ${this.id}.${variable.name} = ${value}`);
+                        const entry: VariableLogEntry = {
+                            timestampPfe: new Date(),
+                            timestampModule: serverTimestamp,
                             module: this.id,
                             variable: variable.name,
-                            value: data
-                        });
+                            value: value
+                        };
+                        this.emit('variableChanged', entry);
                     });
             } else {
                 catModule.debug(`OPC UA variable for variable ${variable.name} not defined`);
@@ -334,15 +357,25 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
                 .on('errorMessage', (errorMessage) => {
                     this.emit('errorMessage', {service, errorMessage} );
                 })
-                .on('state', (state) => {
-                    catModule.info(`state changed: ${this.id}.${service.name} = ${ServiceState[state]}`);
-                    serviceArchive.push({
-                        datetime: new Date(),
-                        module: this.id,
-                        service: service.name,
-                        state: ServiceState[state]
+                .on('commandExecuted', (data) => {
+                    this.emit('commandExecuted', {
+                        service: service,
+                        timestampPfe: data.timestampPfe,
+                        strategy: data.strategy,
+                        command: data.command,
+                        parameter: data.parameter
                     });
-                    this.emit('stateChanged', {service, state});
+                })
+                .on('state', ({state, serverTimestamp}) => {
+                    catModule.info(`state changed: ${this.id}.${service.name} = ${ServiceState[state]}`);
+                    const entry = {
+                        timestampPfe: new Date(),
+                        timestampModule: serverTimestamp,
+                        module: this.id,
+                        service: service,
+                        state: state
+                    };
+                    this.emit('stateChanged', entry);
                     if (state === ServiceState.COMPLETED) {
                         this.emit('serviceCompleted', service);
                     }

@@ -29,8 +29,6 @@ import {EventEmitter} from 'events';
 import {PlayerInterface, RecipeState, Repeat} from '@plt/pfe-ree-interface';
 import {RecipeRun} from "./RecipeRun";
 import StrictEventEmitter from 'strict-event-emitter-types';
-import {ServiceState} from './enum';
-import {Service} from './Service';
 import {Step} from './Step';
 
 /**
@@ -81,7 +79,7 @@ export class Player extends (EventEmitter as { new(): PlayerEmitter }) {
     private _playlist: Recipe[];
 
     readonly recipeRuns: RecipeRun[];
-    private currentRecipeRun: RecipeRun;
+    currentRecipeRun: RecipeRun;
 
     get playlist(): Recipe[] {
         return this._playlist;
@@ -140,7 +138,12 @@ export class Player extends (EventEmitter as { new(): PlayerEmitter }) {
             currentItem: this._currentItem,
             repeat: this.repeat,
             status: this.status,
-            currentRecipeRun: this.currentRecipeRun ? this.currentRecipeRun.json() : undefined
+            recipeRuns: this.recipeRuns.slice(-10).map((rr) => {return {
+                id: rr.id,
+                name: rr.recipe.name,
+                startTime: rr.startTime,
+                endTime: rr.endTime
+            }})
         };
     }
 

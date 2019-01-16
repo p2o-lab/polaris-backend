@@ -39,7 +39,7 @@
     "assets"
   ],
   "dependencies": {
-    "@plt/pfe-ree-interface": "^1.15.2",
+    "@plt/pfe-ree-interface": "^1.17.0",
     "body-parser": "^1.18.3",
     "command-line-args": "^5.0.2",
     "command-line-usage": "^5.0.5",

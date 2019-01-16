@@ -23,55 +23,19 @@
  * SOFTWARE.
  */
 
-import { Recipe } from './Recipe';
-import { v4 } from 'uuid';
-import { RecipeRunInterface } from '@plt/pfe-ree-interface';
-import { ServiceLogEntry, VariableLogEntry } from '../logging/archive';
+import { manager } from '../../model/Manager';
+import { Request, Response, Router } from 'express';
 
+export const recipeRunRouter: Router = Router();
 
-/** One specific recipe run with all logs
- *
+/**
+ * @api {get} /recipeRun/:recipeRunId    Get recipe run
+ * @apiName GetRecipeRun
+ * @apiGroup RecipeRun
+ * @apiParam recipeRunId
  */
-export class RecipeRun {
-    get startTime(): Date {
-        return this._startTime;
-    }
-    get endTime(): Date {
-        return this._endTime;
-    }
-
-    readonly id: string;
-    private _startTime: Date;
-    private _endTime: Date;
-    readonly recipe: Recipe;
-
-    serviceLog: ServiceLogEntry[] = [];
-    variableLog: VariableLogEntry[] = [];
-
-    constructor(recipe: Recipe) {
-        this.id = v4();
-        this.recipe = recipe;
-    }
-
-    public json(): RecipeRunInterface {
-        return {
-            id: this.id,
-            startTime: this._startTime,
-            endTime: this._endTime,
-            recipe: this.recipe.options,
-            serviceLog: this.serviceLog,
-            variableLog: this.variableLog
-        };
-    }
-
-    /** Starts the linked recipe
-     *
-     */
-    public start() {
-        this._startTime = new Date();
-        return this.recipe.start()
-            .once('completed', () => {
-                this._endTime = new Date();
-            });
-    }
-}
+recipeRunRouter.get('/:recipeRunId', async (req: Request, res: Response) => {
+    const result = manager.player.recipeRuns.find(recipeRun => recipeRun.id === req.params.recipeRunId).json();
+    res.contentType('application/json').attachment()
+        .send(JSON.stringify(result, null, 2));
+});
