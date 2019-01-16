@@ -42,6 +42,7 @@ export enum ServiceState {
     COMPLETING = 65536,
     COMPLETED = 131072
 }
+
 export enum ServiceControlEnable {
     UNDEFINED = 0,
     RESET = 2,

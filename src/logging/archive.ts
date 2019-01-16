@@ -24,7 +24,8 @@
  */
 
 export interface ServiceLogEntry {
-    datetime: Date;
+    timestampPfe: Date;
+    timestampModule?: Date;
     module: string;
     service: string;
     state?: string;
@@ -34,13 +35,9 @@ export interface ServiceLogEntry {
 }
 
 export interface VariableLogEntry {
-    datetime: Date;
+    timestampPfe: Date;
+    timestampModule: Date;
     module: string;
     variable: string;
     value: number | string;
 }
-
-export let variableArchive: VariableLogEntry[] = [];
-
-export let serviceArchive: ServiceLogEntry[] = [];
-

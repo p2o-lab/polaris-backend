@@ -27,7 +27,6 @@ import { manager } from '../../model/Manager';
 import { Request, Response, Router } from 'express';
 import * as asyncHandler from 'express-async-handler';
 import { messages } from '../../config/logging';
-import {serviceArchive, variableArchive} from "../../logging/archive";
 
 export const coreRouter: Router = Router();
 
@@ -81,7 +80,7 @@ coreRouter.get('/logs(.json)?', asyncHandler(async (req: Request, res: Response)
  */
 coreRouter.get('/logs/variables(.json)?', asyncHandler(async (req: Request, res: Response) => {
     res.contentType('application/json').attachment()
-        .send(JSON.stringify(variableArchive.slice(-1000), null, 4));
+        .send(JSON.stringify(manager.variableArchive.slice(-1000), null, 2));
 }));
 
 /**
@@ -91,7 +90,7 @@ coreRouter.get('/logs/variables(.json)?', asyncHandler(async (req: Request, res:
  */
 coreRouter.get('/logs/services(.json)?', asyncHandler(async (req: Request, res: Response) => {
     res.contentType('application/json').attachment()
-        .send(JSON.stringify(serviceArchive.slice(-1000), null, 4));
+        .send(JSON.stringify(manager.serviceArchive.slice(-1000), null, 2));
 }));
 
 function isTrue(value: any) {

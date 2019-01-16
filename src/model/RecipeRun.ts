@@ -26,6 +26,7 @@
 import { Recipe } from './Recipe';
 import { v4 } from 'uuid';
 import { RecipeRunInterface } from '@plt/pfe-ree-interface';
+import { ServiceLogEntry, VariableLogEntry } from '../logging/archive';
 
 
 /** One specific recipe run with all logs
@@ -44,6 +45,9 @@ export class RecipeRun {
     private _endTime: Date;
     readonly recipe: Recipe;
 
+    serviceLog: ServiceLogEntry[] = [];
+    variableLog: VariableLogEntry[] = [];
+
     constructor(recipe: Recipe) {
         this.id = v4();
         this.recipe = recipe;
@@ -54,7 +58,9 @@ export class RecipeRun {
             id: this.id,
             startTime: this._startTime,
             endTime: this._endTime,
-            recipe: this.recipe.json()
+            recipe: this.recipe.options,
+            serviceLog: this.serviceLog,
+            variableLog: this.variableLog
         };
     }
 
@@ -67,6 +73,5 @@ export class RecipeRun {
             .once('completed', () => {
                 this._endTime = new Date();
             });
-
     }
 }

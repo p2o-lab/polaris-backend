@@ -258,15 +258,15 @@ export class StateCondition extends ModuleCondition {
     }
 
     listen(): Condition {
-        this.monitoredItem = this.service.parent.listenToOpcUaNode(this.service.status);
-        this.monitoredItem.on('changed', (dataValue) => {
-            const state: ServiceState = dataValue;
-            this._fulfilled = ServiceState[state]
-                .localeCompare(this.state, 'en', { usage: 'search', sensitivity: 'base' }) === 0;
-            catRecipe.info(`StateCondition: ${this.module.id}.${this.service.name}) = (${ServiceState[state]})` +
-                `- ?= ${this.state} -> ${this._fulfilled}`);
-            this.emit('stateChanged', this._fulfilled);
-        });
+        this.monitoredItem = this.service.parent.listenToOpcUaNode(this.service.status)
+            .on('changed', ({value, serverTimestamp}) => {
+                const state: ServiceState = value;
+                this._fulfilled = ServiceState[state]
+                    .localeCompare(this.state, 'en', { usage: 'search', sensitivity: 'base' }) === 0;
+                catRecipe.info(`StateCondition: ${this.module.id}.${this.service.name}) = (${ServiceState[state]})` +
+                    `- ?= ${this.state} -> ${this._fulfilled}`);
+                this.emit('stateChanged', this._fulfilled);
+            });
         return this;
     }
 }
@@ -306,7 +306,7 @@ export class VariableCondition extends ModuleCondition {
         });
 
         this.listener = this.module.listenToVariable(this.dataStructure, this.variable)
-            .on('changed', (value) => {
+            .on('changed', ({value, serverTimestamp}: {value: number, serverTimestamp: Date}) => {
                 catOpc.debug(`value changed to ${value} -  (${this.operator}) compare against ${this.value}`);
                 this._fulfilled = this.compare(value);
                 this.emit('stateChanged', this._fulfilled);
