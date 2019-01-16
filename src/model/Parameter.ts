@@ -31,7 +31,12 @@ import { EventEmitter } from 'events';
 import { DataType } from 'node-opcua-client';
 import { Service } from './Service';
 import {OpcUaNode, ServiceParameter, Strategy} from './Interfaces';
+import {Module} from './Module';
 
+/**
+ * Parameter of an operation. Can be static or dynamic. Dynamic parameters can depend on variables of the same or
+ * other modules.
+ */
 export class Parameter {
 
     name: string;
@@ -43,8 +48,9 @@ export class Parameter {
     private service: Service;
     private _opcUaDataType: DataType;
     private _opcUaNode: OpcUaNode;
+    private modules: Module[];
 
-    constructor(parameterOptions: ParameterOptions, service: Service, strategy?: Strategy) {
+    constructor(parameterOptions: ParameterOptions, service: Service, strategy?: Strategy, modules?: Module[]) {
         catRecipe.trace(`Create Parameter: ${JSON.stringify(parameterOptions)}`);
 
         this.name = parameterOptions.name;
@@ -54,17 +60,17 @@ export class Parameter {
         this.continuous = parameterOptions.continuous || false;
 
         this.service = service;
-        if (service && service.parameters) {
-            const strategyUsed = strategy || service.strategies.find(strategy => strategy.default);
-            const parameterList = [].concat(service.parameters, strategyUsed.parameters);
-            try {
-                this._opcUaNode = parameterList.find(obj => obj.name === this.name).communication[this.variable];
-            } catch {
-                throw new Error(`Could not find parameter "${this.name}" in ${service.name}`);
-            }
-        } else {
-            catService.trace(`No service parameters ${this.service.name}`);
+        const strategyUsed = strategy || service.strategies.find(strategy => strategy.default);
+        const parameterList = [].concat(service.parameters, strategyUsed.parameters);
+        try {
+            this._opcUaNode = parameterList.find(obj => (obj && obj.name === this.name))
+                .communication[this.variable];
+        } catch {
+            throw new Error(`Could not find parameter "${this.name}" in ${service.name}`);
         }
+
+        this.modules = modules || undefined;
+
         const parser: Parser = new Parser();
         this.expression = parser.parse(this.value.toString());
     }
@@ -73,8 +79,8 @@ export class Parameter {
         if (!this._opcUaDataType) {
             const value = await this.service.parent.readVariableNode(this._opcUaNode);
             catService.info(`Datatype for ${this.service.name}.${this.name}.${this.variable} - ${this._opcUaNode.node_id} = ${JSON.stringify(value)}`);
-            this._opcUaDataType = value.value.dataType;
-            catService.info(`Get datatype for ${this.service.name}.${this.name} = ${this._opcUaDataType.toString()}`);
+            this._opcUaDataType = value.value ? value.value.dataType : undefined;
+            catService.info(`Get datatype for ${this.service.name}.${this.name} = ${this._opcUaDataType}`);
         }
         return this._opcUaDataType;
     }
@@ -82,7 +88,7 @@ export class Parameter {
     public listenToParameter() {
         const eventEmitter = new EventEmitter();
         this.scope.forEach(async (item: ScopeOptions) => {
-            const module = manager.modules.find(module => module.id === item.module);
+            const module = this.modules.find(module => module.id === item.module);
             module.listenToVariable(item.dataAssembly, item.variable)
                 .on('refresh', () => eventEmitter.emit('refresh'));
         });
@@ -97,7 +103,7 @@ export class Parameter {
         // get current variables
         const scope = {};
         const tasks = this.scope.map(async (item: ScopeOptions) => {
-            const module = manager.modules.find(module => module.id === item.module);
+            const module = this.modules.find(module => module.id === item.module);
             return module.readVariable(item.dataAssembly, item.variable)
                     .then(value => scope[item.name] = value.value.value);
         });

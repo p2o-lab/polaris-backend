@@ -65,9 +65,9 @@ moduleRouter.put('', upload.single('file'), asyncHandler(async (req, res) => {
     catServer.debug(`Load module: ${JSON.stringify(moduleOptions)}`);
     const newModules = manager.loadModule(moduleOptions);
     newModules.forEach(module =>
-        module.connect().catch(reason => catModule.warn('Could not connect to module: ' + reason))
+        module.connect()
+            .catch(reason => catModule.warn('Could not connect to module: ' + reason))
     );
-    manager.eventEmitter.emit('refresh', 'module');
     res.json(await Promise.all(newModules.map(module => module.json())));
 }));
 
@@ -82,12 +82,11 @@ moduleRouter.delete('/:id', asyncHandler(async (req: Request, res: Response) => 
     if (module.protected) {
         res.status(404).send(`Module {$id} is protected and can't be deleted`);
     } else {
-        await module.disconnect();
         const index = manager.modules.indexOf(module, 0);
         if (index > -1) {
             manager.modules.splice(index, 1);
         }
-        manager.eventEmitter.emit('refresh', 'module');
+        await module.disconnect();
         res.send({ status: 'Successful deleted', id: req.params.id });
     }
 }));
@@ -123,6 +122,28 @@ moduleRouter.post('/:id/disconnect', asyncHandler(async (req: Request, res: Resp
  * @apiGroup Module
  */
 moduleRouter.post('/abort', asyncHandler(async (req: Request, res: Response) => {
-    await manager.abortAllModules();
+    await manager.abortAllServices();
     res.json({ status: 'aborted all services from all modules' });
+}));
+
+/**
+ * @api {post} /module/stop    Stop all services
+ * @apiName StopAllServices
+ * @apiDescription Abort all services from all modules
+ * @apiGroup Module
+ */
+moduleRouter.post('/stop', asyncHandler(async (req: Request, res: Response) => {
+    await manager.stopAllServices();
+    res.json({ status: 'stopped all services from all modules' });
+}));
+
+/**
+ * @api {post} /module/reset    Reset all services
+ * @apiName ResetAllServices
+ * @apiDescription Reset all services from all modules
+ * @apiGroup Module
+ */
+moduleRouter.post('/reset', asyncHandler(async (req: Request, res: Response) => {
+    await manager.resetAllServices();
+    res.json({ status: 'reset all services from all modules' });
 }));

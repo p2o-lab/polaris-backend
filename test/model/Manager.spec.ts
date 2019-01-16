@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018 Markus Graube <markus.graube@tu.dresden.de>,
+ * Copyright (c) 2019 Markus Graube <markus.graube@tu.dresden.de>,
  * Chair for Process Control Systems, Technische Universität Dresden
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,49 +23,45 @@
  * SOFTWARE.
  */
 
+import {Manager} from '../../src/model/Manager';
 import * as fs from 'fs';
-import { Module } from '../../src/model/Module';
-import { Parameter } from '../../src/model/Parameter';
 import {expect} from 'chai';
 
-describe('Parameter', () => {
-    let service;
 
-    before(() => {
-        const file = fs.readFileSync('assets/modules/module_biofeed_1.4.2.json');
+describe('Manager', () => {
 
-        service = new Module(JSON.parse(file.toString()).modules[0]).services[0];
+    let manager  = new Manager();
+
+    it('should load the biofeed module', () => {
+        let modules = manager.loadModule(
+            JSON.parse(fs.readFileSync('assets/modules/module_biofeed_1.4.2.json').toString()),
+            true);
+        expect(modules).to.have.lengthOf(1);
     });
 
-    it('should load', () => {
-        const param = new Parameter({
-            name: 'TargetVolume',
-            value: 3
-        }, service);
+    it('should load biofeed recipe', () => {
+        manager.loadRecipe(
+            JSON.parse(fs.readFileSync('assets/recipes/biofeed/recipe_biofeed_88370C_0.3.1.json').toString()),
+            true);
     });
 
-    it('should load with expression', async() => {
-        const param = new Parameter({
-            name: 'TargetVolume',
-            value: '3+2'
-        }, service);
-        expect(await param.getValue()).to.equal(5);
+    it('should fail when removing a not existing recipe', () => {
+        expect(() => manager.removeRecipe('something')).to.throw();
     });
 
-    it('should load with complex expression', async() => {
-        const param = new Parameter({
-            name: 'TargetVolume',
-            value: 'sin(3)+2'
-        }, service);
-        expect(await param.getValue()).to.be.closeTo(2.14, 0.01);
+    it('should fail when removing a protected recipe', () => {
+        expect(() => manager.removeRecipe(manager.recipes[0].id)).to.throw();
     });
 
-    it('should fail with wrong parameter name', () => {
-        expect(() => {
-            const param = new Parameter({
-                name: 'test',
-                value: 3
-            }, service);
-        }).to.throw();
+    it('should load the achema modules', () => {
+        let modules = manager.loadModule(
+            JSON.parse(fs.readFileSync('assets/modules/modules_achema.json').toString()),
+            true);
+        expect(modules).to.have.lengthOf(3);
     });
+
+    it('should provide JSON output', () => {
+       expect(manager.json().autoReset).to.equal(true);
+    });
+
 });

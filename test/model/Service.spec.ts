@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018 Markus Graube <markus.graube@tu.dresden.de>,
+ * Copyright (c) 2019 Markus Graube <markus.graube@tu.dresden.de>,
  * Chair for Process Control Systems, Technische Universität Dresden
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,44 +23,14 @@
  * SOFTWARE.
  */
 
-import { Recipe } from './Recipe';
-import { v4 } from 'uuid';
-import { RecipeRunInterface } from 'pfe-ree-interface';
+import {Recipe} from '../../src/model/Recipe';
+import * as fs from 'fs';
+import * as assert from 'assert';
+import {Module} from '../../src/model/Module';
+import {RecipeInterface} from 'pfe-ree-interface';
+
+describe('Service', () => {
 
 
-/** One specific recipe run with all logs
- *
- */
-export class RecipeRun {
-
-    readonly id: string;
-    startTime: Date;
-    endTime: Date;
-    readonly recipe: Recipe;
-
-    constructor(recipe: Recipe) {
-        this.id = v4();
-        this.recipe = recipe;
-    }
-
-    public json(): RecipeRunInterface {
-        return {
-            id: this.id,
-            startTime: this.startTime,
-            endTime: this.endTime,
-            recipe: this.recipe.json()
-        };
-    }
-
-    /** Starts the linked recipe
-     *
-     */
-    public start() {
-        this.startTime = new Date();
-        return this.recipe.start()
-            .once('completed', () => {
-                this.endTime = new Date();
-            });
-
-    }
-}
+    it('should load from options');
+});

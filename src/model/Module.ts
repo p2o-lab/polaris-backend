@@ -48,15 +48,26 @@ import { serviceArchive, variableArchive } from '../logging/archive';
 export interface ModuleOptions {
     id: string;
     opcua_server_url: string;
+    hmi_url?: string;
     services: ServiceOptions[];
     process_values: object[];
 }
 
-export class Module {
-    id: string;
-    endpoint: string;
+/**
+ * Module (PEA)
+ *
+ * @event connected         when module successfully connects to PEA
+ * @event disconnected      when module is disconnected from PEA
+ * @event errorMessage      when errorMessage of son eservice changes
+ * @event stateChanged
+ * @event serviceCompleted
+ */
+export class Module extends EventEmitter {
+    readonly id: string;
+    readonly endpoint: string;
     services: Service[];
     variables: ProcessValue[];
+    readonly hmiUrl: string;
 
     session: ClientSession;
     private client: OPCUAClient;
@@ -68,6 +79,7 @@ export class Module {
     protected: boolean = false;
 
     constructor(options: ModuleOptions, protectedModule: boolean = false) {
+        super();
         this.id = options.id;
         this.endpoint = options.opcua_server_url;
         this.protected = protectedModule;
@@ -78,15 +90,18 @@ export class Module {
         if (options.process_values) {
             this.variables = options.process_values.map(variableOptions => new ProcessValue(variableOptions));
         }
+        if (options.hmi_url){
+            this.hmiUrl = options.hmi_url;
+        }
 
         this.monitoredItems = new Map<NodeId, { monitoredItem: ClientMonitoredItem, emitter: EventEmitter }>();
     }
 
     /**
      * Opens connection to server and establish session
-     * @returns {Promise<ClientSession>}
+     * @returns {Promise<void>}
      */
-    async connect(): Promise<ClientSession> {
+    async connect(): Promise<void> {
         if (this.session) {
             catOpc.debug(`Already connected to module ${this.id}`);
         } else {
@@ -99,7 +114,8 @@ export class Module {
                     }
                 });
 
-                client.on('backoff', () => catOpc.debug('retrying connection'));
+                client.on('close', () => catOpc.warn('Closing OPC UA client connection'));
+                client.on('time_out_request', () => catOpc.debug('time out request - retrying connection'));
 
                 await promiseTimeout(5000, client.connect(this.endpoint));
                 catOpc.debug(`module connected ${this.id} ${this.endpoint}`);
@@ -109,8 +125,8 @@ export class Module {
 
                 const subscription = new ClientSubscription(session, {
                     requestedPublishingInterval: 100,
-                    requestedLifetimeCount: 10,
-                    requestedMaxKeepAliveCount: 2,
+                    requestedLifetimeCount: 1000,
+                    requestedMaxKeepAliveCount: 12,
                     maxNotificationsPerPublish: 10,
                     publishingEnabled: true,
                     priority: 10
@@ -146,13 +162,11 @@ export class Module {
                 } catch (err) {
                     catModule.warn('Could not connect to all variables:' + err);
                 }
-
-                manager.eventEmitter.emit('refresh', 'module');
+                this.emit('connected');
             } catch (err) {
                 return Promise.reject(`Could not connect to module ${this.id} on ${this.endpoint}: ${err.toString()}`);
             }
         }
-        return this.session;
     }
 
     async getServiceStates(): Promise<ServiceInterface[]> {
@@ -174,7 +188,8 @@ export class Module {
                     this.session = undefined;
                     await promiseTimeout(1000, this.client.disconnect());
                     this.client = undefined;
-                    manager.eventEmitter.emit('refresh', 'module');
+                    catModule.debug(`Module ${this.id} disconnected`);
+                    this.emit('disconnected');
                     resolve(`Module ${this.id} disconnected`);
                 } catch (err) {
                     reject(err);
@@ -270,32 +285,23 @@ export class Module {
 
     private subscribeToAllServices() {
         this.services.forEach((service) => {
-            if (service.errorMessage) {
-                this.listenToOpcUaNode(service.errorMessage)
-                    .on('changed', () => {
-                        manager.eventEmitter.emit('refresh', 'module');
+            service.subscribeToService()
+                .on('errorMessage', (errorMessage) => {
+                    this.emit('errorMessage', service, errorMessage);
+                })
+                .on('state', (state) => {
+                    catModule.info(`state changed: ${this.id}.${service.name} = ${ServiceState[state]}`);
+                    serviceArchive.push({
+                        datetime: new Date(),
+                        module: this.id,
+                        service: service.name,
+                        state: ServiceState[state]
                     });
-            } else {
-                catModule.warn(`Service ${service.name} from module ${this.id} does not have a errorMessage variable`);
-            }
-            if (service.status) {
-                this.listenToOpcUaNode(service.status)
-                    .on('changed', (data) => {
-                        catModule.info(`state changed: ${this.id}.${service.name} = ${ServiceState[data]}`);
-                        serviceArchive.push({
-                            datetime: new Date(),
-                            module: this.id,
-                            service: service.name,
-                            state: ServiceState[data]
-                        });
-                        manager.eventEmitter.emit('refresh', 'module');
-                        if (data === ServiceState.COMPLETED) {
-                            manager.eventEmitter.emit('serviceCompleted', service);
-                        }
-                    });
-            } else {
-                throw new Error(`OPC UA variable for status of service ${service.name} not defined`);
-            }
+                    this.emit('stateChanged', service, state);
+                    if (state === ServiceState.COMPLETED) {
+                        this.emit('serviceCompleted', service);
+                    }
+                });
         });
     }
 
@@ -306,6 +312,12 @@ export class Module {
         return result;
     }
 
+    /** writes value to opc ua node
+     *
+     * @param {OpcUaNode} node
+     * @param {} value
+     * @returns {Promise<any>}
+     */
     public async writeNode(node: OpcUaNode, value: Variant) {
         if (!this.session) {
             throw new Error(`Can not write node since OPC UA connection to module ${this.id} is not established`);
@@ -325,6 +337,7 @@ export class Module {
         return {
             id: this.id,
             endpoint: this.endpoint,
+            hmiUrl: this.hmiUrl,
             connected: this.isConnected(),
             services: this.isConnected() ? await this.getServiceStates() : undefined,
             protected: this.protected

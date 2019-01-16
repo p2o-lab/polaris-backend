@@ -59,7 +59,7 @@ describe('Recipe', () => {
             assert.equal(json.protected, false);
             assert.deepEqual(json.modules, ['BioFeed']);
             assert.equal(json.options.initial_step, 'S1.AddWater');
-            assert.equal(json.status, 'idle');
+            assert.equal(json.status, undefined);
 
             done();
         });
@@ -112,4 +112,6 @@ describe('Recipe', () => {
             done();
         });
     });
+
+    it('should  force a transition');
 });

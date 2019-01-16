@@ -37,18 +37,18 @@ describe('Module', () => {
                 assert.equal(module.services.length, 14);
                 assert.equal(module.isConnected(), false);
 
-                module.json()
-                    .then((json) => {
-                        assert.deepEqual(json, {
-                            id: 'BioFeed',
-                            endpoint: 'opc.tcp://10.6.51.42:4840',
-                            connected: false,
-                            services: undefined,
-                            protected: false
-                        });
-                    });
+                let json = await module.json();
+                assert.deepEqual(json, {
+                    id: 'BioFeed',
+                    endpoint: 'opc.tcp://10.6.51.42:4840',
+                    hmiUrl: 'http://10.6.51.42',
+                    connected: false,
+                    services: undefined,
+                    protected: false
+                });
                 done();
-            });
+            })
+            ;
         });
 
         it('should load the cif module json', (done) => {

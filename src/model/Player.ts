@@ -23,44 +23,50 @@
  * SOFTWARE.
  */
 
-import { Recipe } from './Recipe';
-import { catManager } from '../config/logging';
-import { EventEmitter } from 'events';
-import { PlayerInterface, RecipeState, Repeat } from 'pfe-ree-interface';
-import { manager } from './Manager';
+import {Recipe} from './Recipe';
+import {catManager} from '../config/logging';
+import {EventEmitter} from 'events';
+import {PlayerInterface, RecipeState, Repeat} from 'pfe-ree-interface';
+import {RecipeRun} from "./RecipeRun";
 
-export class Player {
-    public repeat: Repeat = Repeat.none;
-    private eventEmitter: EventEmitter = new EventEmitter();
+/**
+ * Player can play recipes in a playlist
+ * Only one recipe is active at one point in time
+ *
+ * Following events are emitted
+ * @event started
+ * @event recipeStarted
+ * @event stepFinished
+ * @event recipeFinished
+ * @event completed
+ *
+ */
+export class Player extends EventEmitter{
+    public repeat: Repeat;
 
     private _currentItem: number;
 
-    private _playlist: Recipe[] = [];
+    private _playlist: Recipe[];
+
+    readonly recipeRuns: RecipeRun[];
+    private currentRecipeRun: RecipeRun;
 
     get playlist(): Recipe[] {
         return this._playlist;
     }
 
-    private _status: RecipeState = RecipeState.idle;
+    private _status: RecipeState;
 
     get currentItem(): number {
         return this._currentItem;
     }
 
     constructor() {
-        this.eventEmitter.on('recipe_finished', () => {
-            catManager.info(`recipe finished ${this.currentItem + 1}/${this.playlist.length} (player ${this.status})`);
-            if (this._status === RecipeState.running) {
-                if (this._currentItem + 1 < this._playlist.length) {
-                    this._currentItem = this._currentItem + 1;
-                    catManager.info(`Go to next recipe (${this.currentItem + 1}/${this.playlist.length})`);
-                    this.runCurrentRecipe();
-                } else {
-                    this._status = RecipeState.completed;
-                    this._currentItem = undefined;
-                }
-            }
-        });
+        super();
+        this._playlist = [];
+        this._status = RecipeState.idle;
+        this.currentRecipeRun = undefined;
+        this.recipeRuns = [];
     }
 
     get status() {
@@ -70,9 +76,11 @@ export class Player {
     /**
      * Add recipe to playlist
      * @param {Recipe} recipe
+     * @return Player
      */
-    public enqueue(recipe: Recipe) {
+    public enqueue(recipe: Recipe): Player {
         this._playlist.push(recipe);
+        return this;
     }
 
     public getCurrentRecipe(): Recipe {
@@ -82,26 +90,38 @@ export class Player {
     /**
      * Remove recipe from playlist
      * @param {number} index in playlist
+     * @return Player
      */
-    public remove(index: number) {
+    public remove(index: number): Player {
         catManager.info(`Delete recipe ${index} from playlist`);
         this._playlist.splice(index, 1);
+        return this;
     }
 
+    /**
+     * Get JSON serialisation of player
+     * @returns {PlayerInterface}
+     */
     public json(): PlayerInterface {
         return {
             playlist: this._playlist.map(recipe => recipe.json()),
             currentItem: this._currentItem,
             repeat: this.repeat,
-            status: this.status
+            status: this.status,
+            currentRecipeRun: this.currentRecipeRun ? this.currentRecipeRun.json() : undefined
         };
     }
 
-    public async start() {
+    /**
+     * Start recipe
+     *
+     * @returns Player
+     */
+    public start(): Player {
         if (this.status === RecipeState.idle || this.status === RecipeState.stopped) {
             this._status = RecipeState.running;
             this._currentItem = 0;
-            manager.eventEmitter.emit('refresh', 'recipe');
+            this.emit('started');
             this.runCurrentRecipe();
         } else if (this.status === RecipeState.paused) {
             this._status = RecipeState.running;
@@ -111,13 +131,13 @@ export class Player {
         } else {
             throw new Error('Player currently already running');
         }
+        return this;
     }
 
     public reset() {
         if (this.status === RecipeState.completed || this.status === RecipeState.stopped) {
             this._currentItem = undefined;
             this._status = RecipeState.idle;
-            manager.eventEmitter.emit('refresh', 'recipe');
         }
     }
 
@@ -134,23 +154,36 @@ export class Player {
         }
     }
 
+    /**
+     * Stop the current recipe of player
+     */
     public stop() {
         if (this.status === RecipeState.running) {
             this._status = RecipeState.stopped;
-            this.getCurrentRecipe().current_step.transitions.map(trans => trans.condition.clear());
-            this.getCurrentRecipe().modules.forEach((module) => {
-                //module.stop();
-            });
+            this.getCurrentRecipe().stop();
         }
     }
 
-    private runCurrentRecipe() {
-        const events = this.getCurrentRecipe().start();
-        events.on('recipe_finished', (finishedRecipe) => {
-            console.log('internal runCurrentRecipe');
-            events.removeAllListeners('recipe_finished');
-            this.eventEmitter.emit('recipe_finished', finishedRecipe);
-        });
-    }
 
+    private runCurrentRecipe(): Player {
+        this.currentRecipeRun = new RecipeRun(this.getCurrentRecipe());
+        this.recipeRuns.push(this.currentRecipeRun);
+        this.currentRecipeRun.start()
+            .once('started', () => this.emit('recipeStarted'))
+            .on('stepFinished', (step) => this.emit('stepFinished', step))
+            .once('completed', () => {
+                this.emit('recipeFinished', this.currentRecipeRun.recipe);
+                catManager.info(`recipe finished ${this.currentItem + 1}/${this._playlist.length} (player ${this.status})`);
+                if (this._currentItem + 1 < this._playlist.length) {
+                    this._currentItem = this._currentItem + 1;
+                    catManager.info(`Go to next recipe (${this.currentItem + 1}/${this.playlist.length})`);
+                    this.runCurrentRecipe();
+                } else {
+                    this._status = RecipeState.completed;
+                    this._currentItem = undefined;
+                    this.emit('completed');
+                }
+            });
+        return this;
+    }
 }

@@ -96,7 +96,6 @@ async function setOpModeToAutomatic(nodeId) {
             dimensions: null
         }
     );
-    //console.log('Write OpMode', nodeId.toString(), 16, result);
 
     await wait();
 

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018 Markus Graube <markus.graube@tu.dresden.de>,
+ * Copyright (c) 2019 Markus Graube <markus.graube@tu.dresden.de>,
  * Chair for Process Control Systems, Technische Universität Dresden
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,44 +23,37 @@
  * SOFTWARE.
  */
 
-import { Recipe } from './Recipe';
-import { v4 } from 'uuid';
-import { RecipeRunInterface } from 'pfe-ree-interface';
+import {promiseTimeout} from '../src/timeout-promise';
+import * as assert from "assert";
+import {ServiceState} from '../src/model/enum';
 
-
-/** One specific recipe run with all logs
+/** wait
  *
+ * @param {number} delay in milliseconds
+ * @returns {Promise<any>}
  */
-export class RecipeRun {
+export function later(delay: number) {
+    return new Promise((resolve) => {
+        setTimeout(resolve, delay);
+    });
+}
 
-    readonly id: string;
-    startTime: Date;
-    endTime: Date;
-    readonly recipe: Recipe;
-
-    constructor(recipe: Recipe) {
-        this.id = v4();
-        this.recipe = recipe;
-    }
-
-    public json(): RecipeRunInterface {
-        return {
-            id: this.id,
-            startTime: this.startTime,
-            endTime: this.endTime,
-            recipe: this.recipe.json()
-        };
-    }
-
-    /** Starts the linked recipe
-     *
-     */
-    public start() {
-        this.startTime = new Date();
-        return this.recipe.start()
-            .once('completed', () => {
-                this.endTime = new Date();
+/**
+ * test if listener changes to expectedState within 1 second
+ * @param listener
+ * @param {string} expectedState
+ * @returns {Promise<void>}
+ */
+export async function testForStateChange(listener, expectedState: string) {
+    try {
+        await promiseTimeout(1000, new Promise((resolve) => {
+            listener.on('state', (state) => {
+                if (ServiceState[state] === expectedState) {
+                    resolve();
+                }
             });
-
+        }));
+    } catch (err) {
+        assert.fail(`Failed to reach ${expectedState} within 1000ms`);
     }
 }
