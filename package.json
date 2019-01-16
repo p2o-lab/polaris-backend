@@ -1,6 +1,6 @@
 {
   "name": "@plt/pfe-ree-node",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "main": "./build/index.js",
   "types": "./build.index.d.ts",
   "description": "Server backend for PFE recipe execution engine",
@@ -39,7 +39,7 @@
     "assets"
   ],
   "dependencies": {
-    "@plt/pfe-ree-interface": "^1.17.0",
+    "@plt/pfe-ree-interface": "^1.17.1",
     "body-parser": "^1.18.3",
     "command-line-args": "^5.0.2",
     "command-line-usage": "^5.0.5",
