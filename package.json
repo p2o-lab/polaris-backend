@@ -16,12 +16,10 @@
     "typedoc": "typedoc --mode file --module commonjs --out typedoc/ --target ES6 --excludePrivate --readme none src/",
     "apidoc": "apidoc -i src/server/ -o apidoc",
     "build": "rm -rf build/ && tsc",
-    "ui": "cp -r ../pfe-ree-viz/dist .",
     "build-all": "npm run build && npm run apidoc && npm run ui",
-    "docker": "docker build -t registry.plt.et.tu-dresden.de/pfe-ree-node .",
-    "docker-pi": "docker build -t registry.plt.et.tu-dresden.de/pfe-ree-node/arm -f Dockerfile.arm .",
-    "predepoly": "npm run ui",
-    "deploy": "docker-deploy"
+    "docker": "docker build --add-host=registry.plt.et.tu-dresden.de:10.2.52.10 --add-host=registry.npmjs.org:104.16.24.35 -t registry.plt.et.tu-dresden.de/pfe-ree-node:$npm_package_version .",
+    "docker-pi": "docker build --add-host=registry.plt.et.tu-dresden.de:10.2.52.10 -t registry.plt.et.tu-dresden.de/pfe-ree-node:$npm_package_version-arm -f Dockerfile.arm .",
+    "docker-deploy": "docker push registry.plt.et.tu-dresden.de/pfe-ree-node:$npm_package_version"
   },
   "bin": {
     "pfe-ree-node": "./bin/pfe-ree-node"
@@ -70,7 +68,6 @@
     "apidoc": "^0.17.7",
     "chai": "^4.2.0",
     "chai-http": "^4.2.1",
-    "docker-deploy": "0.0.2",
     "mocha": "^5.2.0",
     "mocha-typescript": "^1.1.16",
     "nyc": "^13.1.0",
