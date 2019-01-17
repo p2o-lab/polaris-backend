@@ -1,22 +1,28 @@
 # Docker Parent Image with Node and Typescript
-FROM node:8-jessie
-
-# Create Directory for the Container
+FROM node:8-jessie as base
 WORKDIR /app
 
-# Copy the ready files we need to our new Directory
-ADD build /app/build
-ADD apidoc /app/apidoc
-ADD assets /app/assets
-ADD node_modules /app/node_modules
+# image for runtime dependencies
+FROM base as dependencies
+COPY package.json .
+COPY package-lock.json .
+RUN npm config set @plt:registry https://registry.plt.et.tu-dresden.de:4873 
+RUN npm install --prod -d
 
-# Grab dependencies
-#RUN echo "10.0.52.100 registry.plt.et.tu-dresden.de\n\r10.1.52.100 registry.plt.et.tu-dresden.de" >> /etc/hosts
-#RUN npm --registry https://registry.plt.et.tu-dresden.de:4873 install --prod
+## Image for building
+FROM dependencies as build
+COPY src src
+COPY apidoc.json .
+COPY tsconfig.json .
+RUN npm install
+RUN npm run build
+RUN npm run apidoc
 
-
-# Expose the port outside of the container
+# production image
+FROM node:alpine as prod
+COPY assets assets
+COPY --from=dependencies /app/node_modules node_modules
+COPY --from=build /app/build build
+COPY --from=build /app/apidoc apidoc
 EXPOSE 3000
-
-# Start the server
 ENTRYPOINT ["node", "build/"]
