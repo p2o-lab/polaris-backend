@@ -33,14 +33,19 @@ export class ExternalTrigger {
     private endpoint: string;
     private nodeId: NodeId;
     private client: OPCUAClient;
-    private session: ClientSession;string
+    private session: ClientSession;
 
-
-    /** options
-     let endpointUrl = 'opc.tcp://127.0.0.1:53530/OPCUA/SimulationServer';    // OPC-UA Server
-     let nodeId = 'ns=3;s=BooleanDataItem'; // "ns=[0-9];[i,s]=[0-9/a-z]"
+    /**
+     * Construct external trigger.
+     *
+     * @param endpoint  url of OPC UA endpoint (e.g. 'opc.tcp://127.0.0.1:53530/OPCUA/SimulationServer')
+     * @param nodeId    nodeId of node to be monitored as external trigger (e.g. 'ns=3;s=BooleanDataItem')
      */
     constructor(endpoint: string, nodeId: string) {
+        if (!endpoint)
+            throw new Error('No Endpoint given');
+        if (!nodeId)
+            throw new Error('No nodeId given');
         this.endpoint = endpoint;
         this.nodeId = resolveNodeId(nodeId);
         this.client = new OPCUAClient({
@@ -49,16 +54,20 @@ export class ExternalTrigger {
                 maxRetry: 5
             }
         });
-        this.startMonitoring();
     }
 
-    private async startMonitoring() {
+    public async getValue(): Promise<boolean> {
+        const dataValue = await this.session.readVariableValue(this.nodeId);
+        console.log(dataValue.value.value);
+        return dataValue.value.value;
+    }
 
+    public async startMonitoring() {
         catOpc.info('Connect to ' + this.endpoint);
         await this.client.connect(this.endpoint);
 
         this.session = await this.client.createSession();
-        const the_subscription = new ClientSubscription(this.session, {
+        const subscription = new ClientSubscription(this.session, {
             requestedPublishingInterval: 1000,
             requestedLifetimeCount: 10,
             requestedMaxKeepAliveCount: 2,
@@ -68,7 +77,7 @@ export class ExternalTrigger {
         });
 
         // install monitored item
-        const monitoredItem = the_subscription.monitor({
+        const monitoredItem = await subscription.monitor({
                 nodeId: this.nodeId,
                 attributeId: AttributeIds.Value
             },
@@ -84,9 +93,5 @@ export class ExternalTrigger {
                 manager.player.start();
             }
         });
-    }
-
-    async getValue() {
-        return (await this.session.readVariableValue(this.nodeId)).value.value;
     }
 }

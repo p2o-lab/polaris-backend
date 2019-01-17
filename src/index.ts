@@ -29,7 +29,7 @@ import * as serverHandlers from './server/serverHandlers';
 import * as commandLineArgs from 'command-line-args';
 import * as fs from 'fs';
 import {manager} from './model/Manager';
-import {ExternalTrigger, watchFlag} from './server/ExternalTrigger';
+import {ExternalTrigger} from './server/ExternalTrigger';
 import commandLineUsage = require('command-line-usage');
 import {catModule} from "./config/logging";
 import {fixReactor} from "./server/automaticMode";
@@ -81,7 +81,7 @@ const sections = [
     {
         header: 'Synopsis',
         content: [
-            '$ node build/index.js [{bold --module} {underline modulePath}] [{bold --recipe} {underline recipePath}] [{bold --watch} {underline opcuaEndpoint} {underline opcuaNodeid}]'
+            '$ node build/index.js [{bold --module} {underline modulePath}] [{bold --recipe} {underline recipePath}] [{bold --externalTrigger} {underline opcuaEndpoint} {underline opcuaNodeid}]'
         ]
     },
     {
@@ -93,7 +93,7 @@ const sections = [
         content: [
             {
                 desc: 'Watching a OPC UA server',
-                example: '$ node src/index.js --watch opc.tcp://127.0.0.1:53530/OPCUA/SimulationServer "ns=3;s=BooleanDataItem"'
+                example: '$ node src/index.js --externalTrigger opc.tcp://127.0.0.1:53530/OPCUA/SimulationServer "ns=3;s=BooleanDataItem"'
             }]
     }
 ];
@@ -154,11 +154,13 @@ if (options) {
         if (options.externalTrigger) {
             console.log('External Trigger:', options.watch);
             const endpoint = options.externalTrigger[0];
-            const nodeid = options.externalTrigger[1];
+            const nodeId = options.externalTrigger[1];
 
-            const et = new ExternalTrigger(endpoint, nodeid);
-            manager.on('recipeFinished', () => {
-                const value = et.getValue();
+            const et = new ExternalTrigger(endpoint, nodeId);
+            et.startMonitoring();
+            // directly restart recipe if external trigger is still active when recipe finishes
+            manager.on('recipeFinished', async () => {
+                const value = await et.getValue();
                 console.log('external trigger', value);
                 if (value) {
                     manager.player.start();
