@@ -148,7 +148,8 @@ export class Player extends (EventEmitter as { new(): PlayerEmitter }) {
     }
 
     /**
-     * Start recipe
+     * Start recipe if player is currently idle or stopped.
+     * Resume if player is currently paused
      *
      * @returns Player
      */

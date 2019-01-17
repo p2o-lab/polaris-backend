@@ -29,7 +29,7 @@ import * as serverHandlers from './server/serverHandlers';
 import * as commandLineArgs from 'command-line-args';
 import * as fs from 'fs';
 import {manager} from './model/Manager';
-import {watchFlag} from './server/flagWatcher';
+import {ExternalTrigger} from './server/ExternalTrigger';
 import commandLineUsage = require('command-line-usage');
 import {catModule} from "./config/logging";
 import {fixReactor} from "./server/automaticMode";
@@ -65,12 +65,12 @@ const optionDefinitions = [
         description: 'Print this usage guide.'
     },
     {
-        name: 'watch',
-        alias: 'w',
+        name: 'externalTrigger',
+        alias: 'e',
         type: String,
         multiple: true,
-        typeLabel: '{underline opcuaEndpoint} {underline opcuaNodeid} {underline httpUri}',
-        description: 'Monitors an OPC UA node (specified via {underline opcuaNodeId}) on the OPC UA server (specified by {underline opcuaEndpoint}. If the node changes its value, a HTTP POST request is sent to {underline httpURI}.'
+        typeLabel: '{underline opcuaEndpoint} {underline opcuaNodeid}',
+        description: 'Monitors an OPC UA node (specified via {underline opcuaNodeId}) on the OPC UA server (specified by {underline opcuaEndpoint}. If the node changes to true or is true when the player completes, the player start from the first recipe.'
     }
 ];
 const sections = [
@@ -81,7 +81,7 @@ const sections = [
     {
         header: 'Synopsis',
         content: [
-            '$ node build/index.js [{bold --module} {underline modulePath}] [{bold --recipe} {underline recipePath}] [{bold --watch} {underline opcuaEndpoint} {underline opcuaNodeid} {underline httpUri}]'
+            '$ node build/index.js [{bold --module} {underline modulePath}] [{bold --recipe} {underline recipePath}] [{bold --externalTrigger} {underline opcuaEndpoint} {underline opcuaNodeid}]'
         ]
     },
     {
@@ -93,7 +93,7 @@ const sections = [
         content: [
             {
                 desc: 'Watching a OPC UA server',
-                example: '$ node src/index.js --watch opc.tcp://127.0.0.1:53530/OPCUA/SimulationServer "ns=3;s=BooleanDataItem" http://127.0.0.1:3000/api/player/start'
+                example: '$ node src/index.js --externalTrigger opc.tcp://127.0.0.1:53530/OPCUA/SimulationServer "ns=3;s=BooleanDataItem"'
             }]
     }
 ];
@@ -150,14 +150,22 @@ if (options) {
             fixReactor();
         }
 
-        /** Start OPC UA flag watcher **/
-        if (options.watch) {
-            console.log('watch', options.watch);
-            const endpoint = options.watch[0];
-            const nodeid = options.watch[1];
-            const httpuri = options.watch[2];
+        /* Start OPC UA external trigger */
+        if (options.externalTrigger) {
+            console.log('External Trigger:', options.watch);
+            const endpoint = options.externalTrigger[0];
+            const nodeId = options.externalTrigger[1];
 
-            watchFlag(endpoint, nodeid, httpuri);
+            const et = new ExternalTrigger(endpoint, nodeId);
+            et.startMonitoring();
+            // directly restart recipe if external trigger is still active when recipe finishes
+            manager.on('recipeFinished', async () => {
+                const value = await et.getValue();
+                console.log('external trigger', value);
+                if (value) {
+                    manager.player.start();
+                }
+            });
         }
     }
 }
