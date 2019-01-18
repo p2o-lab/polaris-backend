@@ -123,6 +123,9 @@ export class Manager extends EventEmitter {
                 .on('errorMessage', ({service, errorMessage}) => {
                     this.emit('notify', 'module', {module: service.parent.id, service: service.name, errorMessage: errorMessage});
                 })
+                .on('controlEnable', ({service, controlEnable}) => {
+                    this.emit('notify', 'module', {module: service.parent.id, service: service.name, controlEnable: controlEnable});
+                })
                 .on('variableChanged', async (data) => {
                     const logEntry: VariableLogEntry = {
                         timestampPfe: data.timestampPfe,
@@ -144,7 +147,7 @@ export class Manager extends EventEmitter {
                         strategy: data.strategy.name,
                         command:  ServiceCommand[data.command],
                         parameter: data.parameter ? data.parameter.map((param) => {
-                            return { name:param.name, value: param.value };
+                            return { name:param.name, value: param.value, scope: param.scope };
                         }) : undefined
                     };
                     this.serviceArchive.push(logEntry);
@@ -163,7 +166,7 @@ export class Manager extends EventEmitter {
                     if (this.player.currentRecipeRun) {
                         this.player.currentRecipeRun.serviceLog.push(logEntry);
                     }
-                    this.emit('notify', 'module', {module: module.id, service: service.name, state: ServiceState[state], lastChange: service.lastChange, controlEnable: await service.getControlEnable()});
+                    this.emit('notify', 'module', {module: module.id, service: service.name, state: ServiceState[state], lastChange: service.lastChange});
                 })
                 .on('serviceCompleted', (service: Service) => {
                     this.performAutoReset(service);

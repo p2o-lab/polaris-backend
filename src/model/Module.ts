@@ -42,7 +42,7 @@ import { catModule, catOpc, catRecipe } from '../config/logging';
 import { EventEmitter } from 'events';
 import { OpcUaNode, Strategy } from './Interfaces';
 import { ServiceState } from './enum';
-import { ModuleInterface, ServiceInterface, ServiceCommand } from '@plt/pfe-ree-interface';
+import {ModuleInterface, ServiceInterface, ServiceCommand, ControlEnableInterface} from '@plt/pfe-ree-interface';
 import { promiseTimeout } from '../timeout-promise';
 import { VariableLogEntry, ServiceLogEntry } from '../logging/archive';
 import StrictEventEmitter from 'strict-event-emitter-types';
@@ -85,6 +85,11 @@ interface ModuleEvents {
      * @event
      */
     errorMessage: {service: Service, errorMessage: string};
+    /**
+     * when controlEnable of one service changes
+     * @event controlEnable
+     */
+    controlEnable: {service: Service, controlEnable: ControlEnableInterface};
     /**
      * Notify when a service changes its state
      * @event
@@ -365,6 +370,9 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
                         command: data.command,
                         parameter: data.parameter
                     });
+                })
+                .on('controlEnable', (controlEnable) => {
+                    this.emit('controlEnable', {service, controlEnable} );
                 })
                 .on('state', ({state, serverTimestamp}) => {
                     catModule.info(`state changed: ${this.id}.${service.name} = ${ServiceState[state]}`);

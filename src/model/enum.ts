@@ -23,6 +23,8 @@
  * SOFTWARE.
  */
 
+import {ControlEnableInterface} from '@plt/pfe-ree-interface';
+
 export enum ServiceState {
     UNDEFINED = 1,
     STOPPED = 4,
@@ -54,6 +56,20 @@ export enum ServiceControlEnable {
     ABORT = 256,
     RESTART = 512,
     COMPLETE = 1024
+}
+
+export function controlEnableToJson(controlEnable: ServiceControlEnable): ControlEnableInterface {
+    return {
+        start: (controlEnable & ServiceControlEnable.START) !== 0,
+        restart: (controlEnable & ServiceControlEnable.RESTART) !== 0,
+        pause: (controlEnable & ServiceControlEnable.PAUSE) !== 0,
+        resume: (controlEnable & ServiceControlEnable.RESUME) !== 0,
+        complete: (controlEnable & ServiceControlEnable.COMPLETE) !== 0,
+        unhold: (controlEnable & ServiceControlEnable.UNHOLD) !== 0,
+        stop: (controlEnable & ServiceControlEnable.STOP) !== 0,
+        abort: (controlEnable & ServiceControlEnable.ABORT) !== 0,
+        reset: (controlEnable & ServiceControlEnable.RESET) !== 0
+    };
 }
 
 export enum ServiceMtpCommand {
