@@ -2,7 +2,10 @@
 FROM node:alpine as base
 WORKDIR /app
 RUN cat /etc/resolv.conf
-RUN nslookup dl-cdn.alpinelinux.org
+RUN ping -w 3 8.8.8.8
+RUN ping -w 3 10.4.50.6
+RUN nslookup dl-cdn.alpinelinux.org 8.8.8.8
+RUN nslookup dl-cdn.alpinelinux.org 10.4.50.6
 
 # image for runtime dependencies
 FROM base as dependencies
