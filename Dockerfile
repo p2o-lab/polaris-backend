@@ -4,7 +4,6 @@ WORKDIR /app
 RUN cat /etc/resolv.conf
 RUN ping -w 3 8.8.8.8
 RUN ping -w 3 10.4.50.6
-RUN nslookup dl-cdn.alpinelinux.org 8.8.8.8
 RUN nslookup dl-cdn.alpinelinux.org 10.4.50.6
 
 # image for runtime dependencies
