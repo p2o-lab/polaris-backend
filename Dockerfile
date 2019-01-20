@@ -8,7 +8,7 @@ RUN apk add openssl
 COPY package.json .
 COPY package-lock.json .
 RUN npm config set @plt:registry https://registry.plt.et.tu-dresden.de:4873 
-RUN npm install --prod -d
+RUN npm install --prod
 
 ## Image for building
 FROM dependencies as build
