@@ -83,7 +83,7 @@ playerRouter.post('/reset', asyncHandler(async (req: Request, res: Response) => 
  * @api {post} /player/enqueue    Enqueue Recipe
  * @apiName EnqueueRecipe
  * @apiGroup Player
- * @apiParam recipeId   id of recipe to be added to playlist
+ * @apiParam {string} recipeId   id of recipe to be added to playlist
  */
 playerRouter.post('/enqueue', async (req: Request, res: Response) => {
     const recipe = manager.recipes.find(recipe => recipe.id === req.body.recipeId);
@@ -99,9 +99,22 @@ playerRouter.post('/enqueue', async (req: Request, res: Response) => {
  * @api {post} /player/remove    Remove Recipe
  * @apiName RemoveRecipe
  * @apiGroup Player
- * @apiParam index   index of recipe in playlist to be removed
+ * @apiParam {number} index   index of recipe in playlist to be removed
  */
 playerRouter.post('/remove', async (req: Request, res: Response) => {
     manager.player.remove(req.body.index);
+    res.json(manager.player.json());
+});
+
+/**
+ * @api {post} /player/forceTransition    Force transition of current recipe in player
+ * @apiName ForceTransition
+ * @apiGroup Player
+ * @apiParam {string} stepName      name of current step
+ * @apiParam {string} nextStepName  name of next step where a transition is available from current step
+ */
+playerRouter.post('/forceTransition', async (req: Request, res: Response) => {
+    console.log("force transition", req.body)
+    manager.player.forceTransition(req.body.stepName, req.body.nextStepName);
     res.json(manager.player.json());
 });

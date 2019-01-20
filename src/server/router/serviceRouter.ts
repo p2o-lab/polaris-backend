@@ -86,7 +86,7 @@ moduleRouter.post('/:moduleId/service/:serviceName/strategy', asyncHandler(async
  * @apiParam {string} serviceName   Name of service
  * @apiParam {string="start","stop","abort","complete","pause","unhold","reset"} command       Command name
  * @apiParam {string} [strategy]    Strategy name
- * @apiParam {Object[]} [parameters]    Parameters for *start* or *restart*
+ * @apiParam {ParameterOptions[]} [parameters]    Parameters for *start* or *restart*
  */
 moduleRouter.post('/:moduleId/service/:serviceName/:command', asyncHandler(async (req: Request, res: Response) => {
     const module = await manager.modules.find(module => module.id === req.params.moduleId);

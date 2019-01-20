@@ -96,17 +96,24 @@ export class Step {
                 catRecipe.info(`Status of step ${this.name} for transition to ${transition.next_step_name}: ` +
                     `${status}`);
                 if (status) {
-                    // clear up all conditions
-                    this.transitions.forEach((transition) => {
-                        transition.condition.clear();
-                    });
-
-                    this.eventEmitter.emit('completed', transition);
+                    this.enterTransition(transition);
                 }
             });
         });
 
         return this.eventEmitter;
+    }
+
+    /**
+     * enter transition (clear conditions and emit 'completed')
+     * @param {Transition} transition
+     */
+    public enterTransition(transition: Transition) {
+        // clear up all conditions
+        this.transitions.forEach((transition) => {
+            transition.condition.clear();
+        });
+        this.eventEmitter.emit('completed', transition);
     }
 
     public json(): StepInterface {

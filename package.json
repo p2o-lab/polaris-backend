@@ -17,7 +17,7 @@
     "apidoc": "apidoc -i src/server/ -o apidoc",
     "build": "rm -rf build/ && tsc",
     "build-all": "npm run build && npm run apidoc && npm run ui",
-    "docker": "docker build --add-host=registry.plt.et.tu-dresden.de:10.2.52.10 --add-host=registry.npmjs.org:104.16.24.35 -t registry.plt.et.tu-dresden.de/pfe-ree-node:$npm_package_version .",
+    "docker": "docker build --add-host=registry.plt.et.tu-dresden.de:10.2.52.10 -t registry.plt.et.tu-dresden.de/pfe-ree-node:$npm_package_version .",
     "docker-pi": "docker build --add-host=registry.plt.et.tu-dresden.de:10.2.52.10 -t registry.plt.et.tu-dresden.de/pfe-ree-node:$npm_package_version-arm -f Dockerfile.arm .",
     "docker-deploy": "docker push registry.plt.et.tu-dresden.de/pfe-ree-node:$npm_package_version"
   },

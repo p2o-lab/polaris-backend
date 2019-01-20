@@ -196,7 +196,6 @@ export class Recipe extends (EventEmitter as { new(): RecipeEmitter }) {
         this.lastChange = new Date();
         this.current_step.execute()
             .once('completed', (transition: Transition) => {
-                assert.notEqual(transition.next_step_name, this.current_step.name);
                 if (transition.next_step) {
                     catRecipe.info(`Step ${this.current_step.name} finished. New step is ${transition.next_step_name}`);
                     this.current_step = transition.next_step;
