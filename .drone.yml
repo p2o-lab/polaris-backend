@@ -6,6 +6,14 @@ clone:
 
 pipeline:
 
+  docker:
+    image: plugins/docker
+    settings:
+      debug: true
+      repo: registry.plt.et.tu-dresden.de/pfe-ree-node
+      registry: registry.plt.et.tu-dresden.de
+      auto_tag: true
+
   build:
     image: node:8-jessie
     commands:
@@ -18,13 +26,7 @@ pipeline:
     commands:
       - npm test
 
-  docker:
-    image: plugins/docker
-    settings:
-      debug: true
-      repo: registry.plt.et.tu-dresden.de/pfe-ree-node
-      registry: registry.plt.et.tu-dresden.de
-      auto_tag: true
+
 
   docker-pi:
     image: plugins/docker

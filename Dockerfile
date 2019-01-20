@@ -1,6 +1,8 @@
 # Docker Parent Image with Node and Typescript
 FROM node:alpine as base
 WORKDIR /app
+RUN ip a
+RUN wget http://dl-cdn.alpinelinux.org/alpine/v3.8/main/x86_64/APKINDEX.tar.gz
 
 # image for runtime dependencies
 FROM base as dependencies
