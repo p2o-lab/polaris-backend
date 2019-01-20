@@ -18,6 +18,22 @@ pipeline:
     commands:
       - npm test
 
+  docker:
+    image: plugins/docker
+    settings:
+      repo: registry.plt.et.tu-dresden.de/pfe-ree-node
+      registry: registry.plt.et.tu-dresden.de
+      auto_tag: true
+
+  docker-pi:
+    image: plugins/docker
+    settings:
+      dockerfile: Dockerfile.arm
+      repo: registry.plt.et.tu-dresden.de/pfe-ree-node
+      registry: registry.plt.et.tu-dresden.de
+      auto_tag: true
+      auto_tag_suffix: arm
+
   notify:
     image: drillster/drone-email
     host: mail.zih.tu-dresden.de
