@@ -5,7 +5,6 @@ WORKDIR /app
 
 # image for runtime dependencies
 FROM base as dependencies
-RUN apk add openssl
 COPY package.json .
 COPY package-lock.json .
 RUN npm config set @plt:registry https://registry.plt.et.tu-dresden.de:4873
