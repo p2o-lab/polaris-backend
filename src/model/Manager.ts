@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018 Markus Graube <markus.graube@tu.dresden.de>,
+ * Copyright (c) 2019 Markus Graube <markus.graube@tu.dresden.de>,
  * Chair for Process Control Systems, Technische Universität Dresden
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,14 +23,14 @@
  * SOFTWARE.
  */
 
-import {Recipe} from "./Recipe";
+import {Recipe} from "./recipe/Recipe";
 import {catManager} from "../config/logging";
 import {EventEmitter} from "events";
-import {Module, ModuleOptions} from "./Module";
-import {Service} from "./Service";
+import {Module, ModuleOptions} from "./core/Module";
+import {Service} from "./core/Service";
 import {ManagerInterface, RecipeOptions, ServiceCommand} from '@plt/pfe-ree-interface';
-import {Player} from "./Player";
-import {ServiceState} from './enum';
+import {Player} from "./recipe/Player";
+import {ServiceState} from './core/enum';
 import {VariableLogEntry,ServiceLogEntry } from '../logging/archive';
 
 export class Manager extends EventEmitter {

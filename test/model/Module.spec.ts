@@ -25,7 +25,7 @@
 
 import * as assert from 'assert';
 import * as fs from 'fs';
-import {Module} from '../../src/model/Module';
+import {Module} from '../../src/model/core/Module';
 
 describe('Module', () => {
     describe('constructor', () => {

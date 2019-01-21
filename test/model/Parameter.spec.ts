@@ -24,8 +24,8 @@
  */
 
 import * as fs from 'fs';
-import { Module } from '../../src/model/Module';
-import { Parameter } from '../../src/model/Parameter';
+import { Module } from '../../src/model/core/Module';
+import { Parameter } from '../../src/model/recipe/Parameter';
 import {expect} from 'chai';
 
 describe('Parameter', () => {

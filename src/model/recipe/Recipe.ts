@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018 Markus Graube <markus.graube@tu.dresden.de>,
+ * Copyright (c) 2019 Markus Graube <markus.graube@tu.dresden.de>,
  * Chair for Process Control Systems, Technische Universität Dresden
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,12 +24,12 @@
  */
 
 import { Step } from './Step';
-import { Module } from './Module';
-import { catRecipe } from '../config/logging';
+import { Module } from '../core/Module';
+import { catRecipe } from '../../config/logging';
 import { EventEmitter } from 'events';
 import { v4 } from 'uuid';
 import { Transition } from './Transition';
-import { manager } from './Manager';
+import { manager } from '../Manager';
 import { RecipeInterface, ModuleInterface, RecipeOptions, RecipeState, StepInterface } from '@plt/pfe-ree-interface';
 import * as assert from 'assert';
 import StrictEventEmitter from 'strict-event-emitter-types';

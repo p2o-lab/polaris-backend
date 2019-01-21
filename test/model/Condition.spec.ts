@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import { Condition, NotCondition, TimeCondition } from '../../src/model/Condition';
+import { Condition, NotCondition, TimeCondition } from '../../src/model/recipe/Condition';
 import * as assert from 'assert';
 import { ConditionType } from '@plt/pfe-ree-interface';
 import { expect } from 'chai';

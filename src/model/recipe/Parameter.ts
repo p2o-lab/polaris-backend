@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018 Markus Graube <markus.graube@tu.dresden.de>,
+ * Copyright (c) 2019 Markus Graube <markus.graube@tu.dresden.de>,
  * Chair for Process Control Systems, Technische Universität Dresden
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,12 +25,12 @@
 
 import { ParameterOptions, ScopeOptions } from '@plt/pfe-ree-interface';
 import { Expression, Parser } from 'expr-eval';
-import {catRecipe, catService} from '../config/logging';
+import {catRecipe, catService} from '../../config/logging';
 import { EventEmitter } from 'events';
 import { DataType } from 'node-opcua-client';
-import { Service } from './Service';
-import {OpcUaNode, Strategy} from './Interfaces';
-import {Module, OpcUaNodeEvents} from './Module';
+import { Service } from '../core/Service';
+import {OpcUaNode, Strategy} from '../core/Interfaces';
+import {Module, OpcUaNodeEvents} from '../core/Module';
 import StrictEventEmitter from 'strict-event-emitter-types';
 
 /**
