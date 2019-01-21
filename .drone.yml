@@ -5,15 +5,19 @@ clone:
 
 
 pipeline:
-
   docker:
     image: docker
     privileged: true
     commands:
-      - docker build -t registry.plt.et.tu-dresden.de/pfe-ree-node .
-      - docker push .
+      - docker build -t registry.plt.et.tu-dresden.de/pfe-ree-node -t registry.plt.et.tu-dresden.de/pfe-ree-node:$DRONE_BRANCH .
+      - docker build -f Dockerfile.arm -t registry.plt.et.tu-dresden.de/pfe-ree-node:latest-arm .
+      - docker push registry.plt.et.tu-dresden.de/pfe-ree-node
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    when:
+      branch:
+        - develop
+        - feature/docker-in-docker
 
   build:
     image: node:8-jessie
@@ -28,16 +32,6 @@ pipeline:
       - npm test
 
 
-
-  docker-pi:
-    image: plugins/docker
-    settings:
-      debug: true
-      dockerfile: Dockerfile.arm
-      repo: registry.plt.et.tu-dresden.de/pfe-ree-node
-      registry: registry.plt.et.tu-dresden.de
-      auto_tag: true
-      auto_tag_suffix: arm
 
   notify:
     image: drillster/drone-email
