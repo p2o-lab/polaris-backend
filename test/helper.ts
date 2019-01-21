@@ -25,7 +25,7 @@
 
 import {promiseTimeout} from '../src/timeout-promise';
 import * as assert from "assert";
-import {ServiceState} from '../src/model/enum';
+import {ServiceState} from '../src/model/core/enum';
 
 /** wait
  *

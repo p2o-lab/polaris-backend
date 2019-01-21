@@ -28,8 +28,8 @@ import {ParameterOptions, ServiceCommand} from '@plt/pfe-ree-interface';
 import { moduleRouter } from './moduleRouter';
 import { Request, Response, Router } from 'express';
 import * as asyncHandler from 'express-async-handler';
-import { Strategy } from '../../model/Interfaces';
-import { Parameter } from '../../model/Parameter';
+import { Strategy } from '../../model/core/Interfaces';
+import { Parameter } from '../../model/recipe/Parameter';
 import { catServer } from '../../config/logging';
 
 export const serviceRouter: Router = Router();

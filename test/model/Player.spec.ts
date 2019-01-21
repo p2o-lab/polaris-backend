@@ -23,9 +23,9 @@
  * SOFTWARE.
  */
 
-import {Player} from '../../src/model/Player';
+import {Player} from '../../src/model/recipe/Player';
 import * as fs from 'fs';
-import {Recipe} from '../../src/model/Recipe';
+import {Recipe} from '../../src/model/recipe/Recipe';
 import {expect} from 'chai';
 import {manager} from '../../src/model/Manager';
 import {later} from '../helper';

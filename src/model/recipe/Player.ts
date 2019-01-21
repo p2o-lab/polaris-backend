@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018 Markus Graube <markus.graube@tu.dresden.de>,
+ * Copyright (c) 2019 Markus Graube <markus.graube@tu.dresden.de>,
  * Chair for Process Control Systems, Technische Universität Dresden
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,8 +23,8 @@
  * SOFTWARE.
  */
 
-import {Recipe} from './Recipe';
-import {catManager} from '../config/logging';
+import {Recipe} from './';
+import {catManager} from '../../config/logging';
 import {EventEmitter} from 'events';
 import {PlayerInterface, RecipeState, Repeat, TransitionOptions} from '@plt/pfe-ree-interface';
 import {RecipeRun} from "./RecipeRun";

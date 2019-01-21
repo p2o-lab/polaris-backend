@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018 Markus Graube <markus.graube@tu.dresden.de>,
+ * Copyright (c) 2019 Markus Graube <markus.graube@tu.dresden.de>,
  * Chair for Process Control Systems, Technische Universität Dresden
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,10 +23,10 @@
  * SOFTWARE.
  */
 
-import { Recipe } from './Recipe';
+import { Recipe } from './';
 import { v4 } from 'uuid';
 import { RecipeRunInterface } from '@plt/pfe-ree-interface';
-import { ServiceLogEntry, VariableLogEntry } from '../logging/archive';
+import { ServiceLogEntry, VariableLogEntry } from '../../logging/archive';
 
 
 /** One specific recipe run with all logs

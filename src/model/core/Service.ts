@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018 Markus Graube <markus.graube@tu.dresden.de>,
+ * Copyright (c) 2019 Markus Graube <markus.graube@tu.dresden.de>,
  * Chair for Process Control Systems, Technische Universität Dresden
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,7 +25,7 @@
 
 import { DataType, DataValue, Variant, VariantArrayType } from 'node-opcua-client';
 import { Module } from './Module';
-import { catOpc, catService } from '../config/logging';
+import { catOpc, catService } from '../../config/logging';
 import {
     controlEnableToJson,
     isAutomaticState,
@@ -38,7 +38,7 @@ import {
     ServiceState
 } from './enum';
 import { OpcUaNode, ServiceParameter, Strategy } from './Interfaces';
-import { Parameter } from './Parameter';
+import { Parameter } from '../recipe/Parameter';
 import {
     ParameterInterface,
     ParameterOptions,
@@ -48,7 +48,7 @@ import {
     ControlEnableInterface
 } from '@plt/pfe-ree-interface';
 import { Unit } from './Unit';
-import { manager } from './Manager';
+import { manager } from '../Manager';
 import { EventEmitter } from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 

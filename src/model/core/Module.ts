@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018 Markus Graube <markus.graube@tu.dresden.de>,
+ * Copyright (c) 2019 Markus Graube <markus.graube@tu.dresden.de>,
  * Chair for Process Control Systems, Technische Universität Dresden
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,7 +24,7 @@
  */
 
 import { Service, ServiceOptions } from './Service';
-import {Parameter} from './Parameter';
+import {Parameter} from '../recipe/Parameter';
 import { ProcessValue } from './ProcessValue';
 import {
     AttributeIds,
@@ -38,13 +38,13 @@ import {
     Variant
 } from 'node-opcua-client';
 import {TimestampsToReturn} from 'node-opcua-service-read';
-import { catModule, catOpc, catRecipe } from '../config/logging';
+import { catModule, catOpc, catRecipe } from '../../config/logging';
 import { EventEmitter } from 'events';
 import { OpcUaNode, Strategy } from './Interfaces';
 import { ServiceState } from './enum';
 import {ModuleInterface, ServiceInterface, ServiceCommand, ControlEnableInterface} from '@plt/pfe-ree-interface';
-import { promiseTimeout } from '../timeout-promise';
-import { VariableLogEntry, ServiceLogEntry } from '../logging/archive';
+import { promiseTimeout } from '../../timeout-promise';
+import { VariableLogEntry, ServiceLogEntry } from '../../logging/archive';
 import StrictEventEmitter from 'strict-event-emitter-types';
 
 export interface ModuleOptions {

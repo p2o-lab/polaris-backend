@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import {Transition} from '../../src/model/Transition';
+import {Transition} from '../../src/model/recipe/Transition';
 import {expect} from 'chai';
 import {ConditionType} from '@plt/pfe-ree-interface';
 

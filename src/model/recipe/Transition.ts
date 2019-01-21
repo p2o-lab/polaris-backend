@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018 Markus Graube <markus.graube@tu.dresden.de>,
+ * Copyright (c) 2019 Markus Graube <markus.graube@tu.dresden.de>,
  * Chair for Process Control Systems, Technische Universität Dresden
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,8 +26,8 @@
 import { Step } from './Step';
 import { Condition } from './Condition';
 import { ConditionOptions, TransitionInterface } from '@plt/pfe-ree-interface';
-import { Module } from './Module';
-import { Recipe } from './Recipe';
+import { Module } from '../core/Module';
+import { Recipe } from './';
 
 export interface TransitionOptions {
     next_step: string;
