@@ -338,9 +338,9 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
             parameter: parameters
         });
         let result;
-        if (command === 'start') {
+        if (command === ServiceCommand.start) {
             result = this.start(strategy, parameters);
-        } else if (command === 'stop') {
+        } else if (command === ServiceCommand.stop) {
             result = this.stop();
         } else if (command === 'reset') {
             result = this.reset();
@@ -566,6 +566,22 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
             await this.setToManualOperationMode();
         }
 
+        let controlEnable : ControlEnableInterface = await this.parent.readVariableNode((this.controlEnable));
+
+        let commandExecutable =
+            (command===ServiceMtpCommand.START && !controlEnable.start) ||
+            (command===ServiceMtpCommand.STOP && !controlEnable.stop) ||
+            (command===ServiceMtpCommand.RESTART && !controlEnable.restart) ||
+            (command===ServiceMtpCommand.PAUSE && !controlEnable.pause) ||
+            (command===ServiceMtpCommand.RESUME && !controlEnable.resume) ||
+            (command===ServiceMtpCommand.COMPLETE && !controlEnable.complete) ||
+            (command===ServiceMtpCommand.UNHOLD && !controlEnable.unhold) ||
+            (command===ServiceMtpCommand.ABORT && !controlEnable.abort);
+
+
+        catService.info(`ControlEnable: ${controlEnable}`);
+        catService.info(`Command ${command} vailidity: ${commandExecutable}`);
+
         const result = await this.parent.writeNode(this.command,
             {
                 dataType: DataType.UInt32,
@@ -577,6 +593,11 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
         this.parent.listenToOpcUaNode(this.command)
             .on('changed', (data) => {
                 catService.info(`command ${this.name} changed: ${JSON.stringify(data)}`);
+            });
+
+        this.parent.listenToOpcUaNode(this.status)
+            .once('changed', (data) => {
+                catService.info(`Status ${this.name} changed: ${JSON.stringify(data)}`);
             });
 
         return result.value === 0;
