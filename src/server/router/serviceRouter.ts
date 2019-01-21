@@ -73,7 +73,7 @@ moduleRouter.post('/:moduleId/service/:serviceName/strategy', asyncHandler(async
     const strategyName = <string> req.body.strategy;
     const strategy : Strategy = service.strategies.find((strategy: Strategy) => strategy.name === strategyName);
     catServer.info(`Strategy ${service.name}, ${JSON.stringify(parameterOptions)}, ${JSON.stringify(strategyName)}`);
-    await service.setStrategyParameters(strategy, parameterOptions.map(param => new Parameter(param, service)));
+    await service.setStrategyParameters(strategy, parameterOptions.map(param => new Parameter(param, service, strategy)));
 
     res.json(await service.getOverview());
 }));

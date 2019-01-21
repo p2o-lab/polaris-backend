@@ -566,21 +566,23 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
             await this.setToManualOperationMode();
         }
 
-        let controlEnable : ControlEnableInterface = await this.parent.readVariableNode((this.controlEnable));
+        let controlEnable: ControlEnableInterface = await this.getControlEnable();
+        catService.info(`ControlEnable: ${JSON.stringify(controlEnable)}`);
 
         let commandExecutable =
-            (command===ServiceMtpCommand.START && !controlEnable.start) ||
-            (command===ServiceMtpCommand.STOP && !controlEnable.stop) ||
-            (command===ServiceMtpCommand.RESTART && !controlEnable.restart) ||
-            (command===ServiceMtpCommand.PAUSE && !controlEnable.pause) ||
-            (command===ServiceMtpCommand.RESUME && !controlEnable.resume) ||
-            (command===ServiceMtpCommand.COMPLETE && !controlEnable.complete) ||
-            (command===ServiceMtpCommand.UNHOLD && !controlEnable.unhold) ||
-            (command===ServiceMtpCommand.ABORT && !controlEnable.abort);
-
-
-        catService.info(`ControlEnable: ${controlEnable}`);
-        catService.info(`Command ${command} vailidity: ${commandExecutable}`);
+            (command===ServiceMtpCommand.START && controlEnable.start) ||
+            (command===ServiceMtpCommand.STOP && controlEnable.stop) ||
+            (command===ServiceMtpCommand.RESTART && controlEnable.restart) ||
+            (command===ServiceMtpCommand.PAUSE && controlEnable.pause) ||
+            (command===ServiceMtpCommand.RESUME && controlEnable.resume) ||
+            (command===ServiceMtpCommand.COMPLETE && controlEnable.complete) ||
+            (command===ServiceMtpCommand.UNHOLD && controlEnable.unhold) ||
+            (command===ServiceMtpCommand.ABORT && controlEnable.abort) ||
+            (command===ServiceMtpCommand.RESET && controlEnable.reset);
+        catService.info(`Command ${command} validity: ${commandExecutable}`);
+        if (!commandExecutable) {
+            return Promise.reject(`ControlOp does not allow ${command}`);
+        }
 
         const result = await this.parent.writeNode(this.command,
             {
@@ -642,11 +644,11 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
         }
         this.parent.listenToOpcUaNode(this.command)
             .on('changed', (data) => {
-                catOpc.info(`ControlOp: ${data}`);
+                catOpc.info(`ControlOp: ${JSON.stringify(data)}`);
             });
         this.parent.listenToOpcUaNode(this.status)
             .on('changed', (data) => {
-                catOpc.info(`ControlOp: ${data}`);
+                catOpc.info(`Status: ${JSON.stringify(data)}`);
             });
         return this;
     }
