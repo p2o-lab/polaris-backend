@@ -9,8 +9,7 @@ pipeline:
     image: docker
     privileged: true
     commands:
-      - BRANCH_NAME=`echo ${DRONE_BRANCH} | sed 's/feature\///'
-      - docker build -t registry.plt.et.tu-dresden.de/pfe-ree-node -t registry.plt.et.tu-dresden.de/pfe-ree-node:${BRANCH_NAME} .
+      - docker build -t registry.plt.et.tu-dresden.de/pfe-ree-node -t registry.plt.et.tu-dresden.de/pfe-ree-node .
       - docker build -f Dockerfile.arm -t registry.plt.et.tu-dresden.de/pfe-ree-node:latest-arm .
       - docker push registry.plt.et.tu-dresden.de/pfe-ree-node
     volumes:
