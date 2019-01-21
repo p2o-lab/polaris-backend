@@ -11,7 +11,8 @@ pipeline:
     settings:
       debug: true
       custom_dns:
-        - 10.4.50.6
+        - "10.4.50.6"
+        - "8.8.8.8"
       repo: registry.plt.et.tu-dresden.de/pfe-ree-node
       registry: registry.plt.et.tu-dresden.de
       auto_tag: true
