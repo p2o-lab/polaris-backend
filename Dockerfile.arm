@@ -1,13 +1,12 @@
 # Docker Parent Image with Node and Typescript
-FROM arm32v7/node as base
-COPY ./qemu-arm-static /usr/bin/qemu-arm-static
+FROM node:8-jessie as base
 WORKDIR /app
 
 # image for runtime dependencies
 FROM base as dependencies
 COPY package.json .
 COPY package-lock.json .
-RUN npm config set @plt:registry https://registry.plt.et.tu-dresden.de:4873 
+RUN npm config set @plt:registry https://registry.plt.et.tu-dresden.de:4873
 RUN npm install --prod
 
 ## Image for building
@@ -20,9 +19,11 @@ RUN npm run build
 RUN npm run apidoc
 
 # production image
-FROM dependencies as prod
+FROM arm32v7/node
+COPY ./qemu-arm-static /usr/bin/qemu-arm-static
 COPY assets assets
+COPY --from=dependencies /app/node_modules node_modules
 COPY --from=build /app/build build
-COPY --from=build /app/build apidoc
+COPY --from=build /app/apidoc apidoc
 EXPOSE 3000
 ENTRYPOINT ["node", "build/"]

@@ -7,7 +7,7 @@ FROM base as dependencies
 COPY package.json .
 COPY package-lock.json .
 RUN npm config set @plt:registry https://registry.plt.et.tu-dresden.de:4873 
-RUN npm install --prod -d
+RUN npm install --prod
 
 ## Image for building
 FROM dependencies as build
@@ -19,7 +19,7 @@ RUN npm run build
 RUN npm run apidoc
 
 # production image
-FROM node:alpine as prod
+FROM node:alpine
 COPY assets assets
 COPY --from=dependencies /app/node_modules node_modules
 COPY --from=build /app/build build
