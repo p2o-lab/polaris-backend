@@ -18,20 +18,47 @@ pipeline:
     commands:
       - npm test
 
-  docker:
+  docker-develop:
     image: docker
     privileged: true
     commands:
-      - docker build -t registry.plt.et.tu-dresden.de/pfe-ree-node:latest .
-      - docker build -f Dockerfile.arm -t registry.plt.et.tu-dresden.de/pfe-ree-node:latest-arm .
-      - docker push registry.plt.et.tu-dresden.de/pfe-ree-node:latest
-      - docker push registry.plt.et.tu-dresden.de/pfe-ree-node:latest-arm
+      - docker build -t registry.plt.et.tu-dresden.de/pfe-ree-node:develop .
+      - docker build -f Dockerfile.arm -t registry.plt.et.tu-dresden.de/pfe-ree-node:develop-arm .
+      - docker push registry.plt.et.tu-dresden.de/pfe-ree-node:develop
+      - docker push registry.plt.et.tu-dresden.de/pfe-ree-node:develop-arm
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     when:
       branch:
         - develop
-        - feature/docker-in-docker
+
+  docker-stable:
+    image: docker
+    privileged: true
+    commands:
+      - docker build -t registry.plt.et.tu-dresden.de/pfe-ree-node:stable .
+      - docker build -f Dockerfile.arm -t registry.plt.et.tu-dresden.de/pfe-ree-node:stable-arm .
+      - docker push registry.plt.et.tu-dresden.de/pfe-ree-node:stable
+      - docker push registry.plt.et.tu-dresden.de/pfe-ree-node:stable-arm
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    when:
+      branch:
+        - stable
+
+  docker-tag:
+    image: docker
+    privileged: true
+    commands:
+      - docker build -t registry.plt.et.tu-dresden.de/pfe-ree-node:${DRONE_TAG} .
+      - docker build -f Dockerfile.arm -t registry.plt.et.tu-dresden.de/pfe-ree-node:${DRONE_TAG}-arm .
+      - docker push registry.plt.et.tu-dresden.de/pfe-ree-node:${DRONE_TAG}
+      - docker push registry.plt.et.tu-dresden.de/pfe-ree-node:${DRONE_TAG}-arm
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    when:
+       event:
+       - tag
 
   notify:
     image: drillster/drone-email
@@ -43,4 +70,3 @@ pipeline:
     recipients: [ markus.graube@tu-dresden.de ]
     when:
       status: [ changed, failure ]
-
