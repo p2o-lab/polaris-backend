@@ -46,6 +46,19 @@ pipeline:
       branch:
         - stable
 
+  docker-tag:
+    image: docker
+    privileged: true
+    commands:
+      - docker build -t "registry.plt.et.tu-dresden.de/pfe-ree-node:${DRONE_TAG##v}" .
+      - docker build -f Dockerfile.arm -t "registry.plt.et.tu-dresden.de/pfe-ree-node:${DRONE_TAG##v}-arm" .
+      - docker push "registry.plt.et.tu-dresden.de/pfe-ree-node:${DRONE_TAG##v}"
+      - docker push "registry.plt.et.tu-dresden.de/pfe-ree-node:${DRONE_TAG##v}-arm"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    when:
+       event:
+       - tag
 
   notify:
     image: drillster/drone-email
