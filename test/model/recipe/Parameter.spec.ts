@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018 Markus Graube <markus.graube@tu.dresden.de>,
+ * Copyright (c) 2019 Markus Graube <markus.graube@tu.dresden.de>,
  * Chair for Process Control Systems, Technische Universität Dresden
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,8 +24,8 @@
  */
 
 import * as fs from 'fs';
-import { Module } from '../../src/model/core/Module';
-import { Parameter } from '../../src/model/recipe/Parameter';
+import { Module } from '../../../src/model/core/Module';
+import { Parameter } from '../../../src/model/recipe/Parameter';
 import {expect} from 'chai';
 
 describe('Parameter', () => {

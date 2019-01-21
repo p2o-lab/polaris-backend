@@ -33,7 +33,8 @@ describe('ExternalTrigger', () => {
     let nodeId: string;
     let server: OPCUAServer;
 
-    before((done) => {
+    before(function(done) {
+        this.timeout(5000);
          server = new OPCUAServer({
             port: 4334, // the port of the listening socket of the server
             resourcePath: 'UA/MyLittleServer', // this path will be added to the endpoint resource name
@@ -41,7 +42,6 @@ describe('ExternalTrigger', () => {
 
         function post_initialize() {
             function construct_my_address_space(server) {
-
                 const addressSpace = server.engine.addressSpace;
                 const namespace = addressSpace.getOwnNamespace();
 
@@ -50,11 +50,6 @@ describe('ExternalTrigger', () => {
                     organizedBy: addressSpace.rootFolder.objects,
                     browseName: 'MyDevice'
                 });
-
-                // add some variables
-                // add a variable named MyVariable1 to the newly created folder "MyDevice"
-
-
 
                 let a = namespace.addVariable({
                     componentOf: device,
@@ -67,7 +62,6 @@ describe('ExternalTrigger', () => {
                     }
                 });
                 nodeId = a.nodeId.toString();
-                console.log(nodeId);
             }
             construct_my_address_space(server);
             server.start(done);

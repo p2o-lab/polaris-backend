@@ -23,14 +23,13 @@
  * SOFTWARE.
  */
 
-import {Recipe} from './';
 import {catManager} from '../../config/logging';
 import {EventEmitter} from 'events';
 import {PlayerInterface, RecipeState, Repeat, TransitionOptions} from '@plt/pfe-ree-interface';
 import {RecipeRun} from "./RecipeRun";
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Step} from './Step';
-import {Transition} from './Transition';
+import {Recipe} from './Recipe';
 
 /**
  * Events emitted by [[Player]]
