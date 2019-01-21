@@ -28,7 +28,7 @@ import { Transition, TransitionOptions } from './Transition';
 import { catRecipe } from '../../config/logging';
 import { EventEmitter } from 'events';
 import { Module } from '../core/Module';
-import { Recipe } from './';
+import { Recipe } from './Recipe';
 import { OperationOptions, StepInterface } from '@plt/pfe-ree-interface';
 import StrictEventEmitter from 'strict-event-emitter-types';
 

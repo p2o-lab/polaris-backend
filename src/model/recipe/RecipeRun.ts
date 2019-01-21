@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import { Recipe } from './';
+import { Recipe } from './Recipe';
 import { v4 } from 'uuid';
 import { RecipeRunInterface } from '@plt/pfe-ree-interface';
 import { ServiceLogEntry, VariableLogEntry } from '../../logging/archive';

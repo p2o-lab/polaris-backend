@@ -27,7 +27,7 @@ import { Step } from './Step';
 import { Condition } from './Condition';
 import { ConditionOptions, TransitionInterface } from '@plt/pfe-ree-interface';
 import { Module } from '../core/Module';
-import { Recipe } from './';
+import { Recipe } from './Recipe';
 
 export interface TransitionOptions {
     next_step: string;

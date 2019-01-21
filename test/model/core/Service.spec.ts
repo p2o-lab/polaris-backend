@@ -23,17 +23,14 @@
  * SOFTWARE.
  */
 
-import {Transition} from '../../src/model/recipe/Transition';
-import {expect} from 'chai';
-import {ConditionType} from '@plt/pfe-ree-interface';
+import {Recipe} from '../../../src/model/recipe/Recipe';
+import * as fs from 'fs';
+import * as assert from 'assert';
+import {Module} from '../../../src/model/core/Module';
+import {RecipeInterface} from '@plt/pfe-ree-interface';
 
-describe('Transition', () => {
+describe('Service', () => {
 
 
-    it('should load from options', () => {
-        let t = new Transition({next_step: "nextStep", condition: {type: ConditionType.time, duration: 1}}, [], undefined);
-
-        const json = t.json();
-        expect(json).to.haveOwnProperty('next_step', 'nextStep');
-    });
+    it('should load from options');
 });

@@ -58,7 +58,6 @@ export class ExternalTrigger {
 
     public async getValue(): Promise<boolean> {
         const dataValue = await this.session.readVariableValue(this.nodeId);
-        console.log(dataValue.value.value);
         return dataValue.value.value;
     }
 
