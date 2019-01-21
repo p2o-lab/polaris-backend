@@ -22,9 +22,10 @@ pipeline:
     image: docker
     privileged: true
     commands:
-      - docker build -t registry.plt.et.tu-dresden.de/pfe-ree-node -t registry.plt.et.tu-dresden.de/pfe-ree-node .
+      - docker build -t registry.plt.et.tu-dresden.de/pfe-ree-node:latest .
       - docker build -f Dockerfile.arm -t registry.plt.et.tu-dresden.de/pfe-ree-node:latest-arm .
-      - docker push registry.plt.et.tu-dresden.de/pfe-ree-node registry.plt.et.tu-dresden.de/pfe-ree-node:latest-arm
+      - docker push registry.plt.et.tu-dresden.de/pfe-ree-node:latest
+      - docker push registry.plt.et.tu-dresden.de/pfe-ree-node:latest-arm
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     when:
