@@ -8,6 +8,7 @@ pipeline:
 
   docker:
     image: docker
+    privileged: true
     commands:
       - docker build -t registry.plt.et.tu-dresden.de/pfe-ree-node .
       - docker push .
