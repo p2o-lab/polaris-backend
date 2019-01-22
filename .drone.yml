@@ -56,7 +56,7 @@ pipeline:
       - docker build -f Dockerfile.arm -t "registry.plt.et.tu-dresden.de/pfe-ree-node:${DRONE_TAG##v}-arm" .
       - docker push "registry.plt.et.tu-dresden.de/pfe-ree-node:${DRONE_TAG##v}"
       - docker push "registry.plt.et.tu-dresden.de/pfe-ree-node:${DRONE_TAG##v}-arm"
-      - docker rm "registry.plt.et.tu-dresden.de/pfe-ree-node:${DRONE_TAG##v}" "registry.plt.et.tu-dresden.de/pfe-ree-node:${DRONE_TAG##v}-arm"
+      - docker rmi "registry.plt.et.tu-dresden.de/pfe-ree-node:${DRONE_TAG##v}" "registry.plt.et.tu-dresden.de/pfe-ree-node:${DRONE_TAG##v}-arm"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     when:
