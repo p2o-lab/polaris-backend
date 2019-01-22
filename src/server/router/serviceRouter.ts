@@ -24,31 +24,57 @@
  */
 
 import { manager } from '../../model/Manager';
-import { ServiceCommand } from '@plt/pfe-ree-interface';
+import {ParameterOptions, ServiceCommand} from '@plt/pfe-ree-interface';
 import { moduleRouter } from './moduleRouter';
 import { Request, Response, Router } from 'express';
 import * as asyncHandler from 'express-async-handler';
-import { Strategy } from '../../model/Interfaces';
-import { Parameter } from '../../model/Parameter';
+import { Strategy } from '../../model/core/Interfaces';
+import { Parameter } from '../../model/recipe/Parameter';
 import { catServer } from '../../config/logging';
 
 export const serviceRouter: Router = Router();
 
 /**
- * @api {post} /module/:moduleId/service/:serviceName/configure    Configure Service
+ * @api {post} /module/:moduleId/service/:serviceName/parameter    Configure Service
  * @apiName ConfigureService
- * @apiDescription Configure service parameters
+ * @apiDescription Configure service parameter
  * @apiGroup Service
- * @apiParam {string} id    Module id
- * @apiParam {object} parameters    Module Service Parameters
+ * @apiParam {string} moduleId    Module id
+ * @apiParam {string} serviceName   Name of service
+ * @apiParam {ParameterOptions[]} parameters    Module Service Parameter
  */
-moduleRouter.post('/:moduleId/service/:serviceName/configure', asyncHandler(async (req: Request, res: Response) => {
+moduleRouter.post('/:moduleId/service/:serviceName/parameter', asyncHandler(async (req: Request, res: Response) => {
     const module = await manager.modules.find(module => module.id === req.params.moduleId);
     if (!module) {
         throw new Error(`Module with id ${req.params.moduleId} not registered`);
     }
     const service = await module.services.find(service => service.name === req.params.serviceName);
     await service.setServiceParameters(req.body.parameters);
+    res.json(await service.getOverview());
+}));
+
+/**
+ * @api {post} /module/:moduleId/service/:serviceName/strategy    Configure Strategy
+ * @apiName ConfigureStrategy
+ * @apiDescription Configure strategy and strategy parameters of service
+ * @apiGroup Service
+ * @apiParam {string} moduleId    Module id
+ * @apiParam {string} serviceName   Name of service
+ * @apiParam {string} strategy      Name of strategy
+ * @apiParam {ParameterOptions[]} parameters    Module Service Parameters
+ */
+moduleRouter.post('/:moduleId/service/:serviceName/strategy', asyncHandler(async (req: Request, res: Response) => {
+    const module = await manager.modules.find(module => module.id === req.params.moduleId);
+    if (!module) {
+        throw new Error(`Module with id ${req.params.moduleId} not registered`);
+    }
+    const service = await module.services.find(service => service.name === req.params.serviceName);
+    const parameterOptions = <ParameterOptions[]> req.body.parameters;
+    const strategyName = <string> req.body.strategy;
+    const strategy : Strategy = service.strategies.find((strategy: Strategy) => strategy.name === strategyName);
+    catServer.info(`Strategy ${service.name}, ${JSON.stringify(parameterOptions)}, ${JSON.stringify(strategyName)}`);
+    await service.setStrategyParameters(strategy, parameterOptions.map(param => new Parameter(param, service)));
+
     res.json(await service.getOverview());
 }));
 
@@ -60,7 +86,7 @@ moduleRouter.post('/:moduleId/service/:serviceName/configure', asyncHandler(asyn
  * @apiParam {string} serviceName   Name of service
  * @apiParam {string="start","stop","abort","complete","pause","unhold","reset"} command       Command name
  * @apiParam {string} [strategy]    Strategy name
- * @apiParam {Object[]} [parameters]    Parameters for *start* or *restart*
+ * @apiParam {ParameterOptions[]} [parameters]    Parameters for *start* or *restart*
  */
 moduleRouter.post('/:moduleId/service/:serviceName/:command', asyncHandler(async (req: Request, res: Response) => {
     const module = await manager.modules.find(module => module.id === req.params.moduleId);

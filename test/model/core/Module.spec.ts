@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018 Markus Graube <markus.graube@tu.dresden.de>,
+ * Copyright (c) 2019 Markus Graube <markus.graube@tu.dresden.de>,
  * Chair for Process Control Systems, Technische Universität Dresden
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,7 +25,7 @@
 
 import * as assert from 'assert';
 import * as fs from 'fs';
-import {Module} from '../../src/model/Module';
+import {Module} from '../../../src/model/core/Module';
 
 describe('Module', () => {
     describe('constructor', () => {

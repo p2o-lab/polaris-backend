@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018 Markus Graube <markus.graube@tu.dresden.de>,
+ * Copyright (c) 2019 Markus Graube <markus.graube@tu.dresden.de>,
  * Chair for Process Control Systems, Technische Universität Dresden
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,14 +23,14 @@
  * SOFTWARE.
  */
 
-import {Recipe} from "./Recipe";
+import {Recipe} from "./recipe/Recipe";
 import {catManager} from "../config/logging";
 import {EventEmitter} from "events";
-import {Module, ModuleOptions} from "./Module";
-import {Service} from "./Service";
+import {Module, ModuleOptions} from "./core/Module";
+import {Service} from "./core/Service";
 import {ManagerInterface, RecipeOptions, ServiceCommand} from '@plt/pfe-ree-interface';
-import {Player} from "./Player";
-import {ServiceState} from './enum';
+import {Player} from "./recipe/Player";
+import {ServiceState} from './core/enum';
 import {VariableLogEntry,ServiceLogEntry } from '../logging/archive';
 
 export class Manager extends EventEmitter {
@@ -58,11 +58,22 @@ export class Manager extends EventEmitter {
     constructor() {
         super();
         this.player = new Player()
-            .on('started', () => this.emit('notify', 'player', this.player.json()))
-            .on('recipeStarted', () => this.emit('notify', 'player', this.player.json()))
-            .on('stepFinished', () => this.emit('notify', 'player', this.player.json()))
-            .on('recipeFinished', () => this.emit('notify', 'player', this.player.json()))
-            .on('completed', () => this.emit('notify', 'player', this.player.json()));
+            .on('started', () => {
+                this.emit('notify', 'player', this.player.json())
+            })
+            .on('recipeStarted', () => {
+                this.emit('notify', 'player', this.player.json())
+            })
+            .on('stepFinished', () => {
+                this.emit('notify', 'player', this.player.json())
+            })
+            .on('recipeFinished', () => {
+                this.emit('recipeFinished');
+                this.emit('notify', 'player', this.player.json())
+            })
+            .on('completed', () => {
+                this.emit('notify', 'player', this.player.json())
+            });
     }
 
     get autoreset(): boolean {
@@ -112,6 +123,9 @@ export class Manager extends EventEmitter {
                 .on('errorMessage', ({service, errorMessage}) => {
                     this.emit('notify', 'module', {module: service.parent.id, service: service.name, errorMessage: errorMessage});
                 })
+                .on('controlEnable', ({service, controlEnable}) => {
+                    this.emit('notify', 'module', {module: service.parent.id, service: service.name, controlEnable: controlEnable});
+                })
                 .on('variableChanged', async (data) => {
                     const logEntry: VariableLogEntry = {
                         timestampPfe: data.timestampPfe,
@@ -133,7 +147,7 @@ export class Manager extends EventEmitter {
                         strategy: data.strategy.name,
                         command:  ServiceCommand[data.command],
                         parameter: data.parameter ? data.parameter.map((param) => {
-                            return { name:param.name, value: param.value };
+                            return { name:param.name, value: param.value, scope: param.scope };
                         }) : undefined
                     };
                     this.serviceArchive.push(logEntry);
@@ -152,7 +166,7 @@ export class Manager extends EventEmitter {
                     if (this.player.currentRecipeRun) {
                         this.player.currentRecipeRun.serviceLog.push(logEntry);
                     }
-                    this.emit('notify', 'module', {module: module.id, service: service.name, state: ServiceState[state], lastChange: service.lastChange, controlEnable: await service.getControlEnable()});
+                    this.emit('notify', 'module', {module: module.id, service: service.name, state: ServiceState[state], lastChange: service.lastChange});
                 })
                 .on('serviceCompleted', (service: Service) => {
                     this.performAutoReset(service);

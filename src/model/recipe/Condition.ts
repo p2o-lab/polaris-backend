@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018 Markus Graube <markus.graube@tu.dresden.de>,
+ * Copyright (c) 2019 Markus Graube <markus.graube@tu.dresden.de>,
  * Chair for Process Control Systems, Technische Universität Dresden
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,10 +23,10 @@
  * SOFTWARE.
  */
 
-import { catOpc, catRecipe } from '../config/logging';
-import { ServiceState } from './enum';
-import { Module } from './Module';
-import { Service } from './Service';
+import { catOpc, catRecipe } from '../../config/logging';
+import { ServiceState } from '../core/enum';
+import { Module } from '../core/Module';
+import { Service } from '../core/Service';
 import { Recipe } from './Recipe';
 import {
     AndConditionOptions,

@@ -30,8 +30,7 @@ import { catServer } from '../config/logging';
 import { serviceRouter } from './router/serviceRouter';
 import { coreRouter } from './router/coreRouter';
 import { playerRouter } from './router/playerRouter';
-import { join } from 'path';
-import {recipeRunRouter} from './router/recipeRunRouter';
+import { recipeRunRouter } from './router/recipeRunRouter';
 
 export default class Routes {
     static init(server): void {
@@ -49,11 +48,6 @@ export default class Routes {
         server.app.use('/api/recipe', recipeRouter);
         server.app.use('/api/player', playerRouter);
         server.app.use('/api', coreRouter);
-
-        // default route to index.html
-        server.app.use((req: Request, res: Response) => {
-            res.sendFile('index.html', { root: join(__dirname, '../../dist') });
-        });
 
         // Error handling
         server.app.use((err: Error, req: Request, res: Response, next: NextFunction) => {

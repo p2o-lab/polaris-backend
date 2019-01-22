@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018 Markus Graube <markus.graube@tu.dresden.de>,
+ * Copyright (c) 2019 Markus Graube <markus.graube@tu.dresden.de>,
  * Chair for Process Control Systems, Technische Universität Dresden
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,12 +23,12 @@
  * SOFTWARE.
  */
 
-import {Player} from '../../src/model/Player';
+import {Player} from '../../../src/model/recipe/Player';
 import * as fs from 'fs';
-import {Recipe} from '../../src/model/Recipe';
+import {Recipe} from '../../../src/model/recipe/Recipe';
 import {expect} from 'chai';
-import {manager} from '../../src/model/Manager';
-import {later} from '../helper';
+import {manager} from '../../../src/model/Manager';
+import {later} from '../../helper';
 
 describe('Player', function () {
 

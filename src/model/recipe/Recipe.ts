@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018 Markus Graube <markus.graube@tu.dresden.de>,
+ * Copyright (c) 2019 Markus Graube <markus.graube@tu.dresden.de>,
  * Chair for Process Control Systems, Technische Universität Dresden
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,12 +24,12 @@
  */
 
 import { Step } from './Step';
-import { Module } from './Module';
-import { catRecipe } from '../config/logging';
+import { Module } from '../core/Module';
+import { catRecipe } from '../../config/logging';
 import { EventEmitter } from 'events';
 import { v4 } from 'uuid';
 import { Transition } from './Transition';
-import { manager } from './Manager';
+import { manager } from '../Manager';
 import { RecipeInterface, ModuleInterface, RecipeOptions, RecipeState, StepInterface } from '@plt/pfe-ree-interface';
 import * as assert from 'assert';
 import StrictEventEmitter from 'strict-event-emitter-types';
@@ -161,9 +161,10 @@ export class Recipe extends (EventEmitter as { new(): RecipeEmitter }) {
         return promise;
     }
 
-    /** start recipe
+    /** 
+     * Starts recipe
      *
-     * @returns {Recipe} "recipe_finished" and "step_finished"
+     * @returns {Recipe}    current Recipe
      */
     public start(): Recipe {
         this.current_step = this.initial_step;
@@ -195,7 +196,6 @@ export class Recipe extends (EventEmitter as { new(): RecipeEmitter }) {
         this.lastChange = new Date();
         this.current_step.execute()
             .once('completed', (transition: Transition) => {
-                assert.notEqual(transition.next_step_name, this.current_step.name);
                 if (transition.next_step) {
                     catRecipe.info(`Step ${this.current_step.name} finished. New step is ${transition.next_step_name}`);
                     this.current_step = transition.next_step;

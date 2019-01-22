@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018 Markus Graube <markus.graube@tu.dresden.de>,
+ * Copyright (c) 2019 Markus Graube <markus.graube@tu.dresden.de>,
  * Chair for Process Control Systems, Technische Universität Dresden
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,9 +25,9 @@
 
 import { Operation } from './Operation';
 import { Transition, TransitionOptions } from './Transition';
-import { catRecipe } from '../config/logging';
+import { catRecipe } from '../../config/logging';
 import { EventEmitter } from 'events';
-import { Module } from './Module';
+import { Module } from '../core/Module';
 import { Recipe } from './Recipe';
 import { OperationOptions, StepInterface } from '@plt/pfe-ree-interface';
 import StrictEventEmitter from 'strict-event-emitter-types';
@@ -96,17 +96,24 @@ export class Step {
                 catRecipe.info(`Status of step ${this.name} for transition to ${transition.next_step_name}: ` +
                     `${status}`);
                 if (status) {
-                    // clear up all conditions
-                    this.transitions.forEach((transition) => {
-                        transition.condition.clear();
-                    });
-
-                    this.eventEmitter.emit('completed', transition);
+                    this.enterTransition(transition);
                 }
             });
         });
 
         return this.eventEmitter;
+    }
+
+    /**
+     * enter transition (clear conditions and emit 'completed')
+     * @param {Transition} transition
+     */
+    public enterTransition(transition: Transition) {
+        // clear up all conditions
+        this.transitions.forEach((transition) => {
+            transition.condition.clear();
+        });
+        this.eventEmitter.emit('completed', transition);
     }
 
     public json(): StepInterface {

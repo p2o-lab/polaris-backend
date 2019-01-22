@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018 Markus Graube <markus.graube@tu.dresden.de>,
+ * Copyright (c) 2019 Markus Graube <markus.graube@tu.dresden.de>,
  * Chair for Process Control Systems, Technische Universität Dresden
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import { Condition, NotCondition, TimeCondition } from '../../src/model/Condition';
+import { Condition, NotCondition, TimeCondition } from '../../../src/model/recipe/Condition';
 import * as assert from 'assert';
 import { ConditionType } from '@plt/pfe-ree-interface';
 import { expect } from 'chai';

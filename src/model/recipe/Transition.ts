@@ -23,14 +23,39 @@
  * SOFTWARE.
  */
 
-import {Recipe} from '../../src/model/Recipe';
-import * as fs from 'fs';
-import * as assert from 'assert';
-import {Module} from '../../src/model/Module';
-import {RecipeInterface} from '@plt/pfe-ree-interface';
+import { Step } from './Step';
+import { Condition } from './Condition';
+import { ConditionOptions, TransitionInterface } from '@plt/pfe-ree-interface';
+import { Module } from '../core/Module';
+import { Recipe } from './Recipe';
 
-describe('Service', () => {
+export interface TransitionOptions {
+    next_step: string;
+    condition: ConditionOptions;
+}
 
+export class Transition {
+    next_step: Step;
+    next_step_name: string;
+    condition: Condition;
 
-    it('should load from options');
-});
+    constructor(options: TransitionOptions, modules: Module[], recipe: Recipe) {
+        if (options.next_step) {
+            this.next_step_name = options.next_step;
+        } else {
+            throw new Error(`"next_step" property is missing in ${JSON.stringify(options)}`);
+        }
+        if (options.condition) {
+            this.condition = Condition.create(options.condition, modules, recipe);
+        } else {
+            throw new Error(`"condition" property is missing in ${JSON.stringify(options)}`);
+        }
+    }
+
+    json(): TransitionInterface {
+        return {
+            next_step: this.next_step_name,
+            condition: this.condition.json()
+        };
+    }
+}

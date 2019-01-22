@@ -25,12 +25,12 @@
 
 import * as assert from 'assert';
 import * as fs from 'fs';
-import {Module} from '../../src/model/Module';
-import {ServiceState} from '../../src/model/enum';
+import {Module} from '../../src/model/core/Module';
+import {ServiceState} from '../../src/model/core/enum';
 import {manager} from '../../src/model/Manager';
 import {expect} from 'chai';
 import {later, testForStateChange} from '../helper';
-import {Service} from '../../src/model/Service';
+import {Service} from '../../src/model/core/Service';
 
 describe('Integration test with CIF test PLC', function () {
 

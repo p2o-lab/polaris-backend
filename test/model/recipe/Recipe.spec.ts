@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018 Markus Graube <markus.graube@tu.dresden.de>,
+ * Copyright (c) 2019 Markus Graube <markus.graube@tu.dresden.de>,
  * Chair for Process Control Systems, Technische Universität Dresden
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,10 +23,10 @@
  * SOFTWARE.
  */
 
-import {Recipe} from '../../src/model/Recipe';
+import {Recipe} from '../../../src/model/recipe/Recipe';
 import * as fs from 'fs';
 import * as assert from 'assert';
-import {Module} from '../../src/model/Module';
+import {Module} from '../../../src/model/core/Module';
 import {RecipeInterface} from '@plt/pfe-ree-interface';
 
 describe('Recipe', () => {

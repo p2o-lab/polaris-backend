@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018 Markus Graube <markus.graube@tu.dresden.de>,
+ * Copyright (c) 2019 Markus Graube <markus.graube@tu.dresden.de>,
  * Chair for Process Control Systems, Technische Universität Dresden
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,8 +25,9 @@
 
 import { DataType, DataValue, Variant, VariantArrayType } from 'node-opcua-client';
 import { Module } from './Module';
-import { catOpc, catService } from '../config/logging';
+import { catOpc, catService } from '../../config/logging';
 import {
+    controlEnableToJson,
     isAutomaticState,
     isExtSource,
     isManualState,
@@ -37,7 +38,7 @@ import {
     ServiceState
 } from './enum';
 import { OpcUaNode, ServiceParameter, Strategy } from './Interfaces';
-import { Parameter } from './Parameter';
+import { Parameter } from '../recipe/Parameter';
 import {
     ParameterInterface,
     ParameterOptions,
@@ -47,7 +48,7 @@ import {
     ControlEnableInterface
 } from '@plt/pfe-ree-interface';
 import { Unit } from './Unit';
-import { manager } from './Manager';
+import { manager } from '../Manager';
 import { EventEmitter } from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 
@@ -82,6 +83,11 @@ interface ServiceEvents {
      */
     state: {state: ServiceState, serverTimestamp: Date};
     /**
+     * Notify when controlOp changes
+     * @event controlEnable
+     */
+    controlEnable: ControlEnableInterface;
+    /**
      * whenever a command is executed from the PFE
      * @event
      */
@@ -104,19 +110,30 @@ type ServiceEmitter = StrictEventEmitter<EventEmitter, ServiceEvents>;
  */
 export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
 
-    name: string;
-    command: OpcUaNode;
-    status: OpcUaNode;
-    controlEnable: OpcUaNode;
-    opMode: OpcUaNode;
-    strategy: OpcUaNode;
-    errorMessage: OpcUaNode;
-    strategies: Strategy[];
-    parameters: ServiceParameter[];
-
-    public parent: Module;
-    private serviceParametersEventEmitters: EventEmitter[];
+    /** name of the service */
+    readonly name: string;
+    /** strategies of the service */
+    readonly strategies: Strategy[];
+    /** service parameters */
+    readonly parameters: ServiceParameter[];
+    /** [Module] of the service */
+    readonly parent: Module;
+    /** timestamp of last change of state */
     lastChange: Date;
+    private serviceParametersEventEmitters: EventEmitter[];
+
+    /** OPC UA node of command/controlOp variable */
+    readonly command: OpcUaNode;
+    /** OPC UA node of status variable */
+    readonly status: OpcUaNode;
+    /** OPC UA node of controlEnable variable */
+    readonly controlEnable: OpcUaNode;
+    /** OPC UA node of opMode variable */
+    readonly opMode: OpcUaNode;
+    /** OPC UA node of strategy variable */
+    readonly strategy: OpcUaNode;
+    /** OPC UA node of errorMessage variable */
+    readonly errorMessage: OpcUaNode;
 
     constructor(serviceOptions: ServiceOptions, parent: Module) {
         super();
@@ -143,8 +160,6 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
         try {
             const result: DataValue = await this.parent.readVariableNode(this.status);
             const state: ServiceState = <ServiceState> result.value.value;
-            const stateString: string = ServiceState[state];
-            catOpc.trace(`Read state ${this.name}: ${state} (${stateString})`);
             return state;
         } catch (err) {
             catOpc.error('Error reading opMode', err);
@@ -161,23 +176,17 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
             const result: DataValue = await this.parent.readVariableNode(this.controlEnable);
             const controlEnable: ServiceControlEnable = <ServiceControlEnable> result.value.value;
             catOpc.trace(`Read ControlEnable ${this.name}: ${controlEnable}`);
-            return {
-                start: (controlEnable & ServiceControlEnable.START) !== 0,
-                restart: (controlEnable & ServiceControlEnable.RESTART) !== 0,
-                pause: (controlEnable & ServiceControlEnable.PAUSE) !== 0,
-                resume: (controlEnable & ServiceControlEnable.RESUME) !== 0,
-                complete: (controlEnable & ServiceControlEnable.COMPLETE) !== 0,
-                unhold: (controlEnable & ServiceControlEnable.UNHOLD) !== 0,
-                stop: (controlEnable & ServiceControlEnable.STOP) !== 0,
-                abort: (controlEnable & ServiceControlEnable.ABORT) !== 0,
-                reset: (controlEnable & ServiceControlEnable.RESET) !== 0
-            };
+            return controlEnableToJson(controlEnable);
         } catch (err) {
             catOpc.error('Error reading controlEnable', err);
             return undefined;
         }
     }
 
+    /**
+     * read error string from module
+     * @returns {Promise<string>}
+     */
     async getErrorString(): Promise<string> {
         try {
             const result: DataValue = await this.parent.readVariableNode(this.errorMessage);
@@ -189,6 +198,10 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
         }
     }
 
+    /**
+     * read opMode from module
+     * @returns {Promise<string>}
+     */
     async getOpMode(): Promise<OpMode> {
         try {
             const result: any = await this.parent.readVariableNode(this.opMode);
@@ -222,6 +235,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
             opMode: OpMode[opMode] || opMode,
             status: ServiceState[await state],
             strategies: await strategies,
+            currentStrategy: await this.getCurrentStrategy(),
             parameters: await params,
             error: await errorString,
             controlEnable: await controlEnable,
@@ -239,6 +253,19 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
                 parameters: await this.getCurrentParameters(strategy).catch(() => undefined)
             };
         }));
+    }
+
+    /**
+     * Read current strategy from module
+     * @returns {Promise<string>}   strategy name
+     */
+    private async getCurrentStrategy(): Promise<string> {
+        try {
+            const id = await this.parent.readVariableNode(this.strategy).value.value;
+            return this.strategies.find(strat => strat.id === id.value.value).name;
+        } catch (err) {
+            return undefined;
+        }
     }
 
     async getCurrentParameters(strategy?: Strategy): Promise<ParameterInterface[]> {
@@ -403,7 +430,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
      * @param {Parameter[]} parameters
      * @returns {Promise<boolean>}
      */
-    private async setStrategyParameters(strategy?: Strategy, parameters?: Parameter[]): Promise<boolean> {
+    public async setStrategyParameters(strategy?: Strategy, parameters?: Parameter[]): Promise<boolean> {
         // set strategy
         if (strategy) {
             catService.info(`Set strategy "${strategy.name}" for service ${this.name}`);
@@ -420,8 +447,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
         if (strategy && parameters) {
             const tasks = parameters.map((param: Parameter) => param.updateValueOnModule());
             const paramResults = await Promise.all(tasks);
-            catService.info(`Set Parameter Promises: ${JSON.stringify(paramResults)}`);
-
+            catService.trace(`Set Parameter Promises: ${JSON.stringify(paramResults)}`);
             this.listenToServiceParameters(parameters);
         }
 
@@ -449,7 +475,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
             arrayType: VariantArrayType.Scalar,
             dimensions: null
         };
-        catService.info(`Set Parameter: ${this.name} - ${JSON.stringify(opcUaNode)} -> ${JSON.stringify(dataValue)}`);
+        catService.debug(`Set Parameter: ${this.name} - ${JSON.stringify(opcUaNode)} -> ${JSON.stringify(dataValue)}`);
         return await this.parent.writeNode(opcUaNode, dataValue);
     }
 
@@ -570,6 +596,12 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
         } else {
             catService.warn(`Service ${this.name} from module ${this.parent.id}` +
                 ` does not have a errorMessage variable`);
+        }
+        if (this.controlEnable) {
+            this.parent.listenToOpcUaNode(this.controlEnable)
+                .on('changed', (data) => {
+                    this.emit('controlEnable', controlEnableToJson(data.value));
+                });
         }
         if (this.status) {
             this.parent.listenToOpcUaNode(this.status)

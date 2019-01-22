@@ -5,36 +5,63 @@ clone:
 
 
 pipeline:
+
   build:
     image: node:8-jessie
     commands:
       - npm config set @plt:registry https://registry.plt.et.tu-dresden.de:4873 
-      - npm install -d
+      - npm install
       - npm run-script apidoc build
+
+  test:
+    image: node:8-jessie
+    commands:
       - npm test
 
-  gitea_release:
-    image: plugins/gitea-release
-    api_key: 457b766b1fddc3832abc1ab47f39c74efa951f50
-    base_url: https://dev.plt.et.tu-dresden.de
-    files:
-      - build/*
-      - apidoc/*
-    checksum:
-      - md5
-      - sha1
-      - sha256
-      - sha512
-      - adler32
-      - crc32
+  docker-develop:
+    image: docker
+    privileged: true
+    commands:
+      - docker build -t registry.plt.et.tu-dresden.de/pfe-ree-node:develop .
+      - docker build -f Dockerfile.arm -t registry.plt.et.tu-dresden.de/pfe-ree-node:develop-arm .
+      - docker push registry.plt.et.tu-dresden.de/pfe-ree-node:develop
+      - docker push registry.plt.et.tu-dresden.de/pfe-ree-node:develop-arm
+      - docker image rm registry.plt.et.tu-dresden.de/pfe-ree-node:develop registry.plt.et.tu-dresden.de/pfe-ree-node:develop-arm
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
     when:
-      event: [ tag ]
+      branch:
+        - develop
 
-  docker:
-    image: plugins/docker
-    auto_tag: true
-    repo: registry.plt.et.tu-dresden.de/pfe-ree-node
-    registry: registry.plt.et.tu-dresden.de
+  docker-stable:
+    image: docker
+    privileged: true
+    commands:
+      - docker build -t registry.plt.et.tu-dresden.de/pfe-ree-node:stable .
+      - docker build -f Dockerfile.arm -t registry.plt.et.tu-dresden.de/pfe-ree-node:stable-arm .
+      - docker push registry.plt.et.tu-dresden.de/pfe-ree-node:stable
+      - docker push registry.plt.et.tu-dresden.de/pfe-ree-node:stable-arm
+      - docker image rm registry.plt.et.tu-dresden.de/pfe-ree-node:stable registry.plt.et.tu-dresden.de/pfe-ree-node:stable-arm
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    when:
+      branch:
+        - stable
+
+  docker-tag:
+    image: docker
+    privileged: true
+    commands:
+      - docker build -t "registry.plt.et.tu-dresden.de/pfe-ree-node:${DRONE_TAG##v}" .
+      - docker build -f Dockerfile.arm -t "registry.plt.et.tu-dresden.de/pfe-ree-node:${DRONE_TAG##v}-arm" .
+      - docker push "registry.plt.et.tu-dresden.de/pfe-ree-node:${DRONE_TAG##v}"
+      - docker push "registry.plt.et.tu-dresden.de/pfe-ree-node:${DRONE_TAG##v}-arm"
+      - docker image rm "registry.plt.et.tu-dresden.de/pfe-ree-node:${DRONE_TAG##v}" "registry.plt.et.tu-dresden.de/pfe-ree-node:${DRONE_TAG##v}-arm"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    when:
+       event:
+       - tag
 
   notify:
     image: drillster/drone-email
@@ -46,4 +73,3 @@ pipeline:
     recipients: [ markus.graube@tu-dresden.de ]
     when:
       status: [ changed, failure ]
-

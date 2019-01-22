@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018 Markus Graube <markus.graube@tu.dresden.de>,
+ * Copyright (c) 2019 Markus Graube <markus.graube@tu.dresden.de>,
  * Chair for Process Control Systems, Technische Universität Dresden
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,39 +23,17 @@
  * SOFTWARE.
  */
 
-import { Step } from './Step';
-import { Condition } from './Condition';
-import { ConditionOptions, TransitionInterface } from '@plt/pfe-ree-interface';
-import { Module } from './Module';
-import { Recipe } from './Recipe';
+import {Transition} from '../../../src/model/recipe/Transition';
+import {expect} from 'chai';
+import {ConditionType} from '@plt/pfe-ree-interface';
 
-export interface TransitionOptions {
-    next_step: string;
-    condition: ConditionOptions;
-}
+describe('Transition', () => {
 
-export class Transition {
-    next_step: Step;
-    next_step_name: string;
-    condition: Condition;
 
-    constructor(options: TransitionOptions, modules: Module[], recipe: Recipe) {
-        if (options.next_step) {
-            this.next_step_name = options.next_step;
-        } else {
-            throw new Error(`"next_step" property is missing in ${JSON.stringify(options)}`);
-        }
-        if (options.condition) {
-            this.condition = Condition.create(options.condition, modules, recipe);
-        } else {
-            throw new Error(`"condition" property is missing in ${JSON.stringify(options)}`);
-        }
-    }
+    it('should load from options', () => {
+        let t = new Transition({next_step: "nextStep", condition: {type: ConditionType.time, duration: 1}}, [], undefined);
 
-    json(): TransitionInterface {
-        return {
-            next_step: this.next_step_name,
-            condition: this.condition.json()
-        };
-    }
-}
+        const json = t.json();
+        expect(json).to.haveOwnProperty('next_step', 'nextStep');
+    });
+});

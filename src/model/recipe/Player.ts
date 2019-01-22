@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018 Markus Graube <markus.graube@tu.dresden.de>,
+ * Copyright (c) 2019 Markus Graube <markus.graube@tu.dresden.de>,
  * Chair for Process Control Systems, Technische Universität Dresden
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,13 +23,13 @@
  * SOFTWARE.
  */
 
-import {Recipe} from './Recipe';
-import {catManager} from '../config/logging';
+import {catManager} from '../../config/logging';
 import {EventEmitter} from 'events';
-import {PlayerInterface, RecipeState, Repeat} from '@plt/pfe-ree-interface';
+import {PlayerInterface, RecipeState, Repeat, TransitionOptions} from '@plt/pfe-ree-interface';
 import {RecipeRun} from "./RecipeRun";
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Step} from './Step';
+import {Recipe} from './Recipe';
 
 /**
  * Events emitted by [[Player]]
@@ -148,7 +148,8 @@ export class Player extends (EventEmitter as { new(): PlayerEmitter }) {
     }
 
     /**
-     * Start recipe
+     * Start recipe if player is currently idle or stopped.
+     * Resume if player is currently paused
      *
      * @returns Player
      */
@@ -199,6 +200,22 @@ export class Player extends (EventEmitter as { new(): PlayerEmitter }) {
         }
     }
 
+    /**
+     * Force transition of current recipe
+     */
+    public forceTransition(stepName: string, nextStepName: string) {
+        const recipe = this.getCurrentRecipe();
+        console.log(stepName, recipe.current_step.name);
+        if (recipe.current_step.name!==stepName) {
+            throw new Error('Wrong step')
+        }
+        const step = recipe.current_step;
+        const transition = step.transitions.find(tr=> tr.next_step_name === nextStepName);
+        if (!transition) {
+            throw new Error('Does not contain nextStep');
+        }
+        step.enterTransition(transition);
+    }
 
     private runCurrentRecipe(): Player {
         this.currentRecipeRun = new RecipeRun(this.getCurrentRecipe());
