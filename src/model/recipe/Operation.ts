@@ -54,7 +54,7 @@ export class Operation {
                 throw new Error(`Operation ${JSON.stringify(options)} has no module specified ` +
                 `and there is more than one module loaded`);
             }
-        }else {
+        } else {
             throw new Error('No modules specified');
         }
 

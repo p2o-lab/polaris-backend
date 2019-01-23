@@ -74,6 +74,7 @@ type PlayerEmitter = StrictEventEmitter<EventEmitter, PlayerEvents>;
 export class Player extends (EventEmitter as { new(): PlayerEmitter }) {
     public repeat: Repeat;
 
+    /** index in playlist starting from 0 */
     private _currentItem: number;
 
     private _playlist: Recipe[];
@@ -119,7 +120,7 @@ export class Player extends (EventEmitter as { new(): PlayerEmitter }) {
 
     /**
      * Remove recipe from playlist
-     * @param {number} index in playlist
+     * @param {number} index in playlist (starting from 0)
      * @return Player
      */
     public remove(index: number): Player {

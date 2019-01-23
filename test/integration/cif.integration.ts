@@ -31,6 +31,7 @@ import {manager} from '../../src/model/Manager';
 import {expect} from 'chai';
 import {later, testForStateChange} from '../helper';
 import {Service} from '../../src/model/core/Service';
+import {Parameter} from '../../src/model/recipe/Parameter';
 
 describe('Integration test with CIF test PLC', function () {
 
@@ -40,7 +41,7 @@ describe('Integration test with CIF test PLC', function () {
     before(() => {
         const file = fs.readFileSync('assets/modules/module_cif.json');
         module = manager.loadModule(JSON.parse(file.toString()))[0];
-        service = module.services[5];
+        service = module.services[4];
     });
 
 
@@ -93,11 +94,11 @@ describe('Integration test with CIF test PLC', function () {
     it('perform a service cycle', async function () {
         this.timeout(10000);
 
-        assert.equal(service.name, 'Test_Service.Vorlegen');
+        assert.equal(service.name, 'Test_Service.Dosieren');
 
         const listener = service.subscribeToService();
-
-        await service.start(service.strategies[0], undefined);
+        let param = new Parameter({name: "SollVolumenStrom", value: 1.3}, service);
+        await service.start(service.strategies[0], [param]);
         await testForStateChange(listener, 'STARTING');
         await testForStateChange(listener, 'RUNNING');
 
@@ -109,7 +110,8 @@ describe('Integration test with CIF test PLC', function () {
         await testForStateChange(listener, 'RESUMING');
         await testForStateChange(listener, 'RUNNING');
 
-        await service.restart(service.strategies[0], undefined);
+        param.value =1.4;
+        await service.restart(service.strategies[0], [param]);
         await testForStateChange(listener, 'STARTING');
         await testForStateChange(listener, 'RUNNING');
 

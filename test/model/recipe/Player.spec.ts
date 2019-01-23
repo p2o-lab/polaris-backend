@@ -29,14 +29,15 @@ import {Recipe} from '../../../src/model/recipe/Recipe';
 import {expect} from 'chai';
 import {manager} from '../../../src/model/Manager';
 import {later} from '../../helper';
+import {RecipeState} from '@plt/pfe-ree-interface';
 
 describe('Player', function () {
 
     this.timeout(10000);
 
     describe('local', () => {
-        let recipeWait5s;
-        let recipeWaitLocal;
+        let recipeWait5s: Recipe;
+        let recipeWaitLocal: Recipe;
         before(() => {
             recipeWait5s = new Recipe(
                 JSON.parse(fs.readFileSync('assets/recipes/test/recipe_wait_0.5s.json').toString()),
@@ -50,22 +51,39 @@ describe('Player', function () {
             let player = new Player();
 
             player.enqueue(recipeWait5s);
-            expect(player.playlist).to.has.length(1);
+            expect(player.playlist).to.have.length(1);
             player.enqueue(recipeWaitLocal);
             player.enqueue(recipeWait5s);
-            expect(player.playlist).to.has.length(3);
+            expect(player.playlist).to.have.length(3);
+
+            player.remove(0);
+            expect(player.playlist).to.have.length(2);
+            expect(player.playlist[0].id).to.equal(recipeWaitLocal.id)
+
+            player.enqueue(recipeWaitLocal);
 
             let completedRecipes = [];
+
+            expect(player.status).to.equal(RecipeState.idle);
             player.start()
                 .on('recipeFinished', (recipe) => {
                     expect(recipe).to.have.property('status', 'completed');
                     completedRecipes.push(recipe);
                 })
                 .on('completed', () => {
-                    expect(completedRecipes).to.has.length(3);
+                    expect(completedRecipes).to.have.length(3);
+                    expect(player.status).to.equal(RecipeState.completed);
+                    player.reset();
+                    expect(player.status).to.equal(RecipeState.idle);
                     done();
                 });
+            expect(player.status).to.equal(RecipeState.running);
+            const json = player.json();
+            expect(json.currentItem).to.equal(0);
+            expect(json.status).to.equal('running');
         });
+
+        it('should force a transition');
     });
 
     describe('CIF', () => {

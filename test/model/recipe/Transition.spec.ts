@@ -36,4 +36,11 @@ describe('Transition', () => {
         const json = t.json();
         expect(json).to.haveOwnProperty('next_step', 'nextStep');
     });
+
+    it('should fail with missing parameters', () => {
+
+        expect(() =>  {let t = new Transition({next_step: undefined, condition: undefined}, [], undefined)}).to.throw;
+        expect(() =>  {let t = new Transition({next_step: "a", condition: undefined}, [], undefined)}).to.throw;
+        expect(() =>  {let t = new Transition({next_step: undefined, condition: {type: ConditionType.time, duration: 1}}, [], undefined)}).to.throw;
+    });
 });
