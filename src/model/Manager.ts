@@ -187,11 +187,11 @@ export class Manager extends EventEmitter {
      * Abort all services from all loaded modules
      */
     abortAllServices() {
-        let tasks = this.modules.map(module =>
-            module.services.map(service =>
-                service.abort()
-            )
-        );
+        let tasks = [];
+        this.modules.forEach((module) =>
+            module.services.forEach(service =>
+                tasks.push(service.abort())
+            ));
         return Promise.all(tasks);
     }
 
@@ -199,11 +199,11 @@ export class Manager extends EventEmitter {
      * Stop all services from all loaded modules
      */
     stopAllServices() {
-        let tasks = this.modules.map(module =>
-            module.services.map(service =>
-                service.stop()
-            )
-        );
+        let tasks = [];
+        this.modules.forEach((module) =>
+            module.services.forEach(service =>
+                tasks.push(service.stop())
+            ));
         return Promise.all(tasks);
     }
 
@@ -211,11 +211,11 @@ export class Manager extends EventEmitter {
      * Reset all services from all loaded modules
      */
     resetAllServices() {
-        let tasks = this.modules.map(module =>
-            module.services.map(service =>
-                service.reset()
-            )
-        );
+        let tasks = [];
+        this.modules.forEach((module) =>
+            module.services.forEach(service =>
+                tasks.push(service.reset())
+            ));
         return Promise.all(tasks);
     }
 
