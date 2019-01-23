@@ -12,7 +12,7 @@
     "dev": "nodemon",
     "start": "ts-node ./src/index.ts",
     "start-dist": "node ./build/index.js",
-    "test": "nyc mocha -r ts-node/register test/**/*.ts",
+    "test": "nyc mocha -r ts-node/register test/**/*.ts test/**/**/*.ts",
     "typedoc": "typedoc --mode file --module commonjs --out typedoc/ --target ES6 --excludePrivate --readme none src/",
     "apidoc": "apidoc -i src/server/ -o apidoc",
     "build": "rm -rf build/ && tsc",
