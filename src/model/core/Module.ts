@@ -52,7 +52,7 @@ export interface ModuleOptions {
     opcua_server_url: string;
     hmi_url?: string;
     services: ServiceOptions[];
-    process_values: object[];
+    process_values: {name: string; communication: OpcUaNode[]}[];
 }
 
 /**
@@ -158,7 +158,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
             this.services = options.services.map(serviceOption => new Service(serviceOption, this));
         }
         if (options.process_values) {
-            this.variables = options.process_values.map(variableOptions => new ProcessValue(variableOptions));
+            this.variables = options.process_values.map(variableOptions => new ProcessValue(variableOptions.name, variableOptions.communication));
         }
         if (options.hmi_url){
             this.hmiUrl = options.hmi_url;
