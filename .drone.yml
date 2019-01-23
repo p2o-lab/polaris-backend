@@ -9,7 +9,6 @@ pipeline:
   build:
     image: node:8-jessie
     commands:
-      - npm config set @plt:registry https://registry.plt.et.tu-dresden.de:4873 
       - npm install
       - npm run-script apidoc build
 
