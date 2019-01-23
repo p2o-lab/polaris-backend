@@ -188,7 +188,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
                 client.on('close', () => catOpc.warn('Closing OPC UA client connection'));
                 client.on('time_out_request', () => catOpc.debug('time out request - retrying connection'));
 
-                await promiseTimeout(5000, client.connect(this.endpoint));
+                await promiseTimeout(1000, client.connect(this.endpoint));
                 catOpc.debug(`module connected ${this.id} ${this.endpoint}`);
 
                 const session = await client.createSession();

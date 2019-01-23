@@ -49,6 +49,8 @@ describe('Integration test with CIF test PLC', function () {
         manager.autoreset = true;
         await module.connect();
 
+        expect(() => {module.connect()}).to.not.throw();
+
         let json = await module.json();
         expect(json).to.have.property('id', 'CIF');
         assert.equal(json.id, 'CIF');
@@ -83,6 +85,9 @@ describe('Integration test with CIF test PLC', function () {
             "unhold": false
         });
 
+        const errorString = await service.getErrorString();
+        expect(errorString).to.be.undefined;
+
     });
 
     it('perform a service cycle', async function () {
@@ -91,14 +96,30 @@ describe('Integration test with CIF test PLC', function () {
         assert.equal(service.name, 'Test_Service.Vorlegen');
 
         const listener = service.subscribeToService();
+
         await service.start(service.strategies[0], undefined);
+        await testForStateChange(listener, 'STARTING');
+        await testForStateChange(listener, 'RUNNING');
+
+        await service.pause();
+        await testForStateChange(listener, 'PAUSING');
+        await testForStateChange(listener, 'PAUSED');
+
+        await service.resume();
+        await testForStateChange(listener, 'RESUMING');
+        await testForStateChange(listener, 'RUNNING');
+
+        await service.restart(service.strategies[0], undefined);
+        await testForStateChange(listener, 'STARTING');
         await testForStateChange(listener, 'RUNNING');
 
         await service.complete();
+        await testForStateChange(listener, 'COMPLETING');
         await testForStateChange(listener, 'COMPLETED');
 
         // test auto reset
         // await service.reset();
+        await testForStateChange(listener, 'RESETTING');
         await testForStateChange(listener, 'IDLE');
 
         await later(500);
