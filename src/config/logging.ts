@@ -35,9 +35,9 @@ import {
 import { CustomLogger } from './CustomLogger';
 
 // Create categories, they will autoregister themselves
-const catLogging = new Category('logger');
-export const catRecipe = new Category('recipe', catLogging);
-export const catModule = new Category('module', catLogging);
+export const catRecipe = new Category('recipe');
+export const catPlayer = new Category('player');
+export const catModule = new Category('module');
 export const catService = new Category('service');
 
 export const catManager = new Category('manager');
@@ -52,15 +52,3 @@ const config = new CategoryConfiguration(
     (category: Category, runtimeSettings: RuntimeSettings) => new CustomLogger(category, runtimeSettings, messages)
 );
 CategoryServiceFactory.setDefaultConfiguration(config);
-catLogging.trace('start logging');
-catRecipe.trace('start logging');
-catModule.trace('start logging');
-
-CategoryServiceFactory.setDefaultConfiguration(new CategoryConfiguration(LogLevel.Info), false);
-CategoryServiceFactory.setConfigurationCategory(new CategoryConfiguration(LogLevel.Info), catServer);
-CategoryServiceFactory.setConfigurationCategory(new CategoryConfiguration(LogLevel.Info), catOpc);
-
-catService.trace('test trace');
-catOpc.trace('test trace');
-catServer.trace('test trace');
-catManager.trace('test trace');

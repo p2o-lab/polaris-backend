@@ -170,7 +170,7 @@ export class Manager extends EventEmitter {
                 })
                 .on('serviceCompleted', (service: Service) => {
                     this.performAutoReset(service);
-                })
+                });
         });
         this.emit('notify', 'module');
         return newModules;
@@ -242,7 +242,11 @@ export class Manager extends EventEmitter {
             setTimeout(() => {
                 if (service.parent.isConnected()) {
                     catManager.info(`Service ${service.parent.id}.${service.name} completed. Now perform autoreset`);
-                    service.reset();
+                    try {
+                        service.reset();
+                    } catch (err) {
+                        catManager.debug('Autoreset not possible')
+                    }
                 }
             }, this._autoreset_timeout);
         }

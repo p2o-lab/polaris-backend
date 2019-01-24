@@ -52,19 +52,16 @@ describe('Module', () => {
         ;
     });
 
-    it('should not connect to a module with wrong endpoint', (done) => {
-        let options: ModuleOptions = JSON.parse(fs.readFileSync('assets/modules/module_biofeed_1.4.2.json').toString()).modules[0];
-        options.opcua_server_url = 'opc.tcp://10.6.51.99:4841';
+    it('should not connect to a module with wrong endpoint', async () => {
+        let options: ModuleOptions = JSON.parse(fs.readFileSync('assets/modules/module_cif.json').toString()).modules[0];
+        options.opcua_server_url = 'opc.tcp://10.6.51.99:484144';
         let module = new Module(options);
-        module.connect()
-            .then(() => {
-                expect.fail();
-                done();
-            })
-            .catch((e) => {
-                expect(e).to.includes('Could not connect to module');
-                done();
-            });
+        try {
+            await module.connect();
+        } catch (e) {
+            expect(e).to.exist;
+        }
+        expect(module.isConnected()).to.be.false;
     });
 
     it('should load the cif module json', (done) => {
