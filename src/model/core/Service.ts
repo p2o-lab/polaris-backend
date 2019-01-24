@@ -567,7 +567,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
         }
 
         let controlEnable: ControlEnableInterface = await this.getControlEnable();
-        catService.info(`ControlEnable: ${JSON.stringify(controlEnable)}`);
+        catService.debug(`ControlEnable of service ${this.name}: ${JSON.stringify(controlEnable)}`);
 
         let commandExecutable =
             (command===ServiceMtpCommand.START && controlEnable.start) ||
@@ -579,9 +579,8 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
             (command===ServiceMtpCommand.UNHOLD && controlEnable.unhold) ||
             (command===ServiceMtpCommand.ABORT && controlEnable.abort) ||
             (command===ServiceMtpCommand.RESET && controlEnable.reset);
-        catService.info(`Command ${command} validity: ${commandExecutable}`);
         if (!commandExecutable) {
-            return Promise.reject(`ControlOp does not allow ${command}`);
+            return Promise.reject(`ControlOp does not allow ${ServiceMtpCommand[command]} for service ${this.name} (${ServiceState[await this.getServiceState()]} - ${JSON.stringify(controlEnable)})`);
         }
 
         const result = await this.parent.writeNode(this.command,
@@ -590,17 +589,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
                 value: command,
                 arrayType: VariantArrayType.Scalar
             });
-        catService.info(`Command ${command} written to ${this.name}: ${JSON.stringify(result)}`);
-
-        this.parent.listenToOpcUaNode(this.command)
-            .on('changed', (data) => {
-                catService.info(`command ${this.name} changed: ${JSON.stringify(data)}`);
-            });
-
-        this.parent.listenToOpcUaNode(this.status)
-            .once('changed', (data) => {
-                catService.info(`Status ${this.name} changed: ${JSON.stringify(data)}`);
-            });
+        catService.info(`Command ${ServiceMtpCommand[command]}(${command}) written to ${this.name}: ${JSON.stringify(result)}`);
 
         return result.value === 0;
     }
@@ -609,9 +598,10 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
      * Listen to state and error of service and emits specific events for them
      *
      * <uml>
-     *     Caller -> Service : subscribeToService
+     *     Caller -> Service : subscribeToService()
      *     ...
      *     Caller <- Service : emit "state"
+     *     Caller <- Service : emit "controlEnable"
      *     Caller <- Service : emit "errorMessage"
      * </uml>
      * @returns {Service} emits 'errorMessage' and 'state' events
@@ -620,15 +610,14 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
         if (this.errorMessage) {
             this.parent.listenToOpcUaNode(this.errorMessage)
                 .on('changed', ({value, serverTimestamp}: {value: string, serverTimestamp: Date}) => {
+                    catService.info(`errorMessage changed for ${this.name}: ${value}`);
                     this.emit('errorMessage', value);
                 });
-        } else {
-            catService.warn(`Service ${this.name} from module ${this.parent.id}` +
-                ` does not have a errorMessage variable`);
         }
         if (this.controlEnable) {
             this.parent.listenToOpcUaNode(this.controlEnable)
                 .on('changed', (data) => {
+                    catService.info(`ControlEnable changed for ${this.name}: ${JSON.stringify(controlEnableToJson(data.value))}`);
                     this.emit('controlEnable', controlEnableToJson(data.value));
                 });
         }
@@ -636,21 +625,26 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
             this.parent.listenToOpcUaNode(this.status)
                 .on('changed', ({value, serverTimestamp}: {value: number, serverTimestamp: Date}) => {
                     this.lastChange = new Date();
-                    catService.info(`${this.name} = ${ServiceState[value]} ${this.lastChange}`);
+                    catService.info(`Status changed for ${this.name}: ${ServiceState[value]} ${this.lastChange}`);
                     this.emit('state', {state: value, serverTimestamp});
                 });
-        } else {
-            throw new Error(`OPC UA variable for status of service ${this.name} not defined`);
         }
-        this.parent.listenToOpcUaNode(this.command)
-            .on('changed', (data) => {
-                catOpc.info(`ControlOp: ${JSON.stringify(data)}`);
-            });
-        this.parent.listenToOpcUaNode(this.status)
-            .on('changed', (data) => {
-                catOpc.info(`Status: ${JSON.stringify(data)}`);
-            });
+        if (this.command) {
+            this.parent.listenToOpcUaNode(this.command)
+                .on('changed', (data) => {
+                    catService.info(`Command changed for ${this.name}: ${ServiceMtpCommand[data.value]} (${data.value})`);
+                });
+        }
         return this;
+    }
+
+    /**
+     * Remove all Event listeners from service
+     */
+    public removeAllSubscriptions() {
+        this.removeAllListeners('state');
+        this.removeAllListeners('controlEnable');
+        this.removeAllListeners('errorMessage');
     }
 
 }

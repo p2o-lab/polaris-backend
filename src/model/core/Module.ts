@@ -189,7 +189,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
                 client.on('time_out_request', () => catOpc.debug('time out request - retrying connection'));
 
                 await promiseTimeout(1000, client.connect(this.endpoint));
-                catOpc.debug(`module connected ${this.id} ${this.endpoint}`);
+                catOpc.info(`module connected ${this.id} ${this.endpoint}`);
 
                 const session = await client.createSession();
                 catOpc.debug(`session established ${this.id} ${this.endpoint}`);
@@ -234,6 +234,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
                     catModule.warn('Could not connect to all variables:' + err);
                 }
                 this.emit('connected');
+                return Promise.resolve();
             } catch (err) {
                 return Promise.reject(`Could not connect to module ${this.id} on ${this.endpoint}: ${err.toString()}`);
             }
@@ -251,6 +252,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
      *
      */
     disconnect(): Promise<any> {
+        this.services.forEach(s => s.removeAllSubscriptions());
         return new Promise(async (resolve, reject) => {
             if (this.session) {
                 catModule.info(`Disconnect module ${this.id}`);
@@ -290,7 +292,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
                     queueSize: 10
                 }, TimestampsToReturn.Both);
 
-            const emitter: StrictEventEmitter<EventEmitter, OpcUaNodeEvents> = new EventEmitter();;
+            const emitter: StrictEventEmitter<EventEmitter, OpcUaNodeEvents> = new EventEmitter();
             monitoredItem.on('changed', (dataValue) => {
                 catOpc.debug(`Variable Changed (${this.resolveNodeId(node)}) = ${dataValue.value.value.toString()}`);
                 emitter.emit('changed', {value: dataValue.value.value, serverTimestamp: dataValue.serverTimestamp});
@@ -375,7 +377,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
                     this.emit('controlEnable', {service, controlEnable} );
                 })
                 .on('state', ({state, serverTimestamp}) => {
-                    catModule.info(`state changed: ${this.id}.${service.name} = ${ServiceState[state]}`);
+                    catModule.debug(`state changed: ${this.id}.${service.name} = ${ServiceState[state]}`);
                     const entry = {
                         timestampPfe: new Date(),
                         timestampModule: serverTimestamp,
