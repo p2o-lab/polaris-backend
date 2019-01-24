@@ -277,9 +277,10 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
     /**
      * Listen to OPC UA node and return event listener which is triggered by any value change
      * @param {OpcUaNode} node
+     * @param {number} samplingInterval     OPC UA sampling interval for this subscription in milliseconds
      * @returns {"events".internal.EventEmitter} "changed" event
      */
-    listenToOpcUaNode(node: OpcUaNode): StrictEventEmitter<EventEmitter, OpcUaNodeEvents> {
+    listenToOpcUaNode(node: OpcUaNode, samplingInterval=100): StrictEventEmitter<EventEmitter, OpcUaNodeEvents> {
         const nodeId = this.resolveNodeId(node);
         if (!this.monitoredItems.has(nodeId)) {
             const monitoredItem: ClientMonitoredItem = this.subscription.monitor({
@@ -287,7 +288,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
                 attributeId: AttributeIds.Value
             },
                 {
-                    samplingInterval: 100,
+                    samplingInterval: samplingInterval,
                     discardOldest: true,
                     queueSize: 10
                 }, TimestampsToReturn.Both);

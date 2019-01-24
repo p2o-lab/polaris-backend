@@ -41,7 +41,7 @@ export function later(delay: number) {
  * rejects after ms milliseconds
  * @param {Service} service     service to be waited for
  * @param {string} expectedState
- * @param {number] ms           max time before promise is rejected
+ * @param {number} ms           max time before promise is rejected
  * @returns {Promise<void>}
  */
 export async function waitForStateChange(service, expectedState: string, ms=1000): Promise<void> {
@@ -56,7 +56,7 @@ export async function waitForStateChange(service, expectedState: string, ms=1000
         service.on('state', test);
         const id = setTimeout(() => {
             clearTimeout(id);
-            reject(`Service ${service.name} failed to reach state ${expectedState} within 1000ms`);
+            reject(`Service ${service.name} failed to reach state ${expectedState} within ${ms}ms`);
         }, ms);
     });
 }
