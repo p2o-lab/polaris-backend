@@ -133,7 +133,6 @@ describe('Player', function () {
 
         it('should run Player with CIF test recipes', async function() {
             this.timeout(5000);
-
             player.enqueue(recipeCif);
             return await timeout(new Promise((resolve) => {
                 player.start()
