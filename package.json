@@ -40,7 +40,8 @@
     "request": "^2.88.0",
     "typescript-logging": "^0.6.3",
     "uuid": "^3.3.2",
-    "ws": "^6.1.2"
+    "ws": "^6.1.2",
+    "yn": "^3.0.0"
   },
   "devDependencies": {
     "@types/body-parser": "^1.17.0",

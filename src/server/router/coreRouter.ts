@@ -27,6 +27,7 @@ import { manager } from '../../model/Manager';
 import { Request, Response, Router } from 'express';
 import * as asyncHandler from 'express-async-handler';
 import { messages } from '../../config/logging';
+import yn from 'yn';
 
 export const coreRouter: Router = Router();
 
@@ -59,7 +60,7 @@ coreRouter.get('/autoReset', asyncHandler(async (req: Request, res: Response) =>
  * @apiParam {Boolean} autoReset      new value of autoReset
  */
 coreRouter.post('/autoReset', asyncHandler(async (req: Request, res: Response) => {
-    manager.autoreset = isTrue(req.body.autoReset);
+    manager.autoreset = yn(req.body.autoReset, {default: false});
     res.json({ autoReset: manager.autoreset });
 }));
 
@@ -93,22 +94,3 @@ coreRouter.get('/logs/services(.json)?', asyncHandler(async (req: Request, res: 
         .send(JSON.stringify(manager.serviceArchive.slice(-1000), null, 2));
 }));
 
-function isTrue(value: any) {
-    let valueTmp;
-    if (typeof(value) === 'string') {
-        valueTmp = value.trim().toLowerCase();
-    } else {
-        valueTmp = value;
-    }
-    switch (valueTmp) {
-    case true:
-    case 'true':
-    case 1:
-    case '1':
-    case 'on':
-    case 'yes':
-        return true;
-    default:
-        return false;
-    }
-}
