@@ -586,7 +586,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
         if (!this.parent.isConnected()) {
             return Promise.reject('Module is not connected');
         }
-        catService.info(`Send command ${ServiceMtpCommand[command]} (${command}) to service "${this.name}"`);
+        catService.debug(`Send command ${ServiceMtpCommand[command]} (${command}) to service "${this.name}"`);
         if (manager.automaticMode) {
             await this.setToAutomaticOperationMode();
         } else {
@@ -616,7 +616,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
                 value: command,
                 arrayType: VariantArrayType.Scalar
             });
-        catService.info(`Command ${ServiceMtpCommand[command]}(${command}) written to ${this.name}: ${JSON.stringify(result)}`);
+        catService.info(`Command ${ServiceMtpCommand[command]}(${command}) written to ${this.name}: ${result.name}`);
 
         return result.value === 0;
     }
@@ -644,7 +644,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
         if (this.controlEnable) {
             this.parent.listenToOpcUaNode(this.controlEnable)
                 .on('changed', (data) => {
-                    catService.info(`ControlEnable changed for ${this.name}: ${JSON.stringify(controlEnableToJson(data.value))}`);
+                    catService.debug(`ControlEnable changed for ${this.name}: ${JSON.stringify(controlEnableToJson(data.value))}`);
                     this.emit('controlEnable', controlEnableToJson(data.value));
                 });
         }
@@ -659,7 +659,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
         if (this.command) {
             this.parent.listenToOpcUaNode(this.command)
                 .on('changed', (data) => {
-                    catService.info(`Command changed for ${this.name}: ${ServiceMtpCommand[data.value]} (${data.value})`);
+                    catService.debug(`Command changed for ${this.name}: ${ServiceMtpCommand[data.value]} (${data.value})`);
                 });
         }
         return this;

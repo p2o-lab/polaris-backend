@@ -29,7 +29,7 @@ import {Recipe} from '../../../src/model/recipe/Recipe';
 import {expect} from 'chai';
 import {Manager} from '../../../src/model/Manager';
 import {later} from '../../helper';
-import {RecipeState} from '@plt/pfe-ree-interface';
+import {RecipeState, ServiceCommand} from '@plt/pfe-ree-interface';
 import {Module} from '../../../src/model/core/Module';
 
 describe('Player', function () {
@@ -97,13 +97,17 @@ describe('Player', function () {
 
             // bring required services to idle
             await module.connect();
-            const service = module.services.find(s => s.name === "Test_Service.Vorlegen");
 
-            await service.abort();
-            await later(500);
+            try {
+                await module.abort();
+            } catch {}
+            await later(200);
 
-            await service.reset();
-            await later(500);
+
+            try {
+                await module.reset();
+            } catch { }
+            await later(200);
 
             await module.disconnect();
         });

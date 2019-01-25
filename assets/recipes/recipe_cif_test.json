@@ -14,7 +14,7 @@
           "parameter": [
             {
               "name": "SollVolumen",
-              "value": "2.1*a",
+              "value": "max(0.2,min(28,0.1*a))",
               "scope": [
                 {
                   "name": "a",

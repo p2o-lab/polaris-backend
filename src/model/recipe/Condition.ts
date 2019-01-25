@@ -263,7 +263,7 @@ export class StateCondition extends ModuleCondition {
                 const state: ServiceState = value;
                 this._fulfilled = ServiceState[state]
                     .localeCompare(this.state, 'en', { usage: 'search', sensitivity: 'base' }) === 0;
-                catRecipe.info(`StateCondition: ${this.module.id}.${this.service.name}) = (${ServiceState[state]})` +
+                catRecipe.debug(`StateCondition: ${this.module.id}.${this.service.name}) = (${ServiceState[state]})` +
                     `- ?= ${this.state} -> ${this._fulfilled}`);
                 this.emit('stateChanged', this._fulfilled);
             });
@@ -298,7 +298,7 @@ export class VariableCondition extends ModuleCondition {
     }
 
     listen(): Condition {
-        catRecipe.info(`Listen to ${this.dataStructure}.${this.variable}`);
+        catRecipe.debug(`Listen to ${this.dataStructure}.${this.variable}`);
         this.module.readVariable(this.dataStructure, this.variable).then((value) => {
             this._fulfilled = this.compare(value.value.value);
             this.emit('stateChanged', this._fulfilled);
