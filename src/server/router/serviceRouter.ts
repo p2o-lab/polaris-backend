@@ -23,14 +23,12 @@
  * SOFTWARE.
  */
 
-import { manager } from '../../model/Manager';
-import {ParameterOptions, ServiceCommand} from '@plt/pfe-ree-interface';
+
 import { moduleRouter } from './moduleRouter';
 import { Request, Response, Router } from 'express';
 import * as asyncHandler from 'express-async-handler';
-import { Strategy } from '../../model/core/Interfaces';
-import { Parameter } from '../../model/recipe/Parameter';
 import { catServer } from '../../config/logging';
+import {manager} from '../../model/Manager';
 
 export const serviceRouter: Router = Router();
 
@@ -44,11 +42,7 @@ export const serviceRouter: Router = Router();
  * @apiParam {ParameterOptions[]} parameters    Module Service Parameter
  */
 moduleRouter.post('/:moduleId/service/:serviceName/parameter', asyncHandler(async (req: Request, res: Response) => {
-    const module = await manager.modules.find(module => module.id === req.params.moduleId);
-    if (!module) {
-        throw new Error(`Module with id ${req.params.moduleId} not registered`);
-    }
-    const service = await module.services.find(service => service.name === req.params.serviceName);
+    const service = manager.getService(req.params.moduleId, req.params.serviceName);
     await service.setServiceParameters(req.body.parameters);
     res.json(await service.getOverview());
 }));
@@ -64,16 +58,9 @@ moduleRouter.post('/:moduleId/service/:serviceName/parameter', asyncHandler(asyn
  * @apiParam {ParameterOptions[]} parameters    Module Service Parameters
  */
 moduleRouter.post('/:moduleId/service/:serviceName/strategy', asyncHandler(async (req: Request, res: Response) => {
-    const module = await manager.modules.find(module => module.id === req.params.moduleId);
-    if (!module) {
-        throw new Error(`Module with id ${req.params.moduleId} not registered`);
-    }
-    const service = await module.services.find(service => service.name === req.params.serviceName);
-    const parameterOptions = <ParameterOptions[]> req.body.parameters;
-    const strategyName = <string> req.body.strategy;
-    const strategy : Strategy = service.strategies.find((strategy: Strategy) => strategy.name === strategyName);
-    catServer.info(`Strategy ${service.name}, ${JSON.stringify(parameterOptions)}, ${JSON.stringify(strategyName)}`);
-    await service.setStrategyParameters(strategy, parameterOptions.map(param => new Parameter(param, service, strategy)));
+    catServer.info(`Set Strategy Parameters ${req.body.strategy}, ${JSON.stringify(req.body.parameters)}`);
+    const service = manager.getService(req.params.moduleId, req.params.serviceName);
+    await service.setStrategyParameters(req.body.strategy, req.body.parameters);
 
     res.json(await service.getOverview());
 }));
@@ -89,26 +76,10 @@ moduleRouter.post('/:moduleId/service/:serviceName/strategy', asyncHandler(async
  * @apiParam {ParameterOptions[]} [parameters]    Parameters for *start* or *restart*
  */
 moduleRouter.post('/:moduleId/service/:serviceName/:command', asyncHandler(async (req: Request, res: Response) => {
-    const module = await manager.modules.find(module => module.id === req.params.moduleId);
-    const service = await module.services.find(service => service.name === req.params.serviceName);
-    const command: ServiceCommand = req.params.command;
-
     catServer.info(`Call service: ${JSON.stringify(req.params)} - ${JSON.stringify(req.body)}`);
-    let strategy: Strategy = null;
-    let parameters: Parameter[] = [];
-    if (req.body.strategy) {
-        strategy = service.strategies.find(strat => strat.name === req.body.strategy);
-    } else {
-        strategy = service.strategies.find(strat => strat.default === true);
-    }
+    const service = manager.getService(req.params.moduleId, req.params.serviceName);
 
-    if (req.body.parameters) {
-        parameters = req.body.parameters.map(
-            parameterOptions => new Parameter(parameterOptions, service, strategy)
-        );
-    }
-
-    const result = await service.executeCommand(command, strategy, parameters);
+    const result = await service.execute(req.params.command, req.body.strategy, req.body.parameters);
     res.json({
         module: module.id,
         service: service.name,
@@ -125,11 +96,7 @@ moduleRouter.post('/:moduleId/service/:serviceName/:command', asyncHandler(async
  * @apiParam {string} serviceName   Name of service
  */
 moduleRouter.get('/:moduleId/service/:serviceName', asyncHandler(async (req: Request, res: Response) => {
-    const module = await manager.modules.find(module => module.id === req.params.moduleId);
-    if (!module) {
-        throw new Error(`Module with id ${req.params.moduleId} not registered`);
-    }
-    const service = await module.services.find(service => service.name === req.params.serviceName);
+    const service = manager.getService(req.params.moduleId, req.params.serviceName);
     res.json(await service.getOverview());
 }));
 

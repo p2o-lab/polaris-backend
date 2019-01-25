@@ -89,7 +89,7 @@ export class Manager extends EventEmitter {
      * Load modules from JSON according to TopologyGenerator output or to simplified JSON
      * Skip module if already a module with same id is registered
      * @param options           options for creating modules
-     * @param protectedModules  should modules be protected from being deleted
+     * @param {boolean} protectedModules  should modules be protected from being deleted
      * @returns {Module[]}  created modules
      */
     public loadModule(options, protectedModules: boolean = false): Module[] {
@@ -147,7 +147,7 @@ export class Manager extends EventEmitter {
                         strategy: data.strategy.name,
                         command:  ServiceCommand[data.command],
                         parameter: data.parameter ? data.parameter.map((param) => {
-                            return { name:param.name, value: param.value, scope: param.scope };
+                            return { name:param.name, value: param.value };
                         }) : undefined
                     };
                     this.serviceArchive.push(logEntry);
@@ -187,11 +187,8 @@ export class Manager extends EventEmitter {
      * Abort all services from all loaded modules
      */
     abortAllServices() {
-        let tasks = [];
-        this.modules.forEach((module) =>
-            module.services.forEach(service =>
-                tasks.push(service.abort())
-            ));
+        const tasks = [];
+        tasks.push(this.modules.map((module) => module.abort()));
         return Promise.all(tasks);
     }
 
@@ -199,11 +196,8 @@ export class Manager extends EventEmitter {
      * Stop all services from all loaded modules
      */
     stopAllServices() {
-        let tasks = [];
-        this.modules.forEach((module) =>
-            module.services.forEach(service =>
-                tasks.push(service.stop())
-            ));
+        const tasks = [];
+        tasks.push(this.modules.map((module) => module.stop()));
         return Promise.all(tasks);
     }
 
@@ -211,11 +205,8 @@ export class Manager extends EventEmitter {
      * Reset all services from all loaded modules
      */
     resetAllServices() {
-        let tasks = [];
-        this.modules.forEach((module) =>
-            module.services.forEach(service =>
-                tasks.push(service.reset())
-            ));
+        const tasks = [];
+        tasks.push(this.modules.map((module) => module.reset()));
         return Promise.all(tasks);
     }
 
@@ -243,7 +234,7 @@ export class Manager extends EventEmitter {
                 if (service.parent.isConnected()) {
                     catManager.info(`Service ${service.parent.id}.${service.name} completed. Now perform autoreset`);
                     try {
-                        service.reset();
+                        service.execute(ServiceCommand.reset);
                     } catch (err) {
                         catManager.debug('Autoreset not possible')
                     }
@@ -266,6 +257,24 @@ export class Manager extends EventEmitter {
                 manager.recipes.splice(index, 1);
             }
         }
+    }
+
+    /**
+     * find [Service] of a [Module] registered in manager
+     * @param {string} moduleName
+     * @param {string} serviceName
+     * @returns {Service}
+     */
+    getService(moduleName: string, serviceName: string): Service {
+        const module: Module = this.modules.find(module => module.id === moduleName);
+        if (!module) {
+            throw new Error(`Module with id ${moduleName} not registered`);
+        }
+        const service: Service = module.services.find(service => service.name === serviceName);
+        if (!service) {
+            throw new Error(`Service ${serviceName} does not exist on module ${moduleName}`);
+        }
+        return service;
     }
 }
 

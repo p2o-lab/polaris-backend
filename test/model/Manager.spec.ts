@@ -26,6 +26,7 @@
 import {Manager} from '../../src/model/Manager';
 import * as fs from 'fs';
 import {expect} from 'chai';
+import {Service} from '../../src/model/core/Service';
 
 
 describe('Manager', () => {
@@ -58,6 +59,14 @@ describe('Manager', () => {
             JSON.parse(fs.readFileSync('assets/modules/modules_achema.json').toString()),
             true);
         expect(modules).to.have.lengthOf(3);
+
+        expect(manager.modules).to.have.lengthOf(3);
+
+        let service = manager.getService('Dose', 'Fill');
+        expect(service).to.be.instanceOf(Service);
+        expect(service.name).to.equal('Fill');
+        expect(() => {manager.getService('Dose', 'NoService')}).to.throw();
+        expect(() => {manager.getService('NoModule', 'NoService')}).to.throw();
     });
 
     it('should provide JSON output', () => {

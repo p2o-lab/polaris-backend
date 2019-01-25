@@ -100,10 +100,10 @@ describe('Player', function () {
             const service = module.services.find(s => s.name === "Test_Service.Vorlegen");
 
             await service.abort();
-            await later(100);
+            await later(500);
 
             await service.reset();
-            await later(100);
+            await later(500);
 
             await module.disconnect();
         });

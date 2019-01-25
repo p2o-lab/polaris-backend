@@ -32,7 +32,8 @@ import {expect} from 'chai';
 import {later, waitForStateChange} from '../helper';
 import {Service} from '../../src/model/core/Service';
 import {Parameter} from '../../src/model/recipe/Parameter';
-import {ServiceCommand} from '@plt/pfe-ree-interface';
+import {ServiceCommand, ServiceInterface} from '@plt/pfe-ree-interface';
+import {ControlEnableInterface, ParameterInterface, StrategyInterface} from '@plt/pfe-ree-interface/dist/interfaces';
 
 describe('CIF Integration', function () {
 
@@ -44,28 +45,12 @@ describe('CIF Integration', function () {
         manager.autoreset = true;
         const file = fs.readFileSync('assets/modules/module_cif.json');
         module = manager.loadModule(JSON.parse(file.toString()))[0];
-        let index = module.services.findIndex((service) => service.name === "Test_Service.Service1");
+        let index = module.services.findIndex((service) => service.name === 'Test_Service.Service1');
         module.services.splice(index, 1);
-        index = module.services.findIndex((service) => service.name === "Test_Service.Service2");
+        index = module.services.findIndex((service) => service.name === 'Test_Service.Service2');
         module.services.splice(index, 1);
         await module.connect();
-    });
-
-    it('should be succesfully connected', async() => {
         service = module.services[2];
-
-        expect(() => {module.connect()}).to.not.throw();
-
-        let json = await module.json();
-        expect(json).to.have.property('id', 'CIF');
-        assert.equal(json.id, 'CIF');
-        assert.equal(json.endpoint, 'opc.tcp://10.6.51.200:4840');
-        assert.equal(json.protected, false);
-        assert.equal(json.connected, true);
-        expect(json.services).to.have.lengthOf(4);
-
-        const serviceStates = await module.getServiceStates();
-        expect(serviceStates).to.have.lengthOf(4);
     });
 
     after(async() => {
@@ -73,6 +58,21 @@ describe('CIF Integration', function () {
         await module.disconnect();
         const json = await module.json();
         assert.equal(json.connected, false);
+    });
+
+    it('should be succesfully connected', async() => {
+
+        expect(() => {module.connect()}).to.not.throw();
+
+        let json = await module.json();
+        expect(json).to.have.property('id', 'CIF');
+        assert.equal(json.endpoint, 'opc.tcp://10.6.51.200:4840');
+        assert.equal(json.protected, false);
+        assert.equal(json.connected, true);
+        expect(json.services).to.have.lengthOf(4);
+
+        const serviceStates = await module.getServiceStates();
+        expect(serviceStates).to.have.lengthOf(4);
     });
 
     it('should bring everything to idle', async () => {
@@ -113,33 +113,61 @@ describe('CIF Integration', function () {
 
         assert.equal(service.name, 'Test_Service.Dosieren');
 
-        let param = new Parameter({name: "SollVolumenStrom", value: 1.3}, service);
-        service.executeCommand(ServiceCommand.start, service.strategies[0], [param]);
+        let param = new Parameter({name: 'SollVolumenStrom', value: 1.3}, service);
+        service.execute(ServiceCommand.start, service.strategies[0], [param]);
         //await waitForStateChange(service, 'STARTING');
         await waitForStateChange(service, 'RUNNING');
 
-        service.pause();
+        service.execute(ServiceCommand.pause);
         //await waitForStateChange(service, 'PAUSING');
         await waitForStateChange(service, 'PAUSED');
 
-        service.resume();
+        service.execute(ServiceCommand.resume);
         //await waitForStateChange(service, 'RESUMING');
         await waitForStateChange(service, 'RUNNING');
 
         // does not work every time
         param.value = 1.4;
-        //service.restart(service.strategies[0], [param]);
+        //service.execute(ServiceCommand.restart, service.strategies[0], [param]);
         //await waitForStateChange(service, 'STARTING');
         //await waitForStateChange(service, 'RUNNING');
 
-        service.complete();
+        service.execute(ServiceCommand.complete);
         //await waitForStateChange(service, 'COMPLETING');
         await waitForStateChange(service, 'COMPLETED');
 
         // test auto reset
-        // service.reset();
         //await waitForStateChange(service, 'RESETTING');
         await waitForStateChange(service, 'IDLE');
+
+        service.execute(ServiceCommand.start);
+        //await waitForStateChange(service, 'STARTING');
+        await waitForStateChange(service, 'RUNNING');
+
+        service.execute(ServiceCommand.stop);
+        //await waitForStateChange(service, 'STOPPING');
+        await waitForStateChange(service, 'STOPPED');
+
+        service.execute(ServiceCommand.abort);
+        //await waitForStateChange(service, 'ABORTING');
+        await waitForStateChange(service, 'ABORTED');
+
+        service.execute(ServiceCommand.reset);
+        //await waitForStateChange(service, 'RESETTING');
+        await waitForStateChange(service, 'IDLE');
+    });
+
+    it('should provide correct service overview', async () => {
+        const json = await service.getOverview();
+        expect(json).to.be.property('name');
+        expect(json).to.be.property('opMode');
+        expect(json).to.be.property('status');
+        expect(json).to.be.property('strategies');
+        expect(json).to.be.property('parameters');
+        expect(json).to.be.property('currentStrategy');
+        expect(json).to.be.property('error');
+        expect(json).to.be.property('lastChange');
+        expect(json).to.be.property('controlEnable');
     });
 
 });

@@ -42,7 +42,10 @@ import { catModule, catOpc, catRecipe } from '../../config/logging';
 import { EventEmitter } from 'events';
 import { OpcUaNode, Strategy } from './Interfaces';
 import { ServiceState } from './enum';
-import {ModuleInterface, ServiceInterface, ServiceCommand, ControlEnableInterface} from '@plt/pfe-ree-interface';
+import {
+    ModuleInterface, ServiceInterface, ServiceCommand, ControlEnableInterface,
+    ParameterInterface
+} from '@plt/pfe-ree-interface';
 import { promiseTimeout } from '../../timeout-promise';
 import { VariableLogEntry, ServiceLogEntry } from '../../logging/archive';
 import StrictEventEmitter from 'strict-event-emitter-types';
@@ -113,7 +116,7 @@ interface ModuleEvents {
         timestampPfe: Date,
         strategy: Strategy,
         command: ServiceCommand,
-        parameter: Parameter[]
+        parameter: ParameterInterface[]
     };
     /**
      * when one service goes to *completed*
@@ -433,6 +436,10 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
         };
     }
 
+    /**
+     * is module connected to physical PEA
+     * @returns {boolean}
+     */
     isConnected(): boolean {
         return !!this.session;
     }
@@ -457,32 +464,40 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
     /**
      * Abort all services in module
      */
-    abort() {
-        const tasks = this.services.map(service => service.abort());
+    abort(): Promise<void[]> {
+        const tasks = this.services.map(service => service.execute(ServiceCommand.abort));
         return Promise.all(tasks);
     }
 
     /**
      * Pause all services in module
      */
-    pause() {
-        const tasks = this.services.map(service => service.pause());
+    pause(): Promise<void[]> {
+        const tasks = this.services.map(service => service.execute(ServiceCommand.pause));
         return Promise.all(tasks);
     }
 
     /**
      * Resume all services in module
      */
-    resume() {
-        const tasks = this.services.map(service => service.resume());
+    resume(): Promise<void[]> {
+        const tasks = this.services.map(service => service.execute(ServiceCommand.resume));
         return Promise.all(tasks);
     }
 
     /**
      * Stop all services in module
      */
-    stop() {
-        const tasks = this.services.map(service => service.stop());
+    stop(): Promise<void[]> {
+        const tasks = this.services.map(service => service.execute(ServiceCommand.stop));
+        return Promise.all(tasks);
+    }
+
+    /**
+     * Reset all services in module
+     */
+    reset(): Promise<void[]> {
+        const tasks = this.services.map(service => service.execute(ServiceCommand.reset));
         return Promise.all(tasks);
     }
 

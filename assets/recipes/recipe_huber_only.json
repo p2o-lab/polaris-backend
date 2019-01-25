@@ -32,20 +32,15 @@
     },
     {
       "name": "S2",
+      "description": "try to change parameters without reset",
       "operations": [
         {
           "module": "Temper",
           "service": "Tempering",
-          "strategy": "SetpointRampTempering",
-          "command": "restart",
           "parameter": [
             {
-              "name": "RampDuration",
-              "value": 60
-            },
-            {
-              "name": "RampEndtemperature",
-              "value": 20
+              "name": "Setpoint",
+              "value": "26"
             }
           ]
         }
@@ -55,19 +50,19 @@
           "next_step": "S3",
           "condition": {
             "type": "time",
-            "duration": 60
+            "duration": "30"
           }
         }
       ]
     },
     {
       "name": "S3",
+      "description": "try to change strategy without reset",
       "operations": [
         {
           "module": "Temper",
           "service": "Tempering",
           "strategy": "SetpointRampTempering",
-          "command": "restart",
           "parameter": [
             {
               "name": "RampDuration",
@@ -75,7 +70,7 @@
             },
             {
               "name": "RampEndtemperature",
-              "value": 22
+              "value": 20
             }
           ]
         }
@@ -92,6 +87,35 @@
     },
     {
       "name": "S4",
+      "operations": [
+        {
+          "module": "Temper",
+          "service": "Tempering",
+          "strategy": "SetpointRampTempering",
+          "parameter": [
+            {
+              "name": "RampDuration",
+              "value": 60
+            },
+            {
+              "name": "RampEndtemperature",
+              "value": 22
+            }
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "S5",
+          "condition": {
+            "type": "time",
+            "duration": 60
+          }
+        }
+      ]
+    },
+    {
+      "name": "S5",
       "operations": [
         {
           "module": "Temper",

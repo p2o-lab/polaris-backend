@@ -73,8 +73,6 @@ export class Operation {
         }
         if (options.command) {
             this.command = options.command;
-        } else {
-            throw new Error(`'command' property is missing in ${ JSON.stringify(options) }`);
         }
         if (options.parameter) {
             this.parameters = options.parameter.map(
@@ -83,10 +81,14 @@ export class Operation {
         }
     }
 
-    execute() {
+    /**
+     * Execute Operation at runtime during recipe run
+     * @returns {Promise<void>}
+     */
+    execute(): Promise<void> {
         catRecipe.info(`Perform operation ${ this.module.id } ${ this.service.name } ${ this.command } ` +
             `(Strategy: ${ this.strategy ? this.strategy.name : '' })`);
-        return this.service.executeCommand(this.command, this.strategy, this.parameters);
+        return this.service.execute(this.command, this.strategy, this.parameters);
     }
 
     json(): OperationInterface {
