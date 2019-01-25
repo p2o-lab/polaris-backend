@@ -67,9 +67,6 @@ type PlayerEmitter = StrictEventEmitter<EventEmitter, PlayerEvents>;
 /**
  * Player can play recipes in a playlist
  * Only one recipe is active at one point in time
- *
- * @event completed
- *
  */
 export class Player extends (EventEmitter as { new(): PlayerEmitter }) {
     public repeat: Repeat;
