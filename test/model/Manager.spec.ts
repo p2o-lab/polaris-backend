@@ -31,30 +31,25 @@ import {Service} from '../../src/model/core/Service';
 
 describe('Manager', () => {
 
-    let manager  = new Manager();
-
-    it('should load the biofeed module', () => {
+    it('should handle recipes and modules from biofeed', () => {
+        const manager  = new Manager();
         let modules = manager.loadModule(
             JSON.parse(fs.readFileSync('assets/modules/module_biofeed_1.4.2.json').toString()),
             true);
         expect(modules).to.have.lengthOf(1);
-    });
-
-    it('should load biofeed recipe', () => {
         manager.loadRecipe(
             JSON.parse(fs.readFileSync('assets/recipes/biofeed/recipe_biofeed_88370C_0.3.1.json').toString()),
             true);
-    });
-
-    it('should fail when removing a not existing recipe', () => {
         expect(() => manager.removeRecipe('something')).to.throw();
-    });
-
-    it('should fail when removing a protected recipe', () => {
         expect(() => manager.removeRecipe(manager.recipes[0].id)).to.throw();
+        manager.loadRecipe(
+            JSON.parse(fs.readFileSync('assets/recipes/biofeed/recipe_biofeed_88370C_0.3.1.json').toString()),
+            false);
+        expect(() => manager.removeRecipe(manager.recipes[1].id)).to.not.throw();
     });
 
     it('should load the achema modules', () => {
+        const manager = new Manager();
         let modules = manager.loadModule(
             JSON.parse(fs.readFileSync('assets/modules/modules_achema.json').toString()),
             true);
@@ -70,7 +65,8 @@ describe('Manager', () => {
     });
 
     it('should provide JSON output', () => {
-       expect(manager.json().autoReset).to.equal(true);
+        const manager= new Manager();
+        expect(manager.json().autoReset).to.equal(true);
     });
 
 });
