@@ -29,16 +29,16 @@ import {Recipe} from '../../../src/model/recipe/Recipe';
 import {expect} from 'chai';
 import {Manager} from '../../../src/model/Manager';
 import {later} from '../../helper';
-import {RecipeState, ServiceCommand} from '@plt/pfe-ree-interface';
-import {Module} from '../../../src/model/core/Module';
+import {RecipeState} from '@plt/pfe-ree-interface';
+import {promiseTimeout} from '../../../src/timeout-promise';
 
 describe('Player', function () {
 
     describe('local', () => {
-        let recipeWait5s: Recipe;
+        let recipeWait0_5s: Recipe;
         let recipeWaitLocal: Recipe;
         before(() => {
-            recipeWait5s = new Recipe(
+            recipeWait0_5s = new Recipe(
                 JSON.parse(fs.readFileSync('assets/recipes/test/recipe_wait_0.5s.json').toString()),
                 [], false);
             recipeWaitLocal = new Recipe(
@@ -50,10 +50,10 @@ describe('Player', function () {
             this.timeout(5000);
             let player = new Player();
 
-            player.enqueue(recipeWait5s);
+            player.enqueue(recipeWait0_5s);
             expect(player.playlist).to.have.length(1);
             player.enqueue(recipeWaitLocal);
-            player.enqueue(recipeWait5s);
+            player.enqueue(recipeWait0_5s);
             expect(player.playlist).to.have.length(3);
 
             player.remove(0);
@@ -83,7 +83,26 @@ describe('Player', function () {
             expect(json.status).to.equal('running');
         });
 
-        it('should force a transition');
+        it('should  force a transition', async() => {
+            this.timeout(5000);
+            let player = new Player();
+            player.enqueue(recipeWaitLocal);
+            player.start();
+
+            expect(() => player.forceTransition('non-existant', 'S2')).to.throw();
+            expect(() => player.forceTransition('S1', 'non-existant')).to.throw();
+            expect(() => player.forceTransition('S1', 'S3')).to.throw();
+
+            await later(5);
+
+            promiseTimeout(100, new Promise((resolve) => {
+                player.once('stepFinished', (step) => {
+                    resolve();
+                })
+            }));
+            player.forceTransition('S1', 'S2');
+            player.forceTransition('S2', 'S3');
+        });
     });
 
     describe('CIF', () => {
