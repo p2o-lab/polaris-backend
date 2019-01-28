@@ -38,6 +38,7 @@
     "multer": "^1.4.1",
     "node-opcua": "^0.5.6",
     "node-opcua-client": "^0.5.6",
+    "pjson": "^1.0.9",
     "request": "^2.88.0",
     "typescript-logging": "^0.6.3",
     "uuid": "^3.3.2",

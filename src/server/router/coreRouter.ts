@@ -42,6 +42,17 @@ coreRouter.get('/', (req: Request, res: Response) => {
 });
 
 /**
+ * @api {get} /version    Get version
+ * @apiName GetVersion
+ * @apiDescription  Get version of pfe-ree-node
+ * @apiGroup Manager
+ */
+coreRouter.get('/version', (req: Request, res: Response) => {
+    var pjson = require('pjson');
+    res.json({version: pjson.version });
+});
+
+/**
  * @api {get} /autoReset    Get autoReset
  * @apiName GetAutoReset
  * @apiDescription Get status of autoReset
