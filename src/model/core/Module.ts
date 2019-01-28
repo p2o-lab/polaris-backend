@@ -46,8 +46,8 @@ import {
     ModuleInterface, ServiceInterface, ServiceCommand, ControlEnableInterface,
     ParameterInterface
 } from '@plt/pfe-ree-interface';
-import { promiseTimeout } from '../../timeout-promise';
-import { VariableLogEntry, ServiceLogEntry } from '../../logging/archive';
+import { timeout } from 'promise-timeout';
+import { VariableLogEntry } from '../../logging/archive';
 import StrictEventEmitter from 'strict-event-emitter-types';
 
 export interface ModuleOptions {
@@ -191,7 +191,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
                 client.on('close', () => catOpc.warn('Closing OPC UA client connection'));
                 client.on('time_out_request', () => catOpc.debug('time out request - retrying connection'));
 
-                await promiseTimeout(1000, client.connect(this.endpoint));
+                await timeout(client.connect(this.endpoint), 1000);
                 catOpc.info(`module connected ${this.id} ${this.endpoint}`);
 
                 const session = await client.createSession();
@@ -260,9 +260,9 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
             if (this.session) {
                 catModule.info(`Disconnect module ${this.id}`);
                 try {
-                    await promiseTimeout(1000, this.session.close());
+                    await timeout(this.session.close(), 1000);
                     this.session = undefined;
-                    await promiseTimeout(1000, this.client.disconnect());
+                    await timeout(1000, this.client.disconnect(), 1000);
                     this.client = undefined;
                     catModule.debug(`Module ${this.id} disconnected`);
                     this.emit('disconnected');
