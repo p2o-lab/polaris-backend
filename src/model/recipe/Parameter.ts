@@ -23,12 +23,12 @@
  * SOFTWARE.
  */
 
-import { ParameterOptions, ScopeOptions } from '@plt/pfe-ree-interface';
-import { Expression, Parser } from 'expr-eval';
+import {ParameterOptions, ScopeOptions} from '@plt/pfe-ree-interface';
+import {Expression, Parser} from 'expr-eval';
 import {catRecipe, catService} from '../../config/logging';
-import { EventEmitter } from 'events';
-import { DataType } from 'node-opcua-client';
-import { Service } from '../core/Service';
+import {EventEmitter} from 'events';
+import {DataType} from 'node-opcua-client';
+import {Service} from '../core/Service';
 import {OpcUaNode, Strategy} from '../core/Interfaces';
 import {Module, OpcUaNodeEvents} from '../core/Module';
 import StrictEventEmitter from 'strict-event-emitter-types';
@@ -54,7 +54,7 @@ export class Parameter {
      * @example
      * "CIF.Sensoren\.L001.V"
      */
-    value: string;
+    value: string | number | boolean;
     scope: ScopeOptions[];
     /**
      * should parameter continuously be updated
@@ -107,7 +107,8 @@ export class Parameter {
                 if (modules.length == 1) {
                     module = modules[0];
                 } else {
-                    throw new Error(`Module ${token} not found in ${variable}`);
+                    catRecipe.warn(`Module ${token} not found in ${variable}`);
+                    return undefined;
                 }
             } else {
                 token = components.shift();
@@ -129,7 +130,8 @@ export class Parameter {
             if (module.variables.find(v => v.name === token)) {
                 dataAssembly = module.variables.find(v => v.name === token)
             } else {
-                throw Error(`DataAssembly ${token} not found in ${variable}`);
+                catRecipe.warn(`DataAssembly ${token} not found in ${variable}`);
+                return undefined;
             }
 
             // find data assembly variable
@@ -143,7 +145,7 @@ export class Parameter {
                 dataAssemblyVariable = 'VExt';
 
             return {name: variable, module: module.id, dataAssembly: dataAssembly.name, variable: dataAssemblyVariable};
-        }));
+        }).filter(Boolean));
     }
 
     public async getDataType(): Promise<DataType> {

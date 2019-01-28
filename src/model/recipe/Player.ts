@@ -25,8 +25,8 @@
 
 import {catManager, catPlayer} from '../../config/logging';
 import {EventEmitter} from 'events';
-import {PlayerInterface, RecipeState, Repeat, TransitionOptions} from '@plt/pfe-ree-interface';
-import {RecipeRun} from "./RecipeRun";
+import {PlayerInterface, RecipeState, Repeat} from '@plt/pfe-ree-interface';
+import {RecipeRun} from './RecipeRun';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Step} from './Step';
 import {Recipe} from './Recipe';
