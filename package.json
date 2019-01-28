@@ -28,6 +28,7 @@
   ],
   "dependencies": {
     "@plt/pfe-ree-interface": "^1.20.0",
+    "assign-deep": "^1.0.0",
     "body-parser": "^1.18.3",
     "command-line-args": "^5.0.2",
     "command-line-usage": "^5.0.5",

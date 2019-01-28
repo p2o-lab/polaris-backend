@@ -30,23 +30,25 @@ import {expect} from 'chai';
 
 describe('Parameter', () => {
     let service;
+    let module;
 
     before(() => {
-        const file = fs.readFileSync('assets/modules/module_biofeed_1.4.2.json');
+        const file = fs.readFileSync('assets/modules/module_cif.json');
 
-        service = new Module(JSON.parse(file.toString()).modules[0]).services[0];
+        module = new Module(JSON.parse(file.toString()).modules[0]);
+        service = module.services[0];
     });
 
     it('should load', () => {
         const param = new Parameter({
-            name: 'TargetVolume',
+            name: 'var1',
             value: 3
         }, service);
     });
 
     it('should load with expression', async() => {
         const param = new Parameter({
-            name: 'TargetVolume',
+            name: 'var1',
             value: '3+2'
         }, service);
         expect(await param.getValue()).to.equal(5);
@@ -54,10 +56,20 @@ describe('Parameter', () => {
 
     it('should load with complex expression', async() => {
         const param = new Parameter({
-            name: 'TargetVolume',
+            name: 'var1',
             value: 'sin(3)+2'
         }, service);
         expect(await param.getValue()).to.be.closeTo(2.14, 0.01);
+    });
+
+    it('should load with complex expression with dataAssembly variables', async() => {
+        await module.connect();
+        const param = new Parameter({
+            name: 'var1',
+            value: '2 * CIF.Sensoren\\.L001.V + CIF.Sensoren\\.L002 + Sensoren\\.L003'
+        }, service, undefined, [module]);
+        expect(await param.getValue()).to.be.closeTo(61, 0.01);
+        await module.disconnect();
     });
 
     it('should fail with wrong parameter name', () => {

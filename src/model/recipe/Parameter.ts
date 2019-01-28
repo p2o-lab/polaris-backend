@@ -32,6 +32,7 @@ import { Service } from '../core/Service';
 import {OpcUaNode, Strategy} from '../core/Interfaces';
 import {Module, OpcUaNodeEvents} from '../core/Module';
 import StrictEventEmitter from 'strict-event-emitter-types';
+import {ProcessValue} from '../core/ProcessValue';
 
 /**
  * Parameter of an [[Operation]]. Can be static or dynamic. Dynamic parameters can depend on variables of the same or
@@ -56,12 +57,19 @@ export class Parameter {
     private _opcUaNode: OpcUaNode;
     private modules: Module[];
 
+    /**
+     *
+     * @param {ParameterOptions} parameterOptions
+     * @param {Service} service
+     * @param {Strategy} strategy       strategy to use
+     * @param {Module[]} modules        modules where expression can be matched
+     */
     constructor(parameterOptions: ParameterOptions, service: Service, strategy?: Strategy, modules?: Module[]) {
         catRecipe.trace(`Create Parameter: ${JSON.stringify(parameterOptions)}`);
 
         this.name = parameterOptions.name;
         this.variable = parameterOptions.variable || 'VExt';
-        this.value = parameterOptions.value;
+        this.value = parameterOptions.value.toString();
         this.scope = parameterOptions.scope || [];
         this.continuous = parameterOptions.continuous || false;
 
@@ -112,14 +120,20 @@ export class Parameter {
             return undefined;
         }
         // get current variables
-        const scope = {};
-        const tasks = this.scope.map(async (item: ScopeOptions) => {
+        const tasks = await Promise.all(this.scope.map(async (item: ScopeOptions) => {
             const module = this.modules.find(module => module.id === item.module);
             return module.readVariable(item.dataAssembly, item.variable)
-                    .then(value => scope[item.name] = value.value.value);
-        });
-        await Promise.all(tasks);
-        catService.trace(`Scope: ${JSON.stringify(scope)} <- ${JSON.stringify(this.scope)}`);
+                    .then(value => {
+                        return item.name.split('.').reduceRight((previous, current) => {
+                            let a = {};
+                            a[current] = previous;
+                            return a;
+                        }, value.value.value );
+                    });
+        }));
+        const assign = require('assign-deep');
+        const scope = assign(...tasks);
+        catService.info(`Scope: ${JSON.stringify(scope)} <- ${JSON.stringify(this.scope)}`);
         const result = this.expression.evaluate(scope);
         catService.info(`Specific parameters: ${this.name} = ${this.value}(${JSON.stringify(scope)}) = ${result}`);
         return result;
