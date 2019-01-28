@@ -45,7 +45,16 @@ export class Parameter {
      */
     name: string;
     variable: string;
-    value: any;
+    /**
+     * Expression to be calculated and used as value.
+     * Can contain variables, which can bei declared inside scope or by using correct variable names
+     * following this syntax "[module].[processValue].[variable]". module can be ommited if only eone module
+     * is loaded. Variable can be omitted. Then "V" is used as variable.
+     * "." in the name of modules or processvariables can be escaped with "\\."
+     * @example
+     * "CIF.Sensoren\.L001.V"
+     */
+    value: string;
     scope: ScopeOptions[];
     /**
      * should parameter continuously be updated
@@ -85,10 +94,56 @@ export class Parameter {
 
         this.modules = modules || undefined;
 
-        const parser: Parser = new Parser();
-        if (this.value) {
-            this.expression = parser.parse(this.value.toString());
-        }
+        const parser: Parser = new Parser({allowMemberAccess: true});
+        this.value = this.value.replace(new RegExp('\\\\.', 'g'), '__');
+        this.expression = parser.parse(this.value);
+        this.scope.push(...this.expression.variables({ withMembers: true }).map((variable) => {
+            let components = variable.split('.').map((token:string) => token.replace(new RegExp('__', 'g'),'.'));
+
+            // find module
+            let token = components.shift();
+            let module = modules.find(m=> m.id === token);
+            if (module==undefined) {
+                if (modules.length == 1) {
+                    module = modules[0];
+                } else {
+                    throw new Error(`Module ${token} not found in ${variable}`);
+                }
+            } else {
+                token = components.shift();
+            }
+
+            // find data assembly
+            let dataAssembly: ProcessValue;
+            /*if (module.services.find(s=> s.name === token)) {
+                let service = module.services.find(s => s.name === token);
+                token = components.shift();
+                if (service.strategies.find( (s: Strategy) => s.name === token)) {
+                    let strategy = service.strategies.find( (s: Strategy) => s.name === token);
+                    dataAssembly = strategy.parameters.find(param => param.name === components.shift());
+                } else {
+                    let strategy = service.strategies.find( (s: Strategy) => s.default);
+                    dataAssembly = strategy.parameters.find(param => param.name === token);
+                }
+            } else*/
+            if (module.variables.find(v => v.name === token)) {
+                dataAssembly = module.variables.find(v => v.name === token)
+            } else {
+                throw Error(`DataAssembly ${token} not found in ${variable}`);
+            }
+
+            // find data assembly variable
+            token = components.shift();
+            let dataAssemblyVariable;
+            if (token in dataAssembly.communication)
+                dataAssemblyVariable = token;
+            else if ('V' in dataAssembly.communication)
+                dataAssemblyVariable = 'V';
+            else if ('VExt' in dataAssembly.communication)
+                dataAssemblyVariable = 'VExt';
+
+            return {name: variable, module: module.id, dataAssembly: dataAssembly.name, variable: dataAssemblyVariable};
+        }));
     }
 
     public async getDataType(): Promise<DataType> {
