@@ -32,7 +32,8 @@ import {Service} from '../core/Service';
 import {OpcUaNode, Strategy} from '../core/Interfaces';
 import {Module, OpcUaNodeEvents} from '../core/Module';
 import StrictEventEmitter from 'strict-event-emitter-types';
-import {ProcessValue} from '../core/ProcessValue';
+import * as assign from 'assign-deep';
+import {ScopeItem} from './ScopeItem';
 
 /**
  * Parameter of an [[Operation]]. Can be static or dynamic. Dynamic parameters can depend on variables of the same or
@@ -47,7 +48,7 @@ export class Parameter {
     variable: string;
     /**
      * Expression to be calculated and used as value.
-     * Can contain variables, which can bei declared inside scope or by using correct variable names
+     * Can contain variables, which can bei declared inside scopeArray or by using correct variable names
      * following this syntax "[module].[processValue].[variable]". module can be ommited if only eone module
      * is loaded. Variable can be omitted. Then "V" is used as variable.
      * "." in the name of modules or processvariables can be escaped with "\\."
@@ -55,7 +56,7 @@ export class Parameter {
      * "CIF.Sensoren\.L001.V"
      */
     value: string | number | boolean;
-    scope: ScopeOptions[];
+    scopeArray: ScopeItem[];
     /**
      * should parameter continuously be updated
      */
@@ -64,12 +65,11 @@ export class Parameter {
     private service: Service;
     private _opcUaDataType: DataType;
     private _opcUaNode: OpcUaNode;
-    private modules: Module[];
 
     /**
      *
      * @param {ParameterOptions} parameterOptions
-     * @param {Service} service
+     * @param {Service} service         service where the parameter belongs to
      * @param {Strategy} strategy       strategy to use
      * @param {Module[]} modules        modules where expression can be matched
      */
@@ -79,7 +79,6 @@ export class Parameter {
         this.name = parameterOptions.name;
         this.variable = parameterOptions.variable || 'VExt';
         this.value = parameterOptions.value.toString();
-        this.scope = parameterOptions.scope || [];
         this.continuous = parameterOptions.continuous || false;
 
         this.service = service;
@@ -92,60 +91,19 @@ export class Parameter {
             throw new Error(`Could not find parameter "${this.name}" in ${service.name}`);
         }
 
-        this.modules = modules || undefined;
+        // evaluate scopeArray
+        this.scopeArray = (parameterOptions.scope || [])
+            .map((item: ScopeOptions) => ScopeItem.extractFromScopeOptions(item, modules));
 
+        // evaluate additional variables from expression
         const parser: Parser = new Parser({allowMemberAccess: true});
         this.value = this.value.replace(new RegExp('\\\\.', 'g'), '__');
         this.expression = parser.parse(this.value);
-        this.scope.push(...this.expression.variables({ withMembers: true }).map((variable) => {
-            let components = variable.split('.').map((token:string) => token.replace(new RegExp('__', 'g'),'.'));
-
-            // find module
-            let token = components.shift();
-            let module = modules.find(m=> m.id === token);
-            if (module==undefined) {
-                if (modules.length == 1) {
-                    module = modules[0];
-                } else {
-                    catRecipe.warn(`Module ${token} not found in ${variable}`);
-                    return undefined;
-                }
-            } else {
-                token = components.shift();
-            }
-
-            // find data assembly
-            let dataAssembly: ProcessValue;
-            /*if (module.services.find(s=> s.name === token)) {
-                let service = module.services.find(s => s.name === token);
-                token = components.shift();
-                if (service.strategies.find( (s: Strategy) => s.name === token)) {
-                    let strategy = service.strategies.find( (s: Strategy) => s.name === token);
-                    dataAssembly = strategy.parameters.find(param => param.name === components.shift());
-                } else {
-                    let strategy = service.strategies.find( (s: Strategy) => s.default);
-                    dataAssembly = strategy.parameters.find(param => param.name === token);
-                }
-            } else*/
-            if (module.variables.find(v => v.name === token)) {
-                dataAssembly = module.variables.find(v => v.name === token)
-            } else {
-                catRecipe.warn(`DataAssembly ${token} not found in ${variable}`);
-                return undefined;
-            }
-
-            // find data assembly variable
-            token = components.shift();
-            let dataAssemblyVariable;
-            if (token in dataAssembly.communication)
-                dataAssemblyVariable = token;
-            else if ('V' in dataAssembly.communication)
-                dataAssemblyVariable = 'V';
-            else if ('VExt' in dataAssembly.communication)
-                dataAssemblyVariable = 'VExt';
-
-            return {name: variable, module: module.id, dataAssembly: dataAssembly.name, variable: dataAssemblyVariable};
-        }).filter(Boolean));
+        this.scopeArray.push(...this.expression
+            .variables({ withMembers: true })
+            .map((variable) => ScopeItem.extractFromExpression(variable, modules))
+            .filter(Boolean)
+        );
     }
 
     public async getDataType(): Promise<DataType> {
@@ -160,16 +118,15 @@ export class Parameter {
 
     public listenToParameter() {
         const eventEmitter: StrictEventEmitter<EventEmitter, OpcUaNodeEvents> = new EventEmitter();
-        this.scope.forEach(async (item: ScopeOptions) => {
-            const module = this.modules.find(module => module.id === item.module);
-            module.listenToVariable(item.dataAssembly, item.variable)
+        this.scopeArray.forEach(async (item) => {
+            item.module.listenToOpcUaNode(item.variable)
                 .on('changed', (data) => eventEmitter.emit('changed', data));
         });
         return eventEmitter;
     }
 
     /**
-     * calculate value from current scope
+     * calculate value from current scopeArray
      * @returns {Promise<any>}
      */
     public async getValue(): Promise<any> {
@@ -177,27 +134,15 @@ export class Parameter {
             return undefined;
         }
         // get current variables
-        const tasks = await Promise.all(this.scope.map(async (item: ScopeOptions) => {
-            const module = this.modules.find(module => module.id === item.module);
-            return module.readVariable(item.dataAssembly, item.variable)
-                    .then(value => {
-                        return item.name.split('.').reduceRight((previous, current) => {
-                            let a = {};
-                            a[current] = previous;
-                            return a;
-                        }, value.value.value );
-                    });
-        }));
-        const assign = require('assign-deep');
+        const tasks = await Promise.all(this.scopeArray.map((item) => item.getScopeValue()));
         const scope = assign(...tasks);
-        catService.info(`Scope: ${JSON.stringify(scope)} <- ${JSON.stringify(this.scope)}`);
         const result = this.expression.evaluate(scope);
-        catService.info(`Specific parameters: ${this.name} = ${this.value}(${JSON.stringify(scope)}) = ${result}`);
+        catService.info(`Specific parameters: ${this.name} = ${this.value} (${JSON.stringify(scope)}) = ${result}`);
         return result;
     }
 
     /**
-     * calculate value from current scope and write it down to module
+     * calculate value from current scopeArray and write it down to module
      * @returns {Promise<any>}
      */
     async updateValueOnModule(): Promise<any> {

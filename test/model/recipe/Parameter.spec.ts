@@ -62,6 +62,25 @@ describe('Parameter', () => {
         expect(await param.getValue()).to.be.closeTo(2.14, 0.01);
     });
 
+    it('should load with complex expression and given scopeArray', async() => {
+        await module.connect();
+        const param = new Parameter({
+            name: 'var1',
+            value: 'sin(a)^2 + cos(CIF.Test_AnaView\\.L004)^2',
+            scope: [
+                {
+                    name: "a",
+                    module: "CIF",
+                    dataAssembly: "Test_AnaView.L004",
+                    variable: "V"
+                }
+            ]
+
+        }, service, undefined, [module]);
+        expect(await param.getValue()).to.be.closeTo(1, 0.01);
+        await module.disconnect();
+    });
+
     it('should load with complex expression with dataAssembly variables', async() => {
         await module.connect();
         const param = new Parameter({
