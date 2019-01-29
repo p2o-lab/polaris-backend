@@ -32,6 +32,7 @@ import {
     AndConditionOptions,
     ConditionOptions,
     ConditionType,
+    ExpressionConditionOptions,
     NotConditionOptions,
     OrConditionOptions, ScopeOptions,
     StateConditionOptions,
@@ -42,7 +43,6 @@ import { EventEmitter } from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Expression, Parser} from 'expr-eval';
 import {ScopeItem} from './ScopeItem';
-import {ExpressionConditionOptions} from '@plt/pfe-ree-interface/dist/options';
 
 
 /**

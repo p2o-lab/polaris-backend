@@ -32,8 +32,7 @@ import {expect} from 'chai';
 import {later, waitForStateChange} from '../helper';
 import {Service} from '../../src/model/core/Service';
 import {Parameter} from '../../src/model/recipe/Parameter';
-import {ServiceCommand, ServiceInterface} from '@plt/pfe-ree-interface';
-import {ControlEnableInterface, ParameterInterface, StrategyInterface} from '@plt/pfe-ree-interface/dist/interfaces';
+import {ServiceCommand} from '@plt/pfe-ree-interface';
 
 describe('CIF Integration', function () {
 
