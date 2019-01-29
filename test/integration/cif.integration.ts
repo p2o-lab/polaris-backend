@@ -50,7 +50,7 @@ describe('CIF Integration', function () {
         index = module.services.findIndex((service) => service.name === 'Test_Service.Service2');
         module.services.splice(index, 1);
         await module.connect();
-        service = module.services[2];
+        service = module.services.find((service) => service.name === 'Test_Service.Dosieren');
     });
 
     after(async() => {
@@ -81,14 +81,10 @@ describe('CIF Integration', function () {
 
         await manager.resetAllServices();
         await later(200);
-    });
 
-    it('should provide correct service state', async () => {
         const state = await service.getServiceState();
         expect(state).to.equal(ServiceState.IDLE);
-    });
 
-    it('should provide correct control enable in IDLE state', async () => {
         const controlEnable = await service.getControlEnable();
         expect(controlEnable).to.deep.equal({
             'abort': true,

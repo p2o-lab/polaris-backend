@@ -24,7 +24,6 @@
  */
 
 import { Service, ServiceOptions } from './Service';
-import {Parameter} from '../recipe/Parameter';
 import { ProcessValue } from './ProcessValue';
 import {
     AttributeIds,
