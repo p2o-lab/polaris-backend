@@ -327,11 +327,12 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
      */
     async execute(command?: ServiceCommand, strategyIn?: Strategy, parametersIn?: (Parameter|ParameterOptions)[] ): Promise<void> {
         catService.info(`Execute ${command} service ${this.parent.id}.${this.name}(${ strategyIn ? strategyIn.name : '' })`);
+        let result;
         if (strategyIn) {
             await this.setStrategyParameters(strategyIn, parametersIn);
         }
         if (command) {
-            await this.executeCommand(command);
+            result = await this.executeCommand(command);
         }
         this.emit('commandExecuted', {
             timestampPfe: new Date(),
@@ -339,6 +340,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
             command: command,
             parameter: await this.getCurrentParameters(strategyIn)
         });
+        return result;
     }
 
     /**
@@ -652,7 +654,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
             this.parent.listenToOpcUaNode(this.status)
                 .on('changed', ({value, serverTimestamp}: {value: number, serverTimestamp: Date}) => {
                     this.lastChange = new Date();
-                    catService.info(`Status changed for ${this.name}: ${ServiceState[value]} ${this.lastChange}`);
+                    catService.info(`Status changed for ${this.name}: ${ServiceState[value]}`);
                     this.emit('state', {state: value, serverTimestamp});
                 });
         }

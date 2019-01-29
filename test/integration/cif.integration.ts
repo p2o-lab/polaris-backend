@@ -50,6 +50,7 @@ describe('CIF Integration', function () {
         index = module.services.findIndex((service) => service.name === 'Test_Service.Service2');
         module.services.splice(index, 1);
         await module.connect();
+        expect(async () => {await module.connect()}).to.not.throw();
         service = module.services.find((service) => service.name === 'Test_Service.Dosieren');
     });
 
@@ -61,10 +62,7 @@ describe('CIF Integration', function () {
     });
 
     it('should be succesfully connected', async() => {
-
-        expect(() => {module.connect()}).to.not.throw();
-
-        let json = await module.json();
+                let json = await module.json();
         expect(json).to.have.property('id', 'CIF');
         assert.equal(json.endpoint, 'opc.tcp://10.6.51.200:4840');
         assert.equal(json.protected, false);
@@ -75,12 +73,13 @@ describe('CIF Integration', function () {
         expect(serviceStates).to.have.lengthOf(4);
     });
 
-    it('should bring everything to idle', async () => {
+    it('should bring everything to idle and perform a service cycle', async function() {
+        this.timeout(10000);
         await manager.abortAllServices();
-        await later(200);
+        await later(250);
 
         await manager.resetAllServices();
-        await later(200);
+        await later(250);
 
         const state = await service.getServiceState();
         expect(state).to.equal(ServiceState.IDLE);
@@ -97,15 +96,9 @@ describe('CIF Integration', function () {
             'stop': true,
             'unhold': false
         });
-    });
 
-    it('should provide correct undefined error string', async () => {
         const errorString = await service.getErrorString();
         expect(errorString).to.be.undefined;
-    });
-
-    it('should perform a service cycle', async function () {
-        this.timeout(10000);
 
         assert.equal(service.name, 'Test_Service.Dosieren');
 
@@ -148,7 +141,7 @@ describe('CIF Integration', function () {
         //await waitForStateChange(service, 'ABORTING');
         await waitForStateChange(service, 'ABORTED');
 
-        service.execute(ServiceCommand.reset);
+        service.execute(ServiceCommand.reset).catch((err) => console.log('already triggered by autoreset'));
         //await waitForStateChange(service, 'RESETTING');
         await waitForStateChange(service, 'IDLE');
     });
