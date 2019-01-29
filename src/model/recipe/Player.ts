@@ -201,12 +201,12 @@ export class Player extends (EventEmitter as { new(): PlayerEmitter }) {
 
     /**
      * Force transition of current recipe
+     *
      */
     public forceTransition(stepName: string, nextStepName: string) {
         const recipe = this.getCurrentRecipe();
-        console.log(stepName, recipe.current_step.name);
         if (recipe.current_step.name!==stepName) {
-            throw new Error('Wrong step')
+            throw new Error(`Ẁrong step. Expected: ${recipe.current_step.name} - Actual: ${stepName}`);
         }
         const step = recipe.current_step;
         const transition = step.transitions.find(tr=> tr.next_step_name === nextStepName);

@@ -113,5 +113,4 @@ describe('Recipe', () => {
         });
     });
 
-    it('should  force a transition');
 });
