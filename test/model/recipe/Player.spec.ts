@@ -30,7 +30,7 @@ import {expect} from 'chai';
 import {Manager} from '../../../src/model/Manager';
 import {later} from '../../helper';
 import {RecipeState} from '@plt/pfe-ree-interface';
-import {promiseTimeout} from '../../../src/timeout-promise';
+import { timeout } from 'promise-timeout';
 
 describe('Player', function () {
 
@@ -95,11 +95,11 @@ describe('Player', function () {
 
             await later(5);
 
-            promiseTimeout(100, new Promise((resolve) => {
+            timeout(new Promise((resolve) => {
                 player.once('stepFinished', (step) => {
                     resolve();
                 })
-            }));
+            }), 100);
             player.forceTransition('S1', 'S2');
             player.forceTransition('S2', 'S3');
         });
