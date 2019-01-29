@@ -25,39 +25,51 @@
 
 import * as assert from 'assert';
 import * as fs from 'fs';
-import {Module} from '../../../src/model/core/Module';
+import {Module, ModuleOptions} from '../../../src/model/core/Module';
+import {expect} from 'chai';
+
 
 describe('Module', () => {
-    describe('constructor', () => {
 
-        it('should load the biofeed module json', (done) => {
-            fs.readFile('assets/modules/module_biofeed_1.4.2.json', async (err, file) => {
-                const module = new Module(JSON.parse(file.toString()).modules[0]);
-                assert.equal(module.id, 'BioFeed');
-                assert.equal(module.services.length, 14);
-                assert.equal(module.isConnected(), false);
+    it('should load the biofeed module json', (done) => {
+        fs.readFile('assets/modules/module_biofeed_1.4.2.json', async (err, file) => {
+            const module = new Module(JSON.parse(file.toString()).modules[0]);
+            assert.equal(module.id, 'BioFeed');
+            assert.equal(module.services.length, 14);
+            assert.equal(module.isConnected(), false);
 
-                let json = await module.json();
-                assert.deepEqual(json, {
-                    id: 'BioFeed',
-                    endpoint: 'opc.tcp://10.6.51.42:4840',
-                    hmiUrl: 'http://10.6.51.42',
-                    connected: false,
-                    services: undefined,
-                    protected: false
-                });
-                done();
-            })
-            ;
-        });
-
-        it('should load the cif module json', (done) => {
-            fs.readFile('assets/modules/module_cif.json', (err, file) => {
-                const module = new Module(JSON.parse(file.toString()).modules[0]);
-                assert.equal(module.id, 'CIF');
-                assert.equal(module.services.length, 6);
-                done();
+            let json = await module.json();
+            assert.deepEqual(json, {
+                id: 'BioFeed',
+                endpoint: 'opc.tcp://10.6.51.42:4840',
+                hmiUrl: 'http://10.6.51.42',
+                connected: false,
+                services: undefined,
+                protected: false
             });
+            done();
+        })
+        ;
+    });
+
+    it('should not connect to a module with wrong endpoint', async () => {
+        let options: ModuleOptions = JSON.parse(fs.readFileSync('assets/modules/module_cif.json').toString()).modules[0];
+        options.opcua_server_url = 'opc.tcp://10.6.51.99:484144';
+        let module = new Module(options);
+        try {
+            await module.connect();
+        } catch (e) {
+            expect(e).to.exist;
+        }
+        expect(module.isConnected()).to.be.false;
+    });
+
+    it('should load the cif module json', (done) => {
+        fs.readFile('assets/modules/module_cif.json', (err, file) => {
+            const module = new Module(JSON.parse(file.toString()).modules[0]);
+            assert.equal(module.id, 'CIF');
+            assert.equal(module.services.length, 6);
+            done();
         });
     });
 });

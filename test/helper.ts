@@ -23,8 +23,6 @@
  * SOFTWARE.
  */
 
-import {promiseTimeout} from '../src/timeout-promise';
-import * as assert from "assert";
 import {ServiceState} from '../src/model/core/enum';
 
 /** wait
@@ -39,21 +37,26 @@ export function later(delay: number) {
 }
 
 /**
- * test if listener changes to expectedState within 1 second
- * @param listener
+ * resolve when service changes to expectedState
+ * rejects after ms milliseconds
+ * @param {Service} service     service to be waited for
  * @param {string} expectedState
+ * @param {number} ms           max time before promise is rejected
  * @returns {Promise<void>}
  */
-export async function testForStateChange(listener, expectedState: string) {
-    try {
-        await promiseTimeout(1000, new Promise((resolve) => {
-            listener.on('state', ({state, serverTimestamp}) => {
-                if (ServiceState[state] === expectedState) {
-                    resolve();
-                }
-            });
-        }));
-    } catch (err) {
-        assert.fail(`Failed to reach ${expectedState} within 1000ms`);
-    }
+export async function waitForStateChange(service, expectedState: string, ms=1000): Promise<void> {
+    return new Promise((resolve, reject) => {
+        function test(data) {
+            if (ServiceState[data.state] === expectedState) {
+                clearTimeout(id);
+                service.removeListener('state', test);
+                resolve();
+            }
+        }
+        service.on('state', test);
+        const id = setTimeout(() => {
+            clearTimeout(id);
+            reject(`Service ${service.name} failed to reach state ${expectedState} within ${ms}ms`);
+        }, ms);
+    });
 }

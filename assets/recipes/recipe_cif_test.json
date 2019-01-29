@@ -14,7 +14,7 @@
           "parameter": [
             {
               "name": "SollVolumen",
-              "value": "2.1*a",
+              "value": "max(0.2,min(28,0.1*a))",
               "scope": [
                 {
                   "name": "a",
@@ -34,10 +34,20 @@
       "transitions": [
         {
           "next_step": "S2",
-          "condition":{
+          "condition": {
+            "type": "and",
+            "conditions": [
+              {
                 "type": "time",
                 "duration": 1
-
+              },
+              {
+                "type": "state",
+                "module": "CIF",
+                "service": "Test_Service.Vorlegen",
+                "state": "running"
+              }
+              ]
           }
         }
       ]

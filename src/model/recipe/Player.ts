@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import {catManager} from '../../config/logging';
+import {catManager, catPlayer} from '../../config/logging';
 import {EventEmitter} from 'events';
 import {PlayerInterface, RecipeState, Repeat, TransitionOptions} from '@plt/pfe-ree-interface';
 import {RecipeRun} from "./RecipeRun";
@@ -67,13 +67,11 @@ type PlayerEmitter = StrictEventEmitter<EventEmitter, PlayerEvents>;
 /**
  * Player can play recipes in a playlist
  * Only one recipe is active at one point in time
- *
- * @event completed
- *
  */
 export class Player extends (EventEmitter as { new(): PlayerEmitter }) {
     public repeat: Repeat;
 
+    /** index in playlist starting from 0 */
     private _currentItem: number;
 
     private _playlist: Recipe[];
@@ -119,7 +117,7 @@ export class Player extends (EventEmitter as { new(): PlayerEmitter }) {
 
     /**
      * Remove recipe from playlist
-     * @param {number} index in playlist
+     * @param {number} index in playlist (starting from 0)
      * @return Player
      */
     public remove(index: number): Player {
@@ -158,6 +156,7 @@ export class Player extends (EventEmitter as { new(): PlayerEmitter }) {
             this._status = RecipeState.running;
             this._currentItem = 0;
             this.emit('started');
+            catPlayer.info('Player started');
             this.runCurrentRecipe();
         } else if (this.status === RecipeState.paused) {
             this._status = RecipeState.running;
@@ -202,12 +201,12 @@ export class Player extends (EventEmitter as { new(): PlayerEmitter }) {
 
     /**
      * Force transition of current recipe
+     *
      */
     public forceTransition(stepName: string, nextStepName: string) {
         const recipe = this.getCurrentRecipe();
-        console.log(stepName, recipe.current_step.name);
         if (recipe.current_step.name!==stepName) {
-            throw new Error('Wrong step')
+            throw new Error(`Ẁrong step. Expected: ${recipe.current_step.name} - Actual: ${stepName}`);
         }
         const step = recipe.current_step;
         const transition = step.transitions.find(tr=> tr.next_step_name === nextStepName);
@@ -224,6 +223,7 @@ export class Player extends (EventEmitter as { new(): PlayerEmitter }) {
             .once('started', () => this.emit('recipeStarted', this.currentRecipeRun.recipe))
             .on('stepFinished', ({finishedStep, nextStep}) => this.emit('stepFinished', finishedStep))
             .once('completed', () => {
+                catPlayer.info('recipe finished');
                 this.emit('recipeFinished', this.currentRecipeRun.recipe);
                 catManager.info(`recipe finished ${this.currentItem + 1}/${this._playlist.length} (player ${this.status})`);
                 if (this._currentItem + 1 < this._playlist.length) {
@@ -233,6 +233,7 @@ export class Player extends (EventEmitter as { new(): PlayerEmitter }) {
                 } else {
                     this._status = RecipeState.completed;
                     this._currentItem = undefined;
+                    catPlayer.info('Player finished');
                     this.emit('completed');
                 }
             });

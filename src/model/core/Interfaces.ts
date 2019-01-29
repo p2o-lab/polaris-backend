@@ -24,8 +24,12 @@
  */
 
 export interface OpcUaNode {
+    /** despite its current name this variable contains the *namespace url* of the node*/
     namespace_index: string;
+    /** node id of the node as string (e.g. 's=sdfdsf' or 'i=12') */
     node_id: string;
+    /** data type of OPC UA node */
+    data_type?: string;
 }
 
 export interface ServiceParameter {

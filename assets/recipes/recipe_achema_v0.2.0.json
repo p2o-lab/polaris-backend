@@ -1,0 +1,323 @@
+{
+  "version": "0.2.0",
+  "name": "Rezept ACHEMA",
+  "description": "Verbessertes Rezept zur ACHEMA 2018",
+  "author": "Markus Graube",
+  "initial_step": "Startup.Init",
+  "steps": [
+    {
+      "name": "Startup.Init",
+      "operations": [
+        {
+          "module": "Temper",
+          "service": "Tempering",
+          "strategy": "SetpointRampTempering",
+          "command": "start",
+          "parameter": [
+            {
+              "name": "RampDuration",
+              "value": 60
+            },
+            {
+              "name": "RampEndtemperature",
+              "value": 20
+            }
+          ]
+        },
+        {
+          "module": "React",
+          "service": "Empty_Service",
+          "strategy": "Empty_Full",
+          "command": "start",
+          "parameter": [
+            {
+              "name": "Empty_Level_Tank_DeadBand",
+              "value": 0.5
+            },
+            {
+              "name": "Empty_VolFlow",
+              "value": 3
+            }
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "condition":  {
+              "type": "state",
+              "module": "Temper",
+              "service": "Tempering",
+              "state": "running"
+          },
+          "next_step": "Running.Vorlegen"
+        }
+      ]
+    },
+    {
+      "name": "Running.Vorlegen",
+      "operations": [
+        {
+          "module": "React",
+          "service": "Empty_Service",
+          "command": "reset"
+        },
+        {
+          "module": "Dose",
+          "service": "DoseAmount",
+          "command": "start",
+          "parameter": [
+            {
+              "name": "SetVolume",
+              "value": 1
+            },
+            {
+              "name": "SetDuration",
+              "value": 30
+            }
+          ]
+        },
+        {
+          "module": "React",
+          "service": "Fill_Service",
+          "command": "start",
+          "parameters": [
+            {
+              "name": "Fill_Level_Max",
+              "value": 1.5
+            }
+          ]
+        },
+        {
+          "module": "React",
+          "service": "Stir_Service",
+          "strategy": "Stirring_Continous",
+          "command": "start",
+          "parameter": [
+            {
+              "name": "Stir_Rotation",
+              "value": 100
+            }
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "Running.Reagieren",
+          "condition": {
+            "type": "and",
+            "conditions": [
+              {
+                "type": "state",
+                "module": "Dose",
+                "service": "DoseAmount",
+                "state": "completed"
+              },
+              {
+                "type": "state",
+                "module": "Temper",
+                "service": "Tempering",
+                "state": "running"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Running.Reagieren",
+      "operations": [
+        {
+          "module": "Dose",
+          "service": "DoseAmount",
+          "command": "start",
+          "parameter": [
+            {
+              "name": "SetVolume",
+              "value": "1"
+            },
+            {
+              "name": "SetDuration",
+              "value": "60"
+            }
+          ]
+        },
+        {
+          "module": "React",
+          "service": "Stir_Service",
+          "strategy": "Stirring_Continous",
+          "command": "restart",
+          "parameter": [
+            {
+              "name": "Stir_Rotation",
+              "value": 200
+            }
+          ]
+        },
+        {
+          "module": "React",
+          "service": "Aerate_Service",
+          "strategy": "Aerate_Continous",
+          "command": "start"
+        },
+        {
+          "module": "Temper",
+          "service": "Tempering",
+          "strategy": "SetpointRampTempering",
+          "parameter": [
+            {
+              "name": "RampDuration",
+              "value": 60
+            },
+            {
+              "name": "RampEndtemperature",
+              "value": 21
+            }
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "Running.Ruhen",
+          "condition": {
+            "type": "and",
+            "conditions": [
+              {
+                "type": "state",
+                "module": "Dose",
+                "service": "DoseAmount",
+                "state": "idle"
+              },
+              {
+                "type": "variable",
+                "module": "Temper",
+                "dataAssembly": "TI",
+                "operator": ">=",
+                "value": 20.95
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Running.Ruhen",
+      "operations": [
+        {
+          "module": "React",
+          "service": "Fill_Service",
+          "command": "complete"
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "Running.Ruhen.Stop",
+          "condition": {
+            "type": "time",
+            "duration": 20
+          }
+        }
+      ]
+    },
+    {
+      "name": "Running.Ruhen.Stop",
+      "operations": [
+        {
+          "module": "React",
+          "service": "Aerate_Service",
+          "command": "complete"
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "Running.Abkühlen",
+          "condition": {
+            "type": "state",
+            "module": "React",
+            "service": "Aerate_Service",
+            "state": "completed"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Running.Abkühlen",
+      "operations": [
+        {
+          "module": "Temper",
+          "service": "Tempering",
+          "strategy": "SetpointRampTempering",
+          "parameter": [
+            {
+              "name": "RampDuration",
+              "value": 60
+            },
+            {
+              "name": "RampEndtemperature",
+              "value": 20
+            }
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "Running.Abkühlen.Stop",
+          "condition": {
+            "type": "variable",
+            "module": "Temper",
+            "dataAssembly": "TI",
+            "operator": "<=",
+            "value": 20.1
+          }
+        }
+      ]
+    },
+    {
+      "name": "Running.Abkühlen.Stop",
+      "operations": [
+        {
+          "module": "Temper",
+          "service": "Tempering",
+          "command": "complete"
+        },
+        {
+          "module": "React",
+          "service": "Stir_Service",
+          "command": "complete"
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "Shutdown.Entleeren",
+          "condition": {
+            "type": "state",
+            "module": "React",
+            "service": "Stir_Service",
+            "state": "idle"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Shutdown.Entleeren",
+      "operations": [
+        {
+          "module": "React",
+          "service": "Empty_Service",
+          "strategy": "Empty_Full",
+          "command": "start"
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "completed",
+          "condition": {
+            "type": "state",
+            "module": "React",
+            "service": "Empty_Service",
+            "state": "completed"
+          }
+        }
+      ]
+    }
+  ]
+}

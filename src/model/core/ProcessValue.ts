@@ -25,14 +25,24 @@
 
 import { OpcUaNode } from './Interfaces';
 
+/**
+ * Process values of a [[Module]].
+ * can be used to collect all process values and subscribe to them later
+ */
 export class ProcessValue {
 
     name: string;
     communication: OpcUaNode[];
 
-    constructor(variableOptions: any) {
-        this.name = variableOptions.name;
-        this.communication = variableOptions.communication;
+    constructor(name: string, communication: OpcUaNode[]) {
+        if (!name) {
+            throw new Error('No name for ProcessValue specified');
+        }
+        if (communication.length===0) {
+            throw new Error('communication list of OpcUaNodes for ProcessValue is empty');
+        }
+        this.name = name;
+        this.communication = communication;
     }
 
 }

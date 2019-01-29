@@ -25,7 +25,7 @@
 
 import { DataType, DataValue, Variant, VariantArrayType } from 'node-opcua-client';
 import { Module } from './Module';
-import { catOpc, catService } from '../../config/logging';
+import {catOpc, catRecipe, catService} from '../../config/logging';
 import {
     controlEnableToJson,
     isAutomaticState,
@@ -51,6 +51,7 @@ import { Unit } from './Unit';
 import { manager } from '../Manager';
 import { EventEmitter } from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
+import undefinedError = Mocha.utils.undefinedError;
 
 export interface ServiceOptions {
     name: string;
@@ -83,7 +84,7 @@ interface ServiceEvents {
      */
     state: {state: ServiceState, serverTimestamp: Date};
     /**
-     * Notify when controlOp changes
+     * Notify when controlEnable changes
      * @event controlEnable
      */
     controlEnable: ControlEnableInterface;
@@ -95,7 +96,7 @@ interface ServiceEvents {
         timestampPfe: Date,
         strategy: Strategy,
         command: ServiceCommand,
-        parameter: Parameter[],
+        parameter: ParameterInterface[],
         scope?: any[]
     };
 }
@@ -230,12 +231,13 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
         const params = this.getCurrentParameters();
         const errorString = this.getErrorString();
         const controlEnable = this.getControlEnable();
+        const currentStrategy = this.getCurrentStrategy();
         return {
             name: this.name,
             opMode: OpMode[opMode] || opMode,
             status: ServiceState[await state],
             strategies: await strategies,
-            currentStrategy: await this.getCurrentStrategy(),
+            currentStrategy: (await currentStrategy).name,
             parameters: await params,
             error: await errorString,
             controlEnable: await controlEnable,
@@ -257,15 +259,13 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
 
     /**
      * Read current strategy from module
-     * @returns {Promise<string>}   strategy name
+     *
+     * if an error occurs, *undefined* is returned
+     * @returns {Promise<Strategy>}   strategy
      */
-    private async getCurrentStrategy(): Promise<string> {
-        try {
-            const id = await this.parent.readVariableNode(this.strategy).value.value;
-            return this.strategies.find(strat => strat.id === id.value.value).name;
-        } catch (err) {
-            return undefined;
-        }
+    private async getCurrentStrategy(): Promise<Strategy> {
+        const id = await this.parent.readVariableNode(this.strategy);
+        return this.strategies.find(strat => strat.id == id.value.value);
     }
 
     async getCurrentParameters(strategy?: Strategy): Promise<ParameterInterface[]> {
@@ -320,27 +320,41 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
         return await Promise.all(tasks);
     }
 
+
     /**
-     * Execute command by writing parameters and ControlOp/ControlExt
-     * Set ControlOp/ControlExt back after 500ms
      *
-     * @param {ServiceCommand} command
-     * @param {Strategy} strategy
-     * @param {Parameter[]} parameters
-     * @returns {Promise<boolean>}
+     * @returns {Promise<void>}
      */
-    async executeCommand(command: ServiceCommand, strategy: Strategy, parameters: Parameter[]): Promise<boolean> {
-        catService.info(`${command} service ${this.name}(${strategy ? strategy.name : ''})`);
+    async execute(command?: ServiceCommand, strategyIn?: Strategy, parametersIn?: (Parameter|ParameterOptions)[] ): Promise<void> {
+        catService.info(`Execute ${command} service ${this.parent.id}.${this.name}(${ strategyIn ? strategyIn.name : '' })`);
+        let result;
+        if (strategyIn) {
+            await this.setStrategyParameters(strategyIn, parametersIn);
+        }
+        if (command) {
+            result = await this.executeCommand(command);
+        }
         this.emit('commandExecuted', {
             timestampPfe: new Date(),
-            strategy: strategy,
+            strategy: await this.getCurrentStrategy(),
             command: command,
-            parameter: parameters
+            parameter: await this.getCurrentParameters(strategyIn)
         });
+        return result;
+    }
+
+    /**
+     * Execute command by writing ControlOp/ControlExt
+     * (currently disabled - Set ControlOp/ControlExt back after 100ms)
+     *
+     * @param {ServiceCommand} command
+     * @returns {Promise<boolean>}
+     */
+    private async executeCommand(command: ServiceCommand): Promise<boolean> {
         let result;
-        if (command === 'start') {
-            result = this.start(strategy, parameters);
-        } else if (command === 'stop') {
+        if (command === ServiceCommand.start) {
+            result = this.start();
+        } else if (command === ServiceCommand.stop) {
             result = this.stop();
         } else if (command === 'reset') {
             result = this.reset();
@@ -355,58 +369,56 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
         } else if (command === 'resume') {
             result = this.resume();
         } else if (command === 'restart') {
-            result = this.restart(strategy, parameters);
+            result = this.restart();
         } else {
             throw new Error(`Command ${command} can not be interpreted`);
         }
-        await result;
         // reset ControlOp variable after 100ms
         // setTimeout(() => this.clearCommand(), 100);
         return result;
     }
 
-    async clearCommand(): Promise<boolean> {
-        return await this.sendCommand(ServiceMtpCommand.UNDEFINED);
+    private clearCommand(): Promise<boolean> {
+        catService.info(`command ${this.name} reset`);
+        return this.sendCommand(ServiceMtpCommand.UNDEFINED);
     }
 
-    async start(strategy?: Strategy, parameters?: Parameter[]): Promise<boolean> {
-        await this.setStrategyParameters(strategy, parameters);
-        return await this.sendCommand(ServiceMtpCommand.START);
+    private start(): Promise<boolean> {
+        return this.sendCommand(ServiceMtpCommand.START);
     }
 
-    async restart(strategy: Strategy, parameter: Parameter[]): Promise<boolean> {
-        await this.setStrategyParameters(strategy, parameter);
+    private restart(): Promise<boolean> {
         return this.sendCommand(ServiceMtpCommand.RESTART);
     }
 
-    stop(): Promise<boolean> {
+    private stop(): Promise<boolean> {
         this.clearListeners();
         return this.sendCommand(ServiceMtpCommand.STOP);
     }
 
-    async reset(): Promise<boolean> {
-        return await this.sendCommand(ServiceMtpCommand.RESET);
+    private reset(): Promise<boolean> {
+        return this.sendCommand(ServiceMtpCommand.RESET);
     }
 
-    complete(): Promise<boolean> {
+    private complete(): Promise<boolean> {
         this.clearListeners();
         return this.sendCommand(ServiceMtpCommand.COMPLETE);
     }
 
-    abort(): Promise<boolean> {
+    private abort(): Promise<boolean> {
         this.clearListeners();
         return this.sendCommand(ServiceMtpCommand.ABORT);
     }
 
-    unhold(): Promise<boolean> {
+    private unhold(): Promise<boolean> {
         return this.sendCommand(ServiceMtpCommand.UNHOLD);
     }
 
-    pause(): Promise<boolean> {
+    private pause(): Promise<boolean> {
         return this.sendCommand(ServiceMtpCommand.PAUSE);
     }
 
-    resume(): Promise<boolean> {
+    private resume(): Promise<boolean> {
         return this.sendCommand(ServiceMtpCommand.RESUME);
     }
 
@@ -415,7 +427,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
      * @param {ParameterOptions[]} parameters
      * @returns {Promise<any[]>}
      */
-    async setServiceParameters(parameters: ParameterOptions[]): Promise<any[]> {
+    public setServiceParameters(parameters: ParameterOptions[]): Promise<any[]> {
         catService.info(`Set service parameters: ${JSON.stringify(parameters)}`);
         const tasks = parameters.map((paramOptions: ParameterOptions) => {
             const param: Parameter = new Parameter(paramOptions, this);
@@ -424,32 +436,50 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
         return Promise.all(tasks);
     }
 
-    /** can set also configuration parameter or process values
+    /** Set strategy and strategy parameter
+     * Use default strategy if strategy is omitted
      *
-     * @param {Strategy} strategy
-     * @param {Parameter[]} parameters
+     * @param {Strategy|string} strategy    object or name of desired strategy
+     * @param {(Parameter|ParameterOptions)[]} parameters
      * @returns {Promise<boolean>}
      */
-    public async setStrategyParameters(strategy?: Strategy, parameters?: Parameter[]): Promise<boolean> {
-        // set strategy
-        if (strategy) {
-            catService.info(`Set strategy "${strategy.name}" for service ${this.name}`);
-            await this.parent.writeNode(this.strategy,
-                {
-                    dataType: DataType.UInt32,
-                    value: strategy.id,
-                    arrayType: VariantArrayType.Scalar,
-                    dimensions: null
-                });
+    public async setStrategyParameters(strategy?: Strategy|string, parameters?: (Parameter|ParameterOptions)[]): Promise<boolean> {
+        // get strategy from input parameters
+        let strat: Strategy;
+        if (!strategy) {
+            strat = this.strategies.find(strat => strat.default === true);
+        } else if (typeof strategy === "string") {
+            strat = this.strategies.find(strat => strat.name === strategy);
+        } else {
+            strat = strategy;
         }
 
-        // set parameter (both configuration and strategy parameters)
-        if (strategy && parameters) {
-            const tasks = parameters.map((param: Parameter) => param.updateValueOnModule());
+        // set strategy
+        catService.info(`Set strategy "${strat.name}" (${strat.id}) for service ${this.name}`);
+        await this.parent.writeNode(this.strategy,
+            {
+                dataType: DataType.UInt32,
+                value: strat.id,
+                arrayType: VariantArrayType.Scalar,
+                dimensions: null
+            });
+
+        // TODO: is order of parameters and strategy important?
+        // set strategy
+        if (parameters) {
+            let params: Parameter[] = parameters.map((param) => {
+                if (param instanceof Parameter) {
+                    return param;
+                } else {
+                    return new Parameter(param, this, strat)
+                }
+            });
+            const tasks = params.map((param: Parameter) => param.updateValueOnModule());
             const paramResults = await Promise.all(tasks);
             catService.trace(`Set Parameter Promises: ${JSON.stringify(paramResults)}`);
-            this.listenToServiceParameters(parameters);
+            this.listenToServiceParameters(params);
         }
+
 
         return Promise.resolve(true);
     }
@@ -558,11 +588,28 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
         if (!this.parent.isConnected()) {
             return Promise.reject('Module is not connected');
         }
-        catService.info(`Send command ${ServiceMtpCommand[command]} (${command}) to service "${this.name}"`);
+        catService.debug(`Send command ${ServiceMtpCommand[command]} (${command}) to service "${this.name}"`);
         if (manager.automaticMode) {
             await this.setToAutomaticOperationMode();
         } else {
             await this.setToManualOperationMode();
+        }
+
+        let controlEnable: ControlEnableInterface = await this.getControlEnable();
+        catService.debug(`ControlEnable of service ${this.name}: ${JSON.stringify(controlEnable)}`);
+
+        let commandExecutable =
+            (command===ServiceMtpCommand.START && controlEnable.start) ||
+            (command===ServiceMtpCommand.STOP && controlEnable.stop) ||
+            (command===ServiceMtpCommand.RESTART && controlEnable.restart) ||
+            (command===ServiceMtpCommand.PAUSE && controlEnable.pause) ||
+            (command===ServiceMtpCommand.RESUME && controlEnable.resume) ||
+            (command===ServiceMtpCommand.COMPLETE && controlEnable.complete) ||
+            (command===ServiceMtpCommand.UNHOLD && controlEnable.unhold) ||
+            (command===ServiceMtpCommand.ABORT && controlEnable.abort) ||
+            (command===ServiceMtpCommand.RESET && controlEnable.reset);
+        if (!commandExecutable) {
+            return Promise.reject(`ControlOp does not allow ${ServiceMtpCommand[command]} for service ${this.name} (${ServiceState[await this.getServiceState()]} - ${JSON.stringify(controlEnable)})`);
         }
 
         const result = await this.parent.writeNode(this.command,
@@ -571,7 +618,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
                 value: command,
                 arrayType: VariantArrayType.Scalar
             });
-        catService.trace(`Command ${command} written to ${this.name}: ${JSON.stringify(result)}`);
+        catService.info(`Command ${ServiceMtpCommand[command]}(${command}) written to ${this.name}: ${result.name}`);
 
         return result.value === 0;
     }
@@ -580,9 +627,10 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
      * Listen to state and error of service and emits specific events for them
      *
      * <uml>
-     *     Caller -> Service : subscribeToService
+     *     Caller -> Service : subscribeToService()
      *     ...
      *     Caller <- Service : emit "state"
+     *     Caller <- Service : emit "controlEnable"
      *     Caller <- Service : emit "errorMessage"
      * </uml>
      * @returns {Service} emits 'errorMessage' and 'state' events
@@ -591,15 +639,14 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
         if (this.errorMessage) {
             this.parent.listenToOpcUaNode(this.errorMessage)
                 .on('changed', ({value, serverTimestamp}: {value: string, serverTimestamp: Date}) => {
+                    catService.info(`errorMessage changed for ${this.name}: ${value}`);
                     this.emit('errorMessage', value);
                 });
-        } else {
-            catService.warn(`Service ${this.name} from module ${this.parent.id}` +
-                ` does not have a errorMessage variable`);
         }
         if (this.controlEnable) {
             this.parent.listenToOpcUaNode(this.controlEnable)
                 .on('changed', (data) => {
+                    catService.debug(`ControlEnable changed for ${this.name}: ${JSON.stringify(controlEnableToJson(data.value))}`);
                     this.emit('controlEnable', controlEnableToJson(data.value));
                 });
         }
@@ -607,13 +654,26 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
             this.parent.listenToOpcUaNode(this.status)
                 .on('changed', ({value, serverTimestamp}: {value: number, serverTimestamp: Date}) => {
                     this.lastChange = new Date();
-                    catService.info(`${this.name} = ${ServiceState[value]} ${this.lastChange}`);
+                    catService.info(`Status changed for ${this.name}: ${ServiceState[value]}`);
                     this.emit('state', {state: value, serverTimestamp});
                 });
-        } else {
-            throw new Error(`OPC UA variable for status of service ${this.name} not defined`);
+        }
+        if (this.command) {
+            this.parent.listenToOpcUaNode(this.command)
+                .on('changed', (data) => {
+                    catService.debug(`Command changed for ${this.name}: ${ServiceMtpCommand[data.value]} (${data.value})`);
+                });
         }
         return this;
+    }
+
+    /**
+     * Remove all Event listeners from service
+     */
+    public removeAllSubscriptions() {
+        this.removeAllListeners('state');
+        this.removeAllListeners('controlEnable');
+        this.removeAllListeners('errorMessage');
     }
 
 }

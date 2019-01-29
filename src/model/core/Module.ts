@@ -24,7 +24,6 @@
  */
 
 import { Service, ServiceOptions } from './Service';
-import {Parameter} from '../recipe/Parameter';
 import { ProcessValue } from './ProcessValue';
 import {
     AttributeIds,
@@ -42,9 +41,12 @@ import { catModule, catOpc, catRecipe } from '../../config/logging';
 import { EventEmitter } from 'events';
 import { OpcUaNode, Strategy } from './Interfaces';
 import { ServiceState } from './enum';
-import {ModuleInterface, ServiceInterface, ServiceCommand, ControlEnableInterface} from '@plt/pfe-ree-interface';
-import { promiseTimeout } from '../../timeout-promise';
-import { VariableLogEntry, ServiceLogEntry } from '../../logging/archive';
+import {
+    ModuleInterface, ServiceInterface, ServiceCommand, ControlEnableInterface,
+    ParameterInterface
+} from '@plt/pfe-ree-interface';
+import { timeout } from 'promise-timeout';
+import { VariableLogEntry } from '../../logging/archive';
 import StrictEventEmitter from 'strict-event-emitter-types';
 
 export interface ModuleOptions {
@@ -52,7 +54,7 @@ export interface ModuleOptions {
     opcua_server_url: string;
     hmi_url?: string;
     services: ServiceOptions[];
-    process_values: object[];
+    process_values: {name: string; communication: OpcUaNode[]}[];
 }
 
 /**
@@ -113,7 +115,7 @@ interface ModuleEvents {
         timestampPfe: Date,
         strategy: Strategy,
         command: ServiceCommand,
-        parameter: Parameter[]
+        parameter: ParameterInterface[]
     };
     /**
      * when one service goes to *completed*
@@ -158,7 +160,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
             this.services = options.services.map(serviceOption => new Service(serviceOption, this));
         }
         if (options.process_values) {
-            this.variables = options.process_values.map(variableOptions => new ProcessValue(variableOptions));
+            this.variables = options.process_values.map(variableOptions => new ProcessValue(variableOptions.name, variableOptions.communication));
         }
         if (options.hmi_url){
             this.hmiUrl = options.hmi_url;
@@ -188,8 +190,8 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
                 client.on('close', () => catOpc.warn('Closing OPC UA client connection'));
                 client.on('time_out_request', () => catOpc.debug('time out request - retrying connection'));
 
-                await promiseTimeout(5000, client.connect(this.endpoint));
-                catOpc.debug(`module connected ${this.id} ${this.endpoint}`);
+                await timeout(client.connect(this.endpoint), 1000);
+                catOpc.info(`module connected ${this.id} ${this.endpoint}`);
 
                 const session = await client.createSession();
                 catOpc.debug(`session established ${this.id} ${this.endpoint}`);
@@ -234,6 +236,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
                     catModule.warn('Could not connect to all variables:' + err);
                 }
                 this.emit('connected');
+                return Promise.resolve();
             } catch (err) {
                 return Promise.reject(`Could not connect to module ${this.id} on ${this.endpoint}: ${err.toString()}`);
             }
@@ -251,13 +254,14 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
      *
      */
     disconnect(): Promise<any> {
+        this.services.forEach(s => s.removeAllSubscriptions());
         return new Promise(async (resolve, reject) => {
             if (this.session) {
                 catModule.info(`Disconnect module ${this.id}`);
                 try {
-                    await promiseTimeout(1000, this.session.close());
+                    await timeout(this.session.close(), 1000);
                     this.session = undefined;
-                    await promiseTimeout(1000, this.client.disconnect());
+                    await timeout(1000, this.client.disconnect(), 1000);
                     this.client = undefined;
                     catModule.debug(`Module ${this.id} disconnected`);
                     this.emit('disconnected');
@@ -275,9 +279,10 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
     /**
      * Listen to OPC UA node and return event listener which is triggered by any value change
      * @param {OpcUaNode} node
+     * @param {number} samplingInterval     OPC UA sampling interval for this subscription in milliseconds
      * @returns {"events".internal.EventEmitter} "changed" event
      */
-    listenToOpcUaNode(node: OpcUaNode): StrictEventEmitter<EventEmitter, OpcUaNodeEvents> {
+    listenToOpcUaNode(node: OpcUaNode, samplingInterval=100): StrictEventEmitter<EventEmitter, OpcUaNodeEvents> {
         const nodeId = this.resolveNodeId(node);
         if (!this.monitoredItems.has(nodeId)) {
             const monitoredItem: ClientMonitoredItem = this.subscription.monitor({
@@ -285,12 +290,12 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
                 attributeId: AttributeIds.Value
             },
                 {
-                    samplingInterval: 100,
+                    samplingInterval: samplingInterval,
                     discardOldest: true,
                     queueSize: 10
                 }, TimestampsToReturn.Both);
 
-            const emitter: StrictEventEmitter<EventEmitter, OpcUaNodeEvents> = new EventEmitter();;
+            const emitter: StrictEventEmitter<EventEmitter, OpcUaNodeEvents> = new EventEmitter();
             monitoredItem.on('changed', (dataValue) => {
                 catOpc.debug(`Variable Changed (${this.resolveNodeId(node)}) = ${dataValue.value.value.toString()}`);
                 emitter.emit('changed', {value: dataValue.value.value, serverTimestamp: dataValue.serverTimestamp});
@@ -375,7 +380,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
                     this.emit('controlEnable', {service, controlEnable} );
                 })
                 .on('state', ({state, serverTimestamp}) => {
-                    catModule.info(`state changed: ${this.id}.${service.name} = ${ServiceState[state]}`);
+                    catModule.debug(`state changed: ${this.id}.${service.name} = ${ServiceState[state]}`);
                     const entry = {
                         timestampPfe: new Date(),
                         timestampModule: serverTimestamp,
@@ -430,6 +435,10 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
         };
     }
 
+    /**
+     * is module connected to physical PEA
+     * @returns {boolean}
+     */
     isConnected(): boolean {
         return !!this.session;
     }
@@ -454,32 +463,40 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
     /**
      * Abort all services in module
      */
-    abort() {
-        const tasks = this.services.map(service => service.abort());
+    abort(): Promise<void[]> {
+        const tasks = this.services.map(service => service.execute(ServiceCommand.abort));
         return Promise.all(tasks);
     }
 
     /**
      * Pause all services in module
      */
-    pause() {
-        const tasks = this.services.map(service => service.pause());
+    pause(): Promise<void[]> {
+        const tasks = this.services.map(service => service.execute(ServiceCommand.pause));
         return Promise.all(tasks);
     }
 
     /**
      * Resume all services in module
      */
-    resume() {
-        const tasks = this.services.map(service => service.resume());
+    resume(): Promise<void[]> {
+        const tasks = this.services.map(service => service.execute(ServiceCommand.resume));
         return Promise.all(tasks);
     }
 
     /**
      * Stop all services in module
      */
-    stop() {
-        const tasks = this.services.map(service => service.stop());
+    stop(): Promise<void[]> {
+        const tasks = this.services.map(service => service.execute(ServiceCommand.stop));
+        return Promise.all(tasks);
+    }
+
+    /**
+     * Reset all services in module
+     */
+    reset(): Promise<void[]> {
+        const tasks = this.services.map(service => service.execute(ServiceCommand.reset));
         return Promise.all(tasks);
     }
 

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018 Markus Graube <markus.graube@tu.dresden.de>,
+ * Copyright (c) 2019 Markus Graube <markus.graube@tu.dresden.de>,
  * Chair for Process Control Systems, Technische Universität Dresden
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,19 +23,20 @@
  * SOFTWARE.
  */
 
-export function promiseTimeout(ms: number, promise: Promise<any>): Promise<any> {
+import {ProcessValue} from '../../../src/model/core/ProcessValue';
+import {expect} from 'chai';
+import {OpcUaNode} from '../../../src/model/core/Interfaces';
 
-    // Create a promise that rejects in <ms> milliseconds
-    const timeout = new Promise((resolve, reject) => {
-        const id = setTimeout(() => {
-            clearTimeout(id);
-            reject('Timed out in ' + ms + 'ms.');
-        }, ms);
+describe('ProcessValue', () => {
+
+    it('should construct', () => {
+        let opcUaNode: OpcUaNode = {namespace_index: 'CODESYSSPV3/3S/IecVarAccess', node_id: 'i=12'};
+        let a = new ProcessValue("asd", [opcUaNode]);
     });
 
-    // Returns a race between our timeout and the passed in promise
-    return Promise.race([
-        promise,
-        timeout
-    ]);
-}
+    it('should fail with missing parameters', () => {
+        expect(() => {let a = new ProcessValue(undefined,undefined) }).to.throw();
+        expect(() => {let a = new ProcessValue("test",undefined) }).to.throw();
+        expect(() => {let a = new ProcessValue("test", []) }).to.throw();
+    });
+});
