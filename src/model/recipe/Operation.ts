@@ -86,7 +86,7 @@ export class Operation {
      * Execute Operation at runtime during recipe run
      * @returns {Promise<void>}
      */
-    execute(): Promise<void> {
+    async execute(): Promise<void> {
         catOperation.info(`Perform operation ${ this.module.id } ${ this.service.name } ${ this.command } ` +
             `(Strategy: ${ this.strategy ? this.strategy.name : '' })`);
         return this.service.execute(this.command, this.strategy, this.parameters)

@@ -24,13 +24,75 @@
  */
 
 import {ServiceState} from '../core/enum';
+import {ControlEnableInterface, ParameterOptions, ServiceCommand} from '@plt/pfe-ree-interface';
+import {Parameter} from '../recipe/Parameter';
+import * as StateMachine from 'javascript-state-machine';
 
 /**
  * A generic function block following the service state machine
  */
-export abstract class FunctionBlock {
+export abstract class FunctionBlock implements BaseService {
+
+    fsm = new StateMachine({
+        init: 'idle',
+        transitions: [
+            {name: 'start', from: 'idle', to: 'starting'},
+            {name: 'complete_starting', from: 'starting', to: 'running'},
+            {name: 'complete', from: 'running', to: 'completed'},
+            {name: 'reset', from: 'completed', to: 'resetting'},
+            {name: 'complete_resetting', from: 'resetting', to: 'idle'}
+        ],
+        methods: {
+            onStart: this.onStart,
+            onComplete_Starting: this.onCompleteStarting,
+            onComplete: this.onComplete,
+            onReset: this.onReset,
+            onComplete_Resetting: this.onCompleteResetting
+        }
+    });
+
+
+    private onStart() {
+        console.log('OnStart');
+        this.fsm.complete_starting();
+    }
+
+    private onCompleteStarting() {
+        console.log('OnCompleteStarting - in Running');
+    }
+
+    private onComplete() {
+        console.log('OnComplete');
+    }
+
+    private onReset() {
+        console.log('OnReset');
+        this.fsm.complete_resetting();
+    }
+
+    private onCompleteResetting() {
+            console.log('OnCompleteResetting');
+        }
+
+    setParameters( parameters: (Parameter | ParameterOptions)[]): Promise<void> {
+        throw new Error('Method not implemented.');
+    }
 
     private state: ServiceState;
+    private controlEnable: ControlEnableInterface;
+
+    getServiceState(): Promise<ServiceState> {
+        return Promise.resolve(this.fsm.state);
+    }
+
+    getControlEnable(): Promise<ControlEnableInterface> {
+        return Promise.resolve(this.controlEnable);
+    }
+
+    executeCommand(command: ServiceCommand): Promise<boolean> {
+        throw new Error('Method not implemented.');
+    }
+
 
     abstract start();
     abstract stop();
@@ -39,5 +101,41 @@ export abstract class FunctionBlock {
     abstract pause();
     abstract resume();
     abstract abort();
+
+}
+
+export class Timer extends FunctionBlock {
+    start() {
+    }
+
+    stop() {
+    }
+
+    complete() {
+    }
+
+    reset() {
+    }
+
+    pause() {
+    }
+
+    resume() {
+    }
+
+    abort() {
+    }
+
+}
+
+export interface BaseService {
+
+    getServiceState(): Promise<ServiceState>;
+
+    getControlEnable(): Promise<ControlEnableInterface>;
+
+    executeCommand(command: ServiceCommand): Promise<boolean>;
+
+    setParameters(parameters: (Parameter|ParameterOptions)[]): Promise<void>;
 
 }

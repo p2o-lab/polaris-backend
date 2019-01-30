@@ -51,6 +51,7 @@ import {Unit} from './Unit';
 import {manager} from '../Manager';
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
+import {BaseService} from '../functionBlock/FunctionBlock';
 
 export interface ServiceOptions {
     name: string;
@@ -110,7 +111,7 @@ type ServiceEmitter = StrictEventEmitter<EventEmitter, ServiceEvents>;
  * after connection to a real PEA, commands can be triggered and states can be retrieved
  *
  */
-export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
+export class Service extends (EventEmitter as { new(): ServiceEmitter }) implements BaseService{
 
     /** name of the service */
     readonly name: string;
@@ -401,6 +402,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
         if (command) {
             result = await this.executeCommand(command);
         }
+        result = await this.executeCommand(command);
         this.emit('commandExecuted', {
             timestampPfe: new Date(),
             strategy: await this.getCurrentStrategy(),
@@ -417,7 +419,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
      * @param {ServiceCommand} command
      * @returns {Promise<boolean>}
      */
-    private async executeCommand(command: ServiceCommand): Promise<boolean> {
+    public async executeCommand(command: ServiceCommand): Promise<boolean> {
         let result;
         if (command === ServiceCommand.start) {
             result = this.start();
@@ -513,7 +515,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
     public async setStrategyParameters(strategy?: Strategy|string, parameters?: (Parameter|ParameterOptions)[]): Promise<void> {
         // get strategy from input parameters
         let strat: Strategy;
-        if (!strategy) {
+        if (strategy === "default") {
             strat = this.strategies.find(strat => strat.default === true);
         } else if (typeof strategy === "string") {
             strat = this.strategies.find(strat => strat.name === strategy);
@@ -523,29 +525,35 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
 
         // set strategy
         catService.info(`Set strategy "${strat.name}" (${strat.id}) for service ${this.name}`);
-        await this.parent.writeNode(this.strategy,
+        return await this.parent.writeNode(this.strategy,
             {
                 dataType: DataType.UInt32,
                 value: strat.id,
                 arrayType: VariantArrayType.Scalar,
                 dimensions: null
             });
+    }
 
-        // TODO: is order of parameters and strategy important?
-        // set strategy
-        if (parameters) {
-            let params: Parameter[] = parameters.map((param) => {
-                if (param instanceof Parameter) {
-                    return param;
-                } else {
-                    return new Parameter(param, this, strat)
-                }
-            });
-            const tasks = params.map((param: Parameter) => param.updateValueOnModule());
-            const paramResults = await Promise.all(tasks);
-            catService.trace(`Set Parameter Promises: ${JSON.stringify(paramResults)}`);
-            this.listenToServiceParameters(params);
-        }
+    /** Set parameter of service
+     * Use current strategy
+     *
+     * @param {(Parameter|ParameterOptions)[]} parameters
+     * @returns {Promise<boolean>}
+     */
+    public async setParameters(parameters: (Parameter|ParameterOptions)[]): Promise<void> {
+        const strat = await this.getCurrentStrategy();
+        let params: Parameter[] = parameters.map((param) => {
+            if (param instanceof Parameter) {
+                return param;
+            } else {
+                return new Parameter(param, this, strat)
+            }
+        });
+        const tasks = params.map((param: Parameter) => param.updateValueOnModule());
+        const paramResults = await Promise.all(tasks);
+        catService.trace(`Set Parameter Promises: ${JSON.stringify(paramResults)}`);
+        this.listenToServiceParameters(params);
+        return Promise.resolve();
     }
 
     private listenToServiceParameters(parameters: Parameter[]) {

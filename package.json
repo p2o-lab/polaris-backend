@@ -36,6 +36,7 @@
     "expr-eval": "^1.2.2",
     "express": "^4.16.4",
     "express-async-handler": "^1.1.4",
+    "javascript-state-machine": "^3.1.0",
     "multer": "^1.4.1",
     "node-opcua": "^0.5.6",
     "node-opcua-client": "^0.5.6",
