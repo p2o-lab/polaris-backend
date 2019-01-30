@@ -268,6 +268,11 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
         return this.strategies.find(strat => strat.id == id.value.value);
     }
 
+    /** get current parameters
+     * from strategy or service (if strategy is undefined)
+     * @param {Strategy} strategy
+     * @returns {Promise<ParameterInterface[]>}
+     */
     async getCurrentParameters(strategy?: Strategy): Promise<ParameterInterface[]> {
         let params: ServiceParameter[] = [];
         if (strategy) {
@@ -313,7 +318,8 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
                     value,
                     max,
                     min,
-                    unit
+                    unit,
+                    readonly: param.interface_class === "StrView"
                 };
             });
         }

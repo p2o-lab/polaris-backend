@@ -78,7 +78,9 @@ export class Parameter {
         this.modules = modules || undefined;
 
         const parser: Parser = new Parser();
-        this.expression = parser.parse(this.value.toString());
+        if (this.value) {
+            this.expression = parser.parse(this.value.toString());
+        }
     }
 
     public async getDataType(): Promise<DataType> {
@@ -106,6 +108,9 @@ export class Parameter {
      * @returns {Promise<any>}
      */
     public async getValue(): Promise<any> {
+        if (!this.expression) {
+            return undefined;
+        }
         // get current variables
         const scope = {};
         const tasks = this.scope.map(async (item: ScopeOptions) => {

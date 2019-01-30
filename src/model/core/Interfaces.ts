@@ -34,6 +34,7 @@ export interface OpcUaNode {
 
 export interface ServiceParameter {
     name: string;
+    interface_class: string;
     communication: {
         VExt: OpcUaNode,
         VOut: OpcUaNode,

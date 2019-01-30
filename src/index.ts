@@ -152,7 +152,7 @@ if (options) {
 
         /* Start OPC UA external trigger */
         if (options.externalTrigger) {
-            console.log('External Trigger:', options.watch);
+            console.log('External Trigger:', options.externalTrigger);
             const endpoint = options.externalTrigger[0];
             const nodeId = options.externalTrigger[1];
 

@@ -152,7 +152,7 @@ export class Player extends (EventEmitter as { new(): PlayerEmitter }) {
      * @returns Player
      */
     public start(): Player {
-        if (this.status === RecipeState.idle || this.status === RecipeState.stopped) {
+        if (this.status === RecipeState.idle || this.status === RecipeState.stopped || this.status === RecipeState.completed) {
             this._status = RecipeState.running;
             this._currentItem = 0;
             this.emit('started');
