@@ -155,7 +155,7 @@ export class Manager extends EventEmitter {
                         this.player.currentRecipeRun.serviceLog.push(logEntry);
                     }
                 })
-                .on('stateChanged', async ({service, state}) => {
+                .on('stateChanged', async ({service, state, timestampPfe}) => {
                     const logEntry: ServiceLogEntry = {
                         timestampPfe: new Date(),
                         module: module.id,
@@ -166,7 +166,7 @@ export class Manager extends EventEmitter {
                     if (this.player.currentRecipeRun) {
                         this.player.currentRecipeRun.serviceLog.push(logEntry);
                     }
-                    this.emit('notify', 'module', {module: module.id, service: service.name, state: ServiceState[state], lastChange: service.lastChange});
+                    this.emit('notify', 'module', {module: module.id, service: service.name, state: ServiceState[state], lastChange: timestampPfe});
                 })
                 .on('serviceCompleted', (service: Service) => {
                     this.performAutoReset(service);

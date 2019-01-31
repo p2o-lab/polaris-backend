@@ -27,14 +27,17 @@ import {ScopeOptions} from '@plt/pfe-ree-interface';
 import {catRecipe} from '../../config/logging';
 import {ProcessValue} from '../core/ProcessValue';
 import {Module} from '../core/Module';
-import {OpcUaNode} from '../core/Interfaces';
+import {OpcUaNode, ServiceParameter, Strategy} from '../core/Interfaces';
 import {manager} from '../Manager';
+import {Service} from '../core/Service';
+import {Parameter} from './Parameter';
 
 export class ScopeItem {
 
     /** name of variable which should be replaced in value */
     name: string;
     module: Module;
+    service: Service;
     variable: OpcUaNode;
 
     /**
@@ -58,9 +61,9 @@ export class ScopeItem {
      */
     static extractFromExpression(variable: string, modules= manager.modules): ScopeItem {
         let components = variable.split('.').map((token: string) => token.replace(new RegExp('__', 'g'), '.'));
+        let token = components.shift();
 
         // find module
-        let token = components.shift();
         let module = modules.find(m => m.id === token);
         if (module == undefined) {
             if (modules.length == 1) {
@@ -73,9 +76,19 @@ export class ScopeItem {
             token = components.shift();
         }
 
+        // find service
+        let service = module.services.find(s => s.name === token);
+        let strategy: Strategy;
+        if (service) {
+            strategy = service.getCurrentStrategy();
+            token = components.shift();
+        }
+
         // find data assembly
-        let dataAssembly: ProcessValue;
-        if (module.variables.find(v => v.name === token)) {
+        let dataAssembly: ProcessValue | ServiceParameter;
+        if (strategy && strategy.parameters.find(p => p.name === token)){
+            dataAssembly = strategy.parameters.find(p => p.name === token);
+        } else if (module.variables.find(v => v.name === token)) {
             dataAssembly = module.variables.find(v => v.name === token)
         } else {
             catRecipe.warn(`DataAssembly ${token} not found in module ${module.id} from variable ${variable}`);
