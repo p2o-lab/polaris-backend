@@ -4,7 +4,7 @@
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>580</x>
+      <x>570</x>
       <y>50</y>
       <w>100</w>
       <h>30</h>
@@ -15,18 +15,24 @@
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>540</x>
-      <y>210</y>
+      <x>530</x>
+      <y>180</y>
       <w>100</w>
-      <h>30</h>
+      <h>110</h>
     </coordinates>
-    <panel_attributes>Module</panel_attributes>
+    <panel_attributes>Module
+--
+id
+endpoint
+--
+connect()
+disconnect()</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLGeneric</id>
     <coordinates>
-      <x>700</x>
+      <x>690</x>
       <y>420</y>
       <w>630</w>
       <h>420</h>
@@ -38,7 +44,7 @@ recipe</panel_attributes>
   <element>
     <id>UMLGeneric</id>
     <coordinates>
-      <x>420</x>
+      <x>410</x>
       <y>20</y>
       <w>640</w>
       <h>330</h>
@@ -50,8 +56,8 @@ core</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>540</x>
-      <y>310</y>
+      <x>530</x>
+      <y>360</y>
       <w>100</w>
       <h>30</h>
     </coordinates>
@@ -61,21 +67,21 @@ core</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>570</x>
+      <x>560</x>
       <y>70</y>
       <w>70</w>
-      <h>160</h>
+      <h>130</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;-
 m1=1
 m2=*</panel_attributes>
-    <additional_attributes>50.0;10.0;10.0;140.0</additional_attributes>
+    <additional_attributes>50.0;10.0;10.0;110.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>580</x>
-      <y>230</y>
+      <x>570</x>
+      <y>280</y>
       <w>40</w>
       <h>100</h>
     </coordinates>
@@ -87,7 +93,7 @@ m2=*</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>900</x>
+      <x>890</x>
       <y>510</y>
       <w>100</w>
       <h>30</h>
@@ -98,7 +104,7 @@ m2=*</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>910</x>
+      <x>900</x>
       <y>720</y>
       <w>100</w>
       <h>30</h>
@@ -109,7 +115,7 @@ m2=*</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1090</x>
+      <x>1080</x>
       <y>520</y>
       <w>100</w>
       <h>30</h>
@@ -120,7 +126,7 @@ m2=*</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1400</x>
+      <x>1390</x>
       <y>410</y>
       <w>100</w>
       <h>30</h>
@@ -131,7 +137,7 @@ m2=*</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1430</x>
+      <x>1420</x>
       <y>280</y>
       <w>100</w>
       <h>30</h>
@@ -142,7 +148,7 @@ m2=*</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1160</x>
+      <x>1150</x>
       <y>160</y>
       <w>210</w>
       <h>190</h>
@@ -159,18 +165,18 @@ ServiceInterface
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>630</x>
+      <x>620</x>
       <y>170</y>
       <w>550</w>
-      <h>180</h>
+      <h>220</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;.</panel_attributes>
-    <additional_attributes>530.0;10.0;10.0;160.0</additional_attributes>
+    <additional_attributes>530.0;10.0;10.0;200.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1360</x>
+      <x>1350</x>
       <y>170</y>
       <w>90</w>
       <h>140</h>
@@ -181,7 +187,7 @@ ServiceInterface
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>950</x>
+      <x>940</x>
       <y>530</y>
       <w>60</w>
       <h>110</h>
@@ -194,7 +200,7 @@ m2=0..n</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>910</x>
+      <x>900</x>
       <y>620</y>
       <w>100</w>
       <h>30</h>
@@ -205,7 +211,7 @@ m2=0..n</panel_attributes>
   <element>
     <type>CustomElementImpl</type>
     <coordinates>
-      <x>10</x>
+      <x>0</x>
       <y>850</y>
       <w>111</w>
       <h>71</h>
@@ -233,7 +239,7 @@ for(String textline : textlines) {
   <element>
     <type>CustomElementImpl</type>
     <coordinates>
-      <x>10</x>
+      <x>0</x>
       <y>930</y>
       <w>200</w>
       <h>200</h>
@@ -272,7 +278,7 @@ drawRectangle(0,0,onGrid(width),onGrid(height));</custom_code>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>950</x>
+      <x>940</x>
       <y>640</y>
       <w>30</w>
       <h>100</h>
@@ -283,7 +289,7 @@ drawRectangle(0,0,onGrid(width),onGrid(height));</custom_code>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>910</x>
+      <x>900</x>
       <y>770</y>
       <w>100</w>
       <h>30</h>
@@ -294,7 +300,7 @@ drawRectangle(0,0,onGrid(width),onGrid(height));</custom_code>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>790</x>
+      <x>780</x>
       <y>710</y>
       <w>100</w>
       <h>40</h>
@@ -305,7 +311,7 @@ drawRectangle(0,0,onGrid(width),onGrid(height));</custom_code>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>830</x>
+      <x>820</x>
       <y>640</y>
       <w>150</w>
       <h>90</h>
@@ -316,7 +322,7 @@ drawRectangle(0,0,onGrid(width),onGrid(height));</custom_code>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>790</x>
+      <x>780</x>
       <y>780</y>
       <w>100</w>
       <h>30</h>
@@ -327,7 +333,7 @@ drawRectangle(0,0,onGrid(width),onGrid(height));</custom_code>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>830</x>
+      <x>820</x>
       <y>740</y>
       <w>30</w>
       <h>60</h>
@@ -338,7 +344,7 @@ drawRectangle(0,0,onGrid(width),onGrid(height));</custom_code>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>920</x>
+      <x>910</x>
       <y>450</y>
       <w>90</w>
       <h>80</h>
@@ -350,7 +356,7 @@ playList</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>870</x>
+      <x>860</x>
       <y>430</y>
       <w>100</w>
       <h>30</h>
@@ -361,7 +367,7 @@ playList</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>710</x>
+      <x>700</x>
       <y>510</y>
       <w>100</w>
       <h>40</h>
@@ -372,7 +378,7 @@ playList</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>750</x>
+      <x>740</x>
       <y>440</y>
       <w>140</w>
       <h>90</h>
@@ -386,7 +392,7 @@ m2=1</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>800</x>
+      <x>790</x>
       <y>520</y>
       <w>120</w>
       <h>40</h>
@@ -399,12 +405,47 @@ m2=1</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>630</x>
+      <x>620</x>
       <y>70</y>
       <w>310</w>
       <h>380</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
     <additional_attributes>10.0;10.0;290.0;360.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>400</x>
+      <y>310</y>
+      <w>100</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>ProcessValue</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>440</x>
+      <y>220</y>
+      <w>110</w>
+      <h>110</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+m1=1
+m2=*</panel_attributes>
+    <additional_attributes>90.0;10.0;10.0;90.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1430</x>
+      <y>300</y>
+      <w>50</w>
+      <h>130</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>30.0;10.0;10.0;110.0</additional_attributes>
   </element>
 </diagram>
