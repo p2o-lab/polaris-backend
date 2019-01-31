@@ -511,7 +511,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
             arrayType: VariantArrayType.Scalar,
             dimensions: null
         };
-        catService.debug(`Set Parameter: ${this.name} - ${JSON.stringify(opcUaNode)} -> ${JSON.stringify(dataValue)}`);
+        catService.info(`Set Parameter: ${this.name} - ${JSON.stringify(opcUaNode)} -> ${JSON.stringify(dataValue)}`);
         return await this.parent.writeNode(opcUaNode, dataValue);
     }
 
@@ -520,7 +520,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
      * @param {OpMode} opMode
      * @returns {boolean}
      */
-    private async writeOpMode(opMode: OpMode): Promise<boolean> {
+    private async writeOpMode(opMode: OpMode): Promise<void> {
         const result = await this.parent.writeNode(this.opMode,
             {
                 dataType: DataType.UInt32,
@@ -528,14 +528,26 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
                 arrayType: VariantArrayType.Scalar,
                 dimensions: null
             });
-        return result.value === 0;
+        if (result.value !== 0) {
+            return Promise.reject()
+        } else {
+            return Promise.resolve();
+        }
     }
 
+
+    public setOperationMode(): Promise<void> {
+        if (manager.automaticMode) {
+            return this.setToAutomaticOperationMode();
+        } else {
+            return this.setToManualOperationMode();
+        }
+    }
     /**
      * Set service to automatic operation mode and source to external source
-     * @returns {Promise<boolean>}
+     * @returns {Promise<void>}
      */
-    private async setToAutomaticOperationMode(): Promise<any> {
+    private async setToAutomaticOperationMode(): Promise<void> {
         let opMode: OpMode = await this.getOpMode();
 
         if (isOffState(opMode)) {
@@ -543,11 +555,11 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
             await this.writeOpMode(OpMode.stateManOp);
             await new Promise((resolve) => {
                 this.parent.listenToOpcUaNode(this.opMode)
-                    .on('changed', ({value, serverTimestamp}: {value: number, serverTimestamp: Date}) => {
+                    .once('changed', ({value, serverTimestamp}: {value: number, serverTimestamp: Date}) => {
                         if (isManualState(value)) {
                             catService.trace(`finally in ManualMode`);
                             opMode = value;
-                            resolve(true);
+                            resolve();
                         }
                     });
             });
@@ -558,35 +570,35 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
             await this.writeOpMode(OpMode.stateAutOp);
             await new Promise((resolve) => {
                 this.parent.listenToOpcUaNode(this.opMode)
-                    .on('changed', ({value, serverTimestamp}: {value: number, serverTimestamp: Date}) => {
+                    .once('changed', ({value, serverTimestamp}: {value: number, serverTimestamp: Date}) => {
                         catOpc.trace(`OpMode changed: ${value}`);
                         if (isAutomaticState(value)) {
                             catService.trace(`finally in AutomaticMode`);
                             opMode = value;
-                            resolve(true);
+                            resolve();
                         }
                     });
             });
         }
+
         if (!isExtSource(opMode)) {
             catService.trace('Go to External source');
             await this.writeOpMode(OpMode.srcExtOp);
-            return new Promise((resolve) => {
+            await new Promise((resolve) => {
                 this.parent.listenToOpcUaNode(this.opMode)
-                    .on('changed', ({value, serverTimestamp}: {value: number, serverTimestamp: Date}) => {
+                    .once('changed', ({value, serverTimestamp}: {value: number, serverTimestamp: Date}) => {
                         catService.trace(`OpMode changed: ${value}`);
                         if (isExtSource(value)) {
                             catService.trace(`finally in ExtSource`);
-                            resolve(true);
+                            resolve();
                         }
                     });
             });
-        } else {
-            return Promise.resolve(true);
         }
+        return Promise.resolve();
     }
 
-    private setToManualOperationMode(): Promise<boolean> {
+    private setToManualOperationMode(): Promise<void> {
         return this.writeOpMode(OpMode.stateManOp);
     }
 
@@ -595,11 +607,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
             return Promise.reject('Module is not connected');
         }
         catService.debug(`Send command ${ServiceMtpCommand[command]} (${command}) to service "${this.name}"`);
-        if (manager.automaticMode) {
-            await this.setToAutomaticOperationMode();
-        } else {
-            await this.setToManualOperationMode();
-        }
+        await this.setOperationMode();
 
         let controlEnable: ControlEnableInterface = await this.getControlEnable();
         catService.debug(`ControlEnable of service ${this.name}: ${JSON.stringify(controlEnable)}`);

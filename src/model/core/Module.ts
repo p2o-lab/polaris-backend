@@ -224,6 +224,12 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
                 this.session = session;
                 this.subscription = subscription;
 
+                // set all services to correct operation mode
+                try {
+                    await Promise.all(this.services.map(service => service.setOperationMode()));
+                } catch (err) {
+                    catModule.warn('Could not bring all services to desired operation mode:' + err);
+                }
                 // subscribe to all services
                 try {
                     this.subscribeToAllServices();
