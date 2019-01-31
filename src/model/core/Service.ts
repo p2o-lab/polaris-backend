@@ -23,9 +23,9 @@
  * SOFTWARE.
  */
 
-import { DataType, DataValue, Variant, VariantArrayType } from 'node-opcua-client';
-import { Module } from './Module';
-import {catOpc, catRecipe, catService} from '../../config/logging';
+import {DataType, DataValue, Variant, VariantArrayType} from 'node-opcua-client';
+import {Module} from './Module';
+import {catOpc, catService} from '../../config/logging';
 import {
     controlEnableToJson,
     isAutomaticState,
@@ -37,21 +37,20 @@ import {
     ServiceMtpCommand,
     ServiceState
 } from './enum';
-import { OpcUaNode, ServiceParameter, Strategy } from './Interfaces';
-import { Parameter } from '../recipe/Parameter';
+import {OpcUaNode, ServiceParameter, Strategy} from './Interfaces';
+import {Parameter} from '../recipe/Parameter';
 import {
+    ControlEnableInterface,
     ParameterInterface,
     ParameterOptions,
     ServiceCommand,
     ServiceInterface,
-    StrategyInterface,
-    ControlEnableInterface
+    StrategyInterface
 } from '@plt/pfe-ree-interface';
-import { Unit } from './Unit';
-import { manager } from '../Manager';
-import { EventEmitter } from 'events';
+import {Unit} from './Unit';
+import {manager} from '../Manager';
+import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
-import undefinedError = Mocha.utils.undefinedError;
 
 export interface ServiceOptions {
     name: string;
