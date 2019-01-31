@@ -51,7 +51,7 @@ import {Unit} from './Unit';
 import {manager} from '../Manager';
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
-import {BaseService} from '../functionBlock/FunctionBlock';
+import {BaseService} from './BaseService';
 
 export interface ServiceOptions {
     name: string;
@@ -111,7 +111,7 @@ type ServiceEmitter = StrictEventEmitter<EventEmitter, ServiceEvents>;
  * after connection to a real PEA, commands can be triggered and states can be retrieved
  *
  */
-export class Service extends (EventEmitter as { new(): ServiceEmitter }) implements BaseService{
+export class Service extends (EventEmitter as { new(): ServiceEmitter }) implements BaseService {
 
     /** name of the service */
     readonly name: string;
@@ -425,19 +425,19 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) impleme
             result = this.start();
         } else if (command === ServiceCommand.stop) {
             result = this.stop();
-        } else if (command === 'reset') {
+        } else if (command === ServiceCommand.reset) {
             result = this.reset();
-        } else if (command === 'complete') {
+        } else if (command === ServiceCommand.complete) {
             result = this.complete();
-        } else if (command === 'abort') {
+        } else if (command === ServiceCommand.abort) {
             result = this.abort();
-        } else if (command === 'unhold') {
+        } else if (command === ServiceCommand.unhold) {
             result = this.unhold();
-        } else if (command === 'pause') {
+        } else if (command === ServiceCommand.pause) {
             result = this.pause();
-        } else if (command === 'resume') {
+        } else if (command === ServiceCommand.resume) {
             result = this.resume();
-        } else if (command === 'restart') {
+        } else if (command === ServiceCommand.restart) {
             result = this.restart();
         } else {
             throw new Error(`Command ${command} can not be interpreted`);
@@ -704,6 +704,46 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) impleme
     }
 
     /**
+<<<<<<< HEAD
+=======
+     * Listen to state and error of service and emits specific events for them
+     *
+     * @returns {Service} emits 'errorMessage' and 'state' events
+     */
+    public subscribeToService(): Service {
+        if (this.errorMessage) {
+            this.parent.listenToOpcUaNode(this.errorMessage)
+                .on('changed', ({value, serverTimestamp}: {value: string, serverTimestamp: Date}) => {
+                    catService.info(`errorMessage changed for ${this.name}: ${value}`);
+                    this.emit('errorMessage', value);
+                });
+        }
+        if (this.controlEnable) {
+            this.parent.listenToOpcUaNode(this.controlEnable)
+                .on('changed', (data) => {
+                    catService.debug(`ControlEnable changed for ${this.name}: ${JSON.stringify(controlEnableToJson(data.value))}`);
+                    this.emit('controlEnable', controlEnableToJson(data.value));
+                });
+        }
+        if (this.status) {
+            this.parent.listenToOpcUaNode(this.status)
+                .on('changed', ({value, serverTimestamp}: {value: number, serverTimestamp: Date}) => {
+                    this.lastChange = new Date();
+                    catService.info(`Status changed for ${this.name}: ${ServiceState[value]}`);
+                    this.emit('state', {state: value, serverTimestamp});
+                });
+        }
+        if (this.command) {
+            this.parent.listenToOpcUaNode(this.command)
+                .on('changed', (data) => {
+                    catService.debug(`Command changed for ${this.name}: ${ServiceMtpCommand[data.value]} (${data.value})`);
+                });
+        }
+        return this;
+    }
+
+    /**
+>>>>>>> added additional FunctionBlocks
      * Remove all Event listeners from service
      */
     public removeAllSubscriptions() {

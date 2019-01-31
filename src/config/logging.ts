@@ -48,6 +48,9 @@ export const catManager = new Category('manager');
 export const catOpc = new Category('opcua');
 export const catServer = new Category('server');
 
+export const catFunctionBlock = new Category('FunctionBlock');
+export const catTimer = new Category('Timer', catFunctionBlock);
+
 // Custom logging
 export const messages: string[] = [];
 
@@ -72,6 +75,8 @@ switch ((process.env.LOGLEVEL||'').toUpperCase()) {
 }
 
 // Configure to use our custom logger, note the callback which returns our CustomLogger from above.
+
+
 const config = new CategoryConfiguration(
     logLevel, LoggerType.Custom, new CategoryLogFormat(),
     (category: Category, runtimeSettings: RuntimeSettings) => new CustomLogger(category, runtimeSettings, messages)
