@@ -666,7 +666,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
                 .on('changed', (data) => {
                     Object.assign(this.controlEnable, data);
                     catService.info(`Status changed for ${this.name}: ${ServiceState[data.value]}`);
-                    this.emit('state', {state: data.value, timestamp: data.serverTimestamp});
+                    this.emit('state', {state: data.value, timestamp: data.timestamp});
                 });
         }
         if (this.command) {
