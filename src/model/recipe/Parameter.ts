@@ -136,6 +136,7 @@ export class Parameter {
         // get current variables
         const tasks = await Promise.all(this.scopeArray.map((item) => item.getScopeValue()));
         const scope = assign(...tasks);
+        catService.info(`Specific parameters: ${this.name} = ${this.value} (${JSON.stringify(scope)})`);
         const result = this.expression.evaluate(scope);
         catService.info(`Specific parameters: ${this.name} = ${this.value} (${JSON.stringify(scope)}) = ${result}`);
         return result;

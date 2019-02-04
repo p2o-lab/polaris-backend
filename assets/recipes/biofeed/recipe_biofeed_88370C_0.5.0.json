@@ -37,13 +37,13 @@
       "operations": [
         {
           "service": "FeedPowder", "command": "start",
-          "parameter": [ { "name": "FeedMass", "value": 142.85 } ]
+          "parameter": [ { "name": "FeedMass", "value": "5*28.57" } ]
         },
         {
           "service": "Stirring", "command": "start",
           "parameter": [
             { "name": "StirringRotationSpeed", "value": 300 },
-            { "name": "StirringDuration", "value": 600 }
+            { "name": "StirringDuration", "value": "6*10" }
           ]
         }
       ],
@@ -71,7 +71,7 @@
         {
           "service": "FeedWater", "command": "start",
           "parameter": [
-            {  "name": "TargetVolume", "value": "BioFeed.FeedPowder.CurrentFeedMass.V/(5*28.57)*4000" }
+            {  "name": "TargetVolume", "value": "BioFeed.FeedPowder\\.CurrentFeedMass.V/(5*28.57)*4000" }
           ]
         }
       ],
@@ -99,7 +99,7 @@
           "service": "Stirring", "command": "start",
           "parameter": [
             { "name": "StirringRotationSpeed", "value": 100},
-            { "name": "StirringDuration", "value": 1800}
+            { "name": "StirringDuration", "value": "30*60"}
           ]
         }
       ],
@@ -156,7 +156,7 @@
         {
           "service": "FeedBufferSolution", "command": "start",
           "parameter": [
-            { "name": "TargetVolume", "value": "BioFeed.FeedPowder.CurrentFeedMass.V/(5*28.57)*81.7"},
+            { "name": "TargetVolume", "value": "BioFeed.FeedPowder\\.CurrentFeedMass.V/(5*28.57)*81.7"},
 			{ "name": "PumpFlowRate", "value":  50}
           ]
         },
@@ -164,7 +164,7 @@
           "service": "Stirring", "command": "start",
           "parameter": [
             { "name": "StirringRotationSpeed", "value": 100 },
-            { "name": "StirringDuration", "value": 1800 }
+            { "name": "StirringDuration", "value": "30*60" }
           ]
         }
       ],
@@ -222,7 +222,7 @@
           "service": "Stirring", "command": "start",
           "parameter": [
             { "name": "StirringRotationSpeed", "value": 100},
-            { "name": "StirringDuration", "value": 600}
+            { "name": "StirringDuration", "value": "10*60"}
           ]
         }
       ],
@@ -279,7 +279,7 @@
         {
           "service": "FeedWater", "command": "start",
           "parameter": [
-            { "name": "TargetVolume", "value": "BioFeed.FeedPowder.CurrentFeedMass.V/(5*28.57)*5000" }
+            { "name": "TargetVolume", "value": "BioFeed.FeedPowder\\.CurrentFeedMass.V/(5*28.57)*5000" }
           ]
         }
       ],
