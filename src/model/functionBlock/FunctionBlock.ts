@@ -66,7 +66,7 @@ export abstract class FunctionBlock implements BaseService {
     private _controlEnable: ControlEnableInterface;
 
     // Internal
-    private async onStartingInternal(): Promise<void> {
+    private async gotoStarting(): Promise<void> {
         this._state = ServiceState.STARTING;
         this._controlEnable = {
             start: false,
@@ -81,10 +81,10 @@ export abstract class FunctionBlock implements BaseService {
         };
         catFunctionBlock.info('starting');
         await this.onStarting();
-        this.onRunningInternal();
+        this.gotoRunning();
     }
 
-    private async onRunningInternal(): Promise<void> {
+    private async gotoRunning(): Promise<void> {
         this._state = ServiceState.RUNNING;
         this._controlEnable = {
             start: false,
@@ -101,7 +101,7 @@ export abstract class FunctionBlock implements BaseService {
         await this.onRunning();
     }
 
-    private async onPausingInternal(): Promise<void> {
+    private async gotoPausing(): Promise<void> {
         this._state = ServiceState.PAUSING;
         this._controlEnable = {
             start: false,
@@ -116,10 +116,10 @@ export abstract class FunctionBlock implements BaseService {
         };
         catFunctionBlock.info('pausing');
         await this.onPausing();
-        this.onPausedInternal();
+        this.gotoPaused();
     }
 
-    private async onPausedInternal(): Promise<void> {
+    private async gotoPaused(): Promise<void> {
         this._state = ServiceState.PAUSED;
         this._controlEnable = {
             start: false,
@@ -136,7 +136,7 @@ export abstract class FunctionBlock implements BaseService {
         await this.onPaused();
     }
 
-    private async onResumingInternal(): Promise<void> {
+    private async gotoResuming(): Promise<void> {
         this._state = ServiceState.RESUMING;
         this._controlEnable = {
             start: false,
@@ -151,10 +151,10 @@ export abstract class FunctionBlock implements BaseService {
         };
         catFunctionBlock.info('resuming');
         await this.onResuming();
-        this.onRunningInternal();
+        this.gotoRunning();
     }
 
-    private async onCompletingInternal(): Promise<void> {
+    private async gotoCompleting(): Promise<void> {
         this._state = ServiceState.COMPLETING;
         this._controlEnable = {
             start: false,
@@ -169,10 +169,10 @@ export abstract class FunctionBlock implements BaseService {
         };
         catFunctionBlock.info('completing');
         await this.onCompleting();
-        this.onCompletedInternal();
+        this.gotoCompleted();
     }
 
-    private async onCompletedInternal(): Promise<void> {
+    private async gotoCompleted(): Promise<void> {
         this._state = ServiceState.COMPLETED;
         this._controlEnable = {
             start: false,
@@ -189,7 +189,78 @@ export abstract class FunctionBlock implements BaseService {
         await this.onCompleted();
     }
 
-    private async onResettingInternal(): Promise<void> {
+    private async gotoStopping(): Promise<void> {
+        this._state = ServiceState.STOPPING;
+        this._controlEnable = {
+            start: false,
+            abort: true,
+            complete: false,
+            pause: false,
+            reset: false,
+            restart: false,
+            resume: false,
+            stop: false,
+            unhold: false
+        };
+        catFunctionBlock.info('stopping');
+        await this.onCompleted();
+        this.gotoStopped();
+    }
+
+    private async gotoStopped(): Promise<void> {
+        this._state = ServiceState.STOPPED;
+        this._controlEnable = {
+            start: false,
+            abort: true,
+            complete: false,
+            pause: false,
+            reset: true,
+            restart: false,
+            resume: false,
+            stop: false,
+            unhold: false
+        };
+        catFunctionBlock.info('stopped');
+        await this.onStopped();
+    }
+
+    private async gotoAborting(): Promise<void> {
+        this._state = ServiceState.ABORTING;
+        this._controlEnable = {
+            start: false,
+            abort: false,
+            complete: false,
+            pause: false,
+            reset: false,
+            restart: false,
+            resume: false,
+            stop: false,
+            unhold: false
+        };
+        catFunctionBlock.info('completed');
+        await this.onAborting();
+        this.gotoAborted();
+    }
+
+    private async gotoAborted(): Promise<void> {
+        this._state = ServiceState.COMPLETED;
+        this._controlEnable = {
+            start: false,
+            abort: true,
+            complete: false,
+            pause: false,
+            reset: true,
+            restart: false,
+            resume: false,
+            stop: true,
+            unhold: false
+        };
+        catFunctionBlock.info('completed');
+        await this.onAborted();
+        this.gotoIdle();
+    }
+
+    private async gotoResetting(): Promise<void> {
         this._controlEnable = {
             start: false,
             abort: true,
@@ -205,10 +276,10 @@ export abstract class FunctionBlock implements BaseService {
         catFunctionBlock.info('resetting');
         await this.onResetting();
         this.parameters = [];
-        this.onIdleInternal();
+        this.gotoIdle();
     }
 
-    private async onIdleInternal(): Promise<void> {
+    private async gotoIdle(): Promise<void> {
         this._controlEnable = {
             start: true,
             abort: true,
@@ -234,6 +305,10 @@ export abstract class FunctionBlock implements BaseService {
     async onCompleting(): Promise<void> {};
     async onCompleted(): Promise<void> {};
     async onResetting(): Promise<void> {};
+    async onAborting(): Promise<void> {};
+    async onAborted(): Promise<void> {};
+    async onStopping(): Promise<void> {};
+    async onStopped(): Promise<void> {};
     async onIdle(): Promise<void> {};
 
     async setParameters(parameters: (Parameter | ParameterOptions)[]): Promise<void> {
@@ -292,50 +367,50 @@ export abstract class FunctionBlock implements BaseService {
 
     public async start() {
         if (this._controlEnable.start) {
-            await this.onStartingInternal();
+            await this.gotoStarting();
         }
     };
 
     public async restart() {
         if (this._controlEnable.restart) {
-            await this.onStartingInternal();
+            await this.gotoStarting();
         }
     };
 
     public async pause() {
         if (this._controlEnable.pause) {
-            await this.onPausingInternal();
+            await this.gotoPausing();
         }
     };
 
     public async resume() {
         if (this._controlEnable.resume) {
-            await this.onResumingInternal();
+            await this.gotoResuming();
         }
     };
 
     public async complete() {
         if (this._controlEnable.complete) {
-            await this.onCompletingInternal();
+            await this.gotoCompleting();
         }
     };
 
     public async stop() {
         if (this._state === ServiceState.RUNNING) {
-            await this.onCompletingInternal();
+            await this.gotoStopping();
         }
     };
 
     public async abort() {
         if (this._state === ServiceState.RUNNING) {
-            await this.onCompletingInternal();
+            await this.gotoAborting();
         }
     };
 
 
     public async reset() {
         if (this._state === ServiceState.COMPLETED) {
-            await this.onResettingInternal();
+            await this.gotoResetting();
         }
     };
 
