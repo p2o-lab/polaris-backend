@@ -109,6 +109,7 @@ describe('Player', function () {
 
         let recipeCif;
         const manager = new Manager();
+        let player = new Player();
 
         before(async () => {
             const module = manager.loadModule(JSON.parse(fs.readFileSync('assets/modules/module_cif.json').toString()))[0];
@@ -122,7 +123,6 @@ describe('Player', function () {
             } catch {}
             await later(200);
 
-
             try {
                 await module.reset();
             } catch { }
@@ -133,20 +133,19 @@ describe('Player', function () {
 
         it('should run Player with CIF test recipes', async function() {
             this.timeout(5000);
-            let player = new Player();
-
             player.enqueue(recipeCif);
-            return await new Promise((resolve) => {
+            return await timeout(new Promise((resolve) => {
                 player.start()
                     .on('recipeFinished', (recipe) => {
                         expect(recipe).to.have.property('status', 'completed');
                     })
-                    .on('completed', async () => {
-                        await Promise.all(manager.modules.map(module => module.disconnect()));
-                        resolve();
-                    });
-            });
+                    .on('completed', () => resolve());
+            }), 3000);
         });
+
+        after(async () =>{
+            await Promise.all(manager.modules.map(module => module.disconnect()));
+        })
 
     });
 

@@ -23,6 +23,7 @@
  * SOFTWARE.
  */
 
+
 export interface OpcUaNode {
     /** despite its current name this variable contains the *namespace url* of the node*/
     namespace_index: string;
@@ -30,10 +31,15 @@ export interface OpcUaNode {
     node_id: string;
     /** data type of OPC UA node */
     data_type?: string;
+    /** recent value */
+    value?: number| string| boolean;
+    /** timestamp of last update of value */
+    timestamp?: Date;
 }
 
 export interface ServiceParameter {
     name: string;
+    interface_class: string;
     communication: {
         VExt: OpcUaNode,
         VOut: OpcUaNode,
@@ -41,10 +47,10 @@ export interface ServiceParameter {
         VMax: OpcUaNode,
         VSclMax: OpcUaNode,
         VSclMin: OpcUaNode,
-        VRbk: { value: any },
+        VRbk: OpcUaNode,
         VUnit: OpcUaNode,
-        WQC: { value: any },
-        OSLevel: { value: any }
+        WQC: OpcUaNode,
+        OSLevel: OpcUaNode
     };
 }
 

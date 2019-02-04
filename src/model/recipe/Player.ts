@@ -25,8 +25,8 @@
 
 import {catManager, catPlayer} from '../../config/logging';
 import {EventEmitter} from 'events';
-import {PlayerInterface, RecipeState, Repeat, TransitionOptions} from '@plt/pfe-ree-interface';
-import {RecipeRun} from "./RecipeRun";
+import {PlayerInterface, RecipeState, Repeat} from '@plt/pfe-ree-interface';
+import {RecipeRun} from './RecipeRun';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Step} from './Step';
 import {Recipe} from './Recipe';
@@ -152,7 +152,7 @@ export class Player extends (EventEmitter as { new(): PlayerEmitter }) {
      * @returns Player
      */
     public start(): Player {
-        if (this.status === RecipeState.idle || this.status === RecipeState.stopped) {
+        if (this.status === RecipeState.idle || this.status === RecipeState.stopped || this.status === RecipeState.completed) {
             this._status = RecipeState.running;
             this._currentItem = 0;
             this.emit('started');

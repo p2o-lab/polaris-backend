@@ -65,7 +65,7 @@ export interface OpcUaNodeEvents {
      * when OpcUaNode changes its value
      * @event
      */
-    changed: {value: any, serverTimestamp: Date};
+    changed: {value: any, timestamp: Date};
 }
 
 /**
@@ -139,9 +139,9 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
     variables: ProcessValue[];
     readonly hmiUrl: string;
 
-    session: ClientSession;
+    private session: ClientSession;
     private client: OPCUAClient;
-    subscription: ClientSubscription;
+    private subscription: ClientSubscription;
     private monitoredItems: Map<NodeId, { monitoredItem: ClientMonitoredItem, emitter: StrictEventEmitter<EventEmitter, OpcUaNodeEvents> }>;
     private namespaceArray: string[];
 
@@ -224,9 +224,15 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
                 this.session = session;
                 this.subscription = subscription;
 
+                // set all services to correct operation mode
+                try {
+                    await Promise.all(this.services.map(service => service.setOperationMode()));
+                } catch (err) {
+                    catModule.warn('Could not bring all services to desired operation mode:' + err);
+                }
                 // subscribe to all services
                 try {
-                    this.subscribeToAllServices();
+                    await this.subscribeToAllServices();
                 } catch (err) {
                     catModule.warn('Could not connect to all services:' + err);
                 }
@@ -298,7 +304,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
             const emitter: StrictEventEmitter<EventEmitter, OpcUaNodeEvents> = new EventEmitter();
             monitoredItem.on('changed', (dataValue) => {
                 catOpc.debug(`Variable Changed (${this.resolveNodeId(node)}) = ${dataValue.value.value.toString()}`);
-                emitter.emit('changed', {value: dataValue.value.value, serverTimestamp: dataValue.serverTimestamp});
+                emitter.emit('changed', {value: dataValue.value.value, timestamp: dataValue.serverTimestamp});
             });
             this.monitoredItems.set(nodeId, { monitoredItem, emitter });
         }
@@ -344,14 +350,14 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
         this.variables.forEach((variable: ProcessValue) => {
             if (variable.communication['V'] && variable.communication['V'].node_id != null) {
                 this.listenToOpcUaNode(variable.communication['V'])
-                    .on('changed', ({value, serverTimestamp}) => {
-                        catModule.debug(`variable changed: ${this.id}.${variable.name} = ${value}`);
+                    .on('changed', (data) => {
+                        catModule.debug(`variable changed: ${this.id}.${variable.name} = ${data.value}`);
                         const entry: VariableLogEntry = {
                             timestampPfe: new Date(),
-                            timestampModule: serverTimestamp,
+                            timestampModule: data.timestamp,
                             module: this.id,
                             variable: variable.name,
-                            value: value
+                            value: data.value
                         };
                         this.emit('variableChanged', entry);
                     });
@@ -362,8 +368,8 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
     }
 
     private subscribeToAllServices() {
-        this.services.forEach((service) => {
-            service.subscribeToService()
+        return Promise.all(this.services.map(async (service) => {
+            return (await service.subscribeToService())
                 .on('errorMessage', (errorMessage) => {
                     this.emit('errorMessage', {service, errorMessage} );
                 })
@@ -379,11 +385,11 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
                 .on('controlEnable', (controlEnable) => {
                     this.emit('controlEnable', {service, controlEnable} );
                 })
-                .on('state', ({state, serverTimestamp}) => {
+                .on('state', ({state, timestamp}) => {
                     catModule.debug(`state changed: ${this.id}.${service.name} = ${ServiceState[state]}`);
                     const entry = {
                         timestampPfe: new Date(),
-                        timestampModule: serverTimestamp,
+                        timestampModule: timestamp,
                         module: this.id,
                         service: service,
                         state: state
@@ -393,7 +399,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
                         this.emit('serviceCompleted', service);
                     }
                 });
-        });
+        }));
     }
 
     public readVariableNode(node: OpcUaNode) {

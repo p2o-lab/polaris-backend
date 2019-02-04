@@ -32,8 +32,7 @@ import {expect} from 'chai';
 import {later, waitForStateChange} from '../helper';
 import {Service} from '../../src/model/core/Service';
 import {Parameter} from '../../src/model/recipe/Parameter';
-import {ServiceCommand, ServiceInterface} from '@plt/pfe-ree-interface';
-import {ControlEnableInterface, ParameterInterface, StrategyInterface} from '@plt/pfe-ree-interface/dist/interfaces';
+import {ServiceCommand} from '@plt/pfe-ree-interface';
 
 describe('CIF Integration', function () {
 
@@ -62,7 +61,7 @@ describe('CIF Integration', function () {
     });
 
     it('should be succesfully connected', async() => {
-                let json = await module.json();
+        let json = await module.json();
         expect(json).to.have.property('id', 'CIF');
         assert.equal(json.endpoint, 'opc.tcp://10.6.51.200:4840');
         assert.equal(json.protected, false);
@@ -81,6 +80,7 @@ describe('CIF Integration', function () {
         await manager.resetAllServices();
         await later(250);
 
+        expect(service).has.property('name', 'Test_Service.Dosieren');
         const state = await service.getServiceState();
         expect(state).to.equal(ServiceState.IDLE);
 
@@ -100,7 +100,7 @@ describe('CIF Integration', function () {
         const errorString = await service.getErrorString();
         expect(errorString).to.be.undefined;
 
-        assert.equal(service.name, 'Test_Service.Dosieren');
+
 
         let param = new Parameter({name: 'SollVolumenStrom', value: 1.3}, service);
         service.execute(ServiceCommand.start, service.strategies[0], [param]);

@@ -89,7 +89,11 @@ export class ExternalTrigger {
         monitoredItem.on('changed', (dataValue) => {
             catOpc.info(`flag is ${dataValue.value.value}`);
             if (dataValue.value.value) {
-                manager.player.start();
+                try {
+                    manager.player.start();
+                } catch (err) {
+                    console.log('player already running');
+                }
             }
         });
     }

@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import { catOpc, catRecipe } from '../../config/logging';
+import {catOpc, catRecipe, catService} from '../../config/logging';
 import { ServiceState } from '../core/enum';
 import { Module } from '../core/Module';
 import { Service } from '../core/Service';
@@ -32,14 +32,17 @@ import {
     AndConditionOptions,
     ConditionOptions,
     ConditionType,
+    ExpressionConditionOptions,
     NotConditionOptions,
-    OrConditionOptions,
+    OrConditionOptions, ScopeOptions,
     StateConditionOptions,
     TimeConditionOptions,
     VariableConditionOptions
 } from '@plt/pfe-ree-interface';
 import { EventEmitter } from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
+import {Expression, Parser} from 'expr-eval';
+import {ScopeItem} from './ScopeItem';
 
 
 /**
@@ -67,11 +70,11 @@ export abstract class Condition extends (EventEmitter as { new(): ConditionEmitt
     /**
      * Create Condition
      * @param {ConditionOptions} options    options for creating Condition
-     * @param {Module[]} modules    modules to be used for evaluatin module name in expressions
+     * @param {Module[]} modules    modules to be used for evaluating module name in expressions
      * @param {Recipe} recipe   recipe using this condition. It will be updated according to the used modules
      * @returns Condition
      * */
-    static create(options: ConditionOptions, modules: Module[], recipe: Recipe): Condition {
+    static create(options: ConditionOptions, modules: Module[], recipe?: Recipe): Condition {
         catRecipe.trace(`Create Condition: ${JSON.stringify(options)}`);
         const type: ConditionType = options.type;
         if (type === ConditionType.time) {
@@ -86,6 +89,8 @@ export abstract class Condition extends (EventEmitter as { new(): ConditionEmitt
             return new OrCondition(<OrConditionOptions> options, modules, recipe);
         } else if (type === ConditionType.not) {
             return new NotCondition(<NotConditionOptions> options, modules, recipe);
+        } else if (type === ConditionType.expression) {
+                return new ExpressionCondition(<ExpressionConditionOptions> options, modules, recipe);
         } else {
             throw new Error(`No Condition found for ${options}`);
         }
@@ -108,6 +113,78 @@ export abstract class Condition extends (EventEmitter as { new(): ConditionEmitt
 
     json(): ConditionOptions {
         return this.options;
+    }
+}
+
+export class ExpressionCondition extends Condition {
+
+    expression: string;
+    scopeArray: ScopeItem[];
+    private expressionObject: Expression;
+
+    /**
+     *
+     * @param {string} expression
+     * @param {object[]} scope
+     * @param {Module[]} modules
+     * @param {Recipe} recipe
+     */
+    constructor(options: ExpressionConditionOptions, modules?: Module[], recipe?: Recipe) {
+        super(options);
+        catRecipe.trace(`Add ExpressionCondition: ${options.expression}`);
+        this.expression = options.expression.replace(new RegExp('\\\\.', 'g'), '__');
+        this.expressionObject = new Parser().parse(this.expression);
+
+        // evaluate scopeArray
+        this.scopeArray = (options.scope||[]).map((item: ScopeOptions) => ScopeItem.extractFromScopeOptions(item, modules));
+
+        // evaluate additional variables from expression
+        const parser: Parser = new Parser({allowMemberAccess: true});
+        this.scopeArray.push(...this.expressionObject
+            .variables({ withMembers: true })
+            .map((variable) => ScopeItem.extractFromExpression(variable, modules))
+            .filter(Boolean)
+        );
+        this._fulfilled = false;
+    }
+
+    listen(): Condition {
+        this.scopeArray.forEach(async (item) => {
+            item.module.listenToOpcUaNode(item.variable)
+                .on('changed', async (data) => {
+                    this._fulfilled = <boolean> (await this.getValue());
+                    this.emit('stateChanged', this._fulfilled)
+                });
+        });
+
+        return this;
+    }
+
+    /**
+     * calculate value from current scopeArray
+     * @returns {Promise<any>}
+     */
+    public async getValue(): Promise<any> {
+        // get current variables
+        const tasks = await Promise.all(this.scopeArray.map(async (item) => {
+            return item.module.readVariableNode(item.variable)
+                .then(value => {
+                    return item.name.split('.').reduceRight((previous, current) => {
+                        let a = {};
+                        a[current] = previous;
+                        return a;
+                    }, value.value.value );
+                });
+        }));
+        const assign = require('assign-deep');
+        const scope = assign(...tasks);
+        catService.info(`Scope: ${JSON.stringify(scope)}`);
+        const result = this.expressionObject.evaluate(scope);
+        return result;
+    }
+
+    clear() {
+        this.removeAllListeners();
     }
 }
 
@@ -259,8 +336,8 @@ export class StateCondition extends ModuleCondition {
 
     listen(): Condition {
         this.monitoredItem = this.service.parent.listenToOpcUaNode(this.service.status)
-            .on('changed', ({value, serverTimestamp}) => {
-                const state: ServiceState = value;
+            .on('changed', (data) => {
+                const state: ServiceState = data.value;
                 this._fulfilled = ServiceState[state]
                     .localeCompare(this.state, 'en', { usage: 'search', sensitivity: 'base' }) === 0;
                 catRecipe.debug(`StateCondition: ${this.module.id}.${this.service.name}) = (${ServiceState[state]})` +
@@ -306,11 +383,11 @@ export class VariableCondition extends ModuleCondition {
         });
 
         this.listener = this.module.listenToVariable(this.dataStructure, this.variable)
-            .on('changed', ({value, serverTimestamp}: {value: number, serverTimestamp: Date}) => {
-                catOpc.debug(`value changed to ${value} -  (${this.operator}) compare against ${this.value}`);
-                this._fulfilled = this.compare(value);
+            .on('changed', (data) => {
+                catOpc.debug(`value changed to ${data.value} -  (${this.operator}) compare against ${this.value}`);
+                this._fulfilled = this.compare(data.value);
                 this.emit('stateChanged', this._fulfilled);
-                catOpc.debug(`VariableCondition ${this.dataStructure}: ${value} ${this.operator} ${this.value} = ${this._fulfilled}`);
+                catOpc.debug(`VariableCondition ${this.dataStructure}: ${data.value} ${this.operator} ${this.value} = ${this._fulfilled}`);
             });
         return this;
     }
