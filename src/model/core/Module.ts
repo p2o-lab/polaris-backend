@@ -232,7 +232,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
                 }
                 // subscribe to all services
                 try {
-                    this.subscribeToAllServices();
+                    await this.subscribeToAllServices();
                 } catch (err) {
                     catModule.warn('Could not connect to all services:' + err);
                 }
@@ -368,8 +368,8 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
     }
 
     private subscribeToAllServices() {
-        this.services.forEach((service) => {
-            service.subscribeToService()
+        return Promise.all(this.services.map(async (service) => {
+            return (await service.subscribeToService())
                 .on('errorMessage', (errorMessage) => {
                     this.emit('errorMessage', {service, errorMessage} );
                 })
@@ -399,7 +399,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
                         this.emit('serviceCompleted', service);
                     }
                 });
-        });
+        }));
     }
 
     public readVariableNode(node: OpcUaNode) {

@@ -173,11 +173,12 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
      * Reads current ControlEnable from [[Module]]
      * @returns {ServiceControlEnable}
      */
-    public getControlEnable(): ControlEnableInterface {
+    public async getControlEnable(): Promise<ControlEnableInterface> {
         try {
-            //const result: DataValue = await this.parent.readVariableNode(this.controlEnable);
-            const controlEnable: ServiceControlEnable = <ServiceControlEnable> this.controlEnable.value;
-            catOpc.trace(`Read ControlEnable ${this.name}: ${controlEnable}`);
+            const result: DataValue = await this.parent.readVariableNode(this.controlEnable);
+            const controlEnable: ServiceControlEnable = result.value.value;
+            //const controlEnable: ServiceControlEnable = <ServiceControlEnable> this.controlEnable.value;
+            catOpc.info(`Read ControlEnable ${this.name}: ${controlEnable} , ${JSON.stringify(controlEnableToJson(controlEnable))}`);
             return controlEnableToJson(controlEnable);
         } catch (err) {
             catOpc.error('Error reading controlEnable', err);
@@ -231,16 +232,16 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
         const strategies = this.getStrategies();
         const params = this.getCurrentParameters();
         const errorString = this.getErrorString();
-        const controlEnable = this.getControlEnable();
+        const controlEnable = await this.getControlEnable();
         const currentStrategy = this.getCurrentStrategy();
         return {
             name: this.name,
             opMode: OpMode[opMode] || opMode,
-            status: state,
+            status: ServiceState[state],
             strategies: await strategies,
-            currentStrategy: (await currentStrategy).name,
+            currentStrategy: currentStrategy.name,
             parameters: await params,
-            error: await errorString,
+            error: errorString,
             controlEnable: controlEnable,
             lastChange: this.status.timestamp
         };
@@ -643,8 +644,12 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
      *
      * @returns {Service} emits 'errorMessage' and 'state' events
      */
-    public subscribeToService(): Service {
+    public async subscribeToService(): Promise<Service> {
+        catService.info(`Subscribe to service ${this.name}`);
         if (this.errorMessage) {
+            let result = await this.parent.readVariableNode(this.errorMessage);
+            this.errorMessage.value = result.value.value;
+            catService.debug(`initial errorMessage: ${JSON.stringify(this.errorMessage)}`);
             this.parent.listenToOpcUaNode(this.errorMessage)
                 .on('changed', (data) => {
                     Object.assign(this.errorMessage, data);
@@ -653,14 +658,26 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
                 });
         }
         if (this.controlEnable) {
+            let result = await this.parent.readVariableNode(this.controlEnable);
+            this.controlEnable.value = result.value.value;
+            catService.info(`initial controlEnable: ${JSON.stringify(this.controlEnable)}`);
             this.parent.listenToOpcUaNode(this.controlEnable)
                 .on('changed', (data) => {
-                    Object.assign(this.controlEnable, data);
-                    catService.debug(`ControlEnable changed for ${this.name}: ${JSON.stringify(controlEnableToJson(data.value))}`);
-                    this.emit('controlEnable', controlEnableToJson(data.value));
+                    this.controlEnable.value = <number> data.value;
+                    this.controlEnable.timestamp = data.timestamp;
+                    let controlEnable = this.getControlEnable();
+
+                    const controlEnable2: ServiceControlEnable = <ServiceControlEnable> this.controlEnable.value;
+                    catService.info(`ControlEnable changed for ${this.name}: ${controlEnable2}`);
+                    catService.info(`ControlEnable changed for ${this.name}: ${this.controlEnable.value}`);
+                    catOpc.info(`Read ControlEnable(${this.name}) = ${JSON.stringify(controlEnable)}`);
+                    this.emit('controlEnable', controlEnableToJson(this.controlEnable.value));
                 });
         }
         if (this.status) {
+            let result = await this.parent.readVariableNode(this.status);
+            this.status.value = result.value.value;
+            catService.info(`initial status: ${JSON.stringify(this.status)}`);
             this.parent.listenToOpcUaNode(this.status)
                 .on('changed', (data) => {
                     Object.assign(this.controlEnable, data);
@@ -669,13 +686,19 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
                 });
         }
         if (this.command) {
+            let result = await this.parent.readVariableNode(this.command);
+            this.command.value = result.value.value;
+            catService.debug(`initial command: ${JSON.stringify(this.command)}`);
             this.parent.listenToOpcUaNode(this.command)
                 .on('changed', (data) => {
                     Object.assign(this.controlEnable, data);
                     catService.debug(`Command changed for ${this.name}: ${ServiceMtpCommand[data.value]} (${data.value})`);
                 });
         }
-        if (this.command) {
+        if (this.currentStrategy) {
+            let result = await this.parent.readVariableNode(this.currentStrategy);
+            this.currentStrategy.value = result.value.value;
+            catService.debug(`initial current strategy: ${this.currentStrategy.value}`);
             this.parent.listenToOpcUaNode(this.currentStrategy)
                 .on('changed', (data) => {
                     Object.assign(this.controlEnable, data);
