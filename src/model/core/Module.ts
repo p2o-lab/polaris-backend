@@ -83,11 +83,6 @@ interface ModuleEvents {
     */
     disconnected: void;
     /**
-     * when errorMessage of one service changes
-     * @event
-     */
-    errorMessage: {service: Service, errorMessage: string};
-    /**
      * when controlEnable of one service changes
      * @event controlEnable
      */
@@ -370,9 +365,6 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
     private subscribeToAllServices() {
         return Promise.all(this.services.map(async (service) => {
             return (await service.subscribeToService())
-                .on('errorMessage', (errorMessage) => {
-                    this.emit('errorMessage', {service, errorMessage} );
-                })
                 .on('commandExecuted', (data) => {
                     this.emit('commandExecuted', {
                         service: service,

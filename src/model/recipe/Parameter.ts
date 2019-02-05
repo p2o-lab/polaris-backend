@@ -96,14 +96,9 @@ export class Parameter {
             .map((item: ScopeOptions) => ScopeItem.extractFromScopeOptions(item, modules));
 
         // evaluate additional variables from expression
-        const parser: Parser = new Parser({allowMemberAccess: true});
-        this.value = this.value.replace(new RegExp('\\\\.', 'g'), '__');
-        this.expression = parser.parse(this.value);
-        this.scopeArray.push(...this.expression
-            .variables({ withMembers: true })
-            .map((variable) => ScopeItem.extractFromExpression(variable, modules))
-            .filter(Boolean)
-        );
+        const extraction = ScopeItem.extractFromExpressionString(this.value);
+        this.expression = extraction.expression;
+        this.scopeArray.push (...extraction.scopeItems);
     }
 
     public async getDataType(): Promise<DataType> {

@@ -29,9 +29,7 @@ import { catRecipe } from '../../config/logging';
 import { EventEmitter } from 'events';
 import { v4 } from 'uuid';
 import { Transition } from './Transition';
-import { manager } from '../Manager';
 import { RecipeInterface, ModuleInterface, RecipeOptions, RecipeState, StepInterface } from '@plt/pfe-ree-interface';
-import * as assert from 'assert';
 import StrictEventEmitter from 'strict-event-emitter-types';
 
 /**
@@ -118,6 +116,7 @@ export class Recipe extends (EventEmitter as { new(): RecipeEmitter }) {
 
         this.options = options;
         this.protected = protectedRecipe;
+        this.lastChange = new Date();
 
         catRecipe.info(`Recipe ${this.name} successfully parsed`);
     }
@@ -142,7 +141,7 @@ export class Recipe extends (EventEmitter as { new(): RecipeEmitter }) {
             currentStep: this.current_step ? this.current_step.name : undefined,
             options: this.options,
             protected: this.protected,
-            lastChange: this.lastChange
+            lastChange: (new Date().getTime() - this.lastChange.getTime())/1000
         };
     }
 

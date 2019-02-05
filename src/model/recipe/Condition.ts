@@ -118,33 +118,25 @@ export abstract class Condition extends (EventEmitter as { new(): ConditionEmitt
 
 export class ExpressionCondition extends Condition {
 
-    expression: string;
-    scopeArray: ScopeItem[];
-    private expressionObject: Expression;
+    private expression: Expression;
+    private scopeArray: ScopeItem[];
 
     /**
-     *
-     * @param {string} expression
-     * @param {object[]} scope
+     * 
+     * @param {ExpressionConditionOptions} options
      * @param {Module[]} modules
      * @param {Recipe} recipe
      */
     constructor(options: ExpressionConditionOptions, modules?: Module[], recipe?: Recipe) {
         super(options);
         catRecipe.trace(`Add ExpressionCondition: ${options.expression}`);
-        this.expression = options.expression.replace(new RegExp('\\\\.', 'g'), '__');
-        this.expressionObject = new Parser().parse(this.expression);
-
         // evaluate scopeArray
         this.scopeArray = (options.scope||[]).map((item: ScopeOptions) => ScopeItem.extractFromScopeOptions(item, modules));
 
         // evaluate additional variables from expression
-        const parser: Parser = new Parser({allowMemberAccess: true});
-        this.scopeArray.push(...this.expressionObject
-            .variables({ withMembers: true })
-            .map((variable) => ScopeItem.extractFromExpression(variable, modules))
-            .filter(Boolean)
-        );
+        const extraction = ScopeItem.extractFromExpressionString(options.expression);
+        this.expression = extraction.expression;
+        this.scopeArray.push (...extraction.scopeItems);
         this._fulfilled = false;
     }
 
@@ -179,7 +171,7 @@ export class ExpressionCondition extends Condition {
         const assign = require('assign-deep');
         const scope = assign(...tasks);
         catService.info(`Scope: ${JSON.stringify(scope)}`);
-        const result = this.expressionObject.evaluate(scope);
+        const result = this.expression.evaluate(scope);
         return result;
     }
 
