@@ -351,6 +351,7 @@ export abstract class FunctionBlock implements BaseService {
     }
 
     async setParameters(parameters: (Parameter | ParameterOptions)[]): Promise<void> {
+        catFunctionBlock.info(`Set parameter: ${JSON.stringify(parameters)}`)
         parameters.forEach(pNew => {
             const pOld = this.parameters.find(pOld => pOld.name === pNew.name);
             if (pOld) {

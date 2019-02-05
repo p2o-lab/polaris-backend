@@ -38,12 +38,12 @@ describe('FunctionBlock', () => {
             expect(timer.state).to.equal(ServiceState.IDLE);
 
             let params = await timer.getCurrentParameters();
-            expect(params).to.have.lengthOf(1);
+            expect(params).to.have.lengthOf(3);
             expect(params[0]).to.deep.equal({
                 "min": 1,
                 "name": "duration",
                 "unit": "ms",
-                "value": 1000
+                "value": 10000
             });
 
             await timer.setParameters([{name: 'duron', value: 1000}]).then(expect.fail, err => err);
