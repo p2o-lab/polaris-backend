@@ -32,6 +32,8 @@ import {ManagerInterface, RecipeOptions, ServiceCommand} from '@plt/pfe-ree-inte
 import {Player} from "./recipe/Player";
 import {ServiceState} from './core/enum';
 import {VariableLogEntry,ServiceLogEntry } from '../logging/archive';
+import {FunctionBlock} from './functionBlock/FunctionBlock';
+import {FunctionBlockFactory} from './functionBlock/FunctionBlockFactory';
 
 export class Manager extends EventEmitter {
 
@@ -40,6 +42,9 @@ export class Manager extends EventEmitter {
 
     // loaded modules
     readonly modules: Module[] = [];
+
+    // instantiated function blocks
+    readonly functionBlocks: FunctionBlock[] = [];
 
     readonly player: Player;
 
@@ -220,6 +225,7 @@ export class Manager extends EventEmitter {
         return {
             activeRecipe: this.player.getCurrentRecipe()? this.player.getCurrentRecipe().json() : undefined,
             modules: this.modules.map(module => module.id),
+            //functionBlocks: this.functionBlocks.map(fb => fb.json()),
             autoReset: this.autoreset
         };
     }
@@ -252,11 +258,10 @@ export class Manager extends EventEmitter {
         }
         if (recipe.protected) {
             throw new Error(`Recipe ${recipeId} can not be deleted since it is protected.`);
-        } else {
-            const index = manager.recipes.indexOf(recipe, 0);
-            if (index > -1) {
-                manager.recipes.splice(index, 1);
-            }
+        }
+        const index = manager.recipes.indexOf(recipe, 0);
+        if (index > -1) {
+            manager.recipes.splice(index, 1);
         }
     }
 
@@ -276,6 +281,23 @@ export class Manager extends EventEmitter {
             throw new Error(`Service ${serviceName} does not exist on module ${moduleName}`);
         }
         return service;
+    }
+
+    public instantiateFunctionBlock(options) {
+        const fb = FunctionBlockFactory.create(options);
+        catManager.info(`instantiated new function block ${fb.name}`);
+        this.functionBlocks.push(fb);
+    }
+
+    public removeFunctionBlock(functionBlockId: string) {
+        catManager.debug(`Remove function block ${functionBlockId}`);
+        const index = this.functionBlocks.findIndex(fb => fb.name === functionBlockId);
+        if (!index) {
+            throw new Error(`Recipe ${functionBlockId} not available.`);
+        }
+        if (index > -1) {
+            manager.functionBlocks.splice(index, 1);
+        }
     }
 }
 

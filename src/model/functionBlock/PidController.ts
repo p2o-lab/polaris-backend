@@ -27,6 +27,8 @@ import {FunctionBlock} from './FunctionBlock';
 
 export class PidController extends FunctionBlock {
 
+    static type = 'pidController';
+
     initParameter() {
         this.parameters = [{name: 'p', value: 1}, {name: 'i', value: 1}, {name: 'd', value: 1}];
     }

@@ -23,16 +23,26 @@
  * SOFTWARE.
  */
 
-import {FunctionBlock} from './FunctionBlock';
+import {Timer} from './Timer';
+import {FunctionGenerator} from './FunctionGenerator';
+import {PidController} from './PidController';
+import {VirtualService} from './VirtualService';
+import {Storage} from './Storage';
 
-export class FunctionGenerator extends FunctionBlock {
-
-    static type = 'functionGenerator';
-
-    startTime: Date;
-
-    initParameter() {
-        this.parameters = [{name: 'function', value: "sin(t)"}, {name: 'updateRate', value: 1000, unit: 'ms', min: 1}];
-    }
-
+export class FunctionBlockFactory {
+ static create(options: any) {
+     if (options.type === Timer.type) {
+         return new Timer(options.name);
+     } else  if (options.type === Storage.type) {
+         return new Storage(options.name);
+     } else if (options.type === FunctionGenerator.type) {
+         return new FunctionGenerator(options.name)
+     } else if (options.type === PidController.type) {
+         return new PidController(options.name)
+     } else if (options.type === VirtualService.type) {
+         return new VirtualService(options.name)
+     } else {
+         throw new Error('Wrong function block type');
+     }
+ }
 }

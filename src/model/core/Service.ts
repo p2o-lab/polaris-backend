@@ -704,46 +704,6 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) impleme
     }
 
     /**
-<<<<<<< HEAD
-=======
-     * Listen to state and error of service and emits specific events for them
-     *
-     * @returns {Service} emits 'errorMessage' and 'state' events
-     */
-    public subscribeToService(): Service {
-        if (this.errorMessage) {
-            this.parent.listenToOpcUaNode(this.errorMessage)
-                .on('changed', ({value, serverTimestamp}: {value: string, serverTimestamp: Date}) => {
-                    catService.info(`errorMessage changed for ${this.name}: ${value}`);
-                    this.emit('errorMessage', value);
-                });
-        }
-        if (this.controlEnable) {
-            this.parent.listenToOpcUaNode(this.controlEnable)
-                .on('changed', (data) => {
-                    catService.debug(`ControlEnable changed for ${this.name}: ${JSON.stringify(controlEnableToJson(data.value))}`);
-                    this.emit('controlEnable', controlEnableToJson(data.value));
-                });
-        }
-        if (this.status) {
-            this.parent.listenToOpcUaNode(this.status)
-                .on('changed', ({value, serverTimestamp}: {value: number, serverTimestamp: Date}) => {
-                    this.lastChange = new Date();
-                    catService.info(`Status changed for ${this.name}: ${ServiceState[value]}`);
-                    this.emit('state', {state: value, serverTimestamp});
-                });
-        }
-        if (this.command) {
-            this.parent.listenToOpcUaNode(this.command)
-                .on('changed', (data) => {
-                    catService.debug(`Command changed for ${this.name}: ${ServiceMtpCommand[data.value]} (${data.value})`);
-                });
-        }
-        return this;
-    }
-
-    /**
->>>>>>> added additional FunctionBlocks
      * Remove all Event listeners from service
      */
     public removeAllSubscriptions() {

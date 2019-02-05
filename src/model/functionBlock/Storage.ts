@@ -27,6 +27,8 @@ import {FunctionBlock} from './FunctionBlock';
 
 export class Storage extends FunctionBlock {
 
+    static type = 'storage';
+
     initParameter() {
         this.parameters = [{name: 'storage', value: undefined}];
     }

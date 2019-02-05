@@ -24,7 +24,7 @@
  */
 
 import {ServiceState} from '../core/enum';
-import {ControlEnableInterface, ParameterOptions, ServiceCommand, ParameterInterface} from '@plt/pfe-ree-interface';
+import {ControlEnableInterface, ParameterInterface, ParameterOptions, ServiceCommand, FunctionBlockInterface} from '@plt/pfe-ree-interface';
 import {Parameter} from '../recipe/Parameter';
 import {BaseService} from '../core/BaseService';
 import {catFunctionBlock} from '../../config/logging';
@@ -36,6 +36,8 @@ export abstract class FunctionBlock implements BaseService {
     get controlEnable(): ControlEnableInterface {
         return this._controlEnable;
     }
+
+    static type: string;
 
     readonly name: string;
     protected parameters: (ParameterInterface)[];
@@ -64,6 +66,7 @@ export abstract class FunctionBlock implements BaseService {
 
     private _state: ServiceState = ServiceState.IDLE;
     private _controlEnable: ControlEnableInterface;
+    private lastChange = new Date();
 
     // Internal
     private async gotoStarting(): Promise<void> {
@@ -297,29 +300,65 @@ export abstract class FunctionBlock implements BaseService {
     }
 
     // Allow user to inject own functionality after reaching each state
-    async onStarting(): Promise<void> {};
-    async onRunning(): Promise<void> {};
-    async onPausing(): Promise<void> {};
-    async onPaused(): Promise<void> {};
-    async onResuming(): Promise<void> {};
-    async onCompleting(): Promise<void> {};
-    async onCompleted(): Promise<void> {};
-    async onResetting(): Promise<void> {};
-    async onAborting(): Promise<void> {};
-    async onAborted(): Promise<void> {};
-    async onStopping(): Promise<void> {};
-    async onStopped(): Promise<void> {};
-    async onIdle(): Promise<void> {};
+    async onStarting(): Promise<void> {
+    };
+
+    async onRunning(): Promise<void> {
+    };
+
+    async onPausing(): Promise<void> {
+    };
+
+    async onPaused(): Promise<void> {
+    };
+
+    async onResuming(): Promise<void> {
+    };
+
+    async onCompleting(): Promise<void> {
+    };
+
+    async onCompleted(): Promise<void> {
+    };
+
+    async onResetting(): Promise<void> {
+    };
+
+    async onAborting(): Promise<void> {
+    };
+
+    async onAborted(): Promise<void> {
+    };
+
+    async onStopping(): Promise<void> {
+    };
+
+    async onStopped(): Promise<void> {
+    };
+
+    async onIdle(): Promise<void> {
+    };
+
+    async json(): Promise<FunctionBlockInterface> {
+        return {
+            name: this.name,
+            type: this.constructor.name,
+            parameters: await this.getCurrentParameters(),
+            status: ServiceState[await this.getServiceState()],
+            controlEnable: await this.getControlEnable(),
+            lastChange: (new Date().getTime() - this.lastChange.getTime()) / 1000
+        }
+    }
 
     async setParameters(parameters: (Parameter | ParameterOptions)[]): Promise<void> {
         parameters.forEach(pNew => {
-            const pOld = this.parameters.find(pOld => pOld.name === pNew.name );
+            const pOld = this.parameters.find(pOld => pOld.name === pNew.name);
             if (pOld) {
                 Object.assign(pOld, pNew);
             } else {
-                throw new Error("try to write not existent variable");
+                throw new Error('try to write not existent variable');
             }
-        } );
+        });
     }
 
     async getCurrentParameters(): Promise<ParameterInterface[]> {
@@ -341,6 +380,7 @@ export abstract class FunctionBlock implements BaseService {
      * @returns {Promise<boolean>}
      */
     public async executeCommand(command: ServiceCommand): Promise<boolean> {
+        this.lastChange = new Date();
         let result;
         if (command === ServiceCommand.start) {
             result = this.start();
@@ -413,5 +453,4 @@ export abstract class FunctionBlock implements BaseService {
             await this.gotoResetting();
         }
     };
-
 }

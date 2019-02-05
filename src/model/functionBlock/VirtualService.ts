@@ -27,4 +27,9 @@ import {FunctionBlock} from './FunctionBlock';
 
 export class VirtualService extends FunctionBlock {
 
+    static type = 'virtualService';
+
+    initParameter() {
+    }
+
 }

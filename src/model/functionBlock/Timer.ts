@@ -23,28 +23,33 @@
  * SOFTWARE.
  */
 
-import {Parameter} from '../recipe/Parameter';
 import {ParameterInterface, ParameterOptions} from '@plt/pfe-ree-interface';
 import {FunctionBlock} from './FunctionBlock';
 import {catTimer} from '../../config/logging';
 
 export class Timer extends FunctionBlock {
 
+    static type = 'timer';
+
     private durationMs: number;
     private timestampStart: Date;
     private elapsedTime: number;
-    private timer;
+    private timerId;
+
+    constructor(name: string) {
+        super(name);
+    }
 
     initParameter() {
         this.parameters = [{name: 'duration', value: 1000, min: 1, unit: "ms"}];
     }
 
     async onStarting(): Promise<void> {
-        clearTimeout(this.timer);
-        this.durationMs = this.parameters.find(p => p.name === 'duration').value;
+        clearTimeout(this.timerId);
+        this.durationMs = <number> this.parameters.find(p => p.name === 'duration').value;
         this.timestampStart = new Date();
         this.elapsedTime = 0;
-        this.timer = setTimeout(() => {
+        this.timerId = setTimeout(() => {
             super.complete();
         }, this.durationMs);
         await catTimer.info(`timer on starting`);
@@ -52,14 +57,14 @@ export class Timer extends FunctionBlock {
 
     async onPausing(): Promise<void> {
         this.elapsedTime = this.elapsedTime + new Date().valueOf() - this.timestampStart.valueOf();
-        clearTimeout(this.timer);
+        clearTimeout(this.timerId);
         await catTimer.info(`timer on pausing (already elapsed ${this.elapsedTime})`);
     }
 
     async onResuming(): Promise<void> {
         this.timestampStart = new Date();
         const openDuration = this.durationMs - this.elapsedTime;
-        this.timer = setTimeout(() => {
+        this.timerId = setTimeout(() => {
             super.complete();
         }, openDuration);
         await catTimer.info(`timer on resuming (${openDuration})`);
