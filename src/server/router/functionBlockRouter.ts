@@ -83,3 +83,42 @@ functionBlockRouter.put('', asyncHandler(async (req: Request, res: Response) => 
     manager.instantiateFunctionBlock(req.body);
     res.json({ status: 'function block successful instantiated' });
 }));
+
+/**
+ * @api {post} /functionBlock/:functionBlockName/parameter    Configure FunctionBlock
+ * @apiName ConfigureFunctionBlock
+ * @apiDescription Configure function block parameter
+ * @apiGroup FunctionBlock
+ * @apiParam {string} functionBlockName   Name of function block
+ * @apiParam {ParameterOptions[]} parameters    function block parameter
+ */
+functionBlockRouter.post('/:functionBlockName/parameter', asyncHandler(async (req: Request, res: Response) => {
+    const fb = manager.functionBlocks.find(fb => fb.name === req.params.functionBlockName);
+    await fb.setParameters(JSON.parse(req.body.parameters));
+    res.json(await fb.json());
+}));
+
+
+/**
+ * @api {post} /functionBlock/:functionBlockId/:command    Call function block
+ * @apiName CallFunctionBlock
+ * @apiGroup FunctionBlock
+ * @apiParam {string} functionBlockId   Name of function block
+ * @apiParam {string="start","stop","abort","complete","pause","unhold","reset"} command       Command name
+ * @apiParam {ParameterOptions[]} [parameters]    Parameters for *start* or *restart*
+ */
+functionBlockRouter.post('/:functionBlockId/:command', asyncHandler(async (req: Request, res: Response) => {
+    catServer.info(`Call function block: ${JSON.stringify(req.params)} - ${JSON.stringify(req.body)}`);
+    const fb = manager.functionBlocks.find(fb => fb.name === req.params.functionBlockId);
+
+    if (req.body.parameters) {
+        await fb.setParameters(req.body.parameters);
+    }
+    const result = await fb.executeCommand(req.params.command);
+    res.json({
+        functionBlock: fb.name,
+        command: req.params.command,
+        status: 'Command succesfully send'
+    });
+}));
+
