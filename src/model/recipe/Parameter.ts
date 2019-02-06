@@ -24,7 +24,7 @@
  */
 
 import {ParameterOptions, ScopeOptions} from '@plt/pfe-ree-interface';
-import {Expression, Parser} from 'expr-eval';
+import {Expression} from 'expr-eval';
 import {catRecipe, catService} from '../../config/logging';
 import {EventEmitter} from 'events';
 import {DataType} from 'node-opcua-client';
