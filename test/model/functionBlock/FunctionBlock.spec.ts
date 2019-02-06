@@ -28,6 +28,7 @@ import {Timer} from '../../../src/model/functionBlock/Timer';
 import {Storage} from '../../../src/model/functionBlock/Storage';
 import {later} from '../../helper';
 import {ServiceState} from '../../../src/model/core/enum';
+import {FunctionGenerator} from '../../../src/model/functionBlock/FunctionGenerator';
 
 
 describe('FunctionBlock', () => {
@@ -48,20 +49,58 @@ describe('FunctionBlock', () => {
 
             await timer.setParameters([{name: 'duron', value: 1000}]).then(expect.fail, err => err);
 
+            await timer.setParameters([{name: 'remainingTime', value: 1000}]).then(expect.fail, err => err);
 
-            timer.setParameters([{name: 'duration', value: 1000}]);
+            await timer.setParameters([{name: 'duration', value: 500}, {name:'updateRate', value: 50}]);
+
+            let hit = 0;
+            timer.listenToVariable('remainingTime').on('changed', () => { hit = hit+1});
             await timer.start();
             expect(timer.state).to.equal(ServiceState.RUNNING);
 
-            await later(500);
+            await later(200);
             await timer.pause();
-            await later(500);
+            expect(hit).to.equal(5);
+            await later(80);
 
             await timer.resume();
 
+            await later(310);
+
+            expect(hit).to.equal(10);
+
+            await timer.reset();
+        });
+    });
+
+    describe('FunctionGenerator', () => {
+        it('should run', async () => {
+            let f1 = new FunctionGenerator('f1');
+            expect(f1.state).to.equal(ServiceState.IDLE);
+
+            let params = await f1.getCurrentParameters();
+            expect(params).to.have.lengthOf(3);
+
+            await f1.setParameters([{name: 'function', value: "sin(5*t)"}, {name: 'updateRate', value: 100}]);
+            await f1.start();
+            expect(f1.state).to.equal(ServiceState.RUNNING);
+
+            await later(120);
+            params = await f1.getCurrentParameters();
+            let value = params.find(p => p.name === 'output');
+            expect(value).to.have.property('value').to.be.closeTo(0.5,0.03);
+            await f1.pause();
             await later(100);
 
-            await timer.restart();
+            params = await f1.getCurrentParameters();
+            value = params.find(p => p.name === 'output');
+            expect(value).to.have.property('value').to.be.closeTo(0.841,0.03);
+            await f1.resume();
+            await later(100);
+
+            await f1.stop();
+
+            await f1.reset();
         });
     });
 
@@ -89,7 +128,7 @@ describe('FunctionBlock', () => {
             await s1.complete();
             await s1.reset();
             params = await s1.getCurrentParameters();
-            expect(params).to.have.lengthOf(0);
+            expect(params).to.have.lengthOf(1);
         })
     })
 });

@@ -24,13 +24,51 @@
  */
 
 import {FunctionBlock} from './FunctionBlock';
+import * as Controller from 'node-pid-controller';
+import {catFunctionBlock} from '../../config/logging';
+import {ParameterOptions} from '@plt/pfe-ree-interface';
+import {Parameter} from '../recipe/Parameter';
+import {ServiceState} from '../core/enum';
 
 export class PidController extends FunctionBlock {
+    set output(value: number) {
+        this._output = value;
+        this.parameters.find(p => p.name === 'output').value = this._output;
+    }
 
     static type = 'pidController';
+    private ctr: Controller;
+    private _output: number;
 
     initParameter() {
-        this.parameters = [{name: 'p', value: 1}, {name: 'i', value: 1}, {name: 'd', value: 1}];
+        this.parameters = [
+            {name: 'setpoint', value: undefined},
+            {name: 'input', value: undefined},
+            {name: 'output', value: undefined, readonly: true},
+            {name: 'p', value: 0.25},
+            {name: 'i', value: 0.01},
+            {name: 'd', value: 0.01}
+        ];
+    }
+
+    async setParameters(parameters: (Parameter | ParameterOptions)[]): Promise<void> {
+        super.setParameters(parameters);
+        let setpoint = parameters.find(param => param.name === 'setpoint');
+        if (setpoint) {
+            this.ctr.setTarget(<number> setpoint.value);
+        }
+        let input = parameters.find(param => param.name === 'input');
+        if (input && this.state === ServiceState.RUNNING) {
+            this._output = this.ctr.update(<number> input.value);
+        }
+    }
+
+    async onStarting() {
+        this.ctr = new Controller({
+            k_p: <number> this.parameters.find(param => param.name === 'p').value,
+            k_i: <number> this.parameters.find(param => param.name === 'i').value,
+            k_d: <number> this.parameters.find(param => param.name === 'd').value
+        });
     }
 
 }

@@ -23,14 +23,16 @@
  * SOFTWARE.
  */
 
-import {ParameterInterface, ParameterOptions} from '@plt/pfe-ree-interface';
 import {FunctionBlock} from './FunctionBlock';
 import {catTimer} from '../../config/logging';
+import Timeout = NodeJS.Timeout;
+import {EventEmitter} from 'events';
+import {OpcUaNodeEvents} from '../core/Module';
+import StrictEventEmitter from 'strict-event-emitter-types';
 
 export class Timer extends FunctionBlock {
-    set remainingTime(value: number) {
-        this._remainingTime = value;
-        this.parameters.find(p => p.name === 'remainingTime').value = this._remainingTime;
+    get remainingTime(): number {
+        return this._remainingTime;
     }
 
     static type = 'timer';
@@ -38,8 +40,15 @@ export class Timer extends FunctionBlock {
     private durationMs: number;
     private timestampStart: Date;
     private _remainingTime: number;
-    private timerId;
-    private timerUpdateId;
+    private elapsedTime: number;
+    private timerId: Timeout;
+    private timerUpdateId: Timeout;
+
+    set remainingTime(value: number) {
+        this._remainingTime = value;
+        this.parameters.find(p => p.name === 'remainingTime').value = this._remainingTime;
+        this.eventEmitters['remainingTime'].emit('changed', {value: this._remainingTime, timestamp: new Date()});
+    }
 
     constructor(name: string) {
         super(name);
@@ -47,47 +56,58 @@ export class Timer extends FunctionBlock {
 
     initParameter() {
         this.parameters = [
-            {name: 'duration', value: 10000, min: 1, unit: "ms"},
-            {name: 'updateRate', value: 1000, min: 100, unit: "ms"},
-            {name: 'remainingTime', value: 10000, unit: "ms", readonly: true},
+            {name: 'duration', value: 10000, min: 1, unit: 'ms'},
+            {name: 'updateRate', value: 1000, min: 100, unit: 'ms'},
+            {name: 'remainingTime', value: 10000, unit: 'ms', readonly: true},
         ];
+        this.selfCompleting = true;
+        this.eventEmitters['remainingTime'] = new EventEmitter();
     }
 
     async onStarting(): Promise<void> {
-        clearTimeout(this.timerId);
         this.durationMs = <number> this.parameters.find(p => p.name === 'duration').value;
         this.timestampStart = new Date();
-        this._remainingTime = this.durationMs;
+        this.elapsedTime = 0;
+        this.remainingTime = this.durationMs;
 
+        await catTimer.info(`timer on starting: ${this.remainingTime}`);
+    }
+
+    async onRunning () {
         this.timerId = setTimeout(() => {
             super.complete();
-            clearTimeout(this.timerUpdateId);
-        }, this._remainingTime);
+            this.timerUpdateId.unref();
+        }, this.remainingTime);
 
-        const updateRate = <number> this.parameters.find(p => p.name === 'updateRate').value
+        const updateRate = <number> this.parameters.find(p => p.name === 'updateRate').value;
         this.timerUpdateId = setInterval(() => {
-            this.remainingTime = this._remainingTime - updateRate
+            this.remainingTime = this.remainingTime - updateRate;
         }, updateRate);
-        await catTimer.info(`timer on starting`);
+
     }
 
     async onPausing(): Promise<void> {
-        this._remainingTime = this._remainingTime - (new Date().getTime() - this.timestampStart.getTime());
+        this.elapsedTime = this.elapsedTime + new Date().getTime() - this.timestampStart.getTime();
+        this.remainingTime = this.durationMs - this.elapsedTime;
         clearTimeout(this.timerId);
-        clearTimeout(this.timerUpdateId);
-        await catTimer.info(`timer on pausing (already elapsed ${this._remainingTime})`);
+        clearInterval(this.timerUpdateId);
+        await catTimer.info(`timer on pausing (${this.remainingTime})`);
     }
 
     async onResuming(): Promise<void> {
         this.timestampStart = new Date();
-        this.timerId = setTimeout(() => {
-            super.complete();
-        }, this._remainingTime);
-        const updateRate = <number> this.parameters.find(p => p.name === 'updateRate').value
-        this.timerUpdateId = setInterval(() => {
-            this.remainingTime = this._remainingTime - updateRate
-        }, updateRate);
-        await catTimer.info(`timer on resuming (${this._remainingTime})`);
+        await catTimer.info(`timer on resuming (${this.remainingTime})`);
+    }
+
+    async onCompleting () {
+        this.onStopping();
+    }
+    async onAborting() {
+        this.onStopping();
+    }
+    async onStopping() {
+        clearTimeout(this.timerId);
+        clearInterval(this.timerUpdateId);
     }
 
 }

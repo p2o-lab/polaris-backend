@@ -24,15 +24,75 @@
  */
 
 import {FunctionBlock} from './FunctionBlock';
+import {catTimer} from '../../config/logging';
+import {Expression, Parser} from 'expr-eval';
+import Timeout = NodeJS.Timeout;
+import {EventEmitter} from 'events';
 
+/**
+ * Function Generator
+ *
+ * Parameters:
+ *  - function: expr-eval Expression used to generate output (Variable *t* can be used inside function to link to elapsed time since start of function in seconds
+ *  - updateRate: update rate of evaluating function
+ *  - output: output value of function
+ */
 export class FunctionGenerator extends FunctionBlock {
 
     static type = 'functionGenerator';
 
     startTime: Date;
+    private timerUpdateId: Timeout;
+    private _output: number;
+    private expression: Expression;
 
-    initParameter() {
-        this.parameters = [{name: 'function', value: "sin(t)"}, {name: 'updateRate', value: 1000, unit: 'ms', min: 1}];
+    set output(value: number) {
+        this._output = value;
+        this.parameters.find(p => p.name === 'output').value = this._output;
+        this.eventEmitters['output'].emit('changed', {value: this._output, timestamp1: new Date()});
     }
+    initParameter() {
+        this.parameters = [
+            {name: 'function', value: "sin(t)"},
+            {name: 'updateRate', value: 1000, unit: 'ms', min: 1},
+            {name: 'output', value: undefined, readonly: true}];
+        this.eventEmitters['output'] = new EventEmitter();
+    }
+
+    async onStarting(): Promise<void> {
+        this.startTime = new Date();
+        this.expression = new Parser().parse(this.parameters.find(p => p.name === 'function').value.toString());
+
+        const updateRate = <number> this.parameters.find(p => p.name === 'updateRate').value;
+        this.timerUpdateId = setInterval(() => {
+            const elapsedTime = (new Date().getTime() - this.startTime.getTime())/1000;
+            const value = this.expression.evaluate({t: elapsedTime });
+            this.output = value;
+        }, updateRate);
+    }
+
+    async onPausing() {
+        this.timerUpdateId.unref();
+    }
+
+    async onResuming() {
+        const updateRate = <number> this.parameters.find(p => p.name === 'updateRate').value;
+        this.timerUpdateId = setInterval(() => {
+            const elapsedTime = (new Date().getTime() - this.startTime.getTime())/1000;
+            this.output = this.expression.evaluate({t: elapsedTime });
+        }, updateRate);
+    }
+
+    async onCompleting () {
+        this.onStopping();
+    }
+    async onAborting() {
+        this.onStopping();
+    }
+    async onStopping() {
+        this.timerUpdateId.unref();
+    }
+
+
 
 }

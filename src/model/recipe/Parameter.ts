@@ -36,7 +36,8 @@ import * as assign from 'assign-deep';
 import {ScopeItem} from './ScopeItem';
 
 /**
- * Parameter of an [[Operation]]. Can be static or dynamic. Dynamic parameters can depend on variables of the same or
+ * Parameter passed to a service or function block. Can be used also as part of an [[Operation]].
+ * Can be static or dynamic. Dynamic parameters can depend on variables of the same or
  * other modules. These can also be continuously updated (specified via continuous property)
  */
 export class Parameter {
