@@ -90,7 +90,7 @@ export class ScopeItem {
             if (modules.length == 1) {
                 module = modules[0];
             } else {
-                catScopeItem.warn(`Error during evaluating variable "${variable}": module "${token}" not found in ${JSON.stringify(modules.map(m=> m.id))}`);
+                catScopeItem.info(`Could not evaluate variable "${variable}": module "${token}" not found in ${JSON.stringify(modules.map(m=> m.id))}`);
                 return undefined;
             }
         } else {
@@ -115,7 +115,7 @@ export class ScopeItem {
         } else if (module.variables.find(v => v.name === token)) {
             dataAssembly = module.variables.find(v => v.name === token)
         } else {
-            catScopeItem.warn(`DataAssembly ${token} not found in module ${module.id} from variable ${variable}`);
+            catScopeItem.info(`Could not evaluate variable "${variable}": DataAssembly ${token} not found in module ${module.id}`);
             return undefined;
         }
 

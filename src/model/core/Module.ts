@@ -182,7 +182,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
                     }
                 });
 
-                client.on('close', () => catOpc.warn('Closing OPC UA client connection'));
+                client.on('close', () => catOpc.info('Closing OPC UA client connection'));
                 client.on('time_out_request', () => catOpc.debug('time out request - retrying connection'));
 
                 await timeout(client.connect(this.endpoint), 1000);
