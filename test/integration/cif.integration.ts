@@ -97,10 +97,6 @@ describe('CIF Integration', function () {
             'unhold': false
         });
 
-        const errorString = await service.getErrorString();
-        expect(errorString).to.be.undefined;
-
-
 
         let param = new Parameter({name: 'SollVolumenStrom', value: 1.3}, service);
         service.execute(ServiceCommand.start, service.strategies[0], [param]);
@@ -154,7 +150,6 @@ describe('CIF Integration', function () {
         expect(json).to.be.property('strategies');
         expect(json).to.be.property('parameters');
         expect(json).to.be.property('currentStrategy');
-        expect(json).to.be.property('error');
         expect(json).to.be.property('lastChange');
         expect(json).to.be.property('controlEnable');
     });
