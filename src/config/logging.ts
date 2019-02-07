@@ -49,9 +49,30 @@ export const catServer = new Category('server');
 
 // Custom logging
 export const messages: string[] = [];
+
+
+let logLevel = LogLevel.Info;
+switch ((process.env.LOGLEVEL||'').toUpperCase()) {
+    case 'ERROR':
+        logLevel = LogLevel.Error;
+        break;
+    case 'WARN':
+        logLevel = LogLevel.Warn;
+        break;
+    case 'INFO':
+        logLevel = LogLevel.Info;
+        break;
+    case 'DEBUG':
+        logLevel = LogLevel.Debug;
+        break;
+    case 'TRACE':
+        logLevel = LogLevel.Trace;
+        break;
+}
+
 // Configure to use our custom logger, note the callback which returns our CustomLogger from above.
 const config = new CategoryConfiguration(
-    LogLevel.Info, LoggerType.Custom, new CategoryLogFormat(),
+    logLevel, LoggerType.Custom, new CategoryLogFormat(),
     (category: Category, runtimeSettings: RuntimeSettings) => new CustomLogger(category, runtimeSettings, messages)
 );
 CategoryServiceFactory.setDefaultConfiguration(config);
