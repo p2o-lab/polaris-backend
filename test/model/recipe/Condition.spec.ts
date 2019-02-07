@@ -24,7 +24,6 @@
  */
 
 import {Condition, ExpressionCondition, TimeCondition} from '../../../src/model/recipe/Condition';
-import * as assert from 'assert';
 import {ConditionType} from '@plt/pfe-ree-interface';
 import {expect} from 'chai';
 import * as fs from 'fs';
@@ -86,79 +85,83 @@ describe('Condition', () => {
 
     });
 
-    it('should listen to a time condition of 0.4s', (done) => {
-        const condition = new TimeCondition({type: ConditionType.time, duration: 0.2});
+    it('should listen to a time condition of 0.1s', (done) => {
+        const condition = new TimeCondition({type: ConditionType.time, duration: 0.1});
 
-        assert.deepEqual(condition.json(), {type: 'time', duration: 0.2});
+        expect(condition.json()).to.deep.equal({type: 'time', duration: 0.1});
 
-        assert.equal(condition.fulfilled, false);
+        expect(condition).to.have.property('fulfilled', false);
 
         condition.listen().on('stateChanged', () => {
-            assert.equal(condition.fulfilled, true);
+            expect(condition).to.have.property('fulfilled', true);
             done();
         });
 
-        assert.equal(condition.fulfilled, false);
+        expect(condition).to.have.property('fulfilled', false);
     });
 
     it('should listen to an AND condition of two time conditions', async () => {
         const condition = Condition.create({
             type: ConditionType.and,
             conditions: [
-                {type: ConditionType.time, duration: 0.5},
-                {type: ConditionType.time, duration: 0.3}
+                {type: ConditionType.time, duration: 0.2},
+                {type: ConditionType.time, duration: 0.1}
             ]
         }, undefined, undefined);
-        assert.deepEqual(condition.json(), {
+        expect(condition.json()).to.deep.equal({
             type: 'and',
             conditions:
-                [{type: 'time', duration: 0.5},
-                    {type: 'time', duration: 0.3}]
+                [{type: 'time', duration: 0.2},
+                    {type: 'time', duration: 0.1}]
         });
-        condition.listen().on('stateChanged', (status) => {
-            assert.equal(condition.fulfilled, true);
+        condition.listen().on('stateChanged', () => {
+            expect(condition).to.have.property('fulfilled', true);
         });
-        assert.equal(condition.fulfilled, false);
-        await later(400);
-        assert.equal(condition.fulfilled, false);
-        await later(110);
-        assert.equal(condition.fulfilled, true);
-
+        expect(condition).to.have.property('fulfilled', false);
+        await later(150);
+        expect(condition).to.have.property('fulfilled', false);
+        await later(60);
+        expect(condition).to.have.property('fulfilled', true);
     });
 
-    it('should listen to a OR condition of two time conditions', (done) => {
+    it('should listen to a OR condition of two time conditions', async () => {
         const condition = Condition.create({
             type: ConditionType.or,
             conditions: [
-                {type: ConditionType.time, duration: 2},
-                {type: ConditionType.time, duration: 0.5}
+                {type: ConditionType.time, duration: 0.5},
+                {type: ConditionType.time, duration: 0.1}
             ]
         }, undefined, undefined);
-        assert.deepEqual(condition.json(), {
+        expect(condition.json()).to.deep.equal({
             type: 'or',
             conditions:
-                [{type: 'time', duration: 2},
-                    {type: 'time', duration: 0.5}]
+                [{type: 'time', duration: 0.5},
+                    {type: 'time', duration: 0.1}]
         });
-        condition.listen().on('stateChanged', (status) => {
-            assert.equal(condition.fulfilled, true);
-            done();
+        let hit = false;
+        condition.listen().on('stateChanged', () => {
+            expect(condition).to.have.property('fulfilled', true);
+            hit = true;
         });
-        assert.equal(condition.fulfilled, false);
+        await later(60);
+        expect(condition).to.have.property('fulfilled', false);
+        await later(50);
+        expect(condition).to.have.property('fulfilled', true);
+        expect(hit).to.be.true;
     });
 
     it('should listen to a NOT condition', async () => {
         const condition = Condition.create({
             type: ConditionType.not,
-            condition: {type: ConditionType.time, duration: 0.5}
+            condition: {type: ConditionType.time, duration: 0.1}
         }, undefined, undefined);
-        assert.deepEqual(condition.json(), {type: 'not', condition: {type: 'time', duration: 0.5}});
+        expect(condition.json()).to.deep.equal({type: 'not', condition: {type: 'time', duration: 0.1}});
 
         condition.listen();
         await later(10);
-        assert.equal(condition.fulfilled, true);
-        await later(500);
-        assert.equal(condition.fulfilled, false);
+        expect(condition).to.have.property('fulfilled', true);
+        await later(100);
+        expect(condition).to.have.property('fulfilled', false);
     });
 
     it('should fail with wrong parameter', () => {
