@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import {catOpc, catRecipe, catService} from '../../config/logging';
+import {catCondition} from '../../config/logging';
 import { ServiceState } from '../core/enum';
 import { Module } from '../core/Module';
 import { Service } from '../core/Service';
@@ -75,7 +75,7 @@ export abstract class Condition extends (EventEmitter as { new(): ConditionEmitt
      * @returns Condition
      * */
     static create(options: ConditionOptions, modules: Module[], recipe?: Recipe): Condition {
-        catRecipe.trace(`Create Condition: ${JSON.stringify(options)}`);
+        catCondition.trace(`Create Condition: ${JSON.stringify(options)}`);
         const type: ConditionType = options.type;
         if (type === ConditionType.time) {
             return new TimeCondition(<TimeConditionOptions> options);
@@ -90,7 +90,7 @@ export abstract class Condition extends (EventEmitter as { new(): ConditionEmitt
         } else if (type === ConditionType.not) {
             return new NotCondition(<NotConditionOptions> options, modules, recipe);
         } else if (type === ConditionType.expression) {
-                return new ExpressionCondition(<ExpressionConditionOptions> options, modules, recipe);
+                return new ExpressionCondition(<ExpressionConditionOptions> options, modules);
         } else {
             throw new Error(`No Condition found for ${options}`);
         }
@@ -125,16 +125,15 @@ export class ExpressionCondition extends Condition {
      * 
      * @param {ExpressionConditionOptions} options
      * @param {Module[]} modules
-     * @param {Recipe} recipe
      */
-    constructor(options: ExpressionConditionOptions, modules?: Module[], recipe?: Recipe) {
+    constructor(options: ExpressionConditionOptions, modules: Module[] = []) {
         super(options);
-        catRecipe.trace(`Add ExpressionCondition: ${options.expression}`);
+        catCondition.info(`Add ExpressionCondition: ${options.expression} (${JSON.stringify(modules.map(m => m.id))})`);
         // evaluate scopeArray
         this.scopeArray = (options.scope||[]).map((item: ScopeOptions) => ScopeItem.extractFromScopeOptions(item, modules));
 
         // evaluate additional variables from expression
-        const extraction = ScopeItem.extractFromExpressionString(options.expression);
+        const extraction = ScopeItem.extractFromExpressionString(options.expression, modules);
         this.expression = extraction.expression;
         this.scopeArray.push (...extraction.scopeItems);
         this._fulfilled = false;
@@ -170,7 +169,7 @@ export class ExpressionCondition extends Condition {
         }));
         const assign = require('assign-deep');
         const scope = assign(...tasks);
-        catService.info(`Scope: ${JSON.stringify(scope)}`);
+        catCondition.info(`Scope: ${JSON.stringify(scope)}`);
         const result = this.expression.evaluate(scope);
         return result;
     }
@@ -185,7 +184,7 @@ export class NotCondition extends Condition {
 
     constructor(options: NotConditionOptions, modules: Module[], recipe: Recipe) {
         super(options);
-        catRecipe.trace(`Add NotCondition: ${options}`);
+        catCondition.trace(`Add NotCondition: ${options}`);
         this.condition = Condition.create(options.condition, modules, recipe);
         this._fulfilled = !this.condition.fulfilled;
     }
@@ -225,13 +224,13 @@ export class AndCondition extends AggregateCondition {
 
     constructor(options: AndConditionOptions, modules: Module[], recipe: Recipe) {
         super(options, modules, recipe);
-        catRecipe.trace(`Add AndCondition: ${options}`);
+        catCondition.trace(`Add AndCondition: ${options}`);
     }
 
     listen(): Condition {
         this.conditions.forEach((condition) => {
             condition.listen().on('stateChanged', (state) => {
-                catRecipe.debug(`AndCondition: ${JSON.stringify(this.conditions.map(item => item.fulfilled))}`);
+                catCondition.debug(`AndCondition: ${JSON.stringify(this.conditions.map(item => item.fulfilled))}`);
                 const oldState = this._fulfilled;
                 this._fulfilled = this.conditions.every(condition => condition.fulfilled);
                 if (oldState !== this._fulfilled) {
@@ -247,7 +246,7 @@ export class OrCondition extends AggregateCondition {
 
     constructor(options: OrConditionOptions, modules: Module[], recipe: Recipe) {
         super(options, modules, recipe);
-        catRecipe.trace(`Add OrCondition: ${options}`);
+        catCondition.trace(`Add OrCondition: ${options}`);
     }
 
     listen(): Condition {
@@ -275,13 +274,13 @@ export class TimeCondition extends Condition {
         }
         this.duration = options.duration * 1000;
         this._fulfilled = false;
-        catRecipe.trace(`Add TimeCondition: ${JSON.stringify(options)}`);
+        catCondition.trace(`Add TimeCondition: ${JSON.stringify(options)}`);
     }
 
     listen(): Condition {
-        catRecipe.debug(`Start Timer: ${this.duration}`);
+        catCondition.debug(`Start Timer: ${this.duration}`);
         this.timer = setTimeout(() => {
-            catRecipe.debug(`TimeCondition finished: ${this.duration}`);
+                catCondition.debug(`TimeCondition finished: ${this.duration}`);
             this._fulfilled = true;
             this.emit('stateChanged', this._fulfilled);
         },
@@ -332,7 +331,7 @@ export class StateCondition extends ModuleCondition {
                 const state: ServiceState = data.value;
                 this._fulfilled = ServiceState[state]
                     .localeCompare(this.state, 'en', { usage: 'search', sensitivity: 'base' }) === 0;
-                catRecipe.debug(`StateCondition: ${this.module.id}.${this.service.name}) = (${ServiceState[state]})` +
+                catCondition.debug(`StateCondition: ${this.module.id}.${this.service.name}) = (${ServiceState[state]})` +
                     `- ?= ${this.state} -> ${this._fulfilled}`);
                 this.emit('stateChanged', this._fulfilled);
             });
@@ -367,19 +366,19 @@ export class VariableCondition extends ModuleCondition {
     }
 
     listen(): Condition {
-        catRecipe.debug(`Listen to ${this.dataStructure}.${this.variable}`);
+        catCondition.debug(`Listen to ${this.dataStructure}.${this.variable}`);
         this.module.readVariable(this.dataStructure, this.variable).then((value) => {
             this._fulfilled = this.compare(value.value.value);
             this.emit('stateChanged', this._fulfilled);
-            catOpc.debug(`VariableCondition ${this.dataStructure}: ${value.value.value} ${this.operator} ${this.value} = ${this._fulfilled}`);
+            catCondition.debug(`VariableCondition ${this.dataStructure}: ${value.value.value} ${this.operator} ${this.value} = ${this._fulfilled}`);
         });
 
         this.listener = this.module.listenToVariable(this.dataStructure, this.variable)
             .on('changed', (data) => {
-                catOpc.debug(`value changed to ${data.value} -  (${this.operator}) compare against ${this.value}`);
+                catCondition.debug(`value changed to ${data.value} -  (${this.operator}) compare against ${this.value}`);
                 this._fulfilled = this.compare(data.value);
                 this.emit('stateChanged', this._fulfilled);
-                catOpc.debug(`VariableCondition ${this.dataStructure}: ${data.value} ${this.operator} ${this.value} = ${this._fulfilled}`);
+                catCondition.debug(`VariableCondition ${this.dataStructure}: ${data.value} ${this.operator} ${this.value} = ${this._fulfilled}`);
             });
         return this;
     }

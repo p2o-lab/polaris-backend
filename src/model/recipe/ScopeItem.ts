@@ -24,7 +24,7 @@
  */
 
 import {ScopeOptions} from '@plt/pfe-ree-interface';
-import {catRecipe} from '../../config/logging';
+import {catScopeItem} from '../../config/logging';
 import {ProcessValue} from '../core/ProcessValue';
 import {Module} from '../core/Module';
 import {OpcUaNode, ServiceParameter, Strategy} from '../core/Interfaces';
@@ -90,7 +90,7 @@ export class ScopeItem {
             if (modules.length == 1) {
                 module = modules[0];
             } else {
-                catRecipe.warn(`Module ${token} not found in ${variable}`);
+                catScopeItem.warn(`Error during evaluating variable "${variable}": module "${token}" not found in ${JSON.stringify(modules.map(m=> m.id))}`);
                 return undefined;
             }
         } else {
@@ -115,7 +115,7 @@ export class ScopeItem {
         } else if (module.variables.find(v => v.name === token)) {
             dataAssembly = module.variables.find(v => v.name === token)
         } else {
-            catRecipe.warn(`DataAssembly ${token} not found in module ${module.id} from variable ${variable}`);
+            catScopeItem.warn(`DataAssembly ${token} not found in module ${module.id} from variable ${variable}`);
             return undefined;
         }
 
