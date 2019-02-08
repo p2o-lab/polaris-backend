@@ -67,7 +67,7 @@ export class RecipeRun {
     /** Starts the linked recipe
      *
      */
-    public start() {
+    public start(): Recipe {
         this._startTime = new Date();
         return this.recipe.start()
             .once('completed', () => {

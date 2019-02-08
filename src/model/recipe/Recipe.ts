@@ -42,6 +42,11 @@ interface RecipeEvents {
      */
     started: void;
     /**
+     * when recipe has been stopped, returns recent step
+     * @event
+     */
+    stopped: Step;
+    /**
      * when a step is finished in the recipe
      * @event
      */
@@ -162,8 +167,6 @@ export class Recipe extends (EventEmitter as { new(): RecipeEmitter }) {
 
     /** 
      * Starts recipe
-     *
-     * @returns {Recipe}    current Recipe
      */
     public start(): Recipe {
         this.current_step = this.initial_step;
@@ -184,10 +187,14 @@ export class Recipe extends (EventEmitter as { new(): RecipeEmitter }) {
 
     /**
      * Stops recipe
+     *
+     * Clear monitoring of all conditions. Services won't be touched.
      */
     public stop () {
         this.status = RecipeState.stopped;
-        this.current_step.transitions.map(trans => trans.condition.clear())
+        this.current_step.transitions.forEach(trans => trans.condition.clear());
+        this.emit('stopped', this.current_step);
+        this.current_step = undefined;
     }
 
     private executeStep() {
