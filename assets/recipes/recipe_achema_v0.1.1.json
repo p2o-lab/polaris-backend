@@ -47,7 +47,7 @@
               "type": "state",
               "module": "Temper",
               "service": "Tempering",
-              "state": "running"
+              "state": "execute"
           },
           "next_step": "Running.Vorlegen"
         }
@@ -116,7 +116,7 @@
                 "type": "state",
                 "module": "Temper",
                 "service": "Tempering",
-                "state": "running"
+                "state": "execute"
               }
             ]
           }

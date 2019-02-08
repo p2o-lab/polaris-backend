@@ -31,7 +31,7 @@ export enum ServiceState {
     STARTING = 8,
     IDLE = 16,
     PAUSED = 32,
-    RUNNING = 64,
+    EXECUTE = 64,
     STOPPING = 128,
     ABORTING = 256,
     ABORTED = 512,

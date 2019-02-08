@@ -136,7 +136,7 @@ describe('Player', function () {
             player.enqueue(recipeCif);
             return await timeout(new Promise((resolve) => {
                 player.start()
-                    .on('recipeFinished', (recipe) => {
+                    .on('recipeFinished', (recipe: Recipe) => {
                         expect(recipe).to.have.property('status', 'completed');
                     })
                     .on('completed', () => resolve());

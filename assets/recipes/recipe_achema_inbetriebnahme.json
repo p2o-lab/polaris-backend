@@ -21,7 +21,7 @@
             "type": "state",
             "module": "Dose",
             "service": "Fill",
-            "state": "running"
+            "state": "execute"
           }
         }
       ]
@@ -323,7 +323,7 @@
             "type": "state",
             "module": "Dose",
             "service": "Fill",
-            "state": "running"
+            "state": "execute"
           }
         }
       ]
