@@ -28,7 +28,7 @@ import * as fs from 'fs';
 import {Recipe} from '../../../src/model/recipe/Recipe';
 import {expect} from 'chai';
 import {Manager} from '../../../src/model/Manager';
-import {later} from '../../helper';
+import * as delay from 'timeout-as-promise';
 import {RecipeState} from '@plt/pfe-ree-interface';
 import { timeout } from 'promise-timeout';
 
@@ -93,7 +93,7 @@ describe('Player', function () {
             expect(() => player.forceTransition('S1', 'non-existant')).to.throw();
             expect(() => player.forceTransition('S1', 'S3')).to.throw();
 
-            await later(5);
+            await delay(5);
 
             timeout(new Promise((resolve) => {
                 player.once('stepFinished', (step) => {
@@ -121,12 +121,12 @@ describe('Player', function () {
             try {
                 await module.abort();
             } catch {}
-            await later(200);
+            await delay(200);
 
             try {
                 await module.reset();
             } catch { }
-            await later(200);
+            await delay(200);
 
             await module.disconnect();
         });
