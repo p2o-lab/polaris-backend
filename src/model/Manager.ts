@@ -135,6 +135,7 @@ export class Manager extends EventEmitter {
                     if (this.player.currentRecipeRun) {
                         this.player.currentRecipeRun.variableLog.push(logEntry);
                     }
+                    this.emit('notify', 'variable', logEntry);
                 })
                 .on('commandExecuted', (data) => {
                     const logEntry: ServiceLogEntry = {
