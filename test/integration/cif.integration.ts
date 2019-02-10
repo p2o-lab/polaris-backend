@@ -74,7 +74,7 @@ describe('CIF Integration', function () {
     });
 
     it('should bring everything to idle and perform a service cycle', async function() {
-        this.timeout(10000);
+        this.timeout(20000);
         await manager.abortAllServices();
         await delay(250);
 
