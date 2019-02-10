@@ -25,17 +25,6 @@
 
 import {ServiceState} from '../src/model/core/enum';
 
-/** wait
- *
- * @param {number} delay in milliseconds
- * @returns {Promise<any>}
- */
-export function later(delay: number) {
-    return new Promise((resolve) => {
-        setTimeout(resolve, delay);
-    });
-}
-
 /**
  * resolve when service changes to expectedState
  * rejects after ms milliseconds
