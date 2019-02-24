@@ -283,7 +283,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
      * @param {number} samplingInterval     OPC UA sampling interval for this subscription in milliseconds
      * @returns {"events".internal.EventEmitter} "changed" event
      */
-    listenToOpcUaNode(node: OpcUaNode, samplingInterval=500): StrictEventEmitter<EventEmitter, OpcUaNodeEvents> {
+    listenToOpcUaNode(node: OpcUaNode, samplingInterval=200): StrictEventEmitter<EventEmitter, OpcUaNodeEvents> {
         const nodeId = this.resolveNodeId(node);
         if (!this.monitoredItems.has(nodeId)) {
             const monitoredItem: ClientMonitoredItem = this.subscription.monitor({
@@ -344,7 +344,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
     private subscribeToAllVariables() {
         this.variables.forEach((variable: ProcessValue) => {
             if (variable.communication['V'] && variable.communication['V'].node_id != null) {
-                this.listenToOpcUaNode(variable.communication['V'])
+                this.listenToOpcUaNode(variable.communication['V'], 500)
                     .on('changed', (data) => {
                         catModule.debug(`variable changed: ${this.id}.${variable.name} = ${data.value}`);
                         const entry: VariableLogEntry = {
