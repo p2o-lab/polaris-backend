@@ -1,11 +1,12 @@
 # pfe-ree-node
 
-PFE Recipe Execution Engine as NodeJs application.  *pfe-ree-node* is controlled via REST. 
+PFE Recipe Execution Engine as NodeJs application.  *pfe-ree-node* is controlled via REST. Furthermore it provides recent state changes via websockets.
+
 A HTML user interface for this project is provided via the [pfe-ree-viz](https://dev.plt.et.tu-dresden.de/modulare-automation/pfe-ree-viz) project.
 
 [![Build status](http://cif.plt.et.tu-dresden.de/api/badges/modulare-automation/pfe-ree-node/status.svg)](http://cif.plt.et.tu-dresden.de/modulare-automation/pfe-ree-node)
 [![Docker image](https://img.shields.io/badge/docker%20image-available-brightgreen.svg)](http://registry.plt.et.tu-dresden.de/#!taglist/pfe-ree-node)
-[![NPM package](https://img.shields.io/badge/npm%20package-available-brightgreen.svg)](https://registry.plt.et.tu-dresden.de:4873/#/detail/pfe-ree-node)
+[![NPM package](https://img.shields.io/badge/npm%20package-available-brightgreen.svg)](https://registry.plt.et.tu-dresden.de:4873/#/detail/@plt/pfe-ree-node)
 
 
 ## Installation and Deployment
