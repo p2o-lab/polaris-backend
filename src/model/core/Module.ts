@@ -451,7 +451,10 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
             throw new Error('No variable specified to resolve nodeid');
         } else if (!this.namespaceArray) {
             throw new Error(`No namespace array read for module ${this.id}`);
+        } else if (!variable.namespace_index) {
+            throw new Error(`namespace index is null in module ${this.id}`);
         } else {
+            catOpc.debug(`resolveNodeId ${JSON.stringify(variable)}`);
             const nodeIdString = `ns=${this.namespaceArray.indexOf(variable.namespace_index)};s=${variable.node_id}`;
             catOpc.debug(`resolveNodeId ${JSON.stringify(variable)} -> ${nodeIdString}`);
             return coerceNodeId(nodeIdString);
