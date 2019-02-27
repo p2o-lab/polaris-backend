@@ -1,8 +1,8 @@
 {
     "modules": [
         {
-            "id": "BioFeed",
-            "opcua_server_url": "opc.tcp://10.6.51.42:4840",
+      "id": "BioFeed",
+      "opcua_server_url": "opc.tcp://10.6.51.42:4840",
             "rest_api_port": "1200",
       "hmi_url": "http://10.6.51.42",
             "services": [
@@ -2112,6 +2112,91 @@
                             "id": "1",
                             "name": "Strategy 1",
                             "default": true,
+                            "sc": true,
+                            "parameters": [
+                                {
+                                    "name": "FlowRate",
+                                    "interface_class": "ExtAnaOp",
+                                    "communication": {
+                                        "WQC": {
+                                            "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.FiltrationToStorage.FlowRate.WQC",
+                                            "data_type": "Byte"
+                                        },
+                                        "OSLevel": {
+                                            "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.FiltrationToStorage.FlowRate.OSLevel",
+                                            "data_type": "Byte"
+                                        },
+                                        "VOut": {
+                                            "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.FiltrationToStorage.FlowRate.VOut",
+                                            "data_type": "Float"
+                                        },
+                                        "VSclMin": {
+                                            "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.FiltrationToStorage.FlowRate.VSclMin",
+                                            "data_type": "Float"
+                                        },
+                                        "VSclMax": {
+                                            "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.FiltrationToStorage.FlowRate.VSclMax",
+                                            "data_type": "Float"
+                                        },
+                                        "VUnit": {
+                                            "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.FiltrationToStorage.FlowRate.VUnit",
+                                            "data_type": "Int16"
+                                        },
+                                        "VMin": {
+                                            "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.FiltrationToStorage.FlowRate.VMin",
+                                            "data_type": "Float"
+                                        },
+                                        "VMax": {
+                                            "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.FiltrationToStorage.FlowRate.VMax",
+                                            "data_type": "Float"
+                                        },
+                                        "VExt": {
+                                            "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.FiltrationToStorage.FlowRate.VExt",
+                                            "data_type": "Float"
+                                        },
+                                        "VRbk": {
+                                            "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.FiltrationToStorage.FlowRate.VRbk",
+                                            "data_type": "Float"
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "ErrorMsg",
+                                    "interface_class": "StrView",
+                                    "communication": {
+                                        "WQC": {
+                                            "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.FiltrationToStorage.ErrorMsg.WQC",
+                                            "data_type": "Byte"
+                                        },
+                                        "OSLevel": {
+                                            "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.FiltrationToStorage.ErrorMsg.OSLevel",
+                                            "data_type": "Byte"
+                                        },
+                                        "Text": {
+                                            "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.FiltrationToStorage.ErrorMsg.sOut",
+                                            "data_type": "xs:string"
+                                        }
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "id": "2",
+                            "name": "Strategy 2",
+                            "default": false,
                             "sc": false,
                             "parameters": [
                                 {
@@ -4182,57 +4267,57 @@
                             "sc": true,
                             "parameters": [
                                 {
-                                    "name": "MeasureValue",
+                                    "name": "VolumeInTank",
                                     "interface_class": "ExtAnaOp",
                                     "communication": {
                                         "WQC": {
                                             "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
-                                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.CalibrateVolume.MeasureValue.WQC",
+                                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.CalibrateVolume.VolumeInTank.WQC",
                                             "data_type": "Byte"
                                         },
                                         "OSLevel": {
                                             "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
-                                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.CalibrateVolume.MeasureValue.OSLevel",
+                                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.CalibrateVolume.VolumeInTank.OSLevel",
                                             "data_type": "Byte"
                                         },
                                         "VOut": {
                                             "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
-                                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.CalibrateVolume.MeasureValue.VOut",
+                                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.CalibrateVolume.VolumeInTank.VOut",
                                             "data_type": "Float"
                                         },
                                         "VSclMin": {
                                             "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
-                                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.CalibrateVolume.MeasureValue.VSclMin",
+                                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.CalibrateVolume.VolumeInTank.VSclMin",
                                             "data_type": "Float"
                                         },
                                         "VSclMax": {
                                             "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
-                                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.CalibrateVolume.MeasureValue.VSclMax",
+                                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.CalibrateVolume.VolumeInTank.VSclMax",
                                             "data_type": "Float"
                                         },
                                         "VUnit": {
                                             "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
-                                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.CalibrateVolume.MeasureValue.VUnit",
+                                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.CalibrateVolume.VolumeInTank.VUnit",
                                             "data_type": "Int16"
                                         },
                                         "VMin": {
                                             "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
-                                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.CalibrateVolume.MeasureValue.VMin",
+                                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.CalibrateVolume.VolumeInTank.VMin",
                                             "data_type": "Float"
                                         },
                                         "VMax": {
                                             "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
-                                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.CalibrateVolume.MeasureValue.VMax",
+                                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.CalibrateVolume.VolumeInTank.VMax",
                                             "data_type": "Float"
                                         },
                                         "VExt": {
                                             "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
-                                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.CalibrateVolume.MeasureValue.VExt",
+                                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.CalibrateVolume.VolumeInTank.VExt",
                                             "data_type": "Float"
                                         },
                                         "VRbk": {
                                             "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
-                                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.CalibrateVolume.MeasureValue.VRbk",
+                                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.CalibrateVolume.VolumeInTank.VRbk",
                                             "data_type": "Float"
                                         }
                                     }
@@ -5084,35 +5169,6 @@
                     }
                 },
                 {
-                    "name": "Q003",
-                    "communication": {
-                        "WQC": {
-                            "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
-                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.Q003.WQC",
-                            "data_type": "Byte"
-                        },
-                        "OSLevel": {
-                            "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
-                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.Q003.OSLevel",
-                            "data_type": "Byte"
-                        },
-                        "V": {
-                            "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
-                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.Q003.V",
-                            "data_type": "Float"
-                        },
-                        "VSclMin": {
-                            "value": "NA"
-                        },
-                        "VSclMax": {
-                            "value": "NA"
-                        },
-                        "VUnit": {
-                            "value": "NA"
-                        }
-                    }
-                },
-                {
                     "name": "Q004",
                     "communication": {
                         "WQC": {
@@ -5128,6 +5184,35 @@
                         "V": {
                             "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                             "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.Q004.V",
+                            "data_type": "Float"
+                        },
+                        "VSclMin": {
+                            "value": "NA"
+                        },
+                        "VSclMax": {
+                            "value": "NA"
+                        },
+                        "VUnit": {
+                            "value": "NA"
+                        }
+                    }
+                },
+                {
+                    "name": "Q003",
+                    "communication": {
+                        "WQC": {
+                            "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.Q003.WQC",
+                            "data_type": "Byte"
+                        },
+                        "OSLevel": {
+                            "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.Q003.OSLevel",
+                            "data_type": "Byte"
+                        },
+                        "V": {
+                            "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.Q003.V",
                             "data_type": "Float"
                         },
                         "VSclMin": {
@@ -10283,56 +10368,56 @@
                     }
                 },
                 {
-                    "name": "CalibrateVolume.MeasureValue",
+                    "name": "CalibrateVolume.VolumeInTank",
                     "communication": {
                         "WQC": {
                             "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
-                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.CalibrateVolume.MeasureValue.WQC",
+                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.CalibrateVolume.VolumeInTank.WQC",
                             "data_type": "Byte"
                         },
                         "OSLevel": {
                             "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
-                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.CalibrateVolume.MeasureValue.OSLevel",
+                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.CalibrateVolume.VolumeInTank.OSLevel",
                             "data_type": "Byte"
                         },
                         "VOut": {
                             "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
-                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.CalibrateVolume.MeasureValue.VOut",
+                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.CalibrateVolume.VolumeInTank.VOut",
                             "data_type": "Float"
                         },
                         "VSclMin": {
                             "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
-                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.CalibrateVolume.MeasureValue.VSclMin",
+                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.CalibrateVolume.VolumeInTank.VSclMin",
                             "data_type": "Float"
                         },
                         "VSclMax": {
                             "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
-                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.CalibrateVolume.MeasureValue.VSclMax",
+                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.CalibrateVolume.VolumeInTank.VSclMax",
                             "data_type": "Float"
                         },
                         "VUnit": {
                             "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
-                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.CalibrateVolume.MeasureValue.VUnit",
+                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.CalibrateVolume.VolumeInTank.VUnit",
                             "data_type": "Int16"
                         },
                         "VMin": {
                             "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
-                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.CalibrateVolume.MeasureValue.VMin",
+                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.CalibrateVolume.VolumeInTank.VMin",
                             "data_type": "Float"
                         },
                         "VMax": {
                             "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
-                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.CalibrateVolume.MeasureValue.VMax",
+                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.CalibrateVolume.VolumeInTank.VMax",
                             "data_type": "Float"
                         },
                         "VExt": {
                             "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
-                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.CalibrateVolume.MeasureValue.VExt",
+                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.CalibrateVolume.VolumeInTank.VExt",
                             "data_type": "Float"
                         },
                         "VRbk": {
                             "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
-                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.CalibrateVolume.MeasureValue.VRbk",
+                            "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Main.CalibrateVolume.VolumeInTank.VRbk",
                             "data_type": "Float"
                         }
                     }

@@ -120,9 +120,6 @@ export class Manager extends EventEmitter {
             module
                 .on('connected', () => this.emit('notify', 'module'))
                 .on('disconnected', () => this.emit('notify', 'module'))
-                .on('errorMessage', ({service, errorMessage}) => {
-                    this.emit('notify', 'module', {module: service.parent.id, service: service.name, errorMessage: errorMessage});
-                })
                 .on('controlEnable', ({service, controlEnable}) => {
                     this.emit('notify', 'module', {module: service.parent.id, service: service.name, controlEnable: controlEnable});
                 })
@@ -166,7 +163,11 @@ export class Manager extends EventEmitter {
                     if (this.player.currentRecipeRun) {
                         this.player.currentRecipeRun.serviceLog.push(logEntry);
                     }
-                    this.emit('notify', 'module', {module: module.id, service: service.name, state: ServiceState[state], lastChange: timestampPfe});
+                    this.emit('notify', 'module', {
+                        module: module.id,
+                        service: service.name,
+                        status: ServiceState[state],
+                        lastChange: 0});
                 })
                 .on('serviceCompleted', (service: Service) => {
                     this.performAutoReset(service);

@@ -15,6 +15,7 @@ pipeline:
   test:
     image: node:8-jessie
     commands:
+      - export LOGLEVEL=warn
       - npm test
 
   docker:

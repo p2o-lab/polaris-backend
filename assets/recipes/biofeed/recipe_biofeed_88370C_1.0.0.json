@@ -1,7 +1,7 @@
 {
-  "version": "0.5.0",
+  "version": "1.0.0",
   "name": "Media preparation for medium 88370C",
-  "description": "This recipe uses the biofeed module for preparing medium 88370C in 9 steps. This recipe approximately lasts 75min.",
+  "description": "This recipe uses the biofeed module for preparing medium 88370C in 9 steps. This recipe approximately lasts 115 min.",
   "author": "Markus Graube <markus.graube@tu-dresden.de>",
   "initial_step": "S1.AddWater",
   "steps": [
@@ -43,7 +43,7 @@
           "service": "Stirring", "command": "start",
           "parameter": [
             { "name": "StirringRotationSpeed", "value": 300 },
-            { "name": "StirringDuration", "value": "6*10" }
+            { "name": "StirringDuration", "value": "10*60" }
           ]
         }
       ],
@@ -336,13 +336,24 @@
         {
           "service": "FiltrationToStorage", "command": "start",
 		  "parameter": [
-            { "name": "FlowRate", "value": 2000}
+            { "name": "FlowRate", "value": 1000}
           ]
         }
       ],
       "transitions": [
         {
           "condition": { "type": "state", "service": "FiltrationToStorage", "state": "completed" },
+          "next_step": "S8.WaitForIdle"
+        }
+      ]
+    },
+	
+	{
+      "name": "S8.WaitForIdle",
+      "operations": [ ],
+      "transitions": [
+        {
+          "condition": { "type": "state", "service": "FiltrationToStorage", "state": "idle" },
           "next_step": "completed"
         }
       ]

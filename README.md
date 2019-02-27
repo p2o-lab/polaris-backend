@@ -1,8 +1,7 @@
 # pfe-ree-node
 
-PFE Recipe Execution Engine as NodeJs application.  *pfe-ree-node* is controlled via REST. Its documentation is served by the application under the path **/doc** (e.g. http://localhost:3000/doc)
-
-A HTML user interface for this project is provided via the pfe-ree-viz project.
+PFE Recipe Execution Engine as NodeJs application.  *pfe-ree-node* is controlled via REST. 
+A HTML user interface for this project is provided via the [pfe-ree-viz](https://dev.plt.et.tu-dresden.de/modulare-automation/pfe-ree-viz) project.
 
 [![Build status](http://cif.plt.et.tu-dresden.de/api/badges/modulare-automation/pfe-ree-node/status.svg)](http://cif.plt.et.tu-dresden.de/modulare-automation/pfe-ree-node)
 [![Docker image](https://img.shields.io/badge/docker%20image-available-brightgreen.svg)](http://registry.plt.et.tu-dresden.de/#!taglist/pfe-ree-node)
@@ -60,3 +59,14 @@ docker push registry.plt.et.tu-dresden.de/pfe-ree-node
 ```
 
 
+## Usage
+
+
+After starting *pfe-ree-node* its REST interface is available under
+http://localhost:3000
+
+*pfe-ree-node* has several command line parameters:
+
+
+
+Its documentation is served by the application under the path **/doc** (e.g. http://localhost:3000/doc)

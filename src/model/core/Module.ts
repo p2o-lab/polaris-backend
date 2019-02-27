@@ -83,11 +83,6 @@ interface ModuleEvents {
     */
     disconnected: void;
     /**
-     * when errorMessage of one service changes
-     * @event
-     */
-    errorMessage: {service: Service, errorMessage: string};
-    /**
      * when controlEnable of one service changes
      * @event controlEnable
      */
@@ -187,7 +182,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
                     }
                 });
 
-                client.on('close', () => catOpc.warn('Closing OPC UA client connection'));
+                client.on('close', () => catOpc.info('Closing OPC UA client connection'));
                 client.on('time_out_request', () => catOpc.debug('time out request - retrying connection'));
 
                 await timeout(client.connect(this.endpoint), 1000);
@@ -370,9 +365,6 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
     private subscribeToAllServices() {
         return Promise.all(this.services.map(async (service) => {
             return (await service.subscribeToService())
-                .on('errorMessage', (errorMessage) => {
-                    this.emit('errorMessage', {service, errorMessage} );
-                })
                 .on('commandExecuted', (data) => {
                     this.emit('commandExecuted', {
                         service: service,
@@ -459,7 +451,10 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
             throw new Error('No variable specified to resolve nodeid');
         } else if (!this.namespaceArray) {
             throw new Error(`No namespace array read for module ${this.id}`);
+        } else if (!variable.namespace_index) {
+            throw new Error(`namespace index is null in module ${this.id}`);
         } else {
+            catOpc.debug(`resolveNodeId ${JSON.stringify(variable)}`);
             const nodeIdString = `ns=${this.namespaceArray.indexOf(variable.namespace_index)};s=${variable.node_id}`;
             catOpc.debug(`resolveNodeId ${JSON.stringify(variable)} -> ${nodeIdString}`);
             return coerceNodeId(nodeIdString);

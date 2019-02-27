@@ -29,9 +29,7 @@ import { catRecipe } from '../../config/logging';
 import { EventEmitter } from 'events';
 import { v4 } from 'uuid';
 import { Transition } from './Transition';
-import { manager } from '../Manager';
 import { RecipeInterface, ModuleInterface, RecipeOptions, RecipeState, StepInterface } from '@plt/pfe-ree-interface';
-import * as assert from 'assert';
 import StrictEventEmitter from 'strict-event-emitter-types';
 
 /**
@@ -43,6 +41,11 @@ interface RecipeEvents {
      * @event
      */
     started: void;
+    /**
+     * when recipe has been stopped, returns recent step
+     * @event
+     */
+    stopped: Step;
     /**
      * when a step is finished in the recipe
      * @event
@@ -118,6 +121,7 @@ export class Recipe extends (EventEmitter as { new(): RecipeEmitter }) {
 
         this.options = options;
         this.protected = protectedRecipe;
+        this.lastChange = new Date();
 
         catRecipe.info(`Recipe ${this.name} successfully parsed`);
     }
@@ -142,7 +146,7 @@ export class Recipe extends (EventEmitter as { new(): RecipeEmitter }) {
             currentStep: this.current_step ? this.current_step.name : undefined,
             options: this.options,
             protected: this.protected,
-            lastChange: this.lastChange
+            lastChange: (new Date().getTime() - this.lastChange.getTime())/1000
         };
     }
 
@@ -163,8 +167,6 @@ export class Recipe extends (EventEmitter as { new(): RecipeEmitter }) {
 
     /** 
      * Starts recipe
-     *
-     * @returns {Recipe}    current Recipe
      */
     public start(): Recipe {
         this.current_step = this.initial_step;
@@ -185,10 +187,14 @@ export class Recipe extends (EventEmitter as { new(): RecipeEmitter }) {
 
     /**
      * Stops recipe
+     *
+     * Clear monitoring of all conditions. Services won't be touched.
      */
     public stop () {
         this.status = RecipeState.stopped;
-        this.current_step.transitions.map(trans => trans.condition.clear())
+        this.current_step.transitions.forEach(trans => trans.condition.clear());
+        this.emit('stopped', this.current_step);
+        this.current_step = undefined;
     }
 
     private executeStep() {

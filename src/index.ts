@@ -157,7 +157,11 @@ if (options) {
             const nodeId = options.externalTrigger[1];
 
             const et = new ExternalTrigger(endpoint, nodeId);
-            et.startMonitoring();
+            et.startMonitoring()
+                .catch((err) => {
+                    console.log("Could not start monitoring of external trigger", err.toString());
+                    process.exit(err);
+                });
             // directly restart recipe if external trigger is still active when recipe finishes
             manager.on('recipeFinished', async () => {
                 const value = await et.getValue();

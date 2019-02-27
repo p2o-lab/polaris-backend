@@ -24,8 +24,8 @@
  */
 
 import {ParameterOptions, ScopeOptions} from '@plt/pfe-ree-interface';
-import {Expression, Parser} from 'expr-eval';
-import {catRecipe, catService} from '../../config/logging';
+import {Expression} from 'expr-eval';
+import {catParameter} from '../../config/logging';
 import {EventEmitter} from 'events';
 import {DataType} from 'node-opcua-client';
 import {Service} from '../core/Service';
@@ -74,7 +74,7 @@ export class Parameter {
      * @param {Module[]} modules        modules where expression can be matched
      */
     constructor(parameterOptions: ParameterOptions, service: Service, strategy?: Strategy, modules?: Module[]) {
-        catRecipe.trace(`Create Parameter: ${JSON.stringify(parameterOptions)}`);
+        catParameter.trace(`Create Parameter: ${JSON.stringify(parameterOptions)}`);
 
         this.name = parameterOptions.name;
         this.variable = parameterOptions.variable || 'VExt';
@@ -96,22 +96,17 @@ export class Parameter {
             .map((item: ScopeOptions) => ScopeItem.extractFromScopeOptions(item, modules));
 
         // evaluate additional variables from expression
-        const parser: Parser = new Parser({allowMemberAccess: true});
-        this.value = this.value.replace(new RegExp('\\\\.', 'g'), '__');
-        this.expression = parser.parse(this.value);
-        this.scopeArray.push(...this.expression
-            .variables({ withMembers: true })
-            .map((variable) => ScopeItem.extractFromExpression(variable, modules))
-            .filter(Boolean)
-        );
+        const extraction = ScopeItem.extractFromExpressionString(this.value, modules);
+        this.expression = extraction.expression;
+        this.scopeArray.push (...extraction.scopeItems);
     }
 
     public async getDataType(): Promise<DataType> {
         if (!this._opcUaDataType) {
             const value = await this.service.parent.readVariableNode(this._opcUaNode);
-            catService.debug(`Datatype for ${this.service.name}.${this.name}.${this.variable} - ${this._opcUaNode.node_id} = ${JSON.stringify(value)}`);
+            catParameter.debug(`Datatype for ${this.service.name}.${this.name}.${this.variable} - ${this._opcUaNode.node_id} = ${JSON.stringify(value)}`);
             this._opcUaDataType = value.value ? value.value.dataType : undefined;
-            catService.debug(`Get datatype for ${this.service.name}.${this.name} = ${this._opcUaDataType}`);
+            catParameter.debug(`Get datatype for ${this.service.name}.${this.name} = ${this._opcUaDataType}`);
         }
         return this._opcUaDataType;
     }
@@ -137,7 +132,7 @@ export class Parameter {
         const tasks = await Promise.all(this.scopeArray.map((item) => item.getScopeValue()));
         const scope = assign(...tasks);
         const result = this.expression.evaluate(scope);
-        catService.info(`Specific parameters: ${this.name} = ${this.value} (${JSON.stringify(scope)}) = ${result}`);
+        catParameter.info(`Specific parameters: ${this.name} = ${this.value} (${JSON.stringify(scope)}) = ${result}`);
         return result;
     }
 
@@ -147,7 +142,7 @@ export class Parameter {
      */
     async updateValueOnModule(): Promise<any> {
         const value = await this.getValue();
-        catService.info(`Set parameter "${this.service.name}[${this.variable}]" for ${this.name} = ${value}`);
+        catParameter.info(`Set parameter "${this.service.name}[${this.variable}]" for ${this.name} = ${value}`);
         return this.service.setParameter(
             this._opcUaNode,
             await this.getDataType(),

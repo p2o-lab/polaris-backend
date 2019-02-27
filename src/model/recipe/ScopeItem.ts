@@ -24,13 +24,13 @@
  */
 
 import {ScopeOptions} from '@plt/pfe-ree-interface';
-import {catRecipe} from '../../config/logging';
+import {catScopeItem} from '../../config/logging';
 import {ProcessValue} from '../core/ProcessValue';
 import {Module} from '../core/Module';
 import {OpcUaNode, ServiceParameter, Strategy} from '../core/Interfaces';
 import {manager} from '../Manager';
 import {Service} from '../core/Service';
-import {Parameter} from './Parameter';
+import {Expression, Parser} from 'expr-eval';
 
 export class ScopeItem {
 
@@ -53,13 +53,34 @@ export class ScopeItem {
         }, value.value.value);
     }
 
+
     /**
+     *
+     * @param {string} expression
+     * @param {Module[]} modules
+     */
+    static extractFromExpressionString(expression: string, modules = manager.modules): {expression: Expression, scopeItems: ScopeItem[]} {
+        const parser: Parser = new Parser({allowMemberAccess: true});
+        const value = expression.replace(new RegExp('\\\\.', 'g'), '__');
+        const expressionObject = parser.parse(value);
+        const scopeItems = expressionObject
+            .variables({ withMembers: true })
+            .map((variable) => ScopeItem.extractFromExpressionVariable(variable, modules))
+            .filter(Boolean);
+        return {expression: expressionObject, scopeItems: scopeItems}
+    }
+
+    /**
+     * Extract scope item from expression variable
+     *
+     *
+     *
      *
      * @param {string} variable
      * @param {Module[]} modules    modules to be searched in for variable names (default: all modules in manager)
      * @returns {ScopeItem}
      */
-    static extractFromExpression(variable: string, modules= manager.modules): ScopeItem {
+    static extractFromExpressionVariable(variable: string, modules= manager.modules): ScopeItem {
         let components = variable.split('.').map((token: string) => token.replace(new RegExp('__', 'g'), '.'));
         let token = components.shift();
 
@@ -69,7 +90,7 @@ export class ScopeItem {
             if (modules.length == 1) {
                 module = modules[0];
             } else {
-                catRecipe.warn(`Module ${token} not found in ${variable}`);
+                catScopeItem.info(`Could not evaluate variable "${variable}": module "${token}" not found in ${JSON.stringify(modules.map(m=> m.id))}`);
                 return undefined;
             }
         } else {
@@ -77,10 +98,13 @@ export class ScopeItem {
         }
 
         // find service
-        let service = module.services.find(s => s.name === token);
+        let service: Service = module.services.find(s => s.name === token);
         let strategy: Strategy;
         if (service) {
-            strategy = service.getCurrentStrategy();
+            strategy = service.strategies.find(strat => strat.id == service.currentStrategy.value);
+            if (!strategy) {
+                strategy = service.strategies.find(strat => strat.default);
+            }
             token = components.shift();
         }
 
@@ -91,7 +115,7 @@ export class ScopeItem {
         } else if (module.variables.find(v => v.name === token)) {
             dataAssembly = module.variables.find(v => v.name === token)
         } else {
-            catRecipe.warn(`DataAssembly ${token} not found in module ${module.id} from variable ${variable}`);
+            catScopeItem.info(`Could not evaluate variable "${variable}": DataAssembly ${token} not found in module ${module.id}`);
             return undefined;
         }
 
