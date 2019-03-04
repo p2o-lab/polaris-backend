@@ -25,9 +25,8 @@
 
 /**
  * physical unit as they are used in MTP
- * @type {{value: number; unit: string; name: string; name_english: string}[]}
  */
-export const Unit = [
+export const Unit: { value: number; unit: string; name: string; name_english: string }[] = [
     {value: 1000, unit: 'K', name: 'Kelvin', name_english: 'Kelvin'},
     {value: 1001, unit: '°C', name: 'Grad Celsius', name_english: 'Degrees Celsius'},
     {value: 1002, unit: '°F', name: 'Grad Fahrenheit', name_english: 'Degrees Fahrenheit'},
@@ -980,6 +979,5 @@ export const Unit = [
         name: 'Zu verwenden, wenn bei der Projektierung die Maßeinheit noch nicht bekannt',
         name_english: 'To be used when the unit of measure is not known during configuration'
     },
-    {value: 1999, unit: 'spezial', name: 'Spezielle Einheiten', name_english: 'Special units'},
-
+    {value: 1999, unit: 'spezial', name: 'Spezielle Einheiten', name_english: 'Special units'}
 ];
