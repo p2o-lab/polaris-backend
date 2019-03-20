@@ -27,10 +27,12 @@ import {ScopeOptions} from '@plt/pfe-ree-interface';
 import {catScopeItem} from '../../config/logging';
 import {ProcessValue} from '../core/ProcessValue';
 import {Module} from '../core/Module';
-import {OpcUaNode, ServiceParameter, Strategy} from '../core/Interfaces';
+import {OpcUaNodeOptions} from '../core/Interfaces';
 import {manager} from '../Manager';
 import {Service} from '../core/Service';
 import {Expression, Parser} from 'expr-eval';
+import {DataAssembly} from '../core/DataAssembly';
+import {Strategy} from '../core/Strategy';
 
 export class ScopeItem {
 
@@ -38,7 +40,7 @@ export class ScopeItem {
     name: string;
     module: Module;
     service: Service;
-    variable: OpcUaNode;
+    variable: OpcUaNodeOptions;
 
     /**
      * Returning an nested object following the name construction. The leaf contains the current value
@@ -109,9 +111,9 @@ export class ScopeItem {
         }
 
         // find data assembly
-        let dataAssembly: ProcessValue | ServiceParameter;
-        if (strategy && strategy.parameters.find(p => p.name === token)){
-            dataAssembly = strategy.parameters.find(p => p.name === token);
+        let dataAssembly: ProcessValue | DataAssembly;
+        if (strategy && strategy.strategyParameters.find(p => p.name === token)){
+            dataAssembly = strategy.strategyParameters.find(p => p.name === token);
         } else if (module.variables.find(v => v.name === token)) {
             dataAssembly = module.variables.find(v => v.name === token)
         } else {

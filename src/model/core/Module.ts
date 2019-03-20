@@ -39,7 +39,7 @@ import {
 import {TimestampsToReturn} from 'node-opcua-service-read';
 import { catModule, catOpc, catRecipe } from '../../config/logging';
 import { EventEmitter } from 'events';
-import { OpcUaNode, Strategy } from './Interfaces';
+import { OpcUaNodeOptions} from './Interfaces';
 import { ServiceState } from './enum';
 import {
     ModuleInterface, ServiceInterface, ServiceCommand, ControlEnableInterface,
@@ -48,21 +48,22 @@ import {
 import { timeout } from 'promise-timeout';
 import { VariableLogEntry } from '../../logging/archive';
 import StrictEventEmitter from 'strict-event-emitter-types';
+import {Strategy} from './Strategy';
 
 export interface ModuleOptions {
     id: string;
     opcua_server_url: string;
     hmi_url?: string;
     services: ServiceOptions[];
-    process_values: {name: string; communication: OpcUaNode[]}[];
+    process_values: {name: string; communication: OpcUaNodeOptions[]}[];
 }
 
 /**
- * Events emitted by [[OpcUaNode]]
+ * Events emitted by [[OpcUaNodeOptions]]
  */
 export interface OpcUaNodeEvents {
     /**
-     * when OpcUaNode changes its value
+     * when OpcUaNodeOptions changes its value
      * @event
      */
     changed: {value: any, timestamp: Date};
@@ -279,11 +280,11 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
 
     /**
      * Listen to OPC UA node and return event listener which is triggered by any value change
-     * @param {OpcUaNode} node
+     * @param {OpcUaNodeOptions} node
      * @param {number} samplingInterval     OPC UA sampling interval for this subscription in milliseconds
      * @returns {"events".internal.EventEmitter} "changed" event
      */
-    listenToOpcUaNode(node: OpcUaNode, samplingInterval=100): StrictEventEmitter<EventEmitter, OpcUaNodeEvents> {
+    listenToOpcUaNode(node: OpcUaNodeOptions, samplingInterval=100): StrictEventEmitter<EventEmitter, OpcUaNodeEvents> {
         const nodeId = this.resolveNodeId(node);
         if (!this.monitoredItems.has(nodeId)) {
             const monitoredItem: ClientMonitoredItem = this.subscription.monitor({
@@ -311,12 +312,12 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
         if (!dataStructure) {
             throw new Error(`ProcessValue ${dataStructureName} is not specified for module ${this.id}`);
         } else {
-            const variable: OpcUaNode = dataStructure.communication[variableName];
+            const variable: OpcUaNodeOptions = dataStructure.communication[variableName];
             return this.listenToOpcUaNode(variable);
         }
     }
 
-    clearListener(node: OpcUaNode) {
+    clearListener(node: OpcUaNodeOptions) {
         const nodeId = this.resolveNodeId(node);
         if (this.monitoredItems.has(nodeId)) {
             const { monitoredItem, emitter } = this.monitoredItems.get(nodeId);
@@ -394,7 +395,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
         }));
     }
 
-    public readVariableNode(node: OpcUaNode) {
+    public readVariableNode(node: OpcUaNodeOptions) {
         const nodeId = this.resolveNodeId(node);
         const result = this.session.readVariableValue(nodeId);
         catOpc.debug(`Read Variable: ${JSON.stringify(node)} -> ${nodeId} = ${result}`);
@@ -403,11 +404,11 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
 
     /** writes value to opc ua node
      *
-     * @param {OpcUaNode} node
+     * @param {OpcUaNodeOptions} node
      * @param {} value
      * @returns {Promise<any>}
      */
-    public async writeNode(node: OpcUaNode, value: Variant) {
+    public async writeNode(node: OpcUaNodeOptions, value: Variant) {
         if (!this.session) {
             throw new Error(`Can not write node since OPC UA connection to module ${this.id} is not established`);
         } else {
@@ -443,10 +444,10 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
 
     /**
      * Resolves nodeId of variable from module JSON using the namespace array
-     * @param {OpcUaNode} variable
+     * @param {OpcUaNodeOptions} variable
      * @returns {any}
      */
-    private resolveNodeId(variable: OpcUaNode) {
+    private resolveNodeId(variable: OpcUaNodeOptions) {
         if (!variable) {
             throw new Error('No variable specified to resolve nodeid');
         } else if (!this.namespaceArray) {

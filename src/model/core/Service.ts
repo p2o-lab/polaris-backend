@@ -37,7 +37,7 @@ import {
     ServiceMtpCommand,
     ServiceState
 } from './enum';
-import {OpcUaNode, ServiceParameter, Strategy} from './Interfaces';
+import {OpcUaNodeOptions} from './Interfaces';
 import {Parameter} from '../recipe/Parameter';
 import {
     ControlEnableInterface,
@@ -51,22 +51,25 @@ import {Unit} from './Unit';
 import {manager} from '../Manager';
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
+import {DataAssembly} from './DataAssembly';
+import {Strategy} from './Strategy';
+import {ConfigurationParameter} from './ConfigurationParameter';
 
 export interface ServiceOptions {
     name: string;
     communication: {
-        OpMode: OpcUaNode;
-        ControlOp: OpcUaNode;
-        ControlExt: OpcUaNode;
-        ControlEnable: OpcUaNode;
-        State: OpcUaNode;
-        StrategyOp: OpcUaNode;
-        StrategyExt: OpcUaNode;
-        CurrentStrategy: OpcUaNode;
-        ErrorMessage: OpcUaNode;
+        OpMode: OpcUaNodeOptions;
+        ControlOp: OpcUaNodeOptions;
+        ControlExt: OpcUaNodeOptions;
+        ControlEnable: OpcUaNodeOptions;
+        State: OpcUaNodeOptions;
+        StrategyOp: OpcUaNodeOptions;
+        StrategyExt: OpcUaNodeOptions;
+        CurrentStrategy: OpcUaNodeOptions;
+        ErrorMessage: OpcUaNodeOptions;
     };
     strategies: Strategy[];
-    parameters: ServiceParameter[];
+    parameters: DataAssembly[];
 }
 
 const InterfaceClassToType = {
@@ -116,8 +119,8 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
     readonly name: string;
     /** strategies of the service */
     readonly strategies: Strategy[];
-    /** service parameters */
-    readonly parameters: ServiceParameter[];
+    /** service configuration strategyParameters */
+    readonly parameters: ConfigurationParameter[];
     /** [Module] of the service */
     readonly parent: Module;
 
@@ -125,17 +128,17 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
     private lastStatusChange: Date;
 
     /** OPC UA node of command/controlOp variable */
-    readonly command: OpcUaNode;
+    readonly command: OpcUaNodeOptions;
     /** OPC UA node of status variable */
-    readonly status: OpcUaNode;
+    readonly status: OpcUaNodeOptions;
     /** OPC UA node of controlEnable variable */
-    readonly controlEnable: OpcUaNode;
+    readonly controlEnable: OpcUaNodeOptions;
     /** OPC UA node of opMode variable */
-    readonly opMode: OpcUaNode;
+    readonly opMode: OpcUaNodeOptions;
     /** OPC UA node of strategy variable */
-    readonly strategy: OpcUaNode;
+    readonly strategy: OpcUaNodeOptions;
     /** OPC UA node of currentStrategy variable */
-    readonly currentStrategy: OpcUaNode;
+    readonly currentStrategy: OpcUaNodeOptions;
 
     constructor(serviceOptions: ServiceOptions, parent: Module) {
         super();
@@ -287,7 +290,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
     }
 
     /**
-     * get JSON overview about service and its state, opMode, strategies, parameters and controlEnable
+     * get JSON overview about service and its state, opMode, strategies, strategyParameters and controlEnable
      * @returns {Promise<ServiceInterface>}
      */
     async getOverview(): Promise<ServiceInterface> {
@@ -310,10 +313,10 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
     }
 
     /**
-     * Get all strategies for service with its current parameters
+     * Get all strategies for service with its current strategyParameters
      * @returns {Promise<StrategyInterface[]>}
      */
-    async getStrategies(): Promise<StrategyInterface[]> {
+    async getStrategies(): Promise<Strategy[]> {
         return await Promise.all(this.strategies.map(async (strategy) => {
             return {
                 id: strategy.id,
@@ -325,15 +328,15 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
         }));
     }
 
-    /** get current parameters
+    /** get current strategyParameters
      * from strategy or service (if strategy is undefined)
-     * @param {Strategy} strategy
+     * @param {StrategyInterface} strategy
      * @returns {Promise<ParameterInterface[]>}
      */
     async getCurrentParameters(strategy?: Strategy): Promise<ParameterInterface[]> {
-        let params: ServiceParameter[] = [];
+        let params: DataAssembly[] = [];
         if (strategy) {
-            params = strategy.parameters;
+            params = strategy.strategyParameters;
         } else {
             params = this.parameters;
         }
@@ -386,10 +389,10 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
 
 
     /**
-     * Set strategy and strategy parameters and execute a command for service on PEA
+     * Set strategy and strategy strategyParameters and execute a command for service on PEA
      * @param {ServiceCommand} command  command to be executed on PEA
-     * @param {Strategy}    strategy  strategy to be set on PEA
-     * @param {Parameter[]|ParameterOptions[]} parameters     parameters to be set on PEA
+     * @param {StrategyInterface}    strategy  strategy to be set on PEA
+     * @param {Parameter[]|ParameterOptions[]} parameters     strategyParameters to be set on PEA
      * @returns {Promise<void>}
      */
     async execute(command?: ServiceCommand, strategy?: Strategy, parameters?: (Parameter|ParameterOptions)[] ): Promise<void> {
@@ -490,7 +493,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
     }
 
     /**
-     * Set service configuration parameters for adaption to environment. Can set also process values
+     * Set service configuration strategyParameters for adaption to environment. Can set also process values
      * @param {ParameterOptions[]} parameters
      * @returns {Promise<any[]>}
      */
@@ -506,12 +509,12 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
     /** Set strategy and strategy parameter
      * Use default strategy if strategy is omitted
      *
-     * @param {Strategy|string} strategy    object or name of desired strategy
+     * @param {StrategyInterface|string} strategy    object or name of desired strategy
      * @param {(Parameter|ParameterOptions)[]} parameters
      * @returns {Promise<void>}
      */
     public async setStrategyParameters(strategy?: Strategy|string, parameters?: (Parameter|ParameterOptions)[]): Promise<void> {
-        // get strategy from input parameters
+        // get strategy from input strategyParameters
         let strat: Strategy;
         if (!strategy) {
             strat = this.strategies.find(strat => strat.default === true);
@@ -531,7 +534,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
                 dimensions: null
             });
 
-        // TODO: is order of parameters and strategy important?
+        // TODO: is order of strategyParameters and strategy important?
         // set strategy
         if (parameters) {
             let params: Parameter[] = parameters.map((param) => {
@@ -560,17 +563,6 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
 
     private clearListeners() {
         this.serviceParametersEventEmitters.forEach(listener => listener.removeAllListeners());
-    }
-
-    async setParameter(opcUaNode: OpcUaNode, dataType: DataType, paramValue: any): Promise<any> {
-        const dataValue: Variant = {
-            dataType,
-            value: paramValue,
-            arrayType: VariantArrayType.Scalar,
-            dimensions: null
-        };
-        catService.debug(`Set Parameter: ${this.name} - ${JSON.stringify(opcUaNode)} -> ${JSON.stringify(dataValue)}`);
-        return await this.parent.writeNode(opcUaNode, dataValue);
     }
 
     /**

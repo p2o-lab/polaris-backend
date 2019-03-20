@@ -29,27 +29,30 @@ import {catParameter} from '../../config/logging';
 import {EventEmitter} from 'events';
 import {DataType} from 'node-opcua-client';
 import {Service} from '../core/Service';
-import {OpcUaNode, Strategy} from '../core/Interfaces';
+import {OpcUaNodeOptions} from '../core/Interfaces';
 import {Module, OpcUaNodeEvents} from '../core/Module';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import * as assign from 'assign-deep';
 import {ScopeItem} from './ScopeItem';
+import {Strategy} from '../core/Strategy';
+import {DataAssembly} from '../core/DataAssembly';
 
 /**
- * Parameter of an [[Operation]]. Can be static or dynamic. Dynamic parameters can depend on variables of the same or
+ * Parameter of an [[Operation]]. Can be static or dynamic. Dynamic strategyParameters can depend on variables of the same or
  * other modules. These can also be continuously updated (specified via continuous property)
  */
 export class Parameter {
 
     /**
-     * name of parameter
+     * name of parameter which should be updated
      */
     name: string;
+    // name of the variable inside the data assembly which should be updated
     variable: string;
     /**
      * Expression to be calculated and used as value.
-     * Can contain variables, which can bei declared inside scopeArray or by using correct variable names
-     * following this syntax "[module].[processValue].[variable]". module can be ommited if only eone module
+     * Can contain variables, which can be declared inside scopeArray or by using correct variable names
+     * following this syntax "[module].[processValue].[variable]". module can be omitted if only eone module
      * is loaded. Variable can be omitted. Then "V" is used as variable.
      * "." in the name of modules or processvariables can be escaped with "\\."
      * @example
@@ -63,8 +66,7 @@ export class Parameter {
     continuous: boolean;
     private expression: Expression;
     private service: Service;
-    private _opcUaDataType: DataType;
-    private _opcUaNode: OpcUaNode;
+    private _parameter: DataAssembly;
 
     /**
      *
@@ -83,10 +85,9 @@ export class Parameter {
 
         this.service = service;
         const strategyUsed = strategy || service.strategies.find(strategy => strategy.default);
-        const parameterList = [].concat(service.parameters, strategyUsed.parameters);
+        const parameterList = [].concat(service.parameters, strategyUsed.strategyParameters);
         try {
-            this._opcUaNode = parameterList.find(obj => (obj && obj.name === this.name))
-                .communication[this.variable];
+            this._parameter = parameterList.find(obj => (obj && obj.name === this.name));
         } catch {
             throw new Error(`Could not find parameter "${this.name}" in ${service.name}`);
         }
@@ -99,16 +100,6 @@ export class Parameter {
         const extraction = ScopeItem.extractFromExpressionString(this.value, modules);
         this.expression = extraction.expression;
         this.scopeArray.push (...extraction.scopeItems);
-    }
-
-    public async getDataType(): Promise<DataType> {
-        if (!this._opcUaDataType) {
-            const value = await this.service.parent.readVariableNode(this._opcUaNode);
-            catParameter.debug(`Datatype for ${this.service.name}.${this.name}.${this.variable} - ${this._opcUaNode.node_id} = ${JSON.stringify(value)}`);
-            this._opcUaDataType = value.value ? value.value.dataType : undefined;
-            catParameter.debug(`Get datatype for ${this.service.name}.${this.name} = ${this._opcUaDataType}`);
-        }
-        return this._opcUaDataType;
     }
 
     public listenToParameter() {
@@ -143,9 +134,6 @@ export class Parameter {
     async updateValueOnModule(): Promise<any> {
         const value = await this.getValue();
         catParameter.info(`Set parameter "${this.service.name}[${this.variable}]" for ${this.name} = ${value}`);
-        return this.service.setParameter(
-            this._opcUaNode,
-            await this.getDataType(),
-            value);
+        await this._parameter.setParameter(value, this.variable);
     }
 }

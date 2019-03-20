@@ -37,7 +37,7 @@ describe('Transition', () => {
         expect(json).to.haveOwnProperty('next_step', 'nextStep');
     });
 
-    it('should fail with missing parameters', () => {
+    it('should fail with missing strategyParameters', () => {
 
         expect(() =>  {let t = new Transition({next_step: undefined, condition: undefined}, [], undefined)}).to.throw;
         expect(() =>  {let t = new Transition({next_step: "a", condition: undefined}, [], undefined)}).to.throw;

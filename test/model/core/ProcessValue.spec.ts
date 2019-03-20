@@ -25,16 +25,16 @@
 
 import {ProcessValue} from '../../../src/model/core/ProcessValue';
 import {expect} from 'chai';
-import {OpcUaNode} from '../../../src/model/core/Interfaces';
+import {OpcUaNodeOptions} from '../../../src/model/core/Interfaces';
 
 describe('ProcessValue', () => {
 
     it('should construct', () => {
-        let opcUaNode: OpcUaNode = {namespace_index: 'CODESYSSPV3/3S/IecVarAccess', node_id: 'i=12'};
+        let opcUaNode: OpcUaNodeOptions = {namespace_index: 'CODESYSSPV3/3S/IecVarAccess', node_id: 'i=12'};
         let a = new ProcessValue("asd", [opcUaNode]);
     });
 
-    it('should fail with missing parameters', () => {
+    it('should fail with missing strategyParameters', () => {
         expect(() => {let a = new ProcessValue(undefined,undefined) }).to.throw();
         expect(() => {let a = new ProcessValue("test",undefined) }).to.throw();
         expect(() => {let a = new ProcessValue("test", []) }).to.throw();

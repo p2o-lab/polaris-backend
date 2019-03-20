@@ -39,7 +39,7 @@ export const serviceRouter: Router = Router();
  * @apiGroup Service
  * @apiParam {string} moduleId    Module id
  * @apiParam {string} serviceName   Name of service
- * @apiParam {ParameterOptions[]} parameters    Module Service Parameter
+ * @apiParam {ParameterOptions[]} strategyParameters    Module Service Parameter
  */
 moduleRouter.post('/:moduleId/service/:serviceName/parameter', asyncHandler(async (req: Request, res: Response) => {
     const service = manager.getService(req.params.moduleId, req.params.serviceName);
@@ -50,12 +50,12 @@ moduleRouter.post('/:moduleId/service/:serviceName/parameter', asyncHandler(asyn
 /**
  * @api {post} /module/:moduleId/service/:serviceName/strategy    Configure Strategy
  * @apiName ConfigureStrategy
- * @apiDescription Configure strategy and strategy parameters of service
+ * @apiDescription Configure strategy and strategy strategyParameters of service
  * @apiGroup Service
  * @apiParam {string} moduleId    Module id
  * @apiParam {string} serviceName   Name of service
  * @apiParam {string} strategy      Name of strategy
- * @apiParam {ParameterOptions[]} parameters    Module Service Parameters
+ * @apiParam {ParameterOptions[]} strategyParameters    Module Service Parameters
  */
 moduleRouter.post('/:moduleId/service/:serviceName/strategy', asyncHandler(async (req: Request, res: Response) => {
     catServer.info(`Set Strategy Parameters ${req.body.strategy}, ${JSON.stringify(req.body.parameters)}`);
@@ -73,7 +73,7 @@ moduleRouter.post('/:moduleId/service/:serviceName/strategy', asyncHandler(async
  * @apiParam {string} serviceName   Name of service
  * @apiParam {string="start","stop","abort","complete","pause","unhold","reset"} command       Command name
  * @apiParam {string} [strategy]    Strategy name
- * @apiParam {ParameterOptions[]} [parameters]    Parameters for *start* or *restart*
+ * @apiParam {ParameterOptions[]} [strategyParameters]    Parameters for *start* or *restart*
  */
 moduleRouter.post('/:moduleId/service/:serviceName/:command', asyncHandler(async (req: Request, res: Response) => {
     catServer.info(`Call service: ${JSON.stringify(req.params)} - ${JSON.stringify(req.body)}`);
