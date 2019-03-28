@@ -50,7 +50,6 @@ import {
 import {Unit} from './Unit';
 import {manager} from '../Manager';
 import {EventEmitter} from 'events';
-import StrictEventEmitter from 'strict-event-emitter-types';
 import {BaseService} from './BaseService';
 
 export interface ServiceOptions {
@@ -76,34 +75,6 @@ const InterfaceClassToType = {
     'ExtDigOp': 'number'
 };
 
-/**
- * Events emitted by [[Service]]
- */
-interface ServiceEvents {
-    /**
-     * Notify when the [[Service] changes its state
-     * @event
-     */
-    state: {state: ServiceState, timestamp: Date};
-    /**
-     * Notify when controlEnable changes
-     * @event controlEnable
-     */
-    controlEnable: ControlEnableInterface;
-    /**
-     * whenever a command is executed from the PFE
-     * @event
-     */
-    commandExecuted: {
-        timestampPfe: Date,
-        strategy: Strategy,
-        command: ServiceCommand,
-        parameter: ParameterInterface[],
-        scope?: any[]
-    };
-}
-
-type ServiceEmitter = StrictEventEmitter<EventEmitter, ServiceEvents>;
 
 /**
  * Service of a [[Module]]
@@ -111,10 +82,8 @@ type ServiceEmitter = StrictEventEmitter<EventEmitter, ServiceEvents>;
  * after connection to a real PEA, commands can be triggered and states can be retrieved
  *
  */
-export class Service extends (EventEmitter as { new(): ServiceEmitter }) implements BaseService {
+export class Service extends BaseService {
 
-    /** name of the service */
-    readonly name: string;
     /** strategies of the service */
     readonly strategies: Strategy[];
     /** service parameters */
@@ -123,33 +92,40 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) impleme
     readonly parent: Module;
 
     private serviceParametersEventEmitters: EventEmitter[];
-    private lastStatusChange: Date;
 
-    /** OPC UA node of command/controlOp variable */
-    readonly command: OpcUaNode;
-    /** OPC UA node of status variable */
-    readonly status: OpcUaNode;
-    /** OPC UA node of controlEnable variable */
-    readonly controlEnable: OpcUaNode;
-    /** OPC UA node of opMode variable */
-    readonly opMode: OpcUaNode;
-    /** OPC UA node of strategy variable */
-    readonly strategy: OpcUaNode;
-    /** OPC UA node of currentStrategy variable */
-    readonly currentStrategy: OpcUaNode;
+    /** OPC UA node of commandNode/controlOp variable */
+    readonly commandNode: OpcUaNode;
+    /** OPC UA node of statusNode variable */
+    readonly statusNode: OpcUaNode;
+    /** OPC UA node of controlEnableNode variable */
+    readonly controlEnableNode: OpcUaNode;
+    /** OPC UA node of opModeNode variable */
+    readonly opModeNode: OpcUaNode;
+    /** OPC UA node of strategyNode variable */
+    readonly strategyNode: OpcUaNode;
+    /** OPC UA node of currentStrategyNode variable */
+    readonly currentStrategyNode: OpcUaNode;
+
+    get state(): ServiceState {
+        return <ServiceState> this.statusNode.value;
+    }
+
+    get controlEnable(): ControlEnableInterface {
+        return controlEnableToJson(<ServiceControlEnable> this.controlEnableNode.value);
+    }
 
     constructor(serviceOptions: ServiceOptions, parent: Module) {
         super();
-        this.name = serviceOptions.name;
+        this._name = serviceOptions.name;
 
-        this.opMode = serviceOptions.communication.OpMode;
-        this.status = serviceOptions.communication.State;
-        this.controlEnable = serviceOptions.communication.ControlEnable;
-        this.command = manager.automaticMode ?
+        this.opModeNode = serviceOptions.communication.OpMode;
+        this.statusNode = serviceOptions.communication.State;
+        this.controlEnableNode = serviceOptions.communication.ControlEnable;
+        this.commandNode = manager.automaticMode ?
             serviceOptions.communication.ControlExt : serviceOptions.communication.ControlOp;
-        this.strategy = manager.automaticMode ?
+        this.strategyNode = manager.automaticMode ?
             serviceOptions.communication.StrategyExt : serviceOptions.communication.StrategyOp;
-        this.currentStrategy = serviceOptions.communication.CurrentStrategy;
+        this.currentStrategyNode = serviceOptions.communication.CurrentStrategy;
 
         this.strategies = serviceOptions.strategies;
         this.parameters = serviceOptions.parameters;
@@ -165,57 +141,59 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) impleme
      */
     public async subscribeToService(): Promise<Service> {
         catService.info(`Subscribe to service ${this.name}`);
-        if (this.controlEnable) {
+        if (this.controlEnableNode) {
             await this.getControlEnable();
-            catService.info(`initial controlEnable: ${this.controlEnable.value}`);
-            this.parent.listenToOpcUaNode(this.controlEnable)
+            catService.info(`initial controlEnable: ${this.controlEnableNode.value}`);
+            this.parent.listenToOpcUaNode(this.controlEnableNode)
                 .on('changed', (data) => {
-                    this.controlEnable.value = data.value;
-                    this.controlEnable.timestamp = new Date();
-                    catService.info(`ControlEnable changed for ${this.name}: ${this.controlEnable.value} - ${JSON.stringify(controlEnableToJson(<ServiceControlEnable> this.controlEnable.value))}`);
-                    this.emit('controlEnable', controlEnableToJson(<ServiceControlEnable> this.controlEnable.value));
+                    this._lastStatusChange = new Date();
+                    this.controlEnableNode.value = data.value;
+                    this.controlEnableNode.timestamp = new Date();
+                    catService.info(`ControlEnable changed for ${this.name}: ${this.controlEnableNode.value} - ${JSON.stringify(controlEnableToJson(<ServiceControlEnable> this.controlEnableNode.value))}`);
+                    this.emit('controlEnable', controlEnableToJson(<ServiceControlEnable> this.controlEnableNode.value));
                 });
         }
-        if (this.status) {
+        if (this.statusNode) {
             await this.getServiceState();
-            catService.info(`initial status: ${this.status.value}`);
-            this.parent.listenToOpcUaNode(this.status)
+            catService.info(`initial status: ${this.statusNode.value}`);
+            this.parent.listenToOpcUaNode(this.statusNode)
                 .on('changed', (data) => {
-                    this.status.value = data.value;
-                    this.status.timestamp = new Date();
-                    this.lastStatusChange = new Date();
-                    catService.info(`Status changed for ${this.name}: ${ServiceState[<ServiceState> this.status.value]}`);
-                    this.emit('state', {state: <ServiceState> this.status.value, timestamp: this.status.timestamp});
+                    this._state = data.value;
+                    this._lastStatusChange = new Date();
+                    this.statusNode.value = data.value;
+                    this.statusNode.timestamp = new Date();
+                    catService.info(`Status changed for ${this.name}: ${ServiceState[<ServiceState> this.statusNode.value]}`);
+                    this.emit('state', {state: <ServiceState> this.statusNode.value, timestamp: this.statusNode.timestamp});
                 });
         }
-        if (this.command) {
-            let result = await this.parent.readVariableNode(this.command);
-            this.command.value = result.value.value;
-            catService.debug(`initial command: ${JSON.stringify(this.command)}`);
-            this.parent.listenToOpcUaNode(this.command)
+        if (this.commandNode) {
+            let result = await this.parent.readVariableNode(this.commandNode);
+            this.commandNode.value = result.value.value;
+            catService.debug(`initial command: ${JSON.stringify(this.commandNode)}`);
+            this.parent.listenToOpcUaNode(this.commandNode)
                 .on('changed', (data) => {
-                    Object.assign(this.command, data);
-                    catService.debug(`Command changed for ${this.name}: ${ServiceMtpCommand[<ServiceMtpCommand> this.command.value]}`);
+                    Object.assign(this.commandNode, data);
+                    catService.debug(`Command changed for ${this.name}: ${ServiceMtpCommand[<ServiceMtpCommand> this.commandNode.value]}`);
                 });
         }
-        if (this.currentStrategy) {
+        if (this.currentStrategyNode) {
             await this.getCurrentStrategy();
-            catService.info(`initial current strategy: ${this.currentStrategy.value}`);
-            this.parent.listenToOpcUaNode(this.currentStrategy)
+            catService.info(`initial current strategy: ${this.currentStrategyNode.value}`);
+            this.parent.listenToOpcUaNode(this.currentStrategyNode)
                 .on('changed', (data) => {
-                    this.currentStrategy.value = data.value;
-                    this.currentStrategy.timestamp = new Date();
-                    catService.debug(`Current Strategy changed for ${this.name}: ${this.currentStrategy.value}`);
+                    this.currentStrategyNode.value = data.value;
+                    this.currentStrategyNode.timestamp = new Date();
+                    catService.debug(`Current Strategy changed for ${this.name}: ${this.currentStrategyNode.value}`);
                 });
         }
-        if (this.opMode) {
+        if (this.opModeNode) {
             await this.getOpMode();
-            catService.info(`initial opMode: ${this.opMode.value}`);
-            this.parent.listenToOpcUaNode(this.opMode)
+            catService.info(`initial opMode: ${this.opModeNode.value}`);
+            this.parent.listenToOpcUaNode(this.opModeNode)
                 .on('changed', (data) => {
-                    this.opMode.value = data.value;
-                    this.opMode.timestamp = new Date();
-                    catService.debug(`Current OpMode changed for ${this.name}: ${this.opMode.value}`);
+                    this.opModeNode.value = data.value;
+                    this.opModeNode.timestamp = new Date();
+                    catService.debug(`Current OpMode changed for ${this.name}: ${this.opModeNode.value}`);
                 });
         }
         return this;
@@ -228,17 +206,17 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) impleme
      * @returns {Promise<ServiceState>}
      */
     public async getServiceState(): Promise<ServiceState> {
-        if (!this.status.value ||
-            (new Date().getMilliseconds() - this.status.timestamp.getMilliseconds() < 1000)) {
-            const result = await this.parent.readVariableNode(this.status);
-            if (result.value.value != this.status.value) {
-                this.lastStatusChange = new Date();
+        if (!this.statusNode.value ||
+            (new Date().getMilliseconds() - this.statusNode.timestamp.getMilliseconds() < 1000)) {
+            const result = await this.parent.readVariableNode(this.statusNode);
+            if (result.value.value != this.statusNode.value) {
+                this._lastStatusChange = new Date();
             }
-            this.status.value = result.value.value;
-            this.status.timestamp = new Date();
-            catService.debug(`Update service state ${this.name}: ${ServiceState[<ServiceState> this.status.value]}`);
+            this.statusNode.value = result.value.value;
+            this.statusNode.timestamp = new Date();
+            catService.debug(`Update service state ${this.name}: ${ServiceState[<ServiceState> this.statusNode.value]}`);
         }
-        return <ServiceState> this.status.value;
+        return <ServiceState> this.statusNode.value;
     }
 
     /**
@@ -248,47 +226,47 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) impleme
      * @returns {Promise<ControlEnableInterface>}
      */
     public async getControlEnable(force = false): Promise<ControlEnableInterface> {
-        if (!this.controlEnable.value || force ||
-            (new Date().getMilliseconds() - this.controlEnable.timestamp.getMilliseconds() < 1000)) {
-            this.controlEnable.value = (await this.parent.readVariableNode(this.controlEnable)).value.value;
-            this.controlEnable.timestamp = new Date();
-            catService.debug(`Update control enable ${this.name}: ${JSON.stringify(controlEnableToJson(<ServiceControlEnable> this.controlEnable.value))}`);
+        if (!this.controlEnableNode.value || force ||
+            (new Date().getMilliseconds() - this.controlEnableNode.timestamp.getMilliseconds() < 1000)) {
+            this.controlEnableNode.value = (await this.parent.readVariableNode(this.controlEnableNode)).value.value;
+            this.controlEnableNode.timestamp = new Date();
+            catService.debug(`Update control enable ${this.name}: ${JSON.stringify(controlEnableToJson(<ServiceControlEnable> this.controlEnableNode.value))}`);
         }
-        return controlEnableToJson(<ServiceControlEnable> this.controlEnable.value);
+        return controlEnableToJson(<ServiceControlEnable> this.controlEnableNode.value);
     }
 
     /**
-     * Get current strategy from internal memory.
-     * If there is no current strategy or it is older than 1000ms, retrieve an updated version from PEA
+     * Get current strategyNode from internal memory.
+     * If there is no current strategyNode or it is older than 1000ms, retrieve an updated version from PEA
      */
     public async getCurrentStrategy(): Promise<Strategy> {
-        if (!this.currentStrategy.value ||
-            (new Date().getMilliseconds() - this.currentStrategy.timestamp.getMilliseconds() < 1000)) {
-            this.currentStrategy.value = (await this.parent.readVariableNode(this.strategy)).value.value;
-            this.currentStrategy.timestamp = new Date();
-            catService.debug(`Update currentStrategy ${this.name}: ${this.currentStrategy.value}`);
+        if (!this.currentStrategyNode.value ||
+            (new Date().getMilliseconds() - this.currentStrategyNode.timestamp.getMilliseconds() < 1000)) {
+            this.currentStrategyNode.value = (await this.parent.readVariableNode(this.strategyNode)).value.value;
+            this.currentStrategyNode.timestamp = new Date();
+            catService.debug(`Update currentStrategy ${this.name}: ${this.currentStrategyNode.value}`);
         }
-        return this.strategies.find(strat => strat.id == this.currentStrategy.value) || this.strategies.find(strat => strat.default) ;
+        return this.strategies.find(strat => strat.id == this.currentStrategyNode.value) || this.strategies.find(strat => strat.default) ;
     }
 
 
     /**
-     * Get current opMode from internal memory.
-     * If there is no opMode or it is older than 1000ms, retrieve an updated version from PEA
+     * Get current opModeNode from internal memory.
+     * If there is no opModeNode or it is older than 1000ms, retrieve an updated version from PEA
      */
     public async getOpMode(): Promise<OpMode> {
-        if (!this.opMode.value ||
-            (new Date().getMilliseconds() - this.opMode.timestamp.getMilliseconds() < 1000)) {
-            const result = await this.parent.readVariableNode(this.opMode);
-            this.opMode.value = result.value.value;
-            this.opMode.timestamp = new Date();
-            catService.debug(`Update opMode ${this.name}: ${<OpMode> this.opMode.value}`);
+        if (!this.opModeNode.value ||
+            (new Date().getMilliseconds() - this.opModeNode.timestamp.getMilliseconds() < 1000)) {
+            const result = await this.parent.readVariableNode(this.opModeNode);
+            this.opModeNode.value = result.value.value;
+            this.opModeNode.timestamp = new Date();
+            catService.debug(`Update opMode ${this.name}: ${<OpMode> this.opModeNode.value}`);
         }
-        return <OpMode> this.opMode.value;
+        return <OpMode> this.opModeNode.value;
     }
 
     /**
-     * get JSON overview about service and its state, opMode, strategies, parameters and controlEnable
+     * get JSON overview about service and its state, opModeNode, strategies, parameters and controlEnableNode
      * @returns {Promise<ServiceInterface>}
      */
     async getOverview(): Promise<ServiceInterface> {
@@ -327,7 +305,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) impleme
     }
 
     /** get current parameters
-     * from strategy or service (if strategy is undefined)
+     * from strategyNode or service (if strategyNode is undefined)
      * @param {Strategy} strategy
      * @returns {Promise<ParameterInterface[]>}
      */
@@ -387,107 +365,70 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) impleme
 
 
     /**
-     * Set strategy and strategy parameters and execute a command for service on PEA
-     * @param {ServiceCommand} command  command to be executed on PEA
-     * @param {Strategy}    strategy  strategy to be set on PEA
+     * Set strategyNode and strategyNode parameters and execute a commandNode for service on PEA
+     * @param {ServiceCommand} command  commandNode to be executed on PEA
+     * @param {Strategy}    strategy  strategyNode to be set on PEA
      * @param {Parameter[]|ParameterOptions[]} parameters     parameters to be set on PEA
      * @returns {Promise<void>}
      */
     async execute(command?: ServiceCommand, strategy?: Strategy, parameters?: (Parameter|ParameterOptions)[] ): Promise<void> {
         catService.info(`Execute ${command} service ${this.parent.id}.${this.name}(${ strategy ? strategy.name : '' })`);
-        let result;
         if (strategy) {
-            await this.setStrategyParameters(strategy, parameters);
+            await this.setStrategy(strategy);
+            await this.setParameters(parameters);
         }
-        if (command) {
-            result = await this.executeCommand(command);
-        }
-        result = await this.executeCommand(command);
+        await this.executeCommand(command);
         this.emit('commandExecuted', {
-            timestampPfe: new Date(),
+            timestamp: new Date(),
             strategy: await this.getCurrentStrategy(),
             command: command,
             parameter: await this.getCurrentParameters(strategy)
         });
-        return result;
     }
 
-    /**
-     * Execute command by writing ControlOp/ControlExt
-     * (currently disabled - Set ControlOp/ControlExt back after 100ms)
-     *
-     * @param {ServiceCommand} command
-     * @returns {Promise<boolean>}
-     */
-    public async executeCommand(command: ServiceCommand): Promise<boolean> {
-        let result;
-        if (command === ServiceCommand.start) {
-            result = this.start();
-        } else if (command === ServiceCommand.stop) {
-            result = this.stop();
-        } else if (command === ServiceCommand.reset) {
-            result = this.reset();
-        } else if (command === ServiceCommand.complete) {
-            result = this.complete();
-        } else if (command === ServiceCommand.abort) {
-            result = this.abort();
-        } else if (command === ServiceCommand.unhold) {
-            result = this.unhold();
-        } else if (command === ServiceCommand.pause) {
-            result = this.pause();
-        } else if (command === ServiceCommand.resume) {
-            result = this.resume();
-        } else if (command === ServiceCommand.restart) {
-            result = this.restart();
-        } else {
-            throw new Error(`Command ${command} can not be interpreted`);
-        }
-        // reset ControlOp variable after 100ms
-        // setTimeout(() => this.clearCommand(), 100);
-        return result;
-    }
+
 
     private clearCommand(): Promise<boolean> {
         catService.info(`command ${this.name} reset`);
         return this.sendCommand(ServiceMtpCommand.UNDEFINED);
     }
 
-    private start(): Promise<boolean> {
+    protected start(): Promise<boolean> {
         return this.sendCommand(ServiceMtpCommand.START);
     }
 
-    private restart(): Promise<boolean> {
+    protected restart(): Promise<boolean> {
         return this.sendCommand(ServiceMtpCommand.RESTART);
     }
 
-    private stop(): Promise<boolean> {
+    protected stop(): Promise<boolean> {
         this.clearListeners();
         return this.sendCommand(ServiceMtpCommand.STOP);
     }
 
-    private reset(): Promise<boolean> {
+    protected reset(): Promise<boolean> {
         return this.sendCommand(ServiceMtpCommand.RESET);
     }
 
-    private complete(): Promise<boolean> {
+    protected complete(): Promise<boolean> {
         this.clearListeners();
         return this.sendCommand(ServiceMtpCommand.COMPLETE);
     }
 
-    private abort(): Promise<boolean> {
+    protected abort(): Promise<boolean> {
         this.clearListeners();
         return this.sendCommand(ServiceMtpCommand.ABORT);
     }
 
-    private unhold(): Promise<boolean> {
+    protected unhold(): Promise<boolean> {
         return this.sendCommand(ServiceMtpCommand.UNHOLD);
     }
 
-    private pause(): Promise<boolean> {
+    protected pause(): Promise<boolean> {
         return this.sendCommand(ServiceMtpCommand.PAUSE);
     }
 
-    private resume(): Promise<boolean> {
+    protected resume(): Promise<boolean> {
         return this.sendCommand(ServiceMtpCommand.RESUME);
     }
 
@@ -505,15 +446,15 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) impleme
         return Promise.all(tasks);
     }
 
-    /** Set strategy and strategy parameter
-     * Use default strategy if strategy is omitted
+    /** Set strategyNode and strategyNode parameter
+     * Use default strategyNode if strategyNode is omitted
      *
      * @param {Strategy|string} strategy    object or name of desired strategy
      * @param {(Parameter|ParameterOptions)[]} parameters
      * @returns {Promise<void>}
      */
-    public async setStrategyParameters(strategy?: Strategy|string, parameters?: (Parameter|ParameterOptions)[]): Promise<void> {
-        // get strategy from input parameters
+    public async setStrategy(strategy?: Strategy|string, parameters?: (Parameter|ParameterOptions)[]): Promise<void> {
+        // get strategyNode from input parameters
         let strat: Strategy;
         if (strategy === "default") {
             strat = this.strategies.find(strat => strat.default === true);
@@ -523,9 +464,9 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) impleme
             strat = strategy;
         }
 
-        // set strategy
+        // set strategyNode
         catService.info(`Set strategy "${strat.name}" (${strat.id}) for service ${this.name}`);
-        return await this.parent.writeNode(this.strategy,
+        return await this.parent.writeNode(this.strategyNode,
             {
                 dataType: DataType.UInt32,
                 value: strat.id,
@@ -587,13 +528,14 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) impleme
      * @returns {boolean}
      */
     private async writeOpMode(opMode: OpMode): Promise<void> {
-        const result = await this.parent.writeNode(this.opMode,
+        const result = await this.parent.writeNode(this.opModeNode,
             {
                 dataType: DataType.UInt32,
                 value: opMode,
                 arrayType: VariantArrayType.Scalar,
                 dimensions: null
             });
+        catService.info(`Set OpMode for service ${this.name} to ${opMode}. result: ${result}`);
         if (result.value !== 0) {
             return Promise.reject()
         } else {
@@ -603,6 +545,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) impleme
 
 
     public setOperationMode(): Promise<void> {
+        catService.info(`Service ${this.name} automaticMode = ${manager.automaticMode}`);
         if (manager.automaticMode) {
             return this.setToAutomaticOperationMode();
         } else {
@@ -616,12 +559,13 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) impleme
      */
     private async setToAutomaticOperationMode(): Promise<void> {
         let opMode: OpMode = await this.getOpMode();
+        catService.info(`Service ${this.name} opMode = ${opMode}`);
 
         if (isOffState(opMode)) {
             catService.trace('First go to Manual state');
             await this.writeOpMode(OpMode.stateManOp);
             await new Promise((resolve) => {
-                this.parent.listenToOpcUaNode(this.opMode)
+                this.parent.listenToOpcUaNode(this.opModeNode)
                     .once('changed', (data) => {
                         if (isManualState(data.value)) {
                             catService.trace(`finally in ManualMode`);
@@ -636,7 +580,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) impleme
             catService.trace('Go to Automatic state');
             await this.writeOpMode(OpMode.stateAutOp);
             await new Promise((resolve) => {
-                this.parent.listenToOpcUaNode(this.opMode)
+                this.parent.listenToOpcUaNode(this.opModeNode)
                     .once('changed', (data) => {
                         catOpc.trace(`OpMode changed: ${data.value}`);
                         if (isAutomaticState(data.value)) {
@@ -652,7 +596,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) impleme
             catService.trace('Go to External source');
             await this.writeOpMode(OpMode.srcExtOp);
             await new Promise((resolve) => {
-                this.parent.listenToOpcUaNode(this.opMode)
+                this.parent.listenToOpcUaNode(this.opModeNode)
                     .once('changed', (data) => {
                         catService.trace(`OpMode changed: ${data.value}`);
                         if (isExtSource(data.value)) {
@@ -692,7 +636,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) impleme
             return Promise.reject(`ControlOp does not allow ${ServiceMtpCommand[command]} for service ${this.name} (${ServiceState[await this.getServiceState()]} - ${JSON.stringify(controlEnable)})`);
         }
 
-        const result = await this.parent.writeNode(this.command,
+        const result = await this.parent.writeNode(this.commandNode,
             {
                 dataType: DataType.UInt32,
                 value: command,

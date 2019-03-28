@@ -83,7 +83,7 @@ interface ModuleEvents {
     */
     disconnected: void;
     /**
-     * when controlEnable of one service changes
+     * when controlEnableNode of one service changes
      * @event controlEnable
      */
     controlEnable: {service: Service, controlEnable: ControlEnableInterface};
@@ -102,7 +102,7 @@ interface ModuleEvents {
      */
     variableChanged: VariableLogEntry;
     /**
-     * whenever a command is executed from the PFE
+     * whenever a commandNode is executed from the PFE
      * @event
      */
     commandExecuted: {
@@ -368,7 +368,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
                 .on('commandExecuted', (data) => {
                     this.emit('commandExecuted', {
                         service: service,
-                        timestampPfe: data.timestampPfe,
+                        timestampPfe: data.timestamp,
                         strategy: data.strategy,
                         command: data.command,
                         parameter: data.parameter

@@ -322,11 +322,11 @@ export class StateCondition extends ModuleCondition {
 
     clear() {
         this.removeAllListeners();
-        this.service.parent.clearListener(this.service.status);
+        this.service.parent.clearListener(this.service.statusNode);
     }
 
     listen(): Condition {
-        this.monitoredItem = this.service.parent.listenToOpcUaNode(this.service.status)
+        this.monitoredItem = this.service.parent.listenToOpcUaNode(this.service.statusNode)
             .on('changed', (data) => {
                 const state: ServiceState = data.value;
                 this._fulfilled = ServiceState[state]

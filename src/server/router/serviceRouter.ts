@@ -48,16 +48,16 @@ moduleRouter.post('/:moduleId/service/:serviceName/parameter', asyncHandler(asyn
 }));
 
 /**
- * @api {post} /module/:moduleId/service/:serviceName/strategy    Configure Strategy
+ * @api {post} /module/:moduleId/service/:serviceName/strategyNode    Configure Strategy
  * @apiName ConfigureStrategy
- * @apiDescription Configure strategy and strategy parameters of service
+ * @apiDescription Configure strategyNode and strategyNode parameters of service
  * @apiGroup Service
  * @apiParam {string} moduleId    Module id
  * @apiParam {string} serviceName   Name of service
- * @apiParam {string} strategy      Name of strategy
+ * @apiParam {string} strategyNode      Name of strategyNode
  * @apiParam {ParameterOptions[]} parameters    Module Service Parameters
  */
-moduleRouter.post('/:moduleId/service/:serviceName/strategy', asyncHandler(async (req: Request, res: Response) => {
+moduleRouter.post('/:moduleId/service/:serviceName/strategyNode', asyncHandler(async (req: Request, res: Response) => {
     catServer.info(`Set Strategy Parameters ${req.body.strategy}, ${JSON.stringify(req.body.parameters)}`);
     const service = manager.getService(req.params.moduleId, req.params.serviceName);
     await service.setStrategy(req.body.strategy);
@@ -66,15 +66,15 @@ moduleRouter.post('/:moduleId/service/:serviceName/strategy', asyncHandler(async
 }));
 
 /**
- * @api {post} /module/:moduleId/service/:serviceName/:command    Call service
+ * @api {post} /module/:moduleId/service/:serviceName/:commandNode    Call service
  * @apiName CallService
  * @apiGroup Service
  * @apiParam {string} moduleId      Module id
  * @apiParam {string} serviceName   Name of service
- * @apiParam {string="start","stop","abort","complete","pause","unhold","reset"} command       Command name
+ * @apiParam {string="start","stop","abort","complete","pause","unhold","reset","restart"} commandNode       Command name
  * @apiParam {ParameterOptions[]} [parameters]    Parameters for *start* or *restart*
  */
-moduleRouter.post('/:moduleId/service/:serviceName/:command', asyncHandler(async (req: Request, res: Response) => {
+moduleRouter.post('/:moduleId/service/:serviceName/:commandNode', asyncHandler(async (req: Request, res: Response) => {
     catServer.info(`Call service: ${JSON.stringify(req.params)} - ${JSON.stringify(req.body)}`);
     const service = manager.getService(req.params.moduleId, req.params.serviceName);
 
@@ -88,7 +88,7 @@ moduleRouter.post('/:moduleId/service/:serviceName/:command', asyncHandler(async
 }));
 
 /**
- * @api {get} /module/:moduleId/service/:serviceName/    Get service status
+ * @api {get} /module/:moduleId/service/:serviceName/    Get service statusNode
  * @apiName GetService
  * @apiGroup Service
  * @apiParam {string} moduleId      Module id

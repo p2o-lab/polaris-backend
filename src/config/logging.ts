@@ -48,8 +48,8 @@ export const catManager = new Category('manager');
 export const catOpc = new Category('opcua');
 export const catServer = new Category('server');
 
-export const catFunctionBlock = new Category('FunctionBlock');
-export const catTimer = new Category('Timer', catFunctionBlock);
+export const catVirtualService = new Category('VirtualService');
+export const catTimer = new Category('Timer', catVirtualService);
 
 // Custom logging
 export const messages: string[] = [];

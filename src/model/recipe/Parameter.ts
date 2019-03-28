@@ -71,7 +71,7 @@ export class Parameter {
      *
      * @param {ParameterOptions} parameterOptions
      * @param {Service} service         service where the parameter belongs to
-     * @param {Strategy} strategy       strategy to use
+     * @param {Strategy} strategy       strategyNode to use
      * @param {Module[]} modules        modules where expression can be matched
      */
     constructor(parameterOptions: ParameterOptions, service: Service, strategy?: Strategy, modules?: Module[]) {

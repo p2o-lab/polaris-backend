@@ -26,11 +26,12 @@
 import {Timer} from './Timer';
 import {FunctionGenerator} from './FunctionGenerator';
 import {PidController} from './PidController';
-import {VirtualService} from './VirtualService';
+import {AggregatedService} from './AggregatedService';
 import {Storage} from './Storage';
+import {VirtualService} from './VirtualService';
 
 export class FunctionBlockFactory {
- static create(options: any) {
+ static create(options: any): VirtualService {
      if (options.type === Timer.type) {
          return new Timer(options.name);
      } else  if (options.type === Storage.type) {
@@ -39,8 +40,8 @@ export class FunctionBlockFactory {
          return new FunctionGenerator(options.name)
      } else if (options.type === PidController.type) {
          return new PidController(options.name)
-     } else if (options.type === VirtualService.type) {
-         return new VirtualService(options.name)
+     } else if (options.type === AggregatedService.type) {
+         return new AggregatedService(options)
      } else {
          throw new Error('Wrong function block type');
      }

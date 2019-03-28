@@ -23,14 +23,13 @@
  * SOFTWARE.
  */
 
-import {FunctionBlock} from './FunctionBlock';
+import {VirtualService} from './VirtualService';
 import * as Controller from 'node-pid-controller';
-import {catFunctionBlock} from '../../config/logging';
 import {ParameterOptions} from '@plt/pfe-ree-interface';
 import {Parameter} from '../recipe/Parameter';
 import {ServiceState} from '../core/enum';
 
-export class PidController extends FunctionBlock {
+export class PidController extends VirtualService {
     set output(value: number) {
         this._output = value;
         this.parameters.find(p => p.name === 'output').value = this._output;

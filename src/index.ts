@@ -102,7 +102,7 @@ let options;
 try {
     options = commandLineArgs(optionDefinitions);
 } catch (err) {
-    console.log('Error: Could not parse command line arguments', err.toString());
+    console.log('Error: Could not parse commandNode line arguments', err.toString());
     console.log(commandLineUsage(sections));
 }
 if (options) {

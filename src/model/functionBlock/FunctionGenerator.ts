@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import {FunctionBlock} from './FunctionBlock';
+import {VirtualService} from './VirtualService';
 import {catTimer} from '../../config/logging';
 import {Expression, Parser} from 'expr-eval';
 import Timeout = NodeJS.Timeout;
@@ -37,7 +37,7 @@ import {EventEmitter} from 'events';
  *  - updateRate: update rate of evaluating function
  *  - output: output value of function
  */
-export class FunctionGenerator extends FunctionBlock {
+export class FunctionGenerator extends VirtualService {
 
     static type = 'functionGenerator';
 

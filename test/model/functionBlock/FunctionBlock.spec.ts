@@ -26,12 +26,12 @@
 import {expect} from 'chai';
 import {Timer} from '../../../src/model/functionBlock/Timer';
 import {Storage} from '../../../src/model/functionBlock/Storage';
-import {later} from '../../helper';
+import * as delay from 'timeout-as-promise';
 import {ServiceState} from '../../../src/model/core/enum';
 import {FunctionGenerator} from '../../../src/model/functionBlock/FunctionGenerator';
 
 
-describe('FunctionBlock', () => {
+describe('VirtualService', () => {
 
     describe('Timer', () => {
         it('should run', async () => {
@@ -58,14 +58,14 @@ describe('FunctionBlock', () => {
             await timer.start();
             expect(timer.state).to.equal(ServiceState.RUNNING);
 
-            await later(200);
+            await delay(200);
             await timer.pause();
             expect(hit).to.equal(5);
-            await later(80);
+            await delay(80);
 
             await timer.resume();
 
-            await later(310);
+            await delay(310);
 
             expect(hit).to.equal(10);
 
@@ -85,18 +85,18 @@ describe('FunctionBlock', () => {
             await f1.start();
             expect(f1.state).to.equal(ServiceState.RUNNING);
 
-            await later(120);
+            await delay(120);
             params = await f1.getCurrentParameters();
             let value = params.find(p => p.name === 'output');
             expect(value).to.have.property('value').to.be.closeTo(0.5,0.03);
             await f1.pause();
-            await later(100);
+            await delay(100);
 
             params = await f1.getCurrentParameters();
             value = params.find(p => p.name === 'output');
             expect(value).to.have.property('value').to.be.closeTo(0.841,0.03);
             await f1.resume();
-            await later(100);
+            await delay(100);
 
             await f1.stop();
 

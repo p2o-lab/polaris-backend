@@ -26,19 +26,119 @@
 import {ServiceState} from './enum';
 import {ControlEnableInterface, ParameterInterface, ParameterOptions, ServiceCommand} from '@plt/pfe-ree-interface';
 import {Parameter} from '../recipe/Parameter';
+import {EventEmitter} from "events";
+import {Strategy} from './Interfaces';
+import StrictEventEmitter from 'strict-event-emitter-types';
 
-export interface BaseService {
+/**
+ * Events emitted by [[BaseService]]
+ */
+interface BaseServiceEvents {
+    /**
+     * Notify when the [[Service] changes its state
+     * @event state
+     */
+    state: {state: ServiceState, timestamp: Date};
+    /**
+     * Notify when controlEnableNode changes
+     * @event controlEnable
+     */
+    controlEnable: ControlEnableInterface;
+    /**
+     * whenever a commandNode is executed from the PFE
+     * @event commandExecuted
+     */
+    commandExecuted: {
+        timestamp: Date,
+        strategy: Strategy,
+        command: ServiceCommand,
+        parameter: ParameterInterface[],
+        scope?: any[]
+    };
+}
 
-    readonly name: string;
+type BaseServiceEmitter = StrictEventEmitter<EventEmitter, BaseServiceEvents>;
 
-    getServiceState(): Promise<ServiceState>;
+export abstract class BaseService extends (EventEmitter as { new(): BaseServiceEmitter }) {
 
-    getControlEnable(): Promise<ControlEnableInterface>;
+    // name of the base service
+    protected _name: string;
 
-    executeCommand(command: ServiceCommand): Promise<boolean>;
+    // is base service self completing
+    protected _selfCompleting = false;
 
-    setParameters(parameters: (Parameter|ParameterOptions)[]): Promise<void>;
+    protected _state: ServiceState = ServiceState.IDLE;
+    protected _controlEnable: ControlEnableInterface;
+    protected parameters: ParameterInterface[];
 
-    getCurrentParameters(): Promise<ParameterInterface[]>;
+    protected _lastStatusChange = new Date();
 
+    protected set selfCompleting(value: boolean) {
+        this._selfCompleting = value;
+    }
+
+    get name(): string {
+        return this._name;
+    }
+
+    get state(): ServiceState {
+        return this._state;
+    }
+
+    get lastStatusChange(): Date {
+        return this._lastStatusChange;
+    }
+
+    get controlEnable(): ControlEnableInterface {
+        return this._controlEnable;
+    }
+
+    getCurrentParameters(strategy?: Strategy): Promise<ParameterInterface[]> {
+        return Promise.resolve(this.parameters);
+    }
+
+    abstract setParameters(parameters: (Parameter|ParameterOptions)[]): Promise<void>;
+
+
+    /**
+     * Execute commandNode
+     *
+     * @param {ServiceCommand} command
+     * @returns {Promise<boolean>}
+     */
+    public async executeCommand(command: ServiceCommand): Promise<boolean> {
+        let result;
+        if (command === ServiceCommand.start) {
+            result = this.start();
+        } else if (command === ServiceCommand.stop) {
+            result = this.stop();
+        } else if (command === ServiceCommand.reset) {
+            result = this.reset();
+        } else if (command === ServiceCommand.complete) {
+            result = this.complete();
+        } else if (command === ServiceCommand.abort) {
+            result = this.abort();
+        } else if (command === ServiceCommand.unhold) {
+            result = this.unhold();
+        } else if (command === ServiceCommand.pause) {
+            result = this.pause();
+        } else if (command === ServiceCommand.resume) {
+            result = this.resume();
+        } else if (command === ServiceCommand.restart) {
+            result = this.restart();
+        } else {
+            throw new Error(`Command ${command} can not be interpreted`);
+        }
+        return result;
+    }
+
+    protected abstract async start();
+    protected abstract async stop();
+    protected abstract async reset();
+    protected abstract async complete();
+    protected abstract async abort();
+    protected abstract async unhold();
+    protected abstract async pause();
+    protected abstract async resume();
+    protected abstract async restart();
 }

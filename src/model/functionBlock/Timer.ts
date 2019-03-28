@@ -23,14 +23,14 @@
  * SOFTWARE.
  */
 
-import {FunctionBlock} from './FunctionBlock';
+import {VirtualService} from './VirtualService';
 import {catTimer} from '../../config/logging';
 import Timeout = NodeJS.Timeout;
 import {EventEmitter} from 'events';
 import {OpcUaNodeEvents} from '../core/Module';
 import StrictEventEmitter from 'strict-event-emitter-types';
 
-export class Timer extends FunctionBlock {
+export class Timer extends VirtualService {
     get remainingTime(): number {
         return this._remainingTime;
     }

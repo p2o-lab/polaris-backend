@@ -27,24 +27,24 @@ import { manager } from '../../model/Manager';
 import { catServer } from '../../config/logging';
 import { Request, Response, Router } from 'express';
 import * as asyncHandler from 'express-async-handler';
-import {FunctionBlock} from '../../model/functionBlock/FunctionBlock';
+import {VirtualService} from '../../model/functionBlock/VirtualService';
 
 export const functionBlockRouter: Router = Router();
 
 /**
  * @api {get} /functionBlock    Get function block list
  * @apiName GetFunctionBlockList
- * @apiGroup FunctionBlock
+ * @apiGroup VirtualService
  */
 functionBlockRouter.get('/', asyncHandler(async (req: Request, res: Response) => {
-    const result = manager.functionBlocks.map(async (fb: FunctionBlock) => await fb.json());
+    const result = manager.functionBlocks.map(async (fb: VirtualService) => await fb.json());
     res.json(result);
 }));
 
 /**
  * @api {get} /functionBlock/:functionBlockId    Get function block
  * @apiName GetFunctionBlock
- * @apiGroup FunctionBlock
+ * @apiGroup VirtualService
  * @apiParam functionBlockId
  */
 functionBlockRouter.get('/:functionBlockId', asyncHandler(async (req: Request, res: Response) => {
@@ -59,7 +59,7 @@ functionBlockRouter.get('/:functionBlockId', asyncHandler(async (req: Request, r
 /**
  * @api {delete} /functionBlock/:functionBlockId    Delete function block
  * @apiName DeleteFunctionBlock
- * @apiGroup FunctionBlock
+ * @apiGroup VirtualService
  * @apiParam functionBlockId   id of function block to be deleted
  */
 functionBlockRouter.delete('/:functionBlockId', asyncHandler(async (req: Request, res: Response) => {
@@ -74,7 +74,7 @@ functionBlockRouter.delete('/:functionBlockId', asyncHandler(async (req: Request
 /**
  * @api {put} /functionBlock    Instantiate function block
  * @apiName PutFunctionBlock
- * @apiGroup FunctionBlock
+ * @apiGroup VirtualService
  * @apiParam {string} name  new function block name
  * @apiParam {string} type  new function block type
  */
@@ -85,10 +85,10 @@ functionBlockRouter.put('', asyncHandler(async (req: Request, res: Response) => 
 }));
 
 /**
- * @api {post} /functionBlock/:functionBlockName/parameter    Configure FunctionBlock
+ * @api {post} /functionBlock/:functionBlockName/parameter    Configure VirtualService
  * @apiName ConfigureFunctionBlock
  * @apiDescription Configure function block parameter
- * @apiGroup FunctionBlock
+ * @apiGroup VirtualService
  * @apiParam {string} functionBlockName   Name of function block
  * @apiParam {ParameterOptions[]} parameters    function block parameter
  */
@@ -100,14 +100,14 @@ functionBlockRouter.post('/:functionBlockName/parameter', asyncHandler(async (re
 
 
 /**
- * @api {post} /functionBlock/:functionBlockId/:command    Call function block
+ * @api {post} /functionBlock/:functionBlockId/:commandNode    Call function block
  * @apiName CallFunctionBlock
- * @apiGroup FunctionBlock
+ * @apiGroup VirtualService
  * @apiParam {string} functionBlockId   Name of function block
- * @apiParam {string="start","stop","abort","complete","pause","unhold","reset"} command       Command name
+ * @apiParam {string="start","stop","abort","complete","pause","unhold","reset"} commandNode       Command name
  * @apiParam {ParameterOptions[]} [parameters]    Parameters for *start* or *restart*
  */
-functionBlockRouter.post('/:functionBlockId/:command', asyncHandler(async (req: Request, res: Response) => {
+functionBlockRouter.post('/:functionBlockId/:commandNode', asyncHandler(async (req: Request, res: Response) => {
     catServer.info(`Call function block: ${JSON.stringify(req.params)} - ${JSON.stringify(req.body)}`);
     const fb = manager.functionBlocks.find(fb => fb.name === req.params.functionBlockId);
 

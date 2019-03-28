@@ -151,7 +151,7 @@ describe('CIF Integration', function () {
         expect(json).to.be.property('strategies');
         expect(json).to.be.property('parameters');
         expect(json).to.be.property('currentStrategy');
-        expect(json).to.be.property('lastChange');
+        expect(json).to.be.property('_lastStatusChange');
         expect(json).to.be.property('controlEnable');
     });
 

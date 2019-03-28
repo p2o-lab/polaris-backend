@@ -32,7 +32,7 @@ import {ManagerInterface, RecipeOptions, ServiceCommand} from '@plt/pfe-ree-inte
 import {Player} from "./recipe/Player";
 import {ServiceState} from './core/enum';
 import {VariableLogEntry,ServiceLogEntry } from '../logging/archive';
-import {FunctionBlock} from './functionBlock/FunctionBlock';
+import {VirtualService} from './functionBlock/VirtualService';
 import {FunctionBlockFactory} from './functionBlock/FunctionBlockFactory';
 
 export class Manager extends EventEmitter {
@@ -44,7 +44,7 @@ export class Manager extends EventEmitter {
     readonly modules: Module[] = [];
 
     // instantiated function blocks
-    readonly functionBlocks: FunctionBlock[] = [];
+    readonly functionBlocks: VirtualService[] = [];
 
     readonly player: Player;
 

@@ -23,9 +23,9 @@
  * SOFTWARE.
  */
 
-import {FunctionBlock} from './FunctionBlock';
+import {VirtualService} from './VirtualService';
 
-export class Storage extends FunctionBlock {
+export class Storage extends VirtualService {
 
     static type = 'storage';
 
