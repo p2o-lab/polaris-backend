@@ -157,6 +157,10 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
         this.serviceParametersEventEmitters = [];
     }
 
+    private get qualifiedName() {
+        return `${this.parent.id}.${this.name}`
+    }
+
     /**
      * Listen to state and error of service and emits specific events for them
      *
@@ -393,7 +397,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
      * @returns {Promise<void>}
      */
     async execute(command?: ServiceCommand, strategy?: Strategy, parameters?: (Parameter|ParameterOptions)[] ): Promise<void> {
-        catService.info(`Execute ${command} service ${this.parent.id}.${this.name}(${ strategy ? strategy.name : '' })`);
+        catService.info(`Execute ${command} service ${this.qualifiedName}(${ strategy ? strategy.name : '' })`);
         let result;
         if (strategy) {
             await this.setStrategyParameters(strategy, parameters);
@@ -587,7 +591,8 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
                 dimensions: null
             });
         if (result.value !== 0) {
-            return Promise.reject()
+            catService.warn(`Error while setting opMode of service ${this.qualifiedName} to ${opMode}: ${JSON.stringify(result)}`);
+            return Promise.reject();
         } else {
             return Promise.resolve();
         }
@@ -596,8 +601,10 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
 
     public setOperationMode(): Promise<void> {
         if (manager.automaticMode) {
+            catService.info(`Bring service ${this.qualifiedName} to automatic mode`);
             return this.setToAutomaticOperationMode();
         } else {
+            catService.info(`Bring service ${this.qualifiedName} to manual mode`);
             return this.setToManualOperationMode();
         }
     }
@@ -608,7 +615,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
      */
     private async setToAutomaticOperationMode(): Promise<void> {
         let opMode: OpMode = await this.getOpMode();
-
+        catService.info(`Current opMode of service ${this.qualifiedName} = ${opMode}`);
         if (isOffState(opMode)) {
             catService.trace('First go to Manual state');
             await this.writeOpMode(OpMode.stateManOp);
@@ -657,7 +664,17 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
     }
 
     private setToManualOperationMode(): Promise<void> {
-        return this.writeOpMode(OpMode.stateManOp);
+        this.writeOpMode(OpMode.stateManOp);
+        return new Promise((resolve) => {
+            this.parent.listenToOpcUaNode(this.opMode)
+                .once('changed', (data) => {
+                    catOpc.trace(`OpMode changed: ${data.value}`);
+                    if (isManualState(data.value)) {
+                        catService.trace(`finally in ManualMode`);
+                        resolve();
+                    }
+                });
+        });
     }
 
     private async sendCommand(command: ServiceMtpCommand): Promise<boolean> {

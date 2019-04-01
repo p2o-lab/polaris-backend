@@ -220,11 +220,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
                 this.subscription = subscription;
 
                 // set all services to correct operation mode
-                try {
-                    await Promise.all(this.services.map(service => service.setOperationMode()));
-                } catch (err) {
-                    catModule.warn('Could not bring all services to desired operation mode:' + err);
-                }
+                await Promise.all(this.services.map(service => service.setOperationMode()));
                 // subscribe to all services
                 try {
                     await this.subscribeToAllServices();
@@ -239,7 +235,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
                 this.emit('connected');
                 return Promise.resolve();
             } catch (err) {
-                return Promise.reject(`Could not connect to module ${this.id} on ${this.endpoint}: ${err.toString()}`);
+                return Promise.reject(`Could not sucessfully connect to module ${this.id} on ${this.endpoint}: ${err.toString()}`);
             }
         }
     }
