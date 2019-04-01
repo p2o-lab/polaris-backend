@@ -204,7 +204,6 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
                     .on('started', () => {
                         catOpc.trace(`subscription started - subscriptionId=${subscription.subscriptionId}`);
                     })
-                    // .on("keepalive", () => catOpc.trace("keepalive"))
                     .on('terminated', () => {
                         catOpc.trace(`subscription (Id=${subscription.subscriptionId}) terminated`);
                     });
