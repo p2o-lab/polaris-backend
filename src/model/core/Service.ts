@@ -155,6 +155,8 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
 
         this.parent = parent;
         this.serviceParametersEventEmitters = [];
+
+        this.lastStatusChange = new Date();
     }
 
     private get qualifiedName() {
