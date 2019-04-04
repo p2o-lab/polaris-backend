@@ -29,6 +29,8 @@ import { Request, Response, Router } from 'express';
 import * as asyncHandler from 'express-async-handler';
 import { catServer } from '../../config/logging';
 import {manager} from '../../model/Manager';
+import {Strategy} from '../../model/core/Interfaces';
+import {Parameter} from '../../model/recipe/Parameter';
 
 export const serviceRouter: Router = Router();
 
@@ -79,7 +81,15 @@ moduleRouter.post('/:moduleId/service/:serviceName/:command', asyncHandler(async
     catServer.info(`Call service: ${JSON.stringify(req.params)} - ${JSON.stringify(req.body)}`);
     const service = manager.getService(req.params.moduleId, req.params.serviceName);
 
-    const result = await service.execute(req.params.command, req.body.strategy, req.body.parameters);
+    let strategy: Strategy = undefined;
+    if (req.body.strategy) {
+        strategy = service.strategies.find(strat => strat.name === req.body.strategy);
+    }
+    if (strategy == undefined) {
+        strategy = service.strategies.find(strat => strat.default === true);
+    }
+
+    const result = await service.execute(req.params.command, strategy, req.body.parameters);
     res.json({
         module: module.id,
         service: service.name,
