@@ -50,7 +50,7 @@ describe('Recipe', () => {
     });
 
     it('should load the biofeed recipe json', (done) => {
-        fs.readFile('assets/recipes/biofeed/recipe_biofeed_88370C_0.3.1.json', async (err, file) => {
+        fs.readFile('assets/recipes/biofeed/recipe_biofeed_88370C_1.0.0.json', async (err, file) => {
             const options = JSON.parse(file.toString());
             const recipe = new Recipe(options, [module_biofeed]);
             assert.equal(recipe.modules.size, 1);

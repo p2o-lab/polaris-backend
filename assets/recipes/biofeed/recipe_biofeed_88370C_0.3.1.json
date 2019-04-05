@@ -220,7 +220,7 @@
       "transitions": [
         {
           "condition": { "type": "state", "service": "Stirring", "state": "idle" },
-          "next_step": "S5.Stirr10Min"
+          "next_step": "S5.Stirr10min"
         }
       ]
     },

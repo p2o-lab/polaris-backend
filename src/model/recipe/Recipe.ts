@@ -108,6 +108,9 @@ export class Recipe extends (EventEmitter as { new(): RecipeEmitter }) {
             this.steps.forEach((step: Step) => {
                 step.transitions.forEach((transition) => {
                     transition.next_step = this.steps.find(step => step.name === transition.next_step_name);
+                    if (!transition.next_step && !["completed", "finished"].find(v => v === transition.next_step_name)) {
+                        throw new Error(`Recipe load error ${this.name}: Next step "${transition.next_step_name}" not found in "${step.name}" for condition "${JSON.stringify(transition.condition.json())}"`)
+                    }
                 });
             });
         } else {
