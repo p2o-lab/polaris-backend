@@ -234,7 +234,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
                 this.emit('connected');
                 return Promise.resolve();
             } catch (err) {
-                return Promise.reject(`Could not sucessfully connect to module ${this.id} on ${this.endpoint}: ${err.toString()}`);
+                return Promise.reject(`Could not successfully connect to module ${this.id} on ${this.endpoint}: ${err.toString()}`);
             }
         }
     }
