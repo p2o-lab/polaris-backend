@@ -20,7 +20,6 @@ RUN npm run apidoc
 
 # production image
 FROM node:alpine
-COPY assets assets
 COPY --from=dependencies /app/node_modules node_modules
 COPY --from=build /app/build build
 COPY --from=build /app/apidoc apidoc
