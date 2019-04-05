@@ -177,7 +177,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
                 .on('changed', (data) => {
                     this.controlEnable.value = data.value;
                     this.controlEnable.timestamp = new Date();
-                    catService.info(`ControlEnable changed for ${this.name}: ${this.controlEnable.value} - ${JSON.stringify(controlEnableToJson(<ServiceControlEnable> this.controlEnable.value))}`);
+                    catService.debug(`ControlEnable changed for ${this.name}: ${this.controlEnable.value} - ${JSON.stringify(controlEnableToJson(<ServiceControlEnable> this.controlEnable.value))}`);
                     this.emit('controlEnable', controlEnableToJson(<ServiceControlEnable> this.controlEnable.value));
                 });
         }
@@ -587,6 +587,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
      * @returns {boolean}
      */
     private async writeOpMode(opMode: OpMode): Promise<void> {
+        catService.debug(`Write opMode of service ${this.qualifiedName} (${this.opMode.namespace_index} - ${this.opMode.node_id}): ${<number> opMode}`);
         const result = await this.parent.writeNode(this.opMode,
             {
                 dataType: DataType.UInt32,
@@ -594,6 +595,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
                 arrayType: VariantArrayType.Scalar,
                 dimensions: null
             });
+        catService.debug(`Setting opMode of service ${this.qualifiedName} ${JSON.stringify(result)}`);
         if (result.value !== 0) {
             catService.warn(`Error while setting opMode of service ${this.qualifiedName} to ${opMode}: ${JSON.stringify(result)}`);
             return Promise.reject();
@@ -609,7 +611,8 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
             return this.setToAutomaticOperationMode();
         } else {
             catService.info(`Bring service ${this.qualifiedName} to manual mode`);
-            return this.setToManualOperationMode();
+            return this.setToManualOperationMode()
+                .then(() => catService.info(`Service ${this.qualifiedName} now in manual mode`));
         }
     }
 
@@ -685,7 +688,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
         if (!this.parent.isConnected()) {
             return Promise.reject('Module is not connected');
         }
-        catService.debug(`Send command ${ServiceMtpCommand[command]} (${command}) to service "${this.name}"`);
+        catService.info(`Send command ${ServiceMtpCommand[command]} (${command}) to service "${this.name}"`);
         await this.setOperationMode();
 
         let controlEnable: ControlEnableInterface = await this.getControlEnable(true);
