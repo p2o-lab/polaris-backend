@@ -90,6 +90,7 @@ export class Recipe extends (EventEmitter as { new(): RecipeEmitter }) {
     current_step: Step;
     status: RecipeState;
     lastChange: Date;
+    private stepListener: EventEmitter;
 
     constructor(options: RecipeOptions, modules: Module[], protectedRecipe: boolean = false) {
         super();
@@ -192,6 +193,7 @@ export class Recipe extends (EventEmitter as { new(): RecipeEmitter }) {
      */
     public stop () {
         this.status = RecipeState.stopped;
+        this.stepListener.removeAllListeners('completed');
         this.current_step.transitions.forEach(trans => trans.condition.clear());
         this.emit('stopped', this.current_step);
         this.current_step = undefined;
@@ -200,7 +202,7 @@ export class Recipe extends (EventEmitter as { new(): RecipeEmitter }) {
     private executeStep() {
         catRecipe.debug(`Start step: ${this.current_step.name}`);
         this.lastChange = new Date();
-        this.current_step.execute()
+        this.stepListener = this.current_step.execute()
             .once('completed', (transition: Transition) => {
                 if (transition.next_step) {
                     catRecipe.info(`Step ${this.current_step.name} finished. New step is ${transition.next_step_name}`);
