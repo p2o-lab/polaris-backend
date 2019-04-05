@@ -336,7 +336,7 @@
         {
           "service": "FiltrationToStorage", "command": "start",
 		  "parameter": [
-            { "name": "FlowRate", "value": 1000}
+            { "name": "FlowRate", "value": 500}
           ]
         }
       ],
