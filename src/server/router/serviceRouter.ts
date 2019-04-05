@@ -74,22 +74,11 @@ moduleRouter.post('/:moduleId/service/:serviceName/strategy', asyncHandler(async
  * @apiParam {string} moduleId      Module id
  * @apiParam {string} serviceName   Name of service
  * @apiParam {string="start","stop","abort","complete","pause","unhold","reset"} command       Command name
- * @apiParam {string} [strategy]    Strategy name
- * @apiParam {ParameterOptions[]} [parameters]    Parameters for *start* or *restart*
  */
 moduleRouter.post('/:moduleId/service/:serviceName/:command', asyncHandler(async (req: Request, res: Response) => {
-    catServer.info(`Call service: ${JSON.stringify(req.params)} - ${JSON.stringify(req.body)}`);
+    catServer.info(`Call service: ${JSON.stringify(req.params)}`);
     const service = manager.getService(req.params.moduleId, req.params.serviceName);
-
-    let strategy: Strategy = undefined;
-    if (req.body.strategy) {
-        strategy = service.strategies.find(strat => strat.name === req.body.strategy);
-    }
-    if (strategy == undefined) {
-        strategy = service.strategies.find(strat => strat.default === true);
-    }
-
-    const result = await service.execute(req.params.command, strategy, req.body.parameters);
+    const result = await service.execute(req.params.command);
     res.json({
         module: module.id,
         service: service.name,

@@ -265,6 +265,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
     /**
      * Get current strategy from internal memory.
      * If there is no current strategy or it is older than 1000ms, retrieve an updated version from PEA
+     * If PEA has no known strategy set in server, set it to default strategy
      */
     public async getCurrentStrategy(): Promise<Strategy> {
         if (!this.currentStrategy.value ||
@@ -273,7 +274,12 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
             this.currentStrategy.timestamp = new Date();
             catService.debug(`Update currentStrategy ${this.name}: ${this.currentStrategy.value}`);
         }
-        return this.strategies.find(strat => strat.id == this.currentStrategy.value) || this.strategies.find(strat => strat.default) ;
+        let strategy = this.strategies.find(strat => strat.id == this.currentStrategy.value);
+        if (!strategy) {
+            strategy = this.strategies.find(strat => strat.default);
+            this.setStrategyParameters(strategy);
+        }
+        return strategy;
     }
 
 
@@ -401,13 +407,13 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
     async execute(command?: ServiceCommand, strategy?: Strategy, parameters?: (Parameter|ParameterOptions)[] ): Promise<void> {
         catService.info(`Execute ${command} service ${this.qualifiedName}(${ strategy ? strategy.name : '' })`);
         let result;
-        if (strategy) {
+        if (strategy || parameters) {
             await this.setStrategyParameters(strategy, parameters);
         }
+        let strat: Strategy = await this.getCurrentStrategy();
         if (command) {
             result = await this.executeCommand(command);
         }
-        let strat: Strategy = await this.getCurrentStrategy();
 
         this.emit('commandExecuted', {
             timestampPfe: new Date(),
@@ -670,18 +676,21 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
         }
     }
 
-    private setToManualOperationMode(): Promise<void> {
-        this.writeOpMode(OpMode.stateManOp);
-        return new Promise((resolve) => {
-            this.parent.listenToOpcUaNode(this.opMode)
-                .once('changed', (data) => {
-                    catOpc.trace(`OpMode changed: ${data.value}`);
-                    if (isManualState(data.value)) {
-                        catService.trace(`finally in ManualMode`);
-                        resolve();
-                    }
-                });
-        });
+    private async setToManualOperationMode(): Promise<void> {
+        let opMode = await this.getOpMode();
+        if (!isManualState(opMode)) {
+            this.writeOpMode(OpMode.stateManOp);
+            return new Promise((resolve) => {
+                this.parent.listenToOpcUaNode(this.opMode)
+                    .once('changed', (data) => {
+                        catOpc.trace(`OpMode changed: ${data.value}`);
+                        if (isManualState(data.value)) {
+                            catService.trace(`finally in ManualMode`);
+                            resolve();
+                        }
+                    });
+            });
+        }
     }
 
     private async sendCommand(command: ServiceMtpCommand): Promise<boolean> {
