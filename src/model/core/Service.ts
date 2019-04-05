@@ -407,11 +407,13 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
         if (command) {
             result = await this.executeCommand(command);
         }
+        let strat: Strategy = await this.getCurrentStrategy();
+
         this.emit('commandExecuted', {
             timestampPfe: new Date(),
-            strategy: await this.getCurrentStrategy(),
+            strategy: strat,
             command: command,
-            parameter: await this.getCurrentParameters(strategy)
+            parameter: await this.getCurrentParameters(strat)
         });
         return result;
     }
