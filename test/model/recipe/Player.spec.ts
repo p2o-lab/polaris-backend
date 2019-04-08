@@ -58,7 +58,7 @@ describe('Player', function () {
 
             player.remove(0);
             expect(player.playlist).to.have.length(2);
-            expect(player.playlist[0].id).to.equal(recipeWaitLocal.id)
+            expect(player.playlist[0].id).to.equal(recipeWaitLocal.id);
 
             player.enqueue(recipeWaitLocal);
 
