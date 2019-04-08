@@ -48,6 +48,7 @@ import {
 import { timeout } from 'promise-timeout';
 import { VariableLogEntry } from '../../logging/archive';
 import StrictEventEmitter from 'strict-event-emitter-types';
+import {Category} from 'typescript-logging';
 
 export interface ModuleOptions {
     id: string;
@@ -145,6 +146,8 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
      */
     protected: boolean = false;
 
+    readonly logger: Category;
+
     constructor(options: ModuleOptions, protectedModule: boolean = false) {
         super();
         this.id = options.id;
@@ -162,6 +165,8 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
         }
 
         this.monitoredItems = new Map<NodeId, { monitoredItem: ClientMonitoredItem, emitter: EventEmitter }>();
+
+        this.logger = new Category(`Module ${this.id}`, catModule);
     }
 
     /**
@@ -173,7 +178,6 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
             catOpc.debug(`Already connected to module ${this.id}`);
             return Promise.resolve();
         } else {
-            try {
                 catOpc.info(`connect module ${this.id} ${this.endpoint}`);
                 const client = new OPCUAClient({
                     endpoint_must_exist: false,
@@ -211,7 +215,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
                 // read namespace array
                 const result: DataValue = await session.readVariableValue('ns=0;i=2255');
                 this.namespaceArray = result.value.value;
-                catModule.debug(`Got namespace array for ${this.id}: ${JSON.stringify(this.namespaceArray)}`);
+                this.logger.debug(`Got namespace array: ${JSON.stringify(this.namespaceArray)}`);
 
                 // store everything
                 this.client = client;
@@ -221,21 +225,16 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
                 // set all services to correct operation mode
                 await Promise.all(this.services.map(service => service.setOperationMode()));
                 // subscribe to all services
-                try {
-                    await this.subscribeToAllServices();
-                } catch (err) {
-                    catModule.warn('Could not connect to all services:' + err);
-                }
+                await this.subscribeToAllServices();
+
                 try {
                     this.subscribeToAllVariables();
                 } catch (err) {
-                    catModule.warn('Could not connect to all variables:' + err);
+                    this.logger.warn('Could not connect to all variables:' + err);
                 }
                 this.emit('connected');
                 return Promise.resolve();
-            } catch (err) {
-                return Promise.reject(`Could not successfully connect to module ${this.id} on ${this.endpoint}: ${err.toString()}`);
-            }
+
         }
     }
 
@@ -253,13 +252,13 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
         this.services.forEach(s => s.removeAllSubscriptions());
         return new Promise(async (resolve, reject) => {
             if (this.session) {
-                catModule.info(`Disconnect module ${this.id}`);
+                this.logger.info(`Disconnect module`);
                 try {
                     await timeout(this.session.close(), 1000);
                     this.session = undefined;
                     await timeout(1000, this.client.disconnect(), 1000);
                     this.client = undefined;
-                    catModule.debug(`Module ${this.id} disconnected`);
+                    this.logger.debug(`Module disconnected`);
                     this.emit('disconnected');
                     resolve(`Module ${this.id} disconnected`);
                 } catch (err) {
@@ -341,7 +340,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
             if (variable.communication['V'] && variable.communication['V'].node_id != null) {
                 this.listenToOpcUaNode(variable.communication['V'])
                     .on('changed', (data) => {
-                        catModule.debug(`variable changed: ${this.id}.${variable.name} = ${data.value}`);
+                        this.logger.debug(`variable changed: ${variable.name} = ${data.value}`);
                         const entry: VariableLogEntry = {
                             timestampPfe: new Date(),
                             timestampModule: data.timestamp,
@@ -352,7 +351,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
                         this.emit('variableChanged', entry);
                     });
             } else {
-                catModule.debug(`OPC UA variable for variable ${variable.name} not defined`);
+                this.logger.debug(`OPC UA variable for variable ${variable.name} not defined`);
             }
         });
     }
@@ -373,7 +372,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
                     this.emit('controlEnable', {service, controlEnable} );
                 })
                 .on('state', ({state, timestamp}) => {
-                    catModule.debug(`state changed: ${this.id}.${service.name} = ${ServiceState[state]}`);
+                    this.logger.debug(`state changed: ${service.name} = ${ServiceState[state]}`);
                     const entry = {
                         timestampPfe: new Date(),
                         timestampModule: timestamp,
@@ -389,10 +388,13 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
         }));
     }
 
-    public readVariableNode(node: OpcUaNode) {
+    public async readVariableNode(node: OpcUaNode) {
         const nodeId = this.resolveNodeId(node);
-        const result = this.session.readVariableValue(nodeId);
+        const result = await this.session.readVariableValue(nodeId);
         catOpc.debug(`Read Variable: ${JSON.stringify(node)} -> ${nodeId} = ${result}`);
+        if (result.statusCode != 0) {
+            throw new Error(`Could not read ${nodeId.toString()}: ${result.statusCode.description}`);
+        }
         return result;
     }
 
@@ -407,7 +409,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
             throw new Error(`Can not write node since OPC UA connection to module ${this.id} is not established`);
         } else {
             const result = await this.session.writeSingleNode(this.resolveNodeId(node), value);
-            catModule.debug(`Write result for ${this.id}.${node.node_id}=${value.value} -> ${result.name}`);
+            this.logger.debug(`Write result for ${node.node_id}=${value.value} -> ${result.name}`);
             return result;
         }
     }
