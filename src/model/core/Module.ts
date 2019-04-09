@@ -55,7 +55,12 @@ export interface ModuleOptions {
     opcua_server_url: string;
     hmi_url?: string;
     services: ServiceOptions[];
-    process_values: {name: string; communication: OpcUaNode[]}[];
+    process_values: {name: string; communication: CommunicationOptions}[];
+}
+
+export interface CommunicationOptions {
+    WQC: OpcUaNode;
+    OSLevel: OpcUaNode;
 }
 
 /**

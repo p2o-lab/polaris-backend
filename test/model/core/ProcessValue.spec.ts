@@ -31,12 +31,11 @@ describe('ProcessValue', () => {
 
     it('should construct', () => {
         let opcUaNode: OpcUaNode = {namespace_index: 'CODESYSSPV3/3S/IecVarAccess', node_id: 'i=12'};
-        let a = new ProcessValue("asd", [opcUaNode]);
+        let a = new ProcessValue("asd", {WQC: opcUaNode, OSLevel: opcUaNode});
     });
 
     it('should fail with missing parameters', () => {
         expect(() => {let a = new ProcessValue(undefined,undefined) }).to.throw();
         expect(() => {let a = new ProcessValue("test",undefined) }).to.throw();
-        expect(() => {let a = new ProcessValue("test", []) }).to.throw();
     });
 });

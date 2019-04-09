@@ -39,17 +39,21 @@ export class Transition {
     next_step_name: string;
     condition: Condition;
 
-    constructor(options: TransitionOptions, modules: Module[], recipe: Recipe) {
+    constructor(options: TransitionOptions, modules: Module[]) {
         if (options.next_step) {
             this.next_step_name = options.next_step;
         } else {
             throw new Error(`"next_step" property is missing in ${JSON.stringify(options)}`);
         }
         if (options.condition) {
-            this.condition = Condition.create(options.condition, modules, recipe);
+            this.condition = Condition.create(options.condition, modules);
         } else {
             throw new Error(`"condition" property is missing in ${JSON.stringify(options)}`);
         }
+    }
+
+    getUsedModules() : Set<Module> {
+        return new Set([...this.condition.getUsedModules()]);
     }
 
     json(): TransitionInterface {

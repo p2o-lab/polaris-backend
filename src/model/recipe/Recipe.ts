@@ -102,10 +102,11 @@ export class Recipe extends (EventEmitter as { new(): RecipeEmitter }) {
         }
 
         if (options.steps) {
-            this.steps = options.steps.map(stepOptions => new Step(stepOptions, modules, this));
+            this.steps = options.steps.map(stepOptions => new Step(stepOptions, modules));
 
             // Resolve next steps to appropriate objects
             this.steps.forEach((step: Step) => {
+                this.modules = new Set([...this.modules, ...step.getUsedModules()]);
                 step.transitions.forEach((transition) => {
                     transition.next_step = this.steps.find(step => step.name === transition.next_step_name);
                     if (!transition.next_step && !["completed", "finished"].find(v => v === transition.next_step_name)) {

@@ -25,14 +25,88 @@
 
 import {Player} from '../../../src/model/recipe/Player';
 import * as fs from 'fs';
-import {Recipe} from '../../../src/model/recipe/Recipe';
 import {expect} from 'chai';
 import {Manager} from '../../../src/model/Manager';
 import * as delay from 'timeout-as-promise';
 import {RecipeState} from '@plt/pfe-ree-interface';
 import { timeout } from 'promise-timeout';
+import {Recipe} from '../../../src/model/recipe/Recipe';
+import {ServiceState, controlEnableToJson} from '../../../src/model/core/enum';
+import {OPCUAClient, ClientSession} from 'node-opcua-client';
+import {OPCUAServer} from 'node-opcua-server';
+import {moduleJson, ModuleTestServer} from '../../ModuleTestServer';
+import {Module} from '../../../src/model/core/Module';
 
 describe('Player', function () {
+
+    describe('OPC UA server mockup', () => {
+
+        let moduleServer: ModuleTestServer;
+
+        before(function (done) {
+            moduleServer = new ModuleTestServer();
+            moduleServer.start(done);
+        });
+
+        after((done) => {
+            moduleServer.shutdown(done);
+        });
+
+        it('should OPC UA server has been started', async () => {
+            const client = new OPCUAClient({
+                endpoint_must_exist: false,
+                connectionStrategy: {
+                    maxRetry: 10
+                }
+            });
+
+            await client.connect('opc.tcp://localhost:4334/ModuleTestServer');
+            let session: ClientSession = await client.createSession();
+
+            let result = await session.readVariableValue('ns=1;s=MyState');
+            expect(result.value.value).to.equal(ServiceState.IDLE);
+
+            moduleServer.varStatus = 8;
+            result = await session.readVariableValue('ns=1;s=MyState');
+            expect(result.value.value).to.equal(ServiceState.STARTING);
+
+            let result2 = await session.readVariableValue('ns=1;s=MyCommandEnable');
+            let ce = controlEnableToJson(result2.value.value);
+            expect(ce).to.deep.equal({
+                abort: true,
+                complete: true,
+                pause: true,
+                reset: true,
+                restart: true,
+                resume: true,
+                start: true,
+                stop: true,
+                unhold: true
+            });
+
+            let result3 = await await session.readVariableValue('ns=0;i=2255');
+            expect(result3.value.value).to.deep.equal([ 'http://opcfoundation.org/UA/',
+                'urn:NodeOPCUA-Server-default']);
+
+            await client.disconnect();
+        });
+
+        it('work with sample module', async function(){
+            this.timeout(15000);
+
+
+            const module = new Module(moduleJson);
+
+            await module.connect();
+            await delay(50);
+
+            // now test recipe
+
+            await module.disconnect();
+        })
+
+
+    });
 
     describe('local', () => {
         let recipeWait0_5s: Recipe;

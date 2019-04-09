@@ -27,7 +27,6 @@ import {catCondition} from '../../config/logging';
 import { ServiceState } from '../core/enum';
 import { Module } from '../core/Module';
 import { Service } from '../core/Service';
-import { Recipe } from './Recipe';
 import {
     AndConditionOptions,
     ConditionOptions,
@@ -41,7 +40,7 @@ import {
 } from '@plt/pfe-ree-interface';
 import { EventEmitter } from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
-import {Expression, Parser} from 'expr-eval';
+import {Expression} from 'expr-eval';
 import {ScopeItem} from './ScopeItem';
 
 
@@ -71,24 +70,23 @@ export abstract class Condition extends (EventEmitter as { new(): ConditionEmitt
      * Create Condition
      * @param {ConditionOptions} options    options for creating Condition
      * @param {Module[]} modules    modules to be used for evaluating module name in expressions
-     * @param {Recipe} recipe   recipe using this condition. It will be updated according to the used modules
      * @returns Condition
      * */
-    static create(options: ConditionOptions, modules: Module[], recipe?: Recipe): Condition {
+    static create(options: ConditionOptions, modules: Module[]): Condition {
         catCondition.trace(`Create Condition: ${JSON.stringify(options)}`);
         const type: ConditionType = options.type;
         if (type === ConditionType.time) {
             return new TimeCondition(<TimeConditionOptions> options);
         } else if (type === ConditionType.and) {
-            return new AndCondition(<AndConditionOptions> options, modules, recipe);
+            return new AndCondition(<AndConditionOptions> options, modules);
         } else if (type === ConditionType.state) {
-            return new StateCondition(<StateConditionOptions> options, modules, recipe);
+            return new StateCondition(<StateConditionOptions> options, modules);
         } else if (type === ConditionType.variable) {
-            return new VariableCondition(<VariableConditionOptions> options, modules, recipe);
+            return new VariableCondition(<VariableConditionOptions> options, modules);
         } else if (type === ConditionType.or) {
-            return new OrCondition(<OrConditionOptions> options, modules, recipe);
+            return new OrCondition(<OrConditionOptions> options, modules);
         } else if (type === ConditionType.not) {
-            return new NotCondition(<NotConditionOptions> options, modules, recipe);
+            return new NotCondition(<NotConditionOptions> options, modules);
         } else if (type === ConditionType.expression) {
                 return new ExpressionCondition(<ExpressionConditionOptions> options, modules);
         } else {
@@ -104,7 +102,12 @@ export abstract class Condition extends (EventEmitter as { new(): ConditionEmitt
     /**
      * Clear listening on condition
      */
-    abstract clear();
+    clear() {
+        this._fulfilled = undefined;
+        this.removeAllListeners();
+    };
+
+    abstract getUsedModules(): Set<Module>;
 
     constructor(options: ConditionOptions) {
         super();
@@ -120,6 +123,7 @@ export class ExpressionCondition extends Condition {
 
     private expression: Expression;
     private scopeArray: ScopeItem[];
+    private listenersExpression: EventEmitter[] = [];
 
     /**
      * 
@@ -139,15 +143,19 @@ export class ExpressionCondition extends Condition {
         this._fulfilled = false;
     }
 
+    getUsedModules(): Set<Module> {
+        return new Set<Module>([...this.scopeArray.map(sa => sa.module)]);
+    }
+
     listen(): Condition {
         this.scopeArray.forEach(async (item) => {
-            item.module.listenToOpcUaNode(item.variable)
-                .on('changed', async (data) => {
+            let a = item.module.listenToOpcUaNode(item.variable);
+                a.on('changed', async () => {
                     this._fulfilled = <boolean> (await this.getValue());
-                    this.emit('stateChanged', this._fulfilled)
+                    this.emit('stateChanged', this._fulfilled);
                 });
+            this.listenersExpression.push(a);
         });
-
         return this;
     }
 
@@ -170,27 +178,30 @@ export class ExpressionCondition extends Condition {
         const assign = require('assign-deep');
         const scope = assign(...tasks);
         catCondition.info(`Scope: ${JSON.stringify(scope)}`);
-        const result = this.expression.evaluate(scope);
-        return result;
+        return this.expression.evaluate(scope);
     }
 
     clear() {
-        this.removeAllListeners();
+        super.clear();
+        this.listenersExpression.forEach((item) => {
+            item.removeAllListeners('changed');
+        });
     }
+
 }
 
 export class NotCondition extends Condition {
     condition: Condition;
 
-    constructor(options: NotConditionOptions, modules: Module[], recipe: Recipe) {
+    constructor(options: NotConditionOptions, modules: Module[]) {
         super(options);
         catCondition.trace(`Add NotCondition: ${options}`);
-        this.condition = Condition.create(options.condition, modules, recipe);
+        this.condition = Condition.create(options.condition, modules);
         this._fulfilled = !this.condition.fulfilled;
     }
 
     clear() {
-        this.removeAllListeners();
+        super.clear();
         this.condition.clear();
     }
 
@@ -201,36 +212,49 @@ export class NotCondition extends Condition {
         });
         return this;
     }
+    getUsedModules(): Set<Module> {
+        return this.condition.getUsedModules();
+    }
 }
 
 export abstract class AggregateCondition extends Condition {
     conditions: Condition[] = [];
 
-    constructor(options: AndConditionOptions | OrConditionOptions, modules: Module[], recipe: Recipe) {
+    constructor(options: AndConditionOptions | OrConditionOptions, modules: Module[]) {
         super(options);
         this.conditions = options.conditions.map((option) => {
-            return Condition.create(option, modules, recipe);
+            return Condition.create(option, modules);
         });
         this._fulfilled = false;
     }
 
     clear() {
-        this.removeAllListeners();
+        super.clear();
         this.conditions.forEach(cond => cond.clear());
+    }
+
+    getUsedModules(): Set<Module> {
+        let set = new Set<Module>();
+        this.conditions.forEach((cond) => {
+            Array.from(cond.getUsedModules()).forEach((module) => {
+                set.add(module)
+            })
+        });
+        return set;
     }
 }
 
 export class AndCondition extends AggregateCondition {
 
-    constructor(options: AndConditionOptions, modules: Module[], recipe: Recipe) {
-        super(options, modules, recipe);
+    constructor(options: AndConditionOptions, modules: Module[]) {
+        super(options, modules);
         catCondition.trace(`Add AndCondition: ${options}`);
     }
 
     listen(): Condition {
         this.conditions.forEach((condition) => {
             condition.listen().on('stateChanged', (state) => {
-                catCondition.debug(`AndCondition: ${JSON.stringify(this.conditions.map(item => item.fulfilled))}`);
+                catCondition.debug(`AndCondition: ${state} = ${JSON.stringify(this.conditions.map(item => item.fulfilled))}`);
                 const oldState = this._fulfilled;
                 this._fulfilled = this.conditions.every(condition => condition.fulfilled);
                 if (oldState !== this._fulfilled) {
@@ -244,8 +268,8 @@ export class AndCondition extends AggregateCondition {
 
 export class OrCondition extends AggregateCondition {
 
-    constructor(options: OrConditionOptions, modules: Module[], recipe: Recipe) {
-        super(options, modules, recipe);
+    constructor(options: OrConditionOptions, modules: Module[]) {
+        super(options, modules);
         catCondition.trace(`Add OrCondition: ${options}`);
     }
 
@@ -264,6 +288,7 @@ export class OrCondition extends AggregateCondition {
 }
 
 export class TimeCondition extends Condition {
+
     private timer: NodeJS.Timer;
     private duration: number;
 
@@ -289,41 +314,50 @@ export class TimeCondition extends Condition {
     }
 
     clear(): void {
-        this.removeAllListeners();
+        super.clear();
         if (this.timer) {
             this.timer.unref();
         }
+    }
+
+    getUsedModules(): Set<Module> {
+        return new Set<Module>();
     }
 }
 
 export abstract class ModuleCondition extends Condition {
     module: Module;
 
-    constructor(options: StateConditionOptions | VariableConditionOptions, modules: Module[], recipe: Recipe) {
+    constructor(options: StateConditionOptions | VariableConditionOptions, modules: Module[]) {
         super(options);
         if (options.module) {
             this.module = modules.find(module => module.id === options.module);
         } else if (modules.length === 1) {
             this.module = modules[0];
         }
-        recipe.modules.add(this.module);
+    }
+
+    getUsedModules() {
+        return new Set<Module>().add(this.module);
     }
 }
 
 export class StateCondition extends ModuleCondition {
-    module: Module;
     service: Service;
     state: string;
     private monitoredItem: EventEmitter;
 
-    constructor(options: StateConditionOptions, modules: Module[], recipe: Recipe) {
-        super(options, modules, recipe);
+    constructor(options: StateConditionOptions, modules: Module[]) {
+        super(options, modules);
         this.service = this.module.services.find(service => service.name === options.service);
+        if (!this.service) {
+            throw new Error(`Service "${options.service}" not found in provided module ${this.module.id}`);
+        }
         this.state = options.state;
     }
 
     clear() {
-        this.removeAllListeners();
+        super.clear();
         this.service.parent.clearListener(this.service.status);
     }
 
@@ -333,8 +367,8 @@ export class StateCondition extends ModuleCondition {
                 const state: ServiceState = data.value;
                 this._fulfilled = ServiceState[state]
                     .localeCompare(this.state, 'en', { usage: 'search', sensitivity: 'base' }) === 0;
-                catCondition.debug(`StateCondition: ${this.module.id}.${this.service.name}) = (${ServiceState[state]})` +
-                    `- ?= ${this.state} -> ${this._fulfilled}`);
+                catCondition.info(`StateCondition ${this.module.id}.${this.service.name}: actual: ${ServiceState[state]}` +
+                    ` - condition: ${this.state} -> ${this._fulfilled}`);
                 this.emit('stateChanged', this._fulfilled);
             });
         return this;
@@ -348,10 +382,10 @@ export class VariableCondition extends ModuleCondition {
     operator: '==' | '<' | '>' | '<=' | '>=';
     private listener: EventEmitter;
 
-    constructor(options: VariableConditionOptions, modules: Module[], recipe: Recipe) {
-        super(options, modules, recipe);
+    constructor(options: VariableConditionOptions, modules: Module[]) {
+        super(options, modules);
         if (!options.dataAssembly) {
-            throw new Error(`Condition does not have 'dataAssembly' ${JSON.stringify(options)} in recipe '${recipe.name}'`);
+            throw new Error(`Condition does not have 'dataAssembly' ${JSON.stringify(options)}`);
         }
         this.dataStructure = options.dataAssembly;
         this.variable = options.variable || 'V';
@@ -363,7 +397,7 @@ export class VariableCondition extends ModuleCondition {
      *
      */
     clear(): void {
-        this.removeAllListeners();
+        super.clear();
         this.listener.removeAllListeners();
     }
 

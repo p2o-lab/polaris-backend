@@ -58,7 +58,7 @@ export class Step {
     transitions: Transition[];
     private eventEmitter: StrictEventEmitter<EventEmitter, StepEvents> = new EventEmitter();
 
-    constructor(options: StepOptions, modules: Module[], recipe: Recipe) {
+    constructor(options: StepOptions, modules: Module[]) {
         if (options.name) {
             this.name = options.name;
         } else {
@@ -66,18 +66,26 @@ export class Step {
         }
         if (options.operations) {
             this.operations = options.operations.map(
-                operationOptions => new Operation(operationOptions, modules, recipe)
+                operationOptions => new Operation(operationOptions, modules)
             );
         } else {
             throw new Error(`"operations" array is missing in ${JSON.stringify(options)}`);
         }
         if (options.transitions) {
             this.transitions = options.transitions.map(
-                transitionOptions => new Transition(transitionOptions, modules, recipe)
+                transitionOptions => new Transition(transitionOptions, modules)
             );
         } else {
             throw new Error(`"transitions" array is missing in ${JSON.stringify(options)}`);
         }
+    }
+
+    getUsedModules(): Set<Module> {
+        let set = new Set<Module>(this.operations.map(op => op.module));
+        this.transitions.forEach(tr => {
+            set = new Set([...set, ...tr.getUsedModules()]);
+        });
+        return set;
     }
 
     execute() {
