@@ -56,21 +56,15 @@ describe('Player', function () {
             player.enqueue(recipeWait0_5s);
             expect(player.playlist).to.have.length(3);
 
-            player.remove(0);
-            expect(player.playlist).to.have.length(2);
-            expect(player.playlist[0].id).to.equal(recipeWaitLocal.id);
-
-            player.enqueue(recipeWaitLocal);
-
             let completedRecipes = [];
 
             expect(player.status).to.equal(RecipeState.idle);
             player.start()
-                .on('recipeFinished', (recipe) => {
+                .on('recipeFinished', (recipe: Recipe) => {
                     expect(recipe).to.have.property('status', 'completed');
-                    completedRecipes.push(recipe);
+                    completedRecipes.push(recipe.id);
                 })
-                .on('completed', () => {
+                .once('completed', async () => {
                     expect(completedRecipes).to.have.length(3);
                     expect(player.status).to.equal(RecipeState.completed);
                     player.reset();
@@ -83,29 +77,91 @@ describe('Player', function () {
             expect(json.status).to.equal('running');
         });
 
-        it('should  force a transition', async() => {
+        it('should load run Player with three local waiting recipes and removal', function(done) {
+            this.timeout(5000);
+            let player = new Player();
+
+            player.enqueue(recipeWait0_5s);
+            expect(player.playlist).to.have.length(1);
+            player.enqueue(recipeWaitLocal);
+            player.enqueue(recipeWait0_5s);
+            expect(player.playlist).to.have.length(3);
+
+            player.remove(0);
+            expect(player.playlist).to.have.length(2);
+            expect(player.playlist[0].id).to.equal(recipeWaitLocal.id);
+
+            player.enqueue(recipeWaitLocal);
+
+            let completedRecipes = [];
+
+            expect(player.status).to.equal(RecipeState.idle);
+            player.start()
+                .on('recipeFinished', (recipe: Recipe) => {
+                    expect(recipe).to.have.property('status', 'completed');
+                    completedRecipes.push(recipe.id);
+                })
+                .once('completed', async () => {
+                    expect(completedRecipes).to.have.length(3);
+                    expect(player.status).to.equal(RecipeState.completed);
+                    player.reset();
+                    expect(player.status).to.equal(RecipeState.idle);
+                    done();
+                });
+            expect(player.status).to.equal(RecipeState.running);
+            const json = player.json();
+            expect(json.currentItem).to.equal(0);
+            expect(json.status).to.equal('running');
+        });
+
+        it('should  force a transition', async () => {
             this.timeout(5000);
             let player = new Player();
             player.enqueue(recipeWaitLocal);
             player.start();
 
+            await timeout(new Promise((resolve) => {
+                player.once('recipeStarted', () => resolve());
+            }), 100);
+
+            expect(player.getCurrentRecipe().current_step.name).to.equal('S1');
+
             expect(() => player.forceTransition('non-existant', 'S2')).to.throw();
             expect(() => player.forceTransition('S1', 'non-existant')).to.throw();
             expect(() => player.forceTransition('S1', 'S3')).to.throw();
 
-            await delay(5);
 
-            timeout(new Promise((resolve) => {
+            // do not change in next 100ms
+            await new Promise((resolve, reject) => {
                 player.once('stepFinished', (step) => {
-                    resolve();
-                })
-            }), 100);
+                    reject();
+                });
+                setTimeout(() => {resolve()}, 100);
+            });
+
             player.forceTransition('S1', 'S2');
+
+            expect(player.getCurrentRecipe().current_step.name).to.equal('S2');
+
+            // do not change in next 100ms
+            await new Promise((resolve, reject) => {
+                player.once('stepFinished', (step) => {
+                    reject();
+                });
+                setTimeout(() => {resolve()}, 100);
+            });
+
             player.forceTransition('S2', 'S3');
+            expect(player.getCurrentRecipe().current_step.name).to.equal('S3');
+
+            await timeout(new Promise((resolve) => {
+                player.once('completed', () => resolve());
+            }), 1000);
+
         });
     });
 
-    describe('CIF', () => {
+    describe.skip('CIF', () => {
 
         let recipeCif;
         const manager = new Manager();
