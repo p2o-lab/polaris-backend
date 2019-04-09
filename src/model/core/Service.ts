@@ -410,6 +410,9 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
      * @returns {Promise<void>}
      */
     async execute(command?: ServiceCommand, strategy?: Strategy, parameters?: (Parameter|ParameterOptions)[] ): Promise<void> {
+        if (!this.parent.isConnected()) {
+            throw new Error('Module is not connected');
+        }
         this.logger.info(`[${this.qualifiedName}] Execute ${command} (${ strategy ? strategy.name : '' })`);
         let result;
         if (strategy || parameters) {
@@ -459,14 +462,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
         } else {
             throw new Error(`Command ${command} can not be interpreted`);
         }
-        // reset ControlOp variable after 100ms
-        // setTimeout(() => this.clearCommand(), 100);
         return result;
-    }
-
-    private clearCommand(): Promise<boolean> {
-        this.logger.info(`[${this.qualifiedName}] command reset`);
-        return this.sendCommand(ServiceMtpCommand.UNDEFINED);
     }
 
     private start(): Promise<boolean> {
@@ -700,7 +696,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
 
     private async sendCommand(command: ServiceMtpCommand): Promise<boolean> {
         if (!this.parent.isConnected()) {
-            return Promise.reject('Module is not connected');
+            throw new Error('Module is not connected');
         }
         this.logger.info(`[${this.qualifiedName}] Send command ${ServiceMtpCommand[command]} (${command})"`);
         await this.setOperationMode();
