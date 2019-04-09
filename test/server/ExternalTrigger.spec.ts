@@ -24,7 +24,8 @@
  */
 
 import {ExternalTrigger} from '../../src/server/ExternalTrigger';
-import {DataType, OPCUAServer, Variant} from 'node-opcua';
+import {DataType, Variant} from 'node-opcua';
+import {OPCUAServer} from 'node-opcua-server';
 import {expect} from 'chai';
 
 describe('ExternalTrigger', () => {
@@ -89,6 +90,8 @@ describe('ExternalTrigger', () => {
         variable1 = true;
 
         expect(await et.getValue()).to.be.true;
+
+        await et.disconnect();
     });
 
 
