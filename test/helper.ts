@@ -33,8 +33,8 @@ import {ServiceState} from '../src/model/core/enum';
  * @param {number} ms           max time before promise is rejected
  * @returns {Promise<void>}
  */
-export async function waitForStateChange(service, expectedState: string, ms=1000): Promise<void> {
-    return new Promise((resolve, reject) => {
+export async function waitForStateChange(service, expectedState: string, ms=200): Promise<void> {
+    return await new Promise((resolve, reject) => {
         function test(data) {
             if (ServiceState[data.state] === expectedState) {
                 clearTimeout(id);

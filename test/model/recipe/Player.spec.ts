@@ -28,14 +28,15 @@ import * as fs from 'fs';
 import {expect} from 'chai';
 import {Manager} from '../../../src/model/Manager';
 import * as delay from 'timeout-as-promise';
-import {RecipeState} from '@plt/pfe-ree-interface';
+import {RecipeOptions, RecipeState, ServiceCommand} from '@plt/pfe-ree-interface';
 import { timeout } from 'promise-timeout';
 import {Recipe} from '../../../src/model/recipe/Recipe';
-import {ServiceState, controlEnableToJson} from '../../../src/model/core/enum';
+import {ServiceState, controlEnableToJson, ServiceMtpCommand} from '../../../src/model/core/enum';
 import {OPCUAClient, ClientSession} from 'node-opcua-client';
 import {OPCUAServer} from 'node-opcua-server';
-import {moduleJson, ModuleTestServer} from '../../ModuleTestServer';
+import {moduleJson, moduleRecipe, ModuleTestServer} from '../../ModuleTestServer';
 import {Module} from '../../../src/model/core/Module';
+import {waitForStateChange} from '../../helper';
 
 describe('Player', function () {
 
@@ -94,17 +95,49 @@ describe('Player', function () {
         it('work with sample module', async function(){
             this.timeout(15000);
 
-
             const module = new Module(moduleJson);
+            const service = module.services[0];
 
             await module.connect();
-            await delay(50);
+            moduleServer.varStatus = ServiceState.IDLE;
+            await waitForStateChange(service, 'IDLE');
 
             // now test recipe
+            const recipe = new Recipe(<RecipeOptions> moduleRecipe, [module]);
+            const player = new Player();
+
+            // two times the same recipe
+            player.enqueue(recipe);
+            player.enqueue(recipe);
+
+            expect(service.status.value).to.equal(ServiceState.IDLE);
+
+            player.start();
+            expect(player.status).to.equal(RecipeState.running);
+            await waitForStateChange(service, 'RUNNING');
+
+            player.pause();
+            await waitForStateChange(service, 'PAUSED');
+            expect(player.status).to.equal(RecipeState.paused);
+
+            player.start();
+            await waitForStateChange(service, 'RUNNING');
+            expect(service.status.value).to.equal(ServiceState.RUNNING);
+            expect(player.status).to.equal(RecipeState.running);
+
+            await waitForStateChange(service, 'COMPLETED', 2000);
+
+            await waitForStateChange(service, 'IDLE');
+
+            await waitForStateChange(service, 'RUNNING');
+
+            player.stop();
+
+            expect(player.status).to.equal(RecipeState.stopped);
+            player.reset();
 
             await module.disconnect();
-        })
-
+        });
 
     });
 
@@ -124,6 +157,8 @@ describe('Player', function () {
             this.timeout(5000);
             let player = new Player();
 
+            expect(()=>player.start()).to.throw('No recipes in playlist');
+
             player.enqueue(recipeWait0_5s);
             expect(player.playlist).to.have.length(1);
             player.enqueue(recipeWaitLocal);
@@ -138,6 +173,16 @@ describe('Player', function () {
                     expect(recipe).to.have.property('status', 'completed');
                     completedRecipes.push(recipe.id);
                 })
+                .on('recipeStarted', (recipe) => {
+                    if (completedRecipes.length==2) {
+                        expect(player.getCurrentRecipe().id).to.equal(recipe.id);
+                        player.pause();
+                        expect(player.status).to.equal(RecipeState.paused);
+                        player.start();
+                        expect(player.status).to.equal(RecipeState.running);
+                        expect(player.getCurrentRecipe().id).to.equal(recipe.id);
+                    }
+                })
                 .once('completed', async () => {
                     expect(completedRecipes).to.have.length(3);
                     expect(player.status).to.equal(RecipeState.completed);
@@ -145,10 +190,14 @@ describe('Player', function () {
                     expect(player.status).to.equal(RecipeState.idle);
                     done();
                 });
+            expect(()=>player.start()).to.throw('already running');
+
             expect(player.status).to.equal(RecipeState.running);
             const json = player.json();
             expect(json.currentItem).to.equal(0);
             expect(json.status).to.equal('running');
+
+
         });
 
         it('should load run Player with three local waiting recipes and removal', function(done) {
