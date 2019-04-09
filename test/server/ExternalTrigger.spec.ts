@@ -31,7 +31,6 @@ import {expect} from 'chai';
 describe('ExternalTrigger', () => {
 
     let variable1 = false;
-    let nodeId: string;
     let server: OPCUAServer;
 
     before(function(done) {
@@ -46,6 +45,7 @@ describe('ExternalTrigger', () => {
                 const addressSpace = server.engine.addressSpace;
                 const namespace = addressSpace.getOwnNamespace();
 
+
                 // declare a new object
                 const device = namespace.addObject({
                     organizedBy: addressSpace.rootFolder.objects,
@@ -55,6 +55,7 @@ describe('ExternalTrigger', () => {
                 let a = namespace.addVariable({
                     componentOf: device,
                     browseName: 'MyVariable1',
+                    nodeId: 'ns=1;s=trigger',
                     dataType: 'Boolean',
                     value: {
                         get: function () {
@@ -62,7 +63,6 @@ describe('ExternalTrigger', () => {
                         }
                     }
                 });
-                nodeId = a.nodeId.toString();
             }
             construct_my_address_space(server);
             server.start(done);
@@ -83,7 +83,7 @@ describe('ExternalTrigger', () => {
     });
 
     it('should work with the sample server', async () => {
-        let et = new ExternalTrigger("opc.tcp://localhost:4334/Ua/MyLittleServer", nodeId);
+        let et = new ExternalTrigger("opc.tcp://localhost:4334/Ua/MyLittleServer", 'ns=1;s=trigger');
         await et.startMonitoring();
 
         expect(await et.getValue()).to.be.false;
