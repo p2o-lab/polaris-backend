@@ -35,7 +35,7 @@ import {Service} from '../../src/model/core/Service';
 import {Parameter} from '../../src/model/recipe/Parameter';
 import {ServiceCommand} from '@plt/pfe-ree-interface';
 
-describe('CIF Integration', function () {
+describe.skip('CIF Integration', function () {
 
     let module: Module;
     let service: Service;

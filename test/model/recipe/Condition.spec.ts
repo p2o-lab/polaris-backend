@@ -39,7 +39,7 @@ function later(delay) {
  * Test for [[Condition]]
  */
 describe('Condition', () => {
-    describe('ExpressionCondition', () => {
+    describe.skip('ExpressionCondition', () => {
         let module: Module;
         before(async () => {
             const file = fs.readFileSync('assets/modules/module_cif.json');
