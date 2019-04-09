@@ -166,7 +166,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
 
         this.monitoredItems = new Map<NodeId, { monitoredItem: ClientMonitoredItem, emitter: EventEmitter }>();
 
-        this.logger = new Category(`Module ${this.id}`, catModule);
+        this.logger = catModule;
     }
 
     /**
@@ -182,7 +182,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
                 const client = new OPCUAClient({
                     endpoint_must_exist: false,
                     connectionStrategy: {
-                        maxRetry: 10
+                        maxRetry: 3
                     }
                 });
 
@@ -215,7 +215,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
                 // read namespace array
                 const result: DataValue = await session.readVariableValue('ns=0;i=2255');
                 this.namespaceArray = result.value.value;
-                this.logger.debug(`Got namespace array: ${JSON.stringify(this.namespaceArray)}`);
+                this.logger.debug(`[${this.id}] Got namespace array: ${JSON.stringify(this.namespaceArray)}`);
 
                 // store everything
                 this.client = client;
@@ -252,13 +252,13 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
         this.services.forEach(s => s.removeAllSubscriptions());
         return new Promise(async (resolve, reject) => {
             if (this.session) {
-                this.logger.info(`Disconnect module`);
+                this.logger.info(`[${this.id}] Disconnect module`);
                 try {
                     await timeout(this.session.close(), 1000);
                     this.session = undefined;
                     await timeout(1000, this.client.disconnect(), 1000);
                     this.client = undefined;
-                    this.logger.debug(`Module disconnected`);
+                    this.logger.debug(`[${this.id}] Module disconnected`);
                     this.emit('disconnected');
                     resolve(`Module ${this.id} disconnected`);
                 } catch (err) {
@@ -340,7 +340,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
             if (variable.communication['V'] && variable.communication['V'].node_id != null) {
                 this.listenToOpcUaNode(variable.communication['V'])
                     .on('changed', (data) => {
-                        this.logger.debug(`variable changed: ${variable.name} = ${data.value}`);
+                        this.logger.debug(`[${this.id}] variable changed: ${variable.name} = ${data.value}`);
                         const entry: VariableLogEntry = {
                             timestampPfe: new Date(),
                             timestampModule: data.timestamp,
@@ -351,7 +351,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
                         this.emit('variableChanged', entry);
                     });
             } else {
-                this.logger.debug(`OPC UA variable for variable ${variable.name} not defined`);
+                this.logger.debug(`[${this.id}] OPC UA variable for variable ${variable.name} not defined`);
             }
         });
     }
@@ -372,7 +372,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
                     this.emit('controlEnable', {service, controlEnable} );
                 })
                 .on('state', ({state, timestamp}) => {
-                    this.logger.debug(`state changed: ${service.name} = ${ServiceState[state]}`);
+                    this.logger.debug(`[${this.id}] state changed: ${service.name} = ${ServiceState[state]}`);
                     const entry = {
                         timestampPfe: new Date(),
                         timestampModule: timestamp,
@@ -409,7 +409,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
             throw new Error(`Can not write node since OPC UA connection to module ${this.id} is not established`);
         } else {
             const result = await this.session.writeSingleNode(this.resolveNodeId(node), value);
-            this.logger.debug(`Write result for ${node.node_id}=${value.value} -> ${result.name}`);
+            this.logger.debug(`[${this.id}] Write result for ${node.node_id}=${value.value} -> ${result.name}`);
             return result;
         }
     }
