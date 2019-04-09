@@ -24,7 +24,7 @@
  */
 
 
-import {OpMode, ServiceState} from '../src/model/core/enum';
+import {OpMode, ServiceMtpCommand, ServiceState} from '../src/model/core/enum';
 import {DataType, Variant} from 'node-opcua';
 import {OPCUAServer} from 'node-opcua-server';
 
@@ -36,6 +36,7 @@ export class ModuleTestServer {
     public varCommandEnable;
     public varOpmode;
     public varVariable;
+    public varStrategy;
     public externalTrigger: boolean;
 
     constructor() {
@@ -43,6 +44,7 @@ export class ModuleTestServer {
             port: 4334
         });
         this.varStatus = ServiceState.IDLE;
+        this.varStrategy = 1;
         this.varCommand = 0;
         this.varCommandEnable = 2047;
         this.varOpmode = 0;
@@ -76,6 +78,33 @@ export class ModuleTestServer {
             value: {
                 get: () => {
                     return new Variant({dataType: DataType.Double, value: this.varVariable});
+                }
+            }
+        });
+
+        namespace.addVariable({
+            componentOf: myModule,
+            nodeId: 'ns=1;s=MyStrategy',
+            browseName: 'MyStrategy',
+            dataType: 'UInt32',
+            value: {
+                get: () => {
+                    return new Variant({dataType: DataType.UInt32, value: this.varStrategy});
+                },
+                set: (variant) => {
+                    this.varStrategy = parseInt(variant.value);
+                }
+            }
+        });
+
+        namespace.addVariable({
+            componentOf: myModule,
+            nodeId: 'ns=1;s=MyCurrentStrategy',
+            browseName: 'MyCurrentStrategy',
+            dataType: 'UInt32',
+            value: {
+                get: () => {
+                    return new Variant({dataType: DataType.UInt32, value: this.varStrategy});
                 }
             }
         });
@@ -132,6 +161,31 @@ export class ModuleTestServer {
                 },
                 set: (variant) => {
                     this.varCommand = parseInt(variant.value);
+                    if (this.varCommand == ServiceMtpCommand.COMPLETE && this.varStatus == ServiceState.RUNNING) {
+                        this.varCommand = ServiceMtpCommand.UNDEFINED;
+                        this.varStatus = ServiceState.COMPLETED;
+                    } else if (this.varCommand == ServiceMtpCommand.RESTART && this.varStatus == ServiceState.RUNNING) {
+                        this.varCommand = ServiceMtpCommand.UNDEFINED;
+                        this.varStatus = ServiceState.RUNNING;
+                    } else if (this.varCommand == ServiceMtpCommand.RESET) {
+                        this.varCommand = ServiceMtpCommand.UNDEFINED;
+                        this.varStatus = ServiceState.IDLE;
+                    } else if (this.varCommand == ServiceMtpCommand.START && this.varStatus == ServiceState.IDLE) {
+                        this.varCommand = ServiceMtpCommand.UNDEFINED;
+                        this.varStatus = ServiceState.RUNNING;
+                    } else if (this.varCommand == ServiceMtpCommand.RESUME && this.varStatus == ServiceState.PAUSED) {
+                        this.varCommand = ServiceMtpCommand.UNDEFINED;
+                        this.varStatus = ServiceState.RUNNING;
+                    } else if (this.varCommand == ServiceMtpCommand.PAUSE && this.varStatus == ServiceState.RUNNING) {
+                        this.varCommand = ServiceMtpCommand.UNDEFINED;
+                        this.varStatus = ServiceState.PAUSED;
+                    } else if (this.varCommand == ServiceMtpCommand.STOP && this.varStatus == ServiceState.RUNNING) {
+                        this.varCommand = ServiceMtpCommand.UNDEFINED;
+                        this.varStatus = ServiceState.STOPPED;
+                    } else if (this.varCommand == ServiceMtpCommand.ABORT) {
+                        this.varCommand = ServiceMtpCommand.UNDEFINED;
+                        this.varStatus = ServiceState.ABORTED;
+                    }
                 }
             }
         });
@@ -143,7 +197,7 @@ export class ModuleTestServer {
             dataType: 'Boolean',
             value: {
                 get: () => {
-                    return new Variant({dataType: DataType.Boolean, value: this.externalTrigger });
+                    return new Variant({dataType: DataType.Boolean, value: this.externalTrigger});
                 }
             }
         });
@@ -186,15 +240,15 @@ export const moduleJson = {
                 },
                 StrategyOp: {
                     namespace_index: 'urn:NodeOPCUA-Server-default',
-                    node_id: 'MyCommandEnable',
+                    node_id: 'MyStrategy',
                 },
                 StrategyExt: {
                     namespace_index: 'urn:NodeOPCUA-Server-default',
-                    node_id: 'MyCommandEnable',
+                    node_id: 'MyStrategy',
                 },
                 CurrentStrategy: {
                     namespace_index: 'urn:NodeOPCUA-Server-default',
-                    node_id: 'MyCommandEnable',
+                    node_id: 'MyCurrentStrategy',
                 },
                 ErrorMessage: {
                     namespace_index: 'urn:NodeOPCUA-Server-default',
@@ -215,23 +269,106 @@ export const moduleJson = {
     ],
     process_values: [
         {
-            name: "Variable001",
+            name: 'Variable001',
             communication: {
                 V: {
                     namespace_index: 'urn:NodeOPCUA-Server-default',
-                    node_id: "MyVariable"
+                    node_id: 'MyVariable'
                 },
                 WQC: {
                     namespace_index: 'urn:NodeOPCUA-Server-default',
-                    node_id: "MyVariable"
+                    node_id: 'MyVariable'
                 },
                 OSLevel: {
                     namespace_index: 'urn:NodeOPCUA-Server-default',
-                    node_id: "MyVariable"
+                    node_id: 'MyVariable'
                 }
-}
+            }
         }
     ]
 };
+
+export const moduleRecipe =  {
+        version: '1.0.0',
+        name: 'Testrezept für CIF Modul',
+        author: 'Markus Graube',
+        initial_step: 'S1',
+        steps: [
+            {
+                name: 'S1',
+                operations: [
+                    {
+                        module: 'CIF',
+                        service: 'Service1',
+                        command: 'start',
+                        parameter: []
+                    }
+                ],
+                transitions: [
+                    {
+                        next_step: 'S2',
+                        condition: {
+                            type: 'and',
+                            conditions: [
+                                {
+                                    type: 'time',
+                                    duration: 1
+                                },
+                                {
+                                    type: 'state',
+                                    module: 'CIF',
+                                    service: 'Service1',
+                                    state: 'running'
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            {
+                name: 'S2',
+                operations: [
+                    {
+                        module: 'CIF',
+                        service: 'Service1',
+                        command: 'complete'
+                    }
+                ],
+                transitions: [
+                    {
+                        next_step: 'S3',
+                        condition: {
+                            type: 'state',
+                            module: 'CIF',
+                            service: 'Service1',
+                            state: 'completed'
+                        }
+                    }
+                ]
+            },
+            {
+                name: 'S3',
+                operations: [
+                    {
+                        module: 'CIF',
+                        service: 'Service1',
+                        command: 'reset'
+                    }
+                ],
+                transitions: [
+                    {
+                        next_step: 'finished',
+                        condition: {
+                            type: 'state',
+                            module: 'CIF',
+                            service: 'Service1',
+                            state: 'idle'
+                        }
+                    }
+                ]
+            }
+        ]
+    };
+
 
 
