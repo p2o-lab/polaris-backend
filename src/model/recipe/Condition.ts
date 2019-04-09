@@ -290,7 +290,9 @@ export class TimeCondition extends Condition {
 
     clear(): void {
         this.removeAllListeners();
-        this.timer.unref();
+        if (this.timer) {
+            this.timer.unref();
+        }
     }
 }
 
