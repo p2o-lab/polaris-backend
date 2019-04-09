@@ -176,7 +176,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
         this.logger.info(`[${this.qualifiedName}] Subscribe to service`);
         if (this.controlEnable) {
             await this.getControlEnable();
-            this.logger.info(`[${this.qualifiedName}] initial controlEnable: ${this.controlEnable.value}`);
+            this.logger.debug(`[${this.qualifiedName}] initial controlEnable: ${this.controlEnable.value}`);
             this.parent.listenToOpcUaNode(this.controlEnable)
                 .on('changed', (data) => {
                     this.controlEnable.value = data.value;
@@ -187,7 +187,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
         }
         if (this.status) {
             await this.getServiceState();
-            this.logger.info(`[${this.qualifiedName}] initial status: ${this.status.value}`);
+            this.logger.debug(`[${this.qualifiedName}] initial status: ${this.status.value}`);
             this.parent.listenToOpcUaNode(this.status)
                 .on('changed', (data) => {
                     this.status.value = data.value;
@@ -200,7 +200,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
         if (this.command) {
             let result = await this.parent.readVariableNode(this.command);
             this.command.value = result.value.value;
-            this.logger.info(`[${this.qualifiedName}] initial command: ${this.command.value}`);
+            this.logger.debug(`[${this.qualifiedName}] initial command: ${this.command.value}`);
             this.parent.listenToOpcUaNode(this.command)
                 .on('changed', (data) => {
                     this.command.value = data.value;
@@ -210,7 +210,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
         }
         if (this.currentStrategy) {
             await this.getCurrentStrategy();
-            this.logger.info(`[${this.qualifiedName}] initial current strategy: ${this.currentStrategy.value}`);
+            this.logger.debug(`[${this.qualifiedName}] initial current strategy: ${this.currentStrategy.value}`);
             this.parent.listenToOpcUaNode(this.currentStrategy)
                 .on('changed', (data) => {
                     this.currentStrategy.value = data.value;
@@ -220,7 +220,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
         }
         if (this.opMode) {
             await this.getOpMode();
-            this.logger.info(`[${this.qualifiedName}] initial opMode: ${this.opMode.value}`);
+            this.logger.debug(`[${this.qualifiedName}] initial opMode: ${this.opMode.value}`);
             this.parent.listenToOpcUaNode(this.opMode)
                 .on('changed', (data) => {
                     this.opMode.value = data.value;
