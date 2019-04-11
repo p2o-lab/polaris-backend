@@ -1,0 +1,76 @@
+{
+  "id": "CIF",
+  "opcua_server_url": "opc.tcp://127.0.0.1:4334/ModuleTestServer",
+  "services": [
+    {
+      "name": "Service1",
+      "communication": {
+        "ControlOp": {
+          "namespace_index": "urn:NodeOPCUA-Server-default",
+          "node_id": "MyCommand"
+        },
+        "ControlExt": {
+          "namespace_index": "urn:NodeOPCUA-Server-default",
+          "node_id": "MyCommandExt"
+        },
+        "State": {
+          "namespace_index": "urn:NodeOPCUA-Server-default",
+          "node_id": "MyState"
+        },
+        "ControlEnable": {
+          "namespace_index": "urn:NodeOPCUA-Server-default",
+          "node_id": "MyCommandEnable"
+        },
+        "OpMode": {
+          "namespace_index": "urn:NodeOPCUA-Server-default",
+          "node_id": "MyOpMode"
+        },
+        "StrategyOp": {
+          "namespace_index": "urn:NodeOPCUA-Server-default",
+          "node_id": "MyStrategy"
+        },
+        "StrategyExt": {
+          "namespace_index": "urn:NodeOPCUA-Server-default",
+          "node_id": "MyStrategy"
+        },
+        "CurrentStrategy": {
+          "namespace_index": "urn:NodeOPCUA-Server-default",
+          "node_id": "MyCurrentStrategy"
+        },
+        "ErrorMessage": {
+          "namespace_index": "urn:NodeOPCUA-Server-default",
+          "node_id": "MyCommandEnable"
+        }
+      },
+      "strategies": [
+        {
+          "id": "1",
+          "name": "Strategy 1",
+          "default": true,
+          "sc": true,
+          "parameters": []
+        }
+      ],
+      "parameters": []
+    }
+  ],
+  "process_values": [
+    {
+      "name": "Variable001",
+      "communication": {
+        "V": {
+          "namespace_index": "urn:NodeOPCUA-Server-default",
+          "node_id": "MyVariable"
+        },
+        "WQC": {
+          "namespace_index": "urn:NodeOPCUA-Server-default",
+          "node_id": "MyVariable"
+        },
+        "OSLevel": {
+          "namespace_index": "urn:NodeOPCUA-Server-default",
+          "node_id": "MyVariable"
+        }
+      }
+    }
+  ]
+}

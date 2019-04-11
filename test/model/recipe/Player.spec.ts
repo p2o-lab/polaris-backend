@@ -28,13 +28,13 @@ import * as fs from 'fs';
 import {expect} from 'chai';
 import {Manager} from '../../../src/model/Manager';
 import * as delay from 'timeout-as-promise';
-import {RecipeOptions, RecipeState, ServiceCommand} from '@plt/pfe-ree-interface';
+import {RecipeOptions, RecipeState} from '@plt/pfe-ree-interface';
 import { timeout } from 'promise-timeout';
 import {Recipe} from '../../../src/model/recipe/Recipe';
-import {ServiceState, controlEnableToJson, ServiceMtpCommand} from '../../../src/model/core/enum';
+import {ServiceState, controlEnableToJson} from '../../../src/model/core/enum';
 import {OPCUAClient, ClientSession} from 'node-opcua-client';
 import {OPCUAServer} from 'node-opcua-server';
-import {moduleJson, moduleRecipe, ModuleTestServer} from '../../ModuleTestServer';
+import {ModuleTestServer} from '../../ModuleTestServer';
 import {Module} from '../../../src/model/core/Module';
 import {waitForStateChange} from '../../helper';
 
@@ -95,6 +95,7 @@ describe('Player', function () {
         it('work with sample module', async function(){
             this.timeout(15000);
 
+            const moduleJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString());
             const module = new Module(moduleJson);
             const service = module.services[0];
 
@@ -103,7 +104,8 @@ describe('Player', function () {
             await waitForStateChange(service, 'IDLE');
 
             // now test recipe
-            const recipe = new Recipe(<RecipeOptions> moduleRecipe, [module]);
+            const recipeJson = JSON.parse(fs.readFileSync('assets/recipes/test/recipe_testserver_1.0.0.json').toString());
+            const recipe = new Recipe(recipeJson, [module]);
             const player = new Player();
 
             // two times the same recipe
@@ -114,21 +116,25 @@ describe('Player', function () {
 
             player.start();
             expect(player.status).to.equal(RecipeState.running);
+            await waitForStateChange(service, 'STARTING');
             await waitForStateChange(service, 'RUNNING');
 
             player.pause();
+            await waitForStateChange(service, 'PAUSING');
             await waitForStateChange(service, 'PAUSED');
             expect(player.status).to.equal(RecipeState.paused);
 
             player.start();
+            await waitForStateChange(service, 'RESUMING');
             await waitForStateChange(service, 'RUNNING');
             expect(service.status.value).to.equal(ServiceState.RUNNING);
             expect(player.status).to.equal(RecipeState.running);
 
-            await waitForStateChange(service, 'COMPLETED', 2000);
+            await waitForStateChange(service, 'COMPLETING', 2000);
+            await waitForStateChange(service, 'COMPLETED');
 
             await waitForStateChange(service, 'IDLE');
-
+            await waitForStateChange(service, 'STARTING');
             await waitForStateChange(service, 'RUNNING');
 
             player.stop();

@@ -27,6 +27,7 @@
 import {OpMode, ServiceMtpCommand, ServiceState} from '../src/model/core/enum';
 import {DataType, Variant} from 'node-opcua';
 import {OPCUAServer} from 'node-opcua-server';
+import Timeout = NodeJS.Timeout;
 
 export class ModuleTestServer {
     private server: OPCUAServer;
@@ -38,6 +39,7 @@ export class ModuleTestServer {
     public varVariable;
     public varStrategy;
     public externalTrigger: boolean;
+    private interval: Timeout;
 
     constructor() {
         this.server = new OPCUAServer({
@@ -59,10 +61,21 @@ export class ModuleTestServer {
         });
     }
 
+    public startSimulation() {
+        let time = 0;
+        this.interval = setInterval(() => {
+            time = time + 0.1;
+            this.varVariable = 20 + 5 * Math.sin(time);
+        },100);
+    }
+
+    public stopSimulation() {
+        this.interval.unref();
+    }
+
     private createAddressSpace() {
         const addressSpace = this.server.engine.addressSpace;
         const namespace = addressSpace.getOwnNamespace();
-
 
         // declare a new object
         const myModule = namespace.addObject({
@@ -163,28 +176,49 @@ export class ModuleTestServer {
                     this.varCommand = parseInt(variant.value);
                     if (this.varCommand == ServiceMtpCommand.COMPLETE && this.varStatus == ServiceState.RUNNING) {
                         this.varCommand = ServiceMtpCommand.UNDEFINED;
-                        this.varStatus = ServiceState.COMPLETED;
+                        this.varStatus = ServiceState.COMPLETING;
+                        setTimeout(() => {
+                            this.varStatus = ServiceState.COMPLETED;
+                        }, 100);
                     } else if (this.varCommand == ServiceMtpCommand.RESTART && this.varStatus == ServiceState.RUNNING) {
                         this.varCommand = ServiceMtpCommand.UNDEFINED;
-                        this.varStatus = ServiceState.RUNNING;
+                        this.varStatus = ServiceState.STARTING;
+                        setTimeout(() => {
+                            this.varStatus = ServiceState.RUNNING;
+                        }, 100);
                     } else if (this.varCommand == ServiceMtpCommand.RESET) {
                         this.varCommand = ServiceMtpCommand.UNDEFINED;
                         this.varStatus = ServiceState.IDLE;
                     } else if (this.varCommand == ServiceMtpCommand.START && this.varStatus == ServiceState.IDLE) {
                         this.varCommand = ServiceMtpCommand.UNDEFINED;
-                        this.varStatus = ServiceState.RUNNING;
+                        this.varStatus = ServiceState.STARTING;
+                        setTimeout(() => {
+                            this.varStatus = ServiceState.RUNNING;
+                        }, 100);
                     } else if (this.varCommand == ServiceMtpCommand.RESUME && this.varStatus == ServiceState.PAUSED) {
                         this.varCommand = ServiceMtpCommand.UNDEFINED;
-                        this.varStatus = ServiceState.RUNNING;
+                        this.varStatus = ServiceState.RESUMING;
+                        setTimeout(() => {
+                            this.varStatus = ServiceState.RUNNING;
+                        }, 100);
                     } else if (this.varCommand == ServiceMtpCommand.PAUSE && this.varStatus == ServiceState.RUNNING) {
                         this.varCommand = ServiceMtpCommand.UNDEFINED;
-                        this.varStatus = ServiceState.PAUSED;
-                    } else if (this.varCommand == ServiceMtpCommand.STOP && this.varStatus == ServiceState.RUNNING) {
+                        this.varStatus = ServiceState.PAUSING;
+                        setTimeout(() => {
+                            this.varStatus = ServiceState.PAUSED;
+                        }, 100);
+                    } else if (this.varCommand == ServiceMtpCommand.STOP) {
                         this.varCommand = ServiceMtpCommand.UNDEFINED;
-                        this.varStatus = ServiceState.STOPPED;
+                        this.varStatus = ServiceState.STOPPING;
+                        setTimeout(() => {
+                            this.varStatus = ServiceState.STOPPED;
+                        }, 100);
                     } else if (this.varCommand == ServiceMtpCommand.ABORT) {
                         this.varCommand = ServiceMtpCommand.UNDEFINED;
-                        this.varStatus = ServiceState.ABORTED;
+                        this.varStatus = ServiceState.ABORTING;
+                        setTimeout(() => {
+                            this.varStatus = ServiceState.ABORTED;
+                        }, 100);
                     }
                 }
             }
@@ -207,168 +241,4 @@ export class ModuleTestServer {
     public shutdown(done) {
         this.server.shutdown(100, done);
     }
-
-
 }
-
-export const moduleJson = {
-    id: 'CIF',
-    opcua_server_url: 'opc.tcp://127.0.0.1:4334/ModuleTestServer',
-    services: [
-        {
-            name: 'Service1',
-            communication: {
-                ControlOp: {
-                    namespace_index: 'urn:NodeOPCUA-Server-default',
-                    node_id: 'MyCommand',
-                },
-                ControlExt: {
-                    namespace_index: 'urn:NodeOPCUA-Server-default',
-                    node_id: 'MyCommandExt',
-                },
-                State: {
-                    namespace_index: 'urn:NodeOPCUA-Server-default',
-                    node_id: 'MyState',
-                },
-                ControlEnable: {
-                    namespace_index: 'urn:NodeOPCUA-Server-default',
-                    node_id: 'MyCommandEnable',
-                },
-                OpMode: {
-                    namespace_index: 'urn:NodeOPCUA-Server-default',
-                    node_id: 'MyOpMode',
-                },
-                StrategyOp: {
-                    namespace_index: 'urn:NodeOPCUA-Server-default',
-                    node_id: 'MyStrategy',
-                },
-                StrategyExt: {
-                    namespace_index: 'urn:NodeOPCUA-Server-default',
-                    node_id: 'MyStrategy',
-                },
-                CurrentStrategy: {
-                    namespace_index: 'urn:NodeOPCUA-Server-default',
-                    node_id: 'MyCurrentStrategy',
-                },
-                ErrorMessage: {
-                    namespace_index: 'urn:NodeOPCUA-Server-default',
-                    node_id: 'MyCommandEnable',
-                }
-            },
-            strategies: [
-                {
-                    id: '1',
-                    name: 'Strategy 1',
-                    default: true,
-                    sc: true,
-                    parameters: []
-                }
-            ],
-            parameters: []
-        }
-    ],
-    process_values: [
-        {
-            name: 'Variable001',
-            communication: {
-                V: {
-                    namespace_index: 'urn:NodeOPCUA-Server-default',
-                    node_id: 'MyVariable'
-                },
-                WQC: {
-                    namespace_index: 'urn:NodeOPCUA-Server-default',
-                    node_id: 'MyVariable'
-                },
-                OSLevel: {
-                    namespace_index: 'urn:NodeOPCUA-Server-default',
-                    node_id: 'MyVariable'
-                }
-            }
-        }
-    ]
-};
-
-export const moduleRecipe =  {
-        version: '1.0.0',
-        name: 'Testrezept für CIF Modul',
-        author: 'Markus Graube',
-        initial_step: 'S1',
-        steps: [
-            {
-                name: 'S1',
-                operations: [
-                    {
-                        module: 'CIF',
-                        service: 'Service1',
-                        command: 'start',
-                        parameter: []
-                    }
-                ],
-                transitions: [
-                    {
-                        next_step: 'S2',
-                        condition: {
-                            type: 'and',
-                            conditions: [
-                                {
-                                    type: 'time',
-                                    duration: 1
-                                },
-                                {
-                                    type: 'state',
-                                    module: 'CIF',
-                                    service: 'Service1',
-                                    state: 'running'
-                                }
-                            ]
-                        }
-                    }
-                ]
-            },
-            {
-                name: 'S2',
-                operations: [
-                    {
-                        module: 'CIF',
-                        service: 'Service1',
-                        command: 'complete'
-                    }
-                ],
-                transitions: [
-                    {
-                        next_step: 'S3',
-                        condition: {
-                            type: 'state',
-                            module: 'CIF',
-                            service: 'Service1',
-                            state: 'completed'
-                        }
-                    }
-                ]
-            },
-            {
-                name: 'S3',
-                operations: [
-                    {
-                        module: 'CIF',
-                        service: 'Service1',
-                        command: 'reset'
-                    }
-                ],
-                transitions: [
-                    {
-                        next_step: 'finished',
-                        condition: {
-                            type: 'state',
-                            module: 'CIF',
-                            service: 'Service1',
-                            state: 'idle'
-                        }
-                    }
-                ]
-            }
-        ]
-    };
-
-
-

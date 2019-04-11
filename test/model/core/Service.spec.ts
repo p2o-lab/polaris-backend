@@ -24,12 +24,13 @@
  */
 
 
-import {moduleJson, ModuleTestServer} from '../../ModuleTestServer';
+import {ModuleTestServer} from '../../ModuleTestServer';
 import {Service} from '../../../src/model/core/Service';
 import {Module} from '../../../src/model/core/Module';
 import {expect} from 'chai';
 import {ServiceCommand} from '@plt/pfe-ree-interface';
 import {waitForStateChange} from '../../helper';
+import * as fs from "fs";
 
 describe('Service', () => {
 
@@ -45,9 +46,10 @@ describe('Service', () => {
     });
 
 
-    it('should load from options', async () => {
+    it('should load from options', async function() {
+        this.timeout(4000);
 
-
+        const moduleJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString());
         let serviceJson = moduleJson.services[0];
 
         // copy object
@@ -82,25 +84,32 @@ describe('Service', () => {
 
 
         await service.execute(ServiceCommand.start);
+        await waitForStateChange(service, 'STARTING');
         await waitForStateChange(service, 'RUNNING');
         await service.execute(ServiceCommand.restart);
-        //await waitForStateChange(service, 'RUNNING');
+        await waitForStateChange(service, 'STARTING');
+        await waitForStateChange(service, 'RUNNING');
         await service.execute(ServiceCommand.stop);
+        await waitForStateChange(service, 'STOPPING');
         await waitForStateChange(service, 'STOPPED');
         await service.execute(ServiceCommand.reset);
         await waitForStateChange(service, 'IDLE');
         await service.execute(ServiceCommand.start);
+        await waitForStateChange(service, 'STARTING');
         await waitForStateChange(service, 'RUNNING');
         await service.execute(ServiceCommand.pause);
+        await waitForStateChange(service, 'PAUSING');
         await waitForStateChange(service, 'PAUSED');
         await service.execute(ServiceCommand.resume);
+        await waitForStateChange(service, 'RESUMING');
         await waitForStateChange(service, 'RUNNING');
         await service.execute(ServiceCommand.complete);
+        await waitForStateChange(service, 'COMPLETING');
         await waitForStateChange(service, 'COMPLETED');
         await service.execute(ServiceCommand.abort);
+        await waitForStateChange(service, 'ABORTING');
         await waitForStateChange(service, 'ABORTED');
 
         await module.disconnect();
-
     });
 });

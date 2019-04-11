@@ -163,7 +163,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
         this.logger = catService;
     }
 
-    private get qualifiedName() {
+    public get qualifiedName() {
         return `${this.parent.id}.${this.name}`
     }
 
