@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import { OpcUaNode } from './Interfaces';
+import {CommunicationOptions} from './Module';
 
 /**
  * Process values of a [[Module]].
@@ -32,13 +32,13 @@ import { OpcUaNode } from './Interfaces';
 export class ProcessValue {
 
     name: string;
-    communication: OpcUaNode[];
+    communication: CommunicationOptions;
 
-    constructor(name: string, communication: OpcUaNode[]) {
+    constructor(name: string, communication: CommunicationOptions) {
         if (!name) {
             throw new Error('No name for ProcessValue specified');
         }
-        if (communication.length===0) {
+        if (!communication) {
             throw new Error('communication list of OpcUaNodes for ProcessValue is empty');
         }
         this.name = name;

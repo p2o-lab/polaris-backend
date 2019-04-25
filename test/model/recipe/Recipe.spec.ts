@@ -28,6 +28,7 @@ import * as fs from 'fs';
 import * as assert from 'assert';
 import {Module} from '../../../src/model/core/Module';
 import {RecipeInterface} from '@plt/pfe-ree-interface';
+import {expect} from 'chai';
 
 describe('Recipe', () => {
 
@@ -49,8 +50,27 @@ describe('Recipe', () => {
         modules.push(new Module(options.modules[0]));
     });
 
+    it('should load the achema json', (done) => {
+        fs.readFile('assets/recipes/recipe_achema_v0.2.0.json', async (err, file) => {
+            const options = JSON.parse(file.toString());
+            const recipe = new Recipe(options, modules);
+            expect(modules).to.have.length(4);
+            expect(recipe.modules).to.have.length(3);
+
+            const json: RecipeInterface = await recipe.json();
+            expect(json).to.have.property('protected', false);
+            expect(json).to.have.property('modules')
+                .to.deep.equal([ 'Temper', 'React', 'Dose' ]);
+            expect(json).to.have.property('options')
+                .to.have.property('initial_step', 'Startup.Init');
+            expect(json).to.have.property('status', undefined);
+
+            done();
+        });
+    });
+
     it('should load the biofeed recipe json', (done) => {
-        fs.readFile('assets/recipes/biofeed/recipe_biofeed_88370C_0.3.1.json', async (err, file) => {
+        fs.readFile('assets/recipes/biofeed/recipe_biofeed_88370C_1.0.0.json', async (err, file) => {
             const options = JSON.parse(file.toString());
             const recipe = new Recipe(options, [module_biofeed]);
             assert.equal(recipe.modules.size, 1);

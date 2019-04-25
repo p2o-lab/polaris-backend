@@ -29,6 +29,8 @@ import { Request, Response, Router } from 'express';
 import * as asyncHandler from 'express-async-handler';
 import { catServer } from '../../config/logging';
 import {manager} from '../../model/Manager';
+import {Strategy} from '../../model/core/Interfaces';
+import {Parameter} from '../../model/recipe/Parameter';
 
 export const serviceRouter: Router = Router();
 
@@ -72,14 +74,11 @@ moduleRouter.post('/:moduleId/service/:serviceName/strategy', asyncHandler(async
  * @apiParam {string} moduleId      Module id
  * @apiParam {string} serviceName   Name of service
  * @apiParam {string="start","stop","abort","complete","pause","unhold","reset"} command       Command name
- * @apiParam {string} [strategy]    Strategy name
- * @apiParam {ParameterOptions[]} [parameters]    Parameters for *start* or *restart*
  */
 moduleRouter.post('/:moduleId/service/:serviceName/:command', asyncHandler(async (req: Request, res: Response) => {
-    catServer.info(`Call service: ${JSON.stringify(req.params)} - ${JSON.stringify(req.body)}`);
+    catServer.info(`Call service: ${JSON.stringify(req.params)}`);
     const service = manager.getService(req.params.moduleId, req.params.serviceName);
-
-    const result = await service.execute(req.params.command, req.body.strategy, req.body.parameters);
+    const result = await service.execute(req.params.command);
     res.json({
         module: module.id,
         service: service.name,

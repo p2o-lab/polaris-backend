@@ -1,33 +1,40 @@
 {
   "version": "1.0.0",
-  "name": "Bring Biofeed module to standby",
+  "name": "Bring Biofeed module to standby (RinsingQualityBased)",
   "author": "Markus Graube <markus.graube@tu-dresden.de>",
-  "initial_step": "RinsingWithBase",
+  "initial_step": "S1.Rinsing",
   "steps": [
     {
-      "name": "RinsingWithBase",
+      "name": "S1.Rinsing",
       "operations": [
         {
           "service": "RinsingQualityBased",
           "command": "start",
           "parameter": [
-            {
-              "name": "VolumeFraction",
-              "value": 0.05
-			}, {
-              "name": "CondLimit", "value": 0.04
-            }
+			{ "name": "CondLimit",
+			  "value": 0.05
+			}
           ]
         }
       ],
       "transitions": [
         {
-          "next_step": "completed",
+          "next_step": "S1.WaitForIdle",
           "condition": {
             "type": "state",
             "service": "RinsingQualityBased",
             "state": "completed"
           }
+        }
+      ]
+    },
+	{
+      "name": "S1.WaitForIdle",
+      "operations": [ ],
+      "transitions": [
+        {
+          "condition": { "type": "state", "service": "RinsingQualityBased", "state": "idle" },
+          "next_step": "completed"
         }
       ]
     }

@@ -26,6 +26,7 @@
 import { Request, Response, Router } from 'express';
 import * as asyncHandler from 'express-async-handler';
 import { manager } from '../../model/Manager';
+import {catServer} from '../../config/logging';
 
 export const playerRouter: Router = Router();
 
@@ -86,7 +87,9 @@ playerRouter.post('/reset', asyncHandler(async (req: Request, res: Response) => 
  * @apiParam {string} recipeId   id of recipe to be added to playlist
  */
 playerRouter.post('/enqueue', async (req: Request, res: Response) => {
+    catServer.info(`Enqueue recipe ${req.body}`);
     const recipe = manager.recipes.find(recipe => recipe.id === req.body.recipeId);
+    catServer.debug(`Enqueue recipe ${recipe.name}`);
     if (recipe) {
         manager.player.enqueue(recipe);
         res.json(manager.player.json());

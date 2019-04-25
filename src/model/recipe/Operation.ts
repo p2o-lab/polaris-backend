@@ -42,12 +42,12 @@ export class Operation {
     command: ServiceCommand;
     parameters: Parameter[];
 
-    constructor(options: OperationOptions, modules: Module[], recipe: Recipe) {
+    constructor(options: OperationOptions, modules: Module[]) {
         if (modules) {
             if (options.module) {
                 this.module = modules.find(module => module.id === options.module);
                 if (!this.module) {
-                    throw new Error(`Could not find module ${options.module}`);
+                    throw new Error(`Could not find module ${options.module} in ${JSON.stringify(modules.map(m=> m.id))}`);
                 }
             } else if (modules.length === 1) {
                 this.module = modules[0];
@@ -59,7 +59,6 @@ export class Operation {
             throw new Error('No modules specified');
         }
 
-        recipe.modules.add(this.module);
         this.service = this.module.services.find(service => service.name === options.service);
         if (this.service === undefined) {
             throw new Error(`Service ${ options.service }(${ this.module.id }) not found in modules`);

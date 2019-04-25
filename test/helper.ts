@@ -24,6 +24,8 @@
  */
 
 import {ServiceState} from '../src/model/core/enum';
+import {Service} from '../src/model/core/Service';
+import { timeout } from 'promise-timeout';
 
 /**
  * resolve when service changes to expectedState
@@ -33,19 +35,14 @@ import {ServiceState} from '../src/model/core/enum';
  * @param {number} ms           max time before promise is rejected
  * @returns {Promise<void>}
  */
-export async function waitForStateChange(service, expectedState: string, ms=1500): Promise<void> {
-    return new Promise((resolve, reject) => {
+export function waitForStateChange(service: Service, expectedState: string, ms=200): Promise<void> {
+    return timeout(new Promise((resolve) => {
         function test(data) {
             if (ServiceState[data.state] === expectedState) {
-                clearTimeout(id);
                 service.removeListener('state', test);
                 resolve();
             }
         }
         service.on('state', test);
-        const id = setTimeout(() => {
-            clearTimeout(id);
-            reject(`Service ${service.name} failed to reach state ${expectedState} within ${ms}ms`);
-        }, ms);
-    });
+    }), ms);
 }

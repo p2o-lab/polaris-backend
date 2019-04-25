@@ -25,7 +25,8 @@
 
 import { series } from 'async';
 import { post } from 'request';
-import {AttributeIds, ClientSession, ClientSubscription, NodeId, OPCUAClient, resolveNodeId} from 'node-opcua';
+import {AttributeIds, NodeId, resolveNodeId} from 'node-opcua';
+import {OPCUAClient, ClientSession, ClientSubscription} from 'node-opcua-client';
 import { catOpc } from '../config/logging';
 import {manager} from '../model/Manager';
 
@@ -96,5 +97,9 @@ export class ExternalTrigger {
                 }
             }
         });
+    }
+
+    public async disconnect() {
+        await this.client.disconnect();
     }
 }

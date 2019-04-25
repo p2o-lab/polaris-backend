@@ -94,6 +94,9 @@ export class Manager extends EventEmitter {
      */
     public loadModule(options, protectedModules: boolean = false): Module[] {
         let newModules: Module[] = [];
+        if (!options) {
+            throw new Error('No modules defined in supplied options');
+        }
         if (options.subplants) {
             options.subplants.forEach((subplantOptions) => {
                 subplantOptions.modules.forEach((moduleOptions: ModuleOptions) => {
