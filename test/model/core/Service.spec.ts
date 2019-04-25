@@ -31,6 +31,7 @@ import {expect} from 'chai';
 import {ServiceCommand} from '@plt/pfe-ree-interface';
 import {waitForStateChange} from '../../helper';
 import * as fs from "fs";
+import * as parseJson from 'json-parse-better-errors';
 
 describe('Service', () => {
 
@@ -49,7 +50,8 @@ describe('Service', () => {
     it('should load from options', async function() {
         this.timeout(4000);
 
-        const moduleJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString());
+        const moduleJson = parseJson(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8'), null, 60);
+
         let serviceJson = moduleJson.services[0];
 
         // copy object
