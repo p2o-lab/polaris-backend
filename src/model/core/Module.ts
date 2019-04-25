@@ -50,13 +50,14 @@ import { VariableLogEntry } from '../../logging/archive';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Strategy} from './Strategy';
 import {Category} from 'typescript-logging';
+import {DataAssemblyOptions} from './DataAssembly';
 
 export interface ModuleOptions {
     id: string;
     opcua_server_url: string;
     hmi_url?: string;
     services: ServiceOptions[];
-    process_values: {name: string; communication: OpcUaNodeOptions[]}[];
+    process_values: DataAssemblyOptions[];
 }
 
 /**
@@ -159,7 +160,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
             this.services = options.services.map(serviceOption => new Service(serviceOption, this));
         }
         if (options.process_values) {
-            this.variables = options.process_values.map(variableOptions => new ProcessValue(variableOptions.name, variableOptions.communication));
+            this.variables = options.process_values.map(variableOptions => new ProcessValue(variableOptions, this));
         }
         if (options.hmi_url){
             this.hmiUrl = options.hmi_url;

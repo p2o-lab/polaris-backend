@@ -84,8 +84,8 @@ export class Parameter {
         this.continuous = parameterOptions.continuous || false;
 
         this.service = service;
-        const strategyUsed = strategy || service.strategies.find(strategy => strategy.default);
-        const parameterList = [].concat(service.parameters, strategyUsed.parameters);
+        const strategyUsed: Strategy = strategy || service.strategies.find(strategy => strategy.default);
+        const parameterList: DataAssembly[] = [].concat(service.parameters, strategyUsed.parameters);
         try {
             this._parameter = parameterList.find(obj => (obj && obj.name === this.name));
         } catch {

@@ -25,12 +25,13 @@
 
 
 import {DataAssembly} from './DataAssembly';
+import {OpcUaNodeOptions} from './Interfaces';
+import {Module} from './Module';
 
 /**
  * StrategyParameter of a [[Service]]
  *
  */
 export class StrategyParameter extends DataAssembly {
-
 
 }

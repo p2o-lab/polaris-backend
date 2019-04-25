@@ -28,10 +28,17 @@ import {catParameter, catService} from '../../config/logging';
 import {Variant, VariantArrayType} from 'node-opcua';
 import {Module} from './Module';
 
+export interface DataAssemblyOptions {
+    name: string;
+    interface_class: string;
+    communication: OpcUaNodeOptions[];
+}
+
 export abstract class DataAssembly {
     name: string;
     interface_class: string;
-    communication: {
+    communication: OpcUaNodeOptions[];
+        /*{
         VExt: OpcUaNodeOptions,
         VOut: OpcUaNodeOptions,
         VMin: OpcUaNodeOptions,
@@ -42,16 +49,22 @@ export abstract class DataAssembly {
         VUnit: OpcUaNodeOptions,
         WQC: OpcUaNodeOptions,
         OSLevel: OpcUaNodeOptions
-    };
+    };*/
 
     private module: Module;
 
-    constructor(module: Module) {
+    constructor(options: DataAssemblyOptions, module: Module) {
+        this.name =  options.name;
+        this.interface_class = options.interface_class;
+        this.communication = options.communication;
         this.module = module;
+        if (!this.module) {
+            throw new Error(`No module for data assembly: ${JSON.stringify(options)}`);
+        }
     }
 
 
-    async setParameter(paramValue: any, variable: string = 'VExt'): Promise<any> {
+    public async setParameter(paramValue: any, variable: string = 'VExt'): Promise<any> {
         const opcUaNode = this.communication[variable];
         const value = await this.module.readVariableNode(opcUaNode);
         const opcUaDataType = value.value ? value.value.dataType : undefined;

@@ -49,8 +49,8 @@ import {Unit} from './Unit';
 import {manager} from '../Manager';
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
-import {DataAssembly} from './DataAssembly';
-import {Strategy} from './Strategy';
+import {DataAssembly, DataAssemblyOptions} from './DataAssembly';
+import {Strategy, StrategyOptions} from './Strategy';
 import {ConfigurationParameter} from './ConfigurationParameter';
 import {Category} from 'typescript-logging';
 import {Module} from './Module';
@@ -74,8 +74,8 @@ export interface ServiceOptions {
         CurrentStrategy: OpcUaNodeOptions;
         ErrorMessage: OpcUaNodeOptions;
     };
-    strategies: Strategy[];
-    parameters: DataAssembly[];
+    strategies: StrategyOptions[];
+    parameters: DataAssemblyOptions[];
 }
 
 const InterfaceClassToType = {
@@ -184,9 +184,12 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
             throw new Error(`No currentStrategy variable in service ${this.name} during parsing`);
         }
 
-        this.strategies = serviceOptions.strategies;
-        this.parameters = serviceOptions.parameters;
-
+        this.strategies = serviceOptions.strategies
+            .map(option => new Strategy(option, parent));
+        if (serviceOptions.parameters) {
+            this.parameters = serviceOptions.parameters
+                .map(options => new ConfigurationParameter(options, parent));
+        }
         this.parent = parent;
         this.serviceParametersEventEmitters = [];
 
@@ -394,25 +397,25 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
                 let min;
                 let unit;
                 try {
-                    const result = await this.parent.readVariableNode(param.communication.VExt);
+                    const result = await this.parent.readVariableNode(param.communication['VExt']);
                     value = result.value.value;
                 } catch {
                     value = undefined;
                 }
                 try {
-                    const result = await this.parent.readVariableNode(param.communication.VMax);
+                    const result = await this.parent.readVariableNode(param.communication['VMax']);
                     max = result.value.value;
                 } catch {
                     max = undefined;
                 }
                 try {
-                    const result = await this.parent.readVariableNode(param.communication.VMin);
+                    const result = await this.parent.readVariableNode(param.communication['VMin']);
                     min = result.value.value;
                 } catch {
                     min = undefined;
                 }
                 try {
-                    const result = await this.parent.readVariableNode(param.communication.VUnit);
+                    const result = await this.parent.readVariableNode(param.communication['VUnit']);
                     const unitItem = Unit.find(item => item.value === result.value.value);
                     unit = unitItem.unit;
                 } catch {
@@ -577,7 +580,6 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
                 dimensions: null
             });
 
-        // TODO: is order of strategyParameters and strategy important?
         // set strategy
         if (parameters) {
             let params: Parameter[] = parameters.map((param) => {

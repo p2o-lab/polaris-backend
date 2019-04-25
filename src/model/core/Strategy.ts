@@ -24,6 +24,23 @@
  */
 
 import {StrategyParameter} from './StrategyParameter';
+import {DataAssembly, DataAssemblyOptions} from './DataAssembly';
+import {ProcessValue} from './ProcessValue';
+import {Module} from './Module';
+
+export interface StrategyOptions {
+    id: string;
+    // name of strategy
+    name: string;
+    // default strategy
+    default: boolean;
+    // self-completing strategy
+    sc: boolean;
+    // strategyParameters of strategy
+    parameters: DataAssemblyOptions[];
+    // process values of strategy
+    processValues: DataAssemblyOptions[];
+}
 
 export class Strategy {
     id: string;
@@ -36,5 +53,17 @@ export class Strategy {
     // strategyParameters of strategy
     parameters: StrategyParameter[];
     // process values of strategy
-    processValues: StrategyParameter[];
+    processValues: DataAssembly[];
+
+    constructor(options: StrategyOptions, module: Module) {
+        this.id = options.id;
+        this.name = options.name;
+        this.default = options.default;
+        this.sc = options.sc;
+        this.parameters = options.parameters.map((options) => new StrategyParameter(options, module));
+        if (options.processValues) {
+            this.processValues = options.processValues
+                .map((options) => new ProcessValue(options, module));
+        }
+    }
 }

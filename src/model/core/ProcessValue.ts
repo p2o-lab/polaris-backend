@@ -24,25 +24,12 @@
  */
 
 import { OpcUaNodeOptions } from './Interfaces';
+import {DataAssembly} from './DataAssembly';
 
 /**
  * Process values of a [[Module]].
  * can be used to collect all process values and subscribe to them later
  */
-export class ProcessValue {
-
-    name: string;
-    communication: OpcUaNodeOptions[];
-
-    constructor(name: string, communication: OpcUaNodeOptions[]) {
-        if (!name) {
-            throw new Error('No name for ProcessValue specified');
-        }
-        if (!communication) {
-            throw new Error('communication list of OpcUaNodes for ProcessValue is empty');
-        }
-        this.name = name;
-        this.communication = communication;
-    }
+export class ProcessValue extends DataAssembly {
 
 }
