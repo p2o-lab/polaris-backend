@@ -201,7 +201,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
                 catOpc.debug(`session established ${this.id} ${this.endpoint}`);
 
                 const subscription = new ClientSubscription(session, {
-                    requestedPublishingInterval: 500,
+                    requestedPublishingInterval: 100,
                     requestedLifetimeCount: 1000,
                     requestedMaxKeepAliveCount: 12,
                     maxNotificationsPerPublish: 10,
@@ -282,7 +282,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
      * @param {number} samplingInterval     OPC UA sampling interval for this subscription in milliseconds
      * @returns {"events".internal.EventEmitter} "changed" event
      */
-    listenToOpcUaNode(node: OpcUaNode, samplingInterval=200): StrictEventEmitter<EventEmitter, OpcUaNodeEvents> {
+    listenToOpcUaNode(node: OpcUaNode, samplingInterval=100): StrictEventEmitter<EventEmitter, OpcUaNodeEvents> {
         const nodeId = this.resolveNodeId(node);
         if (!this.monitoredItems.has(nodeId)) {
             const monitoredItem: ClientMonitoredItem = this.subscription.monitor({

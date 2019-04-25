@@ -232,7 +232,7 @@ export class Player extends (EventEmitter as { new(): PlayerEmitter }) {
                 this.emit('recipeFinished', this.currentRecipeRun.recipe);
                 catManager.info(`recipe finished ${this.currentItem + 1}/${this._playlist.length} (player ${this.status})`);
                 if (this._currentItem + 1 < this._playlist.length) {
-                    await delay(1000);
+                    await delay(500);
                     this._currentItem = this._currentItem + 1;
                     catManager.info(`Go to next recipe (${this.currentItem + 1}/${this.playlist.length})`);
                     this.runCurrentRecipe();

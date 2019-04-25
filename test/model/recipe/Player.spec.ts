@@ -259,7 +259,6 @@ describe('Player', function () {
             expect(() => player.forceTransition('S1', 'non-existant')).to.throw();
             expect(() => player.forceTransition('S1', 'S3')).to.throw();
 
-            await delay(5);
             // do not change in next 100ms
             await new Promise((resolve, reject) => {
                 player.once('stepFinished', (step) => {
