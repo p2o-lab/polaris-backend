@@ -26,12 +26,12 @@
 import {Condition, ExpressionCondition, TimeCondition} from '../../../src/model/recipe/Condition';
 import {ConditionType} from '@plt/pfe-ree-interface';
 import {expect} from 'chai';
-import * as fs from 'fs';
 import {Module} from '../../../src/model/core/Module';
 import {OPCUAServer} from 'node-opcua-server';
-import {moduleJson, ModuleTestServer} from '../../ModuleTestServer';
+import {ModuleTestServer} from '../../ModuleTestServer';
 import {ServiceState} from '../../../src/model/core/enum';
 import { timeout } from 'promise-timeout';
+import * as fs from "fs";
 
 function later(delay) {
     return new Promise(function (resolve) {
@@ -135,6 +135,8 @@ describe('Condition', () => {
         before(async function () {
             moduleServer = new ModuleTestServer();
             await moduleServer.start(() => Promise.resolve);
+
+            const moduleJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8'));
 
             module = new Module(moduleJson);
             await module.connect();
