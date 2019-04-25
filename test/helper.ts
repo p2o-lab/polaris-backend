@@ -24,17 +24,8 @@
  */
 
 import {ServiceState} from '../src/model/core/enum';
-
-/** wait
- *
- * @param {number} delay in milliseconds
- * @returns {Promise<any>}
- */
-export function later(delay: number) {
-    return new Promise((resolve) => {
-        setTimeout(resolve, delay);
-    });
-}
+import {Service} from '../src/model/core/Service';
+import { timeout } from 'promise-timeout';
 
 /**
  * resolve when service changes to expectedState
@@ -44,19 +35,14 @@ export function later(delay: number) {
  * @param {number} ms           max time before promise is rejected
  * @returns {Promise<void>}
  */
-export async function waitForStateChange(service, expectedState: string, ms=1000): Promise<void> {
-    return new Promise((resolve, reject) => {
+export function waitForStateChange(service: Service, expectedState: string, ms=200): Promise<void> {
+    return timeout(new Promise((resolve) => {
         function test(data) {
             if (ServiceState[data.state] === expectedState) {
-                clearTimeout(id);
                 service.removeListener('state', test);
                 resolve();
             }
         }
         service.on('state', test);
-        const id = setTimeout(() => {
-            clearTimeout(id);
-            reject(`Service ${service.name} failed to reach state ${expectedState} within ${ms}ms`);
-        }, ms);
-    });
+    }), ms);
 }

@@ -1,7 +1,7 @@
 {
-  "version": "0.3.1",
+  "version": "1.0.0",
   "name": "Media preparation for medium 88370C",
-  "description": "This recipe uses the biofeed module for preparing medium 88370C in 9 steps. This recipe approximately lasts 75min.",
+  "description": "This recipe uses the biofeed module for preparing medium 88370C in 9 steps. This recipe approximately lasts 115 min.",
   "author": "Markus Graube <markus.graube@tu-dresden.de>",
   "initial_step": "S1.AddWater",
   "steps": [
@@ -37,35 +37,34 @@
       "operations": [
         {
           "service": "FeedPowder", "command": "start",
-          "parameter": [ { "name": "FeedMass", "value": 142.85 } ]
+          "parameter": [ { "name": "FeedMass", "value": 5 } ]
         },
         {
           "service": "Stirring", "command": "start",
           "parameter": [
             { "name": "StirringRotationSpeed", "value": 300 },
-            { "name": "StirringDuration", "value": 420 }
+            { "name": "StirringDuration", "value": "3*60" }
           ]
         }
       ],
       "transitions": [
         {
           "condition": {"type": "state", "service": "Stirring", "state": "completed"},
-          "next_step": "S2.StopStirring"
+          "next_step": "S2.StirrIdle_0"
         }
       ]
     },
-    {
-      "name": "S2.StopStirring",
-      "operations": [
-        { "service": "Stirring", "command": "complete" }
-      ],
+	{
+      "name": "S2.StirrIdle_0",
+      "operations": [ ],
       "transitions": [
         {
-          "condition": { "type": "time", "duration": 20 },
+          "condition": { "type": "state", "service": "Stirring", "state": "idle" },
           "next_step": "S2.AddAdditionalWater"
         }
       ]
     },
+	
     {
       "name": "S2.AddAdditionalWater",
       "operations": [
@@ -89,18 +88,18 @@
       "transitions": [
         {
           "condition": { "type": "state", "service": "FeedWater", "state": "idle" },
-          "next_step": "S2.Stirr"
+          "next_step": "S2.Stirr30Min"
         }
       ]
     },
     {
-      "name": "S2.Stirr",
+      "name": "S2.Stirr30Min",
       "operations": [
         {
           "service": "Stirring", "command": "start",
           "parameter": [
-            { "name": "StirringRotationSpeed", "value": 300},
-            { "name": "StirringDuration", "value": 600}
+            { "name": "StirringRotationSpeed", "value": 100},
+            { "name": "StirringDuration", "value": "3*60"}
           ]
         }
       ],
@@ -128,8 +127,9 @@
           "service": "pHAdjustment", "command": "start",
           "parameter": [
             { "name": "DelayTime", "value": 5 },
-            { "name": "TargetVolume", "value": 5 },
-            { "name": "pHValue", "value": 4.5 }
+            { "name": "TargetVolume", "value": 2 },
+            { "name": "pHValue", "value": 4.5 },
+			{ "name": "PumpFlowRate", "value": 50 }
           ]
         }
       ],
@@ -156,14 +156,15 @@
         {
           "service": "FeedBufferSolution", "command": "start",
           "parameter": [
-            { "name": "TargetVolume", "value": 83 }
+            { "name": "TargetVolume", "value": 5},
+			{ "name": "PumpFlowRate", "value": 50}
           ]
         },
         {
           "service": "Stirring", "command": "start",
           "parameter": [
-            { "name": "StirringRotationSpeed", "value": 300 },
-            { "name": "StirringDuration", "value": 600 }
+            { "name": "StirringRotationSpeed", "value": 100 },
+            { "name": "StirringDuration", "value": "3*60" }
           ]
         }
       ],
@@ -176,7 +177,7 @@
     },
     {
       "name": "S4.addBicarbIdle",
-      "operations": [ ],
+      "operations": [],
       "transitions": [
         {
           "condition": { "type": "state", "service": "Stirring", "state": "idle" },
@@ -190,105 +191,85 @@
         {
           "service": "pHAdjustment", "command": "start",
           "parameter": [
-            { "name": "pHValue", "value": 9 },
+            { "name": "pHValue", "value": 9.0 },
             { "name": "TargetVolume", "value": 5 },
-            { "name": "DelayTime", "value": 5 }
-          ]
-        },
-        {
-          "service": "Stirring", "command": "start",
-          "parameter": [
-            { "name": "StirringRotationSpeed", "value": 300 },
-            { "name": "StirringDuration", "value": 0 }
+            { "name": "DelayTime", "value": 5 },
+			{ "name": "PumpFlowRate", "value": 50 }
           ]
         }
       ],
       "transitions": [
         {
           "condition": { "type": "state", "service": "pHAdjustment", "state": "completed" },
-          "next_step": "S5.stopStirr"
+          "next_step": "S5.ph9Idle"
         }
       ]
     },
     {
-      "name": "S5.stopStirr",
-      "operations": [
-        {
-          "service": "Stirring", "command": "complete"
-        }
-      ],
+      "name": "S5.ph9Idle",
+      "operations": [],
       "transitions": [
         {
-          "condition": { "type": "state", "service": "Stirring", "state": "idle" },
-          "next_step": "S5.Stirr10min"
+          "condition": { "type": "state", "service": "pHAdjustment", "state": "idle"},
+          "next_step": "S5.Stirr10Min"
         }
       ]
     },
-    {
-      "name": "S5.Stirr10min",
+	{
+      "name": "S5.Stirr10Min",
       "operations": [
         {
           "service": "Stirring", "command": "start",
           "parameter": [
-            { "name": "StirringRotationSpeed", "value": 300 },
-            { "name": "StirringDuration", "value": 600 }
+            { "name": "StirringRotationSpeed", "value": 100},
+            { "name": "StirringDuration", "value": "1*60"}
           ]
         }
       ],
       "transitions": [
         {
           "condition": { "type": "state", "service": "Stirring", "state": "completed" },
-          "next_step": "S5.Stirr10minIdle"
+          "next_step": "S5.StirrIdle"
         }
       ]
     },
     {
-      "name": "S5.Stirr10minIdle",
-      "operations": [],
+      "name": "S5.StirrIdle",
+      "operations": [ ],
       "transitions": [
         {
-          "condition": { "type": "state", "service": "Stirring", "state": "idle"},
+          "condition": { "type": "state", "service": "Stirring", "state": "idle" },
           "next_step": "S6.ph7"
         }
       ]
     },
-    {
+	{
       "name": "S6.ph7",
       "operations": [
         {
           "service": "pHAdjustment", "command": "start",
           "parameter": [
-            { "name": "pHValue", "value": 7.3 },
-            { "name": "TargetVolume", "value": 2},
-            { "name": "DelayTime", "value": 5 }
-          ]
-        },
-        {
-          "service": "Stirring", "command": "start",
-          "parameter": [
-            { "name": "StirringRotationSpeed", "value": 300 },
-            { "name": "StirringDuration", "value": 0 }
+            { "name": "pHValue", "value": 7.0 },
+            { "name": "TargetVolume", "value": 10 },
+            { "name": "DelayTime", "value": 5 },
+			{ "name": "PumpFlowRate", "value": 50 }
           ]
         }
       ],
       "transitions": [
         {
           "condition": { "type": "state", "service": "pHAdjustment", "state": "completed" },
-          "next_step": "S6.stopStirr"
+          "next_step": "S6.ph7Idle"
         }
       ]
     },
     {
-      "name": "S6.stopStirr",
-      "operations": [
-        {
-          "service": "Stirring", "command": "complete"
-        }
-      ],
+      "name": "S6.ph7Idle",
+      "operations": [ ],
       "transitions": [
         {
-          "condition": { "type": "state", "service": "Stirring", "state": "idle" },
-          "next_step": "S7.FinalVolume"
+         "condition": { "type": "state", "service": "pHAdjustment", "state": "idle" },
+         "next_step": "S7.FinalVolume"
         }
       ]
     },
@@ -298,7 +279,7 @@
         {
           "service": "FeedWater", "command": "start",
           "parameter": [
-            { "name": "TargetVolume", "value": 5000 }
+            { "name": "TargetVolume", "value": 4500 }
           ]
         }
       ],
@@ -315,20 +296,64 @@
       "transitions": [
         {
           "condition": { "type": "state", "service": "FeedWater", "state": "idle" },
-          "next_step": "S8.FiltrationToStorage"
+          "next_step": "S7.Stirr1Min"
+        }
+      ]
+    },
+	{
+      "name": "S7.Stirr1Min",
+      "operations": [
+        {
+          "service": "Stirring", "command": "start",
+          "parameter": [
+            { "name": "StirringRotationSpeed", "value": 100},
+            { "name": "StirringDuration", "value": 60}
+          ]
+        }
+      ],
+      "transitions": [ 
+        {
+          "condition": { "type": "state", "service": "Stirring", "state": "completed" },
+          "next_step": "S7.Stirr1MinIdle"
         }
       ]
     },
     {
+      "name": "S7.Stirr1MinIdle",
+      "operations":
+	  [ ],
+      "transitions": [
+        {
+          "condition": { "type": "state", "service": "Stirring", "state": "idle"},
+          "next_step": "S8.FiltrationToStorage"
+        }
+      ]
+    },
+	
+    {
       "name": "S8.FiltrationToStorage",
       "operations": [
         {
-          "service": "FiltrationToStorageQualityBased", "command": "start"
+          "service": "FiltrationToStorage", "command": "start",
+		  "parameter": [
+            { "name": "FlowRate", "value": 500}
+          ]
         }
       ],
       "transitions": [
         {
-          "condition": { "type": "state", "service": "FiltrationToStorageQualityBased", "state": "completed" },
+          "condition": { "type": "state", "service": "FiltrationToStorage", "state": "completed" },
+          "next_step": "S8.WaitForIdle"
+        }
+      ]
+    },
+	
+	{
+      "name": "S8.WaitForIdle",
+      "operations": [ ],
+      "transitions": [
+        {
+          "condition": { "type": "state", "service": "FiltrationToStorage", "state": "idle" },
           "next_step": "completed"
         }
       ]

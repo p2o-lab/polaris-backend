@@ -31,7 +31,7 @@ describe('Transition', () => {
 
 
     it('should load from options', () => {
-        let t = new Transition({next_step: "nextStep", condition: {type: ConditionType.time, duration: 1}}, [], undefined);
+        let t = new Transition({next_step: "nextStep", condition: {type: ConditionType.time, duration: 1}}, []);
 
         const json = t.json();
         expect(json).to.haveOwnProperty('next_step', 'nextStep');
@@ -39,8 +39,8 @@ describe('Transition', () => {
 
     it('should fail with missing strategyParameters', () => {
 
-        expect(() =>  {let t = new Transition({next_step: undefined, condition: undefined}, [], undefined)}).to.throw;
-        expect(() =>  {let t = new Transition({next_step: "a", condition: undefined}, [], undefined)}).to.throw;
-        expect(() =>  {let t = new Transition({next_step: undefined, condition: {type: ConditionType.time, duration: 1}}, [], undefined)}).to.throw;
+        expect(() =>  {let t = new Transition({next_step: undefined, condition: undefined}, [])}).to.throw;
+        expect(() =>  {let t = new Transition({next_step: "a", condition: undefined}, [])}).to.throw;
+        expect(() =>  {let t = new Transition({next_step: undefined, condition: {type: ConditionType.time, duration: 1}}, [])}).to.throw;
     });
 });

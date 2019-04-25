@@ -90,6 +90,7 @@ export class Recipe extends (EventEmitter as { new(): RecipeEmitter }) {
     current_step: Step;
     status: RecipeState;
     lastChange: Date;
+    private stepListener: EventEmitter;
 
     constructor(options: RecipeOptions, modules: Module[], protectedRecipe: boolean = false) {
         super();
@@ -101,12 +102,16 @@ export class Recipe extends (EventEmitter as { new(): RecipeEmitter }) {
         }
 
         if (options.steps) {
-            this.steps = options.steps.map(stepOptions => new Step(stepOptions, modules, this));
+            this.steps = options.steps.map(stepOptions => new Step(stepOptions, modules));
 
             // Resolve next steps to appropriate objects
             this.steps.forEach((step: Step) => {
+                this.modules = new Set([...this.modules, ...step.getUsedModules()]);
                 step.transitions.forEach((transition) => {
                     transition.next_step = this.steps.find(step => step.name === transition.next_step_name);
+                    if (!transition.next_step && !["completed", "finished"].find(v => v === transition.next_step_name)) {
+                        throw new Error(`Recipe load error ${this.name}: Next step "${transition.next_step_name}" not found in "${step.name}" for condition "${JSON.stringify(transition.condition.json())}"`)
+                    }
                 });
             });
         } else {
@@ -192,6 +197,7 @@ export class Recipe extends (EventEmitter as { new(): RecipeEmitter }) {
      */
     public stop () {
         this.status = RecipeState.stopped;
+        this.stepListener.removeAllListeners('completed');
         this.current_step.transitions.forEach(trans => trans.condition.clear());
         this.emit('stopped', this.current_step);
         this.current_step = undefined;
@@ -200,7 +206,7 @@ export class Recipe extends (EventEmitter as { new(): RecipeEmitter }) {
     private executeStep() {
         catRecipe.debug(`Start step: ${this.current_step.name}`);
         this.lastChange = new Date();
-        this.current_step.execute()
+        this.stepListener = this.current_step.execute()
             .once('completed', (transition: Transition) => {
                 if (transition.next_step) {
                     catRecipe.info(`Step ${this.current_step.name} finished. New step is ${transition.next_step_name}`);

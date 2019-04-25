@@ -29,12 +29,13 @@ import {Module} from '../../src/model/core/Module';
 import {ServiceState} from '../../src/model/core/enum';
 import {manager} from '../../src/model/Manager';
 import {expect} from 'chai';
-import {later, waitForStateChange} from '../helper';
+import * as delay from 'timeout-as-promise';
+import { waitForStateChange} from '../helper';
 import {Service} from '../../src/model/core/Service';
 import {Parameter} from '../../src/model/recipe/Parameter';
 import {ServiceCommand} from '@plt/pfe-ree-interface';
 
-describe('CIF Integration', function () {
+describe.skip('CIF Integration', function () {
 
     let module: Module;
     let service: Service;
@@ -54,7 +55,7 @@ describe('CIF Integration', function () {
     });
 
     after(async() => {
-        await later(200);
+        await delay(200);
         await module.disconnect();
         const json = await module.json();
         assert.equal(json.connected, false);
@@ -75,10 +76,10 @@ describe('CIF Integration', function () {
     it('should bring everything to idle and perform a service cycle', async function() {
         this.timeout(10000);
         await manager.abortAllServices();
-        await later(250);
+        await delay(250);
 
         await manager.resetAllServices();
-        await later(250);
+        await delay(250);
 
         expect(service).has.property('name', 'Test_Service.Dosieren');
         const state = await service.getServiceState();

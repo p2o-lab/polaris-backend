@@ -108,6 +108,7 @@ export class Player extends (EventEmitter as { new(): PlayerEmitter }) {
      */
     public enqueue(recipe: Recipe): Player {
         this._playlist.push(recipe);
+        catPlayer.info(`Recipe enqueued [${this._playlist.length}]: ${recipe.name}`);
         return this;
     }
 

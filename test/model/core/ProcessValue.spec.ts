@@ -37,6 +37,5 @@ describe('ProcessValue', () => {
     it('should fail with missing strategyParameters', () => {
         expect(() => {let a = new ProcessValue(undefined,undefined) }).to.throw();
         expect(() => {let a = new ProcessValue("test",undefined) }).to.throw();
-        expect(() => {let a = new ProcessValue("test", []) }).to.throw();
     });
 });

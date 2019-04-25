@@ -38,7 +38,7 @@ export class ProcessValue {
         if (!name) {
             throw new Error('No name for ProcessValue specified');
         }
-        if (communication.length===0) {
+        if (!communication) {
             throw new Error('communication list of OpcUaNodes for ProcessValue is empty');
         }
         this.name = name;

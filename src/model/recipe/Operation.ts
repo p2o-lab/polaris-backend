@@ -25,11 +25,12 @@
 
 import { Module } from '../core/Module';
 import { Service } from '../core/Service';
-import { catRecipe} from '../../config/logging';
+import {catOperation} from '../../config/logging';
 import { Recipe } from './Recipe';
 import { Strategy } from '../core/Strategy';
 import { Parameter } from './Parameter';
 import { OperationInterface, OperationOptions, ServiceCommand } from '@plt/pfe-ree-interface';
+import * as delay from 'timeout-as-promise';
 
 /** Operation used in a [[Step]] of a [[Recipe]]
  *
@@ -41,12 +42,12 @@ export class Operation {
     command: ServiceCommand;
     parameters: Parameter[];
 
-    constructor(options: OperationOptions, modules: Module[], recipe: Recipe) {
+    constructor(options: OperationOptions, modules: Module[]) {
         if (modules) {
             if (options.module) {
                 this.module = modules.find(module => module.id === options.module);
                 if (!this.module) {
-                    throw new Error(`Could not find module ${options.module}`);
+                    throw new Error(`Could not find module ${options.module} in ${JSON.stringify(modules.map(m=> m.id))}`);
                 }
             } else if (modules.length === 1) {
                 this.module = modules[0];
@@ -58,7 +59,6 @@ export class Operation {
             throw new Error('No modules specified');
         }
 
-        recipe.modules.add(this.module);
         this.service = this.module.services.find(service => service.name === options.service);
         if (this.service === undefined) {
             throw new Error(`Service ${ options.service }(${ this.module.id }) not found in modules`);
@@ -86,9 +86,14 @@ export class Operation {
      * @returns {Promise<void>}
      */
     execute(): Promise<void> {
-        catRecipe.info(`Perform operation ${ this.module.id } ${ this.service.name } ${ this.command } ` +
+        catOperation.info(`Perform operation ${ this.module.id } ${ this.service.name } ${ this.command } ` +
             `(Strategy: ${ this.strategy ? this.strategy.name : '' })`);
-        return this.service.execute(this.command, this.strategy, this.parameters);
+        return this.service.execute(this.command, this.strategy, this.parameters)
+            .catch(async (reason) => {
+                catOperation.warn('Could not execute operation. Another try in 500ms');
+                await delay(500);
+                return this.service.execute(this.command, this.strategy, this.parameters);
+            });
     }
 
     json(): OperationInterface {
