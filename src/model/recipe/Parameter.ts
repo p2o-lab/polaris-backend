@@ -85,11 +85,14 @@ export class Parameter {
 
         this.service = service;
         const strategyUsed = strategy || service.strategies.find(strategy => strategy.default);
-        const parameterList = [].concat(service.parameters, strategyUsed.strategyParameters);
+        const parameterList = [].concat(service.parameters, strategyUsed.parameters);
         try {
             this._parameter = parameterList.find(obj => (obj && obj.name === this.name));
         } catch {
             throw new Error(`Could not find parameter "${this.name}" in ${service.name}`);
+        }
+        if (!this._parameter) {
+            throw new Error(`Could not find parameter "${this.name}" in ${service.name} - ${strategyUsed.name}`);
         }
 
         // evaluate scopeArray

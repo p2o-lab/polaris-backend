@@ -29,8 +29,6 @@ import { Request, Response, Router } from 'express';
 import * as asyncHandler from 'express-async-handler';
 import { catServer } from '../../config/logging';
 import {manager} from '../../model/Manager';
-import {Strategy} from '../../model/core/Interfaces';
-import {Parameter} from '../../model/recipe/Parameter';
 
 export const serviceRouter: Router = Router();
 

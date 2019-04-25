@@ -28,7 +28,7 @@
                 "type": "state",
                 "module": "CIF",
                 "service": "Service1",
-                "state": "running"
+                "state": "execute"
               }
             ]
           }

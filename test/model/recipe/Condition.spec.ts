@@ -201,7 +201,7 @@ describe('Condition', () => {
             expect(module.services[0]).to.have.property('name', 'Service1');
             expect(condition).to.have.property('fulfilled', false);
 
-            moduleServer.varStatus = ServiceState.RUNNING;
+            moduleServer.varStatus = ServiceState.EXECUTE;
             expect(condition).to.have.property('fulfilled', false);
 
 
@@ -214,7 +214,7 @@ describe('Condition', () => {
             expect(condition).to.have.property('fulfilled', true);
 
             condition.clear();
-            moduleServer.varStatus = ServiceState.RUNNING;
+            moduleServer.varStatus = ServiceState.EXECUTE;
             expect(condition).to.have.property('fulfilled', undefined);
             moduleServer.varStatus = ServiceState.COMPLETED;
             expect(condition).to.have.property('fulfilled', undefined);

@@ -34,7 +34,7 @@ export class Strategy {
     // self-completing strategy
     sc: boolean;
     // strategyParameters of strategy
-    strategyParameters: StrategyParameter[];
+    parameters: StrategyParameter[];
     // process values of strategy
     processValues: StrategyParameter[];
 }

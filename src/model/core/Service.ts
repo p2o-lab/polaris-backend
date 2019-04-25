@@ -719,7 +719,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
         if (!this.parent.isConnected()) {
             throw new Error('Module is not connected');
         }
-        this.logger.info(`[${this.qualifiedName}] Send command ${ServiceMtpCommand[command]} (${command})"`);
+        this.logger.info(`[${this.qualifiedName}] Send command ${ServiceMtpCommand[command]} (${command})`);
         await this.setOperationMode();
 
         let controlEnable: ControlEnableInterface = await this.getControlEnable(true);

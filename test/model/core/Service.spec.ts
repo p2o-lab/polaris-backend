@@ -84,13 +84,12 @@ describe('Service', () => {
 
         await service.subscribeToService();
 
-
         await service.execute(ServiceCommand.start);
         await waitForStateChange(service, 'STARTING');
-        await waitForStateChange(service, 'RUNNING');
+        await waitForStateChange(service, 'EXECUTE');
         await service.execute(ServiceCommand.restart);
         await waitForStateChange(service, 'STARTING');
-        await waitForStateChange(service, 'RUNNING');
+        await waitForStateChange(service, 'EXECUTE');
         await service.execute(ServiceCommand.stop);
         await waitForStateChange(service, 'STOPPING');
         await waitForStateChange(service, 'STOPPED');
@@ -98,13 +97,13 @@ describe('Service', () => {
         await waitForStateChange(service, 'IDLE');
         await service.execute(ServiceCommand.start);
         await waitForStateChange(service, 'STARTING');
-        await waitForStateChange(service, 'RUNNING');
+        await waitForStateChange(service, 'EXECUTE');
         await service.execute(ServiceCommand.pause);
         await waitForStateChange(service, 'PAUSING');
         await waitForStateChange(service, 'PAUSED');
         await service.execute(ServiceCommand.resume);
         await waitForStateChange(service, 'RESUMING');
-        await waitForStateChange(service, 'RUNNING');
+        await waitForStateChange(service, 'EXECUTE');
         await service.execute(ServiceCommand.complete);
         await waitForStateChange(service, 'COMPLETING');
         await waitForStateChange(service, 'COMPLETED');

@@ -112,8 +112,8 @@ export class ScopeItem {
 
         // find data assembly
         let dataAssembly: ProcessValue | DataAssembly;
-        if (strategy && strategy.strategyParameters.find(p => p.name === token)){
-            dataAssembly = strategy.strategyParameters.find(p => p.name === token);
+        if (strategy && strategy.parameters.find(p => p.name === token)){
+            dataAssembly = strategy.parameters.find(p => p.name === token);
         } else if (module.variables.find(v => v.name === token)) {
             dataAssembly = module.variables.find(v => v.name === token)
         } else {

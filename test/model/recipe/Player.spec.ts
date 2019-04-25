@@ -117,7 +117,7 @@ describe('Player', function () {
             player.start();
             expect(player.status).to.equal(RecipeState.running);
             await waitForStateChange(service, 'STARTING');
-            await waitForStateChange(service, 'RUNNING');
+            await waitForStateChange(service, 'EXECUTE');
 
             player.pause();
             await waitForStateChange(service, 'PAUSING');
@@ -126,8 +126,8 @@ describe('Player', function () {
 
             player.start();
             await waitForStateChange(service, 'RESUMING');
-            await waitForStateChange(service, 'RUNNING');
-            expect(service.status.value).to.equal(ServiceState.RUNNING);
+            await waitForStateChange(service, 'EXECUTE');
+            expect(service.status.value).to.equal(ServiceState.EXECUTE);
             expect(player.status).to.equal(RecipeState.running);
 
             await waitForStateChange(service, 'COMPLETING', 2000);
@@ -135,7 +135,7 @@ describe('Player', function () {
 
             await waitForStateChange(service, 'IDLE');
             await waitForStateChange(service, 'STARTING');
-            await waitForStateChange(service, 'RUNNING');
+            await waitForStateChange(service, 'EXECUTE');
 
             player.stop();
 
