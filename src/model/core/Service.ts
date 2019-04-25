@@ -59,11 +59,16 @@ export interface ServiceOptions {
     name: string;
     communication: {
         OpMode: OpcUaNodeOptions;
-        ControlOp: OpcUaNodeOptions;
-        ControlExt: OpcUaNodeOptions;
-        ControlEnable: OpcUaNodeOptions;
-        State: OpcUaNodeOptions;
-        StrategyOp: OpcUaNodeOptions;
+        ControlOp?: OpcUaNodeOptions;
+        CommandMan?: OpcUaNodeOptions;
+        ControlExt?: OpcUaNodeOptions;
+        CommandExt?: OpcUaNodeOptions
+        ControlEnable?: OpcUaNodeOptions;
+        CommandEnable?: OpcUaNodeOptions;
+        State?: OpcUaNodeOptions;
+        CurrentState?: OpcUaNodeOptions;
+        StrategyOp?: OpcUaNodeOptions;
+        StrategyMan?: OpcUaNodeOptions;
         StrategyExt: OpcUaNodeOptions;
         CurrentStrategy: OpcUaNodeOptions;
         ErrorMessage: OpcUaNodeOptions;
@@ -144,14 +149,37 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
         super();
         this.name = serviceOptions.name;
 
-        this.opMode = serviceOptions.communication.OpMode;
-        this.status = serviceOptions.communication.State;
-        this.controlEnable = serviceOptions.communication.ControlEnable;
-        this.command = manager.automaticMode ?
-            serviceOptions.communication.ControlExt : serviceOptions.communication.ControlOp;
-        this.strategy = manager.automaticMode ?
-            serviceOptions.communication.StrategyExt : serviceOptions.communication.StrategyOp;
-        this.currentStrategy = serviceOptions.communication.CurrentStrategy;
+        const com = serviceOptions.communication;
+
+        this.opMode = com.OpMode;
+        if (!this.opMode) {
+            throw new Error(`No opMode variable in service ${this.name} during parsing`);
+        }
+
+        this.status = com.State || com.CurrentState;
+        if (!this.status) {
+            throw new Error(`No status variable in service ${this.name} during parsing`);
+        }
+
+        this.controlEnable = com.ControlEnable || com.CommandEnable;
+        if (!this.controlEnable) {
+            throw new Error(`No controlEnable variable in service ${this.name} during parsing`);
+        }
+
+        this.command = manager.automaticMode ? (com.ControlExt || com.CommandExt) : (com.ControlOp || com.CommandMan);
+        if (!this.opMode) {
+            throw new Error(`No opMode variable in service ${this.name} during parsing`);
+        }
+
+        this.strategy = manager.automaticMode ? com.StrategyExt : (com.StrategyOp || com.StrategyMan);
+        if (!this.strategy) {
+            throw new Error(`No strategy variable in service ${this.name} during parsing`);
+        }
+
+        this.currentStrategy = com.CurrentStrategy;
+        if (!this.currentStrategy) {
+            throw new Error(`No currentStrategy variable in service ${this.name} during parsing`);
+        }
 
         this.strategies = serviceOptions.strategies;
         this.parameters = serviceOptions.parameters;
