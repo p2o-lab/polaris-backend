@@ -136,7 +136,8 @@ describe('Condition', () => {
             moduleServer = new ModuleTestServer();
             await moduleServer.start(() => Promise.resolve);
 
-            const moduleJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8'));
+            const moduleJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8'))
+                .modules[0];
 
             module = new Module(moduleJson);
             await module.connect();
@@ -161,11 +162,11 @@ describe('Condition', () => {
             expect(module.services[0]).to.have.property('name', 'Service1');
             expect(condition).to.have.property('fulfilled', false);
 
-            moduleServer.varVariable = 22;
+            moduleServer.varVariable1 = 22;
             expect(condition).to.have.property('fulfilled', false);
 
 
-            moduleServer.varVariable = 26;
+            moduleServer.varVariable1 = 26;
             await new Promise((resolve) => {
                 condition.once('stateChanged', (state) => {
                     resolve();
@@ -174,9 +175,9 @@ describe('Condition', () => {
             expect(condition).to.have.property('fulfilled', true);
 
             condition.clear();
-            moduleServer.varVariable = 24.4;
+            moduleServer.varVariable1 = 24.4;
             expect(condition).to.have.property('fulfilled', undefined);
-            moduleServer.varVariable = 37;
+            moduleServer.varVariable1 = 37;
             expect(condition).to.have.property('fulfilled', undefined);
 
         });
@@ -233,12 +234,12 @@ describe('Condition', () => {
                 const expr = new ExpressionCondition({type: ConditionType.expression, expression: 'CIF.Variable001.V>10'}, [module]);
                 expr.listen();
 
-                moduleServer.varVariable = 0;
+                moduleServer.varVariable1 = 0;
                 expect(expr).to.have.property('fulfilled', false);
                 let value = await expr.getValue();
                 expect(value).to.be.false;
 
-                moduleServer.varVariable = 11;
+                moduleServer.varVariable1 = 11;
                 await new Promise((resolve) => {
                     expr.once('stateChanged', (state) => {
                         resolve();
@@ -249,7 +250,7 @@ describe('Condition', () => {
                 expect(value).to.be.true;
                 expect(expr).to.have.property('fulfilled', true);
 
-                moduleServer.varVariable = 8;
+                moduleServer.varVariable1 = 8;
                 value = await expr.getValue();
                 expect(value).to.be.false;
                 await new Promise((resolve) => {
@@ -260,14 +261,14 @@ describe('Condition', () => {
                 expect(expr).to.have.property('fulfilled', false);
 
                 expr.clear();
-                moduleServer.varVariable = 12;
+                moduleServer.varVariable1 = 12;
                 value = await expr.getValue();
                 expect(value).to.be.true;
                 expect(expr).to.have.property('fulfilled', undefined);
             });
 
             it('should work with semi-complex expression', async () => {
-                moduleServer.varVariable = 3.1;
+                moduleServer.varVariable1 = 3.1;
                 const expr: ExpressionCondition = <ExpressionCondition> Condition.create({
                     type: ConditionType.expression,
                     expression: 'cos(CIF.Variable001.V)^2 > 0.9'
@@ -275,7 +276,7 @@ describe('Condition', () => {
                 let value = await expr.getValue();
                 expect(value).to.be.true;
 
-                moduleServer.varVariable = 0.7;
+                moduleServer.varVariable1 = 0.7;
                 value = await expr.getValue();
                 expect(value).to.be.false;
             });

@@ -50,7 +50,8 @@ describe('Service', () => {
     it('should load from options', async function() {
         this.timeout(4000);
 
-        const moduleJson = parseJson(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8'), null, 60);
+        const moduleJson = parseJson(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8'), null, 60)
+            .modules[0];
 
         let serviceJson = moduleJson.services[0];
 

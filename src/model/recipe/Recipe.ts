@@ -63,16 +63,6 @@ type RecipeEmitter = StrictEventEmitter<EventEmitter, RecipeEvents>;
 /** Recipe which can be started.
  * It is parsed from RecipeOptions
  *
- * A Recipe has the following states and emits following events
- * @startuml
- * [*] --> idle
- * idle --> running : start() -> started
- * running --> paused : pause()
- * running --> running : -> stepFinished
- * paused --> running : resume()
- * running --> idle : -> completed
- * @enduml
- *
  */
 export class Recipe extends (EventEmitter as { new(): RecipeEmitter }) {
 

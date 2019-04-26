@@ -30,6 +30,7 @@ import {RecipeRun} from './RecipeRun';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Step} from './Step';
 import {Recipe} from './Recipe';
+import * as delay from 'timeout-as-promise';
 
 /**
  * Events emitted by [[Player]]
@@ -226,11 +227,12 @@ export class Player extends (EventEmitter as { new(): PlayerEmitter }) {
         this.currentRecipeRun.start()
             .once('started', () => this.emit('recipeStarted', this.currentRecipeRun.recipe))
             .on('stepFinished', ({finishedStep, nextStep}) => this.emit('stepFinished', finishedStep))
-            .once('completed', () => {
+            .once('completed', async() => {
                 catPlayer.info('recipe finished');
                 this.emit('recipeFinished', this.currentRecipeRun.recipe);
                 catManager.info(`recipe finished ${this.currentItem + 1}/${this._playlist.length} (player ${this.status})`);
                 if (this._currentItem + 1 < this._playlist.length) {
+                    await delay(500);
                     this._currentItem = this._currentItem + 1;
                     catManager.info(`Go to next recipe (${this.currentItem + 1}/${this.playlist.length})`);
                     this.runCurrentRecipe();

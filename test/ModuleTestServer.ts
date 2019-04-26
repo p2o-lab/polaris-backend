@@ -36,7 +36,8 @@ export class ModuleTestServer {
     public varCommand;
     public varCommandEnable;
     public varOpmode;
-    public varVariable;
+    public varVariable1;
+    public varVariable2;
     public varStrategy;
     public externalTrigger: boolean;
     private interval: Timeout;
@@ -51,7 +52,8 @@ export class ModuleTestServer {
         this.varCommandEnable = 2047;
         this.varOpmode = 0;
         this.externalTrigger = false;
-        this.varVariable = 0.0;
+        this.varVariable1 = 20.0;
+        this.varVariable2 = 10.0;
     }
 
     public start(done) {
@@ -64,8 +66,9 @@ export class ModuleTestServer {
     public startSimulation() {
         let time = 0;
         this.interval = setInterval(() => {
-            time = time + 0.1;
-            this.varVariable = 20 + 5 * Math.sin(time);
+            time = time + 0.05;
+            this.varVariable1 = 20 + 5 * Math.sin(time);
+            this.varVariable2 = 10 + 5 * Math.cos(time+2) + 20000/(time+100) + 10*Math.sin(time/100);
         },100);
     }
 
@@ -85,12 +88,24 @@ export class ModuleTestServer {
 
         namespace.addVariable({
             componentOf: myModule,
-            nodeId: 'ns=1;s=MyVariable',
-            browseName: 'MyVariable',
+            nodeId: 'ns=1;s=MyVariable1',
+            browseName: 'MyVariable1',
             dataType: 'Double',
             value: {
                 get: () => {
-                    return new Variant({dataType: DataType.Double, value: this.varVariable});
+                    return new Variant({dataType: DataType.Double, value: this.varVariable1});
+                }
+            }
+        });
+
+        namespace.addVariable({
+            componentOf: myModule,
+            nodeId: 'ns=1;s=MyVariable2',
+            browseName: 'MyVariable2',
+            dataType: 'Double',
+            value: {
+                get: () => {
+                    return new Variant({dataType: DataType.Double, value: this.varVariable2});
                 }
             }
         });
@@ -226,7 +241,7 @@ export class ModuleTestServer {
 
         namespace.addVariable({
             componentOf: myModule,
-            browseName: 'MyVariable1',
+            browseName: 'ExternalTrigger',
             nodeId: 'ns=1;s=trigger',
             dataType: 'Boolean',
             value: {
