@@ -169,6 +169,19 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
         this.monitoredItems = new Map<NodeId, { monitoredItem: ClientMonitoredItem, emitter: EventEmitter }>();
 
         this.logger = catModule;
+
+        this.client = new OPCUAClient({
+            endpoint_must_exist: false,
+            connectionStrategy: {
+                maxRetry: 3
+            }
+        })
+            .on('close', () => {
+                catOpc.warn('Closing OPC UA client connection');
+                this.session =  null;
+                this.emit('disconnected');
+            })
+            .on('time_out_request', () => catOpc.warn('time out request - retrying connection'));
     }
 
     /**
@@ -181,20 +194,11 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
             return Promise.resolve();
         } else {
                 catOpc.info(`connect module ${this.id} ${this.endpoint}`);
-                const client = new OPCUAClient({
-                    endpoint_must_exist: false,
-                    connectionStrategy: {
-                        maxRetry: 3
-                    }
-                });
 
-                client.on('close', () => catOpc.info('Closing OPC UA client connection'));
-                client.on('time_out_request', () => catOpc.debug('time out request - retrying connection'));
-
-                await timeout(client.connect(this.endpoint), 1000);
+                await timeout(this.client.connect(this.endpoint), 1000);
                 catOpc.info(`module connected ${this.id} ${this.endpoint}`);
 
-                const session = await client.createSession();
+                const session = await this.client.createSession();
                 catOpc.debug(`session established ${this.id} ${this.endpoint}`);
 
                 const subscription = new ClientSubscription(session, {
@@ -220,7 +224,6 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
                 this.logger.debug(`[${this.id}] Got namespace array: ${JSON.stringify(this.namespaceArray)}`);
 
                 // store everything
-                this.client = client;
                 this.session = session;
                 this.subscription = subscription;
 
