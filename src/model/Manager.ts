@@ -99,6 +99,9 @@ export class Manager extends EventEmitter {
      */
     public loadModule(options, protectedModules: boolean = false): Module[] {
         let newModules: Module[] = [];
+        if (!options) {
+            throw new Error('No modules defined in supplied options');
+        }
         if (options.subplants) {
             options.subplants.forEach((subplantOptions) => {
                 subplantOptions.modules.forEach((moduleOptions: ModuleOptions) => {
@@ -140,6 +143,7 @@ export class Manager extends EventEmitter {
                     if (this.player.currentRecipeRun) {
                         this.player.currentRecipeRun.variableLog.push(logEntry);
                     }
+                    this.emit('notify', 'variable', logEntry);
                 })
                 .on('commandExecuted', (data) => {
                     const logEntry: ServiceLogEntry = {

@@ -1,0 +1,266 @@
+{
+  "version": "1.2.0",
+  "name": "Bring Biofeed module to standby",
+  "author": "Markus Graube <markus.graube@tu-dresden.de>",
+  "initial_step": "S1.AddWater",
+  "steps": [
+
+    {"name": "S1.AddWater",
+      "operations": [
+        {
+          "service": "FeedWater", "command": "start",
+          "parameter": [
+            { "name": "TargetVolume", "value": 5400}
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "condition": { "type": "state", "service": "FeedWater", "state": "completed" },
+          "next_step": "S1.WaitForIdleWater"
+        }
+      ]
+    },
+
+	{"name": "S1.WaitForIdleWater",
+      "operations": [ ],
+      "transitions": [
+        {
+          "condition": { "type": "state", "service": "FeedWater", "state": "idle" },
+          "next_step": "S1.AddBase"
+        }
+      ]
+    },
+
+	{"name": "S1.AddBase",
+      "operations": [
+        {
+          "service": "FeedBaseSolution", "command": "start",
+          "parameter": [
+            { "name": "TargetVolume", "value": 600},
+			      { "name": "PumpFlowRate", "value": 100}
+          ]
+        },
+		    {
+          "service": "Stirring", "command": "start",
+          "parameter": [
+            { "name": "StirringRotationSpeed", "value": 200 },
+            { "name": "StirringDuration", "value": "7*60" }
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "condition": { "type": "state", "service": "Stirring", "state": "completed" },
+          "next_step": "S1.WaitForIdleBase"
+        }
+      ]
+    },
+
+    {"name": "S1.WaitForIdleBase",
+      "operations": [ ],
+      "transitions": [
+        {
+          "condition": { "type": "state", "service": "Stirring", "state": "idle" },
+          "next_step": "S1.ToWaste"
+        }
+      ]
+    },
+
+	{"name": "S1.ToWaste",
+      "operations": [
+        {
+          "service": "FiltrationToWaste", "command": "start",
+		  "parameter": [
+            { "name": "FlowRate", "value": 500}
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "condition": { "type": "state", "service": "FiltrationToWaste", "state": "completed" },
+          "next_step": "S1.WaitForToWaste"
+        }
+      ]
+    },
+
+	{"name": "S1.WaitForToWaste",
+      "operations": [ ],
+      "transitions": [
+        {
+          "condition": { "type": "state", "service": "FiltrationToWaste", "state": "idle" },
+          "next_step": "S2.AddWater"
+        }
+      ]
+    },
+
+
+
+	{"name": "S2.AddWater",
+      "operations": [
+        {
+          "service": "FeedWater", "command": "start",
+          "parameter": [
+            { "name": "TargetVolume", "value": 6000}
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "condition": { "type": "state", "service": "FeedWater", "state": "completed" },
+          "next_step": "S2.WaitForIdleWater"
+        }
+      ]
+    },
+
+    {"name": "S2.WaitForIdleWater",
+      "operations": [ ],
+      "transitions": [
+        {
+          "condition": { "type": "state", "service": "FeedWater", "state": "idle" },
+          "next_step": "S2.Stirring"
+        }
+      ]
+    },
+
+	{"name": "S2.Stirring",
+      "operations": [
+		{
+          "service": "Stirring", "command": "start",
+          "parameter": [
+            { "name": "StirringRotationSpeed", "value": 200 },
+            { "name": "StirringDuration", "value": "1*60" }
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "condition": { "type": "state", "service": "Stirring", "state": "completed" },
+          "next_step": "S2.WaitForIdleStirring"
+        }
+      ]
+    },
+
+    {"name": "S2.WaitForIdleStirring",
+      "operations": [ ],
+      "transitions": [
+        {
+          "condition": { "type": "state", "service": "Stirring", "state": "idle" },
+          "next_step": "S2.ToWaste"
+        }
+      ]
+    },
+
+	{"name": "S2.ToWaste",
+      "operations": [
+        {
+          "service": "FiltrationToWaste", "command": "start",
+		  "parameter": [
+            { "name": "FlowRate", "value": 500}
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "condition": { "type": "state", "service": "FiltrationToWaste", "state": "completed" },
+          "next_step": "S2.WaitForToWaste"
+        }
+      ]
+    },
+
+	{"name": "S2.WaitForToWaste",
+      "operations": [ ],
+      "transitions": [
+        {
+          "condition": { "type": "state", "service": "FiltrationToWaste", "state": "idle" },
+          "next_step": "S3.AddWater"
+        }
+      ]
+    },
+
+
+
+	{"name": "S3.AddWater",
+      "operations": [
+        {
+          "service": "FeedWater", "command": "start",
+          "parameter": [
+            { "name": "TargetVolume", "value": 6000}
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "condition": { "type": "state", "service": "FeedWater", "state": "completed" },
+          "next_step": "S3.WaitForIdleWater"
+        }
+      ]
+    },
+
+    {"name": "S3.WaitForIdleWater",
+      "operations": [ ],
+      "transitions": [
+        {
+          "condition": { "type": "state", "service": "FeedWater", "state": "idle" },
+          "next_step": "S3.Stirring"
+        }
+      ]
+    },
+
+	{"name": "S3.Stirring",
+      "operations": [
+		{
+          "service": "Stirring", "command": "start",
+          "parameter": [
+            { "name": "StirringRotationSpeed", "value": 200 },
+            { "name": "StirringDuration", "value": "1*60" }
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "condition": { "type": "state", "service": "Stirring", "state": "completed" },
+          "next_step": "S3.WaitForIdleStirring"
+        }
+      ]
+    },
+
+    {"name": "S3.WaitForIdleStirring",
+      "operations": [ ],
+      "transitions": [
+        {
+          "condition": { "type": "state", "service": "Stirring", "state": "idle" },
+          "next_step": "S3.ToWaste"
+        }
+      ]
+    },
+
+	{"name": "S3.ToWaste",
+      "operations": [
+        {
+          "service": "FiltrationToWaste", "command": "start",
+		  "parameter": [
+            { "name": "FlowRate", "value": 500}
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "condition": { "type": "state", "service": "FiltrationToWaste", "state": "completed" },
+          "next_step": "S3.WaitForToWaste"
+        }
+      ]
+    },
+
+	{"name": "S3.WaitForToWaste",
+      "operations": [ ],
+      "transitions": [
+        {
+          "condition": { "type": "state", "service": "FiltrationToWaste", "state": "idle" },
+          "next_step": "completed"
+        }
+      ]
+    }
+
+  ]
+}

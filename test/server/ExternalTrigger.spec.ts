@@ -24,71 +24,41 @@
  */
 
 import {ExternalTrigger} from '../../src/server/ExternalTrigger';
-import {DataType, OPCUAServer, Variant} from 'node-opcua';
+import {OPCUAServer} from 'node-opcua-server';
 import {expect} from 'chai';
+import {ModuleTestServer} from '../ModuleTestServer';
+
 
 describe('ExternalTrigger', () => {
 
-    let variable1 = false;
-    let nodeId: string;
-    let server: OPCUAServer;
+    let moduleServer: ModuleTestServer;
 
-    before(function(done) {
+    before(function (done) {
         this.timeout(5000);
-         server = new OPCUAServer({
-            port: 4334, // the port of the listening socket of the server
-            resourcePath: 'UA/MyLittleServer', // this path will be added to the endpoint resource name
-        });
-
-        function post_initialize() {
-            function construct_my_address_space(server) {
-                const addressSpace = server.engine.addressSpace;
-                const namespace = addressSpace.getOwnNamespace();
-
-                // declare a new object
-                const device = namespace.addObject({
-                    organizedBy: addressSpace.rootFolder.objects,
-                    browseName: 'MyDevice'
-                });
-
-                let a = namespace.addVariable({
-                    componentOf: device,
-                    browseName: 'MyVariable1',
-                    dataType: 'Boolean',
-                    value: {
-                        get: function () {
-                            return new Variant({dataType: DataType.Boolean, value: variable1 });
-                        }
-                    }
-                });
-                nodeId = a.nodeId.toString();
-            }
-            construct_my_address_space(server);
-            server.start(done);
-        }
-
-        server.initialize(post_initialize);
+        moduleServer = new ModuleTestServer();
+        moduleServer.start(done);
     });
 
     after((done) => {
-        server.shutdown(100, ()=> {done()})
+        moduleServer.shutdown(done);
     });
 
     it('should fail with missing endpoint', () => {
-
         expect(() => {let et = new ExternalTrigger(undefined, undefined)}).to.throw();
         expect(() => {let et = new ExternalTrigger("sdfsd", undefined)}).to.throw();
         expect(() => {let et = new ExternalTrigger("opc.tcp://localhost:4334/Ua/MyLittleServer", undefined)}).to.throw();
     });
 
     it('should work with the sample server', async () => {
-        let et = new ExternalTrigger("opc.tcp://localhost:4334/Ua/MyLittleServer", nodeId);
+        let et = new ExternalTrigger("opc.tcp://localhost:4334/Ua/MyLittleServer", 'ns=1;s=trigger');
         await et.startMonitoring();
 
         expect(await et.getValue()).to.be.false;
-        variable1 = true;
+        moduleServer.externalTrigger = true;
 
         expect(await et.getValue()).to.be.true;
+
+        await et.disconnect();
     });
 
 

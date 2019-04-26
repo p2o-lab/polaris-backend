@@ -27,8 +27,8 @@ import {ServiceState} from './enum';
 import {ControlEnableInterface, ParameterInterface, ParameterOptions, ServiceCommand} from '@plt/pfe-ree-interface';
 import {Parameter} from '../recipe/Parameter';
 import {EventEmitter} from "events";
-import {Strategy} from './Interfaces';
 import StrictEventEmitter from 'strict-event-emitter-types';
+import {Strategy} from './Strategy';
 
 /**
  * Events emitted by [[BaseService]]

@@ -56,7 +56,7 @@ describe('VirtualService', () => {
             let hit = 0;
             timer.listenToVariable('remainingTime').on('changed', () => { hit = hit+1});
             await timer.start();
-            expect(timer.state).to.equal(ServiceState.RUNNING);
+            expect(timer.state).to.equal(ServiceState.EXECUTE);
 
             await delay(200);
             await timer.pause();
@@ -83,7 +83,7 @@ describe('VirtualService', () => {
 
             await f1.setParameters([{name: 'function', value: "sin(5*t)"}, {name: 'updateRate', value: 100}]);
             await f1.start();
-            expect(f1.state).to.equal(ServiceState.RUNNING);
+            expect(f1.state).to.equal(ServiceState.EXECUTE);
 
             await delay(120);
             params = await f1.getCurrentParameters();

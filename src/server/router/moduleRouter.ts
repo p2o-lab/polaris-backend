@@ -28,11 +28,8 @@ import { Request, Response, Router } from 'express';
 
 import * as asyncHandler from 'express-async-handler';
 import {catModule, catServer} from '../../config/logging';
-import * as multer from 'multer';
 
 export const moduleRouter: Router = Router();
-
-const upload = multer({ storage: multer.memoryStorage() });
 
 /**
  * @api {get} /module/    Get all modules
@@ -58,12 +55,12 @@ moduleRouter.get('/:id', asyncHandler(async (req: Request, res: Response) => {
  * @api {put} /module    Add module
  * @apiName PutModule
  * @apiGroup Module
- * @apiParam {file} modules    Modules to be added
+ * @apiParam {ModuleOptions} modules    Modules to be added
  */
-moduleRouter.put('', upload.single('file'), asyncHandler(async (req, res) => {
-    const moduleOptions = JSON.parse(req.file.buffer.toString());
-    catServer.debug(`Load module: ${JSON.stringify(moduleOptions)}`);
-    const newModules = manager.loadModule(moduleOptions);
+moduleRouter.put('', asyncHandler(async (req, res) => {
+    const moduleOptions = req.body.modules;
+    catServer.info(`Load module: ${JSON.stringify(moduleOptions)}`);
+    const newModules = manager.loadModule(req.body);
     newModules.forEach(module =>
         module.connect()
             .catch(reason => catModule.warn('Could not connect to module: ' + reason))

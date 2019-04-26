@@ -62,7 +62,7 @@ describe('Parameter', () => {
         expect(await param.getValue()).to.be.closeTo(2.14, 0.01);
     });
 
-    it('should load with complex expression and given scopeArray', async() => {
+    it.skip('should load with complex expression and given scopeArray', async() => {
         await module.connect();
         const param = new Parameter({
             name: 'var1',
@@ -81,7 +81,7 @@ describe('Parameter', () => {
         await module.disconnect();
     });
 
-    it('should load with complex expression with dataAssembly variables', async() => {
+    it.skip('should load with complex expression with dataAssembly variables', async() => {
         await module.connect();
         const param = new Parameter({
             name: 'var1',
@@ -94,7 +94,7 @@ describe('Parameter', () => {
     it('should fail with wrong parameter name', () => {
         expect(() => {
             const param = new Parameter({
-                name: 'test',
+                name: 'non-existing-parameter',
                 value: 3
             }, service);
         }).to.throw();

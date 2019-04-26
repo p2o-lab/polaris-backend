@@ -35,7 +35,7 @@ import {Service} from '../../src/model/core/Service';
 import {Parameter} from '../../src/model/recipe/Parameter';
 import {ServiceCommand} from '@plt/pfe-ree-interface';
 
-describe('CIF Integration', function () {
+describe.skip('CIF Integration', function () {
 
     let module: Module;
     let service: Service;
@@ -102,7 +102,7 @@ describe('CIF Integration', function () {
         let param = new Parameter({name: 'SollVolumenStrom', value: 1.3}, service);
         service.execute(ServiceCommand.start, service.strategies[0], [param]);
         //await waitForStateChange(service, 'STARTING');
-        await waitForStateChange(service, 'RUNNING');
+        await waitForStateChange(service, 'EXECUTE');
 
         service.execute(ServiceCommand.pause);
         //await waitForStateChange(service, 'PAUSING');
@@ -110,13 +110,13 @@ describe('CIF Integration', function () {
 
         service.execute(ServiceCommand.resume);
         //await waitForStateChange(service, 'RESUMING');
-        await waitForStateChange(service, 'RUNNING');
+        await waitForStateChange(service, 'EXECUTE');
 
         // does not work every time
         param.value = 1.4;
         //service.execute(ServiceCommand.restart, service.strategies[0], [param]);
         //await waitForStateChange(service, 'STARTING');
-        //await waitForStateChange(service, 'RUNNING');
+        //await waitForStateChange(service, 'EXECUTE');
 
         service.execute(ServiceCommand.complete);
         //await waitForStateChange(service, 'COMPLETING');
@@ -128,7 +128,7 @@ describe('CIF Integration', function () {
 
         service.execute(ServiceCommand.start);
         //await waitForStateChange(service, 'STARTING');
-        await waitForStateChange(service, 'RUNNING');
+        await waitForStateChange(service, 'EXECUTE');
 
         service.execute(ServiceCommand.stop);
         //await waitForStateChange(service, 'STOPPING');

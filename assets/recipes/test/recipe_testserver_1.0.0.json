@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "name": "Testrezept für CIF Modul",
+  "name": "Test recipe for testserver module",
   "author": "Markus Graube",
   "initial_step": "S1",
   "steps": [
@@ -9,26 +9,9 @@
       "operations": [
         {
           "module": "CIF",
-          "service": "Test_Service.Vorlegen",
+          "service": "Service1",
           "command": "start",
-          "parameter": [
-            {
-              "name": "SollVolumen",
-              "value": "max(0.2,min(28,0.1*a))",
-              "scope": [
-                {
-                  "name": "a",
-                  "module": "CIF",
-                  "dataAssembly": "Test_AnaView.L004",
-                  "variable": "V"
-                }
-              ]
-            },
-            {
-              "name": "SollDauer",
-              "value": "5^2"
-            }
-          ]
+          "parameter": []
         }
       ],
       "transitions": [
@@ -44,10 +27,10 @@
               {
                 "type": "state",
                 "module": "CIF",
-                "service": "Test_Service.Vorlegen",
+                "service": "Service1",
                 "state": "execute"
               }
-              ]
+            ]
           }
         }
       ]
@@ -57,8 +40,29 @@
       "operations": [
         {
           "module": "CIF",
-          "service": "Test_Service.Vorlegen",
+          "service": "Service1",
           "command": "complete"
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "S3",
+          "condition": {
+            "type": "state",
+            "module": "CIF",
+            "service": "Service1",
+            "state": "completed"
+          }
+        }
+      ]
+    },
+    {
+      "name": "S3",
+      "operations": [
+        {
+          "module": "CIF",
+          "service": "Service1",
+          "command": "reset"
         }
       ],
       "transitions": [
@@ -67,8 +71,8 @@
           "condition": {
             "type": "state",
             "module": "CIF",
-            "service": "Test_Service.Vorlegen",
-            "state": "completed"
+            "service": "Service1",
+            "state": "idle"
           }
         }
       ]
