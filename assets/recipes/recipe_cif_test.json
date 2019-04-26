@@ -45,7 +45,7 @@
                 "type": "state",
                 "module": "CIF",
                 "service": "Test_Service.Vorlegen",
-                "state": "running"
+                "state": "execute"
               }
               ]
           }

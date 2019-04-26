@@ -29,8 +29,6 @@ import { Request, Response, Router } from 'express';
 import * as asyncHandler from 'express-async-handler';
 import { catServer } from '../../config/logging';
 import {manager} from '../../model/Manager';
-import {Strategy} from '../../model/core/Interfaces';
-import {Parameter} from '../../model/recipe/Parameter';
 
 export const serviceRouter: Router = Router();
 
@@ -41,7 +39,7 @@ export const serviceRouter: Router = Router();
  * @apiGroup Service
  * @apiParam {string} moduleId    Module id
  * @apiParam {string} serviceName   Name of service
- * @apiParam {ParameterOptions[]} parameters    Module Service Parameter
+ * @apiParam {ParameterOptions[]} strategyParameters    Module Service Parameter
  */
 moduleRouter.post('/:moduleId/service/:serviceName/parameter', asyncHandler(async (req: Request, res: Response) => {
     const service = manager.getService(req.params.moduleId, req.params.serviceName);
@@ -52,12 +50,12 @@ moduleRouter.post('/:moduleId/service/:serviceName/parameter', asyncHandler(asyn
 /**
  * @api {post} /module/:moduleId/service/:serviceName/strategy    Configure Strategy
  * @apiName ConfigureStrategy
- * @apiDescription Configure strategy and strategy parameters of service
+ * @apiDescription Configure strategy and strategy strategyParameters of service
  * @apiGroup Service
  * @apiParam {string} moduleId    Module id
  * @apiParam {string} serviceName   Name of service
  * @apiParam {string} strategy      Name of strategy
- * @apiParam {ParameterOptions[]} parameters    Module Service Parameters
+ * @apiParam {ParameterOptions[]} strategyParameters    Module Service Parameters
  */
 moduleRouter.post('/:moduleId/service/:serviceName/strategy', asyncHandler(async (req: Request, res: Response) => {
     catServer.info(`Set Strategy Parameters ${req.body.strategy}, ${JSON.stringify(req.body.parameters)}`);

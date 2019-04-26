@@ -189,17 +189,17 @@ export class ModuleTestServer {
                 },
                 set: (variant) => {
                     this.varCommand = parseInt(variant.value);
-                    if (this.varCommand == ServiceMtpCommand.COMPLETE && this.varStatus == ServiceState.RUNNING) {
+                    if (this.varCommand == ServiceMtpCommand.COMPLETE && this.varStatus == ServiceState.EXECUTE) {
                         this.varCommand = ServiceMtpCommand.UNDEFINED;
                         this.varStatus = ServiceState.COMPLETING;
                         setTimeout(() => {
                             this.varStatus = ServiceState.COMPLETED;
                         }, 100);
-                    } else if (this.varCommand == ServiceMtpCommand.RESTART && this.varStatus == ServiceState.RUNNING) {
+                    } else if (this.varCommand == ServiceMtpCommand.RESTART && this.varStatus == ServiceState.EXECUTE) {
                         this.varCommand = ServiceMtpCommand.UNDEFINED;
                         this.varStatus = ServiceState.STARTING;
                         setTimeout(() => {
-                            this.varStatus = ServiceState.RUNNING;
+                            this.varStatus = ServiceState.EXECUTE;
                         }, 100);
                     } else if (this.varCommand == ServiceMtpCommand.RESET) {
                         this.varCommand = ServiceMtpCommand.UNDEFINED;
@@ -208,15 +208,15 @@ export class ModuleTestServer {
                         this.varCommand = ServiceMtpCommand.UNDEFINED;
                         this.varStatus = ServiceState.STARTING;
                         setTimeout(() => {
-                            this.varStatus = ServiceState.RUNNING;
+                            this.varStatus = ServiceState.EXECUTE;
                         }, 100);
                     } else if (this.varCommand == ServiceMtpCommand.RESUME && this.varStatus == ServiceState.PAUSED) {
                         this.varCommand = ServiceMtpCommand.UNDEFINED;
                         this.varStatus = ServiceState.RESUMING;
                         setTimeout(() => {
-                            this.varStatus = ServiceState.RUNNING;
+                            this.varStatus = ServiceState.EXECUTE;
                         }, 100);
-                    } else if (this.varCommand == ServiceMtpCommand.PAUSE && this.varStatus == ServiceState.RUNNING) {
+                    } else if (this.varCommand == ServiceMtpCommand.PAUSE && this.varStatus == ServiceState.EXECUTE) {
                         this.varCommand = ServiceMtpCommand.UNDEFINED;
                         this.varStatus = ServiceState.PAUSING;
                         setTimeout(() => {

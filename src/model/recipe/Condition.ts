@@ -344,7 +344,7 @@ export abstract class ModuleCondition extends Condition {
 
 export class StateCondition extends ModuleCondition {
     service: Service;
-    state: string;
+    state: ServiceState;
     private monitoredItem: EventEmitter;
 
     constructor(options: StateConditionOptions, modules: Module[]) {
@@ -353,7 +353,28 @@ export class StateCondition extends ModuleCondition {
         if (!this.service) {
             throw new Error(`Service "${options.service}" not found in provided module ${this.module.id}`);
         }
-        this.state = options.state;
+        const mapping = {
+            'idle': ServiceState.IDLE,
+            'starting': ServiceState.STARTING,
+            'execute': ServiceState.EXECUTE,
+            'completing': ServiceState.COMPLETING,
+            'completed': ServiceState.COMPLETED,
+            'resetting': ServiceState.RESETTING,
+            'pausing': ServiceState.PAUSING,
+            'paused': ServiceState.PAUSED,
+            'resuming': ServiceState.RESUMING,
+            'holding': ServiceState.HOLDING,
+            'held': ServiceState.HELD,
+            'unholding': ServiceState.UNHOLDING,
+            'stopping': ServiceState.STOPPING,
+            'stopped': ServiceState.STOPPED,
+            'aborting': ServiceState.ABORTING,
+            'aborted': ServiceState.ABORTED
+        };
+        this.state = mapping[options.state.toLowerCase()];
+        if (!this.state) {
+            throw new Error(`State ${options.state} is not a valid state for a condition (${JSON.stringify(options)}`);
+        }
     }
 
     clear() {
@@ -365,10 +386,9 @@ export class StateCondition extends ModuleCondition {
         this.monitoredItem = this.service.parent.listenToOpcUaNode(this.service.status)
             .on('changed', (data) => {
                 const state: ServiceState = data.value;
-                this._fulfilled = ServiceState[state]
-                    .localeCompare(this.state, 'en', { usage: 'search', sensitivity: 'base' }) === 0;
-                catCondition.info(`StateCondition ${this.module.id}.${this.service.name}: actual: ${ServiceState[state]}` +
-                    ` - condition: ${this.state} -> ${this._fulfilled}`);
+                this._fulfilled = (state === this.state);
+                catCondition.info(`StateCondition ${this.service.qualifiedName}: actual=${ServiceState[state]}` +
+                    ` ; condition=${ServiceState[this.state]} -> ${this._fulfilled}`);
                 this.emit('stateChanged', this._fulfilled);
             });
         return this;

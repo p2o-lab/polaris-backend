@@ -24,7 +24,7 @@
  */
 
 
-export interface OpcUaNode {
+export interface OpcUaNodeOptions {
     /** despite its current name this variable contains the *namespace url* of the node*/
     namespace_index: string;
     /** node id of the node as string (e.g. 's=sdfdsf' or 'i=12') */
@@ -37,27 +37,3 @@ export interface OpcUaNode {
     timestamp?: Date;
 }
 
-export interface ServiceParameter {
-    name: string;
-    interface_class: string;
-    communication: {
-        VExt: OpcUaNode,
-        VOut: OpcUaNode,
-        VMin: OpcUaNode,
-        VMax: OpcUaNode,
-        VSclMax: OpcUaNode,
-        VSclMin: OpcUaNode,
-        VRbk: OpcUaNode,
-        VUnit: OpcUaNode,
-        WQC: OpcUaNode,
-        OSLevel: OpcUaNode
-    };
-}
-
-export interface Strategy {
-    id: string;
-    name: string;
-    default: boolean;
-    sc: boolean;
-    parameters: ServiceParameter[];
-}

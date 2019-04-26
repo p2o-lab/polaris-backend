@@ -94,7 +94,7 @@ describe('Parameter', () => {
     it('should fail with wrong parameter name', () => {
         expect(() => {
             const param = new Parameter({
-                name: 'test',
+                name: 'non-existing-parameter',
                 value: 3
             }, service);
         }).to.throw();

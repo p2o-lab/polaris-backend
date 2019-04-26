@@ -35,7 +35,7 @@ import {
     ServiceMtpCommand,
     ServiceState
 } from './enum';
-import {OpcUaNode, ServiceParameter, Strategy} from './Interfaces';
+import {OpcUaNodeOptions} from './Interfaces';
 import {Parameter} from '../recipe/Parameter';
 import {
     ControlEnableInterface,
@@ -49,6 +49,9 @@ import {Unit} from './Unit';
 import {manager} from '../Manager';
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
+import {DataAssembly, DataAssemblyOptions} from './DataAssembly';
+import {Strategy, StrategyOptions} from './Strategy';
+import {ConfigurationParameter} from './ConfigurationParameter';
 import {Category} from 'typescript-logging';
 import {Module} from './Module';
 import {catService} from '../../config/logging';
@@ -56,18 +59,23 @@ import {catService} from '../../config/logging';
 export interface ServiceOptions {
     name: string;
     communication: {
-        OpMode: OpcUaNode;
-        ControlOp: OpcUaNode;
-        ControlExt: OpcUaNode;
-        ControlEnable: OpcUaNode;
-        State: OpcUaNode;
-        StrategyOp: OpcUaNode;
-        StrategyExt: OpcUaNode;
-        CurrentStrategy: OpcUaNode;
-        ErrorMessage: OpcUaNode;
+        OpMode: OpcUaNodeOptions;
+        ControlOp?: OpcUaNodeOptions;
+        CommandMan?: OpcUaNodeOptions;
+        ControlExt?: OpcUaNodeOptions;
+        CommandExt?: OpcUaNodeOptions
+        ControlEnable?: OpcUaNodeOptions;
+        CommandEnable?: OpcUaNodeOptions;
+        State?: OpcUaNodeOptions;
+        CurrentState?: OpcUaNodeOptions;
+        StrategyOp?: OpcUaNodeOptions;
+        StrategyMan?: OpcUaNodeOptions;
+        StrategyExt: OpcUaNodeOptions;
+        CurrentStrategy: OpcUaNodeOptions;
+        ErrorMessage: OpcUaNodeOptions;
     };
-    strategies: Strategy[];
-    parameters: ServiceParameter[];
+    strategies: StrategyOptions[];
+    parameters: DataAssemblyOptions[];
 }
 
 const InterfaceClassToType = {
@@ -117,8 +125,8 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
     readonly name: string;
     /** strategies of the service */
     readonly strategies: Strategy[];
-    /** service parameters */
-    readonly parameters: ServiceParameter[];
+    /** service configuration configuration parameters */
+    readonly parameters: ConfigurationParameter[];
     /** [Module] of the service */
     readonly parent: Module;
 
@@ -126,17 +134,17 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
     private lastStatusChange: Date;
 
     /** OPC UA node of command/controlOp variable */
-    readonly command: OpcUaNode;
+    readonly command: OpcUaNodeOptions;
     /** OPC UA node of status variable */
-    readonly status: OpcUaNode;
+    readonly status: OpcUaNodeOptions;
     /** OPC UA node of controlEnable variable */
-    readonly controlEnable: OpcUaNode;
+    readonly controlEnable: OpcUaNodeOptions;
     /** OPC UA node of opMode variable */
-    readonly opMode: OpcUaNode;
+    readonly opMode: OpcUaNodeOptions;
     /** OPC UA node of strategy variable */
-    readonly strategy: OpcUaNode;
+    readonly strategy: OpcUaNodeOptions;
     /** OPC UA node of currentStrategy variable */
-    readonly currentStrategy: OpcUaNode;
+    readonly currentStrategy: OpcUaNodeOptions;
     
     readonly logger: Category;
 
@@ -144,18 +152,44 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
         super();
         this.name = serviceOptions.name;
 
-        this.opMode = serviceOptions.communication.OpMode;
-        this.status = serviceOptions.communication.State;
-        this.controlEnable = serviceOptions.communication.ControlEnable;
-        this.command = manager.automaticMode ?
-            serviceOptions.communication.ControlExt : serviceOptions.communication.ControlOp;
-        this.strategy = manager.automaticMode ?
-            serviceOptions.communication.StrategyExt : serviceOptions.communication.StrategyOp;
-        this.currentStrategy = serviceOptions.communication.CurrentStrategy;
+        const com = serviceOptions.communication;
 
-        this.strategies = serviceOptions.strategies;
-        this.parameters = serviceOptions.parameters;
+        this.opMode = com.OpMode;
+        if (!this.opMode) {
+            throw new Error(`No opMode variable in service ${this.name} during parsing`);
+        }
 
+        this.status = com.State || com.CurrentState;
+        if (!this.status) {
+            throw new Error(`No status variable in service ${this.name} during parsing`);
+        }
+
+        this.controlEnable = com.ControlEnable || com.CommandEnable;
+        if (!this.controlEnable) {
+            throw new Error(`No controlEnable variable in service ${this.name} during parsing`);
+        }
+
+        this.command = manager.automaticMode ? (com.ControlExt || com.CommandExt) : (com.ControlOp || com.CommandMan);
+        if (!this.opMode) {
+            throw new Error(`No opMode variable in service ${this.name} during parsing`);
+        }
+
+        this.strategy = manager.automaticMode ? com.StrategyExt : (com.StrategyOp || com.StrategyMan);
+        if (!this.strategy) {
+            throw new Error(`No strategy variable in service ${this.name} during parsing`);
+        }
+
+        this.currentStrategy = com.CurrentStrategy;
+        if (!this.currentStrategy) {
+            throw new Error(`No currentStrategy variable in service ${this.name} during parsing`);
+        }
+
+        this.strategies = serviceOptions.strategies
+            .map(option => new Strategy(option, parent));
+        if (serviceOptions.parameters) {
+            this.parameters = serviceOptions.parameters
+                .map(options => new ConfigurationParameter(options, parent));
+        }
         this.parent = parent;
         this.serviceParametersEventEmitters = [];
 
@@ -304,7 +338,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
     }
 
     /**
-     * get JSON overview about service and its state, opMode, strategies, parameters and controlEnable
+     * get JSON overview about service and its state, opMode, strategies, strategyParameters and controlEnable
      * @returns {Promise<ServiceInterface>}
      */
     async getOverview(): Promise<ServiceInterface> {
@@ -327,7 +361,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
     }
 
     /**
-     * Get all strategies for service with its current parameters
+     * Get all strategies for service with its current strategyParameters
      * @returns {Promise<StrategyInterface[]>}
      */
     async getStrategies(): Promise<StrategyInterface[]> {
@@ -342,13 +376,13 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
         }));
     }
 
-    /** get current parameters
+    /** get current strategyParameters
      * from strategy or service (if strategy is undefined)
-     * @param {Strategy} strategy
+     * @param {StrategyInterface} strategy
      * @returns {Promise<ParameterInterface[]>}
      */
     async getCurrentParameters(strategy?: Strategy): Promise<ParameterInterface[]> {
-        let params: ServiceParameter[] = [];
+        let params: DataAssembly[] = [];
         if (strategy) {
             params = strategy.parameters;
         } else {
@@ -363,25 +397,25 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
                 let min;
                 let unit;
                 try {
-                    const result = await this.parent.readVariableNode(param.communication.VExt);
+                    const result = await this.parent.readVariableNode(param.communication['VExt']);
                     value = result.value.value;
                 } catch {
                     value = undefined;
                 }
                 try {
-                    const result = await this.parent.readVariableNode(param.communication.VMax);
+                    const result = await this.parent.readVariableNode(param.communication['VMax']);
                     max = result.value.value;
                 } catch {
                     max = undefined;
                 }
                 try {
-                    const result = await this.parent.readVariableNode(param.communication.VMin);
+                    const result = await this.parent.readVariableNode(param.communication['VMin']);
                     min = result.value.value;
                 } catch {
                     min = undefined;
                 }
                 try {
-                    const result = await this.parent.readVariableNode(param.communication.VUnit);
+                    const result = await this.parent.readVariableNode(param.communication['VUnit']);
                     const unitItem = Unit.find(item => item.value === result.value.value);
                     unit = unitItem.unit;
                 } catch {
@@ -403,10 +437,10 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
 
 
     /**
-     * Set strategy and strategy parameters and execute a command for service on PEA
+     * Set strategy and strategy strategyParameters and execute a command for service on PEA
      * @param {ServiceCommand} command  command to be executed on PEA
-     * @param {Strategy}    strategy  strategy to be set on PEA
-     * @param {Parameter[]|ParameterOptions[]} parameters     parameters to be set on PEA
+     * @param {StrategyInterface}    strategy  strategy to be set on PEA
+     * @param {Parameter[]|ParameterOptions[]} parameters     strategyParameters to be set on PEA
      * @returns {Promise<void>}
      */
     async execute(command?: ServiceCommand, strategy?: Strategy, parameters?: (Parameter|ParameterOptions)[] ): Promise<void> {
@@ -505,7 +539,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
     }
 
     /**
-     * Set service configuration parameters for adaption to environment. Can set also process values
+     * Set service configuration strategyParameters for adaption to environment. Can set also process values
      * @param {ParameterOptions[]} parameters
      * @returns {Promise<any[]>}
      */
@@ -521,12 +555,12 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
     /** Set strategy and strategy parameter
      * Use default strategy if strategy is omitted
      *
-     * @param {Strategy|string} strategy    object or name of desired strategy
+     * @param {StrategyInterface|string} strategy    object or name of desired strategy
      * @param {(Parameter|ParameterOptions)[]} parameters
      * @returns {Promise<void>}
      */
     public async setStrategyParameters(strategy?: Strategy|string, parameters?: (Parameter|ParameterOptions)[]): Promise<void> {
-        // get strategy from input parameters
+        // get strategy from input strategyParameters
         let strat: Strategy;
         if (!strategy) {
             strat = this.strategies.find(strat => strat.default === true);
@@ -546,7 +580,6 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
                 dimensions: null
             });
 
-        // TODO: is order of parameters and strategy important?
         // set strategy
         if (parameters) {
             let params: Parameter[] = parameters.map((param) => {
@@ -577,16 +610,6 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
         this.serviceParametersEventEmitters.forEach(listener => listener.removeAllListeners());
     }
 
-    async setParameter(opcUaNode: OpcUaNode, dataType: DataType, paramValue: any): Promise<any> {
-        const dataValue: Variant = {
-            dataType,
-            value: paramValue,
-            arrayType: VariantArrayType.Scalar,
-            dimensions: null
-        };
-        this.logger.debug(`[${this.qualifiedName}] Set Parameter: ${JSON.stringify(opcUaNode)} -> ${JSON.stringify(dataValue)}`);
-        return await this.parent.writeNode(opcUaNode, dataValue);
-    }
 
     /**
      * Write OpMode to service
@@ -698,7 +721,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
         if (!this.parent.isConnected()) {
             throw new Error('Module is not connected');
         }
-        this.logger.info(`[${this.qualifiedName}] Send command ${ServiceMtpCommand[command]} (${command})"`);
+        this.logger.info(`[${this.qualifiedName}] Send command ${ServiceMtpCommand[command]} (${command})`);
         await this.setOperationMode();
 
         let controlEnable: ControlEnableInterface = await this.getControlEnable(true);

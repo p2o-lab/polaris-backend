@@ -29,7 +29,7 @@ export class CustomLogger extends AbstractCategoryLogger {
 
     public messages: string[] = [];
 
-    // The first two parameters are required, the 3rd is our parameter
+    // The first two strategyParameters are required, the 3rd is our parameter
     // where we give this logger an array and log all messages to that array.
     constructor(category: Category, runtimeSettings: RuntimeSettings, messages: string[]) {
         super(category, runtimeSettings);

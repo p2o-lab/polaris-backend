@@ -23,19 +23,15 @@
  * SOFTWARE.
  */
 
-import {ProcessValue} from '../../../src/model/core/ProcessValue';
-import {expect} from 'chai';
-import {OpcUaNodeOptions} from '../../../src/model/core/Interfaces';
 
-describe('ProcessValue', () => {
+import {DataAssembly} from './DataAssembly';
+import {OpcUaNodeOptions} from './Interfaces';
+import {Module} from './Module';
 
-    it('should construct', () => {
-        let opcUaNode: OpcUaNodeOptions = {namespace_index: 'CODESYSSPV3/3S/IecVarAccess', node_id: 'i=12'};
-        let a = new ProcessValue("asd", [opcUaNode]);
-    });
+/**
+ * StrategyParameter of a [[Service]]
+ *
+ */
+export class StrategyParameter extends DataAssembly {
 
-    it('should fail with missing strategyParameters', () => {
-        expect(() => {let a = new ProcessValue(undefined,undefined) }).to.throw();
-        expect(() => {let a = new ProcessValue("test",undefined) }).to.throw();
-    });
-});
+}

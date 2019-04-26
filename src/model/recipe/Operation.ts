@@ -27,7 +27,7 @@ import { Module } from '../core/Module';
 import { Service } from '../core/Service';
 import {catOperation} from '../../config/logging';
 import { Recipe } from './Recipe';
-import { Strategy } from '../core/Interfaces';
+import { Strategy } from '../core/Strategy';
 import { Parameter } from './Parameter';
 import { OperationInterface, OperationOptions, ServiceCommand } from '@plt/pfe-ree-interface';
 import * as delay from 'timeout-as-promise';

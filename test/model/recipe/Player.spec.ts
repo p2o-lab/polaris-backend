@@ -118,7 +118,7 @@ describe('Player', function () {
             player.start();
             expect(player.status).to.equal(RecipeState.running);
             await waitForStateChange(service, 'STARTING');
-            await waitForStateChange(service, 'RUNNING');
+            await waitForStateChange(service, 'EXECUTE');
 
             player.pause();
             await waitForStateChange(service, 'PAUSING');
@@ -127,16 +127,17 @@ describe('Player', function () {
 
             player.start();
             await waitForStateChange(service, 'RESUMING');
-            await waitForStateChange(service, 'RUNNING');
-            expect(service.status.value).to.equal(ServiceState.RUNNING);
+            await waitForStateChange(service, 'EXECUTE');
+            expect(service.status.value).to.equal(ServiceState.EXECUTE);
             expect(player.status).to.equal(RecipeState.running);
 
             await waitForStateChange(service, 'COMPLETING', 2000);
             await waitForStateChange(service, 'COMPLETED');
 
             await waitForStateChange(service, 'IDLE');
+
             await waitForStateChange(service, 'STARTING', 1000);
-            await waitForStateChange(service, 'RUNNING');
+            await waitForStateChange(service, 'EXECUTE');
 
             player.stop();
 
@@ -321,7 +322,7 @@ describe('Player', function () {
             player.enqueue(recipeCif);
             return await timeout(new Promise((resolve) => {
                 player.start()
-                    .on('recipeFinished', (recipe) => {
+                    .on('recipeFinished', (recipe: Recipe) => {
                         expect(recipe).to.have.property('status', 'completed');
                     })
                     .on('completed', () => resolve());
