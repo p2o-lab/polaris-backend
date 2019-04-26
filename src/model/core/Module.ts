@@ -343,7 +343,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
     private subscribeToAllVariables() {
         this.variables.forEach((variable: ProcessValue) => {
             if (variable.communication['V'] && variable.communication['V'].node_id != null) {
-                this.listenToOpcUaNode(variable.communication['V'], 500)
+                this.listenToOpcUaNode(variable.communication['V'], 1000)
                     .on('changed', (data) => {
                         this.logger.debug(`[${this.id}] variable changed: ${variable.name} = ${data.value}`);
                         const entry: VariableLogEntry = {

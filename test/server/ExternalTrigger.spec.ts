@@ -34,6 +34,7 @@ describe('ExternalTrigger', () => {
     let moduleServer: ModuleTestServer;
 
     before(function (done) {
+        this.timeout(5000);
         moduleServer = new ModuleTestServer();
         moduleServer.start(done);
     });

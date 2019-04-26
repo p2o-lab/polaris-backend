@@ -95,7 +95,8 @@ describe('Player', function () {
         it('work with sample module', async function(){
             this.timeout(15000);
 
-            const moduleJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString());
+            const moduleJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString())
+                .modules[0];
             const module = new Module(moduleJson);
             const service = module.services[0];
 
@@ -134,7 +135,7 @@ describe('Player', function () {
             await waitForStateChange(service, 'COMPLETED');
 
             await waitForStateChange(service, 'IDLE');
-            await waitForStateChange(service, 'STARTING');
+            await waitForStateChange(service, 'STARTING', 1000);
             await waitForStateChange(service, 'RUNNING');
 
             player.stop();
