@@ -28,7 +28,7 @@ import * as fs from 'fs';
 import {expect} from 'chai';
 import {Manager} from '../../../src/model/Manager';
 import * as delay from 'timeout-as-promise';
-import {RecipeOptions, RecipeState} from '@plt/pfe-ree-interface';
+import {RecipeState} from '@plt/pfe-ree-interface';
 import { timeout } from 'promise-timeout';
 import {Recipe} from '../../../src/model/recipe/Recipe';
 import {ServiceState, controlEnableToJson} from '../../../src/model/core/enum';
@@ -95,7 +95,8 @@ describe('Player', function () {
         it('work with sample module', async function(){
             this.timeout(15000);
 
-            const moduleJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString());
+            const moduleJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString())
+                .modules[0];
             const module = new Module(moduleJson);
             const service = module.services[0];
 
@@ -134,7 +135,7 @@ describe('Player', function () {
             await waitForStateChange(service, 'COMPLETED');
 
             await waitForStateChange(service, 'IDLE');
-            await waitForStateChange(service, 'STARTING');
+            await waitForStateChange(service, 'STARTING', 1000);
             await waitForStateChange(service, 'RUNNING');
 
             player.stop();
@@ -258,7 +259,6 @@ describe('Player', function () {
             expect(() => player.forceTransition('non-existant', 'S2')).to.throw();
             expect(() => player.forceTransition('S1', 'non-existant')).to.throw();
             expect(() => player.forceTransition('S1', 'S3')).to.throw();
-
 
             // do not change in next 100ms
             await new Promise((resolve, reject) => {
