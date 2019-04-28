@@ -32,7 +32,6 @@ import {manager} from './model/Manager';
 import {ExternalTrigger} from './server/ExternalTrigger';
 import commandLineUsage = require('command-line-usage');
 import {catModule} from "./config/logging";
-import {fixReactor} from "./server/automaticMode";
 
 const optionDefinitions = [
     {
@@ -50,13 +49,6 @@ const optionDefinitions = [
         multiple: true,
         typeLabel: '{underline recipePath[]}',
         description: 'path to recipe.json which should be loaded at startup'
-    },
-    {
-        name: 'fixReactor',
-        alias: 'f',
-        type: Boolean,
-        default: false,
-        description: 'fix operation mode of reactor in ACHEMA module at startup'
     },
     {
         name: 'help',
@@ -144,10 +136,6 @@ if (options) {
                 const recipeOptions = JSON.parse(fs.readFileSync(recipe).toString());
                 manager.loadRecipe(recipeOptions, true);
             });
-        }
-
-        if (options.fixReactor) {
-            fixReactor();
         }
 
         /* Start OPC UA external trigger */

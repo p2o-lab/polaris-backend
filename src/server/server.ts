@@ -29,7 +29,6 @@ import Middleware from '../config/middleware';
 import * as WebSocket from 'ws';
 import { manager } from '../model/Manager';
 import { catServer } from '../config/logging';
-import {fixReactor} from "./automaticMode";
 
 export class Server {
 

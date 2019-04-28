@@ -51,6 +51,8 @@ import StrictEventEmitter from 'strict-event-emitter-types';
 import {Strategy} from './Strategy';
 import {Category} from 'typescript-logging';
 import {DataAssemblyOptions} from './DataAssembly';
+import {DataType, VariantArrayType} from 'node-opcua';
+import * as delay from 'timeout-as-promise';
 
 export interface ModuleOptions {
     id: string;
@@ -226,6 +228,10 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
                 // store everything
                 this.session = session;
                 this.subscription = subscription;
+
+                if (this.endpoint == 'opc.tcp://10.6.51.22:4840') {
+                    await this.fixReactor();
+                }
 
                 // set all services to correct operation mode
                 await Promise.all(this.services.map(service => service.setOperationMode()));
@@ -501,6 +507,72 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
     reset(): Promise<void[]> {
         const tasks = this.services.map(service => service.execute(ServiceCommand.reset));
         return Promise.all(tasks);
+    }
+
+    /** Fix reactor of ACHEMA demonstrator.
+     * Set all opModes from devices to automatic and set senseful default values
+     */
+    private async fixReactor(){
+        const nodeIdsReactor = [
+            'ns=3;s="AEM01"."MTP_AnaDrv"."OpMode"',
+            'ns=3;s="MFH01"."MTP_BinVlv"."OpMode"',
+            'ns=3;s="MFH02"."MTP_BinVlv"."OpMode"',
+            'ns=3;s="MFH03"."MTP_BinVlv"."OpMode"'];
+
+        const valuesReactor = [
+            ['ns=3;s="Fill_Level_Max"."MTP"."VExt"', 1.5],
+            ['ns=3;s="Stir_Level_Min"."MTP"."VExt"', 0.5],
+            ['ns=3;s="Stir_Period"."MTP"."VExt"', 0.5],
+            ['ns=3;s="Stir_Period"."MTP"."VOp"', 0.5],
+            ['ns=3;s="Empty_Level_Tank_Deadband"."MTP"."VExt"', 0.5],
+            ['ns=3;s="Empty_Level_Tank_Deadband"."MTP"."VExt"', 0.5],
+            ['ns=3;s="Empty_Level_Tank"."MTP"."VExt"', 0.5],
+            ['ns=3;s="Empty_Level_Tank"."MTP"."VOp"', 0.5],
+            ['ns=3;s="Empty_Vol_Flow"."MTP"."VOp"', 2.5],
+            ['ns=3;s="Empty_Vol_Flow"."MTP"."VExt"', 2.5],
+        ];
+
+        this.logger.info(`[${this.id}] Fixing nodes in reactor PEA server`);
+
+        // first set to manual
+        await Promise.all(nodeIdsReactor.map(nodeId => {
+            return this.session.writeSingleNode(
+                nodeId,
+                {
+                    dataType: DataType.UInt32,
+                    value: 16,
+                    arrayType: VariantArrayType.Scalar,
+                    dimensions: null
+                }
+            );
+        }));
+        await delay(200);
+
+        // then to automatic
+        await Promise.all(nodeIdsReactor.map(nodeId => {
+            return this.session.writeSingleNode(
+                nodeId,
+                {
+                    dataType: DataType.UInt32,
+                    value: 64,
+                    arrayType: VariantArrayType.Scalar,
+                }
+            );
+        }));
+
+        // give all Parameters nice default values
+        await Promise.all(valuesReactor.map(async (item) => {
+            return this.session.writeSingleNode(
+                item[0],
+                {
+                    dataType: DataType.Float,
+                    value: item[1],
+                    arrayType: VariantArrayType.Scalar,
+                }
+            );
+        }));
+
+        this.logger.info(`[${this.id}] Nodes in reactor PEA server fixed`);
     }
 
 }
