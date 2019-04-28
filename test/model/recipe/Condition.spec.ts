@@ -133,6 +133,7 @@ describe('Condition', () => {
         let module: Module;
 
         before(async function () {
+            this.timeout(4000);
             moduleServer = new ModuleTestServer();
             await moduleServer.start(() => Promise.resolve);
 
