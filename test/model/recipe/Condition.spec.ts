@@ -32,12 +32,8 @@ import {ModuleTestServer} from '../../ModuleTestServer';
 import {ServiceState} from '../../../src/model/core/enum';
 import { timeout } from 'promise-timeout';
 import * as fs from "fs";
+import * as delay from 'timeout-as-promise';
 
-function later(delay) {
-    return new Promise(function (resolve) {
-        setTimeout(resolve, delay);
-    });
-}
 
 /**
  * Test for [[Condition]]
@@ -77,9 +73,9 @@ describe('Condition', () => {
             expect(condition).to.have.property('fulfilled', true);
         });
         expect(condition).to.have.property('fulfilled', false);
-        await later(150);
+        await delay(150);
         expect(condition).to.have.property('fulfilled', false);
-        await later(60);
+        await delay(60);
         expect(condition).to.have.property('fulfilled', true);
     });
 
@@ -102,9 +98,9 @@ describe('Condition', () => {
             expect(condition).to.have.property('fulfilled', true);
             hit = true;
         });
-        await later(60);
+        await delay(60);
         expect(condition).to.have.property('fulfilled', false);
-        await later(50);
+        await delay(50);
         expect(condition).to.have.property('fulfilled', true);
         expect(hit).to.be.true;
     });
@@ -117,9 +113,9 @@ describe('Condition', () => {
         expect(condition.json()).to.deep.equal({type: 'not', condition: {type: 'time', duration: 0.1}});
 
         condition.listen();
-        await later(10);
+        await delay(10);
         expect(condition).to.have.property('fulfilled', true);
-        await later(100);
+        await delay(100);
         expect(condition).to.have.property('fulfilled', false);
     });
 
