@@ -199,7 +199,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
         } else {
                 catOpc.info(`connect module ${this.id} ${this.endpoint}`);
 
-                await timeout(this.client.connect(this.endpoint), 1000);
+                await timeout(this.client.connect(this.endpoint), 2000);
                 catOpc.info(`module connected ${this.id} ${this.endpoint}`);
 
                 const session = await this.client.createSession();
