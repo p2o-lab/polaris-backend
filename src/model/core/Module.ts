@@ -133,11 +133,17 @@ type ModuleEmitter = StrictEventEmitter<EventEmitter, ModuleEvents>;
  *
  */
 export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
+
+    readonly options: ModuleOptions;
     readonly id: string;
     readonly endpoint: string;
-    services: Service[];
-    variables: ProcessValue[];
     readonly hmiUrl: string;
+    readonly services: Service[];
+    readonly variables: ProcessValue[];
+    readonly logger: Category;
+
+    // module is protected and can't be deleted by the user
+    protected: boolean = false;
 
     private session: ClientSession;
     private client: OPCUAClient;
@@ -145,15 +151,11 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
     private monitoredItems: Map<NodeId, { monitoredItem: ClientMonitoredItem, emitter: StrictEventEmitter<EventEmitter, OpcUaNodeEvents> }>;
     private namespaceArray: string[];
 
-    /**
-     * module is protected and can't be deleted by the user
-     */
-    protected: boolean = false;
 
-    readonly logger: Category;
 
     constructor(options: ModuleOptions, protectedModule: boolean = false) {
         super();
+        this.options = options;
         this.id = options.id;
         this.endpoint = options.opcua_server_url;
         this.protected = protectedModule;

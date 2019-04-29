@@ -66,15 +66,15 @@ type RecipeEmitter = StrictEventEmitter<EventEmitter, RecipeEvents>;
  */
 export class Recipe extends (EventEmitter as { new(): RecipeEmitter }) {
 
-    id: string;
-    name: string;
-    options: RecipeOptions;
-    protected: boolean;
+    readonly id: string;
+    readonly name: string;
+    readonly options: RecipeOptions;
+    readonly protected: boolean;
 
     // necessary modules
     modules: Set<Module> = new Set<Module>();
-    initial_step: Step;
-    steps: Step[];
+    readonly initial_step: Step;
+    readonly steps: Step[];
 
     // dynamic properties
     current_step: Step;

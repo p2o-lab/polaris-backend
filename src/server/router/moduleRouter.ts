@@ -51,6 +51,17 @@ moduleRouter.get('/:id', asyncHandler(async (req: Request, res: Response) => {
     res.json(await manager.modules.find(module => module.id === req.params.id).json());
 }));
 
+
+/**
+ * @api {get} /module/:id/download    Download module options
+ * @apiName GetModuleDownload
+ * @apiGroup Module
+ * @apiParam {string} id    Module id
+ */
+moduleRouter.get('/:id/download', asyncHandler(async (req: Request, res: Response) => {
+    res.json(await manager.modules.find(module => module.id === req.params.id).options);
+}));
+
 /**
  * @api {put} /module    Add module
  * @apiName PutModule

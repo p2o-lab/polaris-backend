@@ -54,6 +54,17 @@ recipeRouter.get('/:recipeId', async (req: Request, res: Response) => {
 });
 
 /**
+ * @api {get} /recipe/:recipeId/download    Download recipe options
+ * @apiName GetRecipeDownload
+ * @apiGroup Recipe
+ * @apiParam recipeId
+ */
+recipeRouter.get('/:recipeId/download', async (req: Request, res: Response) => {
+    const result = manager.recipes.find(recipe => recipe.id === req.params.recipeId).options;
+    res.json(result);
+});
+
+/**
  * @api {delete} /recipe/:recipeId    Delete recipe
  * @apiName DeleteRecipe
  * @apiGroup Recipe

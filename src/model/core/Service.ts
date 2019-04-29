@@ -202,9 +202,9 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
     }
 
     /**
-     * Listen to state and error of service and emits specific events for them
+     * Listen to state, controlEnable, command, currentStrategy and opMode of service and emits specific events for them
      *
-     * @returns {Service} emits 'errorMessage' and 'state' events
+     * @returns {Service}
      */
     public async subscribeToService(): Promise<Service> {
         this.logger.info(`[${this.qualifiedName}] Subscribe to service`);
@@ -215,7 +215,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
                 .on('changed', (data) => {
                     this.controlEnable.value = data.value;
                     this.controlEnable.timestamp = new Date();
-                    this.logger.debug(`[${this.qualifiedName}] ControlEnable changed: ${this.controlEnable.value} - ${JSON.stringify(controlEnableToJson(<ServiceControlEnable> this.controlEnable.value))}`);
+                    this.logger.info(`[${this.qualifiedName}] ControlEnable changed: ${this.controlEnable.value} - ${JSON.stringify(controlEnableToJson(<ServiceControlEnable> this.controlEnable.value))}`);
                     this.emit('controlEnable', controlEnableToJson(<ServiceControlEnable> this.controlEnable.value));
                 });
         }
@@ -452,16 +452,18 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
         if (strategy || parameters) {
             await this.setStrategyParameters(strategy, parameters);
         }
-        let strat: Strategy = await this.getCurrentStrategy();
+        if (!strategy) {
+            strategy = await this.getCurrentStrategy();
+        }
         if (command) {
             result = await this.executeCommand(command);
         }
 
         this.emit('commandExecuted', {
             timestampPfe: new Date(),
-            strategy: strat,
+            strategy: strategy,
             command: command,
-            parameter: await this.getCurrentParameters(strat)
+            parameter: await this.getCurrentParameters(strategy)
         });
         return result;
     }
