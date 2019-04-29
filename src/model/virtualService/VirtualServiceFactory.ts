@@ -30,7 +30,7 @@ import {AggregatedService} from './AggregatedService';
 import {Storage} from './Storage';
 import {VirtualService} from './VirtualService';
 
-export class FunctionBlockFactory {
+export class VirtualServiceFactory {
  static create(options: any): VirtualService {
      if (options.type === Timer.type) {
          return new Timer(options.name);
@@ -43,7 +43,7 @@ export class FunctionBlockFactory {
      } else if (options.type === AggregatedService.type) {
          return new AggregatedService(options)
      } else {
-         throw new Error('Wrong function block type');
+         throw new Error('Wrong virtual service type');
      }
  }
 }

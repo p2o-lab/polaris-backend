@@ -32,8 +32,8 @@ import {ManagerInterface, RecipeOptions, ServiceCommand} from '@plt/pfe-ree-inte
 import {Player} from "./recipe/Player";
 import {ServiceState} from './core/enum';
 import {VariableLogEntry,ServiceLogEntry } from '../logging/archive';
-import {VirtualService} from './functionBlock/VirtualService';
-import {FunctionBlockFactory} from './functionBlock/FunctionBlockFactory';
+import {VirtualService} from './virtualService/VirtualService';
+import {VirtualServiceFactory} from './virtualService/VirtualServiceFactory';
 
 export class Manager extends EventEmitter {
 
@@ -43,8 +43,8 @@ export class Manager extends EventEmitter {
     // loaded modules
     readonly modules: Module[] = [];
 
-    // instantiated function blocks
-    readonly functionBlocks: VirtualService[] = [];
+    // instantiated virtual services
+    readonly virtualServices: VirtualService[] = [];
 
     readonly player: Player;
 
@@ -229,7 +229,7 @@ export class Manager extends EventEmitter {
         return {
             activeRecipe: this.player.getCurrentRecipe()? this.player.getCurrentRecipe().json() : undefined,
             modules: this.modules.map(module => module.id),
-            //functionBlocks: this.functionBlocks.map(fb => fb.json()),
+            //virtualServices: this.virtualServices.map(fb => fb.json()),
             autoReset: this.autoreset
         };
     }
@@ -287,20 +287,20 @@ export class Manager extends EventEmitter {
         return service;
     }
 
-    public instantiateFunctionBlock(options) {
-        const fb = FunctionBlockFactory.create(options);
-        catManager.info(`instantiated new function block ${fb.name}`);
-        this.functionBlocks.push(fb);
+    public instantiateVirtualService(options) {
+        const virtualService = VirtualServiceFactory.create(options);
+        catManager.info(`instantiated virtual Service ${virtualService.name}`);
+        this.virtualServices.push(virtualService);
     }
 
-    public removeFunctionBlock(functionBlockId: string) {
-        catManager.debug(`Remove function block ${functionBlockId}`);
-        const index = this.functionBlocks.findIndex(fb => fb.name === functionBlockId);
+    public removeVirtualService(virtualServiceId: string) {
+        catManager.debug(`Remove Virtual Service ${virtualServiceId}`);
+        const index = this.virtualServices.findIndex(fb => fb.name === virtualServiceId);
         if (!index) {
-            throw new Error(`Recipe ${functionBlockId} not available.`);
+            throw new Error(`Virtual Service ${virtualServiceId} not available.`);
         }
         if (index > -1) {
-            manager.functionBlocks.splice(index, 1);
+            manager.virtualServices.splice(index, 1);
         }
     }
 }

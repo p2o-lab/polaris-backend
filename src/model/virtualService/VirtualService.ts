@@ -24,7 +24,7 @@
  */
 
 import {ServiceState} from '../core/enum';
-import {ControlEnableInterface, ParameterInterface, ParameterOptions, ServiceCommand, FunctionBlockInterface} from '@plt/pfe-ree-interface';
+import {ParameterOptions, FunctionBlockInterface} from '@plt/pfe-ree-interface';
 import {Parameter} from '../recipe/Parameter';
 import {BaseService} from '../core/BaseService';
 import {catVirtualService} from '../../config/logging';
@@ -122,7 +122,7 @@ export abstract class VirtualService extends BaseService {
     }
 
     private async gotoRunning(): Promise<void> {
-        this._state = ServiceState.RUNNING;
+        this._state = ServiceState.EXECUTE;
         this._controlEnable = {
             start: false,
             abort: true,

@@ -24,11 +24,11 @@
  */
 
 import {expect} from 'chai';
-import {Timer} from '../../../src/model/functionBlock/Timer';
-import {Storage} from '../../../src/model/functionBlock/Storage';
+import {Timer} from '../../../src/model/virtualService/Timer';
+import {Storage} from '../../../src/model/virtualService/Storage';
 import * as delay from 'timeout-as-promise';
 import {ServiceState} from '../../../src/model/core/enum';
-import {FunctionGenerator} from '../../../src/model/functionBlock/FunctionGenerator';
+import {FunctionGenerator} from '../../../src/model/virtualService/FunctionGenerator';
 
 
 describe('VirtualService', () => {

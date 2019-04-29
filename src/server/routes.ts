@@ -31,7 +31,7 @@ import { serviceRouter } from './router/serviceRouter';
 import { coreRouter } from './router/coreRouter';
 import { playerRouter } from './router/playerRouter';
 import { recipeRunRouter } from './router/recipeRunRouter';
-import {functionBlockRouter} from './router/functionBlockRouter';
+import {virtualServiceRouter} from './router/virtualServiceRouter';
 
 export default class Routes {
     static init(server): void {
@@ -48,7 +48,7 @@ export default class Routes {
         server.app.use('/api/recipeRun', recipeRunRouter);
         server.app.use('/api/recipe', recipeRouter);
         server.app.use('/api/player', playerRouter);
-        server.app.use('/api/functionBlock', functionBlockRouter);
+        server.app.use('/api/virtualService', virtualServiceRouter);
         server.app.use('/api', coreRouter);
 
         // Error handling
