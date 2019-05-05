@@ -162,6 +162,12 @@ export class ModuleTestServer {
                     if (parseInt(variant.value) == OpMode.stateManOp) {
                         this.varOpmode = this.varOpmode | OpMode.stateManAct;
                     }
+                    if (parseInt(variant.value) == OpMode.stateAutOp) {
+                        this.varOpmode = this.varOpmode | OpMode.stateAutAct;
+                    }
+                    if (parseInt(variant.value) == OpMode.srcExtOp) {
+                        this.varOpmode = this.varOpmode | OpMode.srcExtAct;
+                    }
                 }
             }
         });
