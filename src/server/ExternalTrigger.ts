@@ -28,27 +28,29 @@ import { post } from 'request';
 import {AttributeIds, NodeId, resolveNodeId} from 'node-opcua';
 import {OPCUAClient, ClientSession, ClientSubscription} from 'node-opcua-client';
 import { catOpc } from '../config/logging';
-import {manager} from '../model/Manager';
 
 export class ExternalTrigger {
     private endpoint: string;
     private nodeId: NodeId;
     private client: OPCUAClient;
     private session: ClientSession;
+    private callback: () => void;
 
     /**
      * Construct external trigger.
      *
      * @param endpoint  url of OPC UA endpoint (e.g. 'opc.tcp://127.0.0.1:53530/OPCUA/SimulationServer')
      * @param nodeId    nodeId of node to be monitored as external trigger (e.g. 'ns=3;s=BooleanDataItem')
+     * @param callback  callback to be triggered when node becomes true
      */
-    constructor(endpoint: string, nodeId: string) {
+    constructor(endpoint: string, nodeId: string, callback: () => void ) {
         if (!endpoint)
             throw new Error('No Endpoint given');
         if (!nodeId)
             throw new Error('No nodeId given');
         this.endpoint = endpoint;
         this.nodeId = resolveNodeId(nodeId);
+        this.callback = callback;
         this.client = new OPCUAClient({
             endpoint_must_exist: false,
             connectionStrategy: {
@@ -90,11 +92,7 @@ export class ExternalTrigger {
         monitoredItem.on('changed', (dataValue) => {
             catOpc.info(`flag is ${dataValue.value.value}`);
             if (dataValue.value.value) {
-                try {
-                    manager.player.start();
-                } catch (err) {
-                    console.log('player already running');
-                }
+                this.callback();
             }
         });
     }

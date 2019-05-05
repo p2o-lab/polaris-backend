@@ -23,11 +23,11 @@
  * SOFTWARE.
  */
 
-import { manager } from '../../model/Manager';
+import { Manager } from '../../model/Manager';
 import { Request, Response, Router } from 'express';
 
 import * as asyncHandler from 'express-async-handler';
-import {catModule, catServer} from '../../config/logging';
+import { catServer} from '../../config/logging';
 
 export const moduleRouter: Router = Router();
 
@@ -37,6 +37,7 @@ export const moduleRouter: Router = Router();
  * @apiGroup Module
  */
 moduleRouter.get('', asyncHandler(async (req: Request, res: Response) => {
+    const manager: Manager = req.app.get('manager');
     const tasks = manager.modules.map(async module => await module.json());
     res.json(await Promise.all(tasks));
 }));
@@ -48,6 +49,7 @@ moduleRouter.get('', asyncHandler(async (req: Request, res: Response) => {
  * @apiParam {string} id    Module id
  */
 moduleRouter.get('/:id', asyncHandler(async (req: Request, res: Response) => {
+    const manager: Manager = req.app.get('manager');
     res.json(await manager.modules.find(module => module.id === req.params.id).json());
 }));
 
@@ -59,6 +61,7 @@ moduleRouter.get('/:id', asyncHandler(async (req: Request, res: Response) => {
  * @apiParam {string} id    Module id
  */
 moduleRouter.get('/:id/download', asyncHandler(async (req: Request, res: Response) => {
+    const manager: Manager = req.app.get('manager');
     res.json(await manager.modules.find(module => module.id === req.params.id).options);
 }));
 
@@ -71,10 +74,10 @@ moduleRouter.get('/:id/download', asyncHandler(async (req: Request, res: Respons
 moduleRouter.put('', asyncHandler(async (req, res) => {
     const moduleOptions = req.body.modules;
     catServer.info(`Load module: ${JSON.stringify(moduleOptions)}`);
+    const manager: Manager = req.app.get('manager');
     const newModules = manager.loadModule(req.body);
     newModules.forEach(module =>
         module.connect()
-            .catch(reason => catModule.warn('Could not connect to module: ' + reason))
     );
     res.json(await Promise.all(newModules.map(module => module.json())));
 }));
@@ -86,6 +89,7 @@ moduleRouter.put('', asyncHandler(async (req, res) => {
  * @apiParam {string} id    Module id to be deleted
  */
 moduleRouter.delete('/:id', asyncHandler(async (req: Request, res: Response) => {
+    const manager: Manager = req.app.get('manager');
     const module = manager.modules.find(module => module.id === req.params.id);
     if (module.protected) {
         res.status(404).send(`Module {$id} is protected and can't be deleted`);
@@ -106,6 +110,7 @@ moduleRouter.delete('/:id', asyncHandler(async (req: Request, res: Response) => 
  * @apiParam {string} id    Module id
  */
 moduleRouter.post('/:id/connect', asyncHandler(async (req: Request, res: Response) => {
+    const manager: Manager = req.app.get('manager');
     const module = manager.modules.find(module => module.id === req.params.id);
     await module.connect();
     res.json({ module: module.id, status: 'Succesfully connected' });
@@ -118,6 +123,7 @@ moduleRouter.post('/:id/connect', asyncHandler(async (req: Request, res: Respons
  * @apiParam {string} id    Module id
  */
 moduleRouter.post('/:id/disconnect', asyncHandler(async (req: Request, res: Response) => {
+    const manager: Manager = req.app.get('manager');
     const module = manager.modules.find(module => module.id === req.params.id);
     await module.disconnect();
     res.json({ module: module.id, status: 'Succesfully disconnected' });
@@ -130,6 +136,7 @@ moduleRouter.post('/:id/disconnect', asyncHandler(async (req: Request, res: Resp
  * @apiGroup Module
  */
 moduleRouter.post('/abort', asyncHandler(async (req: Request, res: Response) => {
+    const manager: Manager = req.app.get('manager');
     await manager.abortAllServices();
     res.json({ status: 'aborted all services from all modules' });
 }));
@@ -141,6 +148,7 @@ moduleRouter.post('/abort', asyncHandler(async (req: Request, res: Response) => 
  * @apiGroup Module
  */
 moduleRouter.post('/stop', asyncHandler(async (req: Request, res: Response) => {
+    const manager: Manager = req.app.get('manager');
     await manager.stopAllServices();
     res.json({ status: 'stopped all services from all modules' });
 }));
@@ -152,6 +160,7 @@ moduleRouter.post('/stop', asyncHandler(async (req: Request, res: Response) => {
  * @apiGroup Module
  */
 moduleRouter.post('/reset', asyncHandler(async (req: Request, res: Response) => {
+    const manager: Manager = req.app.get('manager');
     await manager.resetAllServices();
     res.json({ status: 'reset all services from all modules' });
 }));

@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import { manager } from '../../model/Manager';
+import { Manager } from '../../model/Manager';
 import { Request, Response, Router } from 'express';
 
 export const recipeRunRouter: Router = Router();
@@ -35,6 +35,7 @@ export const recipeRunRouter: Router = Router();
  * @apiParam recipeRunId
  */
 recipeRunRouter.get('/:recipeRunId', async (req: Request, res: Response) => {
+    const manager: Manager = req.app.get('manager');
     const result = manager.player.recipeRuns.find(recipeRun => recipeRun.id === req.params.recipeRunId).json();
     res.contentType('application/json').attachment()
         .send(JSON.stringify(result, null, 2));

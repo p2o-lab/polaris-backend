@@ -24,11 +24,10 @@
  */
 
 
-import { moduleRouter } from './moduleRouter';
 import { Request, Response, Router } from 'express';
 import * as asyncHandler from 'express-async-handler';
 import { catServer } from '../../config/logging';
-import {manager} from '../../model/Manager';
+import {Manager} from '../../model/Manager';
 
 export const serviceRouter: Router = Router();
 
@@ -41,7 +40,8 @@ export const serviceRouter: Router = Router();
  * @apiParam {string} serviceName   Name of service
  * @apiParam {ParameterOptions[]} strategyParameters    Module Service Parameter
  */
-moduleRouter.post('/:moduleId/service/:serviceName/parameter', asyncHandler(async (req: Request, res: Response) => {
+serviceRouter.post('/:moduleId/service/:serviceName/parameter', asyncHandler(async (req: Request, res: Response) => {
+    const manager: Manager = req.app.get('manager');
     const service = manager.getService(req.params.moduleId, req.params.serviceName);
     await service.setServiceParameters(req.body.parameters);
     res.json(await service.getOverview());
@@ -57,8 +57,9 @@ moduleRouter.post('/:moduleId/service/:serviceName/parameter', asyncHandler(asyn
  * @apiParam {string} strategy      Name of strategy
  * @apiParam {ParameterOptions[]} strategyParameters    Module Service Parameters
  */
-moduleRouter.post('/:moduleId/service/:serviceName/strategy', asyncHandler(async (req: Request, res: Response) => {
+serviceRouter.post('/:moduleId/service/:serviceName/strategy', asyncHandler(async (req: Request, res: Response) => {
     catServer.info(`Set Strategy Parameters ${req.body.strategy}, ${JSON.stringify(req.body.parameters)}`);
+    const manager: Manager = req.app.get('manager');
     const service = manager.getService(req.params.moduleId, req.params.serviceName);
     await service.setStrategyParameters(req.body.strategy, req.body.parameters);
 
@@ -73,8 +74,9 @@ moduleRouter.post('/:moduleId/service/:serviceName/strategy', asyncHandler(async
  * @apiParam {string} serviceName   Name of service
  * @apiParam {string="start","stop","abort","complete","pause","unhold","reset"} command       Command name
  */
-moduleRouter.post('/:moduleId/service/:serviceName/:command', asyncHandler(async (req: Request, res: Response) => {
+serviceRouter.post('/:moduleId/service/:serviceName/:command', asyncHandler(async (req: Request, res: Response) => {
     catServer.info(`Call service: ${JSON.stringify(req.params)}`);
+    const manager: Manager = req.app.get('manager');
     const service = manager.getService(req.params.moduleId, req.params.serviceName);
     const result = await service.execute(req.params.command);
     res.json({
@@ -92,7 +94,8 @@ moduleRouter.post('/:moduleId/service/:serviceName/:command', asyncHandler(async
  * @apiParam {string} moduleId      Module id
  * @apiParam {string} serviceName   Name of service
  */
-moduleRouter.get('/:moduleId/service/:serviceName', asyncHandler(async (req: Request, res: Response) => {
+serviceRouter.get('/:moduleId/service/:serviceName', asyncHandler(async (req: Request, res: Response) => {
+    const manager: Manager = req.app.get('manager');
     const service = manager.getService(req.params.moduleId, req.params.serviceName);
     res.json(await service.getOverview());
 }));

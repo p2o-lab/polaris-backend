@@ -47,9 +47,6 @@ export class Manager extends EventEmitter {
 
     serviceArchive: ServiceLogEntry[] = [];
 
-    // use ControlExt (true) or ControlOp (false)
-    automaticMode: boolean = false;
-
     // autoreset determines if a service is automatically reset when
     private _autoreset: boolean = true;
     // autoreset timeout in milliseconds
