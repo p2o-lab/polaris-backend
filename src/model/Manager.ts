@@ -257,9 +257,9 @@ export class Manager extends EventEmitter {
         if (recipe.protected) {
             throw new Error(`Recipe ${recipeId} can not be deleted since it is protected.`);
         } else {
-            const index = manager.recipes.indexOf(recipe, 0);
+            const index = this.recipes.indexOf(recipe, 0);
             if (index > -1) {
-                manager.recipes.splice(index, 1);
+                this.recipes.splice(index, 1);
             }
         }
     }
