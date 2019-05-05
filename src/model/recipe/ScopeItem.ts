@@ -28,7 +28,6 @@ import {catScopeItem} from '../../config/logging';
 import {ProcessValue} from '../core/ProcessValue';
 import {Module} from '../core/Module';
 import {OpcUaNodeOptions} from '../core/Interfaces';
-import {manager} from '../Manager';
 import {Service} from '../core/Service';
 import {Expression, Parser} from 'expr-eval';
 import {DataAssembly} from '../core/DataAssembly';
@@ -61,7 +60,7 @@ export class ScopeItem {
      * @param {string} expression
      * @param {Module[]} modules
      */
-    static extractFromExpressionString(expression: string, modules = manager.modules): {expression: Expression, scopeItems: ScopeItem[]} {
+    static extractFromExpressionString(expression: string, modules: Module[]): {expression: Expression, scopeItems: ScopeItem[]} {
         const parser: Parser = new Parser({allowMemberAccess: true});
         const value = expression.replace(new RegExp('\\\\.', 'g'), '__');
         const expressionObject = parser.parse(value);
@@ -82,7 +81,7 @@ export class ScopeItem {
      * @param {Module[]} modules    modules to be searched in for variable names (default: all modules in manager)
      * @returns {ScopeItem}
      */
-    static extractFromExpressionVariable(variable: string, modules= manager.modules): ScopeItem {
+    static extractFromExpressionVariable(variable: string, modules: Module[]): ScopeItem {
         let components = variable.split('.').map((token: string) => token.replace(new RegExp('__', 'g'), '.'));
         let token = components.shift();
 
@@ -136,7 +135,7 @@ export class ScopeItem {
      * @param {Module[]} modules    modules to be searched in for variable names (default: all modules in manager)
      * @returns {ScopeItem}
      */
-    static extractFromScopeOptions(item: ScopeOptions, modules = manager.modules): ScopeItem {
+    static extractFromScopeOptions(item: ScopeOptions, modules: Module[]): ScopeItem {
         const module = modules.find(m => m.id === item.module);
         const dataAssembly = module.variables.find(v => v.name === item.dataAssembly);
         const opcUaNode = dataAssembly.communication[item.variable] ||
