@@ -13,7 +13,7 @@
             },
             "ControlExt": {
               "namespace_index": "urn:NodeOPCUA-Server-default",
-              "node_id": "MyCommandExt"
+              "node_id": "MyCommand"
             },
             "State": {
               "namespace_index": "urn:NodeOPCUA-Server-default",
