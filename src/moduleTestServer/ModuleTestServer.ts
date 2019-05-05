@@ -24,7 +24,7 @@
  */
 
 
-import {OpMode, ServiceMtpCommand, ServiceState} from '../src/model/core/enum';
+import {OpMode, ServiceMtpCommand, ServiceState} from '../model/core/enum';
 import {DataType, Variant} from 'node-opcua';
 import {OPCUAServer} from 'node-opcua-server';
 import Timeout = NodeJS.Timeout;

@@ -23,11 +23,7 @@
  * SOFTWARE.
  */
 
-import {ModuleTestServer} from '../test/ModuleTestServer';
+import {ModuleTestServer} from './moduleTestServer/ModuleTestServer';
 
-
-    console.log("Starting test server")
-    const moduleServer = new ModuleTestServer();
-    moduleServer.start(() => moduleServer.startSimulation());
-
-
+const moduleServer = new ModuleTestServer();
+moduleServer.start(() => moduleServer.startSimulation());

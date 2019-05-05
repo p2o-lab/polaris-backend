@@ -24,7 +24,7 @@
  */
 
 
-import {ModuleTestServer} from '../../ModuleTestServer';
+import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 import {Service} from '../../../src/model/core/Service';
 import {Module} from '../../../src/model/core/Module';
 import {expect} from 'chai';

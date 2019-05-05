@@ -34,7 +34,7 @@ import {Recipe} from '../../../src/model/recipe/Recipe';
 import {ServiceState, controlEnableToJson} from '../../../src/model/core/enum';
 import {OPCUAClient, ClientSession} from 'node-opcua-client';
 import {OPCUAServer} from 'node-opcua-server';
-import {ModuleTestServer} from '../../ModuleTestServer';
+import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 import {Module} from '../../../src/model/core/Module';
 import {waitForStateChange} from '../../helper';
 

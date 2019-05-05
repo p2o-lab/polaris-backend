@@ -27,7 +27,7 @@ import * as assert from 'assert';
 import * as fs from 'fs';
 import {Module, ModuleOptions} from '../../../src/model/core/Module';
 import {expect} from 'chai';
-import {ModuleTestServer} from '../../ModuleTestServer';
+import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 
 
 

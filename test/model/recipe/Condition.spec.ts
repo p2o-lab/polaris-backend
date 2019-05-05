@@ -28,7 +28,7 @@ import {ConditionType} from '@plt/pfe-ree-interface';
 import {expect} from 'chai';
 import {Module} from '../../../src/model/core/Module';
 import {OPCUAServer} from 'node-opcua-server';
-import {ModuleTestServer} from '../../ModuleTestServer';
+import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 import {ServiceState} from '../../../src/model/core/enum';
 import { timeout } from 'promise-timeout';
 import * as fs from "fs";

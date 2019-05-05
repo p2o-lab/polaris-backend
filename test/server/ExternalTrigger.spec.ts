@@ -26,7 +26,7 @@
 import {ExternalTrigger} from '../../src/server/ExternalTrigger';
 import {OPCUAServer} from 'node-opcua-server';
 import {expect} from 'chai';
-import {ModuleTestServer} from '../ModuleTestServer';
+import {ModuleTestServer} from '../../src/moduleTestServer/ModuleTestServer';
 
 describe('ExternalTrigger', () => {
 
