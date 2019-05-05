@@ -47,9 +47,6 @@ export class Manager extends EventEmitter {
 
     serviceArchive: ServiceLogEntry[] = [];
 
-    // use ControlExt (true) or ControlOp (false)
-    automaticMode: boolean = false;
-
     // autoreset determines if a service is automatically reset when
     private _autoreset: boolean = true;
     // autoreset timeout in milliseconds
@@ -257,9 +254,9 @@ export class Manager extends EventEmitter {
         if (recipe.protected) {
             throw new Error(`Recipe ${recipeId} can not be deleted since it is protected.`);
         } else {
-            const index = manager.recipes.indexOf(recipe, 0);
+            const index = this.recipes.indexOf(recipe, 0);
             if (index > -1) {
-                manager.recipes.splice(index, 1);
+                this.recipes.splice(index, 1);
             }
         }
     }

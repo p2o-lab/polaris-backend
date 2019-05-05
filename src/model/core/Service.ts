@@ -46,7 +46,6 @@ import {
     StrategyInterface
 } from '@plt/pfe-ree-interface';
 import {Unit} from './Unit';
-import {manager} from '../Manager';
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {DataAssembly, DataAssemblyOptions} from './DataAssembly';
@@ -135,6 +134,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
 
     /** OPC UA node of command/controlOp variable */
     readonly command: OpcUaNodeOptions;
+    readonly commandMan: OpcUaNodeOptions;
     /** OPC UA node of status variable */
     readonly status: OpcUaNodeOptions;
     /** OPC UA node of controlEnable variable */
@@ -143,14 +143,19 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
     readonly opMode: OpcUaNodeOptions;
     /** OPC UA node of strategy variable */
     readonly strategy: OpcUaNodeOptions;
+    readonly strategyMan: OpcUaNodeOptions;
     /** OPC UA node of currentStrategy variable */
     readonly currentStrategy: OpcUaNodeOptions;
-    
+
     readonly logger: Category;
+
+    // use ControlExt (true) or ControlOp (false)
+    readonly automaticMode;
 
     constructor(serviceOptions: ServiceOptions, parent: Module) {
         super();
         this.name = serviceOptions.name;
+        this.automaticMode = false;
 
         const com = serviceOptions.communication;
 
@@ -169,14 +174,24 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
             throw new Error(`No controlEnable variable in service ${this.name} during parsing`);
         }
 
-        this.command = manager.automaticMode ? (com.ControlExt || com.CommandExt) : (com.ControlOp || com.CommandMan);
-        if (!this.opMode) {
-            throw new Error(`No opMode variable in service ${this.name} during parsing`);
+        this.command = com.ControlExt || com.CommandExt;
+        if (!this.command) {
+            throw new Error(`No command variable in service ${this.name} during parsing`);
         }
 
-        this.strategy = manager.automaticMode ? com.StrategyExt : (com.StrategyOp || com.StrategyMan);
+        this.commandMan = com.ControlOp || com.CommandMan;
+        if (!this.commandMan) {
+            throw new Error(`No commandMan variable in service ${this.name} during parsing`);
+        }
+
+        this.strategy = com.StrategyExt;
         if (!this.strategy) {
             throw new Error(`No strategy variable in service ${this.name} during parsing`);
+        }
+
+        this.strategyMan = com.StrategyOp || com.StrategyMan;
+        if (!this.strategyMan) {
+            throw new Error(`No strategyMan variable in service ${this.name} during parsing`);
         }
 
         this.currentStrategy = com.CurrentStrategy;
@@ -240,6 +255,17 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
                     this.command.value = data.value;
                     this.command.timestamp = new Date();
                     this.logger.debug(`[${this.qualifiedName}] Command changed: ${ServiceMtpCommand[<ServiceMtpCommand> this.command.value]}`);
+                });
+        }
+        if (this.commandMan) {
+            let result = await this.parent.readVariableNode(this.commandMan);
+            this.commandMan.value = result.value.value;
+            this.logger.debug(`[${this.qualifiedName}] initial commandMan: ${this.commandMan.value}`);
+            this.parent.listenToOpcUaNode(this.commandMan)
+                .on('changed', (data) => {
+                    this.commandMan.value = data.value;
+                    this.commandMan.timestamp = new Date();
+                    this.logger.debug(`[${this.qualifiedName}] CommandMan changed: ${ServiceMtpCommand[<ServiceMtpCommand> this.commandMan.value]}`);
                 });
         }
         if (this.currentStrategy) {
@@ -309,7 +335,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
     public async getCurrentStrategy(): Promise<Strategy> {
         if (!this.currentStrategy.value ||
             (new Date().getMilliseconds() - this.currentStrategy.timestamp.getMilliseconds() < 1000)) {
-            this.currentStrategy.value = (await this.parent.readVariableNode(this.strategy)).value.value;
+            this.currentStrategy.value = (await this.parent.readVariableNode(this.currentStrategy)).value.value;
             this.currentStrategy.timestamp = new Date();
             this.logger.debug(`[${this.qualifiedName}] Update currentStrategy: ${this.currentStrategy.value}`);
         }
@@ -574,7 +600,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
 
         // set strategy
         this.logger.info(`[${this.qualifiedName}] Set strategy "${strat.name}" (${strat.id})`);
-        await this.parent.writeNode(this.strategy,
+        await this.parent.writeNode(this.automaticMode ? this.strategy : this.strategyMan,
             {
                 dataType: DataType.UInt32,
                 value: strat.id,
@@ -638,7 +664,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
 
 
     public setOperationMode(): Promise<void> {
-        if (manager.automaticMode) {
+        if (this.automaticMode) {
             this.logger.info(`[${this.qualifiedName}] Bring to automatic mode`);
             return this.setToAutomaticOperationMode();
         } else {
@@ -743,7 +769,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
             return Promise.reject(`ControlOp does not allow ${ServiceMtpCommand[command]} (${ServiceState[await this.getServiceState()]} - ${JSON.stringify(controlEnable)})`);
         }
 
-        const result = await this.parent.writeNode(this.command,
+        const result = await this.parent.writeNode(this.automaticMode ? this.command : this.commandMan,
             {
                 dataType: DataType.UInt32,
                 value: command,

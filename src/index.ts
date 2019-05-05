@@ -28,7 +28,7 @@ import {Server} from './server/server';
 import * as serverHandlers from './server/serverHandlers';
 import * as commandLineArgs from 'command-line-args';
 import * as fs from 'fs';
-import {manager} from './model/Manager';
+import {Manager} from './model/Manager';
 import {ExternalTrigger} from './server/ExternalTrigger';
 import commandLineUsage = require('command-line-usage');
 import {catModule} from "./config/logging";
@@ -101,9 +101,9 @@ if (options) {
     if (options.help) {
         console.log(commandLineUsage(sections));
     } else {
+        const manager = new Manager();
         const port: number | string | boolean = serverHandlers.normalizePort(process.env.PORT || 3000);
-
-        const appServer = new Server();
+        const appServer = new Server(manager);
         appServer.app.set('port', port);
 
         const server: http.Server = http.createServer(appServer.app);
@@ -144,7 +144,7 @@ if (options) {
             const endpoint = options.externalTrigger[0];
             const nodeId = options.externalTrigger[1];
 
-            const et = new ExternalTrigger(endpoint, nodeId);
+            const et = new ExternalTrigger(endpoint, nodeId, manager.player.start);
             et.startMonitoring()
                 .catch((err) => {
                     console.log("Could not start monitoring of external trigger", err.toString());

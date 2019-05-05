@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import { manager } from '../../model/Manager';
+import { Manager } from '../../model/Manager';
 import { catServer } from '../../config/logging';
 import { Request, Response, Router } from 'express';
 import * as asyncHandler from 'express-async-handler';
@@ -36,6 +36,7 @@ export const recipeRouter: Router = Router();
  * @apiGroup Recipe
  */
 recipeRouter.get('/', asyncHandler(async (req: Request, res: Response) => {
+    const manager: Manager = req.app.get('manager');
     const result = manager.recipes.map((recipe) => {
         return { id: recipe.id, options: recipe.options, protected: recipe.protected };
     });
@@ -49,6 +50,7 @@ recipeRouter.get('/', asyncHandler(async (req: Request, res: Response) => {
  * @apiParam recipeId
  */
 recipeRouter.get('/:recipeId', async (req: Request, res: Response) => {
+    const manager: Manager = req.app.get('manager');
     const result = manager.recipes.find(recipe => recipe.id === req.params.recipeId).json();
     res.json(result);
 });
@@ -60,6 +62,7 @@ recipeRouter.get('/:recipeId', async (req: Request, res: Response) => {
  * @apiParam recipeId
  */
 recipeRouter.get('/:recipeId/download', async (req: Request, res: Response) => {
+    const manager: Manager = req.app.get('manager');
     const result = manager.recipes.find(recipe => recipe.id === req.params.recipeId).options;
     res.json(result);
 });
@@ -71,6 +74,7 @@ recipeRouter.get('/:recipeId/download', async (req: Request, res: Response) => {
  * @apiParam recipeId   id of recipe to be deleted
  */
 recipeRouter.delete('/:recipeId', asyncHandler(async (req: Request, res: Response) => {
+    const manager: Manager = req.app.get('manager');
     try {
         manager.removeRecipe(req.params.recipeId);
         res.send({ status: 'Successful deleted', id: req.params.recipeId });
@@ -87,6 +91,7 @@ recipeRouter.delete('/:recipeId', asyncHandler(async (req: Request, res: Respons
  */
 recipeRouter.put('', asyncHandler(async (req: Request, res: Response) => {
     catServer.debug(`PUT /recipe: ${JSON.stringify(req.body)}`);
+    const manager: Manager = req.app.get('manager');
     manager.loadRecipe(req.body);
     res.json({ status: 'recipe successful loaded' });
 }));

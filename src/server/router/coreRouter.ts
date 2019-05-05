@@ -23,11 +23,11 @@
  * SOFTWARE.
  */
 
-import { manager } from '../../model/Manager';
+import {Manager} from '../../model/Manager';
 import { Request, Response, Router } from 'express';
 import * as asyncHandler from 'express-async-handler';
-import { messages } from '../../config/logging';
 import yn from 'yn';
+import {messages} from '../../config/logging';
 
 export const coreRouter: Router = Router();
 
@@ -37,6 +37,7 @@ export const coreRouter: Router = Router();
  * @apiGroup Manager
  */
 coreRouter.get('/', (req: Request, res: Response) => {
+    const manager: Manager = req.app.get('manager');
     const result = manager.json();
     res.json(result);
 });
@@ -60,6 +61,7 @@ coreRouter.get('/version', (req: Request, res: Response) => {
 
  */
 coreRouter.get('/autoReset', asyncHandler(async (req: Request, res: Response) => {
+    const manager: Manager = req.app.get('manager');
     res.json({ autoReset: manager.autoreset });
 }));
 
@@ -71,6 +73,7 @@ coreRouter.get('/autoReset', asyncHandler(async (req: Request, res: Response) =>
  * @apiParam {Boolean} autoReset      new value of autoReset
  */
 coreRouter.post('/autoReset', asyncHandler(async (req: Request, res: Response) => {
+    const manager: Manager = req.app.get('manager');
     manager.autoreset = yn(req.body.autoReset, {default: false});
     res.json({ autoReset: manager.autoreset });
 }));
@@ -91,6 +94,7 @@ coreRouter.get('/logs(.json)?', asyncHandler(async (req: Request, res: Response)
  * @apiGroup Manager
  */
 coreRouter.get('/logs/variables(.json)?', asyncHandler(async (req: Request, res: Response) => {
+    const manager: Manager = req.app.get('manager');
     res.contentType('application/json').attachment()
         .send(JSON.stringify(manager.variableArchive.slice(-1000), null, 2));
 }));
@@ -101,6 +105,7 @@ coreRouter.get('/logs/variables(.json)?', asyncHandler(async (req: Request, res:
  * @apiGroup Manager
  */
 coreRouter.get('/logs/services(.json)?', asyncHandler(async (req: Request, res: Response) => {
+    const manager: Manager = req.app.get('manager');
     res.contentType('application/json').attachment()
         .send(JSON.stringify(manager.serviceArchive.slice(-1000), null, 2));
 }));
