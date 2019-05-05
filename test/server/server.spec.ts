@@ -23,10 +23,6 @@
  * SOFTWARE.
  */
 
-import { Condition, TimeCondition } from '../../src/model/recipe/Condition';
-import * as assert from 'assert';
-import { catRecipe } from '../../src/config/logging';
-import { ConditionType } from '@plt/pfe-ree-interface';
 import {Server} from "../../src/server/server";
 import * as http from "http";
 
