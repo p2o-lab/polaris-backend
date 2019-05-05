@@ -91,7 +91,7 @@ export class ScopeItem {
             if (modules.length == 1) {
                 module = modules[0];
             } else {
-                catScopeItem.info(`Could not evaluate variable "${variable}": module "${token}" not found in ${JSON.stringify(modules.map(m=> m.id))}`);
+                catScopeItem.warn(`Could not evaluate variable "${variable}": module "${token}" not found in ${JSON.stringify(modules.map(m=> m.id))}`);
                 return undefined;
             }
         } else {
@@ -113,10 +113,12 @@ export class ScopeItem {
         let dataAssembly: ProcessValue | DataAssembly;
         if (strategy && strategy.parameters.find(p => p.name === token)){
             dataAssembly = strategy.parameters.find(p => p.name === token);
+        } else if (service && service.parameters.find(p => p.name === token)){
+            dataAssembly = strategy.parameters.find(p => p.name === token);
         } else if (module.variables.find(v => v.name === token)) {
             dataAssembly = module.variables.find(v => v.name === token)
         } else {
-            catScopeItem.info(`Could not evaluate variable "${variable}": DataAssembly ${token} not found in module ${module.id}`);
+            catScopeItem.warn(`Could not evaluate variable "${variable}": Token "${token}" not found as dataAssembly in module ${module.id}: ${module.variables.map(v => v.name)}`);
             return undefined;
         }
 
