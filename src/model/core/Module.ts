@@ -37,7 +37,7 @@ import {
     Variant
 } from 'node-opcua-client';
 import {TimestampsToReturn} from 'node-opcua-service-read';
-import { catModule, catOpc, catRecipe } from '../../config/logging';
+import { catModule } from '../../config/logging';
 import { EventEmitter } from 'events';
 import { OpcUaNodeOptions} from './Interfaces';
 import { ServiceState } from './enum';
@@ -181,11 +181,16 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
             }
         })
             .on('close', () => {
-                catOpc.warn('Closing OPC UA client connection');
+                this.logger.info(`[${this.id}] Connection closed by OPC UA server`);
                 this.session =  null;
                 this.emit('disconnected');
             })
-            .on('time_out_request', () => catOpc.warn('time out request - retrying connection'));
+            .on('connection_lost', () => {
+                this.logger.info(`[${this.id}] Connection lost to OPC UA server`);
+                this.session =  null;
+                this.emit('disconnected');
+            })
+            .on('timed_out_request', () => this.logger.warn(`[${this.id}] timed out request - retrying connection`));
     }
 
     /**
@@ -194,16 +199,16 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
      */
     async connect(): Promise<void> {
         if (this.session) {
-            catOpc.debug(`Already connected to module ${this.id}`);
+            this.logger.debug(`[${this.id}] Already connected`);
             return Promise.resolve();
         } else {
-                catOpc.info(`connect module ${this.id} ${this.endpoint}`);
+                this.logger.info(`[${this.id}] connect module via ${this.endpoint}`);
 
                 await timeout(this.client.connect(this.endpoint), 2000);
-                catOpc.info(`module connected ${this.id} ${this.endpoint}`);
+                this.logger.info(`[${this.id}] module connected via ${this.endpoint}`);
 
                 const session = await this.client.createSession();
-                catOpc.debug(`session established ${this.id} ${this.endpoint}`);
+                this.logger.debug(`[${this.id}] session established`);
 
                 const subscription = new ClientSubscription(session, {
                     requestedPublishingInterval: 100,
@@ -216,10 +221,10 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
 
                 subscription
                     .on('started', () => {
-                        catOpc.trace(`subscription started - subscriptionId=${subscription.subscriptionId}`);
+                        this.logger.trace(`[${this.id}] subscription started - subscriptionId=${subscription.subscriptionId}`);
                     })
                     .on('terminated', () => {
-                        catOpc.trace(`subscription (Id=${subscription.subscriptionId}) terminated`);
+                        this.logger.trace(`[${this.id}] subscription (Id=${subscription.subscriptionId}) terminated`);
                     });
 
                 // read namespace array
@@ -252,7 +257,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
     }
 
     async getServiceStates(): Promise<ServiceInterface[]> {
-        catRecipe.trace('check services');
+        this.logger.trace(`[${this.id}] check service states`);
         const tasks = this.services.map(service => service.getOverview());
         return Promise.all(tasks);
     }
@@ -305,7 +310,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
 
             const emitter: StrictEventEmitter<EventEmitter, OpcUaNodeEvents> = new EventEmitter();
             monitoredItem.on('changed', (dataValue) => {
-                catOpc.debug(`Variable Changed (${this.resolveNodeId(node)}) = ${dataValue.value.value.toString()}`);
+                this.logger.debug(`[${this.id}] Variable Changed (${this.resolveNodeId(node)}) = ${dataValue.value.value.toString()}`);
                 emitter.emit('changed', {value: dataValue.value.value, timestamp: dataValue.serverTimestamp});
             });
             this.monitoredItems.set(nodeId, { monitoredItem, emitter });
@@ -329,7 +334,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
             const { monitoredItem, emitter } = this.monitoredItems.get(nodeId);
 
             if (monitoredItem) {
-                monitoredItem.terminate(() => catOpc.trace(`Listener ${JSON.stringify(nodeId)} terminated`));
+                monitoredItem.terminate(() => this.logger.trace(`[${this.id}] Listener ${JSON.stringify(nodeId)} terminated`));
             }
             if (emitter) {
                 emitter.removeAllListeners();
@@ -404,7 +409,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
     public async readVariableNode(node: OpcUaNodeOptions) {
         const nodeId = this.resolveNodeId(node);
         const result = await this.session.readVariableValue(nodeId);
-        catOpc.debug(`Read Variable: ${JSON.stringify(node)} -> ${nodeId} = ${result}`);
+        this.logger.debug(`[${this.id}] Read Variable: ${JSON.stringify(node)} -> ${nodeId} = ${result}`);
         if (result.statusCode != 0) {
             throw new Error(`Could not read ${nodeId.toString()}: ${result.statusCode.description}`);
         }
@@ -464,9 +469,9 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
         } else if (!variable.namespace_index) {
             throw new Error(`namespace index is null in module ${this.id}`);
         } else {
-            catOpc.debug(`resolveNodeId ${JSON.stringify(variable)}`);
+            this.logger.debug(`[${this.id}] resolveNodeId ${JSON.stringify(variable)}`);
             const nodeIdString = `ns=${this.namespaceArray.indexOf(variable.namespace_index)};s=${variable.node_id}`;
-            catOpc.debug(`resolveNodeId ${JSON.stringify(variable)} -> ${nodeIdString}`);
+            this.logger.debug(`[${this.id}] resolveNodeId ${JSON.stringify(variable)} -> ${nodeIdString}`);
             return coerceNodeId(nodeIdString);
         }
     }

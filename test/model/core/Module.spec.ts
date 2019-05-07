@@ -85,14 +85,14 @@ describe('Module', () => {
             moduleServer.start(resolve);
         });
         moduleServer.startSimulation();
-        expect(module.isConnected()).to.equal(false);
+        expect(module.isConnected()).to.be.false;
 
         await module.connect();
-        expect(module.isConnected()).to.equal(true);
+        expect(module.isConnected()).to.be.true;
 
         await new Promise((resolve) => {
             module.on('disconnected', () => {
-                expect(module.isConnected()).to.equal(false);
+                expect(module.isConnected()).to.be.false;
                 resolve();
             });
             moduleServer.stopSimulation();
