@@ -104,7 +104,7 @@ export abstract class Condition extends (EventEmitter as { new(): ConditionEmitt
      */
     clear() {
         this._fulfilled = undefined;
-        this.removeAllListeners();
+        this.removeAllListeners('stateChanged');
     };
 
     abstract getUsedModules(): Set<Module>;
@@ -326,7 +326,9 @@ export class TimeCondition extends Condition {
 }
 
 export abstract class ModuleCondition extends Condition {
-    module: Module;
+    protected readonly module: Module;
+    protected boundCheckHandler = (data) => this.check(data)
+    protected monitoredItem: EventEmitter;
 
     constructor(options: StateConditionOptions | VariableConditionOptions, modules: Module[]) {
         super(options);
@@ -337,15 +339,22 @@ export abstract class ModuleCondition extends Condition {
         }
     }
 
+    clear() {
+        super.clear();
+        if (this.monitoredItem)
+            this.monitoredItem.removeListener('changed', this.boundCheckHandler);
+    }
+
     getUsedModules() {
         return new Set<Module>().add(this.module);
     }
+
+    abstract check(data);
 }
 
 export class StateCondition extends ModuleCondition {
-    service: Service;
-    state: ServiceState;
-    private monitoredItem: EventEmitter;
+    readonly service: Service;
+    readonly state: ServiceState;
 
     constructor(options: StateConditionOptions, modules: Module[]) {
         super(options, modules);
@@ -377,30 +386,27 @@ export class StateCondition extends ModuleCondition {
         }
     }
 
-    clear() {
-        super.clear();
-        this.service.parent.clearListener(this.service.status);
-    }
 
     listen(): Condition {
-        this.monitoredItem = this.service.parent.listenToOpcUaNode(this.service.status)
-            .on('changed', (data) => {
-                const state: ServiceState = data.value;
-                this._fulfilled = (state === this.state);
-                catCondition.info(`StateCondition ${this.service.qualifiedName}: actual=${ServiceState[state]}` +
-                    ` ; condition=${ServiceState[this.state]} -> ${this._fulfilled}`);
-                this.emit('stateChanged', this._fulfilled);
-            });
+        this.monitoredItem = this.module.listenToOpcUaNode(this.service.status)
+            .on('changed', this.boundCheckHandler);
         return this;
+    }
+
+    check(data) {
+        const state: ServiceState = data.value;
+        this._fulfilled = (state === this.state);
+        catCondition.info(`StateCondition ${this.service.qualifiedName}: actual=${ServiceState[state]}` +
+            ` ; condition=${ServiceState[this.state]} -> ${this._fulfilled}`);
+        this.emit('stateChanged', this._fulfilled);
     }
 }
 
 export class VariableCondition extends ModuleCondition {
-    dataStructure: string;
-    variable: string;
-    value: string | number;
-    operator: '==' | '<' | '>' | '<=' | '>=';
-    private listener: EventEmitter;
+    readonly dataStructure: string;
+    readonly variable: string;
+    readonly value: string | number;
+    readonly operator: '==' | '<' | '>' | '<=' | '>=';
 
     constructor(options: VariableConditionOptions, modules: Module[]) {
         super(options, modules);
@@ -413,33 +419,17 @@ export class VariableCondition extends ModuleCondition {
         this.operator = options.operator || '==';
     }
 
-    /**
-     *
-     */
-    clear(): void {
-        super.clear();
-        this.listener.removeAllListeners();
-    }
 
     listen(): Condition {
         catCondition.debug(`Listen to ${this.dataStructure}.${this.variable}`);
-        this.module.readVariable(this.dataStructure, this.variable).then((value) => {
-            this._fulfilled = this.compare(value.value.value);
-            this.emit('stateChanged', this._fulfilled);
-            catCondition.debug(`VariableCondition ${this.dataStructure}: ${value.value.value} ${this.operator} ${this.value} = ${this._fulfilled}`);
-        });
-
-        this.listener = this.module.listenToVariable(this.dataStructure, this.variable)
-            .on('changed', (data) => {
-                catCondition.debug(`value changed to ${data.value} -  (${this.operator}) compare against ${this.value}`);
-                this._fulfilled = this.compare(data.value);
-                this.emit('stateChanged', this._fulfilled);
-                catCondition.debug(`VariableCondition ${this.dataStructure}: ${data.value} ${this.operator} ${this.value} = ${this._fulfilled}`);
-            });
+         this.monitoredItem = this.module.listenToVariable(this.dataStructure, this.variable)
+            .on('changed', this.boundCheckHandler);
         return this;
     }
 
-    private compare(value: number): boolean {
+    check (data) {
+        catCondition.debug(`value changed to ${data.value} -  (${this.operator}) compare against ${this.value}`);
+        const value: number = data.value;
         let result = false;
         if (this.operator === '==') {
             if (value === this.value) {
@@ -462,7 +452,9 @@ export class VariableCondition extends ModuleCondition {
                 result = true;
             }
         }
-        return result;
+        this._fulfilled = result;
+        this.emit('stateChanged', this._fulfilled);
+        catCondition.debug(`VariableCondition ${this.dataStructure}: ${data.value} ${this.operator} ${this.value} = ${this._fulfilled}`);
     }
 
 }

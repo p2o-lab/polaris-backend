@@ -131,7 +131,7 @@ describe('Condition', () => {
         before(async function () {
             this.timeout(4000);
             moduleServer = new ModuleTestServer();
-            await moduleServer.start(() => Promise.resolve);
+            await new Promise((resolve) => moduleServer.start(resolve));
 
             const moduleJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8'))
                 .modules[0];
@@ -140,8 +140,9 @@ describe('Condition', () => {
             await module.connect();
         });
 
-        after((done) => {
-            moduleServer.shutdown(done);
+        after(async () => {
+            await module.disconnect();
+            await new Promise((resolve) => moduleServer.shutdown(resolve));
         });
 
         it('specialized as VariableCondition should work', async () => {
@@ -200,22 +201,58 @@ describe('Condition', () => {
             expect(condition).to.have.property('fulfilled', false);
 
             moduleServer.varStatus = ServiceState.EXECUTE;
+            await delay(100);
+            expect(condition).to.have.property('fulfilled', false);
+
+
+            moduleServer.varStatus = ServiceState.COMPLETED;
+            await new Promise((resolve) => {
+                condition.on('stateChanged', (state) => {
+                    if (state) {
+                        resolve();
+                    }
+                } );
+            });
+            expect(condition).to.have.property('fulfilled', true);
+
+            condition.clear();
+            expect(condition).to.have.property('fulfilled', undefined);
+            moduleServer.varStatus = ServiceState.EXECUTE;
+            await delay(100);
+            expect(condition).to.have.property('fulfilled', undefined);
+            moduleServer.varStatus = ServiceState.COMPLETED;
+            await delay(100);
+            expect(condition).to.have.property('fulfilled', undefined);
+
+
+            // once again
+            moduleServer.varStatus = ServiceState.IDLE;
+            await delay(100);
+            condition.listen();
+            expect(condition).to.have.property('fulfilled', undefined);
+            await new Promise((resolve) => {
+                condition.on('stateChanged', (state) => {
+                    if(state!=undefined) {
+                        resolve();
+                    }
+                } );
+            });
+            expect(condition).to.have.property('fulfilled', false);
+
+            moduleServer.varStatus = ServiceState.EXECUTE;
+            await delay(100);
             expect(condition).to.have.property('fulfilled', false);
 
 
             moduleServer.varStatus = ServiceState.COMPLETED;
             await new Promise((resolve) => {
                 condition.once('stateChanged', (state) => {
-                    resolve();
+                    if(state) {
+                        resolve();
+                    }
                 } );
             });
-            expect(condition).to.have.property('fulfilled', true);
-
             condition.clear();
-            moduleServer.varStatus = ServiceState.EXECUTE;
-            expect(condition).to.have.property('fulfilled', undefined);
-            moduleServer.varStatus = ServiceState.COMPLETED;
-            expect(condition).to.have.property('fulfilled', undefined);
 
         });
 
