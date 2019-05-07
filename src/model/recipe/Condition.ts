@@ -125,6 +125,8 @@ export class ExpressionCondition extends Condition {
     private scopeArray: ScopeItem[];
     private listenersExpression: EventEmitter[] = [];
 
+    private boundOnChanged = () => this.onChanged();
+
     /**
      * 
      * @param {ExpressionConditionOptions} options
@@ -150,13 +152,15 @@ export class ExpressionCondition extends Condition {
     listen(): Condition {
         this.scopeArray.forEach(async (item) => {
             let a = item.module.listenToOpcUaNode(item.variable);
-                a.on('changed', async () => {
-                    this._fulfilled = <boolean> (await this.getValue());
-                    this.emit('stateChanged', this._fulfilled);
-                });
+                a.on('changed', this.boundOnChanged);
             this.listenersExpression.push(a);
         });
         return this;
+    }
+
+    async onChanged() {
+        this._fulfilled = <boolean> (await this.getValue());
+        this.emit('stateChanged', this._fulfilled);
     }
 
     /**
@@ -184,7 +188,7 @@ export class ExpressionCondition extends Condition {
     clear() {
         super.clear();
         this.listenersExpression.forEach((item) => {
-            item.removeAllListeners('changed');
+            item.removeListener('changed', this.boundOnChanged);
         });
     }
 
