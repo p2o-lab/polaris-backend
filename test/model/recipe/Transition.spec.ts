@@ -25,7 +25,7 @@
 
 import {Transition} from '../../../src/model/recipe/Transition';
 import {expect} from 'chai';
-import {ConditionType} from '@plt/pfe-ree-interface';
+import {ConditionType} from '@p2olab/polaris-interface';
 
 describe('Transition', () => {
 

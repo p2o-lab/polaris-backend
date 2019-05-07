@@ -44,7 +44,7 @@ import { ServiceState } from './enum';
 import {
     ModuleInterface, ServiceInterface, ServiceCommand, ControlEnableInterface,
     ParameterInterface
-} from '@plt/pfe-ree-interface';
+} from '@p2olab/polaris-interface';
 import { timeout } from 'promise-timeout';
 import { VariableLogEntry } from '../../logging/archive';
 import StrictEventEmitter from 'strict-event-emitter-types';

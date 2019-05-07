@@ -28,7 +28,7 @@ import * as fs from 'fs';
 import {expect} from 'chai';
 import {Manager} from '../../../src/model/Manager';
 import * as delay from 'timeout-as-promise';
-import {RecipeState} from '@plt/pfe-ree-interface';
+import {RecipeState} from '@p2olab/polaris-interface';
 import { timeout } from 'promise-timeout';
 import {Recipe} from '../../../src/model/recipe/Recipe';
 import {ServiceState, controlEnableToJson} from '../../../src/model/core/enum';

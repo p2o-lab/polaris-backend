@@ -28,7 +28,7 @@ import {catManager} from "../config/logging";
 import {EventEmitter} from "events";
 import {Module, ModuleOptions} from "./core/Module";
 import {Service} from "./core/Service";
-import {ManagerInterface, RecipeOptions, ServiceCommand} from '@plt/pfe-ree-interface';
+import {ManagerInterface, RecipeOptions, ServiceCommand} from '@p2olab/polaris-interface';
 import {Player} from "./recipe/Player";
 import {ServiceState} from './core/enum';
 import {VariableLogEntry,ServiceLogEntry } from '../logging/archive';

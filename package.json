@@ -28,7 +28,7 @@
     "assets"
   ],
   "dependencies": {
-    "@plt/pfe-ree-interface": "^1.21.1",
+    "@p2olab/polaris-interface": "^1.22.0",
     "assign-deep": "^1.0.0",
     "body-parser": "^1.18.3",
     "command-line-args": "^5.0.2",

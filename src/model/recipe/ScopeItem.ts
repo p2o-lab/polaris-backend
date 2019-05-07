@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import {ScopeOptions} from '@plt/pfe-ree-interface';
+import {ScopeOptions} from '@p2olab/polaris-interface';
 import {catScopeItem} from '../../config/logging';
 import {ProcessValue} from '../core/ProcessValue';
 import {Module} from '../core/Module';

@@ -27,7 +27,7 @@ import {Recipe} from '../../../src/model/recipe/Recipe';
 import * as fs from 'fs';
 import * as assert from 'assert';
 import {Module} from '../../../src/model/core/Module';
-import {RecipeInterface} from '@plt/pfe-ree-interface';
+import {RecipeInterface} from '@p2olab/polaris-interface';
 import {expect} from 'chai';
 
 describe('Recipe', () => {

@@ -44,7 +44,7 @@ import {
     ServiceCommand,
     ServiceInterface,
     StrategyInterface
-} from '@plt/pfe-ree-interface';
+} from '@p2olab/polaris-interface';
 import {Unit} from './Unit';
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';

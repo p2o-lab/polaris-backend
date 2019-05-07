@@ -33,7 +33,7 @@ import * as delay from 'timeout-as-promise';
 import { waitForStateChange} from '../helper';
 import {Service} from '../../src/model/core/Service';
 import {Parameter} from '../../src/model/recipe/Parameter';
-import {ServiceCommand} from '@plt/pfe-ree-interface';
+import {ServiceCommand} from '@p2olab/polaris-interface';
 
 describe.skip('CIF Integration', function () {
 

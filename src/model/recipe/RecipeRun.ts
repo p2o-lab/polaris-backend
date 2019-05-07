@@ -25,7 +25,7 @@
 
 import { Recipe } from './Recipe';
 import { v4 } from 'uuid';
-import { RecipeRunInterface } from '@plt/pfe-ree-interface';
+import { RecipeRunInterface } from '@p2olab/polaris-interface';
 import { ServiceLogEntry, VariableLogEntry } from '../../logging/archive';
 
 

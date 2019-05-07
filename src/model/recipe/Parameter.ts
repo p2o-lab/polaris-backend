@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import {ParameterOptions, ScopeOptions} from '@plt/pfe-ree-interface';
+import {ParameterOptions, ScopeOptions} from '@p2olab/polaris-interface';
 import {Expression} from 'expr-eval';
 import {catParameter} from '../../config/logging';
 import {EventEmitter} from 'events';

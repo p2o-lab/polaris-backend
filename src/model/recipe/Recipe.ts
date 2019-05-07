@@ -29,7 +29,7 @@ import { catRecipe } from '../../config/logging';
 import { EventEmitter } from 'events';
 import { v4 } from 'uuid';
 import { Transition } from './Transition';
-import { RecipeInterface, ModuleInterface, RecipeOptions, RecipeState, StepInterface } from '@plt/pfe-ree-interface';
+import { RecipeInterface, ModuleInterface, RecipeOptions, RecipeState, StepInterface } from '@p2olab/polaris-interface';
 import StrictEventEmitter from 'strict-event-emitter-types';
 
 /**

@@ -24,7 +24,7 @@
  */
 
 import {Condition, ExpressionCondition, TimeCondition} from '../../../src/model/recipe/Condition';
-import {ConditionType} from '@plt/pfe-ree-interface';
+import {ConditionType} from '@p2olab/polaris-interface';
 import {expect} from 'chai';
 import {Module} from '../../../src/model/core/Module';
 import {OPCUAServer} from 'node-opcua-server';

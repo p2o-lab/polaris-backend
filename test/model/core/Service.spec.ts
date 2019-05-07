@@ -28,7 +28,7 @@ import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 import {Service} from '../../../src/model/core/Service';
 import {Module} from '../../../src/model/core/Module';
 import {expect} from 'chai';
-import {ServiceCommand} from '@plt/pfe-ree-interface';
+import {ServiceCommand} from '@p2olab/polaris-interface';
 import {waitForStateChange} from '../../helper';
 import * as fs from "fs";
 import * as parseJson from 'json-parse-better-errors';

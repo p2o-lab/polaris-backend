@@ -37,7 +37,7 @@ import {
     StateConditionOptions,
     TimeConditionOptions,
     VariableConditionOptions
-} from '@plt/pfe-ree-interface';
+} from '@p2olab/polaris-interface';
 import { EventEmitter } from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Expression} from 'expr-eval';
