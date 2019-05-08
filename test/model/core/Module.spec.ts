@@ -75,7 +75,8 @@ describe('Module', () => {
         });
     });
 
-    it('should recognize a opc ua server shutdown', async () => {
+    it('should recognize a opc ua server shutdown', async function () {
+        this.timeout(5000);
         const moduleJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8')).modules[0];
 
         const module = new Module(moduleJson);
