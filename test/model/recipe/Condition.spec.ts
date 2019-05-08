@@ -180,7 +180,8 @@ describe('Condition', () => {
 
         });
 
-        it('specialized as StateCondition should work', async () => {
+        it('specialized as StateCondition should work', async function() {
+            this.timeout(5000);
             const condition = Condition.create({
                 type: ConditionType.state,
                 module: 'CIF',
