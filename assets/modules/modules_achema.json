@@ -1,10 +1,4 @@
 {
-    "subplants": [
-        {
-            "name": "Achema DEMO",
-            "id": "sub_achema",
-            "c": 2,
-            "r": 2,
             "modules": [
                 {
                     "id": "Dose",
@@ -4638,103 +4632,6 @@
                         }
                     ]
                 }
-            ],
-            "connections": [
-                {
-                    "start": "Dose_o1",
-                    "target": "React_i3",
-                    "path": [
-                        {
-                            "r": 2,
-                            "c": 3
-                        }
-                    ]
-                },
-                {
-                    "start": "React_o1",
-                    "target": "Temper_i1",
-                    "path": [
-                        {
-                            "r": 2,
-                            "c": 5
-                        }
-                    ]
-                },
-                {
-                    "start": "React_o2",
-                    "target": "Dose_i1",
-                    "path": [
-                        {
-                            "r": 2,
-                            "c": 5
-                        },
-                        {
-                            "r": 3,
-                            "c": 5
-                        },
-                        {
-                            "r": 3,
-                            "c": 4
-                        },
-                        {
-                            "r": 3,
-                            "c": 3
-                        },
-                        {
-                            "r": 3,
-                            "c": 2
-                        },
-                        {
-                            "r": 3,
-                            "c": 1
-                        },
-                        {
-                            "r": 2,
-                            "c": 1
-                        }
-                    ]
-                },
-                {
-                    "start": "Temper_o1",
-                    "target": "React_i1",
-                    "path": [
-                        {
-                            "r": 2,
-                            "c": 7
-                        },
-                        {
-                            "r": 1,
-                            "c": 7
-                        },
-                        {
-                            "r": 1,
-                            "c": 6
-                        },
-                        {
-                            "r": 1,
-                            "c": 5
-                        },
-                        {
-                            "r": 1,
-                            "c": 4
-                        },
-                        {
-                            "r": 1,
-                            "c": 3
-                        },
-                        {
-                            "r": 2,
-                            "c": 3
-                        }
-                    ]
-                }
             ]
-        }
-    ],
-    "connections": [
-        {
-            "start": "sub_xy",
-            "target": "sub_xy"
-        }
-    ]
+
 }
