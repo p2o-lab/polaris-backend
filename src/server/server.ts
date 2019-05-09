@@ -29,6 +29,7 @@ import Middleware from '../config/middleware';
 import * as WebSocket from 'ws';
 import {Manager} from '../model/Manager';
 import { catServer } from '../config/logging';
+import {IncomingMessage} from 'http';
 
 export class Server {
 
@@ -44,8 +45,8 @@ export class Server {
 
     initSocketServer(server) {
         this.wss = new WebSocket.Server({ server });
-        this.wss.on('connection', (ws: WebSocket) => {
-            catServer.info('WS Client connected');
+        this.wss.on('connection', (ws: WebSocket, req: IncomingMessage) => {
+            catServer.info(`WS Client connected: ${req.connection.remoteAddress}`);
         });
     }
 
