@@ -112,6 +112,13 @@ export class Manager extends EventEmitter {
                     newModules.push(new Module(moduleOptions, protectedModules));
                 }
             });
+        } else if (options.module) {
+            let moduleOptions = options.module;
+            if (this.modules.find(module => module.id === moduleOptions.id)) {
+                catManager.warn(`Module ${moduleOptions.id} already in registered modules`);
+            } else {
+                newModules.push(new Module(moduleOptions, protectedModules));
+            }
         } else {
             throw new Error('No modules defined in supplied options');
         }

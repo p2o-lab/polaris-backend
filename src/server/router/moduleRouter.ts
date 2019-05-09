@@ -27,7 +27,7 @@ import { Manager } from '../../model/Manager';
 import { Request, Response, Router } from 'express';
 
 import * as asyncHandler from 'express-async-handler';
-import { catServer} from '../../config/logging';
+import {catModule, catServer} from '../../config/logging';
 
 export const moduleRouter: Router = Router();
 
@@ -69,15 +69,17 @@ moduleRouter.get('/:id/download', asyncHandler(async (req: Request, res: Respons
  * @api {put} /module    Add module
  * @apiName PutModule
  * @apiGroup Module
- * @apiParam {ModuleOptions} modules    Modules to be added
+ * @apiParam {ModuleOptions} module    Module to be added
  */
 moduleRouter.put('', asyncHandler(async (req, res) => {
     const moduleOptions = req.body.modules;
     catServer.info(`Load module: ${JSON.stringify(moduleOptions)}`);
     const manager: Manager = req.app.get('manager');
-    const newModules = manager.loadModule(req.body);
+    const newModules = manager.loadModule({module: req.body.module});
     newModules.forEach(module =>
         module.connect()
+            .catch(() => catModule.warn(`Could not connect to module ${module.id}`)
+            )
     );
     res.json(await Promise.all(newModules.map(module => module.json())));
 }));
