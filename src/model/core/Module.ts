@@ -407,6 +407,9 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
     }
 
     public async readVariableNode(node: OpcUaNodeOptions) {
+        if (!this.isConnected()) {
+            throw new Error(`Module ${this.id} not connected while trying to read variable ${JSON.stringify(node)}`);
+        }
         const nodeId = this.resolveNodeId(node);
         const result = await this.session.readVariableValue(nodeId);
         this.logger.debug(`[${this.id}] Read Variable: ${JSON.stringify(node)} -> ${nodeId} = ${result}`);
