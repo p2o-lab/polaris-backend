@@ -139,7 +139,7 @@ export class ExpressionCondition extends Condition {
         this.scopeArray = (options.scope||[]).map((item: ScopeOptions) => ScopeItem.extractFromScopeOptions(item, modules));
 
         // evaluate additional variables from expression
-        const extraction = ScopeItem.extractFromExpressionString(options.expression, modules);
+        const extraction = ScopeItem.extractFromExpressionString(options.expression, modules, this.scopeArray.map(scope => scope.name));
         this.expression = extraction.expression;
         this.scopeArray.push (...extraction.scopeItems);
         this._fulfilled = false;
