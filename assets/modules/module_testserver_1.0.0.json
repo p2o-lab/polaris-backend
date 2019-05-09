@@ -75,6 +75,23 @@
           }
         },
         {
+          "name": "Variable.001",
+          "communication": {
+            "V": {
+              "namespace_index": "urn:NodeOPCUA-Server-default",
+              "node_id": "MyVariable1"
+            },
+            "WQC": {
+              "namespace_index": "urn:NodeOPCUA-Server-default",
+              "node_id": "MyVariable1"
+            },
+            "OSLevel": {
+              "namespace_index": "urn:NodeOPCUA-Server-default",
+              "node_id": "MyVariable1"
+            }
+          }
+        },
+        {
           "name": "Variable002",
           "communication": {
             "V": {
