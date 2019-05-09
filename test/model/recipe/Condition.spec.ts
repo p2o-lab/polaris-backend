@@ -40,88 +40,123 @@ import * as delay from 'timeout-as-promise';
  */
 describe('Condition', () => {
 
-    it('should listen to a time condition of 0.1s', (done) => {
-        const condition = new TimeCondition({type: ConditionType.time, duration: 0.1});
 
-        expect(condition.json()).to.deep.equal({type: 'time', duration: 0.1});
+    describe('without test server', () => {
+        it('should listen to a time condition of 0.1s', (done) => {
+            const condition = new TimeCondition({type: ConditionType.time, duration: 0.1});
 
-        expect(condition).to.have.property('fulfilled', false);
+            expect(condition.json()).to.deep.equal({type: 'time', duration: 0.1});
 
-        condition.listen().on('stateChanged', () => {
+            expect(condition).to.have.property('fulfilled', false);
+
+            condition.listen().on('stateChanged', () => {
+                expect(condition).to.have.property('fulfilled', true);
+                done();
+            });
+
+            expect(condition).to.have.property('fulfilled', false);
+        });
+
+        it('should listen to an AND condition of two time conditions', async () => {
+            const condition = Condition.create({
+                type: ConditionType.and,
+                conditions: [
+                    {type: ConditionType.time, duration: 0.2},
+                    {type: ConditionType.time, duration: 0.1}
+                ]
+            }, undefined);
+            expect(condition.json()).to.deep.equal({
+                type: 'and',
+                conditions:
+                    [{type: 'time', duration: 0.2},
+                        {type: 'time', duration: 0.1}]
+            });
+            condition.listen().on('stateChanged', () => {
+                expect(condition).to.have.property('fulfilled', true);
+            });
+            expect(condition).to.have.property('fulfilled', false);
+            await delay(150);
+            expect(condition).to.have.property('fulfilled', false);
+            await delay(60);
             expect(condition).to.have.property('fulfilled', true);
-            done();
         });
 
-        expect(condition).to.have.property('fulfilled', false);
-    });
-
-    it('should listen to an AND condition of two time conditions', async () => {
-        const condition = Condition.create({
-            type: ConditionType.and,
-            conditions: [
-                {type: ConditionType.time, duration: 0.2},
-                {type: ConditionType.time, duration: 0.1}
-            ]
-        }, undefined);
-        expect(condition.json()).to.deep.equal({
-            type: 'and',
-            conditions:
-                [{type: 'time', duration: 0.2},
-                    {type: 'time', duration: 0.1}]
-        });
-        condition.listen().on('stateChanged', () => {
+        it('should listen to a OR condition of two time conditions', async () => {
+            const condition = Condition.create({
+                type: ConditionType.or,
+                conditions: [
+                    {type: ConditionType.time, duration: 0.5},
+                    {type: ConditionType.time, duration: 0.1}
+                ]
+            }, undefined);
+            expect(condition.json()).to.deep.equal({
+                type: 'or',
+                conditions:
+                    [{type: 'time', duration: 0.5},
+                        {type: 'time', duration: 0.1}]
+            });
+            let hit = false;
+            condition.listen().on('stateChanged', () => {
+                expect(condition).to.have.property('fulfilled', true);
+                hit = true;
+            });
+            await delay(60);
+            expect(condition).to.have.property('fulfilled', false);
+            await delay(50);
             expect(condition).to.have.property('fulfilled', true);
+            expect(hit).to.be.true;
         });
-        expect(condition).to.have.property('fulfilled', false);
-        await delay(150);
-        expect(condition).to.have.property('fulfilled', false);
-        await delay(60);
-        expect(condition).to.have.property('fulfilled', true);
-    });
 
-    it('should listen to a OR condition of two time conditions', async () => {
-        const condition = Condition.create({
-            type: ConditionType.or,
-            conditions: [
-                {type: ConditionType.time, duration: 0.5},
-                {type: ConditionType.time, duration: 0.1}
-            ]
-        }, undefined);
-        expect(condition.json()).to.deep.equal({
-            type: 'or',
-            conditions:
-                [{type: 'time', duration: 0.5},
-                    {type: 'time', duration: 0.1}]
-        });
-        let hit = false;
-        condition.listen().on('stateChanged', () => {
+        it('should listen to a NOT condition', async () => {
+            const condition = Condition.create({
+                type: ConditionType.not,
+                condition: {type: ConditionType.time, duration: 0.1}
+            }, undefined);
+            expect(condition.json()).to.deep.equal({type: 'not', condition: {type: 'time', duration: 0.1}});
+
+            condition.listen();
+            await delay(10);
             expect(condition).to.have.property('fulfilled', true);
-            hit = true;
+            await delay(100);
+            expect(condition).to.have.property('fulfilled', false);
         });
-        await delay(60);
-        expect(condition).to.have.property('fulfilled', false);
-        await delay(50);
-        expect(condition).to.have.property('fulfilled', true);
-        expect(hit).to.be.true;
-    });
 
-    it('should listen to a NOT condition', async () => {
-        const condition = Condition.create({
-            type: ConditionType.not,
-            condition: {type: ConditionType.time, duration: 0.1}
-        }, undefined);
-        expect(condition.json()).to.deep.equal({type: 'not', condition: {type: 'time', duration: 0.1}});
+        it('should fail with wrong parameter', () => {
+            expect(() => Condition.create({type: ConditionType.time, duration: -10}, undefined))
+                .to.throw();
+        });
 
-        condition.listen();
-        await delay(10);
-        expect(condition).to.have.property('fulfilled', true);
-        await delay(100);
-        expect(condition).to.have.property('fulfilled', false);
-    });
+        describe('ExpressionCondition', () => {
 
-    it('should fail with wrong parameter', () => {
-        expect(() => Condition.create({type: ConditionType.time, duration: -10}, undefined))
-            .to.throw();
+            it('should work with simple expression', async () => {
+                const expr = new ExpressionCondition({type: ConditionType.expression, expression: '4>3'});
+                let value = await expr.getValue();
+                expect(value).to.be.true;
+            });
+
+            it('should fail when module is not connected', async () => {
+                const moduleJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8'))
+                    .modules[0];
+
+                const module = new Module(moduleJson);
+                const expr = <ExpressionCondition> Condition.create({
+                    type: ConditionType.expression,
+                    expression: 'sin(a)^2 + cos(CIF.Variable001)^2 < 0.5',
+                    scope: [
+                        {
+                            name: 'a',
+                            module: 'CIF',
+                            dataAssembly: 'Variable001',
+                            variable: 'V'
+                        }
+                    ]
+                }, [module]);
+
+                expect(()=> expr.getValue()).to.throw;
+            });
+
+        })
+
     });
 
     describe('with ModuleTestServer', () => {
@@ -207,10 +242,12 @@ describe('Condition', () => {
 
 
             moduleServer.varStatus = ServiceState.COMPLETED;
-            await new Promise((resolve) => {
-                condition.on('stateChanged', (state) => {
+            await new Promise((resolve, reject) => {
+                condition.once('stateChanged', (state) => {
                     if (state) {
                         resolve();
+                    } else {
+                        reject('state should change to true');
                     }
                 } );
             });
@@ -225,31 +262,39 @@ describe('Condition', () => {
             await delay(100);
             expect(condition).to.have.property('fulfilled', undefined);
 
+        });
 
-            // once again
+        it('should dont react on a closed condition', async () => {
+            const condition = Condition.create({
+                type: ConditionType.state,
+                module: 'CIF',
+                service: 'Service1',
+                state: 'completed'
+            }, [module]);
+
+            condition.listen();
             moduleServer.varStatus = ServiceState.IDLE;
             await delay(100);
-            condition.listen();
-            expect(condition).to.have.property('fulfilled', undefined);
-            await new Promise((resolve) => {
-                condition.on('stateChanged', (state) => {
-                    if(state!=undefined) {
-                        resolve();
-                    }
-                } );
-            });
             expect(condition).to.have.property('fulfilled', false);
 
-            moduleServer.varStatus = ServiceState.EXECUTE;
+            condition.on('stateChanged', () => console.log('state changed'));
+            expect(condition.listenerCount('stateChanged')).to.equal(1);
+
+            condition.clear();
+            expect(condition).to.have.property('fulfilled', undefined);
+            expect(condition.listenerCount('stateChanged')).to.equal(0);
+
+            condition.listen();
             await delay(100);
             expect(condition).to.have.property('fulfilled', false);
 
-
             moduleServer.varStatus = ServiceState.COMPLETED;
-            await new Promise((resolve) => {
+            await new Promise((resolve, reject) => {
                 condition.once('stateChanged', (state) => {
                     if(state) {
                         resolve();
+                    } else {
+                        reject();
                     }
                 } );
             });
@@ -257,13 +302,8 @@ describe('Condition', () => {
 
         });
 
-        describe('ExpressionCondition', () => {
 
-            it('should work with simple expression', async () => {
-                const expr = new ExpressionCondition({type: ConditionType.expression, expression: '4>3'});
-                let value = await expr.getValue();
-                expect(value).to.be.true;
-            });
+        describe('ExpressionCondition', () => {
 
             it('should work with simple server expression', async () => {
                 const expr = new ExpressionCondition({type: ConditionType.expression, expression: 'CIF.Variable001.V>10'}, [module]);
@@ -329,6 +369,8 @@ describe('Condition', () => {
                         }
                     ]
                 }, [module]);
+                moduleServer.varVariable1 = 0.7;
+
                 let value = await expr.getValue();
                 expect(value).to.be.false;
             });
