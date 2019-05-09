@@ -59,13 +59,16 @@ export class ScopeItem {
      *
      * @param {string} expression
      * @param {Module[]} modules
+     * @param {string[]}   ignoredNames   don't try to find scopeItems for this variable names
      */
-    static extractFromExpressionString(expression: string, modules: Module[]): {expression: Expression, scopeItems: ScopeItem[]} {
+    static extractFromExpressionString(expression: string, modules: Module[], ignoredNames: string[] = [])
+    : {expression: Expression, scopeItems: ScopeItem[]} {
         const parser: Parser = new Parser({allowMemberAccess: true});
         const value = expression.replace(new RegExp('\\\\.', 'g'), '__');
         const expressionObject = parser.parse(value);
         const scopeItems = expressionObject
             .variables({ withMembers: true })
+            .filter((variable) => !ignoredNames.find(n => n == variable))
             .map((variable) => ScopeItem.extractFromExpressionVariable(variable, modules))
             .filter(Boolean);
         return {expression: expressionObject, scopeItems: scopeItems}
