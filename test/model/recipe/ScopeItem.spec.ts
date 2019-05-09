@@ -53,10 +53,15 @@ describe('Scope Item', () => {
 
     it('should work for mutliple variables', () => {
         const extraction = ScopeItem.extractFromExpressionString("CIF.Variable001 + CIF.Variable002", [module]);
-        expect(extraction.scopeItems).to.have.lengthOf(3);
+        expect(extraction.scopeItems).to.have.lengthOf(2);
         expect(extraction.scopeItems[0].name).to.equal('CIF.Variable001');
         expect(extraction.scopeItems[1].name).to.equal('CIF.Variable002');
-        expect(extraction.scopeItems[1].name).to.equal('CIF.Variable002');
+    });
+
+    it('should work for mutliple times of same variables', () => {
+        const extraction = ScopeItem.extractFromExpressionString("CIF.Variable001 + CIF.Variable001", [module]);
+        expect(extraction.scopeItems).to.have.lengthOf(1);
+        expect(extraction.scopeItems[0].name).to.equal('CIF.Variable001');
     });
 
     it('should work for expression with special characters', () => {
