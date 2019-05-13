@@ -92,16 +92,11 @@ moduleRouter.put('', asyncHandler(async (req, res) => {
  */
 moduleRouter.delete('/:id', asyncHandler(async (req: Request, res: Response) => {
     const manager: Manager = req.app.get('manager');
-    const module = manager.modules.find(module => module.id === req.params.id);
-    if (module.protected) {
-        res.status(404).send(`Module {$id} is protected and can't be deleted`);
-    } else {
-        const index = manager.modules.indexOf(module, 0);
-        if (index > -1) {
-            manager.modules.splice(index, 1);
-        }
-        await module.disconnect();
+    try {
+        await manager.removeModule(req.params.id);
         res.send({ status: 'Successful deleted', id: req.params.id });
+    } catch (e) {
+        res.status(404).send(`Module {$req.params.id} is protected and can't be deleted`);
     }
 }));
 
