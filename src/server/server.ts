@@ -47,6 +47,9 @@ export class Server {
         this.wss = new WebSocket.Server({ server });
         this.wss.on('connection', (ws: WebSocket, req: IncomingMessage) => {
             catServer.info(`WS Client connected: ${req.connection.remoteAddress}`);
+            const interval = setInterval(function ping() {
+                ws.send(JSON.stringify({message: 'ping'}));
+            }, 3000);
         });
     }
 
