@@ -43,6 +43,16 @@ coreRouter.get('/', (req: Request, res: Response) => {
 });
 
 /**
+ * @api {post} /shutdown    Shutdown
+ * @apiName Shutdown
+ * @apiGroup Manager
+ */
+coreRouter.post('/shutdown', (req: Request, res: Response) => {
+    process.exit();
+});
+
+
+/**
  * @api {get} /version    Get version
  * @apiName GetVersion
  * @apiDescription  Get version of pfe-ree-node
