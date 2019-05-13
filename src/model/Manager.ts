@@ -32,8 +32,21 @@ import {ManagerInterface, RecipeOptions, ServiceCommand} from '@p2olab/polaris-i
 import {Player} from "./recipe/Player";
 import {ServiceState} from './core/enum';
 import {VariableLogEntry,ServiceLogEntry } from '../logging/archive';
+import StrictEventEmitter from 'strict-event-emitter-types';
 
-export class Manager extends EventEmitter {
+interface ManagerEvents {
+/**
+ * when one service goes to *completed*
+ * @event
+ */
+recipeFinished: void;
+
+notify: (string, any) => void;
+}
+
+type ManagerEmitter = StrictEventEmitter<EventEmitter, ManagerEvents>;
+
+export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
 
     // loaded recipes
     readonly recipes: Recipe[] = [];
@@ -89,7 +102,11 @@ export class Manager extends EventEmitter {
      * @param {boolean} protectedModules  should modules be protected from being deleted
      * @returns {Module[]}  created modules
      */
-    public loadModule(options, protectedModules: boolean = false): Module[] {
+    public loadModule(options: {
+        module?: ModuleOptions,
+        modules?: ModuleOptions[],
+        subplants?: {modules: ModuleOptions[]}[]
+    }, protectedModules: boolean = false): Module[] {
         let newModules: Module[] = [];
         if (!options) {
             throw new Error('No modules defined in supplied options');
@@ -125,8 +142,8 @@ export class Manager extends EventEmitter {
         this.modules.push(...newModules);
         newModules.forEach(async (module: Module) => {
             module
-                .on('connected', () => this.emit('notify', 'module'))
-                .on('disconnected', () => this.emit('notify', 'module'))
+                .on('connected', () => this.emit('notify', 'module', null))
+                .on('disconnected', () => this.emit('notify', 'module', null))
                 .on('controlEnable', ({service, controlEnable}) => {
                     this.emit('notify', 'module', {module: service.parent.id, service: service.name, controlEnable: controlEnable});
                 })
@@ -181,14 +198,30 @@ export class Manager extends EventEmitter {
                     this.performAutoReset(service);
                 });
         });
-        this.emit('notify', 'module');
+        this.emit('notify', 'module', null);
         return newModules;
+    }
+
+
+    public async removeModule(moduleId){
+        const module = this.modules.find(module => module.id === moduleId);
+        if (!module) {
+            throw new Error(`No Module ${moduleId} found.`);
+        }
+        if (module.protected) {
+            throw new Error(`Module ${moduleId} is protected and can't be deleted`);
+        }
+        const index = this.modules.indexOf(module, 0);
+        if (index > -1) {
+            this.modules.splice(index, 1);
+        }
+        await module.disconnect();
     }
 
     public loadRecipe(options: RecipeOptions, protectedRecipe: boolean = false): Recipe {
         const newRecipe = new Recipe(options, this.modules, protectedRecipe);
         this.recipes.push(newRecipe);
-        this.emit('notify', 'recipes');
+        this.emit('notify', 'recipes', null);
         return newRecipe;
     }
 
@@ -239,8 +272,8 @@ export class Manager extends EventEmitter {
     private performAutoReset(service: Service) {
         if (this.autoreset) {
             catManager.info(`Service ${service.parent.id}.${service.name} completed. Short waiting time (${this._autoreset_timeout}) to autoreset`);
-            setTimeout(() => {
-                if (service.parent.isConnected()) {
+            setTimeout(async () => {
+                if (service.parent.isConnected() && await service.getServiceState() === ServiceState.COMPLETED ) {
                     catManager.info(`Service ${service.parent.id}.${service.name} completed. Now perform autoreset`);
                     try {
                         service.execute(ServiceCommand.reset);
@@ -286,5 +319,3 @@ export class Manager extends EventEmitter {
         return service;
     }
 }
-
-export const manager: Manager = new Manager();
