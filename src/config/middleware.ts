@@ -30,9 +30,10 @@ export default class Middleware {
     static init(server): void {
 
         // express middleware
-        server.app.use(express.json());
+        server.app.use(express.json({limit: '10mb'}));
         server.app.use(express.urlencoded({
-            extended: true
+            extended: true,
+            limit: '10mb'
         }));
         server.app.use(cors());
 
