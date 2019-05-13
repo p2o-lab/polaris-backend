@@ -84,6 +84,12 @@ describe('Service', () => {
         expect(result).to.have.property('status', 'IDLE');
 
         await service.subscribeToService();
+        let stateChangeCount=0;
+        service.on('state', (state) => {
+            console.log('state changed', state);
+
+            stateChangeCount++;
+        });
 
         await service.execute(ServiceCommand.start);
         await waitForStateChange(service, 'STARTING');
@@ -111,6 +117,8 @@ describe('Service', () => {
         await service.execute(ServiceCommand.abort);
         await waitForStateChange(service, 'ABORTING');
         await waitForStateChange(service, 'ABORTED');
+
+        expect(stateChangeCount).to.equal(18);
 
         await module.disconnect();
     });
