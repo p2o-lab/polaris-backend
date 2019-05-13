@@ -155,7 +155,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
     constructor(serviceOptions: ServiceOptions, parent: Module) {
         super();
         this.name = serviceOptions.name;
-        this.automaticMode = false;
+        this.automaticMode = true;
 
         const com = serviceOptions.communication;
 
@@ -244,6 +244,9 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
                     this.lastStatusChange = new Date();
                     this.logger.info(`[${this.qualifiedName}] Status changed: ${ServiceState[<ServiceState> this.status.value]}`);
                     this.emit('state', {state: <ServiceState> this.status.value, timestamp: this.status.timestamp});
+                    if (data.value === ServiceState.COMPLETED || data.value === ServiceState.ABORTED || data.value === ServiceState.STOPPED) {
+                        this.clearListeners();
+                    }
                 });
         }
         if (this.command) {
@@ -536,7 +539,6 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
     }
 
     private stop(): Promise<boolean> {
-        this.clearListeners();
         return this.sendCommand(ServiceMtpCommand.STOP);
     }
 
@@ -545,12 +547,10 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
     }
 
     private complete(): Promise<boolean> {
-        this.clearListeners();
         return this.sendCommand(ServiceMtpCommand.COMPLETE);
     }
 
     private abort(): Promise<boolean> {
-        this.clearListeners();
         return this.sendCommand(ServiceMtpCommand.ABORT);
     }
 
@@ -634,7 +634,12 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
         });
     }
 
+    /**
+     *
+     * TODO: This could be a problem. After abort/stop/complete all listeners for changed are removed and not only those for continous Parameter listening
+     */
     private clearListeners() {
+        this.logger.info(`[${this.qualifiedName}] clear parameter listener`);
         this.serviceParametersEventEmitters.forEach(listener => listener.removeAllListeners());
     }
 
@@ -778,15 +783,6 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
         this.logger.info(`[${this.qualifiedName}] Command ${ServiceMtpCommand[command]}(${command}) written: ${result.name}`);
 
         return result.value === 0;
-    }
-
-    /**
-     * Remove all Event listeners from service
-     */
-    public removeAllSubscriptions() {
-        this.removeAllListeners('state');
-        this.removeAllListeners('controlEnable');
-        this.removeAllListeners('errorMessage');
     }
 
 }

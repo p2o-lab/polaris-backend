@@ -25,8 +25,9 @@
 
 import {OpcUaNodeOptions} from './Interfaces';
 import {catParameter, catService} from '../../config/logging';
-import {Variant, VariantArrayType} from 'node-opcua';
+import {DataType, Variant, VariantArrayType} from 'node-opcua';
 import {Module} from './Module';
+import {isAutomaticState, isExtSource, isManualState, isOffState, OpMode} from './enum';
 
 export interface DataAssemblyOptions {
     name: string;
@@ -76,7 +77,105 @@ export abstract class DataAssembly {
             arrayType: VariantArrayType.Scalar,
             dimensions: null
         };
-        catService.debug(`Set Parameter: ${this.name} - ${JSON.stringify(opcUaNode)} -> ${JSON.stringify(dataValue)}`);
+        catService.info(`Set Parameter: ${this.name} - ${JSON.stringify(opcUaNode)} -> ${JSON.stringify(dataValue)}`);
         return await this.module.writeNode(opcUaNode, dataValue);
+    }
+
+    /**
+     * Get current opMode of DataAssembly from PEA memory.
+     */
+    public async getOpMode(): Promise<OpMode> {
+        if (this.communication['OpMode']) {
+            const result = await this.module.readVariableNode(this.communication['OpMode']);
+            return <OpMode> result;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Write OpMode to service
+     * @param {OpMode} opMode
+     * @returns {boolean}
+     */
+    private async writeOpMode(opMode: OpMode): Promise<void> {
+        catParameter.debug(`[${this.name}] Write opMode: ${<number> opMode}`);
+        const result = await this.module.writeNode(this.communication['OpMode'],
+            {
+                dataType: DataType.UInt32,
+                value: opMode,
+                arrayType: VariantArrayType.Scalar,
+                dimensions: null
+            });
+        catParameter.debug(`[${this.name}] Setting opMode ${JSON.stringify(result)}`);
+        if (result.value !== 0) {
+            catParameter.warn(`[${this.name}] Error while setting opMode to ${opMode}: ${JSON.stringify(result)}`);
+            return Promise.reject();
+        } else {
+            return Promise.resolve();
+        }
+    }
+
+    /**
+     * Set service to automatic operation mode and source to external source
+     * @returns {Promise<void>}
+     */
+    public async setToAutomaticOperationMode(): Promise<void> {
+        let opMode: OpMode = await this.getOpMode();
+        catParameter.info(`[${this.name}] Current opMode = ${opMode}`);
+        if (isOffState(opMode)) {
+            catParameter.trace('First go to Manual state');
+            await this.writeOpMode(OpMode.stateManOp);
+            await new Promise((resolve) => {
+                this.module.listenToOpcUaNode(this.communication['OpMode'])
+                    .once('changed', (data) => {
+                        if (isManualState(data.value)) {
+                            catParameter.trace(`[${this.name}] finally in ManualMode`);
+                            opMode = data.value;
+                            resolve();
+                        }
+                    });
+            });
+        }
+
+        if (isManualState(opMode)) {
+            await this.writeOpMode(OpMode.stateAutOp);
+            await new Promise((resolve) => {
+                this.module.listenToOpcUaNode(this.communication['OpMode'])
+                    .once('changed', (data) => {
+                        if (isAutomaticState(data.value)) {
+                            opMode = data.value;
+                            resolve();
+                        }
+                    });
+            });
+        }
+
+        if (!isExtSource(opMode)) {
+            await this.writeOpMode(OpMode.srcExtOp);
+            await new Promise((resolve) => {
+                this.module.listenToOpcUaNode(this.communication['OpMode'])
+                    .once('changed', (data) => {
+                        if (isExtSource(data.value)) {
+                            resolve();
+                        }
+                    });
+            });
+        }
+    }
+
+    public async setToManualOperationMode(): Promise<void> {
+        let opMode = await this.getOpMode();
+        if (!isManualState(opMode)) {
+            this.writeOpMode(OpMode.stateManOp);
+            return new Promise((resolve) => {
+                this.module.listenToOpcUaNode(this.communication['OpMode'])
+                    .once('changed', (data) => {
+                        if (isManualState(data.value)) {
+                            resolve();
+                        }
+                    });
+            });
+        }
     }
 }

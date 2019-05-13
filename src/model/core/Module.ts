@@ -263,20 +263,20 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
     }
 
     /**
-     * Close session and disconnect from server
+     * Close session and disconnect from server of module
      *
      */
     disconnect(): Promise<any> {
-        this.services.forEach(s => s.removeAllSubscriptions());
+        this.services.forEach(s => s.removeAllListeners());
         return new Promise(async (resolve, reject) => {
             if (this.session) {
                 this.logger.info(`[${this.id}] Disconnect module`);
                 try {
                     await timeout(this.session.close(), 1000);
                     this.session = undefined;
-                    await timeout(1000, this.client.disconnect(), 1000);
+                    await timeout(this.client.disconnect(), 1000);
                     this.client = undefined;
-                    this.logger.debug(`[${this.id}] Module disconnected`);
+                    this.logger.info(`[${this.id}] Module disconnected`);
                     this.emit('disconnected');
                     resolve(`Module ${this.id} disconnected`);
                 } catch (err) {
@@ -325,21 +325,6 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
         } else {
             const variable: OpcUaNodeOptions = dataStructure.communication[variableName];
             return this.listenToOpcUaNode(variable);
-        }
-    }
-
-    clearListener(node: OpcUaNodeOptions) {
-        const nodeId = this.resolveNodeId(node);
-        if (this.monitoredItems.has(nodeId)) {
-            const { monitoredItem, emitter } = this.monitoredItems.get(nodeId);
-
-            if (monitoredItem) {
-                monitoredItem.terminate(() => this.logger.trace(`[${this.id}] Listener ${JSON.stringify(nodeId)} terminated`));
-            }
-            if (emitter) {
-                emitter.removeAllListeners();
-            }
-            this.monitoredItems.delete(nodeId);
         }
     }
 

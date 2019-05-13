@@ -29,13 +29,13 @@ import {catParameter} from '../../config/logging';
 import {EventEmitter} from 'events';
 import {DataType} from 'node-opcua-client';
 import {Service} from '../core/Service';
-import {OpcUaNodeOptions} from '../core/Interfaces';
 import {Module, OpcUaNodeEvents} from '../core/Module';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import * as assign from 'assign-deep';
 import {ScopeItem} from './ScopeItem';
 import {Strategy} from '../core/Strategy';
 import {DataAssembly} from '../core/DataAssembly';
+import {Category} from 'typescript-logging';
 
 /**
  * Parameter of an [[Operation]]. Can be static or dynamic. Dynamic strategyParameters can depend on variables of the same or
@@ -67,6 +67,7 @@ export class Parameter {
     private expression: Expression;
     private service: Service;
     private _parameter: DataAssembly;
+    private logger: Category;
 
     /**
      *
@@ -79,9 +80,11 @@ export class Parameter {
         catParameter.trace(`Create Parameter: ${JSON.stringify(parameterOptions)}`);
 
         this.name = parameterOptions.name;
-        this.variable = parameterOptions.variable || 'VExt';
+        this.variable = parameterOptions.variable || service.automaticMode ? 'VExt' : 'VMan';
         this.value = parameterOptions.value.toString();
         this.continuous = parameterOptions.continuous || false;
+
+        this.logger = catParameter;
 
         this.service = service;
         const strategyUsed: Strategy = strategy || service.strategies.find(strategy => strategy.default);
@@ -136,7 +139,20 @@ export class Parameter {
      */
     async updateValueOnModule(): Promise<any> {
         const value = await this.getValue();
-        catParameter.info(`Set parameter "${this.service.name}[${this.variable}]" for ${this.name} = ${value}`);
+        catParameter.info(`Set parameter "${this.service.name}.${this.name}[${this.variable}]" to ${value}`);
+        await this.setOperationMode();
         await this._parameter.setParameter(value, this.variable);
     }
+
+    public setOperationMode(): Promise<void> {
+        if (this.service.automaticMode) {
+            this.logger.info(`[${this.service.qualifiedName}.${this.name}] Bring to automatic mode`);
+            return this._parameter.setToAutomaticOperationMode();
+        } else {
+            this.logger.info(`[${this.service.qualifiedName}.${this.name}] Bring to manual mode`);
+            return this._parameter.setToManualOperationMode()
+                .then(() => this.logger.info(`[${this.service.qualifiedName}.${this.name}] Service now in manual mode`));
+        }
+    }
+
 }
