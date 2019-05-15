@@ -38,7 +38,7 @@ import {DataAssembly} from '../core/DataAssembly';
 import {Category} from 'typescript-logging';
 
 /**
- * Parameter of an [[Operation]]. Can be static or dynamic. Dynamic Parameters can depend on variables of the same or
+ * Parameter of a [[Service]]. Can be static or dynamic. Dynamic Parameters can depend on variables of the same or
  * other modules. These can also be continuously updated (specified via continuous property)
  */
 export class Parameter {
@@ -144,14 +144,18 @@ export class Parameter {
         await this._parameter.setParameter(value, this.variable);
     }
 
+    /**
+     * set operation mode of parameter according to its service
+     * @returns {Promise<void>}
+     */
     public setOperationMode(): Promise<void> {
         if (this.service.automaticMode) {
-            this.logger.info(`[${this.service.qualifiedName}.${this.name}] Bring to automatic mode`);
+            this.logger.debug(`[${this.service.qualifiedName}.${this.name}] Bring to automatic mode`);
             return this._parameter.setToAutomaticOperationMode();
         } else {
-            this.logger.info(`[${this.service.qualifiedName}.${this.name}] Bring to manual mode`);
+            this.logger.debug(`[${this.service.qualifiedName}.${this.name}] Bring to manual mode`);
             return this._parameter.setToManualOperationMode()
-                .then(() => this.logger.info(`[${this.service.qualifiedName}.${this.name}] Service now in manual mode`));
+                .then(() => this.logger.info(`[${this.service.qualifiedName}.${this.name}] Parameter now in manual mode`));
         }
     }
 
