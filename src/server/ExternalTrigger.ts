@@ -90,7 +90,7 @@ export class ExternalTrigger {
             });
 
         monitoredItem.on('changed', (dataValue) => {
-            catOpc.info(`flag is ${dataValue.value.value}`);
+            catOpc.info(`External trigger is ${dataValue.value.value}`);
             if (dataValue.value.value) {
                 this.callback();
             }
