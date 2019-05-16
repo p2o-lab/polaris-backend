@@ -123,7 +123,7 @@ export abstract class DataAssembly {
     public async setToAutomaticOperationMode(): Promise<void> {
         let opMode: OpMode = await this.getOpMode();
         catParameter.info(`[${this.name}] Current opMode = ${opMode}`);
-        if (isOffState(opMode)) {
+        if (opMode && isOffState(opMode)) {
             catParameter.trace('First go to Manual state');
             await this.writeOpMode(OpMode.stateManOp);
             await new Promise((resolve) => {
@@ -138,7 +138,7 @@ export abstract class DataAssembly {
             });
         }
 
-        if (isManualState(opMode)) {
+        if (opMode && isManualState(opMode)) {
             await this.writeOpMode(OpMode.stateAutOp);
             await new Promise((resolve) => {
                 this.module.listenToOpcUaNode(this.communication['OpMode'])
@@ -151,7 +151,7 @@ export abstract class DataAssembly {
             });
         }
 
-        if (!isExtSource(opMode)) {
+        if (opMode && !isExtSource(opMode)) {
             await this.writeOpMode(OpMode.srcExtOp);
             await new Promise((resolve) => {
                 this.module.listenToOpcUaNode(this.communication['OpMode'])
@@ -166,7 +166,7 @@ export abstract class DataAssembly {
 
     public async setToManualOperationMode(): Promise<void> {
         let opMode = await this.getOpMode();
-        if (!isManualState(opMode)) {
+        if (opMode && !isManualState(opMode)) {
             this.writeOpMode(OpMode.stateManOp);
             return new Promise((resolve) => {
                 this.module.listenToOpcUaNode(this.communication['OpMode'])
