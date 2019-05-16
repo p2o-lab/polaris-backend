@@ -153,7 +153,7 @@ if (options) {
             // directly restart recipe if external trigger is still active when recipe finishes
             manager.on('recipeFinished', async () => {
                 const value = await et.getValue();
-                console.log('external trigger', value);
+                console.log('External trigger:', value);
                 if (value) {
                     manager.player.start();
                 }
