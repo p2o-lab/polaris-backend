@@ -154,6 +154,7 @@ export class Player extends (EventEmitter as { new(): PlayerEmitter }) {
      * @returns Player
      */
     public start(): Player {
+        catPlayer.info("Start player");
         if (this.playlist.length <= 0) {
             throw new Error('No recipes in playlist');
         }
