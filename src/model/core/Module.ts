@@ -221,10 +221,10 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
 
                 subscription
                     .on('started', () => {
-                        this.logger.trace(`[${this.id}] subscription started - subscriptionId=${subscription.subscriptionId}`);
+                        this.logger.info(`[${this.id}] subscription started - subscriptionId=${subscription.subscriptionId}`);
                     })
                     .on('terminated', () => {
-                        this.logger.trace(`[${this.id}] subscription (Id=${subscription.subscriptionId}) terminated`);
+                        this.logger.warn(`[${this.id}] subscription (Id=${subscription.subscriptionId}) terminated`);
                     });
 
                 // read namespace array
@@ -310,7 +310,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
 
             const emitter: StrictEventEmitter<EventEmitter, OpcUaNodeEvents> = new EventEmitter();
             monitoredItem.on('changed', (dataValue) => {
-                this.logger.debug(`[${this.id}] Variable Changed (${this.resolveNodeId(node)}) = ${dataValue.value.value.toString()}`);
+                this.logger.info(`[${this.id}] Variable Changed (${this.resolveNodeId(node)}) = ${dataValue.value.value.toString()}`);
                 emitter.emit('changed', {value: dataValue.value.value, timestamp: dataValue.serverTimestamp});
             });
             this.monitoredItems.set(nodeId, { monitoredItem, emitter });
