@@ -81,7 +81,7 @@ export class Parameter {
 
         this.name = parameterOptions.name;
         this.variable = parameterOptions.variable || service.automaticMode ? 'VExt' : 'VMan';
-        this.value = parameterOptions.value.toString();
+        this.value = parameterOptions.value || 0;
         this.continuous = parameterOptions.continuous || false;
 
         this.logger = catParameter;
@@ -103,7 +103,7 @@ export class Parameter {
             .map((item: ScopeOptions) => ScopeItem.extractFromScopeOptions(item, modules));
 
         // evaluate additional variables from expression
-        const extraction = ScopeItem.extractFromExpressionString(this.value, modules);
+        const extraction = ScopeItem.extractFromExpressionString(this.value.toString(), modules);
         this.expression = extraction.expression;
         this.scopeArray.push (...extraction.scopeItems);
     }
