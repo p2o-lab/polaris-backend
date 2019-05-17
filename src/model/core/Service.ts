@@ -31,6 +31,7 @@ import {
     isManualState,
     isOffState,
     OpMode,
+    opModetoJson,
     ServiceControlEnable,
     ServiceMtpCommand,
     ServiceState
@@ -43,7 +44,8 @@ import {
     ParameterOptions,
     ServiceCommand,
     ServiceInterface,
-    StrategyInterface
+    StrategyInterface,
+    OpModeInterface
 } from '@p2olab/polaris-interface';
 import {Unit} from './Unit';
 import {EventEmitter} from 'events';
@@ -92,6 +94,8 @@ interface ServiceEvents {
      * @event
      */
     state: {state: ServiceState, timestamp: Date};
+
+    opMode: OpModeInterface;
     /**
      * Notify when controlEnable changes
      * @event controlEnable
@@ -289,6 +293,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
                     this.opMode.value = data.value;
                     this.opMode.timestamp = new Date();
                     this.logger.debug(`[${this.qualifiedName}] Current OpMode changed: ${this.opMode.value}`);
+                    this.emit('opMode', opModetoJson(<OpMode> this.opMode.value));
                 });
         }
         return this;
@@ -379,7 +384,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
         const currentStrategy = await this.getCurrentStrategy();
         return {
             name: this.name,
-            opMode: OpMode[opMode] || opMode,
+            opMode: opModetoJson(opMode),
             status: ServiceState[state],
             strategies: strategies,
             currentStrategy: currentStrategy.name,

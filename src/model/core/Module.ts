@@ -40,10 +40,11 @@ import {TimestampsToReturn} from 'node-opcua-service-read';
 import { catModule } from '../../config/logging';
 import { EventEmitter } from 'events';
 import { OpcUaNodeOptions} from './Interfaces';
-import {OpMode, ServiceState} from './enum';
+import { ServiceState} from './enum';
 import {
     ModuleInterface, ServiceInterface, ServiceCommand, ControlEnableInterface,
-    ParameterInterface
+    ParameterInterface,
+    OpModeInterface
 } from '@p2olab/polaris-interface';
 import { timeout } from 'promise-timeout';
 import { VariableLogEntry } from '../../logging/archive';
@@ -101,6 +102,13 @@ interface ModuleEvents {
         timestampModule: Date,
         service: Service,
         state: ServiceState};
+    /**
+     * Notify when a service changes its opMode
+     * @event
+     */
+    opModeChanged: {
+        service: Service,
+        opMode: OpModeInterface};
     /**
      * Notify when a variable inside a module changes
      * @event
@@ -379,7 +387,6 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
                     const entry = {
                         timestampPfe: new Date(),
                         timestampModule: timestamp,
-                        module: this.id,
                         service: service,
                         state: state
                     };
@@ -387,6 +394,14 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
                     if (state === ServiceState.COMPLETED) {
                         this.emit('serviceCompleted', service);
                     }
+                })
+                .on('opMode', (opMode) => {
+                    this.logger.debug(`[${this.id}] opMode changed: ${service.name} = ${JSON.stringify(opMode)}`);
+                    const entry = {
+                        service: service,
+                        opMode: opMode
+                    };
+                    this.emit('opModeChanged', entry);
                 });
         }));
     }

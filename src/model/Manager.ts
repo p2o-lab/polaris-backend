@@ -194,6 +194,13 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
                         status: ServiceState[state],
                         lastChange: 0});
                 })
+                .on('opModeChanged', async ({service, opMode}) => {
+                    this.emit('notify', 'module', {
+                        module: module.id,
+                        service: service.name,
+                        opMode: opMode
+                    });
+                })
                 .on('serviceCompleted', (service: Service) => {
                     this.performAutoReset(service);
                 });
