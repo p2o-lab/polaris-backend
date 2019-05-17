@@ -28,7 +28,7 @@
     "assets"
   ],
   "dependencies": {
-    "@p2olab/polaris-interface": "^1.22.0",
+    "@p2olab/polaris-interface": "^1.23.0",
     "assign-deep": "^1.0.0",
     "command-line-args": "^5.1.1",
     "command-line-usage": "^5.0.5",
