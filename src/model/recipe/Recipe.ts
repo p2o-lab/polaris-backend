@@ -191,6 +191,9 @@ export class Recipe extends (EventEmitter as { new(): RecipeEmitter }) {
         this.current_step.transitions.forEach(trans => trans.condition.clear());
         this.emit('stopped', this.current_step);
         this.current_step = undefined;
+        this.modules.forEach((module) => {
+            module.stop();
+        });
     }
 
     private executeStep() {

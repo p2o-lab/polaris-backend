@@ -127,39 +127,45 @@ export abstract class DataAssembly {
             catParameter.trace('First go to Manual state');
             await this.writeOpMode(OpMode.stateManOp);
             await new Promise((resolve) => {
-                this.module.listenToOpcUaNode(this.communication['OpMode'])
-                    .once('changed', (data) => {
-                        if (isManualState(data.value)) {
-                            catParameter.trace(`[${this.name}] finally in ManualMode`);
-                            opMode = data.value;
-                            resolve();
-                        }
-                    });
+                let event = this.module.listenToOpcUaNode(this.communication['OpMode']);
+                function test(data) {
+                    if (isManualState(data.value)) {
+                        opMode = data.value;
+                        event.removeListener('changed', test);
+                        resolve();
+                    }
+                }
+                event.on('changed', test);
             });
         }
 
         if (opMode && isManualState(opMode)) {
             await this.writeOpMode(OpMode.stateAutOp);
             await new Promise((resolve) => {
-                this.module.listenToOpcUaNode(this.communication['OpMode'])
-                    .once('changed', (data) => {
-                        if (isAutomaticState(data.value)) {
-                            opMode = data.value;
-                            resolve();
-                        }
-                    });
+                let event = this.module.listenToOpcUaNode(this.communication['OpMode']);
+                function test(data) {
+                    if (isAutomaticState(data.value)) {
+                        opMode = data.value;
+                        event.removeListener('changed', test);
+                        resolve();
+                    }
+                }
+                event.on('changed', test);
             });
         }
 
         if (opMode && !isExtSource(opMode)) {
             await this.writeOpMode(OpMode.srcExtOp);
             await new Promise((resolve) => {
-                this.module.listenToOpcUaNode(this.communication['OpMode'])
-                    .once('changed', (data) => {
-                        if (isExtSource(data.value)) {
-                            resolve();
-                        }
-                    });
+                let event = this.module.listenToOpcUaNode(this.communication['OpMode']);
+                function test(data) {
+                    if (isExtSource(data.value)) {
+                        opMode = data.value;
+                        event.removeListener('changed', test);
+                        resolve();
+                    }
+                }
+                event.on('changed', test);
             });
         }
     }
@@ -168,13 +174,16 @@ export abstract class DataAssembly {
         let opMode = await this.getOpMode();
         if (opMode && !isManualState(opMode)) {
             this.writeOpMode(OpMode.stateManOp);
-            return new Promise((resolve) => {
-                this.module.listenToOpcUaNode(this.communication['OpMode'])
-                    .once('changed', (data) => {
-                        if (isManualState(data.value)) {
-                            resolve();
-                        }
-                    });
+            await new Promise((resolve) => {
+                let event = this.module.listenToOpcUaNode(this.communication['OpMode']);
+                function test(data) {
+                    if (isManualState(data.value)) {
+                        opMode = data.value;
+                        event.removeListener('changed', test);
+                        resolve();
+                    }
+                }
+                event.on('changed', test);
             });
         }
     }

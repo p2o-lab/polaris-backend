@@ -40,7 +40,7 @@ import {TimestampsToReturn} from 'node-opcua-service-read';
 import { catModule } from '../../config/logging';
 import { EventEmitter } from 'events';
 import { OpcUaNodeOptions} from './Interfaces';
-import { ServiceState } from './enum';
+import {OpMode, ServiceState} from './enum';
 import {
     ModuleInterface, ServiceInterface, ServiceCommand, ControlEnableInterface,
     ParameterInterface
@@ -492,7 +492,11 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
      * Stop all services in module
      */
     stop(): Promise<void[]> {
-        const tasks = this.services.map(service => service.execute(ServiceCommand.stop));
+        const tasks = this.services.map(service => {
+            if (service.status.value != ServiceState.IDLE) {
+                return service.execute(ServiceCommand.stop)
+            }
+        });
         return Promise.all(tasks);
     }
 

@@ -38,8 +38,6 @@ export default class Routes {
 
         // Provide manager in all requests
         server.app.set('manager',manager);
-        server.app.locals.manager = manager;
-
         // Logging all requests
         server.app.use((req: Request, res: Response, next: NextFunction) => {
             catServer.info(`${req.method} ${req.url} - Body: ${JSON.stringify(req.body)}`);

@@ -636,7 +636,6 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
 
     /**
      *
-     * TODO: This could be a problem. After abort/stop/complete all listeners for changed are removed and not only those for continous Parameter listening
      */
     private clearListeners() {
         this.logger.info(`[${this.qualifiedName}] clear parameter listener`);
@@ -679,6 +678,18 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
         }
     }
 
+    private async waitForOpModeToPassSpecificTest(testFunction: (opMode: OpMode) => boolean) {
+        return new Promise((resolve) => {
+            let event = this.parent.listenToOpcUaNode(this.opMode);
+            function test(data) {
+                if (testFunction(data.value)) {
+                    event.removeListener('changed', test);
+                    resolve();
+                }
+            }
+            event.on('changed', test);
+        });
+    }
     /**
      * Set service to automatic operation mode and source to external source
      * @returns {Promise<void>}
@@ -686,67 +697,77 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
     private async setToAutomaticOperationMode(): Promise<void> {
         let opMode: OpMode = await this.getOpMode();
         this.logger.info(`[${this.qualifiedName}] Current opMode = ${opMode}`);
-        if (isOffState(opMode)) {
-            this.logger.trace('First go to Manual state');
+        if (isOffState(<OpMode> this.opMode.value)) {
+            this.logger.info('First go to Manual state');
             await this.writeOpMode(OpMode.stateManOp);
-            await new Promise((resolve) => {
-                this.parent.listenToOpcUaNode(this.opMode)
-                    .once('changed', (data) => {
-                        if (isManualState(data.value)) {
-                            this.logger.trace(`[${this.qualifiedName}] finally in ManualMode`);
-                            opMode = data.value;
-                            resolve();
-                        }
-                    });
-            });
+            await this.waitForOpModeToPassSpecificTest(isManualState);
+            /*await new Promise((resolve) => {
+                let event = this.parent.listenToOpcUaNode(this.opMode);
+                function test(data) {
+                    if (isManualState(data.value)) {
+                        opMode = data.value;
+                        event.removeListener('changed', test);
+                        resolve();
+                    }
+                }
+                event.on('changed', test);
+            });*/
+            this.logger.info(`[${this.qualifiedName}] in ManualMode`);
         }
 
-        if (isManualState(opMode)) {
-            this.logger.trace('Go to Automatic state');
+        if (isManualState(<OpMode> this.opMode.value)) {
+            this.logger.info('Go to Automatic state');
             await this.writeOpMode(OpMode.stateAutOp);
+            //await this.waitForOpModeToPassSpecificTest(isAutomaticState);
             await new Promise((resolve) => {
-                this.parent.listenToOpcUaNode(this.opMode)
-                    .once('changed', (data) => {
-                        this.logger.trace(`[${this.qualifiedName}] OpMode changed: ${data.value}`);
-                        if (isAutomaticState(data.value)) {
-                            this.logger.trace(`[${this.qualifiedName}] finally in AutomaticMode`);
-                            opMode = data.value;
-                            resolve();
-                        }
-                    });
+                let event = this.parent.listenToOpcUaNode(this.opMode);
+                function test(data) {
+                    if (isAutomaticState(data.value)) {
+                        opMode = data.value;
+                        event.removeListener('changed', test);
+                        resolve();
+                    }
+                }
+                event.on('changed', test);
             });
+            this.logger.info(`[${this.qualifiedName}] in AutomaticMode`);
         }
 
-        if (!isExtSource(opMode)) {
-            this.logger.trace('Go to External source');
+        if (!isExtSource(<OpMode> this.opMode.value)) {
+            this.logger.info('Go to External source');
             await this.writeOpMode(OpMode.srcExtOp);
+            //await this.waitForOpModeToPassSpecificTest(isExtSource);
             await new Promise((resolve) => {
-                this.parent.listenToOpcUaNode(this.opMode)
-                    .once('changed', (data) => {
-                        this.logger.trace(`[${this.qualifiedName}] OpMode changed: ${data.value}`);
-                        if (isExtSource(data.value)) {
-                            this.logger.trace(`[${this.qualifiedName}] finally in ExtSource`);
-                            resolve();
-                        }
-                    });
+                let event = this.parent.listenToOpcUaNode(this.opMode);
+                function test(data) {
+                    if (isExtSource(data.value)) {
+                        event.removeListener('changed', test);
+                        resolve();
+                    }
+                }
+                event.on('changed', test);
             });
+            this.logger.trace(`[${this.qualifiedName}] in ExtSource`);
         }
     }
 
     private async setToManualOperationMode(): Promise<void> {
         let opMode = await this.getOpMode();
-        if (!isManualState(opMode)) {
-            this.writeOpMode(OpMode.stateManOp);
-            return new Promise((resolve) => {
-                this.parent.listenToOpcUaNode(this.opMode)
-                    .once('changed', (data) => {
-                        this.logger.trace(`[${this.qualifiedName}] OpMode changed: ${data.value}`);
-                        if (isManualState(data.value)) {
-                            this.logger.trace(`[${this.qualifiedName}] finally in ManualMode`);
-                            resolve();
-                        }
-                    });
+        if (!isManualState(<OpMode> this.opMode.value)) {
+            await this.writeOpMode(OpMode.stateManOp);
+            //await this.waitForOpModeToPassSpecificTest(isManualState);
+            await new Promise((resolve) => {
+                let event = this.parent.listenToOpcUaNode(this.opMode);
+                function test(data) {
+                    if (isManualState(data.value)) {
+
+                        event.removeListener('changed', test);
+                        resolve();
+                    }
+                }
+                event.on('changed', test);
             });
+            this.logger.info(`[${this.qualifiedName}] finally in ManualMode`);
         }
     }
 

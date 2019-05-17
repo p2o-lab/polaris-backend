@@ -144,7 +144,7 @@ if (options) {
             const endpoint = options.externalTrigger[0];
             const nodeId = options.externalTrigger[1];
 
-            const et = new ExternalTrigger(endpoint, nodeId, manager.player.start);
+            const et = new ExternalTrigger(endpoint, nodeId, () => manager.player.start());
             et.startMonitoring()
                 .catch((err) => {
                     console.log("Could not start monitoring of external trigger", err.toString());

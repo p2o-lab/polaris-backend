@@ -75,7 +75,7 @@ export class Player extends (EventEmitter as { new(): PlayerEmitter }) {
     /** index in playlist starting from 0 */
     private _currentItem: number;
 
-    private _playlist: Recipe[];
+    private _playlist: Recipe[] = [];
 
     readonly recipeRuns: RecipeRun[];
     currentRecipeRun: RecipeRun;
@@ -154,8 +154,9 @@ export class Player extends (EventEmitter as { new(): PlayerEmitter }) {
      * @returns Player
      */
     public start(): Player {
-        catPlayer.info("Start player");
-        if (this.playlist.length <= 0) {
+        catPlayer.info(`Start player: ${this._playlist.map(item => item.name)} (current state: ${RecipeState[this.status]})`);
+        if (this._playlist.length <= 0) {
+            catPlayer.warn('No recipes in playlist');
             throw new Error('No recipes in playlist');
         }
         if (this.status === RecipeState.idle || this.status === RecipeState.stopped || this.status === RecipeState.completed) {

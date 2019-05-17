@@ -150,10 +150,10 @@ export class Parameter {
      */
     public setOperationMode(): Promise<void> {
         if (this.service.automaticMode) {
-            this.logger.debug(`[${this.service.qualifiedName}.${this.name}] Bring to automatic mode`);
+            this.logger.info(`[${this.service.qualifiedName}.${this.name}] Bring to automatic mode`);
             return this._parameter.setToAutomaticOperationMode();
         } else {
-            this.logger.debug(`[${this.service.qualifiedName}.${this.name}] Bring to manual mode`);
+            this.logger.info(`[${this.service.qualifiedName}.${this.name}] Bring to manual mode`);
             return this._parameter.setToManualOperationMode()
                 .then(() => this.logger.info(`[${this.service.qualifiedName}.${this.name}] Parameter now in manual mode`));
         }
