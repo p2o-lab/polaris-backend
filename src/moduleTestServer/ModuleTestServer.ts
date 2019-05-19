@@ -378,7 +378,7 @@ export class ModuleTestServer {
     }
 
 
-    public shutdown(done) {
-        this.server.shutdown(100, done);
+    public async shutdown() {
+        await new Promise(resolve => this.server.shutdown(100, resolve));
     }
 }
