@@ -25,5 +25,10 @@
 
 import {ModuleTestServer} from './moduleTestServer/ModuleTestServer';
 
-const moduleServer = new ModuleTestServer();
-moduleServer.start(() => moduleServer.startSimulation());
+async function start () {
+    const moduleServer = new ModuleTestServer();
+    await moduleServer.start();
+    await moduleServer.startSimulation();
+}
+
+start();

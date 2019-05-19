@@ -24,96 +24,136 @@
  */
 
 
-import {OpMode, ServiceMtpCommand, ServiceState} from '../model/core/enum';
+import {OpMode, ServiceControlEnable, ServiceMtpCommand, ServiceState} from '../model/core/enum';
 import {DataType, Variant} from 'node-opcua';
 import {OPCUAServer} from 'node-opcua-server';
 import Timeout = NodeJS.Timeout;
 
-export class ModuleTestServer {
-    private server: OPCUAServer;
+class Variable {
 
-    public varStatus;
-    public varCommand;
-    public varCommandEnable;
-    public varOpmode;
-    public varVariable1;
-    public varVariable2;
-    public varStrategy;
-    public externalTrigger: boolean;
+    v = 20;
+    vext = 20;
+    unit =  Math.floor((Math.random() * 100) + 1000);
+    sclMin = 0;
+    sclMax = 100;
     private interval: Timeout;
 
-    constructor() {
-        this.server = new OPCUAServer({
-            port: 4334
+    constructor(namespace, rootNode, variableName, vext = false) {
+        const variableNode = namespace.addObject({
+            organizedBy: rootNode,
+            browseName: variableName
         });
-        this.varStatus = ServiceState.IDLE;
-        this.varStrategy = 1;
-        this.varCommand = 0;
-        this.varCommandEnable = 2047;
-        this.varOpmode = 0;
-        this.externalTrigger = false;
-        this.varVariable1 = 20.0;
-        this.varVariable2 = 10.0;
+
+        namespace.addVariable({
+            componentOf: variableNode,
+            nodeId: `ns=1;s=${variableName}.V`,
+            browseName: `${variableName}.V`,
+            dataType: 'Double',
+            value: {
+                get: () => {
+                    return new Variant({dataType: DataType.Double, value: this.v});
+                }
+            }
+        });
+
+        namespace.addVariable({
+            componentOf: variableNode,
+            nodeId: `ns=1;s=${variableName}.VUnit`,
+            browseName: `${variableName}.VUnit`,
+            dataType: 'Double',
+            value: {
+                get: () => {
+                    return new Variant({dataType: DataType.Double, value: this.unit});
+                }
+            }
+        });
+
+        namespace.addVariable({
+            componentOf: variableNode,
+            nodeId: `ns=1;s=${variableName}.VSclMin`,
+            browseName: `${variableName}.VSclMin`,
+            dataType: 'Double',
+            value: {
+                get: () => {
+                    return new Variant({dataType: DataType.Double, value: this.sclMin});
+                }
+            }
+        });
+
+        namespace.addVariable({
+            componentOf: variableNode,
+            nodeId: `ns=1;s=${variableName}.VSclMax`,
+            browseName: `${variableName}.VSclMax`,
+            dataType: 'Double',
+            value: {
+                get: () => {
+                    return new Variant({dataType: DataType.Double, value: this.sclMax});
+                }
+            }
+        });
+        if (vext) {
+            namespace.addVariable({
+                componentOf: variableNode,
+                nodeId: `ns=1;s=${variableName}.VExt`,
+                browseName: `${variableName}.VExt`,
+                dataType: 'Double',
+                value: {
+                    get: () => {
+                        return new Variant({dataType: DataType.Double, value: this.vext});
+                    },
+                    set: (variant) => {
+                        this.vext = parseInt(variant.value);
+                        setTimeout(() => {
+                            this.v = this.vext;
+                        }, 1000);
+                    }
+
+                }
+            });
+        }
     }
 
-    public start(done) {
-        this.server.initialize(() => {
-            this.createAddressSpace();
-            this.server.start(done);
-        });
-    }
-
-    public startSimulation() {
+    startSimulation() {
         let time = 0;
+        let f1 = Math.random();
+        let f2 = Math.random();
+        let f3 = Math.random();
+        let f4 = Math.random();
         this.interval = setInterval(() => {
             time = time + 0.05;
-            this.varVariable1 = 20 + 5 * Math.sin(time);
-            this.varVariable2 = 10 + 5 * Math.cos(time+2) + 20000/(time+100) + 10*Math.sin(time/100);
-        },100);
+            this.v = f1 * 20 + 5 * f2 * Math.sin(2 * f3 * time + 3 * f4);
+        }, 100);
     }
 
-    public stopSimulation() {
-        this.interval.unref();
+    stopSimulation() {
+        clearTimeout(this.interval);
+
     }
+}
 
-    private createAddressSpace() {
-        const addressSpace = this.server.engine.addressSpace;
-        const namespace = addressSpace.getOwnNamespace();
+class Service {
+    varStatus = ServiceState.IDLE;
+    varStrategy = 1;
+    varCommand = 0;
+    varCommandEnable = 2047;
+    varOpmode = 0;
+    private variables: Variable[] = [];
 
-        // declare a new object
-        const myModule = namespace.addObject({
-            organizedBy: addressSpace.rootFolder.objects,
-            browseName: 'MyTestModule'
+    constructor(namespace, rootNode, serviceName) {
+        this.state(ServiceState.IDLE);
+
+        const serviceNode = namespace.addObject({
+            organizedBy: rootNode,
+            browseName: serviceName
         });
 
-        namespace.addVariable({
-            componentOf: myModule,
-            nodeId: 'ns=1;s=MyVariable1',
-            browseName: 'MyVariable1',
-            dataType: 'Double',
-            value: {
-                get: () => {
-                    return new Variant({dataType: DataType.Double, value: this.varVariable1});
-                }
-            }
-        });
+
+        this.variables.push(new Variable(namespace, serviceNode, serviceName+'.Parameter1', true));
 
         namespace.addVariable({
-            componentOf: myModule,
-            nodeId: 'ns=1;s=MyVariable2',
-            browseName: 'MyVariable2',
-            dataType: 'Double',
-            value: {
-                get: () => {
-                    return new Variant({dataType: DataType.Double, value: this.varVariable2});
-                }
-            }
-        });
-
-        namespace.addVariable({
-            componentOf: myModule,
-            nodeId: 'ns=1;s=MyStrategy',
-            browseName: 'MyStrategy',
+            componentOf: serviceNode,
+            nodeId: `ns=1;s=${serviceName}.Strategy`,
+            browseName: `${serviceName}.Strategy`,
             dataType: 'UInt32',
             value: {
                 get: () => {
@@ -126,9 +166,9 @@ export class ModuleTestServer {
         });
 
         namespace.addVariable({
-            componentOf: myModule,
-            nodeId: 'ns=1;s=MyCurrentStrategy',
-            browseName: 'MyCurrentStrategy',
+            componentOf: serviceNode,
+            nodeId: `ns=1;s=${serviceName}.CurrentStrategy`,
+            browseName: `${serviceName}.CurrentStrategy`,
             dataType: 'UInt32',
             value: {
                 get: () => {
@@ -138,9 +178,9 @@ export class ModuleTestServer {
         });
 
         namespace.addVariable({
-            componentOf: myModule,
-            nodeId: 'ns=1;s=MyCommandEnable',
-            browseName: 'MyCommandEnable',
+            componentOf: serviceNode,
+            nodeId: `ns=1;s=${serviceName}.CommandEnable`,
+            browseName: `${serviceName}.CommandEnable`,
             dataType: 'UInt32',
             value: {
                 get: () => {
@@ -150,9 +190,9 @@ export class ModuleTestServer {
         });
 
         namespace.addVariable({
-            componentOf: myModule,
-            nodeId: 'ns=1;s=MyOpMode',
-            browseName: 'MyOpMode',
+            componentOf: serviceNode,
+            nodeId: `ns=1;s=${serviceName}.OpMode`,
+            browseName: `${serviceName}.OpMode`,
             dataType: 'UInt32',
             value: {
                 get: () => {
@@ -160,9 +200,11 @@ export class ModuleTestServer {
                 },
                 set: (variant) => {
                     if (parseInt(variant.value) == OpMode.stateManOp) {
+                        this.varOpmode = this.varOpmode & ~OpMode.stateAutAct;
                         this.varOpmode = this.varOpmode | OpMode.stateManAct;
                     }
                     if (parseInt(variant.value) == OpMode.stateAutOp) {
+                        this.varOpmode = this.varOpmode & ~OpMode.stateManAct;
                         this.varOpmode = this.varOpmode | OpMode.stateAutAct;
                     }
                     if (parseInt(variant.value) == OpMode.srcExtOp) {
@@ -173,9 +215,9 @@ export class ModuleTestServer {
         });
 
         namespace.addVariable({
-            componentOf: myModule,
-            nodeId: 'ns=1;s=MyState',
-            browseName: 'MyState',
+            componentOf: serviceNode,
+            nodeId: `ns=1;s=${serviceName}.State`,
+            browseName: `${serviceName}.State`,
             dataType: 'UInt32',
             value: {
                 get: () => {
@@ -185,9 +227,9 @@ export class ModuleTestServer {
         });
 
         namespace.addVariable({
-            componentOf: myModule,
-            nodeId: 'ns=1;s=MyCommand',
-            browseName: 'MyCommand',
+            componentOf: serviceNode,
+            nodeId: `ns=1;s=${serviceName}.Command`,
+            browseName: `${serviceName}.Command`,
             dataType: 'UInt32',
             value: {
                 get: () => {
@@ -196,54 +238,120 @@ export class ModuleTestServer {
                 set: (variant) => {
                     this.varCommand = parseInt(variant.value);
                     if (this.varCommand == ServiceMtpCommand.COMPLETE && this.varStatus == ServiceState.EXECUTE) {
-                        this.varCommand = ServiceMtpCommand.UNDEFINED;
-                        this.varStatus = ServiceState.COMPLETING;
+                        this.state(ServiceState.COMPLETING);
                         setTimeout(() => {
-                            this.varStatus = ServiceState.COMPLETED;
+                            this.state(ServiceState.COMPLETED);
                         }, 100);
                     } else if (this.varCommand == ServiceMtpCommand.RESTART && this.varStatus == ServiceState.EXECUTE) {
-                        this.varCommand = ServiceMtpCommand.UNDEFINED;
-                        this.varStatus = ServiceState.STARTING;
+                        this.state(ServiceState.STARTING);
                         setTimeout(() => {
-                            this.varStatus = ServiceState.EXECUTE;
+                            this.state(ServiceState.EXECUTE);
                         }, 100);
                     } else if (this.varCommand == ServiceMtpCommand.RESET) {
-                        this.varCommand = ServiceMtpCommand.UNDEFINED;
-                        this.varStatus = ServiceState.IDLE;
+                        this.state(ServiceState.IDLE);
                     } else if (this.varCommand == ServiceMtpCommand.START && this.varStatus == ServiceState.IDLE) {
-                        this.varCommand = ServiceMtpCommand.UNDEFINED;
-                        this.varStatus = ServiceState.STARTING;
+                        this.state(ServiceState.STARTING);
                         setTimeout(() => {
-                            this.varStatus = ServiceState.EXECUTE;
+                            this.state(ServiceState.EXECUTE);
                         }, 100);
                     } else if (this.varCommand == ServiceMtpCommand.RESUME && this.varStatus == ServiceState.PAUSED) {
-                        this.varCommand = ServiceMtpCommand.UNDEFINED;
-                        this.varStatus = ServiceState.RESUMING;
+                        this.state(ServiceState.RESUMING);
                         setTimeout(() => {
-                            this.varStatus = ServiceState.EXECUTE;
+                            this.state(ServiceState.EXECUTE);
                         }, 100);
                     } else if (this.varCommand == ServiceMtpCommand.PAUSE && this.varStatus == ServiceState.EXECUTE) {
-                        this.varCommand = ServiceMtpCommand.UNDEFINED;
-                        this.varStatus = ServiceState.PAUSING;
+                        this.state(ServiceState.PAUSING);
                         setTimeout(() => {
-                            this.varStatus = ServiceState.PAUSED;
+                            this.state(ServiceState.PAUSED);
                         }, 100);
                     } else if (this.varCommand == ServiceMtpCommand.STOP) {
-                        this.varCommand = ServiceMtpCommand.UNDEFINED;
-                        this.varStatus = ServiceState.STOPPING;
+                        this.state(ServiceState.STOPPING);
                         setTimeout(() => {
-                            this.varStatus = ServiceState.STOPPED;
+                            this.state(ServiceState.STOPPED);
                         }, 100);
                     } else if (this.varCommand == ServiceMtpCommand.ABORT) {
-                        this.varCommand = ServiceMtpCommand.UNDEFINED;
-                        this.varStatus = ServiceState.ABORTING;
+                        this.state(ServiceState.ABORTING);
                         setTimeout(() => {
-                            this.varStatus = ServiceState.ABORTED;
+                            this.state(ServiceState.ABORTED);
                         }, 100);
                     }
                 }
             }
         });
+    }
+
+    private state(state: ServiceState) {
+        this.varStatus = state;
+        this.varCommand = ServiceMtpCommand.UNDEFINED;
+        this.varCommandEnable = ServiceControlEnable.ABORT + ServiceControlEnable.STOP;
+        switch (state) {
+            case ServiceState.IDLE:
+                this.varCommandEnable += ServiceControlEnable.START;
+                break;
+            case ServiceState.EXECUTE:
+                this.varCommandEnable += ServiceControlEnable.PAUSE + ServiceControlEnable.COMPLETE + ServiceControlEnable.RESTART;
+                break;
+            case ServiceState.PAUSED:
+                this.varCommandEnable += ServiceControlEnable.RESUME;
+                break;
+            case ServiceState.COMPLETED:
+            case ServiceState.STOPPED:
+            case ServiceState.ABORTED:
+                let varCommandEnable;
+                this.varCommandEnable += ServiceControlEnable.RESET;
+                break;
+        }
+    }
+
+    startSimulation() {
+        this.variables.forEach((variable) => variable.startSimulation());
+    }
+
+    stopSimulation() {
+        this.variables.forEach((variable) => variable.stopSimulation());
+    }
+}
+
+export class ModuleTestServer {
+    private server: OPCUAServer;
+
+    public externalTrigger: boolean;
+    public variables: Variable[] = [];
+    public services: Service[] = [];
+
+    constructor() {
+        this.server = new OPCUAServer({
+            port: 4334
+        });
+
+        this.externalTrigger = false;
+    }
+
+    public async start() {
+        await new Promise(resolve => this.server.initialize(resolve));
+        this.createAddressSpace();
+        console.log('address space created')
+        await new Promise(resolve => this.server.start(resolve));
+        console.log('server started')
+    }
+
+    private createAddressSpace() {
+        const addressSpace = this.server.engine.addressSpace;
+        const namespace = addressSpace.getOwnNamespace();
+
+        // declare a new object
+        const myModule = namespace.addObject({
+            organizedBy: addressSpace.rootFolder.objects,
+            browseName: 'TestModule'
+        });
+
+        this.variables.push(new Variable(namespace, myModule, 'Variable1'));
+        this.variables.push(new Variable(namespace, myModule, 'Variable2'));
+        this.variables.push(new Variable(namespace, myModule, 'Variable.3'));
+
+        this.services.push(new Service(namespace, myModule, 'Service1'));
+        this.services.push(new Service(namespace, myModule, 'Service2'));
+
 
         namespace.addVariable({
             componentOf: myModule,
@@ -256,6 +364,17 @@ export class ModuleTestServer {
                 }
             }
         });
+    }
+
+
+    public startSimulation() {
+        this.variables.forEach((variable) => variable.startSimulation());
+        this.services.forEach((service) => service.startSimulation());
+    }
+
+    public stopSimulation() {
+        this.variables.forEach((variable) => variable.stopSimulation());
+        this.services.forEach((services) => services.stopSimulation());
     }
 
 

@@ -32,20 +32,64 @@ import {ServiceCommand} from '@p2olab/polaris-interface';
 import {waitForStateChange} from '../../helper';
 import * as fs from "fs";
 import * as parseJson from 'json-parse-better-errors';
+import {OpMode, opModetoJson} from '../../../src/model/core/enum';
+import * as delay from 'timeout-as-promise';
 
 describe('Service', () => {
 
     let moduleServer: ModuleTestServer;
 
-    before(function (done) {
+    before(async function () {
         moduleServer = new ModuleTestServer();
-        moduleServer.start(done);
+        await moduleServer.start();
+        moduleServer.startSimulation();
     });
 
     after((done) => {
-        moduleServer.shutdown(done);
+        moduleServer.shutdown(() => {
+            moduleServer.stopSimulation();
+            done();
+        });
     });
 
+    it('waitForOpModeSpecificTest', async () => {
+        const moduleJson = parseJson(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8'), null, 60)
+            .modules[0];
+
+        const module = new Module(moduleJson);
+        const service = module.services[0];
+        const testService = moduleServer.services[0];
+
+        await module.connect();
+
+        testService.varOpmode = 0;
+        await service.execute(ServiceCommand.start);
+
+        let opMode = await service.getOpMode();
+        expect(opMode).to.equal(OpMode.stateAutAct + OpMode.srcExtAct);
+        await module.disconnect();
+    });
+
+    it('waitForOpModeSpecificTest', async () => {
+        const moduleJson = parseJson(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8'), null, 60)
+            .modules[0];
+
+        const module = new Module(moduleJson);
+        const service = module.services[0];
+        const testService = moduleServer.services[0];
+
+        await module.connect();
+
+        expect(service.name).to.equal('Service1');
+
+        testService.varOpmode = OpMode.stateAutAct;
+
+        let opMode = await service.getOpMode();
+        expect(opMode).to.equal(OpMode.stateAutAct);
+
+
+        await module.disconnect();
+    });
 
     it('should load from options', async function() {
         this.timeout(10000);
@@ -67,27 +111,28 @@ describe('Service', () => {
         let result = await service.getOverview();
         expect(result).to.have.property('controlEnable')
             .to.deep.equal({
-                abort: true,
-                complete: true,
-                pause: true,
-                reset: true,
-                restart: true,
-                resume: true,
-                start: true,
-                stop: true,
-                unhold: true
-            });
+            abort: true,
+            complete: false,
+            pause: false,
+            reset: false,
+            restart: false,
+            resume: false,
+            start: true,
+            stop: true,
+            unhold: false
+        });
 
         expect(result).to.have.property('currentStrategy', 'Strategy 1');
         expect(result).to.have.property('name', 'Service1');
-        expect(result).to.have.property('opMode', 0);
+        expect(result).to.have.property('opMode').to.deep.equal({
+            source: "external",
+            state: "automatic"
+        });
         expect(result).to.have.property('status', 'IDLE');
 
         await service.subscribeToService();
         let stateChangeCount=0;
         service.on('state', (state) => {
-            console.log('state changed', state);
-
             stateChangeCount++;
         });
 
