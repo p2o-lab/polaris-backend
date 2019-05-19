@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import {DataAssembly} from './DataAssembly';
+import {DataAssembly} from '../dataAssembly/DataAssembly';
 
 export class ConfigurationParameter extends DataAssembly {
 

@@ -23,15 +23,34 @@
  * SOFTWARE.
  */
 
-
 import {DataAssembly} from './DataAssembly';
-import {OpcUaNodeOptions} from './Interfaces';
-import {Module} from './Module';
 
-/**
- * StrategyParameter of a [[Service]]
- *
- */
-export class StrategyParameter extends DataAssembly {
+export class DigView extends DataAssembly {
 
+    get V() { return this.communication['V']}
+    get VUnit() {return this.communication['VUnit']}
+    get VSclMin() {return this.communication['VSclMin']}
+    get VSclMax() {return this.communication['VSclMax']}
+
+    constructor(options, module){
+        super(options, module);
+        this.subscribedNodes.push('V', 'VUnit', 'VSclMin', 'VSclMax');
+    }
+
+}
+
+export class DigMon extends DigView {
+
+    // TODO: add getters
+    
+    constructor(options, module){
+        super(options, module);
+        this.subscribedNodes.push(
+            'VAHEn', 'VAHLim', 'VAHAct',
+            'VWHEn', 'VWHLim', 'VWHAct',
+            'VTHEn', 'VTHLim', 'VTHAct',
+            'VALEn', 'VALLim', 'VALAct',
+            'VWLEn', 'VWLLim', 'VWLAct',
+            'VTLEn', 'VTLLim', 'VTLAct');
+    }
 }

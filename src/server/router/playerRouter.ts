@@ -124,7 +124,7 @@ playerRouter.post('/remove', async (req: Request, res: Response) => {
  * @apiParam {string} nextStepName  name of next step where a transition is available from current step
  */
 playerRouter.post('/forceTransition', async (req: Request, res: Response) => {
-    console.log("force transition", req.body);
+    catServer.info(`Force transition: ${JSON.stringify(req.body)}`);
     const manager: Manager = req.app.get('manager');
     manager.player.forceTransition(req.body.stepName, req.body.nextStepName);
     res.json(manager.player.json());

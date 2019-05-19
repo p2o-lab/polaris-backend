@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018 Markus Graube <markus.graube@tu.dresden.de>,
+ * Copyright (c) 2019 Markus Graube <markus.graube@tu.dresden.de>,
  * Chair for Process Control Systems, Technische Universität Dresden
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,22 +23,34 @@
  * SOFTWARE.
  */
 
-export interface ServiceLogEntry {
-    timestampPfe: Date;
-    timestampModule?: Date;
-    module: string;
-    service: string;
-    state?: string;
-    strategy?: string;
-    command?: string;
-    parameter?: any[];
+import {DataAssembly} from './DataAssembly';
+
+export class AnaView extends DataAssembly {
+
+    get V() { return this.communication['V']}
+    get VUnit() {return this.communication['VUnit']}
+    get VSclMin() {return this.communication['VSclMin']}
+    get VSclMax() {return this.communication['VSclMax']}
+
+    constructor(options, module){
+        super(options, module);
+        this.subscribedNodes.push('V', 'VUnit', 'VSclMin', 'VSclMax');
+    }
+
 }
 
-export interface VariableLogEntry {
-    timestampPfe: Date;
-    timestampModule: Date;
-    module: string;
-    variable: string;
-    value: number | string;
-    unit: string;
+export class AnaMon extends AnaView {
+
+    // TODO: add getters
+
+    constructor(options, module){
+        super(options, module);
+        this.subscribedNodes.push(
+            'VAHEn', 'VAHLim', 'VAHAct',
+            'VWHEn', 'VWHLim', 'VWHAct',
+            'VTHEn', 'VTHLim', 'VTHAct',
+            'VALEn', 'VALLim', 'VALAct',
+            'VWLEn', 'VWLLim', 'VWLAct',
+            'VTLEn', 'VTLLim', 'VTLAct');
+    }
 }

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018 Markus Graube <markus.graube@tu.dresden.de>,
+ * Copyright (c) 2019 Markus Graube <markus.graube@tu.dresden.de>,
  * Chair for Process Control Systems, Technische Universität Dresden
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,22 +23,40 @@
  * SOFTWARE.
  */
 
-export interface ServiceLogEntry {
-    timestampPfe: Date;
-    timestampModule?: Date;
-    module: string;
-    service: string;
-    state?: string;
-    strategy?: string;
-    command?: string;
-    parameter?: any[];
+import {DataAssembly} from './DataAssembly';
+
+export class ExtDigOp extends DataAssembly {
+
+    get VOut() {return this.communication['VOut']}
+    get VUnit() {return this.communication['VUnit']}
+    get VSclMin() {return this.communication['VSclMin']}
+    get VSclMax() {return this.communication['VSclMax']}
+    get VExt() {return this.communication['VExt']}
+    get VMin() {return this.communication['VMin']}
+    get VMax() {return this.communication['VMax']}
+    get VRbk() {return this.communication['VRbk']}
+
+    constructor(options, module){
+        super(options, module);
+        this.subscribedNodes.push('VOut', 'VUnit', 'VSclMin', 'VSclMax', 'VExt', 'VMin', 'VMax', 'VRbk');
+    }
+
 }
 
-export interface VariableLogEntry {
-    timestampPfe: Date;
-    timestampModule: Date;
-    module: string;
-    variable: string;
-    value: number | string;
-    unit: string;
+export class ExtIntDigOp extends ExtDigOp {
+
+    get VInt() {return this.communication['VInt']}
+    get OpMode() {return this.communication['OpMode']}
+
+    constructor(options, module){
+        super(options, module);
+        this.subscribedNodes.push('VInt', 'OpMode');
+    }
+}
+
+export class AdvDigOp extends ExtIntDigOp {
+
+}
+
+export class DigServParam extends ExtIntDigOp {
 }

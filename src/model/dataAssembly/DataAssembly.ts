@@ -23,11 +23,14 @@
  * SOFTWARE.
  */
 
-import {OpcUaNodeOptions} from './Interfaces';
+import {OpcUaNodeOptions} from '../core/Interfaces';
 import {catParameter, catService} from '../../config/logging';
 import {DataType, Variant, VariantArrayType} from 'node-opcua';
-import {Module} from './Module';
-import {isAutomaticState, isExtSource, isManualState, isOffState, OpMode} from './enum';
+import {Module} from '../core/Module';
+import {isAutomaticState, isExtSource, isManualState, isOffState, OpMode} from '../core/enum';
+import {EventEmitter} from 'events';
+import {AnaView} from './AnaView';
+import {ExtAnaOp} from './AnaOp';
 
 export interface DataAssemblyOptions {
     name: string;
@@ -35,33 +38,40 @@ export interface DataAssemblyOptions {
     communication: OpcUaNodeOptions[];
 }
 
-export abstract class DataAssembly {
+export class DataAssembly extends EventEmitter {
     name: string;
     interface_class: string;
     communication: OpcUaNodeOptions[];
-        /*{
-        VExt: OpcUaNodeOptions,
-        VOut: OpcUaNodeOptions,
-        VMin: OpcUaNodeOptions,
-        VMax: OpcUaNodeOptions,
-        VSclMax: OpcUaNodeOptions,
-        VSclMin: OpcUaNodeOptions,
-        VRbk: OpcUaNodeOptions,
-        VUnit: OpcUaNodeOptions,
-        WQC: OpcUaNodeOptions,
-        OSLevel: OpcUaNodeOptions
-    };*/
+
+    get OSLevel() { return this.communication['OSLevel']}
+    get WQC() { return this.communication['WQC']}
+
 
     private module: Module;
+    protected subscribedNodes: string[] = [];
 
     constructor(options: DataAssemblyOptions, module: Module) {
+        super();
         this.name =  options.name;
         this.interface_class = options.interface_class;
         this.communication = options.communication;
+
+        this.subscribedNodes.push('WQC', 'OSLevel');
         this.module = module;
         if (!this.module) {
             throw new Error(`No module for data assembly: ${JSON.stringify(options)}`);
         }
+    }
+
+    public subscribe(samplingInterval=1000){
+        catParameter.debug(`DataAssembly ${this.name} subscribe to ${JSON.stringify(this.subscribedNodes)}`);
+        this.subscribedNodes
+            .filter(node => this.communication[node])
+            .forEach(node => {
+                this.module.listenToOpcUaNode(this.communication[node], samplingInterval)
+                    .on('changed', () => this.emit(node, this.communication[node]));
+        });
+        return this;
     }
 
 
@@ -176,15 +186,16 @@ export abstract class DataAssembly {
             this.writeOpMode(OpMode.stateManOp);
             await new Promise((resolve) => {
                 let event = this.module.listenToOpcUaNode(this.communication['OpMode']);
-                function test(data) {
+                event.on('changed', function test(data) {
                     if (isManualState(data.value)) {
                         opMode = data.value;
                         event.removeListener('changed', test);
                         resolve();
                     }
-                }
-                event.on('changed', test);
+                });
             });
         }
     }
+
+
 }

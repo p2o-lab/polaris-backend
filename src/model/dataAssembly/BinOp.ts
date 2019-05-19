@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018 Markus Graube <markus.graube@tu.dresden.de>,
+ * Copyright (c) 2019 Markus Graube <markus.graube@tu.dresden.de>,
  * Chair for Process Control Systems, Technische Universität Dresden
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,22 +23,37 @@
  * SOFTWARE.
  */
 
-export interface ServiceLogEntry {
-    timestampPfe: Date;
-    timestampModule?: Date;
-    module: string;
-    service: string;
-    state?: string;
-    strategy?: string;
-    command?: string;
-    parameter?: any[];
+import {DataAssembly} from './DataAssembly';
+
+export class ExtBinOp extends DataAssembly {
+
+    get VState0() {return this.communication['VState0']}
+    get VState1() {return this.communication['VState1']}
+    get VExt() {return this.communication['VExt']}
+    get VOut() {return this.communication['VOut']}
+    get VRbk() {return this.communication['VRbk']}
+
+    constructor(options, module){
+        super(options, module);
+        this.subscribedNodes.push('VOut', 'VState0', 'VState1', 'VExt', 'VRbk');
+    }
+
 }
 
-export interface VariableLogEntry {
-    timestampPfe: Date;
-    timestampModule: Date;
-    module: string;
-    variable: string;
-    value: number | string;
-    unit: string;
+export class ExtIntBinOp extends ExtBinOp {
+
+    get VInt() {return this.communication['VInt']}
+    get OpMode() {return this.communication['OpMode']}
+
+    constructor(options, module){
+        super(options, module);
+        this.subscribedNodes.push('VInt', 'OpMode');
+    }
+}
+
+export class AdvBinOp extends ExtIntBinOp {
+
+}
+
+export class BinServParam extends ExtIntBinOp {
 }

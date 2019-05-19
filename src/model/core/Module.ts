@@ -24,7 +24,6 @@
  */
 
 import { Service, ServiceOptions } from './Service';
-import { ProcessValue } from './ProcessValue';
 import {
     AttributeIds,
     ClientMonitoredItem,
@@ -51,9 +50,11 @@ import { VariableLogEntry } from '../../logging/archive';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Strategy} from './Strategy';
 import {Category} from 'typescript-logging';
-import {DataAssemblyOptions} from './DataAssembly';
 import {DataType, VariantArrayType} from 'node-opcua';
 import * as delay from 'timeout-as-promise';
+import {DataAssembly, DataAssemblyOptions} from '../dataAssembly/DataAssembly';
+import {DataAssemblyFactory} from '../dataAssembly/DataAssemblyFactory';
+import {Unit} from './Unit';
 
 export interface ModuleOptions {
     id: string;
@@ -147,7 +148,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
     readonly endpoint: string;
     readonly hmiUrl: string;
     readonly services: Service[];
-    readonly variables: ProcessValue[];
+    readonly variables: DataAssembly[];
     readonly logger: Category;
 
     // module is protected and can't be deleted by the user
@@ -158,8 +159,6 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
     private subscription: ClientSubscription;
     private monitoredItems: Map<NodeId, { monitoredItem: ClientMonitoredItem, emitter: StrictEventEmitter<EventEmitter, OpcUaNodeEvents> }>;
     private namespaceArray: string[];
-
-
 
     constructor(options: ModuleOptions, protectedModule: boolean = false) {
         super();
@@ -172,7 +171,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
             this.services = options.services.map(serviceOption => new Service(serviceOption, this));
         }
         if (options.process_values) {
-            this.variables = options.process_values.map(variableOptions => new ProcessValue(variableOptions, this));
+            this.variables = options.process_values.map(variableOptions => DataAssemblyFactory.create(variableOptions, this));
         }
         if (options.hmi_url){
             this.hmiUrl = options.hmi_url;
@@ -318,7 +317,9 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
 
             const emitter: StrictEventEmitter<EventEmitter, OpcUaNodeEvents> = new EventEmitter();
             monitoredItem.on('changed', (dataValue) => {
-                this.logger.info(`[${this.id}] Variable Changed (${this.resolveNodeId(node)}) = ${dataValue.value.value.toString()}`);
+                this.logger.debug(`[${this.id}] Variable Changed (${this.resolveNodeId(node)}) = ${dataValue.value.value.toString()}`);
+                node.value = dataValue.value.value;
+                node.timestamp = dataValue.serverTimestamp;
                 emitter.emit('changed', {value: dataValue.value.value, timestamp: dataValue.serverTimestamp});
             });
             this.monitoredItems.set(nodeId, { monitoredItem, emitter });
@@ -327,7 +328,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
     }
 
     listenToVariable(dataStructureName: string, variableName: string): StrictEventEmitter<EventEmitter, OpcUaNodeEvents> {
-        const dataStructure: ProcessValue = this.variables.find(variable => variable.name === dataStructureName);
+        const dataStructure: DataAssembly = this.variables.find(variable => variable.name === dataStructureName);
         if (!dataStructure) {
             throw new Error(`ProcessValue ${dataStructureName} is not specified for module ${this.id}`);
         } else {
@@ -336,34 +337,25 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
         }
     }
 
-    public readVariable(dataStructureName: string, variableName: string) {
-        const dataStructure = this.variables.find(variable => variable.name === dataStructureName);
-        if (!dataStructure) {
-            throw new Error(`Datastructure ${dataStructureName}.${variableName} not found in module ${this.id}`);
-        } else {
-            const variable = dataStructure.communication[variableName];
-            return this.readVariableNode(variable);
-        }
-    }
-
     private subscribeToAllVariables() {
-        this.variables.forEach((variable: ProcessValue) => {
-            if (variable.communication['V'] && variable.communication['V'].node_id != null) {
-                this.listenToOpcUaNode(variable.communication['V'], 1000)
-                    .on('changed', (data) => {
-                        this.logger.debug(`[${this.id}] variable changed: ${variable.name} = ${data.value}`);
-                        const entry: VariableLogEntry = {
-                            timestampPfe: new Date(),
-                            timestampModule: data.timestamp,
-                            module: this.id,
-                            variable: variable.name,
-                            value: data.value
-                        };
-                        this.emit('variableChanged', entry);
-                    });
-            } else {
-                this.logger.debug(`[${this.id}] OPC UA variable for variable ${variable.name} not defined`);
-            }
+        this.variables.forEach((variable: DataAssembly) => {
+                variable.subscribe(1000).on('V', (data) => {
+                    let unit;
+                    if (DataAssemblyFactory.isAnaView(variable)){
+                        const unitObject = Unit.find(item => item.value === variable.VUnit.value);
+                        unit = unitObject ? unitObject.unit : undefined;
+                    }
+                    this.logger.debug(`[${this.id}] variable changed: ${variable.name} = ${data.value} ${unit?unit:''}`);
+                    const entry: VariableLogEntry = {
+                        timestampPfe: new Date(),
+                        timestampModule: data.timestamp,
+                        module: this.id,
+                        variable: variable.name,
+                        value: data.value,
+                        unit: unit
+                    };
+                    this.emit('variableChanged', entry);
+                });
         });
     }
 
@@ -402,6 +394,23 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
                         opMode: opMode
                     };
                     this.emit('opModeChanged', entry);
+                })
+                .on('variableChanged', (data) => {
+                    this.logger.debug(`[${this.id}] variable changed: ${data.strategy.name}.${data.parameter.name} = ${data.value}`);
+                    const variable: DataAssembly = data.parameter;
+                    let unit;
+                    if (DataAssemblyFactory.isAnaView(variable)) {
+                        unit =  Unit.find(item => item.value === variable.VUnit.value).unit;
+                    }
+                    const entry = {
+                        timestampPfe: new Date(),
+                        timestampModule: new Date(),
+                        module: this.id,
+                        variable: `${service.name}.${data.strategy.name}.${data.parameter.name}`,
+                        value: data.value,
+                        unit: unit
+                    };
+                    this.emit('variableChanged', entry);
                 });
         }));
     }

@@ -23,10 +23,11 @@
  * SOFTWARE.
  */
 
-import {StrategyParameter} from './StrategyParameter';
-import {DataAssembly, DataAssemblyOptions} from './DataAssembly';
-import {ProcessValue} from './ProcessValue';
+import {DataAssembly, DataAssemblyOptions} from '../dataAssembly/DataAssembly';
 import {Module} from './Module';
+import {EventEmitter} from 'events';
+import {catService} from '../../config/logging';
+import {DataAssemblyFactory} from '../dataAssembly/DataAssemblyFactory';
 
 export interface StrategyOptions {
     id: string;
@@ -42,7 +43,7 @@ export interface StrategyOptions {
     processValues: DataAssemblyOptions[];
 }
 
-export class Strategy {
+export class Strategy extends EventEmitter {
     id: string;
     // name of strategy
     name: string;
@@ -51,19 +52,30 @@ export class Strategy {
     // self-completing strategy
     sc: boolean;
     // strategyParameters of strategy
-    parameters: StrategyParameter[];
+    parameters: DataAssembly[] = [];
     // process values of strategy
-    processValues: DataAssembly[];
+    processValues: DataAssembly[] = [];
 
     constructor(options: StrategyOptions, module: Module) {
+        super();
         this.id = options.id;
         this.name = options.name;
         this.default = options.default;
         this.sc = options.sc;
-        this.parameters = options.parameters.map((options) => new StrategyParameter(options, module));
+        this.parameters = options.parameters.map((options) => DataAssemblyFactory.create(options, module));
         if (options.processValues) {
             this.processValues = options.processValues
-                .map((options) => new ProcessValue(options, module));
+                .map((options) => DataAssemblyFactory.create(options, module));
         }
+    }
+
+    subscribe() {
+        this.parameters.map(param => param.subscribe()
+            .on('VOut', (data) => this.emit('parameterChanged', {parameter: param, value: data}))
+        );
+        this.processValues.map(pv => pv.subscribe()
+            .on('V', (data) => this.emit('processValueChanged', {parameter: pv, value:data}))
+        );
+    return this;
     }
 }

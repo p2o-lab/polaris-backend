@@ -153,7 +153,8 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
                         timestampModule: data.timestampModule,
                         module: module.id,
                         value: data.value,
-                        variable: data.variable
+                        variable: data.variable,
+                        unit: data.unit
                     };
                     this.variableArchive.push(logEntry);
                     if (this.player.currentRecipeRun) {

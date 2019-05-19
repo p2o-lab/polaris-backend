@@ -25,12 +25,11 @@
 
 import {ScopeOptions} from '@p2olab/polaris-interface';
 import {catScopeItem} from '../../config/logging';
-import {ProcessValue} from '../core/ProcessValue';
 import {Module} from '../core/Module';
 import {OpcUaNodeOptions} from '../core/Interfaces';
 import {Service} from '../core/Service';
 import {Expression, Parser} from 'expr-eval';
-import {DataAssembly} from '../core/DataAssembly';
+import {DataAssembly} from '../dataAssembly/DataAssembly';
 import {Strategy} from '../core/Strategy';
 
 export class ScopeItem {
@@ -113,7 +112,7 @@ export class ScopeItem {
         }
 
         // find data assembly
-        let dataAssembly: ProcessValue | DataAssembly;
+        let dataAssembly: DataAssembly;
         if (strategy && strategy.parameters.find(p => p.name === token)){
             dataAssembly = strategy.parameters.find(p => p.name === token);
         } else if (service && service.parameters.find(p => p.name === token)){

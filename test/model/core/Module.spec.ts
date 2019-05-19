@@ -96,7 +96,6 @@ describe('Module', () => {
                 expect(module.isConnected()).to.be.false;
                 resolve();
             });
-            moduleServer.stopSimulation();
             moduleServer.shutdown(() => {});
         });
     })

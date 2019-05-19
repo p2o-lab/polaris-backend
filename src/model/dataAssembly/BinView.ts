@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018 Markus Graube <markus.graube@tu.dresden.de>,
+ * Copyright (c) 2019 Markus Graube <markus.graube@tu.dresden.de>,
  * Chair for Process Control Systems, Technische Universität Dresden
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,13 +23,29 @@
  * SOFTWARE.
  */
 
-import { OpcUaNodeOptions } from './Interfaces';
 import {DataAssembly} from './DataAssembly';
 
-/**
- * Process values of a [[Module]].
- * can be used to collect all process values and subscribe to them later
- */
-export class ProcessValue extends DataAssembly {
+export class BinView extends DataAssembly {
 
+    get V() { return this.communication['V']}
+    get VState0() {return this.communication['VState0']}
+    get VState1() {return this.communication['VState1']}
+
+    constructor(options, module){
+        super(options, module);
+        this.subscribedNodes.push('V', 'VState0', 'VState1');
+    }
+
+}
+
+export class BinMon extends BinView {
+
+    // TODO: add getters
+
+    constructor(options, module){
+        super(options, module);
+        this.subscribedNodes.push(
+            'VFlutTi', 'VFlutEn', 'VFlutCnt',
+            'VFlutAct');
+    }
 }

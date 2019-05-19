@@ -34,7 +34,7 @@ import StrictEventEmitter from 'strict-event-emitter-types';
 import * as assign from 'assign-deep';
 import {ScopeItem} from './ScopeItem';
 import {Strategy} from '../core/Strategy';
-import {DataAssembly} from '../core/DataAssembly';
+import {DataAssembly} from '../dataAssembly/DataAssembly';
 import {Category} from 'typescript-logging';
 
 /**
