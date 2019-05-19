@@ -1,0 +1,59 @@
+{
+  "version": "1.0.0",
+  "name": "One-time rinsing with sodium hydroxide solution",
+  "author": "Markus Graube <markus.graube@tu-dresden.de>",
+  "initial_step": "S1.Rinsing",
+  "steps": [
+    {
+      "name": "S1.Rinsing",
+      "operations": [
+        {
+          "service": "Rinsing",
+          "command": "start",
+          "parameter": [
+            {
+              "name": "VolumeFraction",
+              "value": 10
+            },
+            {
+              "name": "FlowRate",
+              "value": 1000
+            },
+            {
+              "name": "PumpFlowRate",
+              "value": 100
+            },
+            {
+              "name": "TimeWithoutFiltration",
+              "value": 0
+            }
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "S1.WaitForIdle",
+          "condition": {
+            "type": "state",
+            "service": "Rinsing",
+            "state": "completed"
+          }
+        }
+      ]
+    },
+    {
+      "name": "S1.WaitForIdle",
+      "operations": [],
+      "transitions": [
+        {
+          "condition": {
+            "type": "state",
+            "service": "Rinsing",
+            "state": "idle"
+          },
+          "next_step": "completed"
+        }
+      ]
+    }
+  ]
+}
