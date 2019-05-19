@@ -30,10 +30,9 @@ import {Module} from '../../../src/model/core/Module';
 import {expect} from 'chai';
 import {ServiceCommand} from '@p2olab/polaris-interface';
 import {waitForStateChange} from '../../helper';
-import * as fs from "fs";
+import * as fs from 'fs';
 import * as parseJson from 'json-parse-better-errors';
-import {OpMode, opModetoJson} from '../../../src/model/core/enum';
-import * as delay from 'timeout-as-promise';
+import {OpMode} from '../../../src/model/core/enum';
 
 describe('Service', () => {
 
@@ -45,14 +44,12 @@ describe('Service', () => {
         moduleServer.startSimulation();
     });
 
-    after((done) => {
-        moduleServer.shutdown(() => {
-            moduleServer.stopSimulation();
-            done();
-        });
+    after(async () => {
+        moduleServer.stopSimulation();
+        await moduleServer.shutdown();
     });
 
-    it('waitForOpModeSpecificTest', async () => {
+    it('waitForOpModeSpecificTest2', async () => {
         const moduleJson = parseJson(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8'), null, 60)
             .modules[0];
 
