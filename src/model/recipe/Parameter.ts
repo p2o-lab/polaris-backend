@@ -38,7 +38,7 @@ import {DataAssembly} from '../dataAssembly/DataAssembly';
 import {Category} from 'typescript-logging';
 
 /**
- * Parameter of a [[Service]]. Can be static or dynamic. Dynamic Parameters can depend on variables of the same or
+ * Parameter of a [[TestServerService]]. Can be static or dynamic. Dynamic Parameters can depend on variables of the same or
  * other modules. These can also be continuously updated (specified via continuous property)
  */
 export class Parameter {
@@ -53,7 +53,7 @@ export class Parameter {
      * Expression to be calculated and used as value.
      * Can contain variables, which can be declared inside scopeArray or by using correct variable names
      * following this syntax "[module].[processValue].[variable]". module can be omitted if only one module
-     * is loaded. Variable can be omitted. Then "V" is used as variable.
+     * is loaded. TestServerVariable can be omitted. Then "V" is used as variable.
      * "." in the name of modules or processvariables can be escaped with "\\."
      * @example
      * "CIF.Sensoren\.L001.V"

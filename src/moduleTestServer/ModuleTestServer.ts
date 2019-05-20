@@ -27,9 +27,11 @@
 import {OpMode, ServiceControlEnable, ServiceMtpCommand, ServiceState} from '../model/core/enum';
 import {DataType, Variant} from 'node-opcua';
 import {OPCUAServer} from 'node-opcua-server';
+import {catTestServer} from '../config/logging';
+import * as net from 'net';
 import Timeout = NodeJS.Timeout;
 
-class Variable {
+export class TestServerVariable {
 
     v = 20;
     vext = 20;
@@ -131,15 +133,17 @@ class Variable {
     }
 }
 
-class Service {
-    varStatus = ServiceState.IDLE;
+export class TestServerService {
+    varStatus = 0;
     varStrategy = 1;
     varCommand = 0;
-    varCommandEnable = 2047;
+    varCommandEnable = 0;
     varOpmode = 0;
-    private variables: Variable[] = [];
+    serviceName;
+    private variables: TestServerVariable[] = [];
 
     constructor(namespace, rootNode, serviceName) {
+        this.serviceName = serviceName;
         this.state(ServiceState.IDLE);
 
         const serviceNode = namespace.addObject({
@@ -148,7 +152,7 @@ class Service {
         });
 
 
-        this.variables.push(new Variable(namespace, serviceNode, serviceName+'.Parameter1', true));
+        this.variables.push(new TestServerVariable(namespace, serviceNode, serviceName + '.Parameter1', true));
 
         namespace.addVariable({
             componentOf: serviceNode,
@@ -196,6 +200,7 @@ class Service {
             dataType: 'UInt32',
             value: {
                 get: () => {
+                    catTestServer.trace(`[${this.serviceName}] Get Opmode in testserver ${this.varOpmode}`);
                     return new Variant({dataType: DataType.UInt32, value: this.varOpmode});
                 },
                 set: (variant) => {
@@ -210,6 +215,7 @@ class Service {
                     if (parseInt(variant.value) == OpMode.srcExtOp) {
                         this.varOpmode = this.varOpmode | OpMode.srcExtAct;
                     }
+                    catTestServer.debug(`[${this.serviceName}] Set Opmode in testserver ${variant} ${parseInt(variant.value)} -> ${this.varOpmode}`);
                 }
             }
         });
@@ -297,7 +303,6 @@ class Service {
             case ServiceState.COMPLETED:
             case ServiceState.STOPPED:
             case ServiceState.ABORTED:
-                let varCommandEnable;
                 this.varCommandEnable += ServiceControlEnable.RESET;
                 break;
         }
@@ -316,8 +321,8 @@ export class ModuleTestServer {
     private server: OPCUAServer;
 
     public externalTrigger: boolean;
-    public variables: Variable[] = [];
-    public services: Service[] = [];
+    public variables: TestServerVariable[] = [];
+    public services: TestServerService[] = [];
 
     constructor() {
         this.server = new OPCUAServer({
@@ -327,43 +332,39 @@ export class ModuleTestServer {
         this.externalTrigger = false;
     }
 
-    public async start() {
-        await new Promise(resolve => this.server.initialize(resolve));
-        this.createAddressSpace();
-        console.log('address space created')
-        await new Promise(resolve => this.server.start(resolve));
-        console.log('server started')
+
+    async portInUse(port): Promise<boolean> {
+        const server = net.createServer(function (socket) {
+            socket.write('Echo server\r\n');
+            socket.pipe(socket);
+        });
+
+        return new Promise((resolve) => {
+            server.listen(port, '127.0.0.1');
+            server.on('error', function (e) {
+                resolve(true);
+            });
+            server.on('listening', function (e) {
+                server.close();
+                resolve(false);
+            });
+        });
     }
 
-    private createAddressSpace() {
-        const addressSpace = this.server.engine.addressSpace;
-        const namespace = addressSpace.getOwnNamespace();
+    public async start() {
+        if (await this.portInUse(4334)) {
+            throw new Error('Port is in use')
+        }
+        ;
+        await new Promise(resolve => this.server.initialize(resolve));
+        this.createAddressSpace();
+        await new Promise(resolve => this.server.start(resolve));
+        catTestServer.info('server started')
+    }
 
-        // declare a new object
-        const myModule = namespace.addObject({
-            organizedBy: addressSpace.rootFolder.objects,
-            browseName: 'TestModule'
-        });
-
-        this.variables.push(new Variable(namespace, myModule, 'Variable1'));
-        this.variables.push(new Variable(namespace, myModule, 'Variable2'));
-        this.variables.push(new Variable(namespace, myModule, 'Variable.3'));
-
-        this.services.push(new Service(namespace, myModule, 'Service1'));
-        this.services.push(new Service(namespace, myModule, 'Service2'));
-
-
-        namespace.addVariable({
-            componentOf: myModule,
-            browseName: 'ExternalTrigger',
-            nodeId: 'ns=1;s=trigger',
-            dataType: 'Boolean',
-            value: {
-                get: () => {
-                    return new Variant({dataType: DataType.Boolean, value: this.externalTrigger});
-                }
-            }
-        });
+    public async shutdown() {
+        catTestServer.info('Shutdown test server');
+        await new Promise(resolve => this.server.shutdown(100, resolve));
     }
 
 
@@ -377,8 +378,34 @@ export class ModuleTestServer {
         this.services.forEach((services) => services.stopSimulation());
     }
 
+    private createAddressSpace() {
+        const addressSpace = this.server.engine.addressSpace;
+        const namespace = addressSpace.getOwnNamespace();
 
-    public async shutdown() {
-        await new Promise(resolve => this.server.shutdown(100, resolve));
+        // declare a new object
+        const myModule = namespace.addObject({
+            organizedBy: addressSpace.rootFolder.objects,
+            browseName: 'TestModule'
+        });
+
+        this.variables.push(new TestServerVariable(namespace, myModule, 'Variable1'));
+        this.variables.push(new TestServerVariable(namespace, myModule, 'Variable2'));
+        this.variables.push(new TestServerVariable(namespace, myModule, 'TestServerVariable.3'));
+
+        this.services.push(new TestServerService(namespace, myModule, 'Service1'));
+        this.services.push(new TestServerService(namespace, myModule, 'Service2'));
+
+
+        namespace.addVariable({
+            componentOf: myModule,
+            browseName: 'ExternalTrigger',
+            nodeId: 'ns=1;s=trigger',
+            dataType: 'Boolean',
+            value: {
+                get: () => {
+                    return new Variant({dataType: DataType.Boolean, value: this.externalTrigger});
+                }
+            }
+        });
     }
 }

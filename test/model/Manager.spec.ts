@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import { Manager} from '../../src/model/Manager';
+import {Manager} from '../../src/model/Manager';
 import * as fs from 'fs';
 import {expect} from 'chai';
 import {Service} from '../../src/model/core/Service';
@@ -31,7 +31,6 @@ import {ModuleTestServer} from '../../src/moduleTestServer/ModuleTestServer';
 import {waitForStateChange} from '../helper';
 import {ServiceCommand} from '@p2olab/polaris-interface';
 import * as parseJson from 'json-parse-better-errors';
-import {ServiceState} from '../../src/model/core/enum';
 
 
 describe('Manager', () => {
@@ -77,13 +76,13 @@ describe('Manager', () => {
     describe('test with test module', () => {
         let moduleServer: ModuleTestServer;
 
-        before(function (done) {
+        before(async () => {
             moduleServer = new ModuleTestServer();
-            moduleServer.start(done);
+            await moduleServer.start();
         });
 
-        after((done) => {
-            moduleServer.shutdown(done);
+        after(async () => {
+            await moduleServer.shutdown();
         });
 
 
@@ -106,39 +105,49 @@ describe('Manager', () => {
                 stateChangeCount++;
             });
 
-            await service.execute(ServiceCommand.start);
+            service.execute(ServiceCommand.start);
             await waitForStateChange(service, 'STARTING');
             await waitForStateChange(service, 'EXECUTE');
-            await service.execute(ServiceCommand.restart);
+
+            service.execute(ServiceCommand.restart);
             await waitForStateChange(service, 'STARTING');
             await waitForStateChange(service, 'EXECUTE');
-            await service.execute(ServiceCommand.stop);
+
+            service.execute(ServiceCommand.stop);
             await waitForStateChange(service, 'STOPPING');
             await waitForStateChange(service, 'STOPPED');
-            await service.execute(ServiceCommand.reset);
+
+            service.execute(ServiceCommand.reset);
             await waitForStateChange(service, 'IDLE');
-            await service.execute(ServiceCommand.start);
+
+            service.execute(ServiceCommand.start);
             await waitForStateChange(service, 'STARTING');
             await waitForStateChange(service, 'EXECUTE');
-            await service.execute(ServiceCommand.pause);
+
+            service.execute(ServiceCommand.pause);
             await waitForStateChange(service, 'PAUSING');
             await waitForStateChange(service, 'PAUSED');
-            await service.execute(ServiceCommand.resume);
+
+            service.execute(ServiceCommand.resume);
             await waitForStateChange(service, 'RESUMING');
             await waitForStateChange(service, 'EXECUTE');
-            await service.execute(ServiceCommand.complete);
+
+            service.execute(ServiceCommand.complete);
             await waitForStateChange(service, 'COMPLETING', 3000);
             await waitForStateChange(service, 'COMPLETED');
-            await service.execute(ServiceCommand.abort);
+
+            service.execute(ServiceCommand.abort);
             await waitForStateChange(service, 'ABORTING');
             await waitForStateChange(service, 'ABORTED');
-            await service.execute(ServiceCommand.reset);
 
+            service.execute(ServiceCommand.reset);
             await waitForStateChange(service, 'IDLE');
-            await service.execute(ServiceCommand.start);
+
+            service.execute(ServiceCommand.start);
             await waitForStateChange(service, 'STARTING');
             await waitForStateChange(service, 'EXECUTE');
-            await service.execute(ServiceCommand.complete);
+
+            service.execute(ServiceCommand.complete);
             await waitForStateChange(service, 'COMPLETING', 3000);
             await waitForStateChange(service, 'COMPLETED');
 

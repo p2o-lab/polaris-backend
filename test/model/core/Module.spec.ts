@@ -30,7 +30,6 @@ import {expect} from 'chai';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 
 
-
 describe('Module', () => {
 
     it('should load the biofeed module json', (done) => {
@@ -82,9 +81,7 @@ describe('Module', () => {
         const module = new Module(moduleJson);
 
         const moduleServer = new ModuleTestServer();
-        await new Promise((resolve) => {
-            moduleServer.start(resolve);
-        });
+        await moduleServer.start();
         moduleServer.startSimulation();
         expect(module.isConnected()).to.be.false;
 
@@ -96,7 +93,7 @@ describe('Module', () => {
                 expect(module.isConnected()).to.be.false;
                 resolve();
             });
-            moduleServer.shutdown(() => {});
+            moduleServer.shutdown();
         });
     })
 });

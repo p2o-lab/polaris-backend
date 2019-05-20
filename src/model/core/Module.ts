@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import { Service, ServiceOptions } from './Service';
+import {Service, ServiceOptions} from './Service';
 import {
     AttributeIds,
     ClientMonitoredItem,
@@ -36,17 +36,20 @@ import {
     Variant
 } from 'node-opcua-client';
 import {TimestampsToReturn} from 'node-opcua-service-read';
-import { catModule } from '../../config/logging';
-import { EventEmitter } from 'events';
-import { OpcUaNodeOptions} from './Interfaces';
-import { ServiceState} from './enum';
+import {catModule} from '../../config/logging';
+import {EventEmitter} from 'events';
+import {OpcUaNodeOptions} from './Interfaces';
+import {ServiceState} from './enum';
 import {
-    ModuleInterface, ServiceInterface, ServiceCommand, ControlEnableInterface,
+    ControlEnableInterface,
+    ModuleInterface,
+    OpModeInterface,
     ParameterInterface,
-    OpModeInterface
+    ServiceCommand,
+    ServiceInterface
 } from '@p2olab/polaris-interface';
-import { timeout } from 'promise-timeout';
-import { VariableLogEntry } from '../../logging/archive';
+import {timeout} from 'promise-timeout';
+import {VariableLogEntry} from '../../logging/archive';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Strategy} from './Strategy';
 import {Category} from 'typescript-logging';
@@ -202,6 +205,8 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
 
     /**
      * Opens connection to server and establish session
+     *
+     * Subscribe to all important variables
      * @returns {Promise<void>}
      */
     async connect(): Promise<void> {
@@ -321,6 +326,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
                 node.value = dataValue.value.value;
                 node.timestamp = dataValue.serverTimestamp;
                 emitter.emit('changed', {value: dataValue.value.value, timestamp: dataValue.serverTimestamp});
+
             });
             this.monitoredItems.set(nodeId, { monitoredItem, emitter });
         }

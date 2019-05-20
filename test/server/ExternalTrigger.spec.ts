@@ -32,14 +32,13 @@ describe('ExternalTrigger', () => {
 
     let moduleServer: ModuleTestServer;
 
-    before(function (done) {
-        this.timeout(5000);
+    before(async () => {
         moduleServer = new ModuleTestServer();
-        moduleServer.start(done);
+        await moduleServer.start();
     });
 
-    after((done) => {
-        moduleServer.shutdown(done);
+    after(async () => {
+        await moduleServer.shutdown();
     });
 
     it('should fail with missing endpoint', () => {

@@ -23,15 +23,15 @@
  * SOFTWARE.
  */
 
-import {Recipe} from "./recipe/Recipe";
-import {catManager} from "../config/logging";
-import {EventEmitter} from "events";
-import {Module, ModuleOptions} from "./core/Module";
-import {Service} from "./core/Service";
+import {Recipe} from './recipe/Recipe';
+import {catManager} from '../config/logging';
+import {EventEmitter} from 'events';
+import {Module, ModuleOptions} from './core/Module';
+import {Service} from './core/Service';
 import {ManagerInterface, RecipeOptions, ServiceCommand} from '@p2olab/polaris-interface';
-import {Player} from "./recipe/Player";
+import {Player} from './recipe/Player';
 import {ServiceState} from './core/enum';
-import {VariableLogEntry,ServiceLogEntry } from '../logging/archive';
+import {ServiceLogEntry, VariableLogEntry} from '../logging/archive';
 import StrictEventEmitter from 'strict-event-emitter-types';
 
 interface ManagerEvents {
@@ -310,7 +310,7 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
     }
 
     /**
-     * find [Service] of a [Module] registered in manager
+     * find [TestServerService] of a [Module] registered in manager
      * @param {string} moduleName
      * @param {string} serviceName
      * @returns {Service}

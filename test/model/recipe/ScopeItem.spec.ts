@@ -26,8 +26,8 @@
 import {expect} from 'chai';
 import {Module} from '../../../src/model/core/Module';
 import {OPCUAServer} from 'node-opcua-server';
-import { timeout } from 'promise-timeout';
-import * as fs from "fs";
+import {timeout} from 'promise-timeout';
+import * as fs from 'fs';
 import {ScopeItem} from '../../../src/model/recipe/ScopeItem';
 
 
@@ -65,10 +65,10 @@ describe('Scope Item', () => {
     });
 
     it('should work for expression with special characters', () => {
-        const extraction = ScopeItem.extractFromExpressionString("CIF.Variable\\.001 + 3", [module]);
+        const extraction = ScopeItem.extractFromExpressionString('CIF.Variable\\.003 + 3', [module]);
         expect(extraction.scopeItems).to.have.lengthOf(1);
-        expect(extraction.scopeItems[0].variable.node_id).to.equal('MyVariable1');
-        expect(extraction.scopeItems[0].name).to.equal('CIF.Variable__001');
+        expect(extraction.scopeItems[0].variable.node_id).to.equal('Variable.3.V');
+        expect(extraction.scopeItems[0].name).to.equal('CIF.Variable__003');
     });
 
 });

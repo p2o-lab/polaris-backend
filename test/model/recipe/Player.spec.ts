@@ -29,10 +29,10 @@ import {expect} from 'chai';
 import {Manager} from '../../../src/model/Manager';
 import * as delay from 'timeout-as-promise';
 import {RecipeState} from '@p2olab/polaris-interface';
-import { timeout } from 'promise-timeout';
+import {timeout} from 'promise-timeout';
 import {Recipe} from '../../../src/model/recipe/Recipe';
-import {ServiceState, controlEnableToJson} from '../../../src/model/core/enum';
-import {OPCUAClient, ClientSession} from 'node-opcua-client';
+import {controlEnableToJson, ServiceState} from '../../../src/model/core/enum';
+import {ClientSession, OPCUAClient} from 'node-opcua-client';
 import {OPCUAServer} from 'node-opcua-server';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 import {Module} from '../../../src/model/core/Module';
@@ -44,13 +44,13 @@ describe('Player', function () {
 
         let moduleServer: ModuleTestServer;
 
-        before(function (done) {
+        before(async () => {
             moduleServer = new ModuleTestServer();
-            moduleServer.start(done);
+            await moduleServer.start();
         });
 
-        after((done) => {
-            moduleServer.shutdown(done);
+        after(async () => {
+            await moduleServer.shutdown();
         });
 
         it('should OPC UA server has been started', async () => {
@@ -64,25 +64,25 @@ describe('Player', function () {
             await client.connect('opc.tcp://localhost:4334/ModuleTestServer');
             let session: ClientSession = await client.createSession();
 
-            let result = await session.readVariableValue('ns=1;s=MyState');
+            let result = await session.readVariableValue('ns=1;s=Service1.State');
             expect(result.value.value).to.equal(ServiceState.IDLE);
 
-            moduleServer.varStatus = 8;
-            result = await session.readVariableValue('ns=1;s=MyState');
+            moduleServer.services[0].varStatus = 8;
+            result = await session.readVariableValue('ns=1;s=Service1.State');
             expect(result.value.value).to.equal(ServiceState.STARTING);
 
-            let result2 = await session.readVariableValue('ns=1;s=MyCommandEnable');
+            let result2 = await session.readVariableValue('ns=1;s=Service1.CommandEnable');
             let ce = controlEnableToJson(result2.value.value);
             expect(ce).to.deep.equal({
                 abort: true,
-                complete: true,
-                pause: true,
-                reset: true,
-                restart: true,
-                resume: true,
+                complete: false,
+                pause: false,
+                reset: false,
+                restart: false,
+                resume: false,
                 start: true,
                 stop: true,
-                unhold: true
+                unhold: false
             });
 
             let result3 = await await session.readVariableValue('ns=0;i=2255');
@@ -101,7 +101,7 @@ describe('Player', function () {
             const service = module.services[0];
 
             await module.connect();
-            moduleServer.varStatus = ServiceState.IDLE;
+            moduleServer.services[0].varStatus = ServiceState.IDLE;
             await waitForStateChange(service, 'IDLE');
 
             // now test recipe

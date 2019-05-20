@@ -24,21 +24,21 @@
  */
 
 
-import { Request, Response, Router } from 'express';
+import {Request, Response, Router} from 'express';
 import * as asyncHandler from 'express-async-handler';
-import { catServer } from '../../config/logging';
+import {catServer} from '../../config/logging';
 import {Manager} from '../../model/Manager';
 
 export const serviceRouter: Router = Router();
 
 /**
- * @api {post} /module/:moduleId/service/:serviceName/parameter    Configure Service
+ * @api {post} /module/:moduleId/service/:serviceName/parameter    Configure TestServerService
  * @apiName ConfigureService
  * @apiDescription Configure service parameter
- * @apiGroup Service
+ * @apiGroup TestServerService
  * @apiParam {string} moduleId    Module id
  * @apiParam {string} serviceName   Name of service
- * @apiParam {ParameterOptions[]} strategyParameters    Module Service Parameter
+ * @apiParam {ParameterOptions[]} strategyParameters    Module TestServerService Parameter
  */
 serviceRouter.post('/:moduleId/service/:serviceName/parameter', asyncHandler(async (req: Request, res: Response) => {
     const manager: Manager = req.app.get('manager');
@@ -51,11 +51,11 @@ serviceRouter.post('/:moduleId/service/:serviceName/parameter', asyncHandler(asy
  * @api {post} /module/:moduleId/service/:serviceName/strategy    Configure Strategy
  * @apiName ConfigureStrategy
  * @apiDescription Configure strategy and strategy strategyParameters of service
- * @apiGroup Service
+ * @apiGroup TestServerService
  * @apiParam {string} moduleId    Module id
  * @apiParam {string} serviceName   Name of service
  * @apiParam {string} strategy      Name of strategy
- * @apiParam {ParameterOptions[]} strategyParameters    Module Service Parameters
+ * @apiParam {ParameterOptions[]} strategyParameters    Module TestServerService Parameters
  */
 serviceRouter.post('/:moduleId/service/:serviceName/strategy', asyncHandler(async (req: Request, res: Response) => {
     catServer.info(`Set Strategy Parameters ${req.body.strategy}, ${JSON.stringify(req.body.parameters)}`);
@@ -69,7 +69,7 @@ serviceRouter.post('/:moduleId/service/:serviceName/strategy', asyncHandler(asyn
 /**
  * @api {post} /module/:moduleId/service/:serviceName/:command    Call service
  * @apiName CallService
- * @apiGroup Service
+ * @apiGroup TestServerService
  * @apiParam {string} moduleId      Module id
  * @apiParam {string} serviceName   Name of service
  * @apiParam {string="start","stop","abort","complete","pause","unhold","reset"} command       Command name
@@ -90,7 +90,7 @@ serviceRouter.post('/:moduleId/service/:serviceName/:command', asyncHandler(asyn
 /**
  * @api {get} /module/:moduleId/service/:serviceName/    Get service status
  * @apiName GetService
- * @apiGroup Service
+ * @apiGroup TestServerService
  * @apiParam {string} moduleId      Module id
  * @apiParam {string} serviceName   Name of service
  */

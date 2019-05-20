@@ -40,12 +40,12 @@ import {OpcUaNodeOptions} from './Interfaces';
 import {Parameter} from '../recipe/Parameter';
 import {
     ControlEnableInterface,
+    OpModeInterface,
     ParameterInterface,
     ParameterOptions,
     ServiceCommand,
     ServiceInterface,
-    StrategyInterface,
-    OpModeInterface
+    StrategyInterface
 } from '@p2olab/polaris-interface';
 import {Unit} from './Unit';
 import {EventEmitter} from 'events';
@@ -87,11 +87,11 @@ const InterfaceClassToType = {
 };
 
 /**
- * Events emitted by [[Service]]
+ * Events emitted by [[TestServerService]]
  */
 interface ServiceEvents {
     /**
-     * Notify when the [[Service] changes its state
+     * Notify when the [[TestServerService] changes its state
      * @event
      */
     state: {state: ServiceState, timestamp: Date};
@@ -120,7 +120,7 @@ interface ServiceEvents {
 type ServiceEmitter = StrictEventEmitter<EventEmitter, ServiceEvents>;
 
 /**
- * Service of a [[Module]]
+ * TestServerService of a [[Module]]
  *
  * after connection to a real PEA, commands can be triggered and states can be retrieved
  *
@@ -226,7 +226,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
     /**
      * Listen to state, controlEnable, command, currentStrategy and opMode of service and emits specific events for them
      *
-     * @returns {Service}
+     * @returns {TestServerService}
      */
     public async subscribeToService(): Promise<Service> {
         this.logger.info(`[${this.qualifiedName}] Subscribe to service`);
@@ -369,7 +369,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
             const result = await this.parent.readVariableNode(this.opMode);
             this.opMode.value = result.value.value;
             this.opMode.timestamp = new Date();
-            this.logger.info(`[${this.qualifiedName}] Update opMode: ${<OpMode> this.opMode.value}`);
+            this.logger.debug(`[${this.qualifiedName}] Update opMode: ${JSON.stringify(opModetoJson(<OpMode> this.opMode.value))}`);
         }
         return <OpMode> this.opMode.value;
     }
@@ -704,42 +704,25 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
      */
     private async setToAutomaticOperationMode(): Promise<void> {
         let opMode: OpMode = await this.getOpMode();
-        this.logger.info(`[${this.qualifiedName}] Current opMode = ${opMode}`);
+        this.logger.debug(`[${this.qualifiedName}] Current opMode = ${JSON.stringify(opModetoJson(opMode))}`);
         if (isOffState(<OpMode> this.opMode.value)) {
             this.logger.info('First go to Manual state');
-            await this.writeOpMode(OpMode.stateManOp);
+            this.writeOpMode(OpMode.stateManOp);
             await this.waitForOpModeToPassSpecificTest(isManualState);
             this.logger.info(`[${this.qualifiedName}] in ManualMode`);
         }
 
         if (isManualState(<OpMode> this.opMode.value)) {
             this.logger.info(`[${this.qualifiedName}] Go to Automatic state`);
-            await this.writeOpMode(OpMode.stateAutOp);
-            await new Promise((resolve) => {
-                let event = this.parent.listenToOpcUaNode(this.opMode);
-                event.on('changed', function test(data) {
-                    if (isAutomaticState(data.value)) {
-                        opMode = data.value;
-                        event.removeListener('changed', test);
-                        resolve();
-                    }
-                });
-            });
+            this.writeOpMode(OpMode.stateAutOp);
+            await this.waitForOpModeToPassSpecificTest(isAutomaticState);
             this.logger.info(`[${this.qualifiedName}] in AutomaticMode`);
         }
 
         if (!isExtSource(<OpMode> this.opMode.value)) {
             this.logger.info(`[${this.qualifiedName}] Go to External source`);
-            await this.writeOpMode(OpMode.srcExtOp);
-            await new Promise((resolve) => {
-                let event = this.parent.listenToOpcUaNode(this.opMode);
-                event.on('changed', function test(data) {
-                    if (isExtSource(data.value)) {
-                        event.removeListener('changed', test);
-                        resolve();
-                    }
-                });
-            });
+            this.writeOpMode(OpMode.srcExtOp);
+            await this.waitForOpModeToPassSpecificTest(isExtSource);
             this.logger.info(`[${this.qualifiedName}] in ExtSource`);
         }
     }

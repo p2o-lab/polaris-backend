@@ -24,7 +24,7 @@
  */
 
 
-import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
+import {ModuleTestServer, TestServerService} from '../../../src/moduleTestServer/ModuleTestServer';
 import {Service} from '../../../src/model/core/Service';
 import {Module} from '../../../src/model/core/Module';
 import {expect} from 'chai';
@@ -37,75 +37,55 @@ import {OpMode} from '../../../src/model/core/enum';
 describe('Service', () => {
 
     let moduleServer: ModuleTestServer;
+    let service: Service;
+    let testService: TestServerService;
+    let module: Module;
 
-    before(async function () {
+    beforeEach(async () => {
         moduleServer = new ModuleTestServer();
         await moduleServer.start();
         moduleServer.startSimulation();
-    });
-
-    after(async () => {
-        moduleServer.stopSimulation();
-        await moduleServer.shutdown();
-    });
-
-    it('waitForOpModeSpecificTest2', async () => {
-        const moduleJson = parseJson(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8'), null, 60)
-            .modules[0];
-
-        const module = new Module(moduleJson);
-        const service = module.services[0];
-        const testService = moduleServer.services[0];
-
-        await module.connect();
-
-        testService.varOpmode = 0;
-        await service.execute(ServiceCommand.start);
-
-        let opMode = await service.getOpMode();
-        expect(opMode).to.equal(OpMode.stateAutAct + OpMode.srcExtAct);
-        await module.disconnect();
-    });
-
-    it('waitForOpModeSpecificTest', async () => {
-        const moduleJson = parseJson(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8'), null, 60)
-            .modules[0];
-
-        const module = new Module(moduleJson);
-        const service = module.services[0];
-        const testService = moduleServer.services[0];
-
-        await module.connect();
-
-        expect(service.name).to.equal('Service1');
-
-        testService.varOpmode = OpMode.stateAutAct;
-
-        let opMode = await service.getOpMode();
-        expect(opMode).to.equal(OpMode.stateAutAct);
-
-
-        await module.disconnect();
-    });
-
-    it('should load from options', async function() {
-        this.timeout(10000);
+        testService = moduleServer.services[0];
 
         const moduleJson = parseJson(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8'), null, 60)
             .modules[0];
-
         let serviceJson = moduleJson.services[0];
 
         // copy object
         let moduleWithoutService = JSON.parse(JSON.stringify(moduleJson));
         moduleWithoutService.services = [];
 
-        const module = new Module(moduleWithoutService);
-        const service = new Service(serviceJson, module);
+        module = new Module(moduleWithoutService);
+        service = new Service(serviceJson, module);
 
         await module.connect();
+    });
+
+    afterEach(async () => {
+        await module.disconnect();
+        moduleServer.stopSimulation();
+        await moduleServer.shutdown();
+    });
+
+    it('waitForOpModeSpecificTest2', async () => {
+        testService.varOpmode = 0;
+        await service.execute(ServiceCommand.start);
+
+        let opMode = await service.getOpMode();
+        expect(opMode).to.equal(OpMode.stateAutAct + OpMode.srcExtAct);
+    });
+
+    it('waitForOpModeSpecificTest', async () => {
+        expect(service.name).to.equal('Service1');
+        testService.varOpmode = OpMode.stateAutAct;
+        let opMode = await service.getOpMode();
+        expect(opMode).to.equal(OpMode.stateAutAct);
+    });
+
+    it('full service state cycle', async () => {
 
         let result = await service.getOverview();
+        expect(result).to.have.property('status', 'IDLE');
         expect(result).to.have.property('controlEnable')
             .to.deep.equal({
             abort: true,
@@ -122,46 +102,76 @@ describe('Service', () => {
         expect(result).to.have.property('currentStrategy', 'Strategy 1');
         expect(result).to.have.property('name', 'Service1');
         expect(result).to.have.property('opMode').to.deep.equal({
-            source: "external",
-            state: "automatic"
+            state: 'off',
+            source: 'internal'
         });
-        expect(result).to.have.property('status', 'IDLE');
+
 
         await service.subscribeToService();
+        await service.setOperationMode();
+
+        result = await service.getOverview();
+        expect(result).to.have.property('status', 'IDLE');
+        expect(result).to.have.property('controlEnable')
+            .to.deep.equal({
+            abort: true,
+            complete: false,
+            pause: false,
+            reset: false,
+            restart: false,
+            resume: false,
+            start: true,
+            stop: true,
+            unhold: false
+        });
+
+        expect(result).to.have.property('currentStrategy', 'Strategy 1');
+        expect(result).to.have.property('name', 'Service1');
+        expect(result).to.have.property('opMode').to.deep.equal({
+            state: 'automatic',
+            source: 'external'
+        });
+
         let stateChangeCount=0;
-        service.on('state', (state) => {
+        service.on('state', () => {
             stateChangeCount++;
         });
 
-        await service.execute(ServiceCommand.start);
+        service.execute(ServiceCommand.start);
         await waitForStateChange(service, 'STARTING');
         await waitForStateChange(service, 'EXECUTE');
-        await service.execute(ServiceCommand.restart);
+
+        service.execute(ServiceCommand.restart);
         await waitForStateChange(service, 'STARTING');
         await waitForStateChange(service, 'EXECUTE');
-        await service.execute(ServiceCommand.stop);
+
+        service.execute(ServiceCommand.stop);
         await waitForStateChange(service, 'STOPPING');
         await waitForStateChange(service, 'STOPPED');
-        await service.execute(ServiceCommand.reset);
+
+        service.execute(ServiceCommand.reset);
         await waitForStateChange(service, 'IDLE');
-        await service.execute(ServiceCommand.start);
+
+        service.execute(ServiceCommand.start);
         await waitForStateChange(service, 'STARTING');
         await waitForStateChange(service, 'EXECUTE');
-        await service.execute(ServiceCommand.pause);
+
+        service.execute(ServiceCommand.pause);
         await waitForStateChange(service, 'PAUSING');
         await waitForStateChange(service, 'PAUSED');
-        await service.execute(ServiceCommand.resume);
+
+        service.execute(ServiceCommand.resume);
         await waitForStateChange(service, 'RESUMING');
         await waitForStateChange(service, 'EXECUTE');
-        await service.execute(ServiceCommand.complete);
+
+        service.execute(ServiceCommand.complete);
         await waitForStateChange(service, 'COMPLETING');
         await waitForStateChange(service, 'COMPLETED');
-        await service.execute(ServiceCommand.abort);
+
+        service.execute(ServiceCommand.abort);
         await waitForStateChange(service, 'ABORTING');
         await waitForStateChange(service, 'ABORTED');
 
-        expect(stateChangeCount).to.equal(18);
-
-        await module.disconnect();
-    });
+        expect(stateChangeCount).to.equal(17);
+    }).timeout(10000);
 });

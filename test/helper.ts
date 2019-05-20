@@ -25,7 +25,7 @@
 
 import {ServiceState} from '../src/model/core/enum';
 import {Service} from '../src/model/core/Service';
-import { timeout } from 'promise-timeout';
+import {timeout} from 'promise-timeout';
 
 /**
  * resolve when service changes to expectedState
@@ -37,12 +37,11 @@ import { timeout } from 'promise-timeout';
  */
 export function waitForStateChange(service: Service, expectedState: string, ms=500): Promise<void> {
     return timeout(new Promise((resolve) => {
-        function test(data) {
+        service.on('state', function test(data) {
             if (ServiceState[data.state] === expectedState) {
                 service.removeListener('state', test);
                 resolve();
             }
-        }
-        service.on('state', test);
+        });
     }), ms);
 }

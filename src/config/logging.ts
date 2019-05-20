@@ -32,7 +32,7 @@ import {
     LogLevel,
     RuntimeSettings
 } from 'typescript-logging';
-import { CustomLogger } from './CustomLogger';
+import {CustomLogger} from './CustomLogger';
 
 // Create categories, they will autoregister themselves
 export const catRecipe = new Category('recipe');
@@ -47,6 +47,7 @@ export const catService = new Category('service');
 export const catManager = new Category('manager');
 export const catOpc = new Category('opcua');
 export const catServer = new Category('server');
+export const catTestServer = new Category('testserver');
 
 // Custom logging
 export const messages: string[] = [];

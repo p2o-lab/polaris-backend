@@ -30,8 +30,8 @@ import {Module} from '../../../src/model/core/Module';
 import {OPCUAServer} from 'node-opcua-server';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 import {ServiceState} from '../../../src/model/core/enum';
-import { timeout } from 'promise-timeout';
-import * as fs from "fs";
+import {timeout} from 'promise-timeout';
+import * as fs from 'fs';
 import * as delay from 'timeout-as-promise';
 
 
@@ -166,7 +166,7 @@ describe('Condition', () => {
         before(async function () {
             this.timeout(4000);
             moduleServer = new ModuleTestServer();
-            await new Promise((resolve) => moduleServer.start(resolve));
+            await moduleServer.start();
 
             const moduleJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8'))
                 .modules[0];
@@ -177,7 +177,7 @@ describe('Condition', () => {
 
         after(async () => {
             await module.disconnect();
-            await new Promise((resolve) => moduleServer.shutdown(resolve));
+            await moduleServer.shutdown();
         });
 
         it('specialized as VariableCondition should work', async () => {
@@ -195,11 +195,11 @@ describe('Condition', () => {
             expect(module.services[0]).to.have.property('name', 'Service1');
             expect(condition).to.have.property('fulfilled', false);
 
-            moduleServer.varVariable1_V = 22;
+            moduleServer.variables[0].v = 22;
             expect(condition).to.have.property('fulfilled', false);
 
 
-            moduleServer.varVariable1_V = 26;
+            moduleServer.variables[0].v = 26;
             await new Promise((resolve) => {
                 condition.once('stateChanged', (state) => {
                     resolve();
@@ -208,9 +208,9 @@ describe('Condition', () => {
             expect(condition).to.have.property('fulfilled', true);
 
             condition.clear();
-            moduleServer.varVariable1_V = 24.4;
+            moduleServer.variables[0].v = 24.4;
             expect(condition).to.have.property('fulfilled', undefined);
-            moduleServer.varVariable1_V = 37;
+            moduleServer.variables[0].v = 37;
             expect(condition).to.have.property('fulfilled', undefined);
 
         });
@@ -236,12 +236,12 @@ describe('Condition', () => {
             expect(module.services[0]).to.have.property('name', 'Service1');
             expect(condition).to.have.property('fulfilled', false);
 
-            moduleServer.varStatus = ServiceState.EXECUTE;
+            moduleServer.services[0].varStatus = ServiceState.EXECUTE;
             await delay(100);
             expect(condition).to.have.property('fulfilled', false);
 
 
-            moduleServer.varStatus = ServiceState.COMPLETED;
+            moduleServer.services[0].varStatus = ServiceState.COMPLETED;
             await new Promise((resolve, reject) => {
                 condition.once('stateChanged', (state) => {
                     if (state) {
@@ -255,10 +255,10 @@ describe('Condition', () => {
 
             condition.clear();
             expect(condition).to.have.property('fulfilled', undefined);
-            moduleServer.varStatus = ServiceState.EXECUTE;
+            moduleServer.services[0].varStatus = ServiceState.EXECUTE;
             await delay(100);
             expect(condition).to.have.property('fulfilled', undefined);
-            moduleServer.varStatus = ServiceState.COMPLETED;
+            moduleServer.services[0].varStatus = ServiceState.COMPLETED;
             await delay(100);
             expect(condition).to.have.property('fulfilled', undefined);
 
@@ -273,7 +273,7 @@ describe('Condition', () => {
             }, [module]);
 
             condition.listen();
-            moduleServer.varStatus = ServiceState.IDLE;
+            moduleServer.services[0].varStatus = ServiceState.IDLE;
             await delay(100);
             expect(condition).to.have.property('fulfilled', false);
 
@@ -288,7 +288,7 @@ describe('Condition', () => {
             await delay(100);
             expect(condition).to.have.property('fulfilled', false);
 
-            moduleServer.varStatus = ServiceState.COMPLETED;
+            moduleServer.services[0].varStatus = ServiceState.COMPLETED;
             await new Promise((resolve, reject) => {
                 condition.once('stateChanged', (state) => {
                     if(state) {
@@ -309,12 +309,12 @@ describe('Condition', () => {
                 const expr = new ExpressionCondition({type: ConditionType.expression, expression: 'CIF.Variable001.V>10'}, [module]);
                 expr.listen();
 
-                moduleServer.varVariable1_V = 0;
+                moduleServer.variables[0].v = 0;
                 expect(expr).to.have.property('fulfilled', false);
                 let value = await expr.getValue();
                 expect(value).to.be.false;
 
-                moduleServer.varVariable1_V = 11;
+                moduleServer.variables[0].v = 11;
                 await new Promise((resolve) => {
                     expr.once('stateChanged', (state) => {
                         resolve();
@@ -325,7 +325,7 @@ describe('Condition', () => {
                 expect(value).to.be.true;
                 expect(expr).to.have.property('fulfilled', true);
 
-                moduleServer.varVariable1_V = 8;
+                moduleServer.variables[0].v = 8;
                 value = await expr.getValue();
                 expect(value).to.be.false;
                 await new Promise((resolve) => {
@@ -336,14 +336,14 @@ describe('Condition', () => {
                 expect(expr).to.have.property('fulfilled', false);
 
                 expr.clear();
-                moduleServer.varVariable1_V = 12;
+                moduleServer.variables[0].v = 12;
                 value = await expr.getValue();
                 expect(value).to.be.true;
                 expect(expr).to.have.property('fulfilled', undefined);
             });
 
             it('should work with semi-complex expression', async () => {
-                moduleServer.varVariable1_V = 3.1;
+                moduleServer.variables[0].v = 3.1;
                 const expr: ExpressionCondition = <ExpressionCondition> Condition.create({
                     type: ConditionType.expression,
                     expression: 'cos(CIF.Variable001.V)^2 > 0.9'
@@ -351,7 +351,7 @@ describe('Condition', () => {
                 let value = await expr.getValue();
                 expect(value).to.be.true;
 
-                moduleServer.varVariable1_V = 0.7;
+                moduleServer.variables[0].v = 0.7;
                 value = await expr.getValue();
                 expect(value).to.be.false;
             });
@@ -369,7 +369,7 @@ describe('Condition', () => {
                         }
                     ]
                 }, [module]);
-                moduleServer.varVariable1_V = 0.7;
+                moduleServer.variables[0].v = 0.7;
 
                 let value = await expr.getValue();
                 expect(value).to.be.false;
