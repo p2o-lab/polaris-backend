@@ -76,7 +76,7 @@ describe('Module', () => {
 
 
     // TODO: for some reason this test does not terminate
-    it.skip('should recognize a opc ua server shutdown', async () => {
+    it('should recognize a opc ua server shutdown', async () => {
         const moduleJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8')).modules[0];
 
         const module = new Module(moduleJson);

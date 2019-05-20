@@ -190,14 +190,17 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
                 maxRetry: 3
             }
         })
-            .on('close', () => {
+            .on('close', async () => {
                 this.logger.info(`[${this.id}] Connection closed by OPC UA server`);
-                this.session =  null;
+                this.session = null;
                 this.emit('disconnected');
             })
-            .on('connection_lost', () => {
+            .on('connection_lost', async () => {
                 this.logger.info(`[${this.id}] Connection lost to OPC UA server`);
-                this.session =  null;
+                await this.subscription.terminate();
+                await this.session.close();
+                this.session = null;
+                await this.client.disconnect();
                 this.emit('disconnected');
             })
             .on('timed_out_request', () => this.logger.warn(`[${this.id}] timed out request - retrying connection`));
@@ -284,6 +287,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
             if (this.session) {
                 this.logger.info(`[${this.id}] Disconnect module`);
                 try {
+                    await this.subscription.terminate();
                     await timeout(this.session.close(), 1000);
                     this.session = undefined;
                     await timeout(this.client.disconnect(), 1000);

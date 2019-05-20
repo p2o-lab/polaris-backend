@@ -292,7 +292,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
                 this.emit('variableChanged', {parameter: param, value: data})
             }));
         this.strategies.forEach(strategy => strategy.subscribe()
-            .on('processVariableChanged', (data) => {
+                .on('processValueChanged', (data) => {
                 this.emit('variableChanged', {strategy: strategy, parameter: data.parameter, value: data.value.value})
             })
             /*.on('parameterChanged', (data) => {
