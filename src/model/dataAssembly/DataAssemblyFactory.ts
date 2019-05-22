@@ -25,26 +25,61 @@
 
 
 import {DataAssembly, DataAssemblyOptions} from './DataAssembly';
-import {AnaView} from './AnaView';
+import {AnaMon, AnaView} from './AnaView';
 import {Module} from '../core/Module';
 import {AdvAnaOp, AnaServParam, ExtAnaOp, ExtIntAnaOp} from './AnaOp';
-import {DigView} from './DigView';
+import {DigMon, DigView} from './DigView';
 import {AdvDigOp, DigServParam, ExtDigOp, ExtIntDigOp} from './DigOp';
-import {BinView} from './BinView';
+import {BinMon, BinView} from './BinView';
 import {AdvBinOp, BinServParam, ExtBinOp, ExtIntBinOp} from './BinOp';
+import {catModule} from '../../config/logging';
+import {AnaVlv, BinVlv, MonAnaVlv, MonBinVlv} from './Vlv';
+import {AnaDrv, MonAnaDrv} from './Drv';
+import {StrView} from './Str';
 
 export class DataAssemblyFactory {
     static create(variableOptions: DataAssemblyOptions, module: Module): DataAssembly {
-        switch (variableOptions.interface_class) {
-            case "AnaView":
-                return new AnaView(variableOptions, module);
-                break;
-            case "ExtAnaOp":
-                return new ExtAnaOp(variableOptions, module);
-                break;
-            default:
-                return new DataAssembly(variableOptions, module);
+        catModule.debug(`Create DataAssembly ${variableOptions.name} (${variableOptions.interface_class})`);
+
+        const types = {
+            'AnaView': AnaView,
+            'AnaMon': AnaMon,
+            'ExtAnaOp': ExtAnaOp,
+            'ExtIntAnaOp': ExtIntAnaOp,
+            'AdvAnaOp': AdvAnaOp,
+            'AnaServParam': AnaServParam,
+
+            'BinView': BinView,
+            'BinMon': BinMon,
+            'ExtBinOp': ExtBinOp,
+            'ExtIntBinOp': ExtIntBinOp,
+            'AdvBinOp': AdvBinOp,
+            'BinServParam': BinServParam,
+
+            'DigView': DigView,
+            'DigMon': DigMon,
+            'ExtDigOp': ExtDigOp,
+            'ExtIntDigOp': ExtIntDigOp,
+            'AdvDigOp': AdvDigOp,
+            'DigServParam': DigServParam,
+
+            'BinVlv': BinVlv,
+            'MonBinVlv': MonBinVlv,
+            'AnaVlv': AnaVlv,
+            'MonAnaVlv': MonAnaVlv,
+
+            'AnaDrv': AnaDrv,
+            'MonAnaDrv': MonAnaDrv,
+
+            'StrView': StrView
+        };
+        let type = types[variableOptions.interface_class];
+        if (!type) {
+            catModule.warn(`No data assembly for ${variableOptions.interface_class} of ${variableOptions.name}`);
+            type = DataAssembly;
         }
+
+        return new type(variableOptions, module);
     }
 
     static isAnaView(dataAssembly: DataAssembly): dataAssembly is AnaView {
