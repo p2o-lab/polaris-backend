@@ -352,7 +352,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
                 variable.subscribe(1000).on('V', (data) => {
                     let unit;
                     if (DataAssemblyFactory.isAnaView(variable)){
-                        const unitObject = Unit.find(item => item.value === variable.VUnit.value);
+                        const unitObject = Unit.find(item => item.value === parseInt(variable.VUnit.value));
                         unit = unitObject ? unitObject.unit : undefined;
                     }
                     this.logger.debug(`[${this.id}] variable changed: ${variable.name} = ${data.value} ${unit?unit:''}`);
@@ -406,7 +406,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
                     this.emit('opModeChanged', entry);
                 })
                 .on('variableChanged', (data) => {
-                    this.logger.debug(`[${this.id}] service variable changed: ${data.strategy.name}.${data.parameter.name} = ${data.value}`);
+                    this.logger.info(`[${this.id}] service variable changed: ${data.strategy.name}.${data.parameter.name} = ${data.value}`);
                     const variable: DataAssembly = data.parameter;
                     let unit;
                     if (DataAssemblyFactory.isAnaView(variable)) {
