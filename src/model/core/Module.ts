@@ -326,7 +326,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
 
             const emitter: StrictEventEmitter<EventEmitter, OpcUaNodeEvents> = new EventEmitter();
             monitoredItem.on('changed', (dataValue) => {
-                this.logger.debug(`[${this.id}] Variable Changed (${this.resolveNodeId(node)}) = ${dataValue.value.value.toString()}`);
+                this.logger.debug(`[${this.id}] Variable Changed (${nodeId}) = ${dataValue.value.value.toString()}`);
                 node.value = dataValue.value.value;
                 node.timestamp = dataValue.serverTimestamp;
                 emitter.emit('changed', {value: dataValue.value.value, timestamp: dataValue.serverTimestamp});
@@ -406,7 +406,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
                     this.emit('opModeChanged', entry);
                 })
                 .on('variableChanged', (data) => {
-                    this.logger.debug(`[${this.id}] variable changed: ${data.strategy.name}.${data.parameter.name} = ${data.value}`);
+                    this.logger.debug(`[${this.id}] service variable changed: ${data.strategy.name}.${data.parameter.name} = ${data.value}`);
                     const variable: DataAssembly = data.parameter;
                     let unit;
                     if (DataAssemblyFactory.isAnaView(variable)) {
