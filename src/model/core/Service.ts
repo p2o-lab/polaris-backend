@@ -616,7 +616,8 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
                 dimensions: null
             });
 
-        // set strategy
+
+        // set strategy parameters
         if (parameters) {
             let params: Parameter[] = parameters.map((param) => {
                 if (param instanceof Parameter) {
