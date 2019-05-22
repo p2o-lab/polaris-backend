@@ -58,7 +58,7 @@ serviceRouter.post('/:moduleId/service/:serviceName/parameter', asyncHandler(asy
  * @apiParam {ParameterOptions[]} [parameters]    Service Strategy Parameters
  */
 serviceRouter.post('/:moduleId/service/:serviceName/strategy', asyncHandler(async (req: Request, res: Response) => {
-    catServer.info(`Set Strategy Parameters ${req.body.strategy}, ${JSON.stringify(req.body.parameters)}`);
+    catServer.info(`Set Strategy: ${req.body.strategy}; Parameters: ${JSON.stringify(req.body.parameters)}`);
     const manager: Manager = req.app.get('manager');
     const service = manager.getService(req.params.moduleId, req.params.serviceName);
     await service.setStrategyParameters(req.body.strategy, req.body.parameters);
