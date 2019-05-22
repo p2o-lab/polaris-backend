@@ -23,8 +23,8 @@
  * SOFTWARE.
  */
 
-import { Manager } from '../../model/Manager';
-import { Request, Response, Router } from 'express';
+import {Manager} from '../../model/Manager';
+import {Request, Response, Router} from 'express';
 
 import * as asyncHandler from 'express-async-handler';
 import {catModule, catServer} from '../../config/logging';
@@ -73,7 +73,7 @@ moduleRouter.get('/:id/download', asyncHandler(async (req: Request, res: Respons
  */
 moduleRouter.put('', asyncHandler(async (req, res) => {
     const moduleOptions = req.body.modules;
-    catServer.info(`Load module: ${JSON.stringify(moduleOptions)}`);
+    catServer.info(`Load module`);
     const manager: Manager = req.app.get('manager');
     const newModules = manager.loadModule({module: req.body.module});
     newModules.forEach(module =>
