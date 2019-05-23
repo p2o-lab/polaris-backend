@@ -105,7 +105,8 @@ describe('Service', () => {
         });
 
 
-        await service.subscribeToService();
+        service.subscribeToService();
+        await waitForStateChange(service, 'IDLE');
         await service.setOperationMode();
 
         result = await service.getOverview();
@@ -130,44 +131,44 @@ describe('Service', () => {
             source: 'external'
         });
 
-        let stateChangeCount=0;
+        let stateChangeCount = 0;
         service.on('state', () => {
             stateChangeCount++;
         });
 
         service.execute(ServiceCommand.start);
-        await waitForStateChange(service, 'STARTING');
+        waitForStateChange(service, 'STARTING');
         await waitForStateChange(service, 'EXECUTE');
 
         service.execute(ServiceCommand.restart);
-        await waitForStateChange(service, 'STARTING');
+        waitForStateChange(service, 'STARTING');
         await waitForStateChange(service, 'EXECUTE');
 
         service.execute(ServiceCommand.stop);
-        await waitForStateChange(service, 'STOPPING');
+        waitForStateChange(service, 'STOPPING');
         await waitForStateChange(service, 'STOPPED');
 
         service.execute(ServiceCommand.reset);
         await waitForStateChange(service, 'IDLE');
 
         service.execute(ServiceCommand.start);
-        await waitForStateChange(service, 'STARTING');
+        waitForStateChange(service, 'STARTING');
         await waitForStateChange(service, 'EXECUTE');
 
         service.execute(ServiceCommand.pause);
-        await waitForStateChange(service, 'PAUSING');
+        waitForStateChange(service, 'PAUSING');
         await waitForStateChange(service, 'PAUSED');
 
         service.execute(ServiceCommand.resume);
-        await waitForStateChange(service, 'RESUMING');
+        waitForStateChange(service, 'RESUMING');
         await waitForStateChange(service, 'EXECUTE');
 
         service.execute(ServiceCommand.complete);
-        await waitForStateChange(service, 'COMPLETING');
+        waitForStateChange(service, 'COMPLETING');
         await waitForStateChange(service, 'COMPLETED');
 
         service.execute(ServiceCommand.abort);
-        await waitForStateChange(service, 'ABORTING');
+        waitForStateChange(service, 'ABORTING');
         await waitForStateChange(service, 'ABORTED');
 
         expect(stateChangeCount).to.equal(17);

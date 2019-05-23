@@ -117,29 +117,32 @@ describe('Player', function () {
 
             player.start();
             expect(player.status).to.equal(RecipeState.running);
-            await waitForStateChange(service, 'STARTING');
+            waitForStateChange(service, 'STARTING');
             await waitForStateChange(service, 'EXECUTE');
 
             player.pause();
-            await waitForStateChange(service, 'PAUSING');
+            waitForStateChange(service, 'PAUSING');
             await waitForStateChange(service, 'PAUSED');
             expect(player.status).to.equal(RecipeState.paused);
 
             player.start();
-            await waitForStateChange(service, 'RESUMING');
+            waitForStateChange(service, 'RESUMING');
             await waitForStateChange(service, 'EXECUTE');
             expect(service.status.value).to.equal(ServiceState.EXECUTE);
             expect(player.status).to.equal(RecipeState.running);
 
-            await waitForStateChange(service, 'COMPLETING', 2000);
+            waitForStateChange(service, 'COMPLETING', 2000);
             await waitForStateChange(service, 'COMPLETED');
 
             await waitForStateChange(service, 'IDLE');
 
-            await waitForStateChange(service, 'STARTING', 1000);
+            // here the second run of the recipe should start
+
+
+            waitForStateChange(service, 'STARTING', 1000);
             await waitForStateChange(service, 'EXECUTE');
 
-            player.stop();
+            await player.stop();
 
             expect(player.status).to.equal(RecipeState.stopped);
             player.reset();

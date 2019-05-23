@@ -86,8 +86,7 @@ describe('Manager', () => {
         });
 
 
-        it('should load from options', async function() {
-            this.timeout(10000);
+        it('should load from options', async () => {
 
             const moduleJson = parseJson(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8'), null, 60);
 
@@ -98,7 +97,8 @@ describe('Manager', () => {
             const module = manager.modules[0];
             const service = module.services[0];
 
-            await module.connect();
+            module.connect();
+            await waitForStateChange(service, 'IDLE');
 
             let stateChangeCount=0;
             service.on('state', () => {
@@ -106,56 +106,55 @@ describe('Manager', () => {
             });
 
             service.execute(ServiceCommand.start);
-            await waitForStateChange(service, 'STARTING');
+            waitForStateChange(service, 'STARTING');
             await waitForStateChange(service, 'EXECUTE');
 
             service.execute(ServiceCommand.restart);
-            await waitForStateChange(service, 'STARTING');
+            waitForStateChange(service, 'STARTING');
             await waitForStateChange(service, 'EXECUTE');
 
             service.execute(ServiceCommand.stop);
-            await waitForStateChange(service, 'STOPPING');
+            waitForStateChange(service, 'STOPPING');
             await waitForStateChange(service, 'STOPPED');
 
             service.execute(ServiceCommand.reset);
             await waitForStateChange(service, 'IDLE');
 
             service.execute(ServiceCommand.start);
-            await waitForStateChange(service, 'STARTING');
+            waitForStateChange(service, 'STARTING');
             await waitForStateChange(service, 'EXECUTE');
 
             service.execute(ServiceCommand.pause);
-            await waitForStateChange(service, 'PAUSING');
+            waitForStateChange(service, 'PAUSING');
             await waitForStateChange(service, 'PAUSED');
 
             service.execute(ServiceCommand.resume);
-            await waitForStateChange(service, 'RESUMING');
+            waitForStateChange(service, 'RESUMING');
             await waitForStateChange(service, 'EXECUTE');
 
             service.execute(ServiceCommand.complete);
-            await waitForStateChange(service, 'COMPLETING', 3000);
+            waitForStateChange(service, 'COMPLETING', 3000);
             await waitForStateChange(service, 'COMPLETED');
 
             service.execute(ServiceCommand.abort);
-            await waitForStateChange(service, 'ABORTING');
+            waitForStateChange(service, 'ABORTING');
             await waitForStateChange(service, 'ABORTED');
 
             service.execute(ServiceCommand.reset);
             await waitForStateChange(service, 'IDLE');
 
             service.execute(ServiceCommand.start);
-            await waitForStateChange(service, 'STARTING');
+            waitForStateChange(service, 'STARTING');
             await waitForStateChange(service, 'EXECUTE');
 
             service.execute(ServiceCommand.complete);
-            await waitForStateChange(service, 'COMPLETING', 3000);
+            waitForStateChange(service, 'COMPLETING', 3000);
             await waitForStateChange(service, 'COMPLETED');
 
-            expect(stateChangeCount).to.equal(23);
+            expect(stateChangeCount).to.equal(22);
 
             await manager.removeModule(module.id);
-
-        });
+        }).timeout(10000);
 
     });
 
