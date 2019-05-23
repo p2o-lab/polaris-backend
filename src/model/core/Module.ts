@@ -502,6 +502,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
      * Abort all services in module
      */
     abort(): Promise<void[]> {
+        this.logger.info(`[${this.id}] Abort all services`);
         const tasks = this.services.map(service => service.execute(ServiceCommand.abort));
         return Promise.all(tasks);
     }
@@ -510,6 +511,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
      * Pause all services in module which are currently paused
      */
     pause(): Promise<void[]> {
+        this.logger.info(`[${this.id}] Pause all running services`);
         const tasks = this.services.map(async (service) => {
             if (await service.getServiceState() == ServiceState.EXECUTE) {
                 return service.execute(ServiceCommand.pause);
@@ -522,6 +524,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
      * Resume all services in module which are currently paused
      */
     resume(): Promise<void[]> {
+        this.logger.info(`[${this.id}] Resume all paused services`);
         const tasks = this.services.map(async (service) => {
             if (await service.getServiceState() == ServiceState.PAUSED) {
                 return service.execute(ServiceCommand.resume);
@@ -534,6 +537,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
      * Stop all services in module
      */
     stop(): Promise<void[]> {
+        this.logger.info(`[${this.id}] Stop all non-idle services`);
         const tasks = this.services.map(service => {
             if (service.status.value != ServiceState.IDLE) {
                 return service.execute(ServiceCommand.stop);
@@ -546,6 +550,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
      * Reset all services in module
      */
     reset(): Promise<void[]> {
+        this.logger.info(`[${this.id}] Reset all services`);
         const tasks = this.services.map(service => service.execute(ServiceCommand.reset));
         return Promise.all(tasks);
     }
