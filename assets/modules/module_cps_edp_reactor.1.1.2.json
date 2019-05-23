@@ -1,0 +1,3006 @@
+{
+  "GenerationDate": "20190521T165105",
+  "modules": [
+    {
+      "id": "Reaction.(1.1.2)_edited_v2",
+      "opcua_server_url": "opc.tcp://10.6.51.32:4840",
+      "rest_api_port": "1200",
+      "services": [
+        {
+          "name": "Dienste.Filling",
+          "communication": {
+            "OSLevel": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Filling.OSLevel",
+              "data_type": "Byte"
+            },
+            "WQC": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Filling.WQC",
+              "data_type": "Byte"
+            },
+            "OpMode": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Filling.OpMode.binary",
+              "data_type": "UInt32"
+            },
+            "CommandMan": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Filling.CommandMan",
+              "data_type": "UInt32"
+            },
+            "StrategyMan": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Filling.StrategyMan",
+              "data_type": "UInt32"
+            },
+            "CommandInt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Filling.CommandInt",
+              "data_type": "UInt32"
+            },
+            "StrategyInt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Filling.StrategyInt",
+              "data_type": "UInt32"
+            },
+            "CommandExt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Filling.CommandExt",
+              "data_type": "UInt32"
+            },
+            "StrategyExt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Filling.StrategyExt",
+              "data_type": "UInt32"
+            },
+            "CurrentState": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Filling.CurrentState.binary",
+              "data_type": "UInt32"
+            },
+            "CommandEnable": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Filling.CommandEnable.binary",
+              "data_type": "UInt32"
+            },
+            "CurrentStrategy": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Filling.CurrentStrategy",
+              "data_type": "UInt32"
+            }
+          },
+          "strategies": [
+            {
+              "id": "1",
+              "name": "volume_based",
+              "default": true,
+              "sc": true,
+              "parameters": [
+                {
+                  "name": "DoseVolume",
+                  "interface_class": "AnaServParam",
+                  "communication": {
+                    "WQC": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Filling.DoseVolume.WQC",
+                      "data_type": "Byte"
+                    },
+                    "OSLevel": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Filling.DoseVolume.OSLevel",
+                      "data_type": "Byte"
+                    },
+                    "VOut": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Filling.DoseVolume.VOut",
+                      "data_type": "Float"
+                    },
+                    "VSclMin": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Filling.DoseVolume.VSclMin",
+                      "data_type": "Float"
+                    },
+                    "VSclMax": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Filling.DoseVolume.VSclMax",
+                      "data_type": "Float"
+                    },
+                    "VUnit": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Filling.DoseVolume.VUnit",
+                      "data_type": "Int16"
+                    },
+                    "VMin": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Filling.DoseVolume.VMin",
+                      "data_type": "Float"
+                    },
+                    "VMax": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Filling.DoseVolume.VMax",
+                      "data_type": "Float"
+                    },
+                    "VExt": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Filling.DoseVolume.VExt",
+                      "data_type": "Float"
+                    },
+                    "VRbk": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Filling.DoseVolume.VRbk",
+                      "data_type": "Float"
+                    },
+                    "VInt": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Filling.DoseVolume.VInt",
+                      "data_type": "Float"
+                    },
+                    "OpMode": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Filling.DoseVolume.OpMode.binary",
+                      "data_type": "UInt32"
+                    },
+                    "VOp": {
+                      "namespace_index": null,
+                      "node_id": null,
+                      "data_type": "String"
+                    },
+                    "Sync": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Filling.DoseVolume.Sync",
+                      "data_type": "String"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "id": "2",
+              "name": "Strategy 1_copy_1",
+              "default": false,
+              "sc": false,
+              "parameters": []
+            }
+          ],
+          "parameters": []
+        },
+        {
+          "name": "Dienste.Cooling",
+          "communication": {
+            "OSLevel": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Cooling.OSLevel",
+              "data_type": "Byte"
+            },
+            "WQC": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Cooling.WQC",
+              "data_type": "Byte"
+            },
+            "OpMode": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Cooling.OpMode.binary",
+              "data_type": "UInt32"
+            },
+            "CommandMan": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Cooling.CommandMan",
+              "data_type": "UInt32"
+            },
+            "StrategyMan": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Cooling.StrategyMan",
+              "data_type": "UInt32"
+            },
+            "CommandInt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Cooling.CommandInt",
+              "data_type": "UInt32"
+            },
+            "StrategyInt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Cooling.StrategyInt",
+              "data_type": "UInt32"
+            },
+            "CommandExt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Cooling.CommandExt",
+              "data_type": "UInt32"
+            },
+            "StrategyExt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Cooling.StrategyExt",
+              "data_type": "UInt32"
+            },
+            "CurrentState": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Cooling.CurrentState.binary",
+              "data_type": "UInt32"
+            },
+            "CommandEnable": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Cooling.CommandEnable.binary",
+              "data_type": "UInt32"
+            },
+            "CurrentStrategy": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Cooling.CurrentStrategy",
+              "data_type": "UInt32"
+            }
+          },
+          "strategies": [
+            {
+              "id": "1",
+              "name": "Strategy 1",
+              "default": true,
+              "sc": true,
+              "parameters": [
+                {
+                  "name": "SetTemperature",
+                  "interface_class": "AnaServParam",
+                  "communication": {
+                    "WQC": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Cooling.SetTemperature.WQC",
+                      "data_type": "Byte"
+                    },
+                    "OSLevel": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Cooling.SetTemperature.OSLevel",
+                      "data_type": "Byte"
+                    },
+                    "VOut": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Cooling.SetTemperature.VOut",
+                      "data_type": "Float"
+                    },
+                    "VSclMin": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Cooling.SetTemperature.VSclMin",
+                      "data_type": "Float"
+                    },
+                    "VSclMax": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Cooling.SetTemperature.VSclMax",
+                      "data_type": "Float"
+                    },
+                    "VUnit": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Cooling.SetTemperature.VUnit",
+                      "data_type": "Int16"
+                    },
+                    "VMin": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Cooling.SetTemperature.VMin",
+                      "data_type": "Float"
+                    },
+                    "VMax": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Cooling.SetTemperature.VMax",
+                      "data_type": "Float"
+                    },
+                    "VExt": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Cooling.SetTemperature.VExt",
+                      "data_type": "Float"
+                    },
+                    "VRbk": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Cooling.SetTemperature.VRbk",
+                      "data_type": "Float"
+                    },
+                    "VInt": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Cooling.SetTemperature.VInt",
+                      "data_type": "Float"
+                    },
+                    "OpMode": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Cooling.SetTemperature.OpMode.binary",
+                      "data_type": "UInt32"
+                    },
+                    "VOp": {
+                      "namespace_index": null,
+                      "node_id": null,
+                      "data_type": "String"
+                    },
+                    "Sync": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Cooling.SetTemperature.Sync",
+                      "data_type": "String"
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "parameters": []
+        },
+        {
+          "name": "Dienste.Stirring",
+          "communication": {
+            "OSLevel": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.OSLevel",
+              "data_type": "Byte"
+            },
+            "WQC": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.WQC",
+              "data_type": "Byte"
+            },
+            "OpMode": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.OpMode.binary",
+              "data_type": "UInt32"
+            },
+            "CommandMan": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.CommandMan",
+              "data_type": "UInt32"
+            },
+            "StrategyMan": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.StrategyMan",
+              "data_type": "UInt32"
+            },
+            "CommandInt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.CommandInt",
+              "data_type": "UInt32"
+            },
+            "StrategyInt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.StrategyInt",
+              "data_type": "UInt32"
+            },
+            "CommandExt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.CommandExt",
+              "data_type": "UInt32"
+            },
+            "StrategyExt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.StrategyExt",
+              "data_type": "UInt32"
+            },
+            "CurrentState": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.CurrentState.binary",
+              "data_type": "UInt32"
+            },
+            "CommandEnable": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.CommandEnable.binary",
+              "data_type": "UInt32"
+            },
+            "CurrentStrategy": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.CurrentStrategy",
+              "data_type": "UInt32"
+            }
+          },
+          "strategies": [
+            {
+              "id": "1",
+              "name": "time_based",
+              "default": true,
+              "sc": true,
+              "parameters": [
+                {
+                  "name": "Duration",
+                  "interface_class": "AnaServParam",
+                  "communication": {
+                    "WQC": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Duration.WQC",
+                      "data_type": "Byte"
+                    },
+                    "OSLevel": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Duration.OSLevel",
+                      "data_type": "Byte"
+                    },
+                    "VOut": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Duration.VOut",
+                      "data_type": "Float"
+                    },
+                    "VSclMin": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Duration.VSclMin",
+                      "data_type": "Float"
+                    },
+                    "VSclMax": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Duration.VSclMax",
+                      "data_type": "Float"
+                    },
+                    "VUnit": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Duration.VUnit",
+                      "data_type": "Int16"
+                    },
+                    "VMin": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Duration.VMin",
+                      "data_type": "Float"
+                    },
+                    "VMax": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Duration.VMax",
+                      "data_type": "Float"
+                    },
+                    "VExt": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Duration.VExt",
+                      "data_type": "Float"
+                    },
+                    "VRbk": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Duration.VRbk",
+                      "data_type": "Float"
+                    },
+                    "VInt": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Duration.VInt",
+                      "data_type": "Float"
+                    },
+                    "OpMode": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Duration.OpMode.binary",
+                      "data_type": "UInt32"
+                    },
+                    "VOp": {
+                      "namespace_index": null,
+                      "node_id": null,
+                      "data_type": "String"
+                    },
+                    "Sync": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Duration.Sync",
+                      "data_type": "String"
+                    }
+                  }
+                },
+                {
+                  "name": "Frequency",
+                  "interface_class": "AnaServParam",
+                  "communication": {
+                    "WQC": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Frequency.WQC",
+                      "data_type": "Byte"
+                    },
+                    "OSLevel": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Frequency.OSLevel",
+                      "data_type": "Byte"
+                    },
+                    "VOut": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Frequency.VOut",
+                      "data_type": "Float"
+                    },
+                    "VSclMin": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Frequency.VSclMin",
+                      "data_type": "Float"
+                    },
+                    "VSclMax": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Frequency.VSclMax",
+                      "data_type": "Float"
+                    },
+                    "VUnit": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Frequency.VUnit",
+                      "data_type": "Int16"
+                    },
+                    "VMin": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Frequency.VMin",
+                      "data_type": "Float"
+                    },
+                    "VMax": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Frequency.VMax",
+                      "data_type": "Float"
+                    },
+                    "VExt": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Frequency.VExt",
+                      "data_type": "Float"
+                    },
+                    "VRbk": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Frequency.VRbk",
+                      "data_type": "Float"
+                    },
+                    "VInt": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Frequency.VInt",
+                      "data_type": "Float"
+                    },
+                    "OpMode": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Frequency.OpMode.binary",
+                      "data_type": "UInt32"
+                    },
+                    "VOp": {
+                      "namespace_index": null,
+                      "node_id": null,
+                      "data_type": "String"
+                    },
+                    "Sync": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Frequency.Sync",
+                      "data_type": "String"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "id": "2",
+              "name": "continuous",
+              "default": false,
+              "sc": false,
+              "parameters": [
+                {
+                  "name": "Frequency",
+                  "interface_class": "AnaServParam",
+                  "communication": {
+                    "WQC": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Frequency.WQC",
+                      "data_type": "Byte"
+                    },
+                    "OSLevel": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Frequency.OSLevel",
+                      "data_type": "Byte"
+                    },
+                    "VOut": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Frequency.VOut",
+                      "data_type": "Float"
+                    },
+                    "VSclMin": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Frequency.VSclMin",
+                      "data_type": "Float"
+                    },
+                    "VSclMax": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Frequency.VSclMax",
+                      "data_type": "Float"
+                    },
+                    "VUnit": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Frequency.VUnit",
+                      "data_type": "Int16"
+                    },
+                    "VMin": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Frequency.VMin",
+                      "data_type": "Float"
+                    },
+                    "VMax": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Frequency.VMax",
+                      "data_type": "Float"
+                    },
+                    "VExt": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Frequency.VExt",
+                      "data_type": "Float"
+                    },
+                    "VRbk": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Frequency.VRbk",
+                      "data_type": "Float"
+                    },
+                    "VInt": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Frequency.VInt",
+                      "data_type": "Float"
+                    },
+                    "OpMode": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Frequency.OpMode.binary",
+                      "data_type": "UInt32"
+                    },
+                    "VOp": {
+                      "namespace_index": null,
+                      "node_id": null,
+                      "data_type": "String"
+                    },
+                    "Sync": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Frequency.Sync",
+                      "data_type": "String"
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "parameters": []
+        },
+        {
+          "name": "Dienste.Heating",
+          "communication": {
+            "OSLevel": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Heating.OSLevel",
+              "data_type": "Byte"
+            },
+            "WQC": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Heating.WQC",
+              "data_type": "Byte"
+            },
+            "OpMode": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Heating.OpMode.binary",
+              "data_type": "UInt32"
+            },
+            "CommandMan": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Heating.CommandMan",
+              "data_type": "UInt32"
+            },
+            "StrategyMan": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Heating.StrategyMan",
+              "data_type": "UInt32"
+            },
+            "CommandInt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Heating.CommandInt",
+              "data_type": "UInt32"
+            },
+            "StrategyInt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Heating.StrategyInt",
+              "data_type": "UInt32"
+            },
+            "CommandExt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Heating.CommandExt",
+              "data_type": "UInt32"
+            },
+            "StrategyExt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Heating.StrategyExt",
+              "data_type": "UInt32"
+            },
+            "CurrentState": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Heating.CurrentState.binary",
+              "data_type": "UInt32"
+            },
+            "CommandEnable": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Heating.CommandEnable.binary",
+              "data_type": "UInt32"
+            },
+            "CurrentStrategy": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Heating.CurrentStrategy",
+              "data_type": "UInt32"
+            }
+          },
+          "strategies": [
+            {
+              "id": "1",
+              "name": "Strategy 1",
+              "default": true,
+              "sc": true,
+              "parameters": [
+                {
+                  "name": "SetTemperature",
+                  "interface_class": "AnaServParam",
+                  "communication": {
+                    "WQC": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Heating.SetTemperature.WQC",
+                      "data_type": "Byte"
+                    },
+                    "OSLevel": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Heating.SetTemperature.OSLevel",
+                      "data_type": "Byte"
+                    },
+                    "VOut": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Heating.SetTemperature.VOut",
+                      "data_type": "Float"
+                    },
+                    "VSclMin": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Heating.SetTemperature.VSclMin",
+                      "data_type": "Float"
+                    },
+                    "VSclMax": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Heating.SetTemperature.VSclMax",
+                      "data_type": "Float"
+                    },
+                    "VUnit": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Heating.SetTemperature.VUnit",
+                      "data_type": "Int16"
+                    },
+                    "VMin": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Heating.SetTemperature.VMin",
+                      "data_type": "Float"
+                    },
+                    "VMax": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Heating.SetTemperature.VMax",
+                      "data_type": "Float"
+                    },
+                    "VExt": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Heating.SetTemperature.VExt",
+                      "data_type": "Float"
+                    },
+                    "VRbk": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Heating.SetTemperature.VRbk",
+                      "data_type": "Float"
+                    },
+                    "VInt": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Heating.SetTemperature.VInt",
+                      "data_type": "Float"
+                    },
+                    "OpMode": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Heating.SetTemperature.OpMode.binary",
+                      "data_type": "UInt32"
+                    },
+                    "VOp": {
+                      "namespace_index": null,
+                      "node_id": null,
+                      "data_type": "String"
+                    },
+                    "Sync": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Heating.SetTemperature.Sync",
+                      "data_type": "String"
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "parameters": []
+        },
+        {
+          "name": "Dienste.Dosing",
+          "communication": {
+            "OSLevel": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.OSLevel",
+              "data_type": "Byte"
+            },
+            "WQC": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.WQC",
+              "data_type": "Byte"
+            },
+            "OpMode": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.OpMode.binary",
+              "data_type": "UInt32"
+            },
+            "CommandMan": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.CommandMan",
+              "data_type": "UInt32"
+            },
+            "StrategyMan": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.StrategyMan",
+              "data_type": "UInt32"
+            },
+            "CommandInt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.CommandInt",
+              "data_type": "UInt32"
+            },
+            "StrategyInt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.StrategyInt",
+              "data_type": "UInt32"
+            },
+            "CommandExt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.CommandExt",
+              "data_type": "UInt32"
+            },
+            "StrategyExt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.StrategyExt",
+              "data_type": "UInt32"
+            },
+            "CurrentState": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.CurrentState.binary",
+              "data_type": "UInt32"
+            },
+            "CommandEnable": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.CommandEnable.binary",
+              "data_type": "UInt32"
+            },
+            "CurrentStrategy": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.CurrentStrategy",
+              "data_type": "UInt32"
+            }
+          },
+          "strategies": [
+            {
+              "id": "1",
+              "name": "Strategy 1",
+              "default": true,
+              "sc": true,
+              "parameters": [
+                {
+                  "name": "DoseVolume",
+                  "interface_class": "AnaServParam",
+                  "communication": {
+                    "WQC": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.DoseVolume.WQC",
+                      "data_type": "Byte"
+                    },
+                    "OSLevel": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.DoseVolume.OSLevel",
+                      "data_type": "Byte"
+                    },
+                    "VOut": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.DoseVolume.VOut",
+                      "data_type": "Float"
+                    },
+                    "VSclMin": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.DoseVolume.VSclMin",
+                      "data_type": "Float"
+                    },
+                    "VSclMax": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.DoseVolume.VSclMax",
+                      "data_type": "Float"
+                    },
+                    "VUnit": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.DoseVolume.VUnit",
+                      "data_type": "Int16"
+                    },
+                    "VMin": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.DoseVolume.VMin",
+                      "data_type": "Float"
+                    },
+                    "VMax": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.DoseVolume.VMax",
+                      "data_type": "Float"
+                    },
+                    "VExt": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.DoseVolume.VExt",
+                      "data_type": "Float"
+                    },
+                    "VRbk": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.DoseVolume.VRbk",
+                      "data_type": "Float"
+                    },
+                    "VInt": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.DoseVolume.VInt",
+                      "data_type": "Float"
+                    },
+                    "OpMode": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.DoseVolume.OpMode.binary",
+                      "data_type": "UInt32"
+                    },
+                    "VOp": {
+                      "namespace_index": null,
+                      "node_id": null,
+                      "data_type": "String"
+                    },
+                    "Sync": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.DoseVolume.Sync",
+                      "data_type": "String"
+                    }
+                  }
+                },
+                {
+                  "name": "SetFlowRate",
+                  "interface_class": "AnaServParam",
+                  "communication": {
+                    "WQC": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.SetFlowRate.WQC",
+                      "data_type": "Byte"
+                    },
+                    "OSLevel": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.SetFlowRate.OSLevel",
+                      "data_type": "Byte"
+                    },
+                    "VOut": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.SetFlowRate.VOut",
+                      "data_type": "Float"
+                    },
+                    "VSclMin": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.SetFlowRate.VSclMin",
+                      "data_type": "Float"
+                    },
+                    "VSclMax": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.SetFlowRate.VSclMax",
+                      "data_type": "Float"
+                    },
+                    "VUnit": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.SetFlowRate.VUnit",
+                      "data_type": "Int16"
+                    },
+                    "VMin": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.SetFlowRate.VMin",
+                      "data_type": "Float"
+                    },
+                    "VMax": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.SetFlowRate.VMax",
+                      "data_type": "Float"
+                    },
+                    "VExt": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.SetFlowRate.VExt",
+                      "data_type": "Float"
+                    },
+                    "VRbk": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.SetFlowRate.VRbk",
+                      "data_type": "Float"
+                    },
+                    "VInt": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.SetFlowRate.VInt",
+                      "data_type": "Float"
+                    },
+                    "OpMode": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.SetFlowRate.OpMode.binary",
+                      "data_type": "UInt32"
+                    },
+                    "VOp": {
+                      "namespace_index": null,
+                      "node_id": null,
+                      "data_type": "String"
+                    },
+                    "Sync": {
+                      "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                      "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.SetFlowRate.Sync",
+                      "data_type": "String"
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "parameters": []
+        }
+      ],
+      "process_values": [
+        {
+          "name": "Aktoren.V3050",
+          "interface_class": "BinVlv",
+          "communication": {
+            "WQC": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.V3050.WQC",
+              "data_type": "Byte"
+            },
+            "OSLevel": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.V3050.OSLevel",
+              "data_type": "Byte"
+            },
+            "OpMode": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.V3050.OpMode.binary",
+              "data_type": "UInt32"
+            },
+            "SafePos": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.V3050.SafePos",
+              "data_type": "Boolean"
+            },
+            "OpenFbkEn": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.V3050.OpenFbkEn",
+              "data_type": "Boolean"
+            },
+            "CloseFbkEn": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.V3050.CloseFbkEn",
+              "data_type": "Boolean"
+            },
+            "OpenOp": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.V3050.OpenOp",
+              "data_type": "Boolean"
+            },
+            "CloseOp": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.V3050.CloseOp",
+              "data_type": "Boolean"
+            },
+            "OpenLi": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.V3050.OpenLi",
+              "data_type": "Boolean"
+            },
+            "CloseLi": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.V3050.CloseLi",
+              "data_type": "Boolean"
+            },
+            "Ctrl": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.V3050.Ctrl",
+              "data_type": "Boolean"
+            },
+            "OpenFbk": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.V3050.OpenFbk",
+              "data_type": "Boolean"
+            },
+            "CloseFbk": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.V3050.CloseFbk",
+              "data_type": "Boolean"
+            }
+          }
+        },
+        {
+          "name": "Aktoren.V3030",
+          "interface_class": "BinVlv",
+          "communication": {
+            "WQC": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.V3030.WQC",
+              "data_type": "Byte"
+            },
+            "OSLevel": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.V3030.OSLevel",
+              "data_type": "Byte"
+            },
+            "OpMode": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.V3030.OpMode.binary",
+              "data_type": "UInt32"
+            },
+            "SafePos": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.V3030.SafePos",
+              "data_type": "Boolean"
+            },
+            "OpenFbkEn": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.V3030.OpenFbkEn",
+              "data_type": "Boolean"
+            },
+            "CloseFbkEn": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.V3030.CloseFbkEn",
+              "data_type": "Boolean"
+            },
+            "OpenOp": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.V3030.OpenOp",
+              "data_type": "Boolean"
+            },
+            "CloseOp": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.V3030.CloseOp",
+              "data_type": "Boolean"
+            },
+            "OpenLi": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.V3030.OpenLi",
+              "data_type": "Boolean"
+            },
+            "CloseLi": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.V3030.CloseLi",
+              "data_type": "Boolean"
+            },
+            "Ctrl": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.V3030.Ctrl",
+              "data_type": "Boolean"
+            },
+            "OpenFbk": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.V3030.OpenFbk",
+              "data_type": "Boolean"
+            },
+            "CloseFbk": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.V3030.CloseFbk",
+              "data_type": "Boolean"
+            }
+          }
+        },
+        {
+          "name": "Aktoren.P2110",
+          "interface_class": "AnaDrv",
+          "communication": {
+            "WQC": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.P2110.WQC",
+              "data_type": "Byte"
+            },
+            "OSLevel": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.P2110.OSLevel",
+              "data_type": "Byte"
+            },
+            "OpMode": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.P2110.OpMode.binary",
+              "data_type": "UInt32"
+            },
+            "FwdEn": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "Boolean"
+            },
+            "RevEn": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "Boolean"
+            },
+            "StopOp": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.P2110.StopOp",
+              "data_type": "Boolean"
+            },
+            "FwdOp": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.P2110.FwdOp",
+              "data_type": "Boolean"
+            },
+            "RevOp": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.P2110.RevOp",
+              "data_type": "Boolean"
+            },
+            "StopLi": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.P2110.StopLi",
+              "data_type": "Boolean"
+            },
+            "FwdLi": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.P2110.FwdLi",
+              "data_type": "Boolean"
+            },
+            "RevLi": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.P2110.RevLi",
+              "data_type": "Boolean"
+            },
+            "FwdCtrl": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.P2110.FwdCtrl",
+              "data_type": "Boolean"
+            },
+            "RevCtrl": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.P2110.RevCtrl",
+              "data_type": "Boolean"
+            },
+            "FwdFbkEn": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.P2110.FwdFbkEn",
+              "data_type": "Boolean"
+            },
+            "FwdFbk": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.P2110.FwdFbk",
+              "data_type": "Boolean"
+            },
+            "RevFbkEn": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.P2110.RevFbkEn",
+              "data_type": "Boolean"
+            },
+            "RevFbk": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.P2110.RevFbk",
+              "data_type": "Boolean"
+            },
+            "Trip": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.P2110.Trip",
+              "data_type": "Boolean"
+            },
+            "Rpm": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.P2110.Rpm",
+              "data_type": "Float"
+            },
+            "RpmSclMin": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.P2110.RpmSclMin",
+              "data_type": "Float"
+            },
+            "RpmSclMax": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.P2110.RpmSclMax",
+              "data_type": "Float"
+            },
+            "RpmUnit": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.P2110.RpmUnit",
+              "data_type": "Int16"
+            },
+            "RpmMin": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.P2110.RpmMin",
+              "data_type": "Float"
+            },
+            "RpmMax": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.P2110.RpmMax",
+              "data_type": "Float"
+            },
+            "RpmExt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.P2110.RpmExt",
+              "data_type": "Float"
+            },
+            "RpmInt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.P2110.RpmInt",
+              "data_type": "Float"
+            },
+            "RpmRbk": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "Float"
+            }
+          }
+        },
+        {
+          "name": "Aktoren.P3010",
+          "interface_class": "AnaDrv",
+          "communication": {
+            "WQC": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.P3010.WQC",
+              "data_type": "Byte"
+            },
+            "OSLevel": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.P3010.OSLevel",
+              "data_type": "Byte"
+            },
+            "OpMode": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.P3010.OpMode.binary",
+              "data_type": "UInt32"
+            },
+            "FwdEn": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "Boolean"
+            },
+            "RevEn": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "Boolean"
+            },
+            "StopOp": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.P3010.StopOp",
+              "data_type": "Boolean"
+            },
+            "FwdOp": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.P3010.FwdOp",
+              "data_type": "Boolean"
+            },
+            "RevOp": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.P3010.RevOp",
+              "data_type": "Boolean"
+            },
+            "StopLi": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.P3010.StopLi",
+              "data_type": "Boolean"
+            },
+            "FwdLi": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.P3010.FwdLi",
+              "data_type": "Boolean"
+            },
+            "RevLi": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.P3010.RevLi",
+              "data_type": "Boolean"
+            },
+            "FwdCtrl": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.P3010.FwdCtrl",
+              "data_type": "Boolean"
+            },
+            "RevCtrl": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.P3010.RevCtrl",
+              "data_type": "Boolean"
+            },
+            "FwdFbkEn": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.P3010.FwdFbkEn",
+              "data_type": "Boolean"
+            },
+            "FwdFbk": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.P3010.FwdFbk",
+              "data_type": "Boolean"
+            },
+            "RevFbkEn": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.P3010.RevFbkEn",
+              "data_type": "Boolean"
+            },
+            "RevFbk": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.P3010.RevFbk",
+              "data_type": "Boolean"
+            },
+            "Trip": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.P3010.Trip",
+              "data_type": "Boolean"
+            },
+            "Rpm": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.P3010.Rpm",
+              "data_type": "Float"
+            },
+            "RpmSclMin": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.P3010.RpmSclMin",
+              "data_type": "Float"
+            },
+            "RpmSclMax": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.P3010.RpmSclMax",
+              "data_type": "Float"
+            },
+            "RpmUnit": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.P3010.RpmUnit",
+              "data_type": "Int16"
+            },
+            "RpmMin": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.P3010.RpmMin",
+              "data_type": "Float"
+            },
+            "RpmMax": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.P3010.RpmMax",
+              "data_type": "Float"
+            },
+            "RpmExt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.P3010.RpmExt",
+              "data_type": "Float"
+            },
+            "RpmInt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.P3010.RpmInt",
+              "data_type": "Float"
+            },
+            "RpmRbk": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "Float"
+            }
+          }
+        },
+        {
+          "name": "Sensoren.LI1012",
+          "interface_class": "AnaView",
+          "communication": {
+            "WQC": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Sensoren.LI1012.WQC",
+              "data_type": "Byte"
+            },
+            "OSLevel": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Sensoren.LI1012.OSLevel",
+              "data_type": "Byte"
+            },
+            "V": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Sensoren.LI1012.V",
+              "data_type": "Float"
+            },
+            "VSclMin": {
+              "value": "0"
+            },
+            "VSclMax": {
+              "value": "10"
+            },
+            "VUnit": {
+              "value": "1038"
+            }
+          }
+        },
+        {
+          "name": "Sensoren.TIC1016",
+          "interface_class": "AnaView",
+          "communication": {
+            "WQC": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Sensoren.TIC1016.WQC",
+              "data_type": "Byte"
+            },
+            "OSLevel": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Sensoren.TIC1016.OSLevel",
+              "data_type": "Byte"
+            },
+            "V": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Sensoren.TIC1016.V",
+              "data_type": "Float"
+            },
+            "VSclMin": {
+              "value": "0"
+            },
+            "VSclMax": {
+              "value": "100"
+            },
+            "VUnit": {
+              "value": "1001"
+            }
+          }
+        },
+        {
+          "name": "Aktoren.V2120",
+          "interface_class": "BinVlv",
+          "communication": {
+            "WQC": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.V2120.WQC",
+              "data_type": "Byte"
+            },
+            "OSLevel": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.V2120.OSLevel",
+              "data_type": "Byte"
+            },
+            "OpMode": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.V2120.OpMode.binary",
+              "data_type": "UInt32"
+            },
+            "SafePos": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.V2120.SafePos",
+              "data_type": "Boolean"
+            },
+            "OpenFbkEn": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.V2120.OpenFbkEn",
+              "data_type": "Boolean"
+            },
+            "CloseFbkEn": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.V2120.CloseFbkEn",
+              "data_type": "Boolean"
+            },
+            "OpenOp": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.V2120.OpenOp",
+              "data_type": "Boolean"
+            },
+            "CloseOp": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.V2120.CloseOp",
+              "data_type": "Boolean"
+            },
+            "OpenLi": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.V2120.OpenLi",
+              "data_type": "Boolean"
+            },
+            "CloseLi": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.V2120.CloseLi",
+              "data_type": "Boolean"
+            },
+            "Ctrl": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.V2120.Ctrl",
+              "data_type": "Boolean"
+            },
+            "OpenFbk": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.V2120.OpenFbk",
+              "data_type": "Boolean"
+            },
+            "CloseFbk": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.V2120.CloseFbk",
+              "data_type": "Boolean"
+            }
+          }
+        },
+        {
+          "name": "Aktoren.W0002",
+          "interface_class": "BinVlv",
+          "communication": {
+            "WQC": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.W0002.WQC",
+              "data_type": "Byte"
+            },
+            "OSLevel": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.W0002.OSLevel",
+              "data_type": "Byte"
+            },
+            "OpMode": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.W0002.OpMode.binary",
+              "data_type": "UInt32"
+            },
+            "SafePos": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.W0002.SafePos",
+              "data_type": "Boolean"
+            },
+            "OpenFbkEn": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.W0002.OpenFbkEn",
+              "data_type": "Boolean"
+            },
+            "CloseFbkEn": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.W0002.CloseFbkEn",
+              "data_type": "Boolean"
+            },
+            "OpenOp": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.W0002.OpenOp",
+              "data_type": "Boolean"
+            },
+            "CloseOp": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.W0002.CloseOp",
+              "data_type": "Boolean"
+            },
+            "OpenLi": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.W0002.OpenLi",
+              "data_type": "Boolean"
+            },
+            "CloseLi": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.W0002.CloseLi",
+              "data_type": "Boolean"
+            },
+            "Ctrl": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.W0002.Ctrl",
+              "data_type": "Boolean"
+            },
+            "OpenFbk": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.W0002.OpenFbk",
+              "data_type": "Boolean"
+            },
+            "CloseFbk": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Aktoren.W0002.CloseFbk",
+              "data_type": "Boolean"
+            }
+          }
+        },
+        {
+          "name": "Sensoren.L1013",
+          "interface_class": "BinView",
+          "communication": {
+            "WQC": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Sensoren.L1013.WQC",
+              "data_type": "Byte"
+            },
+            "OSLevel": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Sensoren.L1013.OSLevel",
+              "data_type": "Byte"
+            },
+            "V": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Sensoren.L1013.V",
+              "data_type": "Boolean"
+            },
+            "VState0": {
+              "value": "OK"
+            },
+            "VState1": {
+              "value": "\u00dcbervoll"
+            }
+          }
+        },
+        {
+          "name": "Sensoren.L1014",
+          "interface_class": "BinView",
+          "communication": {
+            "WQC": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Sensoren.L1014.WQC",
+              "data_type": "Byte"
+            },
+            "OSLevel": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Sensoren.L1014.OSLevel",
+              "data_type": "Byte"
+            },
+            "V": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Sensoren.L1014.V",
+              "data_type": "Boolean"
+            },
+            "VState0": {
+              "value": "OK"
+            },
+            "VState1": {
+              "value": "Voll"
+            }
+          }
+        },
+        {
+          "name": "Sensoren.L1015",
+          "interface_class": "BinView",
+          "communication": {
+            "WQC": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Sensoren.L1015.WQC",
+              "data_type": "Byte"
+            },
+            "OSLevel": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Sensoren.L1015.OSLevel",
+              "data_type": "Byte"
+            },
+            "V": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Sensoren.L1015.V",
+              "data_type": "Boolean"
+            },
+            "VState0": {
+              "value": "Leer"
+            },
+            "VState1": {
+              "value": "OK"
+            }
+          }
+        },
+        {
+          "name": "Dienste.Filling",
+          "interface_class": "ServiceControl",
+          "communication": {
+            "WQC": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Filling.WQC",
+              "data_type": "Byte"
+            },
+            "OSLevel": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Filling.OSLevel",
+              "data_type": "Byte"
+            },
+            "OpMode": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Filling.OpMode.binary",
+              "data_type": "Int16"
+            },
+            "ControlMan": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "Int16"
+            },
+            "ControlIn": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "Int16"
+            },
+            "ControlExt": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "Int16"
+            },
+            "StrategyMan": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Filling.StrategyMan",
+              "data_type": "Int16"
+            },
+            "StrategyIn": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "Int16"
+            },
+            "StrategyExt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Filling.StrategyExt",
+              "data_type": "Int16"
+            },
+            "ControlEnable": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "Int16"
+            },
+            "State": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "Int16"
+            },
+            "CurrentStrategy": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Filling.CurrentStrategy",
+              "data_type": "Int16"
+            },
+            "InteractQuestion": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "Int16"
+            },
+            "InteractAnswer": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "Int16"
+            },
+            "PosTextId": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "Int16"
+            }
+          }
+        },
+        {
+          "name": "Dienste.Cooling",
+          "interface_class": "ServiceControl",
+          "communication": {
+            "WQC": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Cooling.WQC",
+              "data_type": "Byte"
+            },
+            "OSLevel": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Cooling.OSLevel",
+              "data_type": "Byte"
+            },
+            "OpMode": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Cooling.OpMode.binary",
+              "data_type": "Int16"
+            },
+            "ControlMan": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "Int16"
+            },
+            "ControlIn": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "Int16"
+            },
+            "ControlExt": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "Int16"
+            },
+            "StrategyMan": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Cooling.StrategyMan",
+              "data_type": "Int16"
+            },
+            "StrategyIn": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "Int16"
+            },
+            "StrategyExt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Cooling.StrategyExt",
+              "data_type": "Int16"
+            },
+            "ControlEnable": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "Int16"
+            },
+            "State": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "Int16"
+            },
+            "CurrentStrategy": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Cooling.CurrentStrategy",
+              "data_type": "Int16"
+            },
+            "InteractQuestion": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "Int16"
+            },
+            "InteractAnswer": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "Int16"
+            },
+            "PosTextId": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "Int16"
+            }
+          }
+        },
+        {
+          "name": "Dienste.Stirring",
+          "interface_class": "ServiceControl",
+          "communication": {
+            "WQC": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.WQC",
+              "data_type": "Byte"
+            },
+            "OSLevel": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.OSLevel",
+              "data_type": "Byte"
+            },
+            "OpMode": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.OpMode.binary",
+              "data_type": "Int16"
+            },
+            "ControlMan": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "Int16"
+            },
+            "ControlIn": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "Int16"
+            },
+            "ControlExt": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "Int16"
+            },
+            "StrategyMan": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.StrategyMan",
+              "data_type": "Int16"
+            },
+            "StrategyIn": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "Int16"
+            },
+            "StrategyExt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.StrategyExt",
+              "data_type": "Int16"
+            },
+            "ControlEnable": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "Int16"
+            },
+            "State": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "Int16"
+            },
+            "CurrentStrategy": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.CurrentStrategy",
+              "data_type": "Int16"
+            },
+            "InteractQuestion": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "Int16"
+            },
+            "InteractAnswer": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "Int16"
+            },
+            "PosTextId": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "Int16"
+            }
+          }
+        },
+        {
+          "name": "Dienste.Heating",
+          "interface_class": "ServiceControl",
+          "communication": {
+            "WQC": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Heating.WQC",
+              "data_type": "Byte"
+            },
+            "OSLevel": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Heating.OSLevel",
+              "data_type": "Byte"
+            },
+            "OpMode": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Heating.OpMode.binary",
+              "data_type": "Int16"
+            },
+            "ControlMan": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "Int16"
+            },
+            "ControlIn": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "Int16"
+            },
+            "ControlExt": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "Int16"
+            },
+            "StrategyMan": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Heating.StrategyMan",
+              "data_type": "Int16"
+            },
+            "StrategyIn": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "Int16"
+            },
+            "StrategyExt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Heating.StrategyExt",
+              "data_type": "Int16"
+            },
+            "ControlEnable": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "Int16"
+            },
+            "State": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "Int16"
+            },
+            "CurrentStrategy": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Heating.CurrentStrategy",
+              "data_type": "Int16"
+            },
+            "InteractQuestion": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "Int16"
+            },
+            "InteractAnswer": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "Int16"
+            },
+            "PosTextId": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "Int16"
+            }
+          }
+        },
+        {
+          "name": "Dienste.Dosing",
+          "interface_class": "ServiceControl",
+          "communication": {
+            "WQC": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.WQC",
+              "data_type": "Byte"
+            },
+            "OSLevel": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.OSLevel",
+              "data_type": "Byte"
+            },
+            "OpMode": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.OpMode.binary",
+              "data_type": "Int16"
+            },
+            "ControlMan": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "Int16"
+            },
+            "ControlIn": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "Int16"
+            },
+            "ControlExt": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "Int16"
+            },
+            "StrategyMan": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.StrategyMan",
+              "data_type": "Int16"
+            },
+            "StrategyIn": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "Int16"
+            },
+            "StrategyExt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.StrategyExt",
+              "data_type": "Int16"
+            },
+            "ControlEnable": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "Int16"
+            },
+            "State": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "Int16"
+            },
+            "CurrentStrategy": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.CurrentStrategy",
+              "data_type": "Int16"
+            },
+            "InteractQuestion": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "Int16"
+            },
+            "InteractAnswer": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "Int16"
+            },
+            "PosTextId": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "Int16"
+            }
+          }
+        },
+        {
+          "name": "Dienste.Filling.DoseVolume",
+          "interface_class": "AnaServParam",
+          "communication": {
+            "WQC": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Filling.DoseVolume.WQC",
+              "data_type": "Byte"
+            },
+            "OSLevel": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Filling.DoseVolume.OSLevel",
+              "data_type": "Byte"
+            },
+            "VOut": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Filling.DoseVolume.VOut",
+              "data_type": "Float"
+            },
+            "VSclMin": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Filling.DoseVolume.VSclMin",
+              "data_type": "Float"
+            },
+            "VSclMax": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Filling.DoseVolume.VSclMax",
+              "data_type": "Float"
+            },
+            "VUnit": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Filling.DoseVolume.VUnit",
+              "data_type": "Int16"
+            },
+            "VMin": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Filling.DoseVolume.VMin",
+              "data_type": "Float"
+            },
+            "VMax": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Filling.DoseVolume.VMax",
+              "data_type": "Float"
+            },
+            "VExt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Filling.DoseVolume.VExt",
+              "data_type": "Float"
+            },
+            "VRbk": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Filling.DoseVolume.VRbk",
+              "data_type": "Float"
+            },
+            "VInt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Filling.DoseVolume.VInt",
+              "data_type": "Float"
+            },
+            "OpMode": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Filling.DoseVolume.OpMode.binary",
+              "data_type": "UInt32"
+            },
+            "VOp": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "String"
+            },
+            "Sync": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Filling.DoseVolume.Sync",
+              "data_type": "String"
+            }
+          }
+        },
+        {
+          "name": "Dienste.Cooling.SetTemperature",
+          "interface_class": "AnaServParam",
+          "communication": {
+            "WQC": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Cooling.SetTemperature.WQC",
+              "data_type": "Byte"
+            },
+            "OSLevel": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Cooling.SetTemperature.OSLevel",
+              "data_type": "Byte"
+            },
+            "VOut": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Cooling.SetTemperature.VOut",
+              "data_type": "Float"
+            },
+            "VSclMin": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Cooling.SetTemperature.VSclMin",
+              "data_type": "Float"
+            },
+            "VSclMax": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Cooling.SetTemperature.VSclMax",
+              "data_type": "Float"
+            },
+            "VUnit": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Cooling.SetTemperature.VUnit",
+              "data_type": "Int16"
+            },
+            "VMin": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Cooling.SetTemperature.VMin",
+              "data_type": "Float"
+            },
+            "VMax": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Cooling.SetTemperature.VMax",
+              "data_type": "Float"
+            },
+            "VExt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Cooling.SetTemperature.VExt",
+              "data_type": "Float"
+            },
+            "VRbk": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Cooling.SetTemperature.VRbk",
+              "data_type": "Float"
+            },
+            "VInt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Cooling.SetTemperature.VInt",
+              "data_type": "Float"
+            },
+            "OpMode": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Cooling.SetTemperature.OpMode.binary",
+              "data_type": "UInt32"
+            },
+            "VOp": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "String"
+            },
+            "Sync": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Cooling.SetTemperature.Sync",
+              "data_type": "String"
+            }
+          }
+        },
+        {
+          "name": "Dienste.Stirring.Duration",
+          "interface_class": "AnaServParam",
+          "communication": {
+            "WQC": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Duration.WQC",
+              "data_type": "Byte"
+            },
+            "OSLevel": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Duration.OSLevel",
+              "data_type": "Byte"
+            },
+            "VOut": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Duration.VOut",
+              "data_type": "Float"
+            },
+            "VSclMin": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Duration.VSclMin",
+              "data_type": "Float"
+            },
+            "VSclMax": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Duration.VSclMax",
+              "data_type": "Float"
+            },
+            "VUnit": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Duration.VUnit",
+              "data_type": "Int16"
+            },
+            "VMin": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Duration.VMin",
+              "data_type": "Float"
+            },
+            "VMax": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Duration.VMax",
+              "data_type": "Float"
+            },
+            "VExt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Duration.VExt",
+              "data_type": "Float"
+            },
+            "VRbk": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Duration.VRbk",
+              "data_type": "Float"
+            },
+            "VInt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Duration.VInt",
+              "data_type": "Float"
+            },
+            "OpMode": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Duration.OpMode.binary",
+              "data_type": "UInt32"
+            },
+            "VOp": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "String"
+            },
+            "Sync": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Duration.Sync",
+              "data_type": "String"
+            }
+          }
+        },
+        {
+          "name": "Dienste.Stirring.Frequency",
+          "interface_class": "AnaServParam",
+          "communication": {
+            "WQC": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Frequency.WQC",
+              "data_type": "Byte"
+            },
+            "OSLevel": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Frequency.OSLevel",
+              "data_type": "Byte"
+            },
+            "VOut": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Frequency.VOut",
+              "data_type": "Float"
+            },
+            "VSclMin": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Frequency.VSclMin",
+              "data_type": "Float"
+            },
+            "VSclMax": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Frequency.VSclMax",
+              "data_type": "Float"
+            },
+            "VUnit": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Frequency.VUnit",
+              "data_type": "Int16"
+            },
+            "VMin": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Frequency.VMin",
+              "data_type": "Float"
+            },
+            "VMax": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Frequency.VMax",
+              "data_type": "Float"
+            },
+            "VExt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Frequency.VExt",
+              "data_type": "Float"
+            },
+            "VRbk": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Frequency.VRbk",
+              "data_type": "Float"
+            },
+            "VInt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Frequency.VInt",
+              "data_type": "Float"
+            },
+            "OpMode": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Frequency.OpMode.binary",
+              "data_type": "UInt32"
+            },
+            "VOp": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "String"
+            },
+            "Sync": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Stirring.Frequency.Sync",
+              "data_type": "String"
+            }
+          }
+        },
+        {
+          "name": "Dienste.Heating.SetTemperature",
+          "interface_class": "AnaServParam",
+          "communication": {
+            "WQC": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Heating.SetTemperature.WQC",
+              "data_type": "Byte"
+            },
+            "OSLevel": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Heating.SetTemperature.OSLevel",
+              "data_type": "Byte"
+            },
+            "VOut": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Heating.SetTemperature.VOut",
+              "data_type": "Float"
+            },
+            "VSclMin": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Heating.SetTemperature.VSclMin",
+              "data_type": "Float"
+            },
+            "VSclMax": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Heating.SetTemperature.VSclMax",
+              "data_type": "Float"
+            },
+            "VUnit": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Heating.SetTemperature.VUnit",
+              "data_type": "Int16"
+            },
+            "VMin": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Heating.SetTemperature.VMin",
+              "data_type": "Float"
+            },
+            "VMax": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Heating.SetTemperature.VMax",
+              "data_type": "Float"
+            },
+            "VExt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Heating.SetTemperature.VExt",
+              "data_type": "Float"
+            },
+            "VRbk": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Heating.SetTemperature.VRbk",
+              "data_type": "Float"
+            },
+            "VInt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Heating.SetTemperature.VInt",
+              "data_type": "Float"
+            },
+            "OpMode": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Heating.SetTemperature.OpMode.binary",
+              "data_type": "UInt32"
+            },
+            "VOp": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "String"
+            },
+            "Sync": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Heating.SetTemperature.Sync",
+              "data_type": "String"
+            }
+          }
+        },
+        {
+          "name": "Dienste.Dosing.DoseVolume",
+          "interface_class": "AnaServParam",
+          "communication": {
+            "WQC": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.DoseVolume.WQC",
+              "data_type": "Byte"
+            },
+            "OSLevel": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.DoseVolume.OSLevel",
+              "data_type": "Byte"
+            },
+            "VOut": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.DoseVolume.VOut",
+              "data_type": "Float"
+            },
+            "VSclMin": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.DoseVolume.VSclMin",
+              "data_type": "Float"
+            },
+            "VSclMax": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.DoseVolume.VSclMax",
+              "data_type": "Float"
+            },
+            "VUnit": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.DoseVolume.VUnit",
+              "data_type": "Int16"
+            },
+            "VMin": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.DoseVolume.VMin",
+              "data_type": "Float"
+            },
+            "VMax": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.DoseVolume.VMax",
+              "data_type": "Float"
+            },
+            "VExt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.DoseVolume.VExt",
+              "data_type": "Float"
+            },
+            "VRbk": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.DoseVolume.VRbk",
+              "data_type": "Float"
+            },
+            "VInt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.DoseVolume.VInt",
+              "data_type": "Float"
+            },
+            "OpMode": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.DoseVolume.OpMode.binary",
+              "data_type": "UInt32"
+            },
+            "VOp": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "String"
+            },
+            "Sync": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.DoseVolume.Sync",
+              "data_type": "String"
+            }
+          }
+        },
+        {
+          "name": "Dienste.Dosing.SetFlowRate",
+          "interface_class": "AnaServParam",
+          "communication": {
+            "WQC": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.SetFlowRate.WQC",
+              "data_type": "Byte"
+            },
+            "OSLevel": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.SetFlowRate.OSLevel",
+              "data_type": "Byte"
+            },
+            "VOut": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.SetFlowRate.VOut",
+              "data_type": "Float"
+            },
+            "VSclMin": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.SetFlowRate.VSclMin",
+              "data_type": "Float"
+            },
+            "VSclMax": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.SetFlowRate.VSclMax",
+              "data_type": "Float"
+            },
+            "VUnit": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.SetFlowRate.VUnit",
+              "data_type": "Int16"
+            },
+            "VMin": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.SetFlowRate.VMin",
+              "data_type": "Float"
+            },
+            "VMax": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.SetFlowRate.VMax",
+              "data_type": "Float"
+            },
+            "VExt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.SetFlowRate.VExt",
+              "data_type": "Float"
+            },
+            "VRbk": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.SetFlowRate.VRbk",
+              "data_type": "Float"
+            },
+            "VInt": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.SetFlowRate.VInt",
+              "data_type": "Float"
+            },
+            "OpMode": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.SetFlowRate.OpMode.binary",
+              "data_type": "UInt32"
+            },
+            "VOp": {
+              "namespace_index": null,
+              "node_id": null,
+              "data_type": "String"
+            },
+            "Sync": {
+              "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+              "node_id": "|var|WAGO 750-8204 PFC200 CS 2ETH RS CAN.Application.Dienste.Dosing.SetFlowRate.Sync",
+              "data_type": "String"
+            }
+          }
+        }
+      ],
+      "hmi": {
+        "id": "hmi_Reaction.(1.1.2)_edited_v2",
+        "layoutOptions": {},
+        "children": [
+          {
+            "id": "dd2e033a-94c0-46d1-ae21-f2d85f0fff26",
+            "name": "Tank",
+            "type": "36020190",
+            "x": 315,
+            "y": 282,
+            "width": 350,
+            "height": 567,
+            "rotation": 0,
+            "ports": [
+              {
+                "id": "b770af7c-9942-4e11-a116-2861f3d7aff0",
+                "name": "ML_1",
+                "class": "MeasurementPoint",
+                "x": 323,
+                "y": 360
+              },
+              {
+                "id": "956213e6-23ad-4fcf-b7d5-dd84497ec356",
+                "name": "ML_2",
+                "class": "MeasurementPoint",
+                "x": 323,
+                "y": 610
+              },
+              {
+                "id": "56a3e57a-e303-4e3b-a96d-c70b64cea11f",
+                "name": "ML_3",
+                "class": "MeasurementPoint",
+                "x": 323,
+                "y": 690
+              },
+              {
+                "id": "a40e3efa-d536-4839-91b8-3429e2fd9742",
+                "name": "Nozzle1",
+                "class": "Nozzle",
+                "x": 660,
+                "y": 410
+              },
+              {
+                "id": "f1be91b6-b893-437e-94a2-c9c727679859",
+                "name": "Nozzle2",
+                "class": "Nozzle",
+                "x": 391,
+                "y": 313
+              },
+              {
+                "id": "ff6146f1-99e1-40a0-907f-c932955cfb03",
+                "name": "Nozzle2",
+                "class": "Nozzle",
+                "x": 490,
+                "y": 848
+              },
+              {
+                "id": "f687d3c6-e8fb-4aff-b26a-3eb9c49702fc",
+                "name": "Nozzle2",
+                "class": "Nozzle",
+                "x": 660,
+                "y": 629
+              },
+              {
+                "id": "5740ffc2-809b-4acf-9a3c-db09aadafb33",
+                "name": "Nozzle2",
+                "class": "Nozzle",
+                "x": 519,
+                "y": 468
+              },
+              {
+                "id": "4873dff3-3ec3-47ab-a4ba-c30e6972d2a0",
+                "name": "Nozzle2",
+                "class": "Nozzle",
+                "x": 463,
+                "y": 468
+              },
+              {
+                "id": "1e5dd7c7-da19-4c5b-9a44-a46ba03f0d54",
+                "name": "Nozzle2",
+                "class": "Nozzle",
+                "x": 491,
+                "y": 481
+              }
+            ]
+          },
+          {
+            "id": "c73ddfa4-4f3a-4733-9b80-219408f9a24e",
+            "name": "V3050",
+            "type": "37010201",
+            "x": 1173,
+            "y": 777,
+            "width": 208,
+            "height": 177,
+            "rotation": 0,
+            "ports": [
+              {
+                "id": "3443af7e-b8b2-4615-8920-b7c48d12cd12",
+                "name": "Nozzle1",
+                "class": "Nozzle",
+                "x": 1236,
+                "y": 900
+              }
+            ]
+          },
+          {
+            "id": "98ffb3a7-b8f8-4726-9361-c2406e1baa0c",
+            "name": "V3030",
+            "type": "37010201",
+            "x": 125,
+            "y": 154,
+            "width": 199,
+            "height": 162,
+            "rotation": 0,
+            "ports": [
+              {
+                "id": "82957341-6a61-41b8-bbb4-57ccc98dc12b",
+                "name": "Nozzle1",
+                "class": "Nozzle",
+                "x": 258,
+                "y": 267
+              }
+            ]
+          },
+          {
+            "id": "2e145c28-1362-4c18-822c-7a26b0b6d095",
+            "name": "R1010",
+            "type": "",
+            "x": 451,
+            "y": 165,
+            "width": 10,
+            "height": 10,
+            "rotation": 0,
+            "ports": [
+              {
+                "id": "4a053ed0-ef05-44d2-9c75-aca325f6a507",
+                "name": "Nozzle1",
+                "class": "Nozzle",
+                "x": 490,
+                "y": 279
+              }
+            ]
+          },
+          {
+            "id": "52eb8ef2-020f-49f9-ba62-a2afb34db09e",
+            "name": "P2110",
+            "type": "36419090",
+            "x": 986,
+            "y": 556,
+            "width": 185,
+            "height": 146,
+            "rotation": 0,
+            "ports": [
+              {
+                "id": "13f76eb1-adc0-47ce-afdd-43da850ab138",
+                "name": "Nozzle1",
+                "class": "Nozzle",
+                "x": 1078,
+                "y": 629
+              }
+            ]
+          },
+          {
+            "id": "199d98c5-2f56-467c-a886-bf19be68a4a5",
+            "name": "P3010",
+            "type": "36419090",
+            "x": 990,
+            "y": 826,
+            "width": 183,
+            "height": 148,
+            "rotation": 0,
+            "ports": [
+              {
+                "id": "418812f9-8595-4558-b1be-b114cc235f1f",
+                "name": "Nozzle1",
+                "class": "Nozzle",
+                "x": 1081,
+                "y": 900
+              }
+            ]
+          },
+          {
+            "id": "7f786cad-e8c9-43c6-8f6c-859cf86a2745",
+            "name": "LI1012",
+            "type": "27209090",
+            "x": 667,
+            "y": 209,
+            "width": 109,
+            "height": 80,
+            "rotation": 0,
+            "ports": []
+          },
+          {
+            "id": "380acf49-0e9e-4cb5-b421-3dacc5b86623",
+            "name": "TIC1016",
+            "type": "27209090",
+            "x": 666,
+            "y": 294,
+            "width": 109,
+            "height": 80,
+            "rotation": 0,
+            "ports": []
+          },
+          {
+            "id": "aa3b666d-115c-4bc4-800c-b6ce31ed7415",
+            "name": "V2120",
+            "type": "37010201",
+            "x": 1133,
+            "y": 244,
+            "width": 144,
+            "height": 133,
+            "rotation": 0,
+            "ports": [
+              {
+                "id": "ccf129fe-c1eb-441a-8e9c-d96e82692d19",
+                "name": "Nozzle1",
+                "class": "Nozzle",
+                "x": 1189,
+                "y": 309
+              }
+            ]
+          },
+          {
+            "id": "93687bb7-624e-4423-a4a7-2f70d7fbb362",
+            "name": "W0002",
+            "type": "37010201",
+            "x": 35,
+            "y": 688,
+            "width": 111,
+            "height": 119,
+            "rotation": 0,
+            "ports": [
+              {
+                "id": "bebdb6c6-2e1b-40b0-8357-9ad49f768cbd",
+                "name": "Nozzle1",
+                "class": "Nozzle",
+                "x": 98,
+                "y": 746
+              }
+            ]
+          },
+          {
+            "id": "f27f716e-d7a7-4966-a81c-051ef2e852ad",
+            "name": "L1013",
+            "type": "27143121",
+            "x": 155,
+            "y": 299,
+            "width": 104,
+            "height": 83,
+            "rotation": 0,
+            "ports": [
+              {
+                "id": "2272ff04-5894-4192-9429-30e259d9b2ac",
+                "name": "ML_1",
+                "class": "MeasurementPoint",
+                "x": 257,
+                "y": 360
+              }
+            ]
+          },
+          {
+            "id": "91e45a0d-5f4e-456e-bdf2-0a701ca7d257",
+            "name": "L1014",
+            "type": "27143121",
+            "x": 155,
+            "y": 549,
+            "width": 104,
+            "height": 83,
+            "rotation": 0,
+            "ports": [
+              {
+                "id": "d28fe6ae-d558-4e66-a0a4-c5513369e8ce",
+                "name": "ML_1",
+                "class": "MeasurementPoint",
+                "x": 257,
+                "y": 610
+              }
+            ]
+          },
+          {
+            "id": "65425c0e-cd53-4f54-8b12-89ca17404e78",
+            "name": "L1015",
+            "type": "27143121",
+            "x": 155,
+            "y": 633,
+            "width": 104,
+            "height": 83,
+            "rotation": 0,
+            "ports": [
+              {
+                "id": "f3557743-108f-4712-a367-404a23b9218e",
+                "name": "ML_1",
+                "class": "MeasurementPoint",
+                "x": 257,
+                "y": 690
+              }
+            ]
+          }
+        ],
+        "ports": [],
+        "edges": [
+          {
+            "id": "f2596fe2-7947-44ef-9b0d-0eb24ccebdd4",
+            "sourcePort": "f687d3c6-e8fb-4aff-b26a-3eb9c49702fc",
+            "targetPort": "13f76eb1-adc0-47ce-afdd-43da850ab138",
+            "source": "dd2e033a-94c0-46d1-ae21-f2d85f0fff26",
+            "target": "52eb8ef2-020f-49f9-ba62-a2afb34db09e"
+          },
+          {
+            "id": "91298bc8-c4c9-4781-bf32-b1c79dfcad99",
+            "sourcePort": "3443af7e-b8b2-4615-8920-b7c48d12cd12",
+            "targetPort": "418812f9-8595-4558-b1be-b114cc235f1f",
+            "source": "c73ddfa4-4f3a-4733-9b80-219408f9a24e",
+            "target": "199d98c5-2f56-467c-a886-bf19be68a4a5"
+          },
+          {
+            "id": "9a3c33d7-64a9-41ec-ae2f-7ed2a15f3b90",
+            "sourcePort": "1e5dd7c7-da19-4c5b-9a44-a46ba03f0d54",
+            "targetPort": "4a053ed0-ef05-44d2-9c75-aca325f6a507",
+            "source": "dd2e033a-94c0-46d1-ae21-f2d85f0fff26",
+            "target": "2e145c28-1362-4c18-822c-7a26b0b6d095"
+          },
+          {
+            "id": "c228162d-ee3b-48ca-aa1a-890894b01773",
+            "sourcePort": "b770af7c-9942-4e11-a116-2861f3d7aff0",
+            "targetPort": "2272ff04-5894-4192-9429-30e259d9b2ac",
+            "source": "dd2e033a-94c0-46d1-ae21-f2d85f0fff26",
+            "target": "f27f716e-d7a7-4966-a81c-051ef2e852ad"
+          },
+          {
+            "id": "9f5bb618-95c2-47cf-93a2-33465cd34aae",
+            "sourcePort": "956213e6-23ad-4fcf-b7d5-dd84497ec356",
+            "targetPort": "d28fe6ae-d558-4e66-a0a4-c5513369e8ce",
+            "source": "dd2e033a-94c0-46d1-ae21-f2d85f0fff26",
+            "target": "91e45a0d-5f4e-456e-bdf2-0a701ca7d257"
+          },
+          {
+            "id": "b3126365-26d9-418b-8dc7-984f01c780bd",
+            "sourcePort": "56a3e57a-e303-4e3b-a96d-c70b64cea11f",
+            "targetPort": "f3557743-108f-4712-a367-404a23b9218e",
+            "source": "dd2e033a-94c0-46d1-ae21-f2d85f0fff26",
+            "target": "65425c0e-cd53-4f54-8b12-89ca17404e78"
+          }
+        ]
+      }
+    }
+  ]
+}

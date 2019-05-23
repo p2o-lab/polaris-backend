@@ -29,8 +29,6 @@ import {DataType, Variant, VariantArrayType} from 'node-opcua';
 import {Module} from '../core/Module';
 import {isAutomaticState, isExtSource, isManualState, isOffState, OpMode} from '../core/enum';
 import {EventEmitter} from 'events';
-import {AnaView} from './AnaView';
-import {ExtAnaOp} from './AnaOp';
 
 export interface DataAssemblyOptions {
     name: string;
@@ -66,10 +64,14 @@ export class DataAssembly extends EventEmitter {
     public subscribe(samplingInterval=1000){
         catParameter.debug(`DataAssembly ${this.name} subscribe to ${JSON.stringify(this.subscribedNodes)}`);
         this.subscribedNodes
-            .filter(node => this.communication[node])
+            .filter(node => this.communication[node] && this.communication[node].node_id && this.communication[node].namespace_index)
             .forEach(node => {
-                this.module.listenToOpcUaNode(this.communication[node], samplingInterval)
-                    .on('changed', () => this.emit(node, this.communication[node]));
+                try {
+                    this.module.listenToOpcUaNode(this.communication[node], samplingInterval)
+                        .on('changed', () => this.emit(node, this.communication[node]));
+                } catch (err) {
+                    catParameter.warn(`Could not subscribe to Data Assembly ${this.name}.${node}`);
+                }
         });
         return this;
     }
@@ -97,7 +99,7 @@ export class DataAssembly extends EventEmitter {
     public async getOpMode(): Promise<OpMode> {
         if (this.communication['OpMode']) {
             const result = await this.module.readVariableNode(this.communication['OpMode']);
-            return <OpMode> result;
+            return <OpMode> result.value.value;
         } else {
             return null;
         }
@@ -126,6 +128,18 @@ export class DataAssembly extends EventEmitter {
         }
     }
 
+    public async waitForOpModeToPassSpecificTest(testFunction: (opMode: OpMode) => boolean) {
+        return new Promise((resolve) => {
+            let event = this.module.listenToOpcUaNode(this.communication['OpMode']);
+            event.on('changed', function test(data) {
+                if (testFunction(data.value)) {
+                    event.removeListener('changed', test);
+                    resolve();
+                }
+            });
+        });
+    }
+
     /**
      * Set service to automatic operation mode and source to external source
      * @returns {Promise<void>}
@@ -135,48 +149,18 @@ export class DataAssembly extends EventEmitter {
         catParameter.info(`[${this.name}] Current opMode = ${opMode}`);
         if (opMode && isOffState(opMode)) {
             catParameter.trace('First go to Manual state');
-            await this.writeOpMode(OpMode.stateManOp);
-            await new Promise((resolve) => {
-                let event = this.module.listenToOpcUaNode(this.communication['OpMode']);
-                function test(data) {
-                    if (isManualState(data.value)) {
-                        opMode = data.value;
-                        event.removeListener('changed', test);
-                        resolve();
-                    }
-                }
-                event.on('changed', test);
-            });
+            this.writeOpMode(OpMode.stateManOp);
+            await this.waitForOpModeToPassSpecificTest(isManualState);
         }
 
         if (opMode && isManualState(opMode)) {
-            await this.writeOpMode(OpMode.stateAutOp);
-            await new Promise((resolve) => {
-                let event = this.module.listenToOpcUaNode(this.communication['OpMode']);
-                function test(data) {
-                    if (isAutomaticState(data.value)) {
-                        opMode = data.value;
-                        event.removeListener('changed', test);
-                        resolve();
-                    }
-                }
-                event.on('changed', test);
-            });
+            this.writeOpMode(OpMode.stateAutOp);
+            await this.waitForOpModeToPassSpecificTest(isAutomaticState);
         }
 
         if (opMode && !isExtSource(opMode)) {
-            await this.writeOpMode(OpMode.srcExtOp);
-            await new Promise((resolve) => {
-                let event = this.module.listenToOpcUaNode(this.communication['OpMode']);
-                function test(data) {
-                    if (isExtSource(data.value)) {
-                        opMode = data.value;
-                        event.removeListener('changed', test);
-                        resolve();
-                    }
-                }
-                event.on('changed', test);
-            });
+            this.writeOpMode(OpMode.srcExtOp);
+            await this.waitForOpModeToPassSpecificTest(isExtSource);
         }
     }
 
@@ -184,16 +168,7 @@ export class DataAssembly extends EventEmitter {
         let opMode = await this.getOpMode();
         if (opMode && !isManualState(opMode)) {
             this.writeOpMode(OpMode.stateManOp);
-            await new Promise((resolve) => {
-                let event = this.module.listenToOpcUaNode(this.communication['OpMode']);
-                event.on('changed', function test(data) {
-                    if (isManualState(data.value)) {
-                        opMode = data.value;
-                        event.removeListener('changed', test);
-                        resolve();
-                    }
-                });
-            });
+            await this.waitForOpModeToPassSpecificTest(isManualState);
         }
     }
 

@@ -82,6 +82,7 @@ export interface ServiceOptions {
 
 const InterfaceClassToType = {
     'StrView': 'string',
+    'AnaView': 'string',
     'ExtAnaOp': 'number',
     'ExtDigOp': 'number'
 };
@@ -293,7 +294,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
             }));
         this.strategies.forEach(strategy => strategy.subscribe()
                 .on('processValueChanged', (data) => {
-                this.emit('variableChanged', {strategy: strategy, parameter: data.parameter, value: data.value.value})
+                    this.emit('variableChanged', {strategy: strategy, parameter: data.processValue, value: data.value})
             })
             /*.on('parameterChanged', (data) => {
                 this.emit('parameterChanged', {strategy: strategy, parameter: data.parameter, value: data.value.value})
@@ -518,19 +519,19 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
             result = this.start();
         } else if (command === ServiceCommand.stop) {
             result = this.stop();
-        } else if (command === 'reset') {
+        } else if (command === ServiceCommand.reset) {
             result = this.reset();
-        } else if (command === 'complete') {
+        } else if (command === ServiceCommand.complete) {
             result = this.complete();
-        } else if (command === 'abort') {
+        } else if (command === ServiceCommand.abort) {
             result = this.abort();
-        } else if (command === 'unhold') {
+        } else if (command === ServiceCommand.unhold) {
             result = this.unhold();
-        } else if (command === 'pause') {
+        } else if (command === ServiceCommand.pause) {
             result = this.pause();
-        } else if (command === 'resume') {
+        } else if (command === ServiceCommand.resume) {
             result = this.resume();
-        } else if (command === 'restart') {
+        } else if (command === ServiceCommand.restart) {
             result = this.restart();
         } else {
             throw new Error(`Command ${command} can not be interpreted`);
@@ -729,19 +730,10 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
     }
 
     private async setToManualOperationMode(): Promise<void> {
-        // TODO: remove getOpMode; shouldn't be necesarry
         await this.getOpMode();
         if (!isManualState(<OpMode> this.opMode.value)) {
             await this.writeOpMode(OpMode.stateManOp);
-            await new Promise((resolve) => {
-                let event = this.parent.listenToOpcUaNode(this.opMode);
-                event.on('changed', function test(data) {
-                    if (isManualState(data.value)) {
-                        event.removeListener('changed', test);
-                        resolve();
-                    }
-                });
-            });
+            await this.waitForOpModeToPassSpecificTest(isManualState);
             this.logger.debug(`[${this.qualifiedName}] finally in ManualMode`);
         }
     }
