@@ -29,7 +29,9 @@
   ],
   "dependencies": {
     "@p2olab/polaris-interface": "^1.23.0",
+    "@types/chai-as-promised": "^7.1.0",
     "assign-deep": "^1.0.0",
+    "chai-as-promised": "^7.1.1",
     "command-line-args": "^5.1.1",
     "command-line-usage": "^5.0.5",
     "cors": "^2.8.5",

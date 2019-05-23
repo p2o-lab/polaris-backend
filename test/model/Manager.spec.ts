@@ -25,10 +25,14 @@
 
 import {Manager} from '../../src/model/Manager';
 import * as fs from 'fs';
-import {expect} from 'chai';
+import * as chai from 'chai';
 import {Service} from '../../src/model/core/Service';
 import {ModuleTestServer} from '../../src/moduleTestServer/ModuleTestServer';
 import * as parseJson from 'json-parse-better-errors';
+import * as chaiAsPromised from 'chai-as-promised';
+
+chai.use(chaiAsPromised);
+const expect = chai.expect;
 
 
 describe('Manager', () => {
@@ -62,8 +66,18 @@ describe('Manager', () => {
         let service = manager.getService('Dose', 'Fill');
         expect(service).to.be.instanceOf(Service);
         expect(service.name).to.equal('Fill');
-        expect(() => {manager.getService('Dose', 'NoService')}).to.throw();
-        expect(() => {manager.getService('NoModule', 'NoService')}).to.throw();
+        expect(() => manager.getService('Dose', 'NoService')).to.throw();
+        expect(() => manager.getService('NoModule', 'NoService')).to.throw();
+
+        expect(manager.removeModule('something')).to.be.rejected;
+        expect(manager.removeModule(manager.modules[1].id)).to.be.rejected;
+    });
+
+    it('should prevent removing a protected module', () => {
+        const manager = new Manager();
+        let modules = manager.loadModule(
+            JSON.parse(fs.readFileSync('assets/modules/modules_achema.json').toString()),
+            true);
     });
 
     it('should provide JSON output', () => {
