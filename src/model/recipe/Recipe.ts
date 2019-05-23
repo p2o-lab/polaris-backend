@@ -118,7 +118,7 @@ export class Recipe extends (EventEmitter as { new(): RecipeEmitter }) {
         this.protected = protectedRecipe;
         this.lastChange = new Date();
 
-        catRecipe.info(`Recipe ${this.name} successfully parsed`);
+        catRecipe.info(`Recipe ${this.name} (${this.options.version}) successfully parsed`);
     }
 
     public stepJson(): StepInterface {
