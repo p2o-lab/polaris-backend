@@ -245,41 +245,20 @@ export class TestServerService {
                     this.varCommand = parseInt(variant.value);
                     if (this.varCommand == ServiceMtpCommand.COMPLETE && this.varStatus == ServiceState.EXECUTE) {
                         this.state(ServiceState.COMPLETING);
-                        setTimeout(() => {
-                            this.state(ServiceState.COMPLETED);
-                        }, 100);
                     } else if (this.varCommand == ServiceMtpCommand.RESTART && this.varStatus == ServiceState.EXECUTE) {
                         this.state(ServiceState.STARTING);
-                        setTimeout(() => {
-                            this.state(ServiceState.EXECUTE);
-                        }, 100);
                     } else if (this.varCommand == ServiceMtpCommand.RESET) {
                         this.state(ServiceState.IDLE);
                     } else if (this.varCommand == ServiceMtpCommand.START && this.varStatus == ServiceState.IDLE) {
                         this.state(ServiceState.STARTING);
-                        setTimeout(() => {
-                            this.state(ServiceState.EXECUTE);
-                        }, 100);
                     } else if (this.varCommand == ServiceMtpCommand.RESUME && this.varStatus == ServiceState.PAUSED) {
                         this.state(ServiceState.RESUMING);
-                        setTimeout(() => {
-                            this.state(ServiceState.EXECUTE);
-                        }, 100);
                     } else if (this.varCommand == ServiceMtpCommand.PAUSE && this.varStatus == ServiceState.EXECUTE) {
                         this.state(ServiceState.PAUSING);
-                        setTimeout(() => {
-                            this.state(ServiceState.PAUSED);
-                        }, 100);
                     } else if (this.varCommand == ServiceMtpCommand.STOP) {
                         this.state(ServiceState.STOPPING);
-                        setTimeout(() => {
-                            this.state(ServiceState.STOPPED);
-                        }, 100);
                     } else if (this.varCommand == ServiceMtpCommand.ABORT) {
                         this.state(ServiceState.ABORTING);
-                        setTimeout(() => {
-                            this.state(ServiceState.ABORTED);
-                        }, 100);
                     }
                 }
             }
@@ -287,6 +266,7 @@ export class TestServerService {
     }
 
     private state(state: ServiceState) {
+        catTestServer.info(`Set ServiceState: ${ServiceState[state]}`);
         this.varStatus = state;
         this.varCommand = ServiceMtpCommand.UNDEFINED;
         this.varCommandEnable = ServiceControlEnable.ABORT + ServiceControlEnable.STOP;
@@ -305,6 +285,22 @@ export class TestServerService {
             case ServiceState.ABORTED:
                 this.varCommandEnable += ServiceControlEnable.RESET;
                 break;
+        }
+        this.automaticStateChange(ServiceState.STARTING, ServiceState.EXECUTE);
+        this.automaticStateChange(ServiceState.STOPPING, ServiceState.STOPPED);
+        this.automaticStateChange(ServiceState.ABORTING, ServiceState.ABORTED);
+        this.automaticStateChange(ServiceState.PAUSING, ServiceState.PAUSED);
+        this.automaticStateChange(ServiceState.RESUMING, ServiceState.EXECUTE);
+        this.automaticStateChange(ServiceState.COMPLETING, ServiceState.COMPLETED);
+    }
+
+    private automaticStateChange(currentState: ServiceState, nextState: ServiceState, delay = 100) {
+        if (this.varStatus == currentState) {
+            setTimeout(() => {
+                if (this.varStatus == currentState) {
+                    this.state(nextState);
+                }
+            }, delay);
         }
     }
 
