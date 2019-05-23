@@ -28,8 +28,6 @@ import * as fs from 'fs';
 import {expect} from 'chai';
 import {Service} from '../../src/model/core/Service';
 import {ModuleTestServer} from '../../src/moduleTestServer/ModuleTestServer';
-import {waitForStateChange} from '../helper';
-import {ServiceCommand} from '@p2olab/polaris-interface';
 import * as parseJson from 'json-parse-better-errors';
 
 
@@ -86,7 +84,7 @@ describe('Manager', () => {
         });
 
 
-        it('should load from options', async () => {
+        it('should load from options and remove module', async () => {
 
             const moduleJson = parseJson(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8'), null, 60);
 
@@ -96,62 +94,13 @@ describe('Manager', () => {
 
             const module = manager.modules[0];
             const service = module.services[0];
-
-            module.connect();
-            await waitForStateChange(service, 'IDLE', 1000);
-
             let stateChangeCount=0;
             service.on('state', () => {
                 stateChangeCount++;
             });
 
-            service.execute(ServiceCommand.start);
-            waitForStateChange(service, 'STARTING');
-            await waitForStateChange(service, 'EXECUTE');
+            await module.connect();
 
-            service.execute(ServiceCommand.restart);
-            waitForStateChange(service, 'STARTING');
-            await waitForStateChange(service, 'EXECUTE');
-
-            service.execute(ServiceCommand.stop);
-            waitForStateChange(service, 'STOPPING');
-            await waitForStateChange(service, 'STOPPED');
-
-            service.execute(ServiceCommand.reset);
-            await waitForStateChange(service, 'IDLE');
-
-            service.execute(ServiceCommand.start);
-            waitForStateChange(service, 'STARTING');
-            await waitForStateChange(service, 'EXECUTE');
-
-            service.execute(ServiceCommand.pause);
-            waitForStateChange(service, 'PAUSING');
-            await waitForStateChange(service, 'PAUSED');
-
-            service.execute(ServiceCommand.resume);
-            waitForStateChange(service, 'RESUMING');
-            await waitForStateChange(service, 'EXECUTE');
-
-            service.execute(ServiceCommand.complete);
-            waitForStateChange(service, 'COMPLETING', 3000);
-            await waitForStateChange(service, 'COMPLETED');
-
-            service.execute(ServiceCommand.abort);
-            waitForStateChange(service, 'ABORTING');
-            await waitForStateChange(service, 'ABORTED');
-
-            service.execute(ServiceCommand.reset);
-            await waitForStateChange(service, 'IDLE');
-
-            service.execute(ServiceCommand.start);
-            waitForStateChange(service, 'STARTING');
-            await waitForStateChange(service, 'EXECUTE');
-
-            service.execute(ServiceCommand.complete);
-            waitForStateChange(service, 'COMPLETING', 3000);
-            await waitForStateChange(service, 'COMPLETED', 3000);
-
-            expect(stateChangeCount).to.equal(22);
 
             await manager.removeModule(module.id);
         }).timeout(10000);

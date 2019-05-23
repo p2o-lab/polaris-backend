@@ -92,7 +92,7 @@ describe('Player', function () {
             await client.disconnect();
         });
 
-        it('work with sample module', async function(){
+        it('should run the test recipe two times on the test module with several player interactions (pause, resume, stop)', async function () {
             this.timeout(15000);
 
             const moduleJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString())
@@ -136,8 +136,7 @@ describe('Player', function () {
 
             await waitForStateChange(service, 'IDLE');
 
-            // here the second run of the recipe should start
-
+            // here the second run of the recipe should automatically start, since first recipe is finished
 
             waitForStateChange(service, 'STARTING', 1000);
             await waitForStateChange(service, 'EXECUTE', 1000);

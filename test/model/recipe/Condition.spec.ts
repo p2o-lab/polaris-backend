@@ -264,7 +264,7 @@ describe('Condition', () => {
 
         });
 
-        it('should dont react on a closed condition', async () => {
+        it('should not react on a closed condition', async () => {
             const condition = Condition.create({
                 type: ConditionType.state,
                 module: 'CIF',
@@ -274,7 +274,7 @@ describe('Condition', () => {
 
             condition.listen();
             moduleServer.services[0].varStatus = ServiceState.IDLE;
-            await delay(100);
+            await delay(150);
             expect(condition).to.have.property('fulfilled', false);
 
             condition.on('stateChanged', () => console.log('state changed'));
@@ -285,7 +285,7 @@ describe('Condition', () => {
             expect(condition.listenerCount('stateChanged')).to.equal(0);
 
             condition.listen();
-            await delay(100);
+            await delay(150);
             expect(condition).to.have.property('fulfilled', false);
 
             moduleServer.services[0].varStatus = ServiceState.COMPLETED;

@@ -170,6 +170,17 @@ describe('Service', () => {
         waitForStateChange(service, 'ABORTING');
         await waitForStateChange(service, 'ABORTED');
 
-        expect(stateChangeCount).to.equal(18);
+        service.execute(ServiceCommand.reset);
+        await waitForStateChange(service, 'IDLE');
+
+        service.execute(ServiceCommand.start);
+        waitForStateChange(service, 'STARTING');
+        await waitForStateChange(service, 'EXECUTE');
+
+        service.execute(ServiceCommand.complete);
+        waitForStateChange(service, 'COMPLETING');
+        await waitForStateChange(service, 'COMPLETED');
+
+        expect(stateChangeCount).to.equal(23);
     }).timeout(10000);
 });
