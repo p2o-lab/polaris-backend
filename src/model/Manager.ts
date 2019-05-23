@@ -35,13 +35,13 @@ import {ServiceLogEntry, VariableLogEntry} from '../logging/archive';
 import StrictEventEmitter from 'strict-event-emitter-types';
 
 interface ManagerEvents {
-/**
- * when one service goes to *completed*
- * @event
- */
-recipeFinished: void;
+    /**
+     * when one service goes to *completed*
+     * @event
+     */
+    recipeFinished: void;
 
-notify: (string, any) => void;
+    notify: (string, any) => void;
 }
 
 type ManagerEmitter = StrictEventEmitter<EventEmitter, ManagerEvents>;
@@ -105,7 +105,7 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
     public loadModule(options: {
         module?: ModuleOptions,
         modules?: ModuleOptions[],
-        subplants?: {modules: ModuleOptions[]}[]
+        subplants?: { modules: ModuleOptions[] }[]
     }, protectedModules: boolean = false): Module[] {
         let newModules: Module[] = [];
         if (!options) {
@@ -145,7 +145,11 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
                 .on('connected', () => this.emit('notify', 'module', null))
                 .on('disconnected', () => this.emit('notify', 'module', null))
                 .on('controlEnable', ({service, controlEnable}) => {
-                    this.emit('notify', 'module', {module: service.parent.id, service: service.name, controlEnable: controlEnable});
+                    this.emit('notify', 'module', {
+                        module: service.parent.id,
+                        service: service.name,
+                        controlEnable: controlEnable
+                    });
                 })
                 .on('variableChanged', async (data) => {
                     const logEntry: VariableLogEntry = {
@@ -168,9 +172,9 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
                         module: module.id,
                         service: data.service.name,
                         strategy: data.strategy.name,
-                        command:  ServiceCommand[data.command],
+                        command: ServiceCommand[data.command],
                         parameter: data.parameter ? data.parameter.map((param) => {
-                            return { name:param.name, value: param.value };
+                            return {name: param.name, value: param.value};
                         }) : undefined
                     };
                     this.serviceArchive.push(logEntry);
@@ -193,7 +197,8 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
                         module: module.id,
                         service: service.name,
                         status: ServiceState[state],
-                        lastChange: 0});
+                        lastChange: 0
+                    });
                 })
                 .on('opModeChanged', async ({service, opMode}) => {
                     this.emit('notify', 'module', {
@@ -211,7 +216,7 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
     }
 
 
-    public async removeModule(moduleId){
+    public async removeModule(moduleId) {
         const module = this.modules.find(module => module.id === moduleId);
         if (!module) {
             throw new Error(`No Module ${moduleId} found.`);
@@ -267,7 +272,7 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
      */
     json(): ManagerInterface {
         return {
-            activeRecipe: this.player.getCurrentRecipe()? this.player.getCurrentRecipe().json() : undefined,
+            activeRecipe: this.player.getCurrentRecipe() ? this.player.getCurrentRecipe().json() : undefined,
             modules: this.modules.map(module => module.id),
             autoReset: this.autoreset
         };
@@ -281,7 +286,7 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
         if (this.autoreset) {
             catManager.info(`Service ${service.parent.id}.${service.name} completed. Short waiting time (${this._autoreset_timeout}) to autoreset`);
             setTimeout(async () => {
-                if (service.parent.isConnected() && await service.getServiceState() === ServiceState.COMPLETED ) {
+                if (service.parent.isConnected() && await service.getServiceState() === ServiceState.COMPLETED) {
                     catManager.info(`Service ${service.parent.id}.${service.name} completed. Now perform autoreset`);
                     try {
                         service.execute(ServiceCommand.reset);
