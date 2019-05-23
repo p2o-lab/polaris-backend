@@ -26,8 +26,9 @@
 import {DataAssembly, DataAssemblyOptions} from '../dataAssembly/DataAssembly';
 import {Module} from './Module';
 import {EventEmitter} from 'events';
-import {catService} from '../../config/logging';
 import {DataAssemblyFactory} from '../dataAssembly/DataAssemblyFactory';
+import StrictEventEmitter from 'strict-event-emitter-types';
+import {OpcUaNodeOptions} from './Interfaces';
 
 export interface StrategyOptions {
     id: string;
@@ -43,7 +44,15 @@ export interface StrategyOptions {
     processValues: DataAssemblyOptions[];
 }
 
-export class Strategy extends EventEmitter {
+export interface StrategyEvents {
+    processValueChanged: { processValue: DataAssembly, value: any, timestamp: Date };
+
+    parameterChanged: { parameter: DataAssembly, value: any, timestamp: Date };
+}
+
+type StrategyEmitter = StrictEventEmitter<EventEmitter, StrategyEvents>;
+
+export class Strategy extends (EventEmitter as { new(): StrategyEmitter }) {
     id: string;
     // name of strategy
     name: string;
@@ -71,10 +80,14 @@ export class Strategy extends EventEmitter {
 
     subscribe() {
         this.parameters.map(param => param.subscribe()
-            .on('VOut', (data) => this.emit('parameterChanged', {parameter: param, value: data}))
+            .on('VOut', (data: OpcUaNodeOptions) => {
+                this.emit('parameterChanged', {parameter: param, value: data.value, timestamp: data.timestamp})
+            })
         );
         this.processValues.map(pv => pv.subscribe()
-            .on('V', (data) => this.emit('processValueChanged', {parameter: pv, value:data}))
+            .on('V', (data: OpcUaNodeOptions) => {
+                this.emit('processValueChanged', {processValue: pv, value: data.value, timestamp: data.timestamp})
+            })
         );
     return this;
     }
