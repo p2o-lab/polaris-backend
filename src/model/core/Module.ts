@@ -239,7 +239,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
                         this.logger.info(`[${this.id}] subscription started - subscriptionId=${subscription.subscriptionId}`);
                     })
                     .on('terminated', () => {
-                        this.logger.warn(`[${this.id}] subscription (Id=${subscription.subscriptionId}) terminated`);
+                        this.logger.debug(`[${this.id}] subscription terminated`);
                     });
 
                 // read namespace array
@@ -507,18 +507,26 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
     }
 
     /**
-     * Pause all services in module
+     * Pause all services in module which are currently paused
      */
     pause(): Promise<void[]> {
-        const tasks = this.services.map(service => service.execute(ServiceCommand.pause));
+        const tasks = this.services.map(async (service) => {
+            if (await service.getServiceState() == ServiceState.EXECUTE) {
+                return service.execute(ServiceCommand.pause);
+            }
+        });
         return Promise.all(tasks);
     }
 
     /**
-     * Resume all services in module
+     * Resume all services in module which are currently paused
      */
     resume(): Promise<void[]> {
-        const tasks = this.services.map(service => service.execute(ServiceCommand.resume));
+        const tasks = this.services.map(async (service) => {
+            if (await service.getServiceState() == ServiceState.PAUSED) {
+                return service.execute(ServiceCommand.resume);
+            }
+        });
         return Promise.all(tasks);
     }
 
@@ -528,7 +536,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
     stop(): Promise<void[]> {
         const tasks = this.services.map(service => {
             if (service.status.value != ServiceState.IDLE) {
-                return service.execute(ServiceCommand.stop)
+                return service.execute(ServiceCommand.stop);
             }
         });
         return Promise.all(tasks);
