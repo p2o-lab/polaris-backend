@@ -35,7 +35,7 @@ import {timeout} from 'promise-timeout';
  * @param {number} ms           max time before promise is rejected
  * @returns {Promise<void>}
  */
-export function waitForStateChange(service: Service, expectedState: string, ms=500): Promise<void> {
+export function waitForStateChange(service: Service, expectedState: string, ms = 1000): Promise<void> {
     return timeout(new Promise((resolve) => {
         service.on('state', function test(data) {
             if (ServiceState[data.state] === expectedState) {
