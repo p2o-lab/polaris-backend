@@ -1,0 +1,161 @@
+{
+  "version": "1.0.0",
+  "name": "Test recipe for testserver module",
+  "author": "Markus Graube",
+  "initial_step": "S1",
+  "steps": [
+    {
+      "name": "S1",
+      "operations": [
+        {
+          "module": "CIF",
+          "service": "Service1",
+          "command": "start"
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "S2",
+          "condition": {
+            "type": "state",
+            "module": "CIF",
+            "service": "Service1",
+            "state": "execute"
+          }
+        }
+      ]
+    },
+    {
+      "name": "S2",
+      "operations": [
+        {
+          "module": "CIF",
+          "service": "Service1",
+          "command": "pause"
+        },
+        {
+          "module": "CIF",
+          "service": "Service2",
+          "command": "start"
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "S3",
+          "condition": {
+            "type": "and",
+            "conditions": [
+              {
+                "type": "state",
+                "module": "CIF",
+                "service": "Service1",
+                "state": "paused"
+              },
+              {
+                "type": "state",
+                "module": "CIF",
+                "service": "Service2",
+                "state": "execute"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "S3",
+      "operations": [
+        {
+          "module": "CIF",
+          "service": "Service1",
+          "command": "resume"
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "S4",
+          "condition": {
+            "type": "state",
+            "module": "CIF",
+            "service": "Service1",
+            "state": "execute"
+          }
+        }
+      ]
+    },
+    {
+      "name": "S4",
+      "operations": [
+        {
+          "module": "CIF",
+          "service": "Service1",
+          "command": "stop"
+        },
+        {
+          "module": "CIF",
+          "service": "Service2",
+          "command": "complete"
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "S5",
+          "condition": {
+            "type": "and",
+            "conditions": [
+              {
+                "type": "state",
+                "module": "CIF",
+                "service": "Service1",
+                "state": "stopped"
+              },
+              {
+                "type": "state",
+                "module": "CIF",
+                "service": "Service2",
+                "state": "completed"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "S5",
+      "operations": [
+        {
+          "module": "CIF",
+          "service": "Service1",
+          "command": "reset"
+        },
+        {
+          "module": "CIF",
+          "service": "Service2",
+          "command": "reset"
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "completed",
+          "condition": {
+            "type": "and",
+            "conditions": [
+              {
+                "type": "state",
+                "module": "CIF",
+                "service": "Service1",
+                "state": "idle"
+              },
+              {
+                "type": "state",
+                "module": "CIF",
+                "service": "Service2",
+                "state": "idle"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
