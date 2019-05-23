@@ -30,6 +30,9 @@ import {Service} from '../../src/model/core/Service';
 import {ModuleTestServer} from '../../src/moduleTestServer/ModuleTestServer';
 import * as parseJson from 'json-parse-better-errors';
 import * as chaiAsPromised from 'chai-as-promised';
+import {ServiceState} from '../../src/model/core/enum';
+import {waitForStateChange} from '../helper';
+import {ServiceCommand} from '@p2olab/polaris-interface';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -52,6 +55,25 @@ describe('Manager', () => {
             JSON.parse(fs.readFileSync('assets/recipes/biofeed/recipe_biofeed_88370C_0.3.1.json').toString()),
             false);
         expect(() => manager.removeRecipe(manager.recipes[1].id)).to.not.throw();
+    });
+
+    it('should reject loading modules with empty options', () => {
+        const manager = new Manager();
+        expect(() => manager.loadModule({})).to.throw;
+        expect(() => manager.loadModule(<any>{someattribute: 'abc'})).to.throw;
+    });
+
+    it('should load with single module', () => {
+        const modulesJson = JSON.parse(fs.readFileSync('assets/modules/module_biofeed_1.4.2.json').toString());
+        const moduleJson = modulesJson.modules[0];
+        const manager = new Manager();
+        manager.loadModule({module: moduleJson});
+    });
+
+    it('should load with subplants options', () => {
+        const modulesJson = JSON.parse(fs.readFileSync('assets/modules/module_biofeed_1.4.2.json').toString());
+        const manager = new Manager();
+        manager.loadModule({subplants: [modulesJson]});
     });
 
     it('should load the achema modules', () => {
@@ -98,7 +120,39 @@ describe('Manager', () => {
         });
 
 
-        it('should load from options and remove module', async () => {
+        it('should load from options, stop, abort and reset manager and remove module', async () => {
+
+            const moduleJson = parseJson(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8'), null, 60);
+
+            const manager = new Manager();
+            manager.loadModule(moduleJson);
+            expect(manager.modules).to.have.lengthOf(1);
+
+            const module = manager.modules[0];
+            const service = module.services[1];
+
+            await module.connect();
+            await waitForStateChange(service, 'IDLE');
+            service.execute(ServiceCommand.start);
+            await waitForStateChange(service, 'EXECUTE');
+
+            await manager.stopAllServices();
+            await waitForStateChange(service, 'STOPPED');
+            expect(service.status.value).to.equal(ServiceState.STOPPED);
+
+            await manager.abortAllServices();
+            await waitForStateChange(service, 'ABORTED');
+            expect(service.status.value).to.equal(ServiceState.ABORTED);
+
+            await manager.resetAllServices();
+            await waitForStateChange(service, 'IDLE');
+            expect(service.status.value).to.equal(ServiceState.IDLE);
+
+            await manager.removeModule(module.id);
+            expect(manager.modules).to.have.lengthOf(0);
+        }).timeout(10000);
+
+        it('should autoreset service', async () => {
 
             const moduleJson = parseJson(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8'), null, 60);
 
@@ -107,18 +161,17 @@ describe('Manager', () => {
             manager.loadModule(moduleJson);
 
             const module = manager.modules[0];
-            const service = module.services[0];
-            let stateChangeCount=0;
-            service.on('state', () => {
-                stateChangeCount++;
-            });
+            const service = module.services[1];
 
             await module.connect();
+            await waitForStateChange(service, 'IDLE');
+            service.execute(ServiceCommand.start);
+            await waitForStateChange(service, 'EXECUTE');
 
-
-            await manager.removeModule(module.id);
-        }).timeout(10000);
-
+            service.execute(ServiceCommand.complete);
+            await waitForStateChange(service, 'COMPLETED');
+            await waitForStateChange(service, 'IDLE');
+        });
     });
 
 });
