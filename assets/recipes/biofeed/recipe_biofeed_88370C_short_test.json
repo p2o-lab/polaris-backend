@@ -83,7 +83,10 @@
         {
           "service": "FeedWater", "command": "start",
           "parameter": [
-            {  "name": "TargetVolume", "value": "BioFeed.FeedPowder.CurrentFeedMass.V/(5*28.57)*4000" }
+            {
+              "name": "TargetVolume",
+              "value": "BioFeed.FeedPowder\\.CurrentFeedMass.V/(5*28.57)*4000"
+            }
           ]
         }
       ],
@@ -167,7 +170,10 @@
         {
           "service": "FeedBufferSolution", "command": "start",
           "parameter": [
-            { "name": "TargetVolume", "value": "BioFeed.FeedPowder.CurrentFeedMass.V/(5*28.57)*81.7"}
+            {
+              "name": "TargetVolume",
+              "value": "BioFeed.FeedPowder\\.CurrentFeedMass.V/(5*28.57)*81.7"
+            }
           ]
         },
         {
@@ -272,7 +278,10 @@
         {
           "service": "FeedWater", "command": "start",
           "parameter": [
-            { "name": "TargetVolume", "value": "BioFeed.FeedPowder.CurrentFeedMass.V/(5*28.57)*5000" }
+            {
+              "name": "TargetVolume",
+              "value": "BioFeed.FeedPowder\\.CurrentFeedMass.V/(5*28.57)*5000"
+            }
           ]
         }
       ],
