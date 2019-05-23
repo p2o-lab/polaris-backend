@@ -67,19 +67,17 @@ describe('Service', () => {
         await moduleServer.shutdown();
     });
 
-    it('waitForOpModeSpecificTest2', async () => {
-        testService.varOpmode = 0;
-        await service.execute(ServiceCommand.start);
-
-        let opMode = await service.getOpMode();
-        expect(opMode).to.equal(OpMode.stateAutAct + OpMode.srcExtAct);
-    });
-
     it('waitForOpModeSpecificTest', async () => {
         expect(service.name).to.equal('Service1');
         testService.varOpmode = OpMode.stateAutAct;
         let opMode = await service.getOpMode();
         expect(opMode).to.equal(OpMode.stateAutAct);
+
+        testService.varOpmode = 0;
+        await service.execute(ServiceCommand.start);
+
+        opMode = await service.getOpMode();
+        expect(opMode).to.equal(OpMode.stateAutAct + OpMode.srcExtAct);
     });
 
     it('full service state cycle', async () => {
