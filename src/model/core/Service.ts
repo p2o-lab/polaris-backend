@@ -679,12 +679,9 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
 
     public setOperationMode(): Promise<void> {
         if (this.automaticMode) {
-            this.logger.info(`[${this.qualifiedName}] Bring to automatic mode`);
             return this.setToAutomaticOperationMode();
         } else {
-            this.logger.info(`[${this.qualifiedName}] Bring to manual mode`);
-            return this.setToManualOperationMode()
-                .then(() => this.logger.info(`[${this.qualifiedName}] Service now in manual mode`));
+            return this.setToManualOperationMode();
         }
     }
 
@@ -708,7 +705,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
         let opMode: OpMode = await this.getOpMode();
         this.logger.debug(`[${this.qualifiedName}] Current opMode = ${JSON.stringify(opModetoJson(opMode))}`);
         if (isOffState(<OpMode> this.opMode.value)) {
-            this.logger.info('First go to Manual state');
+            this.logger.info(`[${this.qualifiedName}] Go to Manual state`);
             this.writeOpMode(OpMode.stateManOp);
             await this.waitForOpModeToPassSpecificTest(isManualState);
             this.logger.info(`[${this.qualifiedName}] in ManualMode`);
@@ -732,9 +729,10 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
     private async setToManualOperationMode(): Promise<void> {
         await this.getOpMode();
         if (!isManualState(<OpMode> this.opMode.value)) {
+            this.logger.info(`[${this.qualifiedName}] Go to Manual state`);
             await this.writeOpMode(OpMode.stateManOp);
             await this.waitForOpModeToPassSpecificTest(isManualState);
-            this.logger.debug(`[${this.qualifiedName}] finally in ManualMode`);
+            this.logger.info(`[${this.qualifiedName}] in ManualMode`);
         }
     }
 
@@ -742,7 +740,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
         if (!this.parent.isConnected()) {
             throw new Error('Module is not connected');
         }
-        this.logger.info(`[${this.qualifiedName}] Send command ${ServiceMtpCommand[command]} (${command})`);
+        this.logger.info(`[${this.qualifiedName}] Send command ${ServiceMtpCommand[command]}`);
         await this.setOperationMode();
 
         let controlEnable: ControlEnableInterface = await this.getControlEnable(true);
@@ -759,8 +757,8 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
             (command===ServiceMtpCommand.ABORT && controlEnable.abort) ||
             (command===ServiceMtpCommand.RESET && controlEnable.reset);
         if (!commandExecutable) {
-            this.logger.info(`ControlOp does not allow ${ServiceMtpCommand[command]}- ${JSON.stringify(controlEnable)}`);
-            return Promise.reject('ControlOp does not allow command');
+            this.logger.info(`[${this.qualifiedName}] ControlOp does not allow ${ServiceMtpCommand[command]}- ${JSON.stringify(controlEnable)}`);
+            return Promise.reject(`[${this.qualifiedName}] ControlOp does not allow command ${ServiceMtpCommand[command]}`);
         }
 
         const result = await this.parent.writeNode(this.automaticMode ? this.command : this.commandMan,
@@ -769,7 +767,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
                 value: command,
                 arrayType: VariantArrayType.Scalar
             });
-        this.logger.info(`[${this.qualifiedName}] Command ${ServiceMtpCommand[command]}(${command}) written: ${result.name}`);
+        this.logger.info(`[${this.qualifiedName}] Command ${ServiceMtpCommand[command]} written: ${result.name}`);
 
         return result.value === 0;
     }
