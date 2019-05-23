@@ -13,7 +13,7 @@
     "start": "ts-node ./src/index.ts",
     "start-dist": "node ./build/index.js",
     "start-testserver": "ts-node ./src/testServer.ts",
-    "test": "export LOGLEVEL=warn && nyc mocha -r ts-node/register test/**/*.ts test/**/**/*.ts",
+    "test": "nyc mocha -r ts-node/register test/**/*.ts test/**/**/*.ts",
     "typedoc": "typedoc --mode file --module commonjs --out typedoc/ --target ES6 --excludePrivate --readme none src/",
     "apidoc": "apidoc -i src/server/ -o apidoc",
     "doc": "npm run apidoc && npm run typedoc",
