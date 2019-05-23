@@ -103,7 +103,7 @@ export class Parameter {
             .map((item: ScopeOptions) => ScopeItem.extractFromScopeOptions(item, modules));
 
         // evaluate additional variables from expression
-        const extraction = ScopeItem.extractFromExpressionString(this.value.toString(), modules);
+        const extraction = ScopeItem.extractFromExpressionString(this.value.toString(), modules, this.scopeArray.map(scope => scope.name));
         this.expression = extraction.expression;
         this.scopeArray.push (...extraction.scopeItems);
     }
