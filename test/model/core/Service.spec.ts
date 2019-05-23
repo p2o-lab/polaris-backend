@@ -33,6 +33,7 @@ import {waitForStateChange} from '../../helper';
 import * as fs from 'fs';
 import * as parseJson from 'json-parse-better-errors';
 import {OpMode} from '../../../src/model/core/enum';
+import * as delay from 'timeout-as-promise';
 
 describe('Service', () => {
 
@@ -105,12 +106,8 @@ describe('Service', () => {
         });
 
 
-        let stateChangeCount = 0;
-        service.on('state', () => {
-            stateChangeCount++;
-        });
+
         service.subscribeToService();
-        await waitForStateChange(service, 'IDLE');
         await service.setOperationMode();
 
         result = await service.getOverview();
@@ -135,52 +132,58 @@ describe('Service', () => {
             source: 'external'
         });
 
+        await delay(50);
+        let stateChangeCount = 0;
+        service.on('state', () => {
+            stateChangeCount++;
+        });
+
         service.execute(ServiceCommand.start);
-        waitForStateChange(service, 'STARTING');
+        await waitForStateChange(service, 'STARTING');
         await waitForStateChange(service, 'EXECUTE');
 
         service.execute(ServiceCommand.restart);
-        waitForStateChange(service, 'STARTING');
+        await waitForStateChange(service, 'STARTING');
         await waitForStateChange(service, 'EXECUTE');
 
         service.execute(ServiceCommand.stop);
-        waitForStateChange(service, 'STOPPING');
+        await waitForStateChange(service, 'STOPPING');
         await waitForStateChange(service, 'STOPPED');
 
         service.execute(ServiceCommand.reset);
         await waitForStateChange(service, 'IDLE');
 
         service.execute(ServiceCommand.start);
-        waitForStateChange(service, 'STARTING');
+        await waitForStateChange(service, 'STARTING');
         await waitForStateChange(service, 'EXECUTE');
 
         service.execute(ServiceCommand.pause);
-        waitForStateChange(service, 'PAUSING');
+        await waitForStateChange(service, 'PAUSING');
         await waitForStateChange(service, 'PAUSED');
 
         service.execute(ServiceCommand.resume);
-        waitForStateChange(service, 'RESUMING');
+        await waitForStateChange(service, 'RESUMING');
         await waitForStateChange(service, 'EXECUTE');
 
         service.execute(ServiceCommand.complete);
-        waitForStateChange(service, 'COMPLETING');
+        await waitForStateChange(service, 'COMPLETING');
         await waitForStateChange(service, 'COMPLETED');
 
         service.execute(ServiceCommand.abort);
-        waitForStateChange(service, 'ABORTING');
+        await waitForStateChange(service, 'ABORTING');
         await waitForStateChange(service, 'ABORTED');
 
         service.execute(ServiceCommand.reset);
         await waitForStateChange(service, 'IDLE');
 
         service.execute(ServiceCommand.start);
-        waitForStateChange(service, 'STARTING');
+        await waitForStateChange(service, 'STARTING');
         await waitForStateChange(service, 'EXECUTE');
 
         service.execute(ServiceCommand.complete);
-        waitForStateChange(service, 'COMPLETING');
+        await waitForStateChange(service, 'COMPLETING');
         await waitForStateChange(service, 'COMPLETED');
 
-        expect(stateChangeCount).to.equal(23);
+        expect(stateChangeCount).to.equal(22);
     }).timeout(10000);
 });

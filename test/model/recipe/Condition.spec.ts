@@ -283,9 +283,10 @@ describe('Condition', () => {
             condition.clear();
             expect(condition).to.have.property('fulfilled', undefined);
             expect(condition.listenerCount('stateChanged')).to.equal(0);
+            await delay(50);
 
             condition.listen();
-            await delay(150);
+            await delay(200);
             expect(condition).to.have.property('fulfilled', false);
 
             moduleServer.services[0].varStatus = ServiceState.COMPLETED;
