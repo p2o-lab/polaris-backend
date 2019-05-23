@@ -23,13 +23,13 @@
  * SOFTWARE.
  */
 
-import { Step } from './Step';
-import { Module } from '../core/Module';
-import { catRecipe } from '../../config/logging';
-import { EventEmitter } from 'events';
-import { v4 } from 'uuid';
-import { Transition } from './Transition';
-import { RecipeInterface, ModuleInterface, RecipeOptions, RecipeState, StepInterface } from '@p2olab/polaris-interface';
+import {Step} from './Step';
+import {Module} from '../core/Module';
+import {catRecipe} from '../../config/logging';
+import {EventEmitter} from 'events';
+import {v4} from 'uuid';
+import {Transition} from './Transition';
+import {RecipeInterface, RecipeOptions, RecipeState, StepInterface} from '@p2olab/polaris-interface';
 import StrictEventEmitter from 'strict-event-emitter-types';
 
 /**
@@ -185,19 +185,18 @@ export class Recipe extends (EventEmitter as { new(): RecipeEmitter }) {
      *
      * Clear monitoring of all conditions. Services won't be touched.
      */
-    public stop () {
+    public async stop() {
+        catRecipe.info(`Stop recipe ${this.name}`);
         this.status = RecipeState.stopped;
         this.stepListener.removeAllListeners('completed');
         this.current_step.transitions.forEach(trans => trans.condition.clear());
         this.emit('stopped', this.current_step);
         this.current_step = undefined;
-        this.modules.forEach((module) => {
-            module.stop();
-        });
+        return Promise.all(Object.values(this.modules).map(module => module.stop()));
     }
 
     private executeStep() {
-        catRecipe.debug(`Start step: ${this.current_step.name}`);
+        catRecipe.debug(`Execute step: ${this.current_step.name}`);
         this.lastChange = new Date();
         this.stepListener = this.current_step.execute()
             .once('completed', (transition: Transition) => {

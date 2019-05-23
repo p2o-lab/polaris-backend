@@ -199,10 +199,11 @@ export class Player extends (EventEmitter as { new(): PlayerEmitter }) {
     /**
      * Stop the current recipe of player
      */
-    public stop() {
+    public async stop() {
+        catPlayer.info('Stop player');
         if (this.status === RecipeState.running) {
             this._status = RecipeState.stopped;
-            this.getCurrentRecipe().stop();
+            return this.getCurrentRecipe().stop();
         }
     }
 
