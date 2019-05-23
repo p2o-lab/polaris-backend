@@ -105,6 +105,10 @@ describe('Service', () => {
         });
 
 
+        let stateChangeCount = 0;
+        service.on('state', () => {
+            stateChangeCount++;
+        });
         service.subscribeToService();
         await waitForStateChange(service, 'IDLE');
         await service.setOperationMode();
@@ -129,11 +133,6 @@ describe('Service', () => {
         expect(result).to.have.property('opMode').to.deep.equal({
             state: 'automatic',
             source: 'external'
-        });
-
-        let stateChangeCount = 0;
-        service.on('state', () => {
-            stateChangeCount++;
         });
 
         service.execute(ServiceCommand.start);
@@ -171,6 +170,6 @@ describe('Service', () => {
         waitForStateChange(service, 'ABORTING');
         await waitForStateChange(service, 'ABORTED');
 
-        expect(stateChangeCount).to.equal(17);
+        expect(stateChangeCount).to.equal(18);
     }).timeout(10000);
 });

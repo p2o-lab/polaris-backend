@@ -79,7 +79,7 @@ describe('Recipe', () => {
         let module_biofeed;
 
         before(() => {
-            let file = fs.readFileSync('assets/modules/module_biofeed_1.4.2.json');
+            let file = fs.readFileSync('assets/modules/module_biofeed_1.6.0.json');
             module_biofeed = new Module(JSON.parse(file.toString()).modules[0]);
 
             file = fs.readFileSync('assets/modules/modules_achema.json');
@@ -145,7 +145,12 @@ describe('Recipe', () => {
             path = 'assets/recipes/biofeed/';
             fs.readdirSync(path).forEach((filename) => {
                 const completePath = path + filename;
-                if (fs.statSync(completePath).isFile()) {
+                const ignoredFiles = [
+                    'recipe_biofeed_88370C_0.3.0.json',
+                    'recipe_biofeed_88370C_0.3.1.json',
+                    'recipe_biofeed_standby_1.0.0.json',
+                ];
+                if (fs.statSync(completePath).isFile() && !ignoredFiles.find(f => f == filename)) {
                     it(`should load recipe ${completePath}`, (done) => {
                         fs.readFile(completePath, (err, file) => {
                             const options = JSON.parse(file.toString());

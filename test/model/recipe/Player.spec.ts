@@ -132,7 +132,7 @@ describe('Player', function () {
             expect(player.status).to.equal(RecipeState.running);
 
             waitForStateChange(service, 'COMPLETING', 2000);
-            await waitForStateChange(service, 'COMPLETED');
+            await waitForStateChange(service, 'COMPLETED', 2000);
 
             await waitForStateChange(service, 'IDLE');
 
@@ -140,7 +140,7 @@ describe('Player', function () {
 
 
             waitForStateChange(service, 'STARTING', 1000);
-            await waitForStateChange(service, 'EXECUTE');
+            await waitForStateChange(service, 'EXECUTE', 1000);
 
             await player.stop();
 

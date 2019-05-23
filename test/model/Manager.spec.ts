@@ -98,7 +98,7 @@ describe('Manager', () => {
             const service = module.services[0];
 
             module.connect();
-            await waitForStateChange(service, 'IDLE');
+            await waitForStateChange(service, 'IDLE', 1000);
 
             let stateChangeCount=0;
             service.on('state', () => {
@@ -149,7 +149,7 @@ describe('Manager', () => {
 
             service.execute(ServiceCommand.complete);
             waitForStateChange(service, 'COMPLETING', 3000);
-            await waitForStateChange(service, 'COMPLETED');
+            await waitForStateChange(service, 'COMPLETED', 3000);
 
             expect(stateChangeCount).to.equal(22);
 
