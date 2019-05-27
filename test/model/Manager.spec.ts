@@ -150,10 +150,9 @@ describe('Manager', () => {
 
             await manager.removeModule(module.id);
             expect(manager.modules).to.have.lengthOf(0);
-        }).timeout(10000).retries(3);
+        }).slow(2000).timeout(10000);
 
         it('should autoreset service', async () => {
-
             const moduleJson = parseJson(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8'), null, 60);
 
             const manager = new Manager();
@@ -171,7 +170,9 @@ describe('Manager', () => {
             service.execute(ServiceCommand.complete);
             await waitForStateChange(service, 'COMPLETED');
             await waitForStateChange(service, 'IDLE');
-        });
-    });
+        }).slow(2000).timeout(5000);
+
+
+    }).retries(3);
 
 });

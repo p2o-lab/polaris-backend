@@ -39,10 +39,29 @@ describe('Routes', () => {
     });
 
 
-    it('should work for autoreset', (done) => {
+    it('should provide autoreset', (done) => {
         request(app).get('/api/autoReset')
             .expect('Content-Type', /json/)
             .expect('Content-Length', '18')
-            .expect(200, done)
+            .expect('{"autoReset":true}')
+            .expect(200, done);
     });
+
+
+    it('should give code 404 for not existing routes', (done) => {
+        request(app).get('/api/notExisiting')
+            .expect(404, done);
+    });
+
+    it('should provide version', (done) => {
+        request(app).get('/api/version')
+            .expect('Content-Type', /json/)
+            .expect(200, done);
+    })
+
+    it('should provide logs', (done) => {
+        request(app).get('/api/logs')
+            .expect('Content-Type', /json/)
+            .expect(200, done);
+    })
 });
