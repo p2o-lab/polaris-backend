@@ -185,5 +185,5 @@ describe('Service', () => {
         await waitForStateChange(service, 'COMPLETED');
 
         expect(stateChangeCount).to.equal(22);
-    }).timeout(10000);
+    }).timeout(10000).retries(3);
 });

@@ -150,7 +150,7 @@ describe('Manager', () => {
 
             await manager.removeModule(module.id);
             expect(manager.modules).to.have.lengthOf(0);
-        }).timeout(10000);
+        }).timeout(10000).retries(3);
 
         it('should autoreset service', async () => {
 

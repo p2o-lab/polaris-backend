@@ -93,7 +93,6 @@ describe('Player', function () {
         });
 
         it('should run the test recipe two times on the test module with several player interactions (pause, resume, stop)', async function () {
-            this.timeout(15000);
 
             const moduleJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString())
                 .modules[0];
@@ -147,11 +146,11 @@ describe('Player', function () {
             player.reset();
 
             await module.disconnect();
-        });
+        }).timeout(15000).retries(3);
 
     });
 
-    describe('local', () => {
+    context('local', () => {
         let recipeWait0_5s: Recipe;
         let recipeWaitLocal: Recipe;
         before(() => {
@@ -293,7 +292,7 @@ describe('Player', function () {
         });
     });
 
-    describe.skip('CIF', () => {
+    context.skip('CIF', () => {
 
         let recipeCif;
         const manager = new Manager();
