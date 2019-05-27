@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018 Markus Graube <markus.graube@tu.dresden.de>,
+ * Copyright (c) 2019 Markus Graube <markus.graube@tu.dresden.de>,
  * Chair for Process Control Systems, Technische Universität Dresden
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,32 +23,26 @@
  * SOFTWARE.
  */
 
-import * as cors from 'cors';
+import * as request from 'supertest';
 import * as express from 'express';
+import {Manager} from '../../src/model/Manager';
+import Routes from '../../src/server/routes';
 
-export default class Middleware {
-    static init(app: express.Application): void {
+describe('Routes', () => {
+    let app;
+    let manager: Manager;
 
-        // express middleware
-        app.use(express.json({limit: '10mb'}));
-        app.use(express.urlencoded({
-            extended: true,
-            limit: '10mb'
-        }));
-        app.use(cors());
+    before(() => {
+        app = express();
+        manager = new Manager();
+        Routes.init(app, manager);
+    });
 
-        // cors
-        app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
-            res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS ');
-            res.header(
-                'Access-Control-Allow-Headers',
-                'Origin, X-Requested-With,' +
-                ' Content-Type, Accept,' +
-                ' Authorization,' +
-                ' Access-Control-Allow-Credentials'
-            );
-            res.header('Access-Control-Allow-Credentials', 'true');
-            next();
-        });
-    }
-}
+
+    it('should work for autoreset', (done) => {
+        request(app).get('/api/autoReset')
+            .expect('Content-Type', /json/)
+            .expect('Content-Length', '18')
+            .expect(200, done)
+    });
+});

@@ -28,7 +28,7 @@ import Routes from './routes';
 import Middleware from '../config/middleware';
 import * as WebSocket from 'ws';
 import {Manager} from '../model/Manager';
-import { catServer } from '../config/logging';
+import {catServer} from '../config/logging';
 import {IncomingMessage} from 'http';
 
 export class Server {
@@ -38,8 +38,8 @@ export class Server {
 
     constructor(manager: Manager) {
         this.app = express();
-        Middleware.init(this);
-        Routes.init(this, manager);
+        Middleware.init(this.app);
+        Routes.init(this.app, manager);
         manager.on('notify', (message, data) => this.notifyClients(message, data));
     }
 
