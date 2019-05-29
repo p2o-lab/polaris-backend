@@ -11,11 +11,12 @@ steps:
 - name: test-secrets
   image: alpine
   environment:
+      TEST: "12345678"
       TESTSECRET:
         from_secret: test_secret
   commands:
     - echo "test"
-    - echo $TESTSECRET
+    - echo $TEST $TESTSECRET
 
 - name: build
   image: node:8-jessie
@@ -67,14 +68,9 @@ kind: secret
 name: email_password
 data: OEDavC0OttFArAYM7t94t3PIhr8A1mYV5Wcu-2yeGUszwI5tPg==
 
----
-kind: secret
-name: test_secret
-data: qqtFX1bxtKIGg6DSzx7RZiFqQcYaNu8Nur4f4ZxOZZQvZ8bX
-
 
 ---
 kind: signature
-hmac: 2aba039cd20c6d6bb683b53b18e7adb7968ed4e0d58db4cb5492259401656d85
+hmac: 210752d669bceb79edd4cc513a127a08cd1f75a7be13674fcfd8f6affaf3958e
 
 ...
