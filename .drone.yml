@@ -28,7 +28,7 @@ steps:
     password:
       from_secret: docker_password
     repo: p2olab/polaris-backend
-    autotag: true
+    auto_tag: true
 
 - name: docker-arm
   image: plugins/docker
@@ -38,7 +38,7 @@ steps:
     password:
       from_secret: docker_password
     repo: p2olab/polaris-backend
-    autotag: true
+    auto_tag: true
     auto_tag_suffix: -arm
 
 - name: notify
