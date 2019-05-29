@@ -57,11 +57,11 @@ data: U2Jx4g95lMIzwT4NqXF8LRxOe_YeTQitI0oDiC0_dt0koew=
 
 ---
 kind: secret
-name: docker_username
+name: email_password
 data: OEDavC0OttFArAYM7t94t3PIhr8A1mYV5Wcu-2yeGUszwI5tPg==
 
 ---
 kind: signature
-hmac: e77ac4b81424e6752924631f35e0bcbba434c240bc6956964b1949560a266d59
+hmac: dfa0c8e7c8829f295022c4aaba5bb143a104202966ded6eab4a336de1dba3373
 
 ...
