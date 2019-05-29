@@ -8,15 +8,18 @@ platform:
 
 steps:
 
-- name: test-secrets
-  image: alpine
-  environment:
-      TEST: "12345678"
-      TESTSECRET:
-        from_secret: test_secret
-  commands:
-    - echo "test"
-    - echo $TEST $TESTSECRET
+- name: notify
+  image: drillster/drone-email
+  settings:
+    from: "plt@mailbox.tu-dresden.de"
+    host: mail.zih.tu-dresden.de
+    password:
+      from_secret: email_password
+    username: plt
+  when:
+    status:
+    - changed
+    - failure
 
 - name: build
   image: node:8-jessie
@@ -33,12 +36,11 @@ steps:
 - name: docker
   image: plugins/docker
   settings:
-    settings:
-      username:
-        from_secret: docker_username
-      password:
-        from_secret: docker_password
-      repo: p2olab/polaris-backend
+    username:
+      from_secret: docker_username
+    password:
+      from_secret: docker_password
+    repo: p2olab/polaris-backend
 
 - name: notify
   image: drillster/drone-email
@@ -54,23 +56,7 @@ steps:
     - failure
 
 ---
-kind: secret
-name: docker_password
-data: B3JgA8XYA4zQbN-5BHvq-YyZK3_3lfns08_M-U67QISpBQ==
-
----
-kind: secret
-name: docker_username
-data: U2Jx4g95lMIzwT4NqXF8LRxOe_YeTQitI0oDiC0_dt0koew=
-
----
-kind: secret
-name: email_password
-data: OEDavC0OttFArAYM7t94t3PIhr8A1mYV5Wcu-2yeGUszwI5tPg==
-
-
----
 kind: signature
-hmac: 210752d669bceb79edd4cc513a127a08cd1f75a7be13674fcfd8f6affaf3958e
+hmac: 582d3919f15944c041224ffbd5429212f12514fbdce8aa06c5245cca928eba70
 
 ...
