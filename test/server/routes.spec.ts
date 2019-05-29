@@ -24,32 +24,88 @@
  */
 
 import * as request from 'supertest';
-import * as express from 'express';
 import {Manager} from '../../src/model/Manager';
 import Routes from '../../src/server/routes';
+import {Server} from '../../src/server/server';
 
 describe('Routes', () => {
     let app;
-    let manager: Manager;
 
     before(() => {
-        app = express();
-        manager = new Manager();
-        Routes.init(app, manager);
+        const appServer = new Server(new Manager());
+        app = appServer.app;
     });
 
+    context('autoReset', () => {
 
-    it('should provide autoreset', (done) => {
-        request(app).get('/api/autoReset')
-            .expect('Content-Type', /json/)
-            .expect('Content-Length', '18')
-            .expect('{"autoReset":true}')
-            .expect(200, done);
+        it('should provide autoreset', (done) => {
+            request(app).get('/api/autoReset')
+                .expect('Content-Type', /json/)
+                .expect('Content-Length', '18')
+                .expect('{"autoReset":true}')
+                .expect(200, done);
+        });
+
+        it('should modify autoreset', (done) => {
+            request(app).post('/api/autoReset')
+                .send({autoReset: 'false'})
+                .expect('{"autoReset":false}')
+                .expect(200, done);
+        });
+
+        it('should modify autoreset 2', (done) => {
+            request(app).post('/api/autoReset')
+                .send({autoReset: 0})
+                .expect('{"autoReset":false}')
+                .expect(200, done);
+        });
+
+        it('should modify autoreset 3', (done) => {
+            request(app).post('/api/autoReset')
+                .send({autoReset: 'blub'})
+                .expect('{"autoReset":false}')
+                .expect(200, done);
+        });
+
+        it('should modify autoreset 4', (done) => {
+            request(app).post('/api/autoReset')
+                .send({autoReset: 'true'})
+                .expect('{"autoReset":true}')
+                .expect(200, done);
+        });
+
+        it('should modify autoreset 5', (done) => {
+            request(app).post('/api/autoReset')
+                .send({autoReset: '1'})
+                .expect('{"autoReset":true}')
+                .expect(200, done);
+        });
+
+        it('should modify autoreset 6', (done) => {
+            request(app).post('/api/autoReset')
+                .send({autoReset: true})
+                .expect('{"autoReset":true}')
+                .expect(200, done);
+        });
+
+        it('should modify autoreset 7', (done) => {
+            request(app).post('/api/autoReset')
+                .send({autoReset: 1})
+                .expect('{"autoReset":true}')
+                .expect(200, done);
+        });
+
+        it('should modify autoreset 8', (done) => {
+            request(app).post('/api/autoReset')
+                .send({autoReset: 'TRUE'})
+                .expect('{"autoReset":true}')
+                .expect(200, done);
+        });
+
     });
-
 
     it('should give code 404 for not existing routes', (done) => {
-        request(app).get('/api/notExisiting')
+        request(app).get('/api/notExisting')
             .expect(404, done);
     });
 
@@ -57,7 +113,7 @@ describe('Routes', () => {
         request(app).get('/api/version')
             .expect('Content-Type', /json/)
             .expect(200, done);
-    })
+    });
 
     it('should provide logs', (done) => {
         request(app).get('/api/logs')

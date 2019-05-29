@@ -23,8 +23,7 @@
  * SOFTWARE.
  */
 
-import {Server} from "../../src/server/server";
-import * as http from "http";
+import {Server} from '../../src/server/server';
 import {Manager} from '../../src/model/Manager';
 
 describe('Server', () => {
@@ -32,14 +31,9 @@ describe('Server', () => {
     it('should start the server and close it after a while', async () => {
 
         const appServer = new Server(new Manager());
-        appServer.app.set('port', 3000);
+        appServer.startHttpServer(3000);
 
-        const server: http.Server = http.createServer(appServer.app);
-
-        // initialize the WebSocket server instance
-        await appServer.initSocketServer(server);
-
-        server.close();
-
+        await appServer.initSocketServer();
+        await appServer.stop();
     });
 });

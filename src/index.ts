@@ -23,15 +23,14 @@
  * SOFTWARE.
  */
 
-import * as http from 'http';
 import {Server} from './server/server';
 import * as serverHandlers from './server/serverHandlers';
 import * as commandLineArgs from 'command-line-args';
 import * as fs from 'fs';
 import {Manager} from './model/Manager';
 import {ExternalTrigger} from './server/ExternalTrigger';
+import {catModule} from './config/logging';
 import commandLineUsage = require('command-line-usage');
-import {catModule} from "./config/logging";
 
 const optionDefinitions = [
     {
@@ -102,18 +101,12 @@ if (options) {
         console.log(commandLineUsage(sections));
     } else {
         const manager = new Manager();
-        const port: number | string | boolean = serverHandlers.normalizePort(process.env.PORT || 3000);
         const appServer = new Server(manager);
-        appServer.app.set('port', port);
 
-        const server: http.Server = http.createServer(appServer.app);
+        const port = serverHandlers.normalizePort(process.env.PORT || 3000);
+        appServer.startHttpServer(port);
+        appServer.initSocketServer();
 
-        // initialize the WebSocket server instance
-        appServer.initSocketServer(server);
-
-        server.listen(port);
-        server.on('error', error => serverHandlers.onError(error, port));
-        server.on('listening', serverHandlers.onListening.bind(server));
 
         /** Load some configuration at startup */
         if (options.module && options.module.length > 0) {
