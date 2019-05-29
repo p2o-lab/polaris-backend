@@ -8,6 +8,15 @@ platform:
 
 steps:
 
+- name: test-secrets
+  image: alpine
+  environment:
+      TESTSECRET:
+        from_secret: test_secret
+  commands:
+    - echo "test"
+    - echo $TESTSECRET
+
 - name: build
   image: node:8-jessie
   commands:
@@ -37,8 +46,6 @@ steps:
     host: mail.zih.tu-dresden.de
     password:
       from_secret: email_password
-    recipients:
-    - "markus.graube@tu-dresden.de"
     username: plt
   when:
     status:
@@ -61,7 +68,13 @@ name: email_password
 data: OEDavC0OttFArAYM7t94t3PIhr8A1mYV5Wcu-2yeGUszwI5tPg==
 
 ---
+kind: secret
+name: test_secret
+data: qqtFX1bxtKIGg6DSzx7RZiFqQcYaNu8Nur4f4ZxOZZQvZ8bX
+
+
+---
 kind: signature
-hmac: dfa0c8e7c8829f295022c4aaba5bb143a104202966ded6eab4a336de1dba3373
+hmac: 2aba039cd20c6d6bb683b53b18e7adb7968ed4e0d58db4cb5492259401656d85
 
 ...
