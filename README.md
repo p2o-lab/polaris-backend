@@ -4,6 +4,9 @@ PFE Recipe Execution Engine as NodeJs application.  *pfe-ree-node* is controlled
 
 A HTML user interface for this project is provided via the [pfe-ree-viz](https://dev.plt.et.tu-dresden.de/modulare-automation/pfe-ree-viz) project.
 
+Master@GitHub: [![Build Status](https://cloud.drone.io/api/badges/p2o-lab/polaris-backend/status.svg)](https://cloud.drone.io/p2o-lab/polaris-backend)
+Develop@Github: [![Build Status](https://cloud.drone.io/api/badges/p2o-lab/polaris-backend/status.svg?ref=/refs/heads/develop)](https://cloud.drone.io/p2o-lab/polaris-backend)
+
 [![Build status](http://cif.plt.et.tu-dresden.de/api/badges/modulare-automation/pfe-ree-node/status.svg)](http://cif.plt.et.tu-dresden.de/modulare-automation/pfe-ree-node)
 [![Docker image](https://img.shields.io/badge/docker%20image-available-brightgreen.svg)](http://registry.plt.et.tu-dresden.de/#!taglist/pfe-ree-node)
 [![NPM package](https://img.shields.io/badge/npm%20package-available-brightgreen.svg)](https://registry.plt.et.tu-dresden.de:4873/#/detail/@plt/pfe-ree-node)

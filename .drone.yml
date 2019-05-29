@@ -8,19 +8,6 @@ platform:
 
 steps:
 
-- name: notify1
-  image: drillster/drone-email
-  settings:
-    from: "plt@mailbox.tu-dresden.de"
-    host: mail.zih.tu-dresden.de
-    password:
-      from_secret: email_password
-    username: plt
-  when:
-    status:
-    - changed
-    - failure
-
 - name: build
   image: node:8-jessie
   commands:
@@ -41,6 +28,17 @@ steps:
     password:
       from_secret: docker_password
     repo: p2olab/polaris-backend
+    autotag: true
+
+- name: docker
+  image: plugins/docker
+  settings:
+    username:
+      from_secret: docker_username
+    password:
+      from_secret: docker_password
+    repo: p2olab/polaris-backend-arm
+    autotag: true
 
 - name: notify
   image: drillster/drone-email
