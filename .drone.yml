@@ -8,7 +8,7 @@ platform:
 
 steps:
 
-- name: notify
+- name: notify1
   image: drillster/drone-email
   settings:
     from: "plt@mailbox.tu-dresden.de"
@@ -57,6 +57,6 @@ steps:
 
 ---
 kind: signature
-hmac: 582d3919f15944c041224ffbd5429212f12514fbdce8aa06c5245cca928eba70
+hmac: fc96b73254e150474c3268effa3e68211f1b7582b346cb3b55d5688b803d4a02
 
 ...
