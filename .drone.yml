@@ -30,7 +30,7 @@ steps:
     repo: p2olab/polaris-backend
     autotag: true
 
-- name: docker
+- name: docker-arm
   image: plugins/docker
   settings:
     username:
