@@ -24,7 +24,6 @@ steps:
   image: plugins/docker
   settings:
     settings:
-      auto_tag: true
       username:
         from_secret: docker_username
       password:
@@ -61,3 +60,8 @@ kind: secret
 name: docker_username
 data: OEDavC0OttFArAYM7t94t3PIhr8A1mYV5Wcu-2yeGUszwI5tPg==
 
+---
+kind: signature
+hmac: e77ac4b81424e6752924631f35e0bcbba434c240bc6956964b1949560a266d59
+
+...
