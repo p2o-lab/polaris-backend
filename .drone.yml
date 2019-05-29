@@ -1,39 +1,63 @@
-clone:
-  git:
-    image: plugins/git
-    skip_verify: true
+---
+kind: pipeline
+name: default
 
+platform:
+  os: linux
+  arch: amd64
 
-pipeline:
+steps:
 
-  build:
-    image: node:8-jessie
-    commands:
-      - npm install
-      - npm run-script apidoc build
+- name: build
+  image: node:8-jessie
+  commands:
+  - npm install
+  - npm run-script apidoc build
 
-  test:
-    image: node:8-jessie
-    commands:
-      - export LOGLEVEL=warn
-      - npm test
+- name: test
+  image: node:8-jessie
+  commands:
+  - export LOGLEVEL=warn
+  - npm test
 
-  docker:
-    image: plugins/docker
+- name: docker
+  image: plugins/docker
+  settings:
     settings:
-        username: kevinbacon
-        password: pa55word
-        repo: p2olab/polaris-backend
-        auto_tag: true
-        purge: true
+      auto_tag: true
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+      repo: p2olab/polaris-backend
 
-  notify:
-    image: drillster/drone-email
+- name: notify
+  image: drillster/drone-email
+  settings:
+    from: "plt@mailbox.tu-dresden.de"
     host: mail.zih.tu-dresden.de
+    password:
+      from_secret: email_password
+    recipients:
+    - "markus.graube@tu-dresden.de"
     username: plt
-    password: $EMAIL_PASSWORD
-    secrets: [ email_password ]
-    from: plt@mailbox.tu-dresden.de
-    recipients: [ markus.graube@tu-dresden.de ]
-    when:
-      status: [ changed, failure ]
+  when:
+    status:
+    - changed
+    - failure
+
+---
+kind: secret
+name: docker_password
+data: B3JgA8XYA4zQbN-5BHvq-YyZK3_3lfns08_M-U67QISpBQ==
+
+---
+kind: secret
+name: docker_username
+data: U2Jx4g95lMIzwT4NqXF8LRxOe_YeTQitI0oDiC0_dt0koew=
+
+---
+kind: secret
+name: docker_username
+data: OEDavC0OttFArAYM7t94t3PIhr8A1mYV5Wcu-2yeGUszwI5tPg==
+
