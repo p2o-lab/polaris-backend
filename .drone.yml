@@ -19,27 +19,13 @@ pipeline:
       - npm test
 
   docker:
-    image: docker
-    privileged: true
-    commands:
-      - IMAGE_NAME="registry.plt.et.tu-dresden.de/pfe-ree-node"
-      - BRANCH_TEMP=$${DRONE_BRANCH/develop/latest}
-      - DOCKER_IMAGE="$IMAGE_NAME:$${BRANCH_TEMP/master/stable}$${DRONE_TAG}"
-      - DOCKER_IMAGE_ARM="$DOCKER_IMAGE-arm"
-      - docker build -t $DOCKER_IMAGE .
-      - docker build -f Dockerfile.arm -t $DOCKER_IMAGE_ARM .
-      - docker push $DOCKER_IMAGE
-      - docker push $DOCKER_IMAGE_ARM
-      - docker image rm $DOCKER_IMAGE $DOCKER_IMAGE_ARM
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    when:
-      branch:
-        - develop
-        - master
-      event:
-        - tag
-        - push
+    image: plugins/docker
+    settings:
+        username: kevinbacon
+        password: pa55word
+        repo: p2olab/polaris-backend
+        auto_tag: true
+        purge: true
 
   notify:
     image: drillster/drone-email
