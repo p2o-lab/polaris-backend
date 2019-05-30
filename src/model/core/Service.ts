@@ -52,7 +52,6 @@ import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {DataAssembly, DataAssemblyOptions} from '../dataAssembly/DataAssembly';
 import {Strategy, StrategyOptions} from './Strategy';
-import {ConfigurationParameter} from './ConfigurationParameter';
 import {Category} from 'typescript-logging';
 import {Module} from './Module';
 import {catService} from '../../config/logging';
@@ -133,7 +132,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
     /** strategies of the service */
     readonly strategies: Strategy[];
     /** service configuration configuration parameters */
-    readonly parameters: ConfigurationParameter[];
+    readonly parameters: DataAssembly[];
     /** [Module] of the service */
     readonly parent: Module;
 
