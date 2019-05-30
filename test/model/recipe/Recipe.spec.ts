@@ -108,6 +108,9 @@ describe('Recipe', () => {
                     .to.have.property('initial_step', 'Startup.Init');
                 expect(json).to.have.property('status', undefined);
 
+                const step = recipe.steps[0];
+                expect(step.json()).to.have.property('name', 'Startup.Init');
+
                 done();
             });
         });
