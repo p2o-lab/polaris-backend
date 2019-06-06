@@ -35,12 +35,16 @@ export class TestServerVariable {
 
     v = 20;
     vext = 20;
+    sclMin = Math.random() * 100;
+    sclMax = this.sclMin + Math.random() * 100;
     unit =  Math.floor((Math.random() * 100) + 1000);
-    sclMin = 0;
-    sclMax = 100;
     private interval: Timeout;
+    private simulation: boolean;
 
-    constructor(namespace, rootNode, variableName, vext = false) {
+    constructor(namespace, rootNode, variableName, simulation = false) {
+        catTestServer.info(`Add variable ${variableName}`);
+
+        this.simulation = simulation;
         const variableNode = namespace.addObject({
             organizedBy: rootNode,
             browseName: variableName
@@ -93,7 +97,7 @@ export class TestServerVariable {
                 }
             }
         });
-        if (vext) {
+        if (!this.simulation) {
             namespace.addVariable({
                 componentOf: variableNode,
                 nodeId: `ns=1;s=${variableName}.VExt`,
@@ -116,15 +120,17 @@ export class TestServerVariable {
     }
 
     startSimulation() {
-        let time = 0;
-        let f1 = Math.random();
-        let f2 = Math.random();
-        let f3 = Math.random();
-        let f4 = Math.random();
-        this.interval = setInterval(() => {
-            time = time + 0.05;
-            this.v = f1 * 20 + 5 * f2 * Math.sin(2 * f3 * time + 3 * f4);
-        }, 100);
+        if (this.simulation) {
+            let time = 0;
+            let f1 = Math.random();
+            let f2 = Math.random();
+            let amplitude = this.sclMax - this.sclMin;
+            let average = (this.sclMax + this.sclMin) / 2;
+            this.interval = setInterval(() => {
+                time = time + 0.05;
+                this.v = average + 0.5 * amplitude * Math.sin(2 * f1 * time + 3 * f2);
+            }, 100);
+        }
     }
 
     stopSimulation() {
@@ -133,6 +139,47 @@ export class TestServerVariable {
     }
 }
 
+export class TestServerStringVariable {
+
+    v = 'initial value';
+    vext = '';
+    private interval: Timeout;
+
+    constructor(namespace, rootNode, variableName) {
+        const variableNode = namespace.addObject({
+            organizedBy: rootNode,
+            browseName: variableName
+        });
+
+        namespace.addVariable({
+            componentOf: variableNode,
+            nodeId: `ns=1;s=${variableName}.Text`,
+            browseName: `${variableName}.Text`,
+            dataType: 'String',
+            value: {
+                get: () => {
+                    return new Variant({dataType: DataType.String, value: this.v});
+                },
+                set: (variant) => {
+                    this.v = variant.value;
+                }
+            }
+        });
+
+    }
+
+    startSimulation() {
+        this.interval = setInterval(() => {
+            this.v = new Date().toTimeString();
+        }, 3000);
+    }
+
+    stopSimulation() {
+        clearTimeout(this.interval);
+    }
+}
+
+
 export class TestServerService {
     varStatus = 0;
     varStrategy = 1;
@@ -140,9 +187,10 @@ export class TestServerService {
     varCommandEnable = 0;
     varOpmode = 0;
     serviceName;
-    private variables: TestServerVariable[] = [];
+    private variables: (TestServerVariable | TestServerStringVariable)[] = [];
 
     constructor(namespace, rootNode, serviceName) {
+        catTestServer.info(`Add service ${serviceName}`);
         this.serviceName = serviceName;
         this.state(ServiceState.IDLE);
 
@@ -152,7 +200,10 @@ export class TestServerService {
         });
 
 
-        this.variables.push(new TestServerVariable(namespace, serviceNode, serviceName + '.Parameter1', true));
+        this.variables.push(new TestServerVariable(namespace, serviceNode, serviceName + '.Parameter1', false));
+        this.variables.push(new TestServerVariable(namespace, serviceNode, serviceName + '.Parameter2', false));
+
+        this.variables.push(new TestServerStringVariable(namespace, serviceNode, serviceName + '.ErrorMsg'));
 
         namespace.addVariable({
             componentOf: serviceNode,
@@ -351,7 +402,6 @@ export class ModuleTestServer {
         if (await this.portInUse(4334)) {
             throw new Error('Port is in use')
         }
-        ;
         await new Promise(resolve => this.server.initialize(resolve));
         this.createAddressSpace();
         await new Promise(resolve => this.server.start(resolve));
@@ -384,9 +434,9 @@ export class ModuleTestServer {
             browseName: 'TestModule'
         });
 
-        this.variables.push(new TestServerVariable(namespace, myModule, 'Variable1'));
-        this.variables.push(new TestServerVariable(namespace, myModule, 'Variable2'));
-        this.variables.push(new TestServerVariable(namespace, myModule, 'TestServerVariable.3'));
+        this.variables.push(new TestServerVariable(namespace, myModule, 'Variable1', true));
+        this.variables.push(new TestServerVariable(namespace, myModule, 'Variable2', true));
+        this.variables.push(new TestServerVariable(namespace, myModule, 'TestServerVariable.3', true));
 
         this.services.push(new TestServerService(namespace, myModule, 'Service1'));
         this.services.push(new TestServerService(namespace, myModule, 'Service2'));
@@ -403,5 +453,7 @@ export class ModuleTestServer {
                 }
             }
         });
+
+
     }
 }
