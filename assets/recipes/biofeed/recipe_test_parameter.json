@@ -1,0 +1,126 @@
+{
+  "version": "1.0.0",
+  "name": "Test parameter",
+  "description": "...",
+  "author": "Markus Graube <markus.graube@tu-dresden.de>",
+  "initial_step": "S1.AddWater",
+  "steps": [
+    {
+      "name": "S1.AddWater",
+      "operations": [
+        {
+          "service": "FeedWater",
+          "command": "start",
+          "parameter": [
+            {
+              "name": "TargetVolume",
+              "value": 1000
+            }
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "condition": {
+            "type": "state",
+            "service": "FeedWater",
+            "state": "completed"
+          },
+          "next_step": "S1.WaitForIdle"
+        }
+      ]
+    },
+    {
+      "name": "S1.WaitForIdle",
+      "operations": [],
+      "transitions": [
+        {
+          "condition": {
+            "type": "state",
+            "service": "FeedWater",
+            "state": "idle"
+          },
+          "next_step": "S2.AddWater"
+        }
+      ]
+    },
+    {
+      "name": "S2.AddWater",
+      "operations": [
+        {
+          "service": "FeedWater",
+          "command": "start",
+          "parameter": [
+            {
+              "name": "TargetVolume",
+              "value": "BioFeed.L001.V*1.5"
+            }
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "condition": {
+            "type": "state",
+            "service": "FeedWater",
+            "state": "completed"
+          },
+          "next_step": "S2.WaitForIdle"
+        }
+      ]
+    },
+    {
+      "name": "S2.WaitForIdle",
+      "operations": [],
+      "transitions": [
+        {
+          "condition": {
+            "type": "state",
+            "service": "FeedWater",
+            "state": "idle"
+          },
+          "next_step": "S3.AddWater"
+        }
+      ]
+    },
+    {
+      "name": "S3.AddWater",
+      "operations": [
+        {
+          "service": "FeedWater",
+          "command": "start",
+          "parameter": [
+            {
+              "name": "TargetVolume",
+              "value": "BioFeed.L001.V*1.5"
+            }
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "condition": {
+            "type": "state",
+            "service": "FeedWater",
+            "state": "completed"
+          },
+          "next_step": "S3.WaitForIdle"
+        }
+      ]
+    },
+    {
+      "name": "S3.WaitForIdle",
+      "operations": [],
+      "transitions": [
+        {
+          "condition": {
+            "type": "state",
+            "service": "FeedWater",
+            "state": "idle"
+          },
+          "next_step": "completed"
+        }
+      ]
+    }
+  ]
+}
