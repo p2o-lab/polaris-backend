@@ -68,7 +68,10 @@ export class DataAssembly extends EventEmitter {
             .forEach(node => {
                 try {
                     this.module.listenToOpcUaNode(this.communication[node], samplingInterval)
-                        .on('changed', () => this.emit(node, this.communication[node]));
+                        .on('changed', () => {
+                            catParameter.trace(`Emit ${this.name}.${node} = ${this.communication[node].value}`);
+                            this.emit(node, this.communication[node]);
+                        });
                 } catch (err) {
                     catParameter.warn(`Could not subscribe to Data Assembly ${this.name}.${node}`);
                 }
