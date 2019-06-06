@@ -143,4 +143,8 @@ export class DataAssemblyFactory {
     static isBinServParam(dataAssembly: DataAssembly): dataAssembly is BinServParam {
         return dataAssembly.interface_class == 'BinServParam';
     }
+
+    static isStrView(dataAssembly: DataAssembly): dataAssembly is StrView {
+        return dataAssembly.interface_class == 'StrView';
+    }
 }
