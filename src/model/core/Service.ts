@@ -73,7 +73,6 @@ export interface ServiceOptions {
         StrategyMan?: OpcUaNodeOptions;
         StrategyExt: OpcUaNodeOptions;
         CurrentStrategy: OpcUaNodeOptions;
-        ErrorMessage: OpcUaNodeOptions;
     };
     strategies: StrategyOptions[];
     parameters: DataAssemblyOptions[];
@@ -92,11 +91,13 @@ const InterfaceClassToType = {
 interface ServiceEvents {
     /**
      * Notify when the [[TestServerService] changes its state
-     * @event
+     * @event state
      */
     state: {state: ServiceState, timestamp: Date};
 
-    variableChanged: {strategy?: Strategy; parameter: DataAssembly; value: number}
+    variableChanged: { strategy?: Strategy; parameter: DataAssembly; value: number };
+
+    parameterChanged: { strategy?: Strategy; parameter: DataAssembly, value: number };
 
     opMode: OpModeInterface;
     /**
@@ -106,7 +107,7 @@ interface ServiceEvents {
     controlEnable: ControlEnableInterface;
     /**
      * whenever a command is executed from the PFE
-     * @event
+     * @event commandExecuted
      */
     commandExecuted: {
         timestampPfe: Date,
@@ -292,12 +293,12 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
                 this.emit('variableChanged', {parameter: param, value: data})
             }));
         this.strategies.forEach(strategy => strategy.subscribe()
-                .on('processValueChanged', (data) => {
-                    this.emit('variableChanged', {strategy: strategy, parameter: data.processValue, value: data.value})
+            .on('processValueChanged', (data) => {
+                this.emit('variableChanged', {strategy: strategy, parameter: data.processValue, value: data.value})
             })
-            /*.on('parameterChanged', (data) => {
-                this.emit('parameterChanged', {strategy: strategy, parameter: data.parameter, value: data.value.value})
-            })*/
+            .on('parameterChanged', (data) => {
+                this.emit('parameterChanged', {strategy: strategy, parameter: data.parameter, value: data.value})
+            })
         );
         return this;
     }
@@ -433,11 +434,10 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
                 let max;
                 let min;
                 let unit;
-                try {
-                    const result = await this.parent.readVariableNode(param.communication['VExt']);
-                    value = result.value.value;
-                } catch {
-                    value = undefined;
+                if (DataAssemblyFactory.isExtAnaOp(param)) {
+                    value = param.VOut.value;
+                } else if (DataAssemblyFactory.isStrView(param)) {
+                    value = param.Text.value;
                 }
                 try {
                     const result = await this.parent.readVariableNode(param.communication['VMax']);
@@ -757,7 +757,7 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
             (command===ServiceMtpCommand.RESET && controlEnable.reset);
         if (!commandExecutable) {
             this.logger.info(`[${this.qualifiedName}] ControlOp does not allow ${ServiceMtpCommand[command]}- ${JSON.stringify(controlEnable)}`);
-            return Promise.reject(`[${this.qualifiedName}] ControlOp does not allow command ${ServiceMtpCommand[command]}`);
+            throw new Error(`[${this.qualifiedName}] ControlOp does not allow command ${ServiceMtpCommand[command]}`);
         }
 
         const result = await this.parent.writeNode(this.automaticMode ? this.command : this.commandMan,

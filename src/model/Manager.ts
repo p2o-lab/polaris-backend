@@ -166,6 +166,10 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
                     }
                     this.emit('notify', 'variable', logEntry);
                 })
+                .on('parameterChanged', (data) => {
+                    data['module'] = module.id;
+                    this.emit('notify', 'module', data);
+                })
                 .on('commandExecuted', (data) => {
                     const logEntry: ServiceLogEntry = {
                         timestampPfe: data.timestampPfe,
