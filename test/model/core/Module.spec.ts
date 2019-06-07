@@ -27,6 +27,7 @@ import * as assert from 'assert';
 import * as fs from 'fs';
 import {Module, ModuleOptions} from '../../../src/model/core/Module';
 import {expect} from 'chai';
+import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 
 
 describe('Module', () => {
@@ -72,4 +73,28 @@ describe('Module', () => {
             done();
         });
     });
+
+
+    // TODO: for some reason this test does not terminate
+    it('should recognize a opc ua server shutdown', async () => {
+        const moduleJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8')).modules[0];
+
+        const module = new Module(moduleJson);
+
+        const moduleServer = new ModuleTestServer();
+        await moduleServer.start();
+        expect(module.isConnected()).to.be.false;
+
+        await module.connect();
+        expect(module.isConnected()).to.be.true;
+
+        await new Promise((resolve) => {
+            module.once('disconnected', () => {
+                expect(module.isConnected()).to.be.false;
+                resolve();
+            });
+            moduleServer.shutdown();
+        });
+    });
+
 });

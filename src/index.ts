@@ -23,16 +23,14 @@
  * SOFTWARE.
  */
 
-import * as http from 'http';
 import {Server} from './server/server';
 import * as serverHandlers from './server/serverHandlers';
 import * as commandLineArgs from 'command-line-args';
 import * as fs from 'fs';
-import {manager} from './model/Manager';
+import {Manager} from './model/Manager';
 import {ExternalTrigger} from './server/ExternalTrigger';
+import {catModule} from './config/logging';
 import commandLineUsage = require('command-line-usage');
-import {catModule} from "./config/logging";
-import {fixReactor} from "./server/automaticMode";
 
 const optionDefinitions = [
     {
@@ -52,13 +50,6 @@ const optionDefinitions = [
         description: 'path to recipe.json which should be loaded at startup'
     },
     {
-        name: 'fixReactor',
-        alias: 'f',
-        type: Boolean,
-        default: false,
-        description: 'fix operation mode of reactor in ACHEMA module at startup'
-    },
-    {
         name: 'help',
         alias: 'h',
         type: Boolean,
@@ -75,7 +66,7 @@ const optionDefinitions = [
 ];
 const sections = [
     {
-        header: 'pfe-ree-node',
+        header: 'polaris-backend',
         content: 'Starts recipe execution engine for controlling services of modules.'
     },
     {
@@ -109,19 +100,13 @@ if (options) {
     if (options.help) {
         console.log(commandLineUsage(sections));
     } else {
-        const port: number | string | boolean = serverHandlers.normalizePort(process.env.PORT || 3000);
+        const manager = new Manager();
+        const appServer = new Server(manager);
 
-        const appServer = new Server();
-        appServer.app.set('port', port);
+        const port = serverHandlers.normalizePort(process.env.PORT || 3000);
+        appServer.startHttpServer(port);
+        appServer.initSocketServer();
 
-        const server: http.Server = http.createServer(appServer.app);
-
-        // initialize the WebSocket server instance
-        appServer.initSocketServer(server);
-
-        server.listen(port);
-        server.on('error', error => serverHandlers.onError(error, port));
-        server.on('listening', serverHandlers.onListening.bind(server));
 
         /** Load some configuration at startup */
         if (options.module && options.module.length > 0) {
@@ -146,17 +131,13 @@ if (options) {
             });
         }
 
-        if (options.fixReactor) {
-            fixReactor();
-        }
-
         /* Start OPC UA external trigger */
         if (options.externalTrigger) {
             console.log('External Trigger:', options.externalTrigger);
             const endpoint = options.externalTrigger[0];
             const nodeId = options.externalTrigger[1];
 
-            const et = new ExternalTrigger(endpoint, nodeId);
+            const et = new ExternalTrigger(endpoint, nodeId, () => manager.player.start());
             et.startMonitoring()
                 .catch((err) => {
                     console.log("Could not start monitoring of external trigger", err.toString());
@@ -165,7 +146,7 @@ if (options) {
             // directly restart recipe if external trigger is still active when recipe finishes
             manager.on('recipeFinished', async () => {
                 const value = await et.getValue();
-                console.log('external trigger', value);
+                console.log('External trigger:', value);
                 if (value) {
                     manager.player.start();
                 }

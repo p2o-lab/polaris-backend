@@ -23,8 +23,6 @@
  * SOFTWARE.
  */
 
-import { catServer } from '../config/logging';
-
 export function normalizePort(val: number | string): number | string | boolean {
     const port: number = (typeof val === 'string') ? parseInt(val, 10) : val;
 
@@ -57,11 +55,4 @@ export function onError(error: NodeJS.ErrnoException, port: number | string | bo
     default:
         throw error;
     }
-}
-
-export function onListening(): void {
-    const addr: any = this.address();
-    const bind: string = (typeof addr === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
-
-    catServer.info(`Listening on ${bind}`);
 }

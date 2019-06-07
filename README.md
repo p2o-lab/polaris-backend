@@ -1,13 +1,13 @@
-# pfe-ree-node
+# polaris-backend
 
-PFE Recipe Execution Engine as NodeJs application.  *pfe-ree-node* is controlled via REST. Furthermore it provides recent state changes via websockets.
+*Polaris* is a Process Orchestration Layer application for controlling process equipment assemblies (PEA) in the context of modular production in process industries. Thus, it follows the VDI/VDE/NAMUR 2658 standards.
+*polaris-backend* is a NodeJs application which can be controlled via REST. Furthermore it provides recent state changes via websockets.
 
-A HTML user interface for this project is provided via the [pfe-ree-viz](https://dev.plt.et.tu-dresden.de/modulare-automation/pfe-ree-viz) project.
+A HTML user interface for this project is provided via the [polaris-frontend](https://github.com/p2o-lab/polaris-frontend) project.
 
-[![Build status](http://cif.plt.et.tu-dresden.de/api/badges/modulare-automation/pfe-ree-node/status.svg)](http://cif.plt.et.tu-dresden.de/modulare-automation/pfe-ree-node)
-[![Docker image](https://img.shields.io/badge/docker%20image-available-brightgreen.svg)](http://registry.plt.et.tu-dresden.de/#!taglist/pfe-ree-node)
-[![NPM package](https://img.shields.io/badge/npm%20package-available-brightgreen.svg)](https://registry.plt.et.tu-dresden.de:4873/#/detail/@plt/pfe-ree-node)
-
+Master: [![Build Status](https://cloud.drone.io/api/badges/p2o-lab/polaris-backend/status.svg)](https://cloud.drone.io/p2o-lab/polaris-backend)
+Develop: [![Build Status](https://cloud.drone.io/api/badges/p2o-lab/polaris-backend/status.svg?ref=/refs/heads/develop)](https://cloud.drone.io/p2o-lab/polaris-backend)
+Docker: [![](https://images.microbadger.com/badges/version/p2olab/polaris-backend.svg)](https://microbadger.com/images/p2olab/polaris-backend "Get your own version badge on microbadger.com")
 
 ## Installation and Deployment
 ### Dependencies
@@ -26,19 +26,12 @@ or use ready binary (which should also be installed globally and in modules)
 ./bin/pfe-ree-node
 ```
 
-### Publish
-*pfe-ree-node* is provided via our private NPM registry (https://registry.plt.et.tu-dresden.de:4873)
-```
-npm publish
-``` 
-
-
 ### Docker
 
-Use docker ready image (from our private docker registry [http://registry.plt.et.tu-dresden.de](http://registry.plt.et.tu-dresden.de))
+Use docker ready image
 ```
-docker pull registry.plt.et.tu-dresden.de/pfe-ree-node
-docker run -d -p 3000:3000 registry.plt.et.tu-dresden.de/pfe-ree-node
+docker pull p2olab/polaris-backend
+docker run -d -p 3000:3000 p2olab/polaris-backend
 ```
 
 Update docker image
@@ -47,26 +40,24 @@ docker run deploy
 ```
 or make it manually
 ```
-docker build -t pfe-ree-node .
-docker tag pfe-ree-node registry.plt.et.tu-dresden.de/pfe-ree-node
-docker push registry.plt.et.tu-dresden.de/pfe-ree-node 
+docker build -t p2olab/polaris-backend .
+docker push p2olab/polaris-backend 
 ```
 
 Update docker image for raspberry
 ```
-docker build -t pfe-ree-node/arm -f Dockerfile.arm .
-docker tag pfe-ree-node/arm registry.plt.et.tu-dresden.de/pfe-ree-node/arm
-docker push registry.plt.et.tu-dresden.de/pfe-ree-node 
+docker build -t p2olab/polaris-backend:latest-arm -f Dockerfile.arm .
+docker push p2olab/polaris-backend:latest-arm 
 ```
 
 
 ## Usage
 
 
-After starting *pfe-ree-node* its REST interface is available under
+After starting *polaris-backend* its REST interface is available under
 http://localhost:3000
 
-*pfe-ree-node* has several command line parameters:
+*polaris-backend* has several command line parameters:
 
 
 

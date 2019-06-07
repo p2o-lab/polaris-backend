@@ -23,36 +23,40 @@
  * SOFTWARE.
  */
 
-import { static as expressStatic, Request, Response, NextFunction } from 'express';
-import { moduleRouter } from './router/moduleRouter';
-import { recipeRouter } from './router/recipeRouter';
-import { catServer } from '../config/logging';
-import { serviceRouter } from './router/serviceRouter';
-import { coreRouter } from './router/coreRouter';
-import { playerRouter } from './router/playerRouter';
-import { recipeRunRouter } from './router/recipeRunRouter';
+import * as express from 'express';
+import {NextFunction, Request, Response, static as expressStatic} from 'express';
+import {moduleRouter} from './router/moduleRouter';
+import {recipeRouter} from './router/recipeRouter';
+import {catServer} from '../config/logging';
+import {serviceRouter} from './router/serviceRouter';
+import {coreRouter} from './router/coreRouter';
+import {playerRouter} from './router/playerRouter';
+import {recipeRunRouter} from './router/recipeRunRouter';
+import {Manager} from '../model/Manager';
 import {virtualServiceRouter} from './router/virtualServiceRouter';
 
 export default class Routes {
-    static init(server): void {
+    static init(app: express.Application, manager: Manager): void {
 
+        // Provide manager in all requests
+        app.set('manager', manager);
         // Logging all requests
-        server.app.use((req: Request, res: Response, next: NextFunction) => {
+        app.use((req: Request, res: Response, next: NextFunction) => {
             catServer.info(`${req.method} ${req.url} - Body: ${JSON.stringify(req.body)}`);
             next();
         });
 
-        server.app.use('/doc', expressStatic('apidoc'));
-        server.app.use('/api/module', moduleRouter);
-        server.app.use('/api/module', serviceRouter);
-        server.app.use('/api/recipeRun', recipeRunRouter);
-        server.app.use('/api/recipe', recipeRouter);
-        server.app.use('/api/player', playerRouter);
-        server.app.use('/api/virtualService', virtualServiceRouter);
-        server.app.use('/api', coreRouter);
+        app.use('/doc', expressStatic('apidoc'));
+        app.use('/api/module', moduleRouter);
+        app.use('/api/module', serviceRouter);
+        app.use('/api/recipeRun', recipeRunRouter);
+        app.use('/api/recipe', recipeRouter);
+        app.use('/api/player', playerRouter);
+        app.use('/api', coreRouter);
+        app.use('/api/virtualService', virtualServiceRouter);
 
         // Error handling
-        server.app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+        app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
             catServer.error(`An Error occured: ${err.toString()}`, err);
             res.status(500).send({ status: 'error', error: err.toString(), stack: err.stack });
         });

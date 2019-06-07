@@ -23,7 +23,8 @@
  * SOFTWARE.
  */
 
-import {ControlEnableInterface} from '@plt/pfe-ree-interface';
+import {ControlEnableInterface} from '@p2olab/polaris-interface';
+import {OpModeInterface} from '@p2olab/polaris-interface/dist/interfaces';
 
 export enum ServiceState {
     UNDEFINED = 1,
@@ -101,6 +102,15 @@ export enum OpMode {
     srcIntOp = 4096,
     srcExtOp = 8192,
     srcExtAct = 16384
+}
+
+export function opModetoJson(opMode: OpMode): OpModeInterface {
+    let source: "external" | "internal" = isExtSource(opMode)? "external" : "internal";
+    let state;
+    if (isManualState(opMode)) {state = 'manual'}
+    else if (isAutomaticState(opMode)) {state = 'automatic'}
+    else if (isOffState(opMode)) {state = 'off'}
+    return {state, source}
 }
 
 export function isOffState(opMode: OpMode): boolean {

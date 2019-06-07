@@ -23,26 +23,17 @@
  * SOFTWARE.
  */
 
-import { Condition, TimeCondition } from '../../src/model/recipe/Condition';
-import * as assert from 'assert';
-import { catRecipe } from '../../src/config/logging';
-import { ConditionType } from '@plt/pfe-ree-interface';
-import {Server} from "../../src/server/server";
-import * as http from "http";
+import {Server} from '../../src/server/server';
+import {Manager} from '../../src/model/Manager';
 
 describe('Server', () => {
 
     it('should start the server and close it after a while', async () => {
 
-        const appServer = new Server();
-        appServer.app.set('port', 3000);
+        const appServer = new Server(new Manager());
+        appServer.startHttpServer(3000);
 
-        const server: http.Server = http.createServer(appServer.app);
-
-        // initialize the WebSocket server instance
-        await appServer.initSocketServer(server);
-
-        server.close();
-
+        await appServer.initSocketServer();
+        await appServer.stop();
     });
 });

@@ -23,23 +23,22 @@
  * SOFTWARE.
  */
 
-import {ParameterOptions, ScopeOptions} from '@plt/pfe-ree-interface';
+import {ParameterOptions, ScopeOptions} from '@p2olab/polaris-interface';
 import {Expression} from 'expr-eval';
 import {catParameter} from '../../config/logging';
 import {EventEmitter} from 'events';
 import {DataType} from 'node-opcua-client';
 import {Service} from '../core/Service';
-import {OpcUaNodeOptions} from '../core/Interfaces';
 import {Module, OpcUaNodeEvents} from '../core/Module';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import * as assign from 'assign-deep';
 import {ScopeItem} from './ScopeItem';
 import {Strategy} from '../core/Strategy';
-import {DataAssembly} from '../core/DataAssembly';
+import {DataAssembly} from '../dataAssembly/DataAssembly';
+import {Category} from 'typescript-logging';
 
 /**
- * Parameter passed to a service or function block. Can be used also as part of an [[Operation]].
- * Can be static or dynamic. Dynamic parameters can depend on variables of the same or
+ * Parameter of an [[Operation]]. Can be static or dynamic. Dynamic strategyParameters can depend on variables of the same or
  * other modules. These can also be continuously updated (specified via continuous property)
  */
 export class Parameter {
@@ -53,8 +52,8 @@ export class Parameter {
     /**
      * Expression to be calculated and used as value.
      * Can contain variables, which can be declared inside scopeArray or by using correct variable names
-     * following this syntax "[module].[processValue].[variable]". module can be omitted if only eone module
-     * is loaded. Variable can be omitted. Then "V" is used as variable.
+     * following this syntax "[module].[processValue].[variable]". module can be omitted if only one module
+     * is loaded. TestServerVariable can be omitted. Then "V" is used as variable.
      * "." in the name of modules or processvariables can be escaped with "\\."
      * @example
      * "CIF.Sensoren\.L001.V"
@@ -68,6 +67,7 @@ export class Parameter {
     private expression: Expression;
     private service: Service;
     private _parameter: DataAssembly;
+    private logger: Category;
 
     /**
      *
@@ -80,9 +80,11 @@ export class Parameter {
         catParameter.trace(`Create Parameter: ${JSON.stringify(parameterOptions)}`);
 
         this.name = parameterOptions.name;
-        this.variable = parameterOptions.variable || 'VExt';
-        this.value = parameterOptions.value.toString();
+        this.variable = parameterOptions.variable || service.automaticMode ? 'VExt' : 'VMan';
+        this.value = parameterOptions.value || 0;
         this.continuous = parameterOptions.continuous || false;
+
+        this.logger = catParameter;
 
         this.service = service;
         const strategyUsed: Strategy = strategy || service.strategies.find(strategy => strategy.default);
@@ -101,7 +103,7 @@ export class Parameter {
             .map((item: ScopeOptions) => ScopeItem.extractFromScopeOptions(item, modules));
 
         // evaluate additional variables from expression
-        const extraction = ScopeItem.extractFromExpressionString(this.value, modules);
+        const extraction = ScopeItem.extractFromExpressionString(this.value.toString(), modules, this.scopeArray.map(scope => scope.name));
         this.expression = extraction.expression;
         this.scopeArray.push (...extraction.scopeItems);
     }
@@ -137,7 +139,24 @@ export class Parameter {
      */
     async updateValueOnModule(): Promise<any> {
         const value = await this.getValue();
-        catParameter.info(`Set parameter "${this.service.name}[${this.variable}]" for ${this.name} = ${value}`);
+        catParameter.info(`Set parameter "${this.service.name}.${this.name}[${this.variable}]" to ${value}`);
+        await this.setOperationMode();
         await this._parameter.setParameter(value, this.variable);
     }
+
+    /**
+     * set operation mode of parameter according to its service
+     * @returns {Promise<void>}
+     */
+    public setOperationMode(): Promise<void> {
+        if (this.service.automaticMode) {
+            this.logger.info(`[${this.service.qualifiedName}.${this.name}] Bring to automatic mode`);
+            return this._parameter.setToAutomaticOperationMode();
+        } else {
+            this.logger.info(`[${this.service.qualifiedName}.${this.name}] Bring to manual mode`);
+            return this._parameter.setToManualOperationMode()
+                .then(() => this.logger.info(`[${this.service.qualifiedName}.${this.name}] Parameter now in manual mode`));
+        }
+    }
+
 }

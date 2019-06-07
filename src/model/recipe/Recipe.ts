@@ -23,13 +23,13 @@
  * SOFTWARE.
  */
 
-import { Step } from './Step';
-import { Module } from '../core/Module';
-import { catRecipe } from '../../config/logging';
-import { EventEmitter } from 'events';
-import { v4 } from 'uuid';
-import { Transition } from './Transition';
-import { RecipeInterface, ModuleInterface, RecipeOptions, RecipeState, StepInterface } from '@plt/pfe-ree-interface';
+import {Step} from './Step';
+import {Module} from '../core/Module';
+import {catRecipe} from '../../config/logging';
+import {EventEmitter} from 'events';
+import {v4} from 'uuid';
+import {Transition} from './Transition';
+import {RecipeInterface, RecipeOptions, RecipeState, StepInterface} from '@p2olab/polaris-interface';
 import StrictEventEmitter from 'strict-event-emitter-types';
 
 /**
@@ -66,15 +66,15 @@ type RecipeEmitter = StrictEventEmitter<EventEmitter, RecipeEvents>;
  */
 export class Recipe extends (EventEmitter as { new(): RecipeEmitter }) {
 
-    id: string;
-    name: string;
-    options: RecipeOptions;
-    protected: boolean;
+    readonly id: string;
+    readonly name: string;
+    readonly options: RecipeOptions;
+    readonly protected: boolean;
 
     // necessary modules
     modules: Set<Module> = new Set<Module>();
-    initial_step: Step;
-    steps: Step[];
+    readonly initial_step: Step;
+    readonly steps: Step[];
 
     // dynamic properties
     current_step: Step;
@@ -118,7 +118,7 @@ export class Recipe extends (EventEmitter as { new(): RecipeEmitter }) {
         this.protected = protectedRecipe;
         this.lastChange = new Date();
 
-        catRecipe.info(`Recipe ${this.name} successfully parsed`);
+        catRecipe.info(`Recipe ${this.name} (${this.options.version}) successfully parsed`);
     }
 
     public stepJson(): StepInterface {
@@ -185,16 +185,18 @@ export class Recipe extends (EventEmitter as { new(): RecipeEmitter }) {
      *
      * Clear monitoring of all conditions. Services won't be touched.
      */
-    public stop () {
+    public async stop() {
+        catRecipe.info(`Stop recipe ${this.name}`);
         this.status = RecipeState.stopped;
         this.stepListener.removeAllListeners('completed');
         this.current_step.transitions.forEach(trans => trans.condition.clear());
         this.emit('stopped', this.current_step);
         this.current_step = undefined;
+        return Promise.all(Object.values(this.modules).map(module => module.stop()));
     }
 
     private executeStep() {
-        catRecipe.debug(`Start step: ${this.current_step.name}`);
+        catRecipe.debug(`Execute step: ${this.current_step.name}`);
         this.lastChange = new Date();
         this.stepListener = this.current_step.execute()
             .once('completed', (transition: Transition) => {

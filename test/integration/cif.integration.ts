@@ -27,18 +27,19 @@ import * as assert from 'assert';
 import * as fs from 'fs';
 import {Module} from '../../src/model/core/Module';
 import {ServiceState} from '../../src/model/core/enum';
-import {manager} from '../../src/model/Manager';
+import {Manager} from '../../src/model/Manager';
 import {expect} from 'chai';
 import * as delay from 'timeout-as-promise';
 import { waitForStateChange} from '../helper';
 import {Service} from '../../src/model/core/Service';
 import {Parameter} from '../../src/model/recipe/Parameter';
-import {ServiceCommand} from '@plt/pfe-ree-interface';
+import {ServiceCommand} from '@p2olab/polaris-interface';
 
 describe.skip('CIF Integration', function () {
 
     let module: Module;
     let service: Service;
+    const manager = new Manager();
 
     before(async function() {
         this.timeout(5000);

@@ -23,15 +23,13 @@
  * SOFTWARE.
  */
 
-import {ScopeOptions} from '@plt/pfe-ree-interface';
+import {ScopeOptions} from '@p2olab/polaris-interface';
 import {catScopeItem} from '../../config/logging';
-import {ProcessValue} from '../core/ProcessValue';
 import {Module} from '../core/Module';
 import {OpcUaNodeOptions} from '../core/Interfaces';
-import {manager} from '../Manager';
 import {Service} from '../core/Service';
 import {Expression, Parser} from 'expr-eval';
-import {DataAssembly} from '../core/DataAssembly';
+import {DataAssembly} from '../dataAssembly/DataAssembly';
 import {Strategy} from '../core/Strategy';
 
 export class ScopeItem {
@@ -60,13 +58,16 @@ export class ScopeItem {
      *
      * @param {string} expression
      * @param {Module[]} modules
+     * @param {string[]}   ignoredNames   don't try to find scopeItems for this variable names
      */
-    static extractFromExpressionString(expression: string, modules = manager.modules): {expression: Expression, scopeItems: ScopeItem[]} {
+    static extractFromExpressionString(expression: string, modules: Module[], ignoredNames: string[] = [])
+    : {expression: Expression, scopeItems: ScopeItem[]} {
         const parser: Parser = new Parser({allowMemberAccess: true});
         const value = expression.replace(new RegExp('\\\\.', 'g'), '__');
         const expressionObject = parser.parse(value);
         const scopeItems = expressionObject
             .variables({ withMembers: true })
+            .filter((variable) => !ignoredNames.find(n => n == variable))
             .map((variable) => ScopeItem.extractFromExpressionVariable(variable, modules))
             .filter(Boolean);
         return {expression: expressionObject, scopeItems: scopeItems}
@@ -82,7 +83,7 @@ export class ScopeItem {
      * @param {Module[]} modules    modules to be searched in for variable names (default: all modules in manager)
      * @returns {ScopeItem}
      */
-    static extractFromExpressionVariable(variable: string, modules= manager.modules): ScopeItem {
+    static extractFromExpressionVariable(variable: string, modules: Module[]): ScopeItem {
         let components = variable.split('.').map((token: string) => token.replace(new RegExp('__', 'g'), '.'));
         let token = components.shift();
 
@@ -92,7 +93,7 @@ export class ScopeItem {
             if (modules.length == 1) {
                 module = modules[0];
             } else {
-                catScopeItem.info(`Could not evaluate variable "${variable}": module "${token}" not found in ${JSON.stringify(modules.map(m=> m.id))}`);
+                catScopeItem.warn(`Could not evaluate variable "${variable}": module "${token}" not found in ${JSON.stringify(modules.map(m=> m.id))}`);
                 return undefined;
             }
         } else {
@@ -111,13 +112,15 @@ export class ScopeItem {
         }
 
         // find data assembly
-        let dataAssembly: ProcessValue | DataAssembly;
+        let dataAssembly: DataAssembly;
         if (strategy && strategy.parameters.find(p => p.name === token)){
+            dataAssembly = strategy.parameters.find(p => p.name === token);
+        } else if (service && service.parameters.find(p => p.name === token)){
             dataAssembly = strategy.parameters.find(p => p.name === token);
         } else if (module.variables.find(v => v.name === token)) {
             dataAssembly = module.variables.find(v => v.name === token)
         } else {
-            catScopeItem.info(`Could not evaluate variable "${variable}": DataAssembly ${token} not found in module ${module.id}`);
+            catScopeItem.warn(`Could not evaluate variable "${variable}": Token "${token}" not found as dataAssembly in module ${module.id}: ${module.variables.map(v => v.name)}`);
             return undefined;
         }
 
@@ -136,7 +139,7 @@ export class ScopeItem {
      * @param {Module[]} modules    modules to be searched in for variable names (default: all modules in manager)
      * @returns {ScopeItem}
      */
-    static extractFromScopeOptions(item: ScopeOptions, modules = manager.modules): ScopeItem {
+    static extractFromScopeOptions(item: ScopeOptions, modules: Module[]): ScopeItem {
         const module = modules.find(m => m.id === item.module);
         const dataAssembly = module.variables.find(v => v.name === item.dataAssembly);
         const opcUaNode = dataAssembly.communication[item.variable] ||

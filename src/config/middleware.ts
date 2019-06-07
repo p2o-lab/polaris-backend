@@ -27,17 +27,18 @@ import * as cors from 'cors';
 import * as express from 'express';
 
 export default class Middleware {
-    static init(server): void {
+    static init(app: express.Application): void {
 
         // express middleware
-        server.app.use(express.json());
-        server.app.use(express.urlencoded({
-            extended: true
+        app.use(express.json({limit: '10mb'}));
+        app.use(express.urlencoded({
+            extended: true,
+            limit: '10mb'
         }));
-        server.app.use(cors());
+        app.use(cors());
 
         // cors
-        server.app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
+        app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
             res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS ');
             res.header(
                 'Access-Control-Allow-Headers',

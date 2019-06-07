@@ -25,7 +25,7 @@
 
 import { Step } from './Step';
 import { Condition } from './Condition';
-import { ConditionOptions, TransitionInterface } from '@plt/pfe-ree-interface';
+import { ConditionOptions, TransitionInterface } from '@p2olab/polaris-interface';
 import { Module } from '../core/Module';
 import { Recipe } from './Recipe';
 

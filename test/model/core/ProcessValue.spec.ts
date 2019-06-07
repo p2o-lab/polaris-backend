@@ -23,15 +23,16 @@
  * SOFTWARE.
  */
 
-import {ProcessValue} from '../../../src/model/core/ProcessValue';
+
 import {expect} from 'chai';
 import {OpcUaNodeOptions} from '../../../src/model/core/Interfaces';
+import {DataAssembly} from '../../../src/model/dataAssembly/DataAssembly';
 
 describe('ProcessValue', () => {
 
     it('should fail with missing parameters', () => {
-        expect(() => {let a = new ProcessValue(undefined,undefined) }).to.throw();
+        expect(() => {let a = new DataAssembly(undefined,undefined) }).to.throw();
         let opcUaNode: OpcUaNodeOptions = { namespace_index: 'CODESYSSPV3/3S/IecVarAccess', node_id: 'i=12'};
-        expect(() => {let a = new ProcessValue({name: "name", communication: [opcUaNode], interface_class: 'analogitem'}, undefined) }).to.throw();
+        expect(() => {let a = new DataAssembly({name: "name", communication: [opcUaNode], interface_class: 'analogitem'}, undefined) }).to.throw();
     });
 });

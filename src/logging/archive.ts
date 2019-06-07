@@ -40,4 +40,5 @@ export interface VariableLogEntry {
     module: string;
     variable: string;
     value: number | string;
+    unit: string;
 }

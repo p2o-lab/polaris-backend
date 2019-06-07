@@ -23,15 +23,37 @@
  * SOFTWARE.
  */
 
-
 import {DataAssembly} from './DataAssembly';
-import {OpcUaNodeOptions} from './Interfaces';
-import {Module} from './Module';
 
-/**
- * StrategyParameter of a [[Service]]
- *
- */
-export class StrategyParameter extends DataAssembly {
+export class ExtBinOp extends DataAssembly {
 
+    get VState0() {return this.communication['VState0']}
+    get VState1() {return this.communication['VState1']}
+    get VExt() {return this.communication['VExt']}
+    get VOut() {return this.communication['VOut']}
+    get VRbk() {return this.communication['VRbk']}
+
+    constructor(options, module){
+        super(options, module);
+        this.subscribedNodes.push('VOut', 'VState0', 'VState1', 'VExt', 'VRbk');
+    }
+
+}
+
+export class ExtIntBinOp extends ExtBinOp {
+
+    get VInt() {return this.communication['VInt']}
+    get OpMode() {return this.communication['OpMode']}
+
+    constructor(options, module){
+        super(options, module);
+        this.subscribedNodes.push('VInt', 'OpMode');
+    }
+}
+
+export class AdvBinOp extends ExtIntBinOp {
+
+}
+
+export class BinServParam extends ExtIntBinOp {
 }

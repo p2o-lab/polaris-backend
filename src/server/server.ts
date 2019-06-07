@@ -27,27 +27,57 @@ import * as express from 'express';
 import Routes from './routes';
 import Middleware from '../config/middleware';
 import * as WebSocket from 'ws';
-import { manager } from '../model/Manager';
-import { catServer } from '../config/logging';
-import {fixReactor} from "./automaticMode";
+import {Manager} from '../model/Manager';
+import {catServer} from '../config/logging';
+import * as serverHandlers from './serverHandlers';
+import * as http from 'http';
 
 export class Server {
 
-    public app: express.Application;
+    readonly app: express.Application;
     public wss: WebSocket.Server;
+    private httpServer: http.Server;
 
-    constructor() {
+    constructor(manager: Manager) {
         this.app = express();
-        Middleware.init(this);
-        Routes.init(this);
+        Middleware.init(this.app);
+        Routes.init(this.app, manager);
+
         manager.on('notify', (message, data) => this.notifyClients(message, data));
     }
 
-    initSocketServer(server) {
-        this.wss = new WebSocket.Server({ server });
-        this.wss.on('connection', (ws: WebSocket) => {
-            catServer.info('WS Client connected');
+    public startHttpServer(port: number | string | boolean) {
+        this.httpServer = http.createServer(this.app);
+
+        this.app.set('port', port);
+        this.httpServer.listen(port);
+        this.httpServer.on('error', error => serverHandlers.onError(error, port));
+        this.httpServer.on('listening', () => {
+            const addr: any = this.httpServer.address();
+            const bind: string = (typeof addr === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
+            catServer.info(`Listening on ${bind}`);
         });
+    }
+
+    public async stop() {
+        await this.httpServer.close();
+        this.httpServer = null;
+        await this.wss.close();
+        this.wss = null;
+    }
+
+    public initSocketServer() {
+        if (this.httpServer) {
+            this.wss = new WebSocket.Server({server: this.httpServer});
+            this.wss.on('connection', (ws: WebSocket, req: http.IncomingMessage) => {
+                catServer.info(`WS Client connected: ${req.connection.remoteAddress}`);
+                const interval = setInterval(function ping() {
+                    ws.send(JSON.stringify({message: 'ping'}));
+                }, 3000);
+            });
+        } else {
+            throw new Error('Running HTTP server is required');
+        }
     }
 
     /** Notify all clients via websockets about refresh of data
@@ -57,10 +87,12 @@ export class Server {
      */
     private notifyClients(message: string, data: any) {
         catServer.trace(`WS refresh published ${message} ${data}`);
-        this.wss.clients.forEach((client) => {
-            if (client.readyState === WebSocket.OPEN) {
-                client.send(JSON.stringify({ message, data }));
-            }
-        });
+        if (this.wss) {
+            this.wss.clients.forEach((client) => {
+                if (client.readyState === WebSocket.OPEN) {
+                    client.send(JSON.stringify({message, data}));
+                }
+            });
+        }
     }
 }

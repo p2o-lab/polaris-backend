@@ -1,53 +1,61 @@
-clone:
-  git:
-    image: plugins/git
-    skip_verify: true
+---
+kind: pipeline
+name: default
 
+platform:
+  os: linux
+  arch: amd64
 
-pipeline:
+steps:
 
-  build:
-    image: node:8-jessie
-    commands:
-      - npm install
-      - npm run-script apidoc build
+- name: build
+  image: node:8-jessie
+  commands:
+  - npm install
+  - npm run-script apidoc build
 
-  test:
-    image: node:8-jessie
-    commands:
-      - export LOGLEVEL=warn
-      - npm test
+- name: test
+  image: node:8-jessie
+  commands:
+  - export LOGLEVEL=warn
+  - npm test
 
-  docker:
-    image: docker
-    privileged: true
-    commands:
-      - IMAGE_NAME="registry.plt.et.tu-dresden.de/pfe-ree-node"
-      - BRANCH_TEMP=$${DRONE_BRANCH/develop/latest}
-      - DOCKER_IMAGE="$IMAGE_NAME:$${BRANCH_TEMP/master/stable}$${DRONE_TAG}"
-      - DOCKER_IMAGE_ARM="$DOCKER_IMAGE-arm"
-      - docker build -t $DOCKER_IMAGE .
-      - docker build -f Dockerfile.arm -t $DOCKER_IMAGE_ARM .
-      - docker push $DOCKER_IMAGE
-      - docker push $DOCKER_IMAGE_ARM
-      - docker image rm $DOCKER_IMAGE $DOCKER_IMAGE_ARM
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    when:
-      branch:
-        - develop
-        - master
-      event:
-        - tag
-        - push
+- name: docker
+  image: plugins/docker
+  settings:
+    username:
+      from_secret: docker_username
+    password:
+      from_secret: docker_password
+    repo: p2olab/polaris-backend
+    auto_tag: true
 
-  notify:
-    image: drillster/drone-email
+- name: docker-arm
+  image: plugins/docker
+  settings:
+    username:
+      from_secret: docker_username
+    password:
+      from_secret: docker_password
+    repo: p2olab/polaris-backend
+    auto_tag: true
+    auto_tag_suffix: -arm
+
+- name: notify
+  image: drillster/drone-email
+  settings:
+    from: "plt@mailbox.tu-dresden.de"
     host: mail.zih.tu-dresden.de
+    password:
+      from_secret: email_password
     username: plt
-    password: $EMAIL_PASSWORD
-    secrets: [ email_password ]
-    from: plt@mailbox.tu-dresden.de
-    recipients: [ markus.graube@tu-dresden.de ]
-    when:
-      status: [ changed, failure ]
+  when:
+    status:
+    - changed
+    - failure
+
+---
+kind: signature
+hmac: 2a2690a0a2cd75ec7200671d8084ca56454f98c81d612f528da1caf73c6616d6
+
+...

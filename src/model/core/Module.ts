@@ -23,8 +23,7 @@
  * SOFTWARE.
  */
 
-import { Service, ServiceOptions } from './Service';
-import { ProcessValue } from './ProcessValue';
+import {Service, ServiceOptions} from './Service';
 import {
     AttributeIds,
     ClientMonitoredItem,
@@ -37,20 +36,28 @@ import {
     Variant
 } from 'node-opcua-client';
 import {TimestampsToReturn} from 'node-opcua-service-read';
-import { catModule, catOpc, catRecipe } from '../../config/logging';
-import { EventEmitter } from 'events';
-import { OpcUaNodeOptions} from './Interfaces';
-import { ServiceState } from './enum';
+import {catModule} from '../../config/logging';
+import {EventEmitter} from 'events';
+import {OpcUaNodeOptions} from './Interfaces';
+import {ServiceState} from './enum';
 import {
-    ModuleInterface, ServiceInterface, ServiceCommand, ControlEnableInterface,
-    ParameterInterface
-} from '@plt/pfe-ree-interface';
-import { timeout } from 'promise-timeout';
-import { VariableLogEntry } from '../../logging/archive';
+    ControlEnableInterface,
+    ModuleInterface,
+    OpModeInterface,
+    ParameterInterface,
+    ServiceCommand,
+    ServiceInterface
+} from '@p2olab/polaris-interface';
+import {timeout} from 'promise-timeout';
+import {VariableLogEntry} from '../../logging/archive';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Strategy} from './Strategy';
 import {Category} from 'typescript-logging';
-import {DataAssemblyOptions} from './DataAssembly';
+import {DataType, VariantArrayType} from 'node-opcua';
+import * as delay from 'timeout-as-promise';
+import {DataAssembly, DataAssemblyOptions} from '../dataAssembly/DataAssembly';
+import {DataAssemblyFactory} from '../dataAssembly/DataAssemblyFactory';
+import {Unit} from './Unit';
 
 export interface ModuleOptions {
     id: string;
@@ -100,6 +107,13 @@ interface ModuleEvents {
         service: Service,
         state: ServiceState};
     /**
+     * Notify when a service changes its opMode
+     * @event
+     */
+    opModeChanged: {
+        service: Service,
+        opMode: OpModeInterface};
+    /**
      * Notify when a variable inside a module changes
      * @event
      */
@@ -131,11 +145,17 @@ type ModuleEmitter = StrictEventEmitter<EventEmitter, ModuleEvents>;
  *
  */
 export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
+
+    readonly options: ModuleOptions;
     readonly id: string;
     readonly endpoint: string;
-    services: Service[];
-    variables: ProcessValue[];
     readonly hmiUrl: string;
+    readonly services: Service[];
+    readonly variables: DataAssembly[];
+    readonly logger: Category;
+
+    // module is protected and can't be deleted by the user
+    protected: boolean = false;
 
     private session: ClientSession;
     private client: OPCUAClient;
@@ -143,15 +163,9 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
     private monitoredItems: Map<NodeId, { monitoredItem: ClientMonitoredItem, emitter: StrictEventEmitter<EventEmitter, OpcUaNodeEvents> }>;
     private namespaceArray: string[];
 
-    /**
-     * module is protected and can't be deleted by the user
-     */
-    protected: boolean = false;
-
-    readonly logger: Category;
-
     constructor(options: ModuleOptions, protectedModule: boolean = false) {
         super();
+        this.options = options;
         this.id = options.id;
         this.endpoint = options.opcua_server_url;
         this.protected = protectedModule;
@@ -160,7 +174,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
             this.services = options.services.map(serviceOption => new Service(serviceOption, this));
         }
         if (options.process_values) {
-            this.variables = options.process_values.map(variableOptions => new ProcessValue(variableOptions, this));
+            this.variables = options.process_values.map(variableOptions => DataAssemblyFactory.create(variableOptions, this));
         }
         if (options.hmi_url){
             this.hmiUrl = options.hmi_url;
@@ -169,33 +183,47 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
         this.monitoredItems = new Map<NodeId, { monitoredItem: ClientMonitoredItem, emitter: EventEmitter }>();
 
         this.logger = catModule;
+
+        this.client = new OPCUAClient({
+            endpoint_must_exist: false,
+            connectionStrategy: {
+                maxRetry: 3
+            }
+        })
+            .on('close', async () => {
+                this.logger.info(`[${this.id}] Connection closed by OPC UA server`);
+                this.session = null;
+                this.emit('disconnected');
+            })
+            .on('connection_lost', async () => {
+                this.logger.info(`[${this.id}] Connection lost to OPC UA server`);
+                await this.subscription.terminate();
+                await this.session.close();
+                this.session = null;
+                await this.client.disconnect();
+                this.emit('disconnected');
+            })
+            .on('timed_out_request', () => this.logger.warn(`[${this.id}] timed out request - retrying connection`));
     }
 
     /**
      * Opens connection to server and establish session
+     *
+     * Subscribe to all important variables
      * @returns {Promise<void>}
      */
     async connect(): Promise<void> {
         if (this.session) {
-            catOpc.debug(`Already connected to module ${this.id}`);
+            this.logger.debug(`[${this.id}] Already connected`);
             return Promise.resolve();
         } else {
-                catOpc.info(`connect module ${this.id} ${this.endpoint}`);
-                const client = new OPCUAClient({
-                    endpoint_must_exist: false,
-                    connectionStrategy: {
-                        maxRetry: 3
-                    }
-                });
+                this.logger.info(`[${this.id}] connect module via ${this.endpoint}`);
 
-                client.on('close', () => catOpc.info('Closing OPC UA client connection'));
-                client.on('time_out_request', () => catOpc.debug('time out request - retrying connection'));
+                await timeout(this.client.connect(this.endpoint), 2000);
+                this.logger.info(`[${this.id}] module connected via ${this.endpoint}`);
 
-                await timeout(client.connect(this.endpoint), 1000);
-                catOpc.info(`module connected ${this.id} ${this.endpoint}`);
-
-                const session = await client.createSession();
-                catOpc.debug(`session established ${this.id} ${this.endpoint}`);
+                const session = await this.client.createSession();
+                this.logger.debug(`[${this.id}] session established`);
 
                 const subscription = new ClientSubscription(session, {
                     requestedPublishingInterval: 100,
@@ -208,10 +236,10 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
 
                 subscription
                     .on('started', () => {
-                        catOpc.trace(`subscription started - subscriptionId=${subscription.subscriptionId}`);
+                        this.logger.info(`[${this.id}] subscription started - subscriptionId=${subscription.subscriptionId}`);
                     })
                     .on('terminated', () => {
-                        catOpc.trace(`subscription (Id=${subscription.subscriptionId}) terminated`);
+                        this.logger.debug(`[${this.id}] subscription terminated`);
                     });
 
                 // read namespace array
@@ -220,9 +248,12 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
                 this.logger.debug(`[${this.id}] Got namespace array: ${JSON.stringify(this.namespaceArray)}`);
 
                 // store everything
-                this.client = client;
                 this.session = session;
                 this.subscription = subscription;
+
+                if (this.endpoint == 'opc.tcp://10.6.51.22:4840') {
+                    await this.fixReactor();
+                }
 
                 // set all services to correct operation mode
                 await Promise.all(this.services.map(service => service.setOperationMode()));
@@ -241,26 +272,27 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
     }
 
     async getServiceStates(): Promise<ServiceInterface[]> {
-        catRecipe.trace('check services');
+        this.logger.trace(`[${this.id}] check service states`);
         const tasks = this.services.map(service => service.getOverview());
         return Promise.all(tasks);
     }
 
     /**
-     * Close session and disconnect from server
+     * Close session and disconnect from server of module
      *
      */
     disconnect(): Promise<any> {
-        this.services.forEach(s => s.removeAllSubscriptions());
+        this.services.forEach(s => s.removeAllListeners());
         return new Promise(async (resolve, reject) => {
             if (this.session) {
                 this.logger.info(`[${this.id}] Disconnect module`);
                 try {
+                    await this.subscription.terminate();
                     await timeout(this.session.close(), 1000);
                     this.session = undefined;
-                    await timeout(1000, this.client.disconnect(), 1000);
+                    await timeout(this.client.disconnect(), 1000);
                     this.client = undefined;
-                    this.logger.debug(`[${this.id}] Module disconnected`);
+                    this.logger.info(`[${this.id}] Module disconnected`);
                     this.emit('disconnected');
                     resolve(`Module ${this.id} disconnected`);
                 } catch (err) {
@@ -294,8 +326,11 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
 
             const emitter: StrictEventEmitter<EventEmitter, OpcUaNodeEvents> = new EventEmitter();
             monitoredItem.on('changed', (dataValue) => {
-                catOpc.debug(`Variable Changed (${this.resolveNodeId(node)}) = ${dataValue.value.value.toString()}`);
+                this.logger.debug(`[${this.id}] Variable Changed (${nodeId}) = ${dataValue.value.value.toString()}`);
+                node.value = dataValue.value.value;
+                node.timestamp = dataValue.serverTimestamp;
                 emitter.emit('changed', {value: dataValue.value.value, timestamp: dataValue.serverTimestamp});
+
             });
             this.monitoredItems.set(nodeId, { monitoredItem, emitter });
         }
@@ -303,7 +338,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
     }
 
     listenToVariable(dataStructureName: string, variableName: string): StrictEventEmitter<EventEmitter, OpcUaNodeEvents> {
-        const dataStructure: ProcessValue = this.variables.find(variable => variable.name === dataStructureName);
+        const dataStructure: DataAssembly = this.variables.find(variable => variable.name === dataStructureName);
         if (!dataStructure) {
             throw new Error(`ProcessValue ${dataStructureName} is not specified for module ${this.id}`);
         } else {
@@ -312,49 +347,25 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
         }
     }
 
-    clearListener(node: OpcUaNodeOptions) {
-        const nodeId = this.resolveNodeId(node);
-        if (this.monitoredItems.has(nodeId)) {
-            const { monitoredItem, emitter } = this.monitoredItems.get(nodeId);
-
-            if (monitoredItem) {
-                monitoredItem.terminate(() => catOpc.trace(`Listener ${JSON.stringify(nodeId)} terminated`));
-            }
-            if (emitter) {
-                emitter.removeAllListeners();
-            }
-            this.monitoredItems.delete(nodeId);
-        }
-    }
-
-    public readVariable(dataStructureName: string, variableName: string) {
-        const dataStructure = this.variables.find(variable => variable.name === dataStructureName);
-        if (!dataStructure) {
-            throw new Error(`Datastructure ${dataStructureName}.${variableName} not found in module ${this.id}`);
-        } else {
-            const variable = dataStructure.communication[variableName];
-            return this.readVariableNode(variable);
-        }
-    }
-
     private subscribeToAllVariables() {
-        this.variables.forEach((variable: ProcessValue) => {
-            if (variable.communication['V'] && variable.communication['V'].node_id != null) {
-                this.listenToOpcUaNode(variable.communication['V'], 1000)
-                    .on('changed', (data) => {
-                        this.logger.debug(`[${this.id}] variable changed: ${variable.name} = ${data.value}`);
-                        const entry: VariableLogEntry = {
-                            timestampPfe: new Date(),
-                            timestampModule: data.timestamp,
-                            module: this.id,
-                            variable: variable.name,
-                            value: data.value
-                        };
-                        this.emit('variableChanged', entry);
-                    });
-            } else {
-                this.logger.debug(`[${this.id}] OPC UA variable for variable ${variable.name} not defined`);
-            }
+        this.variables.forEach((variable: DataAssembly) => {
+                variable.subscribe(1000).on('V', (data) => {
+                    let unit;
+                    if (DataAssemblyFactory.isAnaView(variable)){
+                        const unitObject = Unit.find(item => item.value === parseInt(variable.VUnit.value));
+                        unit = unitObject ? unitObject.unit : undefined;
+                    }
+                    this.logger.debug(`[${this.id}] variable changed: ${variable.name} = ${data.value} ${unit?unit:''}`);
+                    const entry: VariableLogEntry = {
+                        timestampPfe: new Date(),
+                        timestampModule: data.timestamp,
+                        module: this.id,
+                        variable: variable.name,
+                        value: data.value,
+                        unit: unit
+                    };
+                    this.emit('variableChanged', entry);
+                });
         });
     }
 
@@ -378,7 +389,6 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
                     const entry = {
                         timestampPfe: new Date(),
                         timestampModule: timestamp,
-                        module: this.id,
                         service: service,
                         state: state
                     };
@@ -386,14 +396,42 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
                     if (state === ServiceState.COMPLETED) {
                         this.emit('serviceCompleted', service);
                     }
+                })
+                .on('opMode', (opMode) => {
+                    this.logger.debug(`[${this.id}] opMode changed: ${service.name} = ${JSON.stringify(opMode)}`);
+                    const entry = {
+                        service: service,
+                        opMode: opMode
+                    };
+                    this.emit('opModeChanged', entry);
+                })
+                .on('variableChanged', (data) => {
+                    this.logger.info(`[${this.id}] service variable changed: ${data.strategy.name}.${data.parameter.name} = ${data.value}`);
+                    const variable: DataAssembly = data.parameter;
+                    let unit;
+                    if (DataAssemblyFactory.isAnaView(variable)) {
+                        unit =  Unit.find(item => item.value === variable.VUnit.value).unit;
+                    }
+                    const entry = {
+                        timestampPfe: new Date(),
+                        timestampModule: new Date(),
+                        module: this.id,
+                        variable: `${service.name}.${data.strategy.name}.${data.parameter.name}`,
+                        value: data.value,
+                        unit: unit
+                    };
+                    this.emit('variableChanged', entry);
                 });
         }));
     }
 
     public async readVariableNode(node: OpcUaNodeOptions) {
+        if (!this.isConnected()) {
+            throw new Error(`Module ${this.id} not connected while trying to read variable ${JSON.stringify(node)}`);
+        }
         const nodeId = this.resolveNodeId(node);
         const result = await this.session.readVariableValue(nodeId);
-        catOpc.debug(`Read Variable: ${JSON.stringify(node)} -> ${nodeId} = ${result}`);
+        this.logger.debug(`[${this.id}] Read Variable: ${JSON.stringify(node)} -> ${nodeId} = ${result}`);
         if (result.statusCode != 0) {
             throw new Error(`Could not read ${nodeId.toString()}: ${result.statusCode.description}`);
         }
@@ -453,9 +491,9 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
         } else if (!variable.namespace_index) {
             throw new Error(`namespace index is null in module ${this.id}`);
         } else {
-            catOpc.debug(`resolveNodeId ${JSON.stringify(variable)}`);
+            this.logger.debug(`[${this.id}] resolveNodeId ${JSON.stringify(variable)}`);
             const nodeIdString = `ns=${this.namespaceArray.indexOf(variable.namespace_index)};s=${variable.node_id}`;
-            catOpc.debug(`resolveNodeId ${JSON.stringify(variable)} -> ${nodeIdString}`);
+            this.logger.debug(`[${this.id}] resolveNodeId ${JSON.stringify(variable)} -> ${nodeIdString}`);
             return coerceNodeId(nodeIdString);
         }
     }
@@ -464,23 +502,34 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
      * Abort all services in module
      */
     abort(): Promise<void[]> {
+        this.logger.info(`[${this.id}] Abort all services`);
         const tasks = this.services.map(service => service.execute(ServiceCommand.abort));
         return Promise.all(tasks);
     }
 
     /**
-     * Pause all services in module
+     * Pause all services in module which are currently paused
      */
     pause(): Promise<void[]> {
-        const tasks = this.services.map(service => service.execute(ServiceCommand.pause));
+        this.logger.info(`[${this.id}] Pause all running services`);
+        const tasks = this.services.map(async (service) => {
+            if (await service.getServiceState() == ServiceState.EXECUTE) {
+                return service.execute(ServiceCommand.pause);
+            }
+        });
         return Promise.all(tasks);
     }
 
     /**
-     * Resume all services in module
+     * Resume all services in module which are currently paused
      */
     resume(): Promise<void[]> {
-        const tasks = this.services.map(service => service.execute(ServiceCommand.resume));
+        this.logger.info(`[${this.id}] Resume all paused services`);
+        const tasks = this.services.map(async (service) => {
+            if (await service.getServiceState() == ServiceState.PAUSED) {
+                return service.execute(ServiceCommand.resume);
+            }
+        });
         return Promise.all(tasks);
     }
 
@@ -488,7 +537,12 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
      * Stop all services in module
      */
     stop(): Promise<void[]> {
-        const tasks = this.services.map(service => service.execute(ServiceCommand.stop));
+        this.logger.info(`[${this.id}] Stop all non-idle services`);
+        const tasks = this.services.map(service => {
+            if (service.status.value != ServiceState.IDLE) {
+                return service.execute(ServiceCommand.stop);
+            }
+        });
         return Promise.all(tasks);
     }
 
@@ -496,8 +550,75 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
      * Reset all services in module
      */
     reset(): Promise<void[]> {
+        this.logger.info(`[${this.id}] Reset all services`);
         const tasks = this.services.map(service => service.execute(ServiceCommand.reset));
         return Promise.all(tasks);
+    }
+
+    /** Fix reactor of ACHEMA demonstrator.
+     * Set all opModes from devices to automatic and set senseful default values
+     */
+    private async fixReactor(){
+        const nodeIdsReactor = [
+            'ns=3;s="AEM01"."MTP_AnaDrv"."OpMode"',
+            'ns=3;s="MFH01"."MTP_BinVlv"."OpMode"',
+            'ns=3;s="MFH02"."MTP_BinVlv"."OpMode"',
+            'ns=3;s="MFH03"."MTP_BinVlv"."OpMode"'];
+
+        const valuesReactor = [
+            ['ns=3;s="Fill_Level_Max"."MTP"."VExt"', 1.5],
+            ['ns=3;s="Stir_Level_Min"."MTP"."VExt"', 0.5],
+            ['ns=3;s="Stir_Period"."MTP"."VExt"', 0.5],
+            ['ns=3;s="Stir_Period"."MTP"."VOp"', 0.5],
+            ['ns=3;s="Empty_Level_Tank_Deadband"."MTP"."VExt"', 0.5],
+            ['ns=3;s="Empty_Level_Tank_Deadband"."MTP"."VExt"', 0.5],
+            ['ns=3;s="Empty_Level_Tank"."MTP"."VExt"', 0.5],
+            ['ns=3;s="Empty_Level_Tank"."MTP"."VOp"', 0.5],
+            ['ns=3;s="Empty_Vol_Flow"."MTP"."VOp"', 2.5],
+            ['ns=3;s="Empty_Vol_Flow"."MTP"."VExt"', 2.5],
+        ];
+
+        this.logger.info(`[${this.id}] Fixing nodes in reactor PEA server`);
+
+        // first set to manual
+        await Promise.all(nodeIdsReactor.map(nodeId => {
+            return this.session.writeSingleNode(
+                nodeId,
+                {
+                    dataType: DataType.UInt32,
+                    value: 16,
+                    arrayType: VariantArrayType.Scalar,
+                    dimensions: null
+                }
+            );
+        }));
+        await delay(200);
+
+        // then to automatic
+        await Promise.all(nodeIdsReactor.map(nodeId => {
+            return this.session.writeSingleNode(
+                nodeId,
+                {
+                    dataType: DataType.UInt32,
+                    value: 64,
+                    arrayType: VariantArrayType.Scalar,
+                }
+            );
+        }));
+
+        // give all Parameters nice default values
+        await Promise.all(valuesReactor.map(async (item) => {
+            return this.session.writeSingleNode(
+                item[0],
+                {
+                    dataType: DataType.Float,
+                    value: item[1],
+                    arrayType: VariantArrayType.Scalar,
+                }
+            );
+        }));
+
+        this.logger.info(`[${this.id}] Nodes in reactor PEA server fixed`);
     }
 
 }

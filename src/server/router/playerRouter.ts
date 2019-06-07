@@ -25,7 +25,7 @@
 
 import { Request, Response, Router } from 'express';
 import * as asyncHandler from 'express-async-handler';
-import { manager } from '../../model/Manager';
+import { Manager } from '../../model/Manager';
 import {catServer} from '../../config/logging';
 
 export const playerRouter: Router = Router();
@@ -36,6 +36,7 @@ export const playerRouter: Router = Router();
  * @apiGroup Player
  */
 playerRouter.get('/', async (req: Request, res: Response) => {
+    const manager: Manager = req.app.get('manager');
     const result = manager.player.json();
     res.json(result);
 });
@@ -46,6 +47,7 @@ playerRouter.get('/', async (req: Request, res: Response) => {
  * @apiGroup Player
  */
 playerRouter.post('/start', asyncHandler(async (req: Request, res: Response) => {
+    const manager: Manager = req.app.get('manager');
     const player = await manager.player.start();
     res.json(player.json());
 }));
@@ -56,6 +58,7 @@ playerRouter.post('/start', asyncHandler(async (req: Request, res: Response) => 
  * @apiGroup Player
  */
 playerRouter.post('/pause', asyncHandler(async (req: Request, res: Response) => {
+    const manager: Manager = req.app.get('manager');
     const result = await manager.player.pause();
     res.json(result);
 }));
@@ -66,6 +69,7 @@ playerRouter.post('/pause', asyncHandler(async (req: Request, res: Response) => 
  * @apiGroup Player
  */
 playerRouter.post('/stop', asyncHandler(async (req: Request, res: Response) => {
+    const manager: Manager = req.app.get('manager');
     const result = await manager.player.stop();
     res.json(result);
 }));
@@ -76,6 +80,7 @@ playerRouter.post('/stop', asyncHandler(async (req: Request, res: Response) => {
  * @apiGroup Player
  */
 playerRouter.post('/reset', asyncHandler(async (req: Request, res: Response) => {
+    const manager: Manager = req.app.get('manager');
     const result = await manager.player.reset();
     res.json(result);
 }));
@@ -88,6 +93,7 @@ playerRouter.post('/reset', asyncHandler(async (req: Request, res: Response) => 
  */
 playerRouter.post('/enqueue', async (req: Request, res: Response) => {
     catServer.info(`Enqueue recipe ${req.body}`);
+    const manager: Manager = req.app.get('manager');
     const recipe = manager.recipes.find(recipe => recipe.id === req.body.recipeId);
     catServer.debug(`Enqueue recipe ${recipe.name}`);
     if (recipe) {
@@ -105,6 +111,7 @@ playerRouter.post('/enqueue', async (req: Request, res: Response) => {
  * @apiParam {number} index   index of recipe in playlist to be removed
  */
 playerRouter.post('/remove', async (req: Request, res: Response) => {
+    const manager: Manager = req.app.get('manager');
     manager.player.remove(req.body.index);
     res.json(manager.player.json());
 });
@@ -117,7 +124,8 @@ playerRouter.post('/remove', async (req: Request, res: Response) => {
  * @apiParam {string} nextStepName  name of next step where a transition is available from current step
  */
 playerRouter.post('/forceTransition', async (req: Request, res: Response) => {
-    console.log("force transition", req.body)
+    catServer.info(`Force transition: ${JSON.stringify(req.body)}`);
+    const manager: Manager = req.app.get('manager');
     manager.player.forceTransition(req.body.stepName, req.body.nextStepName);
     res.json(manager.player.json());
 });

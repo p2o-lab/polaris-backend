@@ -29,7 +29,7 @@ import {catOperation} from '../../config/logging';
 import { Recipe } from './Recipe';
 import { Strategy } from '../core/Strategy';
 import { Parameter } from './Parameter';
-import { OperationInterface, OperationOptions, ServiceCommand } from '@plt/pfe-ree-interface';
+import { OperationInterface, OperationOptions, ServiceCommand } from '@p2olab/polaris-interface';
 import * as delay from 'timeout-as-promise';
 
 /** Operation used in a [[Step]] of a [[Recipe]]
