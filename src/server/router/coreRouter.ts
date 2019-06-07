@@ -24,7 +24,7 @@
  */
 
 import {Manager} from '../../model/Manager';
-import { Request, Response, Router } from 'express';
+import {Request, Response, Router} from 'express';
 import * as asyncHandler from 'express-async-handler';
 import yn from 'yn';
 import {messages} from '../../config/logging';
@@ -55,7 +55,7 @@ coreRouter.post('/shutdown', (req: Request, res: Response) => {
 /**
  * @api {get} /version    Get version
  * @apiName GetVersion
- * @apiDescription  Get version of pfe-ree-node
+ * @apiDescription  Get version of polaris-backend
  * @apiGroup Manager
  */
 coreRouter.get('/version', (req: Request, res: Response) => {

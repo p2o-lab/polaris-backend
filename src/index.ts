@@ -66,7 +66,7 @@ const optionDefinitions = [
 ];
 const sections = [
     {
-        header: 'pfe-ree-node',
+        header: 'polaris-backend',
         content: 'Starts recipe execution engine for controlling services of modules.'
     },
     {

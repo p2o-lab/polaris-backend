@@ -1,12 +1,12 @@
 {
-  "name": "@plt/pfe-ree-node",
+  "name": "@p2olab/polaris-backend",
   "version": "1.8.0",
   "main": "./build/index.js",
   "types": "./build.index.d.ts",
-  "description": "Server backend for PFE recipe execution engine",
+  "description": "Server backend for POL recipe execution engine",
   "author": "Markus Graube <markus.graube@tu-dresden.de>",
-  "repository": "svn@dev.plt.et.tu-dresden.de:modulare-automation/pfe-ree-node.git",
-  "homepage": "https://dev.plt.et.tu-dresden.de/modulare-automation/pfe-ree-node",
+  "repository": "https://github.com/p2o-lab/polaris-backend.git",
+  "homepage": "https://github.com/p2o-lab/polaris-backend",
   "license": "MIT",
   "scripts": {
     "dev": "nodemon",
@@ -21,7 +21,7 @@
     "build-all": "npm run build && npm run doc"
   },
   "bin": {
-    "pfe-ree-node": "./bin/pfe-ree-node"
+    "polaris-backend": "./bin/pfe-ree-node"
   },
   "files": [
     "build",
