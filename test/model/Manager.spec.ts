@@ -138,15 +138,15 @@ describe('Manager', () => {
 
             await manager.stopAllServices();
             await waitForStateChange(service, 'STOPPED');
-            expect(service.status.value).to.equal(ServiceState.STOPPED);
+            expect(service.statusNode.value).to.equal(ServiceState.STOPPED);
 
             await manager.abortAllServices();
             await waitForStateChange(service, 'ABORTED');
-            expect(service.status.value).to.equal(ServiceState.ABORTED);
+            expect(service.statusNode.value).to.equal(ServiceState.ABORTED);
 
             await manager.resetAllServices();
             await waitForStateChange(service, 'IDLE');
-            expect(service.status.value).to.equal(ServiceState.IDLE);
+            expect(service.statusNode.value).to.equal(ServiceState.IDLE);
 
             await manager.removeModule(module.id);
             expect(manager.modules).to.have.lengthOf(0);

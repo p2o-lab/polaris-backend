@@ -134,7 +134,7 @@ describe('Service', () => {
 
         await delay(50);
         let stateChangeCount = 0;
-        service.on('state', () => {
+        service.eventEmitter.on('state', () => {
             stateChangeCount++;
         });
 

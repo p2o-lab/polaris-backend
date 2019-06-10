@@ -24,21 +24,22 @@
  */
 
 import {catCondition} from '../../config/logging';
-import { ServiceState } from '../core/enum';
-import { Module } from '../core/Module';
-import { Service } from '../core/Service';
+import {ServiceState} from '../core/enum';
+import {Module} from '../core/Module';
+import {Service} from '../core/Service';
 import {
     AndConditionOptions,
     ConditionOptions,
     ConditionType,
     ExpressionConditionOptions,
     NotConditionOptions,
-    OrConditionOptions, ScopeOptions,
+    OrConditionOptions,
+    ScopeOptions,
     StateConditionOptions,
     TimeConditionOptions,
     VariableConditionOptions
 } from '@p2olab/polaris-interface';
-import { EventEmitter } from 'events';
+import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Expression} from 'expr-eval';
 import {ScopeItem} from './ScopeItem';
@@ -50,7 +51,7 @@ import {ScopeItem} from './ScopeItem';
 interface ConditionEvents {
     /**
      * Notify when the condition changes its state. Parameter is a boolean representing if condition is fulfilled.
-     * @event
+     * @event stateChanged
      */
     stateChanged: boolean;
 }
@@ -279,7 +280,7 @@ export class OrCondition extends AggregateCondition {
 
     listen(): Condition {
         this.conditions.forEach((condition) => {
-            condition.listen().on('stateChanged', (status) => {
+            condition.listen().on('stateChanged', () => {
                 const oldState = this._fulfilled;
                 this._fulfilled = this.conditions.some(condition => condition.fulfilled);
                 if (oldState !== this._fulfilled) {
@@ -331,7 +332,7 @@ export class TimeCondition extends Condition {
 
 export abstract class ModuleCondition extends Condition {
     protected readonly module: Module;
-    protected boundCheckHandler = (data) => this.check(data)
+    protected boundCheckHandler = (data) => this.check(data);
     protected monitoredItem: EventEmitter;
 
     constructor(options: StateConditionOptions | VariableConditionOptions, modules: Module[]) {
@@ -392,7 +393,7 @@ export class StateCondition extends ModuleCondition {
 
 
     listen(): Condition {
-        this.monitoredItem = this.module.listenToOpcUaNode(this.service.status)
+        this.monitoredItem = this.module.listenToOpcUaNode(this.service.statusNode)
             .on('changed', this.boundCheckHandler);
         return this;
     }

@@ -37,9 +37,9 @@ import {timeout} from 'promise-timeout';
  */
 export function waitForStateChange(service: Service, expectedState: string, ms = 1000): Promise<void> {
     return timeout(new Promise((resolve) => {
-        service.on('state', function test(data) {
+        service.eventEmitter.on('state', function test(data) {
             if (ServiceState[data.state] === expectedState) {
-                service.removeListener('state', test);
+                service.eventEmitter.removeListener('state', test);
                 resolve();
             }
         });

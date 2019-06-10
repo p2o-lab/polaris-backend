@@ -25,7 +25,7 @@
 
 import {VirtualService} from './VirtualService';
 import * as Controller from 'node-pid-controller';
-import {ParameterOptions} from '@plt/pfe-ree-interface';
+import {ParameterOptions} from '@p2olab/polaris-interface';
 import {Parameter} from '../recipe/Parameter';
 import {ServiceState} from '../core/enum';
 
@@ -57,7 +57,7 @@ export class PidController extends VirtualService {
             this.ctr.setTarget(<number> setpoint.value);
         }
         let input = parameters.find(param => param.name === 'input');
-        if (input && this.state === ServiceState.RUNNING) {
+        if (input && this.state === ServiceState.EXECUTE) {
             this._output = this.ctr.update(<number> input.value);
         }
     }

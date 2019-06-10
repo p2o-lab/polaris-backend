@@ -24,16 +24,16 @@
  */
 
 import {ServiceState} from './enum';
-import {ControlEnableInterface, ParameterInterface, ParameterOptions, ServiceCommand} from '@plt/pfe-ree-interface';
+import {ControlEnableInterface, ParameterInterface, ParameterOptions, ServiceCommand} from '@p2olab/polaris-interface';
 import {Parameter} from '../recipe/Parameter';
-import {EventEmitter} from "events";
+import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Strategy} from './Strategy';
 
 /**
  * Events emitted by [[BaseService]]
  */
-interface BaseServiceEvents {
+export interface BaseServiceEvents {
     /**
      * Notify when the [[Service] changes its state
      * @event state
@@ -59,7 +59,9 @@ interface BaseServiceEvents {
 
 type BaseServiceEmitter = StrictEventEmitter<EventEmitter, BaseServiceEvents>;
 
-export abstract class BaseService extends (EventEmitter as { new(): BaseServiceEmitter }) {
+export abstract class BaseService {
+
+    readonly eventEmitter: BaseServiceEmitter;
 
     // name of the base service
     protected _name: string;

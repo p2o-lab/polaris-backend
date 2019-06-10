@@ -73,7 +73,7 @@ export interface ModuleOptions {
 export interface OpcUaNodeEvents {
     /**
      * when OpcUaNodeOptions changes its value
-     * @event
+     * @event changed
      */
     changed: {value: any, timestamp: Date};
 }
@@ -89,7 +89,7 @@ interface ModuleEvents {
     connected: void;
     /**
      * when module is disconnected from PEA
-     * @event
+     * @event disconnected
     */
     disconnected: void;
     /**
@@ -282,7 +282,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
      *
      */
     disconnect(): Promise<any> {
-        this.services.forEach(s => s.removeAllListeners());
+        this.services.forEach(service => service.eventEmitter.removeAllListeners());
         return new Promise(async (resolve, reject) => {
             if (this.session) {
                 this.logger.info(`[${this.id}] Disconnect module`);
@@ -539,7 +539,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
     stop(): Promise<void[]> {
         this.logger.info(`[${this.id}] Stop all non-idle services`);
         const tasks = this.services.map(service => {
-            if (service.status.value != ServiceState.IDLE) {
+            if (service.statusNode.value != ServiceState.IDLE) {
                 return service.execute(ServiceCommand.stop);
             }
         });

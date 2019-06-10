@@ -33,6 +33,8 @@ import {Player} from './recipe/Player';
 import {ServiceState} from './core/enum';
 import {ServiceLogEntry, VariableLogEntry} from '../logging/archive';
 import StrictEventEmitter from 'strict-event-emitter-types';
+import {VirtualService} from './virtualService/VirtualService';
+import {VirtualServiceFactory} from './virtualService/VirtualServiceFactory';
 
 interface ManagerEvents {
     /**
@@ -349,7 +351,7 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
             throw new Error(`Virtual Service ${virtualServiceId} not available.`);
         }
         if (index > -1) {
-            manager.virtualServices.splice(index, 1);
+            this.virtualServices.splice(index, 1);
         }
     }
 }

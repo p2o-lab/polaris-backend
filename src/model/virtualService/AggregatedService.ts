@@ -24,10 +24,9 @@
  */
 
 import {VirtualService} from './VirtualService';
-import {ConditionOptions, OperationInterface, OperationOptions} from '@plt/pfe-ree-interface';
+import {ConditionOptions, OperationOptions} from '@p2olab/polaris-interface';
 import {Module} from '../core/Module';
 import {ServiceState} from '../core/enum';
-import {manager} from '../Manager';
 import v4 = require('uuid/v4');
 
 
@@ -139,7 +138,7 @@ export class AggregatedService extends VirtualService {
     _lastStatusChange: Date;
     private commandEnableExpression: CommandEnableOptions;
 
-    constructor(options: VirtualServiceOptions, modules: Module[] = manager.modules) {
+    constructor(options: VirtualServiceOptions) {
         super(options.name);
         this.id = v4();
         if (options.name) {

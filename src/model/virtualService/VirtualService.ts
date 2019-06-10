@@ -24,12 +24,12 @@
  */
 
 import {ServiceState} from '../core/enum';
-import {ParameterOptions, FunctionBlockInterface} from '@plt/pfe-ree-interface';
+import {ParameterOptions, VirtualServiceInterface} from '@p2olab/polaris-interface';
 import {Parameter} from '../recipe/Parameter';
 import {BaseService} from '../core/BaseService';
 import {catVirtualService} from '../../config/logging';
 import StrictEventEmitter from 'strict-event-emitter-types';
-import {EventEmitter} from "events";
+import {EventEmitter} from 'events';
 import {OpcUaNodeEvents} from '../core/Module';
 
 /**
@@ -353,7 +353,7 @@ export abstract class VirtualService extends BaseService {
 
     // Public methods
 
-    async json(): Promise<FunctionBlockInterface> {
+    async json(): Promise<VirtualServiceInterface> {
         return {
             name: this.name,
             type: this.constructor.name,

@@ -23,11 +23,11 @@
  * SOFTWARE.
  */
 
-import { manager } from '../../model/Manager';
-import { catServer } from '../../config/logging';
-import { Request, Response, Router } from 'express';
+import {catServer} from '../../config/logging';
+import {Request, Response, Router} from 'express';
 import * as asyncHandler from 'express-async-handler';
 import {VirtualService} from '../../model/virtualService/VirtualService';
+import {Manager} from '../../model/Manager';
 
 export const virtualServiceRouter: Router = Router();
 
@@ -37,6 +37,7 @@ export const virtualServiceRouter: Router = Router();
  * @apiGroup VirtualService
  */
 virtualServiceRouter.get('/', asyncHandler(async (req: Request, res: Response) => {
+    const manager: Manager = req.app.get('manager');
     const result = manager.virtualServices.map(async (fb: VirtualService) => await fb.json());
     res.json(result);
 }));
@@ -48,6 +49,7 @@ virtualServiceRouter.get('/', asyncHandler(async (req: Request, res: Response) =
  * @apiParam virtualServiceId
  */
 virtualServiceRouter.get('/:virtualServiceId', asyncHandler(async (req: Request, res: Response) => {
+    const manager: Manager = req.app.get('manager');
     const fb = manager.virtualServices.find(fb => fb.name === req.params.virtualServiceId);
     if (fb) {
         res.json(await fb.json());
@@ -64,6 +66,7 @@ virtualServiceRouter.get('/:virtualServiceId', asyncHandler(async (req: Request,
  */
 virtualServiceRouter.delete('/:virtualServiceId', asyncHandler(async (req: Request, res: Response) => {
     try {
+        const manager: Manager = req.app.get('manager');
         manager.removeVirtualService(req.params.virtualServiceId);
         res.send({ status: 'Successful deleted', id: req.params.virtualServiceId });
     } catch (err) {
@@ -80,6 +83,7 @@ virtualServiceRouter.delete('/:virtualServiceId', asyncHandler(async (req: Reque
  */
 virtualServiceRouter.put('', asyncHandler(async (req: Request, res: Response) => {
     catServer.debug(`PUT /virtualService: ${JSON.stringify(req.body)}`);
+    const manager: Manager = req.app.get('manager');
     manager.instantiateVirtualService(req.body);
     res.json({ status: 'virtual service successful instantiated' });
 }));
@@ -93,6 +97,7 @@ virtualServiceRouter.put('', asyncHandler(async (req: Request, res: Response) =>
  * @apiParam {ParameterOptions[]} parameters    virtual service parameter
  */
 virtualServiceRouter.post('/:virtualServiceName/parameter', asyncHandler(async (req: Request, res: Response) => {
+    const manager: Manager = req.app.get('manager');
     const fb = manager.virtualServices.find(fb => fb.name === req.params.virtualServiceName);
     await fb.setParameters(JSON.parse(req.body.parameters));
     res.json(await fb.json());
@@ -109,6 +114,7 @@ virtualServiceRouter.post('/:virtualServiceName/parameter', asyncHandler(async (
  */
 virtualServiceRouter.post('/:virtualServiceId/:commandNode', asyncHandler(async (req: Request, res: Response) => {
     catServer.info(`Call virtual service: ${JSON.stringify(req.params)} - ${JSON.stringify(req.body)}`);
+    const manager: Manager = req.app.get('manager');
     const fb = manager.virtualServices.find(fb => fb.name === req.params.virtualServiceId);
 
     if (req.body.parameters) {

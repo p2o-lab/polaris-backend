@@ -337,10 +337,10 @@ export class ModuleTestServer {
 
         return new Promise((resolve) => {
             server.listen(port, '127.0.0.1');
-            server.on('error', function (e) {
+            server.on('error', function () {
                 resolve(true);
             });
-            server.on('listening', function (e) {
+            server.on('listening', function () {
                 server.close();
                 resolve(false);
             });
@@ -349,13 +349,12 @@ export class ModuleTestServer {
 
     public async start() {
         if (await this.portInUse(4334)) {
-            throw new Error('Port is in use')
+            throw new Error('Port is in use');
         }
-        ;
         await new Promise(resolve => this.server.initialize(resolve));
         this.createAddressSpace();
         await new Promise(resolve => this.server.start(resolve));
-        catTestServer.info('server started')
+        catTestServer.info('server started');
     }
 
     public async shutdown() {
