@@ -39,7 +39,7 @@ steps:
       from_secret: docker_password
     repo: p2olab/polaris-backend
     auto_tag: true
-    auto_tag_suffix: -arm
+    auto_tag_suffix: arm
 
 - name: notify
   image: drillster/drone-email
@@ -56,6 +56,6 @@ steps:
 
 ---
 kind: signature
-hmac: 5bc845bb5b1f114fda12a5f6e46b5784bf1696e87ef53a5c902b2cc846118ecb
+hmac: 3da37f340aa0a034ade22786242f59202c1298cbfb06fdb59988f9d090a7f0a2
 
 ...
