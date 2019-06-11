@@ -1,6 +1,6 @@
 {
   "name": "@p2olab/polaris-backend",
-  "version": "1.8.0",
+  "version": "1.8.1",
   "main": "./build/index.js",
   "types": "./build.index.d.ts",
   "description": "Server backend for POL recipe execution engine",
