@@ -434,8 +434,19 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
                 let max;
                 let min;
                 let unit;
-                if (DataAssemblyFactory.isExtAnaOp(param)) {
-                    value = param.VOut.value;
+                if (DataAssemblyFactory.isAnaView(param)) {
+                    value = param.V.value;
+                } else if (DataAssemblyFactory.isExtAnaOp(param)) {
+                    value = param.VRbk.value;
+                }
+                if (DataAssemblyFactory.isDigView(param)) {
+                    value = param.V.value;
+                } else if (DataAssemblyFactory.isExtDigOp(param)) {
+                    value = param.VRbk.value;
+                } else if (DataAssemblyFactory.isBinView(param)) {
+                    value = param.V.value;
+                } else if (DataAssemblyFactory.isExtBinOp(param)) {
+                    value = param.VRbk.value;
                 } else if (DataAssemblyFactory.isStrView(param)) {
                     value = param.Text.value;
                 }
@@ -474,9 +485,9 @@ export class Service extends (EventEmitter as { new(): ServiceEmitter }) {
 
 
     /**
-     * Set strategy and strategy strategyParameters and execute a command for service on PEA
+     * Set strategy and strategy parameters and execute a command for service on PEA
      * @param {ServiceCommand} command  command to be executed on PEA
-     * @param {StrategyInterface}    strategy  strategy to be set on PEA
+     * @param {StrategyInterface}    strategy to be set on PEA
      * @param {Parameter[]|ParameterOptions[]} parameters     strategyParameters to be set on PEA
      * @returns {Promise<void>}
      */

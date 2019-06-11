@@ -80,7 +80,7 @@ export class Strategy extends (EventEmitter as { new(): StrategyEmitter }) {
 
     subscribe() {
         this.parameters.map(param => param.subscribe()
-            .on('VOut', (data: OpcUaNodeOptions) => {
+            .on('VRbk', (data: OpcUaNodeOptions) => {
                 this.emit('parameterChanged', {parameter: param, value: data.value, timestamp: data.timestamp})
             })
             .on('Text', (data: OpcUaNodeOptions) => {

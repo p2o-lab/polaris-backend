@@ -89,15 +89,15 @@ export class DataAssemblyFactory {
     }
 
     static isExtAnaOp(dataAssembly: DataAssembly): dataAssembly is ExtAnaOp {
-        return dataAssembly.interface_class == 'ExtAnaOp';
+        return this.isExtIntAnaOp(dataAssembly) || dataAssembly.interface_class == 'ExtAnaOp';
     }
 
     static isExtIntAnaOp(dataAssembly: DataAssembly): dataAssembly is ExtIntAnaOp {
-        return dataAssembly.interface_class == 'ExtIntAnaOp';
+        return this.isAdvAnaOp(dataAssembly) || dataAssembly.interface_class == 'ExtIntAnaOp';
     }
 
     static isAdvAnaOp(dataAssembly: DataAssembly): dataAssembly is AdvAnaOp {
-        return dataAssembly.interface_class == 'AdvAnaOp';
+        return this.isAnaServParam(dataAssembly) || dataAssembly.interface_class == 'AdvAnaOp';
     }
 
     static isAnaServParam(dataAssembly: DataAssembly): dataAssembly is AnaServParam {
@@ -109,15 +109,15 @@ export class DataAssemblyFactory {
     }
 
     static isExtDigOp(dataAssembly: DataAssembly): dataAssembly is ExtDigOp {
-        return dataAssembly.interface_class == 'ExtDigOp';
+        return this.isExtIntDigOp(dataAssembly) || dataAssembly.interface_class == 'ExtDigOp';
     }
 
     static isExtIntDigOp(dataAssembly: DataAssembly): dataAssembly is ExtIntDigOp {
-        return dataAssembly.interface_class == 'ExtIntDigOp';
+        return this.isAdvDigOp(dataAssembly) || dataAssembly.interface_class == 'ExtIntDigOp';
     }
 
     static isAdvDigOp(dataAssembly: DataAssembly): dataAssembly is AdvDigOp {
-        return dataAssembly.interface_class == 'AdvDigOp';
+        return this.isDigServParam(dataAssembly) || dataAssembly.interface_class == 'AdvDigOp';
     }
 
     static isDigServParam(dataAssembly: DataAssembly): dataAssembly is DigServParam {
@@ -129,15 +129,15 @@ export class DataAssemblyFactory {
     }
 
     static isExtBinOp(dataAssembly: DataAssembly): dataAssembly is ExtBinOp {
-        return dataAssembly.interface_class == 'ExtBinOp';
+        return this.isExtIntBinOp(dataAssembly) || dataAssembly.interface_class == 'ExtBinOp';
     }
 
     static isExtIntBinOp(dataAssembly: DataAssembly): dataAssembly is ExtIntBinOp {
-        return dataAssembly.interface_class == 'ExtIntBinOp';
+        return this.isAdvBinOp(dataAssembly) || dataAssembly.interface_class == 'ExtIntBinOp';
     }
 
     static isAdvBinOp(dataAssembly: DataAssembly): dataAssembly is AdvBinOp {
-        return dataAssembly.interface_class == 'AdvBinOp';
+        return this.isBinServParam(dataAssembly) || dataAssembly.interface_class == 'AdvBinOp';
     }
 
     static isBinServParam(dataAssembly: DataAssembly): dataAssembly is BinServParam {
