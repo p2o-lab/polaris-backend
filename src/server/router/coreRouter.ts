@@ -59,7 +59,7 @@ coreRouter.post('/shutdown', (req: Request, res: Response) => {
  * @apiGroup Manager
  */
 coreRouter.get('/version', (req: Request, res: Response) => {
-    var pjson = require('pjson');
+    var pjson = require('../../package.json');
     res.json({version: pjson.version });
 });
 
