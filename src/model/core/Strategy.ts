@@ -83,6 +83,9 @@ export class Strategy extends (EventEmitter as { new(): StrategyEmitter }) {
             .on('VOut', (data: OpcUaNodeOptions) => {
                 this.emit('parameterChanged', {parameter: param, value: data.value, timestamp: data.timestamp})
             })
+            .on('Text', (data: OpcUaNodeOptions) => {
+                this.emit('parameterChanged', {parameter: param, value: data.value, timestamp: data.timestamp})
+            })
         );
         this.processValues.map(pv => pv.subscribe()
             .on('V', (data: OpcUaNodeOptions) => {

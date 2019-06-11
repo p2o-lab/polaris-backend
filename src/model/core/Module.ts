@@ -73,7 +73,7 @@ export interface ModuleOptions {
 export interface OpcUaNodeEvents {
     /**
      * when OpcUaNodeOptions changes its value
-     * @event
+     * @event changed
      */
     changed: {value: any, timestamp: Date};
 }
@@ -84,12 +84,12 @@ export interface OpcUaNodeEvents {
 interface ModuleEvents {
     /**
      * when module successfully connects to PEA
-     * @event
+     * @event connected
      */
     connected: void;
     /**
      * when module is disconnected from PEA
-     * @event
+     * @event disconnected
     */
     disconnected: void;
     /**
@@ -99,7 +99,7 @@ interface ModuleEvents {
     controlEnable: {service: Service, controlEnable: ControlEnableInterface};
     /**
      * Notify when a service changes its state
-     * @event
+     * @event stateChanged
      */
     stateChanged: {
         timestampPfe: Date,
@@ -108,19 +108,34 @@ interface ModuleEvents {
         state: ServiceState};
     /**
      * Notify when a service changes its opMode
-     * @event
+     * @event opModeChanged
      */
     opModeChanged: {
         service: Service,
         opMode: OpModeInterface};
     /**
      * Notify when a variable inside a module changes
-     * @event
+     * @event variableChanged
      */
     variableChanged: VariableLogEntry;
+
+    /**
+     * Notify when
+     * @event parameterChanged
+     */
+    parameterChanged: {
+        timestampPfe: Date,
+        timestampModule: Date,
+        service: string,
+        strategy: string;
+        parameter: string;
+        value: any;
+        unit: string;
+    };
+
     /**
      * whenever a command is executed from the PFE
-     * @event
+     * @event commandExecuted
      */
     commandExecuted: {
         service: Service,
@@ -129,9 +144,10 @@ interface ModuleEvents {
         command: ServiceCommand,
         parameter: ParameterInterface[]
     };
+
     /**
      * when one service goes to *completed*
-     * @event
+     * @event serviceCompleted
      */
     serviceCompleted: Service;
 }
@@ -330,7 +346,6 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
                 node.value = dataValue.value.value;
                 node.timestamp = dataValue.serverTimestamp;
                 emitter.emit('changed', {value: dataValue.value.value, timestamp: dataValue.serverTimestamp});
-
             });
             this.monitoredItems.set(nodeId, { monitoredItem, emitter });
         }
@@ -349,13 +364,14 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
 
     private subscribeToAllVariables() {
         this.variables.forEach((variable: DataAssembly) => {
+            catModule.debug(`[${this.id}] subscribe to process variable ${variable.name}`);
                 variable.subscribe(1000).on('V', (data) => {
                     let unit;
                     if (DataAssemblyFactory.isAnaView(variable)){
                         const unitObject = Unit.find(item => item.value === parseInt(variable.VUnit.value));
                         unit = unitObject ? unitObject.unit : undefined;
                     }
-                    this.logger.debug(`[${this.id}] variable changed: ${variable.name} = ${data.value} ${unit?unit:''}`);
+                    this.logger.info(`[${this.id}] variable changed: ${variable.name} = ${data.value} ${unit ? unit : ''}`);
                     const entry: VariableLogEntry = {
                         timestampPfe: new Date(),
                         timestampModule: data.timestamp,
@@ -421,6 +437,24 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
                         unit: unit
                     };
                     this.emit('variableChanged', entry);
+                }).on('parameterChanged', (data) => {
+                    this.logger.debug(`[${this.id}] parameter changed: ${data.strategy.name}.${data.parameter.name} = ${data.value}`);
+                    const variable: DataAssembly = data.parameter;
+                    let unit;
+                    if (DataAssemblyFactory.isAnaView(variable)) {
+                        unit = Unit.find(item => item.value === variable.VUnit.value).unit;
+                    }
+                    const entry = {
+                        timestampPfe: new Date(),
+                        timestampModule: new Date(),
+                        module: this.id,
+                        service: service.name,
+                        strategy: data.strategy.id,
+                        parameter: data.parameter.name,
+                        value: data.value,
+                        unit: unit
+                    };
+                    this.emit('parameterChanged', entry);
                 });
         }));
     }

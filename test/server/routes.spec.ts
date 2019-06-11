@@ -166,8 +166,24 @@ describe('Routes', () => {
     });
 
     context('#moduleRoutes', () => {
-        it('should provide version', (done) => {
+        it('should provide modules', (done) => {
             request(app).get('/api/module')
+                .expect('Content-Type', /json/)
+                .expect(200, done);
+        });
+    });
+
+    context('#playerRoutes', () => {
+        it('should provide player', (done) => {
+            request(app).get('/api/player')
+                .expect('Content-Type', /json/)
+                .expect(200, done);
+        });
+    });
+
+    context('#recipeRoutes', () => {
+        it('should provide recipes', (done) => {
+            request(app).get('/api/recipe')
                 .expect('Content-Type', /json/)
                 .expect(200, done);
         });

@@ -27,13 +27,17 @@
 import {ModuleTestServer, TestServerService} from '../../../src/moduleTestServer/ModuleTestServer';
 import {Service} from '../../../src/model/core/Service';
 import {Module} from '../../../src/model/core/Module';
-import {expect} from 'chai';
+import * as chai from 'chai';
 import {ServiceCommand} from '@p2olab/polaris-interface';
 import {waitForStateChange} from '../../helper';
 import * as fs from 'fs';
 import * as parseJson from 'json-parse-better-errors';
 import {OpMode} from '../../../src/model/core/enum';
 import * as delay from 'timeout-as-promise';
+import * as chaiAsPromised from 'chai-as-promised';
+
+chai.use(chaiAsPromised);
+const expect = chai.expect;
 
 describe('Service', () => {
 
@@ -66,6 +70,33 @@ describe('Service', () => {
         await module.disconnect();
         moduleServer.stopSimulation();
         await moduleServer.shutdown();
+    });
+
+    it('should reject command if not command enabled', async () => {
+        expect(service.name).to.equal('Service1');
+        let commandEnable = await service.getControlEnable();
+        expect(commandEnable).to.deep.equal({
+            abort: true,
+            complete: false,
+            pause: false,
+            reset: false,
+            restart: false,
+            resume: false,
+            start: true,
+            stop: true,
+            unhold: false
+        });
+
+        await service.execute(ServiceCommand.start);
+
+        expect(service.execute(ServiceCommand.resume)).to.be.rejectedWith(/ControlOp/);
+        commandEnable = await service.getControlEnable();
+    });
+
+    it('should reject command if not connected', async () => {
+        await module.disconnect();
+
+        expect(service.execute(ServiceCommand.start)).to.be.rejectedWith('Module is not connected');
     });
 
     it('waitForOpModeSpecificTest', async () => {

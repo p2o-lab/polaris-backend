@@ -26,6 +26,11 @@
 import {DataAssembly} from './DataAssembly';
 
 export class StrView extends DataAssembly {
+
+    get Text() {
+        return this.communication['Text']
+    }
+
     constructor(options, module) {
         super(options, module);
         this.subscribedNodes.push('Text');
