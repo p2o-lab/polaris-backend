@@ -142,6 +142,9 @@ describe('Player', function () {
 
             await player.stop();
 
+            await waitForStateChange(service, 'STOPPING');
+            await waitForStateChange(service, 'STOPPED');
+
             expect(player.status).to.equal(RecipeState.stopped);
             player.reset();
 
