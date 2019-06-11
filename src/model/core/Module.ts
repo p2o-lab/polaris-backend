@@ -364,7 +364,7 @@ export class Module extends (EventEmitter as { new(): ModuleEmitter }) {
 
     private subscribeToAllVariables() {
         this.variables.forEach((variable: DataAssembly) => {
-            catModule.debug(`[${this.id}] subscribe to process variable ${variable.name}`);
+            catModule.info(`[${this.id}] subscribe to process variable ${variable.name}`);
                 variable.subscribe(1000).on('V', (data) => {
                     let unit;
                     if (DataAssemblyFactory.isAnaView(variable)){

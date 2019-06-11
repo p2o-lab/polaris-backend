@@ -39,7 +39,7 @@ import {StrView} from './Str';
 
 export class DataAssemblyFactory {
     static create(variableOptions: DataAssemblyOptions, module: Module): DataAssembly {
-        catModule.debug(`Create DataAssembly ${variableOptions.name} (${variableOptions.interface_class})`);
+        catModule.info(`Create DataAssembly ${variableOptions.name} (${variableOptions.interface_class})`);
 
         const types = {
             'AnaView': AnaView,
