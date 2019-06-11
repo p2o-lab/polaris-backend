@@ -24,21 +24,22 @@
  */
 
 import {catCondition} from '../../config/logging';
-import { ServiceState } from '../core/enum';
-import { Module } from '../core/Module';
-import { Service } from '../core/Service';
+import {ServiceState} from '../core/enum';
+import {Module} from '../core/Module';
+import {Service} from '../core/Service';
 import {
     AndConditionOptions,
     ConditionOptions,
     ConditionType,
     ExpressionConditionOptions,
     NotConditionOptions,
-    OrConditionOptions, ScopeOptions,
+    OrConditionOptions,
+    ScopeOptions,
     StateConditionOptions,
     TimeConditionOptions,
     VariableConditionOptions
 } from '@p2olab/polaris-interface';
-import { EventEmitter } from 'events';
+import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Expression} from 'expr-eval';
 import {ScopeItem} from './ScopeItem';
@@ -341,6 +342,9 @@ export abstract class ModuleCondition extends Condition {
         } else if (modules.length === 1) {
             this.module = modules[0];
         }
+        if (!this.module) {
+            throw new Error(`Could not find module ${options.module} in ${JSON.stringify(modules.map(m => m.id))}`);
+        }
     }
 
     clear() {
@@ -362,7 +366,9 @@ export class StateCondition extends ModuleCondition {
 
     constructor(options: StateConditionOptions, modules: Module[]) {
         super(options, modules);
-        this.service = this.module.services.find(service => service.name === options.service);
+        if (this.module.services) {
+            this.service = this.module.services.find(service => service.name === options.service);
+        }
         if (!this.service) {
             throw new Error(`Service "${options.service}" not found in provided module ${this.module.id}`);
         }

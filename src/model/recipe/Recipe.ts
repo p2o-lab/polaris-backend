@@ -187,12 +187,12 @@ export class Recipe extends (EventEmitter as { new(): RecipeEmitter }) {
      */
     public async stop() {
         catRecipe.info(`Stop recipe ${this.name}`);
+        this.modules.forEach((module: Module) => module.stop())
         this.status = RecipeState.stopped;
         this.stepListener.removeAllListeners('completed');
         this.current_step.transitions.forEach(trans => trans.condition.clear());
         this.emit('stopped', this.current_step);
         this.current_step = undefined;
-        return Promise.all(Object.values(this.modules).map(module => module.stop()));
     }
 
     private executeStep() {
