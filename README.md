@@ -24,7 +24,7 @@ npm start
 ```
 or use ready binary (which should also be installed globally and in modules)
 ```
-./bin/pfe-ree-node
+./bin/polaris-backend
 ```
 
 ### Docker

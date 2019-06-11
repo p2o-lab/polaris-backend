@@ -2,31 +2,31 @@
 
 
 
-package "module (PEA)" {
+package "Module (PEA)" {
     [Services] -- [OPC UA Server]
 }
 
 node "Process Orchestation Layer (POL)" {
-    package "pfe-ree-node" {
-        [Express] -- [Manager/Module/Service]
-        [Manager/Module/Service] -- [OPC UA Client]
+    package "polaris-backend" {
+        [Express] - [Manager/Module/Service]
+        [Manager/Module/Service] - [OPC UA Client]
     }
 
-    package "pfe-ree-viz" {
+    package "polaris-frontend" {
         [Angular] -right- [Express] : HTTP, Websocket
     }
 
-    package '@plt/pfe-ree-interface' {
+    package "polaris-interface" {
         () interface as if
     }
 }
 
-if .down. [Express] : import
-if .down. [Angular] : import
+if .. [Express] : import
+if .. [Angular] : import
 
 [OPC UA Server] <-left-> [OPC UA Client] : OPC UA
 
-(MTP) <.down. [Services]
-(MTP) .down.> [Manager/Module/Service]
+(MTP) <.. [Services]
+(MTP) ..> [Manager/Module/Service]
 
 @enduml

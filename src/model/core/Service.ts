@@ -106,7 +106,7 @@ interface ServiceEvents {
      */
     controlEnable: ControlEnableInterface;
     /**
-     * whenever a command is executed from the PFE
+     * whenever a command is executed from the POL
      * @event commandExecuted
      */
     commandExecuted: {
