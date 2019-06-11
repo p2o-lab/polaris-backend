@@ -1,8 +1,8 @@
 {
   "name": "@p2olab/polaris-backend",
-  "version": "1.8.1",
-  "main": "./build/index.js",
-  "types": "./build.index.d.ts",
+  "version": "1.8.2",
+  "main": "./build/src/index.js",
+  "types": "./build/src/index.d.ts",
   "description": "Server backend for POL recipe execution engine",
   "author": "Markus Graube <markus.graube@tu-dresden.de>",
   "repository": "https://github.com/p2o-lab/polaris-backend.git",
@@ -17,7 +17,7 @@
     "typedoc": "typedoc --mode file --module commonjs --out typedoc/ --target ES6 --excludePrivate --readme none src/",
     "apidoc": "apidoc -i src/server/ -o apidoc",
     "doc": "npm run apidoc && npm run typedoc",
-    "build": "rm -rf build/ && tsc && cp package.json build/",
+    "build": "rm -rf build/ && tsc",
     "build-all": "npm run build && npm run doc"
   },
   "bin": {

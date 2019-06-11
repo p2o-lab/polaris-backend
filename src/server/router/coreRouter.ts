@@ -28,6 +28,7 @@ import {Request, Response, Router} from 'express';
 import * as asyncHandler from 'express-async-handler';
 import yn from 'yn';
 import {messages} from '../../config/logging';
+import {version} from '../../../package.json';
 
 export const coreRouter: Router = Router();
 
@@ -59,8 +60,7 @@ coreRouter.post('/shutdown', (req: Request, res: Response) => {
  * @apiGroup Manager
  */
 coreRouter.get('/version', (req: Request, res: Response) => {
-    var pjson = require('../../package.json');
-    res.json({version: pjson.version });
+    res.json({version: version});
 });
 
 /**

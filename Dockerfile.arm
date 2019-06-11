@@ -25,4 +25,4 @@ COPY --from=dependencies /app/node_modules node_modules
 COPY --from=build /app/build build
 COPY --from=build /app/apidoc apidoc
 EXPOSE 3000
-ENTRYPOINT ["node", "build/"]
+ENTRYPOINT ["node", "build/src/"]
