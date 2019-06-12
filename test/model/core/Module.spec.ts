@@ -40,7 +40,7 @@ describe('Module', () => {
         } catch (e) {
             expect(e).to.exist;
         }
-        expect(module.isConnected()).to.be.false;
+        expect(module.isConnected()).to.equal(false);
     });
 
     it('should load the cif module json', (done) => {
@@ -59,14 +59,14 @@ describe('Module', () => {
 
         const moduleServer = new ModuleTestServer();
         await moduleServer.start();
-        expect(module.isConnected()).to.be.false;
+        expect(module.isConnected()).to.equal(false);
 
         await module.connect();
-        expect(module.isConnected()).to.be.true;
+        expect(module.isConnected()).to.equal(true);
 
         await new Promise((resolve) => {
             module.once('disconnected', () => {
-                expect(module.isConnected()).to.be.false;
+                expect(module.isConnected()).to.equal(false);
                 resolve();
             });
             moduleServer.shutdown();

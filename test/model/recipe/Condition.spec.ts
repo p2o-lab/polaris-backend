@@ -104,7 +104,7 @@ describe('Condition', () => {
             expect(condition).to.have.property('fulfilled', false);
             await delay(50);
             expect(condition).to.have.property('fulfilled', true);
-            expect(hit).to.be.true;
+            expect(hit).to.equal(true);
         });
 
         it('should listen to a NOT condition', async () => {
@@ -131,7 +131,7 @@ describe('Condition', () => {
             it('should work with simple expression', async () => {
                 const expr = new ExpressionCondition({type: ConditionType.expression, expression: '4>3'});
                 let value = await expr.getValue();
-                expect(value).to.be.true;
+                expect(value).to.equal(true);
             });
 
             it('should fail when module is not connected', async () => {
@@ -313,7 +313,7 @@ describe('Condition', () => {
                 moduleServer.variables[0].v = 0;
                 expect(expr).to.have.property('fulfilled', false);
                 let value = await expr.getValue();
-                expect(value).to.be.false;
+                expect(value).to.equal(false);
 
                 moduleServer.variables[0].v = 11;
                 await new Promise((resolve) => {
@@ -323,12 +323,12 @@ describe('Condition', () => {
                 });
                 expect(expr).to.have.property('fulfilled', true);
                 value = await expr.getValue();
-                expect(value).to.be.true;
+                expect(value).to.equal(true);
                 expect(expr).to.have.property('fulfilled', true);
 
                 moduleServer.variables[0].v = 8;
                 value = await expr.getValue();
-                expect(value).to.be.false;
+                expect(value).to.equal(false);
                 await new Promise((resolve) => {
                     expr.once('stateChanged', (state) => {
                         resolve();
@@ -339,7 +339,7 @@ describe('Condition', () => {
                 expr.clear();
                 moduleServer.variables[0].v = 12;
                 value = await expr.getValue();
-                expect(value).to.be.true;
+                expect(value).to.equal(true);
                 expect(expr).to.have.property('fulfilled', undefined);
             });
 
@@ -350,11 +350,11 @@ describe('Condition', () => {
                     expression: 'cos(CIF.Variable001.V)^2 > 0.9'
                 }, [module]);
                 let value = await expr.getValue();
-                expect(value).to.be.true;
+                expect(value).to.equal(true);
 
                 moduleServer.variables[0].v = 0.7;
                 value = await expr.getValue();
-                expect(value).to.be.false;
+                expect(value).to.equal(false);
             });
 
             it('should work with complex expression', async () => {
@@ -373,7 +373,7 @@ describe('Condition', () => {
                 moduleServer.variables[0].v = 0.7;
 
                 let value = await expr.getValue();
-                expect(value).to.be.false;
+                expect(value).to.equal(false);
             });
 
         });
