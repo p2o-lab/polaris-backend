@@ -126,7 +126,7 @@ export class TestServerVariable {
             let f2 = Math.random();
             let amplitude = this.sclMax - this.sclMin;
             let average = (this.sclMax + this.sclMin) / 2;
-            this.interval = setInterval(() => {
+            this.interval = global.setInterval(() => {
                 time = time + 0.05;
                 this.v = average + 0.5 * amplitude * Math.sin(2 * f1 * time + 3 * f2);
             }, 100);
@@ -169,7 +169,7 @@ export class TestServerStringVariable {
     }
 
     startSimulation() {
-        this.interval = setInterval(() => {
+        this.interval = global.setInterval(() => {
             this.v = new Date().toTimeString();
         }, 3000);
     }
