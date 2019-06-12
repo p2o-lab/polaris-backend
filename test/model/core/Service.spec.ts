@@ -23,18 +23,17 @@
  * SOFTWARE.
  */
 
-
-import {ModuleTestServer, TestServerService} from '../../../src/moduleTestServer/ModuleTestServer';
-import {Service} from '../../../src/model/core/Service';
-import {Module} from '../../../src/model/core/Module';
-import * as chai from 'chai';
 import {ServiceCommand} from '@p2olab/polaris-interface';
-import {waitForStateChange} from '../../helper';
+import * as chai from 'chai';
+import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
 import * as parseJson from 'json-parse-better-errors';
-import {OpMode} from '../../../src/model/core/enum';
 import * as delay from 'timeout-as-promise';
-import * as chaiAsPromised from 'chai-as-promised';
+import {OpMode} from '../../../src/model/core/enum';
+import {Module} from '../../../src/model/core/Module';
+import {Service} from '../../../src/model/core/Service';
+import {ModuleTestServer, TestServerService} from '../../../src/moduleTestServer/ModuleTestServer';
+import {waitForStateChange} from '../../helper';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -54,10 +53,10 @@ describe('Service', () => {
 
         const moduleJson = parseJson(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8'), null, 60)
             .modules[0];
-        let serviceJson = moduleJson.services[0];
+        const serviceJson = moduleJson.services[0];
 
         // copy object
-        let moduleWithoutService = JSON.parse(JSON.stringify(moduleJson));
+        const moduleWithoutService = JSON.parse(JSON.stringify(moduleJson));
         moduleWithoutService.services = [];
 
         module = new Module(moduleWithoutService);
@@ -135,8 +134,6 @@ describe('Service', () => {
             state: 'off',
             source: 'internal'
         });
-
-
 
         service.subscribeToService();
         await service.setOperationMode();

@@ -23,10 +23,10 @@
  * SOFTWARE.
  */
 
-import * as fs from 'fs';
-import { Module } from '../../../src/model/core/Module';
-import { Parameter } from '../../../src/model/recipe/Parameter';
 import {expect} from 'chai';
+import * as fs from 'fs';
+import {Module} from '../../../src/model/core/Module';
+import {Parameter} from '../../../src/model/recipe/Parameter';
 
 describe('Parameter', () => {
     let service;
@@ -46,7 +46,7 @@ describe('Parameter', () => {
         }, service);
     });
 
-    it('should load with expression', async() => {
+    it('should load with expression', async () => {
         const param = new Parameter({
             name: 'var1',
             value: '3+2'
@@ -54,7 +54,7 @@ describe('Parameter', () => {
         expect(await param.getValue()).to.equal(5);
     });
 
-    it('should load with complex expression', async() => {
+    it('should load with complex expression', async () => {
         const param = new Parameter({
             name: 'var1',
             value: 'sin(3)+2'
@@ -62,17 +62,17 @@ describe('Parameter', () => {
         expect(await param.getValue()).to.be.closeTo(2.14, 0.01);
     });
 
-    it.skip('should load with complex expression and given scopeArray', async() => {
+    it.skip('should load with complex expression and given scopeArray', async () => {
         await module.connect();
         const param = new Parameter({
             name: 'var1',
             value: 'sin(a)^2 + cos(CIF.Test_AnaView\\.L004)^2',
             scope: [
                 {
-                    name: "a",
-                    module: "CIF",
-                    dataAssembly: "Test_AnaView.L004",
-                    variable: "V"
+                    name: 'a',
+                    module: 'CIF',
+                    dataAssembly: 'Test_AnaView.L004',
+                    variable: 'V'
                 }
             ]
 
@@ -81,7 +81,7 @@ describe('Parameter', () => {
         await module.disconnect();
     });
 
-    it.skip('should load with complex expression with dataAssembly variables', async() => {
+    it.skip('should load with complex expression with dataAssembly variables', async () => {
         await module.connect();
         const param = new Parameter({
             name: 'var1',

@@ -23,7 +23,6 @@
  * SOFTWARE.
  */
 
-
 import {Request, Response, Router} from 'express';
 import * as asyncHandler from 'express-async-handler';
 import {catServer} from '../../config/logging';
@@ -101,4 +100,3 @@ serviceRouter.get('/:moduleId/service/:serviceName', asyncHandler(async (req: Re
     const service = manager.getService(req.params.moduleId, req.params.serviceName);
     res.json(await service.getOverview());
 }));
-

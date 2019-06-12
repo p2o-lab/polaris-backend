@@ -55,7 +55,7 @@ import {
 import {OpcUaNodeOptions} from './Interfaces';
 import {Module} from './Module';
 import {Strategy, StrategyOptions} from './Strategy';
-import {Unit} from './Unit';
+import {UNIT} from './Unit';
 
 export interface ServiceOptions {
     name: string;
@@ -468,7 +468,7 @@ export class Service extends (EventEmitter as new() => ServiceEmitter) {
                     value = param.Text.value;
                 }
                 if (unit) {
-                    const unitItem = Unit.find((item) => item.value === unit);
+                    const unitItem = UNIT.find((item) => item.value === unit);
                     unit = unitItem.unit;
                 }
                 return {

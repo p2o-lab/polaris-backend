@@ -24,12 +24,11 @@
  */
 
 import {expect} from 'chai';
-import {Module} from '../../../src/model/core/Module';
+import * as fs from 'fs';
 import {OPCUAServer} from 'node-opcua-server';
 import {timeout} from 'promise-timeout';
-import * as fs from 'fs';
+import {Module} from '../../../src/model/core/Module';
 import {ScopeItem} from '../../../src/model/recipe/ScopeItem';
-
 
 /**
  * Test for [[Condition]]
@@ -46,20 +45,20 @@ describe('Scope Item', () => {
     });
 
     it('should work for normal expression', () => {
-        const extraction = ScopeItem.extractFromExpressionString("CIF.Variable001 + 3", [module]);
+        const extraction = ScopeItem.extractFromExpressionString('CIF.Variable001 + 3', [module]);
         expect(extraction.scopeItems).to.have.lengthOf(1);
         expect(extraction.scopeItems[0].name).to.equal('CIF.Variable001');
     });
 
     it('should work for mutliple variables', () => {
-        const extraction = ScopeItem.extractFromExpressionString("CIF.Variable001 + CIF.Variable002", [module]);
+        const extraction = ScopeItem.extractFromExpressionString('CIF.Variable001 + CIF.Variable002', [module]);
         expect(extraction.scopeItems).to.have.lengthOf(2);
         expect(extraction.scopeItems[0].name).to.equal('CIF.Variable001');
         expect(extraction.scopeItems[1].name).to.equal('CIF.Variable002');
     });
 
     it('should work for mutliple times of same variables', () => {
-        const extraction = ScopeItem.extractFromExpressionString("CIF.Variable001 + CIF.Variable001", [module]);
+        const extraction = ScopeItem.extractFromExpressionString('CIF.Variable001 + CIF.Variable001', [module]);
         expect(extraction.scopeItems).to.have.lengthOf(1);
         expect(extraction.scopeItems[0].name).to.equal('CIF.Variable001');
     });

@@ -237,7 +237,7 @@ export class Player extends (EventEmitter as new() => PlayerEmitter) {
             throw new Error(`Ẁrong step. Expected: ${recipe.currentStep.name} - Actual: ${stepName}`);
         }
         const step = recipe.currentStep;
-        const transition = step.transitions.find((tr) => tr.next_step_name === nextStepName);
+        const transition = step.transitions.find((tr) => tr.nextStepName === nextStepName);
         if (!transition) {
             throw new Error('Does not contain nextStep');
         }

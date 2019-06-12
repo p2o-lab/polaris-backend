@@ -57,7 +57,7 @@ import {ServiceState} from './enum';
 import {OpcUaNodeOptions} from './Interfaces';
 import {Service, ServiceOptions} from './Service';
 import {Strategy} from './Strategy';
-import {Unit} from './Unit';
+import {UNIT} from './Unit';
 
 export interface ModuleOptions {
     id: string;
@@ -479,7 +479,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
             variable.subscribe(1000).on('V', (data) => {
                     let unit;
                 if (DataAssemblyFactory.isAnaView(variable)) {
-                    const unitObject = Unit.find((item) => item.value === parseInt(variable.VUnit.value, 10));
+                    const unitObject = UNIT.find((item) => item.value === parseInt(variable.VUnit.value, 10));
                     unit = unitObject ? unitObject.unit : undefined;
                     }
                 this.logger.info(`[${this.id}] variable changed: ${variable.name} = ` +
@@ -539,7 +539,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
                     const variable: DataAssembly = data.parameter;
                     let unit;
                     if (DataAssemblyFactory.isAnaView(variable)) {
-                        unit = Unit.find((item) => item.value === variable.VUnit.value).unit;
+                        unit = UNIT.find((item) => item.value === variable.VUnit.value).unit;
                     }
                     const entry = {
                         timestampPfe: new Date(),
@@ -556,7 +556,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
                     const variable: DataAssembly = data.parameter;
                     let unit;
                     if (DataAssemblyFactory.isAnaView(variable)) {
-                        unit = Unit.find((item) => item.value === variable.VUnit.value).unit;
+                        unit = UNIT.find((item) => item.value === variable.VUnit.value).unit;
                     }
                     const entry = {
                         timestampPfe: new Date(),

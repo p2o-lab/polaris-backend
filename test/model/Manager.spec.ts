@@ -23,16 +23,16 @@
  * SOFTWARE.
  */
 
-import {Manager} from '../../src/model/Manager';
-import * as fs from 'fs';
-import * as chai from 'chai';
-import {Service} from '../../src/model/core/Service';
-import {ModuleTestServer} from '../../src/moduleTestServer/ModuleTestServer';
-import * as parseJson from 'json-parse-better-errors';
-import * as chaiAsPromised from 'chai-as-promised';
-import {ServiceState} from '../../src/model/core/enum';
-import {waitForStateChange} from '../helper';
 import {ServiceCommand} from '@p2olab/polaris-interface';
+import * as chai from 'chai';
+import * as chaiAsPromised from 'chai-as-promised';
+import * as fs from 'fs';
+import * as parseJson from 'json-parse-better-errors';
+import {ServiceState} from '../../src/model/core/enum';
+import {Service} from '../../src/model/core/Service';
+import {Manager} from '../../src/model/Manager';
+import {ModuleTestServer} from '../../src/moduleTestServer/ModuleTestServer';
+import {waitForStateChange} from '../helper';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -42,7 +42,7 @@ describe('Manager', () => {
     it('should reject loading modules with empty options', () => {
         const manager = new Manager();
         expect(() => manager.loadModule({})).to.throw();
-        expect(() => manager.loadModule(<any>{someattribute: 'abc'})).to.throw();
+        expect(() => manager.loadModule({someattribute: 'abc'} as any)).to.throw();
     });
 
     it('should load with single module', () => {
@@ -79,7 +79,7 @@ describe('Manager', () => {
 
     it('should prevent removing a protected module', () => {
         const manager = new Manager();
-        let modules = manager.loadModule(
+        const modules = manager.loadModule(
             JSON.parse(fs.readFileSync('assets/modules/modules_achema.json').toString()),
             true);
     });
@@ -100,7 +100,6 @@ describe('Manager', () => {
         after(async () => {
             await moduleServer.shutdown();
         });
-
 
         it('should load from options, stop, abort and reset manager and remove module', async () => {
 
@@ -153,7 +152,6 @@ describe('Manager', () => {
             await waitForStateChange(service, 'COMPLETED');
             await waitForStateChange(service, 'IDLE');
         }).slow(2000).timeout(5000);
-
 
     }).retries(3);
 

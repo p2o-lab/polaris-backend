@@ -23,8 +23,8 @@
  * SOFTWARE.
  */
 
-import {Server} from '../../src/server/server';
 import {Manager} from '../../src/model/Manager';
+import {Server} from '../../src/server/server';
 
 describe('Server', () => {
 

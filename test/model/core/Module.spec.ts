@@ -24,17 +24,17 @@
  */
 
 import * as assert from 'assert';
+import {expect} from 'chai';
 import * as fs from 'fs';
 import {Module, ModuleOptions} from '../../../src/model/core/Module';
-import {expect} from 'chai';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 
 describe('Module', () => {
 
     it('should not connect to a module with wrong endpoint', async () => {
-        let options: ModuleOptions = JSON.parse(fs.readFileSync('assets/modules/module_cif.json').toString()).modules[0];
+        const options: ModuleOptions = JSON.parse(fs.readFileSync('assets/modules/module_cif.json').toString()).modules[0];
         options.opcua_server_url = 'opc.tcp://10.6.51.99:484144';
-        let module = new Module(options);
+        const module = new Module(options);
         try {
             await module.connect();
         } catch (e) {

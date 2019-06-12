@@ -64,14 +64,6 @@ export abstract class Condition extends (EventEmitter as new() => ConditionEmitt
         return this._fulfilled;
     }
 
-    protected _fulfilled: boolean = false;
-    private options: ConditionOptions;
-
-    constructor(options: ConditionOptions) {
-        super();
-        this.options = options;
-    }
-
     /**
      * Create Condition
      * @param {ConditionOptions} options    options for creating Condition
@@ -100,6 +92,14 @@ export abstract class Condition extends (EventEmitter as new() => ConditionEmitt
         }
     }
 
+    protected _fulfilled: boolean = false;
+    private options: ConditionOptions;
+
+    constructor(options: ConditionOptions) {
+        super();
+        this.options = options;
+    }
+
     /**
      * Listen to any change in condition and inform via 'stateChanged' event
      */
@@ -125,8 +125,6 @@ export class ExpressionCondition extends Condition {
     private expression: Expression;
     private scopeArray: ScopeItem[];
     private listenersExpression: EventEmitter[] = [];
-
-    private boundOnChanged = () => this.onChanged();
 
     /**
      *
@@ -192,6 +190,8 @@ export class ExpressionCondition extends Condition {
             item.removeListener('changed', this.boundOnChanged);
         });
     }
+
+    private boundOnChanged = () => this.onChanged();
 
 }
 
@@ -335,8 +335,6 @@ export abstract class ModuleCondition extends Condition {
     protected readonly module: Module;
     protected monitoredItem: EventEmitter;
 
-    protected boundCheckHandler = (data) => this.check(data);
-
     constructor(options: StateConditionOptions | VariableConditionOptions, modules: Module[]) {
         super(options);
         if (options.module) {
@@ -361,6 +359,8 @@ export abstract class ModuleCondition extends Condition {
     }
 
     public abstract check(data);
+
+    protected boundCheckHandler = (data) => this.check(data);
 }
 
 export class StateCondition extends ModuleCondition {

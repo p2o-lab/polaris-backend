@@ -23,13 +23,13 @@
  * SOFTWARE.
  */
 
-import {Server} from './server/server';
-import * as serverHandlers from './server/serverHandlers';
 import * as commandLineArgs from 'command-line-args';
 import * as fs from 'fs';
+import {catModule} from './config/logging';
 import {Manager} from './model/Manager';
 import {ExternalTrigger} from './server/ExternalTrigger';
-import {catModule} from './config/logging';
+import {Server} from './server/server';
+import * as serverHandlers from './server/serverHandlers';
 import commandLineUsage = require('command-line-usage');
 
 const optionDefinitions = [
@@ -107,7 +107,6 @@ if (options) {
         appServer.startHttpServer(port);
         appServer.initSocketServer();
 
-
         /** Load some configuration at startup */
         if (options.module && options.module.length > 0) {
             console.log(`Load modules from ${options.module}`);
@@ -115,9 +114,9 @@ if (options) {
                 const modulesOptions = JSON.parse(fs.readFileSync(module).toString());
                 manager.loadModule(modulesOptions, true);
             });
-            manager.modules.forEach(module =>
+            manager.modules.forEach((module) =>
                 module.connect()
-                    .catch(reason =>
+                    .catch((reason) =>
                         catModule.warn(`Could not connect to module ${module.id}: ${reason}`)
                         )
             );
@@ -140,7 +139,7 @@ if (options) {
             const et = new ExternalTrigger(endpoint, nodeId, () => manager.player.start());
             et.startMonitoring()
                 .catch((err) => {
-                    console.log("Could not start monitoring of external trigger", err.toString());
+                    console.log('Could not start monitoring of external trigger', err.toString());
                     process.exit(err);
                 });
             // directly restart recipe if external trigger is still active when recipe finishes

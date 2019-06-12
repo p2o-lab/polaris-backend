@@ -23,9 +23,8 @@
  * SOFTWARE.
  */
 
-
 export interface OpcUaNodeOptions {
-    /** despite its current name this variable contains the *namespace url* of the node*/
+    /* despite its current name this variable contains the *namespace url* of the node*/
     namespace_index: string;
     /** node id of the node as string (e.g. 's=sdfdsf' or 'i=12') */
     node_id: string;
@@ -36,4 +35,3 @@ export interface OpcUaNodeOptions {
     /** timestamp of last update of value */
     timestamp?: Date;
 }
-

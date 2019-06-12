@@ -23,31 +23,30 @@
  * SOFTWARE.
  */
 
-import { Module } from '../core/Module';
-import { Service } from '../core/Service';
-import {catOperation} from '../../config/logging';
-import { Recipe } from './Recipe';
-import { Strategy } from '../core/Strategy';
-import { Parameter } from './Parameter';
-import { OperationInterface, OperationOptions, ServiceCommand } from '@p2olab/polaris-interface';
+import {OperationInterface, OperationOptions, ServiceCommand} from '@p2olab/polaris-interface';
 import * as delay from 'timeout-as-promise';
+import {catOperation} from '../../config/logging';
+import {Module} from '../core/Module';
+import {Service} from '../core/Service';
+import {Strategy} from '../core/Strategy';
+import {Parameter} from './Parameter';
 
 /** Operation used in a [[Step]] of a [[Recipe]]
  *
  */
 export class Operation {
-    module: Module;
-    service: Service;
-    strategy: Strategy;
-    command: ServiceCommand;
-    parameters: Parameter[];
+    public module: Module;
+    public service: Service;
+    public strategy: Strategy;
+    public command: ServiceCommand;
+    public parameters: Parameter[];
 
     constructor(options: OperationOptions, modules: Module[]) {
         if (modules) {
             if (options.module) {
-                this.module = modules.find(module => module.id === options.module);
+                this.module = modules.find((module) => module.id === options.module);
                 if (!this.module) {
-                    throw new Error(`Could not find module ${options.module} in ${JSON.stringify(modules.map(m=> m.id))}`);
+                    throw new Error(`Could not find module ${options.module} in ${JSON.stringify(modules.map((m) => m.id))}`);
                 }
             } else if (modules.length === 1) {
                 this.module = modules[0];
@@ -59,14 +58,14 @@ export class Operation {
             throw new Error('No modules specified');
         }
 
-        this.service = this.module.services.find(service => service.name === options.service);
+        this.service = this.module.services.find((service) => service.name === options.service);
         if (this.service === undefined) {
             throw new Error(`Service ${ options.service }(${ this.module.id }) not found in modules`);
         }
         if (options.strategy) {
-            this.strategy = this.service.strategies.find(strategy => strategy.name === options.strategy);
+            this.strategy = this.service.strategies.find((strategy) => strategy.name === options.strategy);
         } else {
-            this.strategy = this.service.strategies.find(strategy => strategy.default === true);
+            this.strategy = this.service.strategies.find((strategy) => strategy.default === true);
         }
         if (!this.strategy) {
             throw new Error(`Strategy '${options.strategy}' could not be found in ${ this.service.name }.`);
@@ -76,7 +75,7 @@ export class Operation {
         }
         if (options.parameter) {
             this.parameters = options.parameter.map(
-                paramOptions => new Parameter(paramOptions, this.service, this.strategy, modules)
+                (paramOptions) => new Parameter(paramOptions, this.service, this.strategy, modules)
             );
         }
     }
@@ -85,7 +84,7 @@ export class Operation {
      * Execute Operation at runtime during recipe run
      * @returns {Promise<void>}
      */
-    execute(): Promise<void> {
+    public execute(): Promise<void> {
         catOperation.info(`Perform operation ${ this.module.id } ${ this.service.name } ${ this.command } ` +
             `(Strategy: ${ this.strategy ? this.strategy.name : '' })`);
         return this.service.execute(this.command, this.strategy, this.parameters)
@@ -96,7 +95,7 @@ export class Operation {
             });
     }
 
-    json(): OperationInterface {
+    public json(): OperationInterface {
         return {
             module: this.module.id,
             service: this.service.name,

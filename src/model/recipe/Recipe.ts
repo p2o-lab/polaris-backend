@@ -98,9 +98,9 @@ export class Recipe extends (EventEmitter as new() => RecipeEmitter) {
             this.steps.forEach((step: Step) => {
                 this.modules = new Set([...this.modules, ...step.getUsedModules()]);
                 step.transitions.forEach((transition) => {
-                    transition.next_step = this.steps.find((step) => step.name === transition.next_step_name);
-                    if (!transition.next_step && !['completed', 'finished'].find((v) => v === transition.next_step_name)) {
-                        throw new Error(`Recipe load error ${this.name}: Next step "${transition.next_step_name}" not found in "${step.name}" for condition "${JSON.stringify(transition.condition.json())}"`);
+                    transition.nextStep = this.steps.find((step) => step.name === transition.nextStepName);
+                    if (!transition.nextStep && !['completed', 'finished'].find((v) => v === transition.nextStepName)) {
+                        throw new Error(`Recipe load error ${this.name}: Next step "${transition.nextStepName}" not found in "${step.name}" for condition "${JSON.stringify(transition.condition.json())}"`);
                     }
                 });
             });
@@ -200,9 +200,9 @@ export class Recipe extends (EventEmitter as new() => RecipeEmitter) {
         this.lastChange = new Date();
         this.stepListener = this.currentStep.execute()
             .once('completed', (transition: Transition) => {
-                if (transition.next_step) {
-                    catRecipe.info(`Step ${this.currentStep.name} finished. New step is ${transition.next_step_name}`);
-                    this.currentStep = transition.next_step;
+                if (transition.nextStep) {
+                    catRecipe.info(`Step ${this.currentStep.name} finished. New step is ${transition.nextStepName}`);
+                    this.currentStep = transition.nextStep;
                     this.executeStep();
                 } else {
                     catRecipe.info(`Recipe completed: ${this.name}`);

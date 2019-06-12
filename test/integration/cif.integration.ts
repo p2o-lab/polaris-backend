@@ -23,17 +23,17 @@
  * SOFTWARE.
  */
 
-import * as assert from 'assert';
-import * as fs from 'fs';
-import {Module} from '../../src/model/core/Module';
-import {ServiceState} from '../../src/model/core/enum';
-import {Manager} from '../../src/model/Manager';
-import {expect} from 'chai';
-import * as delay from 'timeout-as-promise';
-import { waitForStateChange} from '../helper';
-import {Service} from '../../src/model/core/Service';
-import {Parameter} from '../../src/model/recipe/Parameter';
 import {ServiceCommand} from '@p2olab/polaris-interface';
+import * as assert from 'assert';
+import {expect} from 'chai';
+import * as fs from 'fs';
+import * as delay from 'timeout-as-promise';
+import {ServiceState} from '../../src/model/core/enum';
+import {Module} from '../../src/model/core/Module';
+import {Service} from '../../src/model/core/Service';
+import {Manager} from '../../src/model/Manager';
+import {Parameter} from '../../src/model/recipe/Parameter';
+import {waitForStateChange} from '../helper';
 
 describe.skip('CIF Integration', function () {
 
@@ -51,19 +51,21 @@ describe.skip('CIF Integration', function () {
         index = module.services.findIndex((service) => service.name === 'Test_Service.Service2');
         module.services.splice(index, 1);
         await module.connect();
-        expect(async () => {await module.connect()}).to.not.throw();
+        expect(async () => {
+            await module.connect();
+        }).to.not.throw();
         service = module.services.find((service) => service.name === 'Test_Service.Dosieren');
     });
 
-    after(async() => {
+    after(async () => {
         await delay(200);
         await module.disconnect();
         const json = await module.json();
         assert.equal(json.connected, false);
     });
 
-    it('should be succesfully connected', async() => {
-        let json = await module.json();
+    it('should be succesfully connected', async () => {
+        const json = await module.json();
         expect(json).to.have.property('id', 'CIF');
         assert.equal(json.endpoint, 'opc.tcp://10.6.51.200:4840');
         assert.equal(json.protected, false);
@@ -99,48 +101,47 @@ describe.skip('CIF Integration', function () {
             'unhold': false
         });
 
-
-        let param = new Parameter({name: 'SollVolumenStrom', value: 1.3}, service);
+        const param = new Parameter({name: 'SollVolumenStrom', value: 1.3}, service);
         service.execute(ServiceCommand.start, service.strategies[0], [param]);
-        //await waitForStateChange(service, 'STARTING');
+        // await waitForStateChange(service, 'STARTING');
         await waitForStateChange(service, 'EXECUTE');
 
         service.execute(ServiceCommand.pause);
-        //await waitForStateChange(service, 'PAUSING');
+        // await waitForStateChange(service, 'PAUSING');
         await waitForStateChange(service, 'PAUSED');
 
         service.execute(ServiceCommand.resume);
-        //await waitForStateChange(service, 'RESUMING');
+        // await waitForStateChange(service, 'RESUMING');
         await waitForStateChange(service, 'EXECUTE');
 
         // does not work every time
         param.value = 1.4;
-        //service.execute(ServiceCommand.restart, service.strategies[0], [param]);
-        //await waitForStateChange(service, 'STARTING');
-        //await waitForStateChange(service, 'EXECUTE');
+        // service.execute(ServiceCommand.restart, service.strategies[0], [param]);
+        // await waitForStateChange(service, 'STARTING');
+        // await waitForStateChange(service, 'EXECUTE');
 
         service.execute(ServiceCommand.complete);
-        //await waitForStateChange(service, 'COMPLETING');
+        // await waitForStateChange(service, 'COMPLETING');
         await waitForStateChange(service, 'COMPLETED');
 
         // test auto reset
-        //await waitForStateChange(service, 'RESETTING');
+        // await waitForStateChange(service, 'RESETTING');
         await waitForStateChange(service, 'IDLE');
 
         service.execute(ServiceCommand.start);
-        //await waitForStateChange(service, 'STARTING');
+        // await waitForStateChange(service, 'STARTING');
         await waitForStateChange(service, 'EXECUTE');
 
         service.execute(ServiceCommand.stop);
-        //await waitForStateChange(service, 'STOPPING');
+        // await waitForStateChange(service, 'STOPPING');
         await waitForStateChange(service, 'STOPPED');
 
         service.execute(ServiceCommand.abort);
-        //await waitForStateChange(service, 'ABORTING');
+        // await waitForStateChange(service, 'ABORTING');
         await waitForStateChange(service, 'ABORTED');
 
         service.execute(ServiceCommand.reset).catch((err) => console.log('already triggered by autoreset'));
-        //await waitForStateChange(service, 'RESETTING');
+        // await waitForStateChange(service, 'RESETTING');
         await waitForStateChange(service, 'IDLE');
     });
 

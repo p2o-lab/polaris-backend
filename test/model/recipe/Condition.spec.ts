@@ -23,23 +23,21 @@
  * SOFTWARE.
  */
 
-import {Condition, ExpressionCondition, TimeCondition} from '../../../src/model/recipe/Condition';
 import {ConditionType} from '@p2olab/polaris-interface';
 import {expect} from 'chai';
-import {Module} from '../../../src/model/core/Module';
-import {OPCUAServer} from 'node-opcua-server';
-import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
-import {ServiceState} from '../../../src/model/core/enum';
-import {timeout} from 'promise-timeout';
 import * as fs from 'fs';
+import {OPCUAServer} from 'node-opcua-server';
+import {timeout} from 'promise-timeout';
 import * as delay from 'timeout-as-promise';
-
+import {ServiceState} from '../../../src/model/core/enum';
+import {Module} from '../../../src/model/core/Module';
+import {Condition, ExpressionCondition, TimeCondition} from '../../../src/model/recipe/Condition';
+import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 
 /**
  * Test for [[Condition]]
  */
 describe('Condition', () => {
-
 
     describe('without test server', () => {
         it('should listen to a time condition of 0.1s', (done) => {
@@ -130,7 +128,7 @@ describe('Condition', () => {
 
             it('should work with simple expression', async () => {
                 const expr = new ExpressionCondition({type: ConditionType.expression, expression: '4>3'});
-                let value = await expr.getValue();
+                const value = await expr.getValue();
                 expect(value).to.equal(true);
             });
 
@@ -139,7 +137,7 @@ describe('Condition', () => {
                     .modules[0];
 
                 const module = new Module(moduleJson);
-                const expr = <ExpressionCondition> Condition.create({
+                const expr = Condition.create({
                     type: ConditionType.expression,
                     expression: 'sin(a)^2 + cos(CIF.Variable001)^2 < 0.5',
                     scope: [
@@ -150,12 +148,12 @@ describe('Condition', () => {
                             variable: 'V'
                         }
                     ]
-                }, [module]);
+                }, [module]) as ExpressionCondition;
 
-                expect(()=> expr.getValue()).to.throw;
+                expect(() => expr.getValue()).to.throw;
             });
 
-        })
+        });
 
     });
 
@@ -184,9 +182,9 @@ describe('Condition', () => {
             const condition = Condition.create({
                 type: ConditionType.variable,
                 module: 'CIF',
-                dataAssembly: "Variable001",
+                dataAssembly: 'Variable001',
                 variable: 'V',
-                operator: ">",
+                operator: '>',
                 value: 25
             }, [module]);
 
@@ -197,7 +195,6 @@ describe('Condition', () => {
 
             moduleServer.variables[0].v = 22;
             expect(condition).to.have.property('fulfilled', false);
-
 
             moduleServer.variables[0].v = 26;
             await new Promise((resolve) => {
@@ -225,10 +222,10 @@ describe('Condition', () => {
             }, [module]);
             expect(condition.json()).to.deep.equal(
             {
-                module: "CIF",
-                service: "Service1",
-                state: "completed",
-                type: "state"
+                module: 'CIF',
+                service: 'Service1',
+                state: 'completed',
+                type: 'state'
             });
 
             condition.listen();
@@ -239,7 +236,6 @@ describe('Condition', () => {
             moduleServer.services[0].varStatus = ServiceState.EXECUTE;
             await delay(100);
             expect(condition).to.have.property('fulfilled', false);
-
 
             moduleServer.services[0].varStatus = ServiceState.COMPLETED;
             await new Promise((resolve, reject) => {
@@ -292,7 +288,7 @@ describe('Condition', () => {
             moduleServer.services[0].varStatus = ServiceState.COMPLETED;
             await new Promise((resolve, reject) => {
                 condition.once('stateChanged', (state) => {
-                    if(state) {
+                    if (state) {
                         resolve();
                     } else {
                         reject();
@@ -302,7 +298,6 @@ describe('Condition', () => {
             condition.clear();
 
         });
-
 
         describe('ExpressionCondition', () => {
 
@@ -345,10 +340,10 @@ describe('Condition', () => {
 
             it('should work with semi-complex expression', async () => {
                 moduleServer.variables[0].v = 3.1;
-                const expr: ExpressionCondition = <ExpressionCondition> Condition.create({
+                const expr: ExpressionCondition = Condition.create({
                     type: ConditionType.expression,
                     expression: 'cos(CIF.Variable001.V)^2 > 0.9'
-                }, [module]);
+                }, [module]) as ExpressionCondition;
                 let value = await expr.getValue();
                 expect(value).to.equal(true);
 
@@ -358,7 +353,7 @@ describe('Condition', () => {
             });
 
             it('should work with complex expression', async () => {
-                const expr = <ExpressionCondition> Condition.create({
+                const expr = Condition.create({
                     type: ConditionType.expression,
                     expression: 'sin(a)^2 + cos(CIF.Variable001)^2 < 0.5',
                     scope: [
@@ -369,10 +364,10 @@ describe('Condition', () => {
                             variable: 'V'
                         }
                     ]
-                }, [module]);
+                }, [module]) as ExpressionCondition;
                 moduleServer.variables[0].v = 0.7;
 
-                let value = await expr.getValue();
+                const value = await expr.getValue();
                 expect(value).to.equal(false);
             });
 

@@ -23,9 +23,9 @@
  * SOFTWARE.
  */
 
+import {timeout} from 'promise-timeout';
 import {ServiceState} from '../src/model/core/enum';
 import {Service} from '../src/model/core/Service';
-import {timeout} from 'promise-timeout';
 
 /**
  * resolve when service changes to expectedState

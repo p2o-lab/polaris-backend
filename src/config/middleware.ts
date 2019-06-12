@@ -27,7 +27,7 @@ import * as cors from 'cors';
 import * as express from 'express';
 
 export default class Middleware {
-    static init(app: express.Application): void {
+    public static init(app: express.Application): void {
 
         // express middleware
         app.use(express.json({limit: '10mb'}));
