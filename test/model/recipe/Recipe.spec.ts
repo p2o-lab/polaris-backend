@@ -23,12 +23,12 @@
  * SOFTWARE.
  */
 
-import {Recipe} from '../../../src/model/recipe/Recipe';
-import * as fs from 'fs';
-import * as assert from 'assert';
-import {Module} from '../../../src/model/core/Module';
 import {RecipeInterface} from '@p2olab/polaris-interface';
+import * as assert from 'assert';
 import {expect} from 'chai';
+import * as fs from 'fs';
+import {Module} from '../../../src/model/core/Module';
+import {Recipe} from '../../../src/model/recipe/Recipe';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 
 describe('Recipe', () => {
@@ -46,7 +46,6 @@ describe('Recipe', () => {
             await moduleServer.shutdown();
         });
 
-
         it('runs test recipe successfully', async () => {
 
             const moduleJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString())
@@ -56,15 +55,14 @@ describe('Recipe', () => {
             await module.connect();
 
             // now test recipe
-            const recipeJson = JSON.parse(fs.readFileSync('assets/recipes/test/recipe_testserver_2services_1.0.0.json').toString());
+            const recipeJson = JSON.parse(
+                fs.readFileSync('assets/recipes/test/recipe_testserver_2services_1.0.0.json').toString());
             const recipe = new Recipe(recipeJson, [module]);
 
             recipe.start();
 
-
             await new Promise((resolve) => {
                 recipe.on('completed', () => {
-                    console.log('recipe completed')
                     resolve();
                 });
             });
@@ -76,11 +74,11 @@ describe('Recipe', () => {
     describe('valid recipes', () => {
 
         const modules = [];
-        let module_biofeed;
+        let moduleBiofeed;
 
         before(() => {
             let file = fs.readFileSync('assets/modules/module_biofeed_1.6.0.json');
-            module_biofeed = new Module(JSON.parse(file.toString()).modules[0]);
+            moduleBiofeed = new Module(JSON.parse(file.toString()).modules[0]);
 
             file = fs.readFileSync('assets/modules/modules_achema.json');
             let options = JSON.parse(file.toString());
@@ -118,7 +116,7 @@ describe('Recipe', () => {
         it('should load the biofeed recipe json', (done) => {
             fs.readFile('assets/recipes/biofeed/recipe_biofeed_88370C_1.0.0.json', async (err, file) => {
                 const options = JSON.parse(file.toString());
-                const recipe = new Recipe(options, [module_biofeed]);
+                const recipe = new Recipe(options, [moduleBiofeed]);
                 assert.equal(recipe.modules.size, 1);
 
                 const json: RecipeInterface = await recipe.json();
@@ -153,11 +151,11 @@ describe('Recipe', () => {
                     'recipe_biofeed_88370C_0.3.1.json',
                     'recipe_biofeed_standby_1.0.0.json',
                 ];
-                if (fs.statSync(completePath).isFile() && !ignoredFiles.find(f => f == filename)) {
+                if (fs.statSync(completePath).isFile() && !ignoredFiles.find((f) => f === filename)) {
                     it(`should load recipe ${completePath}`, (done) => {
                         fs.readFile(completePath, (err, file) => {
                             const options = JSON.parse(file.toString());
-                            const recipe = new Recipe(options, [module_biofeed]);
+                            const recipe = new Recipe(options, [moduleBiofeed]);
                             done();
                         });
                     });
@@ -178,7 +176,7 @@ describe('Recipe', () => {
         it('should load the biofeed standby recipe json', (done) => {
             fs.readFile('assets/recipes/biofeed/recipe_biofeed_standby_0.1.0.json', (err, file) => {
                 const options = JSON.parse(file.toString());
-                const recipe = new Recipe(options, [module_biofeed]);
+                const recipe = new Recipe(options, [moduleBiofeed]);
                 assert.equal(recipe.modules.size, 1);
                 done();
             });
