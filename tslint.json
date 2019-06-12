@@ -15,7 +15,9 @@
       120
     ],
     "indent": [
-      true, "spaces", 4
+      true,
+      "spaces",
+      2
     ],
     "trailing-comma": [
       true
