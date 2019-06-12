@@ -67,6 +67,14 @@
                       "namespace_index": "urn:NodeOPCUA-Server-default",
                       "node_id": "Service1.Parameter1.VExt"
                     },
+                    "VMax": {
+                      "value": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.Parameter1.VSclMax"
+                    },
+                    "VMin": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.Parameter1.VSclMin"
+                    },
                     "VUnit": {
                       "namespace_index": "urn:NodeOPCUA-Server-default",
                       "node_id": "Service1.Parameter1.VUnit"
@@ -100,6 +108,14 @@
                     "VExt": {
                       "namespace_index": "urn:NodeOPCUA-Server-default",
                       "node_id": "Service1.Parameter2.VExt"
+                    },
+                    "VMax": {
+                      "value": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.Parameter2.VSclMax"
+                    },
+                    "VMin": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.Parameter2.VSclMin"
                     },
                     "VUnit": {
                       "namespace_index": "urn:NodeOPCUA-Server-default",
@@ -163,6 +179,14 @@
                     "VExt": {
                       "namespace_index": "urn:NodeOPCUA-Server-default",
                       "node_id": "Service1.Parameter1.VExt"
+                    },
+                    "VMax": {
+                      "value": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.Parameter1.VSclMax"
+                    },
+                    "VMin": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.Parameter1.VSclMin"
                     },
                     "VUnit": {
                       "namespace_index": "urn:NodeOPCUA-Server-default",
