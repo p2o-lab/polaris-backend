@@ -74,13 +74,9 @@ describe('Recipe', () => {
     describe('valid recipes', () => {
 
         const modules = [];
-        let moduleBiofeed;
 
         before(() => {
-            let file = fs.readFileSync('assets/modules/module_biofeed_1.6.0.json');
-            moduleBiofeed = new Module(JSON.parse(file.toString()).modules[0]);
-
-            file = fs.readFileSync('assets/modules/modules_achema.json');
+            let file = fs.readFileSync('assets/modules/modules_achema.json');
             let options = JSON.parse(file.toString());
             modules.push(new Module(options.modules[0]));
             modules.push(new Module(options.modules[1]));
@@ -113,24 +109,8 @@ describe('Recipe', () => {
             });
         });
 
-        it('should load the biofeed recipe json', (done) => {
-            fs.readFile('assets/recipes/biofeed/recipe_biofeed_88370C_1.0.0.json', async (err, file) => {
-                const options = JSON.parse(file.toString());
-                const recipe = new Recipe(options, [moduleBiofeed]);
-                assert.equal(recipe.modules.size, 1);
-
-                const json: RecipeInterface = await recipe.json();
-                assert.equal(json.protected, false);
-                assert.deepEqual(json.modules, ['BioFeed']);
-                assert.equal(json.options.initial_step, 'S1.AddWater');
-                assert.equal(json.status, undefined);
-
-                done();
-            });
-        });
-
         describe('should load all recipes', () => {
-            let path = 'assets/recipes/';
+            const path = 'assets/recipes/';
             fs.readdirSync(path).forEach((filename) => {
                 const completePath = path + filename;
                 if (fs.statSync(completePath).isFile()) {
@@ -142,41 +122,12 @@ describe('Recipe', () => {
                     });
                 }
             });
-
-            path = 'assets/recipes/biofeed/';
-            fs.readdirSync(path).forEach((filename) => {
-                const completePath = path + filename;
-                const ignoredFiles = [
-                    'recipe_biofeed_88370C_0.3.0.json',
-                    'recipe_biofeed_88370C_0.3.1.json',
-                    'recipe_biofeed_standby_1.0.0.json',
-                ];
-                if (fs.statSync(completePath).isFile() && !ignoredFiles.find((f) => f === filename)) {
-                    it(`should load recipe ${completePath}`, (done) => {
-                        fs.readFile(completePath, (err, file) => {
-                            const options = JSON.parse(file.toString());
-                            const recipe = new Recipe(options, [moduleBiofeed]);
-                            done();
-                        });
-                    });
-                }
-            });
-
         });
 
         it('should load the huber recipe json', (done) => {
             fs.readFile('assets/recipes/recipe_huber_only.json', (err, file) => {
                 const options = JSON.parse(file.toString());
                 const recipe = new Recipe(options, modules);
-                assert.equal(recipe.modules.size, 1);
-                done();
-            });
-        });
-
-        it('should load the biofeed standby recipe json', (done) => {
-            fs.readFile('assets/recipes/biofeed/recipe_biofeed_standby_0.1.0.json', (err, file) => {
-                const options = JSON.parse(file.toString());
-                const recipe = new Recipe(options, [moduleBiofeed]);
                 assert.equal(recipe.modules.size, 1);
                 done();
             });

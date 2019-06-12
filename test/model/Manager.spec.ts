@@ -37,55 +37,37 @@ import {ServiceCommand} from '@p2olab/polaris-interface';
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-
 describe('Manager', () => {
-
-    it('should handle recipes and modules from biofeed', () => {
-        const manager  = new Manager();
-        let modules = manager.loadModule(
-            JSON.parse(fs.readFileSync('assets/modules/module_biofeed_1.4.2.json').toString()),
-            true);
-        expect(modules).to.have.lengthOf(1);
-        manager.loadRecipe(
-            JSON.parse(fs.readFileSync('assets/recipes/biofeed/recipe_biofeed_88370C_0.3.1.json').toString()),
-            true);
-        expect(() => manager.removeRecipe('something')).to.throw();
-        expect(() => manager.removeRecipe(manager.recipes[0].id)).to.throw();
-        manager.loadRecipe(
-            JSON.parse(fs.readFileSync('assets/recipes/biofeed/recipe_biofeed_88370C_0.3.1.json').toString()),
-            false);
-        expect(() => manager.removeRecipe(manager.recipes[1].id)).to.not.throw();
-    });
 
     it('should reject loading modules with empty options', () => {
         const manager = new Manager();
-        expect(() => manager.loadModule({})).to.throw;
-        expect(() => manager.loadModule(<any>{someattribute: 'abc'})).to.throw;
+        expect(() => manager.loadModule({})).to.throw();
+        expect(() => manager.loadModule(<any>{someattribute: 'abc'})).to.throw();
     });
 
     it('should load with single module', () => {
-        const modulesJson = JSON.parse(fs.readFileSync('assets/modules/module_biofeed_1.4.2.json').toString());
+        const modulesJson = JSON.parse(fs.readFileSync('assets/modules/module_cif.json').toString());
         const moduleJson = modulesJson.modules[0];
         const manager = new Manager();
         manager.loadModule({module: moduleJson});
     });
 
     it('should load with subplants options', () => {
-        const modulesJson = JSON.parse(fs.readFileSync('assets/modules/module_biofeed_1.4.2.json').toString());
+        const modulesJson = JSON.parse(fs.readFileSync('assets/modules/module_cif.json').toString());
         const manager = new Manager();
         manager.loadModule({subplants: [modulesJson]});
     });
 
     it('should load the achema modules', () => {
         const manager = new Manager();
-        let modules = manager.loadModule(
+        const modules = manager.loadModule(
             JSON.parse(fs.readFileSync('assets/modules/modules_achema.json').toString()),
             true);
         expect(modules).to.have.lengthOf(3);
 
         expect(manager.modules).to.have.lengthOf(3);
 
-        let service = manager.getService('Dose', 'Fill');
+        const service = manager.getService('Dose', 'Fill');
         expect(service).to.be.instanceOf(Service);
         expect(service.name).to.equal('Fill');
         expect(() => manager.getService('Dose', 'NoService')).to.throw();
@@ -103,7 +85,7 @@ describe('Manager', () => {
     });
 
     it('should provide JSON output', () => {
-        const manager= new Manager();
+        const manager = new Manager();
         expect(manager.json().autoReset).to.equal(true);
     });
 

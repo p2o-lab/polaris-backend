@@ -29,29 +29,7 @@ import {Module, ModuleOptions} from '../../../src/model/core/Module';
 import {expect} from 'chai';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 
-
 describe('Module', () => {
-
-    it('should load the biofeed module json', (done) => {
-        fs.readFile('assets/modules/module_biofeed_1.4.2.json', async (err, file) => {
-            const module = new Module(JSON.parse(file.toString()).modules[0]);
-            assert.equal(module.id, 'BioFeed');
-            assert.equal(module.services.length, 14);
-            assert.equal(module.isConnected(), false);
-
-            let json = await module.json();
-            assert.deepEqual(json, {
-                id: 'BioFeed',
-                endpoint: 'opc.tcp://10.6.51.42:4840',
-                hmiUrl: 'http://10.6.51.42',
-                connected: false,
-                services: undefined,
-                protected: false
-            });
-            done();
-        })
-        ;
-    });
 
     it('should not connect to a module with wrong endpoint', async () => {
         let options: ModuleOptions = JSON.parse(fs.readFileSync('assets/modules/module_cif.json').toString()).modules[0];
@@ -74,8 +52,6 @@ describe('Module', () => {
         });
     });
 
-
-    // TODO: for some reason this test does not terminate
     it('should recognize a opc ua server shutdown', async () => {
         const moduleJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8')).modules[0];
 
