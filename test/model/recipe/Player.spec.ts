@@ -24,7 +24,8 @@
  */
 
 import {RecipeState} from '@p2olab/polaris-interface';
-import {expect} from 'chai';
+import * as chai from 'chai';
+import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
 import {ClientSession, OPCUAClient} from 'node-opcua-client';
 import {OPCUAServer} from 'node-opcua-server';
@@ -37,6 +38,9 @@ import {Player} from '../../../src/model/recipe/Player';
 import {Recipe} from '../../../src/model/recipe/Recipe';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 import {waitForStateChange} from '../../helper';
+
+chai.use(chaiAsPromised);
+const expect = chai.expect;
 
 describe('Player', function () {
 
@@ -91,6 +95,100 @@ describe('Player', function () {
 
             await client.disconnect();
         });
+
+        it('should run a test recipe two times', async () => {
+
+            const moduleJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString())
+                .modules[0];
+            const module = new Module(moduleJson);
+            const service = module.services[0];
+
+            await module.connect();
+            moduleServer.services[0].varStatus = ServiceState.IDLE;
+            await waitForStateChange(service, 'IDLE');
+
+            // now test recipe
+            const recipeJson = JSON.parse(
+                fs.readFileSync('assets/recipes/test/recipe_testserver_1.0.0.json').toString()
+            );
+            const recipe = new Recipe(recipeJson, [module]);
+            const player = new Player();
+
+            // two times the same recipe
+            player.enqueue(recipe);
+            player.enqueue(recipe);
+
+            expect(service.status.value).to.equal(ServiceState.IDLE);
+
+            player.start();
+            expect(player.status).to.equal(RecipeState.running);
+            waitForStateChange(service, 'STARTING');
+            await waitForStateChange(service, 'EXECUTE');
+            waitForStateChange(service, 'COMPLETING', 2000);
+            await waitForStateChange(service, 'COMPLETED', 2000);
+            await waitForStateChange(service, 'IDLE');
+
+            // here the second run of the recipe should automatically start, since first recipe is finished
+
+            waitForStateChange(service, 'STARTING', 2000);
+            await waitForStateChange(service, 'EXECUTE', 2000);
+            waitForStateChange(service, 'COMPLETING', 2000);
+            await waitForStateChange(service, 'COMPLETED', 2000);
+            await waitForStateChange(service, 'IDLE');
+
+            await delay(10);
+
+            expect(player.status).to.equal(RecipeState.completed);
+            player.reset();
+
+            await module.disconnect();
+        }).timeout(10000);
+
+        it('should run a playlist while modifying it', async () => {
+
+            const moduleJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString())
+                .modules[0];
+            const module = new Module(moduleJson);
+            const service = module.services[0];
+
+            await module.connect();
+            moduleServer.services[0].varStatus = ServiceState.IDLE;
+            await waitForStateChange(service, 'IDLE');
+
+            // now test recipe
+            const recipeJson = JSON.parse(
+                fs.readFileSync('assets/recipes/test/recipe_testserver_1.0.0.json').toString()
+            );
+            const recipe = new Recipe(recipeJson, [module]);
+            const player = new Player();
+
+            // two times the same recipe
+            player.enqueue(recipe);
+            player.enqueue(recipe);
+
+            player.start();
+            expect(player.status).to.equal(RecipeState.running);
+            waitForStateChange(service, 'STARTING');
+            await waitForStateChange(service, 'EXECUTE');
+            waitForStateChange(service, 'COMPLETING', 2000);
+            await waitForStateChange(service, 'COMPLETED', 2000);
+            await waitForStateChange(service, 'IDLE');
+
+            // here the second run of the recipe should automatically start, since first recipe is finished
+
+            waitForStateChange(service, 'STARTING', 2000);
+            await waitForStateChange(service, 'EXECUTE', 2000);
+            waitForStateChange(service, 'COMPLETING', 2000);
+            await waitForStateChange(service, 'COMPLETED', 2000);
+            await waitForStateChange(service, 'IDLE');
+
+            await delay(10);
+
+            expect(player.status).to.equal(RecipeState.completed);
+            player.reset();
+
+            await module.disconnect();
+        }).timeout(10000);
 
         it('should run the test recipe two times with several player interactions (pause, resume, stop)', async () => {
 
@@ -151,7 +249,7 @@ describe('Player', function () {
             player.reset();
 
             await module.disconnect();
-        }).timeout(15000).retries(3);
+        }).timeout(10000).retries(3);
 
     });
 
@@ -167,11 +265,11 @@ describe('Player', function () {
                 [], false);
         });
 
-        it('should load run Player with three local waiting recipes', function(done) {
+        it('should load run Player with three local waiting recipes', function (done) {
             this.timeout(5000);
             const player = new Player();
 
-            expect(() => player.start()).to.throw('No recipes in playlist');
+            expect(player.start()).to.be.rejectedWith('No recipes in playlist');
 
             player.enqueue(recipeWaitShort);
             expect(player.playlist).to.have.length(1);
@@ -182,11 +280,11 @@ describe('Player', function () {
             const completedRecipes = [];
 
             expect(player.status).to.equal(RecipeState.idle);
-            player.start()
-                .on('recipeFinished', (recipe: Recipe) => {
-                    expect(recipe).to.have.property('status', 'completed');
-                    completedRecipes.push(recipe.id);
-                })
+
+            player.on('recipeFinished', (recipe: Recipe) => {
+                expect(recipe).to.have.property('status', 'completed');
+                completedRecipes.push(recipe.id);
+            })
                 .on('recipeStarted', (recipe) => {
                     if (completedRecipes.length === 2) {
                         expect(player.getCurrentRecipe().id).to.equal(recipe.id);
@@ -204,7 +302,8 @@ describe('Player', function () {
                     expect(player.status).to.equal(RecipeState.idle);
                     done();
                 });
-            expect(() => player.start()).to.throw('already running');
+            player.start();
+            expect(player.start()).to.be.rejectedWith('already running');
 
             expect(player.status).to.equal(RecipeState.running);
             const json = player.json();
@@ -218,32 +317,56 @@ describe('Player', function () {
             const player = new Player();
 
             player.enqueue(recipeWaitShort);
-            expect(player.playlist).to.have.length(1);
+            player.enqueue(recipeWaitLocal);
             player.enqueue(recipeWaitLocal);
             player.enqueue(recipeWaitShort);
-            expect(player.playlist).to.have.length(3);
-
-            player.remove(0);
-            expect(player.playlist).to.have.length(2);
-            expect(player.playlist[0].id).to.equal(recipeWaitLocal.id);
-
             player.enqueue(recipeWaitLocal);
+            expect(player.playlist).to.have.length(5);
+
+            player.remove(1);
+            expect(player.playlist).to.have.length(4);
+
+            player.enqueue(recipeWaitShort);
+            expect(player.playlist).to.have.length(5);
+
+            expect(player.playlist.map((r) => r.id)).to.deep.equal([
+                recipeWaitShort.id,
+                recipeWaitLocal.id,
+                recipeWaitShort.id,
+                recipeWaitLocal.id,
+                recipeWaitShort.id]);
 
             const completedRecipes = [];
 
             expect(player.status).to.equal(RecipeState.idle);
-            player.start()
-                .on('recipeFinished', (recipe: Recipe) => {
-                    expect(recipe).to.have.property('status', 'completed');
-                    completedRecipes.push(recipe.id);
-                })
+            player.on('recipeFinished', async (recipe: Recipe) => {
+                expect(recipe).to.have.property('status', 'completed');
+                completedRecipes.push(recipe.id);
+                if (completedRecipes.length === 2) {
+                    await delay(10);
+                    expect(player.getCurrentRecipe().id).to.equal(recipeWaitShort.id);
+                    expect(() => player.remove(2)).to.throw('Can not remove currently running recipe');
+                    expect(player.getCurrentRecipe().id).to.equal(recipeWaitShort.id);
+                    player.remove(1);
+                    expect(player.getCurrentRecipe().id).to.equal(recipeWaitShort.id);
+                    expect(player.playlist).to.have.length(4);
+                    player.remove(3);
+                    expect(player.playlist).to.have.length(3);
+                }
+            })
                 .once('completed', async () => {
-                    expect(completedRecipes).to.have.length(3);
+                    expect(completedRecipes).to.have.length(4);
                     expect(player.status).to.equal(RecipeState.completed);
                     player.reset();
                     expect(player.status).to.equal(RecipeState.idle);
+                    expect(completedRecipes).to.deep.equal([
+                        recipeWaitShort.id,
+                        recipeWaitLocal.id,
+                        recipeWaitShort.id,
+                        recipeWaitLocal.id]);
                     done();
                 });
+            player.start();
             expect(player.status).to.equal(RecipeState.running);
             const json = player.json();
             expect(json.currentItem).to.equal(0);
@@ -260,7 +383,7 @@ describe('Player', function () {
                 player.once('recipeStarted', () => resolve());
             }), 100);
 
-            expect(player.getCurrentRecipe().current_step.name).to.equal('S1');
+            expect(player.getCurrentRecipe().currentStep.name).to.equal('S1');
 
             expect(() => player.forceTransition('non-existant', 'S2')).to.throw();
             expect(() => player.forceTransition('S1', 'non-existant')).to.throw();
@@ -278,7 +401,7 @@ describe('Player', function () {
 
             player.forceTransition('S1', 'S2');
 
-            expect(player.getCurrentRecipe().current_step.name).to.equal('S2');
+            expect(player.getCurrentRecipe().currentStep.name).to.equal('S2');
 
             // do not change in next 100ms
             await new Promise((resolve, reject) => {
@@ -291,7 +414,7 @@ describe('Player', function () {
             });
 
             player.forceTransition('S2', 'S3');
-            expect(player.getCurrentRecipe().current_step.name).to.equal('S3');
+            expect(player.getCurrentRecipe().currentStep.name).to.equal('S3');
 
             await timeout(new Promise((resolve) => {
                 player.once('completed', () => resolve());
@@ -326,15 +449,15 @@ describe('Player', function () {
             await module.disconnect();
         });
 
-        it('should run Player with CIF test recipes', async function() {
+        it('should run Player with CIF test recipes', async function () {
             this.timeout(5000);
             player.enqueue(recipeCif);
             return await timeout(new Promise((resolve) => {
-                player.start()
-                    .on('recipeFinished', (recipe: Recipe) => {
-                        expect(recipe).to.have.property('status', 'completed');
-                    })
+                player.on('recipeFinished', (recipe: Recipe) => {
+                    expect(recipe).to.have.property('status', 'completed');
+                })
                     .on('completed', () => resolve());
+                player.start();
             }), 3000);
         });
 
