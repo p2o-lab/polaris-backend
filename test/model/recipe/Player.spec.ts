@@ -23,19 +23,19 @@
  * SOFTWARE.
  */
 
-import {Player} from '../../../src/model/recipe/Player';
-import * as fs from 'fs';
-import {expect} from 'chai';
-import {Manager} from '../../../src/model/Manager';
-import * as delay from 'timeout-as-promise';
 import {RecipeState} from '@p2olab/polaris-interface';
-import {timeout} from 'promise-timeout';
-import {Recipe} from '../../../src/model/recipe/Recipe';
-import {controlEnableToJson, ServiceState} from '../../../src/model/core/enum';
+import {expect} from 'chai';
+import * as fs from 'fs';
 import {ClientSession, OPCUAClient} from 'node-opcua-client';
 import {OPCUAServer} from 'node-opcua-server';
-import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
+import {timeout} from 'promise-timeout';
+import * as delay from 'timeout-as-promise';
+import {controlEnableToJson, ServiceState} from '../../../src/model/core/enum';
 import {Module} from '../../../src/model/core/Module';
+import {Manager} from '../../../src/model/Manager';
+import {Player} from '../../../src/model/recipe/Player';
+import {Recipe} from '../../../src/model/recipe/Recipe';
+import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 import {waitForStateChange} from '../../helper';
 
 describe('Player', function () {
@@ -62,7 +62,7 @@ describe('Player', function () {
             });
 
             await client.connect('opc.tcp://localhost:4334/ModuleTestServer');
-            let session: ClientSession = await client.createSession();
+            const session: ClientSession = await client.createSession();
 
             let result = await session.readVariableValue('ns=1;s=Service1.State');
             expect(result.value.value).to.equal(ServiceState.IDLE);
@@ -71,8 +71,8 @@ describe('Player', function () {
             result = await session.readVariableValue('ns=1;s=Service1.State');
             expect(result.value.value).to.equal(ServiceState.STARTING);
 
-            let result2 = await session.readVariableValue('ns=1;s=Service1.CommandEnable');
-            let ce = controlEnableToJson(result2.value.value);
+            const result2 = await session.readVariableValue('ns=1;s=Service1.CommandEnable');
+            const ce = controlEnableToJson(result2.value.value);
             expect(ce).to.deep.equal({
                 abort: true,
                 complete: false,
@@ -85,14 +85,14 @@ describe('Player', function () {
                 unhold: false
             });
 
-            let result3 = await await session.readVariableValue('ns=0;i=2255');
-            expect(result3.value.value).to.deep.equal([ 'http://opcfoundation.org/UA/',
+            const result3 = await await session.readVariableValue('ns=0;i=2255');
+            expect(result3.value.value).to.deep.equal(['http://opcfoundation.org/UA/',
                 'urn:NodeOPCUA-Server-default']);
 
             await client.disconnect();
         });
 
-        it('should run the test recipe two times on the test module with several player interactions (pause, resume, stop)', async function () {
+        it('should run the test recipe two times with several player interactions (pause, resume, stop)', async () => {
 
             const moduleJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString())
                 .modules[0];
@@ -104,7 +104,9 @@ describe('Player', function () {
             await waitForStateChange(service, 'IDLE');
 
             // now test recipe
-            const recipeJson = JSON.parse(fs.readFileSync('assets/recipes/test/recipe_testserver_1.0.0.json').toString());
+            const recipeJson = JSON.parse(
+                fs.readFileSync('assets/recipes/test/recipe_testserver_1.0.0.json').toString()
+            );
             const recipe = new Recipe(recipeJson, [module]);
             const player = new Player();
 
@@ -154,10 +156,10 @@ describe('Player', function () {
     });
 
     context('local', () => {
-        let recipeWait0_5s: Recipe;
+        let recipeWaitShort: Recipe;
         let recipeWaitLocal: Recipe;
         before(() => {
-            recipeWait0_5s = new Recipe(
+            recipeWaitShort = new Recipe(
                 JSON.parse(fs.readFileSync('assets/recipes/test/recipe_wait_0.5s.json').toString()),
                 [], false);
             recipeWaitLocal = new Recipe(
@@ -167,17 +169,17 @@ describe('Player', function () {
 
         it('should load run Player with three local waiting recipes', function(done) {
             this.timeout(5000);
-            let player = new Player();
+            const player = new Player();
 
-            expect(()=>player.start()).to.throw('No recipes in playlist');
+            expect(() => player.start()).to.throw('No recipes in playlist');
 
-            player.enqueue(recipeWait0_5s);
+            player.enqueue(recipeWaitShort);
             expect(player.playlist).to.have.length(1);
             player.enqueue(recipeWaitLocal);
-            player.enqueue(recipeWait0_5s);
+            player.enqueue(recipeWaitShort);
             expect(player.playlist).to.have.length(3);
 
-            let completedRecipes = [];
+            const completedRecipes = [];
 
             expect(player.status).to.equal(RecipeState.idle);
             player.start()
@@ -186,7 +188,7 @@ describe('Player', function () {
                     completedRecipes.push(recipe.id);
                 })
                 .on('recipeStarted', (recipe) => {
-                    if (completedRecipes.length==2) {
+                    if (completedRecipes.length === 2) {
                         expect(player.getCurrentRecipe().id).to.equal(recipe.id);
                         player.pause();
                         expect(player.status).to.equal(RecipeState.paused);
@@ -202,24 +204,23 @@ describe('Player', function () {
                     expect(player.status).to.equal(RecipeState.idle);
                     done();
                 });
-            expect(()=>player.start()).to.throw('already running');
+            expect(() => player.start()).to.throw('already running');
 
             expect(player.status).to.equal(RecipeState.running);
             const json = player.json();
             expect(json.currentItem).to.equal(0);
             expect(json.status).to.equal('running');
 
-
         });
 
         it('should load run Player with three local waiting recipes and removal', function(done) {
             this.timeout(5000);
-            let player = new Player();
+            const player = new Player();
 
-            player.enqueue(recipeWait0_5s);
+            player.enqueue(recipeWaitShort);
             expect(player.playlist).to.have.length(1);
             player.enqueue(recipeWaitLocal);
-            player.enqueue(recipeWait0_5s);
+            player.enqueue(recipeWaitShort);
             expect(player.playlist).to.have.length(3);
 
             player.remove(0);
@@ -228,7 +229,7 @@ describe('Player', function () {
 
             player.enqueue(recipeWaitLocal);
 
-            let completedRecipes = [];
+            const completedRecipes = [];
 
             expect(player.status).to.equal(RecipeState.idle);
             player.start()
@@ -251,7 +252,7 @@ describe('Player', function () {
 
         it('should  force a transition', async () => {
             this.timeout(5000);
-            let player = new Player();
+            const player = new Player();
             player.enqueue(recipeWaitLocal);
             player.start();
 
@@ -267,10 +268,12 @@ describe('Player', function () {
 
             // do not change in next 100ms
             await new Promise((resolve, reject) => {
-                player.once('stepFinished', (step) => {
+                player.once('stepFinished', () => {
                     reject();
                 });
-                setTimeout(() => {resolve()}, 100);
+                setTimeout(() => {
+                    resolve();
+                }, 100);
             });
 
             player.forceTransition('S1', 'S2');
@@ -279,10 +282,12 @@ describe('Player', function () {
 
             // do not change in next 100ms
             await new Promise((resolve, reject) => {
-                player.once('stepFinished', (step) => {
+                player.once('stepFinished', () => {
                     reject();
                 });
-                setTimeout(() => {resolve()}, 100);
+                setTimeout(() => {
+                    resolve();
+                }, 100);
             });
 
             player.forceTransition('S2', 'S3');
@@ -299,23 +304,23 @@ describe('Player', function () {
 
         let recipeCif;
         const manager = new Manager();
-        let player = new Player();
+        const player = new Player();
 
         before(async () => {
-            const module = manager.loadModule(JSON.parse(fs.readFileSync('assets/modules/module_cif.json').toString()))[0];
-            recipeCif = manager.loadRecipe(JSON.parse(fs.readFileSync('assets/recipes/recipe_cif_test.json').toString()));
+            const module = manager.loadModule(
+                JSON.parse(fs.readFileSync('assets/modules/module_cif.json').toString())
+            )[0];
+            recipeCif = manager.loadRecipe(
+                JSON.parse(fs.readFileSync('assets/recipes/recipe_cif_test.json').toString())
+            );
 
             // bring required services to idle
             await module.connect();
 
-            try {
-                await module.abort();
-            } catch {}
+            await module.abort();
             await delay(200);
 
-            try {
-                await module.reset();
-            } catch { }
+            await module.reset();
             await delay(200);
 
             await module.disconnect();
@@ -333,9 +338,9 @@ describe('Player', function () {
             }), 3000);
         });
 
-        after(async () =>{
-            await Promise.all(manager.modules.map(module => module.disconnect()));
-        })
+        after(async () => {
+            await Promise.all(manager.modules.map((module) => module.disconnect()));
+        });
 
     });
 
