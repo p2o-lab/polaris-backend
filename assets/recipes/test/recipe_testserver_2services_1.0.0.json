@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "name": "Test recipe for testserver module",
+  "name": "Test recipe for testserver module using two services",
   "author": "Markus Graube",
   "initial_step": "S1",
   "steps": [
