@@ -23,14 +23,14 @@
  * SOFTWARE.
  */
 
-import {Step} from './Step';
-import {Module} from '../core/Module';
-import {catRecipe} from '../../config/logging';
-import {EventEmitter} from 'events';
-import {v4} from 'uuid';
-import {Transition} from './Transition';
 import {RecipeInterface, RecipeOptions, RecipeState, StepInterface} from '@p2olab/polaris-interface';
+import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
+import {v4} from 'uuid';
+import {catRecipe} from '../../config/logging';
+import {Module} from '../core/Module';
+import {Step} from './Step';
+import {Transition} from './Transition';
 
 /**
  * Events emitted by [[Recipe]]
@@ -50,7 +50,7 @@ interface RecipeEvents {
      * when a step is finished in the recipe
      * @event
      */
-    stepFinished: {finishedStep: Step, nextStep: Step};
+    stepFinished: Step;
     /**
      * when recipe completes
      * @event
@@ -64,22 +64,22 @@ type RecipeEmitter = StrictEventEmitter<EventEmitter, RecipeEvents>;
  * It is parsed from RecipeOptions
  *
  */
-export class Recipe extends (EventEmitter as { new(): RecipeEmitter }) {
+export class Recipe extends (EventEmitter as new() => RecipeEmitter) {
 
-    readonly id: string;
-    readonly name: string;
-    readonly options: RecipeOptions;
-    readonly protected: boolean;
+    public readonly id: string;
+    public readonly name: string;
+    public readonly options: RecipeOptions;
+    public readonly protected: boolean;
 
     // necessary modules
-    modules: Set<Module> = new Set<Module>();
-    readonly initial_step: Step;
-    readonly steps: Step[];
+    public modules: Set<Module> = new Set<Module>();
+    public readonly initialStep: Step;
+    public readonly steps: Step[];
 
     // dynamic properties
-    current_step: Step;
-    status: RecipeState;
-    lastChange: Date;
+    public currentStep: Step;
+    public status: RecipeState;
+    public lastChange: Date;
     private stepListener: EventEmitter;
 
     constructor(options: RecipeOptions, modules: Module[], protectedRecipe: boolean = false) {
@@ -92,15 +92,15 @@ export class Recipe extends (EventEmitter as { new(): RecipeEmitter }) {
         }
 
         if (options.steps) {
-            this.steps = options.steps.map(stepOptions => new Step(stepOptions, modules));
+            this.steps = options.steps.map((stepOptions) => new Step(stepOptions, modules));
 
             // Resolve next steps to appropriate objects
             this.steps.forEach((step: Step) => {
                 this.modules = new Set([...this.modules, ...step.getUsedModules()]);
                 step.transitions.forEach((transition) => {
-                    transition.next_step = this.steps.find(step => step.name === transition.next_step_name);
-                    if (!transition.next_step && !["completed", "finished"].find(v => v === transition.next_step_name)) {
-                        throw new Error(`Recipe load error ${this.name}: Next step "${transition.next_step_name}" not found in "${step.name}" for condition "${JSON.stringify(transition.condition.json())}"`)
+                    transition.next_step = this.steps.find((step) => step.name === transition.next_step_name);
+                    if (!transition.next_step && !['completed', 'finished'].find((v) => v === transition.next_step_name)) {
+                        throw new Error(`Recipe load error ${this.name}: Next step "${transition.next_step_name}" not found in "${step.name}" for condition "${JSON.stringify(transition.condition.json())}"`);
                     }
                 });
             });
@@ -108,9 +108,9 @@ export class Recipe extends (EventEmitter as { new(): RecipeEmitter }) {
             throw new Error('steps array is missing in activeRecipe');
         }
         if (options.initial_step) {
-            this.initial_step = this.steps.find(step => step.name === options.initial_step);
+            this.initialStep = this.steps.find((step) => step.name === options.initial_step);
         }
-        if (!this.initial_step) {
+        if (!this.initialStep) {
             throw new Error(`"initial_step" property '${options.initial_step}' is missing in activeRecipe`);
         }
 
@@ -122,9 +122,9 @@ export class Recipe extends (EventEmitter as { new(): RecipeEmitter }) {
     }
 
     public stepJson(): StepInterface {
-        let result = undefined;
-        if (this.current_step) {
-            result = this.current_step.json();
+        let result;
+        if (this.currentStep) {
+            result = this.currentStep.json();
         }
         return result;
     }
@@ -136,12 +136,12 @@ export class Recipe extends (EventEmitter as { new(): RecipeEmitter }) {
     public json(): RecipeInterface {
         return {
             id: this.id,
-            modules: Array.from(this.modules).map(module => module.id),
+            modules: Array.from(this.modules).map((module) => module.id),
             status: this.status,
-            currentStep: this.current_step ? this.current_step.name : undefined,
+            currentStep: this.currentStep ? this.currentStep.name : undefined,
             options: this.options,
             protected: this.protected,
-            lastChange: (new Date().getTime() - this.lastChange.getTime())/1000
+            lastChange: (new Date().getTime() - this.lastChange.getTime()) / 1000
         };
     }
 
@@ -151,7 +151,7 @@ export class Recipe extends (EventEmitter as { new(): RecipeEmitter }) {
      */
     public connectModules(): Promise<void[]> {
         let promise;
-        const tasks = Array.from(this.modules).map(module => module.connect());
+        const tasks = Array.from(this.modules).map((module) => module.connect());
         if (tasks.length > 0) {
             promise = Promise.all(tasks);
         } else {
@@ -160,11 +160,11 @@ export class Recipe extends (EventEmitter as { new(): RecipeEmitter }) {
         return promise;
     }
 
-    /** 
+    /**
      * Starts recipe
      */
     public start(): Recipe {
-        this.current_step = this.initial_step;
+        this.currentStep = this.initialStep;
         this.status = RecipeState.idle;
         this.connectModules()
             .catch((reason) => {
@@ -172,7 +172,7 @@ export class Recipe extends (EventEmitter as { new(): RecipeEmitter }) {
                     `Start of recipe not possible: ${reason.toString()}`);
             })
             .then(() => {
-                this.current_step = this.initial_step;
+                this.currentStep = this.initialStep;
                 this.status = RecipeState.running;
                 this.executeStep();
                 this.emit('started');
@@ -190,27 +190,27 @@ export class Recipe extends (EventEmitter as { new(): RecipeEmitter }) {
         await Promise.all(Array.from(this.modules).map((module: Module) => module.stop()));
         this.status = RecipeState.stopped;
         this.stepListener.removeAllListeners('completed');
-        this.current_step.transitions.forEach(trans => trans.condition.clear());
-        this.emit('stopped', this.current_step);
-        this.current_step = undefined;
+        this.currentStep.transitions.forEach((trans) => trans.condition.clear());
+        this.emit('stopped', this.currentStep);
+        this.currentStep = undefined;
     }
 
     private executeStep() {
-        catRecipe.debug(`Execute step: ${this.current_step.name}`);
+        catRecipe.debug(`Execute step: ${this.currentStep.name}`);
         this.lastChange = new Date();
-        this.stepListener = this.current_step.execute()
+        this.stepListener = this.currentStep.execute()
             .once('completed', (transition: Transition) => {
                 if (transition.next_step) {
-                    catRecipe.info(`Step ${this.current_step.name} finished. New step is ${transition.next_step_name}`);
-                    this.current_step = transition.next_step;
+                    catRecipe.info(`Step ${this.currentStep.name} finished. New step is ${transition.next_step_name}`);
+                    this.currentStep = transition.next_step;
                     this.executeStep();
                 } else {
                     catRecipe.info(`Recipe completed: ${this.name}`);
-                    this.current_step = undefined;
+                    this.currentStep = undefined;
                     this.status = RecipeState.completed;
                     this.emit('completed');
                 }
-                this.emit('stepFinished', {finishedStep: this.current_step, nextStep: transition.next_step});
+                this.emit('stepFinished', this.currentStep);
             });
     }
 

@@ -23,21 +23,20 @@
  * SOFTWARE.
  */
 
-
-import {OpMode, ServiceControlEnable, ServiceMtpCommand, ServiceState} from '../model/core/enum';
+import * as net from 'net';
 import {DataType, Variant} from 'node-opcua';
 import {OPCUAServer} from 'node-opcua-server';
 import {catTestServer} from '../config/logging';
-import * as net from 'net';
+import {OpMode, ServiceControlEnable, ServiceMtpCommand, ServiceState} from '../model/core/enum';
 import Timeout = NodeJS.Timeout;
 
 export class TestServerVariable {
 
-    v = 20;
-    vext = 20;
-    sclMin = Math.random() * 100;
-    sclMax = this.sclMin + Math.random() * 100;
-    unit =  Math.floor((Math.random() * 100) + 1000);
+    public v: number = 20;
+    public vext: number = 20;
+    public sclMin: number = Math.random() * 100;
+    public sclMax: number = this.sclMin + Math.random() * 100;
+    public unit: number = Math.floor((Math.random() * 100) + 1000);
     private interval: Timeout;
     private simulation: boolean;
 
@@ -108,10 +107,10 @@ export class TestServerVariable {
                         return new Variant({dataType: DataType.Double, value: this.vext});
                     },
                     set: (variant) => {
-                        this.vext = parseInt(variant.value);
+                        this.vext = parseInt(variant.value, 10);
                         setTimeout(() => {
                             this.v = this.vext;
-                        }, 1000);
+                        }, 500);
                     }
 
                 }
@@ -119,13 +118,13 @@ export class TestServerVariable {
         }
     }
 
-    startSimulation() {
+    public startSimulation() {
         if (this.simulation) {
             let time = 0;
-            let f1 = Math.random();
-            let f2 = Math.random();
-            let amplitude = this.sclMax - this.sclMin;
-            let average = (this.sclMax + this.sclMin) / 2;
+            const f1 = Math.random();
+            const f2 = Math.random();
+            const amplitude = this.sclMax - this.sclMin;
+            const average = (this.sclMax + this.sclMin) / 2;
             this.interval = global.setInterval(() => {
                 time = time + 0.05;
                 this.v = average + 0.5 * amplitude * Math.sin(2 * f1 * time + 3 * f2);
@@ -133,7 +132,7 @@ export class TestServerVariable {
         }
     }
 
-    stopSimulation() {
+    public stopSimulation() {
         clearTimeout(this.interval);
 
     }
@@ -141,8 +140,8 @@ export class TestServerVariable {
 
 export class TestServerStringVariable {
 
-    v = 'initial value';
-    vext = '';
+    public v: string = 'initial value';
+    public vext: string = '';
     private interval: Timeout;
 
     constructor(namespace, rootNode, variableName) {
@@ -168,26 +167,25 @@ export class TestServerStringVariable {
 
     }
 
-    startSimulation() {
+    public startSimulation() {
         this.interval = global.setInterval(() => {
             this.v = new Date().toTimeString();
         }, 3000);
     }
 
-    stopSimulation() {
+    public stopSimulation() {
         clearTimeout(this.interval);
     }
 }
 
-
 export class TestServerService {
-    varStatus = 0;
-    varStrategy = 1;
-    varCommand = 0;
-    varCommandEnable = 0;
-    varOpmode = 0;
-    serviceName;
-    private variables: (TestServerVariable | TestServerStringVariable)[] = [];
+    public varStatus: number = 0;
+    public varStrategy: number = 1;
+    public varCommand: number = 0;
+    public varCommandEnable: number = 0;
+    public varOpmode: number = 0;
+    public serviceName: string;
+    private variables: Array<TestServerVariable | TestServerStringVariable> = [];
 
     constructor(namespace, rootNode, serviceName) {
         catTestServer.info(`Add service ${serviceName}`);
@@ -198,7 +196,6 @@ export class TestServerService {
             organizedBy: rootNode,
             browseName: serviceName
         });
-
 
         this.variables.push(new TestServerVariable(namespace, serviceNode, serviceName + '.Parameter1', false));
         this.variables.push(new TestServerVariable(namespace, serviceNode, serviceName + '.Parameter2', false));
@@ -215,7 +212,7 @@ export class TestServerService {
                     return new Variant({dataType: DataType.UInt32, value: this.varStrategy});
                 },
                 set: (variant) => {
-                    this.varStrategy = parseInt(variant.value);
+                    this.varStrategy = parseInt(variant.value, 10);
                 }
             }
         });
@@ -255,18 +252,19 @@ export class TestServerService {
                     return new Variant({dataType: DataType.UInt32, value: this.varOpmode});
                 },
                 set: (variant) => {
-                    if (parseInt(variant.value) == OpMode.stateManOp) {
+                    if (parseInt(variant.value, 10) === OpMode.stateManOp) {
                         this.varOpmode = this.varOpmode & ~OpMode.stateAutAct;
                         this.varOpmode = this.varOpmode | OpMode.stateManAct;
                     }
-                    if (parseInt(variant.value) == OpMode.stateAutOp) {
+                    if (parseInt(variant.value, 10) === OpMode.stateAutOp) {
                         this.varOpmode = this.varOpmode & ~OpMode.stateManAct;
                         this.varOpmode = this.varOpmode | OpMode.stateAutAct;
                     }
-                    if (parseInt(variant.value) == OpMode.srcExtOp) {
+                    if (parseInt(variant.value, 10) === OpMode.srcExtOp) {
                         this.varOpmode = this.varOpmode | OpMode.srcExtAct;
                     }
-                    catTestServer.debug(`[${this.serviceName}] Set Opmode in testserver ${variant} ${parseInt(variant.value)} -> ${this.varOpmode}`);
+                    catTestServer.debug(`[${this.serviceName}] Set Opmode in testserver ${variant} ` +
+                        `${parseInt(variant.value, 10)} -> ${this.varOpmode}`);
                 }
             }
         });
@@ -293,27 +291,36 @@ export class TestServerService {
                     return new Variant({dataType: DataType.UInt32, value: this.varCommand});
                 },
                 set: (variant) => {
-                    this.varCommand = parseInt(variant.value);
-                    if (this.varCommand == ServiceMtpCommand.COMPLETE && this.varStatus == ServiceState.EXECUTE) {
+                    this.varCommand = parseInt(variant.value, 10);
+                    if (this.varCommand === ServiceMtpCommand.COMPLETE && this.varStatus === ServiceState.EXECUTE) {
                         this.state(ServiceState.COMPLETING);
-                    } else if (this.varCommand == ServiceMtpCommand.RESTART && this.varStatus == ServiceState.EXECUTE) {
+                    } else if (this.varCommand === ServiceMtpCommand.RESTART &&
+                        this.varStatus === ServiceState.EXECUTE) {
                         this.state(ServiceState.STARTING);
-                    } else if (this.varCommand == ServiceMtpCommand.RESET) {
+                    } else if (this.varCommand === ServiceMtpCommand.RESET) {
                         this.state(ServiceState.IDLE);
-                    } else if (this.varCommand == ServiceMtpCommand.START && this.varStatus == ServiceState.IDLE) {
+                    } else if (this.varCommand === ServiceMtpCommand.START && this.varStatus === ServiceState.IDLE) {
                         this.state(ServiceState.STARTING);
-                    } else if (this.varCommand == ServiceMtpCommand.RESUME && this.varStatus == ServiceState.PAUSED) {
+                    } else if (this.varCommand === ServiceMtpCommand.RESUME && this.varStatus === ServiceState.PAUSED) {
                         this.state(ServiceState.RESUMING);
-                    } else if (this.varCommand == ServiceMtpCommand.PAUSE && this.varStatus == ServiceState.EXECUTE) {
+                    } else if (this.varCommand === ServiceMtpCommand.PAUSE && this.varStatus === ServiceState.EXECUTE) {
                         this.state(ServiceState.PAUSING);
-                    } else if (this.varCommand == ServiceMtpCommand.STOP) {
+                    } else if (this.varCommand === ServiceMtpCommand.STOP) {
                         this.state(ServiceState.STOPPING);
-                    } else if (this.varCommand == ServiceMtpCommand.ABORT) {
+                    } else if (this.varCommand === ServiceMtpCommand.ABORT) {
                         this.state(ServiceState.ABORTING);
                     }
                 }
             }
         });
+    }
+
+    public startSimulation() {
+        this.variables.forEach((variable) => variable.startSimulation());
+    }
+
+    public stopSimulation() {
+        this.variables.forEach((variable) => variable.stopSimulation());
     }
 
     private state(state: ServiceState) {
@@ -326,7 +333,8 @@ export class TestServerService {
                 this.varCommandEnable += ServiceControlEnable.START;
                 break;
             case ServiceState.EXECUTE:
-                this.varCommandEnable += ServiceControlEnable.PAUSE + ServiceControlEnable.COMPLETE + ServiceControlEnable.RESTART;
+                this.varCommandEnable += ServiceControlEnable.PAUSE +
+                    ServiceControlEnable.COMPLETE + ServiceControlEnable.RESTART;
                 break;
             case ServiceState.PAUSED:
                 this.varCommandEnable += ServiceControlEnable.RESUME;
@@ -346,30 +354,22 @@ export class TestServerService {
     }
 
     private automaticStateChange(currentState: ServiceState, nextState: ServiceState, delay = 100) {
-        if (this.varStatus == currentState) {
+        if (this.varStatus === currentState) {
             setTimeout(() => {
-                if (this.varStatus == currentState) {
+                if (this.varStatus === currentState) {
                     this.state(nextState);
                 }
             }, delay);
         }
     }
-
-    startSimulation() {
-        this.variables.forEach((variable) => variable.startSimulation());
-    }
-
-    stopSimulation() {
-        this.variables.forEach((variable) => variable.stopSimulation());
-    }
 }
 
 export class ModuleTestServer {
-    private server: OPCUAServer;
 
     public externalTrigger: boolean;
     public variables: TestServerVariable[] = [];
     public services: TestServerService[] = [];
+    private server: OPCUAServer;
 
     constructor() {
         this.server = new OPCUAServer({
@@ -379,19 +379,18 @@ export class ModuleTestServer {
         this.externalTrigger = false;
     }
 
-
-    async portInUse(port): Promise<boolean> {
-        const server = net.createServer(function (socket) {
+    public async portInUse(port): Promise<boolean> {
+        const server = net.createServer((socket) => {
             socket.write('Echo server\r\n');
             socket.pipe(socket);
         });
 
         return new Promise((resolve) => {
             server.listen(port, '127.0.0.1');
-            server.on('error', function (e) {
+            server.on('error', () => {
                 resolve(true);
             });
-            server.on('listening', function (e) {
+            server.on('listening', () => {
                 server.close();
                 resolve(false);
             });
@@ -400,19 +399,18 @@ export class ModuleTestServer {
 
     public async start() {
         if (await this.portInUse(4334)) {
-            throw new Error('Port is in use')
+            throw new Error('Port is in use');
         }
-        await new Promise(resolve => this.server.initialize(resolve));
+        await new Promise((resolve) => this.server.initialize(resolve));
         this.createAddressSpace();
-        await new Promise(resolve => this.server.start(resolve));
-        catTestServer.info('server started')
+        await new Promise((resolve) => this.server.start(resolve));
+        catTestServer.info('server started');
     }
 
     public async shutdown() {
         catTestServer.info('Shutdown test server');
-        await new Promise(resolve => this.server.shutdown(100, resolve));
+        await new Promise((resolve) => this.server.shutdown(100, resolve));
     }
-
 
     public startSimulation() {
         this.variables.forEach((variable) => variable.startSimulation());
@@ -441,7 +439,6 @@ export class ModuleTestServer {
         this.services.push(new TestServerService(namespace, myModule, 'Service1'));
         this.services.push(new TestServerService(namespace, myModule, 'Service2'));
 
-
         namespace.addVariable({
             componentOf: myModule,
             browseName: 'ExternalTrigger',
@@ -453,7 +450,6 @@ export class ModuleTestServer {
                 }
             }
         });
-
 
     }
 }

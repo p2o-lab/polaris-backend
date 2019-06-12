@@ -133,7 +133,7 @@ export class DataAssembly extends EventEmitter {
 
     public async waitForOpModeToPassSpecificTest(testFunction: (opMode: OpMode) => boolean) {
         return new Promise((resolve) => {
-            let event = this.module.listenToOpcUaNode(this.communication['OpMode']);
+            const event = this.module.listenToOpcUaNode(this.communication['OpMode']);
             event.on('changed', function test(data) {
                 if (testFunction(data.value)) {
                     event.removeListener('changed', test);

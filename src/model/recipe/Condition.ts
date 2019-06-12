@@ -64,7 +64,6 @@ export abstract class Condition extends (EventEmitter as new() => ConditionEmitt
         return this._fulfilled;
     }
 
-
     protected _fulfilled: boolean = false;
     private options: ConditionOptions;
 

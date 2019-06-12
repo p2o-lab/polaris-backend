@@ -25,7 +25,7 @@
 
 import {ModuleTestServer} from './moduleTestServer/ModuleTestServer';
 
-async function start () {
+async function start() {
     const moduleServer = new ModuleTestServer();
     await moduleServer.start();
     await moduleServer.startSimulation();

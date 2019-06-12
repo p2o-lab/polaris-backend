@@ -23,11 +23,10 @@
  * SOFTWARE.
  */
 
-import { Recipe } from './Recipe';
-import { v4 } from 'uuid';
-import { RecipeRunInterface } from '@p2olab/polaris-interface';
-import { ServiceLogEntry, VariableLogEntry } from '../../logging/archive';
-
+import {RecipeRunInterface} from '@p2olab/polaris-interface';
+import {v4} from 'uuid';
+import {ServiceLogEntry, VariableLogEntry} from '../../logging/archive';
+import {Recipe} from './Recipe';
 
 /** One specific recipe run with all logs
  *
@@ -40,13 +39,13 @@ export class RecipeRun {
         return this._endTime;
     }
 
-    readonly id: string;
+    public readonly id: string;
+    public readonly recipe: Recipe;
+
+    public serviceLog: ServiceLogEntry[] = [];
+    public variableLog: VariableLogEntry[] = [];
     private _startTime: Date;
     private _endTime: Date;
-    readonly recipe: Recipe;
-
-    serviceLog: ServiceLogEntry[] = [];
-    variableLog: VariableLogEntry[] = [];
 
     constructor(recipe: Recipe) {
         this.id = v4();
