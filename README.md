@@ -7,7 +7,7 @@ A HTML user interface for this project is provided via the [polaris-frontend](ht
 
 Master: [![Build Status](https://cloud.drone.io/api/badges/p2o-lab/polaris-backend/status.svg)](https://cloud.drone.io/p2o-lab/polaris-backend)
 Develop: [![Build Status](https://cloud.drone.io/api/badges/p2o-lab/polaris-backend/status.svg?ref=refs/heads/develop)](https://cloud.drone.io/p2o-lab/polaris-backend)
-Docker: [![](https://images.microbadger.com/badges/version/p2olab/polaris-backend.svg)](https://microbadger.com/images/p2olab/polaris-backend)
+Docker: [![](https://images.microbadger.com/badges/version/p2olab/polaris-backend.svg)](https://microbadger.com/images/p2olab/polaris-backend) [![Greenkeeper badge](https://badges.greenkeeper.io/p2o-lab/polaris-backend.svg)](https://greenkeeper.io/)
 
 
 ## Installation and Deployment

@@ -43,6 +43,7 @@ import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Expression} from 'expr-eval';
 import {ScopeItem} from './ScopeItem';
+import Timeout = NodeJS.Timeout;
 
 
 /**
@@ -294,7 +295,7 @@ export class OrCondition extends AggregateCondition {
 
 export class TimeCondition extends Condition {
 
-    private timer: NodeJS.Timer;
+    private timer: Timeout;
     private duration: number;
 
     constructor(options: TimeConditionOptions) {
@@ -309,7 +310,7 @@ export class TimeCondition extends Condition {
 
     listen(): Condition {
         catCondition.debug(`Start Timer: ${this.duration}`);
-        this.timer = setTimeout(() => {
+        this.timer = global.setTimeout(() => {
                 catCondition.debug(`TimeCondition finished: ${this.duration}`);
             this._fulfilled = true;
             this.emit('stateChanged', this._fulfilled);

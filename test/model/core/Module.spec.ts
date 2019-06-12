@@ -95,6 +95,6 @@ describe('Module', () => {
             });
             moduleServer.shutdown();
         });
-    });
+    }).retries(3);
 
 });
