@@ -190,7 +190,8 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
             this.services = options.services.map((serviceOption) => new Service(serviceOption, this));
         }
         if (options.process_values) {
-            this.variables = options.process_values.map((variableOptions) => DataAssemblyFactory.create(variableOptions, this));
+            this.variables = options.process_values
+                .map((variableOptions) => DataAssemblyFactory.create(variableOptions, this));
         }
         if (options.hmi_url) {
             this.hmiUrl = options.hmi_url;
@@ -252,7 +253,8 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
 
                 subscription
                     .on('started', () => {
-                        this.logger.info(`[${this.id}] subscription started - subscriptionId=${subscription.subscriptionId}`);
+                        this.logger.info(`[${this.id}] subscription started - ` +
+                            `subscriptionId=${subscription.subscriptionId}`);
                     })
                     .on('terminated', () => {
                         this.logger.debug(`[${this.id}] subscription terminated`);
@@ -267,7 +269,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
                 this.session = session;
                 this.subscription = subscription;
 
-                if (this.endpoint == 'opc.tcp://10.6.51.22:4840') {
+            if (this.endpoint === 'opc.tcp://10.6.51.22:4840') {
                     await this.fixReactor();
                 }
 
@@ -368,7 +370,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
         const nodeId = this.resolveNodeId(node);
         const result = await this.session.readVariableValue(nodeId);
         this.logger.debug(`[${this.id}] Read Variable: ${JSON.stringify(node)} -> ${nodeId} = ${result}`);
-        if (result.statusCode !== 0) {
+        if (result.statusCode.value !== 0) {
             throw new Error(`Could not read ${nodeId.toString()}: ${result.statusCode.description}`);
         }
         return result;
@@ -478,7 +480,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
                     let unit;
                 if (DataAssemblyFactory.isAnaView(variable)) {
                     const unitObject = Unit.find((item) => item.value === parseInt(variable.VUnit.value, 10));
-                        unit = unitObject ? unitObject.unit : undefined;
+                    unit = unitObject ? unitObject.unit : undefined;
                     }
                 this.logger.info(`[${this.id}] variable changed: ${variable.name} = ` +
                     `${data.value} ${unit ? unit : ''}`);
