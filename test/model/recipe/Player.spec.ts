@@ -41,7 +41,7 @@ import {waitForStateChange} from '../../helper';
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-describe('Player', function () {
+describe('Player', () => {
 
     describe('OPC UA server mockup', () => {
 
@@ -373,11 +373,9 @@ describe('Player', function () {
         });
 
         it('should  force a transition', async () => {
-            this.timeout(5000);
             const player = new Player();
             player.enqueue(recipeWaitLocal);
             player.start();
-
             await timeout(new Promise((resolve) => {
                 player.once('recipeStarted', () => resolve());
             }), 100);
@@ -419,7 +417,7 @@ describe('Player', function () {
                 player.once('completed', () => resolve());
             }), 1000);
 
-        });
+        }).timeout(5000);
     });
 
 });

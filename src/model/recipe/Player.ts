@@ -159,6 +159,8 @@ export class Player extends (EventEmitter as new() => PlayerEmitter) {
      * Start recipe if player is currently idle or stopped.
      * Resume if player is currently paused
      *
+     * resolves when player has finished
+     *
      * @returns Player
      */
     public async start() {
@@ -173,8 +175,8 @@ export class Player extends (EventEmitter as new() => PlayerEmitter) {
             this.status === RecipeState.completed) {
             this._status = RecipeState.running;
             this._currentItem = 0;
-            this.emit('started');
             catPlayer.info('Player started');
+            this.emit('started');
             while (this.currentItem < this.playlist.length) {
                 catManager.info(`Go to next recipe (${this.currentItem + 1}/${this.playlist.length})`);
                 await this.runCurrentRecipe();
@@ -248,8 +250,8 @@ export class Player extends (EventEmitter as new() => PlayerEmitter) {
         catPlayer.info(`Start recipe ${this.getCurrentRecipe().name}`);
         this.currentRecipeRun = new RecipeRun(this.getCurrentRecipe());
         this.recipeRuns.push(this.currentRecipeRun);
-        return new Promise((resolve) => {
-            this.currentRecipeRun.start()
+        return new Promise(async (resolve) => {
+            this.currentRecipeRun.recipe
                 .on('stepFinished', (finishedStep) => this.emit('stepFinished', finishedStep))
                 .once('started', () => this.emit('recipeStarted', this.currentRecipeRun.recipe))
                 .once('completed', () => {
@@ -258,6 +260,7 @@ export class Player extends (EventEmitter as new() => PlayerEmitter) {
                     this.currentRecipeRun.recipe.removeAllListeners('stepFinished');
                     resolve();
                 });
+            this.currentRecipeRun.start();
         });
     }
 }

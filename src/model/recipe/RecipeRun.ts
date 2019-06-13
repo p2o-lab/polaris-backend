@@ -66,11 +66,11 @@ export class RecipeRun {
     /** Starts the linked recipe
      *
      */
-    public start(): Recipe {
+    public async start(): Promise<Recipe> {
         this._startTime = new Date();
-        return this.recipe.start()
-            .once('completed', () => {
-                this._endTime = new Date();
-            });
+        this.recipe.once('completed', () => {
+            this._endTime = new Date();
+        });
+        return await this.recipe.start();
     }
 }

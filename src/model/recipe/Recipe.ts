@@ -165,21 +165,19 @@ export class Recipe extends (EventEmitter as new() => RecipeEmitter) {
      * Starts recipe
      * Connect to modules and then start the recipe
      */
-    public start(): Recipe {
+    public async start(): Promise<Recipe> {
         if (this.status === RecipeState.running) {
             throw new Error('Recipe is already running');
         }
         this.currentStep = this.initialStep;
         this.status = RecipeState.running;
-        this.connectModules()
+        await this.connectModules()
             .catch((reason) => {
                 throw new Error(`Could not connect to all modules for recipe ${this.name}. ` +
                     `Start of recipe not possible: ${reason.toString()}`);
-            })
-            .then(() => {
-                this.executeStep();
-                this.emit('started');
             });
+        this.executeStep();
+        this.emit('started');
         return this;
     }
 
@@ -207,8 +205,12 @@ export class Recipe extends (EventEmitter as new() => RecipeEmitter) {
         catRecipe.info(`Stop recipe ${this.name}`);
         await Promise.all(Array.from(this.modules).map((module: Module) => module.stop()));
         this.status = RecipeState.stopped;
-        this.stepListener.removeAllListeners('completed');
-        this.currentStep.transitions.forEach((trans) => trans.condition.clear());
+        if (this.stepListener) {
+            this.stepListener.removeAllListeners('completed');
+        }
+        if (this.currentStep) {
+            this.currentStep.transitions.forEach((trans) => trans.condition.clear());
+        }
         this.emit('stopped', this.currentStep);
         this.currentStep = undefined;
     }
