@@ -33,6 +33,7 @@ steps:
 - name: docker-arm
   image: plugins/docker
   settings:
+    dockerfile: Dockerfile.arm
     username:
       from_secret: docker_username
     password:
@@ -56,6 +57,6 @@ steps:
 
 ---
 kind: signature
-hmac: 3da37f340aa0a034ade22786242f59202c1298cbfb06fdb59988f9d090a7f0a2
+hmac: 392e24d213749c7c035d18876b28896425a6f67b9ec7d8055d826f3880ad06b8
 
 ...
