@@ -26,77 +26,101 @@
 import {expect} from 'chai';
 import * as fs from 'fs';
 import {Module} from '../../../src/model/core/Module';
+import {Service} from '../../../src/model/core/Service';
 import {Parameter} from '../../../src/model/recipe/Parameter';
+import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 
 describe('Parameter', () => {
-    let service;
-    let module;
 
-    before(() => {
-        const file = fs.readFileSync('assets/modules/module_cif.json');
+    context('static', () => {
+        let service: Service;
+        let module: Module;
 
-        module = new Module(JSON.parse(file.toString()).modules[0]);
-        service = module.services[0];
-    });
+        before(() => {
+            const file = fs.readFileSync('assets/modules/module_cif.json');
 
-    it('should load', () => {
-        const param = new Parameter({
-            name: 'var1',
-            value: 3
-        }, service);
-    });
+            module = new Module(JSON.parse(file.toString()).modules[0]);
+            service = module.services[0];
+        });
 
-    it('should load with expression', async () => {
-        const param = new Parameter({
-            name: 'var1',
-            value: '3+2'
-        }, service);
-        expect(await param.getValue()).to.equal(5);
-    });
-
-    it('should load with complex expression', async () => {
-        const param = new Parameter({
-            name: 'var1',
-            value: 'sin(3)+2'
-        }, service);
-        expect(await param.getValue()).to.be.closeTo(2.14, 0.01);
-    });
-
-    it.skip('should load with complex expression and given scopeArray', async () => {
-        await module.connect();
-        const param = new Parameter({
-            name: 'var1',
-            value: 'sin(a)^2 + cos(CIF.Test_AnaView\\.L004)^2',
-            scope: [
-                {
-                    name: 'a',
-                    module: 'CIF',
-                    dataAssembly: 'Test_AnaView.L004',
-                    variable: 'V'
-                }
-            ]
-
-        }, service, undefined, [module]);
-        expect(await param.getValue()).to.be.closeTo(1, 0.01);
-        await module.disconnect();
-    });
-
-    it.skip('should load with complex expression with dataAssembly variables', async () => {
-        await module.connect();
-        const param = new Parameter({
-            name: 'var1',
-            value: '2 * CIF.Sensoren\\.L001.V + CIF.Sensoren\\.L002 + Sensoren\\.L003'
-        }, service, undefined, [module]);
-        expect(await param.getValue()).to.be.closeTo(61, 0.01);
-        await module.disconnect();
-    });
-
-    it('should fail with wrong parameter name', () => {
-        expect(() => {
+        it('should load', () => {
             const param = new Parameter({
-                name: 'non-existing-parameter',
+                name: 'var1',
                 value: 3
             }, service);
-        }).to.throw();
+        });
+
+        it('should load with expression', async () => {
+            const param = new Parameter({
+                name: 'var1',
+                value: '3+2'
+            }, service);
+            expect(await param.getValue()).to.equal(5);
+        });
+
+        it('should load with complex expression', async () => {
+            const param = new Parameter({
+                name: 'var1',
+                value: 'sin(3)+2'
+            }, service);
+            expect(await param.getValue()).to.be.closeTo(2.14, 0.01);
+        });
+
+        it('should fail with wrong parameter name', () => {
+            expect(() => {
+                const param = new Parameter({
+                    name: 'non-existing-parameter',
+                    value: 3
+                }, service);
+            }).to.throw();
+        });
     });
+
+    context('with ModuleTestServer', () => {
+        let service: Service;
+        let module: Module;
+        let moduleServer: ModuleTestServer;
+
+        before(async () => {
+            moduleServer = new ModuleTestServer();
+            await moduleServer.start();
+            const moduleJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8'))
+                .modules[0];
+            module = new Module(moduleJson);
+            service = module.services[0];
+            await module.connect();
+        });
+
+        after(async () => {
+            await module.disconnect();
+            await moduleServer.shutdown();
+        });
+
+        it('should load with complex expression and given scopeArray', async () => {
+            const param = new Parameter({
+                name: 'Parameter001',
+                value: 'sin(a)^2 + cos(CIF.Variable001)^2',
+                scope: [
+                    {
+                        name: 'a',
+                        module: 'CIF',
+                        dataAssembly: 'Variable001',
+                        variable: 'V'
+                    }
+                ]
+
+            }, service, undefined, [module]);
+            expect(await param.getValue()).to.be.closeTo(1, 0.01);
+        });
+
+        it('should load with complex expression with dataAssembly variables', async () => {
+            const param = new Parameter({
+                name: 'Parameter001',
+                value: '2 * CIF.Variable001.V + CIF.Variable002 + Variable\\.003'
+            }, service, undefined, [module]);
+            expect(await param.getValue()).to.be.greaterThan(0.01);
+        });
+
+    });
+
 });

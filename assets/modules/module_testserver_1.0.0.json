@@ -343,27 +343,27 @@
           "communication": {
             "V": {
               "namespace_index": "urn:NodeOPCUA-Server-default",
-              "node_id": "Variable.3.V"
+              "node_id": "TestServerVariable.3.V"
             },
             "VUnit": {
               "namespace_index": "urn:NodeOPCUA-Server-default",
-              "node_id": "Variable.3.VUnit"
+              "node_id": "TestServerVariable.3.VUnit"
             },
             "VSclMin": {
               "namespace_index": "urn:NodeOPCUA-Server-default",
-              "node_id": "Variable.3.VSclMin"
+              "node_id": "TestServerVariable.3.VSclMin"
             },
             "VSclMax": {
               "namespace_index": "urn:NodeOPCUA-Server-default",
-              "node_id": "Variable.3.VSclMax"
+              "node_id": "TestServerVariable.3.VSclMax"
             },
             "WQC": {
               "namespace_index": "urn:NodeOPCUA-Server-default",
-              "node_id": "Variable.3.WQC"
+              "node_id": "TestServerVariable.3.WQC"
             },
             "OSLevel": {
               "namespace_index": "urn:NodeOPCUA-Server-default",
-              "node_id": "Variable.3.OSLevel"
+              "node_id": "TestServerVariable.3.OSLevel"
             }
           }
         }

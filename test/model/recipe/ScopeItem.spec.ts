@@ -66,7 +66,7 @@ describe('Scope Item', () => {
     it('should work for expression with special characters', () => {
         const extraction = ScopeItem.extractFromExpressionString('CIF.Variable\\.003 + 3', [module]);
         expect(extraction.scopeItems).to.have.lengthOf(1);
-        expect(extraction.scopeItems[0].variable.node_id).to.equal('Variable.3.V');
+        expect(extraction.scopeItems[0].variable.node_id).to.equal('TestServerVariable.3.V');
         expect(extraction.scopeItems[0].name).to.equal('CIF.Variable__003');
     });
 

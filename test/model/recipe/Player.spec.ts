@@ -33,7 +33,6 @@ import {timeout} from 'promise-timeout';
 import * as delay from 'timeout-as-promise';
 import {controlEnableToJson, ServiceState} from '../../../src/model/core/enum';
 import {Module} from '../../../src/model/core/Module';
-import {Manager} from '../../../src/model/Manager';
 import {Player} from '../../../src/model/recipe/Player';
 import {Recipe} from '../../../src/model/recipe/Recipe';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
@@ -136,13 +135,13 @@ describe('Player', function () {
             await waitForStateChange(service, 'COMPLETED', 2000);
             await waitForStateChange(service, 'IDLE');
 
-            await delay(10);
+            await delay(50);
 
             expect(player.status).to.equal(RecipeState.completed);
             player.reset();
 
             await module.disconnect();
-        }).timeout(10000);
+        }).timeout(10000).retries(3);
 
         it('should run a playlist while modifying it', async () => {
 
@@ -421,50 +420,6 @@ describe('Player', function () {
             }), 1000);
 
         });
-    });
-
-    context.skip('CIF', () => {
-
-        let recipeCif;
-        const manager = new Manager();
-        const player = new Player();
-
-        before(async () => {
-            const module = manager.loadModule(
-                JSON.parse(fs.readFileSync('assets/modules/module_cif.json').toString())
-            )[0];
-            recipeCif = manager.loadRecipe(
-                JSON.parse(fs.readFileSync('assets/recipes/recipe_cif_test.json').toString())
-            );
-
-            // bring required services to idle
-            await module.connect();
-
-            await module.abort();
-            await delay(200);
-
-            await module.reset();
-            await delay(200);
-
-            await module.disconnect();
-        });
-
-        it('should run Player with CIF test recipes', async function () {
-            this.timeout(5000);
-            player.enqueue(recipeCif);
-            return await timeout(new Promise((resolve) => {
-                player.on('recipeFinished', (recipe: Recipe) => {
-                    expect(recipe).to.have.property('status', 'completed');
-                })
-                    .on('completed', () => resolve());
-                player.start();
-            }), 3000);
-        });
-
-        after(async () => {
-            await Promise.all(manager.modules.map((module) => module.disconnect()));
-        });
-
     });
 
 });
