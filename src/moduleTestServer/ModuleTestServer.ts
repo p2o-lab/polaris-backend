@@ -185,7 +185,7 @@ export class TestServerService {
     public varCommandEnable: number = 0;
     public varOpmode: number = 0;
     public serviceName: string;
-    private variables: Array<TestServerVariable | TestServerStringVariable> = [];
+    public readonly parameter: Array<TestServerVariable | TestServerStringVariable> = [];
 
     constructor(namespace, rootNode, serviceName) {
         catTestServer.info(`Add service ${serviceName}`);
@@ -197,10 +197,10 @@ export class TestServerService {
             browseName: serviceName
         });
 
-        this.variables.push(new TestServerVariable(namespace, serviceNode, serviceName + '.Parameter1', false));
-        this.variables.push(new TestServerVariable(namespace, serviceNode, serviceName + '.Parameter2', false));
+        this.parameter.push(new TestServerVariable(namespace, serviceNode, serviceName + '.Parameter1', false));
+        this.parameter.push(new TestServerVariable(namespace, serviceNode, serviceName + '.Parameter2', false));
 
-        this.variables.push(new TestServerStringVariable(namespace, serviceNode, serviceName + '.ErrorMsg'));
+        this.parameter.push(new TestServerStringVariable(namespace, serviceNode, serviceName + '.ErrorMsg'));
 
         namespace.addVariable({
             componentOf: serviceNode,
@@ -316,11 +316,11 @@ export class TestServerService {
     }
 
     public startSimulation() {
-        this.variables.forEach((variable) => variable.startSimulation());
+        this.parameter.forEach((variable) => variable.startSimulation());
     }
 
     public stopSimulation() {
-        this.variables.forEach((variable) => variable.stopSimulation());
+        this.parameter.forEach((variable) => variable.stopSimulation());
     }
 
     private state(state: ServiceState) {
