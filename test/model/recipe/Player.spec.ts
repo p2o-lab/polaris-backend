@@ -196,9 +196,8 @@ describe('Player', () => {
             const module = new Module(moduleJson);
             const service = module.services[0];
 
-            await module.connect();
-            moduleServer.services[0].varStatus = ServiceState.IDLE;
-            await waitForStateChange(service, 'IDLE');
+            module.connect();
+            await waitForStateChange(service, 'IDLE', 2000);
 
             // now test recipe
             const recipeJson = JSON.parse(
@@ -264,8 +263,7 @@ describe('Player', () => {
                 [], false);
         });
 
-        it('should load run Player with three local waiting recipes', function (done) {
-            this.timeout(5000);
+        it('should load run Player with three local waiting recipes', (done) => {
             const player = new Player();
 
             expect(player.start()).to.be.rejectedWith('No recipes in playlist');
@@ -308,8 +306,7 @@ describe('Player', () => {
             const json = player.json();
             expect(json.currentItem).to.equal(0);
             expect(json.status).to.equal('running');
-
-        });
+        }).timeout(5000);
 
         it('should load run Player with three local waiting recipes and removal', function(done) {
             this.timeout(5000);
