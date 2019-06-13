@@ -73,8 +73,8 @@ describe('Manager', () => {
         expect(() => manager.getService('Dose', 'NoService')).to.throw();
         expect(() => manager.getService('NoModule', 'NoService')).to.throw();
 
-        expect(manager.removeModule('something')).to.be.rejected;
-        expect(manager.removeModule(manager.modules[1].id)).to.be.rejected;
+        expect(manager.removeModule('something')).to.be.rejectedWith(/No Module/);
+        expect(manager.removeModule(manager.modules[1].id)).to.be.rejectedWith(/is protected/);
     });
 
     it('should prevent removing a protected module', () => {
@@ -112,8 +112,8 @@ describe('Manager', () => {
             const module = manager.modules[0];
             const service = module.services[1];
 
-            await module.connect();
-            await waitForStateChange(service, 'IDLE');
+            module.connect();
+            await waitForStateChange(service, 'IDLE', 2000);
             service.execute(ServiceCommand.start);
             await waitForStateChange(service, 'EXECUTE');
 
@@ -131,7 +131,7 @@ describe('Manager', () => {
 
             await manager.removeModule(module.id);
             expect(manager.modules).to.have.lengthOf(0);
-        }).slow(2000).timeout(10000);
+        }).slow(2000).timeout(10000).retries(3);
 
         it('should autoreset service', async () => {
             const moduleJson = parseJson(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8'), null, 60);
