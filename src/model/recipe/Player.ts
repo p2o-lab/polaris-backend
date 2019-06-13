@@ -176,11 +176,9 @@ export class Player extends (EventEmitter as new() => PlayerEmitter) {
             this.emit('started');
             catPlayer.info('Player started');
             while (this.currentItem < this.playlist.length) {
+                catManager.info(`Go to next recipe (${this.currentItem + 1}/${this.playlist.length})`);
                 await this.runCurrentRecipe();
                 this._currentItem = this._currentItem + 1;
-                if (this.currentItem < this.playlist.length) {
-                    catManager.info(`Go to next recipe (${this.currentItem + 1}/${this.playlist.length})`);
-                }
             }
             catPlayer.info('Player finished');
             this._status = RecipeState.completed;
@@ -210,9 +208,7 @@ export class Player extends (EventEmitter as new() => PlayerEmitter) {
     public pause() {
         if (this.status === RecipeState.running) {
             this._status = RecipeState.paused;
-            this.getCurrentRecipe().modules.forEach((module) => {
-                module.pause();
-            });
+            this.getCurrentRecipe().pause();
         }
     }
 

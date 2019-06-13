@@ -128,6 +128,10 @@ type ServiceEmitter = StrictEventEmitter<EventEmitter, ServiceEvents>;
  */
 export class Service extends (EventEmitter as new() => ServiceEmitter) {
 
+    public get qualifiedName() {
+        return `${this.parent.id}.${this.name}`;
+    }
+
     /** name of the service */
     public readonly name: string;
     /** strategies of the service */
@@ -214,10 +218,6 @@ export class Service extends (EventEmitter as new() => ServiceEmitter) {
 
         this.lastStatusChange = new Date();
         this.logger = catService;
-    }
-
-    public get qualifiedName() {
-        return `${this.parent.id}.${this.name}`;
     }
 
     /**
@@ -595,14 +595,24 @@ export class Service extends (EventEmitter as new() => ServiceEmitter) {
         });
     }
 
+    public async isCommandExecutable(command: ServiceCommand): Promise<boolean> {
+        const controlEnable: ControlEnableInterface = await this.getControlEnable(true);
+        this.logger.debug(`[${this.qualifiedName}] ControlEnable: ${JSON.stringify(controlEnable)}`);
+        return controlEnable[command];
+    }
+
     /**
      * Execute command by writing ControlOp/ControlExt
-     * (currently disabled - Set ControlOp/ControlExt back after 100ms)
      *
      * @param {ServiceCommand} command
      * @returns {Promise<boolean>}
      */
     private async executeCommand(command: ServiceCommand): Promise<boolean> {
+        const commandExecutable = await this.isCommandExecutable(command);
+        if (!commandExecutable) {
+            this.logger.info(`[${this.qualifiedName}] ControlOp does not allow ${command}`);
+            throw new Error(`[${this.qualifiedName}] ControlOp does not allow command ${command}`);
+        }
         let result;
         if (command === ServiceCommand.start) {
             result = this.start();
@@ -752,25 +762,6 @@ export class Service extends (EventEmitter as new() => ServiceEmitter) {
         }
         this.logger.info(`[${this.qualifiedName}] Send command ${ServiceMtpCommand[command]}`);
         await this.setOperationMode();
-
-        const controlEnable: ControlEnableInterface = await this.getControlEnable(true);
-        this.logger.debug(`[${this.qualifiedName}] ControlEnable: ${JSON.stringify(controlEnable)}`);
-
-        const commandExecutable =
-            (command === ServiceMtpCommand.START && controlEnable.start) ||
-            (command === ServiceMtpCommand.STOP && controlEnable.stop) ||
-            (command === ServiceMtpCommand.RESTART && controlEnable.restart) ||
-            (command === ServiceMtpCommand.PAUSE && controlEnable.pause) ||
-            (command === ServiceMtpCommand.RESUME && controlEnable.resume) ||
-            (command === ServiceMtpCommand.COMPLETE && controlEnable.complete) ||
-            (command === ServiceMtpCommand.UNHOLD && controlEnable.unhold) ||
-            (command === ServiceMtpCommand.ABORT && controlEnable.abort) ||
-            (command === ServiceMtpCommand.RESET && controlEnable.reset);
-        if (!commandExecutable) {
-            this.logger.info(`[${this.qualifiedName}] ControlOp does not allow ${ServiceMtpCommand[command]}: ` +
-                `${JSON.stringify(controlEnable)}`);
-            throw new Error(`[${this.qualifiedName}] ControlOp does not allow command ${ServiceMtpCommand[command]}`);
-        }
 
         const result = await this.parent.writeNode(this.automaticMode ? this.command : this.commandMan,
             {

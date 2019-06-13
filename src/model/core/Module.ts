@@ -482,7 +482,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
                     const unitObject = UNIT.find((item) => item.value === parseInt(variable.VUnit.value, 10));
                     unit = unitObject ? unitObject.unit : undefined;
                     }
-                this.logger.info(`[${this.id}] variable changed: ${variable.name} = ` +
+                this.logger.debug(`[${this.id}] variable changed: ${variable.name} = ` +
                     `${data.value} ${unit ? unit : ''}`);
                     const entry: VariableLogEntry = {
                         timestampPfe: new Date(),
@@ -534,7 +534,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
                     this.emit('opModeChanged', entry);
                 })
                 .on('variableChanged', (data) => {
-                    this.logger.info(`[${this.id}] service variable changed: ` +
+                    this.logger.debug(`[${this.id}] service variable changed: ` +
                         `${data.strategy.name}.${data.parameter.name} = ${data.value}`);
                     const variable: DataAssembly = data.parameter;
                     let unit;

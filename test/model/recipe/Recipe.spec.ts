@@ -25,35 +25,41 @@
 
 import {RecipeInterface} from '@p2olab/polaris-interface';
 import * as assert from 'assert';
-import {expect} from 'chai';
+import * as chai from 'chai';
+import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
 import {Module} from '../../../src/model/core/Module';
 import {Recipe} from '../../../src/model/recipe/Recipe';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
+
+chai.use(chaiAsPromised);
+const expect = chai.expect;
 
 describe('Recipe', () => {
 
     describe('with module test server', () => {
 
         let moduleServer: ModuleTestServer;
+        let module: Module;
 
         before(async () => {
             moduleServer = new ModuleTestServer();
             await moduleServer.start();
+
+            const moduleJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString())
+                .modules[0];
+            module = new Module(moduleJson);
+
+            await module.connect();
+
         });
 
         after(async () => {
+            await module.disconnect();
             await moduleServer.shutdown();
         });
 
         it('runs test recipe successfully', async () => {
-
-            const moduleJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString())
-                .modules[0];
-            const module = new Module(moduleJson);
-
-            await module.connect();
-
             // now test recipe
             const recipeJson = JSON.parse(
                 fs.readFileSync('assets/recipes/test/recipe_testserver_2services_1.0.0.json').toString());
@@ -67,7 +73,36 @@ describe('Recipe', () => {
                 });
             });
 
-        }).timeout(15000);
+        }).timeout(5000);
+
+        it('should only run one recipe at a time', async () => {
+            // now test recipe
+            const recipeJson = JSON.parse(
+                fs.readFileSync('assets/recipes/test/recipe_testserver_2services_1.0.0.json').toString());
+            const recipe = new Recipe(recipeJson, [module]);
+
+            recipe.start();
+            expect(() => recipe.start()).to.throw(/already running/);
+            await new Promise((resolve) => {
+                recipe.on('completed', () => {
+                    resolve();
+                });
+            });
+
+        });
+
+        it('should only allow to stop running recipe', async () => {
+            const recipeJson = JSON.parse(
+                fs.readFileSync('assets/recipes/test/recipe_testserver_2services_1.0.0.json').toString());
+            const recipe = new Recipe(recipeJson, [module]);
+
+            expect(recipe.stop()).to.be.rejectedWith('Can only stop running recipe');
+
+            recipe.start();
+            recipe.stop();
+            expect(recipe.stop()).to.be.rejectedWith('Can only stop running recipe');
+
+        });
 
     });
 
@@ -100,7 +135,7 @@ describe('Recipe', () => {
                     .to.deep.equal(['Temper', 'React', 'Dose']);
                 expect(json).to.have.property('options')
                     .to.have.property('initial_step', 'Startup.Init');
-                expect(json).to.have.property('status', undefined);
+                expect(json).to.have.property('status', 'idle');
 
                 const step = recipe.steps[0];
                 expect(step.json()).to.have.property('name', 'Startup.Init');

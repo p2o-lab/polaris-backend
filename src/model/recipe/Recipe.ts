@@ -116,6 +116,7 @@ export class Recipe extends (EventEmitter as new() => RecipeEmitter) {
 
         this.options = options;
         this.protected = protectedRecipe;
+        this.status = RecipeState.idle;
         this.lastChange = new Date();
 
         catRecipe.info(`Recipe ${this.name} (${this.options.version}) successfully parsed`);
@@ -162,22 +163,36 @@ export class Recipe extends (EventEmitter as new() => RecipeEmitter) {
 
     /**
      * Starts recipe
+     * Connect to modules and then start the recipe
      */
     public start(): Recipe {
+        if (this.status === RecipeState.running) {
+            throw new Error('Recipe is already running');
+        }
         this.currentStep = this.initialStep;
-        this.status = RecipeState.idle;
+        this.status = RecipeState.running;
         this.connectModules()
             .catch((reason) => {
                 throw new Error(`Could not connect to all modules for recipe ${this.name}. ` +
                     `Start of recipe not possible: ${reason.toString()}`);
             })
             .then(() => {
-                this.currentStep = this.initialStep;
-                this.status = RecipeState.running;
                 this.executeStep();
                 this.emit('started');
             });
         return this;
+    }
+
+    /**
+     * Pause the recipe by pausing all modules
+     */
+    public pause() {
+        if (this.status !== RecipeState.running) {
+            throw new Error('Can only pause running recipe');
+        }
+        this.modules.forEach((module) => {
+            module.pause();
+        });
     }
 
     /**
@@ -186,6 +201,9 @@ export class Recipe extends (EventEmitter as new() => RecipeEmitter) {
      * Clear monitoring of all conditions. Services won't be touched.
      */
     public async stop() {
+        if (this.status !== RecipeState.running) {
+            throw new Error('Can only stop running recipe');
+        }
         catRecipe.info(`Stop recipe ${this.name}`);
         await Promise.all(Array.from(this.modules).map((module: Module) => module.stop()));
         this.status = RecipeState.stopped;

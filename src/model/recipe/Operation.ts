@@ -82,17 +82,25 @@ export class Operation {
 
     /**
      * Execute Operation at runtime during recipe run
+     *
+     * Try as long as command can be executed
      * @returns {Promise<void>}
      */
-    public execute(): Promise<void> {
-        catOperation.info(`Perform operation ${ this.module.id } ${ this.service.name } ${ this.command } ` +
-            `(Strategy: ${ this.strategy ? this.strategy.name : '' })`);
-        return this.service.execute(this.command, this.strategy, this.parameters)
-            .catch(async (reason) => {
-                catOperation.warn('Could not execute operation. Another try in 500ms');
-                await delay(500);
-                return this.service.execute(this.command, this.strategy, this.parameters);
-            });
+    public async execute(): Promise<void> {
+        let operationExecuted: boolean = false;
+        while (!operationExecuted) {
+            catOperation.info(`Perform operation ${ this.module.id }.${ this.service.name }.${ this.command }() ` +
+                `(Strategy: ${ this.strategy ? this.strategy.name : '' })`);
+            await this.service.execute(this.command, this.strategy, this.parameters)
+                .then(() => {
+                    operationExecuted = true;
+                })
+                .catch(async () => {
+                    catOperation.warn('Could not execute operation. Another try in 500ms');
+                    await delay(500);
+                });
+        }
+        catOperation.info(`Operation ${ this.module.id }.${ this.service.name }.${ this.command }() executed`);
     }
 
     public json(): OperationInterface {
