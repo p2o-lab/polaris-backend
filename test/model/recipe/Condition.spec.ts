@@ -238,12 +238,11 @@ describe('Condition', () => {
             expect(condition).to.have.property('fulfilled', false);
 
             moduleServer.services[0].varStatus = ServiceState.COMPLETED;
-            await new Promise((resolve, reject) => {
-                condition.once('stateChanged', (state) => {
+            await new Promise((resolve) => {
+                condition.on('stateChanged', function test(state) {
                     if (state) {
+                        condition.removeListener('stateChanged', test);
                         resolve();
-                    } else {
-                        reject('state should change to true');
                     }
                 } );
             });

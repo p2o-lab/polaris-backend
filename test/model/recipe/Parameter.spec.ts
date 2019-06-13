@@ -121,6 +121,23 @@ describe('Parameter', () => {
             expect(await param.getValue()).to.be.greaterThan(0.01);
         });
 
+        it('should update value on module', async () => {
+            const param = new Parameter({
+                name: 'Parameter001',
+                value: '2 * 3'
+            }, service, undefined, [module]);
+            await param.updateValueOnModule();
+            expect(moduleServer.services[0].parameter[0].vext).to.equal(6);
+
+            const param2 = new Parameter({
+                name: 'Parameter002',
+                value: '2 * CIF.Variable001.V + CIF.Variable002 + Variable\\.003'
+            }, service, undefined, [module]);
+            const value = await param2.getValue();
+            await param2.updateValueOnModule();
+            expect(moduleServer.services[0].parameter[1].vext).to.equal(value);
+        });
+
     });
 
 });
