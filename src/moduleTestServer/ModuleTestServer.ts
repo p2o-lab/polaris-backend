@@ -37,10 +37,11 @@ export class TestServerVariable {
     public sclMin: number = Math.random() * 100;
     public sclMax: number = this.sclMin + Math.random() * 100;
     public unit: number = Math.floor((Math.random() * 100) + 1000);
+    public opMode: number = 0;
     private interval: Timeout;
     private simulation: boolean;
 
-    constructor(namespace, rootNode, variableName, simulation = false) {
+    constructor(namespace, rootNode, variableName, simulation = false, opMode = true) {
         catTestServer.info(`Add variable ${variableName}`);
 
         this.simulation = simulation;
@@ -116,6 +117,34 @@ export class TestServerVariable {
                 }
             });
         }
+
+        namespace.addVariable({
+            componentOf: variableNode,
+            nodeId: `ns=1;s=${variableName}.OpMode`,
+            browseName: `${variableName}.OpMode`,
+            dataType: 'UInt32',
+            value: {
+                get: () => {
+                    catTestServer.trace(`[${variableName}] Get Opmode in testserver ${this.opMode}`);
+                    return new Variant({dataType: DataType.UInt32, value: this.opMode});
+                },
+                set: (variant) => {
+                    if (parseInt(variant.value, 10) === OpMode.stateManOp) {
+                        this.opMode = this.opMode & ~OpMode.stateAutAct;
+                        this.opMode = this.opMode | OpMode.stateManAct;
+                    }
+                    if (parseInt(variant.value, 10) === OpMode.stateAutOp) {
+                        this.opMode = this.opMode & ~OpMode.stateManAct;
+                        this.opMode = this.opMode | OpMode.stateAutAct;
+                    }
+                    if (parseInt(variant.value, 10) === OpMode.srcExtOp) {
+                        this.opMode = this.opMode | OpMode.srcExtAct;
+                    }
+                    catTestServer.trace(`[${variableName}] Set Opmode in testserver ${variant} ` +
+                        `${parseInt(variant.value, 10)} -> ${this.opMode}`);
+                }
+            }
+        });
     }
 
     public startSimulation() {

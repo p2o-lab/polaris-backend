@@ -28,6 +28,7 @@ import * as assert from 'assert';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
+import * as delay from 'timeout-as-promise';
 import {Module} from '../../../src/model/core/Module';
 import {Recipe} from '../../../src/model/recipe/Recipe';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
@@ -97,9 +98,11 @@ describe('Recipe', () => {
 
             expect(recipe.stop()).to.be.rejectedWith('Can only stop running recipe');
             await recipe.start();
+            await delay(100);
             await recipe.stop();
             expect(recipe.stop()).to.be.rejectedWith('Can only stop running recipe');
-        });
+            await delay(100);
+        }).timeout(5000);
 
     });
 

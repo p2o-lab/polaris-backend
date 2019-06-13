@@ -49,7 +49,7 @@
               "parameters": [
                 {
                   "name": "Parameter001",
-                  "interface_class": "ExtAnaOp",
+                  "interface_class": "ExtIntAnaOp",
                   "communication": {
                     "V": {
                       "namespace_index": "urn:NodeOPCUA-Server-default",
@@ -86,6 +86,10 @@
                     "OSLevel": {
                       "namespace_index": "urn:NodeOPCUA-Server-default",
                       "node_id": "Service1.Parameter1.OSLevel"
+                    },
+                    "OpMode": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.Parameter1.OpMode"
                     }
                   }
                 },

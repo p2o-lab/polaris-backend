@@ -35,7 +35,7 @@ import {Transition} from './Transition';
 /**
  * Events emitted by [[Recipe]]
  */
-interface RecipeEvents {
+export interface RecipeEvents {
     /**
      * when recipe has successfully started
      * @event
@@ -58,7 +58,7 @@ interface RecipeEvents {
     completed: void;
 }
 
-type RecipeEmitter = StrictEventEmitter<EventEmitter, RecipeEvents>;
+export type RecipeEmitter = StrictEventEmitter<EventEmitter, RecipeEvents>;
 
 /** Recipe which can be started.
  * It is parsed from RecipeOptions
@@ -194,7 +194,7 @@ export class Recipe extends (EventEmitter as new() => RecipeEmitter) {
     }
 
     /**
-     * Stops recipe
+     * Stops recipe and resolves when all services are stopped
      *
      * Clear monitoring of all conditions. Services won't be touched.
      */

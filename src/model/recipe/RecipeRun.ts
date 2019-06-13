@@ -24,14 +24,17 @@
  */
 
 import {RecipeRunInterface} from '@p2olab/polaris-interface';
+import {EventEmitter} from 'events';
 import {v4} from 'uuid';
 import {ServiceLogEntry, VariableLogEntry} from '../../logging/archive';
-import {Recipe} from './Recipe';
+import {Recipe, RecipeEmitter} from './Recipe';
+import {Step} from './Step';
 
 /** One specific recipe run with all logs
  *
  */
-export class RecipeRun {
+export class RecipeRun extends (EventEmitter as new() => RecipeEmitter) {
+
     get startTime(): Date {
         return this._startTime;
     }
@@ -47,10 +50,7 @@ export class RecipeRun {
     private _startTime: Date;
     private _endTime: Date;
 
-    constructor(recipe: Recipe) {
-        this.id = v4();
-        this.recipe = recipe;
-    }
+    private boundOnCompleted = () => this.onCompleted();
 
     public json(): RecipeRunInterface {
         return {
@@ -63,14 +63,53 @@ export class RecipeRun {
         };
     }
 
-    /** Starts the linked recipe
+    private boundOnStarted = () => this.onStarted();
+    private boundOnStepFinished = (finishedStep: Step) => this.onStepFinished(finishedStep);
+
+    constructor(recipe: Recipe) {
+        super();
+        this.id = v4();
+        this.recipe = recipe;
+    }
+
+    /** Starts the linked recipe and resolves when recipe is started
      *
      */
     public async start(): Promise<Recipe> {
         this._startTime = new Date();
-        this.recipe.once('completed', () => {
-            this._endTime = new Date();
-        });
+        this.recipe
+            .on('completed', this.boundOnCompleted)
+            .on('stepFinished', this.boundOnStepFinished)
+            .on('started', this.boundOnStarted);
         return await this.recipe.start();
+    }
+
+    /** Stop the linked recipe
+     *
+     */
+    public async stop(): Promise<void> {
+        this.removeRecipeListeners();
+        this.emit('stopped', this.recipe.currentStep);
+        await this.recipe.stop();
+    }
+
+    private removeRecipeListeners() {
+        this.recipe.removeListener('completed', this.boundOnCompleted);
+        this.recipe.removeListener('stepFinished', this.boundOnStepFinished);
+        this.recipe.removeListener('started', this.boundOnStarted);
+    }
+
+    private onCompleted() {
+        this._endTime = new Date();
+        this.removeRecipeListeners();
+        this.emit('completed');
+    }
+
+    private onStarted() {
+        this.emit('started');
+    }
+
+    private onStepFinished(finishedStep) {
+        this.emit('stepFinished', finishedStep);
     }
 }

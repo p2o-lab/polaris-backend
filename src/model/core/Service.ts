@@ -477,8 +477,8 @@ export class Service extends (EventEmitter as new() => ServiceEmitter) {
                     max,
                     min,
                     unit,
-                    readonly: param.interface_class === 'StrView',
-                    type: interfaceClassToType[param.interface_class]
+                    readonly: param.interfaceClass === 'StrView',
+                    type: interfaceClassToType[param.interfaceClass]
                 };
             });
         }

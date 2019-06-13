@@ -221,7 +221,8 @@ export class Player extends (EventEmitter as new() => PlayerEmitter) {
         catPlayer.info('Stop player');
         if (this.status === RecipeState.running) {
             this._status = RecipeState.stopped;
-            return this.getCurrentRecipe().stop();
+            await this.currentRecipeRun.stop();
+            this.currentRecipeRun = null;
         }
     }
 
@@ -250,14 +251,13 @@ export class Player extends (EventEmitter as new() => PlayerEmitter) {
         catPlayer.info(`Start recipe ${this.getCurrentRecipe().name}`);
         this.currentRecipeRun = new RecipeRun(this.getCurrentRecipe());
         this.recipeRuns.push(this.currentRecipeRun);
-        return new Promise(async (resolve) => {
-            this.currentRecipeRun.recipe
+        return new Promise((resolve) => {
+            this.currentRecipeRun
                 .on('stepFinished', (finishedStep) => this.emit('stepFinished', finishedStep))
-                .once('started', () => this.emit('recipeStarted', this.currentRecipeRun.recipe))
+                .on('started', () => this.emit('recipeStarted', this.currentRecipeRun.recipe))
                 .once('completed', () => {
                     this.emit('recipeFinished', this.currentRecipeRun.recipe);
                     catPlayer.info(`recipe finished ${this.currentItem + 1}/${this._playlist.length} (${this.status})`);
-                    this.currentRecipeRun.recipe.removeAllListeners('stepFinished');
                     resolve();
                 });
             this.currentRecipeRun.start();

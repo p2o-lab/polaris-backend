@@ -222,7 +222,7 @@ describe('Player', () => {
             expect(player.status).to.equal(RecipeState.paused);
 
             player.start();
-            waitForStateChange(service, 'RESUMING');
+            await waitForStateChange(service, 'RESUMING');
             await waitForStateChange(service, 'EXECUTE');
             expect(service.status.value).to.equal(ServiceState.EXECUTE);
             expect(player.status).to.equal(RecipeState.running);
@@ -370,11 +370,14 @@ describe('Player', () => {
         it('should  force a transition', async () => {
             const player = new Player();
             player.enqueue(recipeWaitLocal);
-            player.start();
-            await timeout(new Promise((resolve) => {
-                player.once('recipeStarted', () => resolve());
-            }), 100);
 
+            timeout(new Promise((resolve) => {
+                player.once('started', () => resolve());
+            }), 1000);
+            timeout(new Promise((resolve) => {
+                player.once('recipeStarted', () => resolve());
+            }), 1000);
+            player.start();
             expect(player.getCurrentRecipe().currentStep.name).to.equal('S1');
 
             expect(() => player.forceTransition('non-existant', 'S2')).to.throw();

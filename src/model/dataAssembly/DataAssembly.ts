@@ -23,12 +23,12 @@
  * SOFTWARE.
  */
 
-import {OpcUaNodeOptions} from '../core/Interfaces';
-import {catParameter, catService} from '../../config/logging';
-import {DataType, Variant, VariantArrayType} from 'node-opcua';
-import {Module} from '../core/Module';
-import {isAutomaticState, isExtSource, isManualState, isOffState, OpMode} from '../core/enum';
 import {EventEmitter} from 'events';
+import {DataType, Variant, VariantArrayType} from 'node-opcua';
+import {catParameter, catService} from '../../config/logging';
+import {isAutomaticState, isExtSource, isManualState, isOffState, OpMode} from '../core/enum';
+import {OpcUaNodeOptions} from '../core/Interfaces';
+import {Module} from '../core/Module';
 
 export interface DataAssemblyOptions {
     name: string;
@@ -37,21 +37,16 @@ export interface DataAssemblyOptions {
 }
 
 export class DataAssembly extends EventEmitter {
-    name: string;
-    interface_class: string;
-    communication: OpcUaNodeOptions[];
 
-    get OSLevel() { return this.communication['OSLevel']}
-    get WQC() { return this.communication['WQC']}
-
-
-    private module: Module;
-    protected subscribedNodes: string[] = [];
+    public name: string;
+    public interfaceClass: string;
+    public communication: OpcUaNodeOptions[];
+    protected module: Module;
 
     constructor(options: DataAssemblyOptions, module: Module) {
         super();
         this.name =  options.name;
-        this.interface_class = options.interface_class;
+        this.interfaceClass = options.interface_class;
         this.communication = options.communication;
 
         this.subscribedNodes.push('WQC', 'OSLevel');
@@ -61,11 +56,23 @@ export class DataAssembly extends EventEmitter {
         }
     }
 
-    public subscribe(samplingInterval=1000){
+    protected subscribedNodes: string[] = [];
+
+    get OSLevel() {
+        return this.communication['OSLevel'];
+    }
+
+    get WQC() {
+        return this.communication['WQC'];
+    }
+
+    public subscribe(samplingInterval = 1000) {
         catParameter.debug(`DataAssembly ${this.name} subscribe to ${JSON.stringify(this.subscribedNodes)}`);
         this.subscribedNodes
-            .filter(node => this.communication[node] && this.communication[node].node_id && this.communication[node].namespace_index)
-            .forEach(node => {
+            .filter((node) => this.communication[node] &&
+                this.communication[node].node_id &&
+                this.communication[node].namespace_index)
+            .forEach((node) => {
                 try {
                     this.module.listenToOpcUaNode(this.communication[node], samplingInterval)
                         .on('changed', () => {
@@ -79,7 +86,12 @@ export class DataAssembly extends EventEmitter {
         return this;
     }
 
-
+    /**
+     * Set parameter on module
+     * @param paramValue
+     * @param {string} variable
+     * @returns {Promise<any>}
+     */
     public async setParameter(paramValue: any, variable: string = 'VExt'): Promise<any> {
         const opcUaNode = this.communication[variable];
         const value = await this.module.readVariableNode(opcUaNode);
@@ -102,32 +114,9 @@ export class DataAssembly extends EventEmitter {
     public async getOpMode(): Promise<OpMode> {
         if (this.communication['OpMode']) {
             const result = await this.module.readVariableNode(this.communication['OpMode']);
-            return <OpMode> result.value.value;
+            return result.value.value as OpMode;
         } else {
             return null;
-        }
-    }
-
-    /**
-     * Write OpMode to service
-     * @param {OpMode} opMode
-     * @returns {boolean}
-     */
-    private async writeOpMode(opMode: OpMode): Promise<void> {
-        catParameter.debug(`[${this.name}] Write opMode: ${<number> opMode}`);
-        const result = await this.module.writeNode(this.communication['OpMode'],
-            {
-                dataType: DataType.UInt32,
-                value: opMode,
-                arrayType: VariantArrayType.Scalar,
-                dimensions: null
-            });
-        catParameter.debug(`[${this.name}] Setting opMode ${JSON.stringify(result)}`);
-        if (result.value !== 0) {
-            catParameter.warn(`[${this.name}] Error while setting opMode to ${opMode}: ${JSON.stringify(result)}`);
-            return Promise.reject();
-        } else {
-            return Promise.resolve();
         }
     }
 
@@ -148,7 +137,7 @@ export class DataAssembly extends EventEmitter {
      * @returns {Promise<void>}
      */
     public async setToAutomaticOperationMode(): Promise<void> {
-        let opMode: OpMode = await this.getOpMode();
+        const opMode: OpMode = await this.getOpMode();
         catParameter.info(`[${this.name}] Current opMode = ${opMode}`);
         if (opMode && isOffState(opMode)) {
             catParameter.trace('First go to Manual state');
@@ -168,12 +157,33 @@ export class DataAssembly extends EventEmitter {
     }
 
     public async setToManualOperationMode(): Promise<void> {
-        let opMode = await this.getOpMode();
+        const opMode = await this.getOpMode();
         if (opMode && !isManualState(opMode)) {
             this.writeOpMode(OpMode.stateManOp);
             await this.waitForOpModeToPassSpecificTest(isManualState);
         }
     }
 
-
+    /**
+     * Write OpMode to service
+     * @param {OpMode} opMode
+     * @returns {boolean}
+     */
+    private async writeOpMode(opMode: OpMode): Promise<void> {
+        catParameter.debug(`[${this.name}] Write opMode: ${opMode as number}`);
+        const result = await this.module.writeNode(this.communication['OpMode'],
+            {
+                dataType: DataType.UInt32,
+                value: opMode,
+                arrayType: VariantArrayType.Scalar,
+                dimensions: null
+            });
+        catParameter.debug(`[${this.name}] Setting opMode ${JSON.stringify(result)}`);
+        if (result.value !== 0) {
+            catParameter.warn(`[${this.name}] Error while setting opMode to ${opMode}: ${JSON.stringify(result)}`);
+            return Promise.reject();
+        } else {
+            return Promise.resolve();
+        }
+    }
 }
