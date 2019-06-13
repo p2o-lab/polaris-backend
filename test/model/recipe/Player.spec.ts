@@ -47,12 +47,12 @@ describe('Player', () => {
 
         let moduleServer: ModuleTestServer;
 
-        before(async () => {
+        beforeEach(async () => {
             moduleServer = new ModuleTestServer();
             await moduleServer.start();
         });
 
-        after(async () => {
+        afterEach(async () => {
             await moduleServer.shutdown();
         });
 
@@ -213,8 +213,8 @@ describe('Player', () => {
 
             player.start();
             expect(player.status).to.equal(RecipeState.running);
-            waitForStateChange(service, 'STARTING');
-            await waitForStateChange(service, 'EXECUTE');
+            waitForStateChange(service, 'STARTING', 2000);
+            await waitForStateChange(service, 'EXECUTE', 2000);
 
             player.pause();
             waitForStateChange(service, 'PAUSING');

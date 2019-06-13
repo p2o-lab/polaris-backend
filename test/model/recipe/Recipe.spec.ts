@@ -42,7 +42,7 @@ describe('Recipe', () => {
         let moduleServer: ModuleTestServer;
         let module: Module;
 
-        before(async () => {
+        beforeEach(async () => {
             moduleServer = new ModuleTestServer();
             await moduleServer.start();
 
@@ -54,7 +54,7 @@ describe('Recipe', () => {
 
         });
 
-        after(async () => {
+        afterEach(async () => {
             await module.disconnect();
             await moduleServer.shutdown();
         });
@@ -88,8 +88,7 @@ describe('Recipe', () => {
                     resolve();
                 });
             });
-
-        });
+        }).timeout(5000);
 
         it('should only allow to stop running recipe', async () => {
             const recipeJson = JSON.parse(
