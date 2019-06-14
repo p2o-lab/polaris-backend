@@ -30,6 +30,7 @@ import {Module} from '../core/Module';
 import {Service} from '../core/Service';
 import {Strategy} from '../core/Strategy';
 import {Parameter} from './Parameter';
+import {EventEmitter} from 'events';
 
 /** Operation used in a [[Step]] of a [[Recipe]]
  *
@@ -40,6 +41,8 @@ export class Operation {
     public strategy: Strategy;
     public command: ServiceCommand;
     public parameters: Parameter[];
+    public readonly emitter: EventEmitter;
+    private state: 'executing' | 'completed' | 'aborted';
 
     constructor(options: OperationOptions, modules: Module[]) {
         if (modules) {
@@ -78,6 +81,7 @@ export class Operation {
                 (paramOptions) => new Parameter(paramOptions, this.service, this.strategy, modules)
             );
         }
+        this.emitter = new EventEmitter();
     }
 
     /**
@@ -87,20 +91,37 @@ export class Operation {
      * @returns {Promise<void>}
      */
     public async execute(): Promise<void> {
-        let operationExecuted: boolean = false;
-        while (!operationExecuted) {
+        let numberOfTries = 0;
+        const MAX_TRIES = 10;
+        this.state = 'executing';
+        while (this.state === 'executing') {
             catOperation.info(`Perform operation ${ this.module.id }.${ this.service.name }.${ this.command }() ` +
                 `(Strategy: ${ this.strategy ? this.strategy.name : '' })`);
             await this.service.execute(this.command, this.strategy, this.parameters)
                 .then(() => {
-                    operationExecuted = true;
+                    this.state = 'completed';
+                    this.emitter.emit('changed', 'completed');
                 })
                 .catch(async () => {
-                    catOperation.warn('Could not execute operation. Another try in 500ms');
-                    await delay(500);
+                    numberOfTries++;
+                    if (numberOfTries === MAX_TRIES) {
+                        this.state = 'aborted';
+                        this.emitter.emit('changed', 'aborted');
+                        catOperation.warn('Could not execute operation. Stop restarting');
+                    } else {
+                        catOperation.warn('Could not execute operation. Another try in 500ms');
+                        await delay(500);
+                    }
                 });
         }
+
         catOperation.info(`Operation ${ this.module.id }.${ this.service.name }.${ this.command }() executed`);
+    }
+
+    public stop() {
+        if (this.state === 'executing') {
+            this.state = 'aborted';
+        }
     }
 
     public json(): OperationInterface {
@@ -109,7 +130,8 @@ export class Operation {
             service: this.service.name,
             strategy: this.strategy ? this.strategy.name : undefined,
             command: this.command,
-            parameter: this.parameters
+            parameter: this.parameters,
+            state: this.state
         };
     }
 }

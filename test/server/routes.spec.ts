@@ -118,12 +118,6 @@ describe('Routes', () => {
                 .expect(200, done);
         });
 
-        it('should provide meta information', (done) => {
-            request(app).get('/api/')
-                .expect('Content-Type', /json/)
-                .expect(200, done);
-        });
-
         context('logs', () => {
 
             it('should provide logs', (done) => {

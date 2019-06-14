@@ -28,7 +28,7 @@ import {catManager} from '../config/logging';
 import {EventEmitter} from 'events';
 import {Module, ModuleOptions} from './core/Module';
 import {Service} from './core/Service';
-import {ManagerInterface, RecipeOptions, ServiceCommand} from '@p2olab/polaris-interface';
+import {RecipeOptions, ServiceCommand} from '@p2olab/polaris-interface';
 import {Player} from './recipe/Player';
 import {ServiceState} from './core/enum';
 import {ServiceLogEntry, VariableLogEntry} from '../logging/archive';
@@ -71,14 +71,10 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
             .on('started', () => {
                 this.emit('notify', 'player', this.player.json())
             })
-            .on('recipeStarted', () => {
-                this.emit('notify', 'player', this.player.json())
-            })
-            .on('stepFinished', () => {
-                this.emit('notify', 'player', this.player.json())
+            .on('recipeChanged', () => {
+                this.emit('notify', 'player', this.player.json());
             })
             .on('recipeFinished', () => {
-                this.emit('recipeFinished');
                 this.emit('notify', 'player', this.player.json())
             })
             .on('completed', () => {
@@ -267,19 +263,6 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
         const tasks = [];
         tasks.push(this.modules.map((module) => module.reset()));
         return Promise.all(tasks);
-    }
-
-    /**
-     * get ManagerInterfacie as JSON
-     *
-     * @returns {ManagerInterface}
-     */
-    json(): ManagerInterface {
-        return {
-            activeRecipe: this.player.getCurrentRecipe() ? this.player.getCurrentRecipe().json() : undefined,
-            modules: this.modules.map(module => module.id),
-            autoReset: this.autoreset
-        };
     }
 
     /**

@@ -103,11 +103,15 @@ export class Parameter {
             .map((item: ScopeOptions) => ScopeItem.extractFromScopeOptions(item, modules));
 
         // evaluate additional variables from expression
-        const extraction = ScopeItem.extractFromExpressionString(
-            this.value.toString(), modules, this.scopeArray.map((scope) => scope.name)
-        );
-        this.expression = extraction.expression;
-        this.scopeArray.push (...extraction.scopeItems);
+        try {
+            const extraction = ScopeItem.extractFromExpressionString(
+                this.value.toString(), modules, this.scopeArray.map((scope) => scope.name)
+            );
+            this.expression = extraction.expression;
+            this.scopeArray.push(...extraction.scopeItems);
+        } catch (err) {
+            throw new Error('Parsing error for Parameter');
+        }
     }
 
     public listenToParameter() {
@@ -124,9 +128,6 @@ export class Parameter {
      * @returns {Promise<any>}
      */
     public async getValue(): Promise<any> {
-        if (!this.expression) {
-            return undefined;
-        }
         // get current variables
         const tasks = await Promise.all(this.scopeArray.map((item) => item.getScopeValue()));
         const scope = assign(...tasks);

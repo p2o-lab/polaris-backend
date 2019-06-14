@@ -25,6 +25,7 @@
 
 import {
     ControlEnableInterface,
+    OpcUaNodeOptions,
     OpModeInterface,
     ParameterInterface,
     ParameterOptions,
@@ -52,7 +53,6 @@ import {
     ServiceMtpCommand,
     ServiceState
 } from './enum';
-import {OpcUaNodeOptions} from './Interfaces';
 import {Module} from './Module';
 import {Strategy, StrategyOptions} from './Strategy';
 import {UNIT} from './Unit';
@@ -550,7 +550,7 @@ export class Service extends (EventEmitter as new() => ServiceEmitter) {
         }
 
         // set strategy
-        this.logger.info(`[${this.qualifiedName}] Set strategy "${strat.name}" (${strat.id})`);
+        this.logger.info(`[${this.qualifiedName}] Set strategy "${strat.name}" (ID=${strat.id})`);
         await this.parent.writeNode(this.automaticMode ? this.strategy : this.strategyMan,
             {
                 dataType: DataType.UInt32,

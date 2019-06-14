@@ -281,16 +281,6 @@ describe('Player', () => {
                 expect(recipe).to.have.property('status', 'completed');
                 completedRecipes.push(recipe.id);
             })
-                .on('recipeStarted', (recipe) => {
-                    if (completedRecipes.length === 2) {
-                        expect(player.getCurrentRecipe().id).to.equal(recipe.id);
-                        player.pause();
-                        expect(player.status).to.equal(RecipeState.paused);
-                        player.start();
-                        expect(player.status).to.equal(RecipeState.running);
-                        expect(player.getCurrentRecipe().id).to.equal(recipe.id);
-                    }
-                })
                 .once('completed', async () => {
                     expect(completedRecipes).to.have.length(3);
                     expect(player.status).to.equal(RecipeState.completed);
@@ -375,7 +365,7 @@ describe('Player', () => {
                 player.once('started', () => resolve());
             }), 1000);
             timeout(new Promise((resolve) => {
-                player.once('recipeStarted', () => resolve());
+                player.once('recipeChanged', () => resolve());
             }), 1000);
             player.start();
             expect(player.getCurrentRecipe().currentStep.name).to.equal('S1');
@@ -384,29 +374,9 @@ describe('Player', () => {
             expect(() => player.forceTransition('S1', 'non-existant')).to.throw();
             expect(() => player.forceTransition('S1', 'S3')).to.throw();
 
-            // do not change in next 100ms
-            await new Promise((resolve, reject) => {
-                player.once('stepFinished', () => {
-                    reject();
-                });
-                setTimeout(() => {
-                    resolve();
-                }, 100);
-            });
-
+            await delay(10);
             player.forceTransition('S1', 'S2');
-
             expect(player.getCurrentRecipe().currentStep.name).to.equal('S2');
-
-            // do not change in next 100ms
-            await new Promise((resolve, reject) => {
-                player.once('stepFinished', () => {
-                    reject();
-                });
-                setTimeout(() => {
-                    resolve();
-                }, 100);
-            });
 
             player.forceTransition('S2', 'S3');
             expect(player.getCurrentRecipe().currentStep.name).to.equal('S3');

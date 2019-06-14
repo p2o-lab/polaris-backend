@@ -88,7 +88,7 @@ export class Server {
      * @param data
      */
     private notifyClients(message: string, data: any) {
-        catServer.trace(`WS refresh published ${message} ${data}`);
+        catServer.trace(`WS refresh published ${message}`);
         if (this.wss) {
             this.wss.clients.forEach((client) => {
                 if (client.readyState === WebSocket.OPEN) {

@@ -73,4 +73,30 @@ describe('Module', () => {
         });
     }).retries(3);
 
+    context('with module server', () => {
+        let moduleServer: ModuleTestServer;
+        let module: Module;
+
+        before(async () => {
+            moduleServer = new ModuleTestServer();
+            await moduleServer.start();
+            const moduleJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8')).modules[0];
+            module = new Module(moduleJson);
+
+            await module.connect();
+        });
+
+        after(async () => {
+            await module.disconnect();
+            moduleServer.stopSimulation();
+            await moduleServer.shutdown();
+        });
+
+        it('should provide correct json output', async () => {
+            expect(await module.json()).to.have.property('services')
+                .to.have.lengthOf(2);
+        });
+
+    });
+
 });

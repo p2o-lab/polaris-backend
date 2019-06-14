@@ -84,11 +84,6 @@ describe('Manager', () => {
             true);
     });
 
-    it('should provide JSON output', () => {
-        const manager = new Manager();
-        expect(manager.json().autoReset).to.equal(true);
-    });
-
     describe('test with test module', () => {
         let moduleServer: ModuleTestServer;
 
@@ -103,7 +98,8 @@ describe('Manager', () => {
 
         it('should load from options, stop, abort and reset manager and remove module', async () => {
 
-            const moduleJson = parseJson(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8'), null, 60);
+            const moduleJson = parseJson(
+                fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8'), null, 60);
 
             const manager = new Manager();
             manager.loadModule(moduleJson);
@@ -134,7 +130,8 @@ describe('Manager', () => {
         }).slow(2000).timeout(10000).retries(3);
 
         it('should autoreset service', async () => {
-            const moduleJson = parseJson(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8'), null, 60);
+            const moduleJson = parseJson(
+                fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8'), null, 60);
 
             const manager = new Manager();
             manager.autoreset = true;

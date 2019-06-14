@@ -91,11 +91,11 @@ export class DataAssemblyFactory {
     }
 
     public static isExtIntAnaOp(dataAssembly: DataAssembly): dataAssembly is ExtIntAnaOp {
-        return this.isAdvAnaOp(dataAssembly) || dataAssembly.interfaceClass === 'ExtIntAnaOp';
+        return this.isAdvAnaOp(dataAssembly) || this.isAnaServParam(dataAssembly) || dataAssembly.interfaceClass === 'ExtIntAnaOp';
     }
 
     public static isAdvAnaOp(dataAssembly: DataAssembly): dataAssembly is AdvAnaOp {
-        return this.isAnaServParam(dataAssembly) || dataAssembly.interfaceClass === 'AdvAnaOp';
+        return dataAssembly.interfaceClass === 'AdvAnaOp';
     }
 
     public static isAnaServParam(dataAssembly: DataAssembly): dataAssembly is AnaServParam {

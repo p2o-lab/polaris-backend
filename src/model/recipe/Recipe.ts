@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import {RecipeInterface, RecipeOptions, RecipeState, StepInterface} from '@p2olab/polaris-interface';
+import {RecipeInterface, RecipeOptions, RecipeState} from '@p2olab/polaris-interface';
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {v4} from 'uuid';
@@ -47,10 +47,10 @@ export interface RecipeEvents {
      */
     stopped: Step;
     /**
-     * when a step is finished in the recipe
+     * when something internal changes in a recipe (e.g. a step is finished or operation is executed)
      * @event
      */
-    stepFinished: Step;
+    changed: void;
     /**
      * when recipe completes
      * @event
@@ -122,14 +122,6 @@ export class Recipe extends (EventEmitter as new() => RecipeEmitter) {
         catRecipe.info(`Recipe ${this.name} (${this.options.version}) successfully parsed`);
     }
 
-    public stepJson(): StepInterface {
-        let result;
-        if (this.currentStep) {
-            result = this.currentStep.json();
-        }
-        return result;
-    }
-
     /** Get JSON description of recipe
      *
      * @returns {RecipeInterface}
@@ -139,7 +131,7 @@ export class Recipe extends (EventEmitter as new() => RecipeEmitter) {
             id: this.id,
             modules: Array.from(this.modules).map((module) => module.id),
             status: this.status,
-            currentStep: this.currentStep ? this.currentStep.name : undefined,
+            currentStep: this.currentStep ? this.currentStep.json() : undefined,
             options: this.options,
             protected: this.protected,
             lastChange: (new Date().getTime() - this.lastChange.getTime()) / 1000
@@ -209,6 +201,7 @@ export class Recipe extends (EventEmitter as new() => RecipeEmitter) {
             this.stepListener.removeAllListeners('completed');
         }
         if (this.currentStep) {
+            this.currentStep.operations.forEach((operation) => operation.stop());
             this.currentStep.transitions.forEach((trans) => trans.condition.clear());
         }
         this.emit('stopped', this.currentStep);
@@ -218,7 +211,10 @@ export class Recipe extends (EventEmitter as new() => RecipeEmitter) {
     private executeStep() {
         catRecipe.debug(`Execute step: ${this.currentStep.name}`);
         this.lastChange = new Date();
-        this.stepListener = this.currentStep.execute()
+        this.stepListener = this.currentStep.eventEmitter
+            .on('operationChanged', (operation) => {
+                this.emit('changed');
+            })
             .once('completed', (transition: Transition) => {
                 if (transition.nextStep) {
                     catRecipe.info(`Step ${this.currentStep.name} finished. New step is ${transition.nextStepName}`);
@@ -229,9 +225,11 @@ export class Recipe extends (EventEmitter as new() => RecipeEmitter) {
                     this.currentStep = undefined;
                     this.status = RecipeState.completed;
                     this.emit('completed');
+                    this.stepListener.removeAllListeners('operationChanged');
                 }
-                this.emit('stepFinished', this.currentStep);
+                this.emit('changed');
             });
+        this.currentStep.execute();
     }
 
 }

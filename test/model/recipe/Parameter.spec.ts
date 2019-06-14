@@ -74,6 +74,29 @@ describe('Parameter', () => {
                 }, service);
             }).to.throw();
         });
+
+        it('should provide 0 with empty expression', async () => {
+            const param = new Parameter({
+                name: 'var1',
+                value: ''
+            }, service);
+            expect(await param.getValue()).to.equal(0);
+        });
+
+        it('should provide 0 with no expression', async () => {
+            const param = new Parameter({
+                name: 'var1',
+                value: null
+            }, service);
+            expect(await param.getValue()).to.equal(0);
+        });
+
+        it('should provide 0 with non valid expression', async () => {
+            expect(() => new Parameter({
+                name: 'var1',
+                value: 'ssd+4335.,dfgölkp94'
+            }, service)).to.throw('Parsing error');
+        });
     });
 
     context('with ModuleTestServer', () => {
@@ -136,6 +159,16 @@ describe('Parameter', () => {
             const value = await param2.getValue();
             await param2.updateValueOnModule();
             expect(moduleServer.services[0].parameter[1].vext).to.equal(value);
+        });
+
+        it('should listen to dynamic parameter', (done) => {
+            const param = new Parameter({
+                name: 'Parameter001',
+                value: '2 * CIF.Variable001.V'
+            }, service, undefined, [module]);
+            param.listenToParameter()
+                .once('changed', (data) => done());
+
         });
 
     });

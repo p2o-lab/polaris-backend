@@ -23,8 +23,8 @@
  * SOFTWARE.
  */
 
+import {OpcUaNodeOptions} from '@p2olab/polaris-interface';
 import {expect} from 'chai';
-import {OpcUaNodeOptions} from '../../../src/model/core/Interfaces';
 import {DataAssembly} from '../../../src/model/dataAssembly/DataAssembly';
 
 describe('ProcessValue', () => {
@@ -33,7 +33,11 @@ describe('ProcessValue', () => {
         expect(() => {
             const a = new DataAssembly(undefined, undefined);
         }).to.throw();
-        const opcUaNode: OpcUaNodeOptions = {namespace_index: 'CODESYSSPV3/3S/IecVarAccess', node_id: 'i=12'};
+        const opcUaNode: OpcUaNodeOptions = {
+            namespace_index: 'CODESYSSPV3/3S/IecVarAccess',
+            node_id: 'i=12',
+            data_type: 'Float'
+        };
         expect(() => {
             const a = new DataAssembly({
                 name: 'name',

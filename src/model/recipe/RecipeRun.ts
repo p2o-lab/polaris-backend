@@ -24,16 +24,17 @@
  */
 
 import {RecipeRunInterface} from '@p2olab/polaris-interface';
+import {RecipeState} from '@p2olab/polaris-interface/dist/enum';
 import {EventEmitter} from 'events';
 import {v4} from 'uuid';
 import {ServiceLogEntry, VariableLogEntry} from '../../logging/archive';
 import {Recipe, RecipeEmitter} from './Recipe';
-import {Step} from './Step';
 
 /** One specific recipe run with all logs
  *
  */
 export class RecipeRun extends (EventEmitter as new() => RecipeEmitter) {
+    private boundOnCompleted = () => this.onCompleted();
 
     get startTime(): Date {
         return this._startTime;
@@ -47,10 +48,23 @@ export class RecipeRun extends (EventEmitter as new() => RecipeEmitter) {
 
     public serviceLog: ServiceLogEntry[] = [];
     public variableLog: VariableLogEntry[] = [];
+    private boundOnStarted = () => this.onStarted();
     private _startTime: Date;
     private _endTime: Date;
+    private boundOnChanged = () => this.onChanged();
 
-    private boundOnCompleted = () => this.onCompleted();
+    constructor(recipe: Recipe) {
+        super();
+        this.id = v4();
+        this.recipe = recipe;
+        this._status = RecipeState.idle;
+    }
+
+    private _status: RecipeState;
+
+    get status(): RecipeState {
+        return this._status;
+    }
 
     public json(): RecipeRunInterface {
         return {
@@ -58,18 +72,10 @@ export class RecipeRun extends (EventEmitter as new() => RecipeEmitter) {
             startTime: this._startTime,
             endTime: this._endTime,
             recipe: this.recipe.options,
+            status: this._status,
             serviceLog: this.serviceLog,
             variableLog: this.variableLog
         };
-    }
-
-    private boundOnStarted = () => this.onStarted();
-    private boundOnStepFinished = (finishedStep: Step) => this.onStepFinished(finishedStep);
-
-    constructor(recipe: Recipe) {
-        super();
-        this.id = v4();
-        this.recipe = recipe;
     }
 
     /** Starts the linked recipe and resolves when recipe is started
@@ -79,7 +85,7 @@ export class RecipeRun extends (EventEmitter as new() => RecipeEmitter) {
         this._startTime = new Date();
         this.recipe
             .on('completed', this.boundOnCompleted)
-            .on('stepFinished', this.boundOnStepFinished)
+            .on('changed', this.boundOnChanged)
             .on('started', this.boundOnStarted);
         return await this.recipe.start();
     }
@@ -88,6 +94,8 @@ export class RecipeRun extends (EventEmitter as new() => RecipeEmitter) {
      *
      */
     public async stop(): Promise<void> {
+        this._endTime = new Date();
+        this._status = RecipeState.stopped;
         this.removeRecipeListeners();
         this.emit('stopped', this.recipe.currentStep);
         await this.recipe.stop();
@@ -95,21 +103,23 @@ export class RecipeRun extends (EventEmitter as new() => RecipeEmitter) {
 
     private removeRecipeListeners() {
         this.recipe.removeListener('completed', this.boundOnCompleted);
-        this.recipe.removeListener('stepFinished', this.boundOnStepFinished);
+        this.recipe.removeListener('changed', this.boundOnChanged);
         this.recipe.removeListener('started', this.boundOnStarted);
     }
 
     private onCompleted() {
         this._endTime = new Date();
-        this.removeRecipeListeners();
+        this._status = RecipeState.completed;
         this.emit('completed');
+        this.removeRecipeListeners();
     }
 
     private onStarted() {
-        this.emit('started');
+        this._status = RecipeState.running;
+        this.emit('changed');
     }
 
-    private onStepFinished(finishedStep) {
-        this.emit('stepFinished', finishedStep);
+    private onChanged() {
+        this.emit('changed');
     }
 }

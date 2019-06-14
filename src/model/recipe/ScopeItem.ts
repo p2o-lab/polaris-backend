@@ -23,22 +23,15 @@
  * SOFTWARE.
  */
 
-import {ScopeOptions} from '@p2olab/polaris-interface';
+import {OpcUaNodeOptions, ScopeOptions} from '@p2olab/polaris-interface';
 import {Expression, Parser} from 'expr-eval';
 import {catScopeItem} from '../../config/logging';
-import {OpcUaNodeOptions} from '../core/Interfaces';
 import {Module} from '../core/Module';
 import {Service} from '../core/Service';
 import {Strategy} from '../core/Strategy';
 import {DataAssembly} from '../dataAssembly/DataAssembly';
 
 export class ScopeItem {
-
-    /** name of variable which should be replaced in value */
-    public name: string;
-    public module: Module;
-    public service: Service;
-    public variable: OpcUaNodeOptions;
 
     /**
      *
@@ -58,6 +51,27 @@ export class ScopeItem {
             .filter(Boolean);
         return {expression: expressionObject, scopeItems};
     }
+
+    /** name of variable which should be replaced in value */
+    public name: string;
+
+    /**
+     *
+     * @param {ScopeOptions} item
+     * @param {Module[]} modules    modules to be searched in for variable names (default: all modules in manager)
+     * @returns {ScopeItem}
+     */
+    public static extractFromScopeOptions(item: ScopeOptions, modules: Module[]): ScopeItem {
+        const module = modules.find((m) => m.id === item.module);
+        const dataAssembly = module.variables.find((v) => v.name === item.dataAssembly);
+        const opcUaNode = dataAssembly.communication[item.variable] ||
+            dataAssembly.communication['V'] ||
+            dataAssembly.communication['VExt'];
+        return Object.assign(new ScopeItem(), {name: item.name, module, variable: opcUaNode});
+    }
+
+    public module: Module;
+    public variable: OpcUaNodeOptions;
 
     /**
      * Extract scope item from expression variable
@@ -81,7 +95,7 @@ export class ScopeItem {
             } else {
                 catScopeItem.warn(`Could not evaluate variable "${variable}": module "${token}" not found in ` +
                     `${JSON.stringify(modules.map((m) => m.id))}`);
-                return undefined;
+                return null;
             }
         } else {
             token = components.shift();
@@ -109,7 +123,7 @@ export class ScopeItem {
         } else {
             catScopeItem.warn(`Could not evaluate variable "${variable}": Token "${token}" not found as dataAssembly ` +
                 `in module ${module.id}: ${module.variables.map((v) => v.name)}`);
-            return undefined;
+            return null;
         }
 
         // find data assembly variable
@@ -119,21 +133,6 @@ export class ScopeItem {
             dataAssembly.communication['VExt'];
 
         return Object.assign(new ScopeItem(), {name: variable, module, variable: opcUaNode});
-    }
-
-    /**
-     *
-     * @param {ScopeOptions} item
-     * @param {Module[]} modules    modules to be searched in for variable names (default: all modules in manager)
-     * @returns {ScopeItem}
-     */
-    public static extractFromScopeOptions(item: ScopeOptions, modules: Module[]): ScopeItem {
-        const module = modules.find((m) => m.id === item.module);
-        const dataAssembly = module.variables.find((v) => v.name === item.dataAssembly);
-        const opcUaNode = dataAssembly.communication[item.variable] ||
-            dataAssembly.communication['V'] ||
-            dataAssembly.communication['VExt'];
-        return Object.assign(new ScopeItem(), {name: item.name, module, variable: opcUaNode});
     }
 
     /**

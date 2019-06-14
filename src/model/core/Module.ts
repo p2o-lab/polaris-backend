@@ -26,6 +26,7 @@
 import {
     ControlEnableInterface,
     ModuleInterface,
+    OpcUaNodeOptions,
     OpModeInterface,
     ParameterInterface,
     ServiceCommand,
@@ -54,7 +55,6 @@ import {VariableLogEntry} from '../../logging/archive';
 import {DataAssembly, DataAssemblyOptions} from '../dataAssembly/DataAssembly';
 import {DataAssemblyFactory} from '../dataAssembly/DataAssemblyFactory';
 import {ServiceState} from './enum';
-import {OpcUaNodeOptions} from './Interfaces';
 import {Service, ServiceOptions} from './Service';
 import {Strategy} from './Strategy';
 import {UNIT} from './Unit';
@@ -193,9 +193,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
             this.variables = options.process_values
                 .map((variableOptions) => DataAssemblyFactory.create(variableOptions, this));
         }
-        if (options.hmi_url) {
-            this.hmiUrl = options.hmi_url;
-        }
+        this.hmiUrl = options.hmi_url;
 
         this.monitoredItems = new Map<NodeId, { monitoredItem: ClientMonitoredItem, emitter: EventEmitter }>();
 

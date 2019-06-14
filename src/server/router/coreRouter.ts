@@ -33,17 +33,6 @@ import {Manager} from '../../model/Manager';
 export const coreRouter: Router = Router();
 
 /**
- * @api {get} /    Get Manager
- * @apiName GetManager
- * @apiGroup Manager
- */
-coreRouter.get('/', (req: Request, res: Response) => {
-    const manager: Manager = req.app.get('manager');
-    const result = manager.json();
-    res.json(result);
-});
-
-/**
  * @api {post} /shutdown    Shutdown
  * @apiName Shutdown
  * @apiGroup Manager
