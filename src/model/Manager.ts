@@ -41,7 +41,7 @@ interface ManagerEvents {
      */
     recipeFinished: void;
 
-    notify: (string, any) => void;
+    notify: (topic: string, data: any) => void;
 }
 
 type ManagerEmitter = StrictEventEmitter<EventEmitter, ManagerEvents>;
@@ -63,22 +63,22 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
     // autoreset determines if a service is automatically reset when
     private _autoreset: boolean = true;
     // autoreset timeout in milliseconds
-    private _autoreset_timeout = 500;
+    private _autoresetTimeout = 500;
 
     constructor() {
         super();
         this.player = new Player()
             .on('started', () => {
-                this.emit('notify', 'player', this.player.json())
+                this.emit('notify', 'player', this.player.json());
             })
             .on('recipeChanged', () => {
                 this.emit('notify', 'player', this.player.json());
             })
             .on('recipeFinished', () => {
-                this.emit('notify', 'player', this.player.json())
+                this.emit('notify', 'player', this.player.json());
             })
             .on('completed', () => {
-                this.emit('notify', 'player', this.player.json())
+                this.emit('notify', 'player', this.player.json());
             });
     }
 
@@ -103,7 +103,7 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
         modules?: ModuleOptions[],
         subplants?: { modules: ModuleOptions[] }[]
     }, protectedModules: boolean = false): Module[] {
-        let newModules: Module[] = [];
+        const newModules: Module[] = [];
         if (!options) {
             throw new Error('No modules defined in supplied options');
         }
@@ -128,7 +128,7 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
                 }
             });
         } else if (options.module) {
-            let moduleOptions = options.module;
+            const moduleOptions = options.module;
             if (this.modules.find(module => module.id === moduleOptions.id)) {
                 catManager.warn(`Module ${moduleOptions.id} already in registered modules`);
                 throw new Error(`Module ${moduleOptions.id} already in registered modules`);
@@ -218,9 +218,8 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
         return newModules;
     }
 
-
     public async removeModule(moduleId) {
-        const module = this.modules.find(module => module.id === moduleId);
+        const module = this.modules.find(mod => mod.id === moduleId);
         if (!module) {
             throw new Error(`No Module ${moduleId} found.`);
         }
@@ -244,7 +243,7 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
     /**
      * Abort all services from all loaded modules
      */
-    abortAllServices() {
+    public abortAllServices() {
         const tasks = [];
         tasks.push(this.modules.map((module) => module.abort()));
         return Promise.all(tasks);
@@ -253,7 +252,7 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
     /**
      * Stop all services from all loaded modules
      */
-    stopAllServices() {
+    public stopAllServices() {
         const tasks = [];
         tasks.push(this.modules.map((module) => module.stop()));
         return Promise.all(tasks);
@@ -262,35 +261,15 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
     /**
      * Reset all services from all loaded modules
      */
-    resetAllServices() {
+    public resetAllServices() {
         const tasks = [];
         tasks.push(this.modules.map((module) => module.reset()));
         return Promise.all(tasks);
     }
 
-    /**
-     * Perform autoreset for service (bring it automatically from completed to idle)
-     * @param {Service} service
-     */
-    private performAutoReset(service: Service) {
-        if (this.autoreset) {
-            catManager.info(`Service ${service.parent.id}.${service.name} completed. Short waiting time (${this._autoreset_timeout}) to autoreset`);
-            setTimeout(async () => {
-                if (service.parent.isConnected() && await service.getServiceState() === ServiceState.COMPLETED) {
-                    catManager.info(`Service ${service.parent.id}.${service.name} completed. Now perform autoreset`);
-                    try {
-                        service.execute(ServiceCommand.reset);
-                    } catch (err) {
-                        catManager.debug('Autoreset not possible')
-                    }
-                }
-            }, this._autoreset_timeout);
-        }
-    }
-
     public removeRecipe(recipeId: string) {
         catManager.debug(`Remove recipe ${recipeId}`);
-        const recipe = this.recipes.find(recipe => recipe.id === recipeId);
+        const recipe = this.recipes.find(rec => rec.id === recipeId);
         if (!recipe) {
             throw new Error(`Recipe ${recipeId} not available.`);
         }
@@ -305,13 +284,13 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
     }
 
     /**
-     * find [TestServerService] of a [Module] registered in manager
+     * find [Service] of a [Module] registered in manager
      * @param {string} moduleName
      * @param {string} serviceName
      * @returns {Service}
      */
-    getService(moduleName: string, serviceName: string): Service {
-        const module: Module = this.modules.find(module => module.id === moduleName);
+    public getService(moduleName: string, serviceName: string): Service {
+        const module: Module = this.modules.find(mod => mod.id === moduleName);
         if (!module) {
             throw new Error(`Module with id ${moduleName} not registered`);
         }
@@ -320,5 +299,25 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
             throw new Error(`Service ${serviceName} does not exist on module ${moduleName}`);
         }
         return service;
+    }
+
+    /**
+     * Perform autoreset for service (bring it automatically from completed to idle)
+     * @param {Service} service
+     */
+    private performAutoReset(service: Service) {
+        if (this.autoreset) {
+            catManager.info(`Service ${service.parent.id}.${service.name} completed. Short waiting time (${this._autoresetTimeout}) to autoreset`);
+            setTimeout(async () => {
+                if (service.parent.isConnected() && await service.getServiceState() === ServiceState.COMPLETED) {
+                    catManager.info(`Service ${service.parent.id}.${service.name} completed. Now perform autoreset`);
+                    try {
+                        service.execute(ServiceCommand.reset);
+                    } catch (err) {
+                        catManager.debug('Autoreset not possible');
+                    }
+                }
+            }, this._autoresetTimeout);
+        }
     }
 }
