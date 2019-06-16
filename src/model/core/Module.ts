@@ -235,58 +235,57 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
             this.logger.debug(`[${this.id}] Already connected`);
             return Promise.resolve();
         } else {
-                this.logger.info(`[${this.id}] connect module via ${this.endpoint}`);
+            this.logger.info(`[${this.id}] connect module via ${this.endpoint}`);
 
-                await timeout(this.client.connect(this.endpoint), 2000);
-                this.logger.info(`[${this.id}] module connected via ${this.endpoint}`);
+            await timeout(this.client.connect(this.endpoint), 2000);
+            this.logger.info(`[${this.id}] module connected via ${this.endpoint}`);
 
-                const session = await this.client.createSession();
-                this.logger.debug(`[${this.id}] session established`);
+            const session = await this.client.createSession();
+            this.logger.debug(`[${this.id}] session established`);
 
-                const subscription = new ClientSubscription(session, {
-                    requestedPublishingInterval: 100,
-                    requestedLifetimeCount: 1000,
-                    requestedMaxKeepAliveCount: 12,
-                    maxNotificationsPerPublish: 10,
-                    publishingEnabled: true,
-                    priority: 10
+            const subscription = new ClientSubscription(session, {
+                requestedPublishingInterval: 100,
+                requestedLifetimeCount: 1000,
+                requestedMaxKeepAliveCount: 12,
+                maxNotificationsPerPublish: 10,
+                publishingEnabled: true,
+                priority: 10
+            });
+
+            subscription
+                .on('started', () => {
+                    this.logger.info(`[${this.id}] subscription started - ` +
+                        `subscriptionId=${subscription.subscriptionId}`);
+                })
+                .on('terminated', () => {
+                    this.logger.debug(`[${this.id}] subscription terminated`);
                 });
 
-                subscription
-                    .on('started', () => {
-                        this.logger.info(`[${this.id}] subscription started - ` +
-                            `subscriptionId=${subscription.subscriptionId}`);
-                    })
-                    .on('terminated', () => {
-                        this.logger.debug(`[${this.id}] subscription terminated`);
-                    });
+            // read namespace array
+            const result: DataValue = await session.readVariableValue('ns=0;i=2255');
+            this.namespaceArray = result.value.value;
+            this.logger.debug(`[${this.id}] Got namespace array: ${JSON.stringify(this.namespaceArray)}`);
 
-                // read namespace array
-                const result: DataValue = await session.readVariableValue('ns=0;i=2255');
-                this.namespaceArray = result.value.value;
-                this.logger.debug(`[${this.id}] Got namespace array: ${JSON.stringify(this.namespaceArray)}`);
-
-                // store everything
-                this.session = session;
-                this.subscription = subscription;
+            // store everything
+            this.session = session;
+            this.subscription = subscription;
 
             if (this.endpoint === 'opc.tcp://10.6.51.22:4840') {
-                    await this.fixReactor();
-                }
+                await this.fixReactor();
+            }
 
-                // set all services to correct operation mode
+            // set all services to correct operation mode
             await Promise.all(this.services.map((service) => service.setOperationMode()));
-                // subscribe to all services
-                await this.subscribeToAllServices();
+            // subscribe to all services
+            await this.subscribeToAllServices();
 
-                try {
-                    this.subscribeToAllVariables();
-                } catch (err) {
-                    this.logger.warn('Could not connect to all variables:' + err);
-                }
-                this.emit('connected');
-                return Promise.resolve();
-
+            try {
+                this.subscribeToAllVariables();
+            } catch (err) {
+                this.logger.warn('Could not connect to all variables:' + err);
+            }
+            this.emit('connected');
+            return Promise.resolve();
         }
     }
 
@@ -478,23 +477,23 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
         this.variables.forEach((variable: DataAssembly) => {
             catModule.info(`[${this.id}] subscribe to process variable ${variable.name}`);
             variable.subscribe(1000).on('V', (data) => {
-                    let unit;
+                let unit;
                 if (variable instanceof AnaView) {
                     const unitObject = UNIT.find((item) => item.value === parseInt(variable.VUnit.value, 10));
                     unit = unitObject ? unitObject.unit : undefined;
-                    }
+                }
                 this.logger.debug(`[${this.id}] variable changed: ${variable.name} = ` +
                     `${data.value} ${unit ? unit : ''}`);
-                    const entry: VariableLogEntry = {
-                        timestampPfe: new Date(),
-                        timestampModule: data.timestamp,
-                        module: this.id,
-                        variable: variable.name,
-                        value: data.value,
-                        unit
-                    };
-                    this.emit('variableChanged', entry);
-                });
+                const entry: VariableLogEntry = {
+                    timestampPfe: new Date(),
+                    timestampModule: data.timestamp,
+                    module: this.id,
+                    variable: variable.name,
+                    value: data.value,
+                    unit
+                };
+                this.emit('variableChanged', entry);
+            });
         });
     }
 
