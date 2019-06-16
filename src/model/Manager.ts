@@ -23,21 +23,21 @@
  * SOFTWARE.
  */
 
-import {Recipe} from './recipe/Recipe';
-import {catManager} from '../config/logging';
+import {RecipeOptions, ServiceCommand} from '@p2olab/polaris-interface';
 import {EventEmitter} from 'events';
+import StrictEventEmitter from 'strict-event-emitter-types';
+import {catManager} from '../config/logging';
+import {ServiceLogEntry, VariableLogEntry} from '../logging/archive';
+import {ServiceState} from './core/enum';
 import {Module, ModuleOptions} from './core/Module';
 import {Service} from './core/Service';
-import {RecipeOptions, ServiceCommand} from '@p2olab/polaris-interface';
 import {Player} from './recipe/Player';
-import {ServiceState} from './core/enum';
-import {ServiceLogEntry, VariableLogEntry} from '../logging/archive';
-import StrictEventEmitter from 'strict-event-emitter-types';
+import {Recipe} from './recipe/Recipe';
 
 interface ManagerEvents {
     /**
      * when one service goes to *completed*
-     * @event
+     * @event recipeFinished
      */
     recipeFinished: void;
 
@@ -46,7 +46,7 @@ interface ManagerEvents {
 
 type ManagerEmitter = StrictEventEmitter<EventEmitter, ManagerEvents>;
 
-export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
+export class Manager extends (EventEmitter as new() => ManagerEmitter) {
 
     // loaded recipes
     public readonly recipes: Recipe[] = [];
@@ -101,7 +101,7 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
     public loadModule(options: {
         module?: ModuleOptions,
         modules?: ModuleOptions[],
-        subplants?: { modules: ModuleOptions[] }[]
+        subplants?: Array<{ modules: ModuleOptions[] }>
     }, protectedModules: boolean = false): Module[] {
         const newModules: Module[] = [];
         if (!options) {
@@ -147,7 +147,7 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
                     this.emit('notify', 'module', {
                         module: service.parent.id,
                         service: service.name,
-                        controlEnable: controlEnable
+                        controlEnable
                     });
                 })
                 .on('variableChanged', async (data) => {
@@ -165,8 +165,8 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
                     }
                     this.emit('notify', 'variable', logEntry);
                 })
-                .on('parameterChanged', (data) => {
-                    data['module'] = module.id;
+                .on('parameterChanged', (data: any) => {
+                    data.module = module.id;
                     this.emit('notify', 'module', data);
                 })
                 .on('commandExecuted', (data) => {
@@ -185,7 +185,7 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
                         this.player.currentRecipeRun.serviceLog.push(logEntry);
                     }
                 })
-                .on('stateChanged', async ({service, state, timestampPfe}) => {
+                .on('stateChanged', async ({service, state}) => {
                     const logEntry: ServiceLogEntry = {
                         timestampPfe: new Date(),
                         module: module.id,
@@ -207,7 +207,7 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
                     this.emit('notify', 'module', {
                         module: module.id,
                         service: service.name,
-                        opMode: opMode
+                        opMode
                     });
                 })
                 .on('serviceCompleted', (service: Service) => {
