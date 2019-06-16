@@ -39,9 +39,9 @@ import {EventEmitter} from 'events';
 import {Expression} from 'expr-eval';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {catCondition} from '../../config/logging';
-import {ServiceState} from '../core/enum';
 import {Module} from '../core/Module';
-import {Service} from '../core/Service';
+import {AndCondition, OrCondition} from './AggregateCondition';
+import {StateCondition, VariableCondition} from './ModuleCondition';
 import {ScopeItem} from './ScopeItem';
 import Timeout = NodeJS.Timeout;
 
@@ -136,7 +136,8 @@ export class ExpressionCondition extends Condition {
         catCondition.info(`Add ExpressionCondition: ${options.expression} ` +
             `(${JSON.stringify(modules.map((m) => m.id))})`);
         // evaluate scopeArray
-        this.scopeArray = (options.scope || []).map((item: ScopeOptions) => ScopeItem.extractFromScopeOptions(item, modules));
+        this.scopeArray = (options.scope || [])
+            .map((item: ScopeOptions) => ScopeItem.extractFromScopeOptions(item, modules));
 
         // evaluate additional variables from expression
         const extraction = ScopeItem.extractFromExpressionString(
@@ -227,77 +228,6 @@ export class NotCondition extends Condition {
     }
 }
 
-export abstract class AggregateCondition extends Condition {
-    public conditions: Condition[] = [];
-
-    constructor(options: AndConditionOptions | OrConditionOptions, modules: Module[]) {
-        super(options);
-        this.conditions = options.conditions.map((option) => {
-            return Condition.create(option, modules);
-        });
-        this._fulfilled = false;
-    }
-
-    public clear() {
-        super.clear();
-        this.conditions.forEach((cond) => cond.clear());
-    }
-
-    public getUsedModules(): Set<Module> {
-        const set = new Set<Module>();
-        this.conditions.forEach((cond) => {
-            Array.from(cond.getUsedModules()).forEach((module) => {
-                set.add(module);
-            });
-        });
-        return set;
-    }
-}
-
-export class AndCondition extends AggregateCondition {
-
-    constructor(options: AndConditionOptions, modules: Module[]) {
-        super(options, modules);
-        catCondition.trace(`Add AndCondition: ${options}`);
-    }
-
-    public listen(): Condition {
-        this.conditions.forEach((condition) => {
-            condition.listen().on('stateChanged', (state) => {
-                catCondition.debug(`AndCondition: ${state} = ` +
-                    `${JSON.stringify(this.conditions.map((item) => item.fulfilled))}`);
-                const oldState = this._fulfilled;
-                this._fulfilled = this.conditions.every((cond) => cond.fulfilled);
-                if (oldState !== this._fulfilled) {
-                    this.emit('stateChanged', this._fulfilled);
-                }
-            });
-        });
-        return this;
-    }
-}
-
-export class OrCondition extends AggregateCondition {
-
-    constructor(options: OrConditionOptions, modules: Module[]) {
-        super(options, modules);
-        catCondition.trace(`Add OrCondition: ${options}`);
-    }
-
-    public listen(): Condition {
-        this.conditions.forEach((condition) => {
-            condition.listen().on('stateChanged', (status) => {
-                const oldState = this._fulfilled;
-                this._fulfilled = this.conditions.some((cond) => cond.fulfilled);
-                if (oldState !== this._fulfilled) {
-                    this.emit('stateChanged', this._fulfilled);
-                }
-            });
-        });
-        return this;
-    }
-}
-
 export class TimeCondition extends Condition {
 
     private timer: Timeout;
@@ -334,144 +264,4 @@ export class TimeCondition extends Condition {
     public getUsedModules(): Set<Module> {
         return new Set<Module>();
     }
-}
-
-export abstract class ModuleCondition extends Condition {
-    protected readonly module: Module;
-    protected monitoredItem: EventEmitter;
-
-    constructor(options: StateConditionOptions | VariableConditionOptions, modules: Module[]) {
-        super(options);
-        if (options.module) {
-            this.module = modules.find((module) => module.id === options.module);
-        } else if (modules.length === 1) {
-            this.module = modules[0];
-        }
-        if (!this.module) {
-            throw new Error(`Could not find module ${options.module} in ${JSON.stringify(modules.map((m) => m.id))}`);
-        }
-    }
-
-    public clear() {
-        super.clear();
-        if (this.monitoredItem) {
-            this.monitoredItem.removeListener('changed', this.boundCheckHandler);
-        }
-    }
-
-    public getUsedModules() {
-        return new Set<Module>().add(this.module);
-    }
-
-    public abstract check(data);
-
-    protected boundCheckHandler = (data) => this.check(data);
-}
-
-export class StateCondition extends ModuleCondition {
-    public readonly service: Service;
-    public readonly state: ServiceState;
-
-    constructor(options: StateConditionOptions, modules: Module[]) {
-        super(options, modules);
-        if (this.module.services) {
-            this.service = this.module.services.find((service) => service.name === options.service);
-        }
-        if (!this.service) {
-            throw new Error(`Service "${options.service}" not found in provided module ${this.module.id}`);
-        }
-        const mapping = {
-            'idle': ServiceState.IDLE,
-            'starting': ServiceState.STARTING,
-            'execute': ServiceState.EXECUTE,
-            'completing': ServiceState.COMPLETING,
-            'completed': ServiceState.COMPLETED,
-            'resetting': ServiceState.RESETTING,
-            'pausing': ServiceState.PAUSING,
-            'paused': ServiceState.PAUSED,
-            'resuming': ServiceState.RESUMING,
-            'holding': ServiceState.HOLDING,
-            'held': ServiceState.HELD,
-            'unholding': ServiceState.UNHOLDING,
-            'stopping': ServiceState.STOPPING,
-            'stopped': ServiceState.STOPPED,
-            'aborting': ServiceState.ABORTING,
-            'aborted': ServiceState.ABORTED
-        };
-        this.state = mapping[options.state.toLowerCase()];
-        if (!this.state) {
-            throw new Error(`State ${options.state} is not a valid state for a condition (${JSON.stringify(options)}`);
-        }
-    }
-
-    public listen(): Condition {
-        this.monitoredItem = this.module.listenToOpcUaNode(this.service.status)
-            .on('changed', this.boundCheckHandler);
-        return this;
-    }
-
-    public check(data) {
-        const state: ServiceState = data.value;
-        this._fulfilled = (state === this.state);
-        catCondition.info(`StateCondition ${this.service.qualifiedName}: actual=${ServiceState[state]}` +
-            ` ; condition=${ServiceState[this.state]} -> ${this._fulfilled}`);
-        this.emit('stateChanged', this._fulfilled);
-    }
-}
-
-export class VariableCondition extends ModuleCondition {
-    public readonly dataStructure: string;
-    public readonly variable: string;
-    public readonly value: string | number;
-    public readonly operator: '==' | '<' | '>' | '<=' | '>=';
-
-    constructor(options: VariableConditionOptions, modules: Module[]) {
-        super(options, modules);
-        if (!options.dataAssembly) {
-            throw new Error(`Condition does not have 'dataAssembly' ${JSON.stringify(options)}`);
-        }
-        this.dataStructure = options.dataAssembly;
-        this.variable = options.variable || 'V';
-        this.value = options.value;
-        this.operator = options.operator || '==';
-    }
-
-    public listen(): Condition {
-        catCondition.debug(`Listen to ${this.dataStructure}.${this.variable}`);
-        this.monitoredItem = this.module.listenToVariable(this.dataStructure, this.variable)
-            .on('changed', this.boundCheckHandler);
-        return this;
-    }
-
-    public check(data) {
-        catCondition.debug(`value changed to ${data.value} -  (${this.operator}) compare against ${this.value}`);
-        const value: number = data.value;
-        let result = false;
-        if (this.operator === '==') {
-            if (value === this.value) {
-                result = true;
-            }
-        } else if (this.operator === '<=') {
-            if (value <= this.value) {
-                result = true;
-            }
-        } else if (this.operator === '>=') {
-            if (value >= this.value) {
-                result = true;
-            }
-        } else if (this.operator === '<') {
-            if (value < this.value) {
-                result = true;
-            }
-        } else if (this.operator === '>') {
-            if (value > this.value) {
-                result = true;
-            }
-        }
-        this._fulfilled = result;
-        this.emit('stateChanged', this._fulfilled);
-        catCondition.debug(`VariableCondition ${this.dataStructure}: ` +
-            `${data.value} ${this.operator} ${this.value} = ${this._fulfilled}`);
-    }
-
 }
