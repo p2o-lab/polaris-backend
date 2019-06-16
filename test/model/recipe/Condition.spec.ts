@@ -178,7 +178,7 @@ describe('Condition', () => {
         let moduleServer: ModuleTestServer;
         let module: Module;
 
-        before(async function () {
+        before(async function() {
             this.timeout(4000);
             moduleServer = new ModuleTestServer();
             await moduleServer.start();
@@ -215,7 +215,7 @@ describe('Condition', () => {
 
             moduleServer.variables[0].v = 26;
             await new Promise((resolve) => {
-                condition.once('stateChanged', (state) => {
+                condition.once('stateChanged', () => {
                     resolve();
                 } );
             });
@@ -331,7 +331,7 @@ describe('Condition', () => {
 
                 moduleServer.variables[0].v = 11;
                 await new Promise((resolve) => {
-                    expr.once('stateChanged', (state) => {
+                    expr.once('stateChanged', () => {
                         resolve();
                     } );
                 });
@@ -344,7 +344,7 @@ describe('Condition', () => {
                 value = await expr.getValue();
                 expect(value).to.equal(false);
                 await new Promise((resolve) => {
-                    expr.once('stateChanged', (state) => {
+                    expr.once('stateChanged', () => {
                         resolve();
                     } );
                 });
