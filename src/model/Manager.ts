@@ -102,7 +102,7 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
         module?: ModuleOptions,
         modules?: ModuleOptions[],
         subplants?: Array<{ modules: ModuleOptions[] }>
-    }, protectedModules: boolean = false): Module[] {
+    },                protectedModules: boolean = false): Module[] {
         const newModules: Module[] = [];
         if (!options) {
             throw new Error('No modules defined in supplied options');

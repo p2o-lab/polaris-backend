@@ -33,19 +33,19 @@ export class DigView extends DataAssembly {
     }
 
     get V() {
-        return this.communication['V'];
+        return this.communication.V;
     }
 
     get VUnit() {
-        return this.communication['VUnit'];
+        return this.communication.VUnit;
     }
 
     get VSclMin() {
-        return this.communication['VSclMin'];
+        return this.communication.VSclMin;
     }
 
     get VSclMax() {
-        return this.communication['VSclMax'];
+        return this.communication.VSclMax;
     }
 
 }

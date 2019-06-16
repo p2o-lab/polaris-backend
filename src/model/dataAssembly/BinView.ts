@@ -33,15 +33,15 @@ export class BinView extends DataAssembly {
     }
 
     get V() {
-        return this.communication['V'];
+        return this.communication.V;
     }
 
     get VState0() {
-        return this.communication['VState0'];
+        return this.communication.VState0;
     }
 
     get VState1() {
-        return this.communication['VState1'];
+        return this.communication.VState1;
     }
 
 }

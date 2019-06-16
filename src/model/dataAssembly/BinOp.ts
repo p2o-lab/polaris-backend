@@ -33,23 +33,23 @@ export class ExtBinOp extends DataAssembly {
     }
 
     get VState0() {
-        return this.communication['VState0'];
+        return this.communication.VState0;
     }
 
     get VState1() {
-        return this.communication['VState1'];
+        return this.communication.VState1;
     }
 
     get VExt() {
-        return this.communication['VExt'];
+        return this.communication.VExt;
     }
 
     get VOut() {
-        return this.communication['VOut'];
+        return this.communication.VOut;
     }
 
     get VRbk() {
-        return this.communication['VRbk'];
+        return this.communication.VRbk;
     }
 
 }
@@ -62,11 +62,11 @@ export class ExtIntBinOp extends ExtBinOp {
     }
 
     get VInt() {
-        return this.communication['VInt'];
+        return this.communication.VInt;
     }
 
     get OpMode() {
-        return this.communication['OpMode'];
+        return this.communication.OpMode;
     }
 }
 
