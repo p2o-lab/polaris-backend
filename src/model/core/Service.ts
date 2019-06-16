@@ -38,8 +38,15 @@ import {DataType, DataValue, Variant, VariantArrayType} from 'node-opcua-client'
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Category} from 'typescript-logging';
 import {catService} from '../../config/logging';
+import {ExtAnaOp} from '../dataAssembly/AnaOp';
+import {AnaView} from '../dataAssembly/AnaView';
+import {ExtBinOp} from '../dataAssembly/BinOp';
+import {BinView} from '../dataAssembly/BinView';
 import {DataAssembly, DataAssemblyOptions} from '../dataAssembly/DataAssembly';
 import {DataAssemblyFactory} from '../dataAssembly/DataAssemblyFactory';
+import {ExtDigOp} from '../dataAssembly/DigOp';
+import {DigView} from '../dataAssembly/DigView';
+import {StrView} from '../dataAssembly/Str';
 import {Parameter} from '../recipe/Parameter';
 import {
     controlEnableToJson,
@@ -439,32 +446,31 @@ export class Service extends (EventEmitter as new() => ServiceEmitter) {
                 let max;
                 let min;
                 let unit;
-                if (DataAssemblyFactory.isAnaView(param)) {
+                if (param instanceof AnaView) {
                     value = param.V.value;
                     max = param.VSclMax.value;
                     min = param.VSclMin.value;
                     unit = param.VUnit.value;
-                } else if (DataAssemblyFactory.isExtAnaOp(param)) {
+                } else if (param instanceof ExtAnaOp) {
                     value = param.VRbk.value;
                     max = param.VMax.value;
                     min = param.VMin.value;
                     unit = param.VUnit.value;
-                }
-                if (DataAssemblyFactory.isDigView(param)) {
+                } else if (param instanceof DigView) {
                     value = param.V.value;
                     max = param.VSclMax.value;
                     min = param.VSclMin.value;
                     unit = param.VUnit.value;
-                } else if (DataAssemblyFactory.isExtDigOp(param)) {
+                } else if (param instanceof ExtDigOp) {
                     value = param.VRbk.value;
                     max = param.VMax.value;
                     min = param.VMin.value;
                     unit = param.VUnit.value;
-                } else if (DataAssemblyFactory.isBinView(param)) {
+                } else if (param instanceof BinView) {
                     value = param.V.value;
-                } else if (DataAssemblyFactory.isExtBinOp(param)) {
+                } else if (param instanceof ExtBinOp) {
                     value = param.VRbk.value;
-                } else if (DataAssemblyFactory.isStrView(param)) {
+                } else if (param instanceof StrView) {
                     value = param.Text.value;
                 }
                 if (unit) {

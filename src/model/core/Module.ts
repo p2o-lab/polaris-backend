@@ -52,6 +52,7 @@ import * as delay from 'timeout-as-promise';
 import {Category} from 'typescript-logging';
 import {catModule} from '../../config/logging';
 import {VariableLogEntry} from '../../logging/archive';
+import {AnaView} from '../dataAssembly/AnaView';
 import {DataAssembly, DataAssemblyOptions} from '../dataAssembly/DataAssembly';
 import {DataAssemblyFactory} from '../dataAssembly/DataAssemblyFactory';
 import {ServiceState} from './enum';
@@ -154,6 +155,8 @@ interface ModuleEvents {
 
 type ModuleEmitter = StrictEventEmitter<EventEmitter, ModuleEvents>;
 
+type OpcUaNodeEmitter = StrictEventEmitter<EventEmitter, OpcUaNodeEvents>;
+
 /**
  * Module (PEA) with its services and variables
  *
@@ -176,7 +179,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
     private session: ClientSession;
     private client: OPCUAClient;
     private subscription: ClientSubscription;
-    private monitoredItems: Map<NodeId, { monitoredItem: ClientMonitoredItem, emitter: StrictEventEmitter<EventEmitter, OpcUaNodeEvents> }>;
+    private monitoredItems: Map<NodeId, { monitoredItem: ClientMonitoredItem, emitter: OpcUaNodeEmitter }>;
     private namespaceArray: string[];
 
     constructor(options: ModuleOptions, protectedModule: boolean = false) {
@@ -326,7 +329,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
      * @param {number} samplingInterval     OPC UA sampling interval for this subscription in milliseconds
      * @returns {"events".internal.EventEmitter} "changed" event
      */
-    public listenToOpcUaNode(node: OpcUaNodeOptions, samplingInterval = 100): StrictEventEmitter<EventEmitter, OpcUaNodeEvents> {
+    public listenToOpcUaNode(node: OpcUaNodeOptions, samplingInterval = 100): OpcUaNodeEmitter {
         const nodeId = this.resolveNodeId(node);
         if (!this.monitoredItems.has(nodeId)) {
             const monitoredItem: ClientMonitoredItem = this.subscription.monitor({
@@ -339,7 +342,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
                     queueSize: 10
                 }, TimestampsToReturn.Both);
 
-            const emitter: StrictEventEmitter<EventEmitter, OpcUaNodeEvents> = new EventEmitter();
+            const emitter: OpcUaNodeEmitter = new EventEmitter();
             monitoredItem.on('changed', (dataValue) => {
                 this.logger.debug(`[${this.id}] Variable Changed (${nodeId}) = ${dataValue.value.value.toString()}`);
                 node.value = dataValue.value.value;
@@ -351,7 +354,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
         return this.monitoredItems.get(nodeId).emitter;
     }
 
-    public listenToVariable(dataStructureName: string, variableName: string): StrictEventEmitter<EventEmitter, OpcUaNodeEvents> {
+    public listenToVariable(dataStructureName: string, variableName: string): OpcUaNodeEmitter {
         const dataStructure: DataAssembly = this.variables.find((variable) => variable.name === dataStructureName);
         if (!dataStructure) {
             throw new Error(`ProcessValue ${dataStructureName} is not specified for module ${this.id}`);
@@ -476,7 +479,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
             catModule.info(`[${this.id}] subscribe to process variable ${variable.name}`);
             variable.subscribe(1000).on('V', (data) => {
                     let unit;
-                if (DataAssemblyFactory.isAnaView(variable)) {
+                if (variable instanceof AnaView) {
                     const unitObject = UNIT.find((item) => item.value === parseInt(variable.VUnit.value, 10));
                     unit = unitObject ? unitObject.unit : undefined;
                     }
@@ -507,7 +510,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
                         parameter: data.parameter
                     });
                 })
-                .on('controlEnable', (controlEnable) => {
+                .on('controlEnable', (controlEnable: ControlEnableInterface) => {
                     this.emit('controlEnable', {service, controlEnable} );
                 })
                 .on('state', ({state, timestamp}) => {
@@ -523,7 +526,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
                         this.emit('serviceCompleted', service);
                     }
                 })
-                .on('opMode', (opMode) => {
+                .on('opMode', (opMode: OpModeInterface) => {
                     this.logger.debug(`[${this.id}] opMode changed: ${service.name} = ${JSON.stringify(opMode)}`);
                     const entry = {
                         service,
@@ -536,7 +539,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
                         `${data.strategy.name}.${data.parameter.name} = ${data.value}`);
                     const variable: DataAssembly = data.parameter;
                     let unit;
-                    if (DataAssemblyFactory.isAnaView(variable)) {
+                    if (variable instanceof AnaView) {
                         unit = UNIT.find((item) => item.value === variable.VUnit.value).unit;
                     }
                     const entry = {
@@ -553,7 +556,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
                         `${data.strategy.name}.${data.parameter.name} = ${data.value}`);
                     const variable: DataAssembly = data.parameter;
                     let unit;
-                    if (DataAssemblyFactory.isAnaView(variable)) {
+                    if (variable instanceof AnaView) {
                         unit = UNIT.find((item) => item.value === variable.VUnit.value).unit;
                     }
                     const entry = {

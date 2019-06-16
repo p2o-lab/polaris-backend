@@ -112,6 +112,7 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
                 subplantOptions.modules.forEach((moduleOptions: ModuleOptions) => {
                     if (this.modules.find(module => module.id === moduleOptions.id)) {
                         catManager.warn(`Module ${moduleOptions.id} already in registered modules`);
+                        throw new Error(`Module ${moduleOptions.id} already in registered modules`);
                     } else {
                         newModules.push(new Module(moduleOptions, protectedModules));
                     }
@@ -121,6 +122,7 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
             options.modules.forEach((moduleOptions: ModuleOptions) => {
                 if (this.modules.find(module => module.id === moduleOptions.id)) {
                     catManager.warn(`Module ${moduleOptions.id} already in registered modules`);
+                    throw new Error(`Module ${moduleOptions.id} already in registered modules`);
                 } else {
                     newModules.push(new Module(moduleOptions, protectedModules));
                 }
@@ -129,6 +131,7 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
             let moduleOptions = options.module;
             if (this.modules.find(module => module.id === moduleOptions.id)) {
                 catManager.warn(`Module ${moduleOptions.id} already in registered modules`);
+                throw new Error(`Module ${moduleOptions.id} already in registered modules`);
             } else {
                 newModules.push(new Module(moduleOptions, protectedModules));
             }

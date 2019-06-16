@@ -1168,6 +1168,7 @@
         },
         {
           "name": "Test_AnaView.L004",
+          "interface_class": "AnaView",
           "communication": {
             "WQC": {
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",

@@ -24,7 +24,8 @@
  */
 
 import {ConditionType} from '@p2olab/polaris-interface';
-import {expect} from 'chai';
+import * as chai from 'chai';
+import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
 import {OPCUAServer} from 'node-opcua-server';
 import {timeout} from 'promise-timeout';
@@ -34,12 +35,24 @@ import {Module} from '../../../src/model/core/Module';
 import {Condition, ExpressionCondition, TimeCondition} from '../../../src/model/recipe/Condition';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 
+chai.use(chaiAsPromised);
+const expect = chai.expect;
+
 /**
  * Test for [[Condition]]
  */
 describe('Condition', () => {
 
     describe('without test server', () => {
+
+        it('should fail with no type', () => {
+            expect(() => Condition.create(null, undefined)).to.throw();
+        });
+
+        it('should fail with wrong type', () => {
+            expect(() => Condition.create({type: 'test'} as any, [])).to.throw('No Condition found');
+        });
+
         it('should listen to a time condition of 0.1s', (done) => {
             const condition = new TimeCondition({type: ConditionType.time, duration: 0.1});
 
@@ -117,6 +130,10 @@ describe('Condition', () => {
             expect(condition).to.have.property('fulfilled', true);
             await delay(100);
             expect(condition).to.have.property('fulfilled', false);
+
+            expect(condition.getUsedModules().size).to.equal(0);
+
+            condition.clear();
         });
 
         it('should fail with wrong parameter', () => {
@@ -150,7 +167,7 @@ describe('Condition', () => {
                     ]
                 }, [module]) as ExpressionCondition;
 
-                expect(() => expr.getValue()).to.throw;
+                expect(expr.getValue()).to.be.rejectedWith('not connected');
             });
 
         });
@@ -301,8 +318,11 @@ describe('Condition', () => {
         describe('ExpressionCondition', () => {
 
             it('should work with simple server expression', async () => {
-                const expr = new ExpressionCondition({type: ConditionType.expression, expression: 'CIF.Variable001.V>10'}, [module]);
+                const expr = new ExpressionCondition(
+                    {type: ConditionType.expression, expression: 'CIF.Variable001.V>10'}, [module]);
                 expr.listen();
+
+                expect(expr.getUsedModules().size).to.equal(1);
 
                 moduleServer.variables[0].v = 0;
                 expect(expr).to.have.property('fulfilled', false);

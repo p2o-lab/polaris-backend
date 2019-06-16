@@ -32,11 +32,62 @@ import * as delay from 'timeout-as-promise';
 import {Module} from '../../../src/model/core/Module';
 import {Recipe} from '../../../src/model/recipe/Recipe';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
+import {ConditionType} from '@p2olab/polaris-interface/dist/enum';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('Recipe', () => {
+
+    it('should fail with missing name', () => {
+        expect(() => new Recipe({
+            name: null, author: null, description: null,
+            initial_step: null, version: null, steps: null
+        }, [])).to.throw('missing');
+    });
+
+    it('should fail with missing steps', () => {
+        expect(() => new Recipe({
+            name: 'test', author: null, description: null,
+            initial_step: null, version: null, steps: null
+        }, [])).to.throw('missing');
+    });
+
+    it('should fail with missing initial step', () => {
+        expect(() => new Recipe({
+            name: 'test', author: null, description: null,
+            initial_step: null, version: null, steps: []
+        }, [])).to.throw('not found');
+    });
+
+    it('should fail with wrong initial step', () => {
+        expect(() => new Recipe({
+            name: 'test', author: null, description: null,
+            initial_step: 'initial', version: null, steps: []
+        }, [])).to.throw('not found');
+    });
+
+    it('should fail with wrong next step', () => {
+        expect(() => new Recipe({
+                name: 'test', author: null, description: null,
+                initial_step: 'initial', version: null,
+                steps: [{
+                    name: 'initial', operations: [], transitions: [{
+                        next_step: 'notexisting',
+                        condition: {type: ConditionType.time, duration: 1}
+                    }]
+                }]
+            }
+            , [])).to.throw('not found');
+    });
+
+    it('should work', () => {
+        expect(new Recipe({
+            name: 'test', author: null, description: null,
+            initial_step: 'initial', version: null, steps: [{name: 'initial', operations: [], transitions: []}]
+        }, []))
+            .to.have.property('id');
+    });
 
     describe('with module test server', () => {
 

@@ -24,22 +24,23 @@
  */
 
 import * as assert from 'assert';
-import {expect} from 'chai';
+import * as chai from 'chai';
+import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
 import {Module, ModuleOptions} from '../../../src/model/core/Module';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 
+chai.use(chaiAsPromised);
+const expect = chai.expect;
+
 describe('Module', () => {
 
     it('should not connect to a module with wrong endpoint', async () => {
-        const options: ModuleOptions = JSON.parse(fs.readFileSync('assets/modules/module_cif.json').toString()).modules[0];
+        const options: ModuleOptions =
+            JSON.parse(fs.readFileSync('assets/modules/module_cif.json').toString()).modules[0];
         options.opcua_server_url = 'opc.tcp://10.6.51.99:484144';
         const module = new Module(options);
-        try {
-            await module.connect();
-        } catch (e) {
-            expect(e).to.exist;
-        }
+        expect(module.connect()).to.be.rejectedWith('sdf');
         expect(module.isConnected()).to.equal(false);
     });
 
@@ -80,7 +81,8 @@ describe('Module', () => {
         before(async () => {
             moduleServer = new ModuleTestServer();
             await moduleServer.start();
-            const moduleJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8')).modules[0];
+            const moduleJson =
+                JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8')).modules[0];
             module = new Module(moduleJson);
 
             await module.connect();

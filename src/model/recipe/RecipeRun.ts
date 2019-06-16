@@ -23,8 +23,7 @@
  * SOFTWARE.
  */
 
-import {RecipeRunInterface} from '@p2olab/polaris-interface';
-import {RecipeState} from '@p2olab/polaris-interface/dist/enum';
+import {RecipeRunInterface, RecipeState} from '@p2olab/polaris-interface';
 import {EventEmitter} from 'events';
 import {v4} from 'uuid';
 import {ServiceLogEntry, VariableLogEntry} from '../../logging/archive';
@@ -34,7 +33,6 @@ import {Recipe, RecipeEmitter} from './Recipe';
  *
  */
 export class RecipeRun extends (EventEmitter as new() => RecipeEmitter) {
-    private boundOnCompleted = () => this.onCompleted();
 
     get startTime(): Date {
         return this._startTime;
@@ -43,27 +41,22 @@ export class RecipeRun extends (EventEmitter as new() => RecipeEmitter) {
         return this._endTime;
     }
 
+    private boundOnCompleted = () => this.onCompleted();
+
     public readonly id: string;
     public readonly recipe: Recipe;
 
     public serviceLog: ServiceLogEntry[] = [];
     public variableLog: VariableLogEntry[] = [];
-    private boundOnStarted = () => this.onStarted();
     private _startTime: Date;
     private _endTime: Date;
-    private boundOnChanged = () => this.onChanged();
+    private boundOnStarted = () => this.onStarted();
 
     constructor(recipe: Recipe) {
         super();
         this.id = v4();
         this.recipe = recipe;
         this._status = RecipeState.idle;
-    }
-
-    private _status: RecipeState;
-
-    get status(): RecipeState {
-        return this._status;
     }
 
     public json(): RecipeRunInterface {
@@ -99,6 +92,14 @@ export class RecipeRun extends (EventEmitter as new() => RecipeEmitter) {
         this.removeRecipeListeners();
         this.emit('stopped', this.recipe.currentStep);
         await this.recipe.stop();
+    }
+
+    private boundOnChanged = () => this.onChanged();
+
+    private _status: RecipeState;
+
+    get status(): RecipeState {
+        return this._status;
     }
 
     private removeRecipeListeners() {

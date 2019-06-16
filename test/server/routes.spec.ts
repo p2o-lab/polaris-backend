@@ -165,6 +165,28 @@ describe('Routes', () => {
                 .expect('Content-Type', /json/)
                 .expect(200, done);
         });
+
+        it('should provide not existing modules', (done) => {
+            request(app).get('/api/module/abc1234')
+                .expect(500, done);
+        });
+
+        it('should provide download for not existing modules', (done) => {
+            request(app).get('/api/module/abc1234/download')
+                .expect(500, done);
+        });
+
+        it('should allow interacting with all modules', async () => {
+            await request(app).post('/api/module/abort')
+                .expect('Content-Type', /json/)
+                .expect(200);
+            await request(app).post('/api/module/stop')
+                .expect('Content-Type', /json/)
+                .expect(200);
+            await request(app).post('/api/module/reset')
+                .expect('Content-Type', /json/)
+                .expect(200);
+        });
     });
 
     context('#playerRoutes', () => {

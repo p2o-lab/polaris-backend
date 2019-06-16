@@ -40,6 +40,61 @@ const expect = chai.expect;
 
 describe('Operation', () => {
 
+    context('constructor', () => {
+
+        let module;
+
+        before(() => {
+            const moduleJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString())
+                .modules[0];
+            module = new Module(moduleJson);
+        });
+
+        it('should fail with missing options', () => {
+            expect(() => new Operation(null, [])).to.throw();
+        });
+
+        it('should fail with missing modules', () => {
+            expect(() => new Operation({service: null, command: null}, null)).to.throw('No modules specified');
+        });
+
+        it('should fail with missing 2', () => {
+            expect(() => new Operation({service: null, command: null}, [])).to.throw();
+        });
+
+        it('should fail with missing 3', () => {
+            expect(() => new Operation({
+                module: 'test',
+                service: null,
+                command: null
+            }, [module])).to.throw('Could not find');
+        });
+
+        it('should fail with wrong service name', () => {
+            expect(() => new Operation({
+                module: 'CIF',
+                service: 'test',
+                command: null
+            }, [module])).to.throw('not found');
+        });
+
+        it('should fail with wrong strategy name', () => {
+            expect(() => new Operation({
+                module: 'CIF',
+                service: 'Service1',
+                strategy: 'dd',
+                command: null
+            }, [module])).to.throw('not be found');
+        });
+
+        it('should work', () => {
+            expect(new Operation({
+                module: 'CIF', service: 'Service1', command: 'start' as any,
+                parameter: [{name: 'Parameter001', value: 3}]
+            }, [module])).to.have.property('module');
+        });
+    });
+
     describe('OPC UA server mockup', () => {
 
         let moduleServer: ModuleTestServer;

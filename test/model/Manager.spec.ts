@@ -39,49 +39,79 @@ const expect = chai.expect;
 
 describe('Manager', () => {
 
-    it('should reject loading modules with empty options', () => {
-        const manager = new Manager();
-        expect(() => manager.loadModule({})).to.throw();
-        expect(() => manager.loadModule({someattribute: 'abc'} as any)).to.throw();
+    context('loading modules', () => {
+
+        it('should reject loading modules with empty options', () => {
+            const manager = new Manager();
+            expect(() => manager.loadModule(null)).to.throw();
+            expect(() => manager.loadModule({})).to.throw();
+            expect(() => manager.loadModule({someattribute: 'abc'} as any)).to.throw();
+        });
+
+        it('should load modules', () => {
+            const modulesJson = JSON.parse(fs.readFileSync('assets/modules/module_cif.json').toString());
+            const manager = new Manager();
+            manager.loadModule(modulesJson);
+            expect(() => manager.loadModule(modulesJson)).to.throw('already in registered modules');
+        });
+
+        it('should load with single module', () => {
+            const modulesJson = JSON.parse(fs.readFileSync('assets/modules/module_cif.json').toString());
+            const moduleJson = modulesJson.modules[0];
+            const manager = new Manager();
+            manager.loadModule({module: moduleJson});
+            expect(() => manager.loadModule({module: moduleJson})).to.throw('already in registered modules');
+        });
+
+        it('should load with subplants options', () => {
+            const modulesJson = JSON.parse(fs.readFileSync('assets/modules/module_cif.json').toString());
+            const manager = new Manager();
+            manager.loadModule({subplants: [modulesJson]});
+            expect(() => manager.loadModule({subplants: [modulesJson]})).to.throw('already in registered modules');
+        });
+
+        it('should load the achema modules', () => {
+            const manager = new Manager();
+            const modules = manager.loadModule(
+                JSON.parse(fs.readFileSync('assets/modules/modules_achema.json').toString()),
+                true);
+            expect(modules).to.have.lengthOf(3);
+
+            expect(manager.modules).to.have.lengthOf(3);
+
+            const service = manager.getService('Dose', 'Fill');
+            expect(service).to.be.instanceOf(Service);
+            expect(service.name).to.equal('Fill');
+            expect(() => manager.getService('Dose', 'NoService')).to.throw();
+            expect(() => manager.getService('NoModule', 'NoService')).to.throw();
+
+            expect(manager.removeModule('something')).to.be.rejectedWith(/No Module/);
+            expect(manager.removeModule(manager.modules[1].id)).to.be.rejectedWith(/is protected/);
+        });
+
+        it('should prevent removing a protected module', () => {
+            const manager = new Manager();
+            const modules = manager.loadModule(
+                JSON.parse(fs.readFileSync('assets/modules/modules_achema.json').toString()),
+                true);
+        });
     });
 
-    it('should load with single module', () => {
-        const modulesJson = JSON.parse(fs.readFileSync('assets/modules/module_cif.json').toString());
-        const moduleJson = modulesJson.modules[0];
+    it('should load and remove recipe', () => {
+        const modulesRecipe =
+            JSON.parse(fs.readFileSync('assets/recipes/test/recipe_time_local.json').toString());
         const manager = new Manager();
-        manager.loadModule({module: moduleJson});
-    });
+        manager.loadRecipe(modulesRecipe);
+        manager.loadRecipe(modulesRecipe, true);
 
-    it('should load with subplants options', () => {
-        const modulesJson = JSON.parse(fs.readFileSync('assets/modules/module_cif.json').toString());
-        const manager = new Manager();
-        manager.loadModule({subplants: [modulesJson]});
-    });
+        expect(manager.recipes).to.have.lengthOf(2);
 
-    it('should load the achema modules', () => {
-        const manager = new Manager();
-        const modules = manager.loadModule(
-            JSON.parse(fs.readFileSync('assets/modules/modules_achema.json').toString()),
-            true);
-        expect(modules).to.have.lengthOf(3);
+        expect(() => manager.removeRecipe('whatever')).to.throw('not available');
 
-        expect(manager.modules).to.have.lengthOf(3);
+        manager.removeRecipe(manager.recipes[0].id);
+        expect(manager.recipes).to.have.lengthOf(1);
 
-        const service = manager.getService('Dose', 'Fill');
-        expect(service).to.be.instanceOf(Service);
-        expect(service.name).to.equal('Fill');
-        expect(() => manager.getService('Dose', 'NoService')).to.throw();
-        expect(() => manager.getService('NoModule', 'NoService')).to.throw();
-
-        expect(manager.removeModule('something')).to.be.rejectedWith(/No Module/);
-        expect(manager.removeModule(manager.modules[1].id)).to.be.rejectedWith(/is protected/);
-    });
-
-    it('should prevent removing a protected module', () => {
-        const manager = new Manager();
-        const modules = manager.loadModule(
-            JSON.parse(fs.readFileSync('assets/modules/modules_achema.json').toString()),
-            true);
+        expect(() => manager.removeRecipe(manager.recipes[0].id)).to.throw('protected');
     });
 
     describe('test with test module', () => {

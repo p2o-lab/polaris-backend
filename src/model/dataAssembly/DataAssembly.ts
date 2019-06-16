@@ -42,6 +42,7 @@ export class DataAssembly extends EventEmitter {
     public interfaceClass: string;
     public communication: OpcUaNodeOptions[];
     protected module: Module;
+    protected subscribedNodes: string[] = [];
 
     constructor(options: DataAssemblyOptions, module: Module) {
         super();
@@ -55,8 +56,6 @@ export class DataAssembly extends EventEmitter {
             throw new Error(`No module for data assembly: ${JSON.stringify(options)}`);
         }
     }
-
-    protected subscribedNodes: string[] = [];
 
     get OSLevel() {
         return this.communication['OSLevel'];

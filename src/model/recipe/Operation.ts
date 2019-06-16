@@ -49,7 +49,8 @@ export class Operation {
             if (options.module) {
                 this.module = modules.find((module) => module.id === options.module);
                 if (!this.module) {
-                    throw new Error(`Could not find module ${options.module} in ${JSON.stringify(modules.map((m) => m.id))}`);
+                    throw new Error(`Could not find module ${options.module} ` +
+                        `in ${JSON.stringify(modules.map((m) => m.id))}`);
                 }
             } else if (modules.length === 1) {
                 this.module = modules[0];

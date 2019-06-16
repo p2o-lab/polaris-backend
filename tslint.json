@@ -22,9 +22,14 @@
     "trailing-comma": [
       true
     ],
-    "variable-name": [
-      true
-    ],
+    "variable-name": {
+      "options": [
+        "ban-keywords",
+        "check-format",
+        "allow-leading-underscore"
+      ]
+    },
+    "no-bitwise": false,
     "no-unused-variable": true,
     "typedef": [
       true,

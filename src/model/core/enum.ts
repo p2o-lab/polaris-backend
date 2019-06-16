@@ -23,8 +23,7 @@
  * SOFTWARE.
  */
 
-import {ControlEnableInterface} from '@p2olab/polaris-interface';
-import {OpModeInterface} from '@p2olab/polaris-interface/dist/interfaces';
+import {ControlEnableInterface, OpModeInterface} from '@p2olab/polaris-interface';
 
 export enum ServiceState {
     UNDEFINED = 1,
@@ -105,12 +104,16 @@ export enum OpMode {
 }
 
 export function opModetoJson(opMode: OpMode): OpModeInterface {
-    let source: "external" | "internal" = isExtSource(opMode)? "external" : "internal";
+    const source: 'external' | 'internal' = isExtSource(opMode) ? 'external' : 'internal';
     let state;
-    if (isManualState(opMode)) {state = 'manual'}
-    else if (isAutomaticState(opMode)) {state = 'automatic'}
-    else if (isOffState(opMode)) {state = 'off'}
-    return {state, source}
+    if (isManualState(opMode)) {
+        state = 'manual';
+    } else if (isAutomaticState(opMode)) {
+        state = 'automatic';
+    } else if (isOffState(opMode)) {
+        state = 'off';
+    }
+    return {state, source};
 }
 
 export function isOffState(opMode: OpMode): boolean {

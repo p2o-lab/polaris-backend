@@ -23,12 +23,12 @@
  * SOFTWARE.
  */
 
+import {OpcUaNodeOptions} from '@p2olab/polaris-interface';
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {DataAssembly, DataAssemblyOptions} from '../dataAssembly/DataAssembly';
 import {DataAssemblyFactory} from '../dataAssembly/DataAssemblyFactory';
 import {Module} from './Module';
-import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/ModuleOptions';
 
 export interface StrategyOptions {
     id: string;

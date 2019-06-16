@@ -52,9 +52,6 @@ export class ScopeItem {
         return {expression: expressionObject, scopeItems};
     }
 
-    /** name of variable which should be replaced in value */
-    public name: string;
-
     /**
      *
      * @param {ScopeOptions} item
@@ -69,9 +66,6 @@ export class ScopeItem {
             dataAssembly.communication['VExt'];
         return Object.assign(new ScopeItem(), {name: item.name, module, variable: opcUaNode});
     }
-
-    public module: Module;
-    public variable: OpcUaNodeOptions;
 
     /**
      * Extract scope item from expression variable
@@ -134,6 +128,12 @@ export class ScopeItem {
 
         return Object.assign(new ScopeItem(), {name: variable, module, variable: opcUaNode});
     }
+
+    /** name of variable which should be replaced in value */
+    public name: string;
+
+    public module: Module;
+    public variable: OpcUaNodeOptions;
 
     /**
      * Returning an nested object following the name construction. The leaf contains the current value

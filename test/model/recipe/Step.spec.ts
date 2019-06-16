@@ -23,27 +23,24 @@
  * SOFTWARE.
  */
 
-import {OpcUaNodeOptions} from '@p2olab/polaris-interface';
 import {expect} from 'chai';
-import {DataAssembly} from '../../../src/model/dataAssembly/DataAssembly';
+import {Step} from '../../../src/model/recipe/Step';
 
-describe('ProcessValue', () => {
+describe('Step', () => {
 
-    it('should fail with missing parameters', () => {
-        expect(() => {
-            const a = new DataAssembly(undefined, undefined);
-        }).to.throw();
-        const opcUaNode: OpcUaNodeOptions = {
-            namespace_index: 'CODESYSSPV3/3S/IecVarAccess',
-            node_id: 'i=12',
-            data_type: 'Float'
-        };
-        expect(() => {
-            const a = new DataAssembly({
-                name: 'name',
-                communication: [opcUaNode],
-                interface_class: 'analogitem'
-            }, undefined);
-        }).to.throw();
+    it('should fail to create with missing name', () => {
+        expect(() => new Step({name: null, operations: null, transitions: null}, null)).to.throw('missing');
+    });
+
+    it('should fail to create with missing operations', () => {
+        expect(() => new Step({name: 'test', operations: null, transitions: null}, null)).to.throw('missing');
+    });
+
+    it('should fail to create with missing name', () => {
+        expect(() => new Step({name: 'test', operations: [], transitions: null}, null)).to.throw('missing');
+    });
+
+    it('should create', () => {
+        expect(new Step({name: 'test', operations: [], transitions: []}, null)).to.have.property('name', 'test');
     });
 });

@@ -51,7 +51,7 @@ import Timeout = NodeJS.Timeout;
 interface ConditionEvents {
     /**
      * Notify when the condition changes its state. Parameter is a boolean representing if condition is fulfilled.
-     * @event
+     * @event stateChanged
      */
     stateChanged: boolean;
 }
@@ -133,12 +133,16 @@ export class ExpressionCondition extends Condition {
      */
     constructor(options: ExpressionConditionOptions, modules: Module[] = []) {
         super(options);
-        catCondition.info(`Add ExpressionCondition: ${options.expression} (${JSON.stringify(modules.map((m) => m.id))})`);
+        catCondition.info(`Add ExpressionCondition: ${options.expression} ` +
+            `(${JSON.stringify(modules.map((m) => m.id))})`);
         // evaluate scopeArray
         this.scopeArray = (options.scope || []).map((item: ScopeOptions) => ScopeItem.extractFromScopeOptions(item, modules));
 
         // evaluate additional variables from expression
-        const extraction = ScopeItem.extractFromExpressionString(options.expression, modules, this.scopeArray.map((scope) => scope.name));
+        const extraction = ScopeItem.extractFromExpressionString(
+            options.expression,
+            modules,
+            this.scopeArray.map((scope) => scope.name));
         this.expression = extraction.expression;
         this.scopeArray.push (...extraction.scopeItems);
         this._fulfilled = false;
@@ -260,9 +264,10 @@ export class AndCondition extends AggregateCondition {
     public listen(): Condition {
         this.conditions.forEach((condition) => {
             condition.listen().on('stateChanged', (state) => {
-                catCondition.debug(`AndCondition: ${state} = ${JSON.stringify(this.conditions.map((item) => item.fulfilled))}`);
+                catCondition.debug(`AndCondition: ${state} = ` +
+                    `${JSON.stringify(this.conditions.map((item) => item.fulfilled))}`);
                 const oldState = this._fulfilled;
-                this._fulfilled = this.conditions.every((condition) => condition.fulfilled);
+                this._fulfilled = this.conditions.every((cond) => cond.fulfilled);
                 if (oldState !== this._fulfilled) {
                     this.emit('stateChanged', this._fulfilled);
                 }
@@ -283,7 +288,7 @@ export class OrCondition extends AggregateCondition {
         this.conditions.forEach((condition) => {
             condition.listen().on('stateChanged', (status) => {
                 const oldState = this._fulfilled;
-                this._fulfilled = this.conditions.some((condition) => condition.fulfilled);
+                this._fulfilled = this.conditions.some((cond) => cond.fulfilled);
                 if (oldState !== this._fulfilled) {
                     this.emit('stateChanged', this._fulfilled);
                 }
@@ -465,7 +470,8 @@ export class VariableCondition extends ModuleCondition {
         }
         this._fulfilled = result;
         this.emit('stateChanged', this._fulfilled);
-        catCondition.debug(`VariableCondition ${this.dataStructure}: ${data.value} ${this.operator} ${this.value} = ${this._fulfilled}`);
+        catCondition.debug(`VariableCondition ${this.dataStructure}: ` +
+            `${data.value} ${this.operator} ${this.value} = ${this._fulfilled}`);
     }
 
 }

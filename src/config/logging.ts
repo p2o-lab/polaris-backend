@@ -52,25 +52,14 @@ export const catTestServer = new Category('testserver');
 // Custom logging
 export const messages: string[] = [];
 
-
-let logLevel = LogLevel.Info;
-switch ((process.env.LOGLEVEL||'').toUpperCase()) {
-    case 'ERROR':
-        logLevel = LogLevel.Error;
-        break;
-    case 'WARN':
-        logLevel = LogLevel.Warn;
-        break;
-    case 'INFO':
-        logLevel = LogLevel.Info;
-        break;
-    case 'DEBUG':
-        logLevel = LogLevel.Debug;
-        break;
-    case 'TRACE':
-        logLevel = LogLevel.Trace;
-        break;
-}
+const logLevelMapping = {
+    'ERROR': LogLevel.Error,
+    'WARN': LogLevel.Warn,
+    'INFO': LogLevel.Info,
+    'DEBUG': LogLevel.Debug,
+    'TRACE': LogLevel.Trace
+};
+const logLevel = logLevelMapping[(process.env.LOGLEVEL || '').toUpperCase()] || LogLevel.Info;
 
 // Configure to use our custom logger, note the callback which returns our CustomLogger from above.
 const config = new CategoryConfiguration(

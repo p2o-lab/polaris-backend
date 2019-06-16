@@ -36,22 +36,22 @@ import {RecipeRun} from './RecipeRun';
 interface PlayerEvents {
     /**
      * when player has successfully started
-     * @event
+     * @event started
      */
     started: void;
     /**
      * when something inside a recipe changes
-     * @event
+     * @event recipeChanged
      */
     recipeChanged: Recipe;
     /**
      * Notify when a recipe is completed
-     * @event
+     * @event recipeFinished
      */
     recipeFinished: Recipe;
     /**
      * when player completes
-     * @event
+     * @event completed
      */
     completed: void;
 }

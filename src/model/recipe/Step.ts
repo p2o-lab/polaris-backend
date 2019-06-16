@@ -43,10 +43,14 @@ export interface StepOptions {
 interface StepEvents {
     /**
      * when step is completed
-     * @event
+     * @event completed
      */
     completed: Transition;
 
+    /**
+     * when operation inside step has changed (completed or aborted)
+     * @event operationChanged
+     */
     operationChanged: Operation;
 }
 
@@ -109,9 +113,10 @@ export class Step {
         // start listening to transitions of step
         this.transitions.forEach((transition) => {
             catRecipe.info(`Start listening for transition ${JSON.stringify(transition.json())}`);
-            const events = transition.condition.listen()
+            transition.condition.listen()
                 .on('stateChanged', (status) => {
-                    catRecipe.info(`Status of step ${this.name} for transition to ${transition.nextStepName}: ${status}`);
+                    catRecipe.info(`Status of step ${this.name} ` +
+                        `for transition to ${transition.nextStepName}: ${status}`);
                     if (status) {
                         this.enterTransition(transition);
                     }
