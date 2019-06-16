@@ -49,21 +49,21 @@ type ManagerEmitter = StrictEventEmitter<EventEmitter, ManagerEvents>;
 export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
 
     // loaded recipes
-    readonly recipes: Recipe[] = [];
+    public readonly recipes: Recipe[] = [];
 
     // loaded modules
-    readonly modules: Module[] = [];
+    public readonly modules: Module[] = [];
 
-    readonly player: Player;
+    public readonly player: Player;
 
-    variableArchive: VariableLogEntry[] = [];
+    public variableArchive: VariableLogEntry[] = [];
 
-    serviceArchive: ServiceLogEntry[] = [];
+    public serviceArchive: ServiceLogEntry[] = [];
 
     // autoreset determines if a service is automatically reset when
     private _autoreset: boolean = true;
     // autoreset timeout in milliseconds
-    private _autoresetTimeout = 500;
+    private _autoresetTimeout: number = 500;
 
     constructor() {
         super();
@@ -110,7 +110,7 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
         if (options.subplants) {
             options.subplants.forEach((subplantOptions) => {
                 subplantOptions.modules.forEach((moduleOptions: ModuleOptions) => {
-                    if (this.modules.find(module => module.id === moduleOptions.id)) {
+                    if (this.modules.find((mod) => (mod).id === moduleOptions.id)) {
                         catManager.warn(`Module ${moduleOptions.id} already in registered modules`);
                         throw new Error(`Module ${moduleOptions.id} already in registered modules`);
                     } else {
@@ -120,7 +120,7 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
             });
         } else if (options.modules) {
             options.modules.forEach((moduleOptions: ModuleOptions) => {
-                if (this.modules.find(module => module.id === moduleOptions.id)) {
+                if (this.modules.find((mod) => (mod).id === moduleOptions.id)) {
                     catManager.warn(`Module ${moduleOptions.id} already in registered modules`);
                     throw new Error(`Module ${moduleOptions.id} already in registered modules`);
                 } else {
@@ -129,7 +129,7 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
             });
         } else if (options.module) {
             const moduleOptions = options.module;
-            if (this.modules.find(module => module.id === moduleOptions.id)) {
+            if (this.modules.find((mod) => (mod).id === moduleOptions.id)) {
                 catManager.warn(`Module ${moduleOptions.id} already in registered modules`);
                 throw new Error(`Module ${moduleOptions.id} already in registered modules`);
             } else {
@@ -219,7 +219,7 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
     }
 
     public async removeModule(moduleId) {
-        const module = this.modules.find(mod => mod.id === moduleId);
+        const module = this.modules.find((mod) => mod.id === moduleId);
         if (!module) {
             throw new Error(`No Module ${moduleId} found.`);
         }
@@ -269,7 +269,7 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
 
     public removeRecipe(recipeId: string) {
         catManager.debug(`Remove recipe ${recipeId}`);
-        const recipe = this.recipes.find(rec => rec.id === recipeId);
+        const recipe = this.recipes.find((rec) => rec.id === recipeId);
         if (!recipe) {
             throw new Error(`Recipe ${recipeId} not available.`);
         }
@@ -290,11 +290,11 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
      * @returns {Service}
      */
     public getService(moduleName: string, serviceName: string): Service {
-        const module: Module = this.modules.find(mod => mod.id === moduleName);
+        const module: Module = this.modules.find((mod) => mod.id === moduleName);
         if (!module) {
             throw new Error(`Module with id ${moduleName} not registered`);
         }
-        const service: Service = module.services.find(service => service.name === serviceName);
+        const service: Service = module.services.find((serv) => (serv).name === serviceName);
         if (!service) {
             throw new Error(`Service ${serviceName} does not exist on module ${moduleName}`);
         }
@@ -307,7 +307,8 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
      */
     private performAutoReset(service: Service) {
         if (this.autoreset) {
-            catManager.info(`Service ${service.parent.id}.${service.name} completed. Short waiting time (${this._autoresetTimeout}) to autoreset`);
+            catManager.info(`Service ${service.parent.id}.${service.name} completed. ` +
+                `Short waiting time (${this._autoresetTimeout}) to autoreset`);
             setTimeout(async () => {
                 if (service.parent.isConnected() && await service.getServiceState() === ServiceState.COMPLETED) {
                     catManager.info(`Service ${service.parent.id}.${service.name} completed. Now perform autoreset`);
