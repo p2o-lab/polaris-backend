@@ -24,13 +24,13 @@
  */
 
 import * as commandLineArgs from 'command-line-args';
+import commandLineUsage = require('command-line-usage');
 import * as fs from 'fs';
 import {catModule} from './config/logging';
 import {Manager} from './model/Manager';
 import {ExternalTrigger} from './server/ExternalTrigger';
 import {Server} from './server/server';
 import * as serverHandlers from './server/serverHandlers';
-import commandLineUsage = require('command-line-usage');
 
 const optionDefinitions = [
     {
@@ -61,7 +61,9 @@ const optionDefinitions = [
         type: String,
         multiple: true,
         typeLabel: '{underline opcuaEndpoint} {underline opcuaNodeid}',
-        description: 'Monitors an OPC UA node (specified via {underline opcuaNodeId}) on the OPC UA server (specified by {underline opcuaEndpoint}. If the node changes to true or is true when the player completes, the player start from the first recipe.'
+        description: 'Monitors an OPC UA node (specified via {underline opcuaNodeId}) on the OPC UA server ' +
+        '(specified by {underline opcuaEndpoint}. If the node changes to true or is true when the player completes, ' +
+        'the player start from the first recipe.'
     }
 ];
 const sections = [
@@ -72,7 +74,9 @@ const sections = [
     {
         header: 'Synopsis',
         content: [
-            '$ node build/index.js [{bold --module} {underline modulePath}] [{bold --recipe} {underline recipePath}] [{bold --externalTrigger} {underline opcuaEndpoint} {underline opcuaNodeid}]'
+            '$ node build/src/index.js [{bold --module} {underline modulePath}] ' +
+            '[{bold --recipe} {underline recipePath}] ' +
+            '[{bold --externalTrigger} {underline opcuaEndpoint} {underline opcuaNodeid}]'
         ]
     },
     {
@@ -84,7 +88,8 @@ const sections = [
         content: [
             {
                 desc: 'Watching a OPC UA server',
-                example: '$ node src/index.js --externalTrigger opc.tcp://127.0.0.1:53530/OPCUA/SimulationServer "ns=3;s=BooleanDataItem"'
+                example: '$ node build/src/index.js ' +
+                '--externalTrigger opc.tcp://127.0.0.1:53530/OPCUA/SimulationServer "ns=3;s=BooleanDataItem"'
             }]
     }
 ];
