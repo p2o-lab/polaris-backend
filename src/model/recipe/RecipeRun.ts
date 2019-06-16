@@ -41,7 +41,9 @@ export class RecipeRun extends (EventEmitter as new() => RecipeEmitter) {
         return this._endTime;
     }
 
-    private boundOnCompleted = () => this.onCompleted();
+    get status(): RecipeState {
+        return this._status;
+    }
 
     public readonly id: string;
     public readonly recipe: Recipe;
@@ -50,7 +52,8 @@ export class RecipeRun extends (EventEmitter as new() => RecipeEmitter) {
     public variableLog: VariableLogEntry[] = [];
     private _startTime: Date;
     private _endTime: Date;
-    private boundOnStarted = () => this.onStarted();
+
+    private _status: RecipeState;
 
     constructor(recipe: Recipe) {
         super();
@@ -94,13 +97,10 @@ export class RecipeRun extends (EventEmitter as new() => RecipeEmitter) {
         await this.recipe.stop();
     }
 
+    private boundOnCompleted = () => this.onCompleted();
+    private boundOnStarted = () => this.onStarted();
+
     private boundOnChanged = () => this.onChanged();
-
-    private _status: RecipeState;
-
-    get status(): RecipeState {
-        return this._status;
-    }
 
     private removeRecipeListeners() {
         this.recipe.removeListener('completed', this.boundOnCompleted);

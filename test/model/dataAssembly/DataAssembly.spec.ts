@@ -31,11 +31,11 @@ import * as delay from 'timeout-as-promise';
 import {isAutomaticState, isManualState, OpMode, opModetoJson} from '../../../src/model/core/enum';
 import {Module} from '../../../src/model/core/Module';
 import {AdvAnaOp, AnaServParam, ExtAnaOp, ExtIntAnaOp} from '../../../src/model/dataAssembly/AnaOp';
+import {AnaView} from '../../../src/model/dataAssembly/AnaView';
 import {DataAssembly} from '../../../src/model/dataAssembly/DataAssembly';
 import {DataAssemblyFactory} from '../../../src/model/dataAssembly/DataAssemblyFactory';
 import {StrView} from '../../../src/model/dataAssembly/Str';
 import {ModuleTestServer, TestServerVariable} from '../../../src/moduleTestServer/ModuleTestServer';
-import {AnaView} from '../../../src/model/dataAssembly/AnaView';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;

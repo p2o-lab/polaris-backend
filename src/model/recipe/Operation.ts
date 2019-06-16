@@ -24,13 +24,13 @@
  */
 
 import {OperationInterface, OperationOptions, ServiceCommand} from '@p2olab/polaris-interface';
+import {EventEmitter} from 'events';
 import * as delay from 'timeout-as-promise';
 import {catOperation} from '../../config/logging';
 import {Module} from '../core/Module';
 import {Service} from '../core/Service';
 import {Strategy} from '../core/Strategy';
 import {Parameter} from './Parameter';
-import {EventEmitter} from 'events';
 
 /** Operation used in a [[Step]] of a [[Recipe]]
  *

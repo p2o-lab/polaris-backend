@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import {RecipeInterface} from '@p2olab/polaris-interface';
+import {ConditionType, RecipeInterface} from '@p2olab/polaris-interface';
 import * as assert from 'assert';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
@@ -32,7 +32,6 @@ import * as delay from 'timeout-as-promise';
 import {Module} from '../../../src/model/core/Module';
 import {Recipe} from '../../../src/model/recipe/Recipe';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
-import {ConditionType} from '@p2olab/polaris-interface/dist/enum';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
