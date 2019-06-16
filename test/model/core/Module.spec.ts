@@ -23,7 +23,6 @@
  * SOFTWARE.
  */
 
-import * as assert from 'assert';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
@@ -35,26 +34,38 @@ const expect = chai.expect;
 
 describe('Module', () => {
 
-    it('should not connect to a module with wrong endpoint', async () => {
+    it('should not connect to a module with too high port', () => {
         const options: ModuleOptions =
             JSON.parse(fs.readFileSync('assets/modules/module_cif.json').toString()).modules[0];
-        options.opcua_server_url = 'opc.tcp://10.6.51.99:484144';
+        options.opcua_server_url = 'opc.tcp://10.6.51.99:44447777';
         const module = new Module(options);
-        expect(module.connect()).to.be.rejectedWith('sdf');
         expect(module.isConnected()).to.equal(false);
+        expect(module.connect()).to.be.rejectedWith('Port should be');
     });
+
+    it.skip('should not connect to a module with not existing endpoint', async () => {
+        // test does not terminate
+        const options: ModuleOptions =
+            JSON.parse(fs.readFileSync('assets/modules/module_cif.json').toString()).modules[0];
+        options.opcua_server_url = 'opc.tcp://10.6.51.99:4444';
+        const module = new Module(options);
+        expect(module.isConnected()).to.equal(false);
+        await expect(module.connect()).to.be.rejectedWith('Timeout');
+        expect(module.isConnected()).to.equal(false);
+    }).timeout(3000);
 
     it('should load the cif module json', (done) => {
         fs.readFile('assets/modules/module_cif.json', (err, file) => {
             const module = new Module(JSON.parse(file.toString()).modules[0]);
-            assert.equal(module.id, 'CIF');
-            assert.equal(module.services.length, 6);
+            expect(module).to.have.property('id', 'CIF');
+            expect(module.services).to.have.length(6);
             done();
         });
     });
 
     it('should recognize a opc ua server shutdown', async () => {
-        const moduleJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8')).modules[0];
+        const moduleJson =
+            JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8')).modules[0];
 
         const module = new Module(moduleJson);
 

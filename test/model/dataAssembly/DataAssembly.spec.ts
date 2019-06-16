@@ -94,8 +94,8 @@ describe('DataAssembly', () => {
     });
 
     it('should create AnaView', async () => {
-        moduleJson = JSON.parse(fs.readFileSync('assets/modules/module_cif.json').toString()).modules[0];
-        const daJson = moduleJson.process_values[3];
+        const moduleCifJson = JSON.parse(fs.readFileSync('assets/modules/module_cif.json').toString()).modules[0];
+        const daJson = moduleCifJson.process_values[3];
         const da = DataAssemblyFactory.create(daJson, module);
 
         expect(da instanceof AnaView).to.equal(true);
@@ -134,7 +134,7 @@ describe('DataAssembly', () => {
         expect(opModetoJson(opMode)).to.deep.equal({state: 'automatic', source: 'internal'});
 
         if (da instanceof ExtIntAnaOp) {
-            expect(da.VOut).to.have.property('node_id', '#Service1.Parameter1.V');
+            expect(da.VOut).to.have.property('node_id', 'Service1.Parameter1.V');
             expect(da.VOut).to.have.property('value', 20);
         }
     });

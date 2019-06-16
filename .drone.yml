@@ -20,6 +20,11 @@ steps:
   - export LOGLEVEL=warn
   - npm test
 
+- name: coverage
+  image: plugins/codecov
+  settings:
+    token: c9908c8c-3426-4466-918a-3bb317e84e82
+
 - name: docker
   image: plugins/docker
   settings:
@@ -57,6 +62,6 @@ steps:
 
 ---
 kind: signature
-hmac: 392e24d213749c7c035d18876b28896425a6f67b9ec7d8055d826f3880ad06b8
+hmac: 80fe189912cfa5394a143f67e0342f74cf4c1d8c668cfe8985215f5af54d18ab
 
 ...
