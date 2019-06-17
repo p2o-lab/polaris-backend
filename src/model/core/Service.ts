@@ -363,8 +363,9 @@ export class Service extends (EventEmitter as new() => ServiceEmitter) {
             this.currentStrategy.timestamp = new Date();
             this.logger.debug(`[${this.qualifiedName}] Update currentStrategy: ${this.currentStrategy.value}`);
         }
-        let strategy = this.strategies.find((strat) => strat.id === this.currentStrategy.value);
+        let strategy = this.strategies.find((strat) => parseInt(strat.id, 10) === this.currentStrategy.value);
         if (!strategy) {
+            this.logger.info('No valid strategy on module. Set to default strategy');
             strategy = this.strategies.find((strat) => strat.default);
             this.setStrategyParameters(strategy);
         }
@@ -554,13 +555,12 @@ export class Service extends (EventEmitter as new() => ServiceEmitter) {
         } else {
             strat = strategy;
         }
-
-        await this.setOperationMode();
-
-        // set strategy
         this.logger.info(`[${this.qualifiedName}] Set strategy "${strat.name}" (ID=${strat.id})`);
+
+        // first set opMode and then set strategy
+        await this.setOperationMode();
         const nodeId = this.automaticMode ? this.strategy : this.strategyMan;
-        const result = await this.parent.writeNode(nodeId,
+        await this.parent.writeNode(nodeId,
             {
                 dataType: DataType.UInt32,
                 value: strat.id,
