@@ -31,6 +31,7 @@ import {Module} from '../core/Module';
 import {Service} from '../core/Service';
 import {Strategy} from '../core/Strategy';
 import {Parameter} from './Parameter';
+import {ScopeOptions} from '@p2olab/polaris-interface/dist/RecipeOptions';
 
 /** Operation used in a [[Step]] of a [[Recipe]]
  *
@@ -131,7 +132,12 @@ export class Operation {
             service: this.service.name,
             strategy: this.strategy ? this.strategy.name : undefined,
             command: this.command,
-            parameter: this.parameters,
+            parameter: this.parameters.map((param) => ({
+                name: param.name,
+                variable: param.variable,
+                value: param.value,
+                continuos: param.continuous})
+            ),
             state: this.state
         };
     }
