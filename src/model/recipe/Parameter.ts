@@ -64,6 +64,7 @@ export class Parameter {
      * should parameter continuously be updated
      */
     public continuous: boolean;
+    public readonly options: ParameterOptions;
     private expression: Expression;
     private service: Service;
     private _parameter: DataAssembly;
@@ -79,6 +80,7 @@ export class Parameter {
     constructor(parameterOptions: ParameterOptions, service: Service, strategy?: Strategy, modules?: Module[]) {
         catParameter.trace(`Create Parameter: ${JSON.stringify(parameterOptions)}`);
 
+        this.options = parameterOptions;
         this.name = parameterOptions.name;
         this.variable = parameterOptions.variable || service.automaticMode ? 'VExt' : 'VMan';
         this.value = parameterOptions.value || 0;

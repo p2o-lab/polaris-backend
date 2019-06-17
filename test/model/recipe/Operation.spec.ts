@@ -88,10 +88,24 @@ describe('Operation', () => {
         });
 
         it('should work', () => {
-            expect(new Operation({
+            const op = new Operation({
                 module: 'CIF', service: 'Service1', command: 'start' as any,
                 parameter: [{name: 'Parameter001', value: 3}]
-            }, [module])).to.have.property('module');
+            }, [module]);
+            expect(op).to.have.property('module');
+            expect(op.json()).to.deep.equal({
+                command: 'start',
+                module: 'CIF',
+                parameter: [
+                    {
+                        name: 'Parameter001',
+                        value: 3
+                    }
+                ],
+                service: 'Service1',
+                state: undefined,
+                strategy: 'Strategy 1'
+            });
         });
     });
 
