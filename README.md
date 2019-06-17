@@ -5,9 +5,11 @@
 
 A HTML user interface for this project is provided via the [polaris-frontend](https://github.com/p2o-lab/polaris-frontend) project.
 
-Master: [![Build Status](https://cloud.drone.io/api/badges/p2o-lab/polaris-backend/status.svg)](https://cloud.drone.io/p2o-lab/polaris-backend)
-Develop: [![Build Status](https://cloud.drone.io/api/badges/p2o-lab/polaris-backend/status.svg?ref=/refs/heads/develop)](https://cloud.drone.io/p2o-lab/polaris-backend)
-Docker: [![](https://images.microbadger.com/badges/version/p2olab/polaris-backend.svg)](https://microbadger.com/images/p2olab/polaris-backend "Get your own version badge on microbadger.com")
+[![Build Status](https://cloud.drone.io/api/badges/p2o-lab/polaris-backend/status.svg?ref=refs/heads/develop)](https://cloud.drone.io/p2o-lab/polaris-backend)
+[![Docker Badge](https://images.microbadger.com/badges/image/p2olab/polaris-backend.svg)](https://microbadger.com/images/p2olab/polaris-backend "Get your own image badge on microbadger.com")
+[![Greenkeeper badge](https://badges.greenkeeper.io/p2o-lab/polaris-backend.svg)](https://greenkeeper.io/)
+[![CodeFactor](https://www.codefactor.io/repository/github/p2o-lab/polaris-backend/badge)](https://www.codefactor.io/repository/github/p2o-lab/polaris-backend)
+
 
 ## Installation and Deployment
 ### Dependencies
@@ -23,7 +25,7 @@ npm start
 ```
 or use ready binary (which should also be installed globally and in modules)
 ```
-./bin/pfe-ree-node
+./bin/polaris-backend
 ```
 
 ### Docker
@@ -44,7 +46,7 @@ docker build -t p2olab/polaris-backend .
 docker push p2olab/polaris-backend 
 ```
 
-Update docker image for raspberry
+Update docker image for raspberry pi
 ```
 docker build -t p2olab/polaris-backend:latest-arm -f Dockerfile.arm .
 docker push p2olab/polaris-backend:latest-arm 

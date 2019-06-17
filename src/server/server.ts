@@ -24,19 +24,20 @@
  */
 
 import * as express from 'express';
-import Routes from './routes';
-import Middleware from '../config/middleware';
-import * as WebSocket from 'ws';
-import {Manager} from '../model/Manager';
-import {catServer} from '../config/logging';
-import * as serverHandlers from './serverHandlers';
 import * as http from 'http';
+import * as WebSocket from 'ws';
+import {catServer} from '../config/logging';
+import Middleware from '../config/middleware';
+import {Manager} from '../model/Manager';
+import Routes from './routes';
+import * as serverHandlers from './serverHandlers';
 
 export class Server {
 
-    readonly app: express.Application;
+    public readonly app: express.Application;
     public wss: WebSocket.Server;
     private httpServer: http.Server;
+    private interval: NodeJS.Timeout;
 
     constructor(manager: Manager) {
         this.app = express();
@@ -51,7 +52,7 @@ export class Server {
 
         this.app.set('port', port);
         this.httpServer.listen(port);
-        this.httpServer.on('error', error => serverHandlers.onError(error, port));
+        this.httpServer.on('error', (error) => serverHandlers.onError(error, port));
         this.httpServer.on('listening', () => {
             const addr: any = this.httpServer.address();
             const bind: string = (typeof addr === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
@@ -60,6 +61,7 @@ export class Server {
     }
 
     public async stop() {
+        global.clearInterval(this.interval);
         await this.httpServer.close();
         this.httpServer = null;
         await this.wss.close();
@@ -71,7 +73,7 @@ export class Server {
             this.wss = new WebSocket.Server({server: this.httpServer});
             this.wss.on('connection', (ws: WebSocket, req: http.IncomingMessage) => {
                 catServer.info(`WS Client connected: ${req.connection.remoteAddress}`);
-                const interval = setInterval(function ping() {
+                this.interval = global.setInterval(function ping() {
                     ws.send(JSON.stringify({message: 'ping'}));
                 }, 3000);
             });
@@ -86,7 +88,7 @@ export class Server {
      * @param data
      */
     private notifyClients(message: string, data: any) {
-        catServer.trace(`WS refresh published ${message} ${data}`);
+        catServer.trace(`WS refresh published ${message}`);
         if (this.wss) {
             this.wss.clients.forEach((client) => {
                 if (client.readyState === WebSocket.OPEN) {

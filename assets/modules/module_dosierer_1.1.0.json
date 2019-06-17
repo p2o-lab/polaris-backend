@@ -2,7 +2,7 @@
     "GenerationDate": "20190423T204609",
     "modules": [
         {
-            "id": "CIF",
+          "id": "Dosierer",
             "opcua_server_url": "opc.tcp://10.6.51.200:4840",
             "rest_api_port": "1200",
             "services": [

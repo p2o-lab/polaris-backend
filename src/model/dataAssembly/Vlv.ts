@@ -52,4 +52,3 @@ export class MonAnaVlv extends AnaVlv {
         this.subscribedNodes.push('MonEn', 'MonSafePos', 'MonStatErr', 'MonDynErr', 'MonStatTi', 'MonDynTi', 'PosOpngFbk', 'PosClsngFbk', 'PosReachedFbk', 'PosTolerance', 'PosDefClose', 'PosDefOpen', 'MonPosTi', 'MonPosErr');
     }
 }
-

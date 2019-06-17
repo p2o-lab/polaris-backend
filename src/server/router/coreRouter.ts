@@ -23,24 +23,14 @@
  * SOFTWARE.
  */
 
-import {Manager} from '../../model/Manager';
 import {Request, Response, Router} from 'express';
 import * as asyncHandler from 'express-async-handler';
 import yn from 'yn';
+import {version} from '../../../package.json';
 import {messages} from '../../config/logging';
+import {Manager} from '../../model/Manager';
 
 export const coreRouter: Router = Router();
-
-/**
- * @api {get} /    Get Manager
- * @apiName GetManager
- * @apiGroup Manager
- */
-coreRouter.get('/', (req: Request, res: Response) => {
-    const manager: Manager = req.app.get('manager');
-    const result = manager.json();
-    res.json(result);
-});
 
 /**
  * @api {post} /shutdown    Shutdown
@@ -51,7 +41,6 @@ coreRouter.post('/shutdown', (req: Request, res: Response) => {
     process.exit();
 });
 
-
 /**
  * @api {get} /version    Get version
  * @apiName GetVersion
@@ -59,8 +48,7 @@ coreRouter.post('/shutdown', (req: Request, res: Response) => {
  * @apiGroup Manager
  */
 coreRouter.get('/version', (req: Request, res: Response) => {
-    var pjson = require('pjson');
-    res.json({version: pjson.version });
+    res.json({version});
 });
 
 /**
@@ -68,7 +56,6 @@ coreRouter.get('/version', (req: Request, res: Response) => {
  * @apiName GetAutoReset
  * @apiDescription Get statusNode of autoReset
  * @apiGroup Manager
-
  */
 coreRouter.get('/autoReset', asyncHandler(async (req: Request, res: Response) => {
     const manager: Manager = req.app.get('manager');
@@ -119,4 +106,3 @@ coreRouter.get('/logs/services(.json)?', asyncHandler(async (req: Request, res: 
     res.contentType('application/json').attachment()
         .send(JSON.stringify(manager.serviceArchive.slice(-1000), null, 2));
 }));
-

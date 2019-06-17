@@ -23,8 +23,8 @@
  * SOFTWARE.
  */
 
-import { Manager } from '../../model/Manager';
-import { Request, Response, Router } from 'express';
+import {Request, Response, Router} from 'express';
+import {Manager} from '../../model/Manager';
 
 export const recipeRunRouter: Router = Router();
 
@@ -36,7 +36,7 @@ export const recipeRunRouter: Router = Router();
  */
 recipeRunRouter.get('/:recipeRunId', async (req: Request, res: Response) => {
     const manager: Manager = req.app.get('manager');
-    const result = manager.player.recipeRuns.find(recipeRun => recipeRun.id === req.params.recipeRunId).json();
+    const result = manager.player.recipeRuns.find((recipeRun) => recipeRun.id === req.params.recipeRunId).json();
     res.contentType('application/json').attachment()
         .send(JSON.stringify(result, null, 2));
 });

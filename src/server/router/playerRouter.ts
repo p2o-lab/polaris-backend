@@ -23,10 +23,10 @@
  * SOFTWARE.
  */
 
-import { Request, Response, Router } from 'express';
+import {Request, Response, Router} from 'express';
 import * as asyncHandler from 'express-async-handler';
-import { Manager } from '../../model/Manager';
 import {catServer} from '../../config/logging';
+import {Manager} from '../../model/Manager';
 
 export const playerRouter: Router = Router();
 
@@ -48,8 +48,8 @@ playerRouter.get('/', async (req: Request, res: Response) => {
  */
 playerRouter.post('/start', asyncHandler(async (req: Request, res: Response) => {
     const manager: Manager = req.app.get('manager');
-    const player = await manager.player.start();
-    res.json(player.json());
+    manager.player.start();
+    res.json(manager.player.json());
 }));
 
 /**
@@ -94,7 +94,7 @@ playerRouter.post('/reset', asyncHandler(async (req: Request, res: Response) => 
 playerRouter.post('/enqueue', async (req: Request, res: Response) => {
     catServer.info(`Enqueue recipe ${req.body}`);
     const manager: Manager = req.app.get('manager');
-    const recipe = manager.recipes.find(recipe => recipe.id === req.body.recipeId);
+    const recipe = manager.recipes.find((recipe) => recipe.id === req.body.recipeId);
     catServer.debug(`Enqueue recipe ${recipe.name}`);
     if (recipe) {
         manager.player.enqueue(recipe);

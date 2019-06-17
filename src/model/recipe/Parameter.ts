@@ -24,21 +24,21 @@
  */
 
 import {ParameterOptions, ScopeOptions} from '@p2olab/polaris-interface';
-import {Expression} from 'expr-eval';
-import {catParameter} from '../../config/logging';
-import {EventEmitter} from 'events';
-import {DataType} from 'node-opcua-client';
-import {Service} from '../core/Service';
-import {Module, OpcUaNodeEvents} from '../core/Module';
-import StrictEventEmitter from 'strict-event-emitter-types';
 import * as assign from 'assign-deep';
-import {ScopeItem} from './ScopeItem';
+import {EventEmitter} from 'events';
+import {Expression} from 'expr-eval';
+import {DataType} from 'node-opcua-client';
+import StrictEventEmitter from 'strict-event-emitter-types';
+import {Category} from 'typescript-logging';
+import {catParameter} from '../../config/logging';
+import {Module, OpcUaNodeEvents} from '../core/Module';
+import {Service} from '../core/Service';
 import {Strategy} from '../core/Strategy';
 import {DataAssembly} from '../dataAssembly/DataAssembly';
-import {Category} from 'typescript-logging';
+import {ScopeItem} from './ScopeItem';
 
 /**
- * Parameter of an [[Operation]]. Can be static or dynamic. Dynamic strategyParameters can depend on variables of the same or
+ * Parameter of an [[Operation]]. Can be static or dynamic. Dynamic Parameters can depend on variables of the same or
  * other modules. These can also be continuously updated (specified via continuous property)
  */
 export class Parameter {
@@ -46,9 +46,9 @@ export class Parameter {
     /**
      * name of parameter which should be updated
      */
-    name: string;
+    public name: string;
     // name of the variable inside the data assembly which should be updated
-    variable: string;
+    public variable: string;
     /**
      * Expression to be calculated and used as value.
      * Can contain variables, which can be declared inside scopeArray or by using correct variable names
@@ -58,12 +58,13 @@ export class Parameter {
      * @example
      * "CIF.Sensoren\.L001.V"
      */
-    value: string | number | boolean;
-    scopeArray: ScopeItem[];
+    public value: string | number | boolean;
+    public scopeArray: ScopeItem[];
     /**
      * should parameter continuously be updated
      */
-    continuous: boolean;
+    public continuous: boolean;
+    public readonly options: ParameterOptions;
     private expression: Expression;
     private service: Service;
     private _parameter: DataAssembly;
@@ -79,6 +80,7 @@ export class Parameter {
     constructor(parameterOptions: ParameterOptions, service: Service, strategy?: Strategy, modules?: Module[]) {
         catParameter.trace(`Create Parameter: ${JSON.stringify(parameterOptions)}`);
 
+        this.options = parameterOptions;
         this.name = parameterOptions.name;
         this.variable = parameterOptions.variable || service.automaticMode ? 'VExt' : 'VMan';
         this.value = parameterOptions.value || 0;
@@ -87,10 +89,10 @@ export class Parameter {
         this.logger = catParameter;
 
         this.service = service;
-        const strategyUsed: Strategy = strategy || service.strategies.find(strategy => strategy.default);
+        const strategyUsed: Strategy = strategy || service.strategies.find((strat) => strat.default);
         const parameterList: DataAssembly[] = [].concat(service.parameters, strategyUsed.parameters);
         try {
-            this._parameter = parameterList.find(obj => (obj && obj.name === this.name));
+            this._parameter = parameterList.find((obj) => (obj && obj.name === this.name));
         } catch {
             throw new Error(`Could not find parameter "${this.name}" in ${service.name}`);
         }
@@ -103,9 +105,15 @@ export class Parameter {
             .map((item: ScopeOptions) => ScopeItem.extractFromScopeOptions(item, modules));
 
         // evaluate additional variables from expression
-        const extraction = ScopeItem.extractFromExpressionString(this.value.toString(), modules, this.scopeArray.map(scope => scope.name));
-        this.expression = extraction.expression;
-        this.scopeArray.push (...extraction.scopeItems);
+        try {
+            const extraction = ScopeItem.extractFromExpressionString(
+                this.value.toString(), modules, this.scopeArray.map((scope) => scope.name)
+            );
+            this.expression = extraction.expression;
+            this.scopeArray.push(...extraction.scopeItems);
+        } catch (err) {
+            throw new Error('Parsing error for Parameter');
+        }
     }
 
     public listenToParameter() {
@@ -122,9 +130,6 @@ export class Parameter {
      * @returns {Promise<any>}
      */
     public async getValue(): Promise<any> {
-        if (!this.expression) {
-            return undefined;
-        }
         // get current variables
         const tasks = await Promise.all(this.scopeArray.map((item) => item.getScopeValue()));
         const scope = assign(...tasks);
@@ -137,7 +142,7 @@ export class Parameter {
      * calculate value from current scopeArray and write it down to module
      * @returns {Promise<any>}
      */
-    async updateValueOnModule(): Promise<any> {
+    public async updateValueOnModule(): Promise<any> {
         const value = await this.getValue();
         catParameter.info(`Set parameter "${this.service.name}.${this.name}[${this.variable}]" to ${value}`);
         await this.setOperationMode();
@@ -148,14 +153,15 @@ export class Parameter {
      * set operation mode of parameter according to its service
      * @returns {Promise<void>}
      */
-    public setOperationMode(): Promise<void> {
+    public async setOperationMode(): Promise<void> {
         if (this.service.automaticMode) {
             this.logger.info(`[${this.service.qualifiedName}.${this.name}] Bring to automatic mode`);
-            return this._parameter.setToAutomaticOperationMode();
+            this._parameter.setToAutomaticOperationMode();
+            this.logger.info(`[${this.service.qualifiedName}.${this.name}] Parameter now in automatic mode`);
         } else {
             this.logger.info(`[${this.service.qualifiedName}.${this.name}] Bring to manual mode`);
-            return this._parameter.setToManualOperationMode()
-                .then(() => this.logger.info(`[${this.service.qualifiedName}.${this.name}] Parameter now in manual mode`));
+            await this._parameter.setToManualOperationMode();
+            this.logger.info(`[${this.service.qualifiedName}.${this.name}] Parameter now in manual mode`);
         }
     }
 

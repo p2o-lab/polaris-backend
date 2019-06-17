@@ -23,10 +23,10 @@
  * SOFTWARE.
  */
 
-import {ExternalTrigger} from '../../src/server/ExternalTrigger';
-import {OPCUAServer} from 'node-opcua-server';
 import {expect} from 'chai';
+import {OPCUAServer} from 'node-opcua-server';
 import {ModuleTestServer} from '../../src/moduleTestServer/ModuleTestServer';
+import {ExternalTrigger} from '../../src/server/ExternalTrigger';
 
 describe('ExternalTrigger', () => {
 
@@ -42,25 +42,30 @@ describe('ExternalTrigger', () => {
     });
 
     it('should fail with missing endpoint', () => {
-        expect(() => {let et = new ExternalTrigger(undefined, undefined, undefined)}).to.throw();
-        expect(() => {let et = new ExternalTrigger("sdfsd", undefined, undefined)}).to.throw();
-        expect(() => {let et = new ExternalTrigger("opc.tcp://localhost:4334/Ua/MyLittleServer", undefined, undefined)}).to.throw();
+        expect(() => {
+            const et = new ExternalTrigger(undefined, undefined, undefined);
+        }).to.throw();
+        expect(() => {
+            const et = new ExternalTrigger('sdfsd', undefined, undefined);
+        }).to.throw();
+        expect(() => {
+            const et = new ExternalTrigger('opc.tcp://localhost:4334/Ua/MyLittleServer', undefined, undefined);
+        }).to.throw();
     });
 
     it('should work with the sample server', async () => {
         let et: ExternalTrigger;
         await new Promise(async (resolve) => {
-            et = new ExternalTrigger("opc.tcp://localhost:4334/Ua/MyLittleServer",
+            et = new ExternalTrigger('opc.tcp://localhost:4334/Ua/MyLittleServer',
                 'ns=1;s=trigger', resolve);
             await et.startMonitoring();
 
-            expect(await et.getValue()).to.be.false;
+            expect(await et.getValue()).to.equal(false);
             moduleServer.externalTrigger = true;
 
-            expect(await et.getValue()).to.be.true;
+            expect(await et.getValue()).to.equal(true);
         });
         await et.disconnect();
     });
-
 
 });

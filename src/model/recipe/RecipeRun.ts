@@ -23,16 +23,17 @@
  * SOFTWARE.
  */
 
-import { Recipe } from './Recipe';
-import { v4 } from 'uuid';
-import { RecipeRunInterface } from '@p2olab/polaris-interface';
-import { ServiceLogEntry, VariableLogEntry } from '../../logging/archive';
-
+import {RecipeRunInterface, RecipeState} from '@p2olab/polaris-interface';
+import {EventEmitter} from 'events';
+import {v4} from 'uuid';
+import {ServiceLogEntry, VariableLogEntry} from '../../logging/archive';
+import {Recipe, RecipeEmitter} from './Recipe';
 
 /** One specific recipe run with all logs
  *
  */
-export class RecipeRun {
+export class RecipeRun extends (EventEmitter as new() => RecipeEmitter) {
+
     get startTime(): Date {
         return this._startTime;
     }
@@ -40,17 +41,25 @@ export class RecipeRun {
         return this._endTime;
     }
 
-    readonly id: string;
+    get status(): RecipeState {
+        return this._status;
+    }
+
+    public readonly id: string;
+    public readonly recipe: Recipe;
+
+    public serviceLog: ServiceLogEntry[] = [];
+    public variableLog: VariableLogEntry[] = [];
     private _startTime: Date;
     private _endTime: Date;
-    readonly recipe: Recipe;
 
-    serviceLog: ServiceLogEntry[] = [];
-    variableLog: VariableLogEntry[] = [];
+    private _status: RecipeState;
 
     constructor(recipe: Recipe) {
+        super();
         this.id = v4();
         this.recipe = recipe;
+        this._status = RecipeState.idle;
     }
 
     public json(): RecipeRunInterface {
@@ -59,19 +68,59 @@ export class RecipeRun {
             startTime: this._startTime,
             endTime: this._endTime,
             recipe: this.recipe.options,
+            status: this._status,
             serviceLog: this.serviceLog,
             variableLog: this.variableLog
         };
     }
 
-    /** Starts the linked recipe
+    /** Starts the linked recipe and resolves when recipe is started
      *
      */
-    public start(): Recipe {
+    public async start(): Promise<Recipe> {
         this._startTime = new Date();
-        return this.recipe.start()
-            .once('completed', () => {
-                this._endTime = new Date();
-            });
+        this.recipe
+            .on('completed', this.boundOnCompleted)
+            .on('changed', this.boundOnChanged)
+            .on('started', this.boundOnStarted);
+        return await this.recipe.start();
+    }
+
+    /** Stop the linked recipe
+     *
+     */
+    public async stop(): Promise<void> {
+        this._endTime = new Date();
+        this._status = RecipeState.stopped;
+        this.removeRecipeListeners();
+        this.emit('stopped', this.recipe.currentStep);
+        await this.recipe.stop();
+    }
+
+    private boundOnCompleted = () => this.onCompleted();
+    private boundOnStarted = () => this.onStarted();
+
+    private boundOnChanged = () => this.onChanged();
+
+    private removeRecipeListeners() {
+        this.recipe.removeListener('completed', this.boundOnCompleted);
+        this.recipe.removeListener('changed', this.boundOnChanged);
+        this.recipe.removeListener('started', this.boundOnStarted);
+    }
+
+    private onCompleted() {
+        this._endTime = new Date();
+        this._status = RecipeState.completed;
+        this.emit('completed');
+        this.removeRecipeListeners();
+    }
+
+    private onStarted() {
+        this._status = RecipeState.running;
+        this.emit('changed');
+    }
+
+    private onChanged() {
+        this.emit('changed');
     }
 }

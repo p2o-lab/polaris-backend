@@ -23,11 +23,11 @@
  * SOFTWARE.
  */
 
-import { series } from 'async';
-import { post } from 'request';
+import {series} from 'async';
 import {AttributeIds, NodeId, resolveNodeId} from 'node-opcua';
-import {OPCUAClient, ClientSession, ClientSubscription} from 'node-opcua-client';
-import { catOpc } from '../config/logging';
+import {ClientSession, ClientSubscription, OPCUAClient} from 'node-opcua-client';
+import {post} from 'request';
+import {catOpc} from '../config/logging';
 
 export class ExternalTrigger {
     private endpoint: string;
@@ -44,10 +44,12 @@ export class ExternalTrigger {
      * @param callback  callback to be triggered when node becomes true
      */
     constructor(endpoint: string, nodeId: string, callback: () => void ) {
-        if (!endpoint)
+        if (!endpoint) {
             throw new Error('No Endpoint given');
-        if (!nodeId)
+        }
+        if (!nodeId) {
             throw new Error('No nodeId given');
+        }
         this.endpoint = endpoint;
         this.nodeId = resolveNodeId(nodeId);
         this.callback = callback;

@@ -23,71 +23,65 @@
  * SOFTWARE.
  */
 
-import {Recipe} from './recipe/Recipe';
-import {catManager} from '../config/logging';
+import {RecipeOptions, ServiceCommand} from '@p2olab/polaris-interface';
 import {EventEmitter} from 'events';
+import StrictEventEmitter from 'strict-event-emitter-types';
+import {catManager} from '../config/logging';
+import {ServiceLogEntry, VariableLogEntry} from '../logging/archive';
+import {ServiceState} from './core/enum';
 import {Module, ModuleOptions} from './core/Module';
 import {Service} from './core/Service';
-import {ManagerInterface, RecipeOptions, ServiceCommand} from '@p2olab/polaris-interface';
 import {Player} from './recipe/Player';
-import {ServiceState} from './core/enum';
-import {ServiceLogEntry, VariableLogEntry} from '../logging/archive';
-import StrictEventEmitter from 'strict-event-emitter-types';
-import {VirtualService} from './virtualService/VirtualService';
-import {VirtualServiceFactory} from './virtualService/VirtualServiceFactory';
+import {Recipe} from './recipe/Recipe';
 
 interface ManagerEvents {
     /**
      * when one service goes to *completed*
-     * @event
+     * @event recipeFinished
      */
     recipeFinished: void;
 
-    notify: (string, any) => void;
+    notify: (topic: string, data: any) => void;
 }
 
 type ManagerEmitter = StrictEventEmitter<EventEmitter, ManagerEvents>;
 
-export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
+export class Manager extends (EventEmitter as new() => ManagerEmitter) {
 
     // loaded recipes
-    readonly recipes: Recipe[] = [];
+    public readonly recipes: Recipe[] = [];
 
     // loaded modules
-    readonly modules: Module[] = [];
+    public readonly modules: Module[] = [];
 
     // instantiated virtual services
     readonly virtualServices: VirtualService[] = [];
 
     readonly player: Player;
 
-    variableArchive: VariableLogEntry[] = [];
+    public variableArchive: VariableLogEntry[] = [];
 
-    serviceArchive: ServiceLogEntry[] = [];
+    public serviceArchive: ServiceLogEntry[] = [];
 
     // autoreset determines if a service is automatically reset when
     private _autoreset: boolean = true;
     // autoreset timeout in milliseconds
-    private _autoreset_timeout = 500;
+    private _autoresetTimeout: number = 500;
 
     constructor() {
         super();
         this.player = new Player()
             .on('started', () => {
-                this.emit('notify', 'player', this.player.json())
+                this.emit('notify', 'player', this.player.json());
             })
-            .on('recipeStarted', () => {
-                this.emit('notify', 'player', this.player.json())
-            })
-            .on('stepFinished', () => {
-                this.emit('notify', 'player', this.player.json())
+            .on('recipeChanged', () => {
+                this.emit('notify', 'player', this.player.json());
             })
             .on('recipeFinished', () => {
-                this.emit('recipeFinished');
-                this.emit('notify', 'player', this.player.json())
+                this.emit('notify', 'player', this.player.json());
             })
             .on('completed', () => {
-                this.emit('notify', 'player', this.player.json())
+                this.emit('notify', 'player', this.player.json());
             });
     }
 
@@ -110,17 +104,18 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
     public loadModule(options: {
         module?: ModuleOptions,
         modules?: ModuleOptions[],
-        subplants?: { modules: ModuleOptions[] }[]
+        subplants?: Array<{ modules: ModuleOptions[] }>
     }, protectedModules: boolean = false): Module[] {
-        let newModules: Module[] = [];
+        const newModules: Module[] = [];
         if (!options) {
             throw new Error('No modules defined in supplied options');
         }
         if (options.subplants) {
             options.subplants.forEach((subplantOptions) => {
                 subplantOptions.modules.forEach((moduleOptions: ModuleOptions) => {
-                    if (this.modules.find(module => module.id === moduleOptions.id)) {
+                    if (this.modules.find((mod) => (mod).id === moduleOptions.id)) {
                         catManager.warn(`Module ${moduleOptions.id} already in registered modules`);
+                        throw new Error(`Module ${moduleOptions.id} already in registered modules`);
                     } else {
                         newModules.push(new Module(moduleOptions, protectedModules));
                     }
@@ -128,16 +123,18 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
             });
         } else if (options.modules) {
             options.modules.forEach((moduleOptions: ModuleOptions) => {
-                if (this.modules.find(module => module.id === moduleOptions.id)) {
+                if (this.modules.find((mod) => (mod).id === moduleOptions.id)) {
                     catManager.warn(`Module ${moduleOptions.id} already in registered modules`);
+                    throw new Error(`Module ${moduleOptions.id} already in registered modules`);
                 } else {
                     newModules.push(new Module(moduleOptions, protectedModules));
                 }
             });
         } else if (options.module) {
-            let moduleOptions = options.module;
-            if (this.modules.find(module => module.id === moduleOptions.id)) {
+            const moduleOptions = options.module;
+            if (this.modules.find((mod) => (mod).id === moduleOptions.id)) {
                 catManager.warn(`Module ${moduleOptions.id} already in registered modules`);
+                throw new Error(`Module ${moduleOptions.id} already in registered modules`);
             } else {
                 newModules.push(new Module(moduleOptions, protectedModules));
             }
@@ -153,7 +150,7 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
                     this.emit('notify', 'module', {
                         module: service.parent.id,
                         service: service.name,
-                        controlEnable: controlEnable
+                        controlEnable
                     });
                 })
                 .on('variableChanged', async (data) => {
@@ -171,6 +168,10 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
                     }
                     this.emit('notify', 'variable', logEntry);
                 })
+                .on('parameterChanged', (data: any) => {
+                    data.module = module.id;
+                    this.emit('notify', 'module', data);
+                })
                 .on('commandExecuted', (data) => {
                     const logEntry: ServiceLogEntry = {
                         timestampPfe: data.timestampPfe,
@@ -187,7 +188,7 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
                         this.player.currentRecipeRun.serviceLog.push(logEntry);
                     }
                 })
-                .on('stateChanged', async ({service, state, timestampPfe}) => {
+                .on('stateChanged', async ({service, state}) => {
                     const logEntry: ServiceLogEntry = {
                         timestampPfe: new Date(),
                         module: module.id,
@@ -209,7 +210,7 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
                     this.emit('notify', 'module', {
                         module: module.id,
                         service: service.name,
-                        opMode: opMode
+                        opMode
                     });
                 })
                 .on('serviceCompleted', (service: Service) => {
@@ -220,9 +221,8 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
         return newModules;
     }
 
-
     public async removeModule(moduleId) {
-        const module = this.modules.find(module => module.id === moduleId);
+        const module = this.modules.find((mod) => mod.id === moduleId);
         if (!module) {
             throw new Error(`No Module ${moduleId} found.`);
         }
@@ -246,7 +246,7 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
     /**
      * Abort all services from all loaded modules
      */
-    abortAllServices() {
+    public abortAllServices() {
         const tasks = [];
         tasks.push(this.modules.map((module) => module.abort()));
         return Promise.all(tasks);
@@ -255,7 +255,7 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
     /**
      * Stop all services from all loaded modules
      */
-    stopAllServices() {
+    public stopAllServices() {
         const tasks = [];
         tasks.push(this.modules.map((module) => module.stop()));
         return Promise.all(tasks);
@@ -264,7 +264,7 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
     /**
      * Reset all services from all loaded modules
      */
-    resetAllServices() {
+    public resetAllServices() {
         const tasks = [];
         tasks.push(this.modules.map((module) => module.reset()));
         return Promise.all(tasks);
@@ -306,7 +306,7 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
 
     public removeRecipe(recipeId: string) {
         catManager.debug(`Remove recipe ${recipeId}`);
-        const recipe = this.recipes.find(recipe => recipe.id === recipeId);
+        const recipe = this.recipes.find((rec) => rec.id === recipeId);
         if (!recipe) {
             throw new Error(`Recipe ${recipeId} not available.`);
         }
@@ -321,17 +321,17 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
     }
 
     /**
-     * find [TestServerService] of a [Module] registered in manager
+     * find [Service] of a [Module] registered in manager
      * @param {string} moduleName
      * @param {string} serviceName
      * @returns {Service}
      */
-    getService(moduleName: string, serviceName: string): Service {
-        const module: Module = this.modules.find(module => module.id === moduleName);
+    public getService(moduleName: string, serviceName: string): Service {
+        const module: Module = this.modules.find((mod) => mod.id === moduleName);
         if (!module) {
             throw new Error(`Module with id ${moduleName} not registered`);
         }
-        const service: Service = module.services.find(service => service.name === serviceName);
+        const service: Service = module.services.find((serv) => (serv).name === serviceName);
         if (!service) {
             throw new Error(`Service ${serviceName} does not exist on module ${moduleName}`);
         }

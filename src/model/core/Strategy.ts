@@ -23,12 +23,12 @@
  * SOFTWARE.
  */
 
-import {DataAssembly, DataAssemblyOptions} from '../dataAssembly/DataAssembly';
-import {Module} from './Module';
+import {OpcUaNodeOptions} from '@p2olab/polaris-interface';
 import {EventEmitter} from 'events';
-import {DataAssemblyFactory} from '../dataAssembly/DataAssemblyFactory';
 import StrictEventEmitter from 'strict-event-emitter-types';
-import {OpcUaNodeOptions} from './Interfaces';
+import {DataAssembly, DataAssemblyOptions} from '../dataAssembly/DataAssembly';
+import {DataAssemblyFactory} from '../dataAssembly/DataAssemblyFactory';
+import {Module} from './Module';
 
 export interface StrategyOptions {
     id: string;
@@ -52,18 +52,18 @@ export interface StrategyEvents {
 
 type StrategyEmitter = StrictEventEmitter<EventEmitter, StrategyEvents>;
 
-export class Strategy extends (EventEmitter as { new(): StrategyEmitter }) {
-    id: string;
+export class Strategy extends (EventEmitter as new() => StrategyEmitter) {
+    public id: string;
     // name of strategy
-    name: string;
+    public name: string;
     // default strategy
-    default: boolean;
+    public default: boolean;
     // self-completing strategy
-    sc: boolean;
+    public sc: boolean;
     // strategyParameters of strategy
-    parameters: DataAssembly[] = [];
+    public parameters: DataAssembly[] = [];
     // process values of strategy
-    processValues: DataAssembly[] = [];
+    public processValues: DataAssembly[] = [];
 
     constructor(options: StrategyOptions, module: Module) {
         super();
@@ -71,24 +71,27 @@ export class Strategy extends (EventEmitter as { new(): StrategyEmitter }) {
         this.name = options.name;
         this.default = options.default;
         this.sc = options.sc;
-        this.parameters = options.parameters.map((options) => DataAssemblyFactory.create(options, module));
+        this.parameters = options.parameters.map((paramOptions) => DataAssemblyFactory.create(paramOptions, module));
         if (options.processValues) {
             this.processValues = options.processValues
-                .map((options) => DataAssemblyFactory.create(options, module));
+                .map((pvOptions) => DataAssemblyFactory.create(pvOptions, module));
         }
     }
 
-    subscribe() {
-        this.parameters.map(param => param.subscribe()
-            .on('VOut', (data: OpcUaNodeOptions) => {
-                this.emit('parameterChanged', {parameter: param, value: data.value, timestamp: data.timestamp})
+    public subscribe() {
+        this.parameters.map((param) => param.subscribe()
+            .on('VRbk', (data: OpcUaNodeOptions) => {
+                this.emit('parameterChanged', {parameter: param, value: data.value, timestamp: data.timestamp});
+            })
+            .on('Text', (data: OpcUaNodeOptions) => {
+                this.emit('parameterChanged', {parameter: param, value: data.value, timestamp: data.timestamp});
             })
         );
-        this.processValues.map(pv => pv.subscribe()
+        this.processValues.map((pv) => pv.subscribe()
             .on('V', (data: OpcUaNodeOptions) => {
-                this.emit('processValueChanged', {processValue: pv, value: data.value, timestamp: data.timestamp})
+                this.emit('processValueChanged', {processValue: pv, value: data.value, timestamp: data.timestamp});
             })
         );
-    return this;
+        return this;
     }
 }

@@ -23,8 +23,8 @@
  * SOFTWARE.
  */
 
-import {Manager} from '../../model/Manager';
 import {Request, Response, Router} from 'express';
+import {Manager} from '../../model/Manager';
 
 import * as asyncHandler from 'express-async-handler';
 import {catModule, catServer} from '../../config/logging';
@@ -38,7 +38,7 @@ export const moduleRouter: Router = Router();
  */
 moduleRouter.get('', asyncHandler(async (req: Request, res: Response) => {
     const manager: Manager = req.app.get('manager');
-    const tasks = manager.modules.map(async module => await module.json());
+    const tasks = manager.modules.map(async (module) => await module.json());
     res.json(await Promise.all(tasks));
 }));
 
@@ -50,9 +50,8 @@ moduleRouter.get('', asyncHandler(async (req: Request, res: Response) => {
  */
 moduleRouter.get('/:id', asyncHandler(async (req: Request, res: Response) => {
     const manager: Manager = req.app.get('manager');
-    res.json(await manager.modules.find(module => module.id === req.params.id).json());
+    res.json(await manager.modules.find((module) => module.id === req.params.id).json());
 }));
-
 
 /**
  * @api {get} /module/:id/download    Download module options
@@ -62,7 +61,7 @@ moduleRouter.get('/:id', asyncHandler(async (req: Request, res: Response) => {
  */
 moduleRouter.get('/:id/download', asyncHandler(async (req: Request, res: Response) => {
     const manager: Manager = req.app.get('manager');
-    res.json(await manager.modules.find(module => module.id === req.params.id).options);
+    res.json(await manager.modules.find((module) => module.id === req.params.id).options);
 }));
 
 /**
@@ -76,12 +75,12 @@ moduleRouter.put('', asyncHandler(async (req, res) => {
     catServer.info(`Load module`);
     const manager: Manager = req.app.get('manager');
     const newModules = manager.loadModule({module: req.body.module});
-    newModules.forEach(module =>
+    newModules.forEach((module) =>
         module.connect()
             .catch(() => catModule.warn(`Could not connect to module ${module.id}`)
             )
     );
-    res.json(await Promise.all(newModules.map(module => module.json())));
+    res.json(await Promise.all(newModules.map((module) => module.json())));
 }));
 
 /**
@@ -108,7 +107,7 @@ moduleRouter.delete('/:id', asyncHandler(async (req: Request, res: Response) => 
  */
 moduleRouter.post('/:id/connect', asyncHandler(async (req: Request, res: Response) => {
     const manager: Manager = req.app.get('manager');
-    const module = manager.modules.find(module => module.id === req.params.id);
+    const module = manager.modules.find((module) => module.id === req.params.id);
     await module.connect();
     res.json({ module: module.id, status: 'Succesfully connected' });
 }));
@@ -121,7 +120,7 @@ moduleRouter.post('/:id/connect', asyncHandler(async (req: Request, res: Respons
  */
 moduleRouter.post('/:id/disconnect', asyncHandler(async (req: Request, res: Response) => {
     const manager: Manager = req.app.get('manager');
-    const module = manager.modules.find(module => module.id === req.params.id);
+    const module = manager.modules.find((module) => module.id === req.params.id);
     await module.disconnect();
     res.json({ module: module.id, status: 'Succesfully disconnected' });
 }));

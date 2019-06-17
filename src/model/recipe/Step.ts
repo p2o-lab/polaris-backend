@@ -23,13 +23,13 @@
  * SOFTWARE.
  */
 
+import {OperationOptions, StepInterface} from '@p2olab/polaris-interface';
+import {EventEmitter} from 'events';
+import StrictEventEmitter from 'strict-event-emitter-types';
+import {catRecipe} from '../../config/logging';
+import {Module} from '../core/Module';
 import {Operation} from './Operation';
 import {Transition, TransitionOptions} from './Transition';
-import {catRecipe} from '../../config/logging';
-import {EventEmitter} from 'events';
-import {Module} from '../core/Module';
-import {OperationOptions, StepInterface} from '@p2olab/polaris-interface';
-import StrictEventEmitter from 'strict-event-emitter-types';
 
 export interface StepOptions {
     name: string;
@@ -43,19 +43,25 @@ export interface StepOptions {
 interface StepEvents {
     /**
      * when step is completed
-     * @event
+     * @event completed
      */
     completed: Transition;
+
+    /**
+     * when operation inside step has changed (completed or aborted)
+     * @event operationChanged
+     */
+    operationChanged: Operation;
 }
 
 /**
  * Executable [[Step]] from [[Recipe]]
  */
 export class Step {
-    name: string;
-    operations: Operation[];
-    transitions: Transition[];
-    private eventEmitter: StrictEventEmitter<EventEmitter, StepEvents> = new EventEmitter();
+    public name: string;
+    public operations: Operation[];
+    public transitions: Transition[];
+    public readonly eventEmitter: StrictEventEmitter<EventEmitter, StepEvents>;
 
     constructor(options: StepOptions, modules: Module[]) {
         if (options.name) {
@@ -65,34 +71,41 @@ export class Step {
         }
         if (options.operations) {
             this.operations = options.operations.map(
-                operationOptions => new Operation(operationOptions, modules)
+                (operationOptions) => new Operation(operationOptions, modules)
             );
         } else {
             throw new Error(`"operations" array is missing in ${JSON.stringify(options)}`);
         }
         if (options.transitions) {
             this.transitions = options.transitions.map(
-                transitionOptions => new Transition(transitionOptions, modules)
+                (transitionOptions) => new Transition(transitionOptions, modules)
             );
         } else {
             throw new Error(`"transitions" array is missing in ${JSON.stringify(options)}`);
         }
+        this.eventEmitter = new EventEmitter();
     }
 
-    getUsedModules(): Set<Module> {
-        let set = new Set<Module>(this.operations.map(op => op.module));
-        this.transitions.forEach(tr => {
+    public getUsedModules(): Set<Module> {
+        let set = new Set<Module>(this.operations.map((op) => op.module));
+        this.transitions.forEach((tr) => {
             set = new Set([...set, ...tr.getUsedModules()]);
         });
         return set;
     }
 
-    execute() {
+    public execute() {
         // execute operations for step
         this.operations.forEach((operation) => {
             catRecipe.info(`Start operation ${operation.module.id} ${operation.service.name} ` +
                 `${JSON.stringify(operation.command)}`);
             operation.execute();
+            operation.emitter.on('changed', (state) => {
+                if (state === 'completed' || state === 'aborted') {
+                    operation.emitter.removeAllListeners('changed');
+                }
+                this.eventEmitter.emit('operationChanged', operation);
+            });
         });
 
         // TODO: check if operation all have successfully executed
@@ -100,35 +113,34 @@ export class Step {
         // start listening to transitions of step
         this.transitions.forEach((transition) => {
             catRecipe.info(`Start listening for transition ${JSON.stringify(transition.json())}`);
-            const events = transition.condition.listen()
+            transition.condition.listen()
                 .on('stateChanged', (status) => {
-                    catRecipe.info(`Status of step ${this.name} for transition to ${transition.next_step_name}: ${status}`);
+                    catRecipe.info(`Status of step ${this.name} ` +
+                        `for transition to ${transition.nextStepName}: ${status}`);
                     if (status) {
                         this.enterTransition(transition);
                     }
             });
         });
-
-        return this.eventEmitter;
     }
 
     /**
      * enter transition (clear conditions and emit 'completed')
-     * @param {Transition} transition
+     * @param {Transition} nextTransition
      */
-    public enterTransition(transition: Transition) {
+    public enterTransition(nextTransition: Transition) {
         // clear up all conditions
         this.transitions.forEach((transition) => {
             transition.condition.clear();
         });
-        this.eventEmitter.emit('completed', transition);
+        this.eventEmitter.emit('completed', nextTransition);
     }
 
     public json(): StepInterface {
         return {
             name: this.name,
-            transitions: this.transitions.map(transition => transition.json()),
-            operations: this.operations.map(operation => operation.json())
+            transitions: this.transitions.map((transition) => transition.json()),
+            operations: this.operations.map((operation) => operation.json())
         };
     }
 }

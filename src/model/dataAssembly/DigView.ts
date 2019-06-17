@@ -27,14 +27,25 @@ import {DataAssembly} from './DataAssembly';
 
 export class DigView extends DataAssembly {
 
-    get V() { return this.communication['V']}
-    get VUnit() {return this.communication['VUnit']}
-    get VSclMin() {return this.communication['VSclMin']}
-    get VSclMax() {return this.communication['VSclMax']}
-
-    constructor(options, module){
+    constructor(options, module) {
         super(options, module);
         this.subscribedNodes.push('V', 'VUnit', 'VSclMin', 'VSclMax');
+    }
+
+    get V() {
+        return this.communication['V'];
+    }
+
+    get VUnit() {
+        return this.communication['VUnit'];
+    }
+
+    get VSclMin() {
+        return this.communication['VSclMin'];
+    }
+
+    get VSclMax() {
+        return this.communication['VSclMax'];
     }
 
 }
@@ -42,8 +53,7 @@ export class DigView extends DataAssembly {
 export class DigMon extends DigView {
 
     // TODO: add getters
-    
-    constructor(options, module){
+    constructor(options, module) {
         super(options, module);
         this.subscribedNodes.push(
             'VAHEn', 'VAHLim', 'VAHAct',

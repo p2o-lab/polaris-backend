@@ -27,13 +27,21 @@ import {DataAssembly} from './DataAssembly';
 
 export class BinView extends DataAssembly {
 
-    get V() { return this.communication['V']}
-    get VState0() {return this.communication['VState0']}
-    get VState1() {return this.communication['VState1']}
-
-    constructor(options, module){
+    constructor(options, module) {
         super(options, module);
         this.subscribedNodes.push('V', 'VState0', 'VState1');
+    }
+
+    get V() {
+        return this.communication['V'];
+    }
+
+    get VState0() {
+        return this.communication['VState0'];
+    }
+
+    get VState1() {
+        return this.communication['VState1'];
     }
 
 }
@@ -42,7 +50,7 @@ export class BinMon extends BinView {
 
     // TODO: add getters
 
-    constructor(options, module){
+    constructor(options, module) {
         super(options, module);
         this.subscribedNodes.push(
             'VFlutTi', 'VFlutEn', 'VFlutCnt',

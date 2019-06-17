@@ -23,66 +23,145 @@
  * SOFTWARE.
  */
 
-import {Recipe} from '../../../src/model/recipe/Recipe';
-import * as fs from 'fs';
+import {ConditionType, RecipeInterface} from '@p2olab/polaris-interface';
 import * as assert from 'assert';
+import * as chai from 'chai';
+import * as chaiAsPromised from 'chai-as-promised';
+import * as fs from 'fs';
+import * as delay from 'timeout-as-promise';
 import {Module} from '../../../src/model/core/Module';
-import {RecipeInterface} from '@p2olab/polaris-interface';
-import {expect} from 'chai';
+import {Recipe} from '../../../src/model/recipe/Recipe';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 
+chai.use(chaiAsPromised);
+const expect = chai.expect;
+
 describe('Recipe', () => {
+
+    it('should fail with missing name', () => {
+        expect(() => new Recipe({
+            name: null, author: null, description: null,
+            initial_step: null, version: null, steps: null
+        }, [])).to.throw('missing');
+    });
+
+    it('should fail with missing steps', () => {
+        expect(() => new Recipe({
+            name: 'test', author: null, description: null,
+            initial_step: null, version: null, steps: null
+        }, [])).to.throw('missing');
+    });
+
+    it('should fail with missing initial step', () => {
+        expect(() => new Recipe({
+            name: 'test', author: null, description: null,
+            initial_step: null, version: null, steps: []
+        }, [])).to.throw('not found');
+    });
+
+    it('should fail with wrong initial step', () => {
+        expect(() => new Recipe({
+            name: 'test', author: null, description: null,
+            initial_step: 'initial', version: null, steps: []
+        }, [])).to.throw('not found');
+    });
+
+    it('should fail with wrong next step', () => {
+        expect(() => new Recipe({
+                name: 'test', author: null, description: null,
+                initial_step: 'initial', version: null,
+                steps: [{
+                    name: 'initial', operations: [], transitions: [{
+                        next_step: 'notexisting',
+                        condition: {type: ConditionType.time, duration: 1}
+                    }]
+                }]
+            }
+            , [])).to.throw('not found');
+    });
+
+    it('should work', () => {
+        expect(new Recipe({
+            name: 'test', author: null, description: null,
+            initial_step: 'initial', version: null, steps: [{name: 'initial', operations: [], transitions: []}]
+        }, []))
+            .to.have.property('id');
+    });
 
     describe('with module test server', () => {
 
         let moduleServer: ModuleTestServer;
+        let module: Module;
 
-        before(async () => {
+        beforeEach(async () => {
             moduleServer = new ModuleTestServer();
             await moduleServer.start();
-        });
-
-        after(async () => {
-            await moduleServer.shutdown();
-        });
-
-
-        it('runs test recipe successfully', async () => {
 
             const moduleJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString())
                 .modules[0];
-            const module = new Module(moduleJson);
+            module = new Module(moduleJson);
 
             await module.connect();
 
+        });
+
+        afterEach(async () => {
+            await module.disconnect();
+            await moduleServer.shutdown();
+        });
+
+        it('runs test recipe successfully', async () => {
             // now test recipe
-            const recipeJson = JSON.parse(fs.readFileSync('assets/recipes/test/recipe_testserver_2services_1.0.0.json').toString());
+            const recipeJson = JSON.parse(
+                fs.readFileSync('assets/recipes/test/recipe_testserver_2services_1.0.0.json').toString());
             const recipe = new Recipe(recipeJson, [module]);
 
-            recipe.start();
-
+            await recipe.start();
 
             await new Promise((resolve) => {
                 recipe.on('completed', () => {
-                    console.log('recipe completed')
                     resolve();
                 });
             });
 
-        }).timeout(15000);
+        }).timeout(5000);
+
+        it('should only run one recipe at a time', async () => {
+            // now test recipe
+            const recipeJson = JSON.parse(
+                fs.readFileSync('assets/recipes/test/recipe_testserver_2services_1.0.0.json').toString());
+            const recipe = new Recipe(recipeJson, [module]);
+
+            await recipe.start();
+            expect(recipe.start()).to.be.rejectedWith(/already running/);
+            await new Promise((resolve) => {
+                recipe.on('completed', () => {
+                    resolve();
+                });
+            });
+        }).timeout(5000);
+
+        it('should only allow to stop running recipe', async () => {
+            const recipeJson = JSON.parse(
+                fs.readFileSync('assets/recipes/test/recipe_testserver_2services_1.0.0.json').toString());
+            const recipe = new Recipe(recipeJson, [module]);
+
+            expect(recipe.stop()).to.be.rejectedWith('Can only stop running recipe');
+            await recipe.start();
+            await delay(100);
+            await recipe.stop();
+            expect(recipe.stop()).to.be.rejectedWith('Can only stop running recipe');
+            await delay(100);
+        }).timeout(5000);
 
     });
 
     describe('valid recipes', () => {
 
         const modules = [];
-        let module_biofeed;
 
         before(() => {
-            let file = fs.readFileSync('assets/modules/module_biofeed_1.6.0.json');
-            module_biofeed = new Module(JSON.parse(file.toString()).modules[0]);
-
-            file = fs.readFileSync('assets/modules/modules_achema.json');
+            let file = fs.readFileSync('assets/modules/modules_achema.json');
             let options = JSON.parse(file.toString());
             modules.push(new Module(options.modules[0]));
             modules.push(new Module(options.modules[1]));
@@ -106,7 +185,7 @@ describe('Recipe', () => {
                     .to.deep.equal(['Temper', 'React', 'Dose']);
                 expect(json).to.have.property('options')
                     .to.have.property('initial_step', 'Startup.Init');
-                expect(json).to.have.property('status', undefined);
+                expect(json).to.have.property('status', 'idle');
 
                 const step = recipe.steps[0];
                 expect(step.json()).to.have.property('name', 'Startup.Init');
@@ -115,24 +194,8 @@ describe('Recipe', () => {
             });
         });
 
-        it('should load the biofeed recipe json', (done) => {
-            fs.readFile('assets/recipes/biofeed/recipe_biofeed_88370C_1.0.0.json', async (err, file) => {
-                const options = JSON.parse(file.toString());
-                const recipe = new Recipe(options, [module_biofeed]);
-                assert.equal(recipe.modules.size, 1);
-
-                const json: RecipeInterface = await recipe.json();
-                assert.equal(json.protected, false);
-                assert.deepEqual(json.modules, ['BioFeed']);
-                assert.equal(json.options.initial_step, 'S1.AddWater');
-                assert.equal(json.status, undefined);
-
-                done();
-            });
-        });
-
         describe('should load all recipes', () => {
-            let path = 'assets/recipes/';
+            const path = 'assets/recipes/';
             fs.readdirSync(path).forEach((filename) => {
                 const completePath = path + filename;
                 if (fs.statSync(completePath).isFile()) {
@@ -144,41 +207,12 @@ describe('Recipe', () => {
                     });
                 }
             });
-
-            path = 'assets/recipes/biofeed/';
-            fs.readdirSync(path).forEach((filename) => {
-                const completePath = path + filename;
-                const ignoredFiles = [
-                    'recipe_biofeed_88370C_0.3.0.json',
-                    'recipe_biofeed_88370C_0.3.1.json',
-                    'recipe_biofeed_standby_1.0.0.json',
-                ];
-                if (fs.statSync(completePath).isFile() && !ignoredFiles.find(f => f == filename)) {
-                    it(`should load recipe ${completePath}`, (done) => {
-                        fs.readFile(completePath, (err, file) => {
-                            const options = JSON.parse(file.toString());
-                            const recipe = new Recipe(options, [module_biofeed]);
-                            done();
-                        });
-                    });
-                }
-            });
-
         });
 
         it('should load the huber recipe json', (done) => {
             fs.readFile('assets/recipes/recipe_huber_only.json', (err, file) => {
                 const options = JSON.parse(file.toString());
                 const recipe = new Recipe(options, modules);
-                assert.equal(recipe.modules.size, 1);
-                done();
-            });
-        });
-
-        it('should load the biofeed standby recipe json', (done) => {
-            fs.readFile('assets/recipes/biofeed/recipe_biofeed_standby_0.1.0.json', (err, file) => {
-                const options = JSON.parse(file.toString());
-                const recipe = new Recipe(options, [module_biofeed]);
                 assert.equal(recipe.modules.size, 1);
                 done();
             });

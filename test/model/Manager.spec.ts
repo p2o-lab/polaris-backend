@@ -23,88 +23,95 @@
  * SOFTWARE.
  */
 
-import {Manager} from '../../src/model/Manager';
-import * as fs from 'fs';
-import * as chai from 'chai';
-import {Service} from '../../src/model/core/Service';
-import {ModuleTestServer} from '../../src/moduleTestServer/ModuleTestServer';
-import * as parseJson from 'json-parse-better-errors';
-import * as chaiAsPromised from 'chai-as-promised';
-import {ServiceState} from '../../src/model/core/enum';
-import {waitForStateChange} from '../helper';
 import {ServiceCommand} from '@p2olab/polaris-interface';
+import * as chai from 'chai';
+import * as chaiAsPromised from 'chai-as-promised';
+import * as fs from 'fs';
+import * as parseJson from 'json-parse-better-errors';
+import {ServiceState} from '../../src/model/core/enum';
+import {Service} from '../../src/model/core/Service';
+import {Manager} from '../../src/model/Manager';
+import {ModuleTestServer} from '../../src/moduleTestServer/ModuleTestServer';
+import {waitForStateChange} from '../helper';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-
 describe('Manager', () => {
 
-    it('should handle recipes and modules from biofeed', () => {
-        const manager  = new Manager();
-        let modules = manager.loadModule(
-            JSON.parse(fs.readFileSync('assets/modules/module_biofeed_1.4.2.json').toString()),
-            true);
-        expect(modules).to.have.lengthOf(1);
-        manager.loadRecipe(
-            JSON.parse(fs.readFileSync('assets/recipes/biofeed/recipe_biofeed_88370C_0.3.1.json').toString()),
-            true);
-        expect(() => manager.removeRecipe('something')).to.throw();
-        expect(() => manager.removeRecipe(manager.recipes[0].id)).to.throw();
-        manager.loadRecipe(
-            JSON.parse(fs.readFileSync('assets/recipes/biofeed/recipe_biofeed_88370C_0.3.1.json').toString()),
-            false);
-        expect(() => manager.removeRecipe(manager.recipes[1].id)).to.not.throw();
+    context('loading modules', () => {
+
+        it('should reject loading modules with empty options', () => {
+            const manager = new Manager();
+            expect(() => manager.loadModule(null)).to.throw();
+            expect(() => manager.loadModule({})).to.throw();
+            expect(() => manager.loadModule({someattribute: 'abc'} as any)).to.throw();
+        });
+
+        it('should load modules', () => {
+            const modulesJson = JSON.parse(fs.readFileSync('assets/modules/module_cif.json').toString());
+            const manager = new Manager();
+            manager.loadModule(modulesJson);
+            expect(() => manager.loadModule(modulesJson)).to.throw('already in registered modules');
+        });
+
+        it('should load with single module', () => {
+            const modulesJson = JSON.parse(fs.readFileSync('assets/modules/module_cif.json').toString());
+            const moduleJson = modulesJson.modules[0];
+            const manager = new Manager();
+            manager.loadModule({module: moduleJson});
+            expect(() => manager.loadModule({module: moduleJson})).to.throw('already in registered modules');
+        });
+
+        it('should load with subplants options', () => {
+            const modulesJson = JSON.parse(fs.readFileSync('assets/modules/module_cif.json').toString());
+            const manager = new Manager();
+            manager.loadModule({subplants: [modulesJson]});
+            expect(() => manager.loadModule({subplants: [modulesJson]})).to.throw('already in registered modules');
+        });
+
+        it('should load the achema modules', () => {
+            const manager = new Manager();
+            const modules = manager.loadModule(
+                JSON.parse(fs.readFileSync('assets/modules/modules_achema.json').toString()),
+                true);
+            expect(modules).to.have.lengthOf(3);
+
+            expect(manager.modules).to.have.lengthOf(3);
+
+            const service = manager.getService('Dose', 'Fill');
+            expect(service).to.be.instanceOf(Service);
+            expect(service.name).to.equal('Fill');
+            expect(() => manager.getService('Dose', 'NoService')).to.throw();
+            expect(() => manager.getService('NoModule', 'NoService')).to.throw();
+
+            expect(manager.removeModule('something')).to.be.rejectedWith(/No Module/);
+            expect(manager.removeModule(manager.modules[1].id)).to.be.rejectedWith(/is protected/);
+        });
+
+        it('should prevent removing a protected module', () => {
+            const manager = new Manager();
+            const modules = manager.loadModule(
+                JSON.parse(fs.readFileSync('assets/modules/modules_achema.json').toString()),
+                true);
+        });
     });
 
-    it('should reject loading modules with empty options', () => {
+    it('should load and remove recipe', () => {
+        const modulesRecipe =
+            JSON.parse(fs.readFileSync('assets/recipes/test/recipe_time_local.json').toString());
         const manager = new Manager();
-        expect(() => manager.loadModule({})).to.throw;
-        expect(() => manager.loadModule(<any>{someattribute: 'abc'})).to.throw;
-    });
+        manager.loadRecipe(modulesRecipe);
+        manager.loadRecipe(modulesRecipe, true);
 
-    it('should load with single module', () => {
-        const modulesJson = JSON.parse(fs.readFileSync('assets/modules/module_biofeed_1.4.2.json').toString());
-        const moduleJson = modulesJson.modules[0];
-        const manager = new Manager();
-        manager.loadModule({module: moduleJson});
-    });
+        expect(manager.recipes).to.have.lengthOf(2);
 
-    it('should load with subplants options', () => {
-        const modulesJson = JSON.parse(fs.readFileSync('assets/modules/module_biofeed_1.4.2.json').toString());
-        const manager = new Manager();
-        manager.loadModule({subplants: [modulesJson]});
-    });
+        expect(() => manager.removeRecipe('whatever')).to.throw('not available');
 
-    it('should load the achema modules', () => {
-        const manager = new Manager();
-        let modules = manager.loadModule(
-            JSON.parse(fs.readFileSync('assets/modules/modules_achema.json').toString()),
-            true);
-        expect(modules).to.have.lengthOf(3);
+        manager.removeRecipe(manager.recipes[0].id);
+        expect(manager.recipes).to.have.lengthOf(1);
 
-        expect(manager.modules).to.have.lengthOf(3);
-
-        let service = manager.getService('Dose', 'Fill');
-        expect(service).to.be.instanceOf(Service);
-        expect(service.name).to.equal('Fill');
-        expect(() => manager.getService('Dose', 'NoService')).to.throw();
-        expect(() => manager.getService('NoModule', 'NoService')).to.throw();
-
-        expect(manager.removeModule('something')).to.be.rejected;
-        expect(manager.removeModule(manager.modules[1].id)).to.be.rejected;
-    });
-
-    it('should prevent removing a protected module', () => {
-        const manager = new Manager();
-        let modules = manager.loadModule(
-            JSON.parse(fs.readFileSync('assets/modules/modules_achema.json').toString()),
-            true);
-    });
-
-    it('should provide JSON output', () => {
-        const manager= new Manager();
-        expect(manager.json().autoReset).to.equal(true);
+        expect(() => manager.removeRecipe(manager.recipes[0].id)).to.throw('protected');
     });
 
     describe('test with test module', () => {
@@ -119,10 +126,10 @@ describe('Manager', () => {
             await moduleServer.shutdown();
         });
 
-
         it('should load from options, stop, abort and reset manager and remove module', async () => {
 
-            const moduleJson = parseJson(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8'), null, 60);
+            const moduleJson = parseJson(
+                fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8'), null, 60);
 
             const manager = new Manager();
             manager.loadModule(moduleJson);
@@ -131,8 +138,8 @@ describe('Manager', () => {
             const module = manager.modules[0];
             const service = module.services[1];
 
-            await module.connect();
-            await waitForStateChange(service, 'IDLE');
+            module.connect();
+            await waitForStateChange(service, 'IDLE', 2000);
             service.execute(ServiceCommand.start);
             await waitForStateChange(service, 'EXECUTE');
 
@@ -150,10 +157,11 @@ describe('Manager', () => {
 
             await manager.removeModule(module.id);
             expect(manager.modules).to.have.lengthOf(0);
-        }).slow(2000).timeout(10000);
+        }).slow(2000).timeout(10000).retries(3);
 
         it('should autoreset service', async () => {
-            const moduleJson = parseJson(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8'), null, 60);
+            const moduleJson = parseJson(
+                fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8'), null, 60);
 
             const manager = new Manager();
             manager.autoreset = true;
@@ -171,7 +179,6 @@ describe('Manager', () => {
             await waitForStateChange(service, 'COMPLETED');
             await waitForStateChange(service, 'IDLE');
         }).slow(2000).timeout(5000);
-
 
     }).retries(3);
 

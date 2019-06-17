@@ -23,14 +23,14 @@
  * SOFTWARE.
  */
 
-import {Server} from './server/server';
-import * as serverHandlers from './server/serverHandlers';
 import * as commandLineArgs from 'command-line-args';
+import commandLineUsage = require('command-line-usage');
 import * as fs from 'fs';
+import {catModule} from './config/logging';
 import {Manager} from './model/Manager';
 import {ExternalTrigger} from './server/ExternalTrigger';
-import {catModule} from './config/logging';
-import commandLineUsage = require('command-line-usage');
+import {Server} from './server/server';
+import * as serverHandlers from './server/serverHandlers';
 
 const optionDefinitions = [
     {
@@ -61,7 +61,9 @@ const optionDefinitions = [
         type: String,
         multiple: true,
         typeLabel: '{underline opcuaEndpoint} {underline opcuaNodeid}',
-        description: 'Monitors an OPC UA node (specified via {underline opcuaNodeId}) on the OPC UA server (specified by {underline opcuaEndpoint}. If the node changes to true or is true when the player completes, the player start from the first recipe.'
+        description: 'Monitors an OPC UA node (specified via {underline opcuaNodeId}) on the OPC UA server ' +
+        '(specified by {underline opcuaEndpoint}. If the node changes to true or is true when the player completes, ' +
+        'the player start from the first recipe.'
     }
 ];
 const sections = [
@@ -72,7 +74,9 @@ const sections = [
     {
         header: 'Synopsis',
         content: [
-            '$ node build/index.js [{bold --module} {underline modulePath}] [{bold --recipe} {underline recipePath}] [{bold --externalTrigger} {underline opcuaEndpoint} {underline opcuaNodeid}]'
+            '$ node build/src/index.js [{bold --module} {underline modulePath}] ' +
+            '[{bold --recipe} {underline recipePath}] ' +
+            '[{bold --externalTrigger} {underline opcuaEndpoint} {underline opcuaNodeid}]'
         ]
     },
     {
@@ -84,7 +88,8 @@ const sections = [
         content: [
             {
                 desc: 'Watching a OPC UA server',
-                example: '$ node src/index.js --externalTrigger opc.tcp://127.0.0.1:53530/OPCUA/SimulationServer "ns=3;s=BooleanDataItem"'
+                example: '$ node build/src/index.js ' +
+                '--externalTrigger opc.tcp://127.0.0.1:53530/OPCUA/SimulationServer "ns=3;s=BooleanDataItem"'
             }]
     }
 ];
@@ -107,7 +112,6 @@ if (options) {
         appServer.startHttpServer(port);
         appServer.initSocketServer();
 
-
         /** Load some configuration at startup */
         if (options.module && options.module.length > 0) {
             console.log(`Load modules from ${options.module}`);
@@ -115,9 +119,9 @@ if (options) {
                 const modulesOptions = JSON.parse(fs.readFileSync(module).toString());
                 manager.loadModule(modulesOptions, true);
             });
-            manager.modules.forEach(module =>
+            manager.modules.forEach((module) =>
                 module.connect()
-                    .catch(reason =>
+                    .catch((reason) =>
                         catModule.warn(`Could not connect to module ${module.id}: ${reason}`)
                         )
             );
@@ -140,7 +144,7 @@ if (options) {
             const et = new ExternalTrigger(endpoint, nodeId, () => manager.player.start());
             et.startMonitoring()
                 .catch((err) => {
-                    console.log("Could not start monitoring of external trigger", err.toString());
+                    console.log('Could not start monitoring of external trigger', err.toString());
                     process.exit(err);
                 });
             // directly restart recipe if external trigger is still active when recipe finishes

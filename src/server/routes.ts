@@ -25,18 +25,18 @@
 
 import * as express from 'express';
 import {NextFunction, Request, Response, static as expressStatic} from 'express';
-import {moduleRouter} from './router/moduleRouter';
-import {recipeRouter} from './router/recipeRouter';
 import {catServer} from '../config/logging';
-import {serviceRouter} from './router/serviceRouter';
+import {Manager} from '../model/Manager';
 import {coreRouter} from './router/coreRouter';
+import {moduleRouter} from './router/moduleRouter';
 import {playerRouter} from './router/playerRouter';
+import {recipeRouter} from './router/recipeRouter';
 import {recipeRunRouter} from './router/recipeRunRouter';
 import {Manager} from '../model/Manager';
 import {virtualServiceRouter} from './router/virtualServiceRouter';
 
 export default class Routes {
-    static init(app: express.Application, manager: Manager): void {
+    public static init(app: express.Application, manager: Manager): void {
 
         // Provide manager in all requests
         app.set('manager', manager);

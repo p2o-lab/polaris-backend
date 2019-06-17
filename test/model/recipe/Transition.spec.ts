@@ -23,36 +23,27 @@
  * SOFTWARE.
  */
 
-import {Transition} from '../../../src/model/recipe/Transition';
-import {expect} from 'chai';
 import {ConditionType} from '@p2olab/polaris-interface';
+import {expect} from 'chai';
+import {Transition} from '../../../src/model/recipe/Transition';
 
 describe('Transition', () => {
 
-
     it('should load from options', () => {
-        let t = new Transition({next_step: "nextStep", condition: {type: ConditionType.time, duration: 1}}, []);
+        const t = new Transition({next_step: 'myNextStep', condition: {type: ConditionType.time, duration: 1}}, []);
 
         const json = t.json();
-        expect(json).to.haveOwnProperty('next_step', 'nextStep');
+        expect(json).to.haveOwnProperty('next_step', 'myNextStep');
 
         const set = t.getUsedModules();
         expect(set.size).to.equal(0);
     });
 
     it('should fail with missing strategyParameters', () => {
-
-        expect(() => {
-            let t = new Transition({next_step: undefined, condition: undefined}, [])
-        }).to.throw();
-        expect(() => {
-            let t = new Transition({next_step: null, condition: undefined}, [])
-        }).to.throw();
-        expect(() => {
-            let t = new Transition({next_step: 'a', condition: undefined}, [])
-        }).to.throw();
-        expect(() => {
-            let t = new Transition({next_step: undefined, condition: {type: ConditionType.time, duration: 1}}, [])
-        }).to.throw();
+        expect(() => new Transition({next_step: undefined, condition: undefined}, [])).to.throw();
+        expect(() => new Transition({next_step: null, condition: undefined}, [])).to.throw();
+        expect(() => new Transition({next_step: 'a', condition: undefined}, [])).to.throw();
+        expect(() => new Transition({next_step: undefined, condition: {type: ConditionType.time, duration: 1}}, []))
+            .to.throw();
     });
 });

@@ -27,30 +27,58 @@ import {DataAssembly} from './DataAssembly';
 
 export class ExtAnaOp extends DataAssembly {
 
-    get VOut() {return this.communication['VOut']}
-    get VUnit() {return this.communication['VUnit']}
-    get VSclMin() {return this.communication['VSclMin']}
-    get VSclMax() {return this.communication['VSclMax']}
-    get VExt() {return this.communication['VExt']}
-    get VMin() {return this.communication['VMin']}
-    get VMax() {return this.communication['VMax']}
-    get VRbk() {return this.communication['VRbk']}
-
-    constructor(options, module){
+    constructor(options, module) {
         super(options, module);
         this.subscribedNodes.push('VOut', 'VUnit', 'VSclMin', 'VSclMax', 'VExt', 'VMin', 'VMax', 'VRbk');
+    }
+
+    get VOut() {
+        return this.communication['VOut'];
+    }
+
+    get VUnit() {
+        return this.communication['VUnit'];
+    }
+
+    get VSclMin() {
+        return this.communication['VSclMin'];
+    }
+
+    get VSclMax() {
+        return this.communication['VSclMax'];
+    }
+
+    get VExt() {
+        return this.communication['VExt'];
+    }
+
+    get VMin() {
+        return this.communication['VMin'];
+    }
+
+    get VMax() {
+        return this.communication['VMax'];
+    }
+
+    get VRbk() {
+        return this.communication['VRbk'];
     }
 
 }
 
 export class ExtIntAnaOp extends ExtAnaOp {
 
-    get VInt() {return this.communication['VInt']}
-    get OpMode() {return this.communication['OpMode']}
-
-    constructor(options, module){
+    constructor(options, module) {
         super(options, module);
         this.subscribedNodes.push('VInt', 'OpMode');
+    }
+
+    get VInt() {
+        return this.communication['VInt'];
+    }
+
+    get OpMode() {
+        return this.communication['OpMode'];
     }
 }
 
@@ -59,4 +87,5 @@ export class AdvAnaOp extends ExtIntAnaOp {
 }
 
 export class AnaServParam extends ExtIntAnaOp {
+
 }

@@ -23,11 +23,10 @@
  * SOFTWARE.
  */
 
-import { Step } from './Step';
-import { Condition } from './Condition';
-import { ConditionOptions, TransitionInterface } from '@p2olab/polaris-interface';
-import { Module } from '../core/Module';
-import { Recipe } from './Recipe';
+import {ConditionOptions, TransitionInterface} from '@p2olab/polaris-interface';
+import {Module} from '../core/Module';
+import {Condition} from './Condition';
+import {Step} from './Step';
 
 export interface TransitionOptions {
     next_step: string;
@@ -35,13 +34,13 @@ export interface TransitionOptions {
 }
 
 export class Transition {
-    next_step: Step;
-    next_step_name: string;
-    condition: Condition;
+    public nextStep: Step;
+    public readonly nextStepName: string;
+    public readonly condition: Condition;
 
     constructor(options: TransitionOptions, modules: Module[]) {
         if (options.next_step) {
-            this.next_step_name = options.next_step;
+            this.nextStepName = options.next_step;
         } else {
             throw new Error(`"next_step" property is missing in ${JSON.stringify(options)}`);
         }
@@ -52,13 +51,13 @@ export class Transition {
         }
     }
 
-    getUsedModules() : Set<Module> {
+    public getUsedModules(): Set<Module> {
         return new Set([...this.condition.getUsedModules()]);
     }
 
-    json(): TransitionInterface {
+    public json(): TransitionInterface {
         return {
-            next_step: this.next_step_name,
+            next_step: this.nextStepName,
             condition: this.condition.json()
         };
     }

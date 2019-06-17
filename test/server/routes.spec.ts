@@ -118,12 +118,6 @@ describe('Routes', () => {
                 .expect(200, done);
         });
 
-        it('should provide meta information', (done) => {
-            request(app).get('/api/')
-                .expect('Content-Type', /json/)
-                .expect(200, done);
-        });
-
         context('logs', () => {
 
             it('should provide logs', (done) => {
@@ -166,8 +160,46 @@ describe('Routes', () => {
     });
 
     context('#moduleRoutes', () => {
-        it('should provide version', (done) => {
+        it('should provide modules', (done) => {
             request(app).get('/api/module')
+                .expect('Content-Type', /json/)
+                .expect(200, done);
+        });
+
+        it('should provide not existing modules', (done) => {
+            request(app).get('/api/module/abc1234')
+                .expect(500, done);
+        });
+
+        it('should provide download for not existing modules', (done) => {
+            request(app).get('/api/module/abc1234/download')
+                .expect(500, done);
+        });
+
+        it('should allow interacting with all modules', async () => {
+            await request(app).post('/api/module/abort')
+                .expect('Content-Type', /json/)
+                .expect(200);
+            await request(app).post('/api/module/stop')
+                .expect('Content-Type', /json/)
+                .expect(200);
+            await request(app).post('/api/module/reset')
+                .expect('Content-Type', /json/)
+                .expect(200);
+        });
+    });
+
+    context('#playerRoutes', () => {
+        it('should provide player', (done) => {
+            request(app).get('/api/player')
+                .expect('Content-Type', /json/)
+                .expect(200, done);
+        });
+    });
+
+    context('#recipeRoutes', () => {
+        it('should provide recipes', (done) => {
+            request(app).get('/api/recipe')
                 .expect('Content-Type', /json/)
                 .expect(200, done);
         });

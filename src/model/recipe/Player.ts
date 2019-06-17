@@ -23,14 +23,12 @@
  * SOFTWARE.
  */
 
-import {catManager, catPlayer} from '../../config/logging';
-import {EventEmitter} from 'events';
 import {PlayerInterface, RecipeState, Repeat} from '@p2olab/polaris-interface';
-import {RecipeRun} from './RecipeRun';
+import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
-import {Step} from './Step';
+import {catManager, catPlayer} from '../../config/logging';
 import {Recipe} from './Recipe';
-import * as delay from 'timeout-as-promise';
+import {RecipeRun} from './RecipeRun';
 
 /**
  * Events emitted by [[Player]]
@@ -38,27 +36,22 @@ import * as delay from 'timeout-as-promise';
 interface PlayerEvents {
     /**
      * when player has successfully started
-     * @event
+     * @event started
      */
     started: void;
     /**
-     * when player has started a recipe
-     * @event
+     * when something inside a recipe changes
+     * @event recipeChanged
      */
-    recipeStarted: Recipe;
-    /**
-     * when a step is finished in the player
-     * @event
-     */
-    stepFinished: Step;
+    recipeChanged: Recipe;
     /**
      * Notify when a recipe is completed
-     * @event
+     * @event recipeFinished
      */
     recipeFinished: Recipe;
     /**
      * when player completes
-     * @event
+     * @event completed
      */
     completed: void;
 }
@@ -69,22 +62,20 @@ type PlayerEmitter = StrictEventEmitter<EventEmitter, PlayerEvents>;
  * Player can play recipes in a playlist
  * Only one recipe is active at one point in time
  */
-export class Player extends (EventEmitter as { new(): PlayerEmitter }) {
+export class Player extends (EventEmitter as new() => PlayerEmitter) {
+
+    public readonly recipeRuns: RecipeRun[];
+    public currentRecipeRun: RecipeRun;
     public repeat: Repeat;
 
     /** index in playlist starting from 0 */
     private _currentItem: number;
-
+    private _status: RecipeState;
     private _playlist: Recipe[] = [];
-
-    readonly recipeRuns: RecipeRun[];
-    currentRecipeRun: RecipeRun;
 
     get playlist(): Recipe[] {
         return this._playlist;
     }
-
-    private _status: RecipeState;
 
     get currentItem(): number {
         return this._currentItem;
@@ -123,8 +114,17 @@ export class Player extends (EventEmitter as { new(): PlayerEmitter }) {
      * @return Player
      */
     public remove(index: number): Player {
+        if (index === this.currentItem) {
+            throw new Error('Can not remove currently running recipe');
+        }
+        if (index >= this.playlist.length) {
+            throw new Error('Can not remove recipe with index greater than playlist size');
+        }
         catManager.info(`Delete recipe ${index} from playlist`);
         this._playlist.splice(index, 1);
+        if (index < this.currentItem) {
+            this._currentItem -= 1;
+        }
         return this;
     }
 
@@ -134,16 +134,20 @@ export class Player extends (EventEmitter as { new(): PlayerEmitter }) {
      */
     public json(): PlayerInterface {
         return {
-            playlist: this._playlist.map(recipe => recipe.json()),
+            playlist: this._playlist.map((recipe) => ({id: recipe.id, name: recipe.name, options: recipe.options})),
+            currentRecipe: this.getCurrentRecipe() ? this.getCurrentRecipe().json() : undefined,
             currentItem: this._currentItem,
             repeat: this.repeat,
             status: this.status,
-            recipeRuns: this.recipeRuns.slice(-10).map((rr) => {return {
-                id: rr.id,
-                name: rr.recipe.name,
-                startTime: rr.startTime,
-                endTime: rr.endTime
-            }})
+            recipeRuns: this.recipeRuns.slice(-10).map((rr) => {
+                return {
+                    id: rr.id,
+                    name: rr.recipe.name,
+                    startTime: rr.startTime,
+                    endTime: rr.endTime,
+                    status: rr.status
+                };
+            })
         };
     }
 
@@ -151,20 +155,33 @@ export class Player extends (EventEmitter as { new(): PlayerEmitter }) {
      * Start recipe if player is currently idle or stopped.
      * Resume if player is currently paused
      *
+     * resolves when player has finished
+     *
      * @returns Player
      */
-    public start(): Player {
-        catPlayer.info(`Start player: ${this._playlist.map(item => item.name)} (current state: ${RecipeState[this.status]})`);
+    public async start() {
+        catPlayer.info(`Start player: ${this._playlist.map((item) => item.name)} ` +
+            `(current state: ${RecipeState[this.status]})`);
         if (this._playlist.length <= 0) {
             catPlayer.warn('No recipes in playlist');
             throw new Error('No recipes in playlist');
         }
-        if (this.status === RecipeState.idle || this.status === RecipeState.stopped || this.status === RecipeState.completed) {
+        if (this.status === RecipeState.idle ||
+            this.status === RecipeState.stopped ||
+            this.status === RecipeState.completed) {
             this._status = RecipeState.running;
             this._currentItem = 0;
-            this.emit('started');
             catPlayer.info('Player started');
-            this.runCurrentRecipe();
+            this.emit('started');
+            while (this.currentItem < this.playlist.length) {
+                catManager.info(`Go to next recipe (${this.currentItem + 1}/${this.playlist.length})`);
+                await this.runCurrentRecipe();
+                this._currentItem = this._currentItem + 1;
+            }
+            catPlayer.info('Player finished');
+            this._status = RecipeState.completed;
+            this._currentItem = undefined;
+            this.emit('completed');
         } else if (this.status === RecipeState.paused) {
             this._status = RecipeState.running;
             this.getCurrentRecipe().modules.forEach((module) => {
@@ -173,7 +190,6 @@ export class Player extends (EventEmitter as { new(): PlayerEmitter }) {
         } else {
             throw new Error('Player currently already running');
         }
-        return this;
     }
 
     public reset() {
@@ -190,9 +206,7 @@ export class Player extends (EventEmitter as { new(): PlayerEmitter }) {
     public pause() {
         if (this.status === RecipeState.running) {
             this._status = RecipeState.paused;
-            this.getCurrentRecipe().modules.forEach((module) => {
-                module.pause();
-            });
+            this.getCurrentRecipe().pause();
         }
     }
 
@@ -203,7 +217,8 @@ export class Player extends (EventEmitter as { new(): PlayerEmitter }) {
         catPlayer.info('Stop player');
         if (this.status === RecipeState.running) {
             this._status = RecipeState.stopped;
-            return this.getCurrentRecipe().stop();
+            await this.currentRecipeRun.stop();
+            this.currentRecipeRun = null;
         }
     }
 
@@ -213,39 +228,37 @@ export class Player extends (EventEmitter as { new(): PlayerEmitter }) {
      */
     public forceTransition(stepName: string, nextStepName: string) {
         const recipe = this.getCurrentRecipe();
-        if (recipe.current_step.name!==stepName) {
-            throw new Error(`Ẁrong step. Expected: ${recipe.current_step.name} - Actual: ${stepName}`);
+        if (recipe.currentStep.name !== stepName) {
+            throw new Error(`Ẁrong step. Expected: ${recipe.currentStep.name} - Actual: ${stepName}`);
         }
-        const step = recipe.current_step;
-        const transition = step.transitions.find(tr=> tr.next_step_name === nextStepName);
+        const step = recipe.currentStep;
+        const transition = step.transitions.find((tr) => tr.nextStepName === nextStepName);
         if (!transition) {
             throw new Error('Does not contain nextStep');
         }
         step.enterTransition(transition);
     }
 
-    private runCurrentRecipe(): Player {
+    /** Run current recipe in playlist and resolve when this recipe is completed
+     *
+     * @returns {Promise<void>}
+     */
+    private async runCurrentRecipe(): Promise<void> {
+        catPlayer.info(`Start recipe ${this.getCurrentRecipe().name}`);
         this.currentRecipeRun = new RecipeRun(this.getCurrentRecipe());
         this.recipeRuns.push(this.currentRecipeRun);
-        this.currentRecipeRun.start()
-            .once('started', () => this.emit('recipeStarted', this.currentRecipeRun.recipe))
-            .on('stepFinished', ({finishedStep, nextStep}) => this.emit('stepFinished', finishedStep))
-            .once('completed', async() => {
-                catPlayer.info('recipe finished');
-                this.emit('recipeFinished', this.currentRecipeRun.recipe);
-                catManager.info(`recipe finished ${this.currentItem + 1}/${this._playlist.length} (player ${this.status})`);
-                if (this._currentItem + 1 < this._playlist.length) {
-                    await delay(500);
-                    this._currentItem = this._currentItem + 1;
-                    catManager.info(`Go to next recipe (${this.currentItem + 1}/${this.playlist.length})`);
-                    this.runCurrentRecipe();
-                } else {
-                    this._status = RecipeState.completed;
-                    this._currentItem = undefined;
-                    catPlayer.info('Player finished');
-                    this.emit('completed');
-                }
-            });
-        return this;
+        return new Promise((resolve) => {
+            this.currentRecipeRun
+                .on('changed', () => {
+                    this.emit('recipeChanged', this.currentRecipeRun.recipe);
+                })
+                .once('completed', () => {
+                    this.emit('recipeFinished', this.currentRecipeRun.recipe);
+                    this.currentRecipeRun.removeAllListeners('changed');
+                    catPlayer.info(`recipe finished ${this.currentItem + 1}/${this._playlist.length} (${this.status})`);
+                    resolve();
+                });
+            this.currentRecipeRun.start();
+        });
     }
 }

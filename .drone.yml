@@ -33,13 +33,14 @@ steps:
 - name: docker-arm
   image: plugins/docker
   settings:
+    dockerfile: Dockerfile.arm
     username:
       from_secret: docker_username
     password:
       from_secret: docker_password
     repo: p2olab/polaris-backend
     auto_tag: true
-    auto_tag_suffix: -arm
+    auto_tag_suffix: arm
 
 - name: notify
   image: drillster/drone-email
@@ -56,6 +57,6 @@ steps:
 
 ---
 kind: signature
-hmac: 2a2690a0a2cd75ec7200671d8084ca56454f98c81d612f528da1caf73c6616d6
+hmac: 392e24d213749c7c035d18876b28896425a6f67b9ec7d8055d826f3880ad06b8
 
 ...

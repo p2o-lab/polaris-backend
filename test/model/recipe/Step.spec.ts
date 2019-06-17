@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018 Markus Graube <markus.graube@tu.dresden.de>,
+ * Copyright (c) 2019 Markus Graube <markus.graube@tu.dresden.de>,
  * Chair for Process Control Systems, Technische Universität Dresden
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,17 +23,24 @@
  * SOFTWARE.
  */
 
+import {expect} from 'chai';
+import {Step} from '../../../src/model/recipe/Step';
 
-export interface OpcUaNodeOptions {
-    /** despite its current name this variable contains the *namespace url* of the node*/
-    namespace_index: string;
-    /** node id of the node as string (e.g. 's=sdfdsf' or 'i=12') */
-    node_id: string;
-    /** data type of OPC UA node */
-    data_type?: string;
-    /** recent value */
-    value?: number| string| boolean;
-    /** timestamp of last update of value */
-    timestamp?: Date;
-}
+describe('Step', () => {
 
+    it('should fail to create with missing name', () => {
+        expect(() => new Step({name: null, operations: null, transitions: null}, null)).to.throw('missing');
+    });
+
+    it('should fail to create with missing operations', () => {
+        expect(() => new Step({name: 'test', operations: null, transitions: null}, null)).to.throw('missing');
+    });
+
+    it('should fail to create with missing name', () => {
+        expect(() => new Step({name: 'test', operations: [], transitions: null}, null)).to.throw('missing');
+    });
+
+    it('should create', () => {
+        expect(new Step({name: 'test', operations: [], transitions: []}, null)).to.have.property('name', 'test');
+    });
+});

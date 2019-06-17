@@ -23,10 +23,10 @@
  * SOFTWARE.
  */
 
-import { Manager } from '../../model/Manager';
-import { catServer } from '../../config/logging';
-import { Request, Response, Router } from 'express';
+import {Request, Response, Router} from 'express';
 import * as asyncHandler from 'express-async-handler';
+import {catServer} from '../../config/logging';
+import {Manager} from '../../model/Manager';
 
 export const recipeRouter: Router = Router();
 
@@ -51,7 +51,7 @@ recipeRouter.get('/', asyncHandler(async (req: Request, res: Response) => {
  */
 recipeRouter.get('/:recipeId', async (req: Request, res: Response) => {
     const manager: Manager = req.app.get('manager');
-    const result = manager.recipes.find(recipe => recipe.id === req.params.recipeId).json();
+    const result = manager.recipes.find((recipe) => recipe.id === req.params.recipeId).json();
     res.json(result);
 });
 
@@ -63,7 +63,7 @@ recipeRouter.get('/:recipeId', async (req: Request, res: Response) => {
  */
 recipeRouter.get('/:recipeId/download', async (req: Request, res: Response) => {
     const manager: Manager = req.app.get('manager');
-    const result = manager.recipes.find(recipe => recipe.id === req.params.recipeId).options;
+    const result = manager.recipes.find((recipe) => recipe.id === req.params.recipeId).options;
     res.json(result);
 });
 

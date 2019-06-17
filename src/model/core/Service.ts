@@ -23,7 +23,31 @@
  * SOFTWARE.
  */
 
-import {DataType, DataValue, Variant, VariantArrayType} from 'node-opcua-client';
+import {
+    ControlEnableInterface,
+    OpcUaNodeOptions,
+    OpModeInterface,
+    ParameterInterface,
+    ParameterOptions,
+    ServiceCommand,
+    ServiceInterface,
+    StrategyInterface
+} from '@p2olab/polaris-interface';
+import {EventEmitter} from 'events';
+import {BaseService, BaseServiceEvents} from './BaseService';
+import StrictEventEmitter from 'strict-event-emitter-types';
+import {Category} from 'typescript-logging';
+import {catService} from '../../config/logging';
+import {ExtAnaOp} from '../dataAssembly/AnaOp';
+import {AnaView} from '../dataAssembly/AnaView';
+import {ExtBinOp} from '../dataAssembly/BinOp';
+import {BinView} from '../dataAssembly/BinView';
+import {DataAssembly, DataAssemblyOptions} from '../dataAssembly/DataAssembly';
+import {DataAssemblyFactory} from '../dataAssembly/DataAssemblyFactory';
+import {ExtDigOp} from '../dataAssembly/DigOp';
+import {DigView} from '../dataAssembly/DigView';
+import {StrView} from '../dataAssembly/Str';
+import {Parameter} from '../recipe/Parameter';
 import {
     controlEnableToJson,
     isAutomaticState,
@@ -36,27 +60,9 @@ import {
     ServiceMtpCommand,
     ServiceState
 } from './enum';
-import {OpcUaNodeOptions} from './Interfaces';
-import {Parameter} from '../recipe/Parameter';
-import {
-    ControlEnableInterface,
-    OpModeInterface,
-    ParameterInterface,
-    ParameterOptions,
-    ServiceCommand,
-    ServiceInterface,
-    StrategyInterface
-} from '@p2olab/polaris-interface';
-import {Unit} from './Unit';
-import {EventEmitter} from 'events';
-import {BaseService, BaseServiceEvents} from './BaseService';
-import StrictEventEmitter from 'strict-event-emitter-types';
-import {DataAssembly, DataAssemblyOptions} from '../dataAssembly/DataAssembly';
-import {Strategy, StrategyOptions} from './Strategy';
-import {Category} from 'typescript-logging';
 import {Module} from './Module';
-import {catService} from '../../config/logging';
-import {DataAssemblyFactory} from '../dataAssembly/DataAssemblyFactory';
+import {Strategy, StrategyOptions} from './Strategy';
+import {UNIT} from './Unit';
 
 export interface ServiceOptions {
     name: string;
@@ -74,13 +80,12 @@ export interface ServiceOptions {
         StrategyMan?: OpcUaNodeOptions;
         StrategyExt: OpcUaNodeOptions;
         CurrentStrategy: OpcUaNodeOptions;
-        ErrorMessage: OpcUaNodeOptions;
     };
     strategies: StrategyOptions[];
     parameters: DataAssemblyOptions[];
 }
 
-const InterfaceClassToType = {
+const interfaceClassToType = {
     'StrView': 'string',
     'AnaView': 'string',
     'ExtAnaOp': 'number',
@@ -97,7 +102,9 @@ interface ServiceEvents extends BaseServiceEvents {
      */
     state: {state: ServiceState, timestamp: Date};
 
-    variableChanged: {strategy?: Strategy; parameter: DataAssembly; value: number}
+    variableChanged: { strategy?: Strategy; parameter: DataAssembly; value: number };
+
+    parameterChanged: { strategy?: Strategy; parameter: DataAssembly, value: number };
 
     opMode: OpModeInterface;
     /**
@@ -105,6 +112,17 @@ interface ServiceEvents extends BaseServiceEvents {
      * @event controlEnable
      */
     controlEnable: ControlEnableInterface;
+    /**
+     * whenever a command is executed from the POL
+     * @event commandExecuted
+     */
+    commandExecuted: {
+        timestampPfe: Date,
+        strategy: Strategy,
+        command: ServiceCommand,
+        parameter: ParameterInterface[],
+        scope?: any[]
+    };
 }
 
 type ServiceEmitter = StrictEventEmitter<EventEmitter, ServiceEvents>;
@@ -117,12 +135,15 @@ type ServiceEmitter = StrictEventEmitter<EventEmitter, ServiceEvents>;
  */
 export class Service extends BaseService {
 
+    public get qualifiedName() {
+        return `${this.parent.id}.${this.name}`;
+    }
     readonly eventEmitter: ServiceEmitter;
 
     /** strategies of the service */
-    readonly strategies: Strategy[];
+    public readonly strategies: Strategy[];
     /** service configuration configuration parameters */
-    readonly parameters: DataAssembly[];
+    public readonly parameters: DataAssembly[];
     /** [Module] of the service */
     readonly parent: Module;
 
@@ -137,8 +158,8 @@ export class Service extends BaseService {
     }
 
     /** OPC UA node of command/controlOp variable */
-    readonly command: OpcUaNodeOptions;
-    readonly commandMan: OpcUaNodeOptions;
+    public readonly command: OpcUaNodeOptions;
+    public readonly commandMan: OpcUaNodeOptions;
     /** OPC UA node of status variable */
     readonly statusNode: OpcUaNodeOptions;
     /** OPC UA node of controlEnable variable */
@@ -146,15 +167,15 @@ export class Service extends BaseService {
     /** OPC UA node of opMode variable */
     readonly opModeNode: OpcUaNodeOptions;
     /** OPC UA node of strategy variable */
-    readonly strategy: OpcUaNodeOptions;
-    readonly strategyMan: OpcUaNodeOptions;
+    public readonly strategy: OpcUaNodeOptions;
+    public readonly strategyMan: OpcUaNodeOptions;
     /** OPC UA node of currentStrategy variable */
-    readonly currentStrategy: OpcUaNodeOptions;
-
-    readonly logger: Category;
-
+    public readonly currentStrategy: OpcUaNodeOptions;
+    public readonly logger: Category;
     // use ControlExt (true) or ControlOp (false)
-    readonly automaticMode;
+    public readonly automaticMode: boolean;
+    private serviceParametersEventEmitters: EventEmitter[];
+    private lastStatusChange: Date;
 
     constructor(serviceOptions: ServiceOptions, parent: Module) {
         super();
@@ -206,20 +227,16 @@ export class Service extends BaseService {
         }
 
         this.strategies = serviceOptions.strategies
-            .map(option => new Strategy(option, parent));
+            .map((option) => new Strategy(option, parent));
         if (serviceOptions.parameters) {
             this.parameters = serviceOptions.parameters
-                .map(options => DataAssemblyFactory.create(options, parent));
+                .map((options) => DataAssemblyFactory.create(options, parent));
         }
         this.parent = parent;
         this.serviceParametersEventEmitters = [];
 
         this._lastStatusChange = new Date();
         this.logger = catService;
-    }
-
-    public get qualifiedName() {
-        return `${this.parent.id}.${this.name}`
     }
 
     /**
@@ -256,29 +273,32 @@ export class Service extends BaseService {
                 });
         }
         if (this.command) {
-            let result = await this.parent.readVariableNode(this.command);
+            const result = await this.parent.readVariableNode(this.command);
             this.command.value = result.value.value;
             this.logger.debug(`[${this.qualifiedName}] initial command: ${this.command.value}`);
             this.parent.listenToOpcUaNode(this.command)
-                .on('changed', (data) => {
-                    this.logger.debug(`[${this.qualifiedName}] Command changed: ${ServiceMtpCommand[<ServiceMtpCommand> this.command.value]}`);
+                .on('changed', () => {
+                    this.logger.debug(`[${this.qualifiedName}] Command changed: ` +
+                        `${ServiceMtpCommand[this.command.value as ServiceMtpCommand]}`);
                 });
         }
         if (this.commandMan) {
-            let result = await this.parent.readVariableNode(this.commandMan);
+            const result = await this.parent.readVariableNode(this.commandMan);
             this.commandMan.value = result.value.value;
             this.logger.debug(`[${this.qualifiedName}] initial commandMan: ${this.commandMan.value}`);
             this.parent.listenToOpcUaNode(this.commandMan)
-                .on('changed', (data) => {
-                    this.logger.debug(`[${this.qualifiedName}] CommandMan changed: ${ServiceMtpCommand[<ServiceMtpCommand> this.commandMan.value]}`);
+                .on('changed', () => {
+                    this.logger.debug(`[${this.qualifiedName}] CommandMan changed: ` +
+                        `${ServiceMtpCommand[this.commandMan.value as ServiceMtpCommand]}`);
                 });
         }
         if (this.currentStrategy) {
             await this.getCurrentStrategy();
             this.logger.debug(`[${this.qualifiedName}] initial current strategy: ${this.currentStrategy.value}`);
             this.parent.listenToOpcUaNode(this.currentStrategy)
-                .on('changed', (data) => {
-                    this.logger.debug(`[${this.qualifiedName}] Current Strategy changed: ${this.currentStrategy.value}`);
+                .on('changed', () => {
+                    this.logger.debug(`[${this.qualifiedName}] Current Strategy changed: ` +
+                        `${this.currentStrategy.value}`);
                 });
         }
         if (this.opModeNode) {
@@ -290,7 +310,7 @@ export class Service extends BaseService {
                     this.eventEmitter.emit('opMode', opModetoJson(<OpMode> this.opModeNode.value));
                 });
         }
-        this.parameters.forEach(param => param.subscribe()
+        this.parameters.forEach((param) => param.subscribe()
             .on('V', (data) => {
                 this.eventEmitter.emit('variableChanged', {parameter: param, value: data})
             }));
@@ -356,14 +376,13 @@ export class Service extends BaseService {
             this.currentStrategy.timestamp = new Date();
             this.logger.debug(`[${this.qualifiedName}] Update currentStrategy: ${this.currentStrategy.value}`);
         }
-        let strategy = this.strategies.find(strat => strat.id == this.currentStrategy.value);
+        let strategy = this.strategies.find((strat) => parseInt(strat.id, 10) === this.currentStrategy.value);
         if (!strategy) {
             strategy = this.strategies.find(strat => strat.default);
             this.setStrategy(strategy);
         }
         return strategy;
     }
-
 
     /**
      * Get current opMode from internal memory.
@@ -384,7 +403,7 @@ export class Service extends BaseService {
      * get JSON overview about service and its state, opMode, strategies, parameters and controlEnable
      * @returns {Promise<ServiceInterface>}
      */
-    async getOverview(): Promise<ServiceInterface> {
+    public async getOverview(): Promise<ServiceInterface> {
         const opMode = await this.getOpMode();
         const state = await this.getServiceState();
         const strategies = await this.getStrategies();
@@ -395,11 +414,11 @@ export class Service extends BaseService {
             name: this.name,
             opMode: opModetoJson(opMode),
             status: ServiceState[state],
-            strategies: strategies,
+            strategies,
             currentStrategy: currentStrategy.name,
             parameters: params,
-            controlEnable: controlEnable,
-            lastChange: (new Date().getTime() - this.lastStatusChange.getTime())/1000
+            controlEnable,
+            lastChange: (new Date().getTime() - this.lastStatusChange.getTime()) / 1000
         };
     }
 
@@ -407,7 +426,7 @@ export class Service extends BaseService {
      * Get all strategies for service with its current strategyParameters
      * @returns {Promise<StrategyInterface[]>}
      */
-    async getStrategies(): Promise<StrategyInterface[]> {
+    public async getStrategies(): Promise<StrategyInterface[]> {
         return await Promise.all(this.strategies.map(async (strategy) => {
             return {
                 id: strategy.id,
@@ -424,7 +443,7 @@ export class Service extends BaseService {
      * @param {Strategy} strategy
      * @returns {Promise<ParameterInterface[]>}
      */
-    async getCurrentParameters(strategy?: Strategy): Promise<ParameterInterface[]> {
+    public async getCurrentParameters(strategy?: Strategy): Promise<ParameterInterface[]> {
         let params: DataAssembly[] = [];
         if (strategy) {
             params = strategy.parameters;
@@ -439,30 +458,36 @@ export class Service extends BaseService {
                 let max;
                 let min;
                 let unit;
-                try {
-                    const result = await this.parent.readVariableNode(param.communication['VExt']);
-                    value = result.value.value;
-                } catch {
-                    value = undefined;
+                if (param instanceof AnaView) {
+                    value = param.V.value;
+                    max = param.VSclMax.value;
+                    min = param.VSclMin.value;
+                    unit = param.VUnit.value;
+                } else if (param instanceof ExtAnaOp) {
+                    value = param.VRbk.value;
+                    max = param.VMax.value;
+                    min = param.VMin.value;
+                    unit = param.VUnit.value;
+                } else if (param instanceof DigView) {
+                    value = param.V.value;
+                    max = param.VSclMax.value;
+                    min = param.VSclMin.value;
+                    unit = param.VUnit.value;
+                } else if (param instanceof ExtDigOp) {
+                    value = param.VRbk.value;
+                    max = param.VMax.value;
+                    min = param.VMin.value;
+                    unit = param.VUnit.value;
+                } else if (param instanceof BinView) {
+                    value = param.V.value;
+                } else if (param instanceof ExtBinOp) {
+                    value = param.VRbk.value;
+                } else if (param instanceof StrView) {
+                    value = param.Text.value;
                 }
-                try {
-                    const result = await this.parent.readVariableNode(param.communication['VMax']);
-                    max = result.value.value;
-                } catch {
-                    max = undefined;
-                }
-                try {
-                    const result = await this.parent.readVariableNode(param.communication['VMin']);
-                    min = result.value.value;
-                } catch {
-                    min = undefined;
-                }
-                try {
-                    const result = await this.parent.readVariableNode(param.communication['VUnit']);
-                    const unitItem = Unit.find(item => item.value === result.value.value);
+                if (unit) {
+                    const unitItem = UNIT.find((item) => item.value === unit);
                     unit = unitItem.unit;
-                } catch {
-                    unit = undefined;
                 }
                 return {
                     name,
@@ -470,20 +495,19 @@ export class Service extends BaseService {
                     max,
                     min,
                     unit,
-                    readonly: param.interface_class === "StrView",
-                    type: InterfaceClassToType[param.interface_class]
+                    readonly: param.interfaceClass === 'StrView',
+                    type: interfaceClassToType[param.interfaceClass]
                 };
             });
         }
         return await Promise.all(tasks);
     }
 
-
     /**
-     * Set strategyNode and strategyNode parameters and execute a command for service on PEA
+     * Set strategy and strategy parameters and execute a command for service on PEA
      * @param {ServiceCommand} command  command to be executed on PEA
      * @param {Strategy}    strategy  strategy to be set on PEA
-     * @param {Parameter[]|ParameterOptions[]} parameters     parameters to be set on PEA
+     * @param {Parameter[]|ParameterOptions[]} parameters     strategyParameters to be set on PEA
      * @returns {Promise<void>}
      */
     public async execute(command?: ServiceCommand, strategy?: Strategy, parameters?: (Parameter|ParameterOptions)[] ): Promise<void> {
@@ -626,9 +650,8 @@ export class Service extends BaseService {
      */
     private clearListeners() {
         this.logger.info(`[${this.qualifiedName}] clear parameter listener`);
-        this.serviceParametersEventEmitters.forEach(listener => listener.removeAllListeners());
+        this.serviceParametersEventEmitters.forEach((listener) => listener.removeAllListeners());
     }
-
 
     /**
      * Write OpMode to service
@@ -646,7 +669,8 @@ export class Service extends BaseService {
             });
         this.logger.debug(`[${this.qualifiedName}] Setting opMode ${JSON.stringify(result)}`);
         if (result.value !== 0) {
-            this.logger.warn(`[${this.qualifiedName}] Error while setting opMode to ${opMode}: ${JSON.stringify(result)}`);
+            this.logger.warn(`[${this.qualifiedName}] Error while setting opMode to ${opMode}: ` +
+                `${JSON.stringify(result)}`);
             return Promise.reject();
         } else {
             return Promise.resolve();
@@ -679,7 +703,7 @@ export class Service extends BaseService {
      * @returns {Promise<void>}
      */
     private async setToAutomaticOperationMode(): Promise<void> {
-        let opMode: OpMode = await this.getOpMode();
+        const opMode: OpMode = await this.getOpMode();
         this.logger.debug(`[${this.qualifiedName}] Current opMode = ${JSON.stringify(opModetoJson(opMode))}`);
         if (isOffState(<OpMode> this.opModeNode.value)) {
             this.logger.info(`[${this.qualifiedName}] Go to Manual state`);
@@ -719,24 +743,6 @@ export class Service extends BaseService {
         }
         this.logger.info(`[${this.qualifiedName}] Send command ${ServiceMtpCommand[command]}`);
         await this.setOperationMode();
-
-        let controlEnable: ControlEnableInterface = await this.getControlEnable(true);
-        this.logger.debug(`[${this.qualifiedName}] ControlEnable: ${JSON.stringify(controlEnable)}`);
-
-        let commandExecutable =
-            (command===ServiceMtpCommand.START && controlEnable.start) ||
-            (command===ServiceMtpCommand.STOP && controlEnable.stop) ||
-            (command===ServiceMtpCommand.RESTART && controlEnable.restart) ||
-            (command===ServiceMtpCommand.PAUSE && controlEnable.pause) ||
-            (command===ServiceMtpCommand.RESUME && controlEnable.resume) ||
-            (command===ServiceMtpCommand.COMPLETE && controlEnable.complete) ||
-            (command===ServiceMtpCommand.UNHOLD && controlEnable.unhold) ||
-            (command===ServiceMtpCommand.ABORT && controlEnable.abort) ||
-            (command===ServiceMtpCommand.RESET && controlEnable.reset);
-        if (!commandExecutable) {
-            this.logger.info(`[${this.qualifiedName}] ControlOp does not allow ${ServiceMtpCommand[command]}- ${JSON.stringify(controlEnable)}`);
-            return Promise.reject(`[${this.qualifiedName}] ControlOp does not allow command ${ServiceMtpCommand[command]}`);
-        }
 
         const result = await this.parent.writeNode(this.automaticMode ? this.command : this.commandMan,
             {
