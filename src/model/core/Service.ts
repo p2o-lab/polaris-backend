@@ -555,9 +555,12 @@ export class Service extends (EventEmitter as new() => ServiceEmitter) {
             strat = strategy;
         }
 
+        await this.setOperationMode();
+
         // set strategy
         this.logger.info(`[${this.qualifiedName}] Set strategy "${strat.name}" (ID=${strat.id})`);
-        await this.parent.writeNode(this.automaticMode ? this.strategy : this.strategyMan,
+        const nodeId = this.automaticMode ? this.strategy : this.strategyMan;
+        const result = await this.parent.writeNode(nodeId,
             {
                 dataType: DataType.UInt32,
                 value: strat.id,
