@@ -91,10 +91,10 @@ interface ModuleEvents {
     /**
      * when module is disconnected from PEA
      * @event disconnected
-    */
+     */
     disconnected: void;
     /**
-     * when controlEnableNode of one service changes
+     * when controlEnable of one service changes
      * @event controlEnable
      */
     controlEnable: {service: Service, controlEnable: ControlEnableInterface};
@@ -274,8 +274,6 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
                 await this.fixReactor();
             }
 
-            // set all services to correct operation mode
-            await Promise.all(this.services.map((service) => service.setOperationMode()));
             // subscribe to all services
             await this.subscribeToAllServices();
 
@@ -300,7 +298,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
      *
      */
     public disconnect(): Promise<any> {
-        this.services.forEach((s) => s.removeAllListeners());
+        this.services.forEach((s) => s.eventEmitter.removeAllListeners());
         return new Promise(async (resolve, reject) => {
             if (this.session) {
                 this.logger.info(`[${this.id}] Disconnect module`);
@@ -431,7 +429,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
     public pause(): Promise<void[]> {
         this.logger.info(`[${this.id}] Pause all running services`);
         const tasks = this.services.map(async (service) => {
-            if (await service.getServiceState() === ServiceState.EXECUTE) {
+            if (service.state === ServiceState.EXECUTE) {
                 return service.execute(ServiceCommand.pause);
             }
         });
@@ -444,7 +442,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
     public resume(): Promise<void[]> {
         this.logger.info(`[${this.id}] Resume all paused services`);
         const tasks = this.services.map(async (service) => {
-            if (await service.getServiceState() === ServiceState.PAUSED) {
+            if (service.state === ServiceState.PAUSED) {
                 return service.execute(ServiceCommand.resume);
             }
         });
@@ -457,7 +455,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
     public stop(): Promise<void[]> {
         this.logger.info(`[${this.id}] Stop all non-idle services`);
         const tasks = this.services.map((service) => {
-            if (service.status.value !== ServiceState.IDLE) {
+            if (service.state !== ServiceState.IDLE) {
                 return service.execute(ServiceCommand.stop);
             }
         });
@@ -502,7 +500,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
             return (await service.subscribeToService())
                 .on('commandExecuted', (data) => {
                     this.emit('commandExecuted', {
-                        service: service,
+                        service,
                         timestampPfe: data.timestamp,
                         strategy: data.strategy,
                         command: data.command,
@@ -591,63 +589,6 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
             this.logger.debug(`[${this.id}] resolveNodeId ${JSON.stringify(variable)} -> ${nodeIdString}`);
             return coerceNodeId(nodeIdString);
         }
-    }
-
-    /**
-     * Abort all services in module
-     */
-    abort(): Promise<void[]> {
-        this.logger.info(`[${this.id}] Abort all services`);
-        const tasks = this.services.map(service => service.execute(ServiceCommand.abort));
-        return Promise.all(tasks);
-    }
-
-    /**
-     * Pause all services in module which are currently paused
-     */
-    pause(): Promise<void[]> {
-        this.logger.info(`[${this.id}] Pause all running services`);
-        const tasks = this.services.map(async (service) => {
-            if (await service.getServiceState() == ServiceState.EXECUTE) {
-                return service.execute(ServiceCommand.pause);
-            }
-        });
-        return Promise.all(tasks);
-    }
-
-    /**
-     * Resume all services in module which are currently paused
-     */
-    resume(): Promise<void[]> {
-        this.logger.info(`[${this.id}] Resume all paused services`);
-        const tasks = this.services.map(async (service) => {
-            if (await service.getServiceState() == ServiceState.PAUSED) {
-                return service.execute(ServiceCommand.resume);
-            }
-        });
-        return Promise.all(tasks);
-    }
-
-    /**
-     * Stop all services in module
-     */
-    stop(): Promise<void[]> {
-        this.logger.info(`[${this.id}] Stop all non-idle services`);
-        const tasks = this.services.map(service => {
-            if (service.statusNode.value != ServiceState.IDLE) {
-                return service.execute(ServiceCommand.stop);
-            }
-        });
-        return Promise.all(tasks);
-    }
-
-    /**
-     * Reset all services in module
-     */
-    reset(): Promise<void[]> {
-        this.logger.info(`[${this.id}] Reset all services`);
-        const tasks = this.services.map(service => service.execute(ServiceCommand.reset));
-        return Promise.all(tasks);
     }
 
     /** Fix reactor of ACHEMA demonstrator.

@@ -28,11 +28,14 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
 import * as parseJson from 'json-parse-better-errors';
-import * as delay from 'timeout-as-promise';
-import {OpMode} from '../../../src/model/core/enum';
+import {
+    isAutomaticState, isExtSource, isOffState, OpMode,
+    ServiceState
+} from '../../../src/model/core/enum';
 import {Module} from '../../../src/model/core/Module';
 import {Service} from '../../../src/model/core/Service';
-import {ModuleTestServer, TestServerService} from '../../../src/moduleTestServer/ModuleTestServer';
+import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
+import {TestServerService} from '../../../src/moduleTestServer/ModuleTestService';
 import {waitForStateChange} from '../../helper';
 
 chai.use(chaiAsPromised);
@@ -58,7 +61,6 @@ describe('Service', () => {
     });
 
     context('dynamic test', () => {
-
         let moduleServer: ModuleTestServer;
         let service: Service;
         let testService: TestServerService;
@@ -73,15 +75,8 @@ describe('Service', () => {
             const moduleJson =
                 parseJson(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8'), null, 60)
                     .modules[0];
-            const serviceJson = moduleJson.services[0];
-
-            // copy object
-            const moduleWithoutService = JSON.parse(JSON.stringify(moduleJson));
-            moduleWithoutService.services = [];
-
-            module = new Module(moduleWithoutService);
-            service = new Service(serviceJson, module);
-
+            module = new Module(moduleJson);
+            service = module.services[0];
             await module.connect();
         });
 
@@ -93,8 +88,8 @@ describe('Service', () => {
 
         it('should reject command if not command enabled', async () => {
             expect(service.name).to.equal('Service1');
-            let commandEnable = await service.getControlEnable();
-            expect(commandEnable).to.deep.equal({
+            expect(ServiceState[service.state]).to.equal('IDLE');
+            expect(service.controlEnable).to.deep.equal({
                 abort: true,
                 complete: false,
                 pause: false,
@@ -107,32 +102,54 @@ describe('Service', () => {
             });
 
             await service.execute(ServiceCommand.start);
+            await waitForStateChange(service, 'STARTING');
+            expect(ServiceState[service.state]).to.equal('STARTING');
+            expect(service.controlEnable).to.deep.equal({
+                abort: true,
+                complete: false,
+                pause: false,
+                reset: false,
+                restart: false,
+                resume: false,
+                start: false,
+                stop: true,
+                unhold: false
+            });
 
             expect(service.execute(ServiceCommand.resume)).to.be.rejectedWith(/ControlOp/);
-            commandEnable = await service.getControlEnable();
+            expect(service.controlEnable).to.deep.equal({
+                abort: true,
+                complete: false,
+                pause: false,
+                reset: false,
+                restart: false,
+                resume: false,
+                start: false,
+                stop: true,
+                unhold: false
+            });
         });
 
         it('should reject command if not connected', async () => {
             await module.disconnect();
-
             expect(service.execute(ServiceCommand.start)).to.be.rejectedWith('Module is not connected');
         });
 
         it('waitForOpModeSpecificTest', async () => {
-            expect(service.name).to.equal('Service1');
-            testService.varOpmode = OpMode.stateAutAct;
-            let opMode = await service.getOpMode();
-            expect(opMode).to.equal(OpMode.stateAutAct);
-
             testService.varOpmode = 0;
-            await service.execute(ServiceCommand.start);
+            await service.waitForOpModeToPassSpecificTest(isOffState);
+            expect(service.opMode).to.equal(0);
 
-            opMode = await service.getOpMode();
-            expect(opMode).to.equal(OpMode.stateAutAct + OpMode.srcExtAct);
+            service.setOperationMode();
+
+            await service.waitForOpModeToPassSpecificTest(isAutomaticState);
+            expect(service.opMode).to.equal(OpMode.stateAutAct);
+
+            await service.waitForOpModeToPassSpecificTest(isExtSource);
+            expect(service.opMode).to.equal(OpMode.stateAutAct + OpMode.srcExtAct);
         });
 
         it('full service state cycle', async () => {
-
             let result = await service.getOverview();
             expect(result).to.have.property('status', 'IDLE');
             expect(result).to.have.property('controlEnable')
@@ -155,7 +172,6 @@ describe('Service', () => {
                 source: 'internal'
             });
 
-            service.subscribeToService();
             await service.setOperationMode();
 
             result = await service.getOverview();
@@ -180,9 +196,8 @@ describe('Service', () => {
                 source: 'external'
             });
 
-            await delay(50);
             let stateChangeCount = 0;
-            service.on('state', () => {
+            service.eventEmitter.on('state', () => {
                 stateChangeCount++;
             });
 
@@ -233,6 +248,6 @@ describe('Service', () => {
             await waitForStateChange(service, 'COMPLETED');
 
             expect(stateChangeCount).to.equal(22);
-        }).timeout(10000).retries(3);
+        }).timeout(6000).slow(4000);
     });
 });

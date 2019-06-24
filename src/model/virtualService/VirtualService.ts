@@ -23,23 +23,23 @@
  * SOFTWARE.
  */
 
-import {ServiceState} from '../core/enum';
 import {ParameterOptions, VirtualServiceInterface} from '@p2olab/polaris-interface';
-import {Parameter} from '../recipe/Parameter';
-import {BaseService} from '../core/BaseService';
-import {catVirtualService} from '../../config/logging';
-import StrictEventEmitter from 'strict-event-emitter-types';
 import {EventEmitter} from 'events';
+import StrictEventEmitter from 'strict-event-emitter-types';
+import {catVirtualService} from '../../config/logging';
+import {BaseService} from '../core/BaseService';
+import {ServiceState} from '../core/enum';
 import {OpcUaNodeEvents} from '../core/Module';
+import {Parameter} from '../recipe/Parameter';
 
 /**
  * A generic function block following the service state machine
  */
 export abstract class VirtualService extends BaseService {
 
-    static type: string;
+    public static type: string;
 
-    protected eventEmitters: StrictEventEmitter<EventEmitter, OpcUaNodeEvents>[] = [];
+    protected eventEmitters: Array<StrictEventEmitter<EventEmitter, OpcUaNodeEvents>> = [];
 
     constructor(name: string) {
         super();
@@ -59,49 +59,114 @@ export abstract class VirtualService extends BaseService {
     }
 
     // Allow user to inject own functionality after reaching each state
-    abstract initParameter();
-    async onStarting(): Promise<void> {
-    };
+    public abstract initParameter();
+    public async onStarting(): Promise<void> {
+    }
+    public async onRunning(): Promise<void> {
+    }
+    public async onPausing(): Promise<void> {
+    }
+    public async onPaused(): Promise<void> {
+    }
+    public async onResuming(): Promise<void> {
+    }
+    public async onCompleting(): Promise<void> {
+    }
+    public async onCompleted(): Promise<void> {
+    }
+    public async onResetting(): Promise<void> {
+    }
+    public async onAborting(): Promise<void> {
+    }
+    public async onAborted(): Promise<void> {
+    }
+    public async onStopping(): Promise<void> {
+    }
+    public async onStopped(): Promise<void> {
+    }
+    public async onIdle(): Promise<void> {
+    }
+    public async onUnholding(): Promise<void> {
+    }
+    // Public methods
 
-    async onRunning(): Promise<void> {
-    };
+    public async json(): Promise<VirtualServiceInterface> {
+        return {
+            name: this.name,
+            type: this.constructor.name,
+            parameters: await this.getCurrentParameters(),
+            status: ServiceState[this.state],
+            controlEnable: this.controlEnable,
+            lastChange: (new Date().getTime() - this.lastStatusChange.getTime()) / 1000,
+            sc: this.selfCompleting
+        };
+    }
 
-    async onPausing(): Promise<void> {
-    };
+    public async setParameters(parameters: Array<Parameter | ParameterOptions>): Promise<void> {
+        catVirtualService.info(`Set parameter: ${JSON.stringify(parameters)}`);
+        parameters.forEach((pNew) => {
+            const pOld = this.parameters.find((param) => param.name === pNew.name);
+            if (!pOld) {
+                throw new Error('try to write not existent variable');
+            }
+            if (pOld.readonly) {
+                throw new Error('try to write to readonly variable');
+            }
+            Object.assign(pOld, pNew);
+        });
+    }
 
-    async onPaused(): Promise<void> {
-    };
+    public listenToVariable(variableName: string): StrictEventEmitter<EventEmitter, OpcUaNodeEvents> {
+        return this.eventEmitters[variableName];
+    }
 
-    async onResuming(): Promise<void> {
-    };
-
-    async onCompleting(): Promise<void> {
-    };
-
-    async onCompleted(): Promise<void> {
-    };
-
-    async onResetting(): Promise<void> {
-    };
-
-    async onAborting(): Promise<void> {
-    };
-
-    async onAborted(): Promise<void> {
-    };
-
-    async onStopping(): Promise<void> {
-    };
-
-    async onStopped(): Promise<void> {
-    };
-
-    async onIdle(): Promise<void> {
-    };
-
-    async onUnholding(): Promise<void> {
-    };
-
+    public async start() {
+        if (this._controlEnable.start) {
+            await this.gotoStarting();
+        }
+    }
+    public async restart() {
+        if (this._controlEnable.restart) {
+            await this.gotoStarting();
+        }
+    }
+    public async pause() {
+        if (this._controlEnable.pause) {
+            await this.gotoPausing();
+        }
+    }
+    public async resume() {
+        if (this._controlEnable.resume) {
+            await this.gotoResuming();
+        }
+    }
+    public async complete() {
+        if (this._controlEnable.complete) {
+            await this.gotoCompleting();
+        } else {
+            catVirtualService.warn(`Can not complete, ${JSON.stringify(this._controlEnable)}`);
+        }
+    }
+    public async stop() {
+        if (this._controlEnable.stop) {
+            await this.gotoStopping();
+        }
+    }
+    public async abort() {
+        if (this._controlEnable.abort) {
+            await this.gotoAborting();
+        }
+    }
+    public async reset() {
+        if (this._controlEnable.reset) {
+            await this.gotoResetting();
+        }
+    }
+    public async unhold() {
+        if (this._controlEnable.unhold) {
+            await this.gotoUnholding();
+        }
+    }
     // Internal
     private async gotoStarting(): Promise<void> {
         this._state = ServiceState.STARTING;
@@ -350,92 +415,4 @@ export abstract class VirtualService extends BaseService {
         await this.onUnholding();
         this.gotoRunning();
     }
-
-    // Public methods
-
-    async json(): Promise<VirtualServiceInterface> {
-        return {
-            name: this.name,
-            type: this.constructor.name,
-            parameters: await this.getCurrentParameters(),
-            status: ServiceState[this.state],
-            controlEnable: this.controlEnable,
-            lastChange: (new Date().getTime() - this.lastStatusChange.getTime()) / 1000,
-            sc: this.selfCompleting
-        }
-    }
-
-    async setParameters(parameters: (Parameter | ParameterOptions)[]): Promise<void> {
-        catVirtualService.info(`Set parameter: ${JSON.stringify(parameters)}`);
-        parameters.forEach(pNew => {
-            const pOld = this.parameters.find(pOld => pOld.name === pNew.name);
-            if (!pOld) {
-                throw new Error('try to write not existent variable');
-            }
-            if (pOld.readonly) {
-                throw new Error('try to write to readonly variable');
-            }
-            Object.assign(pOld, pNew);
-        });
-    }
-
-    listenToVariable(variableName: string): StrictEventEmitter<EventEmitter, OpcUaNodeEvents> {
-        return this.eventEmitters[variableName];
-    }
-
-    public async start() {
-        if (this._controlEnable.start) {
-            await this.gotoStarting();
-        }
-    };
-
-    public async restart() {
-        if (this._controlEnable.restart) {
-            await this.gotoStarting();
-        }
-    };
-
-    public async pause() {
-        if (this._controlEnable.pause) {
-            await this.gotoPausing();
-        }
-    };
-
-    public async resume() {
-        if (this._controlEnable.resume) {
-            await this.gotoResuming();
-        }
-    };
-
-    public async complete() {
-        if (this._controlEnable.complete) {
-            await this.gotoCompleting();
-        } else {
-            catVirtualService.warn(`Can not complete, ${JSON.stringify(this._controlEnable)}`);
-        }
-    };
-
-    public async stop() {
-        if (this._controlEnable.stop) {
-            await this.gotoStopping();
-        }
-    };
-
-    public async abort() {
-        if (this._controlEnable.abort) {
-            await this.gotoAborting();
-        }
-    };
-
-    public async reset() {
-        if (this._controlEnable.reset) {
-            await this.gotoResetting();
-        }
-    };
-
-    public async unhold() {
-        if (this._controlEnable.unhold) {
-            await this.gotoUnholding();
-        }
-    };
 }

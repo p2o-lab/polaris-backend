@@ -35,7 +35,8 @@ import {AnaView} from '../../../src/model/dataAssembly/AnaView';
 import {DataAssembly} from '../../../src/model/dataAssembly/DataAssembly';
 import {DataAssemblyFactory} from '../../../src/model/dataAssembly/DataAssemblyFactory';
 import {StrView} from '../../../src/model/dataAssembly/Str';
-import {ModuleTestServer, TestServerVariable} from '../../../src/moduleTestServer/ModuleTestServer';
+import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
+import {TestServerVariable} from '../../../src/moduleTestServer/ModuleTestVariable';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;

@@ -23,12 +23,14 @@
  * SOFTWARE.
  */
 
-import {ServiceState} from './enum';
 import {ControlEnableInterface, ParameterInterface, ParameterOptions, ServiceCommand} from '@p2olab/polaris-interface';
-import {Parameter} from '../recipe/Parameter';
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
+import {catService} from '../../config/logging';
+import {Parameter} from '../recipe/Parameter';
+import {ServiceState} from './enum';
 import {Strategy} from './Strategy';
+import {DataAssembly} from '../dataAssembly/DataAssembly';
 
 /**
  * Events emitted by [[BaseService]]
@@ -55,52 +57,69 @@ export interface BaseServiceEvents {
         parameter: ParameterInterface[],
         scope?: any[]
     };
+    variableChanged: { strategy?: Strategy; parameter: DataAssembly; value: number };
+
+    parameterChanged: { strategy?: Strategy; parameter: DataAssembly, value: number };
 }
 
 type BaseServiceEmitter = StrictEventEmitter<EventEmitter, BaseServiceEvents>;
 
 export abstract class BaseService {
 
-    readonly eventEmitter: BaseServiceEmitter;
+    public readonly eventEmitter: BaseServiceEmitter;
 
     // name of the base service
     protected _name: string;
 
     // is base service self completing
-    protected _selfCompleting = false;
+    protected _selfCompleting: boolean = false;
 
     protected _state: ServiceState = ServiceState.IDLE;
     protected _controlEnable: ControlEnableInterface;
     protected parameters: ParameterInterface[];
 
-    protected _lastStatusChange = new Date();
+    protected _lastStatusChange: Date = new Date();
 
     protected set selfCompleting(value: boolean) {
         this._selfCompleting = value;
     }
 
-    get name(): string {
+    public get qualifiedName() {
+        return `${this.name}`;
+    }
+
+    public get name(): string {
         return this._name;
     }
 
-    get state(): ServiceState {
+    public get state(): ServiceState {
         return this._state;
     }
 
-    get lastStatusChange(): Date {
+    public get lastStatusChange(): Date {
         return this._lastStatusChange;
     }
 
-    get controlEnable(): ControlEnableInterface {
+    public get controlEnable(): ControlEnableInterface {
         return this._controlEnable;
     }
 
-    getCurrentParameters(strategy?: Strategy): Promise<ParameterInterface[]> {
+    public getCurrentParameters(strategy?: Strategy): Promise<ParameterInterface[]> {
         return Promise.resolve(this.parameters);
     }
 
-    abstract setParameters(parameters: (Parameter|ParameterOptions)[]): Promise<void>;
+    public abstract setParameters(parameters: Array<Parameter|ParameterOptions>): Promise<void>;
 
+    /**
+     * allow controlEnable to execute specified command
+     * @param {ServiceCommand} command
+     * @returns {Promise<boolean>}
+     */
+    public isCommandExecutable(command: ServiceCommand): boolean {
+        const controlEnable: ControlEnableInterface = this.controlEnable;
+        catService.debug(`[${this.qualifiedName}] ControlEnable: ${JSON.stringify(controlEnable)}`);
+        return controlEnable[command];
+    }
 
     /**
      * Execute commandNode
@@ -109,6 +128,10 @@ export abstract class BaseService {
      * @returns {Promise<boolean>}
      */
     public async executeCommand(command: ServiceCommand): Promise<boolean> {
+        if (!this.isCommandExecutable(command)) {
+            catService.info(`[${this.qualifiedName}] ControlOp does not allow command ${command}`);
+            throw new Error(`[${this.qualifiedName}] ControlOp does not allow command ${command}`);
+        }
         let result;
         if (command === ServiceCommand.start) {
             result = this.start();

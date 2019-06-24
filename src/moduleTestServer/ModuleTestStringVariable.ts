@@ -23,27 +23,45 @@
  * SOFTWARE.
  */
 
-import {AggregatedService} from './AggregatedService';
-import {FunctionGenerator} from './FunctionGenerator';
-import {PidController} from './PidController';
-import {Storage} from './Storage';
-import {Timer} from './Timer';
-import {VirtualService} from './VirtualService';
+import {DataType, Variant} from 'node-opcua';
+import Timeout = NodeJS.Timeout;
 
-export class VirtualServiceFactory {
- public static create(options: any): VirtualService {
-     if (options.type === Timer.type) {
-         return new Timer(options.name);
-     } else  if (options.type === Storage.type) {
-         return new Storage(options.name);
-     } else if (options.type === FunctionGenerator.type) {
-         return new FunctionGenerator(options.name);
-     } else if (options.type === PidController.type) {
-         return new PidController(options.name);
-     } else if (options.type === AggregatedService.type) {
-         return new AggregatedService(options);
-     } else {
-         throw new Error('Wrong virtual service type');
-     }
- }
+export class TestServerStringVariable {
+
+    public v: string = 'initial value';
+    public vext: string = '';
+    private interval: Timeout;
+
+    constructor(namespace, rootNode, variableName) {
+        const variableNode = namespace.addObject({
+            organizedBy: rootNode,
+            browseName: variableName
+        });
+
+        namespace.addVariable({
+            componentOf: variableNode,
+            nodeId: `ns=1;s=${variableName}.Text`,
+            browseName: `${variableName}.Text`,
+            dataType: 'String',
+            value: {
+                get: () => {
+                    return new Variant({dataType: DataType.String, value: this.v});
+                },
+                set: (variant) => {
+                    this.v = variant.value;
+                }
+            }
+        });
+
+    }
+
+    public startSimulation() {
+        this.interval = global.setInterval(() => {
+            this.v = new Date().toTimeString();
+        }, 3000);
+    }
+
+    public stopSimulation() {
+        global.clearTimeout(this.interval);
+    }
 }

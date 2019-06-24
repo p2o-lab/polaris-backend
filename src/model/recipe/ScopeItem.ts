@@ -99,7 +99,7 @@ export class ScopeItem {
         const service: Service = module.services.find((s) => s.name === token);
         let strategy: Strategy;
         if (service) {
-            strategy = service.strategies.find((strat) => strat.id === service.currentStrategy.value);
+            strategy = service.getCurrentStrategy();
             if (!strategy) {
                 strategy = service.strategies.find((strat) => strat.default);
             }

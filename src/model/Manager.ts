@@ -33,6 +33,8 @@ import {Module, ModuleOptions} from './core/Module';
 import {Service} from './core/Service';
 import {Player} from './recipe/Player';
 import {Recipe} from './recipe/Recipe';
+import {VirtualService} from './virtualService/VirtualService';
+import {VirtualServiceFactory} from './virtualService/VirtualServiceFactory';
 
 interface ManagerEvents {
     /**
@@ -48,6 +50,15 @@ type ManagerEmitter = StrictEventEmitter<EventEmitter, ManagerEvents>;
 
 export class Manager extends (EventEmitter as new() => ManagerEmitter) {
 
+    get autoreset(): boolean {
+        return this._autoreset;
+    }
+
+    set autoreset(value: boolean) {
+        catManager.info(`Set AutoReset to ${value}`);
+        this._autoreset = value;
+    }
+
     // loaded recipes
     public readonly recipes: Recipe[] = [];
 
@@ -55,9 +66,9 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
     public readonly modules: Module[] = [];
 
     // instantiated virtual services
-    readonly virtualServices: VirtualService[] = [];
+    public readonly virtualServices: VirtualService[] = [];
 
-    readonly player: Player;
+    public readonly player: Player;
 
     public variableArchive: VariableLogEntry[] = [];
 
@@ -85,15 +96,6 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
             });
     }
 
-    get autoreset(): boolean {
-        return this._autoreset;
-    }
-
-    set autoreset(value: boolean) {
-        catManager.info(`Set AutoReset to ${value}`);
-        this._autoreset = value;
-    }
-
     /**
      * Load modules from JSON according to TopologyGenerator output or to simplified JSON
      * Skip module if already a module with same id is registered
@@ -105,7 +107,7 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
         module?: ModuleOptions,
         modules?: ModuleOptions[],
         subplants?: Array<{ modules: ModuleOptions[] }>
-    }, protectedModules: boolean = false): Module[] {
+    },                protectedModules: boolean = false): Module[] {
         const newModules: Module[] = [];
         if (!options) {
             throw new Error('No modules defined in supplied options');
@@ -177,7 +179,7 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
                         timestampPfe: data.timestampPfe,
                         module: module.id,
                         service: data.service.name,
-                        strategy: data.strategy.name,
+                        strategy: data.strategy ? data.strategy.name : undefined,
                         command: ServiceCommand[data.command],
                         parameter: data.parameter ? data.parameter.map((param) => {
                             return {name: param.name, value: param.value};
@@ -270,40 +272,6 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
         return Promise.all(tasks);
     }
 
-    /**
-     * get ManagerInterfacie as JSON
-     *
-     * @returns {ManagerInterface}
-     */
-    json(): ManagerInterface {
-        return {
-            activeRecipe: this.player.getCurrentRecipe() ? this.player.getCurrentRecipe().json() : undefined,
-            modules: this.modules.map(module => module.id),
-            //virtualServices: this.virtualServices.map(fb => fb.json()),
-            autoReset: this.autoreset
-        };
-    }
-
-    /**
-     * Perform autoreset for service (bring it automatically from completed to idle)
-     * @param {Service} service
-     */
-    private performAutoReset(service: Service) {
-        if (this.autoreset) {
-            catManager.info(`Service ${service.parent.id}.${service.name} completed. Short waiting time (${this._autoreset_timeout}) to autoreset`);
-            setTimeout(async () => {
-                if (service.parent.isConnected() && await service.getServiceState() === ServiceState.COMPLETED) {
-                    catManager.info(`Service ${service.parent.id}.${service.name} completed. Now perform autoreset`);
-                    try {
-                        service.execute(ServiceCommand.reset);
-                    } catch (err) {
-                        catManager.debug('Autoreset not possible')
-                    }
-                }
-            }, this._autoreset_timeout);
-        }
-    }
-
     public removeRecipe(recipeId: string) {
         catManager.debug(`Remove recipe ${recipeId}`);
         const recipe = this.recipes.find((rec) => rec.id === recipeId);
@@ -346,12 +314,33 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
 
     public removeVirtualService(virtualServiceId: string) {
         catManager.debug(`Remove Virtual Service ${virtualServiceId}`);
-        const index = this.virtualServices.findIndex(fb => fb.name === virtualServiceId);
+        const index = this.virtualServices.findIndex((fb) => fb.name === virtualServiceId);
         if (!index) {
             throw new Error(`Virtual Service ${virtualServiceId} not available.`);
         }
         if (index > -1) {
             this.virtualServices.splice(index, 1);
+        }
+    }
+
+    /**
+     * Perform autoreset for service (bring it automatically from completed to idle)
+     * @param {Service} service
+     */
+    private performAutoReset(service: Service) {
+        if (this.autoreset) {
+            catManager.info(`Service ${service.parent.id}.${service.name} completed. ` +
+                `Short waiting time (${this._autoresetTimeout}) to autoreset`);
+            setTimeout(async () => {
+                if (service.parent.isConnected() && service.state === ServiceState.COMPLETED) {
+                    catManager.info(`Service ${service.parent.id}.${service.name} completed. Now perform autoreset`);
+                    try {
+                        service.execute(ServiceCommand.reset);
+                    } catch (err) {
+                        catManager.debug('Autoreset not possible');
+                    }
+                }
+            }, this._autoresetTimeout);
         }
     }
 }

@@ -23,76 +23,75 @@
  * SOFTWARE.
  */
 
-import {VirtualService} from './VirtualService';
-import {catTimer} from '../../config/logging';
-import {Expression, Parser} from 'expr-eval';
 import Timeout = NodeJS.Timeout;
 import {EventEmitter} from 'events';
+import {Expression, Parser} from 'expr-eval';
+import {catTimer} from '../../config/logging';
+import {VirtualService} from './VirtualService';
 
 /**
  * Function Generator
  *
  * Parameters:
- *  - function: expr-eval Expression used to generate output (Variable *t* can be used inside function to link to elapsed time since start of function in seconds
+ *  - function: expr-eval Expression used to generate output (Variable *t* can be used inside function to link to
+ *  elapsed time since start of function in seconds
  *  - updateRate: update rate of evaluating function
  *  - output: output value of function
  */
 export class FunctionGenerator extends VirtualService {
 
-    static type = 'functionGenerator';
+    public static type: string = 'functionGenerator';
 
-    startTime: Date;
+    public startTime: Date;
     private timerUpdateId: Timeout;
     private _output: number;
     private expression: Expression;
 
     set output(value: number) {
         this._output = value;
-        this.parameters.find(p => p.name === 'output').value = this._output;
+        this.parameters.find((p) => p.name === 'output').value = this._output;
         this.eventEmitters['output'].emit('changed', {value: this._output, timestamp1: new Date()});
     }
-    initParameter() {
+    public initParameter() {
         this.parameters = [
-            {name: 'function', value: "sin(t)"},
+            {name: 'function', value: 'sin(t)'},
             {name: 'updateRate', value: 1000, unit: 'ms', min: 1},
             {name: 'output', value: undefined, readonly: true}];
         this.eventEmitters['output'] = new EventEmitter();
     }
 
-    async onStarting(): Promise<void> {
+    public async onStarting(): Promise<void> {
         this.startTime = new Date();
-        this.expression = new Parser().parse(this.parameters.find(p => p.name === 'function').value.toString());
+        this.expression = new Parser().parse(this.parameters.find((p) => p.name === 'function').value.toString());
 
-        const updateRate = <number> this.parameters.find(p => p.name === 'updateRate').value;
-        this.timerUpdateId = setInterval(() => {
-            const elapsedTime = (new Date().getTime() - this.startTime.getTime())/1000;
+        const updateRate = this.parameters.find((p) => p.name === 'updateRate').value as number;
+        this.timerUpdateId = global.setInterval(() => {
+            const elapsedTime = (new Date().getTime() - this.startTime.getTime()) / 1000;
             const value = this.expression.evaluate({t: elapsedTime });
             this.output = value;
         }, updateRate);
     }
 
-    async onPausing() {
+    public async onPausing() {
         this.timerUpdateId.unref();
     }
 
-    async onResuming() {
-        const updateRate = <number> this.parameters.find(p => p.name === 'updateRate').value;
-        this.timerUpdateId = setInterval(() => {
-            const elapsedTime = (new Date().getTime() - this.startTime.getTime())/1000;
+    public async onResuming() {
+        const updateRate = this.parameters.find((p) => p.name === 'updateRate').value as number;
+        this.timerUpdateId = global.setInterval(() => {
+            const elapsedTime = (new Date().getTime() - this.startTime.getTime()) / 1000;
             this.output = this.expression.evaluate({t: elapsedTime });
         }, updateRate);
     }
 
-    async onCompleting () {
+    public async onCompleting() {
         this.onStopping();
     }
-    async onAborting() {
+    public async onAborting() {
         this.onStopping();
     }
-    async onStopping() {
+    public async onStopping() {
         this.timerUpdateId.unref();
     }
-
-
 
 }

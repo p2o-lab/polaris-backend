@@ -43,6 +43,7 @@ import {ServiceState} from '../core/enum';
 import {Module} from '../core/Module';
 import {Service} from '../core/Service';
 import {ScopeItem} from './ScopeItem';
+import {Expression} from 'expr-eval';
 
 /**
  * Events emitted by [[Condition]]
@@ -227,76 +228,6 @@ export class NotCondition extends Condition {
     }
 }
 
-export abstract class AggregateCondition extends Condition {
-    conditions: Condition[] = [];
-
-    constructor(options: AndConditionOptions | OrConditionOptions, modules: Module[]) {
-        super(options);
-        this.conditions = options.conditions.map((option) => {
-            return Condition.create(option, modules);
-        });
-        this._fulfilled = false;
-    }
-
-    clear() {
-        super.clear();
-        this.conditions.forEach(cond => cond.clear());
-    }
-
-    getUsedModules(): Set<Module> {
-        let set = new Set<Module>();
-        this.conditions.forEach((cond) => {
-            Array.from(cond.getUsedModules()).forEach((module) => {
-                set.add(module)
-            })
-        });
-        return set;
-    }
-}
-
-export class AndCondition extends AggregateCondition {
-
-    constructor(options: AndConditionOptions, modules: Module[]) {
-        super(options, modules);
-        catCondition.trace(`Add AndCondition: ${options}`);
-    }
-
-    listen(): Condition {
-        this.conditions.forEach((condition) => {
-            condition.listen().on('stateChanged', (state) => {
-                catCondition.debug(`AndCondition: ${state} = ${JSON.stringify(this.conditions.map(item => item.fulfilled))}`);
-                const oldState = this._fulfilled;
-                this._fulfilled = this.conditions.every(condition => condition.fulfilled);
-                if (oldState !== this._fulfilled) {
-                    this.emit('stateChanged', this._fulfilled);
-                }
-            });
-        });
-        return this;
-    }
-}
-
-export class OrCondition extends AggregateCondition {
-
-    constructor(options: OrConditionOptions, modules: Module[]) {
-        super(options, modules);
-        catCondition.trace(`Add OrCondition: ${options}`);
-    }
-
-    listen(): Condition {
-        this.conditions.forEach((condition) => {
-            condition.listen().on('stateChanged', () => {
-                const oldState = this._fulfilled;
-                this._fulfilled = this.conditions.some(condition => condition.fulfilled);
-                if (oldState !== this._fulfilled) {
-                    this.emit('stateChanged', this._fulfilled);
-                }
-            });
-        });
-        return this;
-    }
-}
-
 export class TimeCondition extends Condition {
 
     private timer: Timeout;
@@ -337,7 +268,6 @@ export class TimeCondition extends Condition {
 
 export abstract class ModuleCondition extends Condition {
     protected readonly module: Module;
-    protected boundCheckHandler = (data) => this.check(data);
     protected monitoredItem: EventEmitter;
 
     constructor(options: StateConditionOptions | VariableConditionOptions, modules: Module[]) {
@@ -404,15 +334,13 @@ export class StateCondition extends ModuleCondition {
     }
 
     public listen(): Condition {
-        this.monitoredItem = this.module.listenToOpcUaNode(this.service.status)
-            .on('changed', this.boundCheckHandler);
+        this.monitoredItem = this.service.eventEmitter.on('state', this.boundCheckHandler);
         return this;
     }
 
-    public check(data) {
-        const state: ServiceState = data.value;
-        this._fulfilled = (state === this.state);
-        catCondition.info(`StateCondition ${this.service.qualifiedName}: actual=${ServiceState[state]}` +
+    public check(data: {state: ServiceState, timestamp: Date}) {
+        this._fulfilled = (data.state === this.state);
+        catCondition.info(`StateCondition ${this.service.qualifiedName}: actual=${ServiceState[data.state]}` +
             ` ; condition=${ServiceState[this.state]} -> ${this._fulfilled}`);
         this.emit('stateChanged', this._fulfilled);
     }

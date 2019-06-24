@@ -32,7 +32,7 @@ import {moduleRouter} from './router/moduleRouter';
 import {playerRouter} from './router/playerRouter';
 import {recipeRouter} from './router/recipeRouter';
 import {recipeRunRouter} from './router/recipeRunRouter';
-import {Manager} from '../model/Manager';
+import {serviceRouter} from './router/serviceRouter';
 import {virtualServiceRouter} from './router/virtualServiceRouter';
 
 export default class Routes {

@@ -23,19 +23,19 @@
  * SOFTWARE.
  */
 
-import {VirtualService} from './VirtualService';
-import {catTimer} from '../../config/logging';
 import Timeout = NodeJS.Timeout;
 import {EventEmitter} from 'events';
-import {OpcUaNodeEvents} from '../core/Module';
 import StrictEventEmitter from 'strict-event-emitter-types';
+import {catTimer} from '../../config/logging';
+import {OpcUaNodeEvents} from '../core/Module';
+import {VirtualService} from './VirtualService';
 
 export class Timer extends VirtualService {
     get remainingTime(): number {
         return this._remainingTime;
     }
 
-    static type = 'timer';
+    public static type: string = 'timer';
 
     private durationMs: number;
     private timestampStart: Date;
@@ -46,7 +46,7 @@ export class Timer extends VirtualService {
 
     set remainingTime(value: number) {
         this._remainingTime = value;
-        this.parameters.find(p => p.name === 'remainingTime').value = this._remainingTime;
+        this.parameters.find((p) => p.name === 'remainingTime').value = this._remainingTime;
         this.eventEmitters['remainingTime'].emit('changed', {value: this._remainingTime, timestamp: new Date()});
     }
 
@@ -54,7 +54,7 @@ export class Timer extends VirtualService {
         super(name);
     }
 
-    initParameter() {
+    public initParameter() {
         this.parameters = [
             {name: 'duration', value: 10000, min: 1, unit: 'ms'},
             {name: 'updateRate', value: 1000, min: 100, unit: 'ms'},
@@ -64,8 +64,8 @@ export class Timer extends VirtualService {
         this.eventEmitters['remainingTime'] = new EventEmitter();
     }
 
-    async onStarting(): Promise<void> {
-        this.durationMs = <number> this.parameters.find(p => p.name === 'duration').value;
+    public async onStarting(): Promise<void> {
+        this.durationMs = this.parameters.find((p) => p.name === 'duration').value as number;
         this.timestampStart = new Date();
         this.elapsedTime = 0;
         this.remainingTime = this.durationMs;
@@ -73,39 +73,39 @@ export class Timer extends VirtualService {
         await catTimer.info(`timer on starting: ${this.remainingTime}`);
     }
 
-    async onRunning () {
-        this.timerId = setTimeout(() => {
+    public async onRunning() {
+        this.timerId = global.setTimeout(() => {
             super.complete();
             this.timerUpdateId.unref();
         }, this.remainingTime);
 
-        const updateRate = <number> this.parameters.find(p => p.name === 'updateRate').value;
-        this.timerUpdateId = setInterval(() => {
+        const updateRate = this.parameters.find((p) => p.name === 'updateRate').value as number;
+        this.timerUpdateId = global.setInterval(() => {
             this.remainingTime = this.remainingTime - updateRate;
         }, updateRate);
 
     }
 
-    async onPausing(): Promise<void> {
+    public async onPausing(): Promise<void> {
         this.elapsedTime = this.elapsedTime + new Date().getTime() - this.timestampStart.getTime();
         this.remainingTime = this.durationMs - this.elapsedTime;
-        clearTimeout(this.timerId);
-        clearInterval(this.timerUpdateId);
+        global.clearTimeout(this.timerId);
+        global.clearInterval(this.timerUpdateId);
         await catTimer.info(`timer on pausing (${this.remainingTime})`);
     }
 
-    async onResuming(): Promise<void> {
+    public async onResuming(): Promise<void> {
         this.timestampStart = new Date();
         await catTimer.info(`timer on resuming (${this.remainingTime})`);
     }
 
-    async onCompleting () {
+    public async onCompleting() {
         this.onStopping();
     }
-    async onAborting() {
+    public async onAborting() {
         this.onStopping();
     }
-    async onStopping() {
+    public async onStopping() {
         clearTimeout(this.timerId);
         clearInterval(this.timerUpdateId);
     }
