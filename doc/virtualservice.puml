@@ -1,0 +1,38 @@
+@startuml
+skinparam monochrome true
+
+abstract class BaseService
+
+class Service
+
+abstract class VirtualService
+
+class AggregatedService
+
+class Timer
+
+class PidController
+
+class Storage
+
+
+
+BaseService <|-- Service
+BaseService <|-- VirtualService
+
+VirtualService <|-- AggregatedService
+VirtualService <|-- Timer
+VirtualService <|-- PidController
+VirtualService <|-- Storage
+
+class VirtualServices
+
+class Manager
+class Module
+
+Module --> Service : services
+Manager --> Module: modules
+Manager --> VirtualServices: virtualServices
+VirtualServices --> VirtualService : services
+
+@enduml

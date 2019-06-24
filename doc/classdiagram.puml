@@ -1,0 +1,73 @@
+@startuml
+skinparam monochrome true
+
+class Manager
+class Module {
+    id
+    endpoint
+    client: OPCUAClient
+}
+class Operation
+class Parameter
+class Player
+
+Player o-- Recipe : playlist
+class Recipe {
+    name
+    initial_step: Step
+}
+class RecipeRun
+RecipeRun --> Recipe
+class Service {
+    name: string
+    parameters: ServiceParameter[]
+}
+class ProcessValue
+class Strategy
+class Condition{
+    {static} create()
+    {abstract} listen()
+    {abstract} clear()
+    json()
+}
+'class NotCondition
+'class AndCondition
+'class OrCondition
+'class StateCondition
+'class VariableCondition
+'class TimeCondition {
+'    duration
+'}
+
+
+'NotCondition --|> Condition
+'AndCondition --|> Condition
+'OrCondition --|> Condition
+'TimeCondition --|> Condition
+'VariableCondition --|> Condition
+'StateCondition --|> Condition
+
+Manager "1" o-- "*" Module
+Manager "1" o-- "*" Recipe
+Manager "1" o-- "1" Player
+
+Module "1" o-- "*" Service
+Module "1" o-- "*" ProcessValue
+
+Service "1" o-- "*" Strategy
+
+Recipe "1" o-- "*" Step
+Step "1" o-- "*" Operation
+Step "1" o-- "*" Transition
+
+Transition --> Step : nextStep
+Transition --> Condition
+
+Operation --> Service
+Operation --> Parameter
+Operation --> VirtualService
+
+class VirtualService {
+}
+
+@enduml
