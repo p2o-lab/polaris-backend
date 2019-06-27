@@ -1,5 +1,7 @@
 @startuml
 skinparam monochrome true
+hide methods
+hide attributes
 
 abstract class BaseService
 
@@ -13,7 +15,7 @@ class Timer
 
 class PidController
 
-class Storage
+class Other
 
 
 
@@ -23,16 +25,16 @@ BaseService <|-- VirtualService
 VirtualService <|-- AggregatedService
 VirtualService <|-- Timer
 VirtualService <|-- PidController
-VirtualService <|-- Storage
+VirtualService <|-- Other
 
 class VirtualServices
 
 class Manager
 class Module
 
-Module --> Service : services
-Manager --> Module: modules
-Manager --> VirtualServices: virtualServices
-VirtualServices --> VirtualService : services
+Module *-- "*" Service
+Manager o-- "*" Module
+Manager o-- "1" VirtualServices
+VirtualServices *-- "*" VirtualService
 
 @enduml
