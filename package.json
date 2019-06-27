@@ -71,6 +71,7 @@
     "ts-node": "^8.2.0",
     "tslint": "^5.16.0",
     "typedoc": "^0.14.2",
+    "typedoc-plantuml": "git+https://github.com/0815fox/typedoc-plantuml.git",
     "typescript": "^3.4.5"
   },
   "nyc": {
