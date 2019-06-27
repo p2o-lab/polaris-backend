@@ -1,0 +1,40 @@
+@startuml
+
+skinparam monochrome true
+hide methods
+hide empty fields
+
+class AggregatedService
+
+
+
+class State {
+
+}
+
+class PNState
+
+class Operation {
+module
+service
+strategy
+command
+parameters
+}
+
+class Transition {
+condition
+}
+
+AggregatedService "1" *-- "16" State
+State "1" *- "*" PNState
+State "1" -- "1" Transition : > initialTransition
+
+
+
+PNState "1" *- "*" Operation
+
+PNState "1" *-- "*" Transition
+
+Transition "1" *-- "*" PNState
+@enduml
