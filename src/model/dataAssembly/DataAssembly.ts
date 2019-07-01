@@ -23,18 +23,12 @@
  * SOFTWARE.
  */
 
-import {OpcUaNodeOptions} from '@p2olab/polaris-interface';
+import {DataAssemblyOptions, OpcUaNodeOptions} from '@p2olab/polaris-interface';
 import {EventEmitter} from 'events';
 import {DataType, Variant, VariantArrayType} from 'node-opcua';
 import {catParameter, catService} from '../../config/logging';
 import {isAutomaticState, isExtSource, isManualState, isOffState, OpMode} from '../core/enum';
 import {Module} from '../core/Module';
-
-export interface DataAssemblyOptions {
-    name: string;
-    interface_class: string;
-    communication: OpcUaNodeOptions[];
-}
 
 export class DataAssembly extends EventEmitter {
 

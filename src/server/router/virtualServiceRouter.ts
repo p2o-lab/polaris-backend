@@ -23,10 +23,9 @@
  * SOFTWARE.
  */
 
-import {catServer} from '../../config/logging';
 import {Request, Response, Router} from 'express';
 import * as asyncHandler from 'express-async-handler';
-import {VirtualService} from '../../model/virtualService/VirtualService';
+import {catServer} from '../../config/logging';
 import {Manager} from '../../model/Manager';
 
 export const virtualServiceRouter: Router = Router();
@@ -38,8 +37,7 @@ export const virtualServiceRouter: Router = Router();
  */
 virtualServiceRouter.get('/', asyncHandler(async (req: Request, res: Response) => {
     const manager: Manager = req.app.get('manager');
-    const result = manager.virtualServices.map(async (fb: VirtualService) => await fb.json());
-    res.json(result);
+    res.json(await manager.getVirtualServices());
 }));
 
 /**
@@ -50,9 +48,9 @@ virtualServiceRouter.get('/', asyncHandler(async (req: Request, res: Response) =
  */
 virtualServiceRouter.get('/:virtualServiceId', asyncHandler(async (req: Request, res: Response) => {
     const manager: Manager = req.app.get('manager');
-    const fb = manager.virtualServices.find(fb => fb.name === req.params.virtualServiceId);
-    if (fb) {
-        res.json(await fb.json());
+    const virtualService = manager.virtualServices.find((vs) => vs.name === req.params.virtualServiceId);
+    if (virtualService) {
+        res.json(await virtualService.json());
     } else {
         throw new Error('No such virtual service');
     }
@@ -98,33 +96,31 @@ virtualServiceRouter.put('', asyncHandler(async (req: Request, res: Response) =>
  */
 virtualServiceRouter.post('/:virtualServiceName/parameter', asyncHandler(async (req: Request, res: Response) => {
     const manager: Manager = req.app.get('manager');
-    const fb = manager.virtualServices.find(fb => fb.name === req.params.virtualServiceName);
-    await fb.setParameters(JSON.parse(req.body.parameters));
-    res.json(await fb.json());
+    const virtualService = manager.virtualServices.find((vs) => vs.name === req.params.virtualServiceName);
+    await virtualService.setParameters(JSON.parse(req.body.parameters));
+    res.json(await virtualService.json());
 }));
 
-
 /**
- * @api {post} /virtualService/:virtualServiceId/:commandNode    Call virtual service
+ * @api {post} /virtualService/:virtualServiceId/:command    Call virtual service
  * @apiName CallVirtualService
  * @apiGroup VirtualService
  * @apiParam {string} virtualServiceId   Name of virtual service
  * @apiParam {string="start","stop","abort","complete","pause","unhold","reset"} commandNode       Command name
  * @apiParam {ParameterOptions[]} [parameters]    Parameters for *start* or *restart*
  */
-virtualServiceRouter.post('/:virtualServiceId/:commandNode', asyncHandler(async (req: Request, res: Response) => {
+virtualServiceRouter.post('/:virtualServiceId/:command', asyncHandler(async (req: Request, res: Response) => {
     catServer.info(`Call virtual service: ${JSON.stringify(req.params)} - ${JSON.stringify(req.body)}`);
     const manager: Manager = req.app.get('manager');
-    const fb = manager.virtualServices.find(fb => fb.name === req.params.virtualServiceId);
+    const virtualService = manager.virtualServices.find((vs) => vs.name === req.params.virtualServiceId);
 
     if (req.body.parameters) {
-        await fb.setParameters(req.body.parameters);
+        await virtualService.setParameters(req.body.parameters);
     }
-    const result = await fb.executeCommand(req.params.command);
+    const result = await virtualService.executeCommand(req.params.command);
     res.json({
-        virtualService: fb.name,
+        virtualService: virtualService.name,
         command: req.params.command,
         status: 'Command succesfully send'
     });
 }));
-

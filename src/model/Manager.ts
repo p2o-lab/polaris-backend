@@ -23,13 +23,16 @@
  * SOFTWARE.
  */
 
-import {RecipeOptions, ServiceCommand} from '@p2olab/polaris-interface';
+import {ModuleInterface, ModuleOptions,
+    RecipeOptions,
+    ServiceCommand,
+    VirtualServiceInterface} from '@p2olab/polaris-interface';
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {catManager} from '../config/logging';
 import {ServiceLogEntry, VariableLogEntry} from '../logging/archive';
 import {ServiceState} from './core/enum';
-import {Module, ModuleOptions} from './core/Module';
+import {Module} from './core/Module';
 import {Service} from './core/Service';
 import {Player} from './recipe/Player';
 import {Recipe} from './recipe/Recipe';
@@ -238,6 +241,14 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
         await module.disconnect();
     }
 
+    public getModules(): Promise<ModuleInterface[]> {
+        return Promise.all(this.modules.map((module) => module.json()));
+    }
+
+    public async getVirtualServices(): Promise<VirtualServiceInterface[]> {
+        return Promise.all(this.virtualServices.map((vs) => vs.json()));
+    }
+
     public loadRecipe(options: RecipeOptions, protectedRecipe: boolean = false): Recipe {
         const newRecipe = new Recipe(options, this.modules, protectedRecipe);
         this.recipes.push(newRecipe);
@@ -309,6 +320,64 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
     public instantiateVirtualService(options) {
         const virtualService = VirtualServiceFactory.create(options);
         catManager.info(`instantiated virtual Service ${virtualService.name}`);
+        virtualService.eventEmitter
+            .on('controlEnable', (controlEnable) => {
+                this.emit('notify', 'virtualService', {
+                    service: virtualService.name,
+                    controlEnable
+                });
+            })
+            /*.on('variableChanged', async (data) => {
+                const logEntry: VariableLogEntry = {
+                    timestampPfe: new Date(),
+                    module: 'virtualServices',
+                    value: data.value,
+                    variable: data.parameter,
+                    unit: data.parameter.unit
+                };
+                this.variableArchive.push(logEntry);
+                if (this.player.currentRecipeRun) {
+                    this.player.currentRecipeRun.variableLog.push(logEntry);
+                }
+                this.emit('notify', 'variable', logEntry);
+            })*/
+            .on('parameterChanged', (data: any) => {
+                this.emit('notify', 'virtualService', data);
+            })
+            .on('commandExecuted', (data) => {
+                const logEntry: ServiceLogEntry = {
+                    timestampPfe: new Date(),
+                    module: 'virtualServices',
+                    service: virtualService.name,
+                    strategy: null,
+                    command: ServiceCommand[data.command],
+                    parameter: data.parameter ? data.parameter.map((param) => {
+                        return {name: param.name, value: param.value};
+                    }) : undefined
+                };
+                this.serviceArchive.push(logEntry);
+                if (this.player.currentRecipeRun) {
+                    this.player.currentRecipeRun.serviceLog.push(logEntry);
+                }
+            })
+            .on('state', ({state, timestamp}) => {
+                const logEntry: ServiceLogEntry = {
+                    timestampPfe: new Date(),
+                    module: 'virtualServices',
+                    service: virtualService.name,
+                    state: ServiceState[state]
+                };
+                this.serviceArchive.push(logEntry);
+                if (this.player.currentRecipeRun) {
+                    this.player.currentRecipeRun.serviceLog.push(logEntry);
+                }
+                this.emit('notify', 'module', {
+                    module: 'virtualServices',
+                    service: virtualService.name,
+                    status: ServiceState[state],
+                    lastChange: 0
+                });
+            });
         this.virtualServices.push(virtualService);
     }
 

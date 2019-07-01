@@ -23,15 +23,10 @@
  * SOFTWARE.
  */
 
-import {ConditionOptions, TransitionInterface} from '@p2olab/polaris-interface';
+import {ConditionOptions, TransitionInterface, TransitionOptions} from '@p2olab/polaris-interface';
 import {Module} from '../core/Module';
 import {Condition} from './Condition';
 import {Step} from './Step';
-
-export interface TransitionOptions {
-    next_step: string;
-    condition: ConditionOptions;
-}
 
 export class Transition {
     public nextStep: Step;

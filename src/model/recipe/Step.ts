@@ -23,13 +23,13 @@
  * SOFTWARE.
  */
 
-import {OperationOptions, StepInterface} from '@p2olab/polaris-interface';
+import {OperationOptions, StepInterface, TransitionOptions} from '@p2olab/polaris-interface';
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {catRecipe} from '../../config/logging';
 import {Module} from '../core/Module';
 import {Operation} from './Operation';
-import {Transition, TransitionOptions} from './Transition';
+import {Transition} from './Transition';
 
 export interface StepOptions {
     name: string;
@@ -113,7 +113,7 @@ export class Step {
         // start listening to transitions of step
         this.transitions.forEach((transition) => {
             catRecipe.info(`Start listening for transition ${JSON.stringify(transition.json())}`);
-            transition.condition.listen()
+            transition.condition
                 .on('stateChanged', (status) => {
                     catRecipe.info(`Status of step ${this.name} ` +
                         `for transition to ${transition.nextStepName}: ${status}`);
@@ -121,6 +121,7 @@ export class Step {
                         this.enterTransition(transition);
                     }
             });
+            transition.condition.listen();
         });
     }
 

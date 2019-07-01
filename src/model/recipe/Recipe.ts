@@ -211,7 +211,7 @@ export class Recipe extends (EventEmitter as new() => RecipeEmitter) {
     }
 
     private executeStep() {
-        catRecipe.debug(`Execute step: ${this.currentStep.name}`);
+        catRecipe.info(`Execute step: ${this.currentStep.name}`);
         this.lastChange = new Date();
         this.stepListener = this.currentStep.eventEmitter
             .on('operationChanged', () => {

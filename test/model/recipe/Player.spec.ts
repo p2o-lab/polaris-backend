@@ -102,9 +102,8 @@ describe('Player', () => {
             const module = new Module(moduleJson);
             const service = module.services[0];
 
-            await module.connect();
-            moduleServer.services[0].varStatus = ServiceState.IDLE;
-            await waitForStateChange(service, 'IDLE');
+            module.connect();
+            await waitForStateChange(service, 'IDLE', 2000);
 
             // now test recipe
             const recipeJson = JSON.parse(
@@ -121,7 +120,7 @@ describe('Player', () => {
 
             player.start();
             expect(player.status).to.equal(RecipeState.running);
-            await waitForStateChange(service, 'STARTING');
+            await waitForStateChange(service, 'STARTING', 2000);
             await waitForStateChange(service, 'EXECUTE');
             await waitForStateChange(service, 'COMPLETING', 2000);
             await waitForStateChange(service, 'COMPLETED', 2000);
@@ -141,7 +140,7 @@ describe('Player', () => {
             player.reset();
 
             await module.disconnect();
-        }).timeout(10000).retries(3);
+        }).timeout(10000);
 
         it('should run a playlist while modifying it', async () => {
 
@@ -150,8 +149,7 @@ describe('Player', () => {
             const module = new Module(moduleJson);
             const service = module.services[0];
 
-            module.connect();
-            await waitForStateChange(service, 'IDLE', 2000);
+            await module.connect();
 
             // now test recipe
             const recipeJson = JSON.parse(
@@ -186,7 +184,7 @@ describe('Player', () => {
             player.reset();
 
             await module.disconnect();
-        }).timeout(10000).retries(3);
+        }).timeout(10000);
 
         it('should run the test recipe two times with several player interactions (pause, resume, stop)', async () => {
 
@@ -195,8 +193,7 @@ describe('Player', () => {
             const module = new Module(moduleJson);
             const service = module.services[0];
 
-            module.connect();
-            await waitForStateChange(service, 'IDLE', 2000);
+            await module.connect();
 
             // now test recipe
             const recipeJson = JSON.parse(
@@ -214,7 +211,7 @@ describe('Player', () => {
             player.start();
             expect(player.status).to.equal(RecipeState.running);
             await waitForStateChange(service, 'STARTING', 2000);
-            await waitForStateChange(service, 'EXECUTE', 2000);
+            await waitForStateChange(service, 'EXECUTE');
 
             player.pause();
             await waitForStateChange(service, 'PAUSING');
@@ -228,14 +225,14 @@ describe('Player', () => {
             expect(player.status).to.equal(RecipeState.running);
 
             await waitForStateChange(service, 'COMPLETING', 2000);
-            await waitForStateChange(service, 'COMPLETED', 2000);
+            await waitForStateChange(service, 'COMPLETED');
 
             await waitForStateChange(service, 'IDLE');
 
             // here the second run of the recipe should automatically start, since first recipe is finished
 
-            await waitForStateChange(service, 'STARTING', 1000);
-            await waitForStateChange(service, 'EXECUTE', 1000);
+            await waitForStateChange(service, 'STARTING', 2000);
+            await waitForStateChange(service, 'EXECUTE');
 
             await player.stop();
 
@@ -246,7 +243,7 @@ describe('Player', () => {
             player.reset();
 
             await module.disconnect();
-        }).timeout(10000).retries(3);
+        }).timeout(10000);
 
     });
 

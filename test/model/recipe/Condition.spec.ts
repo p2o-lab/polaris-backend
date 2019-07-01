@@ -178,7 +178,7 @@ describe('Condition', () => {
         let moduleServer: ModuleTestServer;
         let module: Module;
 
-        before(async function() {
+        beforeEach(async function() {
             this.timeout(4000);
             moduleServer = new ModuleTestServer();
             await moduleServer.start();
@@ -190,7 +190,7 @@ describe('Condition', () => {
             await module.connect();
         });
 
-        after(async () => {
+        afterEach(async () => {
             await module.disconnect();
             await moduleServer.shutdown();
         });
@@ -286,7 +286,7 @@ describe('Condition', () => {
 
             condition.listen();
             moduleServer.services[0].varStatus = ServiceState.IDLE;
-            await delay(150);
+            await delay(50);
             expect(condition).to.have.property('fulfilled', false);
 
             condition.on('stateChanged', () => console.log('state changed'));
@@ -295,10 +295,8 @@ describe('Condition', () => {
             condition.clear();
             expect(condition).to.have.property('fulfilled', undefined);
             expect(condition.listenerCount('stateChanged')).to.equal(0);
-            await delay(50);
 
             condition.listen();
-            await delay(200);
             expect(condition).to.have.property('fulfilled', false);
 
             moduleServer.services[0].varStatus = ServiceState.COMPLETED;
@@ -312,7 +310,6 @@ describe('Condition', () => {
                 } );
             });
             condition.clear();
-
         });
 
         describe('ExpressionCondition', () => {

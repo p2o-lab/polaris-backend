@@ -52,8 +52,8 @@ export default class Routes {
         app.use('/api/recipeRun', recipeRunRouter);
         app.use('/api/recipe', recipeRouter);
         app.use('/api/player', playerRouter);
-        app.use('/api', coreRouter);
         app.use('/api/virtualService', virtualServiceRouter);
+        app.use('/api', coreRouter);
 
         // Error handling
         app.use((err: Error, req: Request, res: Response, next: NextFunction) => {

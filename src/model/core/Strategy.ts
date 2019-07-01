@@ -23,26 +23,12 @@
  * SOFTWARE.
  */
 
-import {OpcUaNodeOptions} from '@p2olab/polaris-interface';
+import {DataAssemblyOptions, OpcUaNodeOptions, StrategyOptions} from '@p2olab/polaris-interface';
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
-import {DataAssembly, DataAssemblyOptions} from '../dataAssembly/DataAssembly';
+import {DataAssembly} from '../dataAssembly/DataAssembly';
 import {DataAssemblyFactory} from '../dataAssembly/DataAssemblyFactory';
 import {Module} from './Module';
-
-export interface StrategyOptions {
-    id: string;
-    // name of strategy
-    name: string;
-    // default strategy
-    default: boolean;
-    // self-completing strategy
-    sc: boolean;
-    // strategyParameters of strategy
-    parameters: DataAssemblyOptions[];
-    // process values of strategy
-    processValues: DataAssemblyOptions[];
-}
 
 export interface StrategyEvents {
     processValueChanged: { processValue: DataAssembly, value: any, timestamp: Date };

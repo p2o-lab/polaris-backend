@@ -50,6 +50,14 @@ const optionDefinitions = [
         description: 'path to recipe.json which should be loaded at startup'
     },
     {
+        name: 'virtualService',
+        alias: 'v',
+        type: String,
+        multiple: true,
+        typeLabel: '{underline virtualServicePath[]}',
+        description: 'path to virtualService.json which should be loaded at startup'
+    },
+    {
         name: 'help',
         alias: 'h',
         type: Boolean,
@@ -76,6 +84,7 @@ const sections = [
         content: [
             '$ node build/src/index.js [{bold --module} {underline modulePath}] ' +
             '[{bold --recipe} {underline recipePath}] ' +
+            '[{bold --virtualService} {underline virtualServicePath}] ' +
             '[{bold --externalTrigger} {underline opcuaEndpoint} {underline opcuaNodeid}]'
         ]
     },
@@ -132,6 +141,14 @@ if (options) {
             options.recipe.forEach((recipe) => {
                 const recipeOptions = JSON.parse(fs.readFileSync(recipe).toString());
                 manager.loadRecipe(recipeOptions, true);
+            });
+        }
+
+        if (options.virtualService && options.virtualService.length > 0) {
+            console.log(`Load virtual service from ${options.virtualService}`);
+            options.virtualService.forEach((vs) => {
+                const vsOptions = JSON.parse(fs.readFileSync(vs).toString());
+                manager.instantiateVirtualService(vsOptions);
             });
         }
 

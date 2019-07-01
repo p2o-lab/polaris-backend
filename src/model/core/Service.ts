@@ -30,6 +30,7 @@ import {
     ParameterOptions,
     ServiceCommand,
     ServiceInterface,
+    ServiceOptions,
     StrategyInterface
 } from '@p2olab/polaris-interface';
 import {EventEmitter} from 'events';
@@ -41,7 +42,7 @@ import {ExtAnaOp} from '../dataAssembly/AnaOp';
 import {AnaView} from '../dataAssembly/AnaView';
 import {ExtBinOp} from '../dataAssembly/BinOp';
 import {BinView} from '../dataAssembly/BinView';
-import {DataAssembly, DataAssemblyOptions} from '../dataAssembly/DataAssembly';
+import {DataAssembly} from '../dataAssembly/DataAssembly';
 import {DataAssemblyFactory} from '../dataAssembly/DataAssemblyFactory';
 import {ExtDigOp} from '../dataAssembly/DigOp';
 import {DigView} from '../dataAssembly/DigView';
@@ -61,30 +62,8 @@ import {
     ServiceState
 } from './enum';
 import {Module} from './Module';
-import {Strategy, StrategyOptions} from './Strategy';
+import {Strategy} from './Strategy';
 import {UNIT} from './Unit';
-import {waitForStateChange} from '../../../test/helper';
-
-export interface ServiceOptions {
-    name: string;
-    communication: {
-        OpMode: OpcUaNodeOptions;
-        ControlOp?: OpcUaNodeOptions;
-        CommandMan?: OpcUaNodeOptions;
-        ControlExt?: OpcUaNodeOptions;
-        CommandExt?: OpcUaNodeOptions
-        ControlEnable?: OpcUaNodeOptions;
-        CommandEnable?: OpcUaNodeOptions;
-        State?: OpcUaNodeOptions;
-        CurrentState?: OpcUaNodeOptions;
-        StrategyOp?: OpcUaNodeOptions;
-        StrategyMan?: OpcUaNodeOptions;
-        StrategyExt: OpcUaNodeOptions;
-        CurrentStrategy: OpcUaNodeOptions;
-    };
-    strategies: StrategyOptions[];
-    parameters: DataAssemblyOptions[];
-}
 
 const interfaceClassToType = {
     'StrView': 'string',
@@ -129,7 +108,6 @@ export class Service extends BaseService {
     // use ControlExt (true) or ControlOp (false)
     public readonly automaticMode: boolean;
 
-
     /** OPC UA node of command/controlOp variable */
     private readonly commandNode: OpcUaNodeOptions;
     private readonly commandManNode: OpcUaNodeOptions;
@@ -150,8 +128,6 @@ export class Service extends BaseService {
 
     constructor(serviceOptions: ServiceOptions, parent: Module) {
         super();
-        this.eventEmitter = new EventEmitter();
-
         this._name = serviceOptions.name;
         this.automaticMode = true;
         this.parent = parent;
@@ -292,17 +268,20 @@ export class Service extends BaseService {
                 this.eventEmitter.emit('variableChanged', {parameter: param, value: data});
             }));
         this.strategies.forEach((strategy) => strategy.subscribe()
-                .on('processValueChanged', (data) => {
+            .on('processValueChanged', (data) => {
                     this.eventEmitter.emit('variableChanged', {
                         strategy,
                         parameter: data.processValue,
                         value: data.value
                     });
             })
-            /*.on('parameterChanged', (data) => {
-                this.eventEmitter.emit('parameterChanged', {strategy: strategy,
-                parameter: data.parameter, value: data.value.value})
-            })*/
+            .on('parameterChanged', (data) => {
+                this.eventEmitter.emit('parameterChanged', {
+                    strategy,
+                    parameter: data.parameter,
+                    value: data.value
+                });
+            })
         );
 
         // wait until first update of state has been arrived
@@ -319,12 +298,13 @@ export class Service extends BaseService {
     public async getOverview(): Promise<ServiceInterface> {
         const strategies = await this.getStrategies();
         const params = await this.getCurrentParameters();
+        const currentStrategy = this.getCurrentStrategy();
         return {
             name: this.name,
             opMode: opModetoJson(this.opMode),
             status: ServiceState[this.state],
             strategies,
-            currentStrategy: this.getCurrentStrategy().name,
+            currentStrategy: currentStrategy ? currentStrategy.name : null,
             parameters: params,
             controlEnable: this.controlEnable,
             lastChange: (new Date().getTime() - this.lastStatusChange.getTime()) / 1000
@@ -528,7 +508,7 @@ export class Service extends BaseService {
         }
     }
 
-    public async setParameters(parameters: Array<Parameter | ParameterOptions>): Promise<void> {
+    public async setParameters(parameters: Array<Parameter | ParameterOptions> = []): Promise<void> {
         const params: Parameter[] = await Promise.all(parameters.map(async (param) => {
             if (param instanceof Parameter) {
                 return param;

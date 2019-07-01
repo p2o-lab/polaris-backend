@@ -27,10 +27,10 @@ import {ControlEnableInterface, ParameterInterface, ParameterOptions, ServiceCom
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {catService} from '../../config/logging';
+import {DataAssembly} from '../dataAssembly/DataAssembly';
 import {Parameter} from '../recipe/Parameter';
 import {ServiceState} from './enum';
 import {Strategy} from './Strategy';
-import {DataAssembly} from '../dataAssembly/DataAssembly';
 
 /**
  * Events emitted by [[BaseService]]
@@ -47,7 +47,7 @@ export interface BaseServiceEvents {
      */
     controlEnable: ControlEnableInterface;
     /**
-     * whenever a commandNode is executed from the PFE
+     * whenever a commandNode is executed from the POL
      * @event commandExecuted
      */
     commandExecuted: {
@@ -65,20 +65,6 @@ export interface BaseServiceEvents {
 type BaseServiceEmitter = StrictEventEmitter<EventEmitter, BaseServiceEvents>;
 
 export abstract class BaseService {
-
-    public readonly eventEmitter: BaseServiceEmitter;
-
-    // name of the base service
-    protected _name: string;
-
-    // is base service self completing
-    protected _selfCompleting: boolean = false;
-
-    protected _state: ServiceState = ServiceState.IDLE;
-    protected _controlEnable: ControlEnableInterface;
-    protected parameters: ParameterInterface[];
-
-    protected _lastStatusChange: Date = new Date();
 
     protected set selfCompleting(value: boolean) {
         this._selfCompleting = value;
@@ -102,6 +88,24 @@ export abstract class BaseService {
 
     public get controlEnable(): ControlEnableInterface {
         return this._controlEnable;
+    }
+
+    public readonly eventEmitter: BaseServiceEmitter;
+
+    // name of the base service
+    protected _name: string;
+
+    // is base service self completing
+    protected _selfCompleting: boolean = false;
+
+    protected _state: ServiceState = ServiceState.IDLE;
+    protected _controlEnable: ControlEnableInterface;
+    protected parameters: ParameterInterface[];
+
+    protected _lastStatusChange: Date = new Date();
+
+    constructor() {
+        this.eventEmitter = new EventEmitter();
     }
 
     public getCurrentParameters(strategy?: Strategy): Promise<ParameterInterface[]> {

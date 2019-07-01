@@ -268,7 +268,6 @@ export class TimeCondition extends Condition {
 
 export abstract class ModuleCondition extends Condition {
     protected readonly module: Module;
-    protected monitoredItem: EventEmitter;
 
     constructor(options: StateConditionOptions | VariableConditionOptions, modules: Module[]) {
         super(options);
@@ -282,19 +281,10 @@ export abstract class ModuleCondition extends Condition {
         }
     }
 
-    public clear() {
-        super.clear();
-        if (this.monitoredItem) {
-            this.monitoredItem.removeListener('changed', this.boundCheckHandler);
-        }
-    }
-
     public getUsedModules() {
         return new Set<Module>().add(this.module);
     }
 
-    public abstract check(data: any);
-    protected boundCheckHandler = (data: any) => this.check(data);
 }
 
 export class StateCondition extends ModuleCondition {
@@ -334,11 +324,17 @@ export class StateCondition extends ModuleCondition {
     }
 
     public listen(): Condition {
-        this.monitoredItem = this.service.eventEmitter.on('state', this.boundCheckHandler);
+        this.service.eventEmitter.on('state', this.check);
+        this.check({state: this.service.state, timestamp: new Date()});
         return this;
     }
 
-    public check(data: {state: ServiceState, timestamp: Date}) {
+    public clear() {
+        super.clear();
+        this.service.eventEmitter.removeListener('state', this.check);
+    }
+
+    private check = (data: {state: ServiceState, timestamp: Date}) => {
         this._fulfilled = (data.state === this.state);
         catCondition.info(`StateCondition ${this.service.qualifiedName}: actual=${ServiceState[data.state]}` +
             ` ; condition=${ServiceState[this.state]} -> ${this._fulfilled}`);
@@ -365,12 +361,12 @@ export class VariableCondition extends ModuleCondition {
 
     public listen(): Condition {
         catCondition.debug(`Listen to ${this.dataStructure}.${this.variable}`);
-        this.monitoredItem = this.module.listenToVariable(this.dataStructure, this.variable)
-            .on('changed', this.boundCheckHandler);
+        this.module.listenToVariable(this.dataStructure, this.variable)
+            .on('changed', this.check);
         return this;
     }
 
-    public check(data) {
+    private check = (data) => {
         catCondition.debug(`value changed to ${data.value} -  (${this.operator}) compare against ${this.value}`);
         const value: number = data.value;
         let result = false;

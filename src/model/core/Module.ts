@@ -25,13 +25,16 @@
 
 import {
     ControlEnableInterface,
+    DataAssemblyOptions,
     ModuleInterface,
     OpcUaNodeOptions,
     OpModeInterface,
     ParameterInterface,
     ServiceCommand,
-    ServiceInterface
+    ServiceInterface,
+    ServiceOptions
 } from '@p2olab/polaris-interface';
+import {ModuleOptions} from '@p2olab/polaris-interface/dist/ModuleOptions';
 import {EventEmitter} from 'events';
 import {DataType, VariantArrayType} from 'node-opcua';
 import {
@@ -53,20 +56,12 @@ import {Category} from 'typescript-logging';
 import {catModule} from '../../config/logging';
 import {VariableLogEntry} from '../../logging/archive';
 import {AnaView} from '../dataAssembly/AnaView';
-import {DataAssembly, DataAssemblyOptions} from '../dataAssembly/DataAssembly';
+import {DataAssembly} from '../dataAssembly/DataAssembly';
 import {DataAssemblyFactory} from '../dataAssembly/DataAssemblyFactory';
 import {ServiceState} from './enum';
-import {Service, ServiceOptions} from './Service';
+import {Service} from './Service';
 import {Strategy} from './Strategy';
 import {UNIT} from './Unit';
-
-export interface ModuleOptions {
-    id: string;
-    opcua_server_url: string;
-    hmi_url?: string;
-    services: ServiceOptions[];
-    process_values: DataAssemblyOptions[];
-}
 
 /**
  * Events emitted by [[OpcUaNodeOptions]]
@@ -135,7 +130,7 @@ interface ModuleEvents {
     };
 
     /**
-     * whenever a command is executed from the PFE
+     * whenever a command is executed from the POL
      * @event commandExecuted
      */
     commandExecuted: {

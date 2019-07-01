@@ -61,7 +61,9 @@ serviceRouter.post('/:moduleId/service/:serviceName/strategy', asyncHandler(asyn
     const manager: Manager = req.app.get('manager');
     const service = manager.getService(req.params.moduleId, req.params.serviceName);
     await service.setStrategy(req.body.strategy);
-    await service.setParameters(req.body.parameters);
+    if (req.body.parameters) {
+        await service.setParameters(req.body.parameters);
+    }
     res.json(await service.getOverview());
 }));
 

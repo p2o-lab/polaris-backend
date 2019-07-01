@@ -25,9 +25,7 @@
 
 import Timeout = NodeJS.Timeout;
 import {EventEmitter} from 'events';
-import StrictEventEmitter from 'strict-event-emitter-types';
 import {catTimer} from '../../config/logging';
-import {OpcUaNodeEvents} from '../core/Module';
 import {VirtualService} from './VirtualService';
 
 export class Timer extends VirtualService {
@@ -47,6 +45,7 @@ export class Timer extends VirtualService {
     set remainingTime(value: number) {
         this._remainingTime = value;
         this.parameters.find((p) => p.name === 'remainingTime').value = this._remainingTime;
+        this.eventEmitter.emit('variableChanged', {parameter: null, value: this._remainingTime});
         this.eventEmitters['remainingTime'].emit('changed', {value: this._remainingTime, timestamp: new Date()});
     }
 
