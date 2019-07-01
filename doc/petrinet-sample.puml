@@ -14,7 +14,7 @@ t1
 end note
 
 
-===t1=== --> state1
+===t1=== --> startEverything
 note right
 Operations
   R1.Fill.start()
@@ -22,27 +22,38 @@ Operations
   T1.Temper.start(30°C)
 end note
 
-state1 --> ==t3==
+startEverything --> ==t2==
+note right
+t2
+end note
 
-==t2== --> state2
+==t2== --> waitForFillingAndTemperExecute
+==t2== --> waitForDosingCompleted
+
+
+waitForFillingAndTemperExecute --> ==t4==
+
+waitForDosingCompleted --> ==t3==
+note right
+t3
+  D1.DoseAmount.state==COMPLETED
+end note
+
+==t3== --> resetDose
 note right
 operations
   D1.DoseAmount.reset()
 end note
 
-state2 --> ==t3==
+resetDose --> ===t4===
 note right
-t3
+t4
   D1.DoseAmount.state==IDLE &&
+  R1.Fill.state==EXECUTE &&
   T1.Temper.state==EXECUTE
 end note
 
-state1 --> ===t2===
-note right
-t2
-  D1.DoseAmount.state==COMPLETED
-end note
 
 
-==t3== --> (*)
+==t4== --> (*)
 @enduml
