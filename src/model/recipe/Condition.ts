@@ -88,7 +88,7 @@ export abstract class Condition extends (EventEmitter as new() => ConditionEmitt
         } else if (type === ConditionType.expression) {
             return new ExpressionCondition(options as ExpressionConditionOptions, modules);
         } else {
-            throw new Error(`No Condition found for ${options}`);
+            return new TrueCondition(options);
         }
     }
 
@@ -117,6 +117,26 @@ export abstract class Condition extends (EventEmitter as new() => ConditionEmitt
 
     public json(): ConditionOptions {
         return this.options;
+    }
+}
+
+/**
+ * Condition which is always true
+ */
+export class TrueCondition extends Condition {
+
+    constructor(options) {
+        super(options);
+        this._fulfilled = true;
+    }
+
+    public listen(): Condition {
+        this.emit('stateChanged', true);
+        return this;
+    }
+
+    public getUsedModules(): Set<Module> {
+        return new Set<Module>();
     }
 }
 
