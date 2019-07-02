@@ -52,7 +52,13 @@ export class FunctionGenerator extends VirtualService {
         this.parameters.find((p) => p.name === 'output').value = this._output;
         this.eventEmitters['output'].emit('changed', {value: this._output, timestamp1: new Date()});
     }
-    public initParameter() {
+
+    constructor(name: string) {
+        super(name);
+        this.initParameter();
+    }
+
+    protected initParameter() {
         this.parameters = [
             {name: 'function', value: 'sin(t)'},
             {name: 'updateRate', value: 1000, unit: 'ms', min: 1},

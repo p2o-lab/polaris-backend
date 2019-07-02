@@ -23,36 +23,38 @@
  * SOFTWARE.
  */
 
-import {
-    AggregatedService, AggregatedServiceOptions, CommandEnableOptions,
-    StateMachineOptions
-} from './AggregatedService';
-import {FunctionGenerator} from './FunctionGenerator';
-import {PidController} from './PidController';
-import {Storage} from './Storage';
-import {Timer} from './Timer';
-import {VirtualService} from './VirtualService';
-import {Module} from '../core/Module';
+import {ConditionOptions, TransitionInterface} from '@p2olab/polaris-interface';
+import {PetrinetState} from './PetrinetState';
+import {Condition} from '../../recipe/Condition';
+import {Module} from '../../core/Module';
 
-export interface VirtualServiceOptions {
-    name: string;
-    type: string;
+export interface PetrinetTransitionOptions {
+    id: string;
+    condition?: ConditionOptions;
+    // name of the succeeding states or 'finished' or 'hold'
+    nextStates: string[];
 }
 
-export class VirtualServiceFactory {
- public static create(options: VirtualServiceOptions, modules?: Module[]): VirtualService {
-     if (options.type === Timer.type) {
-         return new Timer(options.name);
-     } else  if (options.type === Storage.type) {
-         return new Storage(options.name);
-     } else if (options.type === FunctionGenerator.type) {
-         return new FunctionGenerator(options.name);
-     } else if (options.type === PidController.type) {
-         return new PidController(options.name);
-     } else if (options.type === AggregatedService.type) {
-         return new AggregatedService(options as AggregatedServiceOptions, modules);
-     } else {
-         throw new Error(`Unknown virtual service type ${options.type}`);
-     }
- }
+export class PetrinetTransition {
+
+    public readonly id: string;
+    public readonly options: PetrinetTransitionOptions;
+    public nextStates: PetrinetState[];
+    public priorStates: PetrinetState[];
+    public readonly condition: Condition;
+
+    constructor(options: PetrinetTransitionOptions, modules: Module[]) {
+        this.options = options;
+        this.id = options.id;
+        if (options.condition) {
+            this.condition = Condition.create(options.condition, modules);
+        }
+    }
+
+    public json() {
+        return {
+            nextStates: this.options.nextStates,
+            condition: this.condition.json()
+        };
+    }
 }

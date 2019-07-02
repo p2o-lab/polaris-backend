@@ -27,10 +27,11 @@ import {ControlEnableInterface, ParameterOptions, VirtualServiceInterface} from 
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {catVirtualService} from '../../config/logging';
-import {BaseService, BaseServiceEvents} from '../core/BaseService';
+import {BaseService} from '../core/BaseService';
 import {ServiceState} from '../core/enum';
 import {OpcUaNodeEvents} from '../core/Module';
 import {Parameter} from '../recipe/Parameter';
+import {VirtualServiceOptions} from './VirtualServiceFactory';
 
 /**
  * A generic function block following the service state machine
@@ -55,39 +56,8 @@ export abstract class VirtualService extends BaseService {
             stop: true,
             unhold: false
         };
-        this.initParameter();
     }
 
-    // Allow user to inject own functionality after reaching each state
-    public abstract initParameter();
-    public async onStarting(): Promise<void> {
-    }
-    public async onRunning(): Promise<void> {
-    }
-    public async onPausing(): Promise<void> {
-    }
-    public async onPaused(): Promise<void> {
-    }
-    public async onResuming(): Promise<void> {
-    }
-    public async onCompleting(): Promise<void> {
-    }
-    public async onCompleted(): Promise<void> {
-    }
-    public async onResetting(): Promise<void> {
-    }
-    public async onAborting(): Promise<void> {
-    }
-    public async onAborted(): Promise<void> {
-    }
-    public async onStopping(): Promise<void> {
-    }
-    public async onStopped(): Promise<void> {
-    }
-    public async onIdle(): Promise<void> {
-    }
-    public async onUnholding(): Promise<void> {
-    }
     // Public methods
 
     public async json(): Promise<VirtualServiceInterface> {
@@ -166,6 +136,37 @@ export abstract class VirtualService extends BaseService {
         if (this._controlEnable.unhold) {
             await this.gotoUnholding();
         }
+    }
+
+    // Allow user to inject own functionality after reaching each state
+    protected abstract initParameter();
+    protected async onStarting(): Promise<void> {
+    }
+    protected async onRunning(): Promise<void> {
+    }
+    protected async onPausing(): Promise<void> {
+    }
+    protected async onPaused(): Promise<void> {
+    }
+    protected async onResuming(): Promise<void> {
+    }
+    protected async onCompleting(): Promise<void> {
+    }
+    protected async onCompleted(): Promise<void> {
+    }
+    protected async onResetting(): Promise<void> {
+    }
+    protected async onAborting(): Promise<void> {
+    }
+    protected async onAborted(): Promise<void> {
+    }
+    protected async onStopping(): Promise<void> {
+    }
+    protected async onStopped(): Promise<void> {
+    }
+    protected async onIdle(): Promise<void> {
+    }
+    protected async onUnholding(): Promise<void> {
     }
 
     // Internal

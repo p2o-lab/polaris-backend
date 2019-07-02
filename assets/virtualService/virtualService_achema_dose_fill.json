@@ -1,10 +1,11 @@
 {
   "version": "0.2.0",
   "name": "DoseFill",
+  "type": "aggregatedService",
   "description": "Combined Dose from Dose PEA and fill from reactor",
   "necessaryServices": [
     "Dose.DoseAmount",
-    "React.Fill"
+    "React.Fill_Service"
   ],
   "parameters": [
     {
@@ -34,7 +35,7 @@
             },
             {
               "module": "React",
-              "service": "Fill",
+              "service": "Fill_Service",
               "command": "start"
             }
           ],
@@ -66,7 +67,7 @@
             },
             {
               "module": "React",
-              "service": "Fill",
+              "service": "Fill_Service",
               "command": "pause"
             }
           ],
@@ -97,7 +98,7 @@
             },
             {
               "module": "React",
-              "service": "Fill",
+              "service": "Fill_Service",
               "command": "resume"
             }
           ],
@@ -128,7 +129,7 @@
             },
             {
               "module": "React",
-              "service": "Fill",
+              "service": "Fill_Service",
               "command": "complete"
             }
           ],

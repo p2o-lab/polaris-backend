@@ -32,14 +32,19 @@ import {ServiceState} from '../core/enum';
 export class PidController extends VirtualService {
     set output(value: number) {
         this._output = value;
-        this.parameters.find(p => p.name === 'output').value = this._output;
+        this.parameters.find((p) => p.name === 'output').value = this._output;
     }
 
     static type = 'pidController';
     private ctr: Controller;
     private _output: number;
 
-    initParameter() {
+    constructor(name: string) {
+        super(name);
+        this.initParameter();
+    }
+
+    protected initParameter() {
         this.parameters = [
             {name: 'setpoint', value: undefined},
             {name: 'input', value: undefined},

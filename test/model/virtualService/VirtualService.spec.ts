@@ -75,6 +75,32 @@ describe('VirtualService', () => {
                }
            ]);
        });
+
+       it('should instantiate aggregated service', async () => {
+           const manager = new Manager();
+           const modules = manager.loadModule(
+               JSON.parse(fs.readFileSync('assets/modules/modules_achema.json').toString()),
+               true);
+           expect(modules).to.have.lengthOf(3);
+
+           const asJson = parseJson(
+                fs.readFileSync('assets/virtualService/virtualService_achema_dose_fill.json', 'utf8'), null, 60);
+
+           const aggregatedService = VirtualServiceFactory.create(asJson, modules);
+
+           const json = await aggregatedService.json();
+           expect(json.type).equal('AggregatedService');
+           expect(json.name).equal('DoseFill');
+           expect(json.parameters).deep.equal([
+                {
+                    default: '0',
+                    name: 'SetVolume',
+                    type: 'ExtAnaOp',
+                    unit: '1038'
+                }
+            ]);
+        });
+
     });
 
     describe('Timer', () => {

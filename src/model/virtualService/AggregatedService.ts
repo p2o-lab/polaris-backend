@@ -23,17 +23,19 @@
  * SOFTWARE.
  */
 
-import {VirtualService} from './VirtualService';
-import {ConditionOptions, OperationOptions} from '@p2olab/polaris-interface';
-import {Module} from '../core/Module';
+import {ParameterInterface} from '@p2olab/polaris-interface';
+import {catTimer} from '../../config/logging';
 import {ServiceState} from '../core/enum';
-import v4 = require('uuid/v4');
+import {Module} from '../core/Module';
+import {Petrinet, PetrinetOptions} from './aggregatedService/Petrinet';
+import {VirtualService} from './VirtualService';
+import {VirtualServiceOptions} from './VirtualServiceFactory';
 
-
-export interface VirtualServiceOptions {
-    name: string;
+export interface AggregatedServiceOptions extends VirtualServiceOptions {
+    type: 'aggregatedService';
     description: string;
     version: string;
+    parameters: ParameterInterface[];
     stateMachine: StateMachineOptions;
     commandEnable: CommandEnableOptions;
 }
@@ -52,7 +54,7 @@ export interface CommandEnableOptions {
     resume: string;
     // only in EXECUTE
     complete: string;
-    //only in HELD
+    // only in HELD
     unhold: string;
     // defines the condition when virtual service automatically goes into HOLDING (without any user interaction)
     hold: string;
@@ -68,45 +70,22 @@ export interface CommandEnableOptions {
 /**
  * default is empty Petrinet which just jumps to the next state in the state machine
  */
-export interface StateMachineOptions{
-    starting: PetrinetOptions,
-    execute: PetrinetOptions,
-    pausing: PetrinetOptions,
-    resuming: PetrinetOptions,
-    completing: PetrinetOptions,
-    aborting: PetrinetOptions,
-    stopping: PetrinetOptions,
-    holding: PetrinetOptions,
-    unholding: PetrinetOptions,
+export interface StateMachineOptions {
+    starting: PetrinetOptions;
+    execute: PetrinetOptions;
+    pausing: PetrinetOptions;
+    resuming: PetrinetOptions;
+    completing: PetrinetOptions;
+    aborting: PetrinetOptions;
+    stopping: PetrinetOptions;
+    holding: PetrinetOptions;
+    unholding: PetrinetOptions;
     // following states should not perform any actions which can be defined by the user
-    //idle
-    //paused
-    //completed
-    //resetting
+    // idle
+    // paused
+    // completed
+    // resetting
 }
-
-export interface PetrinetOptions {
-    states: PetrinetState[];
-    transitions: PetrinetTransition[]
-    // name of the id of the first transition
-    initialTransition: string;
-}
-
-export interface PetrinetState {
-    id: string;
-    // operations
-    operations: OperationOptions[];
-    // id of succeeding transitions
-    nextTransitions: string[];
-}
-
-export interface PetrinetTransition {
-    id: string;
-    condition: ConditionOptions;
-    // name of the succeeding states or 'finished' or 'hold'
-    nextStates: string[];
-}
-
 
 /** Virtual Service which can be started.
  * It is parsed from RecipeOptions
@@ -124,40 +103,54 @@ export interface PetrinetTransition {
  */
 export class AggregatedService extends VirtualService {
 
-    static type = 'virtualService';
-
-    id: string;
-    name: string;
-    options: VirtualServiceOptions;
+    public static type: string = 'aggregatedService';
 
     // necessary modules
-    modules: Set<Module> = new Set<Module>();
+    public modules: Set<Module> = new Set<Module>();
 
     // dynamic properties
-    currentState: ServiceState;
-    _lastStatusChange: Date;
+    public currentState: ServiceState;
+    public _lastStatusChange: Date;
     private commandEnableExpression: CommandEnableOptions;
+    private options: AggregatedServiceOptions;
+    private starting: Petrinet;
+    private execute: Petrinet;
+    private completing: Petrinet;
+    private stopping: Petrinet;
 
-    constructor(options: VirtualServiceOptions) {
+    constructor(options: AggregatedServiceOptions, modules: Module[]) {
         super(options.name);
-        this.id = v4();
-        if (options.name) {
-            this.name = options.name;
-        } else {
-            throw new Error('Version property of virtual service is missing');
-        }
-
         this.options = options;
         this._lastStatusChange = new Date();
 
         if (options.commandEnable) {
-            this.commandEnableExpression = options.commandEnable
+            this.commandEnableExpression = options.commandEnable;
         }
 
+        if (options.stateMachine.starting) {
+            this.starting = new Petrinet(options.stateMachine.starting, modules);
+        }
+        if (options.stateMachine.execute) {
+            this.execute = new Petrinet(options.stateMachine.execute, modules);
+        }
+        if (options.stateMachine.completing) {
+            this.completing = new Petrinet(options.stateMachine.completing, modules);
+        }
+        if (options.stateMachine.stopping) {
+            this.stopping = new Petrinet(options.stateMachine.stopping, modules);
+        }
+
+        this.initParameter();
     }
 
-    initParameter() {
-        this.parameters = [];
+    protected initParameter() {
+        this.parameters = this.options.parameters;
+        this.selfCompleting = true;
+    }
+
+    protected async onStarting(): Promise<void> {
+        await catTimer.info(`starting aggregatedservice`);
+        this.starting.start();
     }
 
 }

@@ -64,7 +64,8 @@ export class Operation {
 
         this.service = this.module.services.find((service) => service.name === options.service);
         if (this.service === undefined) {
-            throw new Error(`Service ${ options.service }(${ this.module.id }) not found in modules`);
+            throw new Error(`Service ${ this.module.id }.${ options.service } not found in modules ` +
+            `(${JSON.stringify(modules.map((m) => m.id))})`);
         }
         if (options.strategy) {
             this.strategy = this.service.strategies.find((strategy) => strategy.name === options.strategy);

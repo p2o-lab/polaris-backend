@@ -29,7 +29,12 @@ export class Storage extends VirtualService {
 
     static type = 'storage';
 
-    initParameter() {
+    constructor(name: string) {
+        super(name);
+        this.initParameter();
+    }
+
+    protected initParameter() {
         this.parameters = [{name: 'storage', value: undefined}];
     }
 
