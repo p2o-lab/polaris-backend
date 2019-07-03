@@ -24,17 +24,14 @@
  */
 
 import {OperationOptions} from '@p2olab/polaris-interface';
-import {PetrinetTransition} from './PetrinetTransition';
-import {Operation} from '../../recipe/Operation';
-import {Module} from '../../core/Module';
 import {catRecipe} from '../../../config/logging';
-import {EventEmitter} from 'events';
+import {Module} from '../../core/Module';
+import {Operation} from '../../recipe/Operation';
+import {PetrinetTransition} from './PetrinetTransition';
 
 export interface PetrinetStateOptions {
     id: string;
-    // operations
     operations: OperationOptions[];
-    // id of succeeding transitions
     nextTransitions: string[];
 }
 
@@ -43,29 +40,37 @@ export class PetrinetState {
     public readonly id: string;
     public readonly options: PetrinetStateOptions;
     public nextTransitions: PetrinetTransition[];
-    public readonly eventEmitter: EventEmitter;
+    public operationCompleted: boolean;
     private operations: Operation[];
-
 
     constructor(options, modules: Module[]) {
         this.id = options.id;
         this.options = options;
         this.operations = options.operations.map((op) => new Operation(op, modules));
-        this.eventEmitter = new EventEmitter();
+        this.operationCompleted = false;
     }
 
-    public execute() {
-        // execute operations for step
-        this.operations.forEach((operation) => {
-            catRecipe.info(`Start operation ${operation.module.id} ${operation.service.name} ` +
-                `${JSON.stringify(operation.command)}`);
-            operation.execute();
-            operation.emitter.on('changed', (state) => {
-                if (state === 'completed' || state === 'aborted') {
-                    operation.emitter.removeAllListeners('changed');
-                }
-                this.eventEmitter.emit('operationChanged', operation);
-            });
-        });
+    /**
+     * Execute all operations for PetrinetState
+     *
+     * Resolves when all operations are completed; rejects if one operation is aborted
+     * @returns {Promise<void>}
+     */
+    public async execute() {
+        const tasks = this.operations.map((operation) => new Promise((resolve, reject) => {
+                catRecipe.info(`Start operation ${operation.module.id} ${operation.service.name} ` +
+                    `${JSON.stringify(operation.command)}`);
+                operation.execute();
+                operation.emitter.on('changed', (state) => {
+                    if (state === 'completed') {
+                        resolve();
+                    } else if (state === 'aborted') {
+                        reject();
+                    }
+                });
+            })
+        );
+        await Promise.all(tasks);
+        this.operationCompleted = true;
     }
 }

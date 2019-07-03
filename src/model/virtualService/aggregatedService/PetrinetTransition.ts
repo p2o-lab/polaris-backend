@@ -47,9 +47,7 @@ export class PetrinetTransition {
     constructor(options: PetrinetTransitionOptions, modules: Module[]) {
         this.options = options;
         this.id = options.id;
-        if (options.condition) {
-            this.condition = ConditionFactory.create(options.condition, modules);
-        }
+        this.condition = ConditionFactory.create(options.condition, modules);
     }
 
     public json() {

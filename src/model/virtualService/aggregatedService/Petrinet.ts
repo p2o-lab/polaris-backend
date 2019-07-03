@@ -26,7 +26,6 @@
 import {EventEmitter} from 'events';
 import {catRecipe} from '../../../config/logging';
 import {Module} from '../../core/Module';
-import {Transition} from '../../recipe/Transition';
 import {PetrinetState, PetrinetStateOptions} from './PetrinetState';
 import {PetrinetTransition, PetrinetTransitionOptions} from './PetrinetTransition';
 
@@ -46,10 +45,12 @@ export class Petrinet {
     public readonly transitions: PetrinetTransition[];
     public readonly initialTransition: PetrinetTransition;
     public readonly activeStates: PetrinetState[];
-    public readonly activeTransitions: PetrinetTransition[];
 
     constructor(options: PetrinetOptions, modules: Module[]) {
         this.options = options;
+        this.activeStates = [];
+        this.eventEmitter = new EventEmitter();
+
         this.states = options.states.map((opt) => new PetrinetState(opt, modules));
         this.transitions = options.transitions.map((opt) => new PetrinetTransition(opt, modules));
 
@@ -66,26 +67,20 @@ export class Petrinet {
         });
         this.transitions.forEach((tr: PetrinetTransition) => {
             tr.priorStates =
-                this.states.filter((state) => state.nextTransitions.find((tr1) => tr1.id === tr.id ));
+                this.states.filter((state) => state.nextTransitions.find((tr1) => tr1.id === tr.id));
         });
-
-        this.activeStates = null;
-        this.activeTransitions = null;
-        this.eventEmitter = new EventEmitter();
     }
 
     public start() {
-        this.activateTransition(this.initialTransition);
+        this.listenToTransition(this.initialTransition);
     }
 
-    public activateTransition(transition: PetrinetTransition) {
-        this.activeTransitions.push(transition);
-        catRecipe.info(`Start listening for transition ${JSON.stringify(transition.json())}`);
+    private listenToTransition(transition: PetrinetTransition) {
+        this.eventEmitter.emit('transition', transition);
         transition.condition
             .on('stateChanged', (status) => {
-                catRecipe.info(`Status: ${status}`);
                 if (status) {
-                    this.enterTransition(transition);
+                    this.useTransition(transition);
                 }
             });
         transition.condition.listen();
@@ -93,34 +88,48 @@ export class Petrinet {
 
     /**
      * activate state
+     *
+     * after executing the state the listening of successor transitions will be started as long
+     * as all of the previous states of this transition are active
      * @param {PetrinetState} state
      */
-    public activateState(state: PetrinetState) {
+    private activateState(state: PetrinetState) {
         this.activeStates.push(state);
-        state.eventEmitter.on('operationChanged', (operationState) => {
-            console.log('state', operationState);
-            if (operationState === 'completed') {
-                state.nextTransitions.forEach((tr) => this.activateTransition(tr));
-            }
-        });
-        state.execute();
+        this.eventEmitter.emit('state', state);
+        state.execute()
+            .then(() => {
+                state.nextTransitions.forEach((tr) => {
+                    if (tr.priorStates.every((priorState) =>
+                            this.activeStates.includes(priorState) && priorState.operationCompleted)) {
+                        this.listenToTransition(tr);
+                    }
+                });
+            })
+            .catch(() => {
+                catRecipe.warn(`Petrinet has some aborted operations`);
+            });
     }
 
     /**
      * enter transition (clear conditions and emit 'completed')
      * @param {PetrinetTransition} currentTransition
      */
-    public enterTransition(currentTransition: PetrinetTransition) {
-        // remove current element from activeTransitions
-        const index = this.activeTransitions.indexOf(currentTransition);
-        this.activeTransitions.splice(index, 1);
-
+    private useTransition(currentTransition: PetrinetTransition) {
         // stop listening
         currentTransition.condition.clear();
 
-        // put marks on all next states
-        currentTransition.nextStates.forEach((state) => this.activateState(state));
-        this.eventEmitter.emit('completed', currentTransition);
+        // remove marks from all previous states
+        currentTransition.priorStates.forEach((state) => {
+            const indexState = this.activeStates.indexOf(state);
+            this.activeStates.splice(indexState, 1);
+        });
+
+        // put marks on all next states or complete petrinet
+        if (currentTransition.nextStates.length > 0) {
+            currentTransition.nextStates.forEach((state) => this.activateState(state));
+        } else {
+            this.eventEmitter.emit('completed');
+        }
     }
 
 }
