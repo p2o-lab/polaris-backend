@@ -103,7 +103,7 @@ describe('Petrinet', () => {
                     nextTransitions: ['t4a']
                 },
                 {
-                    id: 's3ba',
+                    id: 's3b',
                     operations: [ ],
                     nextTransitions: ['t4b']
                 },
