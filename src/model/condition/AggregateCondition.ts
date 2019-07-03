@@ -23,38 +23,34 @@
  * SOFTWARE.
  */
 
-import {ConditionOptions, TransitionInterface, TransitionOptions} from '@p2olab/polaris-interface';
+import {AndConditionOptions, OrConditionOptions} from '@p2olab/polaris-interface';
+import {Condition} from './Condition';
 import {Module} from '../core/Module';
-import {Condition} from '../condition/Condition';
-import {Step} from './Step';
-import {ConditionFactory} from '../condition/ConditionFactory';
+import {ConditionFactory} from './ConditionFactory';
 
-export class Transition {
-    public nextStep: Step;
-    public readonly nextStepName: string;
-    public readonly condition: Condition;
+export abstract class AggregateCondition extends Condition {
+    public conditions: Condition[] = [];
 
-    constructor(options: TransitionOptions, modules: Module[]) {
-        if (options.next_step) {
-            this.nextStepName = options.next_step;
-        } else {
-            throw new Error(`"next_step" property is missing in ${JSON.stringify(options)}`);
-        }
-        if (options.condition) {
-            this.condition = ConditionFactory.create(options.condition, modules);
-        } else {
-            throw new Error(`"condition" property is missing in ${JSON.stringify(options)}`);
-        }
+    constructor(options: AndConditionOptions | OrConditionOptions, modules: Module[]) {
+        super(options);
+        this.conditions = options.conditions.map((option) => {
+            return ConditionFactory.create(option, modules);
+        });
+        this._fulfilled = false;
+    }
+
+    public clear() {
+        super.clear();
+        this.conditions.forEach((cond) => cond.clear());
     }
 
     public getUsedModules(): Set<Module> {
-        return new Set([...this.condition.getUsedModules()]);
-    }
-
-    public json(): TransitionInterface {
-        return {
-            next_step: this.nextStepName,
-            condition: this.condition.json()
-        };
+        const set = new Set<Module>();
+        this.conditions.forEach((cond) => {
+            Array.from(cond.getUsedModules()).forEach((module) => {
+                set.add(module);
+            });
+        });
+        return set;
     }
 }

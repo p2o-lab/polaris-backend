@@ -23,38 +23,46 @@
  * SOFTWARE.
  */
 
-import {ConditionOptions, TransitionInterface, TransitionOptions} from '@p2olab/polaris-interface';
+import {TimeConditionOptions} from '@p2olab/polaris-interface';
+import {catCondition} from '../../config/logging';
 import {Module} from '../core/Module';
-import {Condition} from '../condition/Condition';
-import {Step} from './Step';
-import {ConditionFactory} from '../condition/ConditionFactory';
+import {Condition} from './Condition';
+import Timeout = NodeJS.Timeout;
 
-export class Transition {
-    public nextStep: Step;
-    public readonly nextStepName: string;
-    public readonly condition: Condition;
+export class TimeCondition extends Condition {
 
-    constructor(options: TransitionOptions, modules: Module[]) {
-        if (options.next_step) {
-            this.nextStepName = options.next_step;
-        } else {
-            throw new Error(`"next_step" property is missing in ${JSON.stringify(options)}`);
+    private timer: Timeout;
+    private duration: number;
+
+    constructor(options: TimeConditionOptions) {
+        super(options);
+        if (options.duration <= 0) {
+            throw new Error('Duration is negative');
         }
-        if (options.condition) {
-            this.condition = ConditionFactory.create(options.condition, modules);
-        } else {
-            throw new Error(`"condition" property is missing in ${JSON.stringify(options)}`);
+        this.duration = options.duration * 1000;
+        this._fulfilled = false;
+        catCondition.trace(`Add TimeCondition: ${JSON.stringify(options)}`);
+    }
+
+    public listen(): Condition {
+        catCondition.debug(`Start Timer: ${this.duration}`);
+        this.timer = global.setTimeout(() => {
+                catCondition.debug(`TimeCondition finished: ${this.duration}`);
+                this._fulfilled = true;
+                this.emit('stateChanged', this._fulfilled);
+            },
+            this.duration);
+        return this;
+    }
+
+    public clear(): void {
+        super.clear();
+        if (this.timer) {
+            global.clearTimeout(this.timer);
         }
     }
 
     public getUsedModules(): Set<Module> {
-        return new Set([...this.condition.getUsedModules()]);
-    }
-
-    public json(): TransitionInterface {
-        return {
-            next_step: this.nextStepName,
-            condition: this.condition.json()
-        };
+        return new Set<Module>();
     }
 }

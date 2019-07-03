@@ -23,38 +23,25 @@
  * SOFTWARE.
  */
 
-import {ConditionOptions, TransitionInterface, TransitionOptions} from '@p2olab/polaris-interface';
 import {Module} from '../core/Module';
-import {Condition} from '../condition/Condition';
-import {Step} from './Step';
-import {ConditionFactory} from '../condition/ConditionFactory';
+import {Condition} from './Condition';
 
-export class Transition {
-    public nextStep: Step;
-    public readonly nextStepName: string;
-    public readonly condition: Condition;
+/**
+ * Condition which is always true
+ */
+export class TrueCondition extends Condition {
 
-    constructor(options: TransitionOptions, modules: Module[]) {
-        if (options.next_step) {
-            this.nextStepName = options.next_step;
-        } else {
-            throw new Error(`"next_step" property is missing in ${JSON.stringify(options)}`);
-        }
-        if (options.condition) {
-            this.condition = ConditionFactory.create(options.condition, modules);
-        } else {
-            throw new Error(`"condition" property is missing in ${JSON.stringify(options)}`);
-        }
+    constructor(options) {
+        super(options);
+        this._fulfilled = true;
+    }
+
+    public listen(): Condition {
+        this.emit('stateChanged', true);
+        return this;
     }
 
     public getUsedModules(): Set<Module> {
-        return new Set([...this.condition.getUsedModules()]);
-    }
-
-    public json(): TransitionInterface {
-        return {
-            next_step: this.nextStepName,
-            condition: this.condition.json()
-        };
+        return new Set<Module>();
     }
 }

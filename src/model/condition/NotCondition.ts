@@ -23,38 +23,36 @@
  * SOFTWARE.
  */
 
-import {ConditionOptions, TransitionInterface, TransitionOptions} from '@p2olab/polaris-interface';
+import {NotConditionOptions} from '@p2olab/polaris-interface';
 import {Module} from '../core/Module';
-import {Condition} from '../condition/Condition';
-import {Step} from './Step';
-import {ConditionFactory} from '../condition/ConditionFactory';
+import {catCondition} from '../../config/logging';
+import {Condition} from './Condition';
+import {ConditionFactory} from './ConditionFactory';
 
-export class Transition {
-    public nextStep: Step;
-    public readonly nextStepName: string;
-    public readonly condition: Condition;
+export class NotCondition extends Condition {
+    public condition: Condition;
 
-    constructor(options: TransitionOptions, modules: Module[]) {
-        if (options.next_step) {
-            this.nextStepName = options.next_step;
-        } else {
-            throw new Error(`"next_step" property is missing in ${JSON.stringify(options)}`);
-        }
-        if (options.condition) {
-            this.condition = ConditionFactory.create(options.condition, modules);
-        } else {
-            throw new Error(`"condition" property is missing in ${JSON.stringify(options)}`);
-        }
+    constructor(options: NotConditionOptions, modules: Module[]) {
+        super(options);
+        catCondition.trace(`Add NotCondition: ${options}`);
+        this.condition = ConditionFactory.create(options.condition, modules);
+        this._fulfilled = !this.condition.fulfilled;
+    }
+
+    public clear() {
+        super.clear();
+        this.condition.clear();
+    }
+
+    public listen(): Condition {
+        this.condition.listen().on('stateChanged', (state) => {
+            this._fulfilled = !state;
+            this.emit('stateChanged', this._fulfilled);
+        });
+        return this;
     }
 
     public getUsedModules(): Set<Module> {
-        return new Set([...this.condition.getUsedModules()]);
-    }
-
-    public json(): TransitionInterface {
-        return {
-            next_step: this.nextStepName,
-            condition: this.condition.json()
-        };
+        return this.condition.getUsedModules();
     }
 }

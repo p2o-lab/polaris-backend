@@ -23,38 +23,31 @@
  * SOFTWARE.
  */
 
-import {ConditionOptions, TransitionInterface, TransitionOptions} from '@p2olab/polaris-interface';
+import {AndConditionOptions} from '@p2olab/polaris-interface';
 import {Module} from '../core/Module';
-import {Condition} from '../condition/Condition';
-import {Step} from './Step';
-import {ConditionFactory} from '../condition/ConditionFactory';
+import {catCondition} from '../../config/logging';
+import {Condition} from './Condition';
+import {AggregateCondition} from './AggregateCondition';
 
-export class Transition {
-    public nextStep: Step;
-    public readonly nextStepName: string;
-    public readonly condition: Condition;
+export class AndCondition extends AggregateCondition {
 
-    constructor(options: TransitionOptions, modules: Module[]) {
-        if (options.next_step) {
-            this.nextStepName = options.next_step;
-        } else {
-            throw new Error(`"next_step" property is missing in ${JSON.stringify(options)}`);
-        }
-        if (options.condition) {
-            this.condition = ConditionFactory.create(options.condition, modules);
-        } else {
-            throw new Error(`"condition" property is missing in ${JSON.stringify(options)}`);
-        }
+    constructor(options: AndConditionOptions, modules: Module[]) {
+        super(options, modules);
+        catCondition.trace(`Add AndCondition: ${options}`);
     }
 
-    public getUsedModules(): Set<Module> {
-        return new Set([...this.condition.getUsedModules()]);
-    }
-
-    public json(): TransitionInterface {
-        return {
-            next_step: this.nextStepName,
-            condition: this.condition.json()
-        };
+    public listen(): Condition {
+        this.conditions.forEach((condition) => {
+            condition.listen().on('stateChanged', (state) => {
+                catCondition.debug(`AndCondition: ${state} = ` +
+                    `${JSON.stringify(this.conditions.map((item) => item.fulfilled))}`);
+                const oldState = this._fulfilled;
+                this._fulfilled = this.conditions.every((cond) => cond.fulfilled);
+                if (oldState !== this._fulfilled) {
+                    this.emit('stateChanged', this._fulfilled);
+                }
+            });
+        });
+        return this;
     }
 }

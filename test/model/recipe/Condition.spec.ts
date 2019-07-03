@@ -32,8 +32,12 @@ import {timeout} from 'promise-timeout';
 import * as delay from 'timeout-as-promise';
 import {ServiceState} from '../../../src/model/core/enum';
 import {Module} from '../../../src/model/core/Module';
-import {Condition, ExpressionCondition, TimeCondition} from '../../../src/model/recipe/Condition';
+import {Condition} from '../../../src/model/condition/Condition';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
+import {ExpressionCondition} from '../../../src/model/condition/ExpressionCondition';
+import {TimeCondition} from '../../../src/model/condition/TimeCondition';
+import {ConditionFactory} from '../../../src/model/condition/ConditionFactory';
+import {TrueCondition} from '../../../src/model/condition/TrueCondition';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -46,11 +50,12 @@ describe('Condition', () => {
     describe('without test server', () => {
 
         it('should fail with no type', () => {
-            expect(() => Condition.create(null, undefined)).to.throw();
+            expect(() => ConditionFactory.create(null, undefined)).to.throw();
         });
 
-        it('should fail with wrong type', () => {
-            expect(() => Condition.create({type: 'test'} as any, [])).to.throw('No Condition found');
+        it('should provide TrueCondition with wrong type', () => {
+            const cond = ConditionFactory.create({type: 'test'} as any, []);
+            expect(cond).to.instanceOf(TrueCondition);
         });
 
         it('should listen to a time condition of 0.1s', (done) => {
@@ -69,7 +74,7 @@ describe('Condition', () => {
         });
 
         it('should listen to an AND condition of two time conditions', async () => {
-            const condition = Condition.create({
+            const condition = ConditionFactory.create({
                 type: ConditionType.and,
                 conditions: [
                     {type: ConditionType.time, duration: 0.2},
@@ -93,7 +98,7 @@ describe('Condition', () => {
         });
 
         it('should listen to a OR condition of two time conditions', async () => {
-            const condition = Condition.create({
+            const condition = ConditionFactory.create({
                 type: ConditionType.or,
                 conditions: [
                     {type: ConditionType.time, duration: 0.5},
@@ -119,7 +124,7 @@ describe('Condition', () => {
         });
 
         it('should listen to a NOT condition', async () => {
-            const condition = Condition.create({
+            const condition = ConditionFactory.create({
                 type: ConditionType.not,
                 condition: {type: ConditionType.time, duration: 0.1}
             }, undefined);
@@ -137,7 +142,7 @@ describe('Condition', () => {
         });
 
         it('should fail with wrong parameter', () => {
-            expect(() => Condition.create({type: ConditionType.time, duration: -10}, undefined))
+            expect(() => ConditionFactory.create({type: ConditionType.time, duration: -10}, undefined))
                 .to.throw();
         });
 
@@ -154,7 +159,7 @@ describe('Condition', () => {
                     .modules[0];
 
                 const module = new Module(moduleJson);
-                const expr = Condition.create({
+                const expr = ConditionFactory.create({
                     type: ConditionType.expression,
                     expression: 'sin(a)^2 + cos(CIF.Variable001)^2 < 0.5',
                     scope: [
@@ -196,7 +201,7 @@ describe('Condition', () => {
         });
 
         it('specialized as VariableCondition should work', async () => {
-            const condition = Condition.create({
+            const condition = ConditionFactory.create({
                 type: ConditionType.variable,
                 module: 'CIF',
                 dataAssembly: 'Variable001',
@@ -231,7 +236,7 @@ describe('Condition', () => {
 
         it('specialized as StateCondition should work', async function() {
             this.timeout(5000);
-            const condition = Condition.create({
+            const condition = ConditionFactory.create({
                 type: ConditionType.state,
                 module: 'CIF',
                 service: 'Service1',
@@ -277,7 +282,7 @@ describe('Condition', () => {
         });
 
         it('should not react on a closed condition', async () => {
-            const condition = Condition.create({
+            const condition = ConditionFactory.create({
                 type: ConditionType.state,
                 module: 'CIF',
                 service: 'Service1',
@@ -356,7 +361,7 @@ describe('Condition', () => {
 
             it('should work with semi-complex expression', async () => {
                 moduleServer.variables[0].v = 3.1;
-                const expr: ExpressionCondition = Condition.create({
+                const expr: ExpressionCondition = ConditionFactory.create({
                     type: ConditionType.expression,
                     expression: 'cos(CIF.Variable001.V)^2 > 0.9'
                 }, [module]) as ExpressionCondition;
@@ -369,7 +374,7 @@ describe('Condition', () => {
             });
 
             it('should work with complex expression', async () => {
-                const expr = Condition.create({
+                const expr = ConditionFactory.create({
                     type: ConditionType.expression,
                     expression: 'sin(a)^2 + cos(CIF.Variable001)^2 < 0.5',
                     scope: [

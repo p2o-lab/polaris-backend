@@ -23,38 +23,27 @@
  * SOFTWARE.
  */
 
-import {ConditionOptions, TransitionInterface, TransitionOptions} from '@p2olab/polaris-interface';
 import {Module} from '../core/Module';
-import {Condition} from '../condition/Condition';
-import {Step} from './Step';
-import {ConditionFactory} from '../condition/ConditionFactory';
+import {StateConditionOptions, VariableConditionOptions} from '@p2olab/polaris-interface';
+import {Condition} from './Condition';
 
-export class Transition {
-    public nextStep: Step;
-    public readonly nextStepName: string;
-    public readonly condition: Condition;
+export abstract class ModuleCondition extends Condition {
+    protected readonly module: Module;
 
-    constructor(options: TransitionOptions, modules: Module[]) {
-        if (options.next_step) {
-            this.nextStepName = options.next_step;
-        } else {
-            throw new Error(`"next_step" property is missing in ${JSON.stringify(options)}`);
+    constructor(options: StateConditionOptions | VariableConditionOptions, modules: Module[]) {
+        super(options);
+        if (options.module) {
+            this.module = modules.find((module) => module.id === options.module);
+        } else if (modules.length === 1) {
+            this.module = modules[0];
         }
-        if (options.condition) {
-            this.condition = ConditionFactory.create(options.condition, modules);
-        } else {
-            throw new Error(`"condition" property is missing in ${JSON.stringify(options)}`);
+        if (!this.module) {
+            throw new Error(`Could not find module ${options.module} in ${JSON.stringify(modules.map((m) => m.id))}`);
         }
     }
 
-    public getUsedModules(): Set<Module> {
-        return new Set([...this.condition.getUsedModules()]);
+    public getUsedModules() {
+        return new Set<Module>().add(this.module);
     }
 
-    public json(): TransitionInterface {
-        return {
-            next_step: this.nextStepName,
-            condition: this.condition.json()
-        };
-    }
 }

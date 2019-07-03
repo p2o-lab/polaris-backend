@@ -25,8 +25,9 @@
 
 import {ConditionOptions, TransitionInterface} from '@p2olab/polaris-interface';
 import {PetrinetState} from './PetrinetState';
-import {Condition} from '../../recipe/Condition';
+import {Condition} from '../../condition/Condition';
 import {Module} from '../../core/Module';
+import {ConditionFactory} from '../../condition/ConditionFactory';
 
 export interface PetrinetTransitionOptions {
     id: string;
@@ -47,7 +48,7 @@ export class PetrinetTransition {
         this.options = options;
         this.id = options.id;
         if (options.condition) {
-            this.condition = Condition.create(options.condition, modules);
+            this.condition = ConditionFactory.create(options.condition, modules);
         }
     }
 

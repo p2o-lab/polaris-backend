@@ -23,38 +23,54 @@
  * SOFTWARE.
  */
 
-import {ConditionOptions, TransitionInterface, TransitionOptions} from '@p2olab/polaris-interface';
+import {ConditionOptions} from '@p2olab/polaris-interface';
+import {EventEmitter} from 'events';
+import StrictEventEmitter from 'strict-event-emitter-types';
 import {Module} from '../core/Module';
-import {Condition} from '../condition/Condition';
-import {Step} from './Step';
-import {ConditionFactory} from '../condition/ConditionFactory';
 
-export class Transition {
-    public nextStep: Step;
-    public readonly nextStepName: string;
-    public readonly condition: Condition;
+/**
+ * Events emitted by [[Condition]]
+ */
+interface ConditionEvents {
+    /**
+     * Notify when the condition changes its state. Parameter is a boolean representing if condition is fulfilled.
+     * @event stateChanged
+     */
+    stateChanged: boolean;
+}
 
-    constructor(options: TransitionOptions, modules: Module[]) {
-        if (options.next_step) {
-            this.nextStepName = options.next_step;
-        } else {
-            throw new Error(`"next_step" property is missing in ${JSON.stringify(options)}`);
-        }
-        if (options.condition) {
-            this.condition = ConditionFactory.create(options.condition, modules);
-        } else {
-            throw new Error(`"condition" property is missing in ${JSON.stringify(options)}`);
-        }
+type ConditionEmitter = StrictEventEmitter<EventEmitter, ConditionEvents>;
+
+export abstract class Condition extends (EventEmitter as new() => ConditionEmitter) {
+
+    get fulfilled(): boolean {
+        return this._fulfilled;
     }
 
-    public getUsedModules(): Set<Module> {
-        return new Set([...this.condition.getUsedModules()]);
+    protected _fulfilled: boolean = false;
+    private options: ConditionOptions;
+
+    constructor(options: ConditionOptions) {
+        super();
+        this.options = options;
     }
 
-    public json(): TransitionInterface {
-        return {
-            next_step: this.nextStepName,
-            condition: this.condition.json()
-        };
+    /**
+     * Listen to any change in condition and inform via 'stateChanged' event
+     */
+    public abstract listen(): Condition;
+
+    /**
+     * Clear listening on condition
+     */
+    public clear() {
+        this._fulfilled = undefined;
+        this.removeAllListeners('stateChanged');
+    }
+
+    public abstract getUsedModules(): Set<Module>;
+
+    public json(): ConditionOptions {
+        return this.options;
     }
 }
