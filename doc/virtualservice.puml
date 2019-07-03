@@ -37,4 +37,6 @@ Manager o-- "*" Module
 Manager o-- "1" VirtualServices
 VirtualServices *-- "*" VirtualService
 
+AggregatedService o.. BaseService
+
 @enduml
