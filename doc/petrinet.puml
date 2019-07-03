@@ -8,7 +8,7 @@ class AggregatedService
 
 
 
-class State {
+class Petrinet {
 
 }
 
@@ -22,19 +22,19 @@ command
 parameters
 }
 
-class Transition {
+class PNTransition {
 condition
 }
 
-AggregatedService "1" *-- "16" State
-State "1" *- "*" PNState
-State "1" -- "1" Transition : > initialTransition
+AggregatedService "1" *-- "16" Petrinet
+Petrinet "1" *- "*" PNState
+Petrinet "1" -- "1" PNTransition : > initialTransition
 
 
 
 PNState "1" *- "*" Operation
 
-PNState "1" *-- "*" Transition
+PNState "1" *-- "*" PNTransition
 
-Transition "1" *-- "*" PNState
+PNTransition "1" *-- "*" PNState
 @enduml
