@@ -1,0 +1,30 @@
+@startuml
+
+skinparam monochrome true
+
+title ServiceState <i>STARTING</i>
+
+
+(*) --> ===t1===
+note right
+t1
+  D1.DoseAmount.state==IDLE
+  R1.Fill.state==IDLE
+end note
+
+===t1=== --> state1
+note right
+Operations:
+  D1.DoseAmount.start(SetVolume=SetVolume)
+  R1.Fill.start()
+end note
+
+state1 --> ===t2===
+note right
+t2
+  D1.DoseAmount.state==EXECUTE &&
+  R1.Fill.state==EXECUTE
+end note
+
+===t2=== --> (*)
+@enduml
