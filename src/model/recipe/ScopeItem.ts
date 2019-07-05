@@ -62,8 +62,8 @@ export class ScopeItem {
         const module = modules.find((m) => m.id === item.module);
         const dataAssembly = module.variables.find((v) => v.name === item.dataAssembly);
         const opcUaNode = dataAssembly.communication[item.variable] ||
-            dataAssembly.communication['V'] ||
-            dataAssembly.communication['VExt'];
+            dataAssembly.communication.V ||
+            dataAssembly.communication.VExt;
         return Object.assign(new ScopeItem(), {name: item.name, module, variable: opcUaNode});
     }
 
@@ -123,8 +123,8 @@ export class ScopeItem {
         // find data assembly variable
         token = components.shift();
         const opcUaNode = dataAssembly.communication[token] ||
-            dataAssembly.communication['V'] ||
-            dataAssembly.communication['VExt'];
+            dataAssembly.communication.V ||
+            dataAssembly.communication.VExt;
 
         return Object.assign(new ScopeItem(), {name: variable, module, variable: opcUaNode});
     }

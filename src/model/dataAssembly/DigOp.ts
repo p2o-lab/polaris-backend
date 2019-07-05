@@ -33,35 +33,35 @@ export class ExtDigOp extends DataAssembly {
     }
 
     get VOut() {
-        return this.communication['VOut'];
+        return this.communication.VOut;
     }
 
     get VUnit() {
-        return this.communication['VUnit'];
+        return this.communication.VUnit;
     }
 
     get VSclMin() {
-        return this.communication['VSclMin'];
+        return this.communication.VSclMin;
     }
 
     get VSclMax() {
-        return this.communication['VSclMax'];
+        return this.communication.VSclMax;
     }
 
     get VExt() {
-        return this.communication['VExt'];
+        return this.communication.VExt;
     }
 
     get VMin() {
-        return this.communication['VMin'];
+        return this.communication.VMin;
     }
 
     get VMax() {
-        return this.communication['VMax'];
+        return this.communication.VMax;
     }
 
     get VRbk() {
-        return this.communication['VRbk'];
+        return this.communication.VRbk;
     }
 
 }
@@ -74,11 +74,11 @@ export class ExtIntDigOp extends ExtDigOp {
     }
 
     get VInt() {
-        return this.communication['VInt'];
+        return this.communication.VInt;
     }
 
     get OpMode() {
-        return this.communication['OpMode'];
+        return this.communication.OpMode;
     }
 }
 

@@ -58,11 +58,11 @@ export class DataAssembly extends EventEmitter {
     }
 
     get OSLevel() {
-        return this.communication['OSLevel'];
+        return this.communication.OSLevel;
     }
 
     get WQC() {
-        return this.communication['WQC'];
+        return this.communication.WQC;
     }
 
     public subscribe(samplingInterval = 1000) {
@@ -111,8 +111,8 @@ export class DataAssembly extends EventEmitter {
      * Get current opMode of DataAssembly from PEA memory.
      */
     public async getOpMode(): Promise<OpMode> {
-        if (this.communication['OpMode']) {
-            const result = await this.module.readVariableNode(this.communication['OpMode']);
+        if (this.communication.OpMode) {
+            const result = await this.module.readVariableNode(this.communication.OpMode);
             return result.value.value as OpMode;
         } else {
             return null;
@@ -121,7 +121,7 @@ export class DataAssembly extends EventEmitter {
 
     public async waitForOpModeToPassSpecificTest(testFunction: (opMode: OpMode) => boolean) {
         return new Promise((resolve) => {
-            const event = this.module.listenToOpcUaNode(this.communication['OpMode']);
+            const event = this.module.listenToOpcUaNode(this.communication.OpMode);
             event.on('changed', function test(data) {
                 if (testFunction(data.value)) {
                     event.removeListener('changed', test);
@@ -170,7 +170,7 @@ export class DataAssembly extends EventEmitter {
      */
     private async writeOpMode(opMode: OpMode): Promise<void> {
         catParameter.debug(`[${this.name}] Write opMode: ${opMode as number}`);
-        const result = await this.module.writeNode(this.communication['OpMode'],
+        const result = await this.module.writeNode(this.communication.OpMode,
             {
                 dataType: DataType.UInt32,
                 value: opMode,
