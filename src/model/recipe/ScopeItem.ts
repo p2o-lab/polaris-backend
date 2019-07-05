@@ -30,6 +30,14 @@ import {Module} from '../core/Module';
 import {Service} from '../core/Service';
 import {Strategy} from '../core/Strategy';
 import {DataAssembly} from '../dataAssembly/DataAssembly';
+import {AnaView} from '../dataAssembly/AnaView';
+import {DigView} from '../dataAssembly/DigView';
+import {BinView} from '../dataAssembly/BinView';
+import {ExtAnaOp} from '../dataAssembly/AnaOp';
+import {ExtDigOp} from '../dataAssembly/DigOp';
+import {ExtBinOp} from '../dataAssembly/BinOp';
+import {BaseService} from '../core/BaseService';
+import {ServiceState} from '../core/enum';
 
 export class ScopeItem {
 
@@ -61,10 +69,8 @@ export class ScopeItem {
     public static extractFromScopeOptions(item: ScopeOptions, modules: Module[]): ScopeItem {
         const module = modules.find((m) => m.id === item.module);
         const dataAssembly = module.variables.find((v) => v.name === item.dataAssembly);
-        const opcUaNode = dataAssembly.communication[item.variable] ||
-            dataAssembly.communication['V'] ||
-            dataAssembly.communication['VExt'];
-        return Object.assign(new ScopeItem(), {name: item.name, module, variable: opcUaNode});
+        const opcUaNode = ScopeItem.getVariablefromDataAssembly(dataAssembly, item.variable);
+        return new ScopeItem(item.name, module, opcUaNode);
     }
 
     /**
@@ -74,10 +80,11 @@ export class ScopeItem {
      *
      *
      * @param {string} variable
-     * @param {Module[]} modules    modules to be searched in for variable names (default: all modules in manager)
+     * @param {Module[]} modules    modules to be searched in for variable names
      * @returns {ScopeItem}
      */
     public static extractFromExpressionVariable(variable: string, modules: Module[]): ScopeItem {
+        let dataAssembly: DataAssembly;
         const components = variable.split('.').map((tokenT: string) => tokenT.replace(new RegExp('__', 'g'), '.'));
         let token = components.shift();
 
@@ -104,47 +111,89 @@ export class ScopeItem {
                 strategy = service.strategies.find((strat) => strat.default);
             }
             token = components.shift();
-        }
 
-        // find data assembly
-        let dataAssembly: DataAssembly;
-        if (strategy && strategy.parameters.find((p) => p.name === token)) {
-            dataAssembly = strategy.parameters.find((p) => p.name === token);
-        } else if (service && service.parameters.find((p) => p.name === token)) {
-            dataAssembly = strategy.parameters.find((p) => p.name === token);
-        } else if (module.variables.find((v) => v.name === token)) {
-            dataAssembly = module.variables.find((v) => v.name === token);
+            if (strategy.parameters.find((p) => p.name === token)) {
+                dataAssembly = strategy.parameters.find((p) => p.name === token);
+            } else if (service.parameters.find((p) => p.name === token)) {
+                dataAssembly = strategy.parameters.find((p) => p.name === token);
+            } else if (token === 'state') {
+                return new ScopeItem(variable, module, null, service);
+            } else {
+                catScopeItem.warn(`Could not evaluate variable "${variable}": ` +
+                    `Token "${token}" not found as service parameter ` +
+                    `in service ${service.qualifiedName}.${strategy.name}`);
+                return null;
+            }
         } else {
-            catScopeItem.warn(`Could not evaluate variable "${variable}": Token "${token}" not found as dataAssembly ` +
-                `in module ${module.id}: ${module.variables.map((v) => v.name)}`);
-            return null;
+            // find data assembly in process values
+            if (module.variables.find((v) => v.name === token)) {
+                dataAssembly = module.variables.find((v) => v.name === token);
+            } else {
+                catScopeItem.warn(`Could not evaluate variable "${variable}": ` +
+                    `Token "${token}" not found as dataAssembly ` +
+                    `in module ${module.id}: ${module.variables.map((v) => v.name)}`);
+                return null;
+            }
         }
 
         // find data assembly variable
         token = components.shift();
-        const opcUaNode = dataAssembly.communication[token] ||
-            dataAssembly.communication['V'] ||
-            dataAssembly.communication['VExt'];
+        const opcUaNode = ScopeItem.getVariablefromDataAssembly(dataAssembly, token);
 
-        return Object.assign(new ScopeItem(), {name: variable, module, variable: opcUaNode});
+        return new ScopeItem(variable, module, opcUaNode);
+    }
+
+    private static getVariablefromDataAssembly(dataAssembly, token): OpcUaNodeOptions {
+        let opcUaNode = dataAssembly.communication[token];
+        if (!opcUaNode) {
+            // set defaul values
+            if (dataAssembly instanceof AnaView) {
+                opcUaNode = dataAssembly.V;
+            } else if (dataAssembly instanceof DigView) {
+                opcUaNode = dataAssembly.V;
+            } else if (dataAssembly instanceof BinView) {
+                opcUaNode = dataAssembly.V;
+            } else if (dataAssembly instanceof ExtAnaOp) {
+                opcUaNode = dataAssembly.VOut;
+            } else if (dataAssembly instanceof ExtDigOp) {
+                opcUaNode = dataAssembly.VOut;
+            } else if (dataAssembly instanceof ExtBinOp) {
+                opcUaNode = dataAssembly.VOut;
+            }
+        }
+        return opcUaNode;
     }
 
     /** name of variable which should be replaced in value */
-    public name: string;
+    public readonly name: string;
+    public readonly variable: OpcUaNodeOptions;
+    public readonly module: Module;
+    private readonly service: BaseService;
 
-    public module: Module;
-    public variable: OpcUaNodeOptions;
+    constructor(name: string, module, variable?: OpcUaNodeOptions, service?: BaseService) {
+        this.name = name;
+        this.module = module;
+        this.variable = variable;
+        this.service = service;
+    }
 
     /**
      * Returning an nested object following the name construction. The leaf contains the current value
      * as object suitable for expr-eval.evaluate()
      */
-    public async getScopeValue(): Promise<object> {
-        const value = await this.module.readVariableNode(this.variable);
+    public getScopeValue(): object {
+        const value = this.variable ? this.variable.value : ServiceState[this.service.state];
         return this.name.split('.').reduceRight((previous, current) => {
             const a = {};
             a[current] = previous;
             return a;
-        }, value.value.value);
+        }, value);
     }
+
+    public listen() {
+        if (this.variable) {
+            return this.module.listenToOpcUaNode(this.variable);
+        }
+    }
+
 }

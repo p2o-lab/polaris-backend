@@ -49,8 +49,8 @@ describe('Condition', () => {
 
     describe('without test server', () => {
 
-        it('should fail with no type', () => {
-            expect(() => ConditionFactory.create(null, undefined)).to.throw();
+        it('should provide TrueCondition with no type', () => {
+            expect(ConditionFactory.create(null, undefined)).to.instanceOf(TrueCondition);
         });
 
         it('should provide TrueCondition with wrong type', () => {
@@ -332,43 +332,44 @@ describe('Condition', () => {
                 expect(value).to.equal(false);
 
                 moduleServer.variables[0].v = 11;
-                await new Promise((resolve) => {
-                    expr.once('stateChanged', () => {
-                        resolve();
-                    } );
-                });
+                await new Promise((resolve) => expr.once('stateChanged', resolve));
                 expect(expr).to.have.property('fulfilled', true);
                 value = await expr.getValue();
                 expect(value).to.equal(true);
                 expect(expr).to.have.property('fulfilled', true);
 
                 moduleServer.variables[0].v = 8;
+                await Promise.all([
+                    new Promise((resolve) => expr.once('stateChanged', resolve)),
+                    new Promise((resolve) => module.once('variableChanged', resolve)),
+                ]);
                 value = await expr.getValue();
                 expect(value).to.equal(false);
-                await new Promise((resolve) => {
-                    expr.once('stateChanged', () => {
-                        resolve();
-                    } );
-                });
                 expect(expr).to.have.property('fulfilled', false);
 
                 expr.clear();
                 moduleServer.variables[0].v = 12;
+                expr.once('stateChanged', () => { throw new Error('State has changed after it was cleared'); });
+                await new Promise((resolve) => module.once('variableChanged', resolve));
                 value = await expr.getValue();
                 expect(value).to.equal(true);
                 expect(expr).to.have.property('fulfilled', undefined);
             });
 
             it('should work with semi-complex expression', async () => {
-                moduleServer.variables[0].v = 3.1;
                 const expr: ExpressionCondition = ConditionFactory.create({
                     type: ConditionType.expression,
                     expression: 'cos(CIF.Variable001.V)^2 > 0.9'
                 }, [module]) as ExpressionCondition;
+                expr.listen();
+
+                moduleServer.variables[0].v = 3.1;
+                await new Promise((resolve) => expr.once('stateChanged', resolve));
                 let value = await expr.getValue();
                 expect(value).to.equal(true);
 
                 moduleServer.variables[0].v = 0.7;
+                await new Promise((resolve) => expr.once('stateChanged', resolve));
                 value = await expr.getValue();
                 expect(value).to.equal(false);
             });
@@ -386,7 +387,9 @@ describe('Condition', () => {
                         }
                     ]
                 }, [module]) as ExpressionCondition;
+
                 moduleServer.variables[0].v = 0.7;
+                await new Promise((resolve) => module.once('variableChanged', resolve));
 
                 const value = await expr.getValue();
                 expect(value).to.equal(false);

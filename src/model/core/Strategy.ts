@@ -29,6 +29,7 @@ import StrictEventEmitter from 'strict-event-emitter-types';
 import {DataAssembly} from '../dataAssembly/DataAssembly';
 import {DataAssemblyFactory} from '../dataAssembly/DataAssemblyFactory';
 import {Module} from './Module';
+import {catService} from '../../config/logging';
 
 export interface StrategyEvents {
     processValueChanged: { processValue: DataAssembly, value: any, timestamp: Date };
@@ -65,6 +66,7 @@ export class Strategy extends (EventEmitter as new() => StrategyEmitter) {
     }
 
     public subscribe() {
+        catService.info(`Subscribe to strategy ${this.name}: ${JSON.stringify(this.parameters.map(p => p.name))}`);
         this.parameters.map((param) => param.subscribe()
             .on('VRbk', (data: OpcUaNodeOptions) => {
                 this.emit('parameterChanged', {parameter: param, value: data.value, timestamp: data.timestamp});

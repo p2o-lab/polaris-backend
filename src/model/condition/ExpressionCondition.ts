@@ -66,7 +66,7 @@ export class ExpressionCondition extends Condition {
 
     public listen(): Condition {
         this.scopeArray.forEach(async (item) => {
-            const a = item.module.listenToOpcUaNode(item.variable);
+            const a = item.listen();
             a.on('changed', this.boundOnChanged);
             this.listenersExpression.push(a);
         });
@@ -85,14 +85,7 @@ export class ExpressionCondition extends Condition {
     public async getValue(): Promise<any> {
         // get current variables
         const tasks = await Promise.all(this.scopeArray.map(async (item) => {
-            return item.module.readVariableNode(item.variable)
-                .then((value) => {
-                    return item.name.split('.').reduceRight((previous, current) => {
-                        const a = {};
-                        a[current] = previous;
-                        return a;
-                    }, value.value.value );
-                });
+            return item.getScopeValue();
         }));
         const assign = require('assign-deep');
         const scope = assign(...tasks);

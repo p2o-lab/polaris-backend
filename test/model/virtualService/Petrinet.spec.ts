@@ -23,8 +23,8 @@
  * SOFTWARE.
  */
 
-import {Petrinet} from '../../../src/model/virtualService/aggregatedService/Petrinet';
 import {expect} from 'chai';
+import {Petrinet} from '../../../src/model/virtualService/aggregatedService/Petrinet';
 
 describe('Petrinet', () => {
 
@@ -68,7 +68,7 @@ describe('Petrinet', () => {
             transitionChanges.push(tr.id);
         });
 
-        pn.start();
+        pn.run();
 
         pn.eventEmitter.once('completed', () => {
             expect(pn.activeStates).to.have.lengthOf(0);
@@ -168,7 +168,7 @@ describe('Petrinet', () => {
             transitionChanges.push(tr.id);
         });
 
-        pn.start();
+        pn.run();
 
         pn.eventEmitter.once('completed', () => {
             expect(pn.activeStates).to.have.lengthOf(0);

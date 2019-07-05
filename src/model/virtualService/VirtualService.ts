@@ -31,7 +31,6 @@ import {BaseService} from '../core/BaseService';
 import {ServiceState} from '../core/enum';
 import {OpcUaNodeEvents} from '../core/Module';
 import {Parameter} from '../recipe/Parameter';
-import {VirtualServiceOptions} from './VirtualServiceFactory';
 
 /**
  * A generic function block following the service state machine
@@ -141,32 +140,46 @@ export abstract class VirtualService extends BaseService {
     // Allow user to inject own functionality after reaching each state
     protected abstract initParameter();
     protected async onStarting(): Promise<void> {
+        catVirtualService.debug(`[${this.name}] onStarting`);
     }
-    protected async onRunning(): Promise<void> {
+    protected async onExecute(): Promise<void> {
+        catVirtualService.debug(`[${this.name}] onExecute`);
     }
     protected async onPausing(): Promise<void> {
+        catVirtualService.debug(`[${this.name}] onPausing`);
     }
     protected async onPaused(): Promise<void> {
+        catVirtualService.debug(`[${this.name}] onPaused`);
     }
     protected async onResuming(): Promise<void> {
+        catVirtualService.debug(`[${this.name}] onResuming`);
     }
     protected async onCompleting(): Promise<void> {
+        catVirtualService.debug(`[${this.name}] onCompleting`);
     }
     protected async onCompleted(): Promise<void> {
+        catVirtualService.debug(`[${this.name}] onCompleted`);
     }
     protected async onResetting(): Promise<void> {
+        catVirtualService.debug(`[${this.name}] onResetting`);
     }
     protected async onAborting(): Promise<void> {
+        catVirtualService.debug(`[${this.name}] onAborting`);
     }
     protected async onAborted(): Promise<void> {
+        catVirtualService.debug(`[${this.name}] onAborted`);
     }
     protected async onStopping(): Promise<void> {
+        catVirtualService.debug(`[${this.name}] onStopping`);
     }
     protected async onStopped(): Promise<void> {
+        catVirtualService.debug(`[${this.name}] onStopped`);
     }
     protected async onIdle(): Promise<void> {
+        catVirtualService.debug(`[${this.name}] onIdle`);
     }
     protected async onUnholding(): Promise<void> {
+        catVirtualService.debug(`[${this.name}] onUnholding`);
     }
 
     // Internal
@@ -195,10 +208,10 @@ export abstract class VirtualService extends BaseService {
         });
         catVirtualService.info('starting');
         await this.onStarting();
-        this.gotoRunning();
+        this.gotoExecute();
     }
 
-    private async gotoRunning(): Promise<void> {
+    private async gotoExecute(): Promise<void> {
         this.setState(ServiceState.EXECUTE);
         this.setControlEnable({
             start: false,
@@ -212,7 +225,7 @@ export abstract class VirtualService extends BaseService {
             unhold: false
         });
         catVirtualService.info('running');
-        await this.onRunning();
+        await this.onExecute();
     }
 
     private async gotoPausing(): Promise<void> {
@@ -265,7 +278,7 @@ export abstract class VirtualService extends BaseService {
         });
         catVirtualService.info('resuming');
         await this.onResuming();
-        this.gotoRunning();
+        this.gotoExecute();
     }
 
     private async gotoCompleting(): Promise<void> {
@@ -425,6 +438,6 @@ export abstract class VirtualService extends BaseService {
         this.setState(ServiceState.UNHOLDING);
         catVirtualService.info('unholding');
         await this.onUnholding();
-        this.gotoRunning();
+        this.gotoExecute();
     }
 }

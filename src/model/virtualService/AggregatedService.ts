@@ -88,18 +88,6 @@ export interface StateMachineOptions {
 }
 
 /** Virtual Service which can be started.
- * It is parsed from RecipeOptions
- *
- * A Recipe has the following states and emits following events
- * @startuml
- * [*] --> idle
- * idle --> running : start() -> started
- * running --> paused : pause()
- * running --> running : -> stepFinished
- * paused --> running : resume()
- * running --> idle : -> completed
- * @enduml
- *
  */
 export class AggregatedService extends VirtualService {
 
@@ -113,10 +101,16 @@ export class AggregatedService extends VirtualService {
     public _lastStatusChange: Date;
     private commandEnableExpression: CommandEnableOptions;
     private options: AggregatedServiceOptions;
+
     private starting: Petrinet;
     private execute: Petrinet;
     private completing: Petrinet;
     private stopping: Petrinet;
+    private pausing: Petrinet;
+    private resuming: Petrinet;
+    private aborting: Petrinet;
+    private holding: Petrinet;
+    private unholding: Petrinet;
 
     constructor(options: AggregatedServiceOptions, modules: Module[]) {
         super(options.name);
@@ -127,18 +121,15 @@ export class AggregatedService extends VirtualService {
             this.commandEnableExpression = options.commandEnable;
         }
 
-        if (options.stateMachine.starting) {
-            this.starting = new Petrinet(options.stateMachine.starting, modules);
-        }
-        if (options.stateMachine.execute) {
-            this.execute = new Petrinet(options.stateMachine.execute, modules);
-        }
-        if (options.stateMachine.completing) {
-            this.completing = new Petrinet(options.stateMachine.completing, modules);
-        }
-        if (options.stateMachine.stopping) {
-            this.stopping = new Petrinet(options.stateMachine.stopping, modules);
-        }
+        this.starting = new Petrinet(options.stateMachine.starting, modules);
+        this.execute = new Petrinet(options.stateMachine.execute, modules);
+        this.completing = new Petrinet(options.stateMachine.completing, modules);
+        this.stopping = new Petrinet(options.stateMachine.stopping, modules);
+        this.pausing = new Petrinet(options.stateMachine.pausing, modules);
+        this.resuming = new Petrinet(options.stateMachine.resuming, modules);
+        this.aborting = new Petrinet(options.stateMachine.aborting, modules);
+        this.holding = new Petrinet(options.stateMachine.holding, modules);
+        this.unholding = new Petrinet(options.stateMachine.unholding, modules);
 
         this.initParameter();
     }
@@ -149,8 +140,38 @@ export class AggregatedService extends VirtualService {
     }
 
     protected async onStarting(): Promise<void> {
-        await catTimer.info(`starting aggregatedservice`);
-        this.starting.start();
+        await this.starting.run();
     }
 
+    protected async onExecute(): Promise<void> {
+        await this.execute.run();
+    }
+
+    protected async onPausing(): Promise<void> {
+        await this.pausing.run();
+    }
+
+    protected async onCompleting(): Promise<void> {
+        await this.pausing.run();
+    }
+
+    protected async onResuming(): Promise<void> {
+        await this.resuming.run();
+    }
+
+    protected async onAborting(): Promise<void> {
+        await this.aborting.run();
+    }
+
+    protected async onStopping(): Promise<void> {
+        await this.stopping.run();
+    }
+
+    protected async onUnholding(): Promise<void> {
+        await this.unholding.run();
+    }
+
+    protected async onHolding(): Promise<void> {
+        await this.holding.run();
+    }
 }

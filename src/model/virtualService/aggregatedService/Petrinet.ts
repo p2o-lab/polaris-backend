@@ -51,28 +51,33 @@ export class Petrinet {
         this.activeStates = [];
         this.eventEmitter = new EventEmitter();
 
-        this.states = options.states.map((opt) => new PetrinetState(opt, modules));
-        this.transitions = options.transitions.map((opt) => new PetrinetTransition(opt, modules));
+        if (options) {
+            this.states = options.states.map((opt) => new PetrinetState(opt, modules));
+            this.transitions = options.transitions.map((opt) => new PetrinetTransition(opt, modules));
 
-        // Resolve transitions and state strings to appropriate objects
-        this.initialTransition =
-            this.transitions.find((tr: PetrinetTransition) => tr.id === options.initialTransition);
-        this.transitions.forEach((tr: PetrinetTransition) => {
-            tr.nextStates =
-                this.states.filter((state) => tr.options.nextStates.includes(state.id));
-        });
-        this.states.forEach((state: PetrinetState) => {
-            state.nextTransitions =
-                this.transitions.filter((transition) => state.options.nextTransitions.includes(transition.id));
-        });
-        this.transitions.forEach((tr: PetrinetTransition) => {
-            tr.priorStates =
-                this.states.filter((state) => state.nextTransitions.find((tr1) => tr1.id === tr.id));
-        });
+            // Resolve transitions and state strings to appropriate objects
+            this.initialTransition =
+                this.transitions.find((tr: PetrinetTransition) => tr.id === options.initialTransition);
+            this.transitions.forEach((tr: PetrinetTransition) => {
+                tr.nextStates =
+                    this.states.filter((state) => tr.options.nextStates.includes(state.id));
+            });
+            this.states.forEach((state: PetrinetState) => {
+                state.nextTransitions =
+                    this.transitions.filter((transition) => state.options.nextTransitions.includes(transition.id));
+            });
+            this.transitions.forEach((tr: PetrinetTransition) => {
+                tr.priorStates =
+                    this.states.filter((state) => state.nextTransitions.find((tr1) => tr1.id === tr.id));
+            });
+        }
     }
 
-    public start() {
-        this.listenToTransition(this.initialTransition);
+    public async run() {
+        if (this.initialTransition) {
+            this.listenToTransition(this.initialTransition);
+            await new Promise((resolve) => this.eventEmitter.once('completed', () => resolve()));
+        }
     }
 
     private listenToTransition(transition: PetrinetTransition) {
@@ -128,6 +133,8 @@ export class Petrinet {
         if (currentTransition.nextStates.length > 0) {
             currentTransition.nextStates.forEach((state) => this.activateState(state));
         } else {
+            // clear all transition conditions
+            this.transitions.forEach((transition) => transition.condition.clear());
             this.eventEmitter.emit('completed');
         }
     }

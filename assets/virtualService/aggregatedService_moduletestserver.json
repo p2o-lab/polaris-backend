@@ -1,0 +1,64 @@
+{
+  "version": "0.2.0",
+  "name": "DoseFill",
+  "type": "aggregatedService",
+  "description": "Combined Services from module test server",
+  "necessaryServices": [
+    "PEA1.Service1",
+    "PEA2.Service1"
+  ],
+  "parameters": [
+    {
+      "name": "CombinedParameter",
+      "type": "ExtAnaOp",
+      "default": "0",
+      "unit": "1038"
+    }
+  ],
+  "stateMachine": {
+    "starting": {
+      "initialTransition": "t1",
+      "states": [
+        {
+          "id": "Init",
+          "operations": [
+            {
+              "module": "PEA1",
+              "service": "Service1",
+              "command": "start",
+              "parameters": [
+                {
+                  "name": "Parameter001",
+                  "value": "SetVolume"
+                }
+              ]
+            },
+            {
+              "module": "PEA2",
+              "service": "Service1",
+              "command": "start"
+            }
+          ],
+          "nextTransitions": ["t2"]
+        }
+      ],
+      "transitions": [
+        {
+          "id": "t1",
+          "nextStates": ["Init"]
+        },
+        {
+          "id": "t2",
+          "condition": "PEA1.Service1.state==EXECUTE && PEA1.Service1.state==EXECUTE",
+          "nextStates": ["finished"]
+        }
+      ]
+    }
+  },
+  "commandEnable": {
+    "start": "Dose.DoseAmount.commandEnable.start && React.Fill.commandEnable.start",
+    "pause": "Dose.DoseAmount.commandEnable.pause && React.Fill.commandEnable.pause",
+    "resume": "Dose.DoseAmount.commandEnable.resume && React.Fill.commandEnable.resume",
+    "complete": false
+  }
+}

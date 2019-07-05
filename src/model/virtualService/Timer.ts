@@ -73,7 +73,7 @@ export class Timer extends VirtualService {
         await catTimer.info(`timer on starting: ${this.remainingTime}`);
     }
 
-    protected async onRunning() {
+    protected async onExecute() {
         this.timerId = global.setTimeout(() => {
             super.complete();
             this.timerUpdateId.unref();
