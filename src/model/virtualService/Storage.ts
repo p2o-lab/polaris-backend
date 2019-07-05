@@ -27,7 +27,7 @@ import {VirtualService} from './VirtualService';
 
 export class Storage extends VirtualService {
 
-    static type = 'storage';
+    public static type: string = 'storage';
 
     constructor(name: string) {
         super(name);

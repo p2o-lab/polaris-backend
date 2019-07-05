@@ -23,9 +23,9 @@
  * SOFTWARE.
  */
 
+import {DataType, Variant} from 'node-opcua';
 import {catTestServer} from '../config/logging';
 import {OpMode, ServiceControlEnable, ServiceMtpCommand, ServiceState} from '../model/core/enum';
-import {DataType, Variant} from 'node-opcua';
 import {TestServerStringVariable} from './ModuleTestStringVariable';
 import {TestServerVariable} from './ModuleTestVariable';
 

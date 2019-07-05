@@ -28,6 +28,7 @@ import {EventEmitter} from 'events';
 import {Expression, Parser} from 'expr-eval';
 import {catTimer} from '../../config/logging';
 import {VirtualService} from './VirtualService';
+import {ExtAnaOp} from '../dataAssembly/AnaOp';
 
 /**
  * Function Generator
@@ -50,20 +51,12 @@ export class FunctionGenerator extends VirtualService {
     set output(value: number) {
         this._output = value;
         this.parameters.find((p) => p.name === 'output').value = this._output;
-        this.eventEmitters['output'].emit('changed', {value: this._output, timestamp1: new Date()});
+        this.eventEmitter.emit('parameterChanged', {value: this._output, parameter: 'output', unit: null});
     }
 
     constructor(name: string) {
         super(name);
         this.initParameter();
-    }
-
-    protected initParameter() {
-        this.parameters = [
-            {name: 'function', value: 'sin(t)'},
-            {name: 'updateRate', value: 1000, unit: 'ms', min: 1},
-            {name: 'output', value: undefined, readonly: true}];
-        this.eventEmitters['output'] = new EventEmitter();
     }
 
     public async onStarting(): Promise<void> {
@@ -100,4 +93,10 @@ export class FunctionGenerator extends VirtualService {
         this.timerUpdateId.unref();
     }
 
+    protected initParameter() {
+        this.parameters = [
+            {name: 'function', value: 'sin(t)'},
+            {name: 'updateRate', value: 1000, unit: 'ms', min: 1},
+            {name: 'output', value: undefined, readonly: true}];
+    }
 }

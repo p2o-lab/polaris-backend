@@ -39,8 +39,6 @@ export abstract class VirtualService extends BaseService {
 
     public static type: string;
 
-    protected eventEmitters: Array<StrictEventEmitter<EventEmitter, OpcUaNodeEvents>> = [];
-
     constructor(name: string) {
         super();
         this._name = name;
@@ -83,10 +81,6 @@ export abstract class VirtualService extends BaseService {
             }
             Object.assign(pOld, pNew);
         });
-    }
-
-    public listenToVariable(variableName: string): StrictEventEmitter<EventEmitter, OpcUaNodeEvents> {
-        return this.eventEmitters[variableName];
     }
 
     public async start() {

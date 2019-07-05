@@ -65,8 +65,6 @@ const logLevelMapping = {
 const logLevel = logLevelMapping[(process.env.LOGLEVEL || '').toUpperCase()] || LogLevel.Info;
 
 // Configure to use our custom logger, note the callback which returns our CustomLogger from above.
-
-
 const config = new CategoryConfiguration(
     logLevel, LoggerType.Custom, new CategoryLogFormat(),
     (category: Category, runtimeSettings: RuntimeSettings) => new CustomLogger(category, runtimeSettings, messages)

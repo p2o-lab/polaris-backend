@@ -528,38 +528,28 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
                 })
                 .on('variableChanged', (data) => {
                     this.logger.debug(`[${this.id}] service variable changed: ` +
-                        `${data.strategy.name}.${data.parameter.name} = ${data.value}`);
-                    const variable: DataAssembly = data.parameter;
-                    let unit;
-                    if (variable instanceof AnaView) {
-                        unit = UNIT.find((item) => item.value === variable.VUnit.value).unit;
-                    }
+                        `${data.strategy.name}.${data.parameter} = ${data.value}`);
                     const entry = {
                         timestampPfe: new Date(),
                         timestampModule: new Date(),
                         module: this.id,
-                        variable: `${service.name}.${data.strategy.name}.${data.parameter.name}`,
+                        variable: `${service.name}.${data.strategy.name}.${data.parameter}`,
                         value: data.value,
-                        unit
+                        unit: data.unit
                     };
                     this.emit('variableChanged', entry);
                 }).on('parameterChanged', (data) => {
                     this.logger.debug(`[${this.id}] parameter changed: ` +
-                        `${data.strategy.name}.${data.parameter.name} = ${data.value}`);
-                    const variable: DataAssembly = data.parameter;
-                    let unit;
-                    if (variable instanceof AnaView) {
-                        unit = UNIT.find((item) => item.value === variable.VUnit.value).unit;
-                    }
+                        `${data.strategy.name}.${data.parameter} = ${data.value}`);
                     const entry = {
                         timestampPfe: new Date(),
                         timestampModule: new Date(),
                         module: this.id,
                         service: service.name,
                         strategy: data.strategy.id,
-                        parameter: data.parameter.name,
+                        parameter: data.parameter,
                         value: data.value,
-                        unit
+                        unit: data.unit
                     };
                     this.emit('parameterChanged', entry);
                 });

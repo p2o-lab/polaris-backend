@@ -57,9 +57,9 @@ export interface BaseServiceEvents {
         parameter: ParameterInterface[],
         scope?: any[]
     };
-    variableChanged: { strategy?: Strategy; parameter: DataAssembly; value: number };
+    variableChanged: { strategy?: Strategy; parameter: string; value: number, unit: string };
 
-    parameterChanged: { strategy?: Strategy; parameter: DataAssembly, value: number };
+    parameterChanged: { strategy?: Strategy; parameter: string, value: number, unit: string };
 }
 
 type BaseServiceEmitter = StrictEventEmitter<EventEmitter, BaseServiceEvents>;

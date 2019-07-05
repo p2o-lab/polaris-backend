@@ -23,16 +23,15 @@
  * SOFTWARE.
  */
 
+import {Module} from '../core/Module';
 import {
-    AggregatedService, AggregatedServiceOptions, CommandEnableOptions,
-    StateMachineOptions
+    AggregatedService, AggregatedServiceOptions
 } from './AggregatedService';
 import {FunctionGenerator} from './FunctionGenerator';
 import {PidController} from './PidController';
 import {Storage} from './Storage';
 import {Timer} from './Timer';
 import {VirtualService} from './VirtualService';
-import {Module} from '../core/Module';
 
 export interface VirtualServiceOptions {
     name: string;

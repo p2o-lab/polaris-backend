@@ -45,8 +45,7 @@ export class Timer extends VirtualService {
     private set remainingTime(value: number) {
         this._remainingTime = value;
         this.parameters.find((p) => p.name === 'remainingTime').value = this._remainingTime;
-        this.eventEmitter.emit('variableChanged', {parameter: null, value: this._remainingTime});
-        this.eventEmitters['remainingTime'].emit('changed', {value: this._remainingTime, timestamp: new Date()});
+        this.eventEmitter.emit('variableChanged', {parameter: 'remainingTime', value: this._remainingTime, unit: 'ms'});
     }
 
     constructor(name: string) {
@@ -61,7 +60,6 @@ export class Timer extends VirtualService {
             {name: 'remainingTime', value: 10000, unit: 'ms', readonly: true},
         ];
         this.selfCompleting = true;
-        this.eventEmitters['remainingTime'] = new EventEmitter();
     }
 
     protected async onStarting(): Promise<void> {

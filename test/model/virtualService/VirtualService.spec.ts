@@ -124,7 +124,11 @@ describe('VirtualService', () => {
             await timer.setParameters([{name: 'duration', value: 500}, {name: 'updateRate', value: 50}]);
 
             let hit = 0;
-            timer.listenToVariable('remainingTime').on('changed', () => { hit = hit + 1; });
+            timer.eventEmitter.on('variableChanged', (data) => {
+                if (data.parameter === 'remainingTime') {
+                    hit = hit + 1;
+                }
+            });
             await timer.start();
             expect(hit).to.equal(1);
             expect(timer.state).to.equal(ServiceState.EXECUTE);

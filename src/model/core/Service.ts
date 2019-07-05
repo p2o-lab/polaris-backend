@@ -246,21 +246,23 @@ export class Service extends BaseService {
         }
         this.parameters.forEach((param) => param.subscribe()
             .on('V', (data) => {
-                this.eventEmitter.emit('variableChanged', {parameter: param, value: data});
+                this.eventEmitter.emit('variableChanged', {parameter: param.name, value: data, unit: param.getUnit()});
             }));
         this.strategies.forEach((strategy) => strategy.subscribe()
             .on('processValueChanged', (data) => {
                     this.eventEmitter.emit('variableChanged', {
                         strategy,
-                        parameter: data.processValue,
-                        value: data.value
+                        parameter: data.processValue.name,
+                        value: data.value,
+                        unit: data.processValue.getUnit()
                     });
             })
             .on('parameterChanged', (data) => {
                 this.eventEmitter.emit('parameterChanged', {
                     strategy,
-                    parameter: data.parameter,
-                    value: data.value
+                    parameter: data.parameter.name,
+                    value: data.value,
+                    unit: data.parameter.getUnit()
                 });
             })
         );

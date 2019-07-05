@@ -24,6 +24,7 @@
  */
 
 import {DataAssembly} from './DataAssembly';
+import {UNIT} from '../core/Unit';
 
 export class ExtAnaOp extends DataAssembly {
 
@@ -62,6 +63,10 @@ export class ExtAnaOp extends DataAssembly {
 
     get VRbk() {
         return this.communication['VRbk'];
+    }
+
+    public getUnit(): string {
+        return UNIT.find((item) => item.value === this.VUnit.value).unit;
     }
 
 }

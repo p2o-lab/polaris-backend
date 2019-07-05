@@ -30,14 +30,15 @@ import * as fs from 'fs';
 import {OPCUAServer} from 'node-opcua-server';
 import {timeout} from 'promise-timeout';
 import * as delay from 'timeout-as-promise';
-import {ServiceState} from '../../../src/model/core/enum';
-import {Module} from '../../../src/model/core/Module';
+import {catCondition} from '../../../src/config/logging';
 import {Condition} from '../../../src/model/condition/Condition';
-import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
+import {ConditionFactory} from '../../../src/model/condition/ConditionFactory';
 import {ExpressionCondition} from '../../../src/model/condition/ExpressionCondition';
 import {TimeCondition} from '../../../src/model/condition/TimeCondition';
-import {ConditionFactory} from '../../../src/model/condition/ConditionFactory';
 import {TrueCondition} from '../../../src/model/condition/TrueCondition';
+import {ServiceState} from '../../../src/model/core/enum';
+import {Module} from '../../../src/model/core/Module';
+import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -294,7 +295,7 @@ describe('Condition', () => {
             await delay(50);
             expect(condition).to.have.property('fulfilled', false);
 
-            condition.on('stateChanged', () => console.log('state changed'));
+            condition.on('stateChanged', () => catCondition.debug('state changed'));
             expect(condition.listenerCount('stateChanged')).to.equal(1);
 
             condition.clear();
