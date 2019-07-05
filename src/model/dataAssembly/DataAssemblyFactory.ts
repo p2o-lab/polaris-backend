@@ -23,6 +23,7 @@
  * SOFTWARE.
  */
 
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {catModule} from '../../config/logging';
 import {Module} from '../core/Module';
 import {AdvAnaOp, AnaServParam, ExtAnaOp, ExtIntAnaOp} from './AnaOp';
@@ -35,7 +36,6 @@ import {DigMon, DigView} from './DigView';
 import {AnaDrv, MonAnaDrv} from './Drv';
 import {StrView} from './Str';
 import {AnaVlv, BinVlv, MonAnaVlv, MonBinVlv} from './Vlv';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 
 export class DataAssemblyFactory {
     public static create(variableOptions: DataAssemblyOptions, module: Module): DataAssembly {

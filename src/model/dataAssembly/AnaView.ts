@@ -23,8 +23,8 @@
  * SOFTWARE.
  */
 
-import {DataAssembly} from './DataAssembly';
 import {UNIT} from '../core/Unit';
+import {DataAssembly} from './DataAssembly';
 
 export class AnaView extends DataAssembly {
 
