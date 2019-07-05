@@ -32,11 +32,11 @@ import {Module} from '../core/Module';
 
 export class DataAssembly extends EventEmitter {
 
-    public name: string;
-    public interfaceClass: string;
-    public communication: OpcUaNodeOptions[];
-    protected module: Module;
-    protected subscribedNodes: string[] = [];
+    public readonly name: string;
+    public readonly interfaceClass: string;
+    public readonly communication: OpcUaNodeOptions[];
+    protected readonly module: Module;
+    protected readonly subscribedNodes: string[] = [];
 
     constructor(options: DataAssemblyOptions, module: Module) {
         super();
