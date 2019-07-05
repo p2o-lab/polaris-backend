@@ -212,25 +212,6 @@ export class Service extends BaseService {
                 this.eventEmitter.emit('controlEnable', this.controlEnable);
             });
         }
-        if (this.statusNode) {
-            this.parent.listenToOpcUaNode(this.statusNode).on('changed', (data) => {
-                this.statusNode.value = data.value;
-                this.statusNode.timestamp = new Date();
-                this._lastStatusChange = new Date();
-                this._state = this.statusNode.value as ServiceState;
-                this.logger.info(`[${this.qualifiedName}] Status changed: ` +
-                    `${ServiceState[this.statusNode.value as ServiceState]}`);
-                this.eventEmitter.emit('state', {
-                    state: this.state,
-                    timestamp: this.statusNode.timestamp
-                });
-                if (this.state === ServiceState.COMPLETED ||
-                    this.state === ServiceState.ABORTED ||
-                    this.state === ServiceState.STOPPED) {
-                    this.clearListeners();
-                }
-            });
-        }
         if (this.commandNode) {
             this.parent.listenToOpcUaNode(this.commandNode).on('changed', (data) => {
                 this.commandNode.value = data.value;
@@ -284,10 +265,27 @@ export class Service extends BaseService {
             })
         );
 
+        if (this.statusNode) {
+            this.parent.listenToOpcUaNode(this.statusNode).on('changed', (data) => {
+                this.statusNode.value = data.value;
+                this.statusNode.timestamp = new Date();
+                this._lastStatusChange = new Date();
+                this._state = this.statusNode.value as ServiceState;
+                this.logger.info(`[${this.qualifiedName}] Status changed: ` +
+                    `${ServiceState[this.statusNode.value as ServiceState]}`);
+                this.eventEmitter.emit('state', {
+                    state: this.state,
+                    timestamp: this.statusNode.timestamp
+                });
+                if (this.state === ServiceState.COMPLETED ||
+                    this.state === ServiceState.ABORTED ||
+                    this.state === ServiceState.STOPPED) {
+                    this.clearListeners();
+                }
+            });
+        }
         // wait until first update of state has been arrived
-        await new Promise((resolve) => {
-            this.eventEmitter.once('state', () => resolve());
-        });
+        await new Promise((resolve) => this.eventEmitter.once('state', resolve));
         return this.eventEmitter;
     }
 
