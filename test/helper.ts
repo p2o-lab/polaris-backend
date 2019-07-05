@@ -24,18 +24,18 @@
  */
 
 import {timeout} from 'promise-timeout';
+import {BaseService} from '../src/model/core/BaseService';
 import {ServiceState} from '../src/model/core/enum';
-import {Service} from '../src/model/core/Service';
 
 /**
  * resolve when service changes to expectedState
  * rejects after ms milliseconds
- * @param {Service} service     service to be waited for
+ * @param {BaseService} service     service to be waited for
  * @param {string} expectedState
  * @param {number} ms           max time before promise is rejected
  * @returns {Promise<void>}
  */
-export function waitForStateChange(service: Service, expectedState: string, ms = 1000): Promise<void> {
+export function waitForStateChange(service: BaseService, expectedState: string, ms = 1000): Promise<void> {
     return timeout(new Promise((resolve) => {
         service.eventEmitter.on('state', function test(data) {
             if (ServiceState[data.state] === expectedState) {
