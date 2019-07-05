@@ -23,11 +23,11 @@
  * SOFTWARE.
  */
 
-import {VirtualService} from './VirtualService';
-import * as Controller from 'node-pid-controller';
 import {ParameterOptions} from '@p2olab/polaris-interface';
-import {Parameter} from '../recipe/Parameter';
+import * as Controller from 'node-pid-controller';
 import {ServiceState} from '../core/enum';
+import {Parameter} from '../recipe/Parameter';
+import {VirtualService} from './VirtualService';
 
 export class PidController extends VirtualService {
     set output(value: number) {
@@ -35,13 +35,33 @@ export class PidController extends VirtualService {
         this.parameters.find((p) => p.name === 'output').value = this._output;
     }
 
-    static type = 'pidController';
+    public static type: string = 'pidController';
     private ctr: Controller;
     private _output: number;
 
     constructor(name: string) {
         super(name);
         this.initParameter();
+    }
+
+    public async setParameters(parameters: Array<Parameter | ParameterOptions>): Promise<void> {
+        super.setParameters(parameters);
+        const setpoint = parameters.find((param) => param.name === 'setpoint');
+        if (setpoint) {
+            this.ctr.setTarget(setpoint.value as number);
+        }
+        const input = parameters.find((param) => param.name === 'input');
+        if (input && this.state === ServiceState.EXECUTE) {
+            this._output = this.ctr.update(input.value as number);
+        }
+    }
+
+    public async onStarting() {
+        this.ctr = new Controller({
+            k_p: this.parameters.find((param) => param.name === 'p').value as number,
+            k_i: this.parameters.find((param) => param.name === 'i').value as number,
+            k_d: this.parameters.find((param) => param.name === 'd').value as number
+        });
     }
 
     protected initParameter() {
@@ -53,26 +73,6 @@ export class PidController extends VirtualService {
             {name: 'i', value: 0.01},
             {name: 'd', value: 0.01}
         ];
-    }
-
-    async setParameters(parameters: (Parameter | ParameterOptions)[]): Promise<void> {
-        super.setParameters(parameters);
-        let setpoint = parameters.find(param => param.name === 'setpoint');
-        if (setpoint) {
-            this.ctr.setTarget(<number> setpoint.value);
-        }
-        let input = parameters.find(param => param.name === 'input');
-        if (input && this.state === ServiceState.EXECUTE) {
-            this._output = this.ctr.update(<number> input.value);
-        }
-    }
-
-    async onStarting() {
-        this.ctr = new Controller({
-            k_p: <number> this.parameters.find(param => param.name === 'p').value,
-            k_i: <number> this.parameters.find(param => param.name === 'i').value,
-            k_d: <number> this.parameters.find(param => param.name === 'd').value
-        });
     }
 
 }
