@@ -36,23 +36,23 @@ export class ModuleTestServer {
     public variables: TestServerVariable[] = [];
     public services: TestServerService[] = [];
     private server: OPCUAServer;
+    private port: number;
 
-    constructor() {
-        this.server = new OPCUAServer({
-            port: 4334
-        });
+    constructor(port = 4334) {
+        this.port = port;
+        this.server = new OPCUAServer({port: this.port});
 
         this.externalTrigger = false;
     }
 
-    public async portInUse(port): Promise<boolean> {
+    public async portInUse(): Promise<boolean> {
         const server = net.createServer((socket) => {
             socket.write('Echo server\r\n');
             socket.pipe(socket);
         });
 
         return new Promise((resolve) => {
-            server.listen(port, '127.0.0.1');
+            server.listen(this.port, '127.0.0.1');
             server.on('error', () => {
                 resolve(true);
             });
@@ -64,7 +64,7 @@ export class ModuleTestServer {
     }
 
     public async start() {
-        if (await this.portInUse(4334)) {
+        if (await this.portInUse()) {
             throw new Error('Port is in use');
         }
         await new Promise((resolve) => this.server.initialize(resolve));
