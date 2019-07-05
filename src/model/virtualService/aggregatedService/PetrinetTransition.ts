@@ -23,11 +23,11 @@
  * SOFTWARE.
  */
 
-import {ConditionOptions, TransitionInterface} from '@p2olab/polaris-interface';
-import {PetrinetState} from './PetrinetState';
+import {ConditionOptions} from '@p2olab/polaris-interface';
 import {Condition} from '../../condition/Condition';
-import {Module} from '../../core/Module';
 import {ConditionFactory} from '../../condition/ConditionFactory';
+import {Module} from '../../core/Module';
+import {PetrinetState} from './PetrinetState';
 
 export interface PetrinetTransitionOptions {
     id: string;

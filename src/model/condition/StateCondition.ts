@@ -23,11 +23,11 @@
  * SOFTWARE.
  */
 
-import {Service} from '../core/Service';
-import {ServiceState} from '../core/enum';
 import {StateConditionOptions} from '@p2olab/polaris-interface';
-import {Module} from '../core/Module';
 import {catCondition} from '../../config/logging';
+import {ServiceState} from '../core/enum';
+import {Module} from '../core/Module';
+import {Service} from '../core/Service';
 import {Condition} from './Condition';
 import {ModuleCondition} from './ModuleCondition';
 
