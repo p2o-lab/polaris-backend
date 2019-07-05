@@ -23,13 +23,13 @@
  * SOFTWARE.
  */
 
-import {RecipeOptions, ServiceCommand} from '@p2olab/polaris-interface';
+import {ModuleOptions, RecipeOptions, ServiceCommand} from '@p2olab/polaris-interface';
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {catManager} from '../config/logging';
 import {ServiceLogEntry, VariableLogEntry} from '../logging/archive';
 import {ServiceState} from './core/enum';
-import {Module, ModuleOptions} from './core/Module';
+import {Module} from './core/Module';
 import {Service} from './core/Service';
 import {Player} from './recipe/Player';
 import {Recipe} from './recipe/Recipe';
@@ -45,6 +45,12 @@ interface ManagerEvents {
 }
 
 type ManagerEmitter = StrictEventEmitter<EventEmitter, ManagerEvents>;
+
+interface LoadModuleOptions {
+    module?: ModuleOptions;
+    modules?: ModuleOptions[];
+    subplants?: Array<{ modules: ModuleOptions[] }>;
+}
 
 export class Manager extends (EventEmitter as new() => ManagerEmitter) {
 
@@ -98,11 +104,7 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
      * @param {boolean} protectedModules  should modules be protected from being deleted
      * @returns {Module[]}  created modules
      */
-    public loadModule(options: {
-        module?: ModuleOptions,
-        modules?: ModuleOptions[],
-        subplants?: Array<{ modules: ModuleOptions[] }>
-    }, protectedModules: boolean = false): Module[] {
+    public loadModule(options: LoadModuleOptions, protectedModules: boolean = false): Module[] {
         const newModules: Module[] = [];
         if (!options) {
             throw new Error('No modules defined in supplied options');
