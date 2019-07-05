@@ -51,6 +51,12 @@ interface ManagerEvents {
 
 type ManagerEmitter = StrictEventEmitter<EventEmitter, ManagerEvents>;
 
+interface LoadModuleOptions {
+    module?: ModuleOptions;
+    modules?: ModuleOptions[];
+    subplants?: Array<{ modules: ModuleOptions[] }>;
+}
+
 export class Manager extends (EventEmitter as new() => ManagerEmitter) {
 
     get autoreset(): boolean {
@@ -106,11 +112,7 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
      * @param {boolean} protectedModules  should modules be protected from being deleted
      * @returns {Module[]}  created modules
      */
-    public loadModule(options: {
-        module?: ModuleOptions,
-        modules?: ModuleOptions[],
-        subplants?: Array<{ modules: ModuleOptions[] }>
-    },                protectedModules: boolean = false): Module[] {
+    public loadModule(options: LoadModuleOptions, protectedModules: boolean = false): Module[] {
         const newModules: Module[] = [];
         if (!options) {
             throw new Error('No modules defined in supplied options');
