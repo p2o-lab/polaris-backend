@@ -24,8 +24,8 @@
  */
 
 import {AndConditionOptions, OrConditionOptions} from '@p2olab/polaris-interface';
-import {Condition} from './Condition';
 import {Module} from '../core/Module';
+import {Condition} from './Condition';
 import {ConditionFactory} from './ConditionFactory';
 
 export abstract class AggregateCondition extends Condition {

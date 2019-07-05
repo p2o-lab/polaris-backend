@@ -23,8 +23,8 @@
  * SOFTWARE.
  */
 
-import {Module} from '../core/Module';
 import {StateConditionOptions, VariableConditionOptions} from '@p2olab/polaris-interface';
+import {Module} from '../core/Module';
 import {Condition} from './Condition';
 
 export abstract class ModuleCondition extends Condition {

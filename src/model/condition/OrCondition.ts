@@ -24,10 +24,10 @@
  */
 
 import {OrConditionOptions} from '@p2olab/polaris-interface';
-import {Module} from '../core/Module';
 import {catCondition} from '../../config/logging';
-import {Condition} from './Condition';
+import {Module} from '../core/Module';
 import {AggregateCondition} from './AggregateCondition';
+import {Condition} from './Condition';
 
 export class OrCondition extends AggregateCondition {
 

@@ -26,18 +26,18 @@
 import {OpcUaNodeOptions, ScopeOptions} from '@p2olab/polaris-interface';
 import {Expression, Parser} from 'expr-eval';
 import {catScopeItem} from '../../config/logging';
+import {BaseService} from '../core/BaseService';
+import {ServiceState} from '../core/enum';
 import {Module} from '../core/Module';
 import {Service} from '../core/Service';
 import {Strategy} from '../core/Strategy';
-import {DataAssembly} from '../dataAssembly/DataAssembly';
-import {AnaView} from '../dataAssembly/AnaView';
-import {DigView} from '../dataAssembly/DigView';
-import {BinView} from '../dataAssembly/BinView';
 import {ExtAnaOp} from '../dataAssembly/AnaOp';
-import {ExtDigOp} from '../dataAssembly/DigOp';
+import {AnaView} from '../dataAssembly/AnaView';
 import {ExtBinOp} from '../dataAssembly/BinOp';
-import {BaseService} from '../core/BaseService';
-import {ServiceState} from '../core/enum';
+import {BinView} from '../dataAssembly/BinView';
+import {DataAssembly} from '../dataAssembly/DataAssembly';
+import {ExtDigOp} from '../dataAssembly/DigOp';
+import {DigView} from '../dataAssembly/DigView';
 
 export class ScopeItem {
 

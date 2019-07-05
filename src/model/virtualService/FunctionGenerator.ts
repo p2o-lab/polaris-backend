@@ -24,11 +24,8 @@
  */
 
 import Timeout = NodeJS.Timeout;
-import {EventEmitter} from 'events';
 import {Expression, Parser} from 'expr-eval';
-import {catTimer} from '../../config/logging';
 import {VirtualService} from './VirtualService';
-import {ExtAnaOp} from '../dataAssembly/AnaOp';
 
 /**
  * Function Generator

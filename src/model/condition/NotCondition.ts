@@ -24,8 +24,8 @@
  */
 
 import {NotConditionOptions} from '@p2olab/polaris-interface';
-import {Module} from '../core/Module';
 import {catCondition} from '../../config/logging';
+import {Module} from '../core/Module';
 import {Condition} from './Condition';
 import {ConditionFactory} from './ConditionFactory';
 

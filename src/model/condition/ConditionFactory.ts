@@ -29,23 +29,23 @@
  * @param {Module[]} modules    modules to be used for evaluating module name in expressions
  * @returns Condition
  */
-import {TrueCondition} from './TrueCondition';
-import {Condition} from './Condition';
-import {AndCondition} from './AndCondition';
-import {OrCondition} from './OrCondition';
-import {ExpressionCondition} from './ExpressionCondition';
-import {Module} from '../core/Module';
-import {catCondition} from '../../config/logging';
 import {
     AndConditionOptions, ConditionOptions, ConditionType, ExpressionConditionOptions, NotConditionOptions,
     OrConditionOptions,
     StateConditionOptions,
     TimeConditionOptions, VariableConditionOptions
 } from '@p2olab/polaris-interface';
-import {TimeCondition} from './TimeCondition';
+import {catCondition} from '../../config/logging';
+import {Module} from '../core/Module';
+import {AndCondition} from './AndCondition';
+import {Condition} from './Condition';
+import {ExpressionCondition} from './ExpressionCondition';
 import {NotCondition} from './NotCondition';
-import {VariableCondition} from './VariableCondition';
+import {OrCondition} from './OrCondition';
 import {StateCondition} from './StateCondition';
+import {TimeCondition} from './TimeCondition';
+import {TrueCondition} from './TrueCondition';
+import {VariableCondition} from './VariableCondition';
 
 export class ConditionFactory {
     public static create(options: ConditionOptions, modules: Module[]): Condition {

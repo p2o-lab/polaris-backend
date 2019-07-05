@@ -23,8 +23,8 @@
  * SOFTWARE.
  */
 
-import {catTestServer} from '../config/logging';
 import {DataType, Variant} from 'node-opcua';
+import {catTestServer} from '../config/logging';
 import Timeout = NodeJS.Timeout;
 import {OpMode} from '../model/core/enum';
 

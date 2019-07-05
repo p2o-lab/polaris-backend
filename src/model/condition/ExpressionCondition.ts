@@ -23,12 +23,12 @@
  * SOFTWARE.
  */
 
-import {Expression} from 'expr-eval';
-import {ScopeItem} from '../recipe/ScopeItem';
-import {EventEmitter} from 'events';
 import {ExpressionConditionOptions, ScopeOptions} from '@p2olab/polaris-interface';
-import {Module} from '../core/Module';
+import {EventEmitter} from 'events';
+import {Expression} from 'expr-eval';
 import {catCondition} from '../../config/logging';
+import {Module} from '../core/Module';
+import {ScopeItem} from '../recipe/ScopeItem';
 import {Condition} from './Condition';
 
 export class ExpressionCondition extends Condition {
