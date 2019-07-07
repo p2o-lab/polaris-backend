@@ -17,8 +17,7 @@
     "typedoc": "typedoc --mode file --module commonjs --out typedoc/ --target ES6 --excludePrivate --readme none src/",
     "apidoc": "apidoc -i src/server/ -o apidoc",
     "doc": "npm run apidoc && npm run typedoc",
-    "build": "rm -rf build/ && tsc",
-    "build-all": "npm run build && npm run doc"
+    "build": "tsc"
   },
   "bin": {
     "polaris-backend": "./bin/polaris-backend"
