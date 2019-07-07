@@ -82,7 +82,7 @@ interface ServiceEvents extends BaseServiceEvents {
 type ServiceEmitter = StrictEventEmitter<EventEmitter, ServiceEvents>;
 
 /**
- * TestServerService of a [[Module]]
+ * Service of a [[Module]]
  *
  * after connection to a real PEA, commands can be triggered and states can be retrieved
  *
