@@ -23,7 +23,7 @@ steps:
 
 - name: codecov
   image: robertstettner/drone-codecov
-  token: c9908c8c-3426-4466-918a-3bb317e84e82
+  secrets: [ codecov_token]
 
 - name: docker
   image: plugins/docker
