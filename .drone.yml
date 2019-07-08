@@ -24,7 +24,6 @@ steps:
 - name: codecov
   image: robertstettner/drone-codecov
   settings:
-    debug: true
     token:
       from_secret: codecov_token
 
