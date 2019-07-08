@@ -19,6 +19,11 @@ steps:
   commands:
   - export LOGLEVEL=warn
   - npm test
+  - nyc report --reporter=json > coverage/coverage.json
+
+- name: codecov
+  image: robertstettner/drone-codecov
+  token: c9908c8c-3426-4466-918a-3bb317e84e82
 
 - name: docker
   image: plugins/docker
