@@ -23,7 +23,10 @@ steps:
 
 - name: codecov
   image: robertstettner/drone-codecov
-  secrets: [ codecov_token]
+  settings:
+    debug: true
+    token:
+      from_secret: codecov_token
 
 - name: docker
   image: plugins/docker
