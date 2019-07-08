@@ -9,6 +9,9 @@ A HTML user interface for this project is provided via the [polaris-frontend](ht
 [![Docker Badge](https://images.microbadger.com/badges/image/p2olab/polaris-backend.svg)](https://microbadger.com/images/p2olab/polaris-backend "Get your own image badge on microbadger.com")
 [![Greenkeeper badge](https://badges.greenkeeper.io/p2o-lab/polaris-backend.svg)](https://greenkeeper.io/)
 [![CodeFactor](https://www.codefactor.io/repository/github/p2o-lab/polaris-backend/badge)](https://www.codefactor.io/repository/github/p2o-lab/polaris-backend)
+[![codecov](https://codecov.io/gh/p2o-lab/polaris-backend/branch/develop/graph/badge.svg)](https://codecov.io/gh/p2o-lab/polaris-backend)
+
+
 
 
 ## Installation and Deployment

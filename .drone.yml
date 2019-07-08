@@ -19,6 +19,13 @@ steps:
   commands:
   - export LOGLEVEL=warn
   - npm test
+  - node_modules/.bin/nyc report --reporter=json > coverage.json
+
+- name: codecov
+  image: robertstettner/drone-codecov
+  settings:
+    token:
+      from_secret: codecov_token
 
 - name: docker
   image: plugins/docker
@@ -57,6 +64,6 @@ steps:
 
 ---
 kind: signature
-hmac: 392e24d213749c7c035d18876b28896425a6f67b9ec7d8055d826f3880ad06b8
+hmac: 2d2b0e3b9ffcdaa32da1d2df5c7eae1169876fb5886e162f976e05e8e6b9a403
 
 ...
