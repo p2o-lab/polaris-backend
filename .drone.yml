@@ -19,7 +19,7 @@ steps:
   commands:
   - export LOGLEVEL=warn
   - npm test
-  - nyc report --reporter=json > coverage/coverage.json
+  - node_modules/.bin/nyc report --reporter=json > coverage.json
 
 - name: codecov
   image: robertstettner/drone-codecov
