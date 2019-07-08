@@ -40,12 +40,11 @@ describe('Scope Item', () => {
     let moduleTestServer: Module;
     let moduleDosierer: Module;
 
-    before(() => {
+    beforeEach(() => {
         moduleDosierer = new Module(
             JSON.parse(fs.readFileSync('assets/modules/module_dosierer_1.1.0.json').toString()).modules[0]);
         moduleTestServer = new Module(
             JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString()).modules[0]);
-
     });
 
     it('should work for normal expression', () => {
@@ -139,14 +138,14 @@ describe('Scope Item', () => {
 
         let moduleServer: ModuleTestServer;
 
-        before(async () => {
+        beforeEach(async () => {
             moduleServer = new ModuleTestServer();
             await moduleServer.start();
 
             await moduleTestServer.connect();
         });
 
-        after(async () => {
+        afterEach(async () => {
             await moduleTestServer.disconnect();
             await moduleServer.shutdown();
         });

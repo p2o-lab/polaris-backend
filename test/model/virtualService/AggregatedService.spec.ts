@@ -32,14 +32,24 @@ import {waitForStateChange} from '../../helper';
 
 describe('AggregatedService', () => {
 
-    it('should work', async () => {
-        const moduleServer1 = new ModuleTestServer(4334);
-        const moduleServer2 = new ModuleTestServer(4335);
+    let moduleServer1: ModuleTestServer;
+    let moduleServer2: ModuleTestServer;
+
+    beforeEach(async () => {
+        moduleServer1 = new ModuleTestServer(4334);
+        moduleServer2 = new ModuleTestServer(4335);
         await moduleServer1.start();
         await moduleServer2.start();
         moduleServer1.startSimulation();
         moduleServer2.startSimulation();
+    });
 
+    afterEach(async () => {
+        await moduleServer1.shutdown();
+        await moduleServer2.shutdown();
+    });
+
+    it('should work', async () => {
         const moduleJson: ModuleOptions =
             JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8')).modules[0];
 

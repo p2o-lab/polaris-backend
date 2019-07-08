@@ -270,13 +270,12 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
             }
 
             // subscribe to all services
-            await this.subscribeToAllServices();
+            await this.subscribeToAllVariables()
+                .catch((err) => this.logger.warn('Could not connect to all variables:' + err));
+            await this.subscribeToAllServices()
+                .catch((err) => this.logger.warn('Could not connect to all services:' + err));
 
-            try {
-                this.subscribeToAllVariables();
-            } catch (err) {
-                this.logger.warn('Could not connect to all variables:' + err);
-            }
+
             this.emit('connected');
             return Promise.resolve();
         }
@@ -366,6 +365,8 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
         if (result.statusCode.value !== 0) {
             throw new Error(`Could not read ${nodeId.toString()}: ${result.statusCode.description}`);
         }
+        node.value = result.value.value;
+        node.timestamp = result.serverTimestamp;
         return result;
     }
 
@@ -466,28 +467,31 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
         return Promise.all(tasks);
     }
 
-    private subscribeToAllVariables() {
-        this.variables.forEach((variable: DataAssembly) => {
-            catModule.info(`[${this.id}] subscribe to process variable ${variable.name}`);
-            variable.subscribe(1000).on('V', (data) => {
-                let unit;
-                if (variable instanceof AnaView) {
-                    const unitObject = UNIT.find((item) => item.value === parseInt(variable.VUnit.value, 10));
-                    unit = unitObject ? unitObject.unit : undefined;
-                }
-                this.logger.debug(`[${this.id}] variable changed: ${variable.name} = ` +
-                    `${data.value} ${unit ? unit : ''}`);
-                const entry: VariableLogEntry = {
-                    timestampPfe: new Date(),
-                    timestampModule: data.timestamp,
-                    module: this.id,
-                    variable: variable.name,
-                    value: data.value,
-                    unit
-                };
-                this.emit('variableChanged', entry);
-            });
-        });
+    private async subscribeToAllVariables() {
+        await Promise.all(
+            this.variables.map(async (variable: DataAssembly) => {
+                catModule.info(`[${this.id}] subscribe to process variable ${variable.name}`);
+                variable.on('V', (data) => {
+                    let unit;
+                    if (variable instanceof AnaView) {
+                        const unitObject = UNIT.find((item) => item.value === parseInt(variable.VUnit.value, 10));
+                        unit = unitObject ? unitObject.unit : undefined;
+                    }
+                    this.logger.debug(`[${this.id}] variable changed: ${variable.name} = ` +
+                        `${data.value} ${unit ? unit : ''}`);
+                    const entry: VariableLogEntry = {
+                        timestampPfe: new Date(),
+                        timestampModule: data.timestamp,
+                        module: this.id,
+                        variable: variable.name,
+                        value: data.value,
+                        unit
+                    };
+                    this.emit('variableChanged', entry);
+                });
+                await variable.subscribe(1000);
+            })
+        );
     }
 
     private subscribeToAllServices() {

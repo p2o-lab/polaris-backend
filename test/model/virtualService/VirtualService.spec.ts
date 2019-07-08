@@ -121,7 +121,7 @@ describe('VirtualService', () => {
 
             await timer.setParameters([{name: 'remainingTime', value: 1000}]).then(expect.fail, (err) => err);
 
-            await timer.setParameters([{name: 'duration', value: 500}, {name: 'updateRate', value: 50}]);
+            await timer.setParameters([{name: 'duration', value: 100}, {name: 'updateRate', value: 10}]);
 
             let hit = 0;
             timer.eventEmitter.on('variableChanged', (data) => {
@@ -132,16 +132,33 @@ describe('VirtualService', () => {
             await timer.start();
             expect(hit).to.equal(1);
             expect(timer.state).to.equal(ServiceState.EXECUTE);
-            await delay(200);
-            await timer.pause();
+            await delay(45);
             expect(hit).to.equal(5);
-            await delay(80);
+            expect((await timer.getCurrentParameters()).find((p) => p.name === 'remainingTime'))
+                .to.have.property('value')
+                .to.closeTo(55, 5);
+
+            await timer.pause();
+            expect(hit).to.equal(6);
+            await delay(25);
+            expect(hit).to.equal(6);
+            expect((await timer.getCurrentParameters()).find((p) => p.name === 'remainingTime'))
+                .to.have.property('value')
+                .to.closeTo(55, 5);
 
             await timer.resume();
+            expect(hit).to.equal(6);
+            await delay(12);
+            expect(hit).to.equal(7);
+            expect((await timer.getCurrentParameters()).find((p) => p.name === 'remainingTime'))
+                .to.have.property('value')
+                .to.closeTo(43, 5);
 
-            await delay(310);
-
-            expect(hit).to.equal(10);
+            await delay(20);
+            expect(hit).to.equal(9);
+            expect((await timer.getCurrentParameters()).find((p) => p.name === 'remainingTime'))
+                .to.have.property('value')
+                .to.closeTo(23, 5);
 
             await timer.reset();
         });

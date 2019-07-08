@@ -75,6 +75,7 @@ export class ModuleTestServer {
 
     public async shutdown() {
         catTestServer.info('Shutdown test server');
+        this.stopSimulation();
         await new Promise((resolve) => this.server.shutdown(100, resolve));
     }
 

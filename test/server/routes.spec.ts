@@ -41,7 +41,6 @@ describe('Routes', () => {
             .expect(404, done);
     });
 
-
     context('#coreRoutes', () => {
 
         context('autoReset', () => {

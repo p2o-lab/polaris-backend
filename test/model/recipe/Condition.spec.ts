@@ -328,12 +328,13 @@ describe('Condition', () => {
                 expect(expr.getUsedModules().size).to.equal(1);
 
                 moduleServer.variables[0].v = 0;
+                await new Promise((resolve) => module.once('variableChanged', resolve));
                 expect(expr).to.have.property('fulfilled', false);
                 let value = await expr.getValue();
                 expect(value).to.equal(false);
 
                 moduleServer.variables[0].v = 11;
-                await new Promise((resolve) => expr.once('stateChanged', resolve));
+                await new Promise((resolve) => module.once('variableChanged', resolve));
                 expect(expr).to.have.property('fulfilled', true);
                 value = await expr.getValue();
                 expect(value).to.equal(true);
@@ -355,7 +356,7 @@ describe('Condition', () => {
                 value = await expr.getValue();
                 expect(value).to.equal(true);
                 expect(expr).to.have.property('fulfilled', undefined);
-            });
+            }).timeout(4000);
 
             it('should work with semi-complex expression', async () => {
                 const expr: ExpressionCondition = ConditionFactory.create({

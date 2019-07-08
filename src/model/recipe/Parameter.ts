@@ -126,11 +126,11 @@ export class Parameter {
 
     /**
      * calculate value from current scopeArray
-     * @returns {Promise<any>}
+     * @returns number | boolean
      */
-    public async getValue(): Promise<any> {
+    public getValue(): number | boolean {
         // get current variables
-        const tasks = await Promise.all(this.scopeArray.map((item) => item.getScopeValue()));
+        const tasks = this.scopeArray.map((item) => item.getScopeValue());
         const scope = assign(...tasks);
         const result = this.expression.evaluate(scope);
         catParameter.info(`Specific parameters: ${this.name} = ${this.value} (${JSON.stringify(scope)}) = ${result}`);

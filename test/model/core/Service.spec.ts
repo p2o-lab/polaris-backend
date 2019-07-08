@@ -103,7 +103,6 @@ describe('Service', () => {
 
             await service.execute(ServiceCommand.start);
             await waitForStateChange(service, 'STARTING');
-            expect(ServiceState[service.state]).to.equal('STARTING');
             expect(service.controlEnable).to.deep.equal({
                 abort: true,
                 complete: false,
