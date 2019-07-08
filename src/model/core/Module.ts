@@ -275,7 +275,6 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
             await this.subscribeToAllServices()
                 .catch((err) => this.logger.warn('Could not connect to all services:' + err));
 
-
             this.emit('connected');
             return Promise.resolve();
         }

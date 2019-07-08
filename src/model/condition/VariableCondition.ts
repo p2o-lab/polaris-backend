@@ -53,7 +53,7 @@ export class VariableCondition extends ModuleCondition {
         return this;
     }
 
-    private check = (data) => {
+    private check = (data: {value: number}) => {
         catCondition.debug(`value changed to ${data.value} -  (${this.operator}) compare against ${this.value}`);
         const value: number = data.value;
         let result = false;
