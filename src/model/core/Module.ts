@@ -25,7 +25,7 @@
 
 import {
     ControlEnableInterface,
-    ModuleInterface,
+    ModuleInterface, ModuleOptions,
     OpcUaNodeOptions,
     OpModeInterface,
     ParameterInterface,
@@ -53,20 +53,12 @@ import {Category} from 'typescript-logging';
 import {catModule} from '../../config/logging';
 import {VariableLogEntry} from '../../logging/archive';
 import {AnaView} from '../dataAssembly/AnaView';
-import {DataAssembly, DataAssemblyOptions} from '../dataAssembly/DataAssembly';
+import {DataAssembly} from '../dataAssembly/DataAssembly';
 import {DataAssemblyFactory} from '../dataAssembly/DataAssemblyFactory';
 import {ServiceState} from './enum';
-import {Service, ServiceOptions} from './Service';
+import {Service} from './Service';
 import {Strategy} from './Strategy';
 import {UNIT} from './Unit';
-
-export interface ModuleOptions {
-    id: string;
-    opcua_server_url: string;
-    hmi_url?: string;
-    services: ServiceOptions[];
-    process_values: DataAssemblyOptions[];
-}
 
 /**
  * Events emitted by [[OpcUaNodeOptions]]

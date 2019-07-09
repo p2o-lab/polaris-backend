@@ -30,7 +30,7 @@ import {
     ParameterInterface,
     ParameterOptions,
     ServiceCommand,
-    ServiceInterface,
+    ServiceInterface, ServiceOptions,
     StrategyInterface
 } from '@p2olab/polaris-interface';
 import {EventEmitter} from 'events';
@@ -42,7 +42,7 @@ import {ExtAnaOp} from '../dataAssembly/AnaOp';
 import {AnaView} from '../dataAssembly/AnaView';
 import {ExtBinOp} from '../dataAssembly/BinOp';
 import {BinView} from '../dataAssembly/BinView';
-import {DataAssembly, DataAssemblyOptions} from '../dataAssembly/DataAssembly';
+import {DataAssembly} from '../dataAssembly/DataAssembly';
 import {DataAssemblyFactory} from '../dataAssembly/DataAssemblyFactory';
 import {ExtDigOp} from '../dataAssembly/DigOp';
 import {DigView} from '../dataAssembly/DigView';
@@ -61,29 +61,8 @@ import {
     ServiceState
 } from './enum';
 import {Module} from './Module';
-import {Strategy, StrategyOptions} from './Strategy';
+import {Strategy} from './Strategy';
 import {UNIT} from './Unit';
-
-export interface ServiceOptions {
-    name: string;
-    communication: {
-        OpMode: OpcUaNodeOptions;
-        ControlOp?: OpcUaNodeOptions;
-        CommandMan?: OpcUaNodeOptions;
-        ControlExt?: OpcUaNodeOptions;
-        CommandExt?: OpcUaNodeOptions
-        ControlEnable?: OpcUaNodeOptions;
-        CommandEnable?: OpcUaNodeOptions;
-        State?: OpcUaNodeOptions;
-        CurrentState?: OpcUaNodeOptions;
-        StrategyOp?: OpcUaNodeOptions;
-        StrategyMan?: OpcUaNodeOptions;
-        StrategyExt: OpcUaNodeOptions;
-        CurrentStrategy: OpcUaNodeOptions;
-    };
-    strategies: StrategyOptions[];
-    parameters: DataAssemblyOptions[];
-}
 
 const interfaceClassToType = {
     'StrView': 'string',

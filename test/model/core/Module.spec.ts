@@ -23,10 +23,11 @@
  * SOFTWARE.
  */
 
+import {ModuleOptions} from '@p2olab/polaris-interface';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
-import {Module, ModuleOptions} from '../../../src/model/core/Module';
+import {Module} from '../../../src/model/core/Module';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 
 chai.use(chaiAsPromised);
