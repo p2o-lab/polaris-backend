@@ -9,7 +9,6 @@
   "homepage": "https://github.com/p2o-lab/polaris-backend",
   "license": "MIT",
   "scripts": {
-    "dev": "nodemon",
     "start": "ts-node ./src/index.ts",
     "start-dist": "node ./build/index.js",
     "start-testserver": "ts-node ./src/testServer.ts",
