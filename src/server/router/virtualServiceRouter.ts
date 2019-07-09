@@ -44,7 +44,7 @@ virtualServiceRouter.get('/', asyncHandler(async (req: Request, res: Response) =
  * @api {get} /virtualService/:virtualServiceId    Get virtual service
  * @apiName GetVirtualService
  * @apiGroup VirtualService
- * @apiParam virtualServiceId
+ * @apiParam virtualServiceId   id of virtual service
  */
 virtualServiceRouter.get('/:virtualServiceId', asyncHandler(async (req: Request, res: Response) => {
     const manager: Manager = req.app.get('manager');
@@ -91,12 +91,12 @@ virtualServiceRouter.put('', asyncHandler(async (req: Request, res: Response) =>
  * @apiName ConfigureVirtualService
  * @apiDescription Configure virtual service parameter
  * @apiGroup VirtualService
- * @apiParam {string} virtualServiceName   Name of virtual service
+ * @apiParam {string} virtualServiceId   Id of virtual service
  * @apiParam {ParameterOptions[]} parameters    virtual service parameter
  */
-virtualServiceRouter.post('/:virtualServiceName/parameter', asyncHandler(async (req: Request, res: Response) => {
+virtualServiceRouter.post('/:virtualServiceId/parameter', asyncHandler(async (req: Request, res: Response) => {
     const manager: Manager = req.app.get('manager');
-    const virtualService = manager.virtualServices.find((vs) => vs.name === req.params.virtualServiceName);
+    const virtualService = manager.virtualServices.find((vs) => vs.name === req.params.virtualServiceId);
     await virtualService.setParameters(JSON.parse(req.body.parameters));
     res.json(await virtualService.json());
 }));
