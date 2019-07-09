@@ -25,17 +25,14 @@
 
 import {
     ControlEnableInterface,
-    DataAssemblyOptions,
     ModuleInterface, 
     ModuleOptions,
     OpcUaNodeOptions,
     OpModeInterface,
     ParameterInterface,
     ServiceCommand,
-    ServiceInterface,
-    ServiceOptions
+    ServiceInterface
 } from '@p2olab/polaris-interface';
-import {ModuleOptions} from '@p2olab/polaris-interface/dist/ModuleOptions';
 import {EventEmitter} from 'events';
 import {DataType, VariantArrayType} from 'node-opcua';
 import {
