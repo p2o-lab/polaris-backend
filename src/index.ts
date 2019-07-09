@@ -23,6 +23,8 @@
  * SOFTWARE.
  */
 
+/* tslint:disable:no-console */
+
 import * as commandLineArgs from 'command-line-args';
 import commandLineUsage = require('command-line-usage');
 import * as fs from 'fs';
@@ -48,6 +50,14 @@ const optionDefinitions = [
         multiple: true,
         typeLabel: '{underline recipePath[]}',
         description: 'path to recipe.json which should be loaded at startup'
+    },
+    {
+        name: 'virtualService',
+        alias: 'v',
+        type: String,
+        multiple: true,
+        typeLabel: '{underline virtualServicePath[]}',
+        description: 'path to virtualService.json which should be loaded at startup'
     },
     {
         name: 'help',
@@ -76,6 +86,7 @@ const sections = [
         content: [
             '$ node build/src/index.js [{bold --module} {underline modulePath}] ' +
             '[{bold --recipe} {underline recipePath}] ' +
+            '[{bold --virtualService} {underline virtualServicePath}] ' +
             '[{bold --externalTrigger} {underline opcuaEndpoint} {underline opcuaNodeid}]'
         ]
     },
@@ -98,7 +109,7 @@ let options;
 try {
     options = commandLineArgs(optionDefinitions);
 } catch (err) {
-    console.log('Error: Could not parse command line arguments', err.toString());
+    console.log('Error: Could not parse commandNode line arguments', err.toString());
     console.log(commandLineUsage(sections));
 }
 if (options) {
@@ -132,6 +143,14 @@ if (options) {
             options.recipe.forEach((recipe) => {
                 const recipeOptions = JSON.parse(fs.readFileSync(recipe).toString());
                 manager.loadRecipe(recipeOptions, true);
+            });
+        }
+
+        if (options.virtualService && options.virtualService.length > 0) {
+            console.log(`Load virtual service from ${options.virtualService}`);
+            options.virtualService.forEach((vs) => {
+                const vsOptions = JSON.parse(fs.readFileSync(vs).toString());
+                manager.instantiateVirtualService(vsOptions);
             });
         }
 

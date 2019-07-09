@@ -23,15 +23,11 @@
  * SOFTWARE.
  */
 
-import {ConditionOptions, TransitionInterface} from '@p2olab/polaris-interface';
+import {TransitionInterface, TransitionOptions} from '@p2olab/polaris-interface';
+import {Condition} from '../condition/Condition';
+import {ConditionFactory} from '../condition/ConditionFactory';
 import {Module} from '../core/Module';
-import {Condition} from './Condition';
 import {Step} from './Step';
-
-export interface TransitionOptions {
-    next_step: string;
-    condition: ConditionOptions;
-}
 
 export class Transition {
     public nextStep: Step;
@@ -45,7 +41,7 @@ export class Transition {
             throw new Error(`"next_step" property is missing in ${JSON.stringify(options)}`);
         }
         if (options.condition) {
-            this.condition = Condition.create(options.condition, modules);
+            this.condition = ConditionFactory.create(options.condition, modules);
         } else {
             throw new Error(`"condition" property is missing in ${JSON.stringify(options)}`);
         }

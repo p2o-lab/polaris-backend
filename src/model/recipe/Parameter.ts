@@ -38,8 +38,8 @@ import {DataAssembly} from '../dataAssembly/DataAssembly';
 import {ScopeItem} from './ScopeItem';
 
 /**
- * Parameter of a [[TestServerService]]. Can be static or dynamic. Dynamic Parameters can depend on variables
- * of the same or other modules. These can also be continuously updated (specified via continuous property)
+ * Parameter of an [[Operation]]. Can be static or dynamic. Dynamic Parameters can depend on variables of the same or
+ * other modules. These can also be continuously updated (specified via continuous property)
  */
 export class Parameter {
 
@@ -74,7 +74,7 @@ export class Parameter {
      *
      * @param {ParameterOptions} parameterOptions
      * @param {Service} service         service where the parameter belongs to
-     * @param {Strategy} strategy       strategy to use
+     * @param {Strategy} strategy       strategyNode to use
      * @param {Module[]} modules        modules where expression can be matched
      */
     constructor(parameterOptions: ParameterOptions, service: Service, strategy?: Strategy, modules?: Module[]) {
@@ -119,19 +119,18 @@ export class Parameter {
     public listenToParameter() {
         const eventEmitter: StrictEventEmitter<EventEmitter, OpcUaNodeEvents> = new EventEmitter();
         this.scopeArray.forEach(async (item) => {
-            item.module.listenToOpcUaNode(item.variable)
-                .on('changed', (data) => eventEmitter.emit('changed', data));
+            item.listen().on('changed', (data) => eventEmitter.emit('changed', data));
         });
         return eventEmitter;
     }
 
     /**
      * calculate value from current scopeArray
-     * @returns {Promise<any>}
+     * @returns number | boolean
      */
-    public async getValue(): Promise<any> {
+    public getValue(): number | boolean {
         // get current variables
-        const tasks = await Promise.all(this.scopeArray.map((item) => item.getScopeValue()));
+        const tasks = this.scopeArray.map((item) => item.getScopeValue());
         const scope = assign(...tasks);
         const result = this.expression.evaluate(scope);
         catParameter.info(`Specific parameters: ${this.name} = ${this.value} (${JSON.stringify(scope)}) = ${result}`);

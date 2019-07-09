@@ -127,7 +127,6 @@ describe('Manager', () => {
         });
 
         it('should load from options, stop, abort and reset manager and remove module', async () => {
-
             const moduleJson = parseJson(
                 fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8'), null, 60);
 
@@ -136,28 +135,33 @@ describe('Manager', () => {
             expect(manager.modules).to.have.lengthOf(1);
 
             const module = manager.modules[0];
-            const service = module.services[1];
+            const service1 = module.services[0];
+            const service2 = module.services[1];
 
             module.connect();
-            await waitForStateChange(service, 'IDLE', 2000);
-            service.execute(ServiceCommand.start);
-            await waitForStateChange(service, 'EXECUTE');
+            await waitForStateChange(service2, 'IDLE', 2000);
+            service2.execute(ServiceCommand.start);
+            await waitForStateChange(service2, 'EXECUTE');
 
             await manager.stopAllServices();
-            await waitForStateChange(service, 'STOPPED');
-            expect(service.status.value).to.equal(ServiceState.STOPPED);
+            await waitForStateChange(service2, 'STOPPED');
+            expect(service2.state).to.equal(ServiceState.STOPPED);
 
             await manager.abortAllServices();
-            await waitForStateChange(service, 'ABORTED');
-            expect(service.status.value).to.equal(ServiceState.ABORTED);
+            await Promise.all([
+                    waitForStateChange(service1, 'ABORTED'),
+                    waitForStateChange(service2, 'ABORTED')]
+            );
+            expect(service1.state).to.equal(ServiceState.ABORTED);
+            expect(service2.state).to.equal(ServiceState.ABORTED);
 
             await manager.resetAllServices();
-            await waitForStateChange(service, 'IDLE');
-            expect(service.status.value).to.equal(ServiceState.IDLE);
+            await waitForStateChange(service2, 'IDLE');
+            expect(service2.state).to.equal(ServiceState.IDLE);
 
             await manager.removeModule(module.id);
             expect(manager.modules).to.have.lengthOf(0);
-        }).slow(2000).timeout(10000).retries(3);
+        }).timeout(5000);
 
         it('should autoreset service', async () => {
             const moduleJson = parseJson(
@@ -170,16 +174,16 @@ describe('Manager', () => {
             const module = manager.modules[0];
             const service = module.services[1];
 
-            await module.connect();
-            await waitForStateChange(service, 'IDLE');
+            module.connect();
+            await waitForStateChange(service, 'IDLE', 2000);
             service.execute(ServiceCommand.start);
             await waitForStateChange(service, 'EXECUTE');
 
             service.execute(ServiceCommand.complete);
             await waitForStateChange(service, 'COMPLETED');
             await waitForStateChange(service, 'IDLE');
-        }).slow(2000).timeout(5000);
+        });
 
-    }).retries(3);
+    });
 
 });

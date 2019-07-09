@@ -12,7 +12,7 @@
     "start": "ts-node ./src/index.ts",
     "start-dist": "node ./build/index.js",
     "start-testserver": "ts-node ./src/testServer.ts",
-    "test": "nyc mocha -r ts-node/register test/**/*.ts test/**/**/*.ts",
+    "test": "nyc mocha --retries 3 -r ts-node/register test/**/*.ts test/**/**/*.ts",
     "typedoc": "typedoc --mode file --module commonjs --out typedoc/ --target ES6 --excludePrivate --readme none src/",
     "apidoc": "apidoc -i src/server/ -o apidoc",
     "doc": "npm run apidoc && npm run typedoc",
@@ -36,8 +36,10 @@
     "expr-eval": "^1.2.2",
     "express": "^4.16.4",
     "express-async-handler": "^1.1.4",
+    "javascript-state-machine": "^3.1.0",
     "json-parse-better-errors": "^1.0.2",
-    "node-opcua": "^0.7.4",
+    "node-opcua": "^0.7.2",
+    "node-pid-controller": "^1.0.1",
     "promise-timeout": "^1.3.0",
     "request": "^2.88.0",
     "supertest": "^4.0.2",
@@ -69,7 +71,6 @@
     "ts-node": "^8.2.0",
     "tslint": "^5.16.0",
     "typedoc": "^0.14.2",
-    "typedoc-plantuml": "git+https://github.com/0815fox/typedoc-plantuml.git",
     "typescript": "^3.4.5"
   },
   "nyc": {

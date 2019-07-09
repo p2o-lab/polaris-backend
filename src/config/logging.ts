@@ -49,6 +49,9 @@ export const catOpc = new Category('opcua');
 export const catServer = new Category('server');
 export const catTestServer = new Category('testserver');
 
+export const catVirtualService = new Category('VirtualService');
+export const catTimer = new Category('Timer', catVirtualService);
+
 // Custom logging
 export const messages: string[] = [];
 

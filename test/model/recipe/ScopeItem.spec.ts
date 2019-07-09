@@ -24,6 +24,7 @@
  */
 
 import {expect} from 'chai';
+import {Expression} from 'expr-eval';
 import * as fs from 'fs';
 import {OPCUAServer} from 'node-opcua-server';
 import {timeout} from 'promise-timeout';
@@ -39,12 +40,11 @@ describe('Scope Item', () => {
     let moduleTestServer: Module;
     let moduleDosierer: Module;
 
-    before(() => {
+    beforeEach(() => {
         moduleDosierer = new Module(
             JSON.parse(fs.readFileSync('assets/modules/module_dosierer_1.1.0.json').toString()).modules[0]);
         moduleTestServer = new Module(
             JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString()).modules[0]);
-
     });
 
     it('should work for normal expression', () => {
@@ -53,15 +53,17 @@ describe('Scope Item', () => {
         expect(extraction.scopeItems[0].name).to.equal('CIF.Variable001');
     });
 
-    it('should work for mutliple variables', () => {
-        const extraction = ScopeItem.extractFromExpressionString('CIF.Variable001 + CIF.Variable002', [moduleTestServer]);
+    it('should work for multiple variables', () => {
+        const extraction = ScopeItem.extractFromExpressionString('CIF.Variable001 + CIF.Variable002',
+            [moduleTestServer]);
         expect(extraction.scopeItems).to.have.lengthOf(2);
         expect(extraction.scopeItems[0].name).to.equal('CIF.Variable001');
         expect(extraction.scopeItems[1].name).to.equal('CIF.Variable002');
     });
 
     it('should work for mutliple times of same variables', () => {
-        const extraction = ScopeItem.extractFromExpressionString('CIF.Variable001 + CIF.Variable001', [moduleTestServer]);
+        const extraction = ScopeItem.extractFromExpressionString('CIF.Variable001 + CIF.Variable001',
+            [moduleTestServer]);
         expect(extraction.scopeItems).to.have.lengthOf(1);
         expect(extraction.scopeItems[0].name).to.equal('CIF.Variable001');
     });
@@ -100,26 +102,30 @@ describe('Scope Item', () => {
     });
 
     it('should return ScopeItem 4', async () => {
-        const item = ScopeItem.extractFromExpressionVariable('CIF.Variable001.VUnit', [moduleTestServer, moduleDosierer]);
+        const item = ScopeItem.extractFromExpressionVariable('CIF.Variable001.VUnit',
+            [moduleTestServer, moduleDosierer]);
         expect(item).to.have.property('module').to.have.property('id', 'CIF');
         expect(item).to.have.property('name', 'CIF.Variable001.VUnit');
         expect(item).to.have.property('variable').to.have.property('node_id', 'Variable1.VUnit');
     });
 
     it('should return ScopeItem 5', () => {
-        const item = ScopeItem.extractFromExpressionVariable('CIF.Service1.Parameter001', [moduleTestServer, moduleDosierer]);
+        const item = ScopeItem.extractFromExpressionVariable('CIF.Service1.Parameter001',
+            [moduleTestServer, moduleDosierer]);
         expect(item).to.have.property('module').to.have.property('id', 'CIF');
         expect(item).to.have.property('name', 'CIF.Service1.Parameter001');
         expect(item).to.have.property('variable').to.have.property('node_id', 'Service1.Parameter1.V');
     });
 
     it('should return ScopeItem 6', () => {
-        const item = ScopeItem.extractFromExpressionVariable('CIF.Service1.Parameter00x', [moduleTestServer, moduleDosierer]);
+        const item = ScopeItem.extractFromExpressionVariable('CIF.Service1.Parameter00x',
+            [moduleTestServer, moduleDosierer]);
         expect(item).to.equal(null);
     });
 
     it('should return ScopeItem 7', () => {
-        const item = ScopeItem.extractFromExpressionVariable('CIF.Service5.Parameter00x', [moduleTestServer, moduleDosierer]);
+        const item = ScopeItem.extractFromExpressionVariable('CIF.Service5.Parameter00x',
+            [moduleTestServer, moduleDosierer]);
         expect(item).to.equal(null);
     });
 
@@ -132,20 +138,33 @@ describe('Scope Item', () => {
 
         let moduleServer: ModuleTestServer;
 
-        before(async () => {
+        beforeEach(async () => {
             moduleServer = new ModuleTestServer();
             await moduleServer.start();
 
             await moduleTestServer.connect();
         });
 
-        after(async () => {
+        afterEach(async () => {
             await moduleTestServer.disconnect();
             await moduleServer.shutdown();
         });
 
-        it('get scope value', async () => {
-            const item = ScopeItem.extractFromExpressionVariable('CIF.Service1.Parameter001', [moduleTestServer, moduleDosierer]);
+        it('get scope value 1', async () => {
+
+            const item = ScopeItem.extractFromExpressionVariable('CIF.Variable001', [moduleTestServer, moduleDosierer]);
+            expect(await item.getScopeValue()).to.deep.equal({
+                'CIF': {
+                    'Variable001': 20
+                }
+            });
+        });
+
+        it('get scope value 2', async () => {
+            const item = ScopeItem.extractFromExpressionVariable('CIF.Service1.Parameter001',
+                [moduleTestServer, moduleDosierer]);
+            expect(item.name).to.equal('CIF.Service1.Parameter001');
+            expect(item.variable.node_id).to.equal('Service1.Parameter1.V');
             expect(await item.getScopeValue()).to.deep.equal({
                 'CIF': {
                     'Service1': {
@@ -153,6 +172,33 @@ describe('Scope Item', () => {
                     }
                 }
             });
+
+            moduleServer.services[0].parameter[0].v = 30;
+            await new Promise((resolve) => moduleTestServer.on('parameterChanged', resolve));
+
+            expect(await item.getScopeValue()).to.deep.equal({
+                'CIF': {
+                    'Service1': {
+                        'Parameter001': 30
+                    }
+                }
+            });
+        });
+
+        it('should work with state', () => {
+            const data: {expression: Expression, scopeItems: ScopeItem[]} =
+                ScopeItem.extractFromExpressionString('CIF.Service1.state==\'IDLE\'', [moduleTestServer]);
+            expect(data.scopeItems).to.have.lengthOf(1);
+            expect(data.scopeItems[0].name).to.equal('CIF.Service1.state');
+
+            const tasks = data.scopeItems.map((item) => {
+                return item.getScopeValue();
+            });
+            const assign = require('assign-deep');
+            const scope = assign(...tasks);
+
+            expect(data.expression.evaluate(scope)).to.equal(true);
+
         });
 
     });

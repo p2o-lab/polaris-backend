@@ -32,7 +32,7 @@ import {Service} from '../core/Service';
 import {Strategy} from '../core/Strategy';
 import {Parameter} from './Parameter';
 
-/** Operation used in a [[Step]] of a [[Recipe]]
+/** Operation used in a [[Step]] of a [[Recipe]] or [[PetrinetState]]
  *
  */
 export class Operation {
@@ -64,7 +64,8 @@ export class Operation {
 
         this.service = this.module.services.find((service) => service.name === options.service);
         if (this.service === undefined) {
-            throw new Error(`Service ${ options.service }(${ this.module.id }) not found in modules`);
+            throw new Error(`Service ${ this.module.id }.${ options.service } not found in modules ` +
+            `(${JSON.stringify(modules.map((m) => m.id))})`);
         }
         if (options.strategy) {
             this.strategy = this.service.strategies.find((strategy) => strategy.name === options.strategy);
@@ -102,12 +103,14 @@ export class Operation {
                 .then(() => {
                     this.state = 'completed';
                     this.emitter.emit('changed', 'completed');
+                    this.emitter.removeAllListeners('changed');
                 })
                 .catch(async () => {
                     numberOfTries++;
                     if (numberOfTries === MAX_TRIES) {
                         this.state = 'aborted';
                         this.emitter.emit('changed', 'aborted');
+                        this.emitter.removeAllListeners('changed');
                         catOperation.warn('Could not execute operation. Stop restarting');
                     } else {
                         catOperation.warn('Could not execute operation. Another try in 500ms');

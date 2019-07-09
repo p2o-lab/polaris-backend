@@ -23,13 +23,14 @@
  * SOFTWARE.
  */
 
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {catModule} from '../../config/logging';
 import {Module} from '../core/Module';
 import {AdvAnaOp, AnaServParam, ExtAnaOp, ExtIntAnaOp} from './AnaOp';
 import {AnaMon, AnaView} from './AnaView';
 import {AdvBinOp, BinServParam, ExtBinOp, ExtIntBinOp} from './BinOp';
 import {BinMon, BinView} from './BinView';
-import {DataAssembly, DataAssemblyOptions} from './DataAssembly';
+import {DataAssembly} from './DataAssembly';
 import {AdvDigOp, DigServParam, ExtDigOp, ExtIntDigOp} from './DigOp';
 import {DigMon, DigView} from './DigView';
 import {AnaDrv, MonAnaDrv} from './Drv';

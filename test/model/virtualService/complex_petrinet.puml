@@ -1,0 +1,55 @@
+@startuml
+
+skinparam monochrome true
+
+==t1== --> s1a
+==t1== --> s1b
+
+==t2== --> s2
+
+==t3a== --> s3a
+==t3b== --> s3b
+
+
+==t4a== --> s4
+==t4b== --> s4
+
+==t5== -->(*)
+
+(*)  --> ==t1==
+note right
+t1
+end note
+
+s1a --> ==t2==
+s1b --> ==t2==
+note right
+t2
+end note
+
+s2 --> ==t3a==
+note right
+t3a
+end note
+s2 --> ==t3b==
+note right
+t3b
+end note
+
+s3a --> ==t4a==
+note right
+t4a
+end note
+
+s3b --> ==t4b==
+note right
+t4b
+end note
+
+s4 --> ==t5==
+note right
+t5
+end note
+
+
+@enduml

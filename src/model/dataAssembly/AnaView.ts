@@ -23,6 +23,7 @@
  * SOFTWARE.
  */
 
+import {UNIT} from '../core/Unit';
 import {DataAssembly} from './DataAssembly';
 
 export class AnaView extends DataAssembly {
@@ -48,6 +49,9 @@ export class AnaView extends DataAssembly {
         return this.communication['VSclMax'];
     }
 
+    public getUnit(): string {
+        return UNIT.find((item) => item.value === this.VUnit.value).unit;
+    }
 }
 
 export class AnaMon extends AnaView {

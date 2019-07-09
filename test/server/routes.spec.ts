@@ -41,7 +41,6 @@ describe('Routes', () => {
             .expect(404, done);
     });
 
-
     context('#coreRoutes', () => {
 
         context('autoReset', () => {
@@ -166,9 +165,9 @@ describe('Routes', () => {
                 .expect(200, done);
         });
 
-        it('should provide not existing modules', (done) => {
-            request(app).get('/api/module/abc1234')
-                .expect(500, done);
+        it('should provide not existing modules', async () => {
+            await request(app).get('/api/module/abc1234')
+                .expect(500);
         });
 
         it('should provide download for not existing modules', (done) => {
@@ -198,10 +197,20 @@ describe('Routes', () => {
     });
 
     context('#recipeRoutes', () => {
-        it('should provide recipes', (done) => {
-            request(app).get('/api/recipe')
+        it('should provide recipes', async () => {
+            await request(app).get('/api/recipe')
                 .expect('Content-Type', /json/)
-                .expect(200, done);
+                .expect(200);
+        });
+
+        it('should provide specific recipe', async () => {
+            await request(app).get('/api/recipe/abc123')
+                .expect(500);
+        });
+
+        it('should delete not existing recipe', async () => {
+            await request(app).delete('/api/recipe/abc123')
+                .expect(400);
         });
     });
 });

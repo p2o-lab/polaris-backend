@@ -120,6 +120,7 @@ describe('Parameter', () => {
         });
 
         it('should load with complex expression and given scopeArray', async () => {
+
             const param = new Parameter({
                 name: 'Parameter001',
                 value: 'sin(a)^2 + cos(CIF.Variable001)^2',
@@ -133,15 +134,22 @@ describe('Parameter', () => {
                 ]
 
             }, service, undefined, [module]);
-            expect(await param.getValue()).to.be.closeTo(1, 0.01);
+            expect(param.scopeArray).to.have.lengthOf(2);
+            expect(param.scopeArray[1].getScopeValue()).to.deep.equal({
+                CIF: {
+                    Variable001: 20
+                }
+            });
+            expect(param.scopeArray[0].getScopeValue()).to.deep.equal({a: 20});
+            expect(param.getValue()).to.be.closeTo(1, 0.01);
         });
 
-        it('should load with complex expression with dataAssembly variables', async () => {
+        it('should load with complex expression with dataAssembly variables', () => {
             const param = new Parameter({
                 name: 'Parameter001',
                 value: '2 * CIF.Variable001.V + CIF.Variable002 + Variable\\.003'
             }, service, undefined, [module]);
-            expect(await param.getValue()).to.be.greaterThan(0.01);
+            expect(param.getValue()).to.be.greaterThan(0.01);
         });
 
         it('should update value on module', async () => {

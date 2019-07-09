@@ -26,6 +26,7 @@
 import {OpcUaNodeOptions, StrategyOptions} from '@p2olab/polaris-interface';
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
+import {catService} from '../../config/logging';
 import {DataAssembly} from '../dataAssembly/DataAssembly';
 import {DataAssemblyFactory} from '../dataAssembly/DataAssemblyFactory';
 import {Module} from './Module';
@@ -65,6 +66,7 @@ export class Strategy extends (EventEmitter as new() => StrategyEmitter) {
     }
 
     public subscribe() {
+        catService.info(`Subscribe to strategy ${this.name}: ${JSON.stringify(this.parameters.map((p) => p.name))}`);
         this.parameters.map((param) => param.subscribe()
             .on('VRbk', (data: OpcUaNodeOptions) => {
                 this.emit('parameterChanged', {parameter: param, value: data.value, timestamp: data.timestamp});

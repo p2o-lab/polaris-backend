@@ -38,8 +38,7 @@ export const moduleRouter: Router = Router();
  */
 moduleRouter.get('', asyncHandler(async (req: Request, res: Response) => {
     const manager: Manager = req.app.get('manager');
-    const tasks = manager.modules.map(async (module) => await module.json());
-    res.json(await Promise.all(tasks));
+    res.json(await manager.getModules());
 }));
 
 /**

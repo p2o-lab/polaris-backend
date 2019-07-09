@@ -25,7 +25,8 @@
 
 import {
     ControlEnableInterface,
-    ModuleInterface, ModuleOptions,
+    ModuleInterface, 
+    ModuleOptions,
     OpcUaNodeOptions,
     OpModeInterface,
     ParameterInterface,
@@ -127,7 +128,7 @@ interface ModuleEvents {
     };
 
     /**
-     * whenever a command is executed from the PFE
+     * whenever a command is executed from the POL
      * @event commandExecuted
      */
     commandExecuted: {
@@ -266,16 +267,12 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
                 await this.fixReactor();
             }
 
-            // set all services to correct operation mode
-            await Promise.all(this.services.map((service) => service.setOperationMode()));
             // subscribe to all services
-            await this.subscribeToAllServices();
+            await this.subscribeToAllVariables()
+                .catch((err) => this.logger.warn('Could not connect to all variables:' + err));
+            await this.subscribeToAllServices()
+                .catch((err) => this.logger.warn('Could not connect to all services:' + err));
 
-            try {
-                this.subscribeToAllVariables();
-            } catch (err) {
-                this.logger.warn('Could not connect to all variables:' + err);
-            }
             this.emit('connected');
             return Promise.resolve();
         }
@@ -292,7 +289,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
      *
      */
     public disconnect(): Promise<any> {
-        this.services.forEach((s) => s.removeAllListeners());
+        this.services.forEach((s) => s.eventEmitter.removeAllListeners());
         return new Promise(async (resolve, reject) => {
             if (this.session) {
                 this.logger.info(`[${this.id}] Disconnect module`);
@@ -365,6 +362,8 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
         if (result.statusCode.value !== 0) {
             throw new Error(`Could not read ${nodeId.toString()}: ${result.statusCode.description}`);
         }
+        node.value = result.value.value;
+        node.timestamp = result.serverTimestamp;
         return result;
     }
 
@@ -423,7 +422,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
     public pause(): Promise<void[]> {
         this.logger.info(`[${this.id}] Pause all running services`);
         const tasks = this.services.map(async (service) => {
-            if (await service.getServiceState() === ServiceState.EXECUTE) {
+            if (service.state === ServiceState.EXECUTE) {
                 return service.execute(ServiceCommand.pause);
             }
         });
@@ -436,7 +435,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
     public resume(): Promise<void[]> {
         this.logger.info(`[${this.id}] Resume all paused services`);
         const tasks = this.services.map(async (service) => {
-            if (await service.getServiceState() === ServiceState.PAUSED) {
+            if (service.state === ServiceState.PAUSED) {
                 return service.execute(ServiceCommand.resume);
             }
         });
@@ -449,7 +448,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
     public stop(): Promise<void[]> {
         this.logger.info(`[${this.id}] Stop all non-idle services`);
         const tasks = this.services.map((service) => {
-            if (service.status.value !== ServiceState.IDLE) {
+            if (service.state !== ServiceState.IDLE) {
                 return service.execute(ServiceCommand.stop);
             }
         });
@@ -465,28 +464,31 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
         return Promise.all(tasks);
     }
 
-    private subscribeToAllVariables() {
-        this.variables.forEach((variable: DataAssembly) => {
-            catModule.info(`[${this.id}] subscribe to process variable ${variable.name}`);
-            variable.subscribe(1000).on('V', (data) => {
-                let unit;
-                if (variable instanceof AnaView) {
-                    const unitObject = UNIT.find((item) => item.value === parseInt(variable.VUnit.value, 10));
-                    unit = unitObject ? unitObject.unit : undefined;
-                }
-                this.logger.debug(`[${this.id}] variable changed: ${variable.name} = ` +
-                    `${data.value} ${unit ? unit : ''}`);
-                const entry: VariableLogEntry = {
-                    timestampPfe: new Date(),
-                    timestampModule: data.timestamp,
-                    module: this.id,
-                    variable: variable.name,
-                    value: data.value,
-                    unit
-                };
-                this.emit('variableChanged', entry);
-            });
-        });
+    private async subscribeToAllVariables() {
+        await Promise.all(
+            this.variables.map(async (variable: DataAssembly) => {
+                catModule.info(`[${this.id}] subscribe to process variable ${variable.name}`);
+                variable.on('V', (data) => {
+                    let unit;
+                    if (variable instanceof AnaView) {
+                        const unitObject = UNIT.find((item) => item.value === parseInt(variable.VUnit.value, 10));
+                        unit = unitObject ? unitObject.unit : undefined;
+                    }
+                    this.logger.debug(`[${this.id}] variable changed: ${variable.name} = ` +
+                        `${data.value} ${unit ? unit : ''}`);
+                    const entry: VariableLogEntry = {
+                        timestampPfe: new Date(),
+                        timestampModule: data.timestamp,
+                        module: this.id,
+                        variable: variable.name,
+                        value: data.value,
+                        unit
+                    };
+                    this.emit('variableChanged', entry);
+                });
+                await variable.subscribe(1000);
+            })
+        );
     }
 
     private subscribeToAllServices() {
@@ -495,7 +497,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
                 .on('commandExecuted', (data) => {
                     this.emit('commandExecuted', {
                         service,
-                        timestampPfe: data.timestampPfe,
+                        timestampPfe: data.timestamp,
                         strategy: data.strategy,
                         command: data.command,
                         parameter: data.parameter
@@ -527,38 +529,28 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
                 })
                 .on('variableChanged', (data) => {
                     this.logger.debug(`[${this.id}] service variable changed: ` +
-                        `${data.strategy.name}.${data.parameter.name} = ${data.value}`);
-                    const variable: DataAssembly = data.parameter;
-                    let unit;
-                    if (variable instanceof AnaView) {
-                        unit = UNIT.find((item) => item.value === variable.VUnit.value).unit;
-                    }
+                        `${data.strategy.name}.${data.parameter} = ${data.value}`);
                     const entry = {
                         timestampPfe: new Date(),
                         timestampModule: new Date(),
                         module: this.id,
-                        variable: `${service.name}.${data.strategy.name}.${data.parameter.name}`,
+                        variable: `${service.name}.${data.strategy.name}.${data.parameter}`,
                         value: data.value,
-                        unit
+                        unit: data.unit
                     };
                     this.emit('variableChanged', entry);
                 }).on('parameterChanged', (data) => {
                     this.logger.debug(`[${this.id}] parameter changed: ` +
-                        `${data.strategy.name}.${data.parameter.name} = ${data.value}`);
-                    const variable: DataAssembly = data.parameter;
-                    let unit;
-                    if (variable instanceof AnaView) {
-                        unit = UNIT.find((item) => item.value === variable.VUnit.value).unit;
-                    }
+                        `${data.strategy.name}.${data.parameter} = ${data.value}`);
                     const entry = {
                         timestampPfe: new Date(),
                         timestampModule: new Date(),
                         module: this.id,
                         service: service.name,
                         strategy: data.strategy.id,
-                        parameter: data.parameter.name,
+                        parameter: data.parameter,
                         value: data.value,
-                        unit
+                        unit: data.unit
                     };
                     this.emit('parameterChanged', entry);
                 });
