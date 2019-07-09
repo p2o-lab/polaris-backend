@@ -26,7 +26,8 @@
 import {
     ControlEnableInterface,
     DataAssemblyOptions,
-    ModuleInterface,
+    ModuleInterface, 
+    ModuleOptions,
     OpcUaNodeOptions,
     OpModeInterface,
     ParameterInterface,
