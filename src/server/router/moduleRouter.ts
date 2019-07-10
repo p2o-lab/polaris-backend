@@ -70,10 +70,9 @@ moduleRouter.get('/:id/download', asyncHandler(async (req: Request, res: Respons
  * @apiParam {ModuleOptions} module    Module to be added
  */
 moduleRouter.put('', asyncHandler(async (req, res) => {
-    const moduleOptions = req.body.modules;
     catServer.info(`Load module`);
     const manager: Manager = req.app.get('manager');
-    const newModules = manager.loadModule({module: req.body.module});
+    const newModules = manager.loadModule(req.body);
     newModules.forEach((module) =>
         module.connect()
             .catch(() => catModule.warn(`Could not connect to module ${module.id}`)

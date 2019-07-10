@@ -27,6 +27,8 @@ import * as request from 'supertest';
 import {Manager} from '../../src/model/Manager';
 import Routes from '../../src/server/routes';
 import {Server} from '../../src/server/server';
+import {ModuleOptions} from '@p2olab/polaris-interface';
+import * as fs from "fs";
 
 describe('Routes', () => {
     let app;
@@ -183,6 +185,28 @@ describe('Routes', () => {
                 .expect('Content-Type', /json/)
                 .expect(200);
             await request(app).post('/api/module/reset')
+                .expect('Content-Type', /json/)
+                .expect(200);
+        });
+
+        it('should load module', async () => {
+            await request(app).put('/api/module')
+                .send({})
+                .expect('Content-Type', /json/)
+                .expect(500);
+        });
+
+        it('should load module 1', async () => {
+            await request(app).put('/api/module')
+                .send(null)
+                .expect('Content-Type', /json/)
+                .expect(500);
+        });
+
+        it('should load module 2', async () => {
+            const options = JSON.parse(fs.readFileSync('assets/modules/module_cif.json').toString()).modules[0];
+            await request(app).put('/api/module')
+                .send({module: options})
                 .expect('Content-Type', /json/)
                 .expect(200);
         });
