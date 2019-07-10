@@ -25,7 +25,7 @@
 
 import {
     ControlEnableInterface,
-    ModuleInterface, 
+    ModuleInterface,
     ModuleOptions,
     OpcUaNodeOptions,
     OpModeInterface,

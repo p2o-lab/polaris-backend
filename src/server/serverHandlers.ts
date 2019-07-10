@@ -23,6 +23,8 @@
  * SOFTWARE.
  */
 
+import {catServer} from '../config/logging';
+
 export function normalizePort(val: number | string): number | string | boolean {
     const port: number = (typeof val === 'string') ? parseInt(val, 10) : val;
 
@@ -45,11 +47,11 @@ export function onError(error: NodeJS.ErrnoException, port: number | string | bo
 
     switch (error.code) {
     case 'EACCES':
-        console.error(`${bind} requires elevated privileges`);
+        catServer.warn(`${bind} requires elevated privileges`);
         process.exit(1);
         break;
     case 'EADDRINUSE':
-        console.error(`${bind} is already in use`);
+        catServer.warn(`${bind} is already in use`);
         process.exit(1);
         break;
     default:

@@ -42,6 +42,7 @@ export class CustomLogger extends AbstractCategoryLogger {
         // Note: we use createDefaultLogMessage() to spit it out formatted and all
         // however you're free to print in any way you like, the data is all
         // present on the message.
+        /* tslint:disable:no-console */
         const message = this.createDefaultLogMessage(msg);
         this.messages.push(message);
         console.log(message);
