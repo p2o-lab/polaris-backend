@@ -27,7 +27,6 @@ import {ParameterOptions, ScopeOptions} from '@p2olab/polaris-interface';
 import * as assign from 'assign-deep';
 import {EventEmitter} from 'events';
 import {Expression} from 'expr-eval';
-import {DataType} from 'node-opcua-client';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Category} from 'typescript-logging';
 import {catParameter} from '../../config/logging';
@@ -118,7 +117,7 @@ export class Parameter {
 
     public listenToParameter() {
         const eventEmitter: StrictEventEmitter<EventEmitter, OpcUaNodeEvents> = new EventEmitter();
-        this.scopeArray.forEach(async (item) => {
+        this.scopeArray.forEach((item) => {
             item.listen().on('changed', (data) => eventEmitter.emit('changed', data));
         });
         return eventEmitter;

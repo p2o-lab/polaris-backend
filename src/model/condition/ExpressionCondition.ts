@@ -65,7 +65,7 @@ export class ExpressionCondition extends Condition {
     }
 
     public listen(): Condition {
-        this.scopeArray.forEach(async (item) => {
+        this.scopeArray.forEach((item) => {
             const a = item.listen();
             a.on('changed', this.boundOnChanged);
             this.listenersExpression.push(a);

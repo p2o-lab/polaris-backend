@@ -28,7 +28,6 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
 import {ClientSession, OPCUAClient} from 'node-opcua-client';
-import {OPCUAServer} from 'node-opcua-server';
 import {timeout} from 'promise-timeout';
 import * as delay from 'timeout-as-promise';
 import {controlEnableToJson, ServiceState} from '../../../src/model/core/enum';
@@ -57,7 +56,7 @@ describe('Player', () => {
         });
 
         it('should OPC UA server has been started', async () => {
-            const client = new OPCUAClient({
+            const client = OPCUAClient.create({
                 endpoint_must_exist: false,
                 connectionStrategy: {
                     maxRetry: 10
