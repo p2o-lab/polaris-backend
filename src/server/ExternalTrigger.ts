@@ -25,8 +25,8 @@
 
 import {series} from 'async';
 import {AttributeIds, NodeId, resolveNodeId} from 'node-opcua';
-import {ClientSession, ClientSubscription, OPCUAClient, ClientMonitoredItemBase, TimestampsToReturn,
-    ClientMonitoredItemGroup} from 'node-opcua-client';
+import {ClientSession, ClientSubscription, OPCUAClient,
+    TimestampsToReturn} from 'node-opcua-client';
 import {post} from 'request';
 import {catOpc} from '../config/logging';
 

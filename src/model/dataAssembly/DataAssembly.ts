@@ -33,6 +33,7 @@ import {UNIT} from '../core/Unit';
 import {AnaView} from './AnaView';
 
 export class DataAssembly extends EventEmitter {
+    /* tslint:disable:no-string-literal */
 
     public readonly name: string;
     public readonly interfaceClass: string;
