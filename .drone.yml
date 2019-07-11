@@ -22,7 +22,7 @@ steps:
   - node_modules/.bin/nyc report --reporter=json > coverage.json
 
 - name: codecov
-  image: plugins/drone-codecov
+  image: plugins/codecov
   settings:
     token:
       from_secret: codecov_token
