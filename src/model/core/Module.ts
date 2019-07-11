@@ -37,7 +37,7 @@ import {EventEmitter} from 'events';
 import {DataType, VariantArrayType} from 'node-opcua';
 import {
     AttributeIds,
-    ClientMonitoredItem,
+    ClientMonitoredItemBase,
     ClientSession,
     ClientSubscription,
     coerceNodeId,
@@ -69,7 +69,7 @@ export interface OpcUaNodeEvents {
      * when OpcUaNodeOptions changes its value
      * @event changed
      */
-    changed: {value: any, timestamp: Date};
+    changed: { value: any, timestamp: Date };
 }
 
 /**
@@ -90,7 +90,7 @@ interface ModuleEvents {
      * when controlEnable of one service changes
      * @event controlEnable
      */
-    controlEnable: {service: Service, controlEnable: ControlEnableInterface};
+    controlEnable: { service: Service, controlEnable: ControlEnableInterface };
     /**
      * Notify when a service changes its state
      * @event stateChanged
@@ -99,14 +99,16 @@ interface ModuleEvents {
         timestampPfe: Date,
         timestampModule: Date,
         service: Service,
-        state: ServiceState};
+        state: ServiceState
+    };
     /**
      * Notify when a service changes its opMode
      * @event opModeChanged
      */
     opModeChanged: {
         service: Service,
-        opMode: OpModeInterface};
+        opMode: OpModeInterface
+    };
     /**
      * Notify when a variable inside a module changes
      * @event variableChanged
@@ -172,7 +174,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
     private session: ClientSession;
     private client: OPCUAClient;
     private subscription: ClientSubscription;
-    private monitoredItems: Map<NodeId, { monitoredItem: ClientMonitoredItem, emitter: OpcUaNodeEmitter }>;
+    private monitoredItems: Map<NodeId, OpcUaNodeEmitter>;
     private namespaceArray: string[];
 
     constructor(options: ModuleOptions, protectedModule: boolean = false) {
@@ -191,11 +193,11 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
         }
         this.hmiUrl = options.hmi_url;
 
-        this.monitoredItems = new Map<NodeId, { monitoredItem: ClientMonitoredItem, emitter: EventEmitter }>();
+        this.monitoredItems = new Map<NodeId, EventEmitter>();
 
         this.logger = catModule;
 
-        this.client = new OPCUAClient({
+        this.client = OPCUAClient.create({
             endpoint_must_exist: false,
             connectionStrategy: {
                 maxRetry: 3
@@ -236,7 +238,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
             const session = await this.client.createSession();
             this.logger.debug(`[${this.id}] session established`);
 
-            const subscription = new ClientSubscription(session, {
+            const subscription = ClientSubscription.create(session, {
                 requestedPublishingInterval: 100,
                 requestedLifetimeCount: 1000,
                 requestedMaxKeepAliveCount: 12,
@@ -320,26 +322,26 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
     public listenToOpcUaNode(node: OpcUaNodeOptions, samplingInterval = 100): OpcUaNodeEmitter {
         const nodeId = this.resolveNodeId(node);
         if (!this.monitoredItems.has(nodeId)) {
-            const monitoredItem: ClientMonitoredItem = this.subscription.monitor({
-                nodeId,
-                attributeId: AttributeIds.Value
-            },
+            const emitter: OpcUaNodeEmitter = new EventEmitter();
+            this.monitoredItems.set(nodeId, emitter);
+            this.subscription.monitor({
+                    nodeId,
+                    attributeId: AttributeIds.Value
+                },
                 {
                     samplingInterval,
                     discardOldest: true,
                     queueSize: 10
-                }, TimestampsToReturn.Both);
-
-            const emitter: OpcUaNodeEmitter = new EventEmitter();
-            monitoredItem.on('changed', (dataValue) => {
-                this.logger.debug(`[${this.id}] Variable Changed (${nodeId}) = ${dataValue.value.value.toString()}`);
-                node.value = dataValue.value.value;
-                node.timestamp = dataValue.serverTimestamp;
-                emitter.emit('changed', {value: dataValue.value.value, timestamp: dataValue.serverTimestamp});
-            });
-            this.monitoredItems.set(nodeId, { monitoredItem, emitter });
+                }, TimestampsToReturn.Both)
+                .then((monitoredItem: ClientMonitoredItemBase) => monitoredItem.on('changed', (dataValue) => {
+                    this.logger.debug(`[${this.id}] Variable Changed (${nodeId}) ` +
+                        `= ${dataValue.value.value.toString()}`);
+                    node.value = dataValue.value.value;
+                    node.timestamp = dataValue.serverTimestamp;
+                    emitter.emit('changed', {value: dataValue.value.value, timestamp: dataValue.serverTimestamp});
+                }));
         }
-        return this.monitoredItems.get(nodeId).emitter;
+        return this.monitoredItems.get(nodeId);
     }
 
     public listenToVariable(dataStructureName: string, variableName: string): OpcUaNodeEmitter {
@@ -373,12 +375,22 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
      * @param {} value
      * @returns {Promise<any>}
      */
-    public async writeNode(node: OpcUaNodeOptions, value: Variant) {
+    public async writeNode(node: OpcUaNodeOptions, value: number | string) {
         if (!this.session) {
             throw new Error(`Can not write node since OPC UA connection to module ${this.id} is not established`);
         } else {
-            const result = await this.session.writeSingleNode(this.resolveNodeId(node), value);
-            this.logger.debug(`[${this.id}] Write result for ${node.node_id}=${value.value} -> ${result.name}`);
+            if (!node.data_type) {
+                const valueReadback = await this.readVariableNode(node);
+                node.data_type = DataType[valueReadback.value.dataType];
+            }
+            const variant = Variant.coerce({
+                value,
+                dataType: node.data_type,
+                arrayType: VariantArrayType.Scalar
+            });
+            this.logger.info(`[${this.id}] Write ${JSON.stringify(variant)}`);
+            const result = await this.session.writeSingleNode(this.resolveNodeId(node), variant);
+            this.logger.info(`[${this.id}] Write result for ${node.node_id}=${value} -> ${result.name}`);
             return result;
         }
     }
@@ -504,7 +516,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
                     });
                 })
                 .on('controlEnable', (controlEnable: ControlEnableInterface) => {
-                    this.emit('controlEnable', {service, controlEnable} );
+                    this.emit('controlEnable', {service, controlEnable});
                 })
                 .on('state', ({state, timestamp}) => {
                     this.logger.debug(`[${this.id}] state changed: ${service.name} = ${ServiceState[state]}`);
@@ -606,12 +618,12 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
         await Promise.all(nodeIdsReactor.map((nodeId) => {
             return this.session.writeSingleNode(
                 nodeId,
-                {
+                Variant.coerce({
                     dataType: DataType.UInt32,
                     value: 16,
                     arrayType: VariantArrayType.Scalar,
                     dimensions: null
-                }
+                })
             );
         }));
         await delay(200);
@@ -620,11 +632,11 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
         await Promise.all(nodeIdsReactor.map((nodeId) => {
             return this.session.writeSingleNode(
                 nodeId,
-                {
+                Variant.coerce({
                     dataType: DataType.UInt32,
                     value: 64,
                     arrayType: VariantArrayType.Scalar,
-                }
+                })
             );
         }));
 
@@ -632,11 +644,11 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
         await Promise.all(valuesReactor.map(async (item) => {
             return this.session.writeSingleNode(
                 item[0],
-                {
+                Variant.coerce({
                     dataType: DataType.Float,
                     value: item[1],
                     arrayType: VariantArrayType.Scalar,
-                }
+                })
             );
         }));
 

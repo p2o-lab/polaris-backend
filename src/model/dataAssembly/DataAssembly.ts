@@ -33,6 +33,7 @@ import {UNIT} from '../core/Unit';
 import {AnaView} from './AnaView';
 
 export class DataAssembly extends EventEmitter {
+    /* tslint:disable:no-string-literal */
 
     public readonly name: string;
     public readonly interfaceClass: string;
@@ -89,18 +90,8 @@ export class DataAssembly extends EventEmitter {
      */
     public async setParameter(paramValue: any, variable: string = 'VExt'): Promise<any> {
         const opcUaNode = this.communication[variable];
-        const value = await this.module.readVariableNode(opcUaNode);
-        const opcUaDataType = value.value ? value.value.dataType : undefined;
-        catParameter.debug(`Get data type for ${this.module.id}.${this.name} = ${opcUaDataType}`);
-
-        const dataValue: Variant = {
-            dataType: opcUaDataType,
-            value: paramValue,
-            arrayType: VariantArrayType.Scalar,
-            dimensions: null
-        };
-        catService.info(`Set Parameter: ${this.name} - ${JSON.stringify(opcUaNode)} -> ${JSON.stringify(dataValue)}`);
-        return await this.module.writeNode(opcUaNode, dataValue);
+        catService.info(`Set Parameter: ${this.name} - ${JSON.stringify(opcUaNode)} -> ${JSON.stringify(paramValue)}`);
+        return await this.module.writeNode(opcUaNode, paramValue);
     }
 
     /**
@@ -170,13 +161,7 @@ export class DataAssembly extends EventEmitter {
      */
     private async writeOpMode(opMode: OpMode): Promise<void> {
         catParameter.debug(`[${this.name}] Write opMode: ${opMode as number}`);
-        const result = await this.module.writeNode(this.communication['OpMode'],
-            {
-                dataType: DataType.UInt32,
-                value: opMode,
-                arrayType: VariantArrayType.Scalar,
-                dimensions: null
-            });
+        const result = await this.module.writeNode(this.communication['OpMode'], opMode);
         catParameter.debug(`[${this.name}] Setting opMode ${JSON.stringify(result)}`);
         if (result.value !== 0) {
             catParameter.warn(`[${this.name}] Error while setting opMode to ${opMode}: ${JSON.stringify(result)}`);

@@ -34,7 +34,7 @@ import {
     StrategyInterface
 } from '@p2olab/polaris-interface';
 import {EventEmitter} from 'events';
-import {DataType, VariantArrayType} from 'node-opcua';
+import {DataType, Variant, VariantArrayType} from 'node-opcua';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Category} from 'typescript-logging';
 import {catService} from '../../config/logging';
@@ -495,14 +495,7 @@ export class Service extends BaseService {
         // first set opMode and then set strategy
         await this.setOperationMode();
         const nodeId = this.automaticMode ? this.strategyNode : this.strategyManNode;
-        await this.parent.writeNode(nodeId,
-            {
-                dataType: DataType.UInt32,
-                value: strat.id,
-                arrayType: VariantArrayType.Scalar,
-                dimensions: null
-            });
-
+        await this.parent.writeNode(nodeId, strat.id);
         if (parameters) {
             this.setParameters(parameters);
         }
@@ -569,13 +562,7 @@ export class Service extends BaseService {
     private async writeOpMode(opMode: OpMode): Promise<void> {
         this.logger.debug(`[${this.qualifiedName}] Write opMode (${this.opModeNode.namespace_index} - ` +
             `${this.opModeNode.node_id}): ${opMode as number}`);
-        const result = await this.parent.writeNode(this.opModeNode,
-            {
-                dataType: DataType.UInt32,
-                value: opMode,
-                arrayType: VariantArrayType.Scalar,
-                dimensions: null
-            });
+        const result = await this.parent.writeNode(this.opModeNode, opMode);
         this.logger.debug(`[${this.qualifiedName}] Setting opMode ${JSON.stringify(result)}`);
         if (result.value !== 0) {
             this.logger.warn(`[${this.qualifiedName}] Error while setting opMode to ${opMode}: ` +
@@ -630,12 +617,8 @@ export class Service extends BaseService {
         this.logger.info(`[${this.qualifiedName}] Send command ${ServiceMtpCommand[command]}`);
         await this.setOperationMode();
 
-        const result = await this.parent.writeNode(this.automaticMode ? this.commandNode : this.commandManNode,
-            {
-                dataType: DataType.UInt32,
-                value: command,
-                arrayType: VariantArrayType.Scalar
-            });
+        const result =
+            await this.parent.writeNode(this.automaticMode ? this.commandNode : this.commandManNode, command);
         this.logger.info(`[${this.qualifiedName}] Command ${ServiceMtpCommand[command]} written: ${result.name}`);
 
         return result.value === 0;
