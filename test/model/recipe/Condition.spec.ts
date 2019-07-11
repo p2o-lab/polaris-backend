@@ -233,7 +233,7 @@ describe('Condition', () => {
             moduleServer.variables[0].v = 37;
             expect(condition).to.have.property('fulfilled', undefined);
 
-        });
+        }).timeout(4000);
 
         it('specialized as StateCondition should work', async function() {
             this.timeout(5000);

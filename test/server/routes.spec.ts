@@ -161,10 +161,10 @@ describe('Routes', () => {
     });
 
     context('#moduleRoutes', () => {
-        it('should provide modules', (done) => {
-            request(app).get('/api/module')
+        it('should provide modules', async () => {
+            await request(app).get('/api/module')
                 .expect('Content-Type', /json/)
-                .expect(200, done);
+                .expect(200);
         });
 
         it('should provide not existing modules', async () => {
@@ -204,9 +204,16 @@ describe('Routes', () => {
         });
 
         it('should load module 2', async () => {
-            const options = JSON.parse(fs.readFileSync('assets/modules/module_cif.json').toString()).modules[0];
+            const options =
+                JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString()).modules[0];
             await request(app).put('/api/module')
                 .send({module: options})
+                .expect('Content-Type', /json/)
+                .expect(200);
+            await request(app).get('/api/module/CIF')
+                .expect('Content-Type', /json/)
+                .expect(200);
+            await request(app).delete('/api/module/CIF')
                 .expect('Content-Type', /json/)
                 .expect(200);
         });

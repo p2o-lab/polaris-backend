@@ -75,8 +75,7 @@ moduleRouter.put('', asyncHandler(async (req, res) => {
     const newModules = manager.loadModule(req.body);
     newModules.forEach((module) =>
         module.connect()
-            .catch(() => catModule.warn(`Could not connect to module ${module.id}`)
-            )
+            .catch(() => catModule.warn(`Could not connect to module ${module.id}`))
     );
     res.json(await Promise.all(newModules.map((module) => module.json())));
 }));
