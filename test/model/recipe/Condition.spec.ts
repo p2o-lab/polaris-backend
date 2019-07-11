@@ -356,7 +356,7 @@ describe('Condition', () => {
                 value = await expr.getValue();
                 expect(value).to.equal(true);
                 expect(expr).to.have.property('fulfilled', undefined);
-            }).timeout(4000);
+            }).timeout(8000).slow(4000);
 
             it('should work with semi-complex expression', async () => {
                 const expr: ExpressionCondition = ConditionFactory.create({
