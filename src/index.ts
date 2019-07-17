@@ -26,7 +26,7 @@
 /* tslint:disable:no-console */
 
 import * as commandLineArgs from 'command-line-args';
-import commandLineUsage = require('command-line-usage');
+import * as commandLineUsage from 'command-line-usage';
 import * as fs from 'fs';
 import {catModule} from './config/logging';
 import {Manager} from './model/Manager';

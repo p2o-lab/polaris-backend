@@ -1,7 +1,7 @@
 # polaris-backend
 
 *Polaris* is a Process Orchestration Layer application for controlling process equipment assemblies (PEA) in the context of modular production in process industries. Thus, it follows the VDI/VDE/NAMUR 2658 standards.
-*polaris-backend* is a NodeJs application which can be controlled via REST. Furthermore it provides recent state changes via websockets.
+*polaris-backend* is a NodeJs application which can be controlled via REST. Furthermore it provides recent state changes via websockets. For testing and debugging purposes, polaris-backend provides also a testserver which behaves like a PEA.
 
 A HTML user interface for this project is provided via the [polaris-frontend](https://github.com/p2o-lab/polaris-frontend) project.
 
@@ -55,15 +55,22 @@ docker build -t p2olab/polaris-backend:latest-arm -f Dockerfile.arm .
 docker push p2olab/polaris-backend:latest-arm 
 ```
 
-
 ## Usage
 
 
 After starting *polaris-backend* its REST interface is available under
 http://localhost:3000
 
-*polaris-backend* has several command line parameters:
+*polaris-backend* has several command line parameters which are documented by calling `npm start -- -h`
 
 
 
 Its documentation is served by the application under the path **/doc** (e.g. http://localhost:3000/doc)
+
+## Test Process Equipment Assembly
+Polaris can serve a test PEA with an OPC UA server. It has two services with some parameters and some other variables which change over time. You can start this testserver via
+```
+npm run testserver
+```
+
+The corresponding JSON file `assets/modules/module_testserver_1.0.0.json` can be directly loaded in Polaris.
