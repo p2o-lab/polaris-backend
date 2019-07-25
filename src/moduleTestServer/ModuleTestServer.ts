@@ -24,9 +24,10 @@
  */
 
 import * as net from 'net';
-import {DataType, Variant} from 'node-opcua';
+import {AddressSpace, DataType, Namespace, Variant} from 'node-opcua';
 import {OPCUAServer} from 'node-opcua-server';
 import {catTestServer} from '../config/logging';
+import {TestServerNumericVariable} from './ModuleTestNumericVariable';
 import {TestServerService} from './ModuleTestService';
 import {TestServerVariable} from './ModuleTestVariable';
 
@@ -70,7 +71,7 @@ export class ModuleTestServer {
         await new Promise((resolve) => this.server.initialize(resolve));
         this.createAddressSpace();
         await new Promise((resolve) => this.server.start(resolve));
-        catTestServer.info('server started');
+        catTestServer.info('server started on port ' + this.port);
     }
 
     public async shutdown() {
@@ -90,8 +91,8 @@ export class ModuleTestServer {
     }
 
     private createAddressSpace() {
-        const addressSpace = this.server.engine.addressSpace;
-        const namespace = addressSpace.getOwnNamespace();
+        const addressSpace: AddressSpace = this.server.engine.addressSpace;
+        const namespace: Namespace = addressSpace.getOwnNamespace();
 
         // declare a new object
         const myModule = namespace.addObject({
@@ -99,9 +100,9 @@ export class ModuleTestServer {
             browseName: 'TestModule'
         });
 
-        this.variables.push(new TestServerVariable(namespace, myModule, 'Variable1', true));
-        this.variables.push(new TestServerVariable(namespace, myModule, 'Variable2', true));
-        this.variables.push(new TestServerVariable(namespace, myModule, 'TestServerVariable.3', true));
+        this.variables.push(new TestServerNumericVariable(namespace, myModule, 'Variable1', true));
+        this.variables.push(new TestServerNumericVariable(namespace, myModule, 'Variable2', true));
+        this.variables.push(new TestServerNumericVariable(namespace, myModule, 'TestServerVariable.3', true));
 
         this.services.push(new TestServerService(namespace, myModule, 'Service1'));
         this.services.push(new TestServerService(namespace, myModule, 'Service2'));

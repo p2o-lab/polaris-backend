@@ -23,23 +23,21 @@
  * SOFTWARE.
  */
 
-import {DataType, Variant} from 'node-opcua';
+import {DataType, StatusCodes, Variant} from 'node-opcua';
+import {TestServerVariable} from './ModuleTestVariable';
 import Timeout = NodeJS.Timeout;
 
-export class TestServerStringVariable {
+export class TestServerStringVariable extends TestServerVariable {
 
     public v: string = 'initial value';
     public vext: string = '';
-    private interval: Timeout;
+    protected interval: Timeout;
 
-    constructor(namespace, rootNode, variableName) {
-        const variableNode = namespace.addObject({
-            organizedBy: rootNode,
-            browseName: variableName
-        });
+    constructor(namespace, rootNode, variableName: string) {
+        super(namespace, rootNode, variableName);
 
         namespace.addVariable({
-            componentOf: variableNode,
+            componentOf: this.variableNode,
             nodeId: `ns=1;s=${variableName}.Text`,
             browseName: `${variableName}.Text`,
             dataType: 'String',
@@ -49,6 +47,7 @@ export class TestServerStringVariable {
                 },
                 set: (variant) => {
                     this.v = variant.value;
+                    return StatusCodes.Good;
                 }
             }
         });
