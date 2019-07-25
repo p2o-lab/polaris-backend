@@ -26,10 +26,9 @@
 import {expect} from 'chai';
 import {Expression} from 'expr-eval';
 import * as fs from 'fs';
-import {OPCUAServer} from 'node-opcua-server';
-import {timeout} from 'promise-timeout';
 import {Module} from '../../../src/model/core/Module';
 import {ScopeItem} from '../../../src/model/recipe/ScopeItem';
+import {TestServerNumericVariable} from '../../../src/moduleTestServer/ModuleTestNumericVariable';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 
 /**
@@ -173,7 +172,7 @@ describe('Scope Item', () => {
                 }
             });
 
-            moduleServer.services[0].parameter[0].v = 30;
+            (moduleServer.services[0].parameter[0] as TestServerNumericVariable).v = 30;
             await new Promise((resolve) => moduleTestServer.on('parameterChanged', resolve));
 
             expect(await item.getScopeValue()).to.deep.equal({
