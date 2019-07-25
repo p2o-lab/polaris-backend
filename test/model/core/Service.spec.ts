@@ -28,10 +28,7 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
 import * as parseJson from 'json-parse-better-errors';
-import {
-    isAutomaticState, isExtSource, isOffState, OpMode,
-    ServiceState
-} from '../../../src/model/core/enum';
+import {isAutomaticState, isExtSource, isOffState, OpMode, ServiceState} from '../../../src/model/core/enum';
 import {Module} from '../../../src/model/core/Module';
 import {Service} from '../../../src/model/core/Service';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
@@ -86,7 +83,7 @@ describe('Service', () => {
             await moduleServer.shutdown();
         });
 
-        it('should reject command if not command enabled', async () => {
+        it('should reject command if command not enabled', async () => {
             expect(service.name).to.equal('Service1');
             expect(ServiceState[service.state]).to.equal('IDLE');
             expect(service.controlEnable).to.deep.equal({
