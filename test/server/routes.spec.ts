@@ -170,7 +170,7 @@ describe('Routes', () => {
 
         it('should provide not existing modules', async () => {
             await request(app).get('/api/module/abc1234')
-                .expect(500);
+                .expect(404);
         });
 
         it('should provide download for not existing modules', async () => {
