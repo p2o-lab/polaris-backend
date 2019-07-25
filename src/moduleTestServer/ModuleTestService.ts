@@ -23,11 +23,13 @@
  * SOFTWARE.
  */
 
-import {DataType, Variant} from 'node-opcua';
+import {DataType, Namespace, StatusCodes, Variant} from 'node-opcua';
 import {catTestServer} from '../config/logging';
 import {OpMode, ServiceControlEnable, ServiceMtpCommand, ServiceState} from '../model/core/enum';
+import {TestServerNumericVariable} from './ModuleTestNumericVariable';
 import {TestServerStringVariable} from './ModuleTestStringVariable';
 import {TestServerVariable} from './ModuleTestVariable';
+import Timeout = NodeJS.Timeout;
 
 export class TestServerService {
     public varStatus: number = 0;
@@ -36,9 +38,10 @@ export class TestServerService {
     public varCommandEnable: number = 0;
     public varOpmode: number = 0;
     public serviceName: string;
-    public readonly parameter: Array<TestServerVariable | TestServerStringVariable> = [];
+    public readonly parameter: TestServerVariable[] = [];
+    private interval: Timeout;
 
-    constructor(namespace, rootNode, serviceName) {
+    constructor(namespace: Namespace, rootNode, serviceName: string) {
         catTestServer.info(`Add service ${serviceName}`);
         this.serviceName = serviceName;
         this.state(ServiceState.IDLE);
@@ -48,10 +51,13 @@ export class TestServerService {
             browseName: serviceName
         });
 
-        this.parameter.push(new TestServerVariable(namespace, serviceNode, serviceName + '.Parameter1', false));
-        this.parameter.push(new TestServerVariable(namespace, serviceNode, serviceName + '.Parameter2', false));
-
-        this.parameter.push(new TestServerStringVariable(namespace, serviceNode, serviceName + '.ErrorMsg'));
+        this.parameter.push(
+            new TestServerNumericVariable(namespace, serviceNode, serviceName + '.Parameter1', false),
+            new TestServerNumericVariable(namespace, serviceNode, serviceName + '.Parameter2', false),
+            new TestServerNumericVariable(namespace, serviceNode, serviceName + '.ProcessValueIn', false),
+            new TestServerNumericVariable(namespace, serviceNode, serviceName + '.ProcessValueOut', false),
+            new TestServerNumericVariable(namespace, serviceNode, serviceName + '.ProcessValueIntegral', false),
+            new TestServerStringVariable(namespace, serviceNode, serviceName + '.ErrorMsg'));
 
         namespace.addVariable({
             componentOf: serviceNode,
@@ -103,19 +109,21 @@ export class TestServerService {
                     return new Variant({dataType: DataType.UInt32, value: this.varOpmode});
                 },
                 set: (variant) => {
-                    if (parseInt(variant.value, 10) === OpMode.stateManOp) {
+                    const opModeInt = parseInt(variant.value, 10);
+                    if (opModeInt === OpMode.stateManOp) {
                         this.varOpmode = this.varOpmode & ~OpMode.stateAutAct;
                         this.varOpmode = this.varOpmode | OpMode.stateManAct;
-                    }
-                    if (parseInt(variant.value, 10) === OpMode.stateAutOp) {
+                    } else if (opModeInt === OpMode.stateAutOp) {
                         this.varOpmode = this.varOpmode & ~OpMode.stateManAct;
                         this.varOpmode = this.varOpmode | OpMode.stateAutAct;
-                    }
-                    if (parseInt(variant.value, 10) === OpMode.srcExtOp) {
+                    } else if (opModeInt === OpMode.srcExtOp) {
                         this.varOpmode = this.varOpmode | OpMode.srcExtAct;
+                    } else {
+                        return StatusCodes.Bad;
                     }
                     catTestServer.debug(`[${this.serviceName}] Set Opmode in testserver ${variant} ` +
                         `${parseInt(variant.value, 10)} -> ${this.varOpmode}`);
+                    return StatusCodes.Good;
                 }
             }
         });
@@ -160,7 +168,10 @@ export class TestServerService {
                         this.state(ServiceState.STOPPING);
                     } else if (this.varCommand === ServiceMtpCommand.ABORT) {
                         this.state(ServiceState.ABORTING);
+                    } else {
+                        return StatusCodes.Bad;
                     }
+                    return StatusCodes.Good;
                 }
             }
         });
@@ -168,10 +179,21 @@ export class TestServerService {
 
     public startSimulation() {
         this.parameter.forEach((variable) => variable.startSimulation());
+        const processValueIn =
+            this.parameter.find((p) => p.name === this.serviceName + '.ProcessValueIn') as TestServerNumericVariable;
+        const processValueOut =
+            this.parameter.find((p) => p.name === this.serviceName + '.ProcessValueOut') as TestServerNumericVariable;
+        const processValueIntegral = this.parameter.find(
+            (p) => p.name === this.serviceName + '.ProcessValueIntegral') as TestServerNumericVariable;
+        this.interval = global.setInterval(() => {
+            processValueOut.v = 2 * (processValueIn.v as number);
+            processValueIntegral.v = (processValueIntegral.v as number) + (processValueIn.v as number);
+        }, 1000);
     }
 
     public stopSimulation() {
         this.parameter.forEach((variable) => variable.stopSimulation());
+        global.clearInterval(this.interval);
     }
 
     private state(state: ServiceState) {
