@@ -70,6 +70,7 @@ export class TestServerService {
                 },
                 set: (variant) => {
                     this.varStrategy = parseInt(variant.value, 10);
+                    return StatusCodes.Good;
                 }
             }
         });
