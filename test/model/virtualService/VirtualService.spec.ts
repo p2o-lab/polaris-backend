@@ -66,7 +66,8 @@ describe('VirtualService', () => {
                    name: 'updateRate',
                    unit: 'ms',
                    value: 1000
-               },
+               }]);
+           expect(json.processValuesOut).to.deep.equal([
                {
                    name: 'remainingTime',
                    readonly: true,
@@ -108,8 +109,8 @@ describe('VirtualService', () => {
             const timer = new Timer('t1');
             expect(timer.state).to.equal(ServiceState.IDLE);
 
-            const params = await timer.getCurrentParameters();
-            expect(params).to.have.lengthOf(3);
+            const params = timer.parameters;
+            expect(params).to.have.lengthOf(2);
             expect(params[0]).to.deep.equal({
                 'min': 1,
                 'name': 'duration',
@@ -134,7 +135,7 @@ describe('VirtualService', () => {
             expect(timer.state).to.equal(ServiceState.EXECUTE);
             await delay(45);
             expect(hit).to.equal(5);
-            expect((await timer.getCurrentParameters()).find((p) => p.name === 'remainingTime'))
+            expect(timer.processValuesOut.find((p) => p.name === 'remainingTime'))
                 .to.have.property('value')
                 .to.closeTo(55, 5);
 
@@ -142,7 +143,7 @@ describe('VirtualService', () => {
             expect(hit).to.equal(6);
             await delay(25);
             expect(hit).to.equal(6);
-            expect((await timer.getCurrentParameters()).find((p) => p.name === 'remainingTime'))
+            expect(timer.processValuesOut.find((p) => p.name === 'remainingTime'))
                 .to.have.property('value')
                 .to.closeTo(55, 5);
 
@@ -150,13 +151,13 @@ describe('VirtualService', () => {
             expect(hit).to.equal(6);
             await delay(12);
             expect(hit).to.equal(7);
-            expect((await timer.getCurrentParameters()).find((p) => p.name === 'remainingTime'))
+            expect(timer.processValuesOut.find((p) => p.name === 'remainingTime'))
                 .to.have.property('value')
                 .to.closeTo(43, 5);
 
             await delay(20);
             expect(hit).to.equal(9);
-            expect((await timer.getCurrentParameters()).find((p) => p.name === 'remainingTime'))
+            expect(timer.processValuesOut.find((p) => p.name === 'remainingTime'))
                 .to.have.property('value')
                 .to.closeTo(23, 5);
 
@@ -169,7 +170,7 @@ describe('VirtualService', () => {
             const f1 = new FunctionGenerator('f1');
             expect(f1.state).to.equal(ServiceState.IDLE);
 
-            let params = await f1.getCurrentParameters();
+            let params = f1.parameters;
             expect(params).to.have.lengthOf(3);
 
             await f1.setParameters([{name: 'function', value: 'sin(5*t)'}, {name: 'updateRate', value: 100}]);
@@ -177,13 +178,13 @@ describe('VirtualService', () => {
             expect(f1.state).to.equal(ServiceState.EXECUTE);
 
             await delay(110);
-            params = await f1.getCurrentParameters();
+            params = f1.parameters;
             let value = params.find((p) => p.name === 'output');
             expect(value).to.have.property('value').to.be.closeTo(0.5, 0.03);
             await f1.pause();
             await delay(100);
 
-            params = await f1.getCurrentParameters();
+            params = f1.parameters;
             value = params.find((p) => p.name === 'output');
             expect(value).to.have.property('value').to.be.closeTo(0.841, 0.03);
             await f1.resume();
@@ -198,19 +199,19 @@ describe('VirtualService', () => {
     describe('Storage', () => {
         it('should work', async () => {
             const s1 = new Storage('s1');
-            let params = await s1.getCurrentParameters();
+            let params = s1.parameters;
             expect(params).to.have.lengthOf(1);
             expect(params[0]).to.have.property('name', 'storage');
             expect(params[0]).to.have.property('value', undefined);
 
             s1.setParameters([{name: 'storage', value: 2}]);
-            params = await s1.getCurrentParameters();
+            params = s1.parameters;
             expect(params).to.have.lengthOf(1);
             expect(params[0]).to.have.property('name', 'storage');
             expect(params[0]).to.have.property('value', 2);
 
             s1.setParameters([{name: 'storage', value: 'teststring'}]);
-            params = await s1.getCurrentParameters();
+            params = s1.parameters;
             expect(params).to.have.lengthOf(1);
             expect(params[0]).to.have.property('name', 'storage');
             expect(params[0]).to.have.property('value', 'teststring');
@@ -218,7 +219,7 @@ describe('VirtualService', () => {
             await s1.start();
             await s1.complete();
             await s1.reset();
-            params = await s1.getCurrentParameters();
+            params = s1.parameters;
             expect(params).to.have.lengthOf(1);
         });
     });

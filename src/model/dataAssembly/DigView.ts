@@ -1,3 +1,4 @@
+/* tslint:disable:max-classes-per-file */
 /*
  * MIT License
  *
@@ -24,43 +25,29 @@
  */
 
 import {DataAssembly} from './DataAssembly';
+import {MonitorSettings, ScaleSettingsDA, UnitDA} from './mixins';
+import {AnaViewOptions, ParameterInterface} from '@p2olab/polaris-interface';
+import {AnaViewRuntime} from './AnaView';
+import {Module} from '../core/Module';
+import {OpcUaDataItem} from './DataItem';
 
-export class DigView extends DataAssembly {
+export class DigView extends ScaleSettingsDA(UnitDA(DataAssembly)) {
+    public readonly communication: AnaViewRuntime;
 
-    constructor(options, module) {
+    constructor(options, module: Module) {
         super(options, module);
-        this.subscribedNodes.push('V', 'VUnit', 'VSclMin', 'VSclMax');
+        this.communication.V = OpcUaDataItem.fromOptions(options.communication.V, 'read');
     }
 
-    get V() {
-        return this.communication['V'];
+    public toJson(): ParameterInterface {
+        return {
+            ...super.toJson(),
+            value: this.communication.V.value,
+            type: 'number',
+            readonly: true
+        };
     }
-
-    get VUnit() {
-        return this.communication['VUnit'];
-    }
-
-    get VSclMin() {
-        return this.communication['VSclMin'];
-    }
-
-    get VSclMax() {
-        return this.communication['VSclMax'];
-    }
-
 }
 
-export class DigMon extends DigView {
-
-    // TODO: add getters
-    constructor(options, module) {
-        super(options, module);
-        this.subscribedNodes.push(
-            'VAHEn', 'VAHLim', 'VAHAct',
-            'VWHEn', 'VWHLim', 'VWHAct',
-            'VTHEn', 'VTHLim', 'VTHAct',
-            'VALEn', 'VALLim', 'VALAct',
-            'VWLEn', 'VWLLim', 'VWLAct',
-            'VTLEn', 'VTLLim', 'VTLAct');
-    }
+export class DigMon extends MonitorSettings(DigView) {
 }

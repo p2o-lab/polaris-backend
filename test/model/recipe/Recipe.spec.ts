@@ -93,7 +93,8 @@ describe('Recipe', () => {
         let moduleServer: ModuleTestServer;
         let module: Module;
 
-        beforeEach(async () => {
+        beforeEach(async function () {
+            this.timeout(5000);
             moduleServer = new ModuleTestServer();
             await moduleServer.start();
 
@@ -133,7 +134,7 @@ describe('Recipe', () => {
             const recipe = new Recipe(recipeJson, [module]);
 
             await recipe.start();
-            expect(recipe.start()).to.be.rejectedWith(/already running/);
+            await expect(recipe.start()).to.be.rejectedWith(/already running/);
             await new Promise((resolve) => {
                 recipe.on('completed', () => {
                     resolve();
@@ -146,11 +147,11 @@ describe('Recipe', () => {
                 fs.readFileSync('assets/recipes/test/recipe_testserver_2services_1.0.0.json').toString());
             const recipe = new Recipe(recipeJson, [module]);
 
-            expect(recipe.stop()).to.be.rejectedWith('Can only stop running recipe');
+            await expect(recipe.stop()).to.be.rejectedWith('Can only stop running recipe');
             await recipe.start();
             await delay(100);
             await recipe.stop();
-            expect(recipe.stop()).to.be.rejectedWith('Can only stop running recipe');
+            await expect(recipe.stop()).to.be.rejectedWith('Can only stop running recipe');
             await delay(100);
         }).timeout(5000);
 

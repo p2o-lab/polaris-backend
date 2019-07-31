@@ -22,12 +22,12 @@
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service1.OpMode.binary",
               "data_type": "UInt64"
             },
-            "ControlOp": {
+            "CommandMan": {
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service1.ControlOp",
               "data_type": "UInt64"
             },
-            "StrategyOp": {
+            "StrategyMan": {
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service1.StrategyOp",
               "data_type": "UInt64"
@@ -42,7 +42,7 @@
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service1.StrategyInt",
               "data_type": "UInt64"
             },
-            "ControlExt": {
+            "CommandExt": {
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service1.ControlExt",
               "data_type": "UInt64"
@@ -57,7 +57,7 @@
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service1.State.binary",
               "data_type": "UInt64"
             },
-            "ControlEnable": {
+            "CommandEnable": {
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service1.ControlEnable.binary",
               "data_type": "UInt64"
@@ -226,6 +226,9 @@
         {
           "name": "Test_Service.Service2",
           "communication": {
+            "TagName": {
+              "value": "service2"
+            },
             "OSLevel": {
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service2.OSLevel",
@@ -241,12 +244,12 @@
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service2.OpMode.binary",
               "data_type": "UInt64"
             },
-            "ControlOp": {
+            "CommandMan": {
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service2.ControlOp",
               "data_type": "UInt64"
             },
-            "StrategyOp": {
+            "StrategyMan": {
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service2.StrategyOp",
               "data_type": "UInt64"
@@ -261,7 +264,7 @@
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service2.StrategyInt",
               "data_type": "UInt64"
             },
-            "ControlExt": {
+            "CommandExt": {
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service2.ControlExt",
               "data_type": "UInt64"
@@ -276,7 +279,7 @@
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service2.State.binary",
               "data_type": "UInt64"
             },
-            "ControlEnable": {
+            "CommandEnable": {
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service2.ControlEnable.binary",
               "data_type": "UInt64"
@@ -460,12 +463,12 @@
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Nachfuellen.OpMode.binary",
               "data_type": "UInt64"
             },
-            "ControlOp": {
+            "CommandMan": {
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Nachfuellen.ControlOp",
               "data_type": "UInt64"
             },
-            "StrategyOp": {
+            "StrategyMan": {
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Nachfuellen.StrategyOp",
               "data_type": "UInt64"
@@ -480,7 +483,7 @@
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Nachfuellen.StrategyInt",
               "data_type": "UInt64"
             },
-            "ControlExt": {
+            "CommandExt": {
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Nachfuellen.ControlExt",
               "data_type": "UInt64"
@@ -495,7 +498,7 @@
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Nachfuellen.State.binary",
               "data_type": "UInt64"
             },
-            "ControlEnable": {
+            "CommandEnable": {
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Nachfuellen.ControlEnable.binary",
               "data_type": "UInt64"
@@ -591,12 +594,12 @@
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Entleeren.OpMode.binary",
               "data_type": "UInt64"
             },
-            "ControlOp": {
+            "CommandMan": {
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Entleeren.ControlOp",
               "data_type": "UInt64"
             },
-            "StrategyOp": {
+            "StrategyMan": {
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Entleeren.StrategyOp",
               "data_type": "UInt64"
@@ -611,7 +614,7 @@
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Entleeren.StrategyInt",
               "data_type": "UInt64"
             },
-            "ControlExt": {
+            "CommandExt": {
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Entleeren.ControlExt",
               "data_type": "UInt64"
@@ -626,7 +629,7 @@
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Entleeren.State.binary",
               "data_type": "UInt64"
             },
-            "ControlEnable": {
+            "CommandEnable": {
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Entleeren.ControlEnable.binary",
               "data_type": "UInt64"
@@ -698,12 +701,12 @@
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Dosieren.OpMode.binary",
               "data_type": "UInt64"
             },
-            "ControlOp": {
+            "CommandMan": {
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Dosieren.ControlOp",
               "data_type": "UInt64"
             },
-            "StrategyOp": {
+            "StrategyMan": {
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Dosieren.StrategyOp",
               "data_type": "UInt64"
@@ -718,7 +721,7 @@
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Dosieren.StrategyInt",
               "data_type": "UInt64"
             },
-            "ControlExt": {
+            "CommandExt": {
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Dosieren.ControlExt",
               "data_type": "UInt64"
@@ -733,7 +736,7 @@
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Dosieren.State.binary",
               "data_type": "UInt64"
             },
-            "ControlEnable": {
+            "CommandEnable": {
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Dosieren.ControlEnable.binary",
               "data_type": "UInt64"
@@ -829,12 +832,12 @@
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Vorlegen.OpMode.binary",
               "data_type": "UInt64"
             },
-            "ControlOp": {
+            "CommandMan": {
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Vorlegen.ControlOp",
               "data_type": "UInt64"
             },
-            "StrategyOp": {
+            "StrategyMan": {
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Vorlegen.StrategyOp",
               "data_type": "UInt64"
@@ -849,7 +852,7 @@
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Vorlegen.StrategyInt",
               "data_type": "UInt64"
             },
-            "ControlExt": {
+            "CommandExt": {
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Vorlegen.ControlExt",
               "data_type": "UInt64"
@@ -864,7 +867,7 @@
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Vorlegen.State.binary",
               "data_type": "UInt64"
             },
-            "ControlEnable": {
+            "CommandEnable": {
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Vorlegen.ControlEnable.binary",
               "data_type": "UInt64"
@@ -1186,13 +1189,13 @@
               "data_type": "Double"
             },
             "VSclMin": {
-              "value": "0"
+              "value": 0
             },
             "VSclMax": {
-              "value": "35"
+              "value": "35.5"
             },
             "VUnit": {
-              "value": "1038"
+              "value": 1038
             }
           }
         },
@@ -2293,6 +2296,7 @@
         },
         {
           "name": "Sensoren.L001",
+          "interface_class": "AnaView",
           "communication": {
             "WQC": {
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
@@ -2342,7 +2346,7 @@
               "value": "0"
             },
             "VSclMax": {
-              "value": "2"
+              "value": 2.0
             },
             "VUnit": {
               "value": "1352"

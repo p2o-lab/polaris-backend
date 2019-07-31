@@ -28,8 +28,8 @@ import * as fs from 'fs';
 import {Module} from '../../../src/model/core/Module';
 import {Service} from '../../../src/model/core/Service';
 import {Parameter} from '../../../src/model/recipe/Parameter';
-import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 import {TestServerNumericVariable} from '../../../src/moduleTestServer/ModuleTestNumericVariable';
+import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 
 describe('Parameter', () => {
 
@@ -105,7 +105,8 @@ describe('Parameter', () => {
         let module: Module;
         let moduleServer: ModuleTestServer;
 
-        before(async () => {
+        before(async function before() {
+            this.timeout(5000);
             moduleServer = new ModuleTestServer();
             await moduleServer.start();
             const moduleJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8'))
@@ -121,7 +122,6 @@ describe('Parameter', () => {
         });
 
         it('should load with complex expression and given scopeArray', async () => {
-
             const param = new Parameter({
                 name: 'Parameter001',
                 value: 'sin(a)^2 + cos(CIF.Variable001)^2',
@@ -159,8 +159,8 @@ describe('Parameter', () => {
                 value: '2 * 3'
             }, service, undefined, [module]);
             await param.updateValueOnModule();
-            const param0 = moduleServer.services[0].parameter[0] as TestServerNumericVariable;
-            expect(param0.vext).to.equal(6);
+            const param0Ext = moduleServer.services[0].parameter[0] as TestServerNumericVariable;
+            expect(param0Ext.vext).to.equal(6);
 
             const param2 = new Parameter({
                 name: 'Parameter002',
@@ -168,7 +168,8 @@ describe('Parameter', () => {
             }, service, undefined, [module]);
             const value = await param2.getValue();
             await param2.updateValueOnModule();
-            expect(param0.vext).to.equal(value);
+            const param2Ext = moduleServer.services[0].parameter[1] as TestServerNumericVariable;
+            expect(param2Ext.vext).to.equal(value);
         });
 
         it('should listen to dynamic parameter', (done) => {

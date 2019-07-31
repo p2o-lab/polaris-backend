@@ -1,3 +1,4 @@
+/* tslint:disable:max-classes-per-file */
 /*
  * MIT License
  *
@@ -23,67 +24,63 @@
  * SOFTWARE.
  */
 
-import {UNIT} from '../core/Unit';
-import {DataAssembly} from './DataAssembly';
+import {ParameterInterface} from '@p2olab/polaris-interface';
+import {Module} from '../core/Module';
+import {BaseDataAssemblyRuntime, DataAssembly} from './DataAssembly';
+import {OpcUaDataItem} from './DataItem';
+import {
+    OpModeDA,
+    OpModeRuntime,
+    ScaleSettingsDA,
+    ScaleSettingsRuntime,
+    UnitDA,
+    UnitDataAssemblyRuntime, ValueLimitationDA
+} from './mixins';
 
-export class ExtAnaOp extends DataAssembly {
+export type ValueLimitationRuntime = BaseDataAssemblyRuntime & {
+    VMin: OpcUaDataItem<number>;
+    VMax: OpcUaDataItem<number>;
+};
 
-    constructor(options, module) {
+export type AnaOpRuntime = BaseDataAssemblyRuntime &
+    UnitDataAssemblyRuntime & ValueLimitationRuntime &
+    ScaleSettingsRuntime & {
+    VOut: OpcUaDataItem<number>;
+    VRbk: OpcUaDataItem<number>;
+    VExt: OpcUaDataItem<number>;
+};
+
+export class ExtAnaOp extends ValueLimitationDA(ScaleSettingsDA(UnitDA(DataAssembly))) {
+    public readonly communication: AnaOpRuntime;
+
+    constructor(options, module: Module) {
         super(options, module);
-        this.subscribedNodes.push('VOut', 'VUnit', 'VSclMin', 'VSclMax', 'VExt', 'VMin', 'VMax', 'VRbk');
+        this.communication.VOut = OpcUaDataItem.fromOptions(options.communication.VOut, 'read');
+        this.communication.VRbk = OpcUaDataItem.fromOptions(options.communication.VRbk, 'read');
+        this.communication.VExt = OpcUaDataItem.fromOptions(options.communication.VExt, 'write');
     }
 
-    get VOut() {
-        return this.communication['VOut'];
+    public toJson(): ParameterInterface {
+        return {
+            ...super.toJson(),
+            value: this.communication.VOut.value,
+            type: 'number',
+            readonly: false
+        };
     }
-
-    get VUnit() {
-        return this.communication['VUnit'];
-    }
-
-    get VSclMin() {
-        return this.communication['VSclMin'];
-    }
-
-    get VSclMax() {
-        return this.communication['VSclMax'];
-    }
-
-    get VExt() {
-        return this.communication['VExt'];
-    }
-
-    get VMin() {
-        return this.communication['VMin'];
-    }
-
-    get VMax() {
-        return this.communication['VMax'];
-    }
-
-    get VRbk() {
-        return this.communication['VRbk'];
-    }
-
-    public getUnit(): string {
-        return UNIT.find((item) => item.value === this.VUnit.value).unit;
-    }
-
 }
 
-export class ExtIntAnaOp extends ExtAnaOp {
+export type ExtIntAnaOpRuntime = AnaOpRuntime & OpModeRuntime & {
+    VInt: OpcUaDataItem<number>;
+};
 
-    constructor(options, module) {
+export class ExtIntAnaOp extends OpModeDA(ExtAnaOp) {
+
+    public readonly communication: ExtIntAnaOpRuntime;
+
+    constructor(options, module: Module) {
         super(options, module);
-        this.subscribedNodes.push('VInt', 'OpMode');
-    }
-
-    get VInt() {
-        return this.communication['VInt'];
-    }
-
-    get OpMode() {
-        return this.communication['OpMode'];
+        this.communication.VInt = OpcUaDataItem.fromOptions(options.communication.VInt, 'read');
     }
 }
 

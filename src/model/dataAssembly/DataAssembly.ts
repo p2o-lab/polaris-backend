@@ -23,62 +23,91 @@
  * SOFTWARE.
  */
 
-import {DataAssemblyOptions, OpcUaNodeOptions} from '@p2olab/polaris-interface';
+import {
+    BaseDataAssemblyOptions,
+    DataAssemblyOptions,
+    ParameterInterface
+} from '@p2olab/polaris-interface';
 import {EventEmitter} from 'events';
-import {DataType, Variant, VariantArrayType} from 'node-opcua';
-import {catParameter, catService} from '../../config/logging';
-import {isAutomaticState, isExtSource, isManualState, isOffState, OpMode} from '../core/enum';
+import {timeout} from 'promise-timeout';
+import {catDataAssembly} from '../../config/logging';
 import {Module} from '../core/Module';
-import {UNIT} from '../core/Unit';
-import {AnaView} from './AnaView';
+import {OpcUaDataItem} from './DataItem';
+
+export interface BaseDataAssemblyRuntime {
+    TagName: OpcUaDataItem<string>;
+    TagDescription: OpcUaDataItem<string>;
+    OSLevel: OpcUaDataItem<number>;
+    WQC: OpcUaDataItem<number>;
+}
 
 export class DataAssembly extends EventEmitter {
-    /* tslint:disable:no-string-literal */
 
     public readonly name: string;
     public readonly interfaceClass: string;
-    public readonly communication: OpcUaNodeOptions[];
-    protected readonly module: Module;
-    protected readonly subscribedNodes: string[] = [];
+    public readonly communication: BaseDataAssemblyRuntime;
+    public readonly module: Module;
 
     constructor(options: DataAssemblyOptions, module: Module) {
         super();
-        this.name =  options.name;
+        this.name = options.name;
         this.interfaceClass = options.interface_class;
-        this.communication = options.communication;
+        this.communication = {} as BaseDataAssemblyRuntime;
 
-        this.subscribedNodes.push('WQC', 'OSLevel');
         this.module = module;
         if (!this.module) {
             throw new Error(`No module for data assembly: ${JSON.stringify(options)}`);
         }
+
+        if (!options.communication) {
+            throw new Error('Communication variables missing while creating DataAssembly');
+        }
+        this.communication.TagName = OpcUaDataItem.fromOptions(options.communication.TagName, 'read', 'string');
+        this.communication.TagDescription = OpcUaDataItem.fromOptions(options.communication.TagDescription, 'read');
+        this.communication.OSLevel = OpcUaDataItem.fromOptions(options.communication.OSLevel, 'write');
+        this.communication.WQC = OpcUaDataItem.fromOptions(options.communication.WQC, 'read');
     }
 
     get OSLevel() {
-        return this.communication['OSLevel'];
+        return this.communication.OSLevel;
     }
 
     get WQC() {
-        return this.communication['WQC'];
+        return this.communication.WQC;
     }
 
-    public subscribe(samplingInterval = 1000) {
-        catParameter.debug(`DataAssembly ${this.name} subscribe to ${JSON.stringify(this.subscribedNodes)}`);
-        this.subscribedNodes
-            .filter((node) => this.communication[node] &&
-                this.communication[node].node_id &&
-                this.communication[node].namespace_index)
-            .forEach((node) => {
-                try {
-                    this.module.listenToOpcUaNode(this.communication[node], samplingInterval)
-                        .on('changed', () => {
-                            catParameter.trace(`Emit ${this.name}.${node} = ${this.communication[node].value}`);
-                            this.emit(node, this.communication[node]);
+    /**
+     * subscribe to changes in any of the variables of this data assembly (V, VUnit, etc.)
+     *
+     * The appropriate variables are detected via the type of the data assembly
+     * @param samplingInterval
+     */
+    public async subscribe(samplingInterval = 1000): Promise<DataAssembly> {
+        catDataAssembly.info(`subscribe to ${this.name} with variables ${Object.keys(this.communication)}`);
+        await Promise.all(
+            Object.entries(this.communication)
+                .filter(([key, node]) => node && node.nodeId && node.namespaceIndex)
+                .map(([key, node]) => {
+                    return timeout(
+                        new Promise((resolve) => {
+                            this.module.listenToOpcUaNode(node, samplingInterval)
+                                .once('changed', () => {
+                                    // wait until initial update of data assembly has been arrived
+                                    catDataAssembly.debug(`successfully subscribed to ${this.name}.${key}`);
+                                    resolve();
+                                })
+                                .on('changed', () => {
+                                    catDataAssembly.debug(`Emit ${this.name}.${key} = ${node.value}`);
+                                    this.emit(key, node);
+                                });
+                        }), 5000)
+                        .catch((err) => {
+                            throw new Error(`Could not subscribe to ${this.name}.${key} (${JSON.stringify(node)}): ` +
+                                `${err}`);
                         });
-                } catch (err) {
-                    catParameter.warn(`Could not subscribe to Data Assembly ${this.name}.${node}`);
-                }
-        });
+                })
+        );
+        catDataAssembly.info(`successfully subscribed to all variables from ${this.name}`);
         return this;
     }
 
@@ -90,84 +119,18 @@ export class DataAssembly extends EventEmitter {
      */
     public async setParameter(paramValue: any, variable: string = 'VExt'): Promise<any> {
         const opcUaNode = this.communication[variable];
-        catService.info(`Set Parameter: ${this.name} - ${JSON.stringify(opcUaNode)} -> ${JSON.stringify(paramValue)}`);
+        catDataAssembly.info(`Set Parameter: ${this.name} - ${JSON.stringify(opcUaNode)} ` +
+            `-> ${JSON.stringify(paramValue)}`);
         return await this.module.writeNode(opcUaNode, paramValue);
     }
 
-    /**
-     * Get current opMode of DataAssembly from PEA memory.
-     */
-    public async getOpMode(): Promise<OpMode> {
-        if (this.communication['OpMode']) {
-            const result = await this.module.readVariableNode(this.communication['OpMode']);
-            return result.value.value as OpMode;
-        } else {
-            return null;
-        }
-    }
-
-    public async waitForOpModeToPassSpecificTest(testFunction: (opMode: OpMode) => boolean) {
-        return new Promise((resolve) => {
-            const event = this.module.listenToOpcUaNode(this.communication['OpMode']);
-            event.on('changed', function test(data) {
-                if (testFunction(data.value)) {
-                    event.removeListener('changed', test);
-                    resolve();
-                }
-            });
-        });
-    }
-
-    /**
-     * Set service to automatic operation mode and source to external source
-     * @returns {Promise<void>}
-     */
-    public async setToAutomaticOperationMode(): Promise<void> {
-        const opMode: OpMode = await this.getOpMode();
-        catParameter.info(`[${this.name}] Current opMode = ${opMode}`);
-        if (opMode && isOffState(opMode)) {
-            catParameter.trace('First go to Manual state');
-            this.writeOpMode(OpMode.stateManOp);
-            await this.waitForOpModeToPassSpecificTest(isManualState);
-        }
-
-        if (opMode && isManualState(opMode)) {
-            this.writeOpMode(OpMode.stateAutOp);
-            await this.waitForOpModeToPassSpecificTest(isAutomaticState);
-        }
-
-        if (opMode && !isExtSource(opMode)) {
-            this.writeOpMode(OpMode.srcExtOp);
-            await this.waitForOpModeToPassSpecificTest(isExtSource);
-        }
-    }
-
-    public async setToManualOperationMode(): Promise<void> {
-        const opMode = await this.getOpMode();
-        if (opMode && !isManualState(opMode)) {
-            this.writeOpMode(OpMode.stateManOp);
-            await this.waitForOpModeToPassSpecificTest(isManualState);
-        }
-    }
-
-    public getUnit() {
+    public getUnit(): string {
         return null;
     }
 
-    /**
-     * Write OpMode to service
-     * @param {OpMode} opMode
-     * @returns {boolean}
-     */
-    private async writeOpMode(opMode: OpMode): Promise<void> {
-        catParameter.debug(`[${this.name}] Write opMode: ${opMode as number}`);
-        const result = await this.module.writeNode(this.communication['OpMode'], opMode);
-        catParameter.debug(`[${this.name}] Setting opMode ${JSON.stringify(result)}`);
-        if (result.value !== 0) {
-            catParameter.warn(`[${this.name}] Error while setting opMode to ${opMode}: ${JSON.stringify(result)}`);
-            return Promise.reject();
-        } else {
-            return Promise.resolve();
-        }
+    public toJson(): ParameterInterface {
+        return {
+            name: this.name
+        };
     }
 }

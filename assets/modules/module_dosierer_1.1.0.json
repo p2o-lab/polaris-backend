@@ -54,7 +54,7 @@
                             "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.App_Dosing.Services.Fill.StrategyExt",
                             "data_type": "UInt32"
                         },
-                        "CurrentState": {
+                      "State": {
                             "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                             "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.App_Dosing.Services.Fill.CurrentState.binary",
                             "data_type": "UInt32"
@@ -213,7 +213,7 @@
                             "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.App_Dosing.Services.DoseAmount.StrategyExt",
                             "data_type": "UInt32"
                         },
-                        "CurrentState": {
+                      "State": {
                             "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                             "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.App_Dosing.Services.DoseAmount.CurrentState.binary",
                             "data_type": "UInt32"
@@ -441,7 +441,7 @@
                             "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.App_Dosing.Services.DoseConti.StrategyExt",
                             "data_type": "UInt32"
                         },
-                        "CurrentState": {
+                      "State": {
                             "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                             "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.App_Dosing.Services.DoseConti.CurrentState.binary",
                             "data_type": "UInt32"
@@ -593,7 +593,7 @@
                             "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.App_Dosing.Services.Empty.StrategyExt",
                             "data_type": "UInt32"
                         },
-                        "CurrentState": {
+                      "State": {
                             "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                             "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.App_Dosing.Services.Empty.CurrentState.binary",
                             "data_type": "UInt32"

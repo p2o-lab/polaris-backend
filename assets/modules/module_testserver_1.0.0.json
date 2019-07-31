@@ -7,11 +7,11 @@
         {
           "name": "Service1",
           "communication": {
-            "ControlOp": {
+            "CommandMan": {
               "namespace_index": "urn:NodeOPCUA-Server-default",
               "node_id": "Service1.Command"
             },
-            "ControlExt": {
+            "CommandExt": {
               "namespace_index": "urn:NodeOPCUA-Server-default",
               "node_id": "Service1.Command"
             },
@@ -19,7 +19,7 @@
               "namespace_index": "urn:NodeOPCUA-Server-default",
               "node_id": "Service1.State"
             },
-            "ControlEnable": {
+            "CommandEnable": {
               "namespace_index": "urn:NodeOPCUA-Server-default",
               "node_id": "Service1.CommandEnable"
             },
@@ -27,7 +27,7 @@
               "namespace_index": "urn:NodeOPCUA-Server-default",
               "node_id": "Service1.OpMode"
             },
-            "StrategyOp": {
+            "StrategyMan": {
               "namespace_index": "urn:NodeOPCUA-Server-default",
               "node_id": "Service1.Strategy"
             },
@@ -66,6 +66,14 @@
                     "VExt": {
                       "namespace_index": "urn:NodeOPCUA-Server-default",
                       "node_id": "Service1.Parameter1.VExt"
+                    },
+                    "VSclMax": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.Parameter1.VSclMax"
+                    },
+                    "VSclMin": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.Parameter1.VSclMin"
                     },
                     "VMax": {
                       "namespace_index": "urn:NodeOPCUA-Server-default",
@@ -113,6 +121,14 @@
                       "namespace_index": "urn:NodeOPCUA-Server-default",
                       "node_id": "Service1.Parameter2.VExt"
                     },
+                    "VSclMax": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.Parameter2.VSclMax"
+                    },
+                    "VSclMin": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.Parameter2.VSclMin"
+                    },
                     "VMax": {
                       "namespace_index": "urn:NodeOPCUA-Server-default",
                       "node_id": "Service1.Parameter2.VSclMax"
@@ -156,6 +172,134 @@
                     }
                   }
                 }
+              ],
+              "process_values": [
+                {
+                  "name": "PvIn",
+                  "interface_class": "ExtAnaOp",
+                  "communication": {
+                    "V": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.ProcessValueIn.V"
+                    },
+                    "VRbk": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.ProcessValueIn.V"
+                    },
+                    "VOut": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.ProcessValueIn.V"
+                    },
+                    "VExt": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.ProcessValueIn.VExt"
+                    },
+                    "VMax": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.ProcessValueIn.VSclMax"
+                    },
+                    "VMin": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.ProcessValueIn.VSclMin"
+                    },
+                    "VUnit": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.ProcessValueIn.VUnit"
+                    },
+                    "WQC": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.ProcessValueIn.WQC"
+                    },
+                    "OSLevel": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.ProcessValueIn.OSLevel"
+                    }
+                  }
+                },
+                {
+                  "name": "PvOut",
+                  "interface_class": "ExtAnaOp",
+                  "communication": {
+                    "V": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.ProcessValueOut.V"
+                    },
+                    "VRbk": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.ProcessValueOut.V"
+                    },
+                    "VOut": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.ProcessValueOut.V"
+                    },
+                    "VExt": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.ProcessValueOut.VExt"
+                    },
+                    "VMax": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.ProcessValueOut.VSclMax"
+                    },
+                    "VMin": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.ProcessValueOut.VSclMin"
+                    },
+                    "VUnit": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.ProcessValueOut.VUnit"
+                    },
+                    "WQC": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.ProcessValueOut.WQC"
+                    },
+                    "OSLevel": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.ProcessValueOut.OSLevel"
+                    }
+                  }
+                },
+                {
+                  "name": "PvIntegral",
+                  "interface_class": "ExtAnaOp",
+                  "communication": {
+                    "V": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.ProcessValueIntegral.V"
+                    },
+                    "VRbk": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.ProcessValueIntegral.V"
+                    },
+                    "VOut": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.ProcessValueIntegral.V"
+                    },
+                    "VExt": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.ProcessValueIntegral.VExt"
+                    },
+                    "VMax": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.ProcessValueIntegral.VSclMax"
+                    },
+                    "VMin": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.ProcessValueIntegral.VSclMin"
+                    },
+                    "VUnit": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.ProcessValueIntegral.VUnit"
+                    },
+                    "WQC": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.ProcessValueIntegral.WQC"
+                    },
+                    "OSLevel": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.ProcessValueIntegral.OSLevel"
+                    }
+                  }
+                }
               ]
             },
             {
@@ -183,6 +327,14 @@
                     "VExt": {
                       "namespace_index": "urn:NodeOPCUA-Server-default",
                       "node_id": "Service1.Parameter1.VExt"
+                    },
+                    "VSclMax": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.Parameter1.VSclMax"
+                    },
+                    "VSclMin": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.Parameter1.VSclMin"
                     },
                     "VMax": {
                       "namespace_index": "urn:NodeOPCUA-Server-default",
@@ -235,11 +387,11 @@
         {
           "name": "Service2",
           "communication": {
-            "ControlOp": {
+            "CommandMan": {
               "namespace_index": "urn:NodeOPCUA-Server-default",
               "node_id": "Service2.Command"
             },
-            "ControlExt": {
+            "CommandExt": {
               "namespace_index": "urn:NodeOPCUA-Server-default",
               "node_id": "Service2.Command"
             },
@@ -247,7 +399,7 @@
               "namespace_index": "urn:NodeOPCUA-Server-default",
               "node_id": "Service2.State"
             },
-            "ControlEnable": {
+            "CommandEnable": {
               "namespace_index": "urn:NodeOPCUA-Server-default",
               "node_id": "Service2.CommandEnable"
             },
@@ -255,7 +407,7 @@
               "namespace_index": "urn:NodeOPCUA-Server-default",
               "node_id": "Service2.OpMode"
             },
-            "StrategyOp": {
+            "StrategyMan": {
               "namespace_index": "urn:NodeOPCUA-Server-default",
               "node_id": "Service2.Strategy"
             },

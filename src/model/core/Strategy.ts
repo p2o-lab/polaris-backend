@@ -23,17 +23,16 @@
  * SOFTWARE.
  */
 
-import {OpcUaNodeOptions, StrategyOptions} from '@p2olab/polaris-interface';
+import {StrategyOptions} from '@p2olab/polaris-interface';
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {catService} from '../../config/logging';
 import {DataAssembly} from '../dataAssembly/DataAssembly';
 import {DataAssemblyFactory} from '../dataAssembly/DataAssemblyFactory';
+import {OpcUaDataItem} from '../dataAssembly/DataItem';
 import {Module} from './Module';
 
 export interface StrategyEvents {
-    processValueChanged: { processValue: DataAssembly, value: any, timestamp: Date };
-
     parameterChanged: { parameter: DataAssembly, value: any, timestamp: Date };
 }
 
@@ -49,8 +48,6 @@ export class Strategy extends (EventEmitter as new() => StrategyEmitter) {
     public sc: boolean;
     // strategyParameters of strategy
     public parameters: DataAssembly[] = [];
-    // process values of strategy
-    public processValues: DataAssembly[] = [];
 
     constructor(options: StrategyOptions, module: Module) {
         super();
@@ -59,27 +56,18 @@ export class Strategy extends (EventEmitter as new() => StrategyEmitter) {
         this.default = options.default;
         this.sc = options.sc;
         this.parameters = options.parameters.map((paramOptions) => DataAssemblyFactory.create(paramOptions, module));
-        if (options.processValues) {
-            this.processValues = options.processValues
-                .map((pvOptions) => DataAssemblyFactory.create(pvOptions, module));
-        }
     }
 
-    public subscribe() {
+    public async subscribe(): Promise<Strategy> {
         catService.info(`Subscribe to strategy ${this.name}: ${JSON.stringify(this.parameters.map((p) => p.name))}`);
-        this.parameters.map((param) => param.subscribe()
-            .on('VRbk', (data: OpcUaNodeOptions) => {
+        await Promise.all(this.parameters.map(async (param) => (await param.subscribe())
+            .on('VRbk', (data: OpcUaDataItem<number>) => {
                 this.emit('parameterChanged', {parameter: param, value: data.value, timestamp: data.timestamp});
             })
-            .on('Text', (data: OpcUaNodeOptions) => {
+            .on('Text', (data: OpcUaDataItem<string>) => {
                 this.emit('parameterChanged', {parameter: param, value: data.value, timestamp: data.timestamp});
             })
-        );
-        this.processValues.map((pv) => pv.subscribe()
-            .on('V', (data: OpcUaNodeOptions) => {
-                this.emit('processValueChanged', {processValue: pv, value: data.value, timestamp: data.timestamp});
-            })
-        );
+        ));
         return this;
     }
 }

@@ -49,12 +49,12 @@
                                   "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Fill.OpMode.binary",
                                   "data_type": "UInt32"
                                 },
-                                "ControlOp": {
+                              "CommandMan": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                   "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Fill.ControlOp",
                                   "data_type": "UInt32"
                                 },
-                                "StrategyOp": {
+                              "StrategyMan": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                   "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Fill.StrategyOp",
                                   "data_type": "UInt32"
@@ -69,7 +69,7 @@
                                   "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Fill.StrategyInt",
                                   "data_type": "UInt32"
                                 },
-                                "ControlExt": {
+                              "CommandExt": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                   "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Fill.ControlExt",
                                   "data_type": "UInt32"
@@ -84,7 +84,7 @@
                                   "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Fill.State.binary",
                                   "data_type": "UInt32"
                                 },
-                                "ControlEnable": {
+                              "CommandEnable": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                   "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Fill.ControlEnable.binary",
                                   "data_type": "UInt32"
@@ -188,12 +188,12 @@
                                   "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.DoseAmount.OpMode.binary",
                                   "data_type": "UInt32"
                                 },
-                                "ControlOp": {
+                              "CommandMan": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                   "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.DoseAmount.ControlOp",
                                   "data_type": "UInt32"
                                 },
-                                "StrategyOp": {
+                              "StrategyMan": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                   "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.DoseAmount.StrategyOp",
                                   "data_type": "UInt32"
@@ -208,7 +208,7 @@
                                   "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.DoseAmount.StrategyInt",
                                   "data_type": "UInt32"
                                 },
-                                "ControlExt": {
+                              "CommandExt": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                   "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.DoseAmount.ControlExt",
                                   "data_type": "UInt32"
@@ -223,7 +223,7 @@
                                   "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.DoseAmount.State.binary",
                                   "data_type": "UInt32"
                                 },
-                                "ControlEnable": {
+                              "CommandEnable": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                   "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.DoseAmount.ControlEnable.binary",
                                   "data_type": "UInt32"
@@ -376,12 +376,12 @@
                                   "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.DoseConti.OpMode.binary",
                                   "data_type": "UInt32"
                                 },
-                                "ControlOp": {
+                              "CommandMan": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                   "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.DoseConti.ControlOp",
                                   "data_type": "UInt32"
                                 },
-                                "StrategyOp": {
+                              "StrategyMan": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                   "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.DoseConti.StrategyOp",
                                   "data_type": "UInt32"
@@ -396,7 +396,7 @@
                                   "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.DoseConti.StrategyInt",
                                   "data_type": "UInt32"
                                 },
-                                "ControlExt": {
+                              "CommandExt": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                   "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.DoseConti.ControlExt",
                                   "data_type": "UInt32"
@@ -411,7 +411,7 @@
                                   "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.DoseConti.State.binary",
                                   "data_type": "UInt32"
                                 },
-                                "ControlEnable": {
+                              "CommandEnable": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                   "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.DoseConti.ControlEnable.binary",
                                   "data_type": "UInt32"
@@ -508,12 +508,12 @@
                                   "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Empty.OpMode.binary",
                                   "data_type": "UInt32"
                                 },
-                                "ControlOp": {
+                              "CommandMan": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                   "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Empty.ControlOp",
                                   "data_type": "UInt32"
                                 },
-                                "StrategyOp": {
+                              "StrategyMan": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                   "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Empty.StrategyOp",
                                   "data_type": "UInt32"
@@ -528,7 +528,7 @@
                                   "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Empty.StrategyInt",
                                   "data_type": "UInt32"
                                 },
-                                "ControlExt": {
+                              "CommandExt": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                   "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Empty.ControlExt",
                                   "data_type": "UInt32"
@@ -543,7 +543,7 @@
                                   "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Empty.State.binary",
                                   "data_type": "UInt32"
                                 },
-                                "ControlEnable": {
+                              "CommandEnable": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                   "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Empty.ControlEnable.binary",
                                   "data_type": "UInt32"
@@ -1755,14 +1755,14 @@
                                     "node_id": "\"Fill_Service\".\"MTP\".\"OpMode\"",
                                   "data_type": "UInt32"
                                 },
-                                "ControlOp": {
+                              "CommandMan": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                                    "node_id": "\"Fill_Service\".\"MTP\".\"ControlOp\"",
+                                "node_id": "\"Fill_Service\".\"MTP\".\"CommandMan\"",
                                   "data_type": "UInt32"
                                 },
-                                "StrategyOp": {
+                              "StrategyMan": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                                    "node_id": "\"Fill_Service\".\"MTP\".\"StrategyOp\"",
+                                "node_id": "\"Fill_Service\".\"MTP\".\"StrategyMan\"",
                                   "data_type": "UInt32"
                                 },
                                 "ControlInt": {
@@ -1775,9 +1775,9 @@
                                     "node_id": "\"Fill_Service\".\"MTP\".\"StrategyInt\"",
                                   "data_type": "UInt32"
                                 },
-                                "ControlExt": {
+                              "CommandExt": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                                    "node_id": "\"Fill_Service\".\"MTP\".\"ControlExt\"",
+                                "node_id": "\"Fill_Service\".\"MTP\".\"CommandExt\"",
                                   "data_type": "UInt32"
                                 },
                                 "StrategyExt": {
@@ -1790,9 +1790,9 @@
                                     "node_id": "\"Fill_Service\".\"MTP\".\"State\"",
                                   "data_type": "UInt32"
                                 },
-                                "ControlEnable": {
+                              "CommandEnable": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                                    "node_id": "\"Fill_Service\".\"MTP\".\"ControlEnable\"",
+                                "node_id": "\"Fill_Service\".\"MTP\".\"CommandEnable\"",
                                   "data_type": "UInt32"
                                 },
                                 "CurrentStrategy": {
@@ -1894,14 +1894,14 @@
                                     "node_id": "\"Aerate_Service\".\"MTP\".\"OpMode\"",
                                   "data_type": "UInt32"
                                 },
-                                "ControlOp": {
+                              "CommandMan": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                                    "node_id": "\"Aerate_Service\".\"MTP\".\"ControlOp\"",
+                                "node_id": "\"Aerate_Service\".\"MTP\".\"CommandMan\"",
                                   "data_type": "UInt32"
                                 },
-                                "StrategyOp": {
+                              "StrategyMan": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                                    "node_id": "\"Aerate_Service\".\"MTP\".\"StrategyOp\"",
+                                "node_id": "\"Aerate_Service\".\"MTP\".\"StrategyMan\"",
                                   "data_type": "UInt32"
                                 },
                                 "ControlInt": {
@@ -1914,9 +1914,9 @@
                                     "node_id": "\"Aerate_Service\".\"MTP\".\"StrategyInt\"",
                                   "data_type": "UInt32"
                                 },
-                                "ControlExt": {
+                              "CommandExt": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                                    "node_id": "\"Aerate_Service\".\"MTP\".\"ControlExt\"",
+                                "node_id": "\"Aerate_Service\".\"MTP\".\"CommandExt\"",
                                   "data_type": "UInt32"
                                 },
                                 "StrategyExt": {
@@ -1929,9 +1929,9 @@
                                     "node_id": "\"Aerate_Service\".\"MTP\".\"State\"",
                                   "data_type": "UInt32"
                                 },
-                                "ControlEnable": {
+                              "CommandEnable": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                                    "node_id": "\"Aerate_Service\".\"MTP\".\"ControlEnable\"",
+                                "node_id": "\"Aerate_Service\".\"MTP\".\"CommandEnable\"",
                                   "data_type": "UInt32"
                                 },
                                 "CurrentStrategy": {
@@ -2026,14 +2026,14 @@
                                     "node_id": "\"Stir_Service\".\"MTP\".\"OpMode\"",
                                   "data_type": "UInt32"
                                 },
-                                "ControlOp": {
+                              "CommandMan": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                                    "node_id": "\"Stir_Service\".\"MTP\".\"ControlOp\"",
+                                "node_id": "\"Stir_Service\".\"MTP\".\"CommandMan\"",
                                   "data_type": "UInt32"
                                 },
-                                "StrategyOp": {
+                              "StrategyMan": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                                    "node_id": "\"Stir_Service\".\"MTP\".\"StrategyOp\"",
+                                "node_id": "\"Stir_Service\".\"MTP\".\"StrategyMan\"",
                                   "data_type": "UInt32"
                                 },
                                 "ControlInt": {
@@ -2046,9 +2046,9 @@
                                     "node_id": "\"Stir_Service\".\"MTP\".\"StrategyInt\"",
                                   "data_type": "UInt32"
                                 },
-                                "ControlExt": {
+                              "CommandExt": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                                    "node_id": "\"Stir_Service\".\"MTP\".\"ControlExt\"",
+                                "node_id": "\"Stir_Service\".\"MTP\".\"CommandExt\"",
                                   "data_type": "UInt32"
                                 },
                                 "StrategyExt": {
@@ -2061,9 +2061,9 @@
                                     "node_id": "\"Stir_Service\".\"MTP\".\"State\"",
                                   "data_type": "UInt32"
                                 },
-                                "ControlEnable": {
+                              "CommandEnable": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                                    "node_id": "\"Stir_Service\".\"MTP\".\"ControlEnable\"",
+                                "node_id": "\"Stir_Service\".\"MTP\".\"CommandEnable\"",
                                   "data_type": "UInt32"
                                 },
                                 "CurrentStrategy": {
@@ -2215,14 +2215,14 @@
                                     "node_id": "\"Empty_Service\".\"MTP\".\"OpMode\"",
                                   "data_type": "UInt32"
                                 },
-                                "ControlOp": {
+                              "CommandMan": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                                    "node_id": "\"Empty_Service\".\"MTP\".\"ControlOp\"",
+                                "node_id": "\"Empty_Service\".\"MTP\".\"CommandMan\"",
                                   "data_type": "UInt32"
                                 },
-                                "StrategyOp": {
+                              "StrategyMan": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                                    "node_id": "\"Empty_Service\".\"MTP\".\"StrategyOp\"",
+                                "node_id": "\"Empty_Service\".\"MTP\".\"StrategyMan\"",
                                   "data_type": "UInt32"
                                 },
                                 "ControlInt": {
@@ -2235,9 +2235,9 @@
                                     "node_id": "\"Empty_Service\".\"MTP\".\"StrategyInt\"",
                                   "data_type": "UInt32"
                                 },
-                                "ControlExt": {
+                              "CommandExt": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                                    "node_id": "\"Empty_Service\".\"MTP\".\"ControlExt\"",
+                                "node_id": "\"Empty_Service\".\"MTP\".\"CommandExt\"",
                                   "data_type": "UInt32"
                                 },
                                 "StrategyExt": {
@@ -2250,9 +2250,9 @@
                                     "node_id": "\"Empty_Service\".\"MTP\".\"State\"",
                                   "data_type": "UInt32"
                                 },
-                                "ControlEnable": {
+                              "CommandEnable": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                                    "node_id": "\"Empty_Service\".\"MTP\".\"ControlEnable\"",
+                                "node_id": "\"Empty_Service\".\"MTP\".\"CommandEnable\"",
                                   "data_type": "UInt32"
                                 },
                                 "CurrentStrategy": {
@@ -3635,12 +3635,12 @@
                                     "node_id": "mtp:services:circulation:control:OpMode",
                                   "data_type": "UInt32"
                                 },
-                                "ControlOp": {
+                              "CommandMan": {
                                     "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                                     "node_id": "mtp:services:circulation:control:ControlOp",
                                   "data_type": "UInt32"
                                 },
-                                "StrategyOp": {
+                              "StrategyMan": {
                                     "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                                     "node_id": "mtp:services:circulation:control:StrategyOp",
                                   "data_type": "UInt32"
@@ -3655,7 +3655,7 @@
                                     "node_id": "mtp:services:circulation:control:StrategyInt",
                                   "data_type": "UInt32"
                                 },
-                                "ControlExt": {
+                              "CommandExt": {
                                     "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                                     "node_id": "mtp:services:circulation:control:ControlExt",
                                   "data_type": "UInt32"
@@ -3670,7 +3670,7 @@
                                     "node_id": "mtp:services:circulation:control:State",
                                   "data_type": "UInt32"
                                 },
-                                "ControlEnable": {
+                              "CommandEnable": {
                                     "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                                     "node_id": "mtp:services:circulation:control:ControlEnable",
                                   "data_type": "UInt32"
@@ -3710,12 +3710,12 @@
                                     "node_id": "mtp:services:tempering:control:OpMode",
                                   "data_type": "UInt32"
                                 },
-                                "ControlOp": {
+                              "CommandMan": {
                                     "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                                     "node_id": "mtp:services:tempering:control:ControlOp",
                                   "data_type": "UInt32"
                                 },
-                                "StrategyOp": {
+                              "StrategyMan": {
                                     "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                                     "node_id": "mtp:services:tempering:control:StrategyOp",
                                   "data_type": "UInt32"
@@ -3730,7 +3730,7 @@
                                     "node_id": "mtp:services:tempering:control:StrategyInt",
                                   "data_type": "UInt32"
                                 },
-                                "ControlExt": {
+                              "CommandExt": {
                                     "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                                     "node_id": "mtp:services:tempering:control:ControlExt",
                                   "data_type": "UInt32"
@@ -3745,7 +3745,7 @@
                                     "node_id": "mtp:services:tempering:control:State",
                                   "data_type": "UInt32"
                                 },
-                                "ControlEnable": {
+                              "CommandEnable": {
                                     "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                                     "node_id": "mtp:services:tempering:control:ControlEnable",
                                   "data_type": "UInt32"

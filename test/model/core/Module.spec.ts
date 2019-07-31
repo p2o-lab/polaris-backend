@@ -38,10 +38,10 @@ describe('Module', () => {
     it('should reject connecting to a module with too high port', async () => {
         const options: ModuleOptions =
             JSON.parse(fs.readFileSync('assets/modules/module_cif.json').toString()).modules[0];
-        options.opcua_server_url = 'opc.tcp://10.6.51.99:44447777';
+        options.opcua_server_url = 'opc.tcp://127.0.0.1:44447777';
         const module = new Module(options);
         expect(module.isConnected()).to.equal(false);
-        expect(module.connect()).to.be.rejectedWith('Port should be');
+        await expect(module.connect()).to.be.rejectedWith('Port should be');
     });
 
     it('should reject connecting to a module with not existing endpoint', async () => {
@@ -52,18 +52,18 @@ describe('Module', () => {
         expect(module.isConnected()).to.equal(false);
         await expect(module.connect()).to.be.rejectedWith('Timeout');
         expect(module.isConnected()).to.equal(false);
-    }).timeout(3000);
+        await module.disconnect();
+    }).timeout(5000);
 
-    it('should load the cif module json', (done) => {
-        fs.readFile('assets/modules/module_cif.json', (err, file) => {
-            const module = new Module(JSON.parse(file.toString()).modules[0]);
-            expect(module).to.have.property('id', 'CIF');
-            expect(module.services).to.have.length(6);
-            done();
-        });
+    it('should load the cif module json', () => {
+        const f = fs.readFileSync('assets/modules/module_cif.json');
+        const module = new Module(JSON.parse(f.toString()).modules[0]);
+        expect(module).to.have.property('id', 'CIF');
+        expect(module.services).to.have.length(6);
     });
 
-    it('should recognize a opc ua server shutdown', async () => {
+    it('should recognize a opc ua server shutdown', async function() {
+        this.timeout(10000);
         const moduleJson =
             JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8')).modules[0];
 
@@ -83,13 +83,15 @@ describe('Module', () => {
             });
             moduleServer.shutdown();
         });
-    }).retries(3);
+        await moduleServer.shutdown();
+    });
 
     context('with module server', () => {
         let moduleServer: ModuleTestServer;
         let module: Module;
 
-        before(async () => {
+        before(async function() {
+            this.timeout(5000);
             moduleServer = new ModuleTestServer();
             await moduleServer.start();
             const moduleJson =
@@ -101,7 +103,6 @@ describe('Module', () => {
 
         after(async () => {
             await module.disconnect();
-            moduleServer.stopSimulation();
             await moduleServer.shutdown();
         });
 

@@ -38,6 +38,7 @@ import {BinView} from '../dataAssembly/BinView';
 import {DataAssembly} from '../dataAssembly/DataAssembly';
 import {ExtDigOp} from '../dataAssembly/DigOp';
 import {DigView} from '../dataAssembly/DigView';
+import {OpcUaDataItem} from '../dataAssembly/DataItem';
 
 export class ScopeItem {
 
@@ -143,20 +144,20 @@ export class ScopeItem {
         return new ScopeItem(variable, module, opcUaNode);
     }
 
-    private static getVariablefromDataAssembly(dataAssembly, token): OpcUaNodeOptions {
+    private static getVariablefromDataAssembly(dataAssembly, token): OpcUaDataItem<any> {
         let opcUaNode = dataAssembly.communication[token];
         if (!opcUaNode) {
-            // set defaul values
+            // set default values
             if (dataAssembly instanceof AnaView) {
-                opcUaNode = dataAssembly.V;
+                opcUaNode = dataAssembly.communication.V;
             } else if (dataAssembly instanceof DigView) {
-                opcUaNode = dataAssembly.V;
+                opcUaNode = dataAssembly.communication.V;
             } else if (dataAssembly instanceof BinView) {
                 opcUaNode = dataAssembly.V;
             } else if (dataAssembly instanceof ExtAnaOp) {
-                opcUaNode = dataAssembly.VOut;
+                opcUaNode = dataAssembly.communication.VOut;
             } else if (dataAssembly instanceof ExtDigOp) {
-                opcUaNode = dataAssembly.VOut;
+                opcUaNode = dataAssembly.communication.VOut;
             } else if (dataAssembly instanceof ExtBinOp) {
                 opcUaNode = dataAssembly.VOut;
             }
@@ -166,11 +167,11 @@ export class ScopeItem {
 
     /** name of variable which should be replaced in value */
     public readonly name: string;
-    public readonly variable: OpcUaNodeOptions;
+    public readonly variable: OpcUaDataItem<any>;
     public readonly module: Module;
     private readonly service: BaseService;
 
-    constructor(name: string, module, variable?: OpcUaNodeOptions, service?: BaseService) {
+    constructor(name: string, module, variable?: OpcUaDataItem<any>, service?: BaseService) {
         this.name = name;
         this.module = module;
         this.variable = variable;
@@ -183,6 +184,9 @@ export class ScopeItem {
      */
     public getScopeValue(): object {
         const value = this.variable ? this.variable.value : ServiceState[this.service.state];
+        if (value === undefined) {
+            throw new Error(`Could not evaluate scope item ${this.name} (${JSON.stringify(this.variable)} since it seems not connected`);
+        }
         return this.name.split('.').reduceRight((previous, current) => {
             const a = {};
             a[current] = previous;

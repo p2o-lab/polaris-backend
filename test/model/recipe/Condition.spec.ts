@@ -36,8 +36,8 @@ import {TimeCondition} from '../../../src/model/condition/TimeCondition';
 import {TrueCondition} from '../../../src/model/condition/TrueCondition';
 import {ServiceState} from '../../../src/model/core/enum';
 import {Module} from '../../../src/model/core/Module';
-import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 import {TestServerNumericVariable} from '../../../src/moduleTestServer/ModuleTestNumericVariable';
+import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -172,7 +172,7 @@ describe('Condition', () => {
                     ]
                 }, [module]) as ExpressionCondition;
 
-                expect(expr.getValue()).to.be.rejectedWith('not connected');
+                await expect(expr.getValue()).to.be.rejectedWith('not connected');
             });
 
         });
@@ -185,7 +185,7 @@ describe('Condition', () => {
         let var0: TestServerNumericVariable;
 
         beforeEach(async function() {
-            this.timeout(4000);
+            this.timeout(10000);
             moduleServer = new ModuleTestServer();
             await moduleServer.start();
             var0 = moduleServer.variables[0] as TestServerNumericVariable;
@@ -234,7 +234,7 @@ describe('Condition', () => {
             var0.v = 37;
             expect(condition).to.have.property('fulfilled', undefined);
 
-        }).timeout(4000);
+        }).timeout(5000);
 
         it('specialized as StateCondition should work', async function() {
             this.timeout(5000);
@@ -357,7 +357,7 @@ describe('Condition', () => {
                 value = await expr.getValue();
                 expect(value).to.equal(true);
                 expect(expr).to.have.property('fulfilled', undefined);
-            }).timeout(8000).slow(4000);
+            }).timeout(5000);
 
             it('should work with semi-complex expression', async () => {
                 const expr: ExpressionCondition = ConditionFactory.create({

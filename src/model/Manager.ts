@@ -155,7 +155,7 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
                 .on('disconnected', () => this.emit('notify', 'module', null))
                 .on('controlEnable', ({service, controlEnable}) => {
                     this.emit('notify', 'module', {
-                        module: service.parent.id,
+                        module: service.module.id,
                         service: service.name,
                         controlEnable
                     });
@@ -405,11 +405,11 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
      */
     private performAutoReset(service: Service) {
         if (this.autoreset) {
-            catManager.info(`Service ${service.parent.id}.${service.name} completed. ` +
+            catManager.info(`Service ${service.module.id}.${service.name} completed. ` +
                 `Short waiting time (${this._autoresetTimeout}) to autoreset`);
             setTimeout(async () => {
-                if (service.parent.isConnected() && service.state === ServiceState.COMPLETED) {
-                    catManager.info(`Service ${service.parent.id}.${service.name} completed. Now perform autoreset`);
+                if (service.module.isConnected() && service.state === ServiceState.COMPLETED) {
+                    catManager.info(`Service ${service.module.id}.${service.name} completed. Now perform autoreset`);
                     try {
                         service.execute(ServiceCommand.reset);
                     } catch (err) {

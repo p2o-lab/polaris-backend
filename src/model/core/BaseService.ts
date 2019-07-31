@@ -27,7 +27,6 @@ import {ControlEnableInterface, ParameterInterface, ParameterOptions, ServiceCom
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {catService} from '../../config/logging';
-import {DataAssembly} from '../dataAssembly/DataAssembly';
 import {Parameter} from '../recipe/Parameter';
 import {ServiceState} from './enum';
 import {Strategy} from './Strategy';
@@ -100,16 +99,15 @@ export abstract class BaseService {
 
     protected _state: ServiceState = ServiceState.IDLE;
     protected _controlEnable: ControlEnableInterface;
-    protected parameters: ParameterInterface[];
+    public parameters: ParameterInterface[] = [];
+    public processValuesIn: ParameterInterface[] = [];
+    public processValuesOut: ParameterInterface[] = [];
+    public reportValues: ParameterInterface[] = [];
 
     protected _lastStatusChange: Date = new Date();
 
     constructor() {
         this.eventEmitter = new EventEmitter();
-    }
-
-    public getCurrentParameters(strategy?: Strategy): Promise<ParameterInterface[]> {
-        return Promise.resolve(this.parameters);
     }
 
     public abstract setParameters(parameters: Array<Parameter|ParameterOptions>): Promise<void>;
