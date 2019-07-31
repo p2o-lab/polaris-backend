@@ -71,6 +71,6 @@ describe('AggregatedService', () => {
         as.start();
 
         await waitForStateChange(as, 'EXECUTE');
-    });
+    }).timeout(5000);
 
 });

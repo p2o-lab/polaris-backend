@@ -105,7 +105,8 @@ describe('Parameter', () => {
         let module: Module;
         let moduleServer: ModuleTestServer;
 
-        before(async () => {
+        before(async function before() {
+            this.timeout(5000);
             moduleServer = new ModuleTestServer();
             await moduleServer.start();
             const moduleJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8'))
@@ -121,7 +122,6 @@ describe('Parameter', () => {
         });
 
         it('should load with complex expression and given scopeArray', async () => {
-
             const param = new Parameter({
                 name: 'Parameter001',
                 value: 'sin(a)^2 + cos(CIF.Variable001)^2',

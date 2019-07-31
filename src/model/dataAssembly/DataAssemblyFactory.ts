@@ -24,7 +24,7 @@
  */
 
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {catModule} from '../../config/logging';
+import {catDataAssembly} from '../../config/logging';
 import {Module} from '../core/Module';
 import {AdvAnaOp, AnaServParam, ExtAnaOp, ExtIntAnaOp} from './AnaOp';
 import {AnaMon, AnaView} from './AnaView';
@@ -39,7 +39,7 @@ import {AnaVlv, BinVlv, MonAnaVlv, MonBinVlv} from './Vlv';
 
 export class DataAssemblyFactory {
     public static create(variableOptions: DataAssemblyOptions, module: Module): DataAssembly {
-        catModule.debug(`Create DataAssembly ${variableOptions.name} (${variableOptions.interface_class})`);
+        catDataAssembly.debug(`Create DataAssembly ${variableOptions.name} (${variableOptions.interface_class})`);
 
         const types = {
             'AnaView': AnaView,
@@ -75,7 +75,7 @@ export class DataAssemblyFactory {
         };
         let type = types[variableOptions.interface_class];
         if (!type) {
-            catModule.warn(`No data assembly implemented for ${variableOptions.interface_class} ` +
+            catDataAssembly.warn(`No data assembly implemented for ${variableOptions.interface_class} ` +
                 `of ${variableOptions.name}. Use standard DataAssembly.`);
             type = DataAssembly;
         }

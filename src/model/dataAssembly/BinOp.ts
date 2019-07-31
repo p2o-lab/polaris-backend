@@ -24,12 +24,12 @@
  */
 
 import {DataAssembly} from './DataAssembly';
+import {OpModeDA} from './mixins';
 
 export class ExtBinOp extends DataAssembly {
 
     constructor(options, module) {
         super(options, module);
-        this.subscribedNodes.push('VOut', 'VState0', 'VState1', 'VExt', 'VRbk');
     }
 
     get VState0() {
@@ -54,20 +54,7 @@ export class ExtBinOp extends DataAssembly {
 
 }
 
-export class ExtIntBinOp extends ExtBinOp {
-
-    constructor(options, module) {
-        super(options, module);
-        this.subscribedNodes.push('VInt', 'OpMode');
-    }
-
-    get VInt() {
-        return this.communication['VInt'];
-    }
-
-    get OpMode() {
-        return this.communication['OpMode'];
-    }
+export class ExtIntBinOp extends OpModeDA(ExtBinOp) {
 }
 
 export class AdvBinOp extends ExtIntBinOp {

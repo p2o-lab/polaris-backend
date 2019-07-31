@@ -70,7 +70,7 @@ describe('Scope Item', () => {
     it('should work for expression with special characters', () => {
         const extraction = ScopeItem.extractFromExpressionString('CIF.Variable\\.003 + 3', [moduleTestServer]);
         expect(extraction.scopeItems).to.have.lengthOf(1);
-        expect(extraction.scopeItems[0].variable.node_id).to.equal('TestServerVariable.3.V');
+        expect(extraction.scopeItems[0].variable.nodeId).to.equal('TestServerVariable.3.V');
         expect(extraction.scopeItems[0].name).to.equal('CIF.Variable__003');
     });
 
@@ -83,21 +83,21 @@ describe('Scope Item', () => {
         const item = ScopeItem.extractFromExpressionVariable('Variable001', [moduleTestServer]);
         expect(item).to.have.property('module').to.have.property('id', 'CIF');
         expect(item).to.have.property('name', 'Variable001');
-        expect(item).to.have.property('variable').to.have.property('node_id', 'Variable1.V');
+        expect(item).to.have.property('variable').to.have.property('nodeId', 'Variable1.V');
     });
 
     it('should return ScopeItem 2', () => {
         const item = ScopeItem.extractFromExpressionVariable('Variable001.VUnit', [moduleTestServer]);
         expect(item).to.have.property('module').to.have.property('id', 'CIF');
         expect(item).to.have.property('name', 'Variable001.VUnit');
-        expect(item).to.have.property('variable').to.have.property('node_id', 'Variable1.VUnit');
+        expect(item).to.have.property('variable').to.have.property('nodeId', 'Variable1.VUnit');
     });
 
     it('should return ScopeItem 3', () => {
         const item = ScopeItem.extractFromExpressionVariable('Variable001.V', [moduleTestServer]);
         expect(item).to.have.property('module').to.have.property('id', 'CIF');
         expect(item).to.have.property('name', 'Variable001.V');
-        expect(item).to.have.property('variable').to.have.property('node_id', 'Variable1.V');
+        expect(item).to.have.property('variable').to.have.property('nodeId', 'Variable1.V');
     });
 
     it('should return ScopeItem 4', async () => {
@@ -105,7 +105,7 @@ describe('Scope Item', () => {
             [moduleTestServer, moduleDosierer]);
         expect(item).to.have.property('module').to.have.property('id', 'CIF');
         expect(item).to.have.property('name', 'CIF.Variable001.VUnit');
-        expect(item).to.have.property('variable').to.have.property('node_id', 'Variable1.VUnit');
+        expect(item).to.have.property('variable').to.have.property('nodeId', 'Variable1.VUnit');
     });
 
     it('should return ScopeItem 5', () => {
@@ -113,7 +113,7 @@ describe('Scope Item', () => {
             [moduleTestServer, moduleDosierer]);
         expect(item).to.have.property('module').to.have.property('id', 'CIF');
         expect(item).to.have.property('name', 'CIF.Service1.Parameter001');
-        expect(item).to.have.property('variable').to.have.property('node_id', 'Service1.Parameter1.V');
+        expect(item).to.have.property('variable').to.have.property('nodeId', 'Service1.Parameter1.V');
     });
 
     it('should return ScopeItem 6', () => {
@@ -137,7 +137,8 @@ describe('Scope Item', () => {
 
         let moduleServer: ModuleTestServer;
 
-        beforeEach(async () => {
+        beforeEach(async function () {
+            this.timeout(5000);
             moduleServer = new ModuleTestServer();
             await moduleServer.start();
 
@@ -163,7 +164,7 @@ describe('Scope Item', () => {
             const item = ScopeItem.extractFromExpressionVariable('CIF.Service1.Parameter001',
                 [moduleTestServer, moduleDosierer]);
             expect(item.name).to.equal('CIF.Service1.Parameter001');
-            expect(item.variable.node_id).to.equal('Service1.Parameter1.V');
+            expect(item.variable.nodeId).to.equal('Service1.Parameter1.V');
             expect(await item.getScopeValue()).to.deep.equal({
                 'CIF': {
                     'Service1': {

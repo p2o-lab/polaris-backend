@@ -50,14 +50,23 @@ describe('Service', () => {
 
         it('should fail with missing name', () => {
             expect(() => new Service({name: null, parameters: null, communication: null, strategies: null}, null))
-                .to.throw('OpMode');
+                .to.throw('No service name');
         });
 
-        it('should fail with missing communication', () => {
+        it('should fail with missing module', () => {
             expect(() => new Service({name: 'test', parameters: null, communication: null, strategies: null}, null))
-                .to.throw('OpMode');
+                .to.throw('No module');
         });
 
+    });
+
+    it('should reject command if not connected', async () => {
+        const moduleJson =
+            parseJson(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8'), null, 60)
+                .modules[0];
+        const module = new Module(moduleJson);
+        const service = module.services[0];
+        await expect(service.execute(ServiceCommand.start)).to.be.rejectedWith('Module is not connected');
     });
 
     context('dynamic test', () => {
@@ -66,7 +75,8 @@ describe('Service', () => {
         let testService: TestServerService;
         let module: Module;
 
-        beforeEach(async () => {
+        beforeEach(async function () {
+            this.timeout(5000);
             moduleServer = new ModuleTestServer();
             await moduleServer.start();
             moduleServer.startSimulation();
@@ -115,7 +125,7 @@ describe('Service', () => {
                 unhold: false
             });
 
-            expect(service.execute(ServiceCommand.resume)).to.be.rejectedWith(/ControlOp/);
+            await expect(service.execute(ServiceCommand.resume)).to.be.rejectedWith(/ControlOp/);
             expect(service.controlEnable).to.deep.equal({
                 abort: true,
                 complete: false,
@@ -127,11 +137,6 @@ describe('Service', () => {
                 stop: true,
                 unhold: false
             });
-        });
-
-        it('should reject command if not connected', async () => {
-            await module.disconnect();
-            expect(service.execute(ServiceCommand.start)).to.be.rejectedWith('Module is not connected');
         });
 
         it('waitForOpModeSpecificTest', async () => {

@@ -116,7 +116,8 @@ describe('Operation', () => {
         let module: Module;
         let service: Service;
 
-        beforeEach(async () => {
+        beforeEach(async function () {
+            this.timeout(5000);
             moduleServer = new ModuleTestServer();
             await moduleServer.start();
 
@@ -140,7 +141,7 @@ describe('Operation', () => {
             }, [module]);
 
             operation.execute();
-            await delay(600);
+            await delay(300);
             expect(operation.json()).to.have.property('state', 'executing');
             // set precondition for operation
             service.execute(ServiceCommand.start);

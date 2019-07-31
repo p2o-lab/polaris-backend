@@ -70,7 +70,7 @@ describe('Manager', () => {
             expect(() => manager.loadModule({subplants: [modulesJson]})).to.throw('already in registered modules');
         });
 
-        it('should load the achema modules', () => {
+        it('should load the achema modules', async () => {
             const manager = new Manager();
             const modules = manager.loadModule(
                 JSON.parse(fs.readFileSync('assets/modules/modules_achema.json').toString()),
@@ -85,8 +85,8 @@ describe('Manager', () => {
             expect(() => manager.getService('Dose', 'NoService')).to.throw();
             expect(() => manager.getService('NoModule', 'NoService')).to.throw();
 
-            expect(manager.removeModule('something')).to.be.rejectedWith(/No Module/);
-            expect(manager.removeModule(manager.modules[1].id)).to.be.rejectedWith(/is protected/);
+            await expect(manager.removeModule('something')).to.be.rejectedWith(/No Module/);
+            await expect(manager.removeModule(manager.modules[1].id)).to.be.rejectedWith(/is protected/);
         });
 
         it('should prevent removing a protected module', () => {
@@ -114,7 +114,8 @@ describe('Manager', () => {
         expect(() => manager.removeRecipe(manager.recipes[0].id)).to.throw('protected');
     });
 
-    describe('test with test module', () => {
+    describe('test with test module', function () {
+        this.timeout(5000);
         let moduleServer: ModuleTestServer;
 
         before(async () => {

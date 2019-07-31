@@ -23,16 +23,33 @@
  * SOFTWARE.
  */
 
-import {DataAssembly} from './DataAssembly';
+import {ParameterInterface} from '@p2olab/polaris-interface';
+import {BaseDataAssemblyRuntime, DataAssembly} from './DataAssembly';
+import {OpcUaDataItem} from './DataItem';
+
+export type StrRuntime = BaseDataAssemblyRuntime & {
+    Text: OpcUaDataItem<string>;
+};
 
 export class StrView extends DataAssembly {
 
+    public readonly communication: StrRuntime;
+
     get Text() {
-        return this.communication['Text'];
+        return this.communication.Text;
     }
 
     constructor(options, module) {
         super(options, module);
-        this.subscribedNodes.push('Text');
+        this.communication.Text = OpcUaDataItem.fromOptions(options.communication.Text, 'read', 'string');
+    }
+
+    public toJson(): ParameterInterface {
+        return {
+            ...super.toJson(),
+            value: this.Text.value,
+            type: 'string',
+            readonly: true
+        };
     }
 }

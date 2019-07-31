@@ -1,3 +1,4 @@
+/* tslint:disable:max-classes-per-file */
 /*
  * MIT License
  *
@@ -23,63 +24,16 @@
  * SOFTWARE.
  */
 
+import {AnaOpRuntime} from './AnaOp';
 import {DataAssembly} from './DataAssembly';
+import {OpModeDA, ScaleSettingsDA, UnitDA} from './mixins';
 
-export class ExtDigOp extends DataAssembly {
-
-    constructor(options, module) {
-        super(options, module);
-        this.subscribedNodes.push('VOut', 'VUnit', 'VSclMin', 'VSclMax', 'VExt', 'VMin', 'VMax', 'VRbk');
-    }
-
-    get VOut() {
-        return this.communication['VOut'];
-    }
-
-    get VUnit() {
-        return this.communication['VUnit'];
-    }
-
-    get VSclMin() {
-        return this.communication['VSclMin'];
-    }
-
-    get VSclMax() {
-        return this.communication['VSclMax'];
-    }
-
-    get VExt() {
-        return this.communication['VExt'];
-    }
-
-    get VMin() {
-        return this.communication['VMin'];
-    }
-
-    get VMax() {
-        return this.communication['VMax'];
-    }
-
-    get VRbk() {
-        return this.communication['VRbk'];
-    }
-
+export class ExtDigOp extends ScaleSettingsDA(UnitDA(DataAssembly)) {
+    public readonly communication: AnaOpRuntime;
 }
 
-export class ExtIntDigOp extends ExtDigOp {
+export class ExtIntDigOp extends OpModeDA(ExtDigOp) {
 
-    constructor(options, module) {
-        super(options, module);
-        this.subscribedNodes.push('VInt', 'OpMode');
-    }
-
-    get VInt() {
-        return this.communication['VInt'];
-    }
-
-    get OpMode() {
-        return this.communication['OpMode'];
-    }
 }
 
 export class AdvDigOp extends ExtIntDigOp {

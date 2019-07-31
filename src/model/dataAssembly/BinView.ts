@@ -29,7 +29,7 @@ export class BinView extends DataAssembly {
 
     constructor(options, module) {
         super(options, module);
-        this.subscribedNodes.push('V', 'VState0', 'VState1');
+        //this.subscribedNodes.push('V', 'VState0', 'VState1');
     }
 
     get V() {
@@ -52,8 +52,8 @@ export class BinMon extends BinView {
 
     constructor(options, module) {
         super(options, module);
-        this.subscribedNodes.push(
-            'VFlutTi', 'VFlutEn', 'VFlutCnt',
-            'VFlutAct');
+        //this.subscribedNodes.push(
+        //    'VFlutTi', 'VFlutEn', 'VFlutCnt',
+        //    'VFlutAct');
     }
 }
