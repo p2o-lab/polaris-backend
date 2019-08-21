@@ -1,3 +1,4 @@
+/* tslint:disable:max-classes-per-file */
 /*
  * MIT License
  *
@@ -28,7 +29,7 @@ import {DataAssembly} from './DataAssembly';
 export class AnaDrv extends DataAssembly {
     constructor(options, module) {
         super(options, module);
-        //this.subscribedNodes.push('OpMode', 'FwdEn', 'RevEn', 'StopOp', 'FwdOp', 'RevOp', 'StopLi', 'FwdLi', 'RevLi',
+        // this.subscribedNodes.push('OpMode', 'FwdEn', 'RevEn', 'StopOp', 'FwdOp', 'RevOp', 'StopLi', 'FwdLi', 'RevLi',
         //    'FwdCtrl', 'RevCtrl', 'RevFbkEn', 'FwdFbkEn', 'RevFbk', 'FwdFbk', 'SafePos', 'Trip', 'RpmSclMax',
         //    'RpmSclMin', 'RpmUnit', 'RpmInt', 'RpmExt', 'RpmMin', 'RpmMax', 'Rpm', 'RpmFbk', 'PermEn', 'Permit',
         //    'IntlEn', 'Interlock', 'ProtEn', 'Protect', 'ResetOp', 'ResetLi');

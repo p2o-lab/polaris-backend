@@ -34,10 +34,9 @@ import {
 import {catDataAssembly, catParameter} from '../../config/logging';
 import {isAutomaticState, isExtSource, isManualState, isOffState, OpMode} from '../core/enum';
 import {UNIT} from '../core/Unit';
+import {ValueLimitationRuntime} from './AnaOp';
 import {BaseDataAssemblyRuntime, DataAssembly} from './DataAssembly';
 import {OpcUaDataItem} from './DataItem';
-import {BaseDataAssemblyOptions} from '@p2olab/polaris-interface/src/core/dataAssembly';
-import {ValueLimitationRuntime} from './AnaOp';
 
 type Constructor<T = {}> = new (...args: any[]) => T;
 
@@ -106,7 +105,6 @@ export function ScaleSettingsDA<TBase extends Constructor<DataAssembly>>(Base: T
     };
 }
 
-
 // tslint:disable-next-line:variable-name
 export function ValueLimitationDA<TBase extends Constructor<DataAssembly>>(Base: TBase) {
 
@@ -174,9 +172,8 @@ export function OpModeDA<TBase extends Constructor<DataAssembly>>(Base: TBase) {
         /**
          * Get current opMode of DataAssembly from reading its state from the PEA.
          */
-        public async getOpMode(): Promise<OpMode> {
-            const result = await this.module.readVariableNode(this.communication.OpMode);
-            return result.value.value as OpMode;
+        public getOpMode(): OpMode {
+            return this.communication.OpMode.value as OpMode;
         }
 
         public async waitForOpModeToPassSpecificTest(testFunction: (opMode: OpMode) => boolean) {
@@ -186,7 +183,7 @@ export function OpModeDA<TBase extends Constructor<DataAssembly>>(Base: TBase) {
                 } else {
                     this.on('OpMode', function test(data) {
                         if (testFunction(data.value)) {
-                            this.removeListener('changed', test);
+                            this.removeListener('OpMode', test);
                             resolve();
                         }
                     });

@@ -24,7 +24,7 @@
  * SOFTWARE.
  */
 
-import {OpcUaNodeOptions} from '@p2olab/polaris-interface/src/core/options';
+import {OpcUaNodeOptions} from '@p2olab/polaris-interface';
 
 export class DataItem<T> {
     // data type of OPC UA node

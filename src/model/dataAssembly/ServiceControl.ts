@@ -28,7 +28,6 @@ import {Module} from '../core/Module';
 import {BaseDataAssemblyRuntime, DataAssembly} from './DataAssembly';
 import {OpcUaDataItem} from './DataItem';
 import {OpModeDA} from './mixins';
-import {ServiceControlOptions} from '@p2olab/polaris-interface';
 
 export interface ServiceControlRuntime extends BaseDataAssemblyRuntime {
     OpMode: OpcUaDataItem<number>;

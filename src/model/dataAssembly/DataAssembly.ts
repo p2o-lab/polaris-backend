@@ -24,7 +24,6 @@
  */
 
 import {
-    BaseDataAssemblyOptions,
     DataAssemblyOptions,
     ParameterInterface
 } from '@p2olab/polaris-interface';
@@ -83,7 +82,8 @@ export class DataAssembly extends EventEmitter {
      * @param samplingInterval
      */
     public async subscribe(samplingInterval = 1000): Promise<DataAssembly> {
-        catDataAssembly.info(`subscribe to ${this.name} with variables ${Object.keys(this.communication)}`);
+        catDataAssembly.info(`subscribe to ${this.module.id}.${this.name} ` +
+            `with variables ${Object.keys(this.communication)}`);
         await Promise.all(
             Object.entries(this.communication)
                 .filter(([key, node]) => node && node.nodeId && node.namespaceIndex)
@@ -100,14 +100,14 @@ export class DataAssembly extends EventEmitter {
                                     catDataAssembly.debug(`Emit ${this.name}.${key} = ${node.value}`);
                                     this.emit(key, node);
                                 });
-                        }), 5000)
+                        }), 2500)
                         .catch((err) => {
                             throw new Error(`Could not subscribe to ${this.name}.${key} (${JSON.stringify(node)}): ` +
                                 `${err}`);
                         });
                 })
         );
-        catDataAssembly.info(`successfully subscribed to all variables from ${this.name}`);
+        catDataAssembly.info(`successfully subscribed to all variables from ${this.module.id}.${this.name}`);
         return this;
     }
 

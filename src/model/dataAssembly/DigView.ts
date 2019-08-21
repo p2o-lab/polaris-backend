@@ -24,12 +24,12 @@
  * SOFTWARE.
  */
 
-import {DataAssembly} from './DataAssembly';
-import {MonitorSettings, ScaleSettingsDA, UnitDA} from './mixins';
-import {AnaViewOptions, ParameterInterface} from '@p2olab/polaris-interface';
-import {AnaViewRuntime} from './AnaView';
+import {ParameterInterface} from '@p2olab/polaris-interface';
 import {Module} from '../core/Module';
+import {AnaViewRuntime} from './AnaView';
+import {DataAssembly} from './DataAssembly';
 import {OpcUaDataItem} from './DataItem';
+import {MonitorSettings, ScaleSettingsDA, UnitDA} from './mixins';
 
 export class DigView extends ScaleSettingsDA(UnitDA(DataAssembly)) {
     public readonly communication: AnaViewRuntime;

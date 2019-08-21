@@ -1,3 +1,4 @@
+/* tslint:disable:max-classes-per-file */
 /*
  * MIT License
  *
@@ -23,33 +24,24 @@
  * SOFTWARE.
  */
 
-import {DataAssembly} from './DataAssembly';
+import {BaseDataAssemblyRuntime, DataAssembly} from './DataAssembly';
+import {OpcUaDataItem} from './DataItem';
 import {OpModeDA} from './mixins';
+
+export type ExtBinOpRuntime = BaseDataAssemblyRuntime & {
+    VExt: OpcUaDataItem<boolean>;
+    VRbk: OpcUaDataItem<boolean>;
+    VOut: OpcUaDataItem<boolean>;
+    VState0: OpcUaDataItem<string>;
+    VState1: OpcUaDataItem<string>;
+};
 
 export class ExtBinOp extends DataAssembly {
 
+    public readonly communication: ExtBinOpRuntime;
+
     constructor(options, module) {
         super(options, module);
-    }
-
-    get VState0() {
-        return this.communication['VState0'];
-    }
-
-    get VState1() {
-        return this.communication['VState1'];
-    }
-
-    get VExt() {
-        return this.communication['VExt'];
-    }
-
-    get VOut() {
-        return this.communication['VOut'];
-    }
-
-    get VRbk() {
-        return this.communication['VRbk'];
     }
 
 }

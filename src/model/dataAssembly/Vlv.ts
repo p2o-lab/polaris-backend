@@ -1,3 +1,4 @@
+/* tslint:disable:max-classes-per-file */
 /*
 * MIT License
 *
@@ -28,27 +29,27 @@ import {DataAssembly} from './DataAssembly';
 export class BinVlv extends DataAssembly {
     constructor(options, module) {
         super(options, module);
-        //this.subscribedNodes.push('OpMode', 'SafePos', 'OpenOp', 'CloseOp', 'OpenLi', 'CloseLi', 'Ctrl', 'OpenFbkEn', 'CloseFbkEn', 'OpenFbk', 'CloseFbk', 'PermEn', 'Permit', 'IntlEn', 'Interlock', 'ProtEn', 'Protect', 'ResetOp', 'ResetLi');
+        // this.subscribedNodes.push('OpMode', 'SafePos', 'OpenOp', 'CloseOp', 'OpenLi', 'CloseLi', 'Ctrl', 'OpenFbkEn', 'CloseFbkEn', 'OpenFbk', 'CloseFbk', 'PermEn', 'Permit', 'IntlEn', 'Interlock', 'ProtEn', 'Protect', 'ResetOp', 'ResetLi');
     }
 }
 
 export class MonBinVlv extends BinVlv {
     constructor(options, module) {
         super(options, module);
-        //this.subscribedNodes.push('MonEn', 'MonSafePos', 'MonStatErr', 'MonDynErr', 'MonStatTi', 'MonDynTi');
+        // this.subscribedNodes.push('MonEn', 'MonSafePos', 'MonStatErr', 'MonDynErr', 'MonStatTi', 'MonDynTi');
     }
 }
 
 export class AnaVlv extends DataAssembly {
     constructor(options, module) {
         super(options, module);
-        //this.subscribedNodes.push('OpMode', 'OpenOp', 'CloseOp', 'OpenLi', 'CloseLi', 'Ctrl', 'OpenFbkEn', 'CloseFbkEn', 'OpenFbk', 'CloseFbk', 'PosSclMin', 'PosSclMax', 'PosUnit', 'PosInt', 'PosExt', 'PosMin', 'PosMax', 'SafePos', 'PosCtrl', 'PosFbkEn', 'PosFbk', 'PermEn', 'Permit', 'IntlEn', 'Interlock', 'ProtEn', 'Protect', 'ResetOp', 'ResetLi');
+        // this.subscribedNodes.push('OpMode', 'OpenOp', 'CloseOp', 'OpenLi', 'CloseLi', 'Ctrl', 'OpenFbkEn', 'CloseFbkEn', 'OpenFbk', 'CloseFbk', 'PosSclMin', 'PosSclMax', 'PosUnit', 'PosInt', 'PosExt', 'PosMin', 'PosMax', 'SafePos', 'PosCtrl', 'PosFbkEn', 'PosFbk', 'PermEn', 'Permit', 'IntlEn', 'Interlock', 'ProtEn', 'Protect', 'ResetOp', 'ResetLi');
     }
 }
 
 export class MonAnaVlv extends AnaVlv {
     constructor(options, module) {
         super(options, module);
-        //this.subscribedNodes.push('MonEn', 'MonSafePos', 'MonStatErr', 'MonDynErr', 'MonStatTi', 'MonDynTi', 'PosOpngFbk', 'PosClsngFbk', 'PosReachedFbk', 'PosTolerance', 'PosDefClose', 'PosDefOpen', 'MonPosTi', 'MonPosErr');
+        // this.subscribedNodes.push('MonEn', 'MonSafePos', 'MonStatErr', 'MonDynErr', 'MonStatTi', 'MonDynTi', 'PosOpngFbk', 'PosClsngFbk', 'PosReachedFbk', 'PosTolerance', 'PosDefClose', 'PosDefOpen', 'MonPosTi', 'MonPosErr');
     }
 }
