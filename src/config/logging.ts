@@ -36,6 +36,7 @@ import {CustomLogger} from './CustomLogger';
 
 // Create categories, they will autoregister themselves
 export const catRecipe = new Category('recipe');
+export const catDataAssembly = new Category('dataAssembly');
 export const catParameter = new Category('parameter', catRecipe);
 export const catScopeItem = new Category('scopeItem', catRecipe);
 export const catCondition = new Category('condition', catRecipe);
