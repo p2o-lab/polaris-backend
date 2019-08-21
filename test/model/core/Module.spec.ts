@@ -35,7 +35,7 @@ const expect = chai.expect;
 
 describe('Module', () => {
 
-    it('should not connect to a module with too high port', () => {
+    it('should reject connecting to a module with too high port', async () => {
         const options: ModuleOptions =
             JSON.parse(fs.readFileSync('assets/modules/module_cif.json').toString()).modules[0];
         options.opcua_server_url = 'opc.tcp://10.6.51.99:44447777';
@@ -44,8 +44,7 @@ describe('Module', () => {
         expect(module.connect()).to.be.rejectedWith('Port should be');
     });
 
-    it.skip('should not connect to a module with not existing endpoint', async () => {
-        // test does not terminate
+    it('should reject connecting to a module with not existing endpoint', async () => {
         const options: ModuleOptions =
             JSON.parse(fs.readFileSync('assets/modules/module_cif.json').toString()).modules[0];
         options.opcua_server_url = 'opc.tcp://10.6.51.99:4444';
