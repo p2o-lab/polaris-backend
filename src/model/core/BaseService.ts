@@ -90,6 +90,10 @@ export abstract class BaseService {
     }
 
     public readonly eventEmitter: BaseServiceEmitter;
+    public parameters: ParameterInterface[] = [];
+    public processValuesIn: ParameterInterface[] = [];
+    public processValuesOut: ParameterInterface[] = [];
+    public reportValues: ParameterInterface[] = [];
 
     // name of the base service
     protected _name: string;
@@ -99,10 +103,6 @@ export abstract class BaseService {
 
     protected _state: ServiceState = ServiceState.IDLE;
     protected _controlEnable: ControlEnableInterface;
-    public parameters: ParameterInterface[] = [];
-    public processValuesIn: ParameterInterface[] = [];
-    public processValuesOut: ParameterInterface[] = [];
-    public reportValues: ParameterInterface[] = [];
 
     protected _lastStatusChange: Date = new Date();
 

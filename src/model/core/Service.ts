@@ -28,7 +28,6 @@ import {
     ParameterInterface,
     ParameterOptions,
     ServiceCommand,
-    ServiceControlOptions,
     ServiceInterface,
     ServiceOptions,
     StrategyInterface
@@ -39,15 +38,12 @@ import {Category} from 'typescript-logging';
 import {catService} from '../../config/logging';
 import {DataAssembly} from '../dataAssembly/DataAssembly';
 import {DataAssemblyFactory} from '../dataAssembly/DataAssemblyFactory';
+import {OpcUaDataItem} from '../dataAssembly/DataItem';
 import {ServiceControl} from '../dataAssembly/ServiceControl';
 import {Parameter} from '../recipe/Parameter';
 import {BaseService, BaseServiceEvents} from './BaseService';
 import {
     controlEnableToJson,
-    isAutomaticState,
-    isExtSource,
-    isManualState,
-    isOffState,
     OpMode,
     opModetoJson,
     ServiceControlEnable,
@@ -56,8 +52,6 @@ import {
 } from './enum';
 import {Module} from './Module';
 import {Strategy} from './Strategy';
-import {OpcUaDataItem} from '../dataAssembly/DataItem';
-import {OpModeRuntime} from '../dataAssembly/mixins';
 
 /**
  * Events emitted by [[Service]]

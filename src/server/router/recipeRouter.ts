@@ -24,7 +24,6 @@
  */
 
 import {Request, Response, Router} from 'express';
-import * as asyncHandler from 'express-async-handler';
 import {catServer} from '../../config/logging';
 import {Manager} from '../../model/Manager';
 

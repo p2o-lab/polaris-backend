@@ -24,7 +24,6 @@
  */
 
 import Timeout = NodeJS.Timeout;
-import {EventEmitter} from 'events';
 import {catTimer} from '../../config/logging';
 import {VirtualService} from './VirtualService';
 

@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import {OpcUaNodeOptions, ScopeOptions} from '@p2olab/polaris-interface';
+import {ScopeOptions} from '@p2olab/polaris-interface';
 import {Expression, Parser} from 'expr-eval';
 import {catScopeItem} from '../../config/logging';
 import {BaseService} from '../core/BaseService';
@@ -36,9 +36,9 @@ import {AnaView} from '../dataAssembly/AnaView';
 import {ExtBinOp} from '../dataAssembly/BinOp';
 import {BinView} from '../dataAssembly/BinView';
 import {DataAssembly} from '../dataAssembly/DataAssembly';
+import {OpcUaDataItem} from '../dataAssembly/DataItem';
 import {ExtDigOp} from '../dataAssembly/DigOp';
 import {DigView} from '../dataAssembly/DigView';
-import {OpcUaDataItem} from '../dataAssembly/DataItem';
 
 export class ScopeItem {
 
@@ -153,13 +153,13 @@ export class ScopeItem {
             } else if (dataAssembly instanceof DigView) {
                 opcUaNode = dataAssembly.communication.V;
             } else if (dataAssembly instanceof BinView) {
-                opcUaNode = dataAssembly.V;
+                opcUaNode = dataAssembly.communication.V;
             } else if (dataAssembly instanceof ExtAnaOp) {
                 opcUaNode = dataAssembly.communication.VOut;
             } else if (dataAssembly instanceof ExtDigOp) {
                 opcUaNode = dataAssembly.communication.VOut;
             } else if (dataAssembly instanceof ExtBinOp) {
-                opcUaNode = dataAssembly.VOut;
+                opcUaNode = dataAssembly.communication.VOut;
             }
         }
         return opcUaNode;
@@ -185,7 +185,8 @@ export class ScopeItem {
     public getScopeValue(): object {
         const value = this.variable ? this.variable.value : ServiceState[this.service.state];
         if (value === undefined) {
-            throw new Error(`Could not evaluate scope item ${this.name} (${JSON.stringify(this.variable)} since it seems not connected`);
+            throw new Error(`Could not evaluate scope item ${this.name} (${JSON.stringify(this.variable)} ` +
+                `since it seems not connected`);
         }
         return this.name.split('.').reduceRight((previous, current) => {
             const a = {};

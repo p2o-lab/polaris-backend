@@ -24,7 +24,6 @@
  */
 
 import {ParameterInterface} from '@p2olab/polaris-interface';
-import {catTimer} from '../../config/logging';
 import {ServiceState} from '../core/enum';
 import {Module} from '../core/Module';
 import {Petrinet, PetrinetOptions} from './aggregatedService/Petrinet';

@@ -97,8 +97,8 @@ moduleRouter.delete('/:id', asyncHandler(async (req: Request, res: Response) => 
     try {
         await manager.removeModule(req.params.id);
         res.send({ status: 'Successful deleted', id: req.params.id });
-    } catch (e) {
-        res.status(404).send(`Module {$req.params.id} is protected and can't be deleted`);
+    } catch (err) {
+        res.status(404).send(err.toString());
     }
 }));
 
@@ -110,7 +110,7 @@ moduleRouter.delete('/:id', asyncHandler(async (req: Request, res: Response) => 
  */
 moduleRouter.post('/:id/connect', asyncHandler(async (req: Request, res: Response) => {
     const manager: Manager = req.app.get('manager');
-    const module = manager.modules.find((module) => module.id === req.params.id);
+    const module = manager.modules.find((mod) => mod.id === req.params.id);
     await module.connect();
     res.json({ module: module.id, status: 'Succesfully connected' });
 }));
@@ -123,7 +123,7 @@ moduleRouter.post('/:id/connect', asyncHandler(async (req: Request, res: Respons
  */
 moduleRouter.post('/:id/disconnect', asyncHandler(async (req: Request, res: Response) => {
     const manager: Manager = req.app.get('manager');
-    const module = manager.modules.find((module) => module.id === req.params.id);
+    const module = manager.modules.find((mod) => mod.id === req.params.id);
     await module.disconnect();
     res.json({ module: module.id, status: 'Succesfully disconnected' });
 }));

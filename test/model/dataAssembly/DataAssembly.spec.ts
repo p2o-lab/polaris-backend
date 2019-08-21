@@ -23,10 +23,11 @@
  * SOFTWARE.
  */
 
+import {OpcUaNodeOptions} from '@p2olab/polaris-interface';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
-import {isAutomaticState, isManualState, OpMode, opModetoJson} from '../../../src/model/core/enum';
+import {isAutomaticState, isManualState, isOffState, OpMode, opModetoJson} from '../../../src/model/core/enum';
 import {Module} from '../../../src/model/core/Module';
 import {AdvAnaOp, AnaServParam, ExtAnaOp, ExtIntAnaOp} from '../../../src/model/dataAssembly/AnaOp';
 import {AnaView} from '../../../src/model/dataAssembly/AnaView';
@@ -35,7 +36,6 @@ import {DataAssemblyFactory} from '../../../src/model/dataAssembly/DataAssemblyF
 import {StrView} from '../../../src/model/dataAssembly/Str';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 import {TestServerVariable} from '../../../src/moduleTestServer/ModuleTestVariable';
-import {OpcUaNodeOptions} from '@p2olab/polaris-interface';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -143,7 +143,7 @@ describe('DataAssembly', () => {
         let moduleDosierer: Module;
 
         before(async function () {
-            this.timeout(5000);
+            this.timeout(10000);
             moduleServer = new ModuleTestServer();
             await moduleServer.start();
 
@@ -170,21 +170,22 @@ describe('DataAssembly', () => {
             expect(da instanceof ExtIntAnaOp).to.equal(true);
             expect(da instanceof AdvAnaOp).to.equal(false);
 
-            let opMode = await da.getOpMode();
+            await da.subscribe();
+
+            await da.waitForOpModeToPassSpecificTest(isOffState);
+            let opMode = da.getOpMode();
             expect(opModetoJson(opMode)).to.deep.equal({state: 'off', source: 'internal'});
 
             (moduleServer.services[0].parameter[0] as TestServerVariable).opMode = OpMode.stateManAct;
-
             await da.waitForOpModeToPassSpecificTest(isManualState);
-            opMode = await da.getOpMode();
+            opMode = da.getOpMode();
             expect(opModetoJson(opMode)).to.deep.equal({state: 'manual', source: 'internal'});
 
-            da.waitForOpModeToPassSpecificTest(isAutomaticState);
             (moduleServer.services[0].parameter[0] as TestServerVariable).opMode = OpMode.stateAutAct;
-            opMode = await da.getOpMode();
+            await da.waitForOpModeToPassSpecificTest(isAutomaticState);
+            opMode = da.getOpMode();
             expect(opModetoJson(opMode)).to.deep.equal({state: 'automatic', source: 'internal'});
 
-            await da.subscribe();
             if (da instanceof ExtIntAnaOp) {
                 expect(da.communication.VOut).to.have.property('nodeId', 'Service1.Parameter1.V');
                 expect(da.communication.VOut).to.have.property('value', 20);
@@ -242,9 +243,9 @@ describe('DataAssembly', () => {
 
         if (da instanceof StrView) {
             await da.subscribe();
-            expect(da.OSLevel).to.have.property('data_type', 'Byte');
-            expect(da.OSLevel).to.have.property('namespace_index', 'urn:NodeOPCUA-Server-default');
-            expect(da.OSLevel).to.have.property('node_id', 'Service1.ErrorMsg.OSLevel');
+            expect(da.OSLevel).to.have.property('dataType', 'Byte');
+            expect(da.OSLevel).to.have.property('namespaceIndex', 'urn:NodeOPCUA-Server-default');
+            expect(da.OSLevel).to.have.property('nodeId', 'Service1.ErrorMsg.OSLevel');
 
             expect(da.Text).to.have.property('nodeId', 'Service1.ErrorMsg.Text');
             expect(da.Text).to.have.property('value', 'initial value');

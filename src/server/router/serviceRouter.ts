@@ -81,7 +81,7 @@ serviceRouter.post('/:moduleId/service/:serviceName/:command', asyncHandler(asyn
     catServer.info(`Call service: ${JSON.stringify(req.params)}`);
     const manager: Manager = req.app.get('manager');
     const service = manager.getService(req.params.moduleId, req.params.serviceName);
-    const result = await service.execute(req.params.command, req.body.strategy, req.body.parameters);
+    await service.execute(req.params.command, req.body.strategy, req.body.parameters);
     res.json({
         module: module.id,
         service: service.name,

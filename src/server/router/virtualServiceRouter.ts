@@ -117,7 +117,7 @@ virtualServiceRouter.post('/:virtualServiceId/:command', asyncHandler(async (req
     if (req.body.parameters) {
         await virtualService.setParameters(req.body.parameters);
     }
-    const result = await virtualService.executeCommand(req.params.command);
+    await virtualService.executeCommand(req.params.command);
     res.json({
         virtualService: virtualService.name,
         command: req.params.command,

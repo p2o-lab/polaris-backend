@@ -224,16 +224,17 @@ describe('Routes', () => {
                     JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString()).modules[0];
                 await request(app).put('/api/module')
                     .send({module: options})
-                    .expect('Content-Type', /json/)
                     .expect(200)
-                    .expect(/"connected":false/);
+                    .expect('Content-Type', /json/)
+                    .expect(/"connected":false/)
+                    .expect(/"protected":false/);
                 await request(app).get('/api/module/CIF')
-                    .expect('Content-Type', /json/)
                     .expect(200)
+                    .expect('Content-Type', /json/)
                     .expect({});
                 await request(app).delete('/api/module/CIF')
-                    .expect('Content-Type', /json/)
                     .expect(200)
+                    .expect('Content-Type', /json/)
                     .expect({status: 'Successful deleted', id: 'CIF'});
             });
         });

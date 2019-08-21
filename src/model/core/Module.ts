@@ -27,7 +27,6 @@ import {
     ControlEnableInterface,
     ModuleInterface,
     ModuleOptions,
-    OpcUaNodeOptions,
     OpModeInterface,
     ParameterInterface,
     ServiceCommand,
@@ -278,14 +277,10 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
                 await this.fixReactor();
             }
 
-            await this.subscribeToAllServices()
-                .then(() => this.logger.debug('subscribed to all services'))
-            //.catch((err) => this.logger.warn('Could not connect to all services:' + err));
-            await this.subscribeToAllVariables()
-                .then(() => this.logger.debug('subscribed to all variables'))
-            //.catch((err) => this.logger.warn('Could not connect to all variables:' + err));
+            await this.subscribeToAllVariables();
+            await this.subscribeToAllServices();
 
-            this.logger.info(`[${this.id}] Successfully connected with ${this.monitoredItems.size} active subscriptions`);
+            this.logger.info(`[${this.id}] Successfully connected with ${this.monitoredItems.size} active assemblies`);
             this.emit('connected');
         }
     }

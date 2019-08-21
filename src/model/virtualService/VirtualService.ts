@@ -24,12 +24,9 @@
  */
 
 import {ControlEnableInterface, ParameterOptions, VirtualServiceInterface} from '@p2olab/polaris-interface';
-import {EventEmitter} from 'events';
-import StrictEventEmitter from 'strict-event-emitter-types';
 import {catVirtualService} from '../../config/logging';
 import {BaseService} from '../core/BaseService';
 import {ServiceState} from '../core/enum';
-import {OpcUaNodeEvents} from '../core/Module';
 import {Parameter} from '../recipe/Parameter';
 
 /**
