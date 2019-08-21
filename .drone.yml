@@ -49,6 +49,17 @@ steps:
     auto_tag: true
     auto_tag_suffix: arm
 
+- name: docker-test-pea
+  image: plugins/docker
+  settings:
+    dockerfile: Dockerfile.test-pea
+    username:
+      from_secret: docker_username
+    password:
+      from_secret: docker_password
+    repo: p2olab/test-pea
+    auto_tag: true
+
 - name: notify
   image: drillster/drone-email
   settings:

@@ -73,4 +73,9 @@ Polaris can serve a test PEA with an OPC UA server. It has two services with som
 npm run testserver
 ```
 
+or via docker container
+```
+docker run -p 4334:4334 p2olab/test-pea
+```
+
 The corresponding JSON file `assets/modules/module_testserver_1.0.0.json` can be directly loaded in Polaris.
