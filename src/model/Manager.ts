@@ -229,6 +229,7 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
     }
 
     public async removeModule(moduleId) {
+        catManager.info(`Remove module ${moduleId}`);
         const module = this.modules.find((mod) => mod.id === moduleId);
         if (!module) {
             throw new Error(`No Module ${moduleId} found.`);
@@ -236,11 +237,15 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
         if (module.protected) {
             throw new Error(`Module ${moduleId} is protected and can't be deleted`);
         }
+
+        catManager.debug(`Disconnecting module ${moduleId} ...`);
+        await module.disconnect();
+
+        catManager.debug(`Deleting module ${moduleId} ...`);
         const index = this.modules.indexOf(module, 0);
         if (index > -1) {
             this.modules.splice(index, 1);
         }
-        await module.disconnect();
     }
 
     public getModules(): Promise<ModuleInterface[]> {
