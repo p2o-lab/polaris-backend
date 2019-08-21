@@ -210,10 +210,16 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
             })
             .on('connection_lost', async () => {
                 this.logger.info(`[${this.id}] Connection lost to OPC UA server`);
-                await this.subscription.terminate();
-                await this.session.close();
-                this.session = null;
-                await this.client.disconnect();
+                if (this.subscription) {
+                    await this.subscription.terminate();
+                }
+                if (this.session) {
+                    await this.session.close();
+                    this.session = null;
+                }
+                if (this.client) {
+                    await this.client.disconnect();
+                }
                 this.emit('disconnected');
             })
             .on('timed_out_request', () => this.logger.warn(`[${this.id}] timed out request - retrying connection`));
@@ -232,7 +238,11 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
         } else {
             this.logger.info(`[${this.id}] connect module via ${this.endpoint}`);
 
-            await timeout(this.client.connect(this.endpoint), 2000);
+            await timeout(this.client.connect(this.endpoint), 2000)
+                .catch((err) => {
+                    this.client.disconnect();
+                    throw err;
+                });
             this.logger.info(`[${this.id}] module connected via ${this.endpoint}`);
 
             const session = await this.client.createSession();
