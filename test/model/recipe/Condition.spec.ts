@@ -36,8 +36,8 @@ import {TimeCondition} from '../../../src/model/condition/TimeCondition';
 import {TrueCondition} from '../../../src/model/condition/TrueCondition';
 import {ServiceState} from '../../../src/model/core/enum';
 import {Module} from '../../../src/model/core/Module';
-import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 import {TestServerNumericVariable} from '../../../src/moduleTestServer/ModuleTestNumericVariable';
+import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;

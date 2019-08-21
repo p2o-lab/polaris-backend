@@ -28,8 +28,8 @@ import * as fs from 'fs';
 import {Module} from '../../../src/model/core/Module';
 import {Service} from '../../../src/model/core/Service';
 import {Parameter} from '../../../src/model/recipe/Parameter';
-import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 import {TestServerNumericVariable} from '../../../src/moduleTestServer/ModuleTestNumericVariable';
+import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 
 describe('Parameter', () => {
 
