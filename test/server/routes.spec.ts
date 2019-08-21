@@ -23,12 +23,12 @@
  * SOFTWARE.
  */
 
+import * as fs from 'fs';
 import * as request from 'supertest';
 import {Manager} from '../../src/model/Manager';
+import {ModuleTestServer} from '../../src/moduleTestServer/ModuleTestServer';
 import Routes from '../../src/server/routes';
 import {Server} from '../../src/server/server';
-import {ModuleOptions} from '@p2olab/polaris-interface';
-import * as fs from "fs";
 
 describe('Routes', () => {
     let app;
@@ -164,7 +164,8 @@ describe('Routes', () => {
         it('should provide modules', async () => {
             await request(app).get('/api/module')
                 .expect('Content-Type', /json/)
-                .expect(200);
+                .expect(200)
+                .expect([]);
         });
 
         it('should provide not existing modules', async () => {
@@ -172,50 +173,69 @@ describe('Routes', () => {
                 .expect(500);
         });
 
-        it('should provide download for not existing modules', (done) => {
-            request(app).get('/api/module/abc1234/download')
-                .expect(500, done);
+        it('should provide download for not existing modules', async () => {
+            await request(app).get('/api/module/abc1234/download')
+                .expect(500);
         });
 
         it('should allow interacting with all modules', async () => {
             await request(app).post('/api/module/abort')
                 .expect('Content-Type', /json/)
-                .expect(200);
+                .expect(200)
+                .expect({status: 'aborted all services from all modules'});
             await request(app).post('/api/module/stop')
                 .expect('Content-Type', /json/)
-                .expect(200);
+                .expect(200)
+                .expect({status: 'stopped all services from all modules'});
             await request(app).post('/api/module/reset')
                 .expect('Content-Type', /json/)
-                .expect(200);
+                .expect(200)
+                .expect({status: 'reset all services from all modules'});
         });
 
-        it('should load module', async () => {
+        it('should fail wile loading module with empty content', async () => {
             await request(app).put('/api/module')
                 .send({})
                 .expect('Content-Type', /json/)
                 .expect(500);
         });
 
-        it('should load module 1', async () => {
+        it('should fail while loading module without content', async () => {
             await request(app).put('/api/module')
                 .send(null)
                 .expect('Content-Type', /json/)
                 .expect(500);
         });
 
-        it('should load module 2', async () => {
-            const options =
-                JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString()).modules[0];
-            await request(app).put('/api/module')
-                .send({module: options})
-                .expect('Content-Type', /json/)
-                .expect(200);
-            await request(app).get('/api/module/CIF')
-                .expect('Content-Type', /json/)
-                .expect(200);
-            await request(app).delete('/api/module/CIF')
-                .expect('Content-Type', /json/)
-                .expect(200);
+        describe('with test module', () => {
+            let moduleServer: ModuleTestServer;
+
+            before(async () => {
+                moduleServer = new ModuleTestServer();
+                await moduleServer.start();
+            });
+
+            after(async () => {
+                await moduleServer.shutdown();
+            });
+
+            it('should load, get and delete module', async () => {
+                const options =
+                    JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString()).modules[0];
+                await request(app).put('/api/module')
+                    .send({module: options})
+                    .expect('Content-Type', /json/)
+                    .expect(200)
+                    .expect(/"connected":false/);
+                await request(app).get('/api/module/CIF')
+                    .expect('Content-Type', /json/)
+                    .expect(200)
+                    .expect(/"connected":false/);
+                await request(app).delete('/api/module/CIF')
+                    .expect('Content-Type', /json/)
+                    .expect(200)
+                    .expect({status: 'Successful deleted', id: 'CIF'});
+            });
         });
     });
 
