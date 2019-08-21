@@ -230,7 +230,7 @@ describe('Routes', () => {
                 await request(app).get('/api/module/CIF')
                     .expect('Content-Type', /json/)
                     .expect(200)
-                    .expect(/"connected":false/);
+                    .expect({});
                 await request(app).delete('/api/module/CIF')
                     .expect('Content-Type', /json/)
                     .expect(200)

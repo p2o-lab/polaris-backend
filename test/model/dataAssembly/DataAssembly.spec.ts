@@ -182,11 +182,10 @@ describe('DataAssembly', () => {
         expect(da instanceof StrView).to.equal(true);
 
         if (da instanceof StrView) {
-            expect(da.OSLevel).to.deep.equal({
-                data_type: 'Byte',
-                namespace_index: 'urn:NodeOPCUA-Server-default',
-                node_id: 'Service1.ErrorMsg.OSLevel'
-            });
+            await da.subscribe();
+            expect(da.OSLevel).to.have.property('data_type', 'Byte');
+            expect(da.OSLevel).to.have.property('namespace_index', 'urn:NodeOPCUA-Server-default');
+            expect(da.OSLevel).to.have.property('node_id', 'Service1.ErrorMsg.OSLevel');
 
             expect(da.Text).to.have.property('node_id', 'Service1.ErrorMsg.Text');
             expect(da.Text).to.have.property('value', 'initial value');
