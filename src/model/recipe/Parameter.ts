@@ -33,7 +33,10 @@ import {catParameter} from '../../config/logging';
 import {Module, OpcUaNodeEvents} from '../core/Module';
 import {Service} from '../core/Service';
 import {Strategy} from '../core/Strategy';
+import {ExtIntAnaOp} from '../dataAssembly/AnaOp';
+import {ExtIntBinOp} from '../dataAssembly/BinOp';
 import {DataAssembly} from '../dataAssembly/DataAssembly';
+import {ExtIntDigOp} from '../dataAssembly/DigOp';
 import {ScopeItem} from './ScopeItem';
 
 /**
@@ -152,14 +155,20 @@ export class Parameter {
      * @returns {Promise<void>}
      */
     public async setOperationMode(): Promise<void> {
-        if (this.service.automaticMode) {
-            this.logger.info(`[${this.service.qualifiedName}.${this.name}] Bring to automatic mode`);
-            this._parameter.setToAutomaticOperationMode();
-            this.logger.info(`[${this.service.qualifiedName}.${this.name}] Parameter now in automatic mode`);
-        } else {
-            this.logger.info(`[${this.service.qualifiedName}.${this.name}] Bring to manual mode`);
-            await this._parameter.setToManualOperationMode();
-            this.logger.info(`[${this.service.qualifiedName}.${this.name}] Parameter now in manual mode`);
+        if (
+            this._parameter instanceof ExtIntAnaOp ||
+            this._parameter instanceof ExtIntBinOp ||
+            this._parameter instanceof ExtIntDigOp
+        ) {
+            if (this.service.automaticMode) {
+                this.logger.info(`[${this.service.qualifiedName}.${this.name}] Bring to automatic mode`);
+                this._parameter.setToAutomaticOperationMode();
+                this.logger.info(`[${this.service.qualifiedName}.${this.name}] Parameter now in automatic mode`);
+            } else {
+                this.logger.info(`[${this.service.qualifiedName}.${this.name}] Bring to manual mode`);
+                await this._parameter.setToManualOperationMode();
+                this.logger.info(`[${this.service.qualifiedName}.${this.name}] Parameter now in manual mode`);
+            }
         }
     }
 

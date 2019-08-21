@@ -61,7 +61,10 @@ export abstract class VirtualService extends BaseService {
         return {
             name: this.name,
             type: this.constructor.name,
-            parameters: await this.getCurrentParameters(),
+            parameters: this.parameters,
+            processValuesIn: this.processValuesIn,
+            processValuesOut: this.processValuesOut,
+            reportParameters: this.reportValues,
             status: ServiceState[this.state],
             controlEnable: this.controlEnable,
             lastChange: (new Date().getTime() - this.lastStatusChange.getTime()) / 1000,
@@ -132,6 +135,10 @@ export abstract class VirtualService extends BaseService {
     }
 
     // Allow user to inject own functionality after reaching each state
+
+    /**
+     * initialize parameters during construction and when resetting
+     */
     protected abstract initParameter();
     protected async onStarting(): Promise<void> {
         catVirtualService.debug(`[${this.name}] onStarting`);
