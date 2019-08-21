@@ -70,7 +70,7 @@
     "strict-event-emitter-types": "^2.0.0",
     "ts-node": "^8.2.0",
     "tslint": "^5.16.0",
-    "typedoc": "^0.14.2",
+    "typedoc": "^0.15.0",
     "typescript": "^3.4.5"
   },
   "nyc": {
