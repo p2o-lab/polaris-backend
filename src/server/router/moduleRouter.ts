@@ -27,6 +27,7 @@ import {Request, Response, Router} from 'express';
 import {Manager} from '../../model/Manager';
 
 import * as asyncHandler from 'express-async-handler';
+import {constants} from 'http2';
 import {catModule, catServer} from '../../config/logging';
 
 export const moduleRouter: Router = Router();
@@ -49,7 +50,12 @@ moduleRouter.get('', asyncHandler(async (req: Request, res: Response) => {
  */
 moduleRouter.get('/:id', asyncHandler(async (req: Request, res: Response) => {
     const manager: Manager = req.app.get('manager');
-    res.json(await manager.modules.find((module) => module.id === req.params.id).json());
+    const module = await manager.modules.find((mod) => mod.id === req.params.id);
+    if (module) {
+        res.json(module.json());
+    } else {
+        res.status(constants.HTTP_STATUS_NOT_FOUND).send(`Module with id ${req.params.id} not found`);
+    }
 }));
 
 /**

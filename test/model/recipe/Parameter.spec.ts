@@ -28,6 +28,7 @@ import * as fs from 'fs';
 import {Module} from '../../../src/model/core/Module';
 import {Service} from '../../../src/model/core/Service';
 import {Parameter} from '../../../src/model/recipe/Parameter';
+import {TestServerNumericVariable} from '../../../src/moduleTestServer/ModuleTestNumericVariable';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 
 describe('Parameter', () => {
@@ -158,7 +159,8 @@ describe('Parameter', () => {
                 value: '2 * 3'
             }, service, undefined, [module]);
             await param.updateValueOnModule();
-            expect(moduleServer.services[0].parameter[0].vext).to.equal(6);
+            const param1Ext = moduleServer.services[0].parameter[0] as TestServerNumericVariable;
+            expect(param1Ext.vext).to.equal(6);
 
             const param2 = new Parameter({
                 name: 'Parameter002',
@@ -166,7 +168,8 @@ describe('Parameter', () => {
             }, service, undefined, [module]);
             const value = await param2.getValue();
             await param2.updateValueOnModule();
-            expect(moduleServer.services[0].parameter[1].vext).to.equal(value);
+            const param2Ext = moduleServer.services[0].parameter[1] as TestServerNumericVariable;
+            expect(param2Ext.vext).to.equal(value);
         });
 
         it('should listen to dynamic parameter', (done) => {

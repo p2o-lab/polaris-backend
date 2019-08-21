@@ -27,17 +27,16 @@ import {ConditionType} from '@p2olab/polaris-interface';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
-import {OPCUAServer} from 'node-opcua-server';
 import {timeout} from 'promise-timeout';
 import * as delay from 'timeout-as-promise';
 import {catCondition} from '../../../src/config/logging';
-import {Condition} from '../../../src/model/condition/Condition';
 import {ConditionFactory} from '../../../src/model/condition/ConditionFactory';
 import {ExpressionCondition} from '../../../src/model/condition/ExpressionCondition';
 import {TimeCondition} from '../../../src/model/condition/TimeCondition';
 import {TrueCondition} from '../../../src/model/condition/TrueCondition';
 import {ServiceState} from '../../../src/model/core/enum';
 import {Module} from '../../../src/model/core/Module';
+import {TestServerNumericVariable} from '../../../src/moduleTestServer/ModuleTestNumericVariable';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 
 chai.use(chaiAsPromised);
@@ -183,11 +182,13 @@ describe('Condition', () => {
     describe('with ModuleTestServer', () => {
         let moduleServer: ModuleTestServer;
         let module: Module;
+        let var0: TestServerNumericVariable;
 
         beforeEach(async function() {
             this.timeout(4000);
             moduleServer = new ModuleTestServer();
             await moduleServer.start();
+            var0 = moduleServer.variables[0] as TestServerNumericVariable;
 
             const moduleJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8'))
                 .modules[0];
@@ -216,10 +217,10 @@ describe('Condition', () => {
             expect(module.services[0]).to.have.property('name', 'Service1');
             expect(condition).to.have.property('fulfilled', false);
 
-            moduleServer.variables[0].v = 22;
+            var0.v = 22;
             expect(condition).to.have.property('fulfilled', false);
 
-            moduleServer.variables[0].v = 26;
+            var0.v = 26;
             await new Promise((resolve) => {
                 condition.once('stateChanged', () => {
                     resolve();
@@ -228,9 +229,9 @@ describe('Condition', () => {
             expect(condition).to.have.property('fulfilled', true);
 
             condition.clear();
-            moduleServer.variables[0].v = 24.4;
+            var0.v = 24.4;
             expect(condition).to.have.property('fulfilled', undefined);
-            moduleServer.variables[0].v = 37;
+            var0.v = 37;
             expect(condition).to.have.property('fulfilled', undefined);
 
         }).timeout(4000);
@@ -327,20 +328,20 @@ describe('Condition', () => {
 
                 expect(expr.getUsedModules().size).to.equal(1);
 
-                moduleServer.variables[0].v = 0;
+                var0.v = 0;
                 await new Promise((resolve) => module.once('variableChanged', resolve));
                 expect(expr).to.have.property('fulfilled', false);
                 let value = await expr.getValue();
                 expect(value).to.equal(false);
 
-                moduleServer.variables[0].v = 11;
+                var0.v = 11;
                 await new Promise((resolve) => module.once('variableChanged', resolve));
                 expect(expr).to.have.property('fulfilled', true);
                 value = await expr.getValue();
                 expect(value).to.equal(true);
                 expect(expr).to.have.property('fulfilled', true);
 
-                moduleServer.variables[0].v = 8;
+                var0.v = 8;
                 await Promise.all([
                     new Promise((resolve) => expr.once('stateChanged', resolve)),
                     new Promise((resolve) => module.once('variableChanged', resolve)),
@@ -350,7 +351,7 @@ describe('Condition', () => {
                 expect(expr).to.have.property('fulfilled', false);
 
                 expr.clear();
-                moduleServer.variables[0].v = 12;
+                var0.v = 12;
                 expr.once('stateChanged', () => { throw new Error('State has changed after it was cleared'); });
                 await new Promise((resolve) => module.once('variableChanged', resolve));
                 value = await expr.getValue();
@@ -365,12 +366,12 @@ describe('Condition', () => {
                 }, [module]) as ExpressionCondition;
                 expr.listen();
 
-                moduleServer.variables[0].v = 3.1;
+                var0.v = 3.1;
                 await new Promise((resolve) => expr.once('stateChanged', resolve));
                 let value = await expr.getValue();
                 expect(value).to.equal(true);
 
-                moduleServer.variables[0].v = 0.7;
+                var0.v = 0.7;
                 await new Promise((resolve) => expr.once('stateChanged', resolve));
                 value = await expr.getValue();
                 expect(value).to.equal(false);
@@ -390,7 +391,7 @@ describe('Condition', () => {
                     ]
                 }, [module]) as ExpressionCondition;
 
-                moduleServer.variables[0].v = 0.7;
+                var0.v = 0.7;
                 await new Promise((resolve) => module.once('variableChanged', resolve));
 
                 const value = await expr.getValue();

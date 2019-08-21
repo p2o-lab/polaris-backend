@@ -170,7 +170,7 @@ describe('Routes', () => {
 
         it('should provide not existing modules', async () => {
             await request(app).get('/api/module/abc1234')
-                .expect(500);
+                .expect(404);
         });
 
         it('should provide download for not existing modules', async () => {
@@ -230,7 +230,7 @@ describe('Routes', () => {
                 await request(app).get('/api/module/CIF')
                     .expect('Content-Type', /json/)
                     .expect(200)
-                    .expect(/"connected":false/);
+                    .expect({});
                 await request(app).delete('/api/module/CIF')
                     .expect('Content-Type', /json/)
                     .expect(200)

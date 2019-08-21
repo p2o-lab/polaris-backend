@@ -23,101 +23,56 @@
  * SOFTWARE.
  */
 
-import {DataType, Variant} from 'node-opcua';
+import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 import {catTestServer} from '../config/logging';
-import Timeout = NodeJS.Timeout;
 import {OpMode} from '../model/core/enum';
 
-export class TestServerVariable {
+export abstract class TestServerVariable {
 
-    public v: number = 20;
-    public vext: number = 20;
-    public sclMin: number = Math.random() * 100;
-    public sclMax: number = this.sclMin + Math.random() * 100;
-    public unit: number = Math.floor((Math.random() * 100) + 1000);
+    public readonly name: string;
     public opMode: number = 0;
-    private interval: Timeout;
-    private simulation: boolean;
+    public wqc: number = 0;
+    public osLevel: number = 0;
+    protected simulation: boolean;
+    protected variableNode: UAObject;
 
-    constructor(namespace, rootNode, variableName, simulation = false, opMode = true) {
+    constructor(namespace: Namespace, rootNode: UAObject, variableName: string, simulation = false) {
         catTestServer.info(`Add variable ${variableName}`);
 
+        this.name = variableName;
         this.simulation = simulation;
-        const variableNode = namespace.addObject({
+
+        this.variableNode = namespace.addObject({
             organizedBy: rootNode,
             browseName: variableName
         });
 
         namespace.addVariable({
-            componentOf: variableNode,
-            nodeId: `ns=1;s=${variableName}.V`,
-            browseName: `${variableName}.V`,
+            componentOf: this.variableNode,
+            nodeId: `ns=1;s=${variableName}.WQC`,
+            browseName: `${variableName}.WQC`,
             dataType: 'Double',
             value: {
                 get: () => {
-                    return new Variant({dataType: DataType.Double, value: this.v});
+                    return new Variant({dataType: DataType.Double, value: this.wqc});
                 }
             }
         });
 
         namespace.addVariable({
-            componentOf: variableNode,
-            nodeId: `ns=1;s=${variableName}.VUnit`,
-            browseName: `${variableName}.VUnit`,
+            componentOf: this.variableNode,
+            nodeId: `ns=1;s=${variableName}.OSLevel`,
+            browseName: `${variableName}.OSLevel`,
             dataType: 'Double',
             value: {
                 get: () => {
-                    return new Variant({dataType: DataType.Double, value: this.unit});
+                    return new Variant({dataType: DataType.Double, value: this.osLevel});
                 }
             }
         });
 
         namespace.addVariable({
-            componentOf: variableNode,
-            nodeId: `ns=1;s=${variableName}.VSclMin`,
-            browseName: `${variableName}.VSclMin`,
-            dataType: 'Double',
-            value: {
-                get: () => {
-                    return new Variant({dataType: DataType.Double, value: this.sclMin});
-                }
-            }
-        });
-
-        namespace.addVariable({
-            componentOf: variableNode,
-            nodeId: `ns=1;s=${variableName}.VSclMax`,
-            browseName: `${variableName}.VSclMax`,
-            dataType: 'Double',
-            value: {
-                get: () => {
-                    return new Variant({dataType: DataType.Double, value: this.sclMax});
-                }
-            }
-        });
-        if (!this.simulation) {
-            namespace.addVariable({
-                componentOf: variableNode,
-                nodeId: `ns=1;s=${variableName}.VExt`,
-                browseName: `${variableName}.VExt`,
-                dataType: 'Double',
-                value: {
-                    get: () => {
-                        return new Variant({dataType: DataType.Double, value: this.vext});
-                    },
-                    set: (variant) => {
-                        this.vext = parseInt(variant.value, 10);
-                        setTimeout(() => {
-                            this.v = this.vext;
-                        }, 500);
-                    }
-
-                }
-            });
-        }
-
-        namespace.addVariable({
-            componentOf: variableNode,
+            componentOf: this.variableNode,
             nodeId: `ns=1;s=${variableName}.OpMode`,
             browseName: `${variableName}.OpMode`,
             dataType: 'UInt32',
@@ -127,40 +82,27 @@ export class TestServerVariable {
                     return new Variant({dataType: DataType.UInt32, value: this.opMode});
                 },
                 set: (variant) => {
-                    if (parseInt(variant.value, 10) === OpMode.stateManOp) {
+                    const opModeInt = parseInt(variant.value, 10);
+                    if (opModeInt === OpMode.stateManOp) {
                         this.opMode = this.opMode & ~OpMode.stateAutAct;
                         this.opMode = this.opMode | OpMode.stateManAct;
-                    }
-                    if (parseInt(variant.value, 10) === OpMode.stateAutOp) {
+                    } else if (opModeInt === OpMode.stateAutOp) {
                         this.opMode = this.opMode & ~OpMode.stateManAct;
                         this.opMode = this.opMode | OpMode.stateAutAct;
-                    }
-                    if (parseInt(variant.value, 10) === OpMode.srcExtOp) {
+                    } else if (opModeInt === OpMode.srcExtOp) {
                         this.opMode = this.opMode | OpMode.srcExtAct;
+                    } else {
+                        return StatusCodes.Bad;
                     }
                     catTestServer.trace(`[${variableName}] Set Opmode in testserver ${variant} ` +
-                        `${parseInt(variant.value, 10)} -> ${this.opMode}`);
+                        `${opModeInt} -> ${this.opMode}`);
+                    return StatusCodes.Good;
                 }
             }
         });
     }
 
-    public startSimulation() {
-        if (this.simulation) {
-            let time = 0;
-            const f1 = Math.random();
-            const f2 = Math.random();
-            const amplitude = this.sclMax - this.sclMin;
-            const average = (this.sclMax + this.sclMin) / 2;
-            this.interval = global.setInterval(() => {
-                time = time + 0.05;
-                this.v = average + 0.5 * amplitude * Math.sin(2 * f1 * time + 3 * f2);
-            }, 100);
-        }
-    }
+    public abstract startSimulation();
 
-    public stopSimulation() {
-        clearTimeout(this.interval);
-
-    }
+    public abstract stopSimulation();
 }
