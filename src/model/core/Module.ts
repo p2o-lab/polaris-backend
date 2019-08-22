@@ -148,7 +148,7 @@ interface ModuleEvents {
 
 type ModuleEmitter = StrictEventEmitter<EventEmitter, ModuleEvents>;
 
-type OpcUaNodeEmitter = StrictEventEmitter<EventEmitter, OpcUaNodeEvents>;
+export type OpcUaNodeEmitter = StrictEventEmitter<EventEmitter, OpcUaNodeEvents>;
 
 /**
  * Module (PEA) with its services and variables

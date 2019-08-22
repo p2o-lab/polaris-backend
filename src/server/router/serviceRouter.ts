@@ -23,6 +23,7 @@
  * SOFTWARE.
  */
 
+import {ServiceCommand} from '@p2olab/polaris-interface';
 import {Request, Response, Router} from 'express';
 import * as asyncHandler from 'express-async-handler';
 import {catServer} from '../../config/logging';
@@ -81,7 +82,7 @@ serviceRouter.post('/:moduleId/service/:serviceName/:command', asyncHandler(asyn
     catServer.info(`Call service: ${JSON.stringify(req.params)}`);
     const manager: Manager = req.app.get('manager');
     const service = manager.getService(req.params.moduleId, req.params.serviceName);
-    await service.execute(req.params.command, req.body.strategy, req.body.parameters);
+    await service.execute(req.params.command as ServiceCommand, req.body.strategy, req.body.parameters);
     res.json({
         module: module.id,
         service: service.name,

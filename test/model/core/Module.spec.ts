@@ -41,7 +41,7 @@ describe('Module', () => {
         options.opcua_server_url = 'opc.tcp://127.0.0.1:44447777';
         const module = new Module(options);
         expect(module.isConnected()).to.equal(false);
-        await expect(module.connect()).to.be.rejectedWith('Port should be');
+        await expect(module.connect()).to.be.rejectedWith('The connection has been rejected by server');
     });
 
     it('should reject connecting to a module with not existing endpoint', async () => {
@@ -62,7 +62,7 @@ describe('Module', () => {
         expect(module.services).to.have.length(6);
     });
 
-    it('should recognize a opc ua server shutdown', async function () {
+    it('should recognize a opc ua server shutdown', async function() {
         this.timeout(10000);
         const moduleJson =
             JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8')).modules[0];
@@ -90,7 +90,7 @@ describe('Module', () => {
         let moduleServer: ModuleTestServer;
         let module: Module;
 
-        before(async function () {
+        before(async function() {
             this.timeout(5000);
             moduleServer = new ModuleTestServer();
             await moduleServer.start();

@@ -46,12 +46,14 @@ export class DataAssembly extends EventEmitter {
     public readonly interfaceClass: string;
     public readonly communication: BaseDataAssemblyRuntime;
     public readonly module: Module;
+    public subscriptionActive: boolean;
 
     constructor(options: DataAssemblyOptions, module: Module) {
         super();
         this.name = options.name;
         this.interfaceClass = options.interface_class;
         this.communication = {} as BaseDataAssemblyRuntime;
+        this.subscriptionActive = false;
 
         this.module = module;
         if (!this.module) {
@@ -82,42 +84,32 @@ export class DataAssembly extends EventEmitter {
      * @param samplingInterval
      */
     public async subscribe(samplingInterval = 1000): Promise<DataAssembly> {
-        const retryOperation = (operation, times) => new Promise((resolve, reject) => {
-            return operation()
-                .then(resolve)
-                .catch((reason) => {
-                    if (times - 1 > 0) {
-                        return retryOperation.bind(null, operation, times - 1)
-                            .then(resolve)
-                            .catch(reject);
-                    }
-                    return reject(reason);
-                });
-        });
-
-        catDataAssembly.info(`subscribe to ${this.module.id}.${this.name} ` +
-            `with variables ${Object.keys(this.communication)}`);
-        await Promise.all(
-            Object.entries(this.communication)
-                .filter(([key, node]) => key && node && node.nodeId && node.namespaceIndex)
-                .map(([key, node]) =>
-                    timeout(
-                        this.module.listenToOpcUaNode(node, samplingInterval)
-                            .then((emitter) => {
-                                catDataAssembly.debug(`successfully subscribed to ${this.name}.${key}`);
-                                emitter.on('changed', () => {
-                                    catDataAssembly.debug(`Emit ${this.name}.${key} = ${node.value}`);
-                                    this.emit(key, node);
-                                });
-                            }),
-                        1000)
-                        .catch((err) => {
-                            throw new Error(`Could not subscribe to ${this.name}.${key} (${JSON.stringify(node)}): ` +
-                                `${err}`);
-                        })
-                )
-        );
-        catDataAssembly.info(`successfully subscribed to all variables from ${this.module.id}.${this.name}`);
+        if (!this.subscriptionActive) {
+            catDataAssembly.info(`subscribe to ${this.module.id}.${this.name} ` +
+                `with variables ${Object.keys(this.communication)}`);
+            await Promise.all(
+                Object.entries(this.communication)
+                    .filter(([key, node]) => key && node && node.nodeId && node.namespaceIndex)
+                    .map(([key, node]) =>
+                        timeout(
+                            this.module.listenToOpcUaNode(node, samplingInterval)
+                                .then((emitter) => {
+                                    catDataAssembly.debug(`successfully subscribed to ${this.name}.${key}`);
+                                    emitter.on('changed', () => {
+                                        catDataAssembly.debug(`Emit ${this.name}.${key} = ${node.value}`);
+                                        this.emit(key, node);
+                                    });
+                                }),
+                            1000)
+                            .catch((err) => {
+                                throw new Error(`Could not subscribe to ${this.name}.${key} ` +
+                                    `(${JSON.stringify(node)}): ${err}`);
+                            })
+                    )
+            );
+            this.subscriptionActive = true;
+            catDataAssembly.info(`successfully subscribed to all variables from ${this.module.id}.${this.name}`);
+        }
         return this;
     }
 
@@ -135,7 +127,7 @@ export class DataAssembly extends EventEmitter {
     }
 
     public getUnit(): string {
-        catDataAssembly.warn(`Try to access not exisiting unit in ${this.name}`);
+        catDataAssembly.trace(`Try to access not existing unit in ${this.name}`);
         return null;
     }
 

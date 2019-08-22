@@ -44,16 +44,13 @@ describe('DataAssembly', () => {
 
     describe('static', () => {
         it('should fail with missing parameters', () => {
-            expect(() => {
-                const a = new DataAssembly(undefined, undefined);
-            }).to.throw();
+            expect(() => new DataAssembly(undefined, undefined)).to.throw();
             const opcUaNode: OpcUaNodeOptions = {
                 namespace_index: 'CODESYSSPV3/3S/IecVarAccess',
                 node_id: 'i=12',
                 data_type: 'Float'
             };
-            expect(() => {
-                const a = new DataAssembly(<any>{
+            expect(() => new DataAssembly({
                     name: 'name',
                     communication: {
                         TagName: opcUaNode as OpcUaNodeOptions,
@@ -61,10 +58,10 @@ describe('DataAssembly', () => {
                         OSLevel: opcUaNode as OpcUaNodeOptions,
                         WQC: null,
                         access: 'read'
-                    },
+                    } as any,
                     interface_class: 'analogitem'
-                }, undefined);
-            }).to.throw();
+                }, undefined)
+            ).to.throw();
         });
 
         it('should fail without provided module', async () => {
@@ -142,7 +139,7 @@ describe('DataAssembly', () => {
         let module: Module;
         let moduleDosierer: Module;
 
-        before(async function () {
+        before(async function() {
             this.timeout(10000);
             moduleServer = new ModuleTestServer();
             await moduleServer.start();
@@ -170,8 +167,6 @@ describe('DataAssembly', () => {
             expect(da instanceof ExtIntAnaOp).to.equal(true);
             expect(da instanceof AdvAnaOp).to.equal(false);
 
-            await da.subscribe();
-
             await da.waitForOpModeToPassSpecificTest(isOffState);
             let opMode = da.getOpMode();
             expect(opModetoJson(opMode)).to.deep.equal({state: 'off', source: 'internal'});
@@ -198,7 +193,7 @@ describe('DataAssembly', () => {
                 expect(json).to.have.property('max');
                 expect(json).to.have.property('unit');
             }
-        });
+        }).timeout(5000);
 
         it('should create AnaServParam', async () => {
             const daJson = moduleJsonDosierer.services[0].strategies[1].parameters[0];
@@ -241,21 +236,21 @@ describe('DataAssembly', () => {
 
             expect(da instanceof StrView).to.equal(true);
 
-        if (da instanceof StrView) {
-            await da.subscribe();
-            expect(da.OSLevel).to.have.property('dataType', 'Byte');
-            expect(da.OSLevel).to.have.property('namespaceIndex', 'urn:NodeOPCUA-Server-default');
-            expect(da.OSLevel).to.have.property('nodeId', 'Service1.ErrorMsg.OSLevel');
+            if (da instanceof StrView) {
+                await da.subscribe();
+                expect(da.OSLevel).to.have.property('dataType', 'Byte');
+                expect(da.OSLevel).to.have.property('namespaceIndex', 'urn:NodeOPCUA-Server-default');
+                expect(da.OSLevel).to.have.property('nodeId', 'Service1.ErrorMsg.OSLevel');
 
-            expect(da.Text).to.have.property('nodeId', 'Service1.ErrorMsg.Text');
-            expect(da.Text).to.have.property('value', 'initial value');
+                expect(da.Text).to.have.property('nodeId', 'Service1.ErrorMsg.Text');
+                expect(da.Text).to.have.property('value', 'initial value');
 
-            const json = da.toJson();
-            expect(json).to.have.property('name', 'ErrorMsg');
-            expect(json).to.have.property('readonly', true);
-            expect(json).to.have.property('type', 'string');
-            expect(json).to.have.property('value', 'initial value');
-        }
+                const json = da.toJson();
+                expect(json).to.have.property('name', 'ErrorMsg');
+                expect(json).to.have.property('readonly', true);
+                expect(json).to.have.property('type', 'string');
+                expect(json).to.have.property('value', 'initial value');
+            }
         });
     });
 

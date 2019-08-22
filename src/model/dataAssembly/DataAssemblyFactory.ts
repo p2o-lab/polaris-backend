@@ -75,7 +75,7 @@ export class DataAssemblyFactory {
         };
         let type = types[variableOptions.interface_class];
         if (!type) {
-            catDataAssembly.warn(`No data assembly implemented for ${variableOptions.interface_class} ` +
+            catDataAssembly.debug(`No data assembly implemented for ${variableOptions.interface_class} ` +
                 `of ${variableOptions.name}. Use standard DataAssembly.`);
             type = DataAssembly;
         }

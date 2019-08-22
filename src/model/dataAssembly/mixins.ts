@@ -177,6 +177,9 @@ export function OpModeDA<TBase extends Constructor<DataAssembly>>(Base: TBase) {
         }
 
         public async waitForOpModeToPassSpecificTest(testFunction: (opMode: OpMode) => boolean) {
+            if (!this.subscriptionActive) {
+                await this.subscribe();
+            }
             return new Promise((resolve) => {
                 if (testFunction(this.communication.OpMode.value)) {
                     resolve();

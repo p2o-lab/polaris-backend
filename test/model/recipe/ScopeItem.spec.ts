@@ -34,12 +34,12 @@ import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 /**
  * Tests for [[ScopeItem]]
  */
-describe('Scope Item', () => {
+describe('ScopeItem', () => {
 
     let moduleTestServer: Module;
     let moduleDosierer: Module;
 
-    beforeEach(() => {
+    before(() => {
         moduleDosierer = new Module(
             JSON.parse(fs.readFileSync('assets/modules/module_dosierer_1.1.0.json').toString()).modules[0]);
         moduleTestServer = new Module(
@@ -116,13 +116,13 @@ describe('Scope Item', () => {
         expect(item).to.have.property('variable').to.have.property('nodeId', 'Service1.Parameter1.V');
     });
 
-    it('should return ScopeItem 6', () => {
+    it('should return null when parameter name is not existant', () => {
         const item = ScopeItem.extractFromExpressionVariable('CIF.Service1.Parameter00x',
             [moduleTestServer, moduleDosierer]);
         expect(item).to.equal(null);
     });
 
-    it('should return ScopeItem 7', () => {
+    it('should return null if service name is not existant', () => {
         const item = ScopeItem.extractFromExpressionVariable('CIF.Service5.Parameter00x',
             [moduleTestServer, moduleDosierer]);
         expect(item).to.equal(null);
@@ -133,11 +133,11 @@ describe('Scope Item', () => {
             .to.equal(null);
     });
 
-    context('with moduletestserver', () => {
+    context('with module testserver', () => {
 
         let moduleServer: ModuleTestServer;
 
-        beforeEach(async function() {
+        before(async function() {
             this.timeout(5000);
             moduleServer = new ModuleTestServer();
             await moduleServer.start();
@@ -145,22 +145,39 @@ describe('Scope Item', () => {
             await moduleTestServer.connect();
         });
 
-        afterEach(async () => {
+        after(async () => {
             await moduleTestServer.disconnect();
             await moduleServer.shutdown();
         });
 
-        it('get scope value 1', async () => {
-
+        it('get scope value for variable', async () => {
             const item = ScopeItem.extractFromExpressionVariable('CIF.Variable001', [moduleTestServer, moduleDosierer]);
+            await item.listen();
+
             expect(await item.getScopeValue()).to.deep.equal({
                 'CIF': {
                     'Variable001': 20
                 }
             });
-        });
 
-        it('get scope value 2', async () => {
+            (moduleServer.variables[0] as TestServerNumericVariable).v = 3;
+            await new Promise((resolve) => moduleTestServer.on('variableChanged', resolve));
+            expect(await item.getScopeValue()).to.deep.equal({
+                'CIF': {
+                    'Variable001': 3
+                }
+            });
+
+            (moduleServer.variables[0] as TestServerNumericVariable).v = 4;
+            await new Promise((resolve) => moduleTestServer.on('variableChanged', resolve));
+            expect(await item.getScopeValue()).to.deep.equal({
+                'CIF': {
+                    'Variable001': 4
+                }
+            });
+        }).timeout(5000);
+
+        it('get scope value for parameter', async () => {
             const item = ScopeItem.extractFromExpressionVariable('CIF.Service1.Parameter001',
                 [moduleTestServer, moduleDosierer]);
             await item.listen();
@@ -176,7 +193,11 @@ describe('Scope Item', () => {
             });
 
             (moduleServer.services[0].parameter[0] as TestServerNumericVariable).v = 30;
-            await new Promise((resolve) => moduleTestServer.on('parameterChanged', resolve));
+            await new Promise((resolve) => moduleTestServer.on('parameterChanged', (data) => {
+                if (data.parameter === 'Parameter001') {
+                    resolve();
+                }
+            }));
 
             expect(await item.getScopeValue()).to.deep.equal({
                 'CIF': {
@@ -185,7 +206,7 @@ describe('Scope Item', () => {
                     }
                 }
             });
-        });
+        }).timeout(5000);
 
         it('should work with state', () => {
             const data: {expression: Expression, scopeItems: ScopeItem[]} =
@@ -200,7 +221,6 @@ describe('Scope Item', () => {
             const scope = assign(...tasks);
 
             expect(data.expression.evaluate(scope)).to.equal(true);
-
         });
 
     });

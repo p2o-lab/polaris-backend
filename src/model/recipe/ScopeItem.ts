@@ -28,7 +28,7 @@ import {Expression, Parser} from 'expr-eval';
 import {catScopeItem} from '../../config/logging';
 import {BaseService} from '../core/BaseService';
 import {ServiceState} from '../core/enum';
-import {Module} from '../core/Module';
+import {Module, OpcUaNodeEmitter} from '../core/Module';
 import {Service} from '../core/Service';
 import {Strategy} from '../core/Strategy';
 import {ExtAnaOp} from '../dataAssembly/AnaOp';
@@ -192,10 +192,8 @@ export class ScopeItem {
         }, value);
     }
 
-    public listen() {
-        if (this.variable) {
-            return this.module.listenToOpcUaNode(this.variable);
-        }
+    public listen(): Promise<OpcUaNodeEmitter> {
+        return this.module.listenToOpcUaNode(this.variable);
     }
 
 }

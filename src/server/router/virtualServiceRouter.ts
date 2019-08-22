@@ -23,6 +23,7 @@
  * SOFTWARE.
  */
 
+import {ServiceCommand} from '@p2olab/polaris-interface';
 import {Request, Response, Router} from 'express';
 import * as asyncHandler from 'express-async-handler';
 import {catServer} from '../../config/logging';
@@ -117,7 +118,7 @@ virtualServiceRouter.post('/:virtualServiceId/:command', asyncHandler(async (req
     if (req.body.parameters) {
         await virtualService.setParameters(req.body.parameters);
     }
-    await virtualService.executeCommand(req.params.command);
+    await virtualService.executeCommand(req.params.command as ServiceCommand);
     res.json({
         virtualService: virtualService.name,
         command: req.params.command,
