@@ -60,7 +60,7 @@ describe('Scope Item', () => {
         expect(extraction.scopeItems[1].name).to.equal('CIF.Variable002');
     });
 
-    it('should work for mutliple times of same variables', () => {
+    it('should work for multiple times of same variables', () => {
         const extraction = ScopeItem.extractFromExpressionString('CIF.Variable001 + CIF.Variable001',
             [moduleTestServer]);
         expect(extraction.scopeItems).to.have.lengthOf(1);
@@ -137,7 +137,7 @@ describe('Scope Item', () => {
 
         let moduleServer: ModuleTestServer;
 
-        beforeEach(async function () {
+        beforeEach(async function() {
             this.timeout(5000);
             moduleServer = new ModuleTestServer();
             await moduleServer.start();
@@ -163,6 +163,8 @@ describe('Scope Item', () => {
         it('get scope value 2', async () => {
             const item = ScopeItem.extractFromExpressionVariable('CIF.Service1.Parameter001',
                 [moduleTestServer, moduleDosierer]);
+            await item.listen();
+
             expect(item.name).to.equal('CIF.Service1.Parameter001');
             expect(item.variable.nodeId).to.equal('Service1.Parameter1.V');
             expect(await item.getScopeValue()).to.deep.equal({

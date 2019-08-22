@@ -34,7 +34,18 @@ import {Parameter} from '../recipe/Parameter';
  */
 export abstract class VirtualService extends BaseService {
 
+    public get controlEnable(): ControlEnableInterface {
+        return this._controlEnable;
+    }
+
+    public get state(): ServiceState {
+        return this._state;
+    }
+
     public static type: string;
+
+    protected _controlEnable: ControlEnableInterface;
+    protected _state: ServiceState = ServiceState.IDLE;
 
     constructor(name: string) {
         super();

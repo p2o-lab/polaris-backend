@@ -77,17 +77,12 @@ export abstract class BaseService {
         return this._name;
     }
 
-    public get state(): ServiceState {
-        return this._state;
-    }
-
     public get lastStatusChange(): Date {
         return this._lastStatusChange;
     }
 
-    public get controlEnable(): ControlEnableInterface {
-        return this._controlEnable;
-    }
+    public abstract get state(): ServiceState;
+    public abstract get controlEnable(): ControlEnableInterface
 
     public readonly eventEmitter: BaseServiceEmitter;
     public parameters: ParameterInterface[] = [];
@@ -101,12 +96,9 @@ export abstract class BaseService {
     // is base service self completing
     protected _selfCompleting: boolean = false;
 
-    protected _state: ServiceState = ServiceState.IDLE;
-    protected _controlEnable: ControlEnableInterface;
-
     protected _lastStatusChange: Date = new Date();
 
-    constructor() {
+    protected constructor() {
         this.eventEmitter = new EventEmitter();
     }
 

@@ -319,12 +319,12 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
      * @param {number} samplingInterval     OPC UA sampling interval for this subscription in milliseconds
      * @returns {"events".internal.EventEmitter} "changed" event
      */
-    public listenToOpcUaNode(node: OpcUaDataItem<any>, samplingInterval = 100): OpcUaNodeEmitter {
+    public async listenToOpcUaNode(node: OpcUaDataItem<any>, samplingInterval = 100): Promise<OpcUaNodeEmitter> {
         const nodeId = this.resolveNodeId(node);
         if (!this.monitoredItems.has(nodeId)) {
             const emitter: OpcUaNodeEmitter = new EventEmitter();
             this.monitoredItems.set(nodeId, emitter);
-            this.subscription.monitor({
+            const monitoredItem: ClientMonitoredItemBase = await this.subscription.monitor({
                     nodeId,
                     attributeId: AttributeIds.Value
                 },
@@ -332,14 +332,16 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
                     samplingInterval,
                     discardOldest: true,
                     queueSize: 1
-                }, TimestampsToReturn.Both)
-                .then((monitoredItem: ClientMonitoredItemBase) => monitoredItem.on('changed', (dataValue) => {
+                }, TimestampsToReturn.Both);
+            this.logger.debug(`[${this.id}] subscribed to opc ua Variable ${nodeId} `);
+            monitoredItem.on('changed', (dataValue) => {
                     this.logger.debug(`[${this.id}] Variable Changed (${nodeId}) ` +
                         `= ${dataValue.value.value.toString()}`);
                     node.value = dataValue.value.value;
                     node.timestamp = dataValue.serverTimestamp;
                     emitter.emit('changed', {value: dataValue.value.value, timestamp: dataValue.serverTimestamp});
-                }));
+                });
+            await this.readVariableNode(node);
         }
         return this.monitoredItems.get(nodeId);
     }
@@ -480,7 +482,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
     private subscribeToAllVariables(): Promise<DataAssembly[]> {
         return Promise.all(
             this.variables.map((variable: DataAssembly) => {
-                catModule.info(`[${this.id}] subscribe to process variable ${variable.name}`);
+                catModule.debug(`[${this.id}] subscribe to process variable ${variable.name}`);
                 variable.on('V', (data) => {
                     this.logger.info(`[${this.id}] variable changed: ${variable.name} = ` +
                         `${data.value} ${variable.getUnit()}`);

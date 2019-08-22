@@ -24,6 +24,7 @@
  */
 
 import {
+    ControlEnableInterface,
     OpModeInterface,
     ParameterInterface,
     ParameterOptions,
@@ -72,6 +73,14 @@ export class Service extends BaseService {
 
     public get qualifiedName() {
         return `${this.module.id}.${this.name}`;
+    }
+
+    public get controlEnable(): ControlEnableInterface {
+        return controlEnableToJson(this.commandEnableNode.value as ServiceControlEnable);
+    }
+
+    public get state(): ServiceState {
+        return this.statusNode.value as ServiceState;
     }
 
     get opMode(): OpMode {
@@ -219,7 +228,6 @@ export class Service extends BaseService {
         this.logger.info(`[${this.qualifiedName}] Subscribe to service`);
         this.serviceControl
             .on('CommandEnable', () => {
-                this._controlEnable = controlEnableToJson(this.commandEnableNode.value as ServiceControlEnable);
                 this.logger.info(`[${this.qualifiedName}] ControlEnable changed: ` +
                     `${JSON.stringify(this.controlEnable)}`);
                 this.eventEmitter.emit('controlEnable', this.controlEnable);
@@ -242,8 +250,7 @@ export class Service extends BaseService {
             })
             .on('State', () => {
                 this._lastStatusChange = new Date();
-                this._state = this.statusNode.value as ServiceState;
-                this.logger.info(`[${this.qualifiedName}] Status changed: ` +
+                this.logger.info(`[${this.qualifiedName}] State changed: ` +
                     `${ServiceState[this.statusNode.value as ServiceState]}`);
                 this.eventEmitter.emit('state', {
                     state: this.state,

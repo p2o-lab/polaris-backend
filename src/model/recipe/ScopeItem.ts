@@ -77,9 +77,6 @@ export class ScopeItem {
     /**
      * Extract scope item from expression variable
      *
-     *
-     *
-     *
      * @param {string} variable
      * @param {Module[]} modules    modules to be searched in for variable names
      * @returns {ScopeItem}

@@ -78,7 +78,7 @@ export abstract class TestServerVariable {
             dataType: 'UInt32',
             value: {
                 get: () => {
-                    catTestServer.info(`[${variableName}] Get Opmode in testserver ${this.opMode}`);
+                    catTestServer.debug(`[${variableName}] Get Opmode in testserver ${this.opMode}`);
                     return new Variant({dataType: DataType.UInt32, value: this.opMode});
                 },
                 set: (variant) => {
@@ -94,7 +94,7 @@ export abstract class TestServerVariable {
                     } else {
                         return StatusCodes.Bad;
                     }
-                    catTestServer.info(`[${variableName}] Set Opmode in testserver ${variant} ` +
+                    catTestServer.debug(`[${variableName}] Set Opmode in testserver ${variant} ` +
                         `${opModeInt} -> ${this.opMode}`);
                     return StatusCodes.Good;
                 }
