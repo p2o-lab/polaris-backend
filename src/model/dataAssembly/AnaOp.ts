@@ -28,19 +28,10 @@ import {ParameterInterface} from '@p2olab/polaris-interface';
 import {Module} from '../core/Module';
 import {BaseDataAssemblyRuntime, DataAssembly} from './DataAssembly';
 import {OpcUaDataItem} from './DataItem';
-import {
-    OpModeDA,
-    OpModeRuntime,
-    ScaleSettingsDA,
-    ScaleSettingsRuntime,
-    UnitDA,
-    UnitDataAssemblyRuntime, ValueLimitationDA
-} from './mixins';
-
-export type ValueLimitationRuntime = BaseDataAssemblyRuntime & {
-    VMin: OpcUaDataItem<number>;
-    VMax: OpcUaDataItem<number>;
-};
+import {OpModeDA, OpModeRuntime} from './mixins/OpMode';
+import {ScaleSettingsDA, ScaleSettingsRuntime} from './mixins/ScaleSettings';
+import {UnitDA, UnitDataAssemblyRuntime} from './mixins/Unit';
+import {ValueLimitationDA, ValueLimitationRuntime} from './mixins/ValueLimitation';
 
 export type AnaOpRuntime = BaseDataAssemblyRuntime &
     UnitDataAssemblyRuntime & ValueLimitationRuntime &

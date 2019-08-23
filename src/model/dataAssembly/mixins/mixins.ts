@@ -1,4 +1,3 @@
-/* tslint:disable:max-classes-per-file */
 /*
  * MIT License
  *
@@ -24,35 +23,4 @@
  * SOFTWARE.
  */
 
-import {BaseDataAssemblyRuntime, DataAssembly} from './DataAssembly';
-import {OpcUaDataItem} from './DataItem';
-import {OpModeDA} from './mixins/OpMode';
-
-export type ExtBinOpRuntime = BaseDataAssemblyRuntime & {
-    VExt: OpcUaDataItem<boolean>;
-    VRbk: OpcUaDataItem<boolean>;
-    VOut: OpcUaDataItem<boolean>;
-    VState0: OpcUaDataItem<string>;
-    VState1: OpcUaDataItem<string>;
-};
-
-export class ExtBinOp extends DataAssembly {
-
-    public readonly communication: ExtBinOpRuntime;
-
-    constructor(options, module) {
-        super(options, module);
-    }
-
-}
-
-export class ExtIntBinOp extends OpModeDA(ExtBinOp) {
-}
-
-export class AdvBinOp extends ExtIntBinOp {
-
-}
-
-export class BinServParam extends ExtIntBinOp {
-
-}
+export type Constructor<T = {}> = new (...args: any[]) => T;

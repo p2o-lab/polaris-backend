@@ -24,32 +24,100 @@
 * SOFTWARE.
 */
 
-import {DataAssembly} from './DataAssembly';
+import {BaseDataAssemblyRuntime, DataAssembly} from './DataAssembly';
+import {OpcUaDataItem} from './DataItem';
+import {OpModeRuntime} from './mixins/OpMode';
+
+export type BinVlvRuntime = BaseDataAssemblyRuntime & OpModeRuntime & {
+    SafePos: OpcUaDataItem<boolean>;
+    OpenOp: OpcUaDataItem<boolean>;
+    CloseOp: OpcUaDataItem<boolean>;
+    OpenLi: OpcUaDataItem<boolean>;
+    CloseLi: OpcUaDataItem<boolean>;
+    Ctrl: OpcUaDataItem<boolean>;
+    OpenFbkEn: OpcUaDataItem<boolean>;
+    CloseFbkEn: OpcUaDataItem<boolean>;
+    OpenFbk: OpcUaDataItem<boolean>;
+    CloseFbk: OpcUaDataItem<boolean>;
+    PermEn: OpcUaDataItem<boolean>;
+    Permit: OpcUaDataItem<boolean>;
+    IntlEn: OpcUaDataItem<boolean>;
+    Interlock: OpcUaDataItem<boolean>;
+    ProtEn: OpcUaDataItem<boolean>;
+    Protect: OpcUaDataItem<boolean>;
+    ResetOp: OpcUaDataItem<boolean>;
+    ResetLi: OpcUaDataItem<boolean>;
+};
 
 export class BinVlv extends DataAssembly {
-    constructor(options, module) {
-        super(options, module);
-        // this.subscribedNodes.push('OpMode', 'SafePos', 'OpenOp', 'CloseOp', 'OpenLi', 'CloseLi', 'Ctrl', 'OpenFbkEn', 'CloseFbkEn', 'OpenFbk', 'CloseFbk', 'PermEn', 'Permit', 'IntlEn', 'Interlock', 'ProtEn', 'Protect', 'ResetOp', 'ResetLi');
-    }
+    public readonly communication: BinVlvRuntime;
 }
+
+export type MonBinVlvRuntime = BinVlvRuntime & {
+    MonEn: OpcUaDataItem<boolean>;
+    MonSafePos: OpcUaDataItem<boolean>;
+    MonStatErr: OpcUaDataItem<boolean>;
+    MonDynErr: OpcUaDataItem<boolean>;
+    MonStatTi: OpcUaDataItem<number>;
+    MonDynTi: OpcUaDataItem<number>;
+};
 
 export class MonBinVlv extends BinVlv {
-    constructor(options, module) {
-        super(options, module);
-        // this.subscribedNodes.push('MonEn', 'MonSafePos', 'MonStatErr', 'MonDynErr', 'MonStatTi', 'MonDynTi');
-    }
+    public readonly communication: MonBinVlvRuntime;
 }
+
+export type AnaVlvRuntime = BaseDataAssemblyRuntime & OpModeRuntime & {
+    OpenOp: OpcUaDataItem<number>;
+    CloseOp: OpcUaDataItem<number>;
+    OpenLi: OpcUaDataItem<number>;
+    CloseLi: OpcUaDataItem<number>;
+    Ctrl: OpcUaDataItem<number>;
+    OpenFbkEn: OpcUaDataItem<boolean>;
+    CloseFbkEn: OpcUaDataItem<boolean>;
+    OpenFbk: OpcUaDataItem<boolean>;
+    CloseFbk: OpcUaDataItem<boolean>;
+    PosSclMin: OpcUaDataItem<number>;
+    PosSclMax: OpcUaDataItem<number>;
+    PosUnit: OpcUaDataItem<number>;
+    PosInt: OpcUaDataItem<number>;
+    PosExt: OpcUaDataItem<number>;
+    PosMin: OpcUaDataItem<number>;
+    PosMax: OpcUaDataItem<number>;
+    SafePos: OpcUaDataItem<number>;
+    PosCtrl: OpcUaDataItem<number>;
+    PosFbkEn: OpcUaDataItem<boolean>;
+    PosFbk: OpcUaDataItem<number>;
+    PermEn: OpcUaDataItem<boolean>;
+    Permit: OpcUaDataItem<boolean>;
+    IntlEn: OpcUaDataItem<boolean>;
+    Interlock: OpcUaDataItem<boolean>;
+    ProtEn: OpcUaDataItem<boolean>;
+    Protect: OpcUaDataItem<boolean>;
+    ResetOp: OpcUaDataItem<boolean>;
+    ResetLi: OpcUaDataItem<boolean>;
+};
 
 export class AnaVlv extends DataAssembly {
-    constructor(options, module) {
-        super(options, module);
-        // this.subscribedNodes.push('OpMode', 'OpenOp', 'CloseOp', 'OpenLi', 'CloseLi', 'Ctrl', 'OpenFbkEn', 'CloseFbkEn', 'OpenFbk', 'CloseFbk', 'PosSclMin', 'PosSclMax', 'PosUnit', 'PosInt', 'PosExt', 'PosMin', 'PosMax', 'SafePos', 'PosCtrl', 'PosFbkEn', 'PosFbk', 'PermEn', 'Permit', 'IntlEn', 'Interlock', 'ProtEn', 'Protect', 'ResetOp', 'ResetLi');
-    }
+    public readonly communication: AnaVlvRuntime;
 }
 
+export type MonAnaVlvRuntime = AnaVlvRuntime & {
+    MonEn: OpcUaDataItem<boolean>;
+    MonSafePos: OpcUaDataItem<number>;
+    MonStatErr: OpcUaDataItem<boolean>;
+    MonDynErr: OpcUaDataItem<boolean>;
+    MonStatTi: OpcUaDataItem<number>;
+    MonDynTi: OpcUaDataItem<number>;
+    PosOpngFbk: OpcUaDataItem<number>;
+    PosClsngFbk: OpcUaDataItem<number>;
+    PosReachedFbk: OpcUaDataItem<boolean>;
+    PosTolerance: OpcUaDataItem<number>;
+    PosDefClose: OpcUaDataItem<number>;
+    PosDefOpen: OpcUaDataItem<number>;
+    MonPosTi: OpcUaDataItem<number>;
+    MonPosErr: OpcUaDataItem<boolean>;
+};
+
 export class MonAnaVlv extends AnaVlv {
-    constructor(options, module) {
-        super(options, module);
-        // this.subscribedNodes.push('MonEn', 'MonSafePos', 'MonStatErr', 'MonDynErr', 'MonStatTi', 'MonDynTi', 'PosOpngFbk', 'PosClsngFbk', 'PosReachedFbk', 'PosTolerance', 'PosDefClose', 'PosDefOpen', 'MonPosTi', 'MonPosErr');
-    }
+    public readonly communication: MonAnaVlvRuntime;
 }

@@ -24,7 +24,45 @@
  * SOFTWARE.
  */
 
-import {DataAssembly} from './DataAssembly';
+import {BaseDataAssemblyRuntime, DataAssembly} from './DataAssembly';
+import {OpcUaDataItem} from './DataItem';
+import {OpModeRuntime} from './mixins/OpMode';
+
+export type AnaDrvRuntime = BaseDataAssemblyRuntime & OpModeRuntime & {
+    FwdEn: OpcUaDataItem<boolean>;
+    RevEn: OpcUaDataItem<boolean>;
+    StopOp: OpcUaDataItem<boolean>;
+    FwdOp: OpcUaDataItem<boolean>;
+    RevOp: OpcUaDataItem<boolean>;
+    StopLi: OpcUaDataItem<boolean>;
+    FwdLi: OpcUaDataItem<boolean>;
+    RevLi: OpcUaDataItem<boolean>;
+    FwdCtrl: OpcUaDataItem<boolean>;
+    RevCtrl: OpcUaDataItem<boolean>;
+    RevFbkEn: OpcUaDataItem<boolean>;
+    FwdFbkEn: OpcUaDataItem<boolean>;
+    RevFbk: OpcUaDataItem<boolean>;
+    FwdFbk: OpcUaDataItem<boolean>;
+    SafePos: OpcUaDataItem<boolean>;
+    Trip: OpcUaDataItem<number>;
+    RpmSclMax: OpcUaDataItem<number>;
+    RpmSclMin: OpcUaDataItem<number>;
+    RpmUnit: OpcUaDataItem<number>;
+    RpmInt: OpcUaDataItem<number>;
+    RpmExt: OpcUaDataItem<number>;
+    RpmMin: OpcUaDataItem<number>;
+    RpmMax: OpcUaDataItem<number>;
+    Rpm: OpcUaDataItem<number>;
+    RpmFbk: OpcUaDataItem<number>;
+    PermEn: OpcUaDataItem<boolean>;
+    Permit: OpcUaDataItem<boolean>;
+    IntlEn: OpcUaDataItem<boolean>;
+    Interlock: OpcUaDataItem<boolean>;
+    ProtEn: OpcUaDataItem<boolean>;
+    Protect: OpcUaDataItem<boolean>;
+    ResetOp: OpcUaDataItem<boolean>;
+    ResetLi: OpcUaDataItem<boolean>;
+};
 
 export class AnaDrv extends DataAssembly {
     constructor(options, module) {

@@ -1,4 +1,3 @@
-/* tslint:disable:max-classes-per-file */
 /*
  * MIT License
  *
@@ -24,35 +23,39 @@
  * SOFTWARE.
  */
 
-import {BaseDataAssemblyRuntime, DataAssembly} from './DataAssembly';
-import {OpcUaDataItem} from './DataItem';
-import {OpModeDA} from './mixins/OpMode';
+import {ParameterInterface, UnitDataAssemblyOptions} from '@p2olab/polaris-interface';
+import {UNIT} from '../../core/Unit';
+import {BaseDataAssemblyRuntime, DataAssembly} from '../DataAssembly';
+import {OpcUaDataItem} from '../DataItem';
+import {Constructor} from './mixins';
 
-export type ExtBinOpRuntime = BaseDataAssemblyRuntime & {
-    VExt: OpcUaDataItem<boolean>;
-    VRbk: OpcUaDataItem<boolean>;
-    VOut: OpcUaDataItem<boolean>;
-    VState0: OpcUaDataItem<string>;
-    VState1: OpcUaDataItem<string>;
-};
-
-export class ExtBinOp extends DataAssembly {
-
-    public readonly communication: ExtBinOpRuntime;
-
-    constructor(options, module) {
-        super(options, module);
-    }
-
+export interface UnitDataAssemblyRuntime extends BaseDataAssemblyRuntime {
+    VUnit: OpcUaDataItem<number>;
 }
 
-export class ExtIntBinOp extends OpModeDA(ExtBinOp) {
-}
+// tslint:disable-next-line:variable-name
+export function UnitDA<TBase extends Constructor<DataAssembly>>(Base: TBase) {
 
-export class AdvBinOp extends ExtIntBinOp {
+    return class extends Base {
+        public communication: UnitDataAssemblyRuntime;
 
-}
+        constructor(...args: any[]) {
+            super(...args);
+            const a = args[0] as { communication: UnitDataAssemblyOptions };
 
-export class BinServParam extends ExtIntBinOp {
+            this.communication.VUnit = OpcUaDataItem.fromOptions(a.communication.VUnit, 'read');
+        }
 
+        public getUnit(): string {
+            const unit = UNIT.find((item) => item.value === this.communication.VUnit.value);
+            return unit ? unit.unit : '';
+        }
+
+        public toJson(): ParameterInterface {
+            return {
+                ...super.toJson(),
+                unit: this.getUnit()
+            };
+        }
+    };
 }

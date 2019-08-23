@@ -28,7 +28,9 @@ import {ParameterInterface} from '@p2olab/polaris-interface';
 import {Module} from '../core/Module';
 import {BaseDataAssemblyRuntime, DataAssembly} from './DataAssembly';
 import {OpcUaDataItem} from './DataItem';
-import {MonitorSettings, ScaleSettingsDA, ScaleSettingsRuntime, UnitDA, UnitDataAssemblyRuntime} from './mixins';
+import {MonitorSettings} from './mixins/MonitorSettings';
+import {ScaleSettingsDA, ScaleSettingsRuntime} from './mixins/ScaleSettings';
+import {UnitDA, UnitDataAssemblyRuntime} from './mixins/Unit';
 
 export type AnaViewRuntime = BaseDataAssemblyRuntime & UnitDataAssemblyRuntime & ScaleSettingsRuntime & {
     V: OpcUaDataItem<number>;

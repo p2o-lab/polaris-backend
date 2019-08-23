@@ -29,7 +29,9 @@ import {Module} from '../core/Module';
 import {AnaViewRuntime} from './AnaView';
 import {DataAssembly} from './DataAssembly';
 import {OpcUaDataItem} from './DataItem';
-import {MonitorSettings, ScaleSettingsDA, UnitDA} from './mixins';
+import {MonitorSettings} from './mixins/MonitorSettings';
+import {ScaleSettingsDA} from './mixins/ScaleSettings';
+import {UnitDA} from './mixins/Unit';
 
 export class DigView extends ScaleSettingsDA(UnitDA(DataAssembly)) {
     public readonly communication: AnaViewRuntime;
