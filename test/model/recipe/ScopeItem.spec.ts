@@ -161,7 +161,8 @@ describe('ScopeItem', () => {
             });
 
             (moduleServer.variables[0] as TestServerNumericVariable).v = 3;
-            await new Promise((resolve) => moduleTestServer.on('variableChanged', resolve));
+            await new Promise((resolve) =>
+                moduleTestServer.on('variableChanged', (data) => data.variable === 'Variable001' && resolve()));
             expect(await item.getScopeValue()).to.deep.equal({
                 'CIF': {
                     'Variable001': 3
@@ -169,7 +170,8 @@ describe('ScopeItem', () => {
             });
 
             (moduleServer.variables[0] as TestServerNumericVariable).v = 4;
-            await new Promise((resolve) => moduleTestServer.on('variableChanged', resolve));
+            await new Promise((resolve) =>
+                moduleTestServer.on('variableChanged', (data) => data.variable === 'Variable001' && resolve()));
             expect(await item.getScopeValue()).to.deep.equal({
                 'CIF': {
                     'Variable001': 4
@@ -193,11 +195,8 @@ describe('ScopeItem', () => {
             });
 
             (moduleServer.services[0].parameter[0] as TestServerNumericVariable).v = 30;
-            await new Promise((resolve) => moduleTestServer.on('parameterChanged', (data) => {
-                if (data.parameter === 'Parameter001') {
-                    resolve();
-                }
-            }));
+            await new Promise((resolve) =>
+                moduleTestServer.on('parameterChanged', (data) => data.parameter === 'Parameter001' && resolve()));
 
             expect(await item.getScopeValue()).to.deep.equal({
                 'CIF': {
