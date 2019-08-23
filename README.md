@@ -12,8 +12,6 @@ A HTML user interface for this project is provided via the [polaris-frontend](ht
 [![codecov](https://codecov.io/gh/p2o-lab/polaris-backend/branch/develop/graph/badge.svg)](https://codecov.io/gh/p2o-lab/polaris-backend)
 
 
-
-
 ## Installation and Deployment
 ### Dependencies
 All dependencies are installed via NPM
@@ -33,26 +31,10 @@ or use ready binary (which should also be installed globally and in modules)
 
 ### Docker
 
-Use docker ready image
+Use ready docker image, which are automatically updated during drone.io integration
 ```
 docker pull p2olab/polaris-backend
 docker run -d -p 3000:3000 p2olab/polaris-backend
-```
-
-Update docker image
-```bash
-docker run deploy
-```
-or make it manually
-```
-docker build -t p2olab/polaris-backend .
-docker push p2olab/polaris-backend 
-```
-
-Update docker image for raspberry pi
-```
-docker build -t p2olab/polaris-backend:latest-arm -f Dockerfile.arm .
-docker push p2olab/polaris-backend:latest-arm 
 ```
 
 ## Usage
