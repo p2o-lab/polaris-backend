@@ -30,6 +30,7 @@ import {Module} from '../../../src/model/core/Module';
 import {ScopeItem} from '../../../src/model/recipe/ScopeItem';
 import {TestServerNumericVariable} from '../../../src/moduleTestServer/ModuleTestNumericVariable';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
+import {waitForParameterChange, waitForVariableChange} from '../../helper';
 
 /**
  * Tests for [[ScopeItem]]
@@ -70,7 +71,7 @@ describe('ScopeItem', () => {
     it('should work for expression with special characters', () => {
         const extraction = ScopeItem.extractFromExpressionString('CIF.Variable\\.003 + 3', [moduleTestServer]);
         expect(extraction.scopeItems).to.have.lengthOf(1);
-        expect(extraction.scopeItems[0].variable.nodeId).to.equal('TestServerVariable.3.V');
+        expect(extraction.scopeItems[0].dataItem.nodeId).to.equal('TestServerVariable.3.V');
         expect(extraction.scopeItems[0].name).to.equal('CIF.Variable__003');
     });
 
@@ -83,21 +84,21 @@ describe('ScopeItem', () => {
         const item = ScopeItem.extractFromExpressionVariable('Variable001', [moduleTestServer]);
         expect(item).to.have.property('module').to.have.property('id', 'CIF');
         expect(item).to.have.property('name', 'Variable001');
-        expect(item).to.have.property('variable').to.have.property('nodeId', 'Variable1.V');
+        expect(item).to.have.property('dataItem').to.have.property('nodeId', 'Variable1.V');
     });
 
     it('should return ScopeItem 2', () => {
         const item = ScopeItem.extractFromExpressionVariable('Variable001.VUnit', [moduleTestServer]);
         expect(item).to.have.property('module').to.have.property('id', 'CIF');
         expect(item).to.have.property('name', 'Variable001.VUnit');
-        expect(item).to.have.property('variable').to.have.property('nodeId', 'Variable1.VUnit');
+        expect(item).to.have.property('dataItem').to.have.property('nodeId', 'Variable1.VUnit');
     });
 
     it('should return ScopeItem 3', () => {
         const item = ScopeItem.extractFromExpressionVariable('Variable001.V', [moduleTestServer]);
         expect(item).to.have.property('module').to.have.property('id', 'CIF');
         expect(item).to.have.property('name', 'Variable001.V');
-        expect(item).to.have.property('variable').to.have.property('nodeId', 'Variable1.V');
+        expect(item).to.have.property('dataItem').to.have.property('nodeId', 'Variable1.V');
     });
 
     it('should return ScopeItem 4', async () => {
@@ -105,7 +106,7 @@ describe('ScopeItem', () => {
             [moduleTestServer, moduleDosierer]);
         expect(item).to.have.property('module').to.have.property('id', 'CIF');
         expect(item).to.have.property('name', 'CIF.Variable001.VUnit');
-        expect(item).to.have.property('variable').to.have.property('nodeId', 'Variable1.VUnit');
+        expect(item).to.have.property('dataItem').to.have.property('nodeId', 'Variable1.VUnit');
     });
 
     it('should return ScopeItem 5', () => {
@@ -113,7 +114,7 @@ describe('ScopeItem', () => {
             [moduleTestServer, moduleDosierer]);
         expect(item).to.have.property('module').to.have.property('id', 'CIF');
         expect(item).to.have.property('name', 'CIF.Service1.Parameter001');
-        expect(item).to.have.property('variable').to.have.property('nodeId', 'Service1.Parameter1.V');
+        expect(item).to.have.property('dataItem').to.have.property('nodeId', 'Service1.Parameter1.V');
     });
 
     it('should return null when parameter name is not existant', () => {
@@ -152,27 +153,23 @@ describe('ScopeItem', () => {
 
         it('get scope value for variable', async () => {
             const item = ScopeItem.extractFromExpressionVariable('CIF.Variable001', [moduleTestServer, moduleDosierer]);
-            await item.listen();
-
-            expect(await item.getScopeValue()).to.deep.equal({
+            expect(item.getScopeValue()).to.deep.equal({
                 'CIF': {
                     'Variable001': 20
                 }
             });
 
             (moduleServer.variables[0] as TestServerNumericVariable).v = 3;
-            await new Promise((resolve) =>
-                moduleTestServer.on('variableChanged', (data) => data.variable === 'Variable001' && resolve()));
-            expect(await item.getScopeValue()).to.deep.equal({
+            await waitForVariableChange(moduleTestServer, 'Variable001', 3);
+            expect(item.getScopeValue()).to.deep.equal({
                 'CIF': {
                     'Variable001': 3
                 }
             });
 
             (moduleServer.variables[0] as TestServerNumericVariable).v = 4;
-            await new Promise((resolve) =>
-                moduleTestServer.on('variableChanged', (data) => data.variable === 'Variable001' && resolve()));
-            expect(await item.getScopeValue()).to.deep.equal({
+            await waitForVariableChange(moduleTestServer, 'Variable001', 4);
+            expect(item.getScopeValue()).to.deep.equal({
                 'CIF': {
                     'Variable001': 4
                 }
@@ -182,11 +179,10 @@ describe('ScopeItem', () => {
         it('get scope value for parameter', async () => {
             const item = ScopeItem.extractFromExpressionVariable('CIF.Service1.Parameter001',
                 [moduleTestServer, moduleDosierer]);
-            await item.listen();
 
             expect(item.name).to.equal('CIF.Service1.Parameter001');
-            expect(item.variable.nodeId).to.equal('Service1.Parameter1.V');
-            expect(await item.getScopeValue()).to.deep.equal({
+            expect(item.dataItem.nodeId).to.equal('Service1.Parameter1.V');
+            expect(item.getScopeValue()).to.deep.equal({
                 'CIF': {
                     'Service1': {
                         'Parameter001': 20
@@ -195,10 +191,8 @@ describe('ScopeItem', () => {
             });
 
             (moduleServer.services[0].parameter[0] as TestServerNumericVariable).v = 30;
-            await new Promise((resolve) =>
-                moduleTestServer.on('parameterChanged', (data) => data.parameter === 'Parameter001' && resolve()));
-
-            expect(await item.getScopeValue()).to.deep.equal({
+            await waitForParameterChange(moduleTestServer, 'Parameter001', 30);
+            expect(item.getScopeValue()).to.deep.equal({
                 'CIF': {
                     'Service1': {
                         'Parameter001': 30
@@ -211,14 +205,22 @@ describe('ScopeItem', () => {
             const data: {expression: Expression, scopeItems: ScopeItem[]} =
                 ScopeItem.extractFromExpressionString('CIF.Service1.state==\'IDLE\'', [moduleTestServer]);
             expect(data.scopeItems).to.have.lengthOf(1);
-            expect(data.scopeItems[0].name).to.equal('CIF.Service1.state');
+            expect(data.scopeItems[0]).to.have.property('module').to.have.property('id', 'CIF');
+            expect(data.scopeItems[0]).to.have.property('name', 'CIF.Service1.state');
+            expect(data.scopeItems[0]).to.have.property('dataItem').to.have.property('nodeId', 'Service1.State');
 
             const tasks = data.scopeItems.map((item) => {
                 return item.getScopeValue();
             });
             const assign = require('assign-deep');
             const scope = assign(...tasks);
-
+            expect(scope).to.deep.equal({
+                CIF: {
+                    Service1: {
+                        state: 'IDLE'
+                    }
+                }
+            });
             expect(data.expression.evaluate(scope)).to.equal(true);
         });
 

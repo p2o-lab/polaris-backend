@@ -26,9 +26,8 @@
 import {ScopeOptions} from '@p2olab/polaris-interface';
 import {Expression, Parser} from 'expr-eval';
 import {catScopeItem} from '../../config/logging';
-import {BaseService} from '../core/BaseService';
 import {ServiceState} from '../core/enum';
-import {Module, OpcUaNodeEmitter} from '../core/Module';
+import {Module} from '../core/Module';
 import {Service} from '../core/Service';
 import {Strategy} from '../core/Strategy';
 import {ExtAnaOp} from '../dataAssembly/AnaOp';
@@ -39,6 +38,7 @@ import {DataAssembly} from '../dataAssembly/DataAssembly';
 import {OpcUaDataItem} from '../dataAssembly/DataItem';
 import {ExtDigOp} from '../dataAssembly/DigOp';
 import {DigView} from '../dataAssembly/DigView';
+import {ServiceControl} from '../dataAssembly/ServiceControl';
 
 export class ScopeItem {
 
@@ -70,8 +70,7 @@ export class ScopeItem {
     public static extractFromScopeOptions(item: ScopeOptions, modules: Module[]): ScopeItem {
         const module = modules.find((m) => m.id === item.module);
         const dataAssembly = module.variables.find((v) => v.name === item.dataAssembly);
-        const opcUaNode = ScopeItem.getVariablefromDataAssembly(dataAssembly, item.variable);
-        return new ScopeItem(item.name, module, opcUaNode);
+        return new ScopeItem(item.name, module, dataAssembly, item.variable);
     }
 
     /**
@@ -115,7 +114,7 @@ export class ScopeItem {
             } else if (service.parameters.find((p) => p.name === token)) {
                 dataAssembly = strategy.parameters.find((p) => p.name === token);
             } else if (token === 'state') {
-                return new ScopeItem(variable, module, null, service);
+                return new ScopeItem(variable, module, service.serviceControl, 'State');
             } else {
                 catScopeItem.warn(`Could not evaluate variable "${variable}": ` +
                     `Token "${token}" not found as service parameter ` +
@@ -136,43 +135,23 @@ export class ScopeItem {
 
         // find data assembly variable
         token = components.shift();
-        const opcUaNode = ScopeItem.getVariablefromDataAssembly(dataAssembly, token);
 
-        return new ScopeItem(variable, module, opcUaNode);
-    }
-
-    private static getVariablefromDataAssembly(dataAssembly, token): OpcUaDataItem<any> {
-        let opcUaNode = dataAssembly.communication[token];
-        if (!opcUaNode) {
-            // set default values
-            if (dataAssembly instanceof AnaView) {
-                opcUaNode = dataAssembly.communication.V;
-            } else if (dataAssembly instanceof DigView) {
-                opcUaNode = dataAssembly.communication.V;
-            } else if (dataAssembly instanceof BinView) {
-                opcUaNode = dataAssembly.communication.V;
-            } else if (dataAssembly instanceof ExtAnaOp) {
-                opcUaNode = dataAssembly.communication.VOut;
-            } else if (dataAssembly instanceof ExtDigOp) {
-                opcUaNode = dataAssembly.communication.VOut;
-            } else if (dataAssembly instanceof ExtBinOp) {
-                opcUaNode = dataAssembly.communication.VOut;
-            }
-        }
-        return opcUaNode;
+        return new ScopeItem(variable, module, dataAssembly, token);
     }
 
     /** name of variable which should be replaced in value */
     public readonly name: string;
-    public readonly variable: OpcUaDataItem<any>;
+    public readonly dataAssembly: DataAssembly;
+    public readonly dataItem: OpcUaDataItem<any>;
     public readonly module: Module;
-    private readonly service: BaseService;
+    public readonly variableName: string;
 
-    constructor(name: string, module, variable?: OpcUaDataItem<any>, service?: BaseService) {
+    constructor(name: string, module, dataAssembly: DataAssembly, variableName?: string) {
         this.name = name;
         this.module = module;
-        this.variable = variable;
-        this.service = service;
+        this.dataAssembly = dataAssembly;
+        this.variableName = variableName;
+        this.dataItem = this.getDataItem(variableName);
     }
 
     /**
@@ -180,9 +159,12 @@ export class ScopeItem {
      * as object suitable for expr-eval.evaluate()
      */
     public getScopeValue(): object {
-        const value = this.variable ? this.variable.value : ServiceState[this.service.state];
+        let value = this.dataItem.value;
+        if (this.dataAssembly instanceof ServiceControl && this.variableName === 'State') {
+            value = ServiceState[this.dataItem.value as ServiceState];
+        }
         if (value === undefined) {
-            throw new Error(`Could not evaluate scope item ${this.name} (${JSON.stringify(this.variable)} ` +
+            throw new Error(`Could not evaluate scope item ${this.name} (${JSON.stringify(this.dataItem)} ` +
                 `since it seems not connected`);
         }
         return this.name.split('.').reduceRight((previous, current) => {
@@ -192,8 +174,25 @@ export class ScopeItem {
         }, value);
     }
 
-    public listen(): Promise<OpcUaNodeEmitter> {
-        return this.module.listenToOpcUaNode(this.variable);
+    private getDataItem(token: string): OpcUaDataItem<any> {
+        let dataItem = this.dataAssembly.communication[token];
+        if (!dataItem) {
+            // set default values
+            if (this.dataAssembly instanceof AnaView) {
+                dataItem = this.dataAssembly.communication.V;
+            } else if (this.dataAssembly instanceof DigView) {
+                dataItem = this.dataAssembly.communication.V;
+            } else if (this.dataAssembly instanceof BinView) {
+                dataItem = this.dataAssembly.communication.V;
+            } else if (this.dataAssembly instanceof ExtAnaOp) {
+                dataItem = this.dataAssembly.communication.VOut;
+            } else if (this.dataAssembly instanceof ExtDigOp) {
+                dataItem = this.dataAssembly.communication.VOut;
+            } else if (this.dataAssembly instanceof ExtBinOp) {
+                dataItem = this.dataAssembly.communication.VOut;
+            }
+        }
+        return dataItem;
     }
 
 }

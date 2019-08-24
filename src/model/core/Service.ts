@@ -133,7 +133,7 @@ export class Service extends BaseService {
     // use ControlExt (true) or ControlOp (false)
     public readonly automaticMode: boolean;
 
-    private readonly serviceControl: ServiceControl;
+    public readonly serviceControl: ServiceControl;
 
     private readonly logger: Category;
     private serviceParametersEventEmitters: EventEmitter[];
@@ -494,8 +494,8 @@ export class Service extends BaseService {
     private listenToServiceParameters(parameters: Parameter[]) {
         parameters.forEach((param) => {
             if (param.continuous) {
-                const listener: EventEmitter = param.listenToParameter()
-                    .on('changed', () => param.updateValueOnModule());
+                const listener: EventEmitter = param.listenToParameter();
+                listener.on('changed', () => param.updateValueOnModule());
                 this.serviceParametersEventEmitters.push(listener);
             }
         });

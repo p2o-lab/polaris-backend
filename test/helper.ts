@@ -26,6 +26,7 @@
 import {timeout} from 'promise-timeout';
 import {BaseService} from '../src/model/core/BaseService';
 import {ServiceState} from '../src/model/core/enum';
+import {Module} from '../src/model/core/Module';
 
 /**
  * resolve when service changes to expectedState
@@ -44,4 +45,26 @@ export function waitForStateChange(service: BaseService, expectedState: string, 
             }
         });
     }), ms);
+}
+
+export function waitForParameterChange(module: Module, parameterName: string, expected = null) {
+    return new Promise((resolve) =>
+        module.on('parameterChanged', (data) => {
+            if (data.parameter === parameterName && (expected === null || data.value === expected)) {
+                resolve();
+                module.removeListener('parameterChanged', test);
+            }
+        })
+    );
+}
+
+export function waitForVariableChange(module: Module, variableName: string, expected = null) {
+    return new Promise((resolve) =>
+        module.on('variableChanged', function test(data) {
+            if (data.variable === variableName && (expected === null || data.value === expected)) {
+                resolve();
+                module.removeListener('variableChanged', test);
+            }
+        })
+    );
 }

@@ -27,7 +27,6 @@ import {ConditionType} from '@p2olab/polaris-interface';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
-import {timeout} from 'promise-timeout';
 import * as delay from 'timeout-as-promise';
 import {catCondition} from '../../../src/config/logging';
 import {ConditionFactory} from '../../../src/model/condition/ConditionFactory';
@@ -150,6 +149,7 @@ describe('Condition', () => {
 
             it('should work with simple expression', async () => {
                 const expr = new ExpressionCondition({type: ConditionType.expression, expression: '4>3'});
+                expr.listen();
                 const value = await expr.getValue();
                 expect(value).to.equal(true);
             });
@@ -172,7 +172,7 @@ describe('Condition', () => {
                     ]
                 }, [module]) as ExpressionCondition;
 
-                await expect(expr.getValue()).to.be.rejectedWith('not connected');
+                expect(() => expr.getValue()).to.throw('not connected');
             });
 
         });
@@ -336,7 +336,6 @@ describe('Condition', () => {
 
                 var0.v = 11;
                 await new Promise((resolve) => module.once('variableChanged', resolve));
-                expect(expr).to.have.property('fulfilled', true);
                 value = await expr.getValue();
                 expect(value).to.equal(true);
                 expect(expr).to.have.property('fulfilled', true);
@@ -368,7 +367,7 @@ describe('Condition', () => {
 
                 var0.v = 3.1;
                 await new Promise((resolve) => expr.once('stateChanged', resolve));
-                let value = await expr.getValue();
+                let value = expr.getValue();
                 expect(value).to.equal(true);
 
                 var0.v = 0.7;

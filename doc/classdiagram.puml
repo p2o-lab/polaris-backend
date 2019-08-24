@@ -9,38 +9,40 @@ class Module {
     endpoint
     client: OPCUAClient
 }
-class Operation
-class Parameter
-class Player
 
-Player o-- Recipe : playlist
-class Recipe {
-    name
-    initial_step: Step
-}
-class RecipeRun
-RecipeRun --> Recipe
 class Service {
     name: string
     parameters: ServiceParameter[]
 }
 class ProcessValue
 class Strategy
-class Condition{
-    {static} create()
-    {abstract} listen()
-    {abstract} clear()
-    json()
-}
-'class NotCondition
-'class AndCondition
-'class OrCondition
-'class StateCondition
-'class VariableCondition
-'class TimeCondition {
-'    duration
-'}
 
+package recipe {
+    class Operation
+    class Parameter
+    class Player
+    class Recipe {
+        name
+        initial_step: Step
+    }
+    class RecipeRun
+    class Condition{
+        {static} create()
+        {abstract} listen()
+        {abstract} clear()
+        json()
+    }
+    'class NotCondition
+    'class AndCondition
+    'class OrCondition
+    'class StateCondition
+    'class VariableCondition
+    'class TimeCondition {
+    '    duration
+    '}
+    class Step
+    class Transition
+}
 
 'NotCondition --|> Condition
 'AndCondition --|> Condition
@@ -49,8 +51,12 @@ class Condition{
 'VariableCondition --|> Condition
 'StateCondition --|> Condition
 
+RecipeRun --> Recipe
+Player o-- Recipe : playlist
+
 Manager "1" o-- "*" Module
 Manager "1" o-- "*" Recipe
+Manager "1" o-- "*" RecipeRun
 Manager "1" o-- "1" Player
 
 Module "1" o-- "*" Service

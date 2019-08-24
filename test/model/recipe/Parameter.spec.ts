@@ -44,12 +44,11 @@ describe('Parameter', () => {
             service = module.services[0];
         });
 
-        it('should load', () => {
-            const param = new Parameter({
+        it('should load', () => new Parameter({
                 name: 'var1',
                 value: 3
-            }, service);
-        });
+            }, service)
+        );
 
         it('should load with expression', async () => {
             const param = new Parameter({
@@ -68,12 +67,11 @@ describe('Parameter', () => {
         });
 
         it('should fail with wrong parameter name', () => {
-            expect(() => {
-                const param = new Parameter({
+            expect(() => new Parameter({
                     name: 'non-existing-parameter',
                     value: 3
-                }, service);
-            }).to.throw();
+                }, service)
+            ).to.throw();
         });
 
         it('should provide 0 with empty expression', async () => {
@@ -103,12 +101,12 @@ describe('Parameter', () => {
     context('with ModuleTestServer', () => {
         let service: Service;
         let module: Module;
-        let moduleServer: ModuleTestServer;
+        let moduleTestServer: ModuleTestServer;
 
         before(async function before() {
             this.timeout(5000);
-            moduleServer = new ModuleTestServer();
-            await moduleServer.start();
+            moduleTestServer = new ModuleTestServer();
+            await moduleTestServer.start();
             const moduleJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8'))
                 .modules[0];
             module = new Module(moduleJson);
@@ -118,7 +116,7 @@ describe('Parameter', () => {
 
         after(async () => {
             await module.disconnect();
-            await moduleServer.shutdown();
+            await moduleTestServer.shutdown();
         });
 
         it('should load with complex expression and given scopeArray', async () => {
@@ -159,7 +157,7 @@ describe('Parameter', () => {
                 value: '2 * 3'
             }, service, undefined, [module]);
             await param.updateValueOnModule();
-            const param1Ext = moduleServer.services[0].parameter[0] as TestServerNumericVariable;
+            const param1Ext = moduleTestServer.services[0].parameter[0] as TestServerNumericVariable;
             expect(param1Ext.vext).to.equal(6);
 
             const param2 = new Parameter({
@@ -168,18 +166,24 @@ describe('Parameter', () => {
             }, service, undefined, [module]);
             const value = await param2.getValue();
             await param2.updateValueOnModule();
-            const param2Ext = moduleServer.services[0].parameter[1] as TestServerNumericVariable;
+            const param2Ext = moduleTestServer.services[0].parameter[1] as TestServerNumericVariable;
             expect(param2Ext.vext).to.equal(value);
         });
 
-        it('should listen to dynamic parameter', (done) => {
+        it('should listen to dynamic parameter', async () => {
             const param = new Parameter({
                 name: 'Parameter001',
                 value: '2 * CIF.Variable001.V'
             }, service, undefined, [module]);
-            param.listenToParameter()
-                .once('changed', (data) => done());
+            expect(param.scopeArray[0].dataAssembly.subscriptionActive).to.equal(true);
+            expect(param.scopeArray[0].dataAssembly.name).to.equal('Variable001');
+            expect(param.scopeArray[0].dataItem.value).to.equal(20);
 
+            (moduleTestServer.variables[0] as TestServerNumericVariable).v = 10;
+            await new Promise((resolve) => {
+                param.listenToParameter().once('changed', () => resolve());
+            });
+            expect(param.getValue()).to.equal(20);
         });
 
     });

@@ -118,10 +118,10 @@ export class Parameter {
         }
     }
 
-    public listenToParameter() {
+    public listenToParameter(): EventEmitter {
         const eventEmitter: StrictEventEmitter<EventEmitter, OpcUaNodeEvents> = new EventEmitter();
-        this.scopeArray.forEach(async (item) => {
-            (await item.listen()).on('changed', (data) => eventEmitter.emit('changed', data));
+        this.scopeArray.forEach((item) => {
+            item.dataAssembly.on(item.variableName, (data) => eventEmitter.emit('changed', data));
         });
         return eventEmitter;
     }

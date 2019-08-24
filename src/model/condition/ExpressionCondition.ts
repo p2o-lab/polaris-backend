@@ -24,7 +24,6 @@
  */
 
 import {ExpressionConditionOptions, ScopeOptions} from '@p2olab/polaris-interface';
-import {EventEmitter} from 'events';
 import {Expression} from 'expr-eval';
 import {catCondition} from '../../config/logging';
 import {Module} from '../core/Module';
@@ -33,9 +32,8 @@ import {Condition} from './Condition';
 
 export class ExpressionCondition extends Condition {
 
-    private expression: Expression;
-    private scopeArray: ScopeItem[];
-    private listenersExpression: EventEmitter[] = [];
+    private readonly expression: Expression;
+    private readonly scopeArray: ScopeItem[];
 
     /**
      *
@@ -65,38 +63,35 @@ export class ExpressionCondition extends Condition {
     }
 
     public listen(): Condition {
-        this.scopeArray.forEach(async (item) => {
-            const a = await item.listen();
-            a.on('changed', this.boundOnChanged);
-            this.listenersExpression.push(a);
+        this.scopeArray.forEach((item) => {
+            item.dataAssembly.on(item.variableName, this.boundOnChanged);
         });
         return this;
     }
 
     public async onChanged() {
-        this._fulfilled = (await this.getValue()) as boolean;
+        this._fulfilled = this.getValue() as boolean;
         this.emit('stateChanged', this._fulfilled);
     }
 
     /**
      * calculate value from current scopeArray
-     * @returns {Promise<any>}
      */
-    public async getValue(): Promise<any> {
+    public getValue(): any {
         // get current variables
-        const tasks = await Promise.all(this.scopeArray.map(async (item) => {
+        const tasks = this.scopeArray.map((item) => {
             return item.getScopeValue();
-        }));
+        });
         const assign = require('assign-deep');
         const scope = assign(...tasks);
-        catCondition.info(`Scope: ${JSON.stringify(scope)}`);
+        catCondition.debug(`Scope: ${JSON.stringify(scope)}`);
         return this.expression.evaluate(scope);
     }
 
     public clear() {
         super.clear();
-        this.listenersExpression.forEach((item) => {
-            item.removeListener('changed', this.boundOnChanged);
+        this.scopeArray.forEach((item) => {
+            item.dataAssembly.removeListener(item.variableName, this.boundOnChanged);
         });
     }
 
