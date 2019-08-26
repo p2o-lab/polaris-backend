@@ -37,6 +37,7 @@ import {ServiceState} from '../../../src/model/core/enum';
 import {Module} from '../../../src/model/core/Module';
 import {TestServerNumericVariable} from '../../../src/moduleTestServer/ModuleTestNumericVariable';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
+import {waitForVariableChange} from '../../helper';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -329,31 +330,31 @@ describe('Condition', () => {
                 expect(expr.getUsedModules().size).to.equal(1);
 
                 var0.v = 0;
-                await new Promise((resolve) => module.once('variableChanged', resolve));
+                await waitForVariableChange(module, 'Variable001', 0);
                 expect(expr).to.have.property('fulfilled', false);
-                let value = await expr.getValue();
+                let value = expr.getValue();
                 expect(value).to.equal(false);
 
                 var0.v = 11;
-                await new Promise((resolve) => module.once('variableChanged', resolve));
-                value = await expr.getValue();
+                await waitForVariableChange(module, 'Variable001', 11);
+                value = expr.getValue();
                 expect(value).to.equal(true);
                 expect(expr).to.have.property('fulfilled', true);
 
                 var0.v = 8;
                 await Promise.all([
                     new Promise((resolve) => expr.once('stateChanged', resolve)),
-                    new Promise((resolve) => module.once('variableChanged', resolve)),
+                    waitForVariableChange(module, 'Variable001', 8)
                 ]);
-                value = await expr.getValue();
+                value = expr.getValue();
                 expect(value).to.equal(false);
                 expect(expr).to.have.property('fulfilled', false);
 
                 expr.clear();
                 var0.v = 12;
                 expr.once('stateChanged', () => { throw new Error('State has changed after it was cleared'); });
-                await new Promise((resolve) => module.once('variableChanged', resolve));
-                value = await expr.getValue();
+                await waitForVariableChange(module, 'Variable001', 12);
+                value = expr.getValue();
                 expect(value).to.equal(true);
                 expect(expr).to.have.property('fulfilled', undefined);
             }).timeout(5000);
