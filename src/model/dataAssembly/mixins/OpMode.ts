@@ -111,7 +111,7 @@ export function OpModeDA<TBase extends Constructor<DataAssembly>>(Base: TBase) {
          */
         public async writeOpMode(opMode: OpMode): Promise<void> {
             catDataAssembly.debug(`[${this.name}] Write opMode: ${opMode as number}`);
-            const result = await this.module.writeNode(this.communication.OpMode, opMode);
+            const result = await this.module.writeDataItem(this.communication.OpMode, opMode);
             catDataAssembly.debug(`[${this.name}] Setting opMode ${JSON.stringify(result)}`);
             if (result.value !== 0) {
                 catDataAssembly.warn(`[${this.name}] Error while setting opMode to ${opMode}`);

@@ -48,7 +48,7 @@ export class VariableCondition extends ModuleCondition {
 
     public listen(): Condition {
         catCondition.debug(`Listen to ${this.dataStructure}.${this.variable}`);
-        this.module.listenToVariable(this.dataStructure, this.variable).on('changed', this.check);
+        this.module.listenToDataAssembly(this.dataStructure, this.variable).on('changed', this.check);
         return this;
     }
 

@@ -30,12 +30,13 @@ import {Expression} from 'expr-eval';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Category} from 'typescript-logging';
 import {catParameter} from '../../config/logging';
-import {Module, OpcUaNodeEvents} from '../core/Module';
+import {Module} from '../core/Module';
 import {Service} from '../core/Service';
 import {Strategy} from '../core/Strategy';
 import {ExtIntAnaOp} from '../dataAssembly/AnaOp';
 import {ExtIntBinOp} from '../dataAssembly/BinOp';
 import {DataAssembly} from '../dataAssembly/DataAssembly';
+import {DataItemEvents} from '../dataAssembly/DataItem';
 import {ExtIntDigOp} from '../dataAssembly/DigOp';
 import {ScopeItem} from './ScopeItem';
 
@@ -119,7 +120,7 @@ export class Parameter {
     }
 
     public listenToParameter(): EventEmitter {
-        const eventEmitter: StrictEventEmitter<EventEmitter, OpcUaNodeEvents> = new EventEmitter();
+        const eventEmitter: StrictEventEmitter<EventEmitter, DataItemEvents> = new EventEmitter();
         this.scopeArray.forEach((item) => {
             item.dataAssembly.on(item.variableName, (data) => eventEmitter.emit('changed', data));
         });

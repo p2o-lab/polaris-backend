@@ -454,7 +454,7 @@ export class Service extends BaseService {
         await this.setOperationMode();
         const nodeId = this.automaticMode ?
             this.serviceControl.communication.StrategyExt : this.serviceControl.communication.StrategyMan;
-        await this.module.writeNode(nodeId, strat.id);
+        await this.module.writeDataItem(nodeId, strat.id);
         if (parameters) {
             this.setParameters(parameters);
         }
@@ -517,7 +517,7 @@ export class Service extends BaseService {
         await this.setOperationMode();
 
         const result =
-            await this.module.writeNode(this.automaticMode ? this.commandExtNode : this.commandManNode, command);
+            await this.module.writeDataItem(this.automaticMode ? this.commandExtNode : this.commandManNode, command);
         this.logger.info(`[${this.qualifiedName}] Command ${ServiceMtpCommand[command]} written: ${result.name}`);
 
         return result.value === 0;

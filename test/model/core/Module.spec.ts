@@ -23,7 +23,6 @@
  * SOFTWARE.
  */
 
-import {ModuleOptions} from '@p2olab/polaris-interface';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
@@ -35,26 +34,6 @@ const expect = chai.expect;
 
 describe('Module', () => {
 
-    it('should reject connecting to a module with too high port', async () => {
-        const options: ModuleOptions =
-            JSON.parse(fs.readFileSync('assets/modules/module_cif.json').toString()).modules[0];
-        options.opcua_server_url = 'opc.tcp://127.0.0.1:44447777';
-        const module = new Module(options);
-        expect(module.isConnected()).to.equal(false);
-        await expect(module.connect()).to.be.rejectedWith('The connection has been rejected by server');
-    });
-
-    it('should reject connecting to a module with not existing endpoint', async () => {
-        const options: ModuleOptions =
-            JSON.parse(fs.readFileSync('assets/modules/module_cif.json').toString()).modules[0];
-        options.opcua_server_url = 'opc.tcp://10.6.51.99:4444';
-        const module = new Module(options);
-        expect(module.isConnected()).to.equal(false);
-        await expect(module.connect()).to.be.rejectedWith('Timeout');
-        expect(module.isConnected()).to.equal(false);
-        await module.disconnect();
-    }).timeout(5000);
-
     it('should load the cif module json', () => {
         const f = fs.readFileSync('assets/modules/module_cif.json');
         const module = new Module(JSON.parse(f.toString()).modules[0]);
@@ -62,53 +41,32 @@ describe('Module', () => {
         expect(module.services).to.have.length(6);
     });
 
-    it('should recognize a opc ua server shutdown', async function() {
-        this.timeout(10000);
-        const moduleJson =
-            JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8')).modules[0];
-
-        const module = new Module(moduleJson);
-
-        const moduleServer = new ModuleTestServer();
-        await moduleServer.start();
-        expect(module.isConnected()).to.equal(false);
-
-        await module.connect();
-        expect(module.isConnected()).to.equal(true);
-
-        await new Promise((resolve) => {
-            module.once('disconnected', () => {
-                expect(module.isConnected()).to.equal(false);
-                resolve();
-            });
-            moduleServer.shutdown();
-        });
-        await moduleServer.shutdown();
-    });
-
     context('with module server', () => {
         let moduleServer: ModuleTestServer;
-        let module: Module;
 
-        before(async function() {
-            this.timeout(5000);
+        before(async () => {
             moduleServer = new ModuleTestServer();
             await moduleServer.start();
-            const moduleJson =
-                JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8')).modules[0];
-            module = new Module(moduleJson);
-
-            await module.connect();
         });
 
         after(async () => {
-            await module.disconnect();
             await moduleServer.shutdown();
         });
 
-        it('should provide correct json output', async () => {
-            expect(await module.json()).to.have.property('services')
+        it('should connect to module, provide correct json output and disconnect', async () => {
+            const moduleJson =
+                JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8')).modules[0];
+            const module = new Module(moduleJson);
+            await module.connect();
+
+            const json = await module.json();
+            expect(json).to.have.property('id', 'CIF');
+            expect(json).to.have.property('endpoint', 'opc.tcp://127.0.0.1:4334/ModuleTestServer');
+            expect(json).to.have.property('protected', false);
+            expect(json).to.have.property('services')
                 .to.have.lengthOf(2);
+
+            await module.disconnect();
         });
 
     });

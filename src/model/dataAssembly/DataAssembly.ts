@@ -92,7 +92,7 @@ export class DataAssembly extends EventEmitter {
                     .filter(([key, node]) => key && node && node.nodeId && node.namespaceIndex)
                     .map(([key, node]) =>
                         timeout(
-                            this.module.listenToOpcUaDataItem(node, samplingInterval)
+                            this.module.listenToDataItem(node, samplingInterval)
                                 .then((emitter) => {
                                     catDataAssembly.debug(`successfully subscribed to ${this.name}.${key}`);
                                     emitter.on('changed', () => {
@@ -123,7 +123,7 @@ export class DataAssembly extends EventEmitter {
         const opcUaNode = this.communication[variable];
         catDataAssembly.info(`Set Parameter: ${this.name} - ${JSON.stringify(opcUaNode)} ` +
             `-> ${JSON.stringify(paramValue)}`);
-        return await this.module.writeNode(opcUaNode, paramValue);
+        return await this.module.writeDataItem(opcUaNode, paramValue);
     }
 
     public getUnit(): string {

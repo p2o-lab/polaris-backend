@@ -25,6 +25,21 @@
  */
 
 import {OpcUaNodeOptions} from '@p2olab/polaris-interface';
+import {EventEmitter} from 'events';
+import StrictEventEmitter from 'strict-event-emitter-types';
+
+/**
+ * Events emitted by [[DataItem]]
+ */
+export interface DataItemEvents {
+    /**
+     * when OpcUaNodeOptions changes its value
+     * @event changed
+     */
+    changed: { value: any, timestamp: Date };
+}
+
+export type DataItemEmitter = StrictEventEmitter<EventEmitter, DataItemEvents>;
 
 export class DataItem<T> {
     // data type of OPC UA node
