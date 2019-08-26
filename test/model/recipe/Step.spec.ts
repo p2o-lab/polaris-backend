@@ -23,8 +23,12 @@
  * SOFTWARE.
  */
 
+import {ServiceCommand, StepOptions} from '@p2olab/polaris-interface';
 import {expect} from 'chai';
+import * as fs from 'fs';
+import {Module} from '../../../src/model/core/Module';
 import {Step} from '../../../src/model/recipe/Step';
+import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 
 describe('Step', () => {
 
@@ -42,5 +46,53 @@ describe('Step', () => {
 
     it('should create', () => {
         expect(new Step({name: 'test', operations: [], transitions: []}, null)).to.have.property('name', 'test');
+    });
+
+    describe('with module test server', () => {
+
+        let moduleServer: ModuleTestServer;
+        let module: Module;
+
+        beforeEach(async function() {
+            this.timeout(5000);
+            moduleServer = new ModuleTestServer();
+            await moduleServer.start();
+
+            const moduleJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString())
+                .modules[0];
+            module = new Module(moduleJson);
+            await module.connect();
+
+        });
+
+        afterEach(async () => {
+            await moduleServer.shutdown();
+        });
+
+        it('should execute step', async () => {
+            const step = new Step({
+                name: 'S0.CheckInitialConditions',
+                operations: [ {
+                    service: 'Service1',
+                    command: ServiceCommand.start
+                }],
+                transitions: [
+                    {
+                        next_step: 'completed',
+                        condition: {
+                            type: 'state',
+                            module: 'CIF',
+                            service: 'Service1',
+                            state: 'starting'
+                        }
+                    }
+                ]
+            } as StepOptions, [module]);
+
+            step.execute();
+
+            await new Promise((resolve) => step.eventEmitter.on('completed', resolve));
+        });
+
     });
 });
