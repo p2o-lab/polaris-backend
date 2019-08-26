@@ -314,12 +314,9 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
     }
 
     /**
-     * Listen to OPC UA node and return event listener which is triggered by any value change
-     * @param {OpcUaNodeOptions} node
-     * @param {number} samplingInterval     OPC UA sampling interval for this subscription in milliseconds
-     * @returns {"events".internal.EventEmitter} "changed" event
+     * Listen to OPC UA data item and return event listener which is triggered by any value change
      */
-    public async listenToOpcUaNode(node: OpcUaDataItem<any>, samplingInterval = 100): Promise<OpcUaNodeEmitter> {
+    public async listenToOpcUaDataItem(node: OpcUaDataItem<any>, samplingInterval = 100): Promise<OpcUaNodeEmitter> {
         const nodeId = this.resolveNodeId(node);
         if (!this.monitoredItems.has(nodeId)) {
             const emitter: OpcUaNodeEmitter = new EventEmitter();
@@ -341,7 +338,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
                     node.timestamp = dataValue.serverTimestamp;
                     emitter.emit('changed', {value: dataValue.value.value, timestamp: dataValue.serverTimestamp});
                 });
-            await this.readVariableNode(node);
+            await this.initializeOpcUaDataItem(node);
         }
         return this.monitoredItems.get(nodeId);
     }
@@ -356,21 +353,6 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
         return emitter;
     }
 
-    public async readVariableNode(node: OpcUaDataItem<any>) {
-        if (!this.isConnected()) {
-            throw new Error(`Module ${this.id} not connected while trying to read variable ${JSON.stringify(node)}`);
-        }
-        const nodeId = this.resolveNodeId(node);
-        const result = await this.session.readVariableValue(nodeId);
-        this.logger.debug(`[${this.id}] Read Variable: ${JSON.stringify(node)} -> ${nodeId} = ${result}`);
-        if (result.statusCode.value !== 0) {
-            throw new Error(`Could not read ${nodeId.toString()}: ${result.statusCode.description}`);
-        }
-        node.value = result.value.value;
-        node.timestamp = result.serverTimestamp;
-        return result;
-    }
-
     /** writes value to opc ua node
      *
      * @param {OpcUaNodeOptions} node
@@ -381,10 +363,6 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
         if (!this.session) {
             throw new Error(`Can not write node since OPC UA connection to module ${this.id} is not established`);
         } else {
-            if (!node.dataType) {
-                const valueReadback = await this.readVariableNode(node);
-                node.dataType = DataType[valueReadback.value.dataType];
-            }
             const variant = Variant.coerce({
                 value,
                 dataType: node.dataType,
@@ -477,6 +455,23 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
         this.logger.info(`[${this.id}] Reset all services`);
         const tasks = this.services.map((service) => service.execute(ServiceCommand.reset));
         return Promise.all(tasks);
+    }
+
+    /**
+     * Reads the opc ua data item of the data item and use the results for initializing the data item
+     */
+    private async initializeOpcUaDataItem(opcUaDataItem: OpcUaDataItem<any>) {
+        const nodeId = this.resolveNodeId(opcUaDataItem);
+        const result = await this.session.readVariableValue(nodeId);
+        this.logger.debug(`[${this.id}] Read Variable: ${JSON.stringify(opcUaDataItem)} -> ${nodeId} = ${result}`);
+        if (result.statusCode.value !== 0) {
+            throw new Error(`Could not read ${nodeId.toString()}: ${result.statusCode.description}`);
+        }
+        opcUaDataItem.value = result.value.value;
+        opcUaDataItem.timestamp = result.serverTimestamp;
+        if (!opcUaDataItem.dataType) {
+            opcUaDataItem.dataType = DataType[result.value.dataType];
+        }
     }
 
     private subscribeToAllVariables(): Promise<DataAssembly[]> {

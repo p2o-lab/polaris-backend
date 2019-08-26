@@ -92,7 +92,7 @@ export class DataAssembly extends EventEmitter {
                     .filter(([key, node]) => key && node && node.nodeId && node.namespaceIndex)
                     .map(([key, node]) =>
                         timeout(
-                            this.module.listenToOpcUaNode(node, samplingInterval)
+                            this.module.listenToOpcUaDataItem(node, samplingInterval)
                                 .then((emitter) => {
                                     catDataAssembly.debug(`successfully subscribed to ${this.name}.${key}`);
                                     emitter.on('changed', () => {
