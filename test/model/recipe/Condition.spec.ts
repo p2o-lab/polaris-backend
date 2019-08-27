@@ -214,11 +214,10 @@ describe('Condition', () => {
             }, [module]);
 
             condition.listen();
-
-            expect(module.services[0]).to.have.property('name', 'Service1');
             expect(condition).to.have.property('fulfilled', false);
 
             var0.v = 22;
+            await waitForVariableChange(module, 'Variable001', 22);
             expect(condition).to.have.property('fulfilled', false);
 
             var0.v = 26;
@@ -367,15 +366,21 @@ describe('Condition', () => {
                 expr.listen();
 
                 var0.v = 3.1;
-                await new Promise((resolve) => expr.once('stateChanged', resolve));
+                await Promise.all([
+                    new Promise((resolve) => expr.once('stateChanged', resolve)),
+                    waitForVariableChange(module, 'Variable001', 3.1)
+                ]);
                 let value = expr.getValue();
                 expect(value).to.equal(true);
 
                 var0.v = 0.7;
-                await new Promise((resolve) => expr.once('stateChanged', resolve));
-                value = await expr.getValue();
+                await Promise.all([
+                    new Promise((resolve) => expr.once('stateChanged', resolve)),
+                    waitForVariableChange(module, 'Variable001', 0.7)
+                ]);
+                value = expr.getValue();
                 expect(value).to.equal(false);
-            });
+            }).timeout(5000);
 
             it('should work with complex expression', async () => {
                 const expr = ConditionFactory.create({
@@ -394,7 +399,7 @@ describe('Condition', () => {
                 var0.v = 0.7;
                 await new Promise((resolve) => module.once('variableChanged', resolve));
 
-                const value = await expr.getValue();
+                const value = expr.getValue();
                 expect(value).to.equal(false);
             });
 
