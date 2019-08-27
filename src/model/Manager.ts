@@ -240,7 +240,7 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
 
         catManager.debug(`Disconnecting module ${moduleId} ...`);
         await module.disconnect()
-            .catch((err) => catManager.error('Something wrong while disconnecting from module', err));
+            .catch((err) => catManager.warn('Something wrong while disconnecting from module: ' + err.toString()));
 
         catManager.debug(`Deleting module ${moduleId} ...`);
         const index = this.modules.indexOf(module, 0);
