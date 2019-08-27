@@ -198,7 +198,7 @@ export class TestServerService {
     }
 
     private state(state: ServiceState) {
-        catTestServer.info(`Set ServiceState: ${ServiceState[state]}`);
+        catTestServer.debug(`Set ServiceState: ${ServiceState[state]}`);
         this.varStatus = state;
         this.varCommand = ServiceMtpCommand.UNDEFINED;
         this.varCommandEnable = ServiceControlEnable.ABORT + ServiceControlEnable.STOP;

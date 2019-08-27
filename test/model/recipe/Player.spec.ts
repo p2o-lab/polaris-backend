@@ -27,10 +27,9 @@ import {RecipeState} from '@p2olab/polaris-interface';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
-import {ClientSession, OPCUAClient} from 'node-opcua-client';
 import {timeout} from 'promise-timeout';
 import * as delay from 'timeout-as-promise';
-import {controlEnableToJson, ServiceState} from '../../../src/model/core/enum';
+import {ServiceState} from '../../../src/model/core/enum';
 import {Module} from '../../../src/model/core/Module';
 import {Player} from '../../../src/model/recipe/Player';
 import {Recipe} from '../../../src/model/recipe/Recipe';
@@ -55,44 +54,24 @@ describe('Player', () => {
             await moduleServer.shutdown();
         });
 
-        it('should OPC UA server has been started', async () => {
-            const client = OPCUAClient.create({
-                endpoint_must_exist: false,
-                connectionStrategy: {
-                    maxRetry: 10
-                }
-            });
+        it('should run a simple test recipe', async () => {
+            const moduleJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString())
+                .modules[0];
+            const module = new Module(moduleJson);
+            await module.connect();
+            // now test recipe
+            const recipeJson = JSON.parse(
+                fs.readFileSync('assets/recipes/test/recipe_testserver_1.0.0.json').toString()
+            );
+            const recipe = new Recipe(recipeJson, [module]);
+            const player = new Player();
+            player.enqueue(recipe);
 
-            await client.connect('opc.tcp://localhost:4334/ModuleTestServer');
-            const session: ClientSession = await client.createSession();
+            player.start();
+            await new Promise((resolve) => player.once('completed', resolve));
 
-            let result = await session.readVariableValue('ns=1;s=Service1.State');
-            expect(result.value.value).to.equal(ServiceState.IDLE);
-
-            moduleServer.services[0].varStatus = 8;
-            result = await session.readVariableValue('ns=1;s=Service1.State');
-            expect(result.value.value).to.equal(ServiceState.STARTING);
-
-            const result2 = await session.readVariableValue('ns=1;s=Service1.CommandEnable');
-            const ce = controlEnableToJson(result2.value.value);
-            expect(ce).to.deep.equal({
-                abort: true,
-                complete: false,
-                pause: false,
-                reset: false,
-                restart: false,
-                resume: false,
-                start: true,
-                stop: true,
-                unhold: false
-            });
-
-            const result3 = await await session.readVariableValue('ns=0;i=2255');
-            expect(result3.value.value).to.deep.equal(['http://opcfoundation.org/UA/',
-                'urn:NodeOPCUA-Server-default']);
-
-            await client.disconnect();
-        });
+            await module.disconnect();
+        }).timeout(10000);
 
         it('should run a test recipe two times', async () => {
 
@@ -101,8 +80,7 @@ describe('Player', () => {
             const module = new Module(moduleJson);
             const service = module.services[0];
 
-            module.connect();
-            await waitForStateChange(service, 'IDLE', 2000);
+            await module.connect();
 
             // now test recipe
             const recipeJson = JSON.parse(

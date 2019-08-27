@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import {ConditionType, RecipeInterface} from '@p2olab/polaris-interface';
+import {ConditionType, RecipeInterface, RecipeOptions} from '@p2olab/polaris-interface';
 import * as assert from 'assert';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
@@ -93,17 +93,14 @@ describe('Recipe', () => {
         let moduleServer: ModuleTestServer;
         let module: Module;
 
-        beforeEach(async function () {
-            this.timeout(5000);
+        beforeEach(async () => {
             moduleServer = new ModuleTestServer();
             await moduleServer.start();
 
             const moduleJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString())
                 .modules[0];
             module = new Module(moduleJson);
-
             await module.connect();
-
         });
 
         afterEach(async () => {
@@ -112,7 +109,6 @@ describe('Recipe', () => {
         });
 
         it('runs test recipe successfully', async () => {
-            // now test recipe
             const recipeJson = JSON.parse(
                 fs.readFileSync('assets/recipes/test/recipe_testserver_2services_1.0.0.json').toString());
             const recipe = new Recipe(recipeJson, [module]);
@@ -120,11 +116,8 @@ describe('Recipe', () => {
             await recipe.start();
 
             await new Promise((resolve) => {
-                recipe.on('completed', () => {
-                    resolve();
-                });
+                recipe.on('completed', resolve);
             });
-
         }).timeout(5000);
 
         it('should only run one recipe at a time', async () => {
@@ -136,9 +129,7 @@ describe('Recipe', () => {
             await recipe.start();
             await expect(recipe.start()).to.be.rejectedWith(/already running/);
             await new Promise((resolve) => {
-                recipe.on('completed', () => {
-                    resolve();
-                });
+                recipe.on('completed', resolve);
             });
         }).timeout(5000);
 
@@ -200,11 +191,11 @@ describe('Recipe', () => {
             fs.readdirSync(path).forEach((filename) => {
                 const completePath = path + filename;
                 if (fs.statSync(completePath).isFile()) {
-                    it(`should load recipe ${completePath}`, (done) => {
+                    it(`should load recipe ${completePath}`, () => {
                         const file = fs.readFileSync(completePath);
-                        const options = JSON.parse(file.toString());
+                        const options: RecipeOptions = JSON.parse(file.toString());
                         const recipe = new Recipe(options, modules);
-                        done();
+                        expect(recipe.name).to.equal(options.name);
                     });
                 }
             });

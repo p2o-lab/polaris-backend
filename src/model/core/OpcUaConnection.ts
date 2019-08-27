@@ -32,7 +32,6 @@ import {
     coerceNodeId,
     DataType,
     DataValue,
-    NodeId,
     OPCUAClient,
     TimestampsToReturn,
     Variant,
@@ -69,7 +68,7 @@ export class  OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionE
     private session: ClientSession;
     private client: OPCUAClient;
     private subscription: ClientSubscription;
-    private readonly monitoredItems: Map<NodeId, DataItemEmitter>;
+    private readonly monitoredItems: Map<string, DataItemEmitter>;
     private namespaceArray: string[];
     private readonly logger: Category;
     private readonly id: string;
@@ -79,7 +78,7 @@ export class  OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionE
         this.id = moduleId;
         this.endpoint = endpoint;
         this.logger = catOpc;
-        this.monitoredItems = new Map<NodeId, EventEmitter>();
+        this.monitoredItems = new Map<string, EventEmitter>();
     }
 
     /**
@@ -104,7 +103,6 @@ export class  OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionE
             this.logger.info(`[${this.id}] opc ua server connected via ${this.endpoint}`);
 
             this.session = await this.client.createSession();
-            this.logger.debug(`[${this.id}] session established`);
             this.subscription = this.createSubscription();
             this.namespaceArray = await this.readNameSpaceArray();
 
@@ -112,12 +110,16 @@ export class  OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionE
                 await fixReactor(this.session);
             }
 
-            this.logger.info(`[${this.id}] Successfully connected with ${this.monitoredItems.size} active assemblies`);
+            this.logger.info(`[${this.id}] Successfully connected`);
             this.emit('connected');
         }
     }
 
     public async disconnect(): Promise<void> {
+        if (this.client) {
+            this.client.removeAllListeners('close')
+                .removeAllListeners('connection_lost');
+        }
         if (this.subscription) {
             await timeout(this.subscription.terminate(), 1000);
             this.subscription = undefined;
@@ -130,8 +132,7 @@ export class  OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionE
             await timeout(this.client.disconnect(), 1000);
             this.client = undefined;
         }
-        this.logger.info(`[${this.id}] Module disconnected`);
-        this.emit('disconnected');
+        this.logger.info(`[${this.id}] OPC UA connection disconnected`);
     }
 
     /**
@@ -139,7 +140,7 @@ export class  OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionE
      * @returns {boolean}
      */
     public isConnected(): boolean {
-        return !!this.session;
+        return !!this.client && !!this.session;
     }
 
     /**
@@ -147,9 +148,12 @@ export class  OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionE
      */
     public async listenToOpcUaDataItem(node: OpcUaDataItem<any>, samplingInterval = 100): Promise<DataItemEmitter> {
         const nodeId = this.resolveNodeId(node);
-        if (!this.monitoredItems.has(nodeId)) {
+        const monitoredItemKey = nodeId.toString();
+        if (this.monitoredItems.has(monitoredItemKey)) {
+            return this.monitoredItems.get(monitoredItemKey);
+        } else {
+            await this.initializeOpcUaDataItem(node);
             const emitter: DataItemEmitter = new EventEmitter();
-            this.monitoredItems.set(nodeId, emitter);
             const monitoredItem: ClientMonitoredItemBase = await this.subscription.monitor({
                     nodeId,
                     attributeId: AttributeIds.Value
@@ -165,11 +169,11 @@ export class  OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionE
                     `= ${dataValue.value.value.toString()}`);
                 node.value = dataValue.value.value;
                 node.timestamp = dataValue.serverTimestamp;
-                emitter.emit('changed', {value: dataValue.value.value, timestamp: dataValue.serverTimestamp});
+                emitter.emit('changed', {value: node.value, timestamp: node.timestamp});
             });
-            await this.initializeOpcUaDataItem(node);
+            this.monitoredItems.set(monitoredItemKey, emitter);
+            return emitter;
         }
-        return this.monitoredItems.get(nodeId);
     }
 
     /** writes value to opc ua node
@@ -179,7 +183,7 @@ export class  OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionE
      * @returns {Promise<any>}
      */
     public async writeOpcUaDataItem(node: OpcUaDataItem<any>, value: number | string) {
-        if (!this.session) {
+        if (!this.isConnected()) {
             throw new Error(`Can not write node since OPC UA connection to module ${this.id} is not established`);
         } else {
             const variant = Variant.coerce({
@@ -194,22 +198,30 @@ export class  OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionE
         }
     }
 
+    public monitoredItemSize(): number {
+        return this.monitoredItems.size;
+    }
+
     /**
-     * Resolves nodeId of variable from module JSON using the namespace array
-     * @param {OpcUaNodeOptions} variable
+     * Resolves nodeId of dataItem from module JSON using the namespace array
+     * @param {OpcUaNodeOptions} dataItem
      * @returns {any}
      */
-    private resolveNodeId(variable: OpcUaDataItem<any>) {
-        if (!variable) {
-            throw new Error('No variable specified to resolve nodeid');
+    private resolveNodeId(dataItem: OpcUaDataItem<any>) {
+        if (!dataItem) {
+            throw new Error('No dataItem specified to resolve nodeid');
         } else if (!this.namespaceArray) {
             throw new Error(`No namespace array read for module ${this.id}`);
-        } else if (!variable.namespaceIndex) {
+        } else if (!dataItem.namespaceIndex) {
             throw new Error(`namespace index is null in module ${this.id}`);
         }
-        this.logger.debug(`[${this.id}] resolveNodeId ${JSON.stringify(variable)}`);
-        const nodeIdString = `ns=${this.namespaceArray.indexOf(variable.namespaceIndex)};s=${variable.nodeId}`;
-        this.logger.debug(`[${this.id}] resolveNodeId ${JSON.stringify(variable)} -> ${nodeIdString}`);
+        const nsIndex = this.namespaceArray.indexOf(dataItem.namespaceIndex);
+        if (nsIndex === -1) {
+            throw new Error(`Could not resolve namespace ${dataItem.namespaceIndex}`);
+        }
+        const nodeIdString = `ns=${nsIndex};s=${dataItem.nodeId}`;
+
+        this.logger.debug(`[${this.id}] resolveNodeId ${JSON.stringify(dataItem)} -> ${nodeIdString}`);
         return coerceNodeId(nodeIdString);
     }
 
@@ -224,10 +236,12 @@ export class  OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionE
             throw new Error(`Could not read ${nodeId.toString()}: ${result.statusCode.description}`);
         }
         opcUaDataItem.value = result.value.value;
-        opcUaDataItem.timestamp = result.serverTimestamp;
+        // readVariableValue does not provide serverTimestamp
+        opcUaDataItem.timestamp = new Date();
         if (!opcUaDataItem.dataType) {
             opcUaDataItem.dataType = DataType[result.value.dataType];
         }
+        this.logger.debug(`[${this.id}] initialized Variable: ${opcUaDataItem.nodeId.toString()} - ${JSON.stringify(opcUaDataItem)}`);
     }
 
     private async readNameSpaceArray() {
@@ -241,29 +255,22 @@ export class  OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionE
         return OPCUAClient.create({
             endpoint_must_exist: false,
             connectionStrategy: {
-                maxRetry: 3
+                maxRetry: 0
             }
         })
             .on('close', async () => {
-                this.logger.info(`[${this.id}] Connection closed by OPC UA server`);
-                this.session = null;
+                this.logger.info(`[${this.id}] Connection closed to OPC UA server`);
+                await this.disconnect();
                 this.emit('disconnected');
             })
             .on('connection_lost', async () => {
                 this.logger.info(`[${this.id}] Connection lost to OPC UA server`);
-                if (this.subscription) {
-                    await this.subscription.terminate();
-                }
-                if (this.session) {
-                    await this.session.close();
-                    this.session = null;
-                }
-                if (this.client) {
-                    await this.client.disconnect();
-                }
+                await this.disconnect();
                 this.emit('disconnected');
             })
-            .on('timed_out_request', () => this.logger.warn(`[${this.id}] timed out request - retrying connection`));
+            .on('timed_out_request', () => {
+                this.logger.warn(`[${this.id}] timed out request - retrying connection`);
+            });
     }
 
     private createSubscription() {

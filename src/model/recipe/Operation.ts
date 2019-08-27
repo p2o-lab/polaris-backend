@@ -70,7 +70,7 @@ export class Operation {
         if (options.strategy) {
             this.strategy = this.service.strategies.find((strategy) => strategy.name === options.strategy);
         } else {
-            this.strategy = this.service.strategies.find((strategy) => strategy.default === true);
+            this.strategy = this.service.defaultStrategy;
         }
         if (!this.strategy) {
             throw new Error(`Strategy '${options.strategy}' could not be found in ${ this.service.name }.`);

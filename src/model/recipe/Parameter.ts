@@ -92,7 +92,7 @@ export class Parameter {
         this.logger = catParameter;
 
         this.service = service;
-        const strategyUsed: Strategy = strategy || service.strategies.find((strat) => strat.default);
+        const strategyUsed: Strategy = strategy || service.defaultStrategy;
         const parameterList: DataAssembly[] = [].concat(service.parameters, strategyUsed.parameters);
         try {
             this._parameter = parameterList.find((obj) => (obj && obj.name === this.name));

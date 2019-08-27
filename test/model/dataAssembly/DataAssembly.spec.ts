@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import {OpcUaNodeOptions} from '@p2olab/polaris-interface';
+import {ModuleOptions, OpcUaNodeOptions} from '@p2olab/polaris-interface';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
@@ -129,28 +129,60 @@ describe('DataAssembly', () => {
                 expect(da2.getUnit()).to.equal('L');
             }
         });
+
+        it('should create AnaServParam', async () => {
+            const moduleJsonDosierer =
+                JSON.parse(fs.readFileSync('assets/modules/module_dosierer_1.1.0.json').toString()).modules[0];
+            const daJson = moduleJsonDosierer.services[0].strategies[1].parameters[0];
+            const moduleDosierer = new Module(moduleJsonDosierer);
+            const da = DataAssemblyFactory.create(daJson as any, moduleDosierer);
+
+            expect(da instanceof ExtAnaOp).to.equal(true);
+            expect(da instanceof ExtIntAnaOp).to.equal(true);
+            expect(da instanceof AdvAnaOp).to.equal(false);
+            expect(da instanceof AnaServParam).to.equal(true);
+
+            if (da instanceof AnaServParam) {
+                expect(da.communication.VOut).to.have.property('nodeId',
+                    '|var|WAGO 750-8202 PFC200 2ETH RS.App_Dosing.Services.Fill.SetVolume.VOut');
+                expect(da.communication.VInt).to.have.property('nodeId',
+                    '|var|WAGO 750-8202 PFC200 2ETH RS.App_Dosing.Services.Fill.SetVolume.VInt');
+                expect(da.communication.VMin).to.have.property('nodeId',
+                    '|var|WAGO 750-8202 PFC200 2ETH RS.App_Dosing.Services.Fill.SetVolume.VMin');
+                expect(da.communication.VMax).to.have.property('nodeId',
+                    '|var|WAGO 750-8202 PFC200 2ETH RS.App_Dosing.Services.Fill.SetVolume.VMax');
+                expect(da.WQC).to.have.property('nodeId',
+                    '|var|WAGO 750-8202 PFC200 2ETH RS.App_Dosing.Services.Fill.SetVolume.WQC');
+                expect(da.communication.OpMode).to.have.property('nodeId',
+                    '|var|WAGO 750-8202 PFC200 2ETH RS.App_Dosing.Services.Fill.SetVolume.OpMode.binary');
+                expect(da.communication.VExt).to.have.property('nodeId',
+                    '|var|WAGO 750-8202 PFC200 2ETH RS.App_Dosing.Services.Fill.SetVolume.VExt');
+                expect(da.communication.VSclMax).to.have.property('nodeId',
+                    '|var|WAGO 750-8202 PFC200 2ETH RS.App_Dosing.Services.Fill.SetVolume.VSclMax');
+                expect(da.communication.VSclMin).to.have.property('nodeId',
+                    '|var|WAGO 750-8202 PFC200 2ETH RS.App_Dosing.Services.Fill.SetVolume.VSclMin');
+            }
+        });
     });
 
     describe('with testserver', () => {
 
         let moduleServer: ModuleTestServer;
-        let moduleJson;
-        let moduleJsonDosierer;
+        let moduleJson: ModuleOptions;
         let module: Module;
-        let moduleDosierer: Module;
 
-        before(async function() {
-            this.timeout(10000);
+        before(async () => {
             moduleServer = new ModuleTestServer();
             await moduleServer.start();
 
-            moduleJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString())
-                .modules[0];
-            module = new Module(moduleJson);
-            moduleJsonDosierer = JSON.parse(fs.readFileSync('assets/modules/module_dosierer_1.1.0.json').toString())
-                .modules[0];
-            moduleDosierer = new Module(moduleJsonDosierer);
+            moduleJson = {
+                id: 'CIF',
+                opcua_server_url: 'opc.tcp://127.0.0.1:4334/ModuleTestServer',
+                services: [],
+                process_values: []
+            };
 
+            module = new Module(moduleJson);
             await module.connect();
         });
 
@@ -160,12 +192,16 @@ describe('DataAssembly', () => {
         });
 
         it('should create ExtIntAnaOp', async () => {
-            const daJson = moduleJson.services[0].strategies[0].parameters[0];
-            const da = DataAssemblyFactory.create(daJson, module) as ExtIntAnaOp;
+            const daJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString())
+                .modules[0].services[0].strategies[0].parameters[0];
+            const da = DataAssemblyFactory.create(daJson as any, module) as ExtIntAnaOp;
 
+            await da.subscribe();
+            expect(da.name).to.equal('Parameter001');
             expect(da instanceof ExtAnaOp).to.equal(true);
             expect(da instanceof ExtIntAnaOp).to.equal(true);
             expect(da instanceof AdvAnaOp).to.equal(false);
+            expect(da.communication.OpMode.value).to.equal(0);
 
             await da.waitForOpModeToPassSpecificTest(isOffState);
             let opMode = da.getOpMode();
@@ -195,40 +231,33 @@ describe('DataAssembly', () => {
             }
         }).timeout(5000);
 
-        it('should create AnaServParam', async () => {
-            const daJson = moduleJsonDosierer.services[0].strategies[1].parameters[0];
-            const da = DataAssemblyFactory.create(daJson, moduleDosierer);
-
-            expect(da instanceof ExtAnaOp).to.equal(true);
-            expect(da instanceof ExtIntAnaOp).to.equal(true);
-            expect(da instanceof AdvAnaOp).to.equal(false);
-            expect(da instanceof AnaServParam).to.equal(true);
-
-            if (da instanceof AnaServParam) {
-                expect(da.communication.VOut).to.have.property('nodeId',
-                    '|var|WAGO 750-8202 PFC200 2ETH RS.App_Dosing.Services.Fill.SetVolume.VOut');
-                expect(da.communication.VInt).to.have.property('nodeId',
-                    '|var|WAGO 750-8202 PFC200 2ETH RS.App_Dosing.Services.Fill.SetVolume.VInt');
-                expect(da.communication.VMin).to.have.property('nodeId',
-                    '|var|WAGO 750-8202 PFC200 2ETH RS.App_Dosing.Services.Fill.SetVolume.VMin');
-                expect(da.communication.VMax).to.have.property('nodeId',
-                    '|var|WAGO 750-8202 PFC200 2ETH RS.App_Dosing.Services.Fill.SetVolume.VMax');
-                expect(da.WQC).to.have.property('nodeId',
-                    '|var|WAGO 750-8202 PFC200 2ETH RS.App_Dosing.Services.Fill.SetVolume.WQC');
-                expect(da.communication.OpMode).to.have.property('nodeId',
-                    '|var|WAGO 750-8202 PFC200 2ETH RS.App_Dosing.Services.Fill.SetVolume.OpMode.binary');
-                expect(da.communication.VExt).to.have.property('nodeId',
-                    '|var|WAGO 750-8202 PFC200 2ETH RS.App_Dosing.Services.Fill.SetVolume.VExt');
-                expect(da.communication.VSclMax).to.have.property('nodeId',
-                    '|var|WAGO 750-8202 PFC200 2ETH RS.App_Dosing.Services.Fill.SetVolume.VSclMax');
-                expect(da.communication.VSclMin).to.have.property('nodeId',
-                    '|var|WAGO 750-8202 PFC200 2ETH RS.App_Dosing.Services.Fill.SetVolume.VSclMin');
-            }
-        });
-
         it('should create StrView', async () => {
-            const daJson = moduleJson.services[0].strategies[0].parameters[2];
-            const da = DataAssemblyFactory.create(daJson, module);
+            const daJson = {
+                name: 'ErrorMsg',
+                interface_class: 'StrView',
+                communication:
+                    {
+                        WQC:
+                            {
+                                namespace_index: 'urn:NodeOPCUA-Server-default',
+                                node_id: 'Service1.ErrorMsg.WQC',
+                                data_type: 'Byte'
+                            },
+                        OSLevel:
+                            {
+                                namespace_index: 'urn:NodeOPCUA-Server-default',
+                                node_id: 'Service1.ErrorMsg.OSLevel',
+                                data_type: 'Byte'
+                            },
+                        Text:
+                            {
+                                namespace_index: 'urn:NodeOPCUA-Server-default',
+                                node_id: 'Service1.ErrorMsg.Text',
+                                data_type: 'String'
+                            }
+                    }
+            };
+            const da = DataAssemblyFactory.create(daJson as any, module);
 
             expect(da instanceof ExtAnaOp).to.equal(false);
             expect(da instanceof ExtIntAnaOp).to.equal(false);

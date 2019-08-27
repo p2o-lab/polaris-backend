@@ -105,7 +105,7 @@ export class ScopeItem {
         if (service) {
             strategy = service.getCurrentStrategy();
             if (!strategy) {
-                strategy = service.strategies.find((strat) => strat.default);
+                strategy = service.defaultStrategy;
             }
             token = components.shift();
 

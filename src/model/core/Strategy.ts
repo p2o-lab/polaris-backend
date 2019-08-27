@@ -39,22 +39,18 @@ export interface StrategyEvents {
 type StrategyEmitter = StrictEventEmitter<EventEmitter, StrategyEvents>;
 
 export class Strategy extends (EventEmitter as new() => StrategyEmitter) {
-    public id: string;
-    // name of strategy
-    public name: string;
-    // default strategy
-    public default: boolean;
-    // self-completing strategy
-    public sc: boolean;
-    // strategyParameters of strategy
-    public parameters: DataAssembly[] = [];
+    public readonly id: string;
+    public readonly name: string;
+    public readonly defaultStrategy: boolean;
+    public readonly selfCompleting: boolean;
+    public readonly parameters: DataAssembly[] = [];
 
     constructor(options: StrategyOptions, module: Module) {
         super();
         this.id = options.id;
         this.name = options.name;
-        this.default = options.default;
-        this.sc = options.sc;
+        this.defaultStrategy = options.default;
+        this.selfCompleting = options.sc;
         this.parameters = options.parameters.map((paramOptions) => DataAssemblyFactory.create(paramOptions, module));
     }
 

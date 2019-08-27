@@ -26,6 +26,7 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {OpcUaConnection} from '../../../src/model/core/OpcUaConnection';
+import {OpcUaDataItem} from '../../../src/model/dataAssembly/DataItem';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 
 chai.use(chaiAsPromised);
@@ -40,11 +41,62 @@ describe('OpcUaConnection', () => {
     });
 
     it('should reject connecting to a server with not existing endpoint', async () => {
-        const connection = new OpcUaConnection('test', 'opc.tcp://10.6.51.99:4444');
+        const connection = new OpcUaConnection('test', 'opc.tcp://127.0.0.1:4444');
         expect(connection.isConnected()).to.equal(false);
-        await expect(connection.connect()).to.be.rejectedWith('Timeout');
+        await expect(connection.connect()).to.be.rejectedWith('cannot be established');
         expect(connection.isConnected()).to.equal(false);
+    }).timeout(5000);
+
+    it('should connect to a opc ua test server, listen to some opc item and disconnect', async () => {
+        const connection = new OpcUaConnection('testserver', 'opc.tcp://localhost:4334');
+        const moduleServer = new ModuleTestServer();
+        await moduleServer.start();
+
+        expect(connection.isConnected()).to.equal(false);
+
+        await connection.connect();
+        expect(connection.isConnected()).to.equal(true);
+
+        const a = await connection.listenToOpcUaDataItem(OpcUaDataItem.fromOptions({
+            namespace_index: 'urn:NodeOPCUA-Server-default',
+            node_id: 'Service1.Command',
+            data_type: null
+        }, 'read'));
+        expect(connection.monitoredItemSize()).equals(1);
+
+
+        await connection.listenToOpcUaDataItem(OpcUaDataItem.fromOptions({
+            namespace_index: 'urn:NodeOPCUA-Server-default',
+            node_id: 'Service1.Command',
+            data_type: null
+        }, 'read'));
+        expect(connection.monitoredItemSize()).equals(1);
+
+        await expect(
+            connection.listenToOpcUaDataItem(OpcUaDataItem.fromOptions({
+                namespace_index: 'urn:NodeOPCUA-Server-default',
+                node_id: 'notexistant',
+                data_type: null
+            }, 'read'))).to.be.rejectedWith('does not exist');
+        expect(connection.monitoredItemSize()).equals(1);
+
+        await expect(
+            connection.listenToOpcUaDataItem(OpcUaDataItem.fromOptions({
+                namespace_index: 'urn:nan',
+                node_id: 'notexistant',
+                data_type: null
+            }, 'read'))).to.be.rejectedWith('Could not resolve namespace');
+        expect(connection.monitoredItemSize()).equals(1);
+
+        await connection.listenToOpcUaDataItem(OpcUaDataItem.fromOptions({
+            namespace_index: 'urn:NodeOPCUA-Server-default',
+            node_id: 'Service1.OpMode',
+            data_type: null
+        }, 'read'));
+        expect(connection.monitoredItemSize()).equals(2);
+
         await connection.disconnect();
+        await moduleServer.shutdown();
     }).timeout(5000);
 
     it('should connect to a opc ua test server and recognize a shutdown of this server', async () => {
@@ -64,7 +116,6 @@ describe('OpcUaConnection', () => {
             });
             moduleServer.shutdown();
         });
-        await moduleServer.shutdown();
     }).timeout(5000);
 
 });

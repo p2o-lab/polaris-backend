@@ -156,8 +156,7 @@ export class Recipe extends (EventEmitter as new() => RecipeEmitter) {
     }
 
     /**
-     * Starts recipe
-     * Connect to modules and then start the recipe
+     * Connect to modules and then start the recipe; returns after connection to modules established
      */
     public async start(): Promise<Recipe> {
         if (this.status === RecipeState.running) {
@@ -218,6 +217,7 @@ export class Recipe extends (EventEmitter as new() => RecipeEmitter) {
                 this.emit('changed');
             })
             .once('completed', (transition: Transition) => {
+                this.stepListener.removeAllListeners('operationChanged');
                 if (transition.nextStep) {
                     catRecipe.info(`Step ${this.currentStep.name} finished. New step is ${transition.nextStepName}`);
                     this.currentStep = transition.nextStep;
@@ -227,7 +227,6 @@ export class Recipe extends (EventEmitter as new() => RecipeEmitter) {
                     this.currentStep = undefined;
                     this.status = RecipeState.completed;
                     this.emit('completed');
-                    this.stepListener.removeAllListeners('operationChanged');
                 }
                 this.emit('changed');
             });

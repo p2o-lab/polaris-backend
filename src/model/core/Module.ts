@@ -181,6 +181,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
         await this.connection.connect();
         await this.subscribeToAllVariables();
         await this.subscribeToAllServices();
+        this.logger.info(`[${this.id}] Successfully subscribed to ${this.connection.monitoredItemSize()} assemblies`);
     }
 
     /**
@@ -192,7 +193,6 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
         this.services.forEach((s) => s.eventEmitter.removeAllListeners());
         await this.connection.disconnect();
         this.logger.info(`[${this.id}] Module disconnected`);
-        this.emit('disconnected');
     }
 
     /**
