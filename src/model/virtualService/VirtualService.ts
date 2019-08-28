@@ -65,7 +65,7 @@ export abstract class VirtualService extends BaseService {
 
     // Public methods
 
-    public async json(): Promise<VirtualServiceInterface> {
+    public json(): VirtualServiceInterface {
         return {
             name: this.name,
             type: this.constructor.name,

@@ -169,10 +169,9 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
         return this.connection.writeOpcUaDataItem(dataItem as OpcUaDataItem<any>, value);
     }
 
-    public async getServiceStates(): Promise<ServiceInterface[]> {
+    public getServiceStates(): ServiceInterface[] {
         this.logger.trace(`[${this.id}] check service states`);
-        const tasks = this.services.map((service) => service.getOverview());
-        return Promise.all(tasks);
+        return this.services.map((service) => service.getOverview());
     }
 
     public async connect() {
@@ -197,16 +196,14 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
 
     /**
      * Get JSON serialisation of module
-     *
-     * @returns {Promise<ModuleInterface>}
      */
-    public async json(): Promise<ModuleInterface> {
+    public json(): ModuleInterface {
         return {
             id: this.id,
             endpoint: this.connection.endpoint,
             hmiUrl: this.hmiUrl,
             connected: this.isConnected(),
-            services: this.isConnected() ? await this.getServiceStates() : undefined,
+            services: this.isConnected() ? this.getServiceStates() : undefined,
             process_values: [],
             protected: this.protected
         };

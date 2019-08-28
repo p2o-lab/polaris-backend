@@ -37,7 +37,7 @@ import {Service} from './core/Service';
 import {Player} from './recipe/Player';
 import {Recipe} from './recipe/Recipe';
 import {VirtualService} from './virtualService/VirtualService';
-import {VirtualServiceFactory} from './virtualService/VirtualServiceFactory';
+import {VirtualServiceFactory, VirtualServiceOptions} from './virtualService/VirtualServiceFactory';
 
 interface ManagerEvents {
     /**
@@ -249,12 +249,12 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
         }
     }
 
-    public getModules(): Promise<ModuleInterface[]> {
-        return Promise.all(this.modules.map((module) => module.json()));
+    public getModules(): ModuleInterface[] {
+        return this.modules.map((module) => module.json());
     }
 
-    public async getVirtualServices(): Promise<VirtualServiceInterface[]> {
-        return Promise.all(this.virtualServices.map((vs) => vs.json()));
+    public getVirtualServices(): VirtualServiceInterface[] {
+        return this.virtualServices.map((vs) => vs.json());
     }
 
     public loadRecipe(options: RecipeOptions, protectedRecipe: boolean = false): Recipe {
@@ -325,7 +325,7 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
         return service;
     }
 
-    public instantiateVirtualService(options) {
+    public instantiateVirtualService(options: VirtualServiceOptions) {
         const virtualService = VirtualServiceFactory.create(options);
         catManager.info(`instantiated virtual Service ${virtualService.name}`);
         virtualService.eventEmitter
@@ -391,8 +391,8 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
 
     public removeVirtualService(virtualServiceId: string) {
         catManager.debug(`Remove Virtual Service ${virtualServiceId}`);
-        const index = this.virtualServices.findIndex((fb) => fb.name === virtualServiceId);
-        if (!index) {
+        const index = this.virtualServices.findIndex((virtualService) => virtualService.name === virtualServiceId);
+        if (index === -1) {
             throw new Error(`Virtual Service ${virtualServiceId} not available.`);
         }
         if (index > -1) {

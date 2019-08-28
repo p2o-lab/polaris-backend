@@ -25,6 +25,7 @@
 
 import * as fs from 'fs';
 import * as request from 'supertest';
+import * as WebSocket from 'ws';
 import {Manager} from '../../src/model/Manager';
 import {ModuleTestServer} from '../../src/moduleTestServer/ModuleTestServer';
 import Routes from '../../src/server/routes';
@@ -32,10 +33,17 @@ import {Server} from '../../src/server/server';
 
 describe('Routes', () => {
     let app;
+    let appServer: Server;
 
     before(() => {
-        const appServer = new Server(new Manager());
+        appServer = new Server(new Manager());
+        appServer.startHttpServer(3000);
+        appServer.initSocketServer();
         app = appServer.app;
+    });
+
+    after(async () => {
+        await appServer.stop();
     });
 
     it('should give code 404 for not existing routes', (done) => {
@@ -228,10 +236,21 @@ describe('Routes', () => {
                     .expect('Content-Type', /json/)
                     .expect(/"connected":false/)
                     .expect(/"protected":false/);
+
+                // wait until first update of state via websocket
+                const ws = new WebSocket('ws:/localhost:3000');
+                await new Promise((resolve) => ws.on('message', function incoming(msg) {
+                    const data = JSON.parse(msg.toString());
+                    if (data.data && data.data.status) {
+                        ws.removeListener('message', incoming);
+                        resolve();
+                    }
+                }));
+
                 await request(app).get('/api/module/CIF')
                     .expect(200)
                     .expect('Content-Type', /json/)
-                    .expect({});
+                    .expect(/"status":"IDLE"/);
                 await request(app).delete('/api/module/CIF')
                     .expect(200)
                     .expect('Content-Type', /json/)

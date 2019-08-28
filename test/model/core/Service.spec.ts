@@ -154,7 +154,7 @@ describe('Service', () => {
         });
 
         it('full service state cycle', async () => {
-            let result = await service.getOverview();
+            let result = service.getOverview();
             expect(result).to.have.property('status', 'IDLE');
             expect(result).to.have.property('controlEnable')
                 .to.deep.equal({
@@ -178,7 +178,7 @@ describe('Service', () => {
 
             await service.setOperationMode();
 
-            result = await service.getOverview();
+            result = service.getOverview();
             expect(result).to.have.property('status', 'IDLE');
             expect(result).to.have.property('controlEnable')
                 .to.deep.equal({

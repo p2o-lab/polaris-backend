@@ -29,6 +29,7 @@ import {Manager} from '../../model/Manager';
 import * as asyncHandler from 'express-async-handler';
 import {constants} from 'http2';
 import {catModule, catServer} from '../../config/logging';
+import {Module} from '../../model/core/Module';
 
 export const moduleRouter: Router = Router();
 
@@ -50,7 +51,7 @@ moduleRouter.get('', asyncHandler(async (req: Request, res: Response) => {
  */
 moduleRouter.get('/:id', asyncHandler(async (req: Request, res: Response) => {
     const manager: Manager = req.app.get('manager');
-    const module = await manager.modules.find((mod) => mod.id === req.params.id);
+    const module: Module = await manager.modules.find((mod) => mod.id === req.params.id);
     if (module) {
         res.json(module.json());
     } else {
@@ -83,7 +84,7 @@ moduleRouter.put('', asyncHandler(async (req, res) => {
         module.connect()
             .catch(() => catModule.warn(`Could not connect to module ${module.id}`))
     );
-    res.json(await Promise.all(newModules.map((module) => module.json())));
+    res.json(newModules.map((module) => module.json()));
 }));
 
 /**

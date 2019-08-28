@@ -267,9 +267,9 @@ export class Service extends BaseService {
     /**
      * get JSON overview about service and its state, opMode, strategies, parameters and controlEnable
      */
-    public async getOverview(): Promise<ServiceInterface> {
-        const strategies = await this.getStrategies();
-        const params = await this.getCurrentParameters();
+    public getOverview(): ServiceInterface {
+        const strategies = this.getStrategies();
+        const params = this.getCurrentParameters();
         const currentStrategy = this.getCurrentStrategy();
         return {
             name: this.name,
@@ -288,37 +288,35 @@ export class Service extends BaseService {
 
     /**
      * Get all strategies for service with its current strategyParameters
-     * @returns {Promise<StrategyInterface[]>}
      */
-    public async getStrategies(): Promise<StrategyInterface[]> {
-        return await Promise.all(this.strategies.map(async (strategy) => {
+    public getStrategies(): StrategyInterface[] {
+        return this.strategies.map((strategy) => {
             return {
                 id: strategy.id,
                 name: strategy.name,
                 default: strategy.defaultStrategy,
                 sc: strategy.selfCompleting,
-                parameters: await this.getCurrentParameters(strategy).catch(() => undefined)
+                parameters: this.getCurrentParameters(strategy)
             };
-        }));
+        });
     }
 
     /** get current parameters
      * from strategy or service (if strategy is undefined)
      * @param {Strategy} strategy
-     * @returns {Promise<ParameterInterface[]>}
      */
-    public async getCurrentParameters(strategy?: Strategy): Promise<ParameterInterface[]> {
+    public getCurrentParameters(strategy?: Strategy): ParameterInterface[] {
         let params: DataAssembly[] = [];
         if (strategy) {
             params = strategy.parameters;
         } else {
             params = this.parameters;
         }
-        let tasks = [];
+        let paramInterface = [];
         if (params) {
-            tasks = params.map(async (param) => param.toJson());
+            paramInterface = params.map((param) => param.toJson());
         }
-        return await Promise.all(tasks);
+        return paramInterface;
     }
 
     /**
@@ -349,7 +347,7 @@ export class Service extends BaseService {
             timestamp: new Date(),
             strategy,
             command,
-            parameter: await this.getCurrentParameters(strategy)
+            parameter: this.getCurrentParameters(strategy)
         });
     }
 

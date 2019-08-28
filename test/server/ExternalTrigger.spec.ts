@@ -24,7 +24,6 @@
  */
 
 import {expect} from 'chai';
-import {OPCUAServer} from 'node-opcua-server';
 import {ModuleTestServer} from '../../src/moduleTestServer/ModuleTestServer';
 import {ExternalTrigger} from '../../src/server/ExternalTrigger';
 
@@ -42,15 +41,9 @@ describe('ExternalTrigger', () => {
     });
 
     it('should fail with missing endpoint', () => {
-        expect(() => {
-            const et = new ExternalTrigger(undefined, undefined, undefined);
-        }).to.throw();
-        expect(() => {
-            const et = new ExternalTrigger('sdfsd', undefined, undefined);
-        }).to.throw();
-        expect(() => {
-            const et = new ExternalTrigger('opc.tcp://localhost:4334/Ua/MyLittleServer', undefined, undefined);
-        }).to.throw();
+        expect(() => new ExternalTrigger(undefined, undefined, undefined)).to.throw();
+        expect(() => new ExternalTrigger('sdfsd', undefined, undefined)).to.throw();
+        expect(() => new ExternalTrigger('opc.tcp://localhost:4334/Ua/MyServer', undefined, undefined)).to.throw();
     });
 
     it('should work with the sample server', async () => {
