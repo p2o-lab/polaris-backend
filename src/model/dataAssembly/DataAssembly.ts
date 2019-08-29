@@ -136,4 +136,11 @@ export class DataAssembly extends EventEmitter {
             name: this.name
         };
     }
+
+    public createDataItem(options, name: string, access: 'read'|'write') {
+        if (!options[name]) {
+            throw new Error(`No ${name} variable in DataAssembly ${this.constructor.toString()} during parsing`);
+        }
+        this.communication[name] = OpcUaDataItem.fromOptions(options[name], access);
+    }
 }

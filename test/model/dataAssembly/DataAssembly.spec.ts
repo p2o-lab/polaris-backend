@@ -33,6 +33,7 @@ import {AdvAnaOp, AnaServParam, ExtAnaOp, ExtIntAnaOp} from '../../../src/model/
 import {AnaView} from '../../../src/model/dataAssembly/AnaView';
 import {DataAssembly} from '../../../src/model/dataAssembly/DataAssembly';
 import {DataAssemblyFactory} from '../../../src/model/dataAssembly/DataAssemblyFactory';
+import {ServiceControl} from '../../../src/model/dataAssembly/ServiceControl';
 import {StrView} from '../../../src/model/dataAssembly/Str';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 import {TestServerVariable} from '../../../src/moduleTestServer/ModuleTestVariable';
@@ -69,6 +70,31 @@ describe('DataAssembly', () => {
                 {name: 'test', interface_class: 'none', communication: null}, null)
             ).to.throw(/No module for data assembly/);
 
+        });
+
+        it('should create ServiceControl', async () => {
+            const module = new Module({
+                id: 'test',
+                opcua_server_url: null,
+                services: [],
+                process_values: []
+            });
+            const da1 = DataAssemblyFactory.create({
+                name: 'serviceControl1',
+                interface_class: 'ServiceControl',
+                communication: {
+                    OSLevel: null,
+                    TagDescription: null,
+                    TagName: null,
+                    WQC: null,
+                    CommandMan: {
+                        nodeId: 'sdf'
+                    }
+                } as any
+            }, module);
+            expect(da1 instanceof ServiceControl).to.equal(true);
+
+            console.log(da1);
         });
 
         it('should create AnaView', async () => {

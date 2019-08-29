@@ -46,7 +46,8 @@ export class ServiceControl extends OpModeDA(DataAssembly) {
 
     constructor(options, module: Module) {
         super(options, module);
-        this.communication.CommandMan = OpcUaDataItem.fromOptions(options.communication.CommandMan, 'write');
+        this.createDataItem(options.communication, 'CommandMan', 'write');
+        // this.communication.CommandMan = OpcUaDataItem.fromOptions(options.communication.CommandMan, 'write');
         this.communication.CommandExt = OpcUaDataItem.fromOptions(options.communication.CommandExt, 'write');
         this.communication.CommandEnable = OpcUaDataItem.fromOptions(options.communication.CommandEnable, 'read');
         this.communication.State = OpcUaDataItem.fromOptions(options.communication.State, 'read');

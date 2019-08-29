@@ -105,6 +105,15 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
             });
     }
 
+    public getModule(moduleId: string): Module {
+        const module = this.modules.find((mod) => mod.id === moduleId);
+        if (module) {
+            return module;
+        } else {
+            throw Error(`Module with id ${moduleId} not found`);
+        }
+    }
+
     /**
      * Load modules from JSON according to TopologyGenerator output or to simplified JSON
      * Skip module if already a module with same id is registered
@@ -230,10 +239,7 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
 
     public async removeModule(moduleId) {
         catManager.info(`Remove module ${moduleId}`);
-        const module = this.modules.find((mod) => mod.id === moduleId);
-        if (!module) {
-            throw new Error(`No Module ${moduleId} found.`);
-        }
+        const module = this.getModule(moduleId);
         if (module.protected) {
             throw new Error(`Module ${moduleId} is protected and can't be deleted`);
         }
