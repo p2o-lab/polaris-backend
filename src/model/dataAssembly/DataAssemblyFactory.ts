@@ -34,6 +34,7 @@ import {DataAssembly} from './DataAssembly';
 import {AdvDigOp, DigServParam, ExtDigOp, ExtIntDigOp} from './DigOp';
 import {DigMon, DigView} from './DigView';
 import {AnaDrv, MonAnaDrv} from './Drv';
+import {ServiceControl} from './ServiceControl';
 import {StrView} from './Str';
 import {AnaVlv, BinVlv, MonAnaVlv, MonBinVlv} from './Vlv';
 
@@ -71,11 +72,13 @@ export class DataAssemblyFactory {
             'AnaDrv': AnaDrv,
             'MonAnaDrv': MonAnaDrv,
 
-            'StrView': StrView
+            'StrView': StrView,
+
+            'ServiceControl': ServiceControl
         };
         let type = types[variableOptions.interface_class];
         if (!type) {
-            catDataAssembly.debug(`No data assembly implemented for ${variableOptions.interface_class} ` +
+            catDataAssembly.warn(`No data assembly implemented for ${variableOptions.interface_class} ` +
                 `of ${variableOptions.name}. Use standard DataAssembly.`);
             type = DataAssembly;
         }
