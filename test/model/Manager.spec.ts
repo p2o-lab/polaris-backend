@@ -85,7 +85,7 @@ describe('Manager', () => {
             expect(() => manager.getService('Dose', 'NoService')).to.throw();
             expect(() => manager.getService('NoModule', 'NoService')).to.throw();
 
-            await expect(manager.removeModule('something')).to.be.rejectedWith(/No Module/);
+            await expect(manager.removeModule('something')).to.be.rejectedWith('Module with id something not found');
         });
 
         it('should prevent removing a protected module', async () => {

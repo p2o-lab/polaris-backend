@@ -41,7 +41,6 @@ import {AnaVlv, BinVlv, MonAnaVlv, MonBinVlv} from './Vlv';
 export class DataAssemblyFactory {
     public static create(variableOptions: DataAssemblyOptions, module: Module): DataAssembly {
         catDataAssembly.debug(`Create DataAssembly ${variableOptions.name} (${variableOptions.interface_class})`);
-
         const types = {
             'AnaView': AnaView,
             'AnaMon': AnaMon,
@@ -78,8 +77,13 @@ export class DataAssemblyFactory {
         };
         let type = types[variableOptions.interface_class];
         if (!type) {
-            catDataAssembly.warn(`No data assembly implemented for ${variableOptions.interface_class} ` +
-                `of ${variableOptions.name}. Use standard DataAssembly.`);
+            if (!variableOptions.interface_class) {
+                catDataAssembly.debug(`No interface class specified for DataAssembly ${variableOptions.name}. ` +
+                    `Use standard DataAssembly.`);
+            } else {
+                catDataAssembly.warn(`No data assembly implemented for ${variableOptions.interface_class} ` +
+                    `of ${variableOptions.name}. Use standard DataAssembly.`);
+            }
             type = DataAssembly;
         }
 
