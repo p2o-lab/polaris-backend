@@ -93,7 +93,7 @@ describe('Manager', () => {
             manager.loadModule(
                 JSON.parse(fs.readFileSync('assets/modules/modules_achema.json').toString()),
                 true);
-            await expect(manager.removeModule(manager.modules[0].id)).to.be.rejectedWith(/No Module/);
+            await expect(manager.removeModule(manager.modules[0].id)).to.be.rejectedWith(/is protected/);
         });
     });
 
