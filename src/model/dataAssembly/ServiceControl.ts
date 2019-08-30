@@ -24,7 +24,6 @@
  */
 
 /* tslint:disable:max-classes-per-file */
-import {Module} from '../core/Module';
 import {BaseDataAssemblyRuntime, DataAssembly} from './DataAssembly';
 import {OpcUaDataItem} from './DataItem';
 import {OpModeDA} from './mixins/OpMode';
@@ -44,17 +43,16 @@ export interface ServiceControlRuntime extends BaseDataAssemblyRuntime {
 export class ServiceControl extends OpModeDA(DataAssembly) {
     public readonly communication: ServiceControlRuntime;
 
-    constructor(options, module: Module) {
-        super(options, module);
-        this.createDataItem(options.communication, 'CommandMan', 'write');
-        // this.communication.CommandMan = OpcUaDataItem.fromOptions(options.communication.CommandMan, 'write');
-        this.communication.CommandExt = OpcUaDataItem.fromOptions(options.communication.CommandExt, 'write');
-        this.communication.CommandEnable = OpcUaDataItem.fromOptions(options.communication.CommandEnable, 'read');
-        this.communication.State = OpcUaDataItem.fromOptions(options.communication.State, 'read');
-        this.communication.StrategyMan = OpcUaDataItem.fromOptions(options.communication.StrategyMan, 'write');
-        this.communication.StrategyExt = OpcUaDataItem.fromOptions(options.communication.StrategyExt, 'write');
-        this.communication.StrategyInt = OpcUaDataItem.fromOptions(options.communication.StrategyInt, 'read');
-        this.communication.CurrentStrategy = OpcUaDataItem.fromOptions(options.communication.CurrentStrategy, 'read');
+    constructor(options, connection) {
+        super(options, connection);
+        this.createDataItem(options, 'CommandMan', 'write');
+        this.createDataItem(options, 'CommandExt', 'write');
+        this.createDataItem(options, 'CommandEnable', 'read');
+        this.createDataItem(options, 'State', 'read');
+        this.createDataItem(options, 'StrategyMan', 'write');
+        this.createDataItem(options, 'StrategyExt', 'write');
+        this.createDataItem(options, 'StrategyInt', 'read');
+        this.createDataItem(options, 'CurrentStrategy', 'read');
     }
 
 }

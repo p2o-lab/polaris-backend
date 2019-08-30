@@ -51,10 +51,10 @@ export abstract class TestServerVariable {
             componentOf: this.variableNode,
             nodeId: `ns=1;s=${variableName}.WQC`,
             browseName: `${variableName}.WQC`,
-            dataType: 'Double',
+            dataType: DataType.UInt32,
             value: {
                 get: () => {
-                    return new Variant({dataType: DataType.Double, value: this.wqc});
+                    return new Variant({dataType: DataType.UInt32, value: this.wqc});
                 }
             }
         });
@@ -63,10 +63,10 @@ export abstract class TestServerVariable {
             componentOf: this.variableNode,
             nodeId: `ns=1;s=${variableName}.OSLevel`,
             browseName: `${variableName}.OSLevel`,
-            dataType: 'Double',
+            dataType: DataType.UInt32,
             value: {
                 get: () => {
-                    return new Variant({dataType: DataType.Double, value: this.osLevel});
+                    return new Variant({dataType: DataType.UInt32, value: this.osLevel});
                 }
             }
         });
@@ -75,7 +75,7 @@ export abstract class TestServerVariable {
             componentOf: this.variableNode,
             nodeId: `ns=1;s=${variableName}.OpMode`,
             browseName: `${variableName}.OpMode`,
-            dataType: 'UInt32',
+            dataType: DataType.UInt32,
             value: {
                 get: () => {
                     catTestServer.debug(`[${variableName}] Get Opmode in testserver ${this.opMode}`);

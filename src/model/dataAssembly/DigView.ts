@@ -25,10 +25,8 @@
  */
 
 import {ParameterInterface} from '@p2olab/polaris-interface';
-import {Module} from '../core/Module';
 import {AnaViewRuntime} from './AnaView';
 import {DataAssembly} from './DataAssembly';
-import {OpcUaDataItem} from './DataItem';
 import {MonitorSettings} from './mixins/MonitorSettings';
 import {ScaleSettingsDA} from './mixins/ScaleSettings';
 import {UnitDA} from './mixins/Unit';
@@ -36,9 +34,9 @@ import {UnitDA} from './mixins/Unit';
 export class DigView extends ScaleSettingsDA(UnitDA(DataAssembly)) {
     public readonly communication: AnaViewRuntime;
 
-    constructor(options, module: Module) {
-        super(options, module);
-        this.communication.V = OpcUaDataItem.fromOptions(options.communication.V, 'read');
+    constructor(options, connection) {
+        super(options, connection);
+        this.createDataItem(options, 'V', 'read');
     }
 
     public toJson(): ParameterInterface {

@@ -174,7 +174,7 @@ describe('Operation', () => {
             operation.execute();
             await delay(3000);
             expect(operation.json()).to.have.property('state', 'executing');
-            await delay(2010);
+            await delay(2050);
             expect(operation.json()).to.have.property('state', 'aborted');
 
         }).timeout(10000);

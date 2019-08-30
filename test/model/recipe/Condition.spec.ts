@@ -151,7 +151,7 @@ describe('Condition', () => {
             it('should work with simple expression', async () => {
                 const expr = new ExpressionCondition({type: ConditionType.expression, expression: '4>3'});
                 expr.listen();
-                const value = await expr.getValue();
+                const value = expr.getValue();
                 expect(value).to.equal(true);
             });
 
@@ -172,7 +172,6 @@ describe('Condition', () => {
                         }
                     ]
                 }, [module]) as ExpressionCondition;
-
                 expect(() => expr.getValue()).to.throw('not connected');
             });
 

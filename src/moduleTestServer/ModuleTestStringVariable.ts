@@ -24,8 +24,9 @@
  */
 
 import {DataType, StatusCodes, Variant} from 'node-opcua';
-import {TestServerVariable} from './ModuleTestVariable';
 import Timeout = NodeJS.Timeout;
+import {catTestServer} from '../config/logging';
+import {TestServerVariable} from './ModuleTestVariable';
 
 export class TestServerStringVariable extends TestServerVariable {
 
@@ -43,6 +44,7 @@ export class TestServerStringVariable extends TestServerVariable {
             dataType: 'String',
             value: {
                 get: () => {
+                    catTestServer.debug(`[${this.name}] Get string variable in testserver ${this.v}`);
                     return new Variant({dataType: DataType.String, value: this.v});
                 },
                 set: (variant) => {
@@ -57,7 +59,7 @@ export class TestServerStringVariable extends TestServerVariable {
     public startSimulation() {
         this.interval = global.setInterval(() => {
             this.v = new Date().toTimeString();
-        }, 3000);
+        }, 1000);
     }
 
     public stopSimulation() {

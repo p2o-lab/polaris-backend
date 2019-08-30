@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import {ParameterInterface, ValueLimitationOptions} from '@p2olab/polaris-interface';
+import {ParameterInterface} from '@p2olab/polaris-interface';
 import {BaseDataAssemblyRuntime, DataAssembly} from '../DataAssembly';
 import {OpcUaDataItem} from '../DataItem';
 import {Constructor} from './mixins';
@@ -41,15 +41,8 @@ export function ValueLimitationDA<TBase extends Constructor<DataAssembly>>(Base:
 
         constructor(...args: any[]) {
             super(...args);
-            const options = args[0] as { communication: ValueLimitationOptions };
-            if (!options.communication.VMin) {
-                throw new Error(`No VMin in ${this.name}`);
-            }
-            if (!options.communication.VMax) {
-                throw new Error(`No VMax in ${this.name}`);
-            }
-            this.communication.VMax = OpcUaDataItem.fromOptions(options.communication.VMax, 'read');
-            this.communication.VMin = OpcUaDataItem.fromOptions(options.communication.VMin, 'read');
+            this.createDataItem(args[0], 'VMax', 'read');
+            this.createDataItem(args[0], 'VMin', 'read');
         }
 
         public toJson(): ParameterInterface {

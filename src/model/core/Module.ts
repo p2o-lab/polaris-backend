@@ -39,7 +39,7 @@ import {catModule} from '../../config/logging';
 import {VariableLogEntry} from '../../logging/archive';
 import {DataAssembly} from '../dataAssembly/DataAssembly';
 import {DataAssemblyFactory} from '../dataAssembly/DataAssemblyFactory';
-import {DataItem, DataItemEmitter, OpcUaDataItem} from '../dataAssembly/DataItem';
+import {DataItemEmitter} from '../dataAssembly/DataItem';
 import {ServiceState} from './enum';
 import {OpcUaConnection} from './OpcUaConnection';
 import {Service} from './Service';
@@ -141,32 +141,24 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
     // module is protected and can't be deleted by the user
     public protected: boolean = false;
 
-    private readonly connection: OpcUaConnection;
+    readonly connection: OpcUaConnection;
 
     constructor(options: ModuleOptions, protectedModule: boolean = false) {
         super();
         this.options = options;
         this.id = options.id;
         this.protected = protectedModule;
-
-        if (options.services) {
-            this.services = options.services.map((serviceOption) => new Service(serviceOption, this));
-        }
-        if (options.process_values) {
-            this.variables = options.process_values
-                .map((variableOptions) => DataAssemblyFactory.create(variableOptions, this));
-        }
         this.hmiUrl = options.hmi_url;
         this.connection = new OpcUaConnection(this.id, options.opcua_server_url);
         this.logger = catModule;
-    }
 
-    public listenToDataItem(dataItem: DataItem<any>, samplingInterval = 100) {
-        return this.connection.listenToOpcUaDataItem(dataItem as OpcUaDataItem<any>, samplingInterval);
-    }
-
-    public writeDataItem(dataItem: DataItem<any>, value: number | string) {
-        return this.connection.writeOpcUaDataItem(dataItem as OpcUaDataItem<any>, value);
+        if (options.services) {
+            this.services = options.services.map((serviceOption) => new Service(serviceOption, this.connection, this.id));
+        }
+        if (options.process_values) {
+            this.variables = options.process_values
+                .map((variableOptions) => DataAssemblyFactory.create(variableOptions, this.connection));
+        }
     }
 
     public getServiceStates(): ServiceInterface[] {

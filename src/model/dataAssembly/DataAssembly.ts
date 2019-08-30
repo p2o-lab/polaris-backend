@@ -28,9 +28,8 @@ import {
     ParameterInterface
 } from '@p2olab/polaris-interface';
 import {EventEmitter} from 'events';
-import {timeout} from 'promise-timeout';
 import {catDataAssembly} from '../../config/logging';
-import {Module} from '../core/Module';
+import {OpcUaConnection} from '../core/OpcUaConnection';
 import {OpcUaDataItem} from './DataItem';
 
 export interface BaseDataAssemblyRuntime {
@@ -42,39 +41,39 @@ export interface BaseDataAssemblyRuntime {
 
 export class DataAssembly extends EventEmitter {
 
-    public readonly name: string;
-    public readonly interfaceClass: string;
-    public readonly communication: BaseDataAssemblyRuntime;
-    public readonly module: Module;
-    public subscriptionActive: boolean;
-
-    constructor(options: DataAssemblyOptions, module: Module) {
-        super();
-        this.name = options.name;
-        this.interfaceClass = options.interface_class;
-        this.communication = {} as BaseDataAssemblyRuntime;
-        this.subscriptionActive = false;
-
-        this.module = module;
-        if (!this.module) {
-            throw new Error(`No module for data assembly: ${JSON.stringify(options)}`);
-        }
-
-        if (!options.communication) {
-            throw new Error('Communication variables missing while creating DataAssembly');
-        }
-        this.communication.TagName = OpcUaDataItem.fromOptions(options.communication.TagName, 'read', 'string');
-        this.communication.TagDescription = OpcUaDataItem.fromOptions(options.communication.TagDescription, 'read');
-        this.communication.OSLevel = OpcUaDataItem.fromOptions(options.communication.OSLevel, 'write');
-        this.communication.WQC = OpcUaDataItem.fromOptions(options.communication.WQC, 'read');
-    }
-
     get OSLevel() {
         return this.communication.OSLevel;
     }
 
     get WQC() {
         return this.communication.WQC;
+    }
+
+    public readonly name: string;
+    public readonly interfaceClass: string;
+    public readonly communication: BaseDataAssemblyRuntime;
+    public subscriptionActive: boolean;
+    public readonly connection: OpcUaConnection;
+
+    constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
+        super();
+        this.name = options.name;
+        this.interfaceClass = options.interface_class;
+        this.communication = {} as BaseDataAssemblyRuntime;
+        this.subscriptionActive = false;
+
+        this.connection = connection;
+        if (!this.connection) {
+            throw new Error(`No module for data assembly: ${JSON.stringify(options)}`);
+        }
+
+        if (!options.communication) {
+            throw new Error('Communication variables missing while creating DataAssembly');
+        }
+        this.createDataItem(options, 'TagName', 'read', 'string');
+        this.createDataItem(options, 'TagDescription', 'read');
+        this.createDataItem(options, 'OSLevel', 'write');
+        this.createDataItem(options, 'WQC', 'read');
     }
 
     /**
@@ -85,30 +84,21 @@ export class DataAssembly extends EventEmitter {
      */
     public async subscribe(samplingInterval = 1000): Promise<DataAssembly> {
         if (!this.subscriptionActive) {
-            catDataAssembly.info(`subscribe to ${this.module.id}.${this.name} ` +
+            catDataAssembly.info(`subscribe to ${this.name} ` +
                 `with variables ${Object.keys(this.communication)}`);
             await Promise.all(
-                Object.entries(this.communication)
-                    .filter(([key, node]) => key && node && node.nodeId && node.namespaceIndex)
-                    .map(([key, node]) =>
-                        timeout(
-                            this.module.listenToDataItem(node, samplingInterval)
-                                .then((emitter) => {
-                                    catDataAssembly.debug(`successfully subscribed to ${this.name}.${key}`);
-                                    emitter.on('changed', () => {
-                                        catDataAssembly.debug(`Emit ${this.name}.${key} = ${node.value}`);
-                                        this.emit(key, node);
-                                    });
-                                }),
-                            1000)
-                            .catch((err) => {
-                                throw new Error(`Could not subscribe to ${this.name}.${key} ` +
-                                    `(${JSON.stringify(node)}): ${err}`);
-                            })
-                    )
+                Object.entries(this.communication).map(
+                    async ([key, dataItem]: [string, OpcUaDataItem<any>]) => {
+                        await dataItem.subscribe(samplingInterval);
+                        dataItem.on('changed', () => {
+                            catDataAssembly.debug(`Emit ${this.name}.${key} = ${dataItem.value}`);
+                            this.emit(key, dataItem);
+                        });
+                        catDataAssembly.info(`successfully subscribed to ${this.name}.${key}`);
+                    })
             );
             this.subscriptionActive = true;
-            catDataAssembly.info(`successfully subscribed to all variables from ${this.module.id}.${this.name}`);
+            catDataAssembly.info(`successfully subscribed to all variables from ${this.name}`);
         }
         return this;
     }
@@ -119,11 +109,11 @@ export class DataAssembly extends EventEmitter {
      * @param {string} variable
      * @returns {Promise<any>}
      */
-    public async setParameter(paramValue: any, variable: string = 'VExt'): Promise<any> {
-        const opcUaNode = this.communication[variable];
-        catDataAssembly.info(`Set Parameter: ${this.name} - ${JSON.stringify(opcUaNode)} ` +
+    public async setParameter(paramValue: any, variable: string = 'VExt') {
+        const opcUaDataItem: OpcUaDataItem<any> = this.communication[variable];
+        catDataAssembly.info(`Set Parameter: ${this.name} - ${opcUaDataItem.nodeId} ` +
             `-> ${JSON.stringify(paramValue)}`);
-        return await this.module.writeDataItem(opcUaNode, paramValue);
+        await opcUaDataItem.write(paramValue);
     }
 
     public getUnit(): string {
@@ -137,10 +127,12 @@ export class DataAssembly extends EventEmitter {
         };
     }
 
-    public createDataItem(options, name: string, access: 'read'|'write') {
-        if (!options[name]) {
-            throw new Error(`No ${name} variable in DataAssembly ${this.constructor.toString()} during parsing`);
+    public createDataItem(options: DataAssemblyOptions, name: string, access: 'read'|'write', type?) {
+        if (!options.communication[name]) {
+            catDataAssembly.warn(`No variable "${name}" in DataAssembly ${this.name} (${this.constructor.name}) during parsing`);
+        } else {
+            this.communication[name] =
+                OpcUaDataItem.fromOptions(options.communication[name], this.connection, access, type);
         }
-        this.communication[name] = OpcUaDataItem.fromOptions(options[name], access);
     }
 }

@@ -26,7 +26,13 @@
 
 import {OpcUaNodeOptions} from '@p2olab/polaris-interface';
 import {EventEmitter} from 'events';
+import {DataType} from 'node-opcua-client';
+import {timeout} from 'promise-timeout';
 import StrictEventEmitter from 'strict-event-emitter-types';
+import {Category} from 'typescript-logging';
+import {OpcUaConnection} from '../core/OpcUaConnection';
+
+const catDataItem = new Category('DataItem');
 
 /**
  * Events emitted by [[DataItem]]
@@ -41,7 +47,7 @@ export interface DataItemEvents {
 
 export type DataItemEmitter = StrictEventEmitter<EventEmitter, DataItemEvents>;
 
-export class DataItem<T> {
+export abstract class DataItem<T> extends (EventEmitter as new() => DataItemEmitter) {
     // data type of OPC UA node
     public dataType: string;
     // recent value
@@ -50,12 +56,18 @@ export class DataItem<T> {
     public timestamp: Date;
     // can DataItem be accessed
     public access: 'read' | 'write';
+
+    protected logger: Category = catDataItem;
+
+    public abstract async subscribe(samplingInterval);
+
+    public abstract write(value: string|number);
 }
 
 export class OpcUaDataItem<T> extends DataItem<T> {
 
     public static fromOptions<type extends number | string | boolean>(
-        options: OpcUaNodeOptions,
+        options: OpcUaNodeOptions, connection: OpcUaConnection,
         access: 'read' | 'write', type = 'number'): OpcUaDataItem<type> {
         const item = new OpcUaDataItem<type>();
 
@@ -73,8 +85,12 @@ export class OpcUaDataItem<T> extends DataItem<T> {
 
             item.namespaceIndex = options.namespace_index;
             item.nodeId = options.node_id;
+            if ((item.nodeId == null || item.namespaceIndex == null) && item.value == null) {
+                catDataItem.warn('At least node id or value have to be specified during parsing of DataItem');
+            }
         }
         item.access = access;
+        item.connection = connection;
         return item;
     }
 
@@ -82,4 +98,44 @@ export class OpcUaDataItem<T> extends DataItem<T> {
     public namespaceIndex: string;
     // node id of the node as string (e.g. 's=myNode2' or 'i=12')
     public nodeId: string;
+
+    private connection: OpcUaConnection;
+
+    public async subscribe(samplingInterval = 1000): Promise<OpcUaDataItem<T>> {
+        if (this.value === undefined) {
+            await this.read();
+        }
+        const monitoredItem = await timeout(
+            this.connection.listenToOpcUaNode(this.nodeId, this.namespaceIndex, samplingInterval), 1000);
+        monitoredItem.on('changed', (dataValue) => {
+            this.logger.info(`[${this.connection.id}] Variable Changed (${this.nodeId}) ` +
+                `= ${dataValue.value.value.toString()}`);
+            this.value = dataValue.value.value;
+            this.timestamp = dataValue.serverTimestamp;
+            this.emit('changed', {value: this.value, timestamp: this.timestamp});
+        });
+        this.logger.info(`subscribed to Data Item ${this.nodeId}`);
+        return this;
+    }
+
+    public write(value: number | string) {
+        return this.connection.writeOpcUaNode(this.nodeId, this.namespaceIndex, value, this.dataType);
+    }
+
+    /**
+     * Reads the opc ua data item of the data item and use the results for initializing the data item
+     */
+    public async read() {
+        const result = await this.connection.readOpcUaNode(this.nodeId, this.namespaceIndex);
+        this.logger.debug(`[${this.connection.id}] Read Variable: ${this.nodeId.toString()} = ${result}`);
+        if (result.statusCode.value !== 0) {
+            throw new Error(`Could not read ${this.nodeId.toString()}: ${result.statusCode.description}`);
+        }
+        this.value = result.value.value;
+        // readVariableValue does not provide serverTimestamp in node-opcua library
+        this.timestamp = new Date();
+        this.dataType = DataType[result.value.dataType];
+        this.logger.debug(`[${this.connection.id}] initialized Variable: ${this.nodeId.toString()} - ${this.value}`);
+        return this.value;
+    }
 }

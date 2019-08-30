@@ -84,7 +84,7 @@ export class ExpressionCondition extends Condition {
         });
         const assign = require('assign-deep');
         const scope = assign(...tasks);
-        catCondition.debug(`Scope: ${JSON.stringify(scope)}`);
+        catCondition.info(`Scope: ${JSON.stringify(scope)}`);
         return this.expression.evaluate(scope);
     }
 

@@ -25,7 +25,7 @@
 
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {catDataAssembly} from '../../config/logging';
-import {Module} from '../core/Module';
+import {OpcUaConnection} from '../core/OpcUaConnection';
 import {AdvAnaOp, AnaServParam, ExtAnaOp, ExtIntAnaOp} from './AnaOp';
 import {AnaMon, AnaView} from './AnaView';
 import {AdvBinOp, BinServParam, ExtBinOp, ExtIntBinOp} from './BinOp';
@@ -39,7 +39,7 @@ import {StrView} from './Str';
 import {AnaVlv, BinVlv, MonAnaVlv, MonBinVlv} from './Vlv';
 
 export class DataAssemblyFactory {
-    public static create(variableOptions: DataAssemblyOptions, module: Module): DataAssembly {
+    public static create(variableOptions: DataAssemblyOptions, connection: OpcUaConnection): DataAssembly {
         catDataAssembly.debug(`Create DataAssembly ${variableOptions.name} (${variableOptions.interface_class})`);
         const types = {
             'AnaView': AnaView,
@@ -87,6 +87,6 @@ export class DataAssemblyFactory {
             type = DataAssembly;
         }
 
-        return new type(variableOptions, module);
+        return new type(variableOptions, connection);
     }
 }

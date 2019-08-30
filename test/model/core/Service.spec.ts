@@ -45,16 +45,16 @@ describe('Service', () => {
 
     context('constructor', () => {
         it('should fail with missing options', () => {
-            expect(() => new Service(null, null)).to.throw();
+            expect(() => new Service(null, null, null)).to.throw();
         });
 
         it('should fail with missing name', () => {
-            expect(() => new Service({name: null, parameters: null, communication: null, strategies: null}, null))
+            expect(() => new Service({name: null, parameters: null, communication: null, strategies: null}, null, null))
                 .to.throw('No service name');
         });
 
         it('should fail with missing module', () => {
-            expect(() => new Service({name: 'test', parameters: null, communication: null, strategies: null}, null))
+            expect(() => new Service({name: 'test', parameters: null, communication: null, strategies: null}, null, null))
                 .to.throw('No module');
         });
 

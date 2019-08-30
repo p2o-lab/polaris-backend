@@ -103,7 +103,7 @@ export class TestServerService {
             componentOf: serviceNode,
             nodeId: `ns=1;s=${serviceName}.OpMode`,
             browseName: `${serviceName}.OpMode`,
-            dataType: 'UInt32',
+            dataType: DataType.UInt32,
             value: {
                 get: () => {
                     catTestServer.trace(`[${this.serviceName}] Get Opmode in testserver ${this.varOpmode}`);
@@ -148,10 +148,12 @@ export class TestServerService {
             dataType: 'UInt32',
             value: {
                 get: () => {
+                    catTestServer.debug(`Get service command (${this.serviceName}):  ${this.varCommand}`);
                     return new Variant({dataType: DataType.UInt32, value: this.varCommand});
                 },
                 set: (variant) => {
                     this.varCommand = parseInt(variant.value, 10);
+                    catTestServer.info('Set service command: ' + this.varCommand);
                     if (this.varCommand === ServiceMtpCommand.COMPLETE && this.varStatus === ServiceState.EXECUTE) {
                         this.state(ServiceState.COMPLETING);
                     } else if (this.varCommand === ServiceMtpCommand.RESTART &&

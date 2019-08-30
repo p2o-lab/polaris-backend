@@ -25,60 +25,164 @@
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
+import {OpcUaConnection} from '../../../src/model/core/OpcUaConnection';
 import {OpcUaDataItem} from '../../../src/model/dataAssembly/DataItem';
+import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('DataItem', () => {
 
-    it('should reject construction with missing options', () => {
-        const di = OpcUaDataItem.fromOptions(null, 'read', 'string');
-        expect(di.access).to.equal('read');
+    describe('static', () => {
+
+        const connection = new OpcUaConnection(null, null);
+
+        it('should reject construction with missing options', () => {
+            const di = OpcUaDataItem.fromOptions(null, null, 'read', 'string');
+            expect(di.access).to.equal('read');
+        });
+
+        it('should work with float', () => {
+            const di = OpcUaDataItem.fromOptions(
+                {value: 1.2, data_type: 'Float', node_id: 'test', namespace_index: 'test2'}, null, 'read', 'number');
+            expect(di.value).to.equal(1.2);
+        });
+
+        it('should work with float conversion', () => {
+            const di = OpcUaDataItem.fromOptions(
+                {value: '1.2', data_type: 'Float', node_id: 'test', namespace_index: 'test2'}, null, 'read', 'number');
+            expect(di.value).to.equal(1.2);
+        });
+
+        it('should work with value = 0', () => {
+            const di = OpcUaDataItem.fromOptions(
+                {value: 0.0, data_type: 'Float', node_id: 'test', namespace_index: 'test2'}, null, 'read', 'number');
+            expect(di.value).to.equal(0);
+        });
+
+        it('should work with negative value', () => {
+            const di = OpcUaDataItem.fromOptions(
+                {value: -2, data_type: 'Float', node_id: 'test', namespace_index: 'test2'}, null, 'read', 'number');
+            expect(di.value).to.equal(-2.0);
+        });
+
+        it('should work with null value', () => {
+            const di = OpcUaDataItem.fromOptions(
+                {value: null, data_type: 'Float', node_id: 'test', namespace_index: 'test2'}, null, 'read', 'number');
+            expect(di.value).to.equal(null);
+            expect(di.access).to.equal('read');
+        });
+
+        it('should work with undefined value', () => {
+            const di = OpcUaDataItem.fromOptions(
+                {
+                    value: undefined,
+                    data_type: 'Float',
+                    node_id: 'test',
+                    namespace_index: 'test2'
+                }, null, 'write', 'number');
+            expect(di.value).to.equal(undefined);
+            expect(di.access).to.equal('write');
+        });
+
+        it('should work with string conversion', () => {
+            const di = OpcUaDataItem.fromOptions(
+                {value: 1.2, data_type: 'Float', node_id: 'test', namespace_index: 'test2'}, null, 'read', 'string');
+            expect(di.value).to.equal('1.2');
+        });
+
+        it('should reject working when not connected', () => {
+            const di = OpcUaDataItem.fromOptions(
+                {
+                    namespace_index: 'urn:NodeOPCUA-Server-default',
+                    node_id: 'Service1.Parameter1.VExt',
+                    data_type: 'Double'
+                }, connection, 'write', 'number');
+        });
     });
 
-    it('should work with float', () => {
-        const di = OpcUaDataItem.fromOptions(
-            {value: 1.2, data_type: 'Float', node_id: 'test', namespace_index: 'test2'}, 'read', 'number');
-        expect(di.value).to.equal(1.2);
-    });
+    describe('with testserver', () => {
 
-    it('should work with float conversion', () => {
-        const di = OpcUaDataItem.fromOptions(
-            {value: '1.2', data_type: 'Float', node_id: 'test', namespace_index: 'test2'}, 'read', 'number');
-        expect(di.value).to.equal(1.2);
-    });
+        let moduleServer: ModuleTestServer;
+        let connection: OpcUaConnection;
 
-    it('should work with value = 0', () => {
-        const di = OpcUaDataItem.fromOptions(
-            {value: 0.0, data_type: 'Float', node_id: 'test', namespace_index: 'test2'}, 'read', 'number');
-        expect(di.value).to.equal(0);
-    });
+        before(async function() {
+            this.timeout(5000);
+            moduleServer = new ModuleTestServer();
+            await moduleServer.start();
+            moduleServer.startSimulation();
 
-    it('should work with negative value', () => {
-        const di = OpcUaDataItem.fromOptions(
-            {value: -2, data_type: 'Float', node_id: 'test', namespace_index: 'test2'}, 'read', 'number');
-        expect(di.value).to.equal(-2.0);
-    });
+            connection = new OpcUaConnection('CIF', 'opc.tcp://127.0.0.1:4334/ModuleTestServer');
+            await connection.connect();
+        });
 
-    it('should work with null value', () => {
-        const di = OpcUaDataItem.fromOptions(
-            {value: null, data_type: 'Float', node_id: 'test', namespace_index: 'test2'}, 'read', 'number');
-        expect(di.value).to.equal(null);
-        expect(di.access).to.equal('read');
-    });
+        after(async () => {
+            await connection.disconnect();
+            moduleServer.stopSimulation();
+            await moduleServer.shutdown();
+        });
 
-    it('should work with undefined value', () => {
-        const di = OpcUaDataItem.fromOptions(
-            {value: undefined, data_type: 'Float', node_id: 'test', namespace_index: 'test2'}, 'write', 'number');
-        expect(di.value).to.equal(undefined);
-        expect(di.access).to.equal('write');
-    });
+        it('should subscribe', async () => {
+            const di = OpcUaDataItem.fromOptions(
+                {
+                    namespace_index: 'urn:NodeOPCUA-Server-default',
+                    node_id: 'Service1.ErrorMsg.Text',
+                    data_type: 'String'
+                }, connection, 'write', 'string');
 
-    it('should work with string conversion', () => {
-        const di = OpcUaDataItem.fromOptions(
-            {value: 1.2, data_type: 'Float', node_id: 'test', namespace_index: 'test2'}, 'read', 'string');
-        expect(di.value).to.equal('1.2');
-    });
+            const a = await di.subscribe();
+            expect(di.value).to.equal('initial value');
 
+            await new Promise((resolve) => a.on('changed', (data) => {
+                resolve();
+            }));
+        });
+
+        it('should write', async () => {
+            const di = OpcUaDataItem.fromOptions(
+                {
+                    namespace_index: 'urn:NodeOPCUA-Server-default',
+                    node_id: 'Service1.Parameter1.VExt',
+                    data_type: 'Double'
+                }, connection, 'write', 'number');
+            await di.write(22.0);
+
+            const value = await di.read();
+            expect(value).to.be.equal(22.0);
+        });
+
+        it('should fail while writing with wrong datatype', async () => {
+            const di = OpcUaDataItem.fromOptions(
+                {
+                    namespace_index: 'urn:NodeOPCUA-Server-default',
+                    node_id: 'Service1.Parameter1.VExt',
+                    data_type: 'Float'
+                }, connection, 'write', 'number');
+
+            await expect(di.write(22)).to.be.rejectedWith('value supplied for the attribute is not of the same type');
+        });
+
+        it('should fail while writing with wrong datatype 2', async () => {
+            const di = OpcUaDataItem.fromOptions(
+                {
+                    namespace_index: 'urn:NodeOPCUA-Server-default',
+                    node_id: 'Service1.Parameter1.VExt',
+                    data_type: 'abc'
+                }, connection, 'write', 'number');
+
+            await expect(di.write(22)).to.be.rejectedWith('datatype abc must be registered');
+        });
+
+        it('should fail while writing with wrong datatype 3', async () => {
+            const di = OpcUaDataItem.fromOptions(
+                {
+                    namespace_index: 'urn:NodeOPCUA-Server-default',
+                    node_id: 'Service1.Parameter1.VExt',
+                    data_type: 'Byte'
+                }, connection, 'write', 'number');
+
+            await expect(di.write(22)).to.be.rejectedWith('value supplied for the attribute is not of the same type');
+        });
+    });
 });
