@@ -149,7 +149,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
         this.id = options.id;
         this.protected = protectedModule;
         this.hmiUrl = options.hmi_url;
-        this.connection = new OpcUaConnection(this.id, options.opcua_server_url);
+        this.connection = new OpcUaConnection(this.id, options.opcua_server_url, options.username, options.password);
         this.logger = catModule;
 
         if (options.services) {
