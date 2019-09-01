@@ -129,7 +129,8 @@ export class DataAssembly extends EventEmitter {
 
     public createDataItem(options: DataAssemblyOptions, name: string, access: 'read'|'write', type?) {
         if (!options.communication[name]) {
-            catDataAssembly.warn(`No variable "${name}" in DataAssembly ${this.name} (${this.constructor.name}) during parsing`);
+            catDataAssembly.warn(`No variable "${name}" found during parsing of ` +
+                `DataAssembly "${this.name}" (type ${this.constructor.name})`);
         } else {
             this.communication[name] =
                 OpcUaDataItem.fromOptions(options.communication[name], this.connection, access, type);

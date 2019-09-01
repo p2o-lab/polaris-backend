@@ -49,13 +49,15 @@ describe('Service', () => {
         });
 
         it('should fail with missing name', () => {
-            expect(() => new Service({name: null, parameters: null, communication: null, strategies: null}, null, null))
-                .to.throw('No service name');
+            expect(() => new Service(
+                {name: null, parameters: null, communication: null, strategies: null}, null, null)
+            ).to.throw('No service name');
         });
 
         it('should fail with missing module', () => {
-            expect(() => new Service({name: 'test', parameters: null, communication: null, strategies: null}, null, null))
-                .to.throw('No module');
+            expect(() => new Service(
+                {name: 'test', parameters: null, communication: null, strategies: null}, null, null)
+            ).to.throw('No module');
         });
 
     });

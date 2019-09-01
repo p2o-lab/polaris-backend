@@ -69,7 +69,7 @@ export class StateCondition extends ModuleCondition {
 
     public listen(): Condition {
         this.service.eventEmitter.on('state', this.check);
-        this.check({state: this.service.state, timestamp: new Date()});
+        this.check(this.service.state);
         return this;
     }
 
@@ -78,9 +78,9 @@ export class StateCondition extends ModuleCondition {
         this.service.eventEmitter.removeListener('state', this.check);
     }
 
-    private check = (data: { state: ServiceState, timestamp: Date }) => {
-        this._fulfilled = (data.state === this.state);
-        catCondition.info(`StateCondition ${this.service.qualifiedName}: actual=${ServiceState[data.state]}` +
+    private check = (expectedState: ServiceState) => {
+        this._fulfilled = (expectedState === this.state);
+        catCondition.info(`StateCondition ${this.service.qualifiedName}: actual=${ServiceState[expectedState]}` +
             ` ; condition=${ServiceState[this.state]} -> ${this._fulfilled}`);
         this.emit('stateChanged', this._fulfilled);
     }

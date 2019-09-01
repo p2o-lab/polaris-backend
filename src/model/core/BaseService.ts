@@ -39,7 +39,7 @@ export interface BaseServiceEvents {
      * Notify when the [[Service] changes its state
      * @event state
      */
-    state: {state: ServiceState, timestamp: Date};
+    state: ServiceState;
     /**
      * Notify when controlEnableNode changes
      * @event controlEnable

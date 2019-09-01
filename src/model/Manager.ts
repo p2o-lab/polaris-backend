@@ -374,7 +374,7 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
                     this.player.currentRecipeRun.serviceLog.push(logEntry);
                 }
             })
-            .on('state', ({state, timestamp}) => {
+            .on('state', (state) => {
                 const logEntry: ServiceLogEntry = {
                     timestampPfe: new Date(),
                     module: 'virtualServices',
@@ -416,7 +416,8 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
                 `Short waiting time (${this._autoresetTimeout}) to autoreset`);
             setTimeout(async () => {
                 if (service.connection.isConnected() && service.state === ServiceState.COMPLETED) {
-                    catManager.info(`Service ${service.connection.id}.${service.name} completed. Now perform autoreset`);
+                    catManager.info(`Service ${service.connection.id}.${service.name} completed. ` +
+                        `Now perform autoreset`);
                     try {
                         service.execute(ServiceCommand.reset);
                     } catch (err) {

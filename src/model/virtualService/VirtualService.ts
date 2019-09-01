@@ -193,7 +193,7 @@ export abstract class VirtualService extends BaseService {
 
     // Internal
     private setState(newState: ServiceState) {
-        this.eventEmitter.emit('state', {state: newState, timestamp: new Date() });
+        this.eventEmitter.emit('state', newState);
         this._state = newState;
     }
 

@@ -141,7 +141,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
     // module is protected and can't be deleted by the user
     public protected: boolean = false;
 
-    readonly connection: OpcUaConnection;
+    public readonly connection: OpcUaConnection;
 
     constructor(options: ModuleOptions, protectedModule: boolean = false) {
         super();
@@ -153,7 +153,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
         this.logger = catModule;
 
         if (options.services) {
-            this.services = options.services.map((serviceOption) => new Service(serviceOption, this.connection, this.id));
+            this.services = options.services.map((serviceOpts) => new Service(serviceOpts, this.connection, this.id));
         }
         if (options.process_values) {
             this.variables = options.process_values
@@ -313,13 +313,13 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
                 .on('controlEnable', (controlEnable: ControlEnableInterface) => {
                     this.emit('controlEnable', {service, controlEnable});
                 })
-                .on('state', ({state, timestamp}) => {
+                .on('state', (state) => {
                     this.logger.debug(`[${this.id}] state changed: ${service.name} = ${ServiceState[state]}`);
                     const entry = {
                         timestampPfe: new Date(),
-                        timestampModule: timestamp,
-                        service,
-                        state
+                        timestampModule: service.lastStatusChange,
+                        service: service,
+                        state: state
                     };
                     this.emit('stateChanged', entry);
                     if (state === ServiceState.COMPLETED) {

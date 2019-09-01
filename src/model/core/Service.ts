@@ -213,10 +213,7 @@ export class Service extends BaseService {
             .on('State', () => {
                 this.logger.info(`[${this.qualifiedName}] State changed: ` +
                     `${ServiceState[this.statusNode.value as ServiceState]}`);
-                this.eventEmitter.emit('state', {
-                    state: this.state,
-                    timestamp: this.lastStatusChange
-                });
+                this.eventEmitter.emit('state', this.state);
                 if (this.state === ServiceState.COMPLETED ||
                     this.state === ServiceState.ABORTED ||
                     this.state === ServiceState.STOPPED) {
