@@ -26,7 +26,6 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {OpcUaConnection} from '../../../src/model/core/OpcUaConnection';
-import {OpcUaDataItem} from '../../../src/model/dataAssembly/DataItem';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 
 chai.use(chaiAsPromised);
@@ -47,57 +46,81 @@ describe('OpcUaConnection', () => {
         expect(connection.isConnected()).to.equal(false);
     }).timeout(5000);
 
-    it('should connect to a opc ua test server, listen to some opc item and disconnect', async () => {
-        const connection = new OpcUaConnection('testserver', 'opc.tcp://localhost:4334');
-        const moduleServer = new ModuleTestServer();
-        await moduleServer.start();
+    describe('with test server', () => {
+        let moduleServer: ModuleTestServer;
 
-        expect(connection.isConnected()).to.equal(false);
+        before(async () => {
+            moduleServer = new ModuleTestServer();
+            await moduleServer.start();
+        });
 
-        await connection.connect();
-        expect(connection.isConnected()).to.equal(true);
+        after(async () => {
+            await moduleServer.shutdown();
+        });
 
-        const a = await connection.listenToOpcUaDataItem(OpcUaDataItem.fromOptions({
-            namespace_index: 'urn:NodeOPCUA-Server-default',
-            node_id: 'Service1.Command',
-            data_type: null
-        }, 'read'));
-        expect(connection.monitoredItemSize()).equals(1);
+        it('should connect to a opc ua test server, read an opc item and disconnect', async () => {
+            const connection = new OpcUaConnection('testserver', 'opc.tcp://localhost:4334');
+            expect(connection.isConnected()).to.equal(false);
 
+            await connection.connect();
+            expect(connection.isConnected()).to.equal(true);
 
-        await connection.listenToOpcUaDataItem(OpcUaDataItem.fromOptions({
-            namespace_index: 'urn:NodeOPCUA-Server-default',
-            node_id: 'Service1.Command',
-            data_type: null
-        }, 'read'));
-        expect(connection.monitoredItemSize()).equals(1);
+            const result = await connection.readOpcUaNode('Service1.Parameter1.VExt', 'urn:NodeOPCUA-Server-default');
+            expect(result.statusCode.value).to.equal(0);
+            expect(result.statusCode.description).to.equal('No Error');
+            expect(result.value.value).to.equal(20);
 
-        await expect(
-            connection.listenToOpcUaDataItem(OpcUaDataItem.fromOptions({
-                namespace_index: 'urn:NodeOPCUA-Server-default',
-                node_id: 'notexistant',
-                data_type: null
-            }, 'read'))).to.be.rejectedWith('does not exist');
-        expect(connection.monitoredItemSize()).equals(1);
+            await connection.disconnect();
+        });
 
-        await expect(
-            connection.listenToOpcUaDataItem(OpcUaDataItem.fromOptions({
-                namespace_index: 'urn:nan',
-                node_id: 'notexistant',
-                data_type: null
-            }, 'read'))).to.be.rejectedWith('Could not resolve namespace');
-        expect(connection.monitoredItemSize()).equals(1);
+        it('should connect to a opc ua test server, subscribes to an opc item and disconnect', async () => {
+            const connection = new OpcUaConnection('testserver', 'opc.tcp://localhost:4334');
+            expect(connection.isConnected()).to.equal(false);
 
-        await connection.listenToOpcUaDataItem(OpcUaDataItem.fromOptions({
-            namespace_index: 'urn:NodeOPCUA-Server-default',
-            node_id: 'Service1.OpMode',
-            data_type: null
-        }, 'read'));
-        expect(connection.monitoredItemSize()).equals(2);
+            await connection.connect();
+            expect(connection.isConnected()).to.equal(true);
 
-        await connection.disconnect();
-        await moduleServer.shutdown();
-    }).timeout(5000);
+            const result = await connection.listenToOpcUaNode('Service1.ErrorMsg.Text', 'urn:NodeOPCUA-Server-default');
+            expect(result.statusCode.value).to.equal(0);
+            expect(result.statusCode.description).to.equal('No Error');
+
+            await new Promise((resolve) =>
+            result.on('changed', (data) => {
+                resolve();
+            }));
+
+            await connection.disconnect();
+        });
+
+        it('should connect to a opc ua test server, listen to some opc item and disconnect', async () => {
+            const connection = new OpcUaConnection('testserver', 'opc.tcp://localhost:4334');
+            expect(connection.isConnected()).to.equal(false);
+
+            await connection.connect();
+            expect(connection.isConnected()).to.equal(true);
+
+            await connection.listenToOpcUaNode('Service1.Parameter1.VExt', 'urn:NodeOPCUA-Server-default');
+            expect(connection.monitoredItemSize()).equals(1);
+
+            await connection.listenToOpcUaNode('Service1.Parameter1.VExt', 'urn:NodeOPCUA-Server-default');
+            expect(connection.monitoredItemSize()).equals(1);
+
+            await expect(connection.listenToOpcUaNode('notexistant', 'urn:NodeOPCUA-Server-default'))
+                .to.be.rejectedWith('does not exist');
+            expect(connection.monitoredItemSize()).equals(1);
+
+            await expect(connection.listenToOpcUaNode('notexistant', 'urn:nan'))
+                .to.be.rejectedWith('Could not resolve namespace');
+            expect(connection.monitoredItemSize()).equals(1);
+
+            await connection.listenToOpcUaNode('Service1.OpMode', 'urn:NodeOPCUA-Server-default');
+            expect(connection.monitoredItemSize()).equals(2);
+
+            await connection.disconnect();
+
+        }).timeout(50000);
+
+    });
 
     it('should connect to a opc ua test server and recognize a shutdown of this server', async () => {
         const connection = new OpcUaConnection('testserver', 'opc.tcp://localhost:4334');

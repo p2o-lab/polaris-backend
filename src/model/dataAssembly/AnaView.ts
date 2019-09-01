@@ -25,7 +25,7 @@
  */
 
 import {ParameterInterface} from '@p2olab/polaris-interface';
-import {Module} from '../core/Module';
+import {OpcUaConnection} from '../core/OpcUaConnection';
 import {BaseDataAssemblyRuntime, DataAssembly} from './DataAssembly';
 import {OpcUaDataItem} from './DataItem';
 import {MonitorSettings} from './mixins/MonitorSettings';
@@ -39,9 +39,9 @@ export type AnaViewRuntime = BaseDataAssemblyRuntime & UnitDataAssemblyRuntime &
 export class AnaView extends ScaleSettingsDA(UnitDA(DataAssembly)) {
     public readonly communication: AnaViewRuntime;
 
-    constructor(options, module: Module) {
-        super(options, module);
-        this.communication.V = OpcUaDataItem.fromOptions(options.communication.V, 'read');
+    constructor(options, connection: OpcUaConnection) {
+        super(options, connection);
+        this.createDataItem(options, 'V', 'read');
     }
 
     public toJson(): ParameterInterface {

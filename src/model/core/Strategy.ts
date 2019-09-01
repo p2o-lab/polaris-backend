@@ -30,7 +30,7 @@ import {catService} from '../../config/logging';
 import {DataAssembly} from '../dataAssembly/DataAssembly';
 import {DataAssemblyFactory} from '../dataAssembly/DataAssemblyFactory';
 import {OpcUaDataItem} from '../dataAssembly/DataItem';
-import {Module} from './Module';
+import {OpcUaConnection} from './OpcUaConnection';
 
 export interface StrategyEvents {
     parameterChanged: { parameter: DataAssembly, value: any, timestamp: Date };
@@ -45,13 +45,13 @@ export class Strategy extends (EventEmitter as new() => StrategyEmitter) {
     public readonly selfCompleting: boolean;
     public readonly parameters: DataAssembly[] = [];
 
-    constructor(options: StrategyOptions, module: Module) {
+    constructor(options: StrategyOptions, connection: OpcUaConnection) {
         super();
         this.id = options.id;
         this.name = options.name;
         this.defaultStrategy = options.default;
         this.selfCompleting = options.sc;
-        this.parameters = options.parameters.map((paramOptions) => DataAssemblyFactory.create(paramOptions, module));
+        this.parameters = options.parameters.map((paramOpts) => DataAssemblyFactory.create(paramOpts, connection));
     }
 
     public async subscribe(): Promise<Strategy> {

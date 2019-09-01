@@ -65,7 +65,7 @@ export abstract class VirtualService extends BaseService {
 
     // Public methods
 
-    public async json(): Promise<VirtualServiceInterface> {
+    public json(): VirtualServiceInterface {
         return {
             name: this.name,
             type: this.constructor.name,
@@ -193,7 +193,7 @@ export abstract class VirtualService extends BaseService {
 
     // Internal
     private setState(newState: ServiceState) {
-        this.eventEmitter.emit('state', {state: newState, timestamp: new Date() });
+        this.eventEmitter.emit('state', newState);
         this._state = newState;
     }
 

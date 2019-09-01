@@ -28,11 +28,12 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
 import {isAutomaticState, isManualState, isOffState, OpMode, opModetoJson} from '../../../src/model/core/enum';
-import {Module} from '../../../src/model/core/Module';
+import {OpcUaConnection} from '../../../src/model/core/OpcUaConnection';
 import {AdvAnaOp, AnaServParam, ExtAnaOp, ExtIntAnaOp} from '../../../src/model/dataAssembly/AnaOp';
 import {AnaView} from '../../../src/model/dataAssembly/AnaView';
 import {DataAssembly} from '../../../src/model/dataAssembly/DataAssembly';
 import {DataAssemblyFactory} from '../../../src/model/dataAssembly/DataAssemblyFactory';
+import {ServiceControl} from '../../../src/model/dataAssembly/ServiceControl';
 import {StrView} from '../../../src/model/dataAssembly/Str';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 import {TestServerVariable} from '../../../src/moduleTestServer/ModuleTestVariable';
@@ -43,6 +44,7 @@ const expect = chai.expect;
 describe('DataAssembly', () => {
 
     describe('static', () => {
+
         it('should fail with missing parameters', () => {
             expect(() => new DataAssembly(undefined, undefined)).to.throw();
             const opcUaNode: OpcUaNodeOptions = {
@@ -71,15 +73,32 @@ describe('DataAssembly', () => {
 
         });
 
+        it('should create ServiceControl', async () => {
+            const da1 = DataAssemblyFactory.create({
+                name: 'serviceControl1',
+                interface_class: 'ServiceControl',
+                communication: {
+                    OSLevel: null,
+                    TagDescription: null,
+                    TagName: {},
+                    WQC: null,
+                    CommandMan: {
+                        nodeId: 'sdf'
+                    },
+                    CommandExt: {}
+                } as any
+            }, new OpcUaConnection(null, null));
+            expect(da1 instanceof ServiceControl).to.equal(true);
+        });
+
         it('should create AnaView', async () => {
             const moduleCifJson = JSON.parse(fs.readFileSync('assets/modules/module_cif.json').toString()).modules[0];
-            const module = new Module(moduleCifJson);
 
             const daJson1 = moduleCifJson.process_values.find((d) => d.name === 'Test_AnaView.L004');
-            const da1 = DataAssemblyFactory.create(daJson1, module);
-
             const daJson2 = moduleCifJson.process_values.find((d) => d.name === 'Sensoren.L001');
-            const da2 = DataAssemblyFactory.create(daJson2, module);
+
+            const da1 = DataAssemblyFactory.create(daJson1, new OpcUaConnection(null, null));
+            const da2 = DataAssemblyFactory.create(daJson2, new OpcUaConnection(null, null));
 
             expect(da1 instanceof AnaView).to.equal(true);
             expect(da1 instanceof ExtIntAnaOp).to.equal(false);
@@ -134,8 +153,7 @@ describe('DataAssembly', () => {
             const moduleJsonDosierer =
                 JSON.parse(fs.readFileSync('assets/modules/module_dosierer_1.1.0.json').toString()).modules[0];
             const daJson = moduleJsonDosierer.services[0].strategies[1].parameters[0];
-            const moduleDosierer = new Module(moduleJsonDosierer);
-            const da = DataAssemblyFactory.create(daJson as any, moduleDosierer);
+            const da = DataAssemblyFactory.create(daJson as any, new OpcUaConnection(null, null));
 
             expect(da instanceof ExtAnaOp).to.equal(true);
             expect(da instanceof ExtIntAnaOp).to.equal(true);
@@ -168,33 +186,25 @@ describe('DataAssembly', () => {
     describe('with testserver', () => {
 
         let moduleServer: ModuleTestServer;
-        let moduleJson: ModuleOptions;
-        let module: Module;
+        let connection: OpcUaConnection;
 
         before(async () => {
             moduleServer = new ModuleTestServer();
             await moduleServer.start();
 
-            moduleJson = {
-                id: 'CIF',
-                opcua_server_url: 'opc.tcp://127.0.0.1:4334/ModuleTestServer',
-                services: [],
-                process_values: []
-            };
-
-            module = new Module(moduleJson);
-            await module.connect();
+            connection = new OpcUaConnection('CIF', 'opc.tcp://127.0.0.1:4334/ModuleTestServer');
+            await connection.connect();
         });
 
         after(async () => {
-            await module.disconnect();
+            await connection.disconnect();
             await moduleServer.shutdown();
         });
 
         it('should create ExtIntAnaOp', async () => {
             const daJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString())
                 .modules[0].services[0].strategies[0].parameters[0];
-            const da = DataAssemblyFactory.create(daJson as any, module) as ExtIntAnaOp;
+            const da = DataAssemblyFactory.create(daJson as any, connection) as ExtIntAnaOp;
 
             await da.subscribe();
             expect(da.name).to.equal('Parameter001');
@@ -257,7 +267,7 @@ describe('DataAssembly', () => {
                             }
                     }
             };
-            const da = DataAssemblyFactory.create(daJson as any, module);
+            const da = DataAssemblyFactory.create(daJson as any, connection);
 
             expect(da instanceof ExtAnaOp).to.equal(false);
             expect(da instanceof ExtIntAnaOp).to.equal(false);
@@ -267,7 +277,7 @@ describe('DataAssembly', () => {
 
             if (da instanceof StrView) {
                 await da.subscribe();
-                expect(da.OSLevel).to.have.property('dataType', 'Byte');
+                expect(da.OSLevel).to.have.property('dataType', 'UInt32');
                 expect(da.OSLevel).to.have.property('namespaceIndex', 'urn:NodeOPCUA-Server-default');
                 expect(da.OSLevel).to.have.property('nodeId', 'Service1.ErrorMsg.OSLevel');
 

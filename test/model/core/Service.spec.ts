@@ -45,17 +45,19 @@ describe('Service', () => {
 
     context('constructor', () => {
         it('should fail with missing options', () => {
-            expect(() => new Service(null, null)).to.throw();
+            expect(() => new Service(null, null, null)).to.throw();
         });
 
         it('should fail with missing name', () => {
-            expect(() => new Service({name: null, parameters: null, communication: null, strategies: null}, null))
-                .to.throw('No service name');
+            expect(() => new Service(
+                {name: null, parameters: null, communication: null, strategies: null}, null, null)
+            ).to.throw('No service name');
         });
 
         it('should fail with missing module', () => {
-            expect(() => new Service({name: 'test', parameters: null, communication: null, strategies: null}, null))
-                .to.throw('No module');
+            expect(() => new Service(
+                {name: 'test', parameters: null, communication: null, strategies: null}, null, null)
+            ).to.throw('No module');
         });
 
     });
@@ -154,7 +156,7 @@ describe('Service', () => {
         });
 
         it('full service state cycle', async () => {
-            let result = await service.getOverview();
+            let result = service.getOverview();
             expect(result).to.have.property('status', 'IDLE');
             expect(result).to.have.property('controlEnable')
                 .to.deep.equal({
@@ -178,7 +180,7 @@ describe('Service', () => {
 
             await service.setOperationMode();
 
-            result = await service.getOverview();
+            result = service.getOverview();
             expect(result).to.have.property('status', 'IDLE');
             expect(result).to.have.property('controlEnable')
                 .to.deep.equal({

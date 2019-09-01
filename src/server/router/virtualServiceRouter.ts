@@ -51,7 +51,7 @@ virtualServiceRouter.get('/:virtualServiceId', asyncHandler(async (req: Request,
     const manager: Manager = req.app.get('manager');
     const virtualService = manager.virtualServices.find((vs) => vs.name === req.params.virtualServiceId);
     if (virtualService) {
-        res.json(await virtualService.json());
+        res.json(virtualService.json());
     } else {
         throw new Error('No such virtual service');
     }
@@ -99,7 +99,7 @@ virtualServiceRouter.post('/:virtualServiceId/parameter', asyncHandler(async (re
     const manager: Manager = req.app.get('manager');
     const virtualService = manager.virtualServices.find((vs) => vs.name === req.params.virtualServiceId);
     await virtualService.setParameters(JSON.parse(req.body.parameters));
-    res.json(await virtualService.json());
+    res.json(virtualService.json());
 }));
 
 /**

@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import {ParameterInterface, ScaleSettingsDataAssemblyOptions} from '@p2olab/polaris-interface';
+import {ParameterInterface} from '@p2olab/polaris-interface';
 import {BaseDataAssemblyRuntime, DataAssembly} from '../DataAssembly';
 import {OpcUaDataItem} from '../DataItem';
 import {Constructor} from './mixins';
@@ -41,15 +41,8 @@ export function ScaleSettingsDA<TBase extends Constructor<DataAssembly>>(Base: T
 
         constructor(...args: any[]) {
             super(...args);
-            const options = args[0] as { communication: ScaleSettingsDataAssemblyOptions };
-            if (!options.communication.VSclMin) {
-                throw new Error(`No VSclMin in ${this.name}`);
-            }
-            if (!options.communication.VSclMax) {
-                throw new Error(`No VSclMax in ${this.name}`);
-            }
-            this.communication.VSclMax = OpcUaDataItem.fromOptions(options.communication.VSclMax, 'read');
-            this.communication.VSclMin = OpcUaDataItem.fromOptions(options.communication.VSclMin, 'read');
+            this.createDataItem(args[0], 'VSclMax', 'read');
+            this.createDataItem(args[0], 'VSclMin', 'read');
         }
 
         public toJson(): ParameterInterface {

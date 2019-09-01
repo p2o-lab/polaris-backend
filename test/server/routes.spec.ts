@@ -25,6 +25,7 @@
 
 import * as fs from 'fs';
 import * as request from 'supertest';
+import * as WebSocket from 'ws';
 import {Manager} from '../../src/model/Manager';
 import {ModuleTestServer} from '../../src/moduleTestServer/ModuleTestServer';
 import Routes from '../../src/server/routes';
@@ -32,10 +33,17 @@ import {Server} from '../../src/server/server';
 
 describe('Routes', () => {
     let app;
+    let appServer: Server;
 
     before(() => {
-        const appServer = new Server(new Manager());
+        appServer = new Server(new Manager());
+        appServer.startHttpServer(3000);
+        appServer.initSocketServer();
         app = appServer.app;
+    });
+
+    after(async () => {
+        await appServer.stop();
     });
 
     it('should give code 404 for not existing routes', (done) => {
@@ -168,9 +176,10 @@ describe('Routes', () => {
                 .expect([]);
         });
 
-        it('should provide not existing modules', async () => {
+        it('should throw 404 when get not existing module', async () => {
             await request(app).get('/api/module/abc1234')
-                .expect(404);
+                .expect(404)
+                .expect('Error: Module with id abc1234 not found');
         });
 
         it('should provide download for not existing modules', async () => {
@@ -207,6 +216,22 @@ describe('Routes', () => {
                 .expect(500);
         });
 
+        it('should fail while connecting a not existing module', async () => {
+            await request(app).post('/api/module/test/connect')
+                .send(null)
+                .expect(500)
+                .expect('Content-Type', /json/)
+                .expect(/Error: Module with id test not found/);
+        });
+
+        it('should fail while disconnecting from a not existing module', async () => {
+            await request(app).post('/api/module/test/disconnect')
+                .send(null)
+                .expect(500)
+                .expect('Content-Type', /json/)
+                .expect(/Error: Module with id test not found/);
+        });
+
         describe('with test module', () => {
             let moduleServer: ModuleTestServer;
 
@@ -219,7 +244,7 @@ describe('Routes', () => {
                 await moduleServer.shutdown();
             });
 
-            it('should load, get and delete module', async () => {
+            it('should load, get, disconnect and delete module', async () => {
                 const options =
                     JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString()).modules[0];
                 await request(app).put('/api/module')
@@ -228,10 +253,27 @@ describe('Routes', () => {
                     .expect('Content-Type', /json/)
                     .expect(/"connected":false/)
                     .expect(/"protected":false/);
+
+                // wait until first update of state via websocket
+                const ws = new WebSocket('ws:/localhost:3000');
+                await new Promise((resolve) => ws.on('message', function incoming(msg) {
+                    const data = JSON.parse(msg.toString());
+                    if (data.data && data.data.status) {
+                        ws.removeListener('message', incoming);
+                        resolve();
+                    }
+                }));
+
                 await request(app).get('/api/module/CIF')
                     .expect(200)
                     .expect('Content-Type', /json/)
-                    .expect({});
+                    .expect(/"status":"IDLE"/);
+
+                await request(app).post('/api/module/CIF/disconnect')
+                    .expect(200)
+                    .expect('Content-Type', /json/)
+                    .expect(/"status":"Succesfully disconnected"/);
+
                 await request(app).delete('/api/module/CIF')
                     .expect(200)
                     .expect('Content-Type', /json/)

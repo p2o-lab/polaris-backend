@@ -44,7 +44,7 @@ import {ServiceControl} from '../dataAssembly/ServiceControl';
 import {Parameter} from '../recipe/Parameter';
 import {BaseService, BaseServiceEvents} from './BaseService';
 import {controlEnableToJson, OpMode, opModetoJson, ServiceControlEnable, ServiceMtpCommand, ServiceState} from './enum';
-import {Module} from './Module';
+import {OpcUaConnection} from './OpcUaConnection';
 import {Strategy} from './Strategy';
 
 /**
@@ -65,7 +65,7 @@ type ServiceEmitter = StrictEventEmitter<EventEmitter, ServiceEvents>;
 export class Service extends BaseService {
 
     public get qualifiedName() {
-        return `${this.module.id}.${this.name}`;
+        return `${this._parentId}.${this.name}`;
     }
 
     public get controlEnable(): ControlEnableInterface {
@@ -126,23 +126,24 @@ export class Service extends BaseService {
     public readonly processValuesIn: DataAssembly[] = [];
     public readonly processValuesOut: DataAssembly[] = [];
     public readonly reportParameters: DataAssembly[] = [];
-    /** [Module] of the service */
-    public readonly module: Module;
+    public readonly connection: OpcUaConnection;
     // use ControlExt (true) or ControlOp (false)
     public readonly automaticMode: boolean;
     public readonly serviceControl: ServiceControl;
     private readonly logger: Category;
     private serviceParametersEventEmitters: EventEmitter[];
+    private _parentId: string;
 
-    constructor(serviceOptions: ServiceOptions, module: Module) {
+    constructor(serviceOptions: ServiceOptions, connection: OpcUaConnection, parentId: string) {
         super();
+        this._parentId = parentId;
         this._name = serviceOptions.name;
         if (!serviceOptions.name) {
             throw new Error('No service name provided');
         }
 
         this.automaticMode = true;
-        this.module = module;
+        this.connection = connection;
         this.serviceParametersEventEmitters = [];
 
         this._lastStatusChange = new Date();
@@ -150,27 +151,27 @@ export class Service extends BaseService {
 
         this.serviceControl = new ServiceControl(
             {name: this._name, interface_class: 'ServiceControl', communication: serviceOptions.communication},
-            module);
+            connection);
         this.checkServiceControl();
 
         this.strategies = serviceOptions.strategies
-            .map((option) => new Strategy(option, module));
+            .map((option) => new Strategy(option, connection));
 
         if (serviceOptions.parameters) {
             this.parameters = serviceOptions.parameters
-                .map((options) => DataAssemblyFactory.create(options, module));
+                .map((options) => DataAssemblyFactory.create(options, connection));
         }
         if (serviceOptions.processValuesIn) {
             this.processValuesIn = serviceOptions.processValuesIn
-                .map((pvOptions) => DataAssemblyFactory.create(pvOptions, module));
+                .map((pvOptions) => DataAssemblyFactory.create(pvOptions, connection));
         }
         if (serviceOptions.processValuesOut) {
             this.processValuesOut = serviceOptions.processValuesOut
-                .map((pvOptions) => DataAssemblyFactory.create(pvOptions, module));
+                .map((pvOptions) => DataAssemblyFactory.create(pvOptions, connection));
         }
         if (serviceOptions.reportParameters) {
             this.reportParameters = serviceOptions.reportParameters
-                .map((pvOptions) => DataAssemblyFactory.create(pvOptions, module));
+                .map((pvOptions) => DataAssemblyFactory.create(pvOptions, connection));
         }
     }
 
@@ -212,10 +213,7 @@ export class Service extends BaseService {
             .on('State', () => {
                 this.logger.info(`[${this.qualifiedName}] State changed: ` +
                     `${ServiceState[this.statusNode.value as ServiceState]}`);
-                this.eventEmitter.emit('state', {
-                    state: this.state,
-                    timestamp: this.lastStatusChange
-                });
+                this.eventEmitter.emit('state', this.state);
                 if (this.state === ServiceState.COMPLETED ||
                     this.state === ServiceState.ABORTED ||
                     this.state === ServiceState.STOPPED) {
@@ -267,15 +265,15 @@ export class Service extends BaseService {
     /**
      * get JSON overview about service and its state, opMode, strategies, parameters and controlEnable
      */
-    public async getOverview(): Promise<ServiceInterface> {
-        const strategies = await this.getStrategies();
-        const params = await this.getCurrentParameters();
+    public getOverview(): ServiceInterface {
+        const strategies = this.getStrategies();
+        const params = this.getCurrentParameters();
         const currentStrategy = this.getCurrentStrategy();
         return {
             name: this.name,
             opMode: opModetoJson(this.opMode),
             status: ServiceState[this.state],
-            strategies,
+            strategies: strategies,
             currentStrategy: currentStrategy ? currentStrategy.name : null,
             parameters: params,
             processValuesIn: [],
@@ -288,37 +286,35 @@ export class Service extends BaseService {
 
     /**
      * Get all strategies for service with its current strategyParameters
-     * @returns {Promise<StrategyInterface[]>}
      */
-    public async getStrategies(): Promise<StrategyInterface[]> {
-        return await Promise.all(this.strategies.map(async (strategy) => {
+    public getStrategies(): StrategyInterface[] {
+        return this.strategies.map((strategy) => {
             return {
                 id: strategy.id,
                 name: strategy.name,
                 default: strategy.defaultStrategy,
                 sc: strategy.selfCompleting,
-                parameters: await this.getCurrentParameters(strategy).catch(() => undefined)
+                parameters: this.getCurrentParameters(strategy)
             };
-        }));
+        });
     }
 
     /** get current parameters
      * from strategy or service (if strategy is undefined)
      * @param {Strategy} strategy
-     * @returns {Promise<ParameterInterface[]>}
      */
-    public async getCurrentParameters(strategy?: Strategy): Promise<ParameterInterface[]> {
+    public getCurrentParameters(strategy?: Strategy): ParameterInterface[] {
         let params: DataAssembly[] = [];
         if (strategy) {
             params = strategy.parameters;
         } else {
             params = this.parameters;
         }
-        let tasks = [];
+        let paramInterface = [];
         if (params) {
-            tasks = params.map(async (param) => param.toJson());
+            paramInterface = params.map((param) => param.toJson());
         }
-        return await Promise.all(tasks);
+        return paramInterface;
     }
 
     /**
@@ -331,7 +327,7 @@ export class Service extends BaseService {
     public async execute(command?: ServiceCommand,
                          strategy?: Strategy,
                          parameters?: Array<Parameter | ParameterOptions>): Promise<void> {
-        if (!this.module.isConnected()) {
+        if (!this.connection.isConnected()) {
             throw new Error('Module is not connected');
         }
         this.logger.info(`[${this.qualifiedName}] Execute ${command} (${strategy ? strategy.name : ''})`);
@@ -347,46 +343,46 @@ export class Service extends BaseService {
 
         this.eventEmitter.emit('commandExecuted', {
             timestamp: new Date(),
-            strategy,
-            command,
-            parameter: await this.getCurrentParameters(strategy)
+            strategy: strategy,
+            command: command,
+            parameter: this.getCurrentParameters(strategy)
         });
     }
 
     // overridden method from Base Service
-    public start(): Promise<boolean> {
+    public start() {
         return this.sendCommand(ServiceMtpCommand.START);
     }
 
-    public restart(): Promise<boolean> {
+    public restart() {
         return this.sendCommand(ServiceMtpCommand.RESTART);
     }
 
-    public stop(): Promise<boolean> {
+    public stop() {
         return this.sendCommand(ServiceMtpCommand.STOP);
     }
 
-    public reset(): Promise<boolean> {
+    public reset() {
         return this.sendCommand(ServiceMtpCommand.RESET);
     }
 
-    public complete(): Promise<boolean> {
+    public complete() {
         return this.sendCommand(ServiceMtpCommand.COMPLETE);
     }
 
-    public abort(): Promise<boolean> {
+    public abort() {
         return this.sendCommand(ServiceMtpCommand.ABORT);
     }
 
-    public unhold(): Promise<boolean> {
+    public unhold() {
         return this.sendCommand(ServiceMtpCommand.UNHOLD);
     }
 
-    public pause(): Promise<boolean> {
+    public pause() {
         return this.sendCommand(ServiceMtpCommand.PAUSE);
     }
 
-    public resume(): Promise<boolean> {
+    public resume() {
         return this.sendCommand(ServiceMtpCommand.RESUME);
     }
 
@@ -425,9 +421,9 @@ export class Service extends BaseService {
 
         // first set opMode and then set strategy
         await this.setOperationMode();
-        const nodeId = this.automaticMode ?
+        const node = this.automaticMode ?
             this.serviceControl.communication.StrategyExt : this.serviceControl.communication.StrategyMan;
-        await this.module.writeDataItem(nodeId, strat.id);
+        await node.write(strat.id);
         if (parameters) {
             this.setParameters(parameters);
         }
@@ -482,15 +478,13 @@ export class Service extends BaseService {
         this.serviceParametersEventEmitters.forEach((listener) => listener.removeAllListeners());
     }
 
-    private async sendCommand(command: ServiceMtpCommand): Promise<boolean> {
+    private async sendCommand(command: ServiceMtpCommand) {
         this.logger.info(`[${this.qualifiedName}] Send command ${ServiceMtpCommand[command]}`);
         await this.setOperationMode();
 
-        const result =
-            await this.module.writeDataItem(this.automaticMode ? this.commandExtNode : this.commandManNode, command);
-        this.logger.info(`[${this.qualifiedName}] Command ${ServiceMtpCommand[command]} written: ${result.name}`);
-
-        return result.value === 0;
+        const node = this.automaticMode ? this.commandExtNode : this.commandManNode;
+        await node.write(command);
+        this.logger.info(`[${this.qualifiedName}] Command ${ServiceMtpCommand[command]} written`);
     }
 
     private checkServiceControl() {

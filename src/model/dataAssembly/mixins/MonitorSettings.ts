@@ -23,8 +23,7 @@
  * SOFTWARE.
  */
 
-import {AnaMonOptions} from '@p2olab/polaris-interface';
-import {BaseDataAssemblyRuntime} from '../DataAssembly';
+import {BaseDataAssemblyRuntime, DataAssembly} from '../DataAssembly';
 import {OpcUaDataItem} from '../DataItem';
 import {Constructor} from './mixins';
 
@@ -50,31 +49,30 @@ export type MonitorSettingsRuntime = BaseDataAssemblyRuntime & {
 };
 
 // tslint:disable-next-line:variable-name
-export function MonitorSettings<TBase extends Constructor>(Base: TBase) {
+export function MonitorSettings<TBase extends Constructor<DataAssembly>>(Base: TBase) {
     return class extends Base {
         public communication: MonitorSettingsRuntime;
 
         constructor(...args: any[]) {
             super(...args);
-            const a = args[0] as { communication: AnaMonOptions };
-            this.communication.VAHEn = OpcUaDataItem.fromOptions(a.communication.VAHEn, 'write');
-            this.communication.VAHLim = OpcUaDataItem.fromOptions(a.communication.VAHLim, 'write');
-            this.communication.VAHAct = OpcUaDataItem.fromOptions(a.communication.VAHAct, 'write');
-            this.communication.VWHEn = OpcUaDataItem.fromOptions(a.communication.VWHEn, 'write');
-            this.communication.VWHLim = OpcUaDataItem.fromOptions(a.communication.VWHLim, 'write');
-            this.communication.VWHAct = OpcUaDataItem.fromOptions(a.communication.VWHAct, 'write');
-            this.communication.VTHEn = OpcUaDataItem.fromOptions(a.communication.VTHEn, 'write');
-            this.communication.VTHLim = OpcUaDataItem.fromOptions(a.communication.VTHLim, 'write');
-            this.communication.VTHAct = OpcUaDataItem.fromOptions(a.communication.VTHAct, 'write');
-            this.communication.VALEn = OpcUaDataItem.fromOptions(a.communication.VALEn, 'write');
-            this.communication.VALLim = OpcUaDataItem.fromOptions(a.communication.VALLim, 'write');
-            this.communication.VALAct = OpcUaDataItem.fromOptions(a.communication.VALAct, 'write');
-            this.communication.VWLEn = OpcUaDataItem.fromOptions(a.communication.VWLEn, 'write');
-            this.communication.VWLLim = OpcUaDataItem.fromOptions(a.communication.VWLLim, 'write');
-            this.communication.VWLAct = OpcUaDataItem.fromOptions(a.communication.VWLAct, 'write');
-            this.communication.VTLEn = OpcUaDataItem.fromOptions(a.communication.VTLEn, 'write');
-            this.communication.VTLLim = OpcUaDataItem.fromOptions(a.communication.VTLLim, 'write');
-            this.communication.VTLAct = OpcUaDataItem.fromOptions(a.communication.VTLAct, 'write');
+            this.createDataItem(args[0], 'VAHEn', 'write');
+            this.createDataItem(args[0], 'VAHLim', 'write');
+            this.createDataItem(args[0], 'VAHAct', 'write');
+            this.createDataItem(args[0], 'VWHEn', 'write');
+            this.createDataItem(args[0], 'VWHLim', 'write');
+            this.createDataItem(args[0], 'VWHAct', 'write');
+            this.createDataItem(args[0], 'VTHEn', 'write');
+            this.createDataItem(args[0], 'VTHLim', 'write');
+            this.createDataItem(args[0], 'VTHAct', 'write');
+            this.createDataItem(args[0], 'VALEn', 'write');
+            this.createDataItem(args[0], 'VALLim', 'write');
+            this.createDataItem(args[0], 'VALAct', 'write');
+            this.createDataItem(args[0], 'VWLEn', 'write');
+            this.createDataItem(args[0], 'VWLLim', 'write');
+            this.createDataItem(args[0], 'VWLAct', 'write');
+            this.createDataItem(args[0], 'VTLEn', 'write');
+            this.createDataItem(args[0], 'VTLLim', 'write');
+            this.createDataItem(args[0], 'VTLAct', 'write');
         }
     };
 }

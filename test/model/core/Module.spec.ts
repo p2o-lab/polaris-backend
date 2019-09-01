@@ -59,7 +59,7 @@ describe('Module', () => {
             const module = new Module(moduleJson);
             await module.connect();
 
-            const json = await module.json();
+            const json = module.json();
             expect(json).to.have.property('id', 'CIF');
             expect(json).to.have.property('endpoint', 'opc.tcp://127.0.0.1:4334/ModuleTestServer');
             expect(json).to.have.property('protected', false);

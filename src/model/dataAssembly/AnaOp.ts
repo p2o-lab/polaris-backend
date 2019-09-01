@@ -25,7 +25,7 @@
  */
 
 import {ParameterInterface} from '@p2olab/polaris-interface';
-import {Module} from '../core/Module';
+import {OpcUaConnection} from '../core/OpcUaConnection';
 import {BaseDataAssemblyRuntime, DataAssembly} from './DataAssembly';
 import {OpcUaDataItem} from './DataItem';
 import {OpModeDA, OpModeRuntime} from './mixins/OpMode';
@@ -44,11 +44,12 @@ export type AnaOpRuntime = BaseDataAssemblyRuntime &
 export class ExtAnaOp extends ValueLimitationDA(ScaleSettingsDA(UnitDA(DataAssembly))) {
     public readonly communication: AnaOpRuntime;
 
-    constructor(options, module: Module) {
-        super(options, module);
-        this.communication.VOut = OpcUaDataItem.fromOptions(options.communication.VOut, 'read');
-        this.communication.VRbk = OpcUaDataItem.fromOptions(options.communication.VRbk, 'read');
-        this.communication.VExt = OpcUaDataItem.fromOptions(options.communication.VExt, 'write');
+    constructor(options, connection: OpcUaConnection) {
+        super(options, connection);
+
+        this.createDataItem(options, 'VOut', 'read');
+        this.createDataItem(options, 'VRbk', 'read');
+        this.createDataItem(options, 'VExt', 'write');
     }
 
     public toJson(): ParameterInterface {
@@ -69,9 +70,9 @@ export class ExtIntAnaOp extends OpModeDA(ExtAnaOp) {
 
     public readonly communication: ExtIntAnaOpRuntime;
 
-    constructor(options, module: Module) {
-        super(options, module);
-        this.communication.VInt = OpcUaDataItem.fromOptions(options.communication.VInt, 'read');
+    constructor(options, connection: OpcUaConnection) {
+        super(options, connection);
+        this.createDataItem(options, 'VInt', 'read');
     }
 }
 

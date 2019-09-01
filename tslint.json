@@ -5,6 +5,7 @@
       true,
       "single"
     ],
+    "object-literal-shorthand": false,
     "object-literal-key-quotes": false,
     "object-literal-sort-keys": false,
     "ordered-imports": true,

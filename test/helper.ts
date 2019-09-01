@@ -38,8 +38,8 @@ import {Module} from '../src/model/core/Module';
  */
 export function waitForStateChange(service: BaseService, expectedState: string, ms = 1000): Promise<void> {
     return timeout(new Promise((resolve) => {
-        service.eventEmitter.on('state', function test(data) {
-            if (ServiceState[data.state] === expectedState) {
+        service.eventEmitter.on('state', function test(state) {
+            if (ServiceState[state] === expectedState) {
                 service.eventEmitter.removeListener('state', test);
                 resolve();
             }

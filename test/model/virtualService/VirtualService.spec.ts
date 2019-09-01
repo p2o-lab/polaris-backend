@@ -47,12 +47,12 @@ describe('VirtualService', () => {
     });
 
     describe('Factory', () => {
-       it('should instantiate timer', async () => {
+       it('should instantiate timer', () => {
            const timerJson = parseJson(fs.readFileSync('assets/virtualService/timer.json', 'utf8'), null, 60);
 
            const timer = VirtualServiceFactory.create(timerJson);
 
-           const json = await timer.json();
+           const json = timer.json();
            expect(json.type).equal('Timer');
            expect(json.name).equal('timer1');
            expect(json.parameters).deep.equal([
@@ -77,7 +77,7 @@ describe('VirtualService', () => {
            ]);
        });
 
-       it('should instantiate aggregated service', async () => {
+       it('should instantiate aggregated service', () => {
            const manager = new Manager();
            const modules = manager.loadModule(
                JSON.parse(fs.readFileSync('assets/modules/modules_achema.json').toString()),
@@ -89,7 +89,7 @@ describe('VirtualService', () => {
 
            const aggregatedService = VirtualServiceFactory.create(asJson, modules);
 
-           const json = await aggregatedService.json();
+           const json = aggregatedService.json();
            expect(json.type).equal('AggregatedService');
            expect(json.name).equal('DoseFill');
            expect(json.parameters).deep.equal([

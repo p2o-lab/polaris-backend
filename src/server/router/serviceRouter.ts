@@ -44,7 +44,7 @@ serviceRouter.post('/:moduleId/service/:serviceName/parameter', asyncHandler(asy
     const manager: Manager = req.app.get('manager');
     const service = manager.getService(req.params.moduleId, req.params.serviceName);
     await service.setServiceParameters(req.body.parameters);
-    res.json(await service.getOverview());
+    res.json(service.getOverview());
 }));
 
 /**
@@ -65,7 +65,7 @@ serviceRouter.post('/:moduleId/service/:serviceName/strategy', asyncHandler(asyn
     if (req.body.parameters) {
         await service.setParameters(req.body.parameters);
     }
-    res.json(await service.getOverview());
+    res.json(service.getOverview());
 }));
 
 /**
@@ -101,5 +101,5 @@ serviceRouter.post('/:moduleId/service/:serviceName/:command', asyncHandler(asyn
 serviceRouter.get('/:moduleId/service/:serviceName', asyncHandler(async (req: Request, res: Response) => {
     const manager: Manager = req.app.get('manager');
     const service = manager.getService(req.params.moduleId, req.params.serviceName);
-    res.json(await service.getOverview());
+    res.json(service.getOverview());
 }));

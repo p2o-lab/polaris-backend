@@ -39,9 +39,9 @@ export class StrView extends DataAssembly {
         return this.communication.Text;
     }
 
-    constructor(options, module) {
-        super(options, module);
-        this.communication.Text = OpcUaDataItem.fromOptions(options.communication.Text, 'read', 'string');
+    constructor(options, connection) {
+        super(options, connection);
+        this.createDataItem(options, 'Text', 'read', 'string');
     }
 
     public toJson(): ParameterInterface {

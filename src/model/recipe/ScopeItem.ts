@@ -164,8 +164,7 @@ export class ScopeItem {
             value = ServiceState[this.dataItem.value as ServiceState];
         }
         if (value === undefined) {
-            throw new Error(`Could not evaluate scope item ${this.name} (${JSON.stringify(this.dataItem)} ` +
-                `since it seems not connected`);
+            throw new Error(`Could not evaluate scope item ${this.name} since it seems not connected`);
         }
         return this.name.split('.').reduceRight((previous, current) => {
             const a = {};

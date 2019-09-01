@@ -25,7 +25,7 @@
 
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {catDataAssembly} from '../../config/logging';
-import {Module} from '../core/Module';
+import {OpcUaConnection} from '../core/OpcUaConnection';
 import {AdvAnaOp, AnaServParam, ExtAnaOp, ExtIntAnaOp} from './AnaOp';
 import {AnaMon, AnaView} from './AnaView';
 import {AdvBinOp, BinServParam, ExtBinOp, ExtIntBinOp} from './BinOp';
@@ -34,13 +34,13 @@ import {DataAssembly} from './DataAssembly';
 import {AdvDigOp, DigServParam, ExtDigOp, ExtIntDigOp} from './DigOp';
 import {DigMon, DigView} from './DigView';
 import {AnaDrv, MonAnaDrv} from './Drv';
+import {ServiceControl} from './ServiceControl';
 import {StrView} from './Str';
 import {AnaVlv, BinVlv, MonAnaVlv, MonBinVlv} from './Vlv';
 
 export class DataAssemblyFactory {
-    public static create(variableOptions: DataAssemblyOptions, module: Module): DataAssembly {
+    public static create(variableOptions: DataAssemblyOptions, connection: OpcUaConnection): DataAssembly {
         catDataAssembly.debug(`Create DataAssembly ${variableOptions.name} (${variableOptions.interface_class})`);
-
         const types = {
             'AnaView': AnaView,
             'AnaMon': AnaMon,
@@ -71,15 +71,22 @@ export class DataAssemblyFactory {
             'AnaDrv': AnaDrv,
             'MonAnaDrv': MonAnaDrv,
 
-            'StrView': StrView
+            'StrView': StrView,
+
+            'ServiceControl': ServiceControl
         };
         let type = types[variableOptions.interface_class];
         if (!type) {
-            catDataAssembly.debug(`No data assembly implemented for ${variableOptions.interface_class} ` +
-                `of ${variableOptions.name}. Use standard DataAssembly.`);
+            if (!variableOptions.interface_class) {
+                catDataAssembly.debug(`No interface class specified for DataAssembly ${variableOptions.name}. ` +
+                    `Use standard DataAssembly.`);
+            } else {
+                catDataAssembly.warn(`No data assembly implemented for ${variableOptions.interface_class} ` +
+                    `of ${variableOptions.name}. Use standard DataAssembly.`);
+            }
             type = DataAssembly;
         }
 
-        return new type(variableOptions, module);
+        return new type(variableOptions, connection);
     }
 }

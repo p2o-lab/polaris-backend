@@ -39,7 +39,7 @@ import {catModule} from '../../config/logging';
 import {VariableLogEntry} from '../../logging/archive';
 import {DataAssembly} from '../dataAssembly/DataAssembly';
 import {DataAssemblyFactory} from '../dataAssembly/DataAssemblyFactory';
-import {DataItem, DataItemEmitter, OpcUaDataItem} from '../dataAssembly/DataItem';
+import {DataItemEmitter} from '../dataAssembly/DataItem';
 import {ServiceState} from './enum';
 import {OpcUaConnection} from './OpcUaConnection';
 import {Service} from './Service';
@@ -141,38 +141,29 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
     // module is protected and can't be deleted by the user
     public protected: boolean = false;
 
-    private readonly connection: OpcUaConnection;
+    public readonly connection: OpcUaConnection;
 
     constructor(options: ModuleOptions, protectedModule: boolean = false) {
         super();
         this.options = options;
         this.id = options.id;
         this.protected = protectedModule;
-
-        if (options.services) {
-            this.services = options.services.map((serviceOption) => new Service(serviceOption, this));
-        }
-        if (options.process_values) {
-            this.variables = options.process_values
-                .map((variableOptions) => DataAssemblyFactory.create(variableOptions, this));
-        }
         this.hmiUrl = options.hmi_url;
         this.connection = new OpcUaConnection(this.id, options.opcua_server_url);
         this.logger = catModule;
+
+        if (options.services) {
+            this.services = options.services.map((serviceOpts) => new Service(serviceOpts, this.connection, this.id));
+        }
+        if (options.process_values) {
+            this.variables = options.process_values
+                .map((variableOptions) => DataAssemblyFactory.create(variableOptions, this.connection));
+        }
     }
 
-    public listenToDataItem(dataItem: DataItem<any>, samplingInterval = 100) {
-        return this.connection.listenToOpcUaDataItem(dataItem as OpcUaDataItem<any>, samplingInterval);
-    }
-
-    public writeDataItem(dataItem: DataItem<any>, value: number | string) {
-        return this.connection.writeOpcUaDataItem(dataItem as OpcUaDataItem<any>, value);
-    }
-
-    public async getServiceStates(): Promise<ServiceInterface[]> {
+    public getServiceStates(): ServiceInterface[] {
         this.logger.trace(`[${this.id}] check service states`);
-        const tasks = this.services.map((service) => service.getOverview());
-        return Promise.all(tasks);
+        return this.services.map((service) => service.getOverview());
     }
 
     public async connect() {
@@ -197,16 +188,14 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
 
     /**
      * Get JSON serialisation of module
-     *
-     * @returns {Promise<ModuleInterface>}
      */
-    public async json(): Promise<ModuleInterface> {
+    public json(): ModuleInterface {
         return {
             id: this.id,
             endpoint: this.connection.endpoint,
             hmiUrl: this.hmiUrl,
             connected: this.isConnected(),
-            services: this.isConnected() ? await this.getServiceStates() : undefined,
+            services: this.isConnected() ? this.getServiceStates() : undefined,
             process_values: [],
             protected: this.protected
         };
@@ -324,13 +313,13 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
                 .on('controlEnable', (controlEnable: ControlEnableInterface) => {
                     this.emit('controlEnable', {service, controlEnable});
                 })
-                .on('state', ({state, timestamp}) => {
+                .on('state', (state) => {
                     this.logger.debug(`[${this.id}] state changed: ${service.name} = ${ServiceState[state]}`);
                     const entry = {
                         timestampPfe: new Date(),
-                        timestampModule: timestamp,
-                        service,
-                        state
+                        timestampModule: service.lastStatusChange,
+                        service: service,
+                        state: state
                     };
                     this.emit('stateChanged', entry);
                     if (state === ServiceState.COMPLETED) {

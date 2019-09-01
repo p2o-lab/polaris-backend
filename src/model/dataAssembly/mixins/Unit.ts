@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import {ParameterInterface, UnitDataAssemblyOptions} from '@p2olab/polaris-interface';
+import {ParameterInterface} from '@p2olab/polaris-interface';
 import {UNIT} from '../../core/Unit';
 import {BaseDataAssemblyRuntime, DataAssembly} from '../DataAssembly';
 import {OpcUaDataItem} from '../DataItem';
@@ -41,9 +41,7 @@ export function UnitDA<TBase extends Constructor<DataAssembly>>(Base: TBase) {
 
         constructor(...args: any[]) {
             super(...args);
-            const a = args[0] as { communication: UnitDataAssemblyOptions };
-
-            this.communication.VUnit = OpcUaDataItem.fromOptions(a.communication.VUnit, 'read');
+            this.createDataItem(args[0], 'VUnit', 'read');
         }
 
         public getUnit(): string {

@@ -23,7 +23,6 @@
  * SOFTWARE.
  */
 
-import {OpModeOptions} from '@p2olab/polaris-interface';
 import {catDataAssembly} from '../../../config/logging';
 import {isAutomaticState, isExtSource, isManualState, isOffState, OpMode} from '../../core/enum';
 import {BaseDataAssemblyRuntime, DataAssembly} from '../DataAssembly';
@@ -41,14 +40,9 @@ export function OpModeDA<TBase extends Constructor<DataAssembly>>(Base: TBase) {
 
         constructor(...args: any[]) {
             super(...args);
-            const a = args[0] as { communication: OpModeOptions };
-
-            this.communication.OpMode = OpcUaDataItem.fromOptions(a.communication.OpMode, 'write');
+            this.createDataItem(args[0], 'OpMode', 'write');
         }
 
-        /**
-         * Get current opMode of DataAssembly from reading its state from the PEA.
-         */
         public getOpMode(): OpMode {
             return this.communication.OpMode.value as OpMode;
         }
@@ -73,7 +67,6 @@ export function OpModeDA<TBase extends Constructor<DataAssembly>>(Base: TBase) {
 
         /**
          * Set data assembly to automatic operation mode and source to external source
-         * @returns {Promise<void>}
          */
         public async setToAutomaticOperationMode(): Promise<void> {
             catDataAssembly.debug(`[${this.name}] Current opMode = ${this.communication.OpMode.value}`);
@@ -96,7 +89,7 @@ export function OpModeDA<TBase extends Constructor<DataAssembly>>(Base: TBase) {
             }
         }
 
-        public async setToManualOperationMode(): Promise<void> {
+        public async setToManualOperationMode() {
             const opMode = await this.getOpMode();
             if (opMode && !isManualState(opMode)) {
                 this.writeOpMode(OpMode.stateManOp);
@@ -104,21 +97,10 @@ export function OpModeDA<TBase extends Constructor<DataAssembly>>(Base: TBase) {
             }
         }
 
-        /**
-         * Write OpMode to service
-         * @param {OpMode} opMode
-         * @returns {boolean}
-         */
-        public async writeOpMode(opMode: OpMode): Promise<void> {
+        public async writeOpMode(opMode: OpMode) {
             catDataAssembly.debug(`[${this.name}] Write opMode: ${opMode as number}`);
-            const result = await this.module.writeDataItem(this.communication.OpMode, opMode);
-            catDataAssembly.debug(`[${this.name}] Setting opMode ${JSON.stringify(result)}`);
-            if (result.value !== 0) {
-                catDataAssembly.warn(`[${this.name}] Error while setting opMode to ${opMode}`);
-                return Promise.reject();
-            } else {
-                return Promise.resolve();
-            }
+            await this.communication.OpMode.write(opMode);
+            catDataAssembly.debug(`[${this.name}] Setting opMode successfully`);
         }
     };
 }

@@ -85,15 +85,15 @@ describe('Manager', () => {
             expect(() => manager.getService('Dose', 'NoService')).to.throw();
             expect(() => manager.getService('NoModule', 'NoService')).to.throw();
 
-            await expect(manager.removeModule('something')).to.be.rejectedWith(/No Module/);
-            await expect(manager.removeModule(manager.modules[1].id)).to.be.rejectedWith(/is protected/);
+            await expect(manager.removeModule('something')).to.be.rejectedWith('Module with id something not found');
         });
 
-        it('should prevent removing a protected module', () => {
+        it('should prevent removing a protected module', async () => {
             const manager = new Manager();
-            const modules = manager.loadModule(
+            manager.loadModule(
                 JSON.parse(fs.readFileSync('assets/modules/modules_achema.json').toString()),
                 true);
+            await expect(manager.removeModule(manager.modules[0].id)).to.be.rejectedWith(/is protected/);
         });
     });
 
@@ -114,7 +114,22 @@ describe('Manager', () => {
         expect(() => manager.removeRecipe(manager.recipes[0].id)).to.throw('protected');
     });
 
-    describe('test with test module', function () {
+    it('should load and provide virtual services', () => {
+        const manager = new Manager();
+        expect(manager.getVirtualServices()).to.have.length(0);
+
+        manager.instantiateVirtualService({name: 'timer1', type: 'timer'});
+        expect(manager.getVirtualServices()).to.have.length(1);
+        expect(manager.getVirtualServices()[0]).to.have.property('name', 'timer1');
+
+        expect(() => manager.removeVirtualService('timer234')).to.throw('not available');
+        manager.removeVirtualService('timer1');
+        expect(manager.getVirtualServices()).to.have.length(0);
+
+        expect(() => manager.removeVirtualService('timer1')).to.throw('not available');
+    });
+
+    describe('test with test module', function() {
         this.timeout(5000);
         let moduleServer: ModuleTestServer;
 

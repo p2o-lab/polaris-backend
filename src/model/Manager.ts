@@ -37,7 +37,7 @@ import {Service} from './core/Service';
 import {Player} from './recipe/Player';
 import {Recipe} from './recipe/Recipe';
 import {VirtualService} from './virtualService/VirtualService';
-import {VirtualServiceFactory} from './virtualService/VirtualServiceFactory';
+import {VirtualServiceFactory, VirtualServiceOptions} from './virtualService/VirtualServiceFactory';
 
 interface ManagerEvents {
     /**
@@ -105,6 +105,15 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
             });
     }
 
+    public getModule(moduleId: string): Module {
+        const module = this.modules.find((mod) => mod.id === moduleId);
+        if (module) {
+            return module;
+        } else {
+            throw Error(`Module with id ${moduleId} not found`);
+        }
+    }
+
     /**
      * Load modules from JSON according to TopologyGenerator output or to simplified JSON
      * Skip module if already a module with same id is registered
@@ -155,7 +164,7 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
                 .on('disconnected', () => this.emit('notify', 'module', null))
                 .on('controlEnable', ({service, controlEnable}) => {
                     this.emit('notify', 'module', {
-                        module: service.module.id,
+                        module: module.id,
                         service: service.name,
                         controlEnable
                     });
@@ -230,10 +239,7 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
 
     public async removeModule(moduleId) {
         catManager.info(`Remove module ${moduleId}`);
-        const module = this.modules.find((mod) => mod.id === moduleId);
-        if (!module) {
-            throw new Error(`No Module ${moduleId} found.`);
-        }
+        const module = this.getModule(moduleId);
         if (module.protected) {
             throw new Error(`Module ${moduleId} is protected and can't be deleted`);
         }
@@ -249,12 +255,12 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
         }
     }
 
-    public getModules(): Promise<ModuleInterface[]> {
-        return Promise.all(this.modules.map((module) => module.json()));
+    public getModules(): ModuleInterface[] {
+        return this.modules.map((module) => module.json());
     }
 
-    public async getVirtualServices(): Promise<VirtualServiceInterface[]> {
-        return Promise.all(this.virtualServices.map((vs) => vs.json()));
+    public getVirtualServices(): VirtualServiceInterface[] {
+        return this.virtualServices.map((vs) => vs.json());
     }
 
     public loadRecipe(options: RecipeOptions, protectedRecipe: boolean = false): Recipe {
@@ -325,7 +331,7 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
         return service;
     }
 
-    public instantiateVirtualService(options) {
+    public instantiateVirtualService(options: VirtualServiceOptions) {
         const virtualService = VirtualServiceFactory.create(options);
         catManager.info(`instantiated virtual Service ${virtualService.name}`);
         virtualService.eventEmitter
@@ -368,7 +374,7 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
                     this.player.currentRecipeRun.serviceLog.push(logEntry);
                 }
             })
-            .on('state', ({state, timestamp}) => {
+            .on('state', (state) => {
                 const logEntry: ServiceLogEntry = {
                     timestampPfe: new Date(),
                     module: 'virtualServices',
@@ -391,8 +397,8 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
 
     public removeVirtualService(virtualServiceId: string) {
         catManager.debug(`Remove Virtual Service ${virtualServiceId}`);
-        const index = this.virtualServices.findIndex((fb) => fb.name === virtualServiceId);
-        if (!index) {
+        const index = this.virtualServices.findIndex((virtualService) => virtualService.name === virtualServiceId);
+        if (index === -1) {
             throw new Error(`Virtual Service ${virtualServiceId} not available.`);
         }
         if (index > -1) {
@@ -406,11 +412,12 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
      */
     private performAutoReset(service: Service) {
         if (this.autoreset) {
-            catManager.info(`Service ${service.module.id}.${service.name} completed. ` +
+            catManager.info(`Service ${service.connection.id}.${service.name} completed. ` +
                 `Short waiting time (${this._autoresetTimeout}) to autoreset`);
             setTimeout(async () => {
-                if (service.module.isConnected() && service.state === ServiceState.COMPLETED) {
-                    catManager.info(`Service ${service.module.id}.${service.name} completed. Now perform autoreset`);
+                if (service.connection.isConnected() && service.state === ServiceState.COMPLETED) {
+                    catManager.info(`Service ${service.connection.id}.${service.name} completed. ` +
+                        `Now perform autoreset`);
                     try {
                         service.execute(ServiceCommand.reset);
                     } catch (err) {
