@@ -27,6 +27,7 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
 import {Module} from '../../../src/model/core/Module';
+import {StrView} from '../../../src/model/dataAssembly/Str';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 
 chai.use(chaiAsPromised);
@@ -47,9 +48,11 @@ describe('Module', () => {
         before(async () => {
             moduleServer = new ModuleTestServer();
             await moduleServer.start();
+            moduleServer.startSimulation();
         });
 
         after(async () => {
+            moduleServer.stopSimulation();
             await moduleServer.shutdown();
         });
 
@@ -66,8 +69,54 @@ describe('Module', () => {
             expect(json).to.have.property('services')
                 .to.have.lengthOf(2);
 
+            expect(module.services[0].eventEmitter.listenerCount('state')).to.equal(1);
+            expect(module.services[0].serviceControl.listenerCount('State')).to.equal(1);
+
+            expect(module.variables[0].listenerCount('V')).to.equal(1);
+            expect(module.variables[0].communication.WQC.listenerCount('changed')).to.equal(1);
+            expect(module.variables[0].communication.WQC.listenerCount('changed')).to.equal(1);
+            expect(module.services[0].eventEmitter.listenerCount('parameterChanged')).to.equal(1);
+
+            const errorMsg = module.services[0].strategies[0].parameters[2] as StrView;
+            expect(errorMsg.communication.WQC.listenerCount('changed')).to.equal(1);
+            expect(errorMsg.communication.Text.listenerCount('changed')).to.equal(1);
+            expect(errorMsg.listenerCount('Text')).to.equal(1);
+
+            await Promise.all([
+                new Promise((resolve) => module.on('parameterChanged', resolve)),
+                new Promise((resolve) => module.on('variableChanged', resolve)),
+                new Promise((resolve) => module.on('stateChanged', resolve))
+            ]);
             await module.disconnect();
         });
+
+        it('should work after reconnect', async () => {
+            const moduleJson =
+                JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8')).modules[0];
+            const module = new Module(moduleJson);
+            const param = module.services[0].strategies[0].parameters[2];
+            expect(param.listenerCount('Text')).to.equal(0);
+
+            await module.connect();
+            expect(module.connection.monitoredItemSize()).to.equal(48);
+            expect(param.listenerCount('Text')).to.equal(1);
+
+            await Promise.all([
+                new Promise((resolve) => module.on('parameterChanged', resolve)),
+                new Promise((resolve) => module.on('variableChanged', resolve)),
+                new Promise((resolve) => module.on('stateChanged', resolve))
+            ]);
+            await module.disconnect();
+            expect(module.connection.monitoredItemSize()).to.equal(0);
+
+            await module.connect();
+            expect(module.connection.monitoredItemSize()).to.equal(48);
+            await Promise.all([
+                new Promise((resolve) => module.on('parameterChanged', resolve)),
+                new Promise((resolve) => module.on('variableChanged', resolve)),
+                new Promise((resolve) => module.on('stateChanged', resolve))
+            ]);
+        }).timeout(5000);
 
     });
 

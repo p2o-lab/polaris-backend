@@ -125,6 +125,7 @@ export class  OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionE
             await timeout(this.client.disconnect(), 1000);
             this.client = undefined;
         }
+        this.monitoredItems.clear();
         this.logger.info(`[${this.id}] OPC UA connection disconnected`);
     }
 
@@ -162,7 +163,7 @@ export class  OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionE
             if (monitoredItem.statusCode.value !== 0) {
                 throw new Error(monitoredItem.statusCode.description);
             }
-            this.logger.info(`[${this.id}] subscribed to opc ua Variable ${monitoredItemKey} `);
+            this.logger.debug(`[${this.id}] subscribed to opc ua Variable ${monitoredItemKey} `);
             this.monitoredItems.set(monitoredItemKey, monitoredItem);
             return monitoredItem;
         }

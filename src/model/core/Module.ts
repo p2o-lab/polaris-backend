@@ -149,7 +149,9 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
         this.id = options.id;
         this.protected = protectedModule;
         this.hmiUrl = options.hmi_url;
-        this.connection = new OpcUaConnection(this.id, options.opcua_server_url, options.username, options.password);
+        this.connection = new OpcUaConnection(this.id, options.opcua_server_url, options.username, options.password)
+            .on('connected', () => this.emit('connected'))
+            .on('disconnected', () => this.emit('disconnected'));
         this.logger = catModule;
 
         if (options.services) {
@@ -167,8 +169,6 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
     }
 
     public async connect() {
-        this.connection.on('connected', () => this.emit('connected'));
-        this.connection.on('disconnected', () => this.emit('disconnected'));
         await this.connection.connect();
         await this.subscribeToAllVariables();
         await this.subscribeToAllServices();
@@ -181,8 +181,11 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
      */
     public async disconnect(): Promise<void> {
         this.logger.info(`[${this.id}] Disconnect module`);
-        this.services.forEach((s) => s.eventEmitter.removeAllListeners());
+        await this.unsubscribeFromAllVariables();
+        await this.unsubscribeFromAllServices();
+        this.services.forEach((s) => s.unsubscribe());
         await this.connection.disconnect();
+        this.emit('disconnected');
         this.logger.info(`[${this.id}] Module disconnected`);
     }
 
@@ -195,7 +198,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
             endpoint: this.connection.endpoint,
             hmiUrl: this.hmiUrl,
             connected: this.isConnected(),
-            services: this.isConnected() ? this.getServiceStates() : undefined,
+            services: this.getServiceStates(),
             process_values: [],
             protected: this.protected
         };
@@ -281,7 +284,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
             this.variables.map((variable: DataAssembly) => {
                 catModule.debug(`[${this.id}] subscribe to process variable ${variable.name}`);
                 variable.on('V', (data) => {
-                    this.logger.info(`[${this.id}] variable changed: ${variable.name} = ` +
+                    this.logger.debug(`[${this.id}] variable changed: ${variable.name} = ` +
                         `${data.value} ${variable.getUnit()}`);
                     const entry: VariableLogEntry = {
                         timestampPfe: new Date(),
@@ -298,9 +301,13 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
         );
     }
 
+    private unsubscribeFromAllVariables() {
+        this.variables.forEach((variable: DataAssembly) => variable.unsubscribe());
+    }
+
     private subscribeToAllServices() {
-        return Promise.all(this.services.map(async (service) => {
-            return (await service.subscribeToService())
+        return Promise.all(this.services.map((service) => {
+            service.eventEmitter
                 .on('commandExecuted', (data) => {
                     this.emit('commandExecuted', {
                         service,
@@ -361,7 +368,12 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
                     };
                     this.emit('parameterChanged', entry);
                 });
+            return service.subscribeToService();
         }));
+    }
+
+    private unsubscribeFromAllServices() {
+        this.services.forEach((service) => service.unsubscribe());
     }
 
 }

@@ -108,14 +108,18 @@ export class OpcUaDataItem<T> extends DataItem<T> {
         const monitoredItem = await timeout(
             this.connection.listenToOpcUaNode(this.nodeId, this.namespaceIndex, samplingInterval), 1000);
         monitoredItem.on('changed', (dataValue) => {
-            this.logger.info(`[${this.connection.id}] Variable Changed (${this.nodeId}) ` +
+            this.logger.debug(`[${this.connection.id}] Variable Changed (${this.nodeId}) ` +
                 `= ${dataValue.value.value.toString()}`);
             this.value = dataValue.value.value;
             this.timestamp = dataValue.serverTimestamp;
             this.emit('changed', {value: this.value, timestamp: this.timestamp});
         });
-        this.logger.info(`subscribed to Data Item ${this.nodeId}`);
+        this.logger.debug(`subscribed to Data Item ${this.nodeId}`);
         return this;
+    }
+
+    public unsubscribe() {
+        this.logger.debug('unsubscribe from data item');
     }
 
     public write(value: number | string) {

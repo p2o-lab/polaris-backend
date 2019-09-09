@@ -190,7 +190,7 @@ export class Service extends BaseService {
         this.logger.info(`[${this.qualifiedName}] Subscribe to service`);
         this.serviceControl
             .on('CommandEnable', () => {
-                this.logger.info(`[${this.qualifiedName}] ControlEnable changed: ` +
+                this.logger.debug(`[${this.qualifiedName}] ControlEnable changed: ` +
                     `${JSON.stringify(this.controlEnable)}`);
                 this.eventEmitter.emit('controlEnable', this.controlEnable);
             })
@@ -221,45 +221,60 @@ export class Service extends BaseService {
                 }
             });
         const tasks = [];
-        tasks.push(await this.serviceControl.subscribe(50));
+        tasks.push(this.serviceControl.subscribe(50));
 
         tasks.concat(
-            this.parameters.map(async (param) => (await param.subscribe())
-                .on('V', (data) => {
+            this.parameters.map((param) => {
+                param.on('V', (data) => {
                     this.eventEmitter.emit('variableChanged', {
                         parameter: param.name,
                         value: data,
                         unit: param.getUnit()
                     });
-                })),
-            this.processValuesIn.map(async (param) => (await param.subscribe())
-                .on('V', (data) => {
+                });
+                return param.subscribe();
+            }),
+            this.processValuesIn.map((pv) => {
+                pv.on('V', (data) => {
                     this.eventEmitter.emit('variableChanged', {
-                        parameter: param.name,
+                        parameter: pv.name,
                         value: data,
-                        unit: param.getUnit()
+                        unit: pv.getUnit()
                     });
-                })),
-            this.processValuesOut.map(async (param) => (await param.subscribe())
-                .on('V', (data) => {
+                });
+                return pv.subscribe();
+            }),
+            this.processValuesOut.map((pv) => {
+                pv.on('V', (data) => {
                     this.eventEmitter.emit('variableChanged', {
-                        parameter: param.name,
+                        parameter: pv.name,
                         value: data,
-                        unit: param.getUnit()
+                        unit: pv.getUnit()
                     });
-                })),
-            this.strategies.map(async (strategy) => (await strategy.subscribe())
-                .on('parameterChanged', (data) => {
+                });
+                return pv.subscribe();
+            }),
+            this.strategies.map((strategy) => {
+                strategy.on('parameterChanged', (data) => {
                     this.eventEmitter.emit('parameterChanged', {
                         strategy,
                         parameter: data.parameter.name,
                         value: data.value,
                         unit: data.parameter.getUnit()
                     });
-                })
-            ));
+                });
+                return strategy.subscribe();
+            }));
         await Promise.all(tasks);
         return this.eventEmitter;
+    }
+
+    public unsubscribe() {
+        this.serviceControl.unsubscribe();
+        this.parameters.forEach((param) => param.unsubscribe());
+        this.processValuesIn.forEach((pv) => pv.unsubscribe());
+        this.processValuesOut.forEach((pv) => pv.unsubscribe());
+        this.strategies.forEach((strategy) => strategy.unsubscribe());
     }
 
     /**
@@ -280,7 +295,9 @@ export class Service extends BaseService {
             processValuesOut: [],
             reportParameters: [],
             controlEnable: this.controlEnable,
-            lastChange: (new Date().getTime() - this.lastStatusChange.getTime()) / 1000
+            lastChange: this.lastStatusChange ?
+                (new Date().getTime() - this.lastStatusChange.getTime()) / 1000 :
+                undefined
         };
     }
 

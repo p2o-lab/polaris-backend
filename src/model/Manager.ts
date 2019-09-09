@@ -160,8 +160,13 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
         this.modules.push(...newModules);
         newModules.forEach(async (module: Module) => {
             module
-                .on('connected', () => this.emit('notify', 'module', null))
-                .on('disconnected', () => this.emit('notify', 'module', null))
+                .on('connected', () => {
+                    this.emit('notify', 'module', null);
+                })
+                .on('disconnected', () => {
+                    catManager.info('Module disconnected');
+                    this.emit('notify', 'module', null);
+                })
                 .on('controlEnable', ({service, controlEnable}) => {
                     this.emit('notify', 'module', {
                         module: module.id,
