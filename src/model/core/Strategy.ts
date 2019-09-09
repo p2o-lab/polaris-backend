@@ -26,7 +26,8 @@
 import {StrategyOptions} from '@p2olab/polaris-interface';
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
-import {catService} from '../../config/logging';
+import {Category} from 'typescript-logging';
+import {catStrategy} from '../../config/logging';
 import {DataAssembly} from '../dataAssembly/DataAssembly';
 import {DataAssemblyFactory} from '../dataAssembly/DataAssemblyFactory';
 import {OpcUaDataItem} from '../dataAssembly/DataItem';
@@ -44,6 +45,7 @@ export class Strategy extends (EventEmitter as new() => StrategyEmitter) {
     public readonly defaultStrategy: boolean;
     public readonly selfCompleting: boolean;
     public readonly parameters: DataAssembly[] = [];
+    private readonly logger: Category;
 
     constructor(options: StrategyOptions, connection: OpcUaConnection) {
         super();
@@ -52,18 +54,30 @@ export class Strategy extends (EventEmitter as new() => StrategyEmitter) {
         this.defaultStrategy = options.default;
         this.selfCompleting = options.sc;
         this.parameters = options.parameters.map((paramOpts) => DataAssemblyFactory.create(paramOpts, connection));
+        this.logger = catStrategy;
     }
 
     public async subscribe(): Promise<Strategy> {
-        catService.info(`Subscribe to strategy ${this.name}: ${JSON.stringify(this.parameters.map((p) => p.name))}`);
-        await Promise.all(this.parameters.map(async (param) => (await param.subscribe())
-            .on('VRbk', (data: OpcUaDataItem<number>) => {
-                this.emit('parameterChanged', {parameter: param, value: data.value, timestamp: data.timestamp});
+        this.logger.debug(`Subscribe to strategy ${this.name}: ${JSON.stringify(this.parameters.map((p) => p.name))}`);
+        await Promise.all(
+            this.parameters.map((param) => {
+                param
+                    .on('VRbk', (data: OpcUaDataItem<number>) => {
+                        this.emit('parameterChanged', {parameter: param, value: data.value, timestamp: data.timestamp});
+                    })
+                    .on('Text', (data: OpcUaDataItem<string>) => {
+                        this.emit('parameterChanged', {parameter: param, value: data.value, timestamp: data.timestamp});
+                    });
+                return param.subscribe();
             })
-            .on('Text', (data: OpcUaDataItem<string>) => {
-                this.emit('parameterChanged', {parameter: param, value: data.value, timestamp: data.timestamp});
-            })
-        ));
+        );
+        this.logger.debug(`Subscribed to strategy ${this.name}: ${JSON.stringify(this.parameters.map((p) => p.name))}`);
         return this;
+    }
+
+    public unsubscribe() {
+        this.parameters.forEach((param) => {
+            param.unsubscribe();
+        });
     }
 }

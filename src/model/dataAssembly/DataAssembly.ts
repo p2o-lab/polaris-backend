@@ -84,23 +84,30 @@ export class DataAssembly extends EventEmitter {
      */
     public async subscribe(samplingInterval = 1000): Promise<DataAssembly> {
         if (!this.subscriptionActive) {
-            catDataAssembly.info(`subscribe to ${this.name} ` +
+            catDataAssembly.debug(`subscribe to ${this.name} ` +
                 `with variables ${Object.keys(this.communication)}`);
             await Promise.all(
                 Object.entries(this.communication).map(
-                    async ([key, dataItem]: [string, OpcUaDataItem<any>]) => {
-                        await dataItem.subscribe(samplingInterval);
+                    ([key, dataItem]: [string, OpcUaDataItem<any>]) => {
                         dataItem.on('changed', () => {
                             catDataAssembly.debug(`Emit ${this.name}.${key} = ${dataItem.value}`);
                             this.emit(key, dataItem);
                         });
-                        catDataAssembly.info(`successfully subscribed to ${this.name}.${key}`);
+                        return dataItem.subscribe(samplingInterval);
                     })
             );
             this.subscriptionActive = true;
-            catDataAssembly.info(`successfully subscribed to all variables from ${this.name}`);
+            catDataAssembly.debug(`successfully subscribed to all variables from ${this.name}`);
         }
         return this;
+    }
+
+    public unsubscribe() {
+        this.subscriptionActive = false;
+        Object.values(this.communication).forEach((dataItem: OpcUaDataItem<any>) => {
+            dataItem.unsubscribe();
+            dataItem.removeAllListeners('changed');
+        });
     }
 
     /**

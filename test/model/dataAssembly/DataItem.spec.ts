@@ -92,13 +92,14 @@ describe('DataItem', () => {
             expect(di.value).to.equal('1.2');
         });
 
-        it('should reject working when not connected', () => {
+        it('should reject working when not connected', async () => {
             const di = OpcUaDataItem.fromOptions(
                 {
                     namespace_index: 'urn:NodeOPCUA-Server-default',
                     node_id: 'Service1.Parameter1.VExt',
                     data_type: 'Double'
                 }, connection, 'write', 'number');
+            await expect(di.read()).to.be.rejectedWith('namespace');
         });
     });
 
@@ -134,9 +135,25 @@ describe('DataItem', () => {
             const a = await di.subscribe();
             expect(di.value).to.equal('initial value');
 
-            await new Promise((resolve) => a.on('changed', (data) => {
-                resolve();
-            }));
+            await new Promise((resolve) => a.on('changed', resolve));
+        });
+
+        it('should subscribe, disconnect and resubscribe', async () => {
+            const di = OpcUaDataItem.fromOptions(
+                {
+                    namespace_index: 'urn:NodeOPCUA-Server-default',
+                    node_id: 'Service1.ErrorMsg.Text',
+                    data_type: 'String'
+                }, connection, 'write', 'string');
+
+            const a = await di.subscribe();
+            await new Promise((resolve) => a.on('changed', resolve));
+
+            await connection.disconnect();
+            await connection.connect();
+
+            const a1 = await di.subscribe();
+            await new Promise((resolve) => a1.on('changed', resolve));
         });
 
         it('should write', async () => {

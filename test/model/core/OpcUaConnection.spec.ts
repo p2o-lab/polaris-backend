@@ -73,7 +73,7 @@ describe('OpcUaConnection', () => {
             await connection.disconnect();
         });
 
-        it('should connect to a opc ua test server, subscribes to an opc item and disconnect', async () => {
+        it('should connect to a opc ua test server, subscribes to one opc item and disconnect', async () => {
             const connection = new OpcUaConnection('testserver', 'opc.tcp://localhost:4334');
             expect(connection.isConnected()).to.equal(false);
 
@@ -84,15 +84,38 @@ describe('OpcUaConnection', () => {
             expect(result.statusCode.value).to.equal(0);
             expect(result.statusCode.description).to.equal('No Error');
 
-            await new Promise((resolve) =>
-            result.on('changed', (data) => {
-                resolve();
-            }));
+            await new Promise((resolve) => result.on('changed', resolve));
 
             await connection.disconnect();
         });
 
-        it('should connect to a opc ua test server, listen to some opc item and disconnect', async () => {
+        it('should work after reconnection', async () => {
+            const connection = new OpcUaConnection('testserver', 'opc.tcp://localhost:4334');
+            expect(connection.isConnected()).to.equal(false);
+
+            await connection.connect();
+            expect(connection.isConnected()).to.equal(true);
+
+            const result = await connection.listenToOpcUaNode('Service1.ErrorMsg.Text', 'urn:NodeOPCUA-Server-default');
+            expect(result.statusCode.value).to.equal(0);
+            expect(result.statusCode.description).to.equal('No Error');
+            expect(connection.monitoredItemSize()).to.equal(1);
+
+            await new Promise((resolve) => result.on('changed', resolve));
+
+            await connection.disconnect();
+            expect(connection.monitoredItemSize()).to.equal(0);
+            await connection.connect();
+
+            const res2 = await connection.listenToOpcUaNode('Service1.ErrorMsg.Text', 'urn:NodeOPCUA-Server-default');
+            await new Promise((resolve, reject) => {
+                result.on('changed', reject);
+                res2.on('changed', resolve);
+            });
+            expect(connection.monitoredItemSize()).to.equal(1);
+        });
+
+        it('should connect to a opc ua test server, listen to some opc items and disconnect', async () => {
             const connection = new OpcUaConnection('testserver', 'opc.tcp://localhost:4334');
             expect(connection.isConnected()).to.equal(false);
 
