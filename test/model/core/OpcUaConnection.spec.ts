@@ -143,6 +143,17 @@ describe('OpcUaConnection', () => {
 
         }).timeout(50000);
 
+        it('should connect with username and password', async () => {
+            const connection = new OpcUaConnection('testserver', 'opc.tcp://localhost:4334', 'admin', '1234');
+            await connection.connect();
+            await connection.disconnect();
+        });
+
+        it('should fail connecting with wrong username and password', async () => {
+            const connection = new OpcUaConnection('testserver', 'opc.tcp://localhost:4334', 'admin', 'empty');
+            await expect(connection.connect()).to.be.rejectedWith('BadUserAccessDenied');
+        });
+
     });
 
     it('should connect to a opc ua test server and recognize a shutdown of this server', async () => {

@@ -33,6 +33,9 @@ import {
     DataValue,
     OPCUAClient,
     TimestampsToReturn,
+    UserIdentityInfo,
+    UserIdentityInfoUserName,
+    UserTokenType,
     Variant,
     VariantArrayType
 } from 'node-opcua';
@@ -70,13 +73,17 @@ export class  OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionE
     private readonly monitoredItems: Map<string, ClientMonitoredItemBase>;
     private namespaceArray: string[];
     private readonly logger: Category;
+    private readonly username: string;
+    private readonly password: string;
 
-    constructor(moduleId: string, endpoint: string) {
+    constructor(moduleId: string, endpoint: string, username?: string, password?: string) {
         super();
         this.id = moduleId;
         this.endpoint = endpoint;
         this.logger = catOpc;
         this.monitoredItems = new Map<string, ClientMonitoredItemBase>();
+        this.username = username;
+        this.password = password;
     }
 
     /**
@@ -87,18 +94,8 @@ export class  OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionE
             this.logger.debug(`[${this.id}] Already connected`);
             return Promise.resolve();
         } else {
-            this.client = this.createClient();
-            this.logger.info(`[${this.id}] connect module via ${this.endpoint}`);
-
-            await timeout(this.client.connect(this.endpoint), 2000)
-                .catch((err) => {
-                    this.client.disconnect();
-                    throw err;
-                });
-            this.logger.info(`[${this.id}] opc ua server connected via ${this.endpoint}`);
-
-            this.session = await this.client.createSession();
-            this.logger.info(`session created`);
+            this.client = await this.createAndConnectClient();
+            this.session = await this.createSession();
             this.namespaceArray = await this.readNameSpaceArray();
             this.subscription = await this.createSubscription();
 
@@ -195,7 +192,7 @@ export class  OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionE
     }
 
     /**
-     * Resolves nodeId of dataItem from module using the namespace array
+     * Resolves a nodeId from nodeid and namesace url using the namespace array
      */
     private resolveNodeId(nodeId: string, namespaceUrl: string) {
         if (!this.namespaceArray) {
@@ -222,8 +219,8 @@ export class  OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionE
         return namespaceArray;
     }
 
-    private createClient() {
-        return OPCUAClient.create({
+    private async createAndConnectClient() {
+        const client = OPCUAClient.create({
             endpoint_must_exist: false,
             connectionStrategy: {
                 maxRetry: 0
@@ -242,6 +239,30 @@ export class  OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionE
             .on('timed_out_request', () => {
                 this.logger.warn(`[${this.id}] timed out request - retrying connection`);
             });
+        this.logger.info(`[${this.id}] connect module via ${this.endpoint}`);
+
+        await timeout(client.connect(this.endpoint), 2000)
+            .catch((err) => {
+                client.disconnect();
+                throw err;
+            });
+        this.logger.info(`[${this.id}] opc ua server connected via ${this.endpoint}`);
+        return client;
+    }
+
+    private async createSession() {
+        let userIdentityInfo: UserIdentityInfo = { type: UserTokenType.Anonymous};
+        if (this.username && this.password) {
+            userIdentityInfo =
+                {
+                    type: UserTokenType.UserName,
+                    userName: this.username,
+                    password: this.password
+                } as UserIdentityInfoUserName;
+        }
+        const session = await this.client.createSession(userIdentityInfo);
+        this.logger.info(`session created (#${session.sessionId})`);
+        return session;
     }
 
     private async createSubscription() {
@@ -264,9 +285,9 @@ export class  OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionE
             .on('terminated', () => {
                 this.logger.info(`[${this.id}] subscription terminated`);
             })
-            .on('internal_error', (err: Error) => this.logger.info(`[${this.id}] internal error: ${err}`))
-            .on('error', (err: Error) => this.logger.info(`[${this.id}] error: ${err}`))
-            .on('status_changed', (data) => this.logger.info(`[${this.id}] status changed: ${data}`))
+            .on('internal_error', (err: Error) => this.logger.debug(`[${this.id}] internal error: ${err}`))
+            .on('error', (err: Error) => this.logger.warn(`[${this.id}] error: ${err}`))
+            .on('status_changed', (data) => this.logger.debug(`[${this.id}] status changed: ${data}`))
             .on('item_added', (data) => this.logger.debug(`[${this.id}] item added: ${data}`))
             .on('raw_notification', (data) => this.logger.trace(`[${this.id}] raw_notification: ${data}`))
 

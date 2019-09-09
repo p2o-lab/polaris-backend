@@ -31,6 +31,11 @@ import {TestServerNumericVariable} from './ModuleTestNumericVariable';
 import {TestServerService} from './ModuleTestService';
 import {TestServerVariable} from './ModuleTestVariable';
 
+function validUserFunc(username: string, password: string): boolean {
+    catTestServer.info(`Try to login with ${username}:${password}`);
+    return username === 'admin' && password === '1234';
+}
+
 export class ModuleTestServer {
 
     public externalTrigger: boolean;
@@ -41,7 +46,7 @@ export class ModuleTestServer {
 
     constructor(port = 4334) {
         this.port = port;
-        this.server = new OPCUAServer({port: this.port});
+        this.server = new OPCUAServer({port: this.port, userManager: {isValidUser: validUserFunc}});
 
         this.externalTrigger = false;
     }
