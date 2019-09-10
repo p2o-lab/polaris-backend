@@ -393,7 +393,7 @@
                                       },
                                       "VExt": {
                                           "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
-                                          "node_id": "\"Stir_Rotation\".\"MTP\".\"VOp\"",
+                                          "node_id": "\"Stir_Rotation\".\"MTP\".\"VExt\"",
                                         "data_type": "Float"
                                       },
                                       "VRbk": {

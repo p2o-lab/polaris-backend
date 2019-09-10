@@ -29,6 +29,7 @@
 import { ClientSession } from 'node-opcua';
 import {DataType, Variant, VariantArrayType} from 'node-opcua-variant';
 import * as delay from 'timeout-as-promise';
+import {catOpc} from '../config/logging';
 
 export async function fixReactor(session: ClientSession) {
     const nodeIdsReactor = [
@@ -50,7 +51,7 @@ export async function fixReactor(session: ClientSession) {
         ['ns=3;s="Empty_Vol_Flow"."MTP"."VExt"', 2.5],
     ];
 
-    this.logger.info(`[${this.id}] Fixing nodes in reactor PEA server`);
+    catOpc.info(`Fixing nodes in reactor PEA server`);
 
     // first set to manual
     await Promise.all(nodeIdsReactor.map((nodeId) => {
@@ -90,5 +91,5 @@ export async function fixReactor(session: ClientSession) {
         );
     }));
 
-    this.logger.info(`[${this.id}] Nodes in reactor PEA server fixed`);
+    catOpc.info(`Nodes in reactor PEA server fixed`);
 }

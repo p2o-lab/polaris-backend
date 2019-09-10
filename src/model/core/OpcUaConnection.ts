@@ -100,7 +100,8 @@ export class  OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionE
             this.subscription = await this.createSubscription();
 
             if (this.endpoint === 'opc.tcp://10.6.51.22:4840') {
-                await fixReactor(this.session);
+                await fixReactor(this.session)
+                    .catch((err) => this.logger.warn(`Something wrong during fixing reactor ${JSON.stringify(err)}`));
             }
 
             this.logger.info(`[${this.id}] Successfully connected`);
