@@ -73,7 +73,7 @@ describe('Manager', () => {
         it('should load the achema modules', async () => {
             const manager = new Manager();
             const modules = manager.loadModule(
-                JSON.parse(fs.readFileSync('assets/modules/modules_achema.json').toString()),
+                JSON.parse(fs.readFileSync('assets/modules/achema_demonstrator/modules_achema.json').toString()),
                 true);
             expect(modules).to.have.lengthOf(3);
 
@@ -91,7 +91,7 @@ describe('Manager', () => {
         it('should prevent removing a protected module', async () => {
             const manager = new Manager();
             manager.loadModule(
-                JSON.parse(fs.readFileSync('assets/modules/modules_achema.json').toString()),
+                JSON.parse(fs.readFileSync('assets/modules/achema_demonstrator/modules_achema.json').toString()),
                 true);
             await expect(manager.removeModule(manager.modules[0].id)).to.be.rejectedWith(/is protected/);
         });
