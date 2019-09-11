@@ -80,7 +80,7 @@ describe('VirtualService', () => {
        it('should instantiate aggregated service', () => {
            const manager = new Manager();
            const modules = manager.loadModule(
-               JSON.parse(fs.readFileSync('assets/modules/modules_achema.json').toString()),
+               JSON.parse(fs.readFileSync('assets/modules/achema_demonstrator/modules_achema.json').toString()),
                true);
            expect(modules).to.have.lengthOf(3);
 
