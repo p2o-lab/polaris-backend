@@ -153,7 +153,7 @@ describe('Recipe', () => {
         const modules = [];
 
         before(() => {
-            let file = fs.readFileSync('assets/modules/modules_achema.json');
+            let file = fs.readFileSync('assets/modules/achema_demonstrator/modules_achema.json');
             let options = JSON.parse(file.toString());
             modules.push(new Module(options.modules[0]));
             modules.push(new Module(options.modules[1]));
