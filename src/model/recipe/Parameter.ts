@@ -27,19 +27,22 @@ import {ParameterOptions, ScopeOptions} from '@p2olab/polaris-interface';
 import * as assign from 'assign-deep';
 import {EventEmitter} from 'events';
 import {Expression} from 'expr-eval';
-import {DataType} from 'node-opcua-client';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Category} from 'typescript-logging';
 import {catParameter} from '../../config/logging';
-import {Module, OpcUaNodeEvents} from '../core/Module';
+import {Module} from '../core/Module';
 import {Service} from '../core/Service';
 import {Strategy} from '../core/Strategy';
+import {ExtIntAnaOp} from '../dataAssembly/AnaOp';
+import {ExtIntBinOp} from '../dataAssembly/BinOp';
 import {DataAssembly} from '../dataAssembly/DataAssembly';
+import {DataItemEvents} from '../dataAssembly/DataItem';
+import {ExtIntDigOp} from '../dataAssembly/DigOp';
 import {ScopeItem} from './ScopeItem';
 
 /**
- * Parameter of a [[TestServerService]]. Can be static or dynamic. Dynamic Parameters can depend on variables
- * of the same or other modules. These can also be continuously updated (specified via continuous property)
+ * Parameter of an [[Operation]]. Can be static or dynamic. Dynamic Parameters can depend on variables of the same or
+ * other modules. These can also be continuously updated (specified via continuous property)
  */
 export class Parameter {
 
@@ -64,6 +67,7 @@ export class Parameter {
      * should parameter continuously be updated
      */
     public continuous: boolean;
+    public readonly options: ParameterOptions;
     private expression: Expression;
     private service: Service;
     private _parameter: DataAssembly;
@@ -73,12 +77,13 @@ export class Parameter {
      *
      * @param {ParameterOptions} parameterOptions
      * @param {Service} service         service where the parameter belongs to
-     * @param {Strategy} strategy       strategy to use
+     * @param {Strategy} strategy       strategyNode to use
      * @param {Module[]} modules        modules where expression can be matched
      */
     constructor(parameterOptions: ParameterOptions, service: Service, strategy?: Strategy, modules?: Module[]) {
         catParameter.trace(`Create Parameter: ${JSON.stringify(parameterOptions)}`);
 
+        this.options = parameterOptions;
         this.name = parameterOptions.name;
         this.variable = parameterOptions.variable || service.automaticMode ? 'VExt' : 'VMan';
         this.value = parameterOptions.value || 0;
@@ -87,7 +92,7 @@ export class Parameter {
         this.logger = catParameter;
 
         this.service = service;
-        const strategyUsed: Strategy = strategy || service.strategies.find((strategy) => strategy.default);
+        const strategyUsed: Strategy = strategy || service.defaultStrategy;
         const parameterList: DataAssembly[] = [].concat(service.parameters, strategyUsed.parameters);
         try {
             this._parameter = parameterList.find((obj) => (obj && obj.name === this.name));
@@ -103,32 +108,32 @@ export class Parameter {
             .map((item: ScopeOptions) => ScopeItem.extractFromScopeOptions(item, modules));
 
         // evaluate additional variables from expression
-        const extraction = ScopeItem.extractFromExpressionString(
-            this.value.toString(), modules, this.scopeArray.map((scope) => scope.name)
-        );
-        this.expression = extraction.expression;
-        this.scopeArray.push (...extraction.scopeItems);
+        try {
+            const extraction = ScopeItem.extractFromExpressionString(
+                this.value.toString(), modules, this.scopeArray.map((scope) => scope.name)
+            );
+            this.expression = extraction.expression;
+            this.scopeArray.push(...extraction.scopeItems);
+        } catch (err) {
+            throw new Error('Parsing error for Parameter');
+        }
     }
 
-    public listenToParameter() {
-        const eventEmitter: StrictEventEmitter<EventEmitter, OpcUaNodeEvents> = new EventEmitter();
-        this.scopeArray.forEach(async (item) => {
-            item.module.listenToOpcUaNode(item.variable)
-                .on('changed', (data) => eventEmitter.emit('changed', data));
+    public listenToParameter(): EventEmitter {
+        const eventEmitter: StrictEventEmitter<EventEmitter, DataItemEvents> = new EventEmitter();
+        this.scopeArray.forEach((item) => {
+            item.dataAssembly.on(item.variableName, (data) => eventEmitter.emit('changed', data));
         });
         return eventEmitter;
     }
 
     /**
      * calculate value from current scopeArray
-     * @returns {Promise<any>}
+     * @returns number | boolean
      */
-    public async getValue(): Promise<any> {
-        if (!this.expression) {
-            return undefined;
-        }
+    public getValue(): number | boolean {
         // get current variables
-        const tasks = await Promise.all(this.scopeArray.map((item) => item.getScopeValue()));
+        const tasks = this.scopeArray.map((item) => item.getScopeValue());
         const scope = assign(...tasks);
         const result = this.expression.evaluate(scope);
         catParameter.info(`Specific parameters: ${this.name} = ${this.value} (${JSON.stringify(scope)}) = ${result}`);
@@ -151,14 +156,20 @@ export class Parameter {
      * @returns {Promise<void>}
      */
     public async setOperationMode(): Promise<void> {
-        if (this.service.automaticMode) {
-            this.logger.info(`[${this.service.qualifiedName}.${this.name}] Bring to automatic mode`);
-            this._parameter.setToAutomaticOperationMode();
-            this.logger.info(`[${this.service.qualifiedName}.${this.name}] Parameter now in automatic mode`);
-        } else {
-            this.logger.info(`[${this.service.qualifiedName}.${this.name}] Bring to manual mode`);
-            await this._parameter.setToManualOperationMode();
-            this.logger.info(`[${this.service.qualifiedName}.${this.name}] Parameter now in manual mode`);
+        if (
+            this._parameter instanceof ExtIntAnaOp ||
+            this._parameter instanceof ExtIntBinOp ||
+            this._parameter instanceof ExtIntDigOp
+        ) {
+            if (this.service.automaticMode) {
+                this.logger.info(`[${this.service.qualifiedName}.${this.name}] Bring to automatic mode`);
+                this._parameter.setToAutomaticOperationMode();
+                this.logger.info(`[${this.service.qualifiedName}.${this.name}] Parameter now in automatic mode`);
+            } else {
+                this.logger.info(`[${this.service.qualifiedName}.${this.name}] Bring to manual mode`);
+                await this._parameter.setToManualOperationMode();
+                this.logger.info(`[${this.service.qualifiedName}.${this.name}] Parameter now in manual mode`);
+            }
         }
     }
 

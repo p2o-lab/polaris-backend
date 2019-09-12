@@ -23,75 +23,61 @@
  * SOFTWARE.
  */
 
+import {StrategyOptions} from '@p2olab/polaris-interface';
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
-import {DataAssembly, DataAssemblyOptions} from '../dataAssembly/DataAssembly';
+import {Category} from 'typescript-logging';
+import {catStrategy} from '../../config/logging';
+import {DataAssembly} from '../dataAssembly/DataAssembly';
 import {DataAssemblyFactory} from '../dataAssembly/DataAssemblyFactory';
-import {OpcUaNodeOptions} from './Interfaces';
-import {Module} from './Module';
-
-export interface StrategyOptions {
-    id: string;
-    // name of strategy
-    name: string;
-    // default strategy
-    default: boolean;
-    // self-completing strategy
-    sc: boolean;
-    // strategyParameters of strategy
-    parameters: DataAssemblyOptions[];
-    // process values of strategy
-    processValues: DataAssemblyOptions[];
-}
+import {OpcUaDataItem} from '../dataAssembly/DataItem';
+import {OpcUaConnection} from './OpcUaConnection';
 
 export interface StrategyEvents {
-    processValueChanged: { processValue: DataAssembly, value: any, timestamp: Date };
-
     parameterChanged: { parameter: DataAssembly, value: any, timestamp: Date };
 }
 
 type StrategyEmitter = StrictEventEmitter<EventEmitter, StrategyEvents>;
 
 export class Strategy extends (EventEmitter as new() => StrategyEmitter) {
-    public id: string;
-    // name of strategy
-    public name: string;
-    // default strategy
-    public default: boolean;
-    // self-completing strategy
-    public sc: boolean;
-    // strategyParameters of strategy
-    public parameters: DataAssembly[] = [];
-    // process values of strategy
-    public processValues: DataAssembly[] = [];
+    public readonly id: string;
+    public readonly name: string;
+    public readonly defaultStrategy: boolean;
+    public readonly selfCompleting: boolean;
+    public readonly parameters: DataAssembly[] = [];
+    private readonly logger: Category;
 
-    constructor(options: StrategyOptions, module: Module) {
+    constructor(options: StrategyOptions, connection: OpcUaConnection) {
         super();
         this.id = options.id;
         this.name = options.name;
-        this.default = options.default;
-        this.sc = options.sc;
-        this.parameters = options.parameters.map((paramOptions) => DataAssemblyFactory.create(paramOptions, module));
-        if (options.processValues) {
-            this.processValues = options.processValues
-                .map((pvOptions) => DataAssemblyFactory.create(pvOptions, module));
-        }
+        this.defaultStrategy = options.default;
+        this.selfCompleting = options.sc;
+        this.parameters = options.parameters.map((paramOpts) => DataAssemblyFactory.create(paramOpts, connection));
+        this.logger = catStrategy;
     }
 
-    public subscribe() {
-        this.parameters.map((param) => param.subscribe()
-            .on('VRbk', (data: OpcUaNodeOptions) => {
-                this.emit('parameterChanged', {parameter: param, value: data.value, timestamp: data.timestamp});
-            })
-            .on('Text', (data: OpcUaNodeOptions) => {
-                this.emit('parameterChanged', {parameter: param, value: data.value, timestamp: data.timestamp});
+    public async subscribe(): Promise<Strategy> {
+        this.logger.debug(`Subscribe to strategy ${this.name}: ${JSON.stringify(this.parameters.map((p) => p.name))}`);
+        await Promise.all(
+            this.parameters.map((param) => {
+                param
+                    .on('VRbk', (data: OpcUaDataItem<number>) => {
+                        this.emit('parameterChanged', {parameter: param, value: data.value, timestamp: data.timestamp});
+                    })
+                    .on('Text', (data: OpcUaDataItem<string>) => {
+                        this.emit('parameterChanged', {parameter: param, value: data.value, timestamp: data.timestamp});
+                    });
+                return param.subscribe();
             })
         );
-        this.processValues.map((pv) => pv.subscribe()
-            .on('V', (data: OpcUaNodeOptions) => {
-                this.emit('processValueChanged', {processValue: pv, value: data.value, timestamp: data.timestamp});
-            })
-        );
+        this.logger.debug(`Subscribed to strategy ${this.name}: ${JSON.stringify(this.parameters.map((p) => p.name))}`);
         return this;
+    }
+
+    public unsubscribe() {
+        this.parameters.forEach((param) => {
+            param.unsubscribe();
+        });
     }
 }

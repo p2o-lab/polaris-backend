@@ -33,17 +33,6 @@ import {Manager} from '../../model/Manager';
 export const coreRouter: Router = Router();
 
 /**
- * @api {get} /    Get Manager
- * @apiName GetManager
- * @apiGroup Manager
- */
-coreRouter.get('/', (req: Request, res: Response) => {
-    const manager: Manager = req.app.get('manager');
-    const result = manager.json();
-    res.json(result);
-});
-
-/**
  * @api {post} /shutdown    Shutdown
  * @apiName Shutdown
  * @apiGroup Manager
@@ -65,7 +54,7 @@ coreRouter.get('/version', (req: Request, res: Response) => {
 /**
  * @api {get} /autoReset    Get autoReset
  * @apiName GetAutoReset
- * @apiDescription Get status of autoReset
+ * @apiDescription Get statusNode of autoReset
  * @apiGroup Manager
  */
 coreRouter.get('/autoReset', asyncHandler(async (req: Request, res: Response) => {
@@ -76,7 +65,7 @@ coreRouter.get('/autoReset', asyncHandler(async (req: Request, res: Response) =>
 /**
  * @api {post} /autoReset   Set autoReset
  * @apiName PostAutoReset
- * @apiDescription Set status of autoReset and returns updated value
+ * @apiDescription Set statusNode of autoReset and returns updated value
  * @apiGroup Manager
  * @apiParam {Boolean} autoReset      new value of autoReset
  */

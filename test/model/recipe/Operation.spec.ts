@@ -31,6 +31,7 @@ import {ClientSession, OPCUAClient} from 'node-opcua-client';
 import {OPCUAServer} from 'node-opcua-server';
 import * as delay from 'timeout-as-promise';
 import {Module} from '../../../src/model/core/Module';
+import {Service} from '../../../src/model/core/Service';
 import {Operation} from '../../../src/model/recipe/Operation';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 import {waitForStateChange} from '../../helper';
@@ -40,28 +41,117 @@ const expect = chai.expect;
 
 describe('Operation', () => {
 
+    context('constructor', () => {
+
+        let module;
+
+        before(() => {
+            const moduleJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString())
+                .modules[0];
+            module = new Module(moduleJson);
+        });
+
+        it('should fail with missing options', () => {
+            expect(() => new Operation(null, [])).to.throw();
+        });
+
+        it('should fail with missing modules', () => {
+            expect(() => new Operation({service: null, command: null}, null)).to.throw('No modules specified');
+        });
+
+        it('should fail with missing 2', () => {
+            expect(() => new Operation({service: null, command: null}, [])).to.throw();
+        });
+
+        it('should fail with missing 3', () => {
+            expect(() => new Operation({
+                module: 'test',
+                service: null,
+                command: null
+            }, [module])).to.throw('Could not find');
+        });
+
+        it('should fail with wrong service name', () => {
+            expect(() => new Operation({
+                module: 'CIF',
+                service: 'test',
+                command: null
+            }, [module])).to.throw('not found');
+        });
+
+        it('should fail with wrong strategy name', () => {
+            expect(() => new Operation({
+                module: 'CIF',
+                service: 'Service1',
+                strategy: 'dd',
+                command: null
+            }, [module])).to.throw('not be found');
+        });
+
+        it('should work', () => {
+            const op = new Operation({
+                module: 'CIF', service: 'Service1', command: 'start' as any,
+                parameter: [{name: 'Parameter001', value: 3}]
+            }, [module]);
+            expect(op).to.have.property('module');
+            expect(op.json()).to.deep.equal({
+                command: 'start',
+                module: 'CIF',
+                parameter: [
+                    {
+                        name: 'Parameter001',
+                        value: 3
+                    }
+                ],
+                service: 'Service1',
+                state: undefined,
+                strategy: 'Strategy 1'
+            });
+        });
+    });
+
     describe('OPC UA server mockup', () => {
 
         let moduleServer: ModuleTestServer;
+        let module: Module;
+        let service: Service;
 
-        before(async () => {
+        beforeEach(async function () {
+            this.timeout(5000);
             moduleServer = new ModuleTestServer();
             await moduleServer.start();
+
+            const moduleJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString())
+                .modules[0];
+            module = new Module(moduleJson);
+            service = module.services[0];
+
+            await module.connect();
         });
 
-        after(async () => {
+        afterEach(async () => {
+            await module.disconnect();
             await moduleServer.shutdown();
         });
 
         it('should try execute operation until it works', async () => {
+            const operation = new Operation({
+                service: 'Service1',
+                command: 'complete' as ServiceCommand
+            }, [module]);
 
-            const moduleJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString())
-                .modules[0];
-            const module = new Module(moduleJson);
-            const service = module.services[0];
+            operation.execute();
+            await delay(300);
+            expect(operation.json()).to.have.property('state', 'executing');
+            // set precondition for operation
+            service.execute(ServiceCommand.start);
 
-            await module.connect();
+            await waitForStateChange(service, 'COMPLETED', 3000);
+            expect(operation.json()).to.have.property('state', 'completed');
 
+        }).timeout(10000);
+
+        it('should try execute operation until it is stopped', async () => {
             const operation = new Operation({
                 service: 'Service1',
                 command: 'complete' as ServiceCommand
@@ -69,9 +159,23 @@ describe('Operation', () => {
 
             operation.execute();
             await delay(600);
-            service.execute(ServiceCommand.start);
+            expect(operation.json()).to.have.property('state', 'executing');
+            operation.stop();
+            expect(operation.json()).to.have.property('state', 'aborted');
 
-            await waitForStateChange(service, 'COMPLETED', 3000);
+        }).timeout(10000);
+
+        it('should try execute operation until timeout', async () => {
+            const operation = new Operation({
+                service: 'Service1',
+                command: 'complete' as ServiceCommand
+            }, [module]);
+
+            operation.execute();
+            await delay(3000);
+            expect(operation.json()).to.have.property('state', 'executing');
+            await delay(2050);
+            expect(operation.json()).to.have.property('state', 'aborted');
 
         }).timeout(10000);
 

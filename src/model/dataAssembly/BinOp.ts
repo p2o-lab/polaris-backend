@@ -1,3 +1,4 @@
+/* tslint:disable:max-classes-per-file */
 /*
  * MIT License
  *
@@ -23,32 +24,29 @@
  * SOFTWARE.
  */
 
-import {DataAssembly} from './DataAssembly';
+import {BaseDataAssemblyRuntime, DataAssembly} from './DataAssembly';
+import {OpcUaDataItem} from './DataItem';
+import {OpModeDA} from './mixins/OpMode';
+
+export type ExtBinOpRuntime = BaseDataAssemblyRuntime & {
+    VExt: OpcUaDataItem<boolean>;
+    VRbk: OpcUaDataItem<boolean>;
+    VOut: OpcUaDataItem<boolean>;
+    VState0: OpcUaDataItem<string>;
+    VState1: OpcUaDataItem<string>;
+};
 
 export class ExtBinOp extends DataAssembly {
 
-    get VState0() {return this.communication['VState0']}
-    get VState1() {return this.communication['VState1']}
-    get VExt() {return this.communication['VExt']}
-    get VOut() {return this.communication['VOut']}
-    get VRbk() {return this.communication['VRbk']}
+    public readonly communication: ExtBinOpRuntime;
 
-    constructor(options, module){
+    constructor(options, module) {
         super(options, module);
-        this.subscribedNodes.push('VOut', 'VState0', 'VState1', 'VExt', 'VRbk');
     }
 
 }
 
-export class ExtIntBinOp extends ExtBinOp {
-
-    get VInt() {return this.communication['VInt']}
-    get OpMode() {return this.communication['OpMode']}
-
-    constructor(options, module){
-        super(options, module);
-        this.subscribedNodes.push('VInt', 'OpMode');
-    }
+export class ExtIntBinOp extends OpModeDA(ExtBinOp) {
 }
 
 export class AdvBinOp extends ExtIntBinOp {
@@ -56,4 +54,5 @@ export class AdvBinOp extends ExtIntBinOp {
 }
 
 export class BinServParam extends ExtIntBinOp {
+
 }

@@ -6,7 +6,6 @@ WORKDIR /app
 FROM base as dependencies
 COPY package.json .
 COPY package-lock.json .
-COPY .npmrc .
 RUN npm install --prod
 
 ## Image for building

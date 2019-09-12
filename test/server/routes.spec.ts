@@ -23,24 +23,33 @@
  * SOFTWARE.
  */
 
+import * as fs from 'fs';
 import * as request from 'supertest';
+import * as WebSocket from 'ws';
 import {Manager} from '../../src/model/Manager';
+import {ModuleTestServer} from '../../src/moduleTestServer/ModuleTestServer';
 import Routes from '../../src/server/routes';
 import {Server} from '../../src/server/server';
 
 describe('Routes', () => {
     let app;
+    let appServer: Server;
 
     before(() => {
-        const appServer = new Server(new Manager());
+        appServer = new Server(new Manager());
+        appServer.startHttpServer(3000);
+        appServer.initSocketServer();
         app = appServer.app;
+    });
+
+    after(async () => {
+        await appServer.stop();
     });
 
     it('should give code 404 for not existing routes', (done) => {
         request(app).get('/api/notExisting')
             .expect(404, done);
     });
-
 
     context('#coreRoutes', () => {
 
@@ -118,12 +127,6 @@ describe('Routes', () => {
                 .expect(200, done);
         });
 
-        it('should provide meta information', (done) => {
-            request(app).get('/api/')
-                .expect('Content-Type', /json/)
-                .expect(200, done);
-        });
-
         context('logs', () => {
 
             it('should provide logs', (done) => {
@@ -166,10 +169,116 @@ describe('Routes', () => {
     });
 
     context('#moduleRoutes', () => {
-        it('should provide modules', (done) => {
-            request(app).get('/api/module')
+        it('should provide modules', async () => {
+            await request(app).get('/api/module')
                 .expect('Content-Type', /json/)
-                .expect(200, done);
+                .expect(200)
+                .expect([]);
+        });
+
+        it('should throw 404 when get not existing module', async () => {
+            await request(app).get('/api/module/abc1234')
+                .expect(404)
+                .expect('Error: Module with id abc1234 not found');
+        });
+
+        it('should provide download for not existing modules', async () => {
+            await request(app).get('/api/module/abc1234/download')
+                .expect(500);
+        });
+
+        it('should allow interacting with all modules', async () => {
+            await request(app).post('/api/module/abort')
+                .expect('Content-Type', /json/)
+                .expect(200)
+                .expect({status: 'aborted all services from all modules'});
+            await request(app).post('/api/module/stop')
+                .expect('Content-Type', /json/)
+                .expect(200)
+                .expect({status: 'stopped all services from all modules'});
+            await request(app).post('/api/module/reset')
+                .expect('Content-Type', /json/)
+                .expect(200)
+                .expect({status: 'reset all services from all modules'});
+        });
+
+        it('should fail wile loading module with empty content', async () => {
+            await request(app).put('/api/module')
+                .send({})
+                .expect('Content-Type', /json/)
+                .expect(500);
+        });
+
+        it('should fail while loading module without content', async () => {
+            await request(app).put('/api/module')
+                .send(null)
+                .expect('Content-Type', /json/)
+                .expect(500);
+        });
+
+        it('should fail while connecting a not existing module', async () => {
+            await request(app).post('/api/module/test/connect')
+                .send(null)
+                .expect(500)
+                .expect('Content-Type', /json/)
+                .expect(/Error: Module with id test not found/);
+        });
+
+        it('should fail while disconnecting from a not existing module', async () => {
+            await request(app).post('/api/module/test/disconnect')
+                .send(null)
+                .expect(500)
+                .expect('Content-Type', /json/)
+                .expect(/Error: Module with id test not found/);
+        });
+
+        describe('with test module', () => {
+            let moduleServer: ModuleTestServer;
+
+            before(async () => {
+                moduleServer = new ModuleTestServer();
+                await moduleServer.start();
+            });
+
+            after(async () => {
+                await moduleServer.shutdown();
+            });
+
+            it('should load, get, disconnect and delete module', async () => {
+                const options =
+                    JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString()).modules[0];
+                await request(app).put('/api/module')
+                    .send({module: options})
+                    .expect(200)
+                    .expect('Content-Type', /json/)
+                    .expect(/"connected":false/)
+                    .expect(/"protected":false/);
+
+                // wait until first update of state via websocket
+                const ws = new WebSocket('ws:/localhost:3000');
+                await new Promise((resolve) => ws.on('message', function incoming(msg) {
+                    const data = JSON.parse(msg.toString());
+                    if (data.data && data.data.status) {
+                        ws.removeListener('message', incoming);
+                        resolve();
+                    }
+                }));
+
+                await request(app).get('/api/module/CIF')
+                    .expect(200)
+                    .expect('Content-Type', /json/)
+                    .expect(/"status":"IDLE"/);
+
+                await request(app).post('/api/module/CIF/disconnect')
+                    .expect(200)
+                    .expect('Content-Type', /json/)
+                    .expect(/"status":"Succesfully disconnected"/);
+
+                await request(app).delete('/api/module/CIF')
+                    .expect(200)
+                    .expect('Content-Type', /json/)
+                    .expect({status: 'Successful deleted', id: 'CIF'});
+            });
         });
     });
 
@@ -182,10 +291,20 @@ describe('Routes', () => {
     });
 
     context('#recipeRoutes', () => {
-        it('should provide recipes', (done) => {
-            request(app).get('/api/recipe')
+        it('should provide recipes', async () => {
+            await request(app).get('/api/recipe')
                 .expect('Content-Type', /json/)
-                .expect(200, done);
+                .expect(200);
+        });
+
+        it('should provide specific recipe', async () => {
+            await request(app).get('/api/recipe/abc123')
+                .expect(500);
+        });
+
+        it('should delete not existing recipe', async () => {
+            await request(app).delete('/api/recipe/abc123')
+                .expect(400);
         });
     });
 });

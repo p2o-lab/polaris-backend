@@ -1,3 +1,4 @@
+/* tslint:disable:max-classes-per-file */
 /*
  * MIT License
  *
@@ -23,34 +24,35 @@
  * SOFTWARE.
  */
 
-import {DataAssembly} from './DataAssembly';
+import {ParameterInterface} from '@p2olab/polaris-interface';
+import {OpcUaConnection} from '../core/OpcUaConnection';
+import {BaseDataAssemblyRuntime, DataAssembly} from './DataAssembly';
+import {OpcUaDataItem} from './DataItem';
+import {MonitorSettings} from './mixins/MonitorSettings';
+import {ScaleSettingsDA, ScaleSettingsRuntime} from './mixins/ScaleSettings';
+import {UnitDA, UnitDataAssemblyRuntime} from './mixins/Unit';
 
-export class AnaView extends DataAssembly {
+export type AnaViewRuntime = BaseDataAssemblyRuntime & UnitDataAssemblyRuntime & ScaleSettingsRuntime & {
+    V: OpcUaDataItem<number>;
+};
 
-    get V() { return this.communication['V']}
-    get VUnit() {return this.communication['VUnit']}
-    get VSclMin() {return this.communication['VSclMin']}
-    get VSclMax() {return this.communication['VSclMax']}
+export class AnaView extends ScaleSettingsDA(UnitDA(DataAssembly)) {
+    public readonly communication: AnaViewRuntime;
 
-    constructor(options, module){
-        super(options, module);
-        this.subscribedNodes.push('V', 'VUnit', 'VSclMin', 'VSclMax');
+    constructor(options, connection: OpcUaConnection) {
+        super(options, connection);
+        this.createDataItem(options, 'V', 'read');
     }
 
+    public toJson(): ParameterInterface {
+        return {
+            ...super.toJson(),
+            value: this.communication.V.value,
+            type: 'number',
+            readonly: true
+        };
+    }
 }
 
-export class AnaMon extends AnaView {
-
-    // TODO: add getters
-
-    constructor(options, module){
-        super(options, module);
-        this.subscribedNodes.push(
-            'VAHEn', 'VAHLim', 'VAHAct',
-            'VWHEn', 'VWHLim', 'VWHAct',
-            'VTHEn', 'VTHLim', 'VTHAct',
-            'VALEn', 'VALLim', 'VALAct',
-            'VWLEn', 'VWLLim', 'VWLAct',
-            'VTLEn', 'VTLLim', 'VTLAct');
-    }
+export class AnaMon extends MonitorSettings(AnaView) {
 }

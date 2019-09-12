@@ -39,57 +39,98 @@ const expect = chai.expect;
 
 describe('Manager', () => {
 
-    it('should reject loading modules with empty options', () => {
-        const manager = new Manager();
-        expect(() => manager.loadModule({})).to.throw();
-        expect(() => manager.loadModule({someattribute: 'abc'} as any)).to.throw();
+    context('loading modules', () => {
+
+        it('should reject loading modules with empty options', () => {
+            const manager = new Manager();
+            expect(() => manager.loadModule(null)).to.throw();
+            expect(() => manager.loadModule({})).to.throw();
+            expect(() => manager.loadModule({someattribute: 'abc'} as any)).to.throw();
+        });
+
+        it('should load modules', () => {
+            const modulesJson = JSON.parse(fs.readFileSync('assets/modules/module_cif.json').toString());
+            const manager = new Manager();
+            manager.loadModule(modulesJson);
+            expect(() => manager.loadModule(modulesJson)).to.throw('already in registered modules');
+        });
+
+        it('should load with single module', () => {
+            const modulesJson = JSON.parse(fs.readFileSync('assets/modules/module_cif.json').toString());
+            const moduleJson = modulesJson.modules[0];
+            const manager = new Manager();
+            manager.loadModule({module: moduleJson});
+            expect(() => manager.loadModule({module: moduleJson})).to.throw('already in registered modules');
+        });
+
+        it('should load with subplants options', () => {
+            const modulesJson = JSON.parse(fs.readFileSync('assets/modules/module_cif.json').toString());
+            const manager = new Manager();
+            manager.loadModule({subplants: [modulesJson]});
+            expect(() => manager.loadModule({subplants: [modulesJson]})).to.throw('already in registered modules');
+        });
+
+        it('should load the achema modules', async () => {
+            const manager = new Manager();
+            const modules = manager.loadModule(
+                JSON.parse(fs.readFileSync('assets/modules/achema_demonstrator/modules_achema.json').toString()),
+                true);
+            expect(modules).to.have.lengthOf(3);
+
+            expect(manager.modules).to.have.lengthOf(3);
+
+            const service = manager.getService('Dose', 'Fill');
+            expect(service).to.be.instanceOf(Service);
+            expect(service.name).to.equal('Fill');
+            expect(() => manager.getService('Dose', 'NoService')).to.throw();
+            expect(() => manager.getService('NoModule', 'NoService')).to.throw();
+
+            await expect(manager.removeModule('something')).to.be.rejectedWith('Module with id something not found');
+        });
+
+        it('should prevent removing a protected module', async () => {
+            const manager = new Manager();
+            manager.loadModule(
+                JSON.parse(fs.readFileSync('assets/modules/achema_demonstrator/modules_achema.json').toString()),
+                true);
+            await expect(manager.removeModule(manager.modules[0].id)).to.be.rejectedWith(/is protected/);
+        });
     });
 
-    it('should load with single module', () => {
-        const modulesJson = JSON.parse(fs.readFileSync('assets/modules/module_cif.json').toString());
-        const moduleJson = modulesJson.modules[0];
+    it('should load and remove recipe', () => {
+        const modulesRecipe =
+            JSON.parse(fs.readFileSync('assets/recipes/test/recipe_time_local.json').toString());
         const manager = new Manager();
-        manager.loadModule({module: moduleJson});
+        manager.loadRecipe(modulesRecipe);
+        manager.loadRecipe(modulesRecipe, true);
+
+        expect(manager.recipes).to.have.lengthOf(2);
+
+        expect(() => manager.removeRecipe('whatever')).to.throw('not available');
+
+        manager.removeRecipe(manager.recipes[0].id);
+        expect(manager.recipes).to.have.lengthOf(1);
+
+        expect(() => manager.removeRecipe(manager.recipes[0].id)).to.throw('protected');
     });
 
-    it('should load with subplants options', () => {
-        const modulesJson = JSON.parse(fs.readFileSync('assets/modules/module_cif.json').toString());
+    it('should load and provide virtual services', () => {
         const manager = new Manager();
-        manager.loadModule({subplants: [modulesJson]});
+        expect(manager.getVirtualServices()).to.have.length(0);
+
+        manager.instantiateVirtualService({name: 'timer1', type: 'timer'});
+        expect(manager.getVirtualServices()).to.have.length(1);
+        expect(manager.getVirtualServices()[0]).to.have.property('name', 'timer1');
+
+        expect(() => manager.removeVirtualService('timer234')).to.throw('not available');
+        manager.removeVirtualService('timer1');
+        expect(manager.getVirtualServices()).to.have.length(0);
+
+        expect(() => manager.removeVirtualService('timer1')).to.throw('not available');
     });
 
-    it('should load the achema modules', () => {
-        const manager = new Manager();
-        const modules = manager.loadModule(
-            JSON.parse(fs.readFileSync('assets/modules/modules_achema.json').toString()),
-            true);
-        expect(modules).to.have.lengthOf(3);
-
-        expect(manager.modules).to.have.lengthOf(3);
-
-        const service = manager.getService('Dose', 'Fill');
-        expect(service).to.be.instanceOf(Service);
-        expect(service.name).to.equal('Fill');
-        expect(() => manager.getService('Dose', 'NoService')).to.throw();
-        expect(() => manager.getService('NoModule', 'NoService')).to.throw();
-
-        expect(manager.removeModule('something')).to.be.rejectedWith(/No Module/);
-        expect(manager.removeModule(manager.modules[1].id)).to.be.rejectedWith(/is protected/);
-    });
-
-    it('should prevent removing a protected module', () => {
-        const manager = new Manager();
-        const modules = manager.loadModule(
-            JSON.parse(fs.readFileSync('assets/modules/modules_achema.json').toString()),
-            true);
-    });
-
-    it('should provide JSON output', () => {
-        const manager = new Manager();
-        expect(manager.json().autoReset).to.equal(true);
-    });
-
-    describe('test with test module', () => {
+    describe('test with test module', function() {
+        this.timeout(5000);
         let moduleServer: ModuleTestServer;
 
         before(async () => {
@@ -102,12 +143,49 @@ describe('Manager', () => {
         });
 
         it('should load from options, stop, abort and reset manager and remove module', async () => {
-
-            const moduleJson = parseJson(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8'), null, 60);
+            const moduleJson = parseJson(
+                fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8'), null, 60);
 
             const manager = new Manager();
             manager.loadModule(moduleJson);
             expect(manager.modules).to.have.lengthOf(1);
+
+            const module = manager.modules[0];
+            const service1 = module.services[0];
+            const service2 = module.services[1];
+
+            module.connect();
+            await waitForStateChange(service2, 'IDLE', 2000);
+            service2.execute(ServiceCommand.start);
+            await waitForStateChange(service2, 'EXECUTE');
+
+            await manager.stopAllServices();
+            await waitForStateChange(service2, 'STOPPED');
+            expect(service2.state).to.equal(ServiceState.STOPPED);
+
+            await manager.abortAllServices();
+            await Promise.all([
+                    waitForStateChange(service1, 'ABORTED'),
+                    waitForStateChange(service2, 'ABORTED')]
+            );
+            expect(service1.state).to.equal(ServiceState.ABORTED);
+            expect(service2.state).to.equal(ServiceState.ABORTED);
+
+            await manager.resetAllServices();
+            await waitForStateChange(service2, 'IDLE');
+            expect(service2.state).to.equal(ServiceState.IDLE);
+
+            await manager.removeModule(module.id);
+            expect(manager.modules).to.have.lengthOf(0);
+        }).timeout(5000);
+
+        it('should autoreset service', async () => {
+            const moduleJson = parseJson(
+                fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8'), null, 60);
+
+            const manager = new Manager();
+            manager.autoreset = true;
+            manager.loadModule(moduleJson);
 
             const module = manager.modules[0];
             const service = module.services[1];
@@ -117,42 +195,11 @@ describe('Manager', () => {
             service.execute(ServiceCommand.start);
             await waitForStateChange(service, 'EXECUTE');
 
-            await manager.stopAllServices();
-            await waitForStateChange(service, 'STOPPED');
-            expect(service.status.value).to.equal(ServiceState.STOPPED);
-
-            await manager.abortAllServices();
-            await waitForStateChange(service, 'ABORTED');
-            expect(service.status.value).to.equal(ServiceState.ABORTED);
-
-            await manager.resetAllServices();
-            await waitForStateChange(service, 'IDLE');
-            expect(service.status.value).to.equal(ServiceState.IDLE);
-
-            await manager.removeModule(module.id);
-            expect(manager.modules).to.have.lengthOf(0);
-        }).slow(2000).timeout(10000).retries(3);
-
-        it('should autoreset service', async () => {
-            const moduleJson = parseJson(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8'), null, 60);
-
-            const manager = new Manager();
-            manager.autoreset = true;
-            manager.loadModule(moduleJson);
-
-            const module = manager.modules[0];
-            const service = module.services[1];
-
-            await module.connect();
-            await waitForStateChange(service, 'IDLE');
-            service.execute(ServiceCommand.start);
-            await waitForStateChange(service, 'EXECUTE');
-
             service.execute(ServiceCommand.complete);
             await waitForStateChange(service, 'COMPLETED');
             await waitForStateChange(service, 'IDLE');
-        }).slow(2000).timeout(5000);
+        });
 
-    }).retries(3);
+    });
 
 });

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018 Markus Graube <markus.graube@tu.dresden.de>,
+ * Copyright (c) 2019 Markus Graube <markus.graube@tu.dresden.de>,
  * Chair for Process Control Systems, Technische Universität Dresden
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,15 +23,34 @@
  * SOFTWARE.
  */
 
-export interface OpcUaNodeOptions {
-    /* despite its current name this variable contains the *namespace url* of the node*/
-    namespace_index: string;
-    /** node id of the node as string (e.g. 's=sdfdsf' or 'i=12') */
-    node_id: string;
-    /** data type of OPC UA node */
-    data_type?: string;
-    /** recent value */
-    value?: number| string| boolean;
-    /** timestamp of last update of value */
-    timestamp?: Date;
+import {ParameterInterface} from '@p2olab/polaris-interface';
+import {BaseDataAssemblyRuntime, DataAssembly} from '../DataAssembly';
+import {OpcUaDataItem} from '../DataItem';
+import {Constructor} from './mixins';
+
+export interface ScaleSettingsRuntime extends BaseDataAssemblyRuntime {
+    VSclMin: OpcUaDataItem<number>;
+    VSclMax: OpcUaDataItem<number>;
+}
+
+// tslint:disable-next-line:variable-name
+export function ScaleSettingsDA<TBase extends Constructor<DataAssembly>>(Base: TBase) {
+
+    return class extends Base {
+        public communication: ScaleSettingsRuntime;
+
+        constructor(...args: any[]) {
+            super(...args);
+            this.createDataItem(args[0], 'VSclMax', 'read');
+            this.createDataItem(args[0], 'VSclMin', 'read');
+        }
+
+        public toJson(): ParameterInterface {
+            return {
+                ...super.toJson(),
+                max: this.communication.VSclMax.value,
+                min: this.communication.VSclMin.value
+            };
+        }
+    };
 }

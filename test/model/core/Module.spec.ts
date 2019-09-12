@@ -23,54 +23,101 @@
  * SOFTWARE.
  */
 
-import * as assert from 'assert';
-import {expect} from 'chai';
+import * as chai from 'chai';
+import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
-import {Module, ModuleOptions} from '../../../src/model/core/Module';
+import {Module} from '../../../src/model/core/Module';
+import {StrView} from '../../../src/model/dataAssembly/Str';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
+
+chai.use(chaiAsPromised);
+const expect = chai.expect;
 
 describe('Module', () => {
 
-    it('should not connect to a module with wrong endpoint', async () => {
-        const options: ModuleOptions = JSON.parse(fs.readFileSync('assets/modules/module_cif.json').toString()).modules[0];
-        options.opcua_server_url = 'opc.tcp://10.6.51.99:484144';
-        const module = new Module(options);
-        try {
+    it('should load the cif module json', () => {
+        const f = fs.readFileSync('assets/modules/module_cif.json');
+        const module = new Module(JSON.parse(f.toString()).modules[0]);
+        expect(module).to.have.property('id', 'CIF');
+        expect(module.services).to.have.length(6);
+    });
+
+    context('with module server', () => {
+        let moduleServer: ModuleTestServer;
+
+        before(async () => {
+            moduleServer = new ModuleTestServer();
+            await moduleServer.start();
+            moduleServer.startSimulation();
+        });
+
+        after(async () => {
+            moduleServer.stopSimulation();
+            await moduleServer.shutdown();
+        });
+
+        it('should connect to module, provide correct json output and disconnect', async () => {
+            const moduleJson =
+                JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8')).modules[0];
+            const module = new Module(moduleJson);
             await module.connect();
-        } catch (e) {
-            expect(e).to.exist;
-        }
-        expect(module.isConnected()).to.equal(false);
-    });
 
-    it('should load the cif module json', (done) => {
-        fs.readFile('assets/modules/module_cif.json', (err, file) => {
-            const module = new Module(JSON.parse(file.toString()).modules[0]);
-            assert.equal(module.id, 'CIF');
-            assert.equal(module.services.length, 6);
-            done();
+            const json = module.json();
+            expect(json).to.have.property('id', 'CIF');
+            expect(json).to.have.property('endpoint', 'opc.tcp://127.0.0.1:4334/ModuleTestServer');
+            expect(json).to.have.property('protected', false);
+            expect(json).to.have.property('services')
+                .to.have.lengthOf(2);
+
+            expect(module.services[0].eventEmitter.listenerCount('state')).to.equal(1);
+            expect(module.services[0].serviceControl.listenerCount('State')).to.equal(1);
+
+            expect(module.variables[0].listenerCount('V')).to.equal(1);
+            expect(module.variables[0].communication.WQC.listenerCount('changed')).to.equal(1);
+            expect(module.variables[0].communication.WQC.listenerCount('changed')).to.equal(1);
+            expect(module.services[0].eventEmitter.listenerCount('parameterChanged')).to.equal(1);
+
+            const errorMsg = module.services[0].strategies[0].parameters[2] as StrView;
+            expect(errorMsg.communication.WQC.listenerCount('changed')).to.equal(1);
+            expect(errorMsg.communication.Text.listenerCount('changed')).to.equal(1);
+            expect(errorMsg.listenerCount('Text')).to.equal(1);
+
+            await Promise.all([
+                new Promise((resolve) => module.on('parameterChanged', resolve)),
+                new Promise((resolve) => module.on('variableChanged', resolve)),
+                new Promise((resolve) => module.on('stateChanged', resolve))
+            ]);
+            await module.disconnect();
         });
+
+        it('should work after reconnect', async () => {
+            const moduleJson =
+                JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8')).modules[0];
+            const module = new Module(moduleJson);
+            const param = module.services[0].strategies[0].parameters[2];
+            expect(param.listenerCount('Text')).to.equal(0);
+
+            await module.connect();
+            expect(module.connection.monitoredItemSize()).to.equal(48);
+            expect(param.listenerCount('Text')).to.equal(1);
+
+            await Promise.all([
+                new Promise((resolve) => module.on('parameterChanged', resolve)),
+                new Promise((resolve) => module.on('variableChanged', resolve)),
+                new Promise((resolve) => module.on('stateChanged', resolve))
+            ]);
+            await module.disconnect();
+            expect(module.connection.monitoredItemSize()).to.equal(0);
+
+            await module.connect();
+            expect(module.connection.monitoredItemSize()).to.equal(48);
+            await Promise.all([
+                new Promise((resolve) => module.on('parameterChanged', resolve)),
+                new Promise((resolve) => module.on('variableChanged', resolve)),
+                new Promise((resolve) => module.on('stateChanged', resolve))
+            ]);
+        }).timeout(5000);
+
     });
-
-    it('should recognize a opc ua server shutdown', async () => {
-        const moduleJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8')).modules[0];
-
-        const module = new Module(moduleJson);
-
-        const moduleServer = new ModuleTestServer();
-        await moduleServer.start();
-        expect(module.isConnected()).to.equal(false);
-
-        await module.connect();
-        expect(module.isConnected()).to.equal(true);
-
-        await new Promise((resolve) => {
-            module.once('disconnected', () => {
-                expect(module.isConnected()).to.equal(false);
-                resolve();
-            });
-            moduleServer.shutdown();
-        });
-    }).retries(3);
 
 });

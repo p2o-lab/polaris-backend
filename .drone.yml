@@ -19,6 +19,13 @@ steps:
   commands:
   - export LOGLEVEL=warn
   - npm test
+  - node_modules/.bin/nyc report --reporter=json > coverage.json
+
+- name: codecov
+  image: robertstettner/drone-codecov
+  settings:
+    token:
+      from_secret: codecov_token
 
 - name: docker
   image: plugins/docker
@@ -42,6 +49,17 @@ steps:
     auto_tag: true
     auto_tag_suffix: arm
 
+- name: docker-test-pea
+  image: plugins/docker
+  settings:
+    dockerfile: Dockerfile.test-pea
+    username:
+      from_secret: docker_username
+    password:
+      from_secret: docker_password
+    repo: p2olab/test-pea
+    auto_tag: true
+
 - name: notify
   image: drillster/drone-email
   settings:
@@ -57,6 +75,6 @@ steps:
 
 ---
 kind: signature
-hmac: 392e24d213749c7c035d18876b28896425a6f67b9ec7d8055d826f3880ad06b8
+hmac: af163dddfd72ca6aa1af521e412b641586f9bcb0c5be6cefd0cb33f01ea51255
 
 ...

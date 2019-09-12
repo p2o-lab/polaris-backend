@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import {RecipeInterface} from '@p2olab/polaris-interface';
+import {ConditionType, RecipeInterface, RecipeOptions} from '@p2olab/polaris-interface';
 import * as assert from 'assert';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
@@ -38,6 +38,56 @@ const expect = chai.expect;
 
 describe('Recipe', () => {
 
+    it('should fail with missing name', () => {
+        expect(() => new Recipe({
+            name: null, author: null, description: null,
+            initial_step: null, version: null, steps: null
+        }, [])).to.throw('missing');
+    });
+
+    it('should fail with missing steps', () => {
+        expect(() => new Recipe({
+            name: 'test', author: null, description: null,
+            initial_step: null, version: null, steps: null
+        }, [])).to.throw('missing');
+    });
+
+    it('should fail with missing initial step', () => {
+        expect(() => new Recipe({
+            name: 'test', author: null, description: null,
+            initial_step: null, version: null, steps: []
+        }, [])).to.throw('not found');
+    });
+
+    it('should fail with wrong initial step', () => {
+        expect(() => new Recipe({
+            name: 'test', author: null, description: null,
+            initial_step: 'initial', version: null, steps: []
+        }, [])).to.throw('not found');
+    });
+
+    it('should fail with wrong next step', () => {
+        expect(() => new Recipe({
+                name: 'test', author: null, description: null,
+                initial_step: 'initial', version: null,
+                steps: [{
+                    name: 'initial', operations: [], transitions: [{
+                        next_step: 'notexisting',
+                        condition: {type: ConditionType.time, duration: 1}
+                    }]
+                }]
+            }
+            , [])).to.throw('not found');
+    });
+
+    it('should work', () => {
+        expect(new Recipe({
+            name: 'test', author: null, description: null,
+            initial_step: 'initial', version: null, steps: [{name: 'initial', operations: [], transitions: []}]
+        }, []))
+            .to.have.property('id');
+    });
+
     describe('with module test server', () => {
 
         let moduleServer: ModuleTestServer;
@@ -50,9 +100,7 @@ describe('Recipe', () => {
             const moduleJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString())
                 .modules[0];
             module = new Module(moduleJson);
-
             await module.connect();
-
         });
 
         afterEach(async () => {
@@ -61,7 +109,6 @@ describe('Recipe', () => {
         });
 
         it('runs test recipe successfully', async () => {
-            // now test recipe
             const recipeJson = JSON.parse(
                 fs.readFileSync('assets/recipes/test/recipe_testserver_2services_1.0.0.json').toString());
             const recipe = new Recipe(recipeJson, [module]);
@@ -69,11 +116,8 @@ describe('Recipe', () => {
             await recipe.start();
 
             await new Promise((resolve) => {
-                recipe.on('completed', () => {
-                    resolve();
-                });
+                recipe.on('completed', resolve);
             });
-
         }).timeout(5000);
 
         it('should only run one recipe at a time', async () => {
@@ -83,11 +127,9 @@ describe('Recipe', () => {
             const recipe = new Recipe(recipeJson, [module]);
 
             await recipe.start();
-            expect(recipe.start()).to.be.rejectedWith(/already running/);
+            await expect(recipe.start()).to.be.rejectedWith(/already running/);
             await new Promise((resolve) => {
-                recipe.on('completed', () => {
-                    resolve();
-                });
+                recipe.on('completed', resolve);
             });
         }).timeout(5000);
 
@@ -96,11 +138,11 @@ describe('Recipe', () => {
                 fs.readFileSync('assets/recipes/test/recipe_testserver_2services_1.0.0.json').toString());
             const recipe = new Recipe(recipeJson, [module]);
 
-            expect(recipe.stop()).to.be.rejectedWith('Can only stop running recipe');
+            await expect(recipe.stop()).to.be.rejectedWith('Can only stop running recipe');
             await recipe.start();
             await delay(100);
             await recipe.stop();
-            expect(recipe.stop()).to.be.rejectedWith('Can only stop running recipe');
+            await expect(recipe.stop()).to.be.rejectedWith('Can only stop running recipe');
             await delay(100);
         }).timeout(5000);
 
@@ -111,7 +153,7 @@ describe('Recipe', () => {
         const modules = [];
 
         before(() => {
-            let file = fs.readFileSync('assets/modules/modules_achema.json');
+            let file = fs.readFileSync('assets/modules/achema_demonstrator/modules_achema.json');
             let options = JSON.parse(file.toString());
             modules.push(new Module(options.modules[0]));
             modules.push(new Module(options.modules[1]));
@@ -149,11 +191,11 @@ describe('Recipe', () => {
             fs.readdirSync(path).forEach((filename) => {
                 const completePath = path + filename;
                 if (fs.statSync(completePath).isFile()) {
-                    it(`should load recipe ${completePath}`, (done) => {
+                    it(`should load recipe ${completePath}`, () => {
                         const file = fs.readFileSync(completePath);
-                        const options = JSON.parse(file.toString());
+                        const options: RecipeOptions = JSON.parse(file.toString());
                         const recipe = new Recipe(options, modules);
-                        done();
+                        expect(recipe.name).to.equal(options.name);
                     });
                 }
             });

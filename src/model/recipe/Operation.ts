@@ -24,6 +24,7 @@
  */
 
 import {OperationInterface, OperationOptions, ServiceCommand} from '@p2olab/polaris-interface';
+import {EventEmitter} from 'events';
 import * as delay from 'timeout-as-promise';
 import {catOperation} from '../../config/logging';
 import {Module} from '../core/Module';
@@ -31,7 +32,7 @@ import {Service} from '../core/Service';
 import {Strategy} from '../core/Strategy';
 import {Parameter} from './Parameter';
 
-/** Operation used in a [[Step]] of a [[Recipe]]
+/** Operation used in a [[Step]] of a [[Recipe]] or [[PetrinetState]]
  *
  */
 export class Operation {
@@ -40,13 +41,16 @@ export class Operation {
     public strategy: Strategy;
     public command: ServiceCommand;
     public parameters: Parameter[];
+    public readonly emitter: EventEmitter;
+    private state: 'executing' | 'completed' | 'aborted';
 
     constructor(options: OperationOptions, modules: Module[]) {
         if (modules) {
             if (options.module) {
                 this.module = modules.find((module) => module.id === options.module);
                 if (!this.module) {
-                    throw new Error(`Could not find module ${options.module} in ${JSON.stringify(modules.map((m) => m.id))}`);
+                    throw new Error(`Could not find module ${options.module} ` +
+                        `in ${JSON.stringify(modules.map((m) => m.id))}`);
                 }
             } else if (modules.length === 1) {
                 this.module = modules[0];
@@ -60,12 +64,13 @@ export class Operation {
 
         this.service = this.module.services.find((service) => service.name === options.service);
         if (this.service === undefined) {
-            throw new Error(`Service ${ options.service }(${ this.module.id }) not found in modules`);
+            throw new Error(`Service ${ this.module.id }.${ options.service } not found in modules ` +
+            `(${JSON.stringify(modules.map((m) => m.id))})`);
         }
         if (options.strategy) {
             this.strategy = this.service.strategies.find((strategy) => strategy.name === options.strategy);
         } else {
-            this.strategy = this.service.strategies.find((strategy) => strategy.default === true);
+            this.strategy = this.service.defaultStrategy;
         }
         if (!this.strategy) {
             throw new Error(`Strategy '${options.strategy}' could not be found in ${ this.service.name }.`);
@@ -78,6 +83,7 @@ export class Operation {
                 (paramOptions) => new Parameter(paramOptions, this.service, this.strategy, modules)
             );
         }
+        this.emitter = new EventEmitter();
     }
 
     /**
@@ -87,20 +93,39 @@ export class Operation {
      * @returns {Promise<void>}
      */
     public async execute(): Promise<void> {
-        let operationExecuted: boolean = false;
-        while (!operationExecuted) {
+        let numberOfTries = 0;
+        const MAX_TRIES = 10;
+        this.state = 'executing';
+        while (this.state === 'executing') {
             catOperation.info(`Perform operation ${ this.module.id }.${ this.service.name }.${ this.command }() ` +
                 `(Strategy: ${ this.strategy ? this.strategy.name : '' })`);
             await this.service.execute(this.command, this.strategy, this.parameters)
                 .then(() => {
-                    operationExecuted = true;
+                    this.state = 'completed';
+                    this.emitter.emit('changed', 'completed');
+                    this.emitter.removeAllListeners('changed');
                 })
                 .catch(async () => {
-                    catOperation.warn('Could not execute operation. Another try in 500ms');
-                    await delay(500);
+                    numberOfTries++;
+                    if (numberOfTries === MAX_TRIES) {
+                        this.state = 'aborted';
+                        this.emitter.emit('changed', 'aborted');
+                        this.emitter.removeAllListeners('changed');
+                        catOperation.warn('Could not execute operation. Stop restarting');
+                    } else {
+                        catOperation.warn('Could not execute operation. Another try in 500ms');
+                        await delay(500);
+                    }
                 });
         }
+
         catOperation.info(`Operation ${ this.module.id }.${ this.service.name }.${ this.command }() executed`);
+    }
+
+    public stop() {
+        if (this.state === 'executing') {
+            this.state = 'aborted';
+        }
     }
 
     public json(): OperationInterface {
@@ -109,7 +134,8 @@ export class Operation {
             service: this.service.name,
             strategy: this.strategy ? this.strategy.name : undefined,
             command: this.command,
-            parameter: this.parameters
+            parameter: this.parameters ? this.parameters.map((param) => param.options) : undefined,
+            state: this.state
         };
     }
 }

@@ -29,7 +29,6 @@ import StrictEventEmitter from 'strict-event-emitter-types';
 import {catManager, catPlayer} from '../../config/logging';
 import {Recipe} from './Recipe';
 import {RecipeRun} from './RecipeRun';
-import {Step} from './Step';
 
 /**
  * Events emitted by [[Player]]
@@ -37,27 +36,22 @@ import {Step} from './Step';
 interface PlayerEvents {
     /**
      * when player has successfully started
-     * @event
+     * @event started
      */
     started: void;
     /**
-     * when player has started a recipe
-     * @event
+     * when something inside a recipe changes
+     * @event recipeChanged
      */
-    recipeStarted: Recipe;
-    /**
-     * when a step is finished in the player
-     * @event
-     */
-    stepFinished: Step;
+    recipeChanged: Recipe;
     /**
      * Notify when a recipe is completed
-     * @event
+     * @event recipeFinished
      */
     recipeFinished: Recipe;
     /**
      * when player completes
-     * @event
+     * @event completed
      */
     completed: void;
 }
@@ -140,7 +134,8 @@ export class Player extends (EventEmitter as new() => PlayerEmitter) {
      */
     public json(): PlayerInterface {
         return {
-            playlist: this._playlist.map((recipe) => recipe.json()),
+            playlist: this._playlist.map((recipe) => ({id: recipe.id, name: recipe.name, options: recipe.options})),
+            currentRecipe: this.getCurrentRecipe() ? this.getCurrentRecipe().json() : undefined,
             currentItem: this._currentItem,
             repeat: this.repeat,
             status: this.status,
@@ -149,7 +144,8 @@ export class Player extends (EventEmitter as new() => PlayerEmitter) {
                     id: rr.id,
                     name: rr.recipe.name,
                     startTime: rr.startTime,
-                    endTime: rr.endTime
+                    endTime: rr.endTime,
+                    status: rr.status
                 };
             })
         };
@@ -253,10 +249,12 @@ export class Player extends (EventEmitter as new() => PlayerEmitter) {
         this.recipeRuns.push(this.currentRecipeRun);
         return new Promise((resolve) => {
             this.currentRecipeRun
-                .on('stepFinished', (finishedStep) => this.emit('stepFinished', finishedStep))
-                .on('started', () => this.emit('recipeStarted', this.currentRecipeRun.recipe))
+                .on('changed', () => {
+                    this.emit('recipeChanged', this.currentRecipeRun.recipe);
+                })
                 .once('completed', () => {
                     this.emit('recipeFinished', this.currentRecipeRun.recipe);
+                    this.currentRecipeRun.removeAllListeners('changed');
                     catPlayer.info(`recipe finished ${this.currentItem + 1}/${this._playlist.length} (${this.status})`);
                     resolve();
                 });

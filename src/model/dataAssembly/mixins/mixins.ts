@@ -23,23 +23,4 @@
  * SOFTWARE.
  */
 
-import {expect} from 'chai';
-import {OpcUaNodeOptions} from '../../../src/model/core/Interfaces';
-import {DataAssembly} from '../../../src/model/dataAssembly/DataAssembly';
-
-describe('ProcessValue', () => {
-
-    it('should fail with missing parameters', () => {
-        expect(() => {
-            const a = new DataAssembly(undefined, undefined);
-        }).to.throw();
-        const opcUaNode: OpcUaNodeOptions = {namespace_index: 'CODESYSSPV3/3S/IecVarAccess', node_id: 'i=12'};
-        expect(() => {
-            const a = new DataAssembly({
-                name: 'name',
-                communication: [opcUaNode],
-                interface_class: 'analogitem'
-            }, undefined);
-        }).to.throw();
-    });
-});
+export type Constructor<T = {}> = new (...args: any[]) => T;

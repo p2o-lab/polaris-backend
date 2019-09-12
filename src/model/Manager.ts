@@ -23,68 +23,41 @@
  * SOFTWARE.
  */
 
-import {Recipe} from './recipe/Recipe';
-import {catManager} from '../config/logging';
+import {ModuleInterface, ModuleOptions,
+    RecipeOptions,
+    ServiceCommand,
+    VirtualServiceInterface} from '@p2olab/polaris-interface';
 import {EventEmitter} from 'events';
-import {Module, ModuleOptions} from './core/Module';
-import {Service} from './core/Service';
-import {ManagerInterface, RecipeOptions, ServiceCommand} from '@p2olab/polaris-interface';
-import {Player} from './recipe/Player';
-import {ServiceState} from './core/enum';
-import {ServiceLogEntry, VariableLogEntry} from '../logging/archive';
 import StrictEventEmitter from 'strict-event-emitter-types';
+import {catManager} from '../config/logging';
+import {ServiceLogEntry, VariableLogEntry} from '../logging/archive';
+import {ServiceState} from './core/enum';
+import {Module} from './core/Module';
+import {Service} from './core/Service';
+import {Player} from './recipe/Player';
+import {Recipe} from './recipe/Recipe';
+import {VirtualService} from './virtualService/VirtualService';
+import {VirtualServiceFactory, VirtualServiceOptions} from './virtualService/VirtualServiceFactory';
 
 interface ManagerEvents {
     /**
      * when one service goes to *completed*
-     * @event
+     * @event recipeFinished
      */
     recipeFinished: void;
 
-    notify: (string, any) => void;
+    notify: (topic: string, data: any) => void;
 }
 
 type ManagerEmitter = StrictEventEmitter<EventEmitter, ManagerEvents>;
 
-export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
+interface LoadModuleOptions {
+    module?: ModuleOptions;
+    modules?: ModuleOptions[];
+    subplants?: Array<{ modules: ModuleOptions[] }>;
+}
 
-    // loaded recipes
-    readonly recipes: Recipe[] = [];
-
-    // loaded modules
-    readonly modules: Module[] = [];
-
-    readonly player: Player;
-
-    variableArchive: VariableLogEntry[] = [];
-
-    serviceArchive: ServiceLogEntry[] = [];
-
-    // autoreset determines if a service is automatically reset when
-    private _autoreset: boolean = true;
-    // autoreset timeout in milliseconds
-    private _autoreset_timeout = 500;
-
-    constructor() {
-        super();
-        this.player = new Player()
-            .on('started', () => {
-                this.emit('notify', 'player', this.player.json())
-            })
-            .on('recipeStarted', () => {
-                this.emit('notify', 'player', this.player.json())
-            })
-            .on('stepFinished', () => {
-                this.emit('notify', 'player', this.player.json())
-            })
-            .on('recipeFinished', () => {
-                this.emit('recipeFinished');
-                this.emit('notify', 'player', this.player.json())
-            })
-            .on('completed', () => {
-                this.emit('notify', 'player', this.player.json())
-            });
-    }
+export class Manager extends (EventEmitter as new() => ManagerEmitter) {
 
     get autoreset(): boolean {
         return this._autoreset;
@@ -95,6 +68,52 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
         this._autoreset = value;
     }
 
+    // loaded recipes
+    public readonly recipes: Recipe[] = [];
+
+    // loaded modules
+    public readonly modules: Module[] = [];
+
+    // instantiated virtual services
+    public readonly virtualServices: VirtualService[] = [];
+
+    public readonly player: Player;
+
+    public variableArchive: VariableLogEntry[] = [];
+
+    public serviceArchive: ServiceLogEntry[] = [];
+
+    // autoreset determines if a service is automatically reset when
+    private _autoreset: boolean = true;
+    // autoreset timeout in milliseconds
+    private _autoresetTimeout: number = 500;
+
+    constructor() {
+        super();
+        this.player = new Player()
+            .on('started', () => {
+                this.emit('notify', 'player', this.player.json());
+            })
+            .on('recipeChanged', () => {
+                this.emit('notify', 'player', this.player.json());
+            })
+            .on('recipeFinished', () => {
+                this.emit('notify', 'player', this.player.json());
+            })
+            .on('completed', () => {
+                this.emit('notify', 'player', this.player.json());
+            });
+    }
+
+    public getModule(moduleId: string): Module {
+        const module = this.modules.find((mod) => mod.id === moduleId);
+        if (module) {
+            return module;
+        } else {
+            throw Error(`Module with id ${moduleId} not found`);
+        }
+    }
+
     /**
      * Load modules from JSON according to TopologyGenerator output or to simplified JSON
      * Skip module if already a module with same id is registered
@@ -102,20 +121,17 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
      * @param {boolean} protectedModules  should modules be protected from being deleted
      * @returns {Module[]}  created modules
      */
-    public loadModule(options: {
-        module?: ModuleOptions,
-        modules?: ModuleOptions[],
-        subplants?: { modules: ModuleOptions[] }[]
-    }, protectedModules: boolean = false): Module[] {
-        let newModules: Module[] = [];
+    public loadModule(options: LoadModuleOptions, protectedModules: boolean = false): Module[] {
+        const newModules: Module[] = [];
         if (!options) {
             throw new Error('No modules defined in supplied options');
         }
         if (options.subplants) {
             options.subplants.forEach((subplantOptions) => {
                 subplantOptions.modules.forEach((moduleOptions: ModuleOptions) => {
-                    if (this.modules.find(module => module.id === moduleOptions.id)) {
+                    if (this.modules.find((mod) => (mod).id === moduleOptions.id)) {
                         catManager.warn(`Module ${moduleOptions.id} already in registered modules`);
+                        throw new Error(`Module ${moduleOptions.id} already in registered modules`);
                     } else {
                         newModules.push(new Module(moduleOptions, protectedModules));
                     }
@@ -123,16 +139,18 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
             });
         } else if (options.modules) {
             options.modules.forEach((moduleOptions: ModuleOptions) => {
-                if (this.modules.find(module => module.id === moduleOptions.id)) {
+                if (this.modules.find((mod) => (mod).id === moduleOptions.id)) {
                     catManager.warn(`Module ${moduleOptions.id} already in registered modules`);
+                    throw new Error(`Module ${moduleOptions.id} already in registered modules`);
                 } else {
                     newModules.push(new Module(moduleOptions, protectedModules));
                 }
             });
         } else if (options.module) {
-            let moduleOptions = options.module;
-            if (this.modules.find(module => module.id === moduleOptions.id)) {
+            const moduleOptions = options.module;
+            if (this.modules.find((mod) => (mod).id === moduleOptions.id)) {
                 catManager.warn(`Module ${moduleOptions.id} already in registered modules`);
+                throw new Error(`Module ${moduleOptions.id} already in registered modules`);
             } else {
                 newModules.push(new Module(moduleOptions, protectedModules));
             }
@@ -142,13 +160,18 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
         this.modules.push(...newModules);
         newModules.forEach(async (module: Module) => {
             module
-                .on('connected', () => this.emit('notify', 'module', null))
-                .on('disconnected', () => this.emit('notify', 'module', null))
+                .on('connected', () => {
+                    this.emit('notify', 'module', null);
+                })
+                .on('disconnected', () => {
+                    catManager.info('Module disconnected');
+                    this.emit('notify', 'module', null);
+                })
                 .on('controlEnable', ({service, controlEnable}) => {
                     this.emit('notify', 'module', {
-                        module: service.parent.id,
+                        module: module.id,
                         service: service.name,
-                        controlEnable: controlEnable
+                        controlEnable
                     });
                 })
                 .on('variableChanged', async (data) => {
@@ -166,8 +189,8 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
                     }
                     this.emit('notify', 'variable', logEntry);
                 })
-                .on('parameterChanged', (data) => {
-                    data['module'] = module.id;
+                .on('parameterChanged', (data: any) => {
+                    data.module = module.id;
                     this.emit('notify', 'module', data);
                 })
                 .on('commandExecuted', (data) => {
@@ -175,7 +198,7 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
                         timestampPfe: data.timestampPfe,
                         module: module.id,
                         service: data.service.name,
-                        strategy: data.strategy.name,
+                        strategy: data.strategy ? data.strategy.name : undefined,
                         command: ServiceCommand[data.command],
                         parameter: data.parameter ? data.parameter.map((param) => {
                             return {name: param.name, value: param.value};
@@ -186,7 +209,7 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
                         this.player.currentRecipeRun.serviceLog.push(logEntry);
                     }
                 })
-                .on('stateChanged', async ({service, state, timestampPfe}) => {
+                .on('stateChanged', async ({service, state}) => {
                     const logEntry: ServiceLogEntry = {
                         timestampPfe: new Date(),
                         module: module.id,
@@ -208,7 +231,7 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
                     this.emit('notify', 'module', {
                         module: module.id,
                         service: service.name,
-                        opMode: opMode
+                        opMode
                     });
                 })
                 .on('serviceCompleted', (service: Service) => {
@@ -219,20 +242,30 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
         return newModules;
     }
 
-
     public async removeModule(moduleId) {
-        const module = this.modules.find(module => module.id === moduleId);
-        if (!module) {
-            throw new Error(`No Module ${moduleId} found.`);
-        }
+        catManager.info(`Remove module ${moduleId}`);
+        const module = this.getModule(moduleId);
         if (module.protected) {
             throw new Error(`Module ${moduleId} is protected and can't be deleted`);
         }
+
+        catManager.debug(`Disconnecting module ${moduleId} ...`);
+        await module.disconnect()
+            .catch((err) => catManager.warn('Something wrong while disconnecting from module: ' + err.toString()));
+
+        catManager.debug(`Deleting module ${moduleId} ...`);
         const index = this.modules.indexOf(module, 0);
         if (index > -1) {
             this.modules.splice(index, 1);
         }
-        await module.disconnect();
+    }
+
+    public getModules(): ModuleInterface[] {
+        return this.modules.map((module) => module.json());
+    }
+
+    public getVirtualServices(): VirtualServiceInterface[] {
+        return this.virtualServices.map((vs) => vs.json());
     }
 
     public loadRecipe(options: RecipeOptions, protectedRecipe: boolean = false): Recipe {
@@ -245,7 +278,7 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
     /**
      * Abort all services from all loaded modules
      */
-    abortAllServices() {
+    public abortAllServices() {
         const tasks = [];
         tasks.push(this.modules.map((module) => module.abort()));
         return Promise.all(tasks);
@@ -254,7 +287,7 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
     /**
      * Stop all services from all loaded modules
      */
-    stopAllServices() {
+    public stopAllServices() {
         const tasks = [];
         tasks.push(this.modules.map((module) => module.stop()));
         return Promise.all(tasks);
@@ -263,48 +296,15 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
     /**
      * Reset all services from all loaded modules
      */
-    resetAllServices() {
+    public resetAllServices() {
         const tasks = [];
         tasks.push(this.modules.map((module) => module.reset()));
         return Promise.all(tasks);
     }
 
-    /**
-     * get ManagerInterfacie as JSON
-     *
-     * @returns {ManagerInterface}
-     */
-    json(): ManagerInterface {
-        return {
-            activeRecipe: this.player.getCurrentRecipe() ? this.player.getCurrentRecipe().json() : undefined,
-            modules: this.modules.map(module => module.id),
-            autoReset: this.autoreset
-        };
-    }
-
-    /**
-     * Perform autoreset for service (bring it automatically from completed to idle)
-     * @param {Service} service
-     */
-    private performAutoReset(service: Service) {
-        if (this.autoreset) {
-            catManager.info(`Service ${service.parent.id}.${service.name} completed. Short waiting time (${this._autoreset_timeout}) to autoreset`);
-            setTimeout(async () => {
-                if (service.parent.isConnected() && await service.getServiceState() === ServiceState.COMPLETED) {
-                    catManager.info(`Service ${service.parent.id}.${service.name} completed. Now perform autoreset`);
-                    try {
-                        service.execute(ServiceCommand.reset);
-                    } catch (err) {
-                        catManager.debug('Autoreset not possible')
-                    }
-                }
-            }, this._autoreset_timeout);
-        }
-    }
-
     public removeRecipe(recipeId: string) {
         catManager.debug(`Remove recipe ${recipeId}`);
-        const recipe = this.recipes.find(recipe => recipe.id === recipeId);
+        const recipe = this.recipes.find((rec) => rec.id === recipeId);
         if (!recipe) {
             throw new Error(`Recipe ${recipeId} not available.`);
         }
@@ -319,20 +319,117 @@ export class Manager extends (EventEmitter as { new(): ManagerEmitter }) {
     }
 
     /**
-     * find [TestServerService] of a [Module] registered in manager
+     * find [Service] of a [Module] registered in manager
      * @param {string} moduleName
      * @param {string} serviceName
      * @returns {Service}
      */
-    getService(moduleName: string, serviceName: string): Service {
-        const module: Module = this.modules.find(module => module.id === moduleName);
+    public getService(moduleName: string, serviceName: string): Service {
+        const module: Module = this.modules.find((mod) => mod.id === moduleName);
         if (!module) {
             throw new Error(`Module with id ${moduleName} not registered`);
         }
-        const service: Service = module.services.find(service => service.name === serviceName);
+        const service: Service = module.services.find((serv) => (serv).name === serviceName);
         if (!service) {
             throw new Error(`Service ${serviceName} does not exist on module ${moduleName}`);
         }
         return service;
+    }
+
+    public instantiateVirtualService(options: VirtualServiceOptions) {
+        const virtualService = VirtualServiceFactory.create(options);
+        catManager.info(`instantiated virtual Service ${virtualService.name}`);
+        virtualService.eventEmitter
+            .on('controlEnable', (controlEnable) => {
+                this.emit('notify', 'virtualService', {
+                    service: virtualService.name,
+                    controlEnable
+                });
+            })
+            /*.on('variableChanged', async (data) => {
+                const logEntry: VariableLogEntry = {
+                    timestampPfe: new Date(),
+                    module: 'virtualServices',
+                    value: data.value,
+                    variable: data.parameter,
+                    unit: data.parameter.unit
+                };
+                this.variableArchive.push(logEntry);
+                if (this.player.currentRecipeRun) {
+                    this.player.currentRecipeRun.variableLog.push(logEntry);
+                }
+                this.emit('notify', 'variable', logEntry);
+            })*/
+            .on('parameterChanged', (data: any) => {
+                this.emit('notify', 'virtualService', data);
+            })
+            .on('commandExecuted', (data) => {
+                const logEntry: ServiceLogEntry = {
+                    timestampPfe: new Date(),
+                    module: 'virtualServices',
+                    service: virtualService.name,
+                    strategy: null,
+                    command: ServiceCommand[data.command],
+                    parameter: data.parameter ? data.parameter.map((param) => {
+                        return {name: param.name, value: param.value};
+                    }) : undefined
+                };
+                this.serviceArchive.push(logEntry);
+                if (this.player.currentRecipeRun) {
+                    this.player.currentRecipeRun.serviceLog.push(logEntry);
+                }
+            })
+            .on('state', (state) => {
+                const logEntry: ServiceLogEntry = {
+                    timestampPfe: new Date(),
+                    module: 'virtualServices',
+                    service: virtualService.name,
+                    state: ServiceState[state]
+                };
+                this.serviceArchive.push(logEntry);
+                if (this.player.currentRecipeRun) {
+                    this.player.currentRecipeRun.serviceLog.push(logEntry);
+                }
+                this.emit('notify', 'module', {
+                    module: 'virtualServices',
+                    service: virtualService.name,
+                    status: ServiceState[state],
+                    lastChange: 0
+                });
+            });
+        this.virtualServices.push(virtualService);
+    }
+
+    public removeVirtualService(virtualServiceId: string) {
+        catManager.debug(`Remove Virtual Service ${virtualServiceId}`);
+        const index = this.virtualServices.findIndex((virtualService) => virtualService.name === virtualServiceId);
+        if (index === -1) {
+            throw new Error(`Virtual Service ${virtualServiceId} not available.`);
+        }
+        if (index > -1) {
+            this.virtualServices.splice(index, 1);
+        }
+    }
+
+    /**
+     * Perform autoreset for service (bring it automatically from completed to idle)
+     * @param {Service} service
+     */
+    private performAutoReset(service: Service) {
+        if (this.autoreset) {
+            catManager.info(`Service ${service.connection.id}.${service.name} completed. ` +
+                `Short waiting time (${this._autoresetTimeout}) to autoreset`);
+            setTimeout(async () => {
+                if (service.connection.isConnected() && service.state === ServiceState.COMPLETED) {
+                    catManager.info(`Service ${service.connection.id}.${service.name} completed. ` +
+                        `Now perform autoreset`);
+                    try {
+                        service.execute(ServiceCommand.reset);
+                    } catch (err) {
+                        catManager.debug('Autoreset not possible');
+                    }
+                }
+            }, this._autoresetTimeout);
+        }
     }
 }

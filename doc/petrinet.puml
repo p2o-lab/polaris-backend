@@ -1,0 +1,40 @@
+@startuml
+
+skinparam monochrome true
+hide methods
+hide empty fields
+
+class AggregatedService
+
+
+
+class Petrinet {
+
+}
+
+class PNState
+
+class Operation {
+module
+service
+strategy
+command
+parameters
+}
+
+class PNTransition {
+condition
+}
+
+AggregatedService "1" *-- "16" Petrinet
+Petrinet "1" *- "*" PNState
+Petrinet "1" -- "1" PNTransition : > initialTransition
+
+
+
+PNState "1" *- "*" Operation
+
+PNState "1" *-- "*" PNTransition
+
+PNTransition "1" *-- "*" PNState
+@enduml

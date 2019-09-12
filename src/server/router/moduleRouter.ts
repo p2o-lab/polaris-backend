@@ -27,6 +27,7 @@ import {Request, Response, Router} from 'express';
 import {Manager} from '../../model/Manager';
 
 import * as asyncHandler from 'express-async-handler';
+import {constants} from 'http2';
 import {catModule, catServer} from '../../config/logging';
 
 export const moduleRouter: Router = Router();
@@ -38,8 +39,7 @@ export const moduleRouter: Router = Router();
  */
 moduleRouter.get('', asyncHandler(async (req: Request, res: Response) => {
     const manager: Manager = req.app.get('manager');
-    const tasks = manager.modules.map(async (module) => await module.json());
-    res.json(await Promise.all(tasks));
+    res.json(await manager.getModules());
 }));
 
 /**
@@ -48,10 +48,14 @@ moduleRouter.get('', asyncHandler(async (req: Request, res: Response) => {
  * @apiGroup Module
  * @apiParam {string} id    Module id
  */
-moduleRouter.get('/:id', asyncHandler(async (req: Request, res: Response) => {
+moduleRouter.get('/:id', (req: Request, res: Response) => {
     const manager: Manager = req.app.get('manager');
-    res.json(await manager.modules.find((module) => module.id === req.params.id).json());
-}));
+    try {
+        res.json(manager.getModule(req.params.id).json());
+    } catch (err) {
+        res.status(constants.HTTP_STATUS_NOT_FOUND).send(err.toString());
+    }
+});
 
 /**
  * @api {get} /module/:id/download    Download module options
@@ -59,10 +63,10 @@ moduleRouter.get('/:id', asyncHandler(async (req: Request, res: Response) => {
  * @apiGroup Module
  * @apiParam {string} id    Module id
  */
-moduleRouter.get('/:id/download', asyncHandler(async (req: Request, res: Response) => {
+moduleRouter.get('/:id/download', (req: Request, res: Response) => {
     const manager: Manager = req.app.get('manager');
-    res.json(await manager.modules.find((module) => module.id === req.params.id).options);
-}));
+    res.json(manager.getModule(req.params.id).options);
+});
 
 /**
  * @api {put} /module    Add module
@@ -70,18 +74,16 @@ moduleRouter.get('/:id/download', asyncHandler(async (req: Request, res: Respons
  * @apiGroup Module
  * @apiParam {ModuleOptions} module    Module to be added
  */
-moduleRouter.put('', asyncHandler(async (req, res) => {
-    const moduleOptions = req.body.modules;
+moduleRouter.put('', (req, res) => {
     catServer.info(`Load module`);
     const manager: Manager = req.app.get('manager');
-    const newModules = manager.loadModule({module: req.body.module});
+    const newModules = manager.loadModule(req.body);
     newModules.forEach((module) =>
         module.connect()
-            .catch(() => catModule.warn(`Could not connect to module ${module.id}`)
-            )
+            .catch(() => catModule.warn(`Could not connect to module ${module.id}`))
     );
-    res.json(await Promise.all(newModules.map((module) => module.json())));
-}));
+    res.json(newModules.map((module) => module.json()));
+});
 
 /**
  * @api {delete} /module/:id    Delete module
@@ -94,8 +96,8 @@ moduleRouter.delete('/:id', asyncHandler(async (req: Request, res: Response) => 
     try {
         await manager.removeModule(req.params.id);
         res.send({ status: 'Successful deleted', id: req.params.id });
-    } catch (e) {
-        res.status(404).send(`Module {$req.params.id} is protected and can't be deleted`);
+    } catch (err) {
+        res.status(404).send(err.toString());
     }
 }));
 
@@ -107,7 +109,7 @@ moduleRouter.delete('/:id', asyncHandler(async (req: Request, res: Response) => 
  */
 moduleRouter.post('/:id/connect', asyncHandler(async (req: Request, res: Response) => {
     const manager: Manager = req.app.get('manager');
-    const module = manager.modules.find((module) => module.id === req.params.id);
+    const module = manager.getModule(req.params.id);
     await module.connect();
     res.json({ module: module.id, status: 'Succesfully connected' });
 }));
@@ -120,7 +122,7 @@ moduleRouter.post('/:id/connect', asyncHandler(async (req: Request, res: Respons
  */
 moduleRouter.post('/:id/disconnect', asyncHandler(async (req: Request, res: Response) => {
     const manager: Manager = req.app.get('manager');
-    const module = manager.modules.find((module) => module.id === req.params.id);
+    const module = manager.getModule(req.params.id);
     await module.disconnect();
     res.json({ module: module.id, status: 'Succesfully disconnected' });
 }));

@@ -1,0 +1,59 @@
+@startuml
+
+skinparam monochrome true
+
+title ServiceState <i>STARTING</i>
+
+
+(*) --> ===t1===
+note right
+t1
+  R1.Fill.state==IDLE
+  D1.DoseAmount.state=IDLE
+  T1.Temper.state==IDLE
+end note
+
+
+===t1=== --> startEverything
+note right
+Operations
+  R1.Fill.start()
+  D1.DoseAmount.start(100ml)
+  T1.Temper.start(30°C)
+end note
+
+startEverything --> ==t2==
+note right
+t2
+end note
+
+==t2== --> waitForFillingAndTemperExecute
+==t2== --> waitForDosingCompleted
+
+
+waitForFillingAndTemperExecute --> ==t4==
+
+waitForDosingCompleted --> ==t3==
+note right
+t3
+  D1.DoseAmount.state==COMPLETED
+end note
+
+==t3== --> resetDose
+note right
+operations
+  D1.DoseAmount.reset()
+end note
+
+resetDose --> ===t4===
+note right
+t4
+  D1.DoseAmount.state==IDLE &&
+  R1.Fill.state==EXECUTE &&
+  T1.Temper.state==EXECUTE
+end note
+
+
+
+==t4== --> (*)
+@enduml

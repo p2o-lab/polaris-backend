@@ -33,6 +33,7 @@ import {playerRouter} from './router/playerRouter';
 import {recipeRouter} from './router/recipeRouter';
 import {recipeRunRouter} from './router/recipeRunRouter';
 import {serviceRouter} from './router/serviceRouter';
+import {virtualServiceRouter} from './router/virtualServiceRouter';
 
 export default class Routes {
     public static init(app: express.Application, manager: Manager): void {
@@ -51,11 +52,12 @@ export default class Routes {
         app.use('/api/recipeRun', recipeRunRouter);
         app.use('/api/recipe', recipeRouter);
         app.use('/api/player', playerRouter);
+        app.use('/api/virtualService', virtualServiceRouter);
         app.use('/api', coreRouter);
 
         // Error handling
         app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-            catServer.error(`An Error occured: ${err.toString()}`, err);
+            catServer.warn(`Internal server error (HTTP 500): ${err.toString()}`);
             res.status(500).send({ status: 'error', error: err.toString(), stack: err.stack });
         });
 

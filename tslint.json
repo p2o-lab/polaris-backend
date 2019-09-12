@@ -5,6 +5,7 @@
       true,
       "single"
     ],
+    "object-literal-shorthand": false,
     "object-literal-key-quotes": false,
     "object-literal-sort-keys": false,
     "ordered-imports": true,
@@ -22,9 +23,14 @@
     "trailing-comma": [
       true
     ],
-    "variable-name": [
-      true
-    ],
+    "variable-name": {
+      "options": [
+        "ban-keywords",
+        "check-format",
+        "allow-leading-underscore"
+      ]
+    },
+    "no-bitwise": false,
     "no-unused-variable": true,
     "typedef": [
       true,

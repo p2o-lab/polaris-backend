@@ -23,14 +23,16 @@
  * SOFTWARE.
  */
 
+/* tslint:disable:no-console */
+
 import * as commandLineArgs from 'command-line-args';
+import * as commandLineUsage from 'command-line-usage';
 import * as fs from 'fs';
 import {catModule} from './config/logging';
 import {Manager} from './model/Manager';
 import {ExternalTrigger} from './server/ExternalTrigger';
 import {Server} from './server/server';
 import * as serverHandlers from './server/serverHandlers';
-import commandLineUsage = require('command-line-usage');
 
 const optionDefinitions = [
     {
@@ -50,6 +52,14 @@ const optionDefinitions = [
         description: 'path to recipe.json which should be loaded at startup'
     },
     {
+        name: 'virtualService',
+        alias: 'v',
+        type: String,
+        multiple: true,
+        typeLabel: '{underline virtualServicePath[]}',
+        description: 'path to virtualService.json which should be loaded at startup'
+    },
+    {
         name: 'help',
         alias: 'h',
         type: Boolean,
@@ -61,7 +71,9 @@ const optionDefinitions = [
         type: String,
         multiple: true,
         typeLabel: '{underline opcuaEndpoint} {underline opcuaNodeid}',
-        description: 'Monitors an OPC UA node (specified via {underline opcuaNodeId}) on the OPC UA server (specified by {underline opcuaEndpoint}. If the node changes to true or is true when the player completes, the player start from the first recipe.'
+        description: 'Monitors an OPC UA node (specified via {underline opcuaNodeId}) on the OPC UA server ' +
+        '(specified by {underline opcuaEndpoint}. If the node changes to true or is true when the player completes, ' +
+        'the player start from the first recipe.'
     }
 ];
 const sections = [
@@ -72,7 +84,10 @@ const sections = [
     {
         header: 'Synopsis',
         content: [
-            '$ node build/index.js [{bold --module} {underline modulePath}] [{bold --recipe} {underline recipePath}] [{bold --externalTrigger} {underline opcuaEndpoint} {underline opcuaNodeid}]'
+            '$ node build/src/index.js [{bold --module} {underline modulePath}] ' +
+            '[{bold --recipe} {underline recipePath}] ' +
+            '[{bold --virtualService} {underline virtualServicePath}] ' +
+            '[{bold --externalTrigger} {underline opcuaEndpoint} {underline opcuaNodeid}]'
         ]
     },
     {
@@ -84,7 +99,8 @@ const sections = [
         content: [
             {
                 desc: 'Watching a OPC UA server',
-                example: '$ node src/index.js --externalTrigger opc.tcp://127.0.0.1:53530/OPCUA/SimulationServer "ns=3;s=BooleanDataItem"'
+                example: '$ node build/src/index.js ' +
+                '--externalTrigger opc.tcp://127.0.0.1:53530/OPCUA/SimulationServer "ns=3;s=BooleanDataItem"'
             }]
     }
 ];
@@ -93,7 +109,7 @@ let options;
 try {
     options = commandLineArgs(optionDefinitions);
 } catch (err) {
-    console.log('Error: Could not parse command line arguments', err.toString());
+    console.log('Error: Could not parse commandNode line arguments', err.toString());
     console.log(commandLineUsage(sections));
 }
 if (options) {
@@ -127,6 +143,14 @@ if (options) {
             options.recipe.forEach((recipe) => {
                 const recipeOptions = JSON.parse(fs.readFileSync(recipe).toString());
                 manager.loadRecipe(recipeOptions, true);
+            });
+        }
+
+        if (options.virtualService && options.virtualService.length > 0) {
+            console.log(`Load virtual service from ${options.virtualService}`);
+            options.virtualService.forEach((vs) => {
+                const vsOptions = JSON.parse(fs.readFileSync(vs).toString());
+                manager.instantiateVirtualService(vsOptions);
             });
         }
 

@@ -1,3 +1,4 @@
+/* tslint:disable:max-classes-per-file */
 /*
  * MIT License
  *
@@ -23,34 +24,55 @@
  * SOFTWARE.
  */
 
-import {DataAssembly} from './DataAssembly';
+import {ParameterInterface} from '@p2olab/polaris-interface';
+import {OpcUaConnection} from '../core/OpcUaConnection';
+import {BaseDataAssemblyRuntime, DataAssembly} from './DataAssembly';
+import {OpcUaDataItem} from './DataItem';
+import {OpModeDA, OpModeRuntime} from './mixins/OpMode';
+import {ScaleSettingsDA, ScaleSettingsRuntime} from './mixins/ScaleSettings';
+import {UnitDA, UnitDataAssemblyRuntime} from './mixins/Unit';
+import {ValueLimitationDA, ValueLimitationRuntime} from './mixins/ValueLimitation';
 
-export class ExtAnaOp extends DataAssembly {
+export type AnaOpRuntime = BaseDataAssemblyRuntime &
+    UnitDataAssemblyRuntime & ValueLimitationRuntime &
+    ScaleSettingsRuntime & {
+    VOut: OpcUaDataItem<number>;
+    VRbk: OpcUaDataItem<number>;
+    VExt: OpcUaDataItem<number>;
+};
 
-    get VOut() {return this.communication['VOut']}
-    get VUnit() {return this.communication['VUnit']}
-    get VSclMin() {return this.communication['VSclMin']}
-    get VSclMax() {return this.communication['VSclMax']}
-    get VExt() {return this.communication['VExt']}
-    get VMin() {return this.communication['VMin']}
-    get VMax() {return this.communication['VMax']}
-    get VRbk() {return this.communication['VRbk']}
+export class ExtAnaOp extends ValueLimitationDA(ScaleSettingsDA(UnitDA(DataAssembly))) {
+    public readonly communication: AnaOpRuntime;
 
-    constructor(options, module){
-        super(options, module);
-        this.subscribedNodes.push('VOut', 'VUnit', 'VSclMin', 'VSclMax', 'VExt', 'VMin', 'VMax', 'VRbk');
+    constructor(options, connection: OpcUaConnection) {
+        super(options, connection);
+
+        this.createDataItem(options, 'VOut', 'read');
+        this.createDataItem(options, 'VRbk', 'read');
+        this.createDataItem(options, 'VExt', 'write');
     }
 
+    public toJson(): ParameterInterface {
+        return {
+            ...super.toJson(),
+            value: this.communication.VOut.value,
+            type: 'number',
+            readonly: false
+        };
+    }
 }
 
-export class ExtIntAnaOp extends ExtAnaOp {
+export type ExtIntAnaOpRuntime = AnaOpRuntime & OpModeRuntime & {
+    VInt: OpcUaDataItem<number>;
+};
 
-    get VInt() {return this.communication['VInt']}
-    get OpMode() {return this.communication['OpMode']}
+export class ExtIntAnaOp extends OpModeDA(ExtAnaOp) {
 
-    constructor(options, module){
-        super(options, module);
-        this.subscribedNodes.push('VInt', 'OpMode');
+    public readonly communication: ExtIntAnaOpRuntime;
+
+    constructor(options, connection: OpcUaConnection) {
+        super(options, connection);
+        this.createDataItem(options, 'VInt', 'read');
     }
 }
 
@@ -59,4 +81,5 @@ export class AdvAnaOp extends ExtIntAnaOp {
 }
 
 export class AnaServParam extends ExtIntAnaOp {
+
 }

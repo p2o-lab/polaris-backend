@@ -23,23 +23,24 @@
  * SOFTWARE.
  */
 
-import {catModule} from '../../config/logging';
-import {Module} from '../core/Module';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {catDataAssembly} from '../../config/logging';
+import {OpcUaConnection} from '../core/OpcUaConnection';
 import {AdvAnaOp, AnaServParam, ExtAnaOp, ExtIntAnaOp} from './AnaOp';
 import {AnaMon, AnaView} from './AnaView';
 import {AdvBinOp, BinServParam, ExtBinOp, ExtIntBinOp} from './BinOp';
 import {BinMon, BinView} from './BinView';
-import {DataAssembly, DataAssemblyOptions} from './DataAssembly';
+import {DataAssembly} from './DataAssembly';
 import {AdvDigOp, DigServParam, ExtDigOp, ExtIntDigOp} from './DigOp';
 import {DigMon, DigView} from './DigView';
 import {AnaDrv, MonAnaDrv} from './Drv';
+import {ServiceControl} from './ServiceControl';
 import {StrView} from './Str';
 import {AnaVlv, BinVlv, MonAnaVlv, MonBinVlv} from './Vlv';
 
 export class DataAssemblyFactory {
-    public static create(variableOptions: DataAssemblyOptions, module: Module): DataAssembly {
-        catModule.debug(`Create DataAssembly ${variableOptions.name} (${variableOptions.interface_class})`);
-
+    public static create(variableOptions: DataAssemblyOptions, connection: OpcUaConnection): DataAssembly {
+        catDataAssembly.debug(`Create DataAssembly ${variableOptions.name} (${variableOptions.interface_class})`);
         const types = {
             'AnaView': AnaView,
             'AnaMon': AnaMon,
@@ -70,79 +71,22 @@ export class DataAssemblyFactory {
             'AnaDrv': AnaDrv,
             'MonAnaDrv': MonAnaDrv,
 
-            'StrView': StrView
+            'StrView': StrView,
+
+            'ServiceControl': ServiceControl
         };
         let type = types[variableOptions.interface_class];
         if (!type) {
-            catModule.warn(`No data assembly implemented for ${variableOptions.interface_class} ` +
-                `of ${variableOptions.name}. Use standard DataAssembly.`);
+            if (!variableOptions.interface_class) {
+                catDataAssembly.debug(`No interface class specified for DataAssembly ${variableOptions.name}. ` +
+                    `Use standard DataAssembly.`);
+            } else {
+                catDataAssembly.warn(`No data assembly implemented for ${variableOptions.interface_class} ` +
+                    `of ${variableOptions.name}. Use standard DataAssembly.`);
+            }
             type = DataAssembly;
         }
 
-        return new type(variableOptions, module);
-    }
-
-    public static isAnaView(dataAssembly: DataAssembly): dataAssembly is AnaView {
-        return dataAssembly.interfaceClass === 'AnaView';
-    }
-
-    public static isExtAnaOp(dataAssembly: DataAssembly): dataAssembly is ExtAnaOp {
-        return this.isExtIntAnaOp(dataAssembly) || dataAssembly.interfaceClass === 'ExtAnaOp';
-    }
-
-    public static isExtIntAnaOp(dataAssembly: DataAssembly): dataAssembly is ExtIntAnaOp {
-        return this.isAdvAnaOp(dataAssembly) || dataAssembly.interfaceClass === 'ExtIntAnaOp';
-    }
-
-    public static isAdvAnaOp(dataAssembly: DataAssembly): dataAssembly is AdvAnaOp {
-        return this.isAnaServParam(dataAssembly) || dataAssembly.interfaceClass === 'AdvAnaOp';
-    }
-
-    public static isAnaServParam(dataAssembly: DataAssembly): dataAssembly is AnaServParam {
-        return dataAssembly.interfaceClass === 'AnaServParam';
-    }
-
-    public static isDigView(dataAssembly: DataAssembly): dataAssembly is DigView {
-        return dataAssembly.interfaceClass === 'DigView';
-    }
-
-    public static isExtDigOp(dataAssembly: DataAssembly): dataAssembly is ExtDigOp {
-        return this.isExtIntDigOp(dataAssembly) || dataAssembly.interfaceClass === 'ExtDigOp';
-    }
-
-    public static isExtIntDigOp(dataAssembly: DataAssembly): dataAssembly is ExtIntDigOp {
-        return this.isAdvDigOp(dataAssembly) || dataAssembly.interfaceClass === 'ExtIntDigOp';
-    }
-
-    public static isAdvDigOp(dataAssembly: DataAssembly): dataAssembly is AdvDigOp {
-        return this.isDigServParam(dataAssembly) || dataAssembly.interfaceClass === 'AdvDigOp';
-    }
-
-    public static isDigServParam(dataAssembly: DataAssembly): dataAssembly is DigServParam {
-        return dataAssembly.interfaceClass === 'DigServParam';
-    }
-
-    public static isBinView(dataAssembly: DataAssembly): dataAssembly is BinView {
-        return dataAssembly.interfaceClass === 'BinView';
-    }
-
-    public static isExtBinOp(dataAssembly: DataAssembly): dataAssembly is ExtBinOp {
-        return this.isExtIntBinOp(dataAssembly) || dataAssembly.interfaceClass === 'ExtBinOp';
-    }
-
-    public static isExtIntBinOp(dataAssembly: DataAssembly): dataAssembly is ExtIntBinOp {
-        return this.isAdvBinOp(dataAssembly) || dataAssembly.interfaceClass === 'ExtIntBinOp';
-    }
-
-    public static isAdvBinOp(dataAssembly: DataAssembly): dataAssembly is AdvBinOp {
-        return this.isBinServParam(dataAssembly) || dataAssembly.interfaceClass === 'AdvBinOp';
-    }
-
-    public static isBinServParam(dataAssembly: DataAssembly): dataAssembly is BinServParam {
-        return dataAssembly.interfaceClass === 'BinServParam';
-    }
-
-    public static isStrView(dataAssembly: DataAssembly): dataAssembly is StrView {
-        return dataAssembly.interfaceClass === 'StrView';
+        return new type(variableOptions, connection);
     }
 }

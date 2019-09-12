@@ -1,3 +1,4 @@
+/* tslint:disable:max-classes-per-file */
 /*
  * MIT License
  *
@@ -23,29 +24,35 @@
  * SOFTWARE.
  */
 
-import {DataAssembly} from './DataAssembly';
+import {BaseDataAssemblyRuntime, DataAssembly} from './DataAssembly';
+import {OpcUaDataItem} from './DataItem';
+
+export type BinViewRuntime = BaseDataAssemblyRuntime & {
+    V: OpcUaDataItem<boolean>;
+    VState0: OpcUaDataItem<string>;
+    VState1: OpcUaDataItem<string>;
+};
 
 export class BinView extends DataAssembly {
+    public readonly communication: BinViewRuntime;
 
-    get V() { return this.communication['V']}
-    get VState0() {return this.communication['VState0']}
-    get VState1() {return this.communication['VState1']}
-
-    constructor(options, module){
+    constructor(options, module) {
         super(options, module);
-        this.subscribedNodes.push('V', 'VState0', 'VState1');
     }
-
 }
+
+export type BinMonRuntime = BinViewRuntime & {
+    VFlutTi: OpcUaDataItem<number>;
+    VFlutEn: OpcUaDataItem<boolean>;
+    VFlutCnt: OpcUaDataItem<number>;
+    VFlutAct: OpcUaDataItem<boolean>;
+};
 
 export class BinMon extends BinView {
 
-    // TODO: add getters
+    public readonly communication: BinMonRuntime;
 
-    constructor(options, module){
+    constructor(options, module) {
         super(options, module);
-        this.subscribedNodes.push(
-            'VFlutTi', 'VFlutEn', 'VFlutCnt',
-            'VFlutAct');
     }
 }

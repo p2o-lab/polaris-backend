@@ -23,10 +23,9 @@
  * SOFTWARE.
  */
 
-import {series} from 'async';
 import {AttributeIds, NodeId, resolveNodeId} from 'node-opcua';
-import {ClientSession, ClientSubscription, OPCUAClient} from 'node-opcua-client';
-import {post} from 'request';
+import {ClientSession, ClientSubscription, OPCUAClient,
+    TimestampsToReturn} from 'node-opcua-client';
 import {catOpc} from '../config/logging';
 
 export class ExternalTrigger {
@@ -53,7 +52,7 @@ export class ExternalTrigger {
         this.endpoint = endpoint;
         this.nodeId = resolveNodeId(nodeId);
         this.callback = callback;
-        this.client = new OPCUAClient({
+        this.client = OPCUAClient.create({
             endpoint_must_exist: false,
             connectionStrategy: {
                 maxRetry: 5
@@ -71,7 +70,7 @@ export class ExternalTrigger {
         await this.client.connect(this.endpoint);
 
         this.session = await this.client.createSession();
-        const subscription = new ClientSubscription(this.session, {
+        const subscription = ClientSubscription.create(this.session, {
             requestedPublishingInterval: 1000,
             requestedLifetimeCount: 10,
             requestedMaxKeepAliveCount: 2,
@@ -89,7 +88,7 @@ export class ExternalTrigger {
                 samplingInterval: 100,
                 discardOldest: true,
                 queueSize: 10
-            });
+            }, TimestampsToReturn.Both);
 
         monitoredItem.on('changed', (dataValue) => {
             catOpc.info(`External trigger is ${dataValue.value.value}`);
