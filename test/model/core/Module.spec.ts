@@ -38,7 +38,7 @@ describe('Module', () => {
     it('should load the cif module json', () => {
         const f = fs.readFileSync('assets/modules/module_cif.json');
         const module = new Module(JSON.parse(f.toString()).modules[0]);
-        expect(module).to.have.property('id', 'ModuleTestServer');
+        expect(module).to.have.property('id', 'CIF');
         expect(module.services).to.have.length(6);
     });
 
