@@ -122,11 +122,11 @@ describe('Parameter', () => {
         it('should load with complex expression and given scopeArray', async () => {
             const param = new Parameter({
                 name: 'Parameter001',
-                value: 'sin(a)^2 + cos(CIF.Variable001)^2',
+                value: 'sin(a)^2 + cos(ModuleTestServer.Variable001)^2',
                 scope: [
                     {
                         name: 'a',
-                        module: 'CIF',
+                        module: 'ModuleTestServer',
                         dataAssembly: 'Variable001',
                         variable: 'V'
                     }
@@ -135,7 +135,7 @@ describe('Parameter', () => {
             }, service, undefined, [module]);
             expect(param.scopeArray).to.have.lengthOf(2);
             expect(param.scopeArray[1].getScopeValue()).to.deep.equal({
-                CIF: {
+                ModuleTestServer: {
                     Variable001: 20
                 }
             });
@@ -146,7 +146,7 @@ describe('Parameter', () => {
         it('should load with complex expression with dataAssembly variables', () => {
             const param = new Parameter({
                 name: 'Parameter001',
-                value: '2 * CIF.Variable001.V + CIF.Variable002 + Variable\\.003'
+                value: '2 * ModuleTestServer.Variable001.V + ModuleTestServer.Variable002 + Variable\\.003'
             }, service, undefined, [module]);
             expect(param.getValue()).to.be.greaterThan(0.01);
         });
@@ -162,7 +162,7 @@ describe('Parameter', () => {
 
             const param2 = new Parameter({
                 name: 'Parameter002',
-                value: '2 * CIF.Variable001.V + CIF.Variable002 + Variable\\.003'
+                value: '2 * ModuleTestServer.Variable001.V + ModuleTestServer.Variable002 + Variable\\.003'
             }, service, undefined, [module]);
             const value = await param2.getValue();
             await param2.updateValueOnModule();
@@ -173,7 +173,7 @@ describe('Parameter', () => {
         it('should listen to dynamic parameter', async () => {
             const param = new Parameter({
                 name: 'Parameter001',
-                value: '2 * CIF.Variable001.V'
+                value: '2 * ModuleTestServer.Variable001.V'
             }, service, undefined, [module]);
             expect(param.scopeArray[0].dataAssembly.subscriptionActive).to.equal(true);
             expect(param.scopeArray[0].dataAssembly.name).to.equal('Variable001');

@@ -59,7 +59,7 @@ export class Parameter {
      * is loaded. TestServerVariable can be omitted. Then "V" is used as variable.
      * "." in the name of modules or processvariables can be escaped with "\\."
      * @example
-     * "CIF.Sensoren\.L001.V"
+     * "ModuleTestServer.Sensoren\.L001.V"
      */
     public value: string | number | boolean;
     public scopeArray: ScopeItem[];
