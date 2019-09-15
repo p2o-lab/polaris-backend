@@ -29,7 +29,7 @@ import * as WebSocket from 'ws';
 import {Manager} from '../../src/model/Manager';
 import {ModuleTestServer} from '../../src/moduleTestServer/ModuleTestServer';
 import Routes from '../../src/server/routes';
-import {Server} from '../../src/server/server';
+import {BackendNotification, Server} from '../../src/server/server';
 
 describe('Routes', () => {
     let app;
@@ -257,8 +257,8 @@ describe('Routes', () => {
                 // wait until first update of state via websocket
                 const ws = new WebSocket('ws:/localhost:3000');
                 await new Promise((resolve) => ws.on('message', function incoming(msg) {
-                    const data = JSON.parse(msg.toString());
-                    if (data.data && data.data.status) {
+                    const data: BackendNotification = JSON.parse(msg.toString());
+                    if (data.message === 'service' && data.service.status) {
                         ws.removeListener('message', incoming);
                         resolve();
                     }
@@ -266,7 +266,8 @@ describe('Routes', () => {
 
                 await request(app).get('/api/module/CIF')
                     .expect(200)
-                    .expect('Content-Type', /json/)
+                    .expect('Content-Type', 'application/json; charset=utf-8')
+                    .expect(/"connected":true/)
                     .expect(/"status":"IDLE"/);
 
                 await request(app).post('/api/module/CIF/disconnect')

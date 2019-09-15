@@ -306,12 +306,10 @@ describe('Condition', () => {
             expect(condition).to.have.property('fulfilled', false);
 
             moduleServer.services[0].varStatus = ServiceState.COMPLETED;
-            await new Promise((resolve, reject) => {
-                condition.once('stateChanged', (state) => {
+            await new Promise((resolve) => {
+                condition.on('stateChanged', (state) => {
                     if (state) {
                         resolve();
-                    } else {
-                        reject();
                     }
                 } );
             });

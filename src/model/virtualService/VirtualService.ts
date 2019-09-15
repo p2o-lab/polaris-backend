@@ -49,7 +49,7 @@ export abstract class VirtualService extends BaseService {
 
     public static type: string;
 
-    protected parameters: ParameterInterface[];
+    protected procedureParameters: ParameterInterface[];
     protected processValuesIn: ParameterInterface[];
     protected processValuesOut: ParameterInterface[];
     protected reportParameters: ParameterInterface[];
@@ -84,7 +84,7 @@ export abstract class VirtualService extends BaseService {
                 name: 'default',
                 default: true,
                 sc: this.selfCompleting,
-                parameters: this.parameters,
+                parameters: this.procedureParameters,
                 processValuesIn: this.processValuesIn,
                 processValuesOut: this.processValuesOut,
                 reportParameters: this.reportParameters
@@ -99,7 +99,7 @@ export abstract class VirtualService extends BaseService {
     public async setParameters(parameters: Array<Parameter | ParameterOptions>): Promise<void> {
         catVirtualService.info(`Set parameter: ${JSON.stringify(parameters)}`);
         parameters.forEach((pNew) => {
-            const pOld = [].concat(this.parameters, this.processValuesIn)
+            const pOld = [].concat(this.procedureParameters, this.processValuesIn)
                 .find((param) => param.name === pNew.name);
             if (!pOld) {
                 throw new Error('try to write not existent variable');
@@ -114,6 +114,8 @@ export abstract class VirtualService extends BaseService {
     public async start() {
         if (this._controlEnable.start) {
             await this.gotoStarting();
+        } else {
+            catVirtualService.warn('Start not enabled');
         }
     }
 
@@ -175,7 +177,7 @@ export abstract class VirtualService extends BaseService {
     protected abstract initParameter();
 
     protected async onStarting(): Promise<void> {
-        catVirtualService.debug(`[${this.name}] onStarting`);
+        catVirtualService.info(`[${this.name}] onStarting`);
     }
 
     protected async onExecute(): Promise<void> {
@@ -256,6 +258,7 @@ export abstract class VirtualService extends BaseService {
         });
         catVirtualService.info('starting');
         await this.onStarting();
+        catVirtualService.info('Onstarting over');
         this.gotoExecute();
     }
 

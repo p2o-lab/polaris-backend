@@ -36,11 +36,17 @@ export class Timer extends VirtualService {
     private elapsedTime: number;
     private timerId: Timeout;
     private timerUpdateId: Timeout;
+    private _remainingTime: number;
+
+    private get remainingTime() {
+        return this._remainingTime;
+    }
 
     private set remainingTime(value: number) {
-        const remainingTime = this.processValuesOut.find((p) => p.name === 'remainingTime');
-        remainingTime.value = value;
-        this.eventEmitter.emit('parameterChanged', {parameter: remainingTime, parameterType: 'processValueOut'});
+        this._remainingTime = value;
+        const param = this.processValuesOut.find((p) => p.name === 'remainingTime');
+        param.value = this._remainingTime;
+        this.eventEmitter.emit('parameterChanged', {parameter: param, parameterType: 'processValueOut'});
     }
 
     constructor(options) {
@@ -49,7 +55,7 @@ export class Timer extends VirtualService {
     }
 
     protected initParameter() {
-        this.parameters = [
+        this.procedureParameters = [
             {name: 'duration', value: 10000, min: 1, unit: 'ms'},
             {name: 'updateRate', value: 1000, min: 100, unit: 'ms'}
         ];
@@ -60,12 +66,11 @@ export class Timer extends VirtualService {
     }
 
     protected async onStarting(): Promise<void> {
-        this.durationMs = this.parameters.find((p) => p.name === 'duration').value as number;
+        this.durationMs = this.procedureParameters.find((p) => p.name === 'duration').value as number;
         this.timestampStart = new Date();
         this.elapsedTime = 0;
         this.remainingTime = this.durationMs;
-
-        await catTimer.info(`timer on starting: ${this.remainingTime}`);
+        catTimer.info(`timer on starting: ${this.remainingTime}`);
     }
 
     protected async onExecute() {
@@ -74,7 +79,7 @@ export class Timer extends VirtualService {
             this.timerUpdateId.unref();
         }, this.remainingTime);
 
-        const updateRate = this.parameters.find((p) => p.name === 'updateRate').value as number;
+        const updateRate = this.procedureParameters.find((p) => p.name === 'updateRate').value as number;
         this.timerUpdateId = global.setInterval(() => {
             this.remainingTime = this.remainingTime - updateRate;
         }, updateRate);

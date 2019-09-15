@@ -57,9 +57,9 @@ export class FunctionGenerator extends VirtualService {
 
     public async onStarting(): Promise<void> {
         this.startTime = new Date();
-        this.expression = new Parser().parse(this.parameters.find((p) => p.name === 'function').value.toString());
+        this.expression = new Parser().parse(this.procedureParameters.find((p) => p.name === 'function').value.toString());
 
-        const updateRate = this.parameters.find((p) => p.name === 'updateRate').value as number;
+        const updateRate = this.procedureParameters.find((p) => p.name === 'updateRate').value as number;
         this.timerUpdateId = global.setInterval(() => {
             const elapsedTime = (new Date().getTime() - this.startTime.getTime()) / 1000;
             const value = this.expression.evaluate({t: elapsedTime});
@@ -72,7 +72,7 @@ export class FunctionGenerator extends VirtualService {
     }
 
     public async onResuming() {
-        const updateRate = this.parameters.find((p) => p.name === 'updateRate').value as number;
+        const updateRate = this.procedureParameters.find((p) => p.name === 'updateRate').value as number;
         this.timerUpdateId = global.setInterval(() => {
             const elapsedTime = (new Date().getTime() - this.startTime.getTime()) / 1000;
             this.output = this.expression.evaluate({t: elapsedTime});
@@ -92,7 +92,7 @@ export class FunctionGenerator extends VirtualService {
     }
 
     protected initParameter() {
-        this.parameters = [
+        this.procedureParameters = [
             {name: 'function', value: 'sin(t)'},
             {name: 'updateRate', value: 1000, unit: 'ms', min: 1}
         ];

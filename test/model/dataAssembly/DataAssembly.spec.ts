@@ -115,27 +115,25 @@ describe('DataAssembly', () => {
                 expect(da1.communication.VUnit).to.have.property('value', 1038);
                 expect(da1.getUnit()).to.equal('L');
 
-                expect(da1.toJson()).to.deep.equal({
-                    name: 'Test_AnaView.L004',
-                    min: 0,
-                    max: 35.5,
-                    value: undefined,
-                    unit: 'L',
-                    type: 'number',
-                    readonly: true
-                });
+                let json = da1.toJson();
+                expect(json).to.have.property('name', 'Test_AnaView.L004');
+                expect(json).to.have.property('max', 35.5);
+                expect(json).to.have.property('min', 0);
+                expect(json).to.have.property('value', undefined);
+                expect(json).to.have.property('unit', 'L');
+                expect(json).to.have.property('type', 'number');
+                expect(json).to.have.property('readonly', true);
 
                 da1.communication.V.value = 12.3;
 
-                expect(da1.toJson()).to.deep.equal({
-                    name: 'Test_AnaView.L004',
-                    min: 0,
-                    max: 35.5,
-                    value: 12.3,
-                    unit: 'L',
-                    type: 'number',
-                    readonly: true
-                });
+                json = da1.toJson();
+                expect(json).to.have.property('name', 'Test_AnaView.L004');
+                expect(json).to.have.property('max', 35.5);
+                expect(json).to.have.property('min', 0);
+                expect(json).to.have.property('value', 12.3);
+                expect(json).to.have.property('unit', 'L');
+                expect(json).to.have.property('type', 'number');
+                expect(json).to.have.property('readonly', true);
             }
 
             expect(da2 instanceof AnaView).to.equals(true);

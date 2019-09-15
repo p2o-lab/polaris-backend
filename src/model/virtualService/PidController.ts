@@ -32,7 +32,7 @@ import {VirtualService} from './VirtualService';
 export class PidController extends VirtualService {
     set output(value: number) {
         this._output = value;
-        this.parameters.find((p) => p.name === 'output').value = this._output;
+        this.procedureParameters.find((p) => p.name === 'output').value = this._output;
     }
 
     public static type: string = 'pidController';
@@ -58,14 +58,14 @@ export class PidController extends VirtualService {
 
     public async onStarting() {
         this.ctr = new Controller({
-            k_p: this.parameters.find((param) => param.name === 'p').value as number,
-            k_i: this.parameters.find((param) => param.name === 'i').value as number,
-            k_d: this.parameters.find((param) => param.name === 'd').value as number
+            k_p: this.procedureParameters.find((param) => param.name === 'p').value as number,
+            k_i: this.procedureParameters.find((param) => param.name === 'i').value as number,
+            k_d: this.procedureParameters.find((param) => param.name === 'd').value as number
         });
     }
 
     protected initParameter() {
-        this.parameters = [
+        this.procedureParameters = [
             {name: 'p', value: 0.25},
             {name: 'i', value: 0.01},
             {name: 'd', value: 0.01}
