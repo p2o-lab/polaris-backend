@@ -70,6 +70,9 @@ export class AnaDrv extends DataAssembly {
 
     constructor(options, connection) {
         super(options, connection);
+        this.isReadOnly = false;
+        this.outputDataItem = this.communication.RpmFbk;
+        this.type = 'number';
     }
 }
 

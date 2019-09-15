@@ -36,13 +36,10 @@ export class DigView extends ScaleSettingsDA(UnitDA(DataAssembly)) {
 
     constructor(options, connection) {
         super(options, connection);
+        this.createDataItem(options, 'V', 'read');
         this.isReadOnly = true;
         this.type = 'number';
-        this.createDataItem(options, 'V', 'read');
-    }
-
-    public getValue(): number {
-        return this.communication.V.value;
+        this.outputDataItem = this.communication.V;
     }
 }
 

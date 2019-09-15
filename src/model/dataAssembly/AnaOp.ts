@@ -24,7 +24,6 @@
  * SOFTWARE.
  */
 
-import {ParameterInterface} from '@p2olab/polaris-interface';
 import {OpcUaConnection} from '../core/OpcUaConnection';
 import {BaseDataAssemblyRuntime, DataAssembly} from './DataAssembly';
 import {OpcUaDataItem} from './DataItem';
@@ -46,12 +45,12 @@ export class ExtAnaOp extends ValueLimitationDA(ScaleSettingsDA(UnitDA(DataAssem
 
     constructor(options, connection: OpcUaConnection) {
         super(options, connection);
-        this.isReadOnly = false;
-        this.outputDataItem = this.communication.VOut;
-        this.type = 'number';
         this.createDataItem(options, 'VOut', 'read');
         this.createDataItem(options, 'VRbk', 'read');
         this.createDataItem(options, 'VExt', 'write');
+        this.isReadOnly = false;
+        this.outputDataItem = this.communication.VOut;
+        this.type = 'number';
     }
 }
 
@@ -65,6 +64,9 @@ export class ExtIntAnaOp extends OpModeDA(ExtAnaOp) {
 
     constructor(options, connection: OpcUaConnection) {
         super(options, connection);
+        this.isReadOnly = false;
+        this.type = 'number';
+        this.outputDataItem = this.communication.VRbk;
         this.createDataItem(options, 'VInt', 'read');
     }
 }
