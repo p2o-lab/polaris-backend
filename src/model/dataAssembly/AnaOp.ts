@@ -46,19 +46,12 @@ export class ExtAnaOp extends ValueLimitationDA(ScaleSettingsDA(UnitDA(DataAssem
 
     constructor(options, connection: OpcUaConnection) {
         super(options, connection);
-
+        this.isReadOnly = false;
+        this.outputDataItem = this.communication.VOut;
+        this.type = 'number';
         this.createDataItem(options, 'VOut', 'read');
         this.createDataItem(options, 'VRbk', 'read');
         this.createDataItem(options, 'VExt', 'write');
-    }
-
-    public toJson(): ParameterInterface {
-        return {
-            ...super.toJson(),
-            value: this.communication.VOut.value,
-            type: 'number',
-            readonly: false
-        };
     }
 }
 

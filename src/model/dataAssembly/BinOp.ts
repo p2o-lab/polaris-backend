@@ -42,6 +42,8 @@ export class ExtBinOp extends DataAssembly {
 
     constructor(options, module) {
         super(options, module);
+        this.isReadOnly = false;
+        this.type = 'boolean';
     }
 
 }

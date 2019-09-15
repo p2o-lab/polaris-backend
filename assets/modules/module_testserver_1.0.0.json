@@ -173,7 +173,7 @@
                   }
                 }
               ],
-              "process_values": [
+              "processValuesIn": [
                 {
                   "name": "PvIn",
                   "interface_class": "ExtAnaOp",
@@ -215,7 +215,9 @@
                       "node_id": "Service1.ProcessValueIn.OSLevel"
                     }
                   }
-                },
+                }
+                ],
+              "processValuesOut": [
                 {
                   "name": "PvOut",
                   "interface_class": "ExtAnaOp",

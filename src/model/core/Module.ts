@@ -45,6 +45,16 @@ import {OpcUaConnection} from './OpcUaConnection';
 import {Service} from './Service';
 import {Strategy} from './Strategy';
 
+export interface ParameterChange {
+    timestampModule: Date;
+    service: Service;
+    strategy: string;
+    parameter: string;
+    value: any;
+    unit: string;
+    parameterType: 'parameter' | 'processValueIn' | 'processValueOut' | 'reportValue';
+}
+
 /**
  * Events emitted by [[Module]]
  */
@@ -69,8 +79,6 @@ interface ModuleEvents {
      * @event stateChanged
      */
     stateChanged: {
-        timestampPfe: Date,
-        timestampModule: Date,
         service: Service,
         state: ServiceState
     };
@@ -92,15 +100,7 @@ interface ModuleEvents {
      * Notify when
      * @event parameterChanged
      */
-    parameterChanged: {
-        timestampPfe: Date,
-        timestampModule: Date,
-        service: string,
-        strategy: string;
-        parameter: string;
-        value: any;
-        unit: string;
-    };
+    parameterChanged: ParameterChange;
 
     /**
      * whenever a command is executed from the POL
@@ -108,7 +108,6 @@ interface ModuleEvents {
      */
     commandExecuted: {
         service: Service,
-        timestampPfe: Date,
         strategy: Strategy,
         command: ServiceCommand,
         parameter: ParameterInterface[]
@@ -311,7 +310,6 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
                 .on('commandExecuted', (data) => {
                     this.emit('commandExecuted', {
                         service,
-                        timestampPfe: data.timestamp,
                         strategy: data.strategy,
                         command: data.command,
                         parameter: data.parameter
@@ -341,30 +339,17 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
                     };
                     this.emit('opModeChanged', entry);
                 })
-                .on('variableChanged', (data) => {
-                    this.logger.debug(`[${this.id}] service variable changed: ` +
-                        `${data.strategy.name}.${data.parameter} = ${data.value}`);
-                    const entry = {
-                        timestampPfe: new Date(),
-                        timestampModule: new Date(),
-                        module: this.id,
-                        variable: `${service.name}.${data.strategy.name}.${data.parameter}`,
-                        value: data.value,
-                        unit: data.unit
-                    };
-                    this.emit('variableChanged', entry);
-                }).on('parameterChanged', (data) => {
+                .on('parameterChanged', (data) => {
                     this.logger.debug(`[${this.id}] parameter changed: ` +
-                        `${data.strategy.name}.${data.parameter} = ${data.value}`);
-                    const entry = {
-                        timestampPfe: new Date(),
-                        timestampModule: new Date(),
-                        module: this.id,
-                        service: service.name,
+                        `${data.strategy.name}.${data.parameter} = ${data.parameter.value}`);
+                    const entry: ParameterChange = {
+                        timestampModule: data.parameter.timestamp,
+                        service: service,
                         strategy: data.strategy.id,
-                        parameter: data.parameter,
-                        value: data.value,
-                        unit: data.unit
+                        parameter: data.parameter.name,
+                        value: data.parameter.value,
+                        unit: data.parameter.unit,
+                        parameterType: data.parameterType
                     };
                     this.emit('parameterChanged', entry);
                 });

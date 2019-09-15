@@ -42,13 +42,12 @@ export class FunctionGenerator extends VirtualService {
 
     public startTime: Date;
     private timerUpdateId: Timeout;
-    private _output: number;
     private expression: Expression;
 
     set output(value: number) {
-        this._output = value;
-        this.parameters.find((p) => p.name === 'output').value = this._output;
-        this.eventEmitter.emit('parameterChanged', {value: this._output, parameter: 'output', unit: null});
+        const output = this.processValuesOut.find((p) => p.name === 'output');
+        output.value = value;
+        this.eventEmitter.emit('parameterChanged', {parameter: output, parameterType: 'processValueOut'});
     }
 
     constructor(name: string) {
@@ -63,7 +62,7 @@ export class FunctionGenerator extends VirtualService {
         const updateRate = this.parameters.find((p) => p.name === 'updateRate').value as number;
         this.timerUpdateId = global.setInterval(() => {
             const elapsedTime = (new Date().getTime() - this.startTime.getTime()) / 1000;
-            const value = this.expression.evaluate({t: elapsedTime });
+            const value = this.expression.evaluate({t: elapsedTime});
             this.output = value;
         }, updateRate);
     }
@@ -76,16 +75,18 @@ export class FunctionGenerator extends VirtualService {
         const updateRate = this.parameters.find((p) => p.name === 'updateRate').value as number;
         this.timerUpdateId = global.setInterval(() => {
             const elapsedTime = (new Date().getTime() - this.startTime.getTime()) / 1000;
-            this.output = this.expression.evaluate({t: elapsedTime });
+            this.output = this.expression.evaluate({t: elapsedTime});
         }, updateRate);
     }
 
     public async onCompleting() {
         this.onStopping();
     }
+
     public async onAborting() {
         this.onStopping();
     }
+
     public async onStopping() {
         this.timerUpdateId.unref();
     }
@@ -93,7 +94,10 @@ export class FunctionGenerator extends VirtualService {
     protected initParameter() {
         this.parameters = [
             {name: 'function', value: 'sin(t)'},
-            {name: 'updateRate', value: 1000, unit: 'ms', min: 1},
-            {name: 'output', value: undefined, readonly: true}];
+            {name: 'updateRate', value: 1000, unit: 'ms', min: 1}
+        ];
+        this.processValuesOut = [
+            {name: 'output', value: undefined, readonly: true}
+        ];
     }
 }

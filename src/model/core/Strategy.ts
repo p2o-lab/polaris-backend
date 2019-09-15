@@ -23,18 +23,20 @@
  * SOFTWARE.
  */
 
-import {StrategyOptions} from '@p2olab/polaris-interface';
+import {ParameterInterface, StrategyInterface, StrategyOptions} from '@p2olab/polaris-interface';
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Category} from 'typescript-logging';
 import {catStrategy} from '../../config/logging';
 import {DataAssembly} from '../dataAssembly/DataAssembly';
 import {DataAssemblyFactory} from '../dataAssembly/DataAssemblyFactory';
-import {OpcUaDataItem} from '../dataAssembly/DataItem';
 import {OpcUaConnection} from './OpcUaConnection';
 
 export interface StrategyEvents {
-    parameterChanged: { parameter: DataAssembly, value: any, timestamp: Date };
+    parameterChanged: {
+        parameter: ParameterInterface;
+        parameterType: 'parameter' | 'processValueIn' | 'processValueOut' | 'reportValue'
+    };
 }
 
 type StrategyEmitter = StrictEventEmitter<EventEmitter, StrategyEvents>;
@@ -44,6 +46,9 @@ export class Strategy extends (EventEmitter as new() => StrategyEmitter) {
     public readonly name: string;
     public readonly defaultStrategy: boolean;
     public readonly selfCompleting: boolean;
+    public readonly processValuesIn: DataAssembly[] = [];
+    public readonly processValuesOut: DataAssembly[] = [];
+    public readonly reportParameters: DataAssembly[] = [];
     public readonly parameters: DataAssembly[] = [];
     private readonly logger: Category;
 
@@ -54,30 +59,62 @@ export class Strategy extends (EventEmitter as new() => StrategyEmitter) {
         this.defaultStrategy = options.default;
         this.selfCompleting = options.sc;
         this.parameters = options.parameters.map((paramOpts) => DataAssemblyFactory.create(paramOpts, connection));
+        if (options.processValuesIn) {
+            this.processValuesIn = options.processValuesIn
+                .map((pvOptions) => DataAssemblyFactory.create(pvOptions, connection));
+        }
+        if (options.processValuesOut) {
+            this.processValuesOut = options.processValuesOut
+                .map((pvOptions) => DataAssemblyFactory.create(pvOptions, connection));
+        }
+        if (options.reportParameters) {
+            this.reportParameters = options.reportParameters
+                .map((pvOptions) => DataAssemblyFactory.create(pvOptions, connection));
+        }
         this.logger = catStrategy;
     }
 
     public async subscribe(): Promise<Strategy> {
         this.logger.debug(`Subscribe to strategy ${this.name}: ${JSON.stringify(this.parameters.map((p) => p.name))}`);
-        await Promise.all(
+        await Promise.all([
             this.parameters.map((param) => {
-                param
-                    .on('VRbk', (data: OpcUaDataItem<number>) => {
-                        this.emit('parameterChanged', {parameter: param, value: data.value, timestamp: data.timestamp});
-                    })
-                    .on('Text', (data: OpcUaDataItem<string>) => {
-                        this.emit('parameterChanged', {parameter: param, value: data.value, timestamp: data.timestamp});
-                    });
+                param.on('changed', () => this.emit('parameterChanged', {parameter: param.toJson(), parameterType: 'parameter'}));
+                return param.subscribe();
+            }),
+            this.processValuesIn.map((pv) => {
+                pv.on('changed', () => this.emit('parameterChanged', {parameter: pv.toJson(), parameterType: 'processValueIn'}));
+                return pv.subscribe();
+            }),
+            this.processValuesOut.map((pv) => {
+                pv.on('changed', () => this.emit('parameterChanged', {parameter: pv.toJson(), parameterType: 'processValueOut'}));
+                return pv.subscribe();
+            }),
+            this.reportParameters.map((param) => {
+                param.on('changed', () => this.emit('parameterChanged', {parameter: param.toJson(), parameterType: 'reportValue'}));
                 return param.subscribe();
             })
-        );
+        ]);
         this.logger.debug(`Subscribed to strategy ${this.name}: ${JSON.stringify(this.parameters.map((p) => p.name))}`);
         return this;
     }
 
     public unsubscribe() {
-        this.parameters.forEach((param) => {
-            param.unsubscribe();
-        });
+        this.parameters.forEach((param) => param.unsubscribe());
+        this.processValuesIn.forEach((pv) => pv.unsubscribe());
+        this.processValuesOut.forEach((pv) => pv.unsubscribe());
+        this.reportParameters.forEach((pv) => pv.unsubscribe());
+    }
+
+    public toJson(): StrategyInterface {
+        return {
+            id: this.id,
+            name: this.name,
+            default: this.defaultStrategy,
+            sc: this.selfCompleting,
+            parameters: this.parameters.map((param) => param.toJson()),
+            processValuesIn: this.processValuesIn.map((param) => param.toJson()),
+            processValuesOut: this.processValuesOut.map((param) => param.toJson()),
+            reportParameters: this.reportParameters.map((param) => param.toJson())
+        };
     }
 }

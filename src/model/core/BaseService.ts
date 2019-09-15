@@ -50,15 +50,17 @@ export interface BaseServiceEvents {
      * @event commandExecuted
      */
     commandExecuted: {
-        timestamp: Date,
         strategy: Strategy,
         command: ServiceCommand,
         parameter: ParameterInterface[],
         scope?: any[]
     };
-    variableChanged: { strategy?: Strategy; parameter: string; value: number, unit: string };
 
-    parameterChanged: { strategy?: Strategy; parameter: string, value: number, unit: string };
+    parameterChanged: {
+        strategy?: Strategy;
+        parameter: ParameterInterface;
+        parameterType: 'parameter' | 'processValueIn' | 'processValueOut' | 'reportValue'
+    };
 }
 
 type BaseServiceEmitter = StrictEventEmitter<EventEmitter, BaseServiceEvents>;
@@ -85,10 +87,6 @@ export abstract class BaseService {
     public abstract get controlEnable(): ControlEnableInterface
 
     public readonly eventEmitter: BaseServiceEmitter;
-    public parameters: ParameterInterface[] = [];
-    public processValuesIn: ParameterInterface[] = [];
-    public processValuesOut: ParameterInterface[] = [];
-    public reportValues: ParameterInterface[] = [];
 
     // name of the base service
     protected _name: string;

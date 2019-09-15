@@ -66,12 +66,16 @@ export class PidController extends VirtualService {
 
     protected initParameter() {
         this.parameters = [
-            {name: 'setpoint', value: undefined},
-            {name: 'input', value: undefined},
-            {name: 'output', value: undefined, readonly: true},
             {name: 'p', value: 0.25},
             {name: 'i', value: 0.01},
             {name: 'd', value: 0.01}
+        ];
+        this.processValuesIn = [
+            {name: 'setpoint', value: undefined},
+            {name: 'input', value: undefined}
+        ];
+        this.processValuesOut = [
+            {name: 'output', value: undefined, readonly: true},
         ];
     }
 

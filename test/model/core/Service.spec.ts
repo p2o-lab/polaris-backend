@@ -201,6 +201,9 @@ describe('Service', () => {
                 state: 'automatic',
                 source: 'external'
             });
+            expect(result.processValuesIn).to.deep.equal([]);
+            expect(result.processValuesOut).to.deep.equal({});
+            expect(result.reportParameters).to.deep.equal({});
 
             let stateChangeCount = 0;
             service.eventEmitter.on('state', () => {

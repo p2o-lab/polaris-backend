@@ -30,7 +30,7 @@ import {
 import {EventEmitter} from 'events';
 import {catDataAssembly} from '../../config/logging';
 import {OpcUaConnection} from '../core/OpcUaConnection';
-import {OpcUaDataItem} from './DataItem';
+import {DataItem, OpcUaDataItem} from './DataItem';
 
 export interface BaseDataAssemblyRuntime {
     TagName: OpcUaDataItem<string>;
@@ -54,6 +54,9 @@ export class DataAssembly extends EventEmitter {
     public readonly communication: BaseDataAssemblyRuntime;
     public subscriptionActive: boolean;
     public readonly connection: OpcUaConnection;
+    public isReadOnly: boolean = false;
+    public type: string = 'number';
+    public outputDataItem: DataItem<any>;
 
     constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
         super();
@@ -92,6 +95,7 @@ export class DataAssembly extends EventEmitter {
                         dataItem.on('changed', () => {
                             catDataAssembly.debug(`Emit ${this.name}.${key} = ${dataItem.value}`);
                             this.emit(key, dataItem);
+                            this.emit('changed');
                         });
                         return dataItem.subscribe(samplingInterval);
                     })
@@ -123,6 +127,14 @@ export class DataAssembly extends EventEmitter {
         await opcUaDataItem.write(paramValue);
     }
 
+    public getValue() {
+        return this.outputDataItem.value;
+    }
+
+    public getLastUpdate(): Date {
+        return this.outputDataItem.timestamp;
+    }
+
     public getUnit(): string {
         catDataAssembly.trace(`Try to access not existing unit in ${this.name}`);
         return null;
@@ -130,7 +142,12 @@ export class DataAssembly extends EventEmitter {
 
     public toJson(): ParameterInterface {
         return {
-            name: this.name
+            name: this.name,
+            value: this.getValue(),
+            unit: this.getUnit(),
+            type: this.type,
+            readonly: this.isReadOnly,
+            timestamp: this.getLastUpdate()
         };
     }
 

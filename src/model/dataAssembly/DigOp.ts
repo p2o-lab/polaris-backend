@@ -32,6 +32,15 @@ import {UnitDA} from './mixins/Unit';
 
 export class ExtDigOp extends ScaleSettingsDA(UnitDA(DataAssembly)) {
     public readonly communication: AnaOpRuntime;
+
+    constructor(options, connection) {
+        super(options, connection);
+        this.isReadOnly = false;
+        this.type = 'number';
+        this.createDataItem(options, 'VOut', 'read');
+        this.createDataItem(options, 'VRbk', 'read');
+        this.createDataItem(options, 'VExt', 'write');
+    }
 }
 
 export class ExtIntDigOp extends OpModeDA(ExtDigOp) {

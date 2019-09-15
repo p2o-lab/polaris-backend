@@ -31,6 +31,14 @@ import Middleware from '../config/middleware';
 import {Manager} from '../model/Manager';
 import Routes from './routes';
 import * as serverHandlers from './serverHandlers';
+import {
+    ModuleInterface,
+    PlayerInterface,
+    RecipeInterface,
+    ServiceInterface,
+    VirtualServiceInterface
+} from '@p2olab/polaris-interface';
+import {VariableLogEntry} from '../logging/archive';
 
 export class Server {
 
@@ -44,7 +52,7 @@ export class Server {
         Middleware.init(this.app);
         Routes.init(this.app, manager);
 
-        manager.on('notify', (message, data) => this.notifyClients(message, data));
+        manager.on('notify', (notification) => this.notifyClients(notification));
     }
 
     public startHttpServer(port: number | string | boolean) {
@@ -87,14 +95,41 @@ export class Server {
      * @param message "module", "recipes", "player", "action"
      * @param data
      */
-    private notifyClients(message: string, data: any) {
-        catServer.trace(`WS refresh published ${message}: ${JSON.stringify(data)}`);
+    private notifyClients(notification: BackendNotification) {
+        catServer.trace(`WS refresh published: ${notification}`);
         if (this.wss) {
             this.wss.clients.forEach((client) => {
                 if (client.readyState === WebSocket.OPEN) {
-                    client.send(JSON.stringify({message, data}));
+                    client.send(JSON.stringify(notification));
                 }
             });
         }
     }
 }
+
+export type BackendNotification =
+    {
+        message: 'player';
+        player: PlayerInterface;
+    } |
+{
+    message: 'recipes';
+    recipes: RecipeInterface[];
+}    |
+    {
+        message: 'module';
+        module: ModuleInterface;
+    } |
+    {
+        message: 'service';
+        moduleId: string;
+        service: ServiceInterface;
+    } |
+    {
+        message: 'virtualService';
+        virtualService: VirtualServiceInterface;
+    } |
+    {
+    message: 'variable',
+    variable: VariableLogEntry;
+};

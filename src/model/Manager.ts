@@ -38,6 +38,7 @@ import {Player} from './recipe/Player';
 import {Recipe} from './recipe/Recipe';
 import {VirtualService} from './virtualService/VirtualService';
 import {VirtualServiceFactory, VirtualServiceOptions} from './virtualService/VirtualServiceFactory';
+import {BackendNotification} from '../server/server';
 
 interface ManagerEvents {
     /**
@@ -46,7 +47,7 @@ interface ManagerEvents {
      */
     recipeFinished: void;
 
-    notify: (topic: string, data: any) => void;
+    notify: BackendNotification;
 }
 
 type ManagerEmitter = StrictEventEmitter<EventEmitter, ManagerEvents>;
@@ -92,16 +93,16 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
         super();
         this.player = new Player()
             .on('started', () => {
-                this.emit('notify', 'player', this.player.json());
+                this.emit('notify', { message: 'player', player: this.player.json()});
             })
             .on('recipeChanged', () => {
-                this.emit('notify', 'player', this.player.json());
+                this.emit('notify', { message: 'player', player: this.player.json()});
             })
             .on('recipeFinished', () => {
-                this.emit('notify', 'player', this.player.json());
+                this.emit('notify', { message: 'player', player: this.player.json()});
             })
             .on('completed', () => {
-                this.emit('notify', 'player', this.player.json());
+                this.emit('notify', { message: 'player', player: this.player.json()});
             });
     }
 
@@ -158,23 +159,19 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
             throw new Error('No modules defined in supplied options');
         }
         this.modules.push(...newModules);
-        newModules.forEach(async (module: Module) => {
+        newModules.forEach((module: Module) => {
             module
                 .on('connected', () => {
-                    this.emit('notify', 'module', null);
+                    this.emit('notify', { message: 'module', module: module.json()});
                 })
                 .on('disconnected', () => {
                     catManager.info('Module disconnected');
-                    this.emit('notify', 'module', null);
+                    this.emit('notify', { message: 'module', module: module.json()});
                 })
-                .on('controlEnable', ({service, controlEnable}) => {
-                    this.emit('notify', 'module', {
-                        module: module.id,
-                        service: service.name,
-                        controlEnable
-                    });
+                .on('controlEnable', ({service}) => {
+                    this.emit('notify', {message: 'service', moduleId: module.id, service: service.getOverview()});
                 })
-                .on('variableChanged', async (data) => {
+                .on('variableChanged', (data) => {
                     const logEntry: VariableLogEntry = {
                         timestampPfe: data.timestampPfe,
                         timestampModule: data.timestampModule,
@@ -187,18 +184,17 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
                     if (this.player.currentRecipeRun) {
                         this.player.currentRecipeRun.variableLog.push(logEntry);
                     }
-                    this.emit('notify', 'variable', logEntry);
+                    this.emit('notify', {message: 'variable', variable: logEntry});
                 })
-                .on('parameterChanged', (data: any) => {
-                    data.module = module.id;
-                    this.emit('notify', 'module', data);
+                .on('parameterChanged', (parameterChange) => {
+                    this.emit('notify', {message: 'service', moduleId: module.id, service: parameterChange.service.getOverview()});
                 })
                 .on('commandExecuted', (data) => {
                     const logEntry: ServiceLogEntry = {
-                        timestampPfe: data.timestampPfe,
+                        timestampPfe: new Date(),
                         module: module.id,
                         service: data.service.name,
-                        strategy: data.strategy ? data.strategy.name : undefined,
+                        strategy: data.strategy.name,
                         command: ServiceCommand[data.command],
                         parameter: data.parameter ? data.parameter.map((param) => {
                             return {name: param.name, value: param.value};
@@ -209,7 +205,7 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
                         this.player.currentRecipeRun.serviceLog.push(logEntry);
                     }
                 })
-                .on('stateChanged', async ({service, state}) => {
+                .on('stateChanged', ({service, state}) => {
                     const logEntry: ServiceLogEntry = {
                         timestampPfe: new Date(),
                         module: module.id,
@@ -220,25 +216,16 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
                     if (this.player.currentRecipeRun) {
                         this.player.currentRecipeRun.serviceLog.push(logEntry);
                     }
-                    this.emit('notify', 'module', {
-                        module: module.id,
-                        service: service.name,
-                        status: ServiceState[state],
-                        lastChange: 0
-                    });
+                    this.emit('notify', {message: 'service', moduleId: module.id, service: service.getOverview()});
                 })
-                .on('opModeChanged', async ({service, opMode}) => {
-                    this.emit('notify', 'module', {
-                        module: module.id,
-                        service: service.name,
-                        opMode
-                    });
+                .on('opModeChanged', ({service}) => {
+                    this.emit('notify', {message: 'service', moduleId: module.id, service: service.getOverview()});
                 })
                 .on('serviceCompleted', (service: Service) => {
                     this.performAutoReset(service);
                 });
+            this.emit('notify', {message: 'module', module: module.json()});
         });
-        this.emit('notify', 'module', null);
         return newModules;
     }
 
@@ -271,7 +258,7 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
     public loadRecipe(options: RecipeOptions, protectedRecipe: boolean = false): Recipe {
         const newRecipe = new Recipe(options, this.modules, protectedRecipe);
         this.recipes.push(newRecipe);
-        this.emit('notify', 'recipes', null);
+        this.emit('notify', {message: 'recipes', recipes: this.recipes.map((r) => r.json())});
         return newRecipe;
     }
 
@@ -340,28 +327,11 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
         const virtualService = VirtualServiceFactory.create(options);
         catManager.info(`instantiated virtual Service ${virtualService.name}`);
         virtualService.eventEmitter
-            .on('controlEnable', (controlEnable) => {
-                this.emit('notify', 'virtualService', {
-                    service: virtualService.name,
-                    controlEnable
-                });
+            .on('controlEnable', () => {
+                this.emit('notify', {message: 'virtualService', virtualService: virtualService.json()});
             })
-            /*.on('variableChanged', async (data) => {
-                const logEntry: VariableLogEntry = {
-                    timestampPfe: new Date(),
-                    module: 'virtualServices',
-                    value: data.value,
-                    variable: data.parameter,
-                    unit: data.parameter.unit
-                };
-                this.variableArchive.push(logEntry);
-                if (this.player.currentRecipeRun) {
-                    this.player.currentRecipeRun.variableLog.push(logEntry);
-                }
-                this.emit('notify', 'variable', logEntry);
-            })*/
             .on('parameterChanged', (data: any) => {
-                this.emit('notify', 'virtualService', data);
+                this.emit('notify', {message: 'virtualService', virtualService: virtualService.json()});
             })
             .on('commandExecuted', (data) => {
                 const logEntry: ServiceLogEntry = {
@@ -390,12 +360,7 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
                 if (this.player.currentRecipeRun) {
                     this.player.currentRecipeRun.serviceLog.push(logEntry);
                 }
-                this.emit('notify', 'module', {
-                    module: 'virtualServices',
-                    service: virtualService.name,
-                    status: ServiceState[state],
-                    lastChange: 0
-                });
+                this.emit('notify', {message: 'virtualService', virtualService: virtualService.json()});
             });
         this.virtualServices.push(virtualService);
     }

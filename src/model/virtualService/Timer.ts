@@ -33,18 +33,14 @@ export class Timer extends VirtualService {
 
     private durationMs: number;
     private timestampStart: Date;
-    private _remainingTime: number;
     private elapsedTime: number;
     private timerId: Timeout;
     private timerUpdateId: Timeout;
 
-    private get remainingTime(): number {
-        return this._remainingTime;
-    }
     private set remainingTime(value: number) {
-        this._remainingTime = value;
-        this.processValuesOut.find((p) => p.name === 'remainingTime').value = this._remainingTime;
-        this.eventEmitter.emit('variableChanged', {parameter: 'remainingTime', value: this._remainingTime, unit: 'ms'});
+        const remainingTime = this.processValuesOut.find((p) => p.name === 'remainingTime');
+        remainingTime.value = value;
+        this.eventEmitter.emit('parameterChanged', {parameter: remainingTime, parameterType: 'processValueOut'});
     }
 
     constructor(options) {
@@ -101,9 +97,11 @@ export class Timer extends VirtualService {
     protected async onCompleting() {
         this.onStopping();
     }
+
     protected async onAborting() {
         this.onStopping();
     }
+
     protected async onStopping() {
         global.clearTimeout(this.timerId);
         global.clearInterval(this.timerUpdateId);

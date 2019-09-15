@@ -38,6 +38,9 @@ export class BinView extends DataAssembly {
 
     constructor(options, module) {
         super(options, module);
+        this.isReadOnly = true;
+        this.type = 'boolean';
+        this.createDataItem(options, 'V', 'read', 'boolean');
     }
 }
 
