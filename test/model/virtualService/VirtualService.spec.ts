@@ -33,6 +33,7 @@ import {FunctionGenerator} from '../../../src/model/virtualService/FunctionGener
 import {Storage} from '../../../src/model/virtualService/Storage';
 import {Timer} from '../../../src/model/virtualService/Timer';
 import {VirtualServiceFactory} from '../../../src/model/virtualService/VirtualServiceFactory';
+import {waitForStateChange} from '../../helper';
 
 describe('VirtualService', () => {
 
@@ -106,11 +107,17 @@ describe('VirtualService', () => {
     });
 
     describe('Timer', () => {
+        it('should instantiate', () => {
+            const timer = new Timer('t1');
+            expect(timer.name).to.equal('t1');
+            expect(timer.qualifiedName).to.equal('t1');
+            expect(timer.state).to.equal(ServiceState.IDLE);
+        });
+
         it('should run', async () => {
             const timer = new Timer('t1');
-            expect(timer.state).to.equal(ServiceState.IDLE);
 
-            let json = timer.json().strategies[0];
+            const json = timer.json().strategies[0];
             expect(json.parameters).to.have.lengthOf(2);
             expect(json.processValuesIn).to.equal(undefined);
             expect(json.processValuesOut).to.have.lengthOf(1);
@@ -135,22 +142,24 @@ describe('VirtualService', () => {
                 }
             });
             await timer.start();
-            expect(hit).to.equal(1);
             expect(timer.state).to.equal(ServiceState.EXECUTE);
+            expect(hit).to.equal(1);
+            expect(timer.json().strategies[0].processValuesOut.find((p) => p.name === 'remainingTime'))
+                .to.have.property('value')
+                .to.equal(100);
+
             await delay(45);
             expect(hit).to.equal(5);
-
-            json = timer.json().strategies[0];
-            expect(json.processValuesOut.find((p) => p.name === 'remainingTime'))
+            expect(timer.json().strategies[0].processValuesOut.find((p) => p.name === 'remainingTime'))
                 .to.have.property('value')
                 .to.closeTo(55, 5);
 
+            // do not count further on pause
             await timer.pause();
             expect(hit).to.equal(6);
             await delay(25);
             expect(hit).to.equal(6);
-            json = timer.json().strategies[0];
-            expect(json.processValuesOut.find((p) => p.name === 'remainingTime'))
+            expect(timer.json().strategies[0].processValuesOut.find((p) => p.name === 'remainingTime'))
                 .to.have.property('value')
                 .to.closeTo(55, 5);
 
@@ -158,19 +167,38 @@ describe('VirtualService', () => {
             expect(hit).to.equal(6);
             await delay(12);
             expect(hit).to.equal(7);
-            json = timer.json().strategies[0];
-            expect(json.processValuesOut.find((p) => p.name === 'remainingTime'))
+            expect(timer.json().strategies[0].processValuesOut.find((p) => p.name === 'remainingTime'))
                 .to.have.property('value')
                 .to.closeTo(43, 5);
 
             await delay(20);
             expect(hit).to.equal(9);
-            json = timer.json().strategies[0];
-            expect(json.processValuesOut.find((p) => p.name === 'remainingTime'))
+            expect(timer.json().strategies[0].processValuesOut.find((p) => p.name === 'remainingTime'))
                 .to.have.property('value')
                 .to.closeTo(23, 5);
 
             await timer.reset();
+        });
+
+        it('should restart', async () => {
+            const timer = new Timer('t1');
+            expect(timer.state).to.equal(ServiceState.IDLE);
+
+            timer.start();
+            await waitForStateChange(timer, 'EXECUTE');
+            expect(timer.state).to.equal(ServiceState.EXECUTE);
+
+            timer.restart();
+            await waitForStateChange(timer, 'EXECUTE');
+            expect(timer.state).to.equal(ServiceState.EXECUTE);
+
+            timer.abort();
+            await waitForStateChange(timer, 'ABORTED');
+            expect(timer.state).to.equal(ServiceState.ABORTED);
+
+            timer.reset();
+            await waitForStateChange(timer, 'IDLE');
+            expect(timer.state).to.equal(ServiceState.IDLE);
         });
     });
 

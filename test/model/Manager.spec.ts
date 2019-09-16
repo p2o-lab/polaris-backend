@@ -129,6 +129,14 @@ describe('Manager', () => {
         expect(() => manager.removeVirtualService('timer1')).to.throw('not available');
     });
 
+    it('should instantiate and run virtual service', async () => {
+        const manager = new Manager();
+        manager.instantiateVirtualService({name: 'timer1', type: 'timer'});
+        manager.virtualServices[0].setParameters([{name: 'duration', value: 100}]);
+        manager.virtualServices[0].start();
+        await waitForStateChange(manager.virtualServices[0], 'COMPLETED');
+    });
+
     describe('test with test module', function() {
         this.timeout(5000);
         let moduleServer: ModuleTestServer;
