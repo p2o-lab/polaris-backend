@@ -264,21 +264,21 @@ describe('Routes', () => {
                     }
                 }));
 
-                await request(app).get('/api/module/CIF')
+                await request(app).get('/api/module/ModuleTestServer')
                     .expect(200)
                     .expect('Content-Type', 'application/json; charset=utf-8')
                     .expect(/"connected":true/)
                     .expect(/"status":"IDLE"/);
 
-                await request(app).post('/api/module/CIF/disconnect')
+                await request(app).post('/api/module/ModuleTestServer/disconnect')
                     .expect(200)
                     .expect('Content-Type', /json/)
                     .expect(/"status":"Succesfully disconnected"/);
 
-                await request(app).delete('/api/module/CIF')
+                await request(app).delete('/api/module/ModuleTestServer')
                     .expect(200)
                     .expect('Content-Type', /json/)
-                    .expect({status: 'Successful deleted', id: 'CIF'});
+                    .expect({status: 'Successful deleted', id: 'ModuleTestServer'});
             });
         });
     });

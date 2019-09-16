@@ -1,7 +1,7 @@
 {
   "modules": [
     {
-      "id": "CIF",
+      "id": "ModuleTestServer",
       "opcua_server_url": "opc.tcp://127.0.0.1:4334/ModuleTestServer",
       "services": [
         {

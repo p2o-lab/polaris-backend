@@ -162,11 +162,11 @@ describe('Condition', () => {
                 const module = new Module(moduleJson);
                 const expr = ConditionFactory.create({
                     type: ConditionType.expression,
-                    expression: 'sin(a)^2 + cos(CIF.Variable001)^2 < 0.5',
+                    expression: 'sin(a)^2 + cos(ModuleTestServer.Variable001)^2 < 0.5',
                     scope: [
                         {
                             name: 'a',
-                            module: 'CIF',
+                            module: 'ModuleTestServer',
                             dataAssembly: 'Variable001',
                             variable: 'V'
                         }
@@ -205,7 +205,7 @@ describe('Condition', () => {
         it('specialized as VariableCondition should work', async () => {
             const condition = ConditionFactory.create({
                 type: ConditionType.variable,
-                module: 'CIF',
+                module: 'ModuleTestServer',
                 dataAssembly: 'Variable001',
                 variable: 'V',
                 operator: '>',
@@ -239,13 +239,13 @@ describe('Condition', () => {
             this.timeout(5000);
             const condition = ConditionFactory.create({
                 type: ConditionType.state,
-                module: 'CIF',
+                module: 'ModuleTestServer',
                 service: 'Service1',
                 state: 'completed'
             }, [module]);
             expect(condition.json()).to.deep.equal(
             {
-                module: 'CIF',
+                module: 'ModuleTestServer',
                 service: 'Service1',
                 state: 'completed',
                 type: 'state'
@@ -285,7 +285,7 @@ describe('Condition', () => {
         it('should not react on a closed condition', async () => {
             const condition = ConditionFactory.create({
                 type: ConditionType.state,
-                module: 'CIF',
+                module: 'ModuleTestServer',
                 service: 'Service1',
                 state: 'completed'
             }, [module]);
@@ -320,7 +320,7 @@ describe('Condition', () => {
 
             it('should work with simple server expression', async () => {
                 const expr = new ExpressionCondition(
-                    {type: ConditionType.expression, expression: 'CIF.Variable001.V>10'}, [module]);
+                    {type: ConditionType.expression, expression: 'ModuleTestServer.Variable001.V>10'}, [module]);
                 expr.listen();
 
                 expect(expr.getUsedModules().size).to.equal(1);
@@ -358,7 +358,7 @@ describe('Condition', () => {
             it('should work with semi-complex expression', async () => {
                 const expr: ExpressionCondition = ConditionFactory.create({
                     type: ConditionType.expression,
-                    expression: 'cos(CIF.Variable001.V)^2 > 0.9'
+                    expression: 'cos(ModuleTestServer.Variable001.V)^2 > 0.9'
                 }, [module]) as ExpressionCondition;
                 expr.listen();
 
@@ -382,11 +382,11 @@ describe('Condition', () => {
             it('should work with complex expression', async () => {
                 const expr = ConditionFactory.create({
                     type: ConditionType.expression,
-                    expression: 'sin(a)^2 + cos(CIF.Variable001)^2 < 0.5',
+                    expression: 'sin(a)^2 + cos(ModuleTestServer.Variable001)^2 < 0.5',
                     scope: [
                         {
                             name: 'a',
-                            module: 'CIF',
+                            module: 'ModuleTestServer',
                             dataAssembly: 'Variable001',
                             variable: 'V'
                         }

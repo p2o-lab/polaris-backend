@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import {ModuleOptions, OpcUaNodeOptions} from '@p2olab/polaris-interface';
+import {OpcUaNodeOptions} from '@p2olab/polaris-interface';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
@@ -190,7 +190,7 @@ describe('DataAssembly', () => {
             moduleServer = new ModuleTestServer();
             await moduleServer.start();
 
-            connection = new OpcUaConnection('CIF', 'opc.tcp://127.0.0.1:4334/ModuleTestServer');
+            connection = new OpcUaConnection('ModuleTestServer', 'opc.tcp://127.0.0.1:4334/ModuleTestServer');
             await connection.connect();
         });
 

@@ -114,7 +114,7 @@ describe('DataItem', () => {
             await moduleServer.start();
             moduleServer.startSimulation();
 
-            connection = new OpcUaConnection('CIF', 'opc.tcp://127.0.0.1:4334/ModuleTestServer');
+            connection = new OpcUaConnection('ModuleTestServer', 'opc.tcp://127.0.0.1:4334/ModuleTestServer');
             await connection.connect();
         });
 
