@@ -8,7 +8,7 @@
       "name": "S1",
       "operations": [
         {
-          "module": "CIF",
+          "module": "ModuleTestServer",
           "service": "Service1",
           "command": "start"
         }
@@ -18,7 +18,7 @@
           "next_step": "S2",
           "condition": {
             "type": "state",
-            "module": "CIF",
+            "module": "ModuleTestServer",
             "service": "Service1",
             "state": "execute"
           }
@@ -29,12 +29,12 @@
       "name": "S2",
       "operations": [
         {
-          "module": "CIF",
+          "module": "ModuleTestServer",
           "service": "Service1",
           "command": "pause"
         },
         {
-          "module": "CIF",
+          "module": "ModuleTestServer",
           "service": "Service2",
           "command": "start"
         }
@@ -47,13 +47,13 @@
             "conditions": [
               {
                 "type": "state",
-                "module": "CIF",
+                "module": "ModuleTestServer",
                 "service": "Service1",
                 "state": "paused"
               },
               {
                 "type": "state",
-                "module": "CIF",
+                "module": "ModuleTestServer",
                 "service": "Service2",
                 "state": "execute"
               }
@@ -66,7 +66,7 @@
       "name": "S3",
       "operations": [
         {
-          "module": "CIF",
+          "module": "ModuleTestServer",
           "service": "Service1",
           "command": "resume"
         }
@@ -76,7 +76,7 @@
           "next_step": "S4",
           "condition": {
             "type": "state",
-            "module": "CIF",
+            "module": "ModuleTestServer",
             "service": "Service1",
             "state": "execute"
           }
@@ -87,12 +87,12 @@
       "name": "S4",
       "operations": [
         {
-          "module": "CIF",
+          "module": "ModuleTestServer",
           "service": "Service1",
           "command": "stop"
         },
         {
-          "module": "CIF",
+          "module": "ModuleTestServer",
           "service": "Service2",
           "command": "complete"
         }
@@ -105,13 +105,13 @@
             "conditions": [
               {
                 "type": "state",
-                "module": "CIF",
+                "module": "ModuleTestServer",
                 "service": "Service1",
                 "state": "stopped"
               },
               {
                 "type": "state",
-                "module": "CIF",
+                "module": "ModuleTestServer",
                 "service": "Service2",
                 "state": "completed"
               }
@@ -124,12 +124,12 @@
       "name": "S5",
       "operations": [
         {
-          "module": "CIF",
+          "module": "ModuleTestServer",
           "service": "Service1",
           "command": "reset"
         },
         {
-          "module": "CIF",
+          "module": "ModuleTestServer",
           "service": "Service2",
           "command": "reset"
         }
@@ -142,13 +142,13 @@
             "conditions": [
               {
                 "type": "state",
-                "module": "CIF",
+                "module": "ModuleTestServer",
                 "service": "Service1",
                 "state": "idle"
               },
               {
                 "type": "state",
-                "module": "CIF",
+                "module": "ModuleTestServer",
                 "service": "Service2",
                 "state": "idle"
               }

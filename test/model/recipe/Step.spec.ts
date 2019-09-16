@@ -81,7 +81,7 @@ describe('Step', () => {
                         next_step: 'completed',
                         condition: {
                             type: 'state',
-                            module: 'CIF',
+                            module: 'ModuleTestServer',
                             service: 'Service1',
                             state: 'starting'
                         }

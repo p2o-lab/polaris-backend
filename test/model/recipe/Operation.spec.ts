@@ -27,8 +27,6 @@ import {ServiceCommand} from '@p2olab/polaris-interface';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
-import {ClientSession, OPCUAClient} from 'node-opcua-client';
-import {OPCUAServer} from 'node-opcua-server';
 import * as delay from 'timeout-as-promise';
 import {Module} from '../../../src/model/core/Module';
 import {Service} from '../../../src/model/core/Service';
@@ -73,7 +71,7 @@ describe('Operation', () => {
 
         it('should fail with wrong service name', () => {
             expect(() => new Operation({
-                module: 'CIF',
+                module: 'ModuleTestServer',
                 service: 'test',
                 command: null
             }, [module])).to.throw('not found');
@@ -81,7 +79,7 @@ describe('Operation', () => {
 
         it('should fail with wrong strategy name', () => {
             expect(() => new Operation({
-                module: 'CIF',
+                module: 'ModuleTestServer',
                 service: 'Service1',
                 strategy: 'dd',
                 command: null
@@ -90,13 +88,13 @@ describe('Operation', () => {
 
         it('should work', () => {
             const op = new Operation({
-                module: 'CIF', service: 'Service1', command: 'start' as any,
+                module: 'ModuleTestServer', service: 'Service1', command: 'start' as any,
                 parameter: [{name: 'Parameter001', value: 3}]
             }, [module]);
             expect(op).to.have.property('module');
             expect(op.json()).to.deep.equal({
                 command: 'start',
-                module: 'CIF',
+                module: 'ModuleTestServer',
                 parameter: [
                     {
                         name: 'Parameter001',
@@ -116,7 +114,7 @@ describe('Operation', () => {
         let module: Module;
         let service: Service;
 
-        beforeEach(async function () {
+        beforeEach(async function() {
             this.timeout(5000);
             moduleServer = new ModuleTestServer();
             await moduleServer.start();
