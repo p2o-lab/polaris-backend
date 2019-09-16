@@ -23,14 +23,16 @@
  * SOFTWARE.
  */
 
-import {ModuleInterface, ModuleOptions,
+import {
+    BackendNotification, ModuleInterface, ModuleOptions,
     RecipeOptions,
-    ServiceCommand,
-    VirtualServiceInterface} from '@p2olab/polaris-interface';
+    ServiceCommand, VariableChange,
+    VirtualServiceInterface
+} from '@p2olab/polaris-interface';
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {catManager} from '../config/logging';
-import {ServiceLogEntry, VariableLogEntry} from '../logging/archive';
+import {ServiceLogEntry} from '../logging/archive';
 import {ServiceState} from './core/enum';
 import {Module} from './core/Module';
 import {Service} from './core/Service';
@@ -38,7 +40,6 @@ import {Player} from './recipe/Player';
 import {Recipe} from './recipe/Recipe';
 import {VirtualService} from './virtualService/VirtualService';
 import {VirtualServiceFactory, VirtualServiceOptions} from './virtualService/VirtualServiceFactory';
-import {BackendNotification} from '../server/server';
 
 interface ManagerEvents {
     /**
@@ -80,7 +81,7 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
 
     public readonly player: Player;
 
-    public variableArchive: VariableLogEntry[] = [];
+    public variableArchive: VariableChange[] = [];
 
     public serviceArchive: ServiceLogEntry[] = [];
 
@@ -172,7 +173,7 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
                     this.emit('notify', {message: 'service', moduleId: module.id, service: service.getOverview()});
                 })
                 .on('variableChanged', (data) => {
-                    const logEntry: VariableLogEntry = {
+                    const logEntry: VariableChange = {
                         timestampPfe: data.timestampPfe,
                         timestampModule: data.timestampModule,
                         module: module.id,
@@ -187,7 +188,11 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
                     this.emit('notify', {message: 'variable', variable: logEntry});
                 })
                 .on('parameterChanged', (parameterChange) => {
-                    this.emit('notify', {message: 'service', moduleId: module.id, service: parameterChange.service.getOverview()});
+                    this.emit('notify', {
+                        message: 'service',
+                        moduleId: module.id,
+                        service: parameterChange.service.getOverview()
+                    });
                 })
                 .on('commandExecuted', (data) => {
                     const logEntry: ServiceLogEntry = {

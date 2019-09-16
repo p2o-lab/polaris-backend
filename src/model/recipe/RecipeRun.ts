@@ -23,10 +23,10 @@
  * SOFTWARE.
  */
 
-import {RecipeRunInterface, RecipeState} from '@p2olab/polaris-interface';
+import {RecipeRunInterface, RecipeState, VariableChange} from '@p2olab/polaris-interface';
 import {EventEmitter} from 'events';
 import {v4} from 'uuid';
-import {ServiceLogEntry, VariableLogEntry} from '../../logging/archive';
+import {ServiceLogEntry} from '../../logging/archive';
 import {Recipe, RecipeEmitter} from './Recipe';
 
 /** One specific recipe run with all logs
@@ -49,7 +49,7 @@ export class RecipeRun extends (EventEmitter as new() => RecipeEmitter) {
     public readonly recipe: Recipe;
 
     public serviceLog: ServiceLogEntry[] = [];
-    public variableLog: VariableLogEntry[] = [];
+    public variableLog: VariableChange[] = [];
     private _startTime: Date;
     private _endTime: Date;
 

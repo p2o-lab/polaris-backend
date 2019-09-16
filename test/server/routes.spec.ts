@@ -29,7 +29,8 @@ import * as WebSocket from 'ws';
 import {Manager} from '../../src/model/Manager';
 import {ModuleTestServer} from '../../src/moduleTestServer/ModuleTestServer';
 import Routes from '../../src/server/routes';
-import {BackendNotification, Server} from '../../src/server/server';
+import {Server} from '../../src/server/server';
+import {BackendNotification} from '@p2olab/polaris-interface';
 
 describe('Routes', () => {
     let app;

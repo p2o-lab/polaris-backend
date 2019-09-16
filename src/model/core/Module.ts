@@ -30,13 +30,12 @@ import {
     OpModeInterface,
     ParameterInterface,
     ServiceCommand,
-    ServiceInterface
+    ServiceInterface, VariableChange
 } from '@p2olab/polaris-interface';
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Category} from 'typescript-logging';
 import {catModule} from '../../config/logging';
-import {VariableLogEntry} from '../../logging/archive';
 import {DataAssembly} from '../dataAssembly/DataAssembly';
 import {DataAssemblyFactory} from '../dataAssembly/DataAssemblyFactory';
 import {DataItemEmitter} from '../dataAssembly/DataItem';
@@ -94,7 +93,7 @@ interface ModuleEvents {
      * Notify when a variable inside a module changes
      * @event variableChanged
      */
-    variableChanged: VariableLogEntry;
+    variableChanged: VariableChange;
 
     /**
      * Notify when
@@ -285,7 +284,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
                 variable.on('V', (data) => {
                     this.logger.debug(`[${this.id}] variable changed: ${variable.name} = ` +
                         `${data.value} ${variable.getUnit()}`);
-                    const entry: VariableLogEntry = {
+                    const entry: VariableChange = {
                         timestampPfe: new Date(),
                         timestampModule: data.timestamp,
                         module: this.id,

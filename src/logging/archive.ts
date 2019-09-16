@@ -33,12 +33,3 @@ export interface ServiceLogEntry {
     command?: string;
     parameter?: any[];
 }
-
-export interface VariableLogEntry {
-    timestampPfe: Date;
-    timestampModule: Date;
-    module: string;
-    variable: string;
-    value: number | string;
-    unit: string;
-}

@@ -23,6 +23,7 @@
  * SOFTWARE.
  */
 
+import {BackendNotification} from '@p2olab/polaris-interface';
 import * as express from 'express';
 import * as http from 'http';
 import * as WebSocket from 'ws';
@@ -31,14 +32,6 @@ import Middleware from '../config/middleware';
 import {Manager} from '../model/Manager';
 import Routes from './routes';
 import * as serverHandlers from './serverHandlers';
-import {
-    ModuleInterface,
-    PlayerInterface,
-    RecipeInterface,
-    ServiceInterface,
-    VirtualServiceInterface
-} from '@p2olab/polaris-interface';
-import {VariableLogEntry} from '../logging/archive';
 
 export class Server {
 
@@ -91,9 +84,6 @@ export class Server {
     }
 
     /** Notify all clients via websockets about refresh of data
-     *
-     * @param message "module", "recipes", "player", "action"
-     * @param data
      */
     private notifyClients(notification: BackendNotification) {
         catServer.trace(`WS refresh published: ${notification}`);
@@ -106,30 +96,3 @@ export class Server {
         }
     }
 }
-
-export type BackendNotification =
-    {
-        message: 'player';
-        player: PlayerInterface;
-    } |
-{
-    message: 'recipes';
-    recipes: RecipeInterface[];
-}    |
-    {
-        message: 'module';
-        module: ModuleInterface;
-    } |
-    {
-        message: 'service';
-        moduleId: string;
-        service: ServiceInterface;
-    } |
-    {
-        message: 'virtualService';
-        virtualService: VirtualServiceInterface;
-    } |
-    {
-    message: 'variable',
-    variable: VariableLogEntry;
-};
