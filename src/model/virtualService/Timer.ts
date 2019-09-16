@@ -74,9 +74,14 @@ export class Timer extends VirtualService {
     }
 
     protected async onExecute() {
+        // clear timers is important when timer is restarted
+        global.clearTimeout(this.timerId);
+        global.clearInterval(this.timerUpdateId);
+
+        // set timers
         this.timerId = global.setTimeout(() => {
             super.complete();
-            this.timerUpdateId.unref();
+            global.clearInterval(this.timerUpdateId);
         }, this.remainingTime);
 
         const updateRate = this.procedureParameters.find((p) => p.name === 'updateRate').value as number;
@@ -96,7 +101,7 @@ export class Timer extends VirtualService {
 
     protected async onResuming(): Promise<void> {
         this.timestampStart = new Date();
-        await catTimer.info(`timer on resuming (${this.remainingTime})`);
+        catTimer.info(`timer on resuming (${this.remainingTime})`);
     }
 
     protected async onCompleting() {
@@ -108,6 +113,7 @@ export class Timer extends VirtualService {
     }
 
     protected async onStopping() {
+        catTimer.info(`timer stopped`);
         global.clearTimeout(this.timerId);
         global.clearInterval(this.timerUpdateId);
     }

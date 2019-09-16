@@ -335,7 +335,7 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
             .on('controlEnable', () => {
                 this.emit('notify', {message: 'virtualService', virtualService: virtualService.json()});
             })
-            .on('parameterChanged', (data: any) => {
+            .on('parameterChanged', () => {
                 this.emit('notify', {message: 'virtualService', virtualService: virtualService.json()});
             })
             .on('commandExecuted', (data) => {

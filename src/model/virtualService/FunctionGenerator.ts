@@ -56,6 +56,9 @@ export class FunctionGenerator extends VirtualService {
     }
 
     public async onStarting(): Promise<void> {
+        // clear timers is important when timer is restarted
+        global.clearInterval(this.timerUpdateId);
+
         this.startTime = new Date();
         this.expression = new Parser()
             .parse(this.procedureParameters.find((p) => p.name === 'function').value.toString());

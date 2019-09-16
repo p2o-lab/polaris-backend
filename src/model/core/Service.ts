@@ -26,7 +26,6 @@
 import {
     ControlEnableInterface,
     OpModeInterface,
-    ParameterInterface,
     ParameterOptions,
     ServiceCommand,
     ServiceInterface,
@@ -320,17 +319,15 @@ export class Service extends BaseService {
     }
 
     /**
-     * Set service configuration strategyParameters for adaption to environment. Can set also process values
-     * @param {ParameterOptions[]} parameters
-     * @returns {Promise<any[]>}
+     * Set service configuration parameters for adaption to environment.
      */
-    public setServiceParameters(parameters: ParameterOptions[]): Promise<any[]> {
+    public async setConfigurationParameters(parameters: ParameterOptions[]) {
         this.logger.info(`[${this.qualifiedName}] Set service parameters: ${JSON.stringify(parameters)}`);
         const tasks = parameters.map((paramOptions: ParameterOptions) => {
             const param: Parameter = new Parameter(paramOptions, this);
             return param.updateValueOnModule();
         });
-        return Promise.all(tasks);
+        await Promise.all(tasks);
     }
 
     /** Set strategy
