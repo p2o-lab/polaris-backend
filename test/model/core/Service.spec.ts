@@ -98,6 +98,12 @@ describe('Service', () => {
             await moduleServer.shutdown();
         });
 
+        it('should provide correct JSON', () => {
+            expect(ServiceState[service.state]).to.equal('IDLE');
+            const result = service.getOverview();
+            expect(result).to.have.property('status', 'IDLE');
+        });
+
         it('should reject command if not command enabled', async () => {
             expect(service.name).to.equal('Service1');
             expect(ServiceState[service.state]).to.equal('IDLE');
@@ -201,6 +207,10 @@ describe('Service', () => {
                 state: 'automatic',
                 source: 'external'
             });
+            expect(result.strategies[0].processValuesIn).to.have.length(1);
+            expect(result.strategies[0].processValuesIn[0].value).to.equal(20);
+            expect(result.strategies[0].processValuesOut).to.have.length(2);
+            expect(result.strategies[0].reportParameters).to.have.length(0);
 
             let stateChangeCount = 0;
             service.eventEmitter.on('state', () => {

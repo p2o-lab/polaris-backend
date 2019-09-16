@@ -134,7 +134,7 @@ export class AggregatedService extends VirtualService {
     }
 
     protected initParameter() {
-        this.parameters = this.options.parameters;
+        this.procedureParameters = this.options.parameters;
         this.selfCompleting = true;
     }
 

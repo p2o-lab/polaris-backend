@@ -48,8 +48,8 @@ export function ScaleSettingsDA<TBase extends Constructor<DataAssembly>>(Base: T
         public toJson(): ParameterInterface {
             return {
                 ...super.toJson(),
-                max: this.communication.VSclMax.value,
-                min: this.communication.VSclMin.value
+                max: this.communication.VSclMax ? this.communication.VSclMax.value : undefined,
+                min: this.communication.VSclMin ? this.communication.VSclMin.value : undefined
             };
         }
     };

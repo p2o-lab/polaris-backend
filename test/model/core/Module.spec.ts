@@ -80,7 +80,6 @@ describe('Module', () => {
             const errorMsg = module.services[0].strategies[0].parameters[2] as StrView;
             expect(errorMsg.communication.WQC.listenerCount('changed')).to.equal(1);
             expect(errorMsg.communication.Text.listenerCount('changed')).to.equal(1);
-            expect(errorMsg.listenerCount('Text')).to.equal(1);
 
             await Promise.all([
                 new Promise((resolve) => module.on('parameterChanged', resolve)),
@@ -98,8 +97,7 @@ describe('Module', () => {
             expect(param.listenerCount('Text')).to.equal(0);
 
             await module.connect();
-            expect(module.connection.monitoredItemSize()).to.equal(48);
-            expect(param.listenerCount('Text')).to.equal(1);
+            expect(module.connection.monitoredItemSize()).to.equal(69);
 
             await Promise.all([
                 new Promise((resolve) => module.on('parameterChanged', resolve)),
@@ -110,7 +108,7 @@ describe('Module', () => {
             expect(module.connection.monitoredItemSize()).to.equal(0);
 
             await module.connect();
-            expect(module.connection.monitoredItemSize()).to.equal(48);
+            expect(module.connection.monitoredItemSize()).to.equal(69);
             await Promise.all([
                 new Promise((resolve) => module.on('parameterChanged', resolve)),
                 new Promise((resolve) => module.on('variableChanged', resolve)),

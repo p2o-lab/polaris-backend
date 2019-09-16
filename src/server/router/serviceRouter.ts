@@ -43,7 +43,7 @@ export const serviceRouter: Router = Router();
 serviceRouter.post('/:moduleId/service/:serviceName/parameter', asyncHandler(async (req: Request, res: Response) => {
     const manager: Manager = req.app.get('manager');
     const service = manager.getService(req.params.moduleId, req.params.serviceName);
-    await service.setServiceParameters(req.body.parameters);
+    await service.setConfigurationParameters(req.body.parameters);
     res.json(service.getOverview());
 }));
 

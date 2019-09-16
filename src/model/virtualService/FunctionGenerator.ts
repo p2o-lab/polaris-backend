@@ -42,13 +42,12 @@ export class FunctionGenerator extends VirtualService {
 
     public startTime: Date;
     private timerUpdateId: Timeout;
-    private _output: number;
     private expression: Expression;
 
     set output(value: number) {
-        this._output = value;
-        this.parameters.find((p) => p.name === 'output').value = this._output;
-        this.eventEmitter.emit('parameterChanged', {value: this._output, parameter: 'output', unit: null});
+        const output = this.processValuesOut.find((p) => p.name === 'output');
+        output.value = value;
+        this.eventEmitter.emit('parameterChanged', {parameter: output, parameterType: 'processValueOut'});
     }
 
     constructor(name: string) {
@@ -57,14 +56,17 @@ export class FunctionGenerator extends VirtualService {
     }
 
     public async onStarting(): Promise<void> {
-        this.startTime = new Date();
-        this.expression = new Parser().parse(this.parameters.find((p) => p.name === 'function').value.toString());
+        // clear timers is important when timer is restarted
+        global.clearInterval(this.timerUpdateId);
 
-        const updateRate = this.parameters.find((p) => p.name === 'updateRate').value as number;
+        this.startTime = new Date();
+        this.expression = new Parser()
+            .parse(this.procedureParameters.find((p) => p.name === 'function').value.toString());
+
+        const updateRate = this.procedureParameters.find((p) => p.name === 'updateRate').value as number;
         this.timerUpdateId = global.setInterval(() => {
             const elapsedTime = (new Date().getTime() - this.startTime.getTime()) / 1000;
-            const value = this.expression.evaluate({t: elapsedTime });
-            this.output = value;
+            this.output = this.expression.evaluate({t: elapsedTime});
         }, updateRate);
     }
 
@@ -73,27 +75,32 @@ export class FunctionGenerator extends VirtualService {
     }
 
     public async onResuming() {
-        const updateRate = this.parameters.find((p) => p.name === 'updateRate').value as number;
+        const updateRate = this.procedureParameters.find((p) => p.name === 'updateRate').value as number;
         this.timerUpdateId = global.setInterval(() => {
             const elapsedTime = (new Date().getTime() - this.startTime.getTime()) / 1000;
-            this.output = this.expression.evaluate({t: elapsedTime });
+            this.output = this.expression.evaluate({t: elapsedTime});
         }, updateRate);
     }
 
     public async onCompleting() {
         this.onStopping();
     }
+
     public async onAborting() {
         this.onStopping();
     }
+
     public async onStopping() {
         this.timerUpdateId.unref();
     }
 
     protected initParameter() {
-        this.parameters = [
+        this.procedureParameters = [
             {name: 'function', value: 'sin(t)'},
-            {name: 'updateRate', value: 1000, unit: 'ms', min: 1},
-            {name: 'output', value: undefined, readonly: true}];
+            {name: 'updateRate', value: 1000, unit: 'ms', min: 1}
+        ];
+        this.processValuesOut = [
+            {name: 'output', value: undefined, readonly: true}
+        ];
     }
 }

@@ -23,7 +23,12 @@
  * SOFTWARE.
  */
 
-import {ControlEnableInterface, ParameterOptions, VirtualServiceInterface} from '@p2olab/polaris-interface';
+import {
+    ControlEnableInterface,
+    ParameterInterface,
+    ParameterOptions,
+    VirtualServiceInterface
+} from '@p2olab/polaris-interface';
 import {catVirtualService} from '../../config/logging';
 import {BaseService} from '../core/BaseService';
 import {ServiceState} from '../core/enum';
@@ -43,6 +48,11 @@ export abstract class VirtualService extends BaseService {
     }
 
     public static type: string;
+
+    protected procedureParameters: ParameterInterface[];
+    protected processValuesIn: ParameterInterface[];
+    protected processValuesOut: ParameterInterface[];
+    protected reportParameters: ParameterInterface[];
 
     protected _controlEnable: ControlEnableInterface;
     protected _state: ServiceState = ServiceState.IDLE;
@@ -69,23 +79,30 @@ export abstract class VirtualService extends BaseService {
         return {
             name: this.name,
             type: this.constructor.name,
-            parameters: this.parameters,
-            processValuesIn: this.processValuesIn,
-            processValuesOut: this.processValuesOut,
-            reportParameters: this.reportValues,
+            strategies: [{
+                id: 'default',
+                name: 'default',
+                default: true,
+                sc: this.selfCompleting,
+                parameters: this.procedureParameters,
+                processValuesIn: this.processValuesIn,
+                processValuesOut: this.processValuesOut,
+                reportParameters: this.reportParameters
+            }],
+            parameters: [],
             status: ServiceState[this.state],
             controlEnable: this.controlEnable,
-            lastChange: (new Date().getTime() - this.lastStatusChange.getTime()) / 1000,
-            sc: this.selfCompleting
+            lastChange: (new Date().getTime() - this.lastStatusChange.getTime()) / 1000
         };
     }
 
     public async setParameters(parameters: Array<Parameter | ParameterOptions>): Promise<void> {
         catVirtualService.info(`Set parameter: ${JSON.stringify(parameters)}`);
         parameters.forEach((pNew) => {
-            const pOld = this.parameters.find((param) => param.name === pNew.name);
+            const pOld = [].concat(this.procedureParameters, this.processValuesIn)
+                .find((param) => param.name === pNew.name);
             if (!pOld) {
-                throw new Error('try to write not existent variable');
+                throw new Error('try to write not existing variable');
             }
             if (pOld.readonly) {
                 throw new Error('try to write to readonly variable');
@@ -99,43 +116,49 @@ export abstract class VirtualService extends BaseService {
             await this.gotoStarting();
         }
     }
+
     public async restart() {
         if (this._controlEnable.restart) {
             await this.gotoStarting();
         }
     }
+
     public async pause() {
         if (this._controlEnable.pause) {
             await this.gotoPausing();
         }
     }
+
     public async resume() {
         if (this._controlEnable.resume) {
             await this.gotoResuming();
         }
     }
+
     public async complete() {
         if (this._controlEnable.complete) {
             await this.gotoCompleting();
-        } else {
-            catVirtualService.warn(`Can not complete, ${JSON.stringify(this._controlEnable)}`);
         }
     }
+
     public async stop() {
         if (this._controlEnable.stop) {
             await this.gotoStopping();
         }
     }
+
     public async abort() {
         if (this._controlEnable.abort) {
             await this.gotoAborting();
         }
     }
+
     public async reset() {
         if (this._controlEnable.reset) {
             await this.gotoResetting();
         }
     }
+
     public async unhold() {
         if (this._controlEnable.unhold) {
             await this.gotoUnholding();
@@ -148,45 +171,59 @@ export abstract class VirtualService extends BaseService {
      * initialize parameters during construction and when resetting
      */
     protected abstract initParameter();
+
     protected async onStarting(): Promise<void> {
-        catVirtualService.debug(`[${this.name}] onStarting`);
+        catVirtualService.info(`[${this.name}] onStarting`);
     }
+
     protected async onExecute(): Promise<void> {
         catVirtualService.debug(`[${this.name}] onExecute`);
     }
+
     protected async onPausing(): Promise<void> {
         catVirtualService.debug(`[${this.name}] onPausing`);
     }
+
     protected async onPaused(): Promise<void> {
         catVirtualService.debug(`[${this.name}] onPaused`);
     }
+
     protected async onResuming(): Promise<void> {
         catVirtualService.debug(`[${this.name}] onResuming`);
     }
+
     protected async onCompleting(): Promise<void> {
         catVirtualService.debug(`[${this.name}] onCompleting`);
     }
+
     protected async onCompleted(): Promise<void> {
         catVirtualService.debug(`[${this.name}] onCompleted`);
     }
+
     protected async onResetting(): Promise<void> {
         catVirtualService.debug(`[${this.name}] onResetting`);
     }
+
     protected async onAborting(): Promise<void> {
         catVirtualService.debug(`[${this.name}] onAborting`);
     }
+
     protected async onAborted(): Promise<void> {
         catVirtualService.debug(`[${this.name}] onAborted`);
     }
+
     protected async onStopping(): Promise<void> {
         catVirtualService.debug(`[${this.name}] onStopping`);
     }
+
     protected async onStopped(): Promise<void> {
         catVirtualService.debug(`[${this.name}] onStopped`);
     }
+
     protected async onIdle(): Promise<void> {
         catVirtualService.debug(`[${this.name}] onIdle`);
     }
+
     protected async onUnholding(): Promise<void> {
         catVirtualService.debug(`[${this.name}] onUnholding`);
     }
@@ -233,7 +270,7 @@ export abstract class VirtualService extends BaseService {
             stop: true,
             unhold: false
         });
-        catVirtualService.info('running');
+        catVirtualService.info('execute');
         await this.onExecute();
     }
 
@@ -373,13 +410,13 @@ export abstract class VirtualService extends BaseService {
             stop: false,
             unhold: false
         });
-        catVirtualService.info('completed');
+        catVirtualService.info('aborting');
         await this.onAborting();
         this.gotoAborted();
     }
 
     private async gotoAborted(): Promise<void> {
-        this.setState(ServiceState.COMPLETED);
+        this.setState(ServiceState.ABORTED);
         this.setControlEnable({
             start: false,
             abort: true,
@@ -391,12 +428,12 @@ export abstract class VirtualService extends BaseService {
             stop: true,
             unhold: false
         });
-        catVirtualService.info('completed');
+        catVirtualService.info('aborted');
         await this.onAborted();
-        this.gotoIdle();
     }
 
     private async gotoResetting(): Promise<void> {
+        this.setState(ServiceState.RESETTING);
         this.setControlEnable({
             start: false,
             abort: true,
@@ -408,7 +445,6 @@ export abstract class VirtualService extends BaseService {
             stop: true,
             unhold: false
         });
-        this.setState(ServiceState.RESETTING);
         catVirtualService.info('resetting');
         await this.onResetting();
         this.initParameter();
@@ -416,6 +452,7 @@ export abstract class VirtualService extends BaseService {
     }
 
     private async gotoIdle(): Promise<void> {
+        this.setState(ServiceState.IDLE);
         this.setControlEnable({
             start: true,
             abort: true,
@@ -427,12 +464,12 @@ export abstract class VirtualService extends BaseService {
             stop: true,
             unhold: false
         });
-        this.setState(ServiceState.IDLE);
         catVirtualService.info('idle');
         await this.onIdle();
     }
 
     private async gotoUnholding(): Promise<void> {
+        this.setState(ServiceState.UNHOLDING);
         this.setControlEnable({
             start: false,
             abort: true,
@@ -444,7 +481,6 @@ export abstract class VirtualService extends BaseService {
             stop: true,
             unhold: false
         });
-        this.setState(ServiceState.UNHOLDING);
         catVirtualService.info('unholding');
         await this.onUnholding();
         this.gotoExecute();

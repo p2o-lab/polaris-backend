@@ -35,7 +35,7 @@ export class Storage extends VirtualService {
     }
 
     protected initParameter() {
-        this.parameters = [{name: 'storage', value: undefined}];
+        this.procedureParameters = [{name: 'storage', value: undefined}];
     }
 
 }

@@ -42,14 +42,9 @@ export class StrView extends DataAssembly {
     constructor(options, connection) {
         super(options, connection);
         this.createDataItem(options, 'Text', 'read', 'string');
+        this.isReadOnly = true;
+        this.type = 'string';
+        this.outputDataItem = this.communication.Text;
     }
 
-    public toJson(): ParameterInterface {
-        return {
-            ...super.toJson(),
-            value: this.Text.value,
-            type: 'string',
-            readonly: true
-        };
-    }
 }

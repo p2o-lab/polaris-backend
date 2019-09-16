@@ -26,7 +26,6 @@
 import {
     ControlEnableInterface,
     OpModeInterface,
-    ParameterInterface,
     ParameterOptions,
     ServiceCommand,
     ServiceInterface,
@@ -123,9 +122,6 @@ export class Service extends BaseService {
     public readonly eventEmitter: ServiceEmitter;
     public readonly strategies: Strategy[] = [];
     public readonly parameters: DataAssembly[] = [];
-    public readonly processValuesIn: DataAssembly[] = [];
-    public readonly processValuesOut: DataAssembly[] = [];
-    public readonly reportParameters: DataAssembly[] = [];
     public readonly connection: OpcUaConnection;
     // use ControlExt (true) or ControlOp (false)
     public readonly automaticMode: boolean;
@@ -160,18 +156,6 @@ export class Service extends BaseService {
         if (serviceOptions.parameters) {
             this.parameters = serviceOptions.parameters
                 .map((options) => DataAssemblyFactory.create(options, connection));
-        }
-        if (serviceOptions.processValuesIn) {
-            this.processValuesIn = serviceOptions.processValuesIn
-                .map((pvOptions) => DataAssemblyFactory.create(pvOptions, connection));
-        }
-        if (serviceOptions.processValuesOut) {
-            this.processValuesOut = serviceOptions.processValuesOut
-                .map((pvOptions) => DataAssemblyFactory.create(pvOptions, connection));
-        }
-        if (serviceOptions.reportParameters) {
-            this.reportParameters = serviceOptions.reportParameters
-                .map((pvOptions) => DataAssemblyFactory.create(pvOptions, connection));
         }
     }
 
@@ -225,42 +209,14 @@ export class Service extends BaseService {
 
         tasks.concat(
             this.parameters.map((param) => {
-                param.on('V', (data) => {
-                    this.eventEmitter.emit('variableChanged', {
-                        parameter: param.name,
-                        value: data,
-                        unit: param.getUnit()
-                    });
-                });
                 return param.subscribe();
-            }),
-            this.processValuesIn.map((pv) => {
-                pv.on('V', (data) => {
-                    this.eventEmitter.emit('variableChanged', {
-                        parameter: pv.name,
-                        value: data,
-                        unit: pv.getUnit()
-                    });
-                });
-                return pv.subscribe();
-            }),
-            this.processValuesOut.map((pv) => {
-                pv.on('V', (data) => {
-                    this.eventEmitter.emit('variableChanged', {
-                        parameter: pv.name,
-                        value: data,
-                        unit: pv.getUnit()
-                    });
-                });
-                return pv.subscribe();
             }),
             this.strategies.map((strategy) => {
                 strategy.on('parameterChanged', (data) => {
                     this.eventEmitter.emit('parameterChanged', {
                         strategy,
-                        parameter: data.parameter.name,
-                        value: data.value,
-                        unit: data.parameter.getUnit()
+                        parameter: data.parameter,
+                        parameterType: data.parameterType
                     });
                 });
                 return strategy.subscribe();
@@ -272,8 +228,6 @@ export class Service extends BaseService {
     public unsubscribe() {
         this.serviceControl.unsubscribe();
         this.parameters.forEach((param) => param.unsubscribe());
-        this.processValuesIn.forEach((pv) => pv.unsubscribe());
-        this.processValuesOut.forEach((pv) => pv.unsubscribe());
         this.strategies.forEach((strategy) => strategy.unsubscribe());
     }
 
@@ -281,57 +235,19 @@ export class Service extends BaseService {
      * get JSON overview about service and its state, opMode, strategies, parameters and controlEnable
      */
     public getOverview(): ServiceInterface {
-        const strategies = this.getStrategies();
-        const params = this.getCurrentParameters();
         const currentStrategy = this.getCurrentStrategy();
         return {
             name: this.name,
             opMode: opModetoJson(this.opMode),
             status: ServiceState[this.state],
-            strategies: strategies,
+            strategies: this.strategies.map((strategy) => strategy.toJson()),
             currentStrategy: currentStrategy ? currentStrategy.name : null,
-            parameters: params,
-            processValuesIn: [],
-            processValuesOut: [],
-            reportParameters: [],
+            parameters: this.parameters.map((param) => param.toJson()),
             controlEnable: this.controlEnable,
             lastChange: this.lastStatusChange ?
                 (new Date().getTime() - this.lastStatusChange.getTime()) / 1000 :
                 undefined
         };
-    }
-
-    /**
-     * Get all strategies for service with its current strategyParameters
-     */
-    public getStrategies(): StrategyInterface[] {
-        return this.strategies.map((strategy) => {
-            return {
-                id: strategy.id,
-                name: strategy.name,
-                default: strategy.defaultStrategy,
-                sc: strategy.selfCompleting,
-                parameters: this.getCurrentParameters(strategy)
-            };
-        });
-    }
-
-    /** get current parameters
-     * from strategy or service (if strategy is undefined)
-     * @param {Strategy} strategy
-     */
-    public getCurrentParameters(strategy?: Strategy): ParameterInterface[] {
-        let params: DataAssembly[] = [];
-        if (strategy) {
-            params = strategy.parameters;
-        } else {
-            params = this.parameters;
-        }
-        let paramInterface = [];
-        if (params) {
-            paramInterface = params.map((param) => param.toJson());
-        }
-        return paramInterface;
     }
 
     /**
@@ -359,10 +275,9 @@ export class Service extends BaseService {
         }
 
         this.eventEmitter.emit('commandExecuted', {
-            timestamp: new Date(),
             strategy: strategy,
             command: command,
-            parameter: this.getCurrentParameters(strategy)
+            parameter: strategy.parameters.map((param) => param.toJson())
         });
     }
 
@@ -404,17 +319,15 @@ export class Service extends BaseService {
     }
 
     /**
-     * Set service configuration strategyParameters for adaption to environment. Can set also process values
-     * @param {ParameterOptions[]} parameters
-     * @returns {Promise<any[]>}
+     * Set service configuration parameters for adaption to environment.
      */
-    public setServiceParameters(parameters: ParameterOptions[]): Promise<any[]> {
+    public async setConfigurationParameters(parameters: ParameterOptions[]) {
         this.logger.info(`[${this.qualifiedName}] Set service parameters: ${JSON.stringify(parameters)}`);
         const tasks = parameters.map((paramOptions: ParameterOptions) => {
             const param: Parameter = new Parameter(paramOptions, this);
             return param.updateValueOnModule();
         });
-        return Promise.all(tasks);
+        await Promise.all(tasks);
     }
 
     /** Set strategy
