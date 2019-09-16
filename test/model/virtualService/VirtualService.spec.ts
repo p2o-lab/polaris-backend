@@ -104,6 +104,11 @@ describe('VirtualService', () => {
             ]);
         });
 
+       it('should fail with unknown virtual service type', () => {
+           expect(() => VirtualServiceFactory.create({type: 'unknown', name: 'myUnknownVirtualService'}))
+               .to.throw('Unknown virtual service type');
+       });
+
     });
 
     describe('Timer', () => {
@@ -259,6 +264,34 @@ describe('VirtualService', () => {
             await s1.reset();
             params = s1.json().strategies[0].parameters;
             expect(params).to.have.lengthOf(1);
+        });
+    });
+
+    describe('FunctionGenerator', () => {
+        it('should work', async () => {
+            const f1 = new FunctionGenerator('s1');
+            let params = f1.json().strategies[0].parameters;
+            expect(params).to.have.lengthOf(2);
+            expect(params[0]).to.have.property('name', 'function');
+            expect(params[0]).to.have.property('value', 'sin(t)');
+
+            f1.setParameters([{name: 'function', value: '2*t'}]);
+            params = f1.json().strategies[0].parameters;
+            expect(params[0]).to.have.property('name', 'function');
+            expect(params[0]).to.have.property('value', '2*t');
+
+            await f1.start();
+            await new Promise((resolve) => {
+                f1.eventEmitter.once('parameterChanged' , () => {
+                    resolve();
+                });
+            });
+            params = f1.json().strategies[0].processValuesOut;
+            expect(params[0]).to.have.property('name', 'output');
+            expect(params[0]).to.have.property('value').to.closeTo(2, 0.5);
+
+            await f1.complete();
+            await f1.reset();
         });
     });
 });

@@ -36,6 +36,7 @@ import {DataAssembly} from '../../../src/model/dataAssembly/DataAssembly';
 import {DataAssemblyFactory} from '../../../src/model/dataAssembly/DataAssemblyFactory';
 import {ExtIntDigOp} from '../../../src/model/dataAssembly/DigOp';
 import {DigMon} from '../../../src/model/dataAssembly/DigView';
+import {MonAnaDrv} from '../../../src/model/dataAssembly/Drv';
 import {ServiceControl} from '../../../src/model/dataAssembly/ServiceControl';
 import {StrView} from '../../../src/model/dataAssembly/Str';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
@@ -350,6 +351,29 @@ describe('DataAssembly', () => {
                 value: 23,
                 max: 100,
                 min: 0
+            });
+        });
+
+        it('should create MonAnaDrv', async () => {
+            const da1 = DataAssemblyFactory.create({
+                name: 'MonAnaDrv1',
+                interface_class: 'MonAnaDrv',
+                communication: {
+                    OSLevel: null,
+                    TagDescription: null,
+                    TagName: null,
+                    WQC: null,
+                    RpmFbk: {value: 50}
+                }
+            } as any, new OpcUaConnection(null, null));
+            expect(da1 instanceof MonAnaDrv).to.equal(true);
+            expect(da1.toJson()).to.deep.equal({
+                name: 'MonAnaDrv1',
+                readonly: false,
+                timestamp: undefined,
+                type: 'number',
+                unit: null,
+                value: 50,
             });
         });
     });
