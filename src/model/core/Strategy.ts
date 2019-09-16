@@ -78,19 +78,23 @@ export class Strategy extends (EventEmitter as new() => StrategyEmitter) {
         this.logger.debug(`Subscribe to strategy ${this.name}: ${JSON.stringify(this.parameters.map((p) => p.name))}`);
         await Promise.all([
             this.parameters.map((param) => {
-                param.on('changed', () => this.emit('parameterChanged', {parameter: param.toJson(), parameterType: 'parameter'}));
+                param.on('changed',
+                    () => this.emit('parameterChanged', {parameter: param.toJson(), parameterType: 'parameter'}));
                 return param.subscribe();
             }),
             this.processValuesIn.map((pv) => {
-                pv.on('changed', () => this.emit('parameterChanged', {parameter: pv.toJson(), parameterType: 'processValueIn'}));
+                pv.on('changed',
+                    () => this.emit('parameterChanged', {parameter: pv.toJson(), parameterType: 'processValueIn'}));
                 return pv.subscribe();
             }),
             this.processValuesOut.map((pv) => {
-                pv.on('changed', () => this.emit('parameterChanged', {parameter: pv.toJson(), parameterType: 'processValueOut'}));
+                pv.on('changed',
+                    () => this.emit('parameterChanged', {parameter: pv.toJson(), parameterType: 'processValueOut'}));
                 return pv.subscribe();
             }),
             this.reportParameters.map((param) => {
-                param.on('changed', () => this.emit('parameterChanged', {parameter: param.toJson(), parameterType: 'reportValue'}));
+                param.on('changed',
+                    () => this.emit('parameterChanged', {parameter: param.toJson(), parameterType: 'reportValue'}));
                 return param.subscribe();
             })
         ]);

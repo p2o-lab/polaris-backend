@@ -57,13 +57,13 @@ export class FunctionGenerator extends VirtualService {
 
     public async onStarting(): Promise<void> {
         this.startTime = new Date();
-        this.expression = new Parser().parse(this.procedureParameters.find((p) => p.name === 'function').value.toString());
+        this.expression = new Parser()
+            .parse(this.procedureParameters.find((p) => p.name === 'function').value.toString());
 
         const updateRate = this.procedureParameters.find((p) => p.name === 'updateRate').value as number;
         this.timerUpdateId = global.setInterval(() => {
             const elapsedTime = (new Date().getTime() - this.startTime.getTime()) / 1000;
-            const value = this.expression.evaluate({t: elapsedTime});
-            this.output = value;
+            this.output = this.expression.evaluate({t: elapsedTime});
         }, updateRate);
     }
 
