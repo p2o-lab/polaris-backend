@@ -128,11 +128,11 @@ export class DataAssembly extends EventEmitter {
     }
 
     public getValue() {
-        return this.outputDataItem.value;
+        return this.outputDataItem ? this.outputDataItem.value : undefined;
     }
 
     public getLastUpdate(): Date {
-        return this.outputDataItem.timestamp;
+        return this.outputDataItem ? this.outputDataItem.timestamp : undefined;
     }
 
     public getUnit(): string {

@@ -77,6 +77,8 @@ export class OpcUaDataItem<T> extends DataItem<T> {
                     item.value = parseFloat(options.value) as type;
                 } else if (type === 'string') {
                     item.value = options.value.toString() as type;
+                } else if (type === 'boolean') {
+                    item.value = !!options.value as type;
                 } else {
                     item.value = options.value as type;
                 }

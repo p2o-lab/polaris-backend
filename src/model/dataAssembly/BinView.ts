@@ -44,7 +44,6 @@ export class BinView extends DataAssembly {
         this.isReadOnly = true;
         this.type = 'boolean';
         this.outputDataItem = this.communication.V;
-
     }
 }
 
@@ -61,5 +60,9 @@ export class BinMon extends BinView {
 
     constructor(options, module) {
         super(options, module);
+        this.createDataItem(options, 'VFlutTi', 'read', 'number');
+        this.createDataItem(options, 'VFlutEn', 'write', 'boolean');
+        this.createDataItem(options, 'VFlutCnt', 'read', 'number');
+        this.createDataItem(options, 'VFlutAct', 'read', 'boolean');
     }
 }

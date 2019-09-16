@@ -31,8 +31,11 @@ import {isAutomaticState, isManualState, isOffState, OpMode, opModetoJson} from 
 import {OpcUaConnection} from '../../../src/model/core/OpcUaConnection';
 import {AdvAnaOp, AnaServParam, ExtAnaOp, ExtIntAnaOp} from '../../../src/model/dataAssembly/AnaOp';
 import {AnaView} from '../../../src/model/dataAssembly/AnaView';
+import {BinMon, BinView} from '../../../src/model/dataAssembly/BinView';
 import {DataAssembly} from '../../../src/model/dataAssembly/DataAssembly';
 import {DataAssemblyFactory} from '../../../src/model/dataAssembly/DataAssemblyFactory';
+import {ExtIntDigOp} from '../../../src/model/dataAssembly/DigOp';
+import {DigMon} from '../../../src/model/dataAssembly/DigView';
 import {ServiceControl} from '../../../src/model/dataAssembly/ServiceControl';
 import {StrView} from '../../../src/model/dataAssembly/Str';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
@@ -45,8 +48,56 @@ describe('DataAssembly', () => {
 
     describe('static', () => {
 
+        it('should use default Data assembly when provided type not found', () => {
+            const da1 = DataAssemblyFactory.create({
+                name: 'xyz',
+                interface_class: 'SomethingStrange',
+                communication: {
+                    OSLevel: null,
+                    TagDescription: null,
+                    TagName: {},
+                    WQC: null,
+                    V: { value: 22 },
+                    VState0: { value: 'on'},
+                    VState1: { value: 'off'}
+                } as any
+            }, new OpcUaConnection(null, null));
+            expect(da1 instanceof DataAssembly).to.equal(true);
+            expect(da1.toJson()).to.deep.equal({
+                name: 'xyz',
+                readonly: false,
+                timestamp: undefined,
+                type: 'number',
+                unit: null,
+                value: undefined
+            });
+
+            const da2 = DataAssemblyFactory.create({
+                name: 'xyz2',
+                communication: {
+                    OSLevel: null,
+                    TagDescription: null,
+                    TagName: null,
+                    WQC: null
+                }
+            } as any, new OpcUaConnection(null, null));
+            expect(da2 instanceof DataAssembly).to.equal(true);
+        });
+
+        it('should fail with missing communication options', () => {
+            expect(() => new DataAssembly({
+                    name: 'name',
+                    communication: null,
+                    interface_class: 'analogitem'
+                }, new OpcUaConnection(null, null))
+            ).to.throw('Communication variables missing while creating DataAssembly');
+        });
+
         it('should fail with missing parameters', () => {
             expect(() => new DataAssembly(undefined, undefined)).to.throw();
+        });
+
+        it('should fail with xyz', () => {
             const opcUaNode: OpcUaNodeOptions = {
                 namespace_index: 'CODESYSSPV3/3S/IecVarAccess',
                 node_id: 'i=12',
@@ -63,7 +114,7 @@ describe('DataAssembly', () => {
                     } as any,
                     interface_class: 'analogitem'
                 }, undefined)
-            ).to.throw();
+            ).to.throw('No module for data assembly');
         });
 
         it('should fail without provided module', async () => {
@@ -178,6 +229,128 @@ describe('DataAssembly', () => {
                 expect(da.communication.VSclMin).to.have.property('nodeId',
                     '|var|WAGO 750-8202 PFC200 2ETH RS.App_Dosing.Services.Fill.SetVolume.VSclMin');
             }
+        });
+
+        it('should create BinView', async () => {
+            const da1 = DataAssemblyFactory.create({
+                name: 'binview1',
+                interface_class: 'BinView',
+                communication: {
+                    OSLevel: null,
+                    TagDescription: null,
+                    TagName: {},
+                    WQC: null,
+                    V: { value: 22 },
+                    VState0: { value: 'on'},
+                    VState1: { value: 'off'}
+                } as any
+            }, new OpcUaConnection(null, null));
+            expect(da1 instanceof BinView).to.equal(true);
+            expect(da1.toJson()).to.deep.equal({
+                name: 'binview1',
+                readonly: true,
+                timestamp: undefined,
+                type: 'boolean',
+                unit: null,
+                value: true
+            });
+
+            const da2 = DataAssemblyFactory.create({
+                name: 'binview2',
+                interface_class: 'BinView',
+                communication: {
+                    OSLevel: null,
+                    TagDescription: null,
+                    TagName: {},
+                    WQC: null,
+                    V: { value: 0 },
+                    VState0: { value: 'on'},
+                    VState1: { value: 'off'}
+                } as any
+            }, new OpcUaConnection(null, null));
+            expect(da2.toJson().value).to.equal(false);
+        });
+
+        it('should create BinMon', async () => {
+            const da1 = DataAssemblyFactory.create({
+                name: 'binmon1',
+                interface_class: 'BinMon',
+                communication: {
+                    OSLevel: null,
+                    TagDescription: null,
+                    TagName: {},
+                    WQC: null,
+                    V: {value: true},
+                    VState0: {value: 'on'},
+                    VState1: {value: 'off'},
+                    VFlutEn: null
+                } as any
+            }, new OpcUaConnection(null, null));
+            expect(da1 instanceof BinMon).to.equal(true);
+            expect(da1.toJson()).to.deep.equal({
+                name: 'binmon1',
+                readonly: true,
+                timestamp: undefined,
+                type: 'boolean',
+                unit: null,
+                value: true
+            });
+        });
+
+        it('should create DigMon', async () => {
+            const da1 = DataAssemblyFactory.create({
+                name: 'digmon1',
+                interface_class: 'DigMon',
+                communication: {
+                    OSLevel: null,
+                    TagDescription: null,
+                    TagName: null,
+                    WQC: null,
+                    V: {value: 23},
+                    VUnit: {value: 1038},
+                    VSclMax: {value: 100},
+                    VSclMin: {value: 0}
+                } as any
+            }, new OpcUaConnection(null, null));
+            expect(da1 instanceof DigMon).to.equal(true);
+            expect(da1.toJson()).to.deep.equal({
+                name: 'digmon1',
+                readonly: true,
+                timestamp: undefined,
+                type: 'number',
+                unit: 'L',
+                value: 23,
+                max: 100,
+                min: 0
+            });
+        });
+
+        it('should create ExtIntDigOp', async () => {
+            const da1 = DataAssemblyFactory.create({
+                name: 'extintdigop1',
+                interface_class: 'ExtIntDigOp',
+                communication: {
+                    OSLevel: null,
+                    TagDescription: null,
+                    TagName: null,
+                    WQC: null,
+                    VRbk: {value: 23},
+                    VUnit: {value: 1038},
+                    VSclMax: {value: 100},
+                    VSclMin: {value: 0}
+                } as any
+            }, new OpcUaConnection(null, null));
+            expect(da1 instanceof ExtIntDigOp).to.equal(true);
+            expect(da1.toJson()).to.deep.equal({
+                name: 'extintdigop1',
+                readonly: false,
+                timestamp: undefined,
+                type: 'number',
+                unit: 'L',
+                value: 23,
+                max: 100,
+                min: 0
+            });
         });
     });
 
