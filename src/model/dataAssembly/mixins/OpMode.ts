@@ -69,24 +69,25 @@ export function OpModeDA<TBase extends Constructor<DataAssembly>>(Base: TBase) {
          * Set data assembly to automatic operation mode and source to external source
          */
         public async setToAutomaticOperationMode(): Promise<void> {
-            catDataAssembly.debug(`[${this.name}] Current opMode = ${this.communication.OpMode.value}`);
+            catDataAssembly.info(`[${this.name}] Current opMode = ${this.communication.OpMode.value}`);
             if (isOffState(this.communication.OpMode.value)) {
-                catDataAssembly.trace('First go to Manual state');
+                catDataAssembly.trace(`[${this.name}] First go to Manual state`);
                 this.writeOpMode(OpMode.stateManOp);
                 await this.waitForOpModeToPassSpecificTest(isManualState);
             }
 
             if (isManualState(this.communication.OpMode.value)) {
-                catDataAssembly.trace('Then to automatic');
+                catDataAssembly.trace(`[${this.name}] Then to automatic`);
                 this.writeOpMode(OpMode.stateAutOp);
                 await this.waitForOpModeToPassSpecificTest(isAutomaticState);
             }
 
             if (!isExtSource(this.communication.OpMode.value)) {
-                catDataAssembly.trace('Finally to Ext');
+                catDataAssembly.trace(`[${this.name}] Finally to Ext`);
                 this.writeOpMode(OpMode.srcExtOp);
                 await this.waitForOpModeToPassSpecificTest(isExtSource);
             }
+            catDataAssembly.info(`[${this.name}] Current opMode = ${this.communication.OpMode.value}`);
         }
 
         public async setToManualOperationMode() {
