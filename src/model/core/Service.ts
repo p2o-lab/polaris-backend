@@ -163,7 +163,12 @@ export class Service extends BaseService {
      * Get current strategy from internal memory.
      */
     public getCurrentStrategy(): Strategy {
-        return this.strategies.find((strat) => parseInt(strat.id, 10) === this.currentStrategyNode.value);
+        let strategy = this.strategies.find((strat) => parseInt(strat.id, 10) === this.currentStrategyNode.value);
+        if (!strategy) {
+            strategy = this.defaultStrategy;
+            this.currentStrategyNode.value = parseInt(strategy.id, 10);
+        }
+        return strategy;
     }
 
     /**
@@ -270,6 +275,8 @@ export class Service extends BaseService {
         if (!strategy) {
             strategy = await this.getCurrentStrategy();
         }
+        this.logger.info(`[${this.qualifiedName}] Identified strategy ${strategy.name}`);
+
         if (command) {
             await this.executeCommand(command);
         }
@@ -279,6 +286,7 @@ export class Service extends BaseService {
             command: command,
             parameter: strategy.parameters.map((param) => param.toJson())
         });
+        this.logger.info(`[${this.qualifiedName}] ${command} executed`);
     }
 
     // overridden method from Base Service
