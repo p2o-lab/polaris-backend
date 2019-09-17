@@ -215,7 +215,7 @@ describe('DataAssembly', () => {
 
             await da.waitForOpModeToPassSpecificTest(isOffState);
             let opMode = da.getOpMode();
-            expect(opModetoJson(opMode)).to.deep.equal({state: 'off', source: 'internal'});
+            expect(opModetoJson(opMode)).to.deep.equal({state: 'off', source: 'external'});
 
             (moduleServer.services[0].parameter[0] as TestServerVariable).opMode = OpMode.stateManAct;
             await da.waitForOpModeToPassSpecificTest(isManualState);
