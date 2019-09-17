@@ -215,17 +215,17 @@ describe('DataAssembly', () => {
 
             await da.waitForOpModeToPassSpecificTest(isOffState);
             let opMode = da.getOpMode();
-            expect(opModetoJson(opMode)).to.deep.equal({state: 'off', source: 'external'});
+            expect(opModetoJson(opMode)).to.deep.equal({state: 'off', source: undefined});
 
             (moduleServer.services[0].parameter[0] as TestServerVariable).opMode = OpMode.stateManAct;
             await da.waitForOpModeToPassSpecificTest(isManualState);
             opMode = da.getOpMode();
-            expect(opModetoJson(opMode)).to.deep.equal({state: 'manual', source: 'internal'});
+            expect(opModetoJson(opMode)).to.deep.equal({state: 'manual', source: undefined});
 
             (moduleServer.services[0].parameter[0] as TestServerVariable).opMode = OpMode.stateAutAct;
             await da.waitForOpModeToPassSpecificTest(isAutomaticState);
             opMode = da.getOpMode();
-            expect(opModetoJson(opMode)).to.deep.equal({state: 'automatic', source: 'internal'});
+            expect(opModetoJson(opMode)).to.deep.equal({state: 'automatic', source: 'external'});
 
             if (da instanceof ExtIntAnaOp) {
                 expect(da.communication.VOut).to.have.property('nodeId', 'Service1.Parameter1.V');
