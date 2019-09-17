@@ -100,20 +100,21 @@ export enum OpMode {
     srcIntLi = 2048,
     srcIntOp = 4096,
     srcExtOp = 8192,
-    srcExtAct = 16384
+    srcIntAct = 16384
 }
 
 export function opModetoJson(opMode: OpMode): OpModeInterface {
-    const source: 'external' | 'internal' = isExtSource(opMode) ? 'external' : 'internal';
+    let source: 'external' | 'internal';
     let state;
     if (isManualState(opMode)) {
         state = 'manual';
     } else if (isAutomaticState(opMode)) {
         state = 'automatic';
+        source = isExtSource(opMode) ? 'external' : 'internal';
     } else if (isOffState(opMode)) {
         state = 'off';
     }
-    return {state, source};
+    return {state: state, source: source};
 }
 
 export function isOffState(opMode: OpMode): boolean {
@@ -129,9 +130,9 @@ export function isManualState(opMode: OpMode): boolean {
 }
 
 export function isExtSource(opMode: OpMode): boolean {
-    return (opMode & OpMode.srcExtAct) === OpMode.srcExtAct;
+    return (opMode & OpMode.srcIntAct) === 0;
 }
 
 export function isIntSource(opMode: OpMode): boolean {
-    return (opMode & OpMode.srcExtAct) === 0;
+    return (opMode & OpMode.srcIntAct) === OpMode.srcIntAct;
 }

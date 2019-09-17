@@ -149,10 +149,10 @@ describe('Service', () => {
             service.setOperationMode();
 
             await service.waitForOpModeToPassSpecificTest(isAutomaticState);
-            expect(service.opMode).to.equal(OpMode.stateAutAct);
+            expect(service.opMode).to.equal(OpMode.stateAutAct + OpMode.srcIntAct);
 
             await service.waitForOpModeToPassSpecificTest(isExtSource);
-            expect(service.opMode).to.equal(OpMode.stateAutAct + OpMode.srcExtAct);
+            expect(service.opMode).to.equal(OpMode.stateAutAct);
         });
 
         it('full service state cycle', async () => {
@@ -175,7 +175,7 @@ describe('Service', () => {
             expect(result).to.have.property('name', 'Service1');
             expect(result).to.have.property('opMode').to.deep.equal({
                 state: 'off',
-                source: 'internal'
+                source: undefined
             });
 
             await service.setOperationMode();
