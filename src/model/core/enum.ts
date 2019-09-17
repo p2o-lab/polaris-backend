@@ -101,7 +101,7 @@ export enum OpMode {
     srcIntLi = 2048,
     srcIntOp = 4096,
     srcExtOp = 8192,
-    srcExtAct = 16384
+    srcIntAct = 16384
 }
 
 export function opModetoJson(opMode: OpMode): OpModeInterface {
@@ -126,9 +126,9 @@ export function isManualState(opMode: OpMode): boolean {
 }
 
 export function isExtSource(opMode: OpMode): boolean {
-    return (opMode & OpMode.srcExtAct) === OpMode.srcExtAct;
+    return (opMode & OpMode.srcIntAct) === 0;
 }
 
 export function isIntSource(opMode: OpMode): boolean {
-    return (opMode & OpMode.srcExtAct) === 0;
+    return (opMode & OpMode.srcIntAct) === OpMode.srcIntAct;
 }
