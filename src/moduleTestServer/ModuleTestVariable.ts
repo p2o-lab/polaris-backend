@@ -90,7 +90,7 @@ export abstract class TestServerVariable {
                         this.opMode = this.opMode & ~OpMode.stateManAct;
                         this.opMode = this.opMode | OpMode.stateAutAct;
                     } else if (opModeInt === OpMode.srcExtOp) {
-                        this.opMode = this.opMode | OpMode.srcExtAct;
+                        this.opMode = this.opMode & ~OpMode.srcIntAct;
                     } else {
                         return StatusCodes.Bad;
                     }
