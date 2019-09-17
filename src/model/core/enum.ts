@@ -104,16 +104,17 @@ export enum OpMode {
 }
 
 export function opModetoJson(opMode: OpMode): OpModeInterface {
-    const source: 'external' | 'internal' = isExtSource(opMode) ? 'external' : 'internal';
+    let source: 'external' | 'internal';
     let state;
     if (isManualState(opMode)) {
         state = 'manual';
     } else if (isAutomaticState(opMode)) {
         state = 'automatic';
+        source = isExtSource(opMode) ? 'external' : 'internal';
     } else if (isOffState(opMode)) {
         state = 'off';
     }
-    return {state, source};
+    return {state: state, source: source};
 }
 
 export function isOffState(opMode: OpMode): boolean {

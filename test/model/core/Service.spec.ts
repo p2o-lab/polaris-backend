@@ -181,7 +181,7 @@ describe('Service', () => {
             expect(result).to.have.property('name', 'Service1');
             expect(result).to.have.property('opMode').to.deep.equal({
                 state: 'off',
-                source: 'external'
+                source: undefined
             });
 
             await service.setOperationMode();
