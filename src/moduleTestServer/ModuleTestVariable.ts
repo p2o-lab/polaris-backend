@@ -89,6 +89,7 @@ export abstract class TestServerVariable {
                     } else if (opModeInt === OpMode.stateAutOp) {
                         this.opMode = this.opMode & ~OpMode.stateManAct;
                         this.opMode = this.opMode | OpMode.stateAutAct;
+                        this.opMode = this.opMode | OpMode.srcIntAct;
                     } else if (opModeInt === OpMode.srcExtOp) {
                         this.opMode = this.opMode & ~OpMode.srcIntAct;
                     } else {

@@ -117,6 +117,7 @@ export class TestServerService {
                     } else if (opModeInt === OpMode.stateAutOp) {
                         this.varOpmode = this.varOpmode & ~OpMode.stateManAct;
                         this.varOpmode = this.varOpmode | OpMode.stateAutAct;
+                        this.varOpmode = this.varOpmode | OpMode.srcIntAct;
                     } else if (opModeInt === OpMode.srcExtOp) {
                         this.varOpmode = this.varOpmode & ~OpMode.srcIntAct;
                     } else {
