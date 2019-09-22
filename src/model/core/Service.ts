@@ -190,7 +190,8 @@ export class Service extends BaseService {
                     `${this.currentStrategyNode.value}`);
             })
             .on('OpMode', () => {
-                this.logger.info(`[${this.qualifiedName}] Current OpMode changed: ${this.opModeNode.value}`);
+                this.logger.debug(`[${this.qualifiedName}] Current OpMode changed: ` +
+                    `${opModetoJson(this.opModeNode.value)}`);
                 this.eventEmitter.emit('opMode', opModetoJson(this.opMode));
             })
             .on('State', () => {

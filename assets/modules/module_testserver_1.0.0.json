@@ -500,6 +500,36 @@
               "node_id": "TestServerVariable.3.OSLevel"
             }
           }
+        },
+        {
+          "name": "PvIntegral",
+          "interface_class": "AnaView",
+          "communication": {
+            "V": {
+              "namespace_index": "urn:NodeOPCUA-Server-default",
+              "node_id": "Service1.ProcessValueIntegral.V"
+            },
+            "VMax": {
+              "namespace_index": "urn:NodeOPCUA-Server-default",
+              "node_id": "Service1.ProcessValueIntegral.VSclMax"
+            },
+            "VMin": {
+              "namespace_index": "urn:NodeOPCUA-Server-default",
+              "node_id": "Service1.ProcessValueIntegral.VSclMin"
+            },
+            "VUnit": {
+              "namespace_index": "urn:NodeOPCUA-Server-default",
+              "node_id": "Service1.ProcessValueIntegral.VUnit"
+            },
+            "WQC": {
+              "namespace_index": "urn:NodeOPCUA-Server-default",
+              "node_id": "Service1.ProcessValueIntegral.WQC"
+            },
+            "OSLevel": {
+              "namespace_index": "urn:NodeOPCUA-Server-default",
+              "node_id": "Service1.ProcessValueIntegral.OSLevel"
+            }
+          }
         }
       ]
     }
