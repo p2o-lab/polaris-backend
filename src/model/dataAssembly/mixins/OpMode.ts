@@ -69,7 +69,7 @@ export function OpModeDA<TBase extends Constructor<DataAssembly>>(Base: TBase) {
          * Set data assembly to automatic operation mode and source to external source
          */
         public async setToAutomaticOperationMode(): Promise<void> {
-            catDataAssembly.info(`[${this.name}] Current opMode = ${this.communication.OpMode.value}`);
+            catDataAssembly.debug(`[${this.name}] Current opMode = ${this.communication.OpMode.value}`);
             if (isOffState(this.communication.OpMode.value)) {
                 catDataAssembly.trace(`[${this.name}] First go to Manual state`);
                 this.writeOpMode(OpMode.stateManOp);
@@ -87,7 +87,6 @@ export function OpModeDA<TBase extends Constructor<DataAssembly>>(Base: TBase) {
                 this.writeOpMode(OpMode.srcExtOp);
                 await this.waitForOpModeToPassSpecificTest(isExtSource);
             }
-            catDataAssembly.info(`[${this.name}] Current opMode = ${this.communication.OpMode.value}`);
         }
 
         public async setToManualOperationMode() {

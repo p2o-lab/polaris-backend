@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import {OperationInterface, OperationOptions, ServiceCommand} from '@p2olab/polaris-interface';
+import {OperationInterface, OperationOptions, ParameterOptions, ServiceCommand} from '@p2olab/polaris-interface';
 import {EventEmitter} from 'events';
 import * as delay from 'timeout-as-promise';
 import {catOperation} from '../../config/logging';
@@ -40,7 +40,7 @@ export class Operation {
     public service: Service;
     public strategy: Strategy;
     public command: ServiceCommand;
-    public parameters: Parameter[];
+    public parameterOptions: ParameterOptions[];
     public readonly emitter: EventEmitter;
     private state: 'executing' | 'completed' | 'aborted';
 
@@ -70,7 +70,7 @@ export class Operation {
         if (options.strategy) {
             this.strategy = this.service.strategies.find((strategy) => strategy.name === options.strategy);
         } else {
-            this.strategy = this.service.defaultStrategy;
+            this.strategy = this.service.getDefaultStrategy();
         }
         if (!this.strategy) {
             throw new Error(`Strategy '${options.strategy}' could not be found in ${ this.service.name }.`);
@@ -79,9 +79,7 @@ export class Operation {
             this.command = options.command;
         }
         if (options.parameter) {
-            this.parameters = options.parameter.map(
-                (paramOptions) => new Parameter(paramOptions, this.service, this.strategy, modules)
-            );
+            this.parameterOptions = options.parameter || [];
         }
         this.emitter = new EventEmitter();
     }
@@ -99,13 +97,14 @@ export class Operation {
         while (this.state === 'executing') {
             catOperation.info(`Perform operation ${ this.module.id }.${ this.service.name }.${ this.command }() ` +
                 `(Strategy: ${ this.strategy ? this.strategy.name : '' })`);
-            await this.service.execute(this.command, this.strategy, this.parameters)
+            await this.service.executeCommandWithStrategyAndParameter(
+                this.command, this.strategy, this.parameterOptions)
                 .then(() => {
                     this.state = 'completed';
                     this.emitter.emit('changed', 'completed');
                     this.emitter.removeAllListeners('changed');
                 })
-                .catch(async () => {
+                .catch(async (err) => {
                     numberOfTries++;
                     if (numberOfTries === MAX_TRIES) {
                         this.state = 'aborted';
@@ -113,7 +112,7 @@ export class Operation {
                         this.emitter.removeAllListeners('changed');
                         catOperation.warn('Could not execute operation. Stop restarting');
                     } else {
-                        catOperation.warn('Could not execute operation. Another try in 500ms');
+                        catOperation.warn(`Could not execute operation. Another try in 500ms. ${err.toString()}`);
                         await delay(500);
                     }
                 });
@@ -134,7 +133,7 @@ export class Operation {
             service: this.service.name,
             strategy: this.strategy ? this.strategy.name : undefined,
             command: this.command,
-            parameter: this.parameters ? this.parameters.map((param) => param.options) : undefined,
+            parameter: this.parameterOptions,
             state: this.state
         };
     }

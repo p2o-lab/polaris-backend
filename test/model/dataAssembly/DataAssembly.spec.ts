@@ -66,7 +66,7 @@ describe('DataAssembly', () => {
             expect(da1 instanceof DataAssembly).to.equal(true);
             expect(da1.toJson()).to.deep.equal({
                 name: 'xyz',
-                readonly: false,
+                readonly: true,
                 timestamp: undefined,
                 type: 'number',
                 unit: null,
@@ -369,7 +369,7 @@ describe('DataAssembly', () => {
             expect(da1 instanceof MonAnaDrv).to.equal(true);
             expect(da1.toJson()).to.deep.equal({
                 name: 'MonAnaDrv1',
-                readonly: false,
+                readonly: true,
                 timestamp: undefined,
                 type: 'number',
                 unit: null,

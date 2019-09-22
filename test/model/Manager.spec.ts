@@ -164,7 +164,7 @@ describe('Manager', () => {
 
             module.connect();
             await waitForStateChange(service2, 'IDLE', 2000);
-            service2.execute(ServiceCommand.start);
+            service2.executeCommand(ServiceCommand.start);
             await waitForStateChange(service2, 'EXECUTE');
 
             await manager.stopAllServices();
@@ -200,10 +200,10 @@ describe('Manager', () => {
 
             module.connect();
             await waitForStateChange(service, 'IDLE', 2000);
-            service.execute(ServiceCommand.start);
+            service.executeCommand(ServiceCommand.start);
             await waitForStateChange(service, 'EXECUTE');
 
-            service.execute(ServiceCommand.complete);
+            service.executeCommand(ServiceCommand.complete);
             await waitForStateChange(service, 'COMPLETED');
             await waitForStateChange(service, 'IDLE');
         });

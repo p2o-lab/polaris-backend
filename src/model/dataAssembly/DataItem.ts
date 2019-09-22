@@ -31,6 +31,7 @@ import {timeout} from 'promise-timeout';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Category} from 'typescript-logging';
 import {OpcUaConnection} from '../core/OpcUaConnection';
+import {catDataAssembly} from '../../config/logging';
 
 const catDataItem = new Category('DataItem');
 
@@ -125,6 +126,7 @@ export class OpcUaDataItem<T> extends DataItem<T> {
     }
 
     public write(value: number | string) {
+        this.logger.debug(`write: ${value} to ${this.nodeId}`);
         return this.connection.writeOpcUaNode(this.nodeId, this.namespaceIndex, value, this.dataType);
     }
 

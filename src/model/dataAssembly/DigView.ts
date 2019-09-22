@@ -24,7 +24,6 @@
  * SOFTWARE.
  */
 
-import {ParameterInterface} from '@p2olab/polaris-interface';
 import {AnaViewRuntime} from './AnaView';
 import {DataAssembly} from './DataAssembly';
 import {MonitorSettings} from './mixins/MonitorSettings';
@@ -37,9 +36,8 @@ export class DigView extends ScaleSettingsDA(UnitDA(DataAssembly)) {
     constructor(options, connection) {
         super(options, connection);
         this.createDataItem(options, 'V', 'read');
-        this.isReadOnly = true;
         this.type = 'number';
-        this.outputDataItem = this.communication.V;
+        this.readDataItem = this.communication.V;
     }
 }
 
