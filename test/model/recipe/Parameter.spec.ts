@@ -101,7 +101,7 @@ describe('Parameter', () => {
         let module: Module;
         let moduleTestServer: ModuleTestServer;
 
-        before(async function before() {
+        beforeEach(async function before() {
             this.timeout(5000);
             moduleTestServer = new ModuleTestServer();
             await moduleTestServer.start();
@@ -112,7 +112,7 @@ describe('Parameter', () => {
             await module.connect();
         });
 
-        after(async () => {
+        afterEach(async () => {
             await module.disconnect();
             await moduleTestServer.shutdown();
         });
