@@ -383,7 +383,7 @@ describe('DataAssembly', () => {
         let moduleServer: ModuleTestServer;
         let connection: OpcUaConnection;
 
-        before(async () => {
+        beforeEach(async () => {
             moduleServer = new ModuleTestServer();
             await moduleServer.start();
 
@@ -391,7 +391,7 @@ describe('DataAssembly', () => {
             await connection.connect();
         });
 
-        after(async () => {
+        afterEach(async () => {
             await connection.disconnect();
             await moduleServer.shutdown();
         });
