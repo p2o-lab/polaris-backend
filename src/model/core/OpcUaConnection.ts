@@ -262,7 +262,7 @@ export class  OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionE
                 } as UserIdentityInfoUserName;
         }
         const session = await this.client.createSession(userIdentityInfo);
-        this.logger.info(`session created (#${session.sessionId})`);
+        this.logger.debug(`session created (#${session.sessionId})`);
         return session;
     }
 
