@@ -150,27 +150,6 @@
                       "node_id": "Service1.Parameter2.OSLevel"
                     }
                   }
-                },
-                {
-                  "name": "ErrorMsg",
-                  "interface_class": "StrView",
-                  "communication": {
-                    "WQC": {
-                      "namespace_index": "urn:NodeOPCUA-Server-default",
-                      "node_id": "Service1.ErrorMsg.WQC",
-                      "data_type": "Byte"
-                    },
-                    "OSLevel": {
-                      "namespace_index": "urn:NodeOPCUA-Server-default",
-                      "node_id": "Service1.ErrorMsg.OSLevel",
-                      "data_type": "Byte"
-                    },
-                    "Text": {
-                      "namespace_index": "urn:NodeOPCUA-Server-default",
-                      "node_id": "Service1.ErrorMsg.Text",
-                      "data_type": "String"
-                    }
-                  }
                 }
               ],
               "processValuesIn": [
@@ -219,24 +198,33 @@
                 ],
               "processValuesOut": [
                 {
+                  "name": "CurrentTime",
+                  "interface_class": "StrView",
+                  "communication": {
+                    "WQC": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.ErrorMsg.WQC",
+                      "data_type": "Byte"
+                    },
+                    "OSLevel": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.ErrorMsg.OSLevel",
+                      "data_type": "Byte"
+                    },
+                    "Text": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.ErrorMsg.Text",
+                      "data_type": "String"
+                    }
+                  }
+                },
+                {
                   "name": "PvOut",
-                  "interface_class": "ExtAnaOp",
+                  "interface_class": "AnaView",
                   "communication": {
                     "V": {
                       "namespace_index": "urn:NodeOPCUA-Server-default",
                       "node_id": "Service1.ProcessValueOut.V"
-                    },
-                    "VRbk": {
-                      "namespace_index": "urn:NodeOPCUA-Server-default",
-                      "node_id": "Service1.ProcessValueOut.V"
-                    },
-                    "VOut": {
-                      "namespace_index": "urn:NodeOPCUA-Server-default",
-                      "node_id": "Service1.ProcessValueOut.V"
-                    },
-                    "VExt": {
-                      "namespace_index": "urn:NodeOPCUA-Server-default",
-                      "node_id": "Service1.ProcessValueOut.VExt"
                     },
                     "VMax": {
                       "namespace_index": "urn:NodeOPCUA-Server-default",
@@ -262,23 +250,11 @@
                 },
                 {
                   "name": "PvIntegral",
-                  "interface_class": "ExtAnaOp",
+                  "interface_class": "AnaView",
                   "communication": {
                     "V": {
                       "namespace_index": "urn:NodeOPCUA-Server-default",
                       "node_id": "Service1.ProcessValueIntegral.V"
-                    },
-                    "VRbk": {
-                      "namespace_index": "urn:NodeOPCUA-Server-default",
-                      "node_id": "Service1.ProcessValueIntegral.V"
-                    },
-                    "VOut": {
-                      "namespace_index": "urn:NodeOPCUA-Server-default",
-                      "node_id": "Service1.ProcessValueIntegral.V"
-                    },
-                    "VExt": {
-                      "namespace_index": "urn:NodeOPCUA-Server-default",
-                      "node_id": "Service1.ProcessValueIntegral.VExt"
                     },
                     "VMax": {
                       "namespace_index": "urn:NodeOPCUA-Server-default",
@@ -522,6 +498,36 @@
             "OSLevel": {
               "namespace_index": "urn:NodeOPCUA-Server-default",
               "node_id": "TestServerVariable.3.OSLevel"
+            }
+          }
+        },
+        {
+          "name": "PvIntegral",
+          "interface_class": "AnaView",
+          "communication": {
+            "V": {
+              "namespace_index": "urn:NodeOPCUA-Server-default",
+              "node_id": "Service1.ProcessValueIntegral.V"
+            },
+            "VMax": {
+              "namespace_index": "urn:NodeOPCUA-Server-default",
+              "node_id": "Service1.ProcessValueIntegral.VSclMax"
+            },
+            "VMin": {
+              "namespace_index": "urn:NodeOPCUA-Server-default",
+              "node_id": "Service1.ProcessValueIntegral.VSclMin"
+            },
+            "VUnit": {
+              "namespace_index": "urn:NodeOPCUA-Server-default",
+              "node_id": "Service1.ProcessValueIntegral.VUnit"
+            },
+            "WQC": {
+              "namespace_index": "urn:NodeOPCUA-Server-default",
+              "node_id": "Service1.ProcessValueIntegral.WQC"
+            },
+            "OSLevel": {
+              "namespace_index": "urn:NodeOPCUA-Server-default",
+              "node_id": "Service1.ProcessValueIntegral.OSLevel"
             }
           }
         }

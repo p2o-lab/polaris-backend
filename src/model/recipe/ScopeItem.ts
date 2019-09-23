@@ -30,15 +30,8 @@ import {ServiceState} from '../core/enum';
 import {Module} from '../core/Module';
 import {Service} from '../core/Service';
 import {Strategy} from '../core/Strategy';
-import {ExtAnaOp} from '../dataAssembly/AnaOp';
-import {AnaView} from '../dataAssembly/AnaView';
-import {ExtBinOp} from '../dataAssembly/BinOp';
-import {BinView} from '../dataAssembly/BinView';
 import {DataAssembly} from '../dataAssembly/DataAssembly';
-import {OpcUaDataItem} from '../dataAssembly/DataItem';
-import {ExtDigOp} from '../dataAssembly/DigOp';
-import {DigView} from '../dataAssembly/DigView';
-import {ServiceControl} from '../dataAssembly/ServiceControl';
+import {DataItem} from '../dataAssembly/DataItem';
 
 export class ScopeItem {
 
@@ -49,12 +42,12 @@ export class ScopeItem {
      * @param {string[]}   ignoredNames   don't try to find scopeItems for this variable names
      */
     public static extractFromExpressionString(expression: string, modules: Module[], ignoredNames: string[] = [])
-    : {expression: Expression, scopeItems: ScopeItem[]} {
+        : { expression: Expression, scopeItems: ScopeItem[] } {
         const parser: Parser = new Parser({allowMemberAccess: true});
         const value = expression.replace(new RegExp('\\\\.', 'g'), '__');
         const expressionObject = parser.parse(value);
         const scopeItems = expressionObject
-            .variables({ withMembers: true })
+            .variables({withMembers: true})
             .filter((variable) => !ignoredNames.find((n) => n === variable))
             .map((variable) => ScopeItem.extractFromExpressionVariable(variable, modules))
             .filter(Boolean);
@@ -81,6 +74,7 @@ export class ScopeItem {
      * @returns {ScopeItem}
      */
     public static extractFromExpressionVariable(variable: string, modules: Module[]): ScopeItem {
+        catScopeItem.debug(`Extract ScopeItem from "${variable}"`);
         let dataAssembly: DataAssembly;
         const components = variable.split('.').map((tokenT: string) => tokenT.replace(new RegExp('__', 'g'), '.'));
         let token = components.shift();
@@ -98,28 +92,35 @@ export class ScopeItem {
         } else {
             token = components.shift();
         }
+        catScopeItem.debug(`Found module "${module.id}" for expression "${variable}"`);
 
         // find service
         const service: Service = module.services.find((s) => s.name === token);
         let strategy: Strategy;
         if (service) {
+            catScopeItem.debug(`Found service "${service.name}" for expression "${variable}"`);
             strategy = service.getCurrentStrategy();
             if (!strategy) {
-                strategy = service.defaultStrategy;
+                strategy = service.getDefaultStrategy();
             }
             token = components.shift();
 
-            if (strategy.parameters.find((p) => p.name === token)) {
-                dataAssembly = strategy.parameters.find((p) => p.name === token);
-            } else if (service.parameters.find((p) => p.name === token)) {
-                dataAssembly = strategy.parameters.find((p) => p.name === token);
-            } else if (token === 'state') {
-                return new ScopeItem(variable, module, service.serviceControl, 'State');
-            } else {
-                catScopeItem.warn(`Could not evaluate variable "${variable}": ` +
-                    `Token "${token}" not found as service parameter ` +
-                    `in service ${service.qualifiedName}.${strategy.name}`);
-                return null;
+            const paramList = [].concat(
+                service.parameters,
+                strategy.parameters,
+                strategy.processValuesIn,
+                strategy.processValuesOut,
+                strategy.reportParameters);
+            dataAssembly = paramList.find((p) => p.name === token);
+            if (!dataAssembly) {
+                if (token === 'state') {
+                    return new ScopeItem(variable, module, service.serviceControl, 'State');
+                } else {
+                    catScopeItem.warn(`Could not evaluate variable "${variable}": ` +
+                        `Token "${token}" not found as service parameter ` +
+                        `in service ${service.qualifiedName}.${strategy.name}`);
+                    return null;
+                }
             }
         } else {
             // find data assembly in process values
@@ -142,16 +143,16 @@ export class ScopeItem {
     /** name of variable which should be replaced in value */
     public readonly name: string;
     public readonly dataAssembly: DataAssembly;
-    public readonly dataItem: OpcUaDataItem<any>;
     public readonly module: Module;
     public readonly variableName: string;
+    public readonly dataItem: DataItem<any>;
 
-    constructor(name: string, module, dataAssembly: DataAssembly, variableName?: string) {
+    constructor(name: string, module: Module, dataAssembly: DataAssembly, variableName?: string) {
         this.name = name;
         this.module = module;
         this.dataAssembly = dataAssembly;
         this.variableName = variableName;
-        this.dataItem = this.getDataItem(variableName);
+        this.dataItem = this.dataAssembly.communication[variableName] || this.dataAssembly.readDataItem;
     }
 
     /**
@@ -160,8 +161,8 @@ export class ScopeItem {
      */
     public getScopeValue(): object {
         let value = this.dataItem.value;
-        if (this.dataAssembly instanceof ServiceControl && this.variableName === 'State') {
-            value = ServiceState[this.dataItem.value as ServiceState];
+        if (this.variableName === 'State') {
+            value = ServiceState[value as ServiceState];
         }
         if (value === undefined) {
             throw new Error(`Could not evaluate scope item ${this.name} since it seems not connected`);
@@ -171,27 +172,6 @@ export class ScopeItem {
             a[current] = previous;
             return a;
         }, value);
-    }
-
-    private getDataItem(token: string): OpcUaDataItem<any> {
-        let dataItem = this.dataAssembly.communication[token];
-        if (!dataItem) {
-            // set default values
-            if (this.dataAssembly instanceof AnaView) {
-                dataItem = this.dataAssembly.communication.V;
-            } else if (this.dataAssembly instanceof DigView) {
-                dataItem = this.dataAssembly.communication.V;
-            } else if (this.dataAssembly instanceof BinView) {
-                dataItem = this.dataAssembly.communication.V;
-            } else if (this.dataAssembly instanceof ExtAnaOp) {
-                dataItem = this.dataAssembly.communication.VOut;
-            } else if (this.dataAssembly instanceof ExtDigOp) {
-                dataItem = this.dataAssembly.communication.VOut;
-            } else if (this.dataAssembly instanceof ExtBinOp) {
-                dataItem = this.dataAssembly.communication.VOut;
-            }
-        }
-        return dataItem;
     }
 
 }

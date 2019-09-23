@@ -27,7 +27,7 @@ import {expect} from 'chai';
 import * as fs from 'fs';
 import * as parseJson from 'json-parse-better-errors';
 import * as delay from 'timeout-as-promise';
-import {ServiceState} from '../../../src/model/core/enum';
+import {controlEnableToJson, ServiceState} from '../../../src/model/core/enum';
 import {Manager} from '../../../src/model/Manager';
 import {FunctionGenerator} from '../../../src/model/virtualService/FunctionGenerator';
 import {Storage} from '../../../src/model/virtualService/Storage';
@@ -200,6 +200,18 @@ describe('VirtualService', () => {
             timer.abort();
             await waitForStateChange(timer, 'ABORTED');
             expect(timer.state).to.equal(ServiceState.ABORTED);
+
+            expect(timer.controlEnable).to.deep.equal({
+                abort: false,
+                complete: false,
+                pause: false,
+                reset: true,
+                restart: false,
+                resume: false,
+                start: false,
+                stop: false,
+                unhold: false
+            });
 
             timer.reset();
             await waitForStateChange(timer, 'IDLE');

@@ -68,7 +68,39 @@ describe('Service', () => {
                 .modules[0];
         const module = new Module(moduleJson);
         const service = module.services[0];
-        await expect(service.execute(ServiceCommand.start)).to.be.rejectedWith('Module is not connected');
+        await expect(service.executeCommand(ServiceCommand.start)).to.be.rejectedWith('Module is not connected');
+    });
+
+    context('with ModuleTestServer', () => {
+        let module: Module;
+        let service: Service;
+
+        before(() => {
+            const moduleJson =
+                parseJson(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8'), null, 60)
+                    .modules[0];
+            module = new Module(moduleJson);
+            service = module.services[0];
+        });
+
+        it('should get default strategy', () => {
+            const strategy = service.getDefaultStrategy();
+            expect(strategy.name).to.equal('Strategy 1');
+        });
+
+        it('should find strategy', () => {
+            const strategy = service.getStrategyByNameOrDefault('Strategy 1');
+            expect(strategy.name).to.equal('Strategy 1');
+        });
+
+        it('should find strategy 2', () => {
+            const strategy = service.getStrategyByNameOrDefault('StrategyNotThere');
+            expect(strategy).to.equal(undefined);
+        });
+
+        it('should get undefined when getting current strategy when not connected', () => {
+            expect(service.getCurrentStrategy()).to.equal(undefined);
+        });
     });
 
     context('dynamic test', () => {
@@ -98,6 +130,15 @@ describe('Service', () => {
             await moduleServer.shutdown();
         });
 
+        it('should get default strategy for default strategy', () => {
+            expect(service.getCurrentStrategy()).to.equal(service.getDefaultStrategy());
+        });
+
+        it('should find parameter', () => {
+            const param = service.findInputParameter('Parameter002');
+            expect(param.name).to.equal('Parameter002');
+        });
+
         it('should provide correct JSON', () => {
             expect(ServiceState[service.state]).to.equal('IDLE');
             const result = service.getOverview();
@@ -119,7 +160,7 @@ describe('Service', () => {
                 unhold: false
             });
 
-            await service.execute(ServiceCommand.start);
+            await service.executeCommand(ServiceCommand.start);
             await waitForStateChange(service, 'STARTING');
             expect(service.controlEnable).to.deep.equal({
                 abort: true,
@@ -133,7 +174,7 @@ describe('Service', () => {
                 unhold: false
             });
 
-            await expect(service.execute(ServiceCommand.resume)).to.be.rejectedWith(/ControlOp/);
+            await expect(service.executeCommand(ServiceCommand.resume)).to.be.rejectedWith('ControlOp');
             expect(service.controlEnable).to.deep.equal({
                 abort: true,
                 complete: false,
@@ -209,7 +250,7 @@ describe('Service', () => {
             });
             expect(result.strategies[0].processValuesIn).to.have.length(1);
             expect(result.strategies[0].processValuesIn[0].value).to.equal(20);
-            expect(result.strategies[0].processValuesOut).to.have.length(2);
+            expect(result.strategies[0].processValuesOut).to.have.length(3);
             expect(result.strategies[0].reportParameters).to.have.length(0);
 
             let stateChangeCount = 0;
@@ -217,49 +258,49 @@ describe('Service', () => {
                 stateChangeCount++;
             });
 
-            service.execute(ServiceCommand.start);
+            service.executeCommand(ServiceCommand.start);
             await waitForStateChange(service, 'STARTING');
             await waitForStateChange(service, 'EXECUTE');
 
-            service.execute(ServiceCommand.restart);
+            service.executeCommand(ServiceCommand.restart);
             await waitForStateChange(service, 'STARTING');
             await waitForStateChange(service, 'EXECUTE');
 
-            service.execute(ServiceCommand.stop);
+            service.executeCommand(ServiceCommand.stop);
             await waitForStateChange(service, 'STOPPING');
             await waitForStateChange(service, 'STOPPED');
 
-            service.execute(ServiceCommand.reset);
+            service.executeCommand(ServiceCommand.reset);
             await waitForStateChange(service, 'IDLE');
 
-            service.execute(ServiceCommand.start);
+            service.executeCommand(ServiceCommand.start);
             await waitForStateChange(service, 'STARTING');
             await waitForStateChange(service, 'EXECUTE');
 
-            service.execute(ServiceCommand.pause);
+            service.executeCommand(ServiceCommand.pause);
             await waitForStateChange(service, 'PAUSING');
             await waitForStateChange(service, 'PAUSED');
 
-            service.execute(ServiceCommand.resume);
+            service.executeCommand(ServiceCommand.resume);
             await waitForStateChange(service, 'RESUMING');
             await waitForStateChange(service, 'EXECUTE');
 
-            service.execute(ServiceCommand.complete);
+            service.executeCommand(ServiceCommand.complete);
             await waitForStateChange(service, 'COMPLETING');
             await waitForStateChange(service, 'COMPLETED');
 
-            service.execute(ServiceCommand.abort);
+            service.executeCommand(ServiceCommand.abort);
             await waitForStateChange(service, 'ABORTING');
             await waitForStateChange(service, 'ABORTED');
 
-            service.execute(ServiceCommand.reset);
+            service.executeCommand(ServiceCommand.reset);
             await waitForStateChange(service, 'IDLE');
 
-            service.execute(ServiceCommand.start);
+            service.executeCommand(ServiceCommand.start);
             await waitForStateChange(service, 'STARTING');
             await waitForStateChange(service, 'EXECUTE');
 
-            service.execute(ServiceCommand.complete);
+            service.executeCommand(ServiceCommand.complete);
             await waitForStateChange(service, 'COMPLETING');
             await waitForStateChange(service, 'COMPLETED');
 

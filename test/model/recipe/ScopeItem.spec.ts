@@ -27,6 +27,7 @@ import {expect} from 'chai';
 import {Expression} from 'expr-eval';
 import * as fs from 'fs';
 import {Module} from '../../../src/model/core/Module';
+import {OpcUaDataItem} from '../../../src/model/dataAssembly/DataItem';
 import {ScopeItem} from '../../../src/model/recipe/ScopeItem';
 import {TestServerNumericVariable} from '../../../src/moduleTestServer/ModuleTestNumericVariable';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
@@ -73,7 +74,7 @@ describe('ScopeItem', () => {
         const extraction = ScopeItem.extractFromExpressionString('ModuleTestServer.Variable\\.003 + 3',
             [moduleTestServer]);
         expect(extraction.scopeItems).to.have.lengthOf(1);
-        expect(extraction.scopeItems[0].dataItem.nodeId).to.equal('TestServerVariable.3.V');
+        expect((extraction.scopeItems[0].dataItem as OpcUaDataItem<any>).nodeId).to.equal('TestServerVariable.3.V');
         expect(extraction.scopeItems[0].name).to.equal('ModuleTestServer.Variable__003');
     });
 
@@ -184,7 +185,7 @@ describe('ScopeItem', () => {
                 [moduleTestServer, moduleDosierer]);
 
             expect(item.name).to.equal('ModuleTestServer.Service1.Parameter001');
-            expect(item.dataItem.nodeId).to.equal('Service1.Parameter1.V');
+            expect((item.dataItem as OpcUaDataItem<any>).nodeId).to.equal('Service1.Parameter1.V');
             expect(item.getScopeValue()).to.deep.equal({
                 'ModuleTestServer': {
                     'Service1': {

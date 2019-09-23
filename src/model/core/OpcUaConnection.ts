@@ -179,7 +179,7 @@ export class  OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionE
                 dataType: dataType,
                 arrayType: VariantArrayType.Scalar
             });
-            this.logger.info(`[${this.id}] Write ${nodeId} - ${JSON.stringify(variant)}`);
+            this.logger.debug(`[${this.id}] Write ${nodeId} - ${JSON.stringify(variant)}`);
             const statusCode = await this.session.writeSingleNode(this.resolveNodeId(nodeId, namespaceUrl), variant);
             if (statusCode.value !== 0) {
                 this.logger.warn(`Error while writing to opcua: ${statusCode.description}`);
@@ -262,7 +262,7 @@ export class  OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionE
                 } as UserIdentityInfoUserName;
         }
         const session = await this.client.createSession(userIdentityInfo);
-        this.logger.info(`session created (#${session.sessionId})`);
+        this.logger.debug(`session created (#${session.sessionId})`);
         return session;
     }
 

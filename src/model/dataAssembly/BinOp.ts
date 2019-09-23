@@ -47,9 +47,9 @@ export class ExtBinOp extends DataAssembly {
         this.createDataItem(options, 'VOut', 'read', 'boolean');
         this.createDataItem(options, 'VState0', 'read', 'string');
         this.createDataItem(options, 'VState1', 'read', 'string');
-        this.isReadOnly = false;
         this.type = 'boolean';
-        this.outputDataItem = this.communication.VOut;
+        this.writeDataItem = this.communication.VExt;
+        this.readDataItem = this.communication.VOut;
     }
 
 }

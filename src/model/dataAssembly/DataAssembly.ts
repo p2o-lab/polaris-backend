@@ -25,11 +25,12 @@
 
 import {
     DataAssemblyOptions,
-    ParameterInterface
+    ParameterInterface, ParameterOptions
 } from '@p2olab/polaris-interface';
 import {EventEmitter} from 'events';
 import {catDataAssembly} from '../../config/logging';
 import {OpcUaConnection} from '../core/OpcUaConnection';
+import {Parameter} from '../recipe/Parameter';
 import {DataItem, OpcUaDataItem} from './DataItem';
 
 export interface BaseDataAssemblyRuntime {
@@ -56,7 +57,10 @@ export class DataAssembly extends EventEmitter {
     public readonly connection: OpcUaConnection;
     public isReadOnly: boolean = false;
     public type: string = 'number';
-    public outputDataItem: DataItem<any>;
+    public writeDataItem: DataItem<any> = null;
+    public readDataItem: DataItem<any>;
+    public requestedValue: string;
+    public parameterRequest: Parameter;
 
     constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
         super();
@@ -120,19 +124,48 @@ export class DataAssembly extends EventEmitter {
      * @param {string} variable
      * @returns {Promise<any>}
      */
-    public async setParameter(paramValue: any, variable: string = 'VExt') {
-        const opcUaDataItem: OpcUaDataItem<any> = this.communication[variable];
-        catDataAssembly.info(`Set Parameter: ${this.name} - ${opcUaDataItem.nodeId} ` +
-            `-> ${JSON.stringify(paramValue)}`);
-        await opcUaDataItem.write(paramValue);
+    public async setParameter(paramValue: any, variable?: string) {
+        let dataItem: DataItem<any>;
+        if (variable) {
+            dataItem = this.communication[variable];
+        } else {
+            dataItem = this.writeDataItem;
+        }
+        catDataAssembly.debug(`Set Parameter: ${this.name} (${variable}) -> ${JSON.stringify(paramValue)}`);
+        await dataItem.write(paramValue);
+    }
+
+    public async setValue(p: ParameterOptions, modules: any[]) {
+        catDataAssembly.debug(`set value: ${JSON.stringify(p)}`);
+        this.requestedValue = p.value.toString();
+
+        if (this.parameterRequest) {
+            this.parameterRequest.unlistenToScopeArray();
+
+            if (this.parameterRequest.eventEmitter) {
+                this.parameterRequest.eventEmitter.removeListener('changed', this.setParameter);
+            }
+        }
+
+        this.parameterRequest = new Parameter(p, modules);
+
+        const value = this.parameterRequest.getValue();
+        catDataAssembly.trace(`calculated value: ${value}`);
+        await this.setParameter(value);
+
+        if (this.parameterRequest.options.continuous) {
+            catDataAssembly.trace(`Continous parameter change`);
+            this.parameterRequest.listenToScopeArray()
+                .on('changed', (data) => this.setParameter(data));
+        }
     }
 
     public getValue() {
-        return this.outputDataItem ? this.outputDataItem.value : undefined;
+        return this.readDataItem ? this.readDataItem.value : undefined;
     }
 
     public getLastUpdate(): Date {
-        return this.outputDataItem ? this.outputDataItem.timestamp : undefined;
+        return this.readDataItem ? this.readDataItem.timestamp : undefined;
     }
 
     public getUnit(): string {
@@ -146,7 +179,7 @@ export class DataAssembly extends EventEmitter {
             value: this.getValue(),
             unit: this.getUnit(),
             type: this.type,
-            readonly: this.isReadOnly,
+            readonly: this.writeDataItem === null,
             timestamp: this.getLastUpdate()
         };
     }

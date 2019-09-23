@@ -28,6 +28,7 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
 import {isAutomaticState, isManualState, isOffState, OpMode, opModetoJson} from '../../../src/model/core/enum';
+import {Module} from '../../../src/model/core/Module';
 import {OpcUaConnection} from '../../../src/model/core/OpcUaConnection';
 import {AdvAnaOp, AnaServParam, ExtAnaOp, ExtIntAnaOp} from '../../../src/model/dataAssembly/AnaOp';
 import {AnaView} from '../../../src/model/dataAssembly/AnaView';
@@ -66,7 +67,7 @@ describe('DataAssembly', () => {
             expect(da1 instanceof DataAssembly).to.equal(true);
             expect(da1.toJson()).to.deep.equal({
                 name: 'xyz',
-                readonly: false,
+                readonly: true,
                 timestamp: undefined,
                 type: 'number',
                 unit: null,
@@ -369,7 +370,7 @@ describe('DataAssembly', () => {
             expect(da1 instanceof MonAnaDrv).to.equal(true);
             expect(da1.toJson()).to.deep.equal({
                 name: 'MonAnaDrv1',
-                readonly: false,
+                readonly: true,
                 timestamp: undefined,
                 type: 'number',
                 unit: null,
@@ -383,7 +384,7 @@ describe('DataAssembly', () => {
         let moduleServer: ModuleTestServer;
         let connection: OpcUaConnection;
 
-        before(async () => {
+        beforeEach(async () => {
             moduleServer = new ModuleTestServer();
             await moduleServer.start();
 
@@ -391,10 +392,87 @@ describe('DataAssembly', () => {
             await connection.connect();
         });
 
-        after(async () => {
+        afterEach(async () => {
             await connection.disconnect();
             await moduleServer.shutdown();
         });
+
+        it('should subscribe and unsubscribe from ExtIntAnaOp', async () => {
+            const daJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString())
+                .modules[0].services[0].strategies[0].parameters[0];
+            const da = DataAssemblyFactory.create(daJson as any, connection) as ExtIntAnaOp;
+
+            await da.subscribe();
+
+            da.setParameter(2);
+            await new Promise((resolve) => da.on('changed', () => {
+                if (da.writeDataItem.value === 2) {
+                    resolve();
+                }
+            }));
+            expect(da.writeDataItem.value).to.equal(2);
+
+            await da.setParameter(3, 'VExt');
+            await new Promise((resolve) => da.on('changed', () => {
+                if (da.writeDataItem.value === 3) {
+                    resolve();
+                }
+            }));
+
+            da.unsubscribe();
+            da.setParameter(2);
+            await Promise.race([
+                new Promise((resolve, reject) => da.on('changed', reject)),
+                new Promise((resolve) => setTimeout(resolve, 500))
+            ]);
+        }).timeout(5000);
+
+        it('should set value', async () => {
+            const daJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString())
+                .modules[0].services[0].strategies[0].parameters[0];
+            const da = DataAssemblyFactory.create(daJson as any, connection) as ExtIntAnaOp;
+
+            await da.subscribe();
+
+            await da.setValue({value: 11, name: 'abc'}, []);
+            await new Promise((resolve) => da.on('changed', () => {
+                if (da.writeDataItem.value === 11) {
+                    resolve();
+                }
+            }));
+            expect(da.writeDataItem.value).to.equal(11);
+
+            await da.setValue({value: 12, name: 'abc'}, []);
+            await new Promise((resolve) => da.on('changed', () => {
+                if (da.writeDataItem.value === 12) {
+                    resolve();
+                }
+            }));
+            expect(da.writeDataItem.value).to.equal(12);
+        }).timeout(5000);
+
+        it('should set continous value', async () => {
+            const daModule = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString())
+                .modules[0];
+            const module = new Module(daModule);
+            await module.connect();
+            moduleServer.startSimulation();
+
+            const da = module.services[0].strategies[0].parameters[0];
+            const inputDa = module.variables[0];
+            await da.subscribe();
+            await inputDa.subscribe();
+
+            await new Promise((resolve) => inputDa.on('changed', () => resolve()));
+
+            da.setValue({value: '2 * ModuleTestServer.Variable001', name: da.name, continuous: true}, [module]);
+            await new Promise((resolve) => da.on('changed', () => resolve()));
+            expect(da.getValue()).to.be.closeTo(2 * inputDa.getValue(), 0.25 * inputDa.getValue());
+
+            await da.setValue({value: '11', name: da.name}, []);
+            await new Promise((resolve) => da.on('changed', () => resolve()));
+            expect(da.getValue()).to.equal(11);
+        }).timeout(5000);
 
         it('should create ExtIntAnaOp', async () => {
             const daJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString())

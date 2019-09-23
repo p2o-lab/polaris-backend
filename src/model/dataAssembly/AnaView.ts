@@ -42,9 +42,8 @@ export class AnaView extends ScaleSettingsDA(UnitDA(DataAssembly)) {
     constructor(options, connection: OpcUaConnection) {
         super(options, connection);
         this.createDataItem(options, 'V', 'read');
-        this.isReadOnly = true;
         this.type = 'number';
-        this.outputDataItem = this.communication.V;
+        this.readDataItem = this.communication.V;
     }
 
 }
