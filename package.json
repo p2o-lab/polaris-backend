@@ -19,7 +19,8 @@
     "build": "tsc"
   },
   "bin": {
-    "polaris-backend": "./bin/polaris-backend"
+    "polaris-backend": "./bin/polaris-backend",
+    "test-pea": "./bin/test-pea"
   },
   "files": [
     "build",

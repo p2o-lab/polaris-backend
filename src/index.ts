@@ -79,12 +79,13 @@ const optionDefinitions = [
 const sections = [
     {
         header: 'polaris-backend',
-        content: 'Starts recipe execution engine for controlling services of modules.'
+        content: 'Starts polaris backend engine for controlling services of modules.'
     },
     {
         header: 'Synopsis',
         content: [
-            '$ node build/src/index.js [{bold --module} {underline modulePath}] ' +
+            '$ ./bin/polaris-backend' +
+            '[{bold --module} {underline modulePath}] ' +
             '[{bold --recipe} {underline recipePath}] ' +
             '[{bold --virtualService} {underline virtualServicePath}] ' +
             '[{bold --externalTrigger} {underline opcuaEndpoint} {underline opcuaNodeid}]'
@@ -98,8 +99,9 @@ const sections = [
         header: 'Examples',
         content: [
             {
-                desc: 'Watching a OPC UA server',
-                example: '$ node build/src/index.js ' +
+                desc: 'Run Polaris backend and starts recipe when ' +
+                    'specified OPC UA server has a change in a specified node',
+                example: '$ ./bin/polaris-backend ' +
                 '--externalTrigger opc.tcp://127.0.0.1:53530/OPCUA/SimulationServer "ns=3;s=BooleanDataItem"'
             }]
     }
