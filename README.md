@@ -30,6 +30,12 @@ or use ready binary (which should also be installed globally and in modules)
 ./bin/polaris-backend
 ```
 
+Available CLI options are provided by:
+```
+./bin/polaris-backend -h
+```
+
+
 ### Docker
 
 Use ready docker image, which are automatically updated during drone.io integration
@@ -51,9 +57,15 @@ http://localhost:3000
 Its documentation is served by the application under the path **/doc** (e.g. http://localhost:3000/doc)
 
 ## Test Process Equipment Assembly
-Polaris can serve a test PEA with an OPC UA server. It has two services with some parameters and some other variables which change over time. You can start this testserver via
+Polaris can serve a test PEA with an OPC UA server via port 4334. It has two services with some parameters and some other variables which change over time. You can start this testserver via
 ```
 npm run testserver
+```
+
+or
+
+```
+./bin/test-pea
 ```
 
 or via docker container
