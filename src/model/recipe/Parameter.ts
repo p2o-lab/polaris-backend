@@ -37,7 +37,7 @@ import {ScopeItem} from './ScopeItem';
  * Static or Dynamic Parameter. Dynamic Parameters can depend on variables of the same or
  * other modules. These can also be continuously updated (specified via continuous property)
  */
-export class Parameter extends EventEmitter {
+export class Parameter {
 
     /**
      * name of parameter which should be updated
@@ -70,7 +70,6 @@ export class Parameter extends EventEmitter {
      * @param {Module[]} modules        modules where expression can be matched
      */
     constructor(parameterOptions: ParameterOptions, modules: Module[] = []) {
-        super();
         catParameter.info(`Create Parameter: ${JSON.stringify(parameterOptions)}`);
 
         this.options = parameterOptions;
@@ -109,7 +108,7 @@ export class Parameter extends EventEmitter {
                 item.dataAssembly.on('changed', this.notify);
             });
         }
-        return  this.eventEmitter;
+        return this.eventEmitter;
     }
 
     public unlistenToScopeArray() {

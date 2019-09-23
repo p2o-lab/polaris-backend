@@ -173,6 +173,47 @@ describe('Parameter', () => {
             expect(param.getValue()).to.equal(20);
         });
 
+        it('should unlisten to dynamic parameter', async () => {
+            const param = new Parameter({
+                name: 'Parameter001',
+                value: '2 * ModuleTestServer.Variable001.V'
+            }, [module]);
+
+            param.listenToScopeArray();
+            (moduleTestServer.variables[0] as TestServerNumericVariable).v = 10;
+            await Promise.race([
+                new Promise((resolve, reject) => param.eventEmitter.once('changed', resolve)),
+                new Promise((resolve, reject) => setTimeout(reject, 1000, 'timeout'))
+            ]);
+
+            param.unlistenToScopeArray();
+            (moduleTestServer.variables[0] as TestServerNumericVariable).v = 11;
+            await Promise.race([
+                new Promise((resolve, reject) => param.eventEmitter.once('changed', reject)),
+                new Promise((resolve, reject) => setTimeout(resolve, 1000))
+            ]);
+        });
+
+        it('should allow to listen multiple times', async () => {
+            const param = new Parameter({
+                name: 'Parameter001',
+                value: '2 * ModuleTestServer.Variable001.V'
+            }, [module]);
+            expect(param.scopeArray[0].dataAssembly.listenerCount('changed')).to.equal(0);
+            expect(param.scopeArray[0].dataItem.listenerCount('changed')).to.equal(1);
+
+            param.listenToScopeArray();
+            param.listenToScopeArray();
+            param.listenToScopeArray();
+            param.listenToScopeArray();
+            expect(param.scopeArray[0].dataAssembly.listenerCount('changed')).to.equal(1);
+            expect(param.scopeArray[0].dataItem.listenerCount('changed')).to.equal(1);
+
+            param.unlistenToScopeArray();
+            expect(param.scopeArray[0].dataAssembly.listenerCount('changed')).to.equal(0);
+            expect(param.scopeArray[0].dataItem.listenerCount('changed')).to.equal(1);
+        });
+
     });
 
 });
