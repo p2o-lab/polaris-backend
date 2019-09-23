@@ -106,7 +106,7 @@ describe('Service', () => {
             let moduleServer: ModuleTestServer;
             let testService: TestServerService;
 
-            beforeEach(async function () {
+            beforeEach(async function() {
                 this.timeout(5000);
                 moduleServer = new ModuleTestServer();
                 await moduleServer.start();

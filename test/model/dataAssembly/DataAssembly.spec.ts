@@ -396,6 +396,36 @@ describe('DataAssembly', () => {
             await moduleServer.shutdown();
         });
 
+        it('should subscribe and unsubscribe from ExtIntAnaOp', async () => {
+            const daJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString())
+                .modules[0].services[0].strategies[0].parameters[0];
+            const da = DataAssemblyFactory.create(daJson as any, connection) as ExtIntAnaOp;
+
+            await da.subscribe();
+
+            da.setParameter(2);
+            await new Promise((resolve) => da.on('changed', () => {
+                if (da.writeDataItem.value === 2) {
+                    resolve();
+                }
+            }));
+            expect(da.writeDataItem.value).to.equal(2);
+
+            await da.setParameter(3, 'VExt');
+            await new Promise((resolve) => da.on('changed', () => {
+                if (da.writeDataItem.value === 3) {
+                    resolve();
+                }
+            }));
+
+            da.unsubscribe();
+            da.setParameter(2);
+            await Promise.race([
+                new Promise((resolve, reject) => da.on('changed', reject)),
+                new Promise((resolve) => setTimeout(resolve, 500))
+            ]);
+        }).timeout(5000);
+
         it('should create ExtIntAnaOp', async () => {
             const daJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString())
                 .modules[0].services[0].strategies[0].parameters[0];

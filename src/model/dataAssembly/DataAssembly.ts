@@ -131,7 +131,7 @@ export class DataAssembly extends EventEmitter {
         } else {
             dataItem = this.writeDataItem;
         }
-        catDataAssembly.info(`Set Parameter: ${this.name} (${dataItem}) -> ${JSON.stringify(paramValue)}`);
+        catDataAssembly.info(`Set Parameter: ${this.name} (${variable}) -> ${JSON.stringify(paramValue)}`);
         await dataItem.write(paramValue);
     }
 
