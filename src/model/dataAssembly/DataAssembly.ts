@@ -131,12 +131,12 @@ export class DataAssembly extends EventEmitter {
         } else {
             dataItem = this.writeDataItem;
         }
-        catDataAssembly.info(`Set Parameter: ${this.name} (${variable}) -> ${JSON.stringify(paramValue)}`);
+        catDataAssembly.debug(`Set Parameter: ${this.name} (${variable}) -> ${JSON.stringify(paramValue)}`);
         await dataItem.write(paramValue);
     }
 
     public async setValue(p: ParameterOptions, modules: any[]) {
-        catDataAssembly.info(`set value: ${p.value}`);
+        catDataAssembly.debug(`set value: ${p.value}`);
         this.requestedValue = p.value.toString();
 
         if (this.parameterRequest) {
@@ -150,11 +150,11 @@ export class DataAssembly extends EventEmitter {
         this.parameterRequest = new Parameter(p, modules);
 
         const value = this.parameterRequest.getValue();
-        catDataAssembly.info(`calculated value: ${value}`);
+        catDataAssembly.trace(`calculated value: ${value}`);
         await this.setParameter(value);
 
         if (this.parameterRequest.options.continuous) {
-            catDataAssembly.info(`Continous parameter change`);
+            catDataAssembly.trace(`Continous parameter change`);
             this.parameterRequest.listenToScopeArray()
                 .on('changed', (data) => this.setParameter(data));
         }
