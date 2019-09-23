@@ -132,6 +132,18 @@ describe('Operation', () => {
             await moduleServer.shutdown();
         });
 
+        it('should execute operation', async () => {
+            const operation = new Operation({
+                service: 'Service1',
+                command: 'start' as ServiceCommand
+            }, [module]);
+
+            operation.execute();
+
+            await waitForStateChange(service, 'EXECUTE', 3000);
+            expect(operation.json()).to.have.property('state', 'completed');
+        });
+
         it('should try execute operation until it works', async () => {
             const operation = new Operation({
                 service: 'Service1',
@@ -142,7 +154,7 @@ describe('Operation', () => {
             await delay(300);
             expect(operation.json()).to.have.property('state', 'executing');
             // set precondition for operation
-            service.execute(ServiceCommand.start);
+            service.executeCommand(ServiceCommand.start);
 
             await waitForStateChange(service, 'COMPLETED', 3000);
             expect(operation.json()).to.have.property('state', 'completed');

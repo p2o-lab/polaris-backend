@@ -131,20 +131,21 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
 
     public readonly options: ModuleOptions;
     public readonly id: string;
-    public readonly hmiUrl: string;
     public readonly services: Service[];
     public readonly variables: DataAssembly[];
-    public readonly logger: Category;
-
     // module is protected and can't be deleted by the user
     public protected: boolean = false;
-
     public readonly connection: OpcUaConnection;
+
+    private readonly description: string;
+    private readonly hmiUrl: string;
+    private readonly logger: Category;
 
     constructor(options: ModuleOptions, protectedModule: boolean = false) {
         super();
         this.options = options;
         this.id = options.id;
+        this.description = options.description;
         this.protected = protectedModule;
         this.hmiUrl = options.hmi_url;
         this.connection = new OpcUaConnection(this.id, options.opcua_server_url, options.username, options.password)
@@ -193,6 +194,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
     public json(): ModuleInterface {
         return {
             id: this.id,
+            description: this.description,
             endpoint: this.connection.endpoint,
             hmiUrl: this.hmiUrl,
             connected: this.isConnected(),
@@ -225,7 +227,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
      */
     public abort(): Promise<void[]> {
         this.logger.info(`[${this.id}] Abort all services`);
-        const tasks = this.services.map((service) => service.execute(ServiceCommand.abort));
+        const tasks = this.services.map((service) => service.executeCommand(ServiceCommand.abort));
         return Promise.all(tasks);
     }
 
@@ -236,7 +238,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
         this.logger.info(`[${this.id}] Pause all running services`);
         const tasks = this.services.map(async (service) => {
             if (service.state === ServiceState.EXECUTE) {
-                return service.execute(ServiceCommand.pause);
+                return service.executeCommand(ServiceCommand.pause);
             }
         });
         return Promise.all(tasks);
@@ -249,7 +251,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
         this.logger.info(`[${this.id}] Resume all paused services`);
         const tasks = this.services.map(async (service) => {
             if (service.state === ServiceState.PAUSED) {
-                return service.execute(ServiceCommand.resume);
+                return service.executeCommand(ServiceCommand.resume);
             }
         });
         return Promise.all(tasks);
@@ -262,7 +264,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
         this.logger.info(`[${this.id}] Stop all non-idle services`);
         const tasks = this.services.map((service) => {
             if (service.state !== ServiceState.IDLE) {
-                return service.execute(ServiceCommand.stop);
+                return service.executeCommand(ServiceCommand.stop);
             }
         });
         return Promise.all(tasks);
@@ -273,7 +275,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
      */
     public reset(): Promise<void[]> {
         this.logger.info(`[${this.id}] Reset all services`);
-        const tasks = this.services.map((service) => service.execute(ServiceCommand.reset));
+        const tasks = this.services.map((service) => service.executeCommand(ServiceCommand.reset));
         return Promise.all(tasks);
     }
 
@@ -318,7 +320,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
                     this.emit('controlEnable', {service, controlEnable});
                 })
                 .on('state', (state) => {
-                    this.logger.debug(`[${this.id}] state changed: ${service.name} = ${ServiceState[state]}`);
+                    this.logger.info(`[${this.id}] state changed: ${service.name} = ${ServiceState[state]}`);
                     const entry = {
                         timestampPfe: new Date(),
                         timestampModule: service.lastStatusChange,

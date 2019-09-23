@@ -47,14 +47,20 @@ describe('Parameter', () => {
         it('should load', () => new Parameter({
                 name: 'var1',
                 value: 3
-            }, service)
+            }, [module])
+        );
+
+        it('should load withour modules', () => new Parameter({
+                name: 'var1',
+                value: 3
+            }, [])
         );
 
         it('should load with expression', async () => {
             const param = new Parameter({
                 name: 'var1',
                 value: '3+2'
-            }, service);
+            }, [module]);
             expect(await param.getValue()).to.equal(5);
         });
 
@@ -62,23 +68,15 @@ describe('Parameter', () => {
             const param = new Parameter({
                 name: 'var1',
                 value: 'sin(3)+2'
-            }, service);
+            }, [module]);
             expect(await param.getValue()).to.be.closeTo(2.14, 0.01);
-        });
-
-        it('should fail with wrong parameter name', () => {
-            expect(() => new Parameter({
-                    name: 'non-existing-parameter',
-                    value: 3
-                }, service)
-            ).to.throw();
         });
 
         it('should provide 0 with empty expression', async () => {
             const param = new Parameter({
                 name: 'var1',
                 value: ''
-            }, service);
+            }, [module]);
             expect(await param.getValue()).to.equal(0);
         });
 
@@ -86,7 +84,7 @@ describe('Parameter', () => {
             const param = new Parameter({
                 name: 'var1',
                 value: null
-            }, service);
+            }, []);
             expect(await param.getValue()).to.equal(0);
         });
 
@@ -94,7 +92,7 @@ describe('Parameter', () => {
             expect(() => new Parameter({
                 name: 'var1',
                 value: 'ssd+4335.,dfgölkp94'
-            }, service)).to.throw('Parsing error');
+            }, [])).to.throw('Parsing error');
         });
     });
 
@@ -103,7 +101,7 @@ describe('Parameter', () => {
         let module: Module;
         let moduleTestServer: ModuleTestServer;
 
-        before(async function before() {
+        beforeEach(async function before() {
             this.timeout(5000);
             moduleTestServer = new ModuleTestServer();
             await moduleTestServer.start();
@@ -114,7 +112,7 @@ describe('Parameter', () => {
             await module.connect();
         });
 
-        after(async () => {
+        afterEach(async () => {
             await module.disconnect();
             await moduleTestServer.shutdown();
         });
@@ -132,7 +130,7 @@ describe('Parameter', () => {
                     }
                 ]
 
-            }, service, undefined, [module]);
+            }, [module]);
             expect(param.scopeArray).to.have.lengthOf(2);
             expect(param.scopeArray[1].getScopeValue()).to.deep.equal({
                 ModuleTestServer: {
@@ -147,43 +145,73 @@ describe('Parameter', () => {
             const param = new Parameter({
                 name: 'Parameter001',
                 value: '2 * ModuleTestServer.Variable001.V + ModuleTestServer.Variable002 + Variable\\.003'
-            }, service, undefined, [module]);
+            }, [module]);
             expect(param.getValue()).to.be.greaterThan(0.01);
         });
 
-        it('should update value on module', async () => {
+        it('should evaluate simple expression', () => {
             const param = new Parameter({
                 name: 'Parameter001',
                 value: '2 * 3'
-            }, service, undefined, [module]);
-            await param.updateValueOnModule();
-            const param1Ext = moduleTestServer.services[0].parameter[0] as TestServerNumericVariable;
-            expect(param1Ext.vext).to.equal(6);
-
-            const param2 = new Parameter({
-                name: 'Parameter002',
-                value: '2 * ModuleTestServer.Variable001.V + ModuleTestServer.Variable002 + Variable\\.003'
-            }, service, undefined, [module]);
-            const value = await param2.getValue();
-            await param2.updateValueOnModule();
-            const param2Ext = moduleTestServer.services[0].parameter[1] as TestServerNumericVariable;
-            expect(param2Ext.vext).to.equal(value);
+            }, [module]);
+            expect(param.getValue()).to.equal(6);
         });
 
         it('should listen to dynamic parameter', async () => {
             const param = new Parameter({
                 name: 'Parameter001',
                 value: '2 * ModuleTestServer.Variable001.V'
-            }, service, undefined, [module]);
+            }, [module]);
             expect(param.scopeArray[0].dataAssembly.subscriptionActive).to.equal(true);
             expect(param.scopeArray[0].dataAssembly.name).to.equal('Variable001');
-            expect(param.scopeArray[0].dataItem.value).to.equal(20);
+            expect(param.scopeArray[0].dataAssembly.readDataItem.value).to.equal(20);
 
             (moduleTestServer.variables[0] as TestServerNumericVariable).v = 10;
             await new Promise((resolve) => {
-                param.listenToParameter().once('changed', () => resolve());
+                param.listenToScopeArray().once('changed', () => resolve());
             });
             expect(param.getValue()).to.equal(20);
+        });
+
+        it('should unlisten to dynamic parameter', async () => {
+            const param = new Parameter({
+                name: 'Parameter001',
+                value: '2 * ModuleTestServer.Variable001.V'
+            }, [module]);
+
+            param.listenToScopeArray();
+            (moduleTestServer.variables[0] as TestServerNumericVariable).v = 10;
+            await Promise.race([
+                new Promise((resolve, reject) => param.eventEmitter.once('changed', resolve)),
+                new Promise((resolve, reject) => setTimeout(reject, 1000, 'timeout'))
+            ]);
+
+            param.unlistenToScopeArray();
+            (moduleTestServer.variables[0] as TestServerNumericVariable).v = 11;
+            await Promise.race([
+                new Promise((resolve, reject) => param.eventEmitter.once('changed', reject)),
+                new Promise((resolve, reject) => setTimeout(resolve, 1000))
+            ]);
+        });
+
+        it('should allow to listen multiple times', async () => {
+            const param = new Parameter({
+                name: 'Parameter001',
+                value: '2 * ModuleTestServer.Variable001.V'
+            }, [module]);
+            expect(param.scopeArray[0].dataAssembly.listenerCount('changed')).to.equal(0);
+            expect(param.scopeArray[0].dataItem.listenerCount('changed')).to.equal(1);
+
+            param.listenToScopeArray();
+            param.listenToScopeArray();
+            param.listenToScopeArray();
+            param.listenToScopeArray();
+            expect(param.scopeArray[0].dataAssembly.listenerCount('changed')).to.equal(1);
+            expect(param.scopeArray[0].dataItem.listenerCount('changed')).to.equal(1);
+
+            param.unlistenToScopeArray();
+            expect(param.scopeArray[0].dataAssembly.listenerCount('changed')).to.equal(0);
+            expect(param.scopeArray[0].dataItem.listenerCount('changed')).to.equal(1);
         });
 
     });

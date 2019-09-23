@@ -419,13 +419,13 @@ export abstract class VirtualService extends BaseService {
         this.setState(ServiceState.ABORTED);
         this.setControlEnable({
             start: false,
-            abort: true,
+            abort: false,
             complete: false,
             pause: false,
             reset: true,
             restart: false,
             resume: false,
-            stop: true,
+            stop: false,
             unhold: false
         });
         catVirtualService.info('aborted');

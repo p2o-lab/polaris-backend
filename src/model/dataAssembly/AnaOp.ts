@@ -48,8 +48,8 @@ export class ExtAnaOp extends ValueLimitationDA(ScaleSettingsDA(UnitDA(DataAssem
         this.createDataItem(options, 'VOut', 'read');
         this.createDataItem(options, 'VRbk', 'read');
         this.createDataItem(options, 'VExt', 'write');
-        this.isReadOnly = false;
-        this.outputDataItem = this.communication.VOut;
+        this.writeDataItem = this.communication.VExt;
+        this.readDataItem = this.communication.VRbk;
         this.type = 'number';
     }
 }
@@ -64,9 +64,7 @@ export class ExtIntAnaOp extends OpModeDA(ExtAnaOp) {
 
     constructor(options, connection: OpcUaConnection) {
         super(options, connection);
-        this.isReadOnly = false;
         this.type = 'number';
-        this.outputDataItem = this.communication.VRbk;
         this.createDataItem(options, 'VInt', 'read');
     }
 }

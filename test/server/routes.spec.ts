@@ -271,6 +271,12 @@ describe('Routes', () => {
                     .expect(/"connected":true/)
                     .expect(/"status":"IDLE"/);
 
+                await request(app).post('/api/module/ModuleTestServer/service/Service1')
+                    .send({name: 'Parameter001', value: 2})
+                    .expect(200)
+                    .expect('Content-Type', /json/)
+                    .expect(/"status":"IDLE"/);
+
                 await request(app).post('/api/module/ModuleTestServer/disconnect')
                     .expect(200)
                     .expect('Content-Type', /json/)

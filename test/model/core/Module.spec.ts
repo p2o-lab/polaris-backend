@@ -77,7 +77,7 @@ describe('Module', () => {
             expect(module.variables[0].communication.WQC.listenerCount('changed')).to.equal(1);
             expect(module.services[0].eventEmitter.listenerCount('parameterChanged')).to.equal(1);
 
-            const errorMsg = module.services[0].strategies[0].parameters[2] as StrView;
+            const errorMsg = module.services[0].strategies[0].processValuesOut[0] as StrView;
             expect(errorMsg.communication.WQC.listenerCount('changed')).to.equal(1);
             expect(errorMsg.communication.Text.listenerCount('changed')).to.equal(1);
 
@@ -93,11 +93,9 @@ describe('Module', () => {
             const moduleJson =
                 JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8')).modules[0];
             const module = new Module(moduleJson);
-            const param = module.services[0].strategies[0].parameters[2];
-            expect(param.listenerCount('Text')).to.equal(0);
 
             await module.connect();
-            expect(module.connection.monitoredItemSize()).to.equal(69);
+            expect(module.connection.monitoredItemSize()).to.equal(63);
 
             await Promise.all([
                 new Promise((resolve) => module.on('parameterChanged', resolve)),
@@ -108,7 +106,7 @@ describe('Module', () => {
             expect(module.connection.monitoredItemSize()).to.equal(0);
 
             await module.connect();
-            expect(module.connection.monitoredItemSize()).to.equal(69);
+            expect(module.connection.monitoredItemSize()).to.equal(63);
             await Promise.all([
                 new Promise((resolve) => module.on('parameterChanged', resolve)),
                 new Promise((resolve) => module.on('variableChanged', resolve)),

@@ -125,6 +125,7 @@ export class OpcUaDataItem<T> extends DataItem<T> {
     }
 
     public write(value: number | string) {
+        this.logger.debug(`write: ${value} to ${this.nodeId}`);
         return this.connection.writeOpcUaNode(this.nodeId, this.namespaceIndex, value, this.dataType);
     }
 

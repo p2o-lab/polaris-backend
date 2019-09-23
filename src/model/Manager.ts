@@ -394,7 +394,7 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
                     catManager.info(`Service ${service.connection.id}.${service.name} completed. ` +
                         `Now perform autoreset`);
                     try {
-                        service.execute(ServiceCommand.reset);
+                        service.executeCommand(ServiceCommand.reset);
                     } catch (err) {
                         catManager.debug('Autoreset not possible');
                     }
