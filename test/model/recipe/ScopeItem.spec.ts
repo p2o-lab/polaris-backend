@@ -27,11 +27,11 @@ import {expect} from 'chai';
 import {Expression} from 'expr-eval';
 import * as fs from 'fs';
 import {Module} from '../../../src/model/core/Module';
+import {OpcUaDataItem} from '../../../src/model/dataAssembly/DataItem';
 import {ScopeItem} from '../../../src/model/recipe/ScopeItem';
 import {TestServerNumericVariable} from '../../../src/moduleTestServer/ModuleTestNumericVariable';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 import {waitForParameterChange, waitForVariableChange} from '../../helper';
-import {OpcUaDataItem} from '../../../src/model/dataAssembly/DataItem';
 
 /**
  * Tests for [[ScopeItem]]

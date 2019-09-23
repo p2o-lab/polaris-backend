@@ -31,7 +31,6 @@ import {timeout} from 'promise-timeout';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Category} from 'typescript-logging';
 import {OpcUaConnection} from '../core/OpcUaConnection';
-import {catDataAssembly} from '../../config/logging';
 
 const catDataItem = new Category('DataItem');
 

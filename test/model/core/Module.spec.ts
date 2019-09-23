@@ -29,7 +29,6 @@ import * as fs from 'fs';
 import {Module} from '../../../src/model/core/Module';
 import {StrView} from '../../../src/model/dataAssembly/Str';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
-import {DataAssembly} from '../../../src/model/dataAssembly/DataAssembly';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;

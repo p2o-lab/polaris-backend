@@ -368,6 +368,15 @@ export class Service extends BaseService {
         return this.serviceControl.waitForOpModeToPassSpecificTest(testFunction);
     }
 
+    public findInputParameter(parameterName: string): DataAssembly {
+        const parameterList = [].concat(
+            this.parameters,
+            this.getCurrentStrategy().parameters,
+            this.getCurrentStrategy().processValuesIn
+        );
+        return parameterList.find((obj) => (obj.name === parameterName));
+    }
+
     /**
      *
      */
@@ -419,12 +428,4 @@ export class Service extends BaseService {
         }
     }
 
-    public findInputParameter(parameterName: string): DataAssembly {
-        const parameterList = [].concat(
-            this.parameters,
-            this.getCurrentStrategy().parameters,
-            this.getCurrentStrategy().processValuesIn
-        );
-        return parameterList.find((obj) => (obj.name === parameterName));
-    }
 }
