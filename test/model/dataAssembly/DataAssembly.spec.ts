@@ -28,6 +28,7 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
 import {isAutomaticState, isManualState, isOffState, OpMode, opModetoJson} from '../../../src/model/core/enum';
+import {Module} from '../../../src/model/core/Module';
 import {OpcUaConnection} from '../../../src/model/core/OpcUaConnection';
 import {AdvAnaOp, AnaServParam, ExtAnaOp, ExtIntAnaOp} from '../../../src/model/dataAssembly/AnaOp';
 import {AnaView} from '../../../src/model/dataAssembly/AnaView';
@@ -448,6 +449,29 @@ describe('DataAssembly', () => {
                 }
             }));
             expect(da.writeDataItem.value).to.equal(12);
+        }).timeout(5000);
+
+        it('should set continous value', async () => {
+            const daModule = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString())
+                .modules[0];
+            const module = new Module(daModule);
+            await module.connect();
+            moduleServer.startSimulation();
+
+            const da = module.services[0].strategies[0].parameters[0];
+            const inputDa = module.variables[0];
+            await da.subscribe();
+            await inputDa.subscribe();
+
+            await new Promise((resolve) => inputDa.on('changed', () => resolve()));
+
+            da.setValue({value: '2 * ModuleTestServer.Variable001', name: da.name, continuous: true}, [module]);
+            await new Promise((resolve) => da.on('changed', () => resolve()));
+            expect(da.getValue()).to.be.closeTo(2 * inputDa.getValue(), 0.25 * inputDa.getValue());
+
+            await da.setValue({value: '11', name: da.name}, []);
+            await new Promise((resolve) => da.on('changed', () => resolve()));
+            expect(da.getValue()).to.equal(11);
         }).timeout(5000);
 
         it('should create ExtIntAnaOp', async () => {

@@ -136,7 +136,7 @@ export class DataAssembly extends EventEmitter {
     }
 
     public async setValue(p: ParameterOptions, modules: any[]) {
-        catDataAssembly.debug(`set value: ${p.value}`);
+        catDataAssembly.debug(`set value: ${JSON.stringify(p)}`);
         this.requestedValue = p.value.toString();
 
         if (this.parameterRequest) {
