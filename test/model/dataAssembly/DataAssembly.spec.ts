@@ -448,7 +448,7 @@ describe('DataAssembly', () => {
                 }
             }));
             expect(da.writeDataItem.value).to.equal(12);
-        });
+        }).timeout(5000);
 
         it('should create ExtIntAnaOp', async () => {
             const daJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString())
