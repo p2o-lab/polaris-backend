@@ -36,6 +36,10 @@ import {Parameter} from './Parameter';
  *
  */
 export class Operation {
+
+    private static MAX_RETRIES: number = 10;
+    private static RETRY_DELAY: number = 500;
+
     public module: Module;
     public service: Service;
     public strategy: Strategy;
@@ -85,14 +89,14 @@ export class Operation {
     }
 
     /**
-     * Execute Operation at runtime during recipe run
+     * Execute Operation at runtime.
      *
-     * Try as long as command can be executed
-     * @returns {Promise<void>}
+     * There are a maximum of Operation.MAX_RETRIES retries of this operation
+     * for example if command can not be executed due to commandEnable.
+     * Between retries there is a delay of Operation.RETRY_DELAY milliseconds.
      */
     public async execute(): Promise<void> {
         let numberOfTries = 0;
-        const MAX_TRIES = 10;
         this.state = 'executing';
         while (this.state === 'executing') {
             catOperation.info(`Perform operation ${ this.module.id }.${ this.service.name }.${ this.command }() ` +
@@ -106,14 +110,15 @@ export class Operation {
                 })
                 .catch(async (err) => {
                     numberOfTries++;
-                    if (numberOfTries === MAX_TRIES) {
+                    catOperation.debug(`Operation could not be executed due to error: : ${err.toString()}`);
+                    if (numberOfTries === Operation.MAX_RETRIES) {
                         this.state = 'aborted';
                         this.emitter.emit('changed', 'aborted');
                         this.emitter.removeAllListeners('changed');
                         catOperation.warn('Could not execute operation. Stop restarting');
                     } else {
-                        catOperation.warn(`Could not execute operation. Another try in 500ms. ${err.toString()}`);
-                        await delay(500);
+                        catOperation.warn(`Could not execute operation. Another try in ${Operation.RETRY_DELAY}ms`);
+                        await delay(Operation.RETRY_DELAY);
                     }
                 });
         }
