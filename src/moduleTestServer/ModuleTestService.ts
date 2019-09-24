@@ -154,7 +154,7 @@ export class TestServerService {
                 },
                 set: (variant) => {
                     this.varCommand = parseInt(variant.value, 10);
-                    catTestServer.info('Set service command: ' + this.varCommand);
+                    catTestServer.debug('Set service command: ' + this.varCommand);
                     if (this.varCommand === ServiceMtpCommand.COMPLETE && this.varStatus === ServiceState.EXECUTE) {
                         this.state(ServiceState.COMPLETING);
                     } else if (this.varCommand === ServiceMtpCommand.RESTART &&

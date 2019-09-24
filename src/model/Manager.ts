@@ -321,11 +321,7 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
         if (!module) {
             throw new Error(`Module with id ${moduleName} not registered`);
         }
-        const service: Service = module.services.find((serv) => (serv).name === serviceName);
-        if (!service) {
-            throw new Error(`Service ${serviceName} does not exist on module ${moduleName}`);
-        }
-        return service;
+        return module.getService(serviceName);
     }
 
     public instantiateVirtualService(options: VirtualServiceOptions) {

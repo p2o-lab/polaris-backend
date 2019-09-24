@@ -74,7 +74,7 @@ describe('Operation', () => {
                 module: 'ModuleTestServer',
                 service: 'test',
                 command: null
-            }, [module])).to.throw('not found');
+            }, [module])).to.throw('Could not find service with name test');
         });
 
         it('should fail with wrong strategy name', () => {
