@@ -25,13 +25,13 @@
 
 import {ParameterInterface} from '@p2olab/polaris-interface';
 import {Category} from 'typescript-logging';
+import {catAggregatedService} from '../../config/logging';
 import {ServiceState} from '../core/enum';
 import {Module} from '../core/Module';
 import {Service} from '../core/Service';
 import {Petrinet, PetrinetOptions} from './aggregatedService/Petrinet';
 import {VirtualService} from './VirtualService';
 import {VirtualServiceOptions} from './VirtualServiceFactory';
-import {catAggregatedService} from '../../config/logging';
 
 export interface AggregatedServiceOptions extends VirtualServiceOptions {
     type: 'aggregatedService';

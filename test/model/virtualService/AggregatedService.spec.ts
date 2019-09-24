@@ -156,8 +156,8 @@ describe('AggregatedService', () => {
     });
 
     it('should work complex', async () => {
-        const aggregatedServiceJson: AggregatedServiceOptions =
-            JSON.parse(fs.readFileSync('assets/virtualService/aggregatedService_moduletestserver_complex.json', 'utf8'));
+        const aggregatedServiceJson: AggregatedServiceOptions = JSON.parse(
+            fs.readFileSync('assets/virtualService/aggregatedService_moduletestserver_complex.json', 'utf8'));
         const as = new AggregatedService(aggregatedServiceJson, [module1, module2]);
 
         as.start();
