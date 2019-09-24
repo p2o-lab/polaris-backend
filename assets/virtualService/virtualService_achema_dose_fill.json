@@ -4,8 +4,8 @@
   "type": "aggregatedService",
   "description": "Combined Dose from Dose PEA and fill from reactor",
   "necessaryServices": [
-    "Dose.DoseAmount",
-    "React.Fill_Service"
+    { "module": "Dose", "service": "DoseAmount" },
+    { "module":  "React", "service": "Fill_Service"}
   ],
   "parameters": [
     {
@@ -49,7 +49,7 @@
         },
         {
           "id": "t2",
-          "condition": "Dose.DoseAmount.state==EXECUTE && React.Fill.state==EXECUTE",
+          "condition": "Dose.DoseAmount.state=='EXECUTE' and React.Fill.state=='EXECUTE'",
           "nextStates": ["finished"]
         }
       ]
