@@ -32,7 +32,7 @@ import {Module} from '../../../src/model/core/Module';
 import {Service} from '../../../src/model/core/Service';
 import {Operation} from '../../../src/model/recipe/Operation';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
-import {waitForStateChange} from '../../helper';
+
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -140,7 +140,7 @@ describe('Operation', () => {
 
             operation.execute();
 
-            await waitForStateChange(service, 'EXECUTE', 3000);
+            await service.waitForStateChangeWithTimeout('EXECUTE', 3000);
             expect(operation.json()).to.have.property('state', 'completed');
         });
 
@@ -156,7 +156,7 @@ describe('Operation', () => {
             // set precondition for operation
             service.executeCommand(ServiceCommand.start);
 
-            await waitForStateChange(service, 'COMPLETED', 3000);
+            await service.waitForStateChangeWithTimeout('COMPLETED', 3000);
             expect(operation.json()).to.have.property('state', 'completed');
 
         }).timeout(10000);

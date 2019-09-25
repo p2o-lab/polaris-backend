@@ -29,7 +29,6 @@ import * as fs from 'fs';
 import {Module} from '../../../src/model/core/Module';
 import {AggregatedService, AggregatedServiceOptions} from '../../../src/model/virtualService/AggregatedService';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
-import {waitForStateChange} from '../../helper';
 
 describe('AggregatedService', () => {
 
@@ -85,9 +84,9 @@ describe('AggregatedService', () => {
         });
         as.start();
         await Promise.all([
-            waitForStateChange(as, 'EXECUTE'),
-            waitForStateChange(module1.services[0], 'EXECUTE'),
-            waitForStateChange(module2.services[0], 'EXECUTE')
+            as.waitForStateChangeWithTimeout('EXECUTE'),
+            module1.services[0].waitForStateChangeWithTimeout('EXECUTE'),
+            module2.services[0].waitForStateChangeWithTimeout('EXECUTE')
             ]);
 
         expect(as.controlEnable).to.deep.equal({
@@ -103,9 +102,9 @@ describe('AggregatedService', () => {
         });
         as.complete();
         await Promise.all([
-            waitForStateChange(as, 'COMPLETED'),
-            waitForStateChange(module1.services[0], 'COMPLETED'),
-            waitForStateChange(module2.services[0], 'COMPLETED')
+            as.waitForStateChangeWithTimeout('COMPLETED'),
+            module1.services[0].waitForStateChangeWithTimeout('COMPLETED'),
+            module2.services[0].waitForStateChangeWithTimeout('COMPLETED')
         ]);
 
         expect(as.controlEnable).to.deep.equal({
@@ -121,9 +120,9 @@ describe('AggregatedService', () => {
         });
         as.reset();
         await Promise.all([
-            waitForStateChange(as, 'IDLE'),
-            waitForStateChange(module1.services[0], 'IDLE'),
-            waitForStateChange(module2.services[0], 'IDLE')
+            as.waitForStateChangeWithTimeout('IDLE'),
+            module1.services[0].waitForStateChangeWithTimeout('IDLE'),
+            module2.services[0].waitForStateChangeWithTimeout('IDLE')
         ]);
     });
 
@@ -134,26 +133,51 @@ describe('AggregatedService', () => {
 
         as.start();
         await Promise.all([
-            waitForStateChange(as, 'EXECUTE'),
-            waitForStateChange(module1.services[0], 'EXECUTE'),
-            waitForStateChange(module2.services[0], 'EXECUTE')
+            as.waitForStateChangeWithTimeout('EXECUTE'),
+            module1.services[0].waitForStateChangeWithTimeout('EXECUTE'),
+            module2.services[0].waitForStateChangeWithTimeout('EXECUTE')
         ]);
 
         as.complete();
         await Promise.all([
-            waitForStateChange(as, 'COMPLETED'),
-            waitForStateChange(module1.services[0], 'COMPLETED'),
-            waitForStateChange(module2.services[0], 'COMPLETED')
+            as.waitForStateChangeWithTimeout('COMPLETED'),
+            module1.services[0].waitForStateChangeWithTimeout('COMPLETED'),
+            module2.services[0].waitForStateChangeWithTimeout('COMPLETED')
         ]);
 
         as.reset();
         await Promise.all([
-            waitForStateChange(as, 'IDLE'),
-            waitForStateChange(module1.services[0], 'IDLE'),
-            waitForStateChange(module2.services[0], 'IDLE')
+            as.waitForStateChangeWithTimeout('IDLE'),
+            module1.services[0].waitForStateChangeWithTimeout('IDLE'),
+            module2.services[0].waitForStateChangeWithTimeout('IDLE')
         ]);
 
-    });
+    }).timeout(5000);
+
+    it('should work with complete cycle', async () => {
+        const aggregatedServiceJson: AggregatedServiceOptions =
+            JSON.parse(fs.readFileSync('assets/virtualService/aggregatedService_moduletestserver_small.json', 'utf8'));
+        const as = new AggregatedService(aggregatedServiceJson, [module1, module2]);
+
+        as.start();
+        await as.waitForStateChangeWithTimeout('EXECUTE');
+
+        as.pause();
+        await as.waitForStateChangeWithTimeout('PAUSED');
+
+        as.resume();
+        await as.waitForStateChangeWithTimeout('EXECUTE');
+
+        as.restart();
+        await as.waitForStateChangeWithTimeout('EXECUTE');
+
+        as.stop();
+        await as.waitForStateChangeWithTimeout('STOPPED');
+
+        as.abort();
+        await as.waitForStateChangeWithTimeout('ABORTED');
+
+    }).timeout(10000);
 
     it('should work complex', async () => {
         const aggregatedServiceJson: AggregatedServiceOptions = JSON.parse(
@@ -161,9 +185,10 @@ describe('AggregatedService', () => {
         const as = new AggregatedService(aggregatedServiceJson, [module1, module2]);
 
         as.start();
-        await waitForStateChange(module1.services[0], 'EXECUTE');
-        await waitForStateChange(module2.services[0], 'EXECUTE');
-        await waitForStateChange(as, 'EXECUTE');
+        await module1.services[0].waitForStateChangeWithTimeout('EXECUTE');
+        await module2.services[0].waitForStateChangeWithTimeout('EXECUTE');
+        await as.waitForStateChangeWithTimeout('EXECUTE');
+
     });
 
 });

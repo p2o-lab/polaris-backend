@@ -134,7 +134,7 @@ describe('Manager', () => {
         manager.instantiateVirtualService({name: 'timer1', type: 'timer'});
         manager.virtualServices[0].setParameters([{name: 'duration', value: 100}]);
         manager.virtualServices[0].start();
-        await waitForStateChange(manager.virtualServices[0], 'COMPLETED');
+        await manager.virtualServices[0].waitForStateChangeWithTimeout('COMPLETED');
     });
 
     describe('test with test module', function() {
@@ -163,24 +163,24 @@ describe('Manager', () => {
             const service2 = module.services[1];
 
             module.connect();
-            await waitForStateChange(service2, 'IDLE', 2000);
+            await service2.waitForStateChangeWithTimeout('IDLE', 2000);
             service2.executeCommand(ServiceCommand.start);
-            await waitForStateChange(service2, 'EXECUTE');
+            await service2.waitForStateChangeWithTimeout('EXECUTE');
 
             await manager.stopAllServices();
-            await waitForStateChange(service2, 'STOPPED');
+            await service2.waitForStateChangeWithTimeout('STOPPED');
             expect(service2.state).to.equal(ServiceState.STOPPED);
 
             await manager.abortAllServices();
             await Promise.all([
-                    waitForStateChange(service1, 'ABORTED'),
-                    waitForStateChange(service2, 'ABORTED')]
+                    service1.waitForStateChangeWithTimeout('ABORTED'),
+                    service2.waitForStateChangeWithTimeout('ABORTED')]
             );
             expect(service1.state).to.equal(ServiceState.ABORTED);
             expect(service2.state).to.equal(ServiceState.ABORTED);
 
             await manager.resetAllServices();
-            await waitForStateChange(service2, 'IDLE');
+            await service2.waitForStateChangeWithTimeout('IDLE');
             expect(service2.state).to.equal(ServiceState.IDLE);
 
             await manager.removeModule(module.id);
@@ -199,13 +199,13 @@ describe('Manager', () => {
             const service = module.services[1];
 
             module.connect();
-            await waitForStateChange(service, 'IDLE', 2000);
+            await service.waitForStateChangeWithTimeout('IDLE', 2000);
             service.executeCommand(ServiceCommand.start);
-            await waitForStateChange(service, 'EXECUTE');
+            await service.waitForStateChangeWithTimeout('EXECUTE');
 
             service.executeCommand(ServiceCommand.complete);
-            await waitForStateChange(service, 'COMPLETED');
-            await waitForStateChange(service, 'IDLE');
+            await service.waitForStateChangeWithTimeout('COMPLETED');
+            await service.waitForStateChangeWithTimeout('IDLE');
         });
 
     });

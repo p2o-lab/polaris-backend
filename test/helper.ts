@@ -23,29 +23,7 @@
  * SOFTWARE.
  */
 
-import {timeout} from 'promise-timeout';
-import {BaseService} from '../src/model/core/BaseService';
-import {ServiceState} from '../src/model/core/enum';
 import {Module} from '../src/model/core/Module';
-
-/**
- * resolve when service changes to expectedState
- * rejects after ms milliseconds
- * @param {BaseService} service     service to be waited for
- * @param {string} expectedState
- * @param {number} ms           max time before promise is rejected
- * @returns {Promise<void>}
- */
-export function waitForStateChange(service: BaseService, expectedState: string, ms = 1000): Promise<void> {
-    return timeout(new Promise((resolve) => {
-        service.eventEmitter.on('state', function test(state) {
-            if (ServiceState[state] === expectedState) {
-                service.eventEmitter.removeListener('state', test);
-                resolve();
-            }
-        });
-    }), ms);
-}
 
 export function waitForParameterChange(module: Module, parameterName: string, expected = null) {
     return new Promise((resolve) =>

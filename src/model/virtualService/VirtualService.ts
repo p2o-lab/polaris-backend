@@ -119,7 +119,7 @@ export abstract class VirtualService extends BaseService {
 
     public async restart() {
         if (this._controlEnable.restart) {
-            await this.gotoStarting();
+            await this.gotoRestarting();
         }
     }
 
@@ -174,6 +174,10 @@ export abstract class VirtualService extends BaseService {
 
     protected async onStarting(): Promise<void> {
         catVirtualService.info(`[${this.name}] onStarting`);
+    }
+
+    protected async onRestarting(): Promise<void> {
+        catVirtualService.info(`[${this.name}] onRestarting`);
     }
 
     protected async onExecute(): Promise<void> {
@@ -254,6 +258,24 @@ export abstract class VirtualService extends BaseService {
         });
         catVirtualService.info('starting');
         await this.onStarting();
+        this.gotoExecute();
+    }
+
+    private async gotoRestarting(): Promise<void> {
+        this.setState(ServiceState.STARTING);
+        this.setControlEnable({
+            start: false,
+            abort: true,
+            complete: false,
+            pause: false,
+            reset: false,
+            restart: false,
+            resume: false,
+            stop: true,
+            unhold: false
+        });
+        catVirtualService.info('restarting');
+        await this.onRestarting();
         this.gotoExecute();
     }
 

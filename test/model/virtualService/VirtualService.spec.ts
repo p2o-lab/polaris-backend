@@ -33,7 +33,7 @@ import {FunctionGenerator} from '../../../src/model/virtualService/FunctionGener
 import {Storage} from '../../../src/model/virtualService/Storage';
 import {Timer} from '../../../src/model/virtualService/Timer';
 import {VirtualServiceFactory} from '../../../src/model/virtualService/VirtualServiceFactory';
-import {waitForStateChange} from '../../helper';
+
 
 describe('VirtualService', () => {
 
@@ -190,15 +190,15 @@ describe('VirtualService', () => {
             expect(timer.state).to.equal(ServiceState.IDLE);
 
             timer.start();
-            await waitForStateChange(timer, 'EXECUTE');
+            await timer.waitForStateChangeWithTimeout('EXECUTE');
             expect(timer.state).to.equal(ServiceState.EXECUTE);
 
             timer.restart();
-            await waitForStateChange(timer, 'EXECUTE');
+            await timer.waitForStateChangeWithTimeout('EXECUTE');
             expect(timer.state).to.equal(ServiceState.EXECUTE);
 
             timer.abort();
-            await waitForStateChange(timer, 'ABORTED');
+            await timer.waitForStateChangeWithTimeout('ABORTED');
             expect(timer.state).to.equal(ServiceState.ABORTED);
 
             expect(timer.controlEnable).to.deep.equal({
@@ -214,7 +214,7 @@ describe('VirtualService', () => {
             });
 
             timer.reset();
-            await waitForStateChange(timer, 'IDLE');
+            await timer.waitForStateChangeWithTimeout('IDLE');
             expect(timer.state).to.equal(ServiceState.IDLE);
         });
     });

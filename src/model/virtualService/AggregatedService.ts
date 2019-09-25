@@ -26,7 +26,7 @@
 import {ParameterInterface} from '@p2olab/polaris-interface';
 import {Category} from 'typescript-logging';
 import {catAggregatedService} from '../../config/logging';
-import {ServiceState} from '../core/enum';
+import {BaseService} from '../core/BaseService';
 import {Module} from '../core/Module';
 import {Service} from '../core/Service';
 import {Petrinet, PetrinetOptions} from './aggregatedService/Petrinet';
@@ -102,7 +102,6 @@ export class AggregatedService extends VirtualService {
     public readonly services: Service[];
 
     // dynamic properties
-    public currentState: ServiceState;
     public _lastStatusChange: Date;
     private readonly commandEnableExpression: CommandEnableOptions;
     private readonly options: AggregatedServiceOptions;
@@ -174,85 +173,62 @@ export class AggregatedService extends VirtualService {
         this.selfCompleting = true;
     }
 
-    protected async onStarting(): Promise<void> {
-        if (this.starting) {
-            await this.starting.run();
-        } else {
-            this.logger.info('use default behaviour for starting');
-            await Promise.all(this.services.map((service) => service.start()));
-        }
+    protected onStarting(): Promise<void> {
+        return this.runPetriNetOrDefault('starting', (service) => service.start(), 'STARTING');
     }
 
     protected async onExecute(): Promise<void> {
-        if (this.execute) {
-            await this.execute.run();
-        }
+        return this.runPetriNetOrDefault('execute');
     }
 
     protected async onPausing(): Promise<void> {
-        if (this.pausing) {
-            await this.pausing.run();
-        } else {
-            this.logger.info('use default behaviour for pausing');
-            await Promise.all(this.services.map((service) => service.pause()));
-        }
+        return this.runPetriNetOrDefault('pausing', (service) => service.pause(), 'PAUSED');
     }
 
     protected async onCompleting(): Promise<void> {
-        if (this.completing) {
-            await this.completing.run();
-        } else {
-            this.logger.info('use default behaviour for completing');
-            await Promise.all(this.services.map((service) => service.complete()));
-        }
+        return this.runPetriNetOrDefault('completing', (service) => service.complete(), 'COMPLETED');
     }
 
     protected async onResuming(): Promise<void> {
-        if (this.resuming) {
-            await this.resuming.run();
-        } else {
-            this.logger.info('use default behaviour for resuming');
-            await Promise.all(this.services.map((service) => service.resume()));
-        }
+        return this.runPetriNetOrDefault('resuming', (service) => service.resume(), 'EXECUTE');
     }
 
     protected async onAborting(): Promise<void> {
-        if (this.aborting) {
-            await this.aborting.run();
-        } else {
-            this.logger.info('use default behaviour for aborting');
-            await Promise.all(this.services.map((service) => service.abort()));
-        }
+        return this.runPetriNetOrDefault('aborting', (service) => service.abort(), 'ABORTED');
     }
 
     protected async onStopping(): Promise<void> {
-        if (this.stopping) {
-            await this.stopping.run();
-        } else {
-            this.logger.info('use default behaviour for stopping');
-            await Promise.all(this.services.map((service) => service.stop()));
-        }
+        return this.runPetriNetOrDefault('stopping', (service) => service.stop(), 'STOPPED');
     }
 
     protected async onUnholding(): Promise<void> {
-        if (this.unholding) {
-            await this.unholding.run();
-        } else {
-            this.logger.info('use default behaviour for unholding');
-            await Promise.all(this.services.map((service) => service.unhold()));
-        }
+        return this.runPetriNetOrDefault('unholding', (service) => service.unhold(), 'EXECUTE');
     }
 
     protected async onHolding(): Promise<void> {
         await this.holding.run();
     }
 
+    protected async onRestarting(): Promise<void> {
+        return this.runPetriNetOrDefault('restarting', (service) => service.restart(), 'EXECUTE');
+    }
+
     protected async onResetting(): Promise<void> {
-        if (this.resetting) {
-            await this.resetting.run();
-        } else {
-            this.logger.info('use default behaviour for resetting');
-            await Promise.all(this.services.map((service) => service.reset()));
+        return this.runPetriNetOrDefault('resetting', (service) => service.reset(), 'IDLE');
+    }
+
+    private async runPetriNetOrDefault(petrinetName: string,
+                                       command: (service: BaseService) => Promise<void> = null,
+                                       stateName: string = null) {
+        const petrinet: Petrinet = this[petrinetName];
+        if (petrinet) {
+            await petrinet.run();
+        } else if (command && stateName) {
+            this.logger.info(`use default behaviour for ${petrinetName}`);
+            await Promise.all(this.services.map(async (service) => {
+                command(service);
+                await service.waitForStateChange(stateName);
+            }));
         }
     }
 }

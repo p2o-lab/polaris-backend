@@ -195,7 +195,7 @@ export class Service extends BaseService {
                 this.eventEmitter.emit('opMode', opModetoJson(this.opMode));
             })
             .on('State', () => {
-                this.logger.info(`[${this.qualifiedName}] State changed: ` +
+                this.logger.debug(`[${this.qualifiedName}] State changed: ` +
                     `${ServiceState[this.statusNode.value as ServiceState]}`);
                 this.eventEmitter.emit('state', this.state);
                 if (this.state === ServiceState.COMPLETED ||
@@ -386,12 +386,12 @@ export class Service extends BaseService {
     }
 
     private async sendCommand(command: ServiceMtpCommand) {
-        this.logger.info(`[${this.qualifiedName}] Send command ${ServiceMtpCommand[command]}`);
+        this.logger.debug(`[${this.qualifiedName}] Send command ${ServiceMtpCommand[command]}`);
         await this.setOperationMode();
 
         const node = this.automaticMode ? this.commandExtNode : this.commandManNode;
         await node.write(command);
-        this.logger.info(`[${this.qualifiedName}] Command ${ServiceMtpCommand[command]} written`);
+        this.logger.trace(`[${this.qualifiedName}] Command ${ServiceMtpCommand[command]} written`);
     }
 
     private checkServiceControl() {
