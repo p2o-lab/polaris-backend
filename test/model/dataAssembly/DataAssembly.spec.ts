@@ -507,8 +507,9 @@ describe('DataAssembly', () => {
             await new Promise((resolve) => inputDa.on('changed', () => resolve()));
 
             da.setValue({value: '2 * ModuleTestServer.Variable001', name: da.name, continuous: true}, [module]);
+            const inputValue = inputDa.getValue();
             await new Promise((resolve) => da.on('changed', () => resolve()));
-            expect(da.getValue()).to.be.closeTo(2 * inputDa.getValue(), 0.25 * inputDa.getValue());
+            expect(da.getValue()).to.be.closeTo(2 * inputValue, 0.05 * inputValue);
 
             await da.setValue({value: '11', name: da.name}, []);
             await new Promise((resolve) => da.on('changed', () => resolve()));
