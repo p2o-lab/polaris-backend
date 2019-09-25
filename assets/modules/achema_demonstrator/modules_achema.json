@@ -2,38 +2,13 @@
             "modules": [
                 {
                     "id": "Dose",
-                    "c": 2,
-                    "r": 2,
-                    "ports": [
-                        {
-                            "input": [
-                                "Dose_i1"
-                            ]
-                        },
-                        {
-                            "output": [
-                                "Dose_o1",
-                                "Dose_o2"
-                            ]
-                        }
-                    ],
-                    "kpi": [
-                        {
-                            "communication": {
-                                "value": {
-                                    "namespace_index": 2,
-                                    "node_id": "BP11.ProcessValues.EnergyConsumption"
-                                }
-                            },
-                            "name": "Energy consumption"
-                        }
-                    ],
                     "opcua_server_url": "opc.tcp://10.6.51.21",
-                    "rest_api_port": "1200",
                     "services": [
                         {
                             "name": "Fill",
                             "communication": {
+                              "TagName": { "value":  "Fill"},
+                              "TagDescription": {"value": "Sample service with different parameters"},
                                 "OSLevel": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                   "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Fill.OSLevel",
@@ -173,6 +148,8 @@
                         {
                             "name": "DoseAmount",
                             "communication": {
+                              "TagName": { "value":  "DoseAmount"},
+                              "TagDescription": {"value": "Sample service with different parameters"},
                                 "OSLevel": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                   "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.DoseAmount.OSLevel",
@@ -361,6 +338,8 @@
                         {
                             "name": "DoseConti",
                             "communication": {
+                              "TagName": { "value":  "DoseConti"},
+                              "TagDescription": {"value": "Sample service with different parameters"},
                                 "OSLevel": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                   "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.DoseConti.OSLevel",
@@ -493,6 +472,8 @@
                         {
                             "name": "Empty",
                             "communication": {
+                              "TagName": { "value":  "Empty"},
+                              "TagDescription": {"value": "Sample service with different parameters"},
                                 "OSLevel": {
                                     "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                                   "node_id": "|var|WAGO 750-8202 PFC200 CS 2ETH RS.App_Dosing.Services.Empty.OSLevel",
@@ -1706,40 +1687,13 @@
                 },
                 {
                     "id": "React",
-                    "c": 4,
-                    "r": 2,
-                    "ports": [
-                        {
-                            "input": [
-                                "React_i1",
-                                "React_i2",
-                                "React_i3"
-                            ]
-                        },
-                        {
-                            "output": [
-                                "React_o1",
-                                "React_o2"
-                            ]
-                        }
-                    ],
-                    "kpi": [
-                        {
-                            "communication": {
-                                "value": {
-                                    "namespace_index": 2,
-                                    "node_id": "BP12.ProcessValues.EnergyConsumption"
-                                }
-                            },
-                            "name": "Energy consumption"
-                        }
-                    ],
                     "opcua_server_url": "opc.tcp://10.6.51.22:4840",
-                    "rest_api_port": "1201",
                     "services": [
                         {
                             "name": "Fill_Service",
                             "communication": {
+                              "TagName": { "value":  "Fill_Service"},
+                              "TagDescription": {"value": "Sample service with different parameters"},
                                 "OSLevel": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                                     "node_id": "\"Fill_Service\".\"MTP\".\"OSLevel\"",
@@ -1879,6 +1833,8 @@
                         {
                             "name": "Aerate_Service",
                             "communication": {
+                              "TagName": { "value":  "Aerate_Service"},
+                              "TagDescription": {"value": "Sample service with different parameters"},
                                 "OSLevel": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                                     "node_id": "\"Aerate_Service\".\"MTP\".\"OSLevel\"",
@@ -2011,6 +1967,8 @@
                         {
                             "name": "Stir_Service",
                             "communication": {
+                              "TagName": { "value":  "Stir_Service"},
+                              "TagDescription": {"value": "Sample service with different parameters"},
                                 "OSLevel": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                                     "node_id": "\"Stir_Service\".\"MTP\".\"OSLevel\"",
@@ -2200,6 +2158,8 @@
                         {
                             "name": "Empty_Service",
                             "communication": {
+                              "TagName": { "value":  "Empty_Service"},
+                              "TagDescription": {"value": "Sample service with different parameters"},
                                 "OSLevel": {
                                     "namespace_index": "http://www.siemens.com/simatic-s7-opcua",
                                     "node_id": "\"Empty_Service\".\"MTP\".\"OSLevel\"",
@@ -3589,37 +3549,13 @@
                 },
                 {
                     "id": "Temper",
-                    "c": 6,
-                    "r": 2,
-                    "ports": [
-                        {
-                            "input": [
-                                "Temper_i1"
-                            ]
-                        },
-                        {
-                            "output": [
-                                "Temper_o1"
-                            ]
-                        }
-                    ],
-                    "kpi": [
-                        {
-                            "communication": {
-                                "value": {
-                                    "namespace_index": 2,
-                                    "node_id": "BP13.ProcessValues.EnergyConsumption"
-                                }
-                            },
-                            "name": "Energy consumption"
-                        }
-                    ],
                     "opcua_server_url": "opc.tcp://10.6.51.24:4840",
-                    "rest_api_port": "1202",
                     "services": [
                         {
                             "name": "Circulation",
                             "communication": {
+                              "TagName": { "value":  "Circulation"},
+                              "TagDescription": {"value": "Sample service with different parameters"},
                                 "OSLevel": {
                                     "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                                     "node_id": "mtp:services:circulation:control:OSLevel",
@@ -3695,6 +3631,8 @@
                         {
                             "name": "Tempering",
                             "communication": {
+                              "TagName": { "value":  "Tempering"},
+                              "TagDescription": {"value": "Sample service with different parameters"},
                                 "OSLevel": {
                                     "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
                                     "node_id": "mtp:services:tempering:control:OSLevel",

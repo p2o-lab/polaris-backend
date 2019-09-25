@@ -30,7 +30,8 @@ import {
     OpModeInterface,
     ParameterInterface,
     ServiceCommand,
-    ServiceInterface, VariableChange
+    ServiceInterface,
+    VariableChange
 } from '@p2olab/polaris-interface';
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
@@ -247,7 +248,11 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
      */
     public pause(): Promise<void[]> {
         this.logger.info(`[${this.id}] Pause all running services`);
-        const tasks = this.services.map((service) => service.executeCommand(ServiceCommand.pause));
+        const tasks = this.services.map((service) => {
+            if (service.isCommandExecutable(ServiceCommand.pause)) {
+                return service.executeCommand(ServiceCommand.pause);
+            }
+        });
         return Promise.all(tasks);
     }
 
@@ -256,7 +261,11 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
      */
     public resume(): Promise<void[]> {
         this.logger.info(`[${this.id}] Resume all paused services`);
-        const tasks = this.services.map(async (service) => service.executeCommand(ServiceCommand.resume));
+        const tasks = this.services.map((service) => {
+            if (service.isCommandExecutable(ServiceCommand.resume)) {
+                return service.executeCommand(ServiceCommand.resume);
+            }
+        });
         return Promise.all(tasks);
     }
 
@@ -265,7 +274,11 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
      */
     public stop(): Promise<void[]> {
         this.logger.info(`[${this.id}] Stop all non-idle services`);
-        const tasks = this.services.map((service) => service.executeCommand(ServiceCommand.stop));
+        const tasks = this.services.map((service) => {
+            if (service.isCommandExecutable(ServiceCommand.stop)) {
+                return service.executeCommand(ServiceCommand.stop);
+            }
+        });
         return Promise.all(tasks);
     }
 
@@ -319,7 +332,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
                     this.emit('controlEnable', {service, controlEnable});
                 })
                 .on('state', (state) => {
-                    this.logger.info(`[${this.id}] state changed: ${service.name} = ${ServiceState[state]}`);
+                    this.logger.debug(`[${this.id}] state changed: ${service.name} = ${ServiceState[state]}`);
                     const entry = {
                         timestampPfe: new Date(),
                         timestampModule: service.lastStatusChange,

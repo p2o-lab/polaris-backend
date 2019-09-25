@@ -23,10 +23,7 @@
  * SOFTWARE.
  */
 
-import {
-    DataAssemblyOptions,
-    ParameterInterface, ParameterOptions
-} from '@p2olab/polaris-interface';
+import {DataAssemblyOptions, ParameterInterface, ParameterOptions} from '@p2olab/polaris-interface';
 import {EventEmitter} from 'events';
 import {catDataAssembly} from '../../config/logging';
 import {OpcUaConnection} from '../core/OpcUaConnection';
@@ -94,8 +91,12 @@ export class DataAssembly extends EventEmitter {
             catDataAssembly.debug(`subscribe to ${this.name} ` +
                 `with variables ${Object.keys(this.communication)}`);
             await Promise.all(
-                Object.entries(this.communication).map(
-                    ([key, dataItem]: [string, OpcUaDataItem<any>]) => {
+                Object.entries(this.communication)
+                    .filter(([key, dataItem]: [string, OpcUaDataItem<any>]) =>
+                        dataItem &&
+                        dataItem.nodeId &&
+                        dataItem.namespaceIndex)
+                    .map(([key, dataItem]: [string, OpcUaDataItem<any>]) => {
                         dataItem.on('changed', () => {
                             catDataAssembly.debug(`Emit ${this.name}.${key} = ${dataItem.value}`);
                             this.emit(key, dataItem);
@@ -112,10 +113,11 @@ export class DataAssembly extends EventEmitter {
 
     public unsubscribe() {
         this.subscriptionActive = false;
-        Object.values(this.communication).forEach((dataItem: OpcUaDataItem<any>) => {
-            dataItem.unsubscribe();
-            dataItem.removeAllListeners('changed');
-        });
+        Object.values(this.communication)
+            .filter((dataItem) => dataItem !== undefined)
+            .forEach((dataItem: OpcUaDataItem<any>) => {
+                dataItem.removeAllListeners('changed');
+            });
     }
 
     /**
@@ -184,13 +186,22 @@ export class DataAssembly extends EventEmitter {
         };
     }
 
-    public createDataItem(options: DataAssemblyOptions, name: string, access: 'read'|'write', type?) {
+    public createDataItem(options: DataAssemblyOptions, name: string, access: 'read' | 'write', type?) {
         if (!options.communication[name]) {
             catDataAssembly.warn(`No variable "${name}" found during parsing of ` +
                 `DataAssembly "${this.name}" (type ${this.constructor.name})`);
+            this.communication[name] = undefined;
         } else {
             this.communication[name] =
                 OpcUaDataItem.fromOptions(options.communication[name], this.connection, access, type);
         }
+    }
+
+    public checkExistenceOfAllDataItems() {
+        Object.entries(this.communication).forEach(([key, entry]: [string, DataItem<any>]) => {
+            if (entry === undefined) {
+                throw new Error(`No ${key} variable found for generating DataAssembly ${this.name} of type ${this.interfaceClass}`);
+            }
+        });
     }
 }

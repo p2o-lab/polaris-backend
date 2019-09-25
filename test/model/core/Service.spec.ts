@@ -190,15 +190,15 @@ describe('Service', () => {
         it('waitForOpModeSpecificTest', async () => {
             testService.varOpmode = 0;
             await service.waitForOpModeToPassSpecificTest(isOffState);
-            expect(service.opMode).to.equal(0);
+            expect(service.serviceControl.getOpMode()).to.equal(0);
 
             service.setOperationMode();
 
             await service.waitForOpModeToPassSpecificTest(isAutomaticState);
-            expect(service.opMode).to.equal(OpMode.stateAutAct + OpMode.srcIntAct);
+            expect(service.serviceControl.getOpMode()).to.equal(OpMode.stateAutAct + OpMode.srcIntAct);
 
             await service.waitForOpModeToPassSpecificTest(isExtSource);
-            expect(service.opMode).to.equal(OpMode.stateAutAct);
+            expect(service.serviceControl.getOpMode()).to.equal(OpMode.stateAutAct);
         });
 
         it('full service state cycle', async () => {

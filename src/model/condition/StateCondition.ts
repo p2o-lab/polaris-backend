@@ -75,7 +75,7 @@ export class StateCondition extends ModuleCondition {
 
     private check = (expectedState: ServiceState) => {
         this._fulfilled = (expectedState === this.state);
-        catCondition.info(`StateCondition ${this.service.qualifiedName}: actual=${ServiceState[expectedState]}` +
+        catCondition.debug(`StateCondition ${this.service.qualifiedName}: actual=${ServiceState[expectedState]}` +
             ` ; condition=${ServiceState[this.state]} -> ${this._fulfilled}`);
         this.emit('stateChanged', this._fulfilled);
     }

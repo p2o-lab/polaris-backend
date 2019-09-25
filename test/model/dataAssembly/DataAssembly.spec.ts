@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import {OpcUaNodeOptions} from '@p2olab/polaris-interface';
+import {OpcUaNodeOptions, ServiceControlOptions} from '@p2olab/polaris-interface';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
@@ -131,9 +131,8 @@ describe('DataAssembly', () => {
                 name: 'serviceControl1',
                 interface_class: 'ServiceControl',
                 communication: {
-                    OSLevel: null,
+                    OSLevel: {},
                     TagDescription: null,
-                    TagName: {},
                     WQC: null,
                     CommandMan: {
                         nodeId: 'sdf'
@@ -142,6 +141,48 @@ describe('DataAssembly', () => {
                 } as any
             }, new OpcUaConnection(null, null));
             expect(da1 instanceof ServiceControl).to.equal(true);
+            expect((da1 as ServiceControl).communication.CommandMan).to.not.equal(undefined);
+            expect(da1.communication.WQC).to.equal(undefined);
+            expect(da1.communication.TagName).to.equal(undefined);
+        });
+
+        it('should have correct check for ServiceControl', async () => {
+            const da1: ServiceControl = DataAssemblyFactory.create({
+                name: 'serviceControl1',
+                interface_class: 'ServiceControl',
+                communication: {
+                    OSLevel: { value: 0},
+                    TagDescription: {value: 0},
+                    WQC: {value: 0},
+                    CommandMan: {value: 0},
+                    CommandExt: {value: 0},
+                    CommandEnable: {value: 0},
+                    State: {value: 0},
+                    TagName: { value: 'a'},
+                    CurrentStrategy: {value: 0},
+                    StrategyInt: {value: 0},
+                    StrategyExt: {value: 0},
+                    StrategyMan: {value: 0},
+                    OpMode: {value: 0}
+                } as ServiceControlOptions
+            }, new OpcUaConnection(null, null)) as ServiceControl;
+            da1.checkExistenceOfAllDataItems();
+        });
+
+        it('should have false check for ServiceControl', async () => {
+            const da1: ServiceControl = DataAssemblyFactory.create({
+                name: 'serviceControl1',
+                interface_class: 'ServiceControl',
+                communication: {
+                    OSLevel: { value: 0},
+                    TagDescription: {value: 0},
+                    WQC: {value: 0},
+                    CommandMan: {value: 0},
+                    CommandExt: {value: 0},
+                    CommandEnable: {value: 0},
+                } as ServiceControlOptions
+            }, new OpcUaConnection(null, null)) as ServiceControl;
+            expect(() => da1.checkExistenceOfAllDataItems()).to.throw('No TagName variable found for generating');
         });
 
         it('should create AnaView', async () => {

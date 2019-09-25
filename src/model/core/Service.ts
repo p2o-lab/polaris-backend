@@ -67,51 +67,19 @@ export class Service extends BaseService {
     }
 
     public get controlEnable(): ControlEnableInterface {
-        return controlEnableToJson(this.commandEnableNode.value as ServiceControlEnable);
+        return controlEnableToJson(this.serviceControl.communication.CommandEnable.value as ServiceControlEnable);
     }
 
     public get state(): ServiceState {
-        return this.statusNode.value as ServiceState;
+        return this.serviceControl.communication.State.value as ServiceState;
     }
 
     public get lastStatusChange(): Date {
-        return this.statusNode.timestamp;
+        return this.serviceControl.communication.State.timestamp;
     }
 
-    get opMode(): OpMode {
-        return this.opModeNode.value as OpMode;
-    }
-
-    get opModeNode(): OpcUaDataItem<number> {
-        return this.serviceControl.communication.OpMode;
-    }
-
-    get statusNode(): OpcUaDataItem<number> {
-        return this.serviceControl.communication.State;
-    }
-
-    get currentStrategyNode(): OpcUaDataItem<number> {
-        return this.serviceControl.communication.CurrentStrategy;
-    }
-
-    get strategyExtNode(): OpcUaDataItem<number> {
-        return this.serviceControl.communication.StrategyExt;
-    }
-
-    get strategyManNode(): OpcUaDataItem<number> {
-        return this.serviceControl.communication.StrategyMan;
-    }
-
-    get commandEnableNode(): OpcUaDataItem<number> {
-        return this.serviceControl.communication.CommandEnable;
-    }
-
-    get commandExtNode(): OpcUaDataItem<number> {
-        return this.serviceControl.communication.CommandExt;
-    }
-
-    get commandManNode(): OpcUaDataItem<number> {
-        return this.serviceControl.communication.CommandMan;
+    public get currentStrategy() {
+        return this.serviceControl.communication.CurrentStrategy.value;
     }
 
     public readonly eventEmitter: ServiceEmitter;
@@ -143,7 +111,7 @@ export class Service extends BaseService {
         this.serviceControl = new ServiceControl(
             {name: this._name, interface_class: 'ServiceControl', communication: serviceOptions.communication},
             connection);
-        this.checkServiceControl();
+        this.serviceControl.checkExistenceOfAllDataItems();
 
         this.strategies = serviceOptions.strategies
             .map((option) => new Strategy(option, connection));
@@ -162,7 +130,7 @@ export class Service extends BaseService {
      * Get current strategy from internal memory.
      */
     public getCurrentStrategy(): Strategy {
-        return this.strategies.find((strat) => parseInt(strat.id, 10) === this.currentStrategyNode.value);
+        return this.strategies.find((strat) => parseInt(strat.id, 10) === this.currentStrategy);
     }
 
     /**
@@ -177,26 +145,14 @@ export class Service extends BaseService {
                     `${JSON.stringify(this.controlEnable)}`);
                 this.eventEmitter.emit('controlEnable', this.controlEnable);
             })
-            .on('CommandExt', () => {
-                this.logger.debug(`[${this.qualifiedName}] CommandExt changed: ` +
-                    `${ServiceMtpCommand[this.commandExtNode.value as ServiceMtpCommand]}`);
-            })
-            .on('CommandMan', () => {
-                this.logger.debug(`[${this.qualifiedName}] CommandMan changed: ` +
-                    `${ServiceMtpCommand[this.commandManNode.value as ServiceMtpCommand]}`);
-            })
-            .on('CurrentStrategy', () => {
-                this.logger.debug(`[${this.qualifiedName}] Current Strategy changed: ` +
-                    `${this.currentStrategyNode.value}`);
-            })
             .on('OpMode', () => {
                 this.logger.debug(`[${this.qualifiedName}] Current OpMode changed: ` +
-                    `${opModetoJson(this.opModeNode.value)}`);
-                this.eventEmitter.emit('opMode', opModetoJson(this.opMode));
+                    `${opModetoJson(this.serviceControl.getOpMode())}`);
+                this.eventEmitter.emit('opMode', opModetoJson(this.serviceControl.getOpMode()));
             })
             .on('State', () => {
                 this.logger.debug(`[${this.qualifiedName}] State changed: ` +
-                    `${ServiceState[this.statusNode.value as ServiceState]}`);
+                    `${ServiceState[this.state]}`);
                 this.eventEmitter.emit('state', this.state);
                 if (this.state === ServiceState.COMPLETED ||
                     this.state === ServiceState.ABORTED ||
@@ -238,7 +194,7 @@ export class Service extends BaseService {
         const currentStrategy = this.getCurrentStrategy();
         return {
             name: this.name,
-            opMode: opModetoJson(this.opMode),
+            opMode: opModetoJson(this.serviceControl.getOpMode()),
             status: ServiceState[this.state],
             strategies: this.strategies.map((strategy) => strategy.toJson()),
             currentStrategy: currentStrategy ? currentStrategy.name : null,
@@ -389,43 +345,11 @@ export class Service extends BaseService {
         this.logger.debug(`[${this.qualifiedName}] Send command ${ServiceMtpCommand[command]}`);
         await this.setOperationMode();
 
-        const node = this.automaticMode ? this.commandExtNode : this.commandManNode;
+        const node = this.automaticMode ?
+            this.serviceControl.communication.CommandExt :
+            this.serviceControl.communication.CommandMan;
         await node.write(command);
         this.logger.trace(`[${this.qualifiedName}] Command ${ServiceMtpCommand[command]} written`);
-    }
-
-    private checkServiceControl() {
-        if (!this.opModeNode) {
-            throw new Error(`No OpMode variable in service ${this.qualifiedName} during parsing`);
-        }
-
-        if (!this.statusNode) {
-            throw new Error(`No status variable in service ${this.qualifiedName} during parsing`);
-        }
-
-        if (!this.commandEnableNode) {
-            throw new Error(`No commandEnable variable in service ${this.qualifiedName} during parsing`);
-        }
-
-        if (!this.commandExtNode) {
-            throw new Error(`No commandExt variable in service ${this.qualifiedName} during parsing`);
-        }
-
-        if (!this.commandManNode) {
-            throw new Error(`No commandMan variable in service ${this.qualifiedName} during parsing`);
-        }
-
-        if (!this.strategyExtNode) {
-            throw new Error(`No strategyExt variable in service ${this.qualifiedName} during parsing`);
-        }
-
-        if (!this.strategyManNode) {
-            throw new Error(`No strategyMan variable in service ${this.qualifiedName} during parsing`);
-        }
-
-        if (!this.currentStrategyNode) {
-            throw new Error(`No currentStrategy variable in service ${this.name} during parsing`);
-        }
     }
 
 }

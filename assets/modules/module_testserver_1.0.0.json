@@ -7,6 +7,10 @@
         {
           "name": "Service1",
           "communication": {
+            "TagName": { "value":  "Service1"},
+            "TagDescription": {"value": "Sample service with different parameters"},
+            "OSLevel": {"value": 1},
+            "WQC": { "value":  0},
             "CommandMan": {
               "namespace_index": "urn:NodeOPCUA-Server-default",
               "node_id": "Service1.Command"
@@ -32,6 +36,10 @@
               "node_id": "Service1.Strategy"
             },
             "StrategyExt": {
+              "namespace_index": "urn:NodeOPCUA-Server-default",
+              "node_id": "Service1.Strategy"
+            },
+            "StrategyInt": {
               "namespace_index": "urn:NodeOPCUA-Server-default",
               "node_id": "Service1.Strategy"
             },
@@ -365,6 +373,10 @@
         {
           "name": "Service2",
           "communication": {
+            "TagName": { "value":  "Service2"},
+            "TagDescription": {"value": "Sample service with different parameters"},
+            "OSLevel": {"value": 1},
+            "WQC": { "value":  0},
             "CommandMan": {
               "namespace_index": "urn:NodeOPCUA-Server-default",
               "node_id": "Service2.Command"
@@ -390,6 +402,10 @@
               "node_id": "Service2.Strategy"
             },
             "StrategyExt": {
+              "namespace_index": "urn:NodeOPCUA-Server-default",
+              "node_id": "Service2.Strategy"
+            },
+            "StrategyInt": {
               "namespace_index": "urn:NodeOPCUA-Server-default",
               "node_id": "Service2.Strategy"
             },
