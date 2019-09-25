@@ -32,7 +32,6 @@ import {ServiceState} from '../../src/model/core/enum';
 import {Service} from '../../src/model/core/Service';
 import {Manager} from '../../src/model/Manager';
 import {ModuleTestServer} from '../../src/moduleTestServer/ModuleTestServer';
-import {waitForStateChange} from '../helper';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
