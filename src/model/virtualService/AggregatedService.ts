@@ -106,16 +106,7 @@ export class AggregatedService extends VirtualService {
     private readonly commandEnableExpression: CommandEnableOptions;
     private readonly options: AggregatedServiceOptions;
 
-    private readonly starting: Petrinet;
-    private readonly execute: Petrinet;
-    private readonly completing: Petrinet;
-    private readonly stopping: Petrinet;
-    private readonly pausing: Petrinet;
-    private readonly resuming: Petrinet;
-    private readonly aborting: Petrinet;
-    private readonly holding: Petrinet;
-    private readonly unholding: Petrinet;
-    private readonly resetting: Petrinet;
+    private readonly stateMachines: Map<string, Petrinet>;
 
     private logger: Category;
 
@@ -134,36 +125,10 @@ export class AggregatedService extends VirtualService {
             return module.getService(opts.service);
         });
 
-        if (options.stateMachine.starting) {
-            this.starting = new Petrinet(options.stateMachine.starting, modules);
-        }
-        if (options.stateMachine.execute) {
-            this.execute = new Petrinet(options.stateMachine.execute, modules);
-        }
-        if (options.stateMachine.completing) {
-            this.completing = new Petrinet(options.stateMachine.completing, modules);
-        }
-        if (options.stateMachine.stopping) {
-            this.stopping = new Petrinet(options.stateMachine.stopping, modules);
-        }
-        if (options.stateMachine.pausing) {
-            this.pausing = new Petrinet(options.stateMachine.pausing, modules);
-        }
-        if (options.stateMachine.resuming) {
-            this.resuming = new Petrinet(options.stateMachine.resuming, modules);
-        }
-        if (options.stateMachine.aborting) {
-            this.aborting = new Petrinet(options.stateMachine.aborting, modules);
-        }
-        if (options.stateMachine.holding) {
-            this.holding = new Petrinet(options.stateMachine.holding, modules);
-        }
-        if (options.stateMachine.unholding) {
-            this.unholding = new Petrinet(options.stateMachine.unholding, modules);
-        }
-        if (options.stateMachine.resetting) {
-            this.resetting = new Petrinet(options.stateMachine.resetting, modules);
-        }
+        this.stateMachines = new Map<string, Petrinet>();
+        Object.keys(options.stateMachine).forEach((stateMachineName: string) => {
+            this.stateMachines.set(stateMachineName, new Petrinet(options.stateMachine[stateMachineName], modules));
+        });
 
         this.initParameter();
     }
@@ -174,7 +139,7 @@ export class AggregatedService extends VirtualService {
     }
 
     protected onStarting(): Promise<void> {
-        return this.runPetriNetOrDefault('starting', (service) => service.start(), 'STARTING');
+        return this.runPetriNetOrDefault('starting', (service) => service.start(), 'EXECUTE');
     }
 
     protected async onExecute(): Promise<void> {
@@ -206,7 +171,7 @@ export class AggregatedService extends VirtualService {
     }
 
     protected async onHolding(): Promise<void> {
-        await this.holding.run();
+        return this.runPetriNetOrDefault('holding');
     }
 
     protected async onRestarting(): Promise<void> {
@@ -220,7 +185,7 @@ export class AggregatedService extends VirtualService {
     private async runPetriNetOrDefault(petrinetName: string,
                                        command: (service: BaseService) => Promise<void> = null,
                                        stateName: string = null) {
-        const petrinet: Petrinet = this[petrinetName];
+        const petrinet: Petrinet = this.stateMachines.get(petrinetName);
         if (petrinet) {
             await petrinet.run();
         } else if (command && stateName) {
