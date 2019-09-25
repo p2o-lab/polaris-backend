@@ -234,6 +234,7 @@ export abstract class VirtualService extends BaseService {
 
     // Internal
     private setState(newState: ServiceState) {
+        catVirtualService.info(`[${this.name}] state changed to ${ServiceState[newState]}`);
         this.eventEmitter.emit('state', newState);
         this._state = newState;
     }
@@ -256,7 +257,6 @@ export abstract class VirtualService extends BaseService {
             stop: true,
             unhold: false
         });
-        catVirtualService.info('starting');
         await this.onStarting();
         this.gotoExecute();
     }
@@ -274,7 +274,6 @@ export abstract class VirtualService extends BaseService {
             stop: true,
             unhold: false
         });
-        catVirtualService.info('restarting');
         await this.onRestarting();
         this.gotoExecute();
     }
@@ -292,7 +291,6 @@ export abstract class VirtualService extends BaseService {
             stop: true,
             unhold: false
         });
-        catVirtualService.info('execute');
         await this.onExecute();
     }
 
@@ -309,7 +307,6 @@ export abstract class VirtualService extends BaseService {
             stop: true,
             unhold: false
         });
-        catVirtualService.info('pausing');
         await this.onPausing();
         this.gotoPaused();
     }
@@ -327,7 +324,6 @@ export abstract class VirtualService extends BaseService {
             stop: true,
             unhold: false
         });
-        catVirtualService.info('paused');
         await this.onPaused();
     }
 
@@ -344,7 +340,6 @@ export abstract class VirtualService extends BaseService {
             stop: true,
             unhold: false
         });
-        catVirtualService.info('resuming');
         await this.onResuming();
         this.gotoExecute();
     }
@@ -362,7 +357,6 @@ export abstract class VirtualService extends BaseService {
             stop: true,
             unhold: false
         });
-        catVirtualService.info('completing');
         await this.onCompleting();
         this.gotoCompleted();
     }
@@ -380,7 +374,6 @@ export abstract class VirtualService extends BaseService {
             stop: true,
             unhold: false
         });
-        catVirtualService.info('completed');
         await this.onCompleted();
     }
 
@@ -397,7 +390,6 @@ export abstract class VirtualService extends BaseService {
             stop: false,
             unhold: false
         });
-        catVirtualService.info('stopping');
         await this.onStopping();
         this.gotoStopped();
     }
@@ -415,7 +407,6 @@ export abstract class VirtualService extends BaseService {
             stop: false,
             unhold: false
         });
-        catVirtualService.info('stopped');
         await this.onStopped();
     }
 
@@ -432,7 +423,6 @@ export abstract class VirtualService extends BaseService {
             stop: false,
             unhold: false
         });
-        catVirtualService.info('aborting');
         await this.onAborting();
         this.gotoAborted();
     }
@@ -450,7 +440,6 @@ export abstract class VirtualService extends BaseService {
             stop: false,
             unhold: false
         });
-        catVirtualService.info('aborted');
         await this.onAborted();
     }
 
@@ -467,7 +456,6 @@ export abstract class VirtualService extends BaseService {
             stop: true,
             unhold: false
         });
-        catVirtualService.info('resetting');
         await this.onResetting();
         this.initParameter();
         this.gotoIdle();
@@ -486,7 +474,6 @@ export abstract class VirtualService extends BaseService {
             stop: true,
             unhold: false
         });
-        catVirtualService.info('idle');
         await this.onIdle();
     }
 
@@ -503,7 +490,6 @@ export abstract class VirtualService extends BaseService {
             stop: true,
             unhold: false
         });
-        catVirtualService.info('unholding');
         await this.onUnholding();
         this.gotoExecute();
     }

@@ -17,7 +17,7 @@ steps:
 - name: test
   image: node:8-jessie
   commands:
-  - export LOGLEVEL=warn
+  - export LOGLEVEL=error
   - npm test
   - node_modules/.bin/nyc report --reporter=json > coverage.json
 

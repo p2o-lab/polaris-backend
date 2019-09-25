@@ -26,6 +26,7 @@
 import {ModuleOptions} from '@p2olab/polaris-interface';
 import {expect} from 'chai';
 import * as fs from 'fs';
+import {ServiceState} from '../../../src/model/core/enum';
 import {Module} from '../../../src/model/core/Module';
 import {AggregatedService, AggregatedServiceOptions} from '../../../src/model/virtualService/AggregatedService';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
@@ -186,9 +187,15 @@ describe('AggregatedService', () => {
 
         as.start();
         await module1.services[0].waitForStateChangeWithTimeout('EXECUTE');
-        await module2.services[0].waitForStateChangeWithTimeout('EXECUTE');
-        await as.waitForStateChangeWithTimeout('EXECUTE');
+        expect(module1.services[0].state).to.equal(ServiceState.EXECUTE);
+        expect(module2.services[0].state).to.not.equal(ServiceState.EXECUTE);
+        expect(as.state).to.not.equal(ServiceState.EXECUTE);
 
+        // wait for second service to be started
+        await as.waitForStateChangeWithTimeout('EXECUTE');
+        expect(module1.services[0].state).to.equal(ServiceState.EXECUTE);
+        expect(module2.services[0].state).to.equal(ServiceState.EXECUTE);
+        expect(as.state).to.equal(ServiceState.EXECUTE);
     });
 
 });
