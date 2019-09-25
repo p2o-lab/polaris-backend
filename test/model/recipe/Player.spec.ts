@@ -35,7 +35,6 @@ import {Player} from '../../../src/model/recipe/Player';
 import {Recipe} from '../../../src/model/recipe/Recipe';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 
-
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 

@@ -34,7 +34,6 @@ import {Storage} from '../../../src/model/virtualService/Storage';
 import {Timer} from '../../../src/model/virtualService/Timer';
 import {VirtualServiceFactory} from '../../../src/model/virtualService/VirtualServiceFactory';
 
-
 describe('VirtualService', () => {
 
     describe('via Manager', () => {

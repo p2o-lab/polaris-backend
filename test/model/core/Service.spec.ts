@@ -37,7 +37,6 @@ import {Service} from '../../../src/model/core/Service';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 import {TestServerService} from '../../../src/moduleTestServer/ModuleTestService';
 
-
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
