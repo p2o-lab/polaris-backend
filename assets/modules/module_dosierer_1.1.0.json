@@ -9,6 +9,8 @@
                 {
                     "name": "Services.Fill",
                     "communication": {
+                        "TagName": { "value": "Fill"},
+                        "TagDescription": {"value": "Sample service with different parameters"},
                         "OSLevel": {
                             "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                             "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.App_Dosing.Services.Fill.OSLevel",
@@ -168,6 +170,8 @@
                 {
                     "name": "Services.DoseAmount",
                     "communication": {
+                        "TagName": { "value":  "DoseAmount"},
+                        "TagDescription": {"value": "Sample service with different parameters"},
                         "OSLevel": {
                             "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                             "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.App_Dosing.Services.DoseAmount.OSLevel",
@@ -396,6 +400,8 @@
                 {
                     "name": "Services.DoseConti",
                     "communication": {
+                        "TagName": { "value":  "DoseConti"},
+                        "TagDescription": {"value": "Sample service with different parameters"},
                         "OSLevel": {
                             "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                             "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.App_Dosing.Services.DoseConti.OSLevel",
@@ -548,6 +554,8 @@
                 {
                     "name": "Services.Empty",
                     "communication": {
+                        "TagName": { "value":  "Empty"},
+                        "TagDescription": {"value": "Sample service with different parameters"},
                         "OSLevel": {
                             "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
                             "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.App_Dosing.Services.Empty.OSLevel",

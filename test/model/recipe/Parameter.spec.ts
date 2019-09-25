@@ -50,7 +50,7 @@ describe('Parameter', () => {
             }, [module])
         );
 
-        it('should load withour modules', () => new Parameter({
+        it('should load without modules', () => new Parameter({
                 name: 'var1',
                 value: 3
             }, [])
