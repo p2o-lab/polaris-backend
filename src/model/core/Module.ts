@@ -247,11 +247,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
      */
     public pause(): Promise<void[]> {
         this.logger.info(`[${this.id}] Pause all running services`);
-        const tasks = this.services.map(async (service) => {
-            if (service.state === ServiceState.EXECUTE) {
-                return service.executeCommand(ServiceCommand.pause);
-            }
-        });
+        const tasks = this.services.map((service) => service.executeCommand(ServiceCommand.pause));
         return Promise.all(tasks);
     }
 
@@ -260,11 +256,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
      */
     public resume(): Promise<void[]> {
         this.logger.info(`[${this.id}] Resume all paused services`);
-        const tasks = this.services.map(async (service) => {
-            if (service.state === ServiceState.PAUSED) {
-                return service.executeCommand(ServiceCommand.resume);
-            }
-        });
+        const tasks = this.services.map(async (service) => service.executeCommand(ServiceCommand.resume));
         return Promise.all(tasks);
     }
 
@@ -273,11 +265,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
      */
     public stop(): Promise<void[]> {
         this.logger.info(`[${this.id}] Stop all non-idle services`);
-        const tasks = this.services.map((service) => {
-            if (service.state !== ServiceState.IDLE) {
-                return service.executeCommand(ServiceCommand.stop);
-            }
-        });
+        const tasks = this.services.map((service) => service.executeCommand(ServiceCommand.stop));
         return Promise.all(tasks);
     }
 
