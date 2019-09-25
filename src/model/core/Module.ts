@@ -162,6 +162,17 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
         }
     }
 
+    public getService(serviceName: string): Service {
+        const service = this.services.find((s) => s.name === serviceName);
+        if (service) {
+            return service;
+        } else if (!serviceName && this.services.length === 1) {
+            return this.services[0];
+        } else {
+            throw new Error(`[${this.id}] Could not find service with name ${serviceName}`);
+        }
+    }
+
     public getServiceStates(): ServiceInterface[] {
         this.logger.trace(`[${this.id}] check service states`);
         return this.services.map((service) => service.getOverview());

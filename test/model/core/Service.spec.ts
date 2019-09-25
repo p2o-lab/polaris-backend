@@ -36,7 +36,6 @@ import {Module} from '../../../src/model/core/Module';
 import {Service} from '../../../src/model/core/Service';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 import {TestServerService} from '../../../src/moduleTestServer/ModuleTestService';
-import {waitForStateChange} from '../../helper';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -161,7 +160,7 @@ describe('Service', () => {
             });
 
             await service.executeCommand(ServiceCommand.start);
-            await waitForStateChange(service, 'STARTING');
+            await service.waitForStateChangeWithTimeout('STARTING');
             expect(service.controlEnable).to.deep.equal({
                 abort: true,
                 complete: false,
@@ -259,50 +258,50 @@ describe('Service', () => {
             });
 
             service.executeCommand(ServiceCommand.start);
-            await waitForStateChange(service, 'STARTING');
-            await waitForStateChange(service, 'EXECUTE');
+            await service.waitForStateChangeWithTimeout('STARTING');
+            await service.waitForStateChangeWithTimeout('EXECUTE');
 
             service.executeCommand(ServiceCommand.restart);
-            await waitForStateChange(service, 'STARTING');
-            await waitForStateChange(service, 'EXECUTE');
+            await service.waitForStateChangeWithTimeout('STARTING');
+            await service.waitForStateChangeWithTimeout('EXECUTE');
 
             service.executeCommand(ServiceCommand.stop);
-            await waitForStateChange(service, 'STOPPING');
-            await waitForStateChange(service, 'STOPPED');
+            await service.waitForStateChangeWithTimeout('STOPPING');
+            await service.waitForStateChangeWithTimeout('STOPPED');
 
             service.executeCommand(ServiceCommand.reset);
-            await waitForStateChange(service, 'IDLE');
+            await service.waitForStateChangeWithTimeout('IDLE');
 
             service.executeCommand(ServiceCommand.start);
-            await waitForStateChange(service, 'STARTING');
-            await waitForStateChange(service, 'EXECUTE');
+            await service.waitForStateChangeWithTimeout('STARTING');
+            await service.waitForStateChangeWithTimeout('EXECUTE');
 
             service.executeCommand(ServiceCommand.pause);
-            await waitForStateChange(service, 'PAUSING');
-            await waitForStateChange(service, 'PAUSED');
+            await service.waitForStateChangeWithTimeout('PAUSING');
+            await service.waitForStateChangeWithTimeout('PAUSED');
 
             service.executeCommand(ServiceCommand.resume);
-            await waitForStateChange(service, 'RESUMING');
-            await waitForStateChange(service, 'EXECUTE');
+            await service.waitForStateChangeWithTimeout('RESUMING');
+            await service.waitForStateChangeWithTimeout('EXECUTE');
 
             service.executeCommand(ServiceCommand.complete);
-            await waitForStateChange(service, 'COMPLETING');
-            await waitForStateChange(service, 'COMPLETED');
+            await service.waitForStateChangeWithTimeout('COMPLETING');
+            await service.waitForStateChangeWithTimeout('COMPLETED');
 
             service.executeCommand(ServiceCommand.abort);
-            await waitForStateChange(service, 'ABORTING');
-            await waitForStateChange(service, 'ABORTED');
+            await service.waitForStateChangeWithTimeout('ABORTING');
+            await service.waitForStateChangeWithTimeout('ABORTED');
 
             service.executeCommand(ServiceCommand.reset);
-            await waitForStateChange(service, 'IDLE');
+            await service.waitForStateChangeWithTimeout('IDLE');
 
             service.executeCommand(ServiceCommand.start);
-            await waitForStateChange(service, 'STARTING');
-            await waitForStateChange(service, 'EXECUTE');
+            await service.waitForStateChangeWithTimeout('STARTING');
+            await service.waitForStateChangeWithTimeout('EXECUTE');
 
             service.executeCommand(ServiceCommand.complete);
-            await waitForStateChange(service, 'COMPLETING');
-            await waitForStateChange(service, 'COMPLETED');
+            await service.waitForStateChangeWithTimeout('COMPLETING');
+            await service.waitForStateChangeWithTimeout('COMPLETED');
 
             expect(stateChangeCount).to.equal(22);
         }).timeout(6000).slow(4000);

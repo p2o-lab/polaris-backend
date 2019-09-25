@@ -30,10 +30,15 @@
  * @returns Condition
  */
 import {
-    AndConditionOptions, ConditionOptions, ConditionType, ExpressionConditionOptions, NotConditionOptions,
+    AndConditionOptions,
+    ConditionOptions,
+    ConditionType,
+    ExpressionConditionOptions,
+    NotConditionOptions,
     OrConditionOptions,
     StateConditionOptions,
-    TimeConditionOptions, VariableConditionOptions
+    TimeConditionOptions,
+    VariableConditionOptions
 } from '@p2olab/polaris-interface';
 import {catCondition} from '../../config/logging';
 import {Module} from '../core/Module';
@@ -48,25 +53,33 @@ import {TrueCondition} from './TrueCondition';
 import {VariableCondition} from './VariableCondition';
 
 export class ConditionFactory {
-    public static create(options: ConditionOptions, modules: Module[]): Condition {
+    public static create(options: ConditionOptions | string, modules: Module[]): Condition {
         catCondition.trace(`Create Condition: ${JSON.stringify(options)}`);
-        const type: ConditionType = options ? options.type : null;
-        if (type === ConditionType.time) {
-            return new TimeCondition(options as TimeConditionOptions);
-        } else if (type === ConditionType.and) {
-            return new AndCondition(options as AndConditionOptions, modules);
-        } else if (type === ConditionType.state) {
-            return new StateCondition(options as StateConditionOptions, modules);
-        } else if (type === ConditionType.variable) {
-            return new VariableCondition(options as VariableConditionOptions, modules);
-        } else if (type === ConditionType.or) {
-            return new OrCondition(options as OrConditionOptions, modules);
-        } else if (type === ConditionType.not) {
-            return new NotCondition(options as NotConditionOptions, modules);
-        } else if (type === ConditionType.expression) {
-            return new ExpressionCondition(options as ExpressionConditionOptions, modules);
+        if (typeof options === 'string') {
+            return new ExpressionCondition({
+                type: ConditionType.expression,
+                expression: options
+            } as ExpressionConditionOptions, modules);
         } else {
-            return new TrueCondition(options);
+            const type: ConditionType = options ? options.type : null;
+            if (type === ConditionType.time) {
+                return new TimeCondition(options as TimeConditionOptions);
+            } else if (type === ConditionType.and) {
+                return new AndCondition(options as AndConditionOptions, modules);
+            } else if (type === ConditionType.state) {
+                return new StateCondition(options as StateConditionOptions, modules);
+            } else if (type === ConditionType.variable) {
+                return new VariableCondition(options as VariableConditionOptions, modules);
+            } else if (type === ConditionType.or) {
+                return new OrCondition(options as OrConditionOptions, modules);
+            } else if (type === ConditionType.not) {
+                return new NotCondition(options as NotConditionOptions, modules);
+            } else if (type === ConditionType.expression) {
+                return new ExpressionCondition(options as ExpressionConditionOptions, modules);
+            } else {
+                catCondition.warn('Default true condition');
+                return new TrueCondition(options);
+            }
         }
     }
 }

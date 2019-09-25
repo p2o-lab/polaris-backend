@@ -82,9 +82,12 @@ export class Petrinet {
 
     private listenToTransition(transition: PetrinetTransition) {
         this.eventEmitter.emit('transition', transition);
+        catRecipe.debug(`Start listening to transition ${transition.id}: ` +
+            `${JSON.stringify(transition.condition.json())}`);
         transition.condition
             .on('stateChanged', (status) => {
                 if (status) {
+                    catRecipe.debug(`transition completed ${transition.id}`);
                     this.useTransition(transition);
                 }
             });
