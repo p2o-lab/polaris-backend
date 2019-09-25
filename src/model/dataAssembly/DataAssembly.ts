@@ -200,7 +200,8 @@ export class DataAssembly extends EventEmitter {
     public checkExistenceOfAllDataItems() {
         Object.entries(this.communication).forEach(([key, entry]: [string, DataItem<any>]) => {
             if (entry === undefined) {
-                throw new Error(`No ${key} variable found for generating DataAssembly ${this.name} of type ${this.interfaceClass}`);
+                throw new Error(`No ${key} variable found for generating DataAssembly ${this.name} ` +
+                    `of type ${this.interfaceClass}`);
             }
         });
     }
