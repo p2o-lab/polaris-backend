@@ -134,8 +134,8 @@ describe('Service', () => {
         });
 
         it('should find parameter', () => {
-            const param = service.findInputParameter('Parameter002');
-            expect(param.name).to.equal('Parameter002');
+            const param = service.findInputParameter('Offset');
+            expect(param.name).to.equal('Offset');
         });
 
         it('should provide correct JSON', () => {
@@ -248,7 +248,7 @@ describe('Service', () => {
                 source: 'external'
             });
             expect(result.strategies[0].processValuesIn).to.have.length(1);
-            expect(result.strategies[0].processValuesIn[0].value).to.equal(20);
+            expect(result.strategies[0].processValuesIn[0].value).to.equal(1);
             expect(result.strategies[0].processValuesOut).to.have.length(3);
             expect(result.strategies[0].reportParameters).to.have.length(0);
 

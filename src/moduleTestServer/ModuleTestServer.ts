@@ -105,9 +105,9 @@ export class ModuleTestServer {
             browseName: 'TestModule'
         });
 
-        this.variables.push(new TestServerNumericVariable(namespace, myModule, 'Variable1', true));
-        this.variables.push(new TestServerNumericVariable(namespace, myModule, 'Variable2', true));
-        this.variables.push(new TestServerNumericVariable(namespace, myModule, 'TestServerVariable.3', true));
+        this.variables.push(new TestServerNumericVariable(namespace, myModule, 'Variable1'));
+        this.variables.push(new TestServerNumericVariable(namespace, myModule, 'Variable2'));
+        this.variables.push(new TestServerNumericVariable(namespace, myModule, 'TestServerVariable.3'));
 
         this.services.push(new TestServerService(namespace, myModule, 'Service1'));
         this.services.push(new TestServerService(namespace, myModule, 'Service2'));

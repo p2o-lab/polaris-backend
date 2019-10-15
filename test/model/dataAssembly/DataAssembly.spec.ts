@@ -522,7 +522,7 @@ describe('DataAssembly', () => {
             const da = DataAssemblyFactory.create(daJson as any, connection) as ExtIntAnaOp;
 
             await da.subscribe();
-            expect(da.name).to.equal('Parameter001');
+            expect(da.name).to.equal('Factor');
             expect(da instanceof ExtAnaOp).to.equal(true);
             expect(da instanceof ExtIntAnaOp).to.equal(true);
             expect(da instanceof AdvAnaOp).to.equal(false);
@@ -532,24 +532,24 @@ describe('DataAssembly', () => {
             let opMode = da.getOpMode();
             expect(opModetoJson(opMode)).to.deep.equal({state: 'off', source: undefined});
 
-            (moduleServer.services[0].parameter[0] as TestServerVariable).opMode = OpMode.stateManAct;
+            moduleServer.services[0].factor.opMode = OpMode.stateManAct;
             await da.waitForOpModeToPassSpecificTest(isManualState);
             opMode = da.getOpMode();
             expect(opModetoJson(opMode)).to.deep.equal({state: 'manual', source: undefined});
 
-            (moduleServer.services[0].parameter[0] as TestServerVariable).opMode = OpMode.stateAutAct;
+            moduleServer.services[0].factor.opMode = OpMode.stateAutAct;
             await da.waitForOpModeToPassSpecificTest(isAutomaticState);
             opMode = da.getOpMode();
             expect(opModetoJson(opMode)).to.deep.equal({state: 'automatic', source: 'external'});
 
             if (da instanceof ExtIntAnaOp) {
-                expect(da.communication.VOut).to.have.property('nodeId', 'Service1.Parameter1.V');
-                expect(da.communication.VOut).to.have.property('value', 20);
+                expect(da.communication.VOut).to.have.property('nodeId', 'Service1.Factor.V');
+                expect(da.communication.VOut).to.have.property('value', 2);
                 const json = da.toJson();
-                expect(json).to.have.property('name', 'Parameter001');
+                expect(json).to.have.property('name', 'Factor');
                 expect(json).to.have.property('readonly', false);
                 expect(json).to.have.property('type', 'number');
-                expect(json).to.have.property('value', 20);
+                expect(json).to.have.property('value', 2);
                 expect(json).to.have.property('min');
                 expect(json).to.have.property('max');
                 expect(json).to.have.property('unit');
@@ -558,26 +558,26 @@ describe('DataAssembly', () => {
 
         it('should create StrView', async () => {
             const daJson = {
-                name: 'ErrorMsg',
+                name: 'CurrentTime',
                 interface_class: 'StrView',
                 communication:
                     {
                         WQC:
                             {
                                 namespace_index: 'urn:NodeOPCUA-Server-default',
-                                node_id: 'Service1.ErrorMsg.WQC',
+                                node_id: 'Service1.CurrentTime.WQC',
                                 data_type: 'Byte'
                             },
                         OSLevel:
                             {
                                 namespace_index: 'urn:NodeOPCUA-Server-default',
-                                node_id: 'Service1.ErrorMsg.OSLevel',
+                                node_id: 'Service1.CurrentTime.OSLevel',
                                 data_type: 'Byte'
                             },
                         Text:
                             {
                                 namespace_index: 'urn:NodeOPCUA-Server-default',
-                                node_id: 'Service1.ErrorMsg.Text',
+                                node_id: 'Service1.CurrentTime.Text',
                                 data_type: 'String'
                             }
                     }
@@ -594,13 +594,13 @@ describe('DataAssembly', () => {
                 await da.subscribe();
                 expect(da.OSLevel).to.have.property('dataType', 'UInt32');
                 expect(da.OSLevel).to.have.property('namespaceIndex', 'urn:NodeOPCUA-Server-default');
-                expect(da.OSLevel).to.have.property('nodeId', 'Service1.ErrorMsg.OSLevel');
+                expect(da.OSLevel).to.have.property('nodeId', 'Service1.CurrentTime.OSLevel');
 
-                expect(da.Text).to.have.property('nodeId', 'Service1.ErrorMsg.Text');
+                expect(da.Text).to.have.property('nodeId', 'Service1.CurrentTime.Text');
                 expect(da.Text).to.have.property('value', 'initial value');
 
                 const json = da.toJson();
-                expect(json).to.have.property('name', 'ErrorMsg');
+                expect(json).to.have.property('name', 'CurrentTime');
                 expect(json).to.have.property('readonly', true);
                 expect(json).to.have.property('type', 'string');
                 expect(json).to.have.property('value', 'initial value');

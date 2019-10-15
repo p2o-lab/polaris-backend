@@ -33,14 +33,12 @@ export abstract class TestServerVariable {
     public opMode: number = 0;
     public wqc: number = 0;
     public osLevel: number = 0;
-    protected simulation: boolean;
     protected variableNode: UAObject;
 
-    constructor(namespace: Namespace, rootNode: UAObject, variableName: string, simulation = false) {
+    constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
         catTestServer.info(`Add variable ${variableName}`);
 
         this.name = variableName;
-        this.simulation = simulation;
 
         this.variableNode = namespace.addObject({
             organizedBy: rootNode,

@@ -58,7 +58,7 @@ export class TestServerStringVariable extends TestServerVariable {
 
     public startSimulation() {
         this.interval = global.setInterval(() => {
-            this.v = new Date().toTimeString();
+            this.v = new Date().toLocaleTimeString();
         }, 1000);
     }
 
