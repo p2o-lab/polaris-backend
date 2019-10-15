@@ -1,34 +1,7 @@
 {
   "module": {
     "id": "Dose",
-    "c": 2,
-    "r": 2,
-    "ports": [
-      {
-        "input": [
-          "Dose_i1"
-        ]
-      },
-      {
-        "output": [
-          "Dose_o1",
-          "Dose_o2"
-        ]
-      }
-    ],
-    "kpi": [
-      {
-        "communication": {
-          "value": {
-            "namespace_index": 2,
-            "node_id": "BP11.ProcessValues.EnergyConsumption"
-          }
-        },
-        "name": "Energy consumption"
-      }
-    ],
     "opcua_server_url": "opc.tcp://10.6.51.21",
-    "rest_api_port": "1200",
     "services": [
       {
         "name": "Fill",
