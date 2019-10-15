@@ -68,6 +68,7 @@ describe('DataAssembly', () => {
             expect(da1.toJson()).to.deep.equal({
                 name: 'xyz',
                 readonly: true,
+                requestedValue: undefined,
                 timestamp: undefined,
                 type: 'number',
                 unit: null,
@@ -292,6 +293,7 @@ describe('DataAssembly', () => {
             expect(da1.toJson()).to.deep.equal({
                 name: 'binview1',
                 readonly: true,
+                requestedValue: undefined,
                 timestamp: undefined,
                 type: 'boolean',
                 unit: null,
@@ -333,6 +335,7 @@ describe('DataAssembly', () => {
             expect(da1.toJson()).to.deep.equal({
                 name: 'binmon1',
                 readonly: true,
+                requestedValue: undefined,
                 timestamp: undefined,
                 type: 'boolean',
                 unit: null,
@@ -359,6 +362,7 @@ describe('DataAssembly', () => {
             expect(da1.toJson()).to.deep.equal({
                 name: 'digmon1',
                 readonly: true,
+                requestedValue: undefined,
                 timestamp: undefined,
                 type: 'number',
                 unit: 'L',
@@ -387,6 +391,7 @@ describe('DataAssembly', () => {
             expect(da1.toJson()).to.deep.equal({
                 name: 'extintdigop1',
                 readonly: false,
+                requestedValue: undefined,
                 timestamp: undefined,
                 type: 'number',
                 unit: 'L',
@@ -412,6 +417,7 @@ describe('DataAssembly', () => {
             expect(da1.toJson()).to.deep.equal({
                 name: 'MonAnaDrv1',
                 readonly: true,
+                requestedValue: undefined,
                 timestamp: undefined,
                 type: 'number',
                 unit: null,

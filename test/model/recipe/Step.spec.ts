@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import {ServiceCommand, StepOptions} from '@p2olab/polaris-interface';
+import {ConditionType, ServiceCommand} from '@p2olab/polaris-interface';
 import {expect} from 'chai';
 import * as fs from 'fs';
 import {Module} from '../../../src/model/core/Module';
@@ -80,17 +80,16 @@ describe('Step', () => {
                     {
                         next_step: 'completed',
                         condition: {
-                            type: 'state',
+                            type: ConditionType.state,
                             module: 'ModuleTestServer',
                             service: 'Service1',
                             state: 'starting'
                         }
                     }
                 ]
-            } as StepOptions, [module]);
+            }, [module]);
 
             step.execute();
-
             await new Promise((resolve) => step.eventEmitter.on('completed', resolve));
         });
 

@@ -31,7 +31,6 @@ import {TestServerVariable} from './ModuleTestVariable';
 export class TestServerStringVariable extends TestServerVariable {
 
     public v: string = 'initial value';
-    public vext: string = '';
     protected interval: Timeout;
 
     constructor(namespace, rootNode, variableName: string) {
@@ -56,13 +55,13 @@ export class TestServerStringVariable extends TestServerVariable {
 
     }
 
-    public startSimulation() {
+    public startCurrentTimeUpdate() {
         this.interval = global.setInterval(() => {
             this.v = new Date().toLocaleTimeString();
-        }, 1000);
+        }, 100);
     }
 
-    public stopSimulation() {
-        global.clearTimeout(this.interval);
+    public stopCurrentTimeUpdate() {
+        global.clearInterval(this.interval);
     }
 }

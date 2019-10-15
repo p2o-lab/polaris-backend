@@ -39,7 +39,7 @@ function validUserFunc(username: string, password: string): boolean {
 export class ModuleTestServer {
 
     public externalTrigger: boolean;
-    public variables: TestServerVariable[] = [];
+    public variables: TestServerNumericVariable[] = [];
     public services: TestServerService[] = [];
     private server: OPCUAServer;
     private port: number;
@@ -86,12 +86,12 @@ export class ModuleTestServer {
     }
 
     public startSimulation() {
-        this.variables.forEach((variable) => variable.startSimulation());
+        this.variables.forEach((variable) => variable.startRandomOscillation());
         this.services.forEach((service) => service.startSimulation());
     }
 
     public stopSimulation() {
-        this.variables.forEach((variable) => variable.stopSimulation());
+        this.variables.forEach((variable) => variable.stopRandomOscillation());
         this.services.forEach((services) => services.stopSimulation());
     }
 

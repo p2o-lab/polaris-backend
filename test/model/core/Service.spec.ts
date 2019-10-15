@@ -250,7 +250,7 @@ describe('Service', () => {
             expect(result.strategies[0].processValuesIn).to.have.length(1);
             expect(result.strategies[0].processValuesIn[0].value).to.equal(1);
             expect(result.strategies[0].processValuesOut).to.have.length(3);
-            expect(result.strategies[0].reportParameters).to.have.length(0);
+            expect(result.strategies[0].reportParameters).to.have.length(3);
 
             let stateChangeCount = 0;
             service.eventEmitter.on('state', () => {

@@ -100,8 +100,5 @@ export abstract class TestServerVariable {
             }
         });
     }
-
-    public abstract startSimulation();
-
-    public abstract stopSimulation();
+    
 }

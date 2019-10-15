@@ -116,7 +116,7 @@ export class TestServerNumericVariable extends TestServerVariable {
         });
     }
 
-    public startSimulation() {
+    public startRandomOscillation() {
         let time = 0;
         const f1 = Math.random();
         const f2 = Math.random();
@@ -128,7 +128,7 @@ export class TestServerNumericVariable extends TestServerVariable {
         }, 100);
     }
 
-    public stopSimulation() {
+    public stopRandomOscillation() {
         global.clearInterval(this.interval);
     }
 }

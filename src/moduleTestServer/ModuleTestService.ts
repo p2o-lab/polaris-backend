@@ -51,6 +51,7 @@ export class TestServerService {
     public readonly finalTime: TestServerStringVariable;
 
     private interval: Timeout;
+    private timeoutAutomaticStateChange: Timeout;
     private unit: number = 1351;
     private unitIntegral: number = 1038;
 
@@ -201,11 +202,17 @@ export class TestServerService {
     }
 
     public startSimulation() {
-        this.currentTime.startSimulation();
+        this.currentTime.startCurrentTimeUpdate();
     }
 
     public stopSimulation() {
-        this.currentTime.stopSimulation();
+        this.currentTime.stopCurrentTimeUpdate();
+        if (this.interval) {
+            global.clearInterval(this.interval);
+        }
+        if (this.timeoutAutomaticStateChange) {
+            global.clearTimeout(this.timeoutAutomaticStateChange);
+        }
     }
 
     private state(state: ServiceState) {
@@ -250,7 +257,8 @@ export class TestServerService {
 
     private automaticStateChange(currentState: ServiceState, nextState: ServiceState, delay = 100) {
         if (this.varStatus === currentState) {
-            setTimeout(() => {
+            global.clearTimeout(this.timeoutAutomaticStateChange);
+            this.timeoutAutomaticStateChange = global.setTimeout(() => {
                 if (this.varStatus === currentState) {
                     this.state(nextState);
                 }
