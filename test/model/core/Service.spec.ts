@@ -188,7 +188,7 @@ describe('Service', () => {
         });
 
         it('waitForOpModeSpecificTest', async () => {
-            testService.varOpmode = 0;
+            testService.opMode.opMode = 0;
             await service.waitForOpModeToPassSpecificTest(isOffState);
             expect(service.serviceControl.getOpMode()).to.equal(0);
 

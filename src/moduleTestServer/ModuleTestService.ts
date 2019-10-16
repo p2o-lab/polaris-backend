@@ -25,18 +25,18 @@
 
 import {DataType, Namespace, StatusCodes, Variant} from 'node-opcua';
 import {catTestServer} from '../config/logging';
-import {OpMode, ServiceControlEnable, ServiceMtpCommand, ServiceState} from '../model/core/enum';
+import {ServiceControlEnable, ServiceMtpCommand, ServiceState} from '../model/core/enum';
 import {TestServerNumericVariable} from './ModuleTestNumericVariable';
 import {TestServerStringVariable} from './ModuleTestStringVariable';
-import {TestServerVariable} from './ModuleTestVariable';
 import Timeout = NodeJS.Timeout;
+import {ModulTestOpMode} from './ModulTestOpMode';
 
 export class TestServerService {
     public varStatus: number = 0;
     public varStrategy: number = 1;
     public varCommand: number = 0;
     public varCommandEnable: number = 0;
-    public varOpmode: number = 0;
+    public opMode: ModulTestOpMode;
     public readonly serviceName: string;
 
     public readonly offset: TestServerNumericVariable;
@@ -119,36 +119,7 @@ export class TestServerService {
             }
         });
 
-        ns.addVariable({
-            componentOf: serviceNode,
-            nodeId: `ns=1;s=${serviceName}.OpMode`,
-            browseName: `${serviceName}.OpMode`,
-            dataType: DataType.UInt32,
-            value: {
-                get: () => {
-                    catTestServer.trace(`[${this.serviceName}] Get Opmode in testserver ${this.varOpmode}`);
-                    return new Variant({dataType: DataType.UInt32, value: this.varOpmode});
-                },
-                set: (variant) => {
-                    const opModeInt = parseInt(variant.value, 10);
-                    if (opModeInt === OpMode.stateManOp) {
-                        this.varOpmode = this.varOpmode & ~OpMode.stateAutAct;
-                        this.varOpmode = this.varOpmode | OpMode.stateManAct;
-                    } else if (opModeInt === OpMode.stateAutOp) {
-                        this.varOpmode = this.varOpmode & ~OpMode.stateManAct;
-                        this.varOpmode = this.varOpmode | OpMode.stateAutAct;
-                        this.varOpmode = this.varOpmode | OpMode.srcIntAct;
-                    } else if (opModeInt === OpMode.srcExtOp) {
-                        this.varOpmode = this.varOpmode & ~OpMode.srcIntAct;
-                    } else {
-                        return StatusCodes.Bad;
-                    }
-                    catTestServer.debug(`[${this.serviceName}] Set Opmode in testserver ${variant} ` +
-                        `${parseInt(variant.value, 10)} -> ${this.varOpmode}`);
-                    return StatusCodes.Good;
-                }
-            }
-        });
+        this.opMode = new ModulTestOpMode(ns, serviceNode, this.serviceName);
 
         ns.addVariable({
             componentOf: serviceNode,

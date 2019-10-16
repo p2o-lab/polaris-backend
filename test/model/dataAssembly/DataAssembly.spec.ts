@@ -538,12 +538,12 @@ describe('DataAssembly', () => {
             let opMode = da.getOpMode();
             expect(opModetoJson(opMode)).to.deep.equal({state: 'off', source: undefined});
 
-            moduleServer.services[0].factor.opMode = OpMode.stateManAct;
+            moduleServer.services[0].factor.opMode.opMode = OpMode.stateManAct;
             await da.waitForOpModeToPassSpecificTest(isManualState);
             opMode = da.getOpMode();
             expect(opModetoJson(opMode)).to.deep.equal({state: 'manual', source: undefined});
 
-            moduleServer.services[0].factor.opMode = OpMode.stateAutAct;
+            moduleServer.services[0].factor.opMode.opMode = OpMode.stateAutAct;
             await da.waitForOpModeToPassSpecificTest(isAutomaticState);
             opMode = da.getOpMode();
             expect(opModetoJson(opMode)).to.deep.equal({state: 'automatic', source: 'external'});
