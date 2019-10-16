@@ -52,7 +52,6 @@ export class DataAssembly extends EventEmitter {
     public readonly communication: BaseDataAssemblyRuntime;
     public subscriptionActive: boolean;
     public readonly connection: OpcUaConnection;
-    public isReadOnly: boolean = false;
     public type: string = 'number';
     public writeDataItem: DataItem<any> = null;
     public readDataItem: DataItem<any>;
@@ -124,7 +123,6 @@ export class DataAssembly extends EventEmitter {
      * Set parameter on module
      * @param paramValue
      * @param {string} variable
-     * @returns {Promise<any>}
      */
     public async setParameter(paramValue: any, variable?: string) {
         let dataItem: DataItem<any>;
@@ -139,26 +137,28 @@ export class DataAssembly extends EventEmitter {
 
     public async setValue(p: ParameterOptions, modules: any[]) {
         catDataAssembly.debug(`set value: ${JSON.stringify(p)}`);
-        this.requestedValue = p.value.toString();
+        if (p.value) {
+            this.requestedValue = p.value.toString();
 
-        if (this.parameterRequest) {
-            this.parameterRequest.unlistenToScopeArray();
+            if (this.parameterRequest) {
+                this.parameterRequest.unlistenToScopeArray();
 
-            if (this.parameterRequest.eventEmitter) {
-                this.parameterRequest.eventEmitter.removeListener('changed', this.setParameter);
+                if (this.parameterRequest.eventEmitter) {
+                    this.parameterRequest.eventEmitter.removeListener('changed', this.setParameter);
+                }
             }
-        }
 
-        this.parameterRequest = new Parameter(p, modules);
+            this.parameterRequest = new Parameter(p, modules);
 
-        const value = this.parameterRequest.getValue();
-        catDataAssembly.trace(`calculated value: ${value}`);
-        await this.setParameter(value);
+            const value = this.parameterRequest.getValue();
+            catDataAssembly.trace(`calculated value: ${value}`);
+            await this.setParameter(value);
 
-        if (this.parameterRequest.options.continuous) {
-            catDataAssembly.trace(`Continous parameter change`);
-            this.parameterRequest.listenToScopeArray()
-                .on('changed', (data) => this.setParameter(data));
+            if (this.parameterRequest.options.continuous) {
+                catDataAssembly.trace(`Continous parameter change`);
+                this.parameterRequest.listenToScopeArray()
+                    .on('changed', (data) => this.setParameter(data));
+            }
         }
     }
 
@@ -179,6 +179,7 @@ export class DataAssembly extends EventEmitter {
         return {
             name: this.name,
             value: this.getValue(),
+            requestedValue: this.requestedValue,
             unit: this.getUnit(),
             type: this.type,
             readonly: this.writeDataItem === null,

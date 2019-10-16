@@ -8,7 +8,7 @@
           "name": "Service1",
           "communication": {
             "TagName": { "value":  "Service1"},
-            "TagDescription": {"value": "Sample service with different parameters"},
+            "TagDescription": {"value": "Sample service which calculates: PVOut = Factor*PVIn + Offset; PVIntegral = PVIntegral_old + PVOut"},
             "OSLevel": {"value": 1},
             "WQC": { "value":  0},
             "CommandMan": {
@@ -56,106 +56,106 @@
               "sc": true,
               "parameters": [
                 {
-                  "name": "Parameter001",
+                  "name": "Factor",
                   "interface_class": "ExtIntAnaOp",
                   "communication": {
                     "V": {
                       "namespace_index": "urn:NodeOPCUA-Server-default",
-                      "node_id": "Service1.Parameter1.V"
+                      "node_id": "Service1.Factor.V"
                     },
                     "VRbk": {
                       "namespace_index": "urn:NodeOPCUA-Server-default",
-                      "node_id": "Service1.Parameter1.V"
+                      "node_id": "Service1.Factor.V"
                     },
                     "VOut": {
                       "namespace_index": "urn:NodeOPCUA-Server-default",
-                      "node_id": "Service1.Parameter1.V"
+                      "node_id": "Service1.Factor.V"
                     },
                     "VExt": {
                       "namespace_index": "urn:NodeOPCUA-Server-default",
-                      "node_id": "Service1.Parameter1.VExt"
+                      "node_id": "Service1.Factor.VExt"
                     },
                     "VSclMax": {
                       "namespace_index": "urn:NodeOPCUA-Server-default",
-                      "node_id": "Service1.Parameter1.VSclMax"
+                      "node_id": "Service1.Factor.VSclMax"
                     },
                     "VSclMin": {
                       "namespace_index": "urn:NodeOPCUA-Server-default",
-                      "node_id": "Service1.Parameter1.VSclMin"
+                      "node_id": "Service1.Factor.VSclMin"
                     },
                     "VMax": {
                       "namespace_index": "urn:NodeOPCUA-Server-default",
-                      "node_id": "Service1.Parameter1.VSclMax"
+                      "node_id": "Service1.Factor.VSclMax"
                     },
                     "VMin": {
                       "namespace_index": "urn:NodeOPCUA-Server-default",
-                      "node_id": "Service1.Parameter1.VSclMin"
+                      "node_id": "Service1.Factor.VSclMin"
                     },
                     "VUnit": {
                       "namespace_index": "urn:NodeOPCUA-Server-default",
-                      "node_id": "Service1.Parameter1.VUnit"
+                      "node_id": "Service1.Factor.VUnit"
                     },
                     "WQC": {
                       "namespace_index": "urn:NodeOPCUA-Server-default",
-                      "node_id": "Service1.Parameter1.WQC"
+                      "node_id": "Service1.Factor.WQC"
                     },
                     "OSLevel": {
                       "namespace_index": "urn:NodeOPCUA-Server-default",
-                      "node_id": "Service1.Parameter1.OSLevel"
+                      "node_id": "Service1.Factor.OSLevel"
                     },
                     "OpMode": {
                       "namespace_index": "urn:NodeOPCUA-Server-default",
-                      "node_id": "Service1.Parameter1.OpMode"
+                      "node_id": "Service1.Factor.OpMode"
                     }
                   }
                 },
                 {
-                  "name": "Parameter002",
+                  "name": "Offset",
                   "interface_class": "ExtAnaOp",
                   "communication": {
                     "V": {
                       "namespace_index": "urn:NodeOPCUA-Server-default",
-                      "node_id": "Service1.Parameter2.V"
+                      "node_id": "Service1.Offset.V"
                     },
                     "VRbk": {
                       "namespace_index": "urn:NodeOPCUA-Server-default",
-                      "node_id": "Service1.Parameter2.V"
+                      "node_id": "Service1.Offset.V"
                     },
                     "VOut": {
                       "namespace_index": "urn:NodeOPCUA-Server-default",
-                      "node_id": "Service1.Parameter2.V"
+                      "node_id": "Service1.Offset.V"
                     },
                     "VExt": {
                       "namespace_index": "urn:NodeOPCUA-Server-default",
-                      "node_id": "Service1.Parameter2.VExt"
+                      "node_id": "Service1.Offset.VExt"
                     },
                     "VSclMax": {
                       "namespace_index": "urn:NodeOPCUA-Server-default",
-                      "node_id": "Service1.Parameter2.VSclMax"
+                      "node_id": "Service1.Offset.VSclMax"
                     },
                     "VSclMin": {
                       "namespace_index": "urn:NodeOPCUA-Server-default",
-                      "node_id": "Service1.Parameter2.VSclMin"
+                      "node_id": "Service1.Offset.VSclMin"
                     },
                     "VMax": {
                       "namespace_index": "urn:NodeOPCUA-Server-default",
-                      "node_id": "Service1.Parameter2.VSclMax"
+                      "node_id": "Service1.Offset.VSclMax"
                     },
                     "VMin": {
                       "namespace_index": "urn:NodeOPCUA-Server-default",
-                      "node_id": "Service1.Parameter2.VSclMin"
+                      "node_id": "Service1.Offset.VSclMin"
                     },
                     "VUnit": {
                       "namespace_index": "urn:NodeOPCUA-Server-default",
-                      "node_id": "Service1.Parameter2.VUnit"
+                      "node_id": "Service1.Offset.VUnit"
                     },
                     "WQC": {
                       "namespace_index": "urn:NodeOPCUA-Server-default",
-                      "node_id": "Service1.Parameter2.WQC"
+                      "node_id": "Service1.Offset.WQC"
                     },
                     "OSLevel": {
                       "namespace_index": "urn:NodeOPCUA-Server-default",
-                      "node_id": "Service1.Parameter2.OSLevel"
+                      "node_id": "Service1.Offset.OSLevel"
                     }
                   }
                 }
@@ -211,17 +211,17 @@
                   "communication": {
                     "WQC": {
                       "namespace_index": "urn:NodeOPCUA-Server-default",
-                      "node_id": "Service1.ErrorMsg.WQC",
+                      "node_id": "Service1.CurrentTime.WQC",
                       "data_type": "Byte"
                     },
                     "OSLevel": {
                       "namespace_index": "urn:NodeOPCUA-Server-default",
-                      "node_id": "Service1.ErrorMsg.OSLevel",
+                      "node_id": "Service1.CurrentTime.OSLevel",
                       "data_type": "Byte"
                     },
                     "Text": {
                       "namespace_index": "urn:NodeOPCUA-Server-default",
-                      "node_id": "Service1.ErrorMsg.Text",
+                      "node_id": "Service1.CurrentTime.Text",
                       "data_type": "String"
                     }
                   }
@@ -286,6 +286,89 @@
                     }
                   }
                 }
+              ],
+              "reportParameters": [
+                {
+                  "name": "LastTime",
+                  "interface_class": "StrView",
+                  "communication": {
+                    "WQC": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.FinalTime.WQC",
+                      "data_type": "Byte"
+                    },
+                    "OSLevel": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.FinalTime.OSLevel",
+                      "data_type": "Byte"
+                    },
+                    "Text": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.FinalTime.Text",
+                      "data_type": "String"
+                    }
+                  }
+                },
+                {
+                  "name": "FinalOut",
+                  "interface_class": "AnaView",
+                  "communication": {
+                    "V": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.FinalOut.V"
+                    },
+                    "VMax": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.FinalOut.VSclMax"
+                    },
+                    "VMin": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.FinalOut.VSclMin"
+                    },
+                    "VUnit": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.FinalOut.VUnit"
+                    },
+                    "WQC": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.FinalOut.WQC"
+                    },
+                    "OSLevel": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.FinalOut.OSLevel"
+                    }
+                  }
+                },
+                {
+                  "name": "FinalIntegral",
+                  "interface_class": "AnaView",
+                  "communication": {
+                    "V": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.FinalIntegral.V"
+                    },
+                    "VMax": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.FinalIntegral.VSclMax"
+                    },
+                    "VMin": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.FinalIntegral.VSclMin"
+                    },
+                    "VUnit": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.FinalIntegral.VUnit"
+                    },
+                    "WQC": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.FinalIntegral.WQC"
+                    },
+                    "OSLevel": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.FinalIntegral.OSLevel"
+                    }
+                  }
+                }
               ]
             },
             {
@@ -295,72 +378,72 @@
               "sc": false,
               "parameters": [
                 {
-                  "name": "Parameter001a",
+                  "name": "Offset",
                   "interface_class": "ExtAnaOp",
                   "communication": {
                     "V": {
                       "namespace_index": "urn:NodeOPCUA-Server-default",
-                      "node_id": "Service1.Parameter1.V"
+                      "node_id": "Service1.Offset.V"
                     },
                     "VRbk": {
                       "namespace_index": "urn:NodeOPCUA-Server-default",
-                      "node_id": "Service1.Parameter1.V"
+                      "node_id": "Service1.Offset.V"
                     },
                     "VOut": {
                       "namespace_index": "urn:NodeOPCUA-Server-default",
-                      "node_id": "Service1.Parameter1.V"
+                      "node_id": "Service1.Offset.V"
                     },
                     "VExt": {
                       "namespace_index": "urn:NodeOPCUA-Server-default",
-                      "node_id": "Service1.Parameter1.VExt"
+                      "node_id": "Service1.Offset.VExt"
                     },
                     "VSclMax": {
                       "namespace_index": "urn:NodeOPCUA-Server-default",
-                      "node_id": "Service1.Parameter1.VSclMax"
+                      "node_id": "Service1.Offset.VSclMax"
                     },
                     "VSclMin": {
                       "namespace_index": "urn:NodeOPCUA-Server-default",
-                      "node_id": "Service1.Parameter1.VSclMin"
+                      "node_id": "Service1.Offset.VSclMin"
                     },
                     "VMax": {
                       "namespace_index": "urn:NodeOPCUA-Server-default",
-                      "node_id": "Service1.Parameter1.VSclMax"
+                      "node_id": "Service1.Offset.VSclMax"
                     },
                     "VMin": {
                       "namespace_index": "urn:NodeOPCUA-Server-default",
-                      "node_id": "Service1.Parameter1.VSclMin"
+                      "node_id": "Service1.Offset.VSclMin"
                     },
                     "VUnit": {
                       "namespace_index": "urn:NodeOPCUA-Server-default",
-                      "node_id": "Service1.Parameter1.VUnit"
+                      "node_id": "Service1.Offset.VUnit"
                     },
                     "WQC": {
                       "namespace_index": "urn:NodeOPCUA-Server-default",
-                      "node_id": "Service1.Parameter1.WQC"
+                      "node_id": "Service1.Offset.WQC"
                     },
                     "OSLevel": {
                       "namespace_index": "urn:NodeOPCUA-Server-default",
-                      "node_id": "Service1.Parameter1.OSLevel"
+                      "node_id": "Service1.Offset.OSLevel"
                     }
                   }
                 },
                 {
-                  "name": "ErrorMsg",
+                  "name": "CurrentTime",
                   "interface_class": "StrView",
                   "communication": {
                     "WQC": {
                       "namespace_index": "urn:NodeOPCUA-Server-default",
-                      "node_id": "Service1.ErrorMsg.WQC",
+                      "node_id": "Service1.CurrentTime.WQC",
                       "data_type": "Byte"
                     },
                     "OSLevel": {
                       "namespace_index": "urn:NodeOPCUA-Server-default",
-                      "node_id": "Service1.ErrorMsg.OSLevel",
+                      "node_id": "Service1.CurrentTime.OSLevel",
                       "data_type": "Byte"
                     },
                     "Text": {
                       "namespace_index": "urn:NodeOPCUA-Server-default",
-                      "node_id": "Service1.ErrorMsg.Text",
+                      "node_id": "Service1.CurrentTime.Text",
                       "data_type": "String"
                     }
                   }
@@ -368,7 +451,50 @@
               ]
             }
           ],
-          "parameters": []
+          "parameters": [
+            {
+              "name": "UpdateRateInMs",
+              "interface_class": "ExtAnaOp",
+              "communication": {
+                "V": {
+                  "namespace_index": "urn:NodeOPCUA-Server-default",
+                  "node_id": "Service1.UpdateRate.V"
+                },
+                "VRbk": {
+                  "namespace_index": "urn:NodeOPCUA-Server-default",
+                  "node_id": "Service1.UpdateRate.V"
+                },
+                "VOut": {
+                  "namespace_index": "urn:NodeOPCUA-Server-default",
+                  "node_id": "Service1.UpdateRate.V"
+                },
+                "VExt": {
+                  "namespace_index": "urn:NodeOPCUA-Server-default",
+                  "node_id": "Service1.UpdateRate.VExt"
+                },
+                "VMax": {
+                  "namespace_index": "urn:NodeOPCUA-Server-default",
+                  "node_id": "Service1.UpdateRate.VSclMax"
+                },
+                "VMin": {
+                  "namespace_index": "urn:NodeOPCUA-Server-default",
+                  "node_id": "Service1.UpdateRate.VSclMin"
+                },
+                "VUnit": {
+                  "namespace_index": "urn:NodeOPCUA-Server-default",
+                  "node_id": "Service1.UpdateRate.VUnit"
+                },
+                "WQC": {
+                  "namespace_index": "urn:NodeOPCUA-Server-default",
+                  "node_id": "Service1.UpdateRate.WQC"
+                },
+                "OSLevel": {
+                  "namespace_index": "urn:NodeOPCUA-Server-default",
+                  "node_id": "Service1.UpdateRate.OSLevel"
+                }
+              }
+            }
+          ]
         },
         {
           "name": "Service2",
@@ -420,7 +546,51 @@
               "name": "Strategy 1",
               "default": true,
               "sc": true,
-              "parameters": []
+              "parameters": [],
+              "processValuesIn": [
+                {
+                  "name": "PvIn",
+                  "interface_class": "ExtAnaOp",
+                  "communication": {
+                    "V": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service2.ProcessValueIn.V"
+                    },
+                    "VRbk": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service2.ProcessValueIn.V"
+                    },
+                    "VOut": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service2.ProcessValueIn.V"
+                    },
+                    "VExt": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service2.ProcessValueIn.VExt"
+                    },
+                    "VMax": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service2.ProcessValueIn.VSclMax"
+                    },
+                    "VMin": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service2.ProcessValueIn.VSclMin"
+                    },
+                    "VUnit": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service2.ProcessValueIn.VUnit"
+                    },
+                    "WQC": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service2.ProcessValueIn.WQC"
+                    },
+                    "OSLevel": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service2.ProcessValueIn.OSLevel"
+                    }
+                  }
+                }
+              ]
             }
           ],
           "parameters": []

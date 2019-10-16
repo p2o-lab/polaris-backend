@@ -95,7 +95,7 @@ describe('Module', () => {
             const module = new Module(moduleJson);
 
             await module.connect();
-            expect(module.connection.monitoredItemSize()).to.equal(63);
+            expect(module.connection.monitoredItemSize()).to.equal(88);
 
             await Promise.all([
                 new Promise((resolve) => module.on('parameterChanged', resolve)),
@@ -106,7 +106,7 @@ describe('Module', () => {
             expect(module.connection.monitoredItemSize()).to.equal(0);
 
             await module.connect();
-            expect(module.connection.monitoredItemSize()).to.equal(63);
+            expect(module.connection.monitoredItemSize()).to.equal(88);
             await Promise.all([
                 new Promise((resolve) => module.on('parameterChanged', resolve)),
                 new Promise((resolve) => module.on('variableChanged', resolve)),

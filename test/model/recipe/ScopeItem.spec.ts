@@ -113,11 +113,11 @@ describe('ScopeItem', () => {
     });
 
     it('should return ScopeItem 5', () => {
-        const item = ScopeItem.extractFromExpressionVariable('ModuleTestServer.Service1.Parameter001',
+        const item = ScopeItem.extractFromExpressionVariable('ModuleTestServer.Service1.Factor',
             [moduleTestServer, moduleDosierer]);
         expect(item).to.have.property('module').to.have.property('id', 'ModuleTestServer');
-        expect(item).to.have.property('name', 'ModuleTestServer.Service1.Parameter001');
-        expect(item).to.have.property('dataItem').to.have.property('nodeId', 'Service1.Parameter1.V');
+        expect(item).to.have.property('name', 'ModuleTestServer.Service1.Factor');
+        expect(item).to.have.property('dataItem').to.have.property('nodeId', 'Service1.Factor.V');
     });
 
     it('should return null when parameter name is not existant', () => {
@@ -181,25 +181,25 @@ describe('ScopeItem', () => {
         }).timeout(5000);
 
         it('get scope value for parameter', async () => {
-            const item = ScopeItem.extractFromExpressionVariable('ModuleTestServer.Service1.Parameter001',
+            const item = ScopeItem.extractFromExpressionVariable('ModuleTestServer.Service1.Factor',
                 [moduleTestServer, moduleDosierer]);
 
-            expect(item.name).to.equal('ModuleTestServer.Service1.Parameter001');
-            expect((item.dataItem as OpcUaDataItem<any>).nodeId).to.equal('Service1.Parameter1.V');
+            expect(item.name).to.equal('ModuleTestServer.Service1.Factor');
+            expect((item.dataItem as OpcUaDataItem<any>).nodeId).to.equal('Service1.Factor.V');
             expect(item.getScopeValue()).to.deep.equal({
                 'ModuleTestServer': {
                     'Service1': {
-                        'Parameter001': 20
+                        'Factor': 2
                     }
                 }
             });
 
-            (moduleServer.services[0].parameter[0] as TestServerNumericVariable).v = 30;
-            await waitForParameterChange(moduleTestServer, 'Parameter001', 30);
+            moduleServer.services[0].factor.v = 30;
+            await waitForParameterChange(moduleTestServer, 'Factor', 30);
             expect(item.getScopeValue()).to.deep.equal({
                 'ModuleTestServer': {
                     'Service1': {
-                        'Parameter001': 30
+                        'Factor': 30
                     }
                 }
             });
