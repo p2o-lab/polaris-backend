@@ -58,7 +58,7 @@ export class TestServerStringVariable extends TestServerVariable {
     public startCurrentTimeUpdate() {
         this.interval = global.setInterval(() => {
             this.v = new Date().toLocaleTimeString();
-        }, 100);
+        }, 1000);
     }
 
     public stopCurrentTimeUpdate() {
