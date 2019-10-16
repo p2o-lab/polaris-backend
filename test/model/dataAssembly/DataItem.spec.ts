@@ -96,7 +96,7 @@ describe('DataItem', () => {
             const di = OpcUaDataItem.fromOptions(
                 {
                     namespace_index: 'urn:NodeOPCUA-Server-default',
-                    node_id: 'Service1.Parameter1.VExt',
+                    node_id: 'Service1.Factor.VExt',
                     data_type: 'Double'
                 }, connection, 'write', 'number');
             await expect(di.read()).to.be.rejectedWith('namespace');
@@ -128,7 +128,7 @@ describe('DataItem', () => {
             const di = OpcUaDataItem.fromOptions(
                 {
                     namespace_index: 'urn:NodeOPCUA-Server-default',
-                    node_id: 'Service1.ErrorMsg.Text',
+                    node_id: 'Service1.CurrentTime.Text',
                     data_type: 'String'
                 }, connection, 'write', 'string');
 
@@ -142,7 +142,7 @@ describe('DataItem', () => {
             const di = OpcUaDataItem.fromOptions(
                 {
                     namespace_index: 'urn:NodeOPCUA-Server-default',
-                    node_id: 'Service1.ErrorMsg.Text',
+                    node_id: 'Service1.CurrentTime.Text',
                     data_type: 'String'
                 }, connection, 'write', 'string');
 
@@ -160,7 +160,7 @@ describe('DataItem', () => {
             const di = OpcUaDataItem.fromOptions(
                 {
                     namespace_index: 'urn:NodeOPCUA-Server-default',
-                    node_id: 'Service1.Parameter1.VExt',
+                    node_id: 'Service1.Factor.VExt',
                     data_type: 'Double'
                 }, connection, 'write', 'number');
             await di.write(22.0);
@@ -173,7 +173,7 @@ describe('DataItem', () => {
             const di = OpcUaDataItem.fromOptions(
                 {
                     namespace_index: 'urn:NodeOPCUA-Server-default',
-                    node_id: 'Service1.Parameter1.VExt',
+                    node_id: 'Service1.Factor.VExt',
                     data_type: 'Float'
                 }, connection, 'write', 'number');
 
@@ -184,7 +184,7 @@ describe('DataItem', () => {
             const di = OpcUaDataItem.fromOptions(
                 {
                     namespace_index: 'urn:NodeOPCUA-Server-default',
-                    node_id: 'Service1.Parameter1.VExt',
+                    node_id: 'Service1.Factor.VExt',
                     data_type: 'abc'
                 }, connection, 'write', 'number');
 
@@ -195,7 +195,7 @@ describe('DataItem', () => {
             const di = OpcUaDataItem.fromOptions(
                 {
                     namespace_index: 'urn:NodeOPCUA-Server-default',
-                    node_id: 'Service1.Parameter1.VExt',
+                    node_id: 'Service1.Factor.VExt',
                     data_type: 'Byte'
                 }, connection, 'write', 'number');
 

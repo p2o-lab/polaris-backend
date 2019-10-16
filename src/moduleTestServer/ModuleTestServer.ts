@@ -39,7 +39,7 @@ function validUserFunc(username: string, password: string): boolean {
 export class ModuleTestServer {
 
     public externalTrigger: boolean;
-    public variables: TestServerVariable[] = [];
+    public variables: TestServerNumericVariable[] = [];
     public services: TestServerService[] = [];
     private server: OPCUAServer;
     private port: number;
@@ -86,12 +86,12 @@ export class ModuleTestServer {
     }
 
     public startSimulation() {
-        this.variables.forEach((variable) => variable.startSimulation());
+        this.variables.forEach((variable) => variable.startRandomOscillation());
         this.services.forEach((service) => service.startSimulation());
     }
 
     public stopSimulation() {
-        this.variables.forEach((variable) => variable.stopSimulation());
+        this.variables.forEach((variable) => variable.stopRandomOscillation());
         this.services.forEach((services) => services.stopSimulation());
     }
 
@@ -105,9 +105,9 @@ export class ModuleTestServer {
             browseName: 'TestModule'
         });
 
-        this.variables.push(new TestServerNumericVariable(namespace, myModule, 'Variable1', true));
-        this.variables.push(new TestServerNumericVariable(namespace, myModule, 'Variable2', true));
-        this.variables.push(new TestServerNumericVariable(namespace, myModule, 'TestServerVariable.3', true));
+        this.variables.push(new TestServerNumericVariable(namespace, myModule, 'Variable1'));
+        this.variables.push(new TestServerNumericVariable(namespace, myModule, 'Variable2'));
+        this.variables.push(new TestServerNumericVariable(namespace, myModule, 'TestServerVariable.3'));
 
         this.services.push(new TestServerService(namespace, myModule, 'Service1'));
         this.services.push(new TestServerService(namespace, myModule, 'Service2'));
