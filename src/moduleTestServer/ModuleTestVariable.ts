@@ -100,5 +100,4 @@ export abstract class TestServerVariable {
             }
         });
     }
-    
 }
