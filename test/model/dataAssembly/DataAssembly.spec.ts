@@ -183,7 +183,6 @@ describe('DataAssembly', () => {
                     CommandEnable: {value: 0},
                 } as ServiceControlOptions
             }, new OpcUaConnection(null, null)) as ServiceControl;
-            da1.logParsingErrors();
             expect(da1.hasBeenCompletelyParsed()).to.equal(false);
         });
 
