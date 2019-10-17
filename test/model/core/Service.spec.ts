@@ -57,7 +57,7 @@ describe('Service', () => {
         it('should fail with missing module', () => {
             expect(() => new Service(
                 {name: 'test', parameters: null, communication: null, strategies: null}, null, null)
-            ).to.throw('No module');
+            ).to.throw('No connection defined for creating data assembly');
         });
 
     });

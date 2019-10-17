@@ -117,13 +117,13 @@ describe('DataAssembly', () => {
                     } as any,
                     interface_class: 'analogitem'
                 }, undefined)
-            ).to.throw('No module for data assembly');
+            ).to.throw('No connection defined for creating data assembly');
         });
 
         it('should fail without provided module', async () => {
             expect(() => DataAssemblyFactory.create(
                 {name: 'test', interface_class: 'none', communication: null}, null)
-            ).to.throw(/No module for data assembly/);
+            ).to.throw('No connection defined for creating data assembly');
 
         });
 
