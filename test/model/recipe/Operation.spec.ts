@@ -76,7 +76,7 @@ describe('Operation', () => {
             }, [module])).to.throw('Could not find service with name test');
         });
 
-        it('should fail with wrong strategy name', () => {
+        it('should fail with wrong procedure name', () => {
             expect(() => new Operation({
                 module: 'ModuleTestServer',
                 service: 'Service1',
@@ -108,7 +108,6 @@ describe('Operation', () => {
     });
 
     describe('OPC UA server mockup', () => {
-
         let moduleServer: ModuleTestServer;
         let module: Module;
         let service: Service;

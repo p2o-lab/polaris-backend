@@ -39,7 +39,7 @@ describe('Transition', () => {
         expect(set.size).to.equal(0);
     });
 
-    it('should fail with missing strategyParameters', () => {
+    it('should fail with missing parameters', () => {
         expect(() => new Transition({next_step: undefined, condition: undefined}, [])).to.throw();
         expect(() => new Transition({next_step: null, condition: undefined}, [])).to.throw();
         expect(() => new Transition({next_step: 'a', condition: undefined}, [])).to.throw();

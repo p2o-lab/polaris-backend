@@ -191,13 +191,13 @@ export class Service extends BaseService {
      * get JSON overview about service and its state, opMode, procedures, parameters and controlEnable
      */
     public getOverview(): ServiceInterface {
-        const procedure = this.getCurrentProcedure();
+        const currentProcedure = this.getCurrentProcedure();
         return {
             name: this.name,
             opMode: opModetoJson(this.serviceControl.getOpMode()),
             status: ServiceState[this.state],
             strategies: this.procedures.map((procedure) => procedure.toJson()),
-            currentStrategy: procedure ? procedure.name : null,
+            currentStrategy: currentProcedure ? currentProcedure.name : null,
             parameters: this.parameters.map((param) => param.toJson()),
             controlEnable: this.controlEnable,
             lastChange: this.lastStatusChange ?

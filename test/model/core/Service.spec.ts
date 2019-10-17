@@ -82,22 +82,22 @@ describe('Service', () => {
             service = module.services[0];
         });
 
-        it('should get default strategy', () => {
+        it('should get default procedure', () => {
             const strategy = service.getDefaultProcedure();
             expect(strategy.name).to.equal('Strategy 1');
         });
 
-        it('should find strategy', () => {
+        it('should find v', () => {
             const strategy = service.getProcedureByNameOrDefault('Strategy 1');
             expect(strategy.name).to.equal('Strategy 1');
         });
 
-        it('should find strategy 2', () => {
-            const strategy = service.getProcedureByNameOrDefault('StrategyNotThere');
+        it('should find procedure 2', () => {
+            const strategy = service.getProcedureByNameOrDefault('ProcedureNotThere');
             expect(strategy).to.equal(undefined);
         });
 
-        it('should get undefined when getting current strategy when not connected', () => {
+        it('should get undefined when getting current procedure when not connected', () => {
             expect(service.getCurrentProcedure()).to.equal(undefined);
         });
     });
@@ -129,7 +129,7 @@ describe('Service', () => {
             await moduleServer.shutdown();
         });
 
-        it('should get default strategy for default strategy', () => {
+        it('should get default procedure for current procedure', () => {
             expect(service.getCurrentProcedure()).to.equal(service.getDefaultProcedure());
         });
 

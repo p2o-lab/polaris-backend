@@ -98,7 +98,7 @@ export class Procedure extends (EventEmitter as new() => ProcedureEmitter) {
                 return param.subscribe();
             })
         ]);
-        this.logger.debug(`Subscribed to procedure ${this.name}: ${JSON.stringify(this.parameters.map((p) => p.name))}`);
+        this.logger.debug(`Subscribed to procedure ${this.name}`);
         return this;
     }
 

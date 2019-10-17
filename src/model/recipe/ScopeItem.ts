@@ -28,8 +28,8 @@ import {Expression, Parser} from 'expr-eval';
 import {catScopeItem} from '../../config/logging';
 import {ServiceState} from '../core/enum';
 import {Module} from '../core/Module';
-import {Service} from '../core/Service';
 import {Procedure} from '../core/Procedure';
+import {Service} from '../core/Service';
 import {DataAssembly} from '../dataAssembly/DataAssembly';
 import {DataItem} from '../dataAssembly/DataItem';
 
