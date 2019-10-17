@@ -68,7 +68,7 @@ export class DataAssembly extends EventEmitter {
 
         this.connection = connection;
         if (!this.connection) {
-            throw new Error(`No module for data assembly: ${JSON.stringify(options)}`);
+            throw new Error(`No connection defined for creating data assembly: ${JSON.stringify(options)}`);
         }
 
         if (!options.communication) {
