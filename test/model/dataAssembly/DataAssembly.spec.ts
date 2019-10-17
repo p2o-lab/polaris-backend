@@ -117,13 +117,13 @@ describe('DataAssembly', () => {
                     } as any,
                     interface_class: 'analogitem'
                 }, undefined)
-            ).to.throw('No module for data assembly');
+            ).to.throw('No connection defined for creating data assembly');
         });
 
         it('should fail without provided module', async () => {
             expect(() => DataAssemblyFactory.create(
                 {name: 'test', interface_class: 'none', communication: null}, null)
-            ).to.throw(/No module for data assembly/);
+            ).to.throw('No connection defined for creating data assembly');
 
         });
 
@@ -167,7 +167,7 @@ describe('DataAssembly', () => {
                     OpMode: {value: 0}
                 } as ServiceControlOptions
             }, new OpcUaConnection(null, null)) as ServiceControl;
-            da1.checkExistenceOfAllDataItems();
+            expect(da1.hasBeenCompletelyParsed()).to.equal(true);
         });
 
         it('should have false check for ServiceControl', async () => {
@@ -183,7 +183,7 @@ describe('DataAssembly', () => {
                     CommandEnable: {value: 0},
                 } as ServiceControlOptions
             }, new OpcUaConnection(null, null)) as ServiceControl;
-            expect(() => da1.checkExistenceOfAllDataItems()).to.throw('No TagName variable found for generating');
+            expect(da1.hasBeenCompletelyParsed()).to.equal(false);
         });
 
         it('should create AnaView', async () => {
