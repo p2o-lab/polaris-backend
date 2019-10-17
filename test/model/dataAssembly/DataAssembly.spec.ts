@@ -167,7 +167,7 @@ describe('DataAssembly', () => {
                     OpMode: {value: 0}
                 } as ServiceControlOptions
             }, new OpcUaConnection(null, null)) as ServiceControl;
-            da1.checkExistenceOfAllDataItems();
+            expect(da1.hasBeenCompletelyParsed()).to.equal(true);
         });
 
         it('should have false check for ServiceControl', async () => {
@@ -183,7 +183,8 @@ describe('DataAssembly', () => {
                     CommandEnable: {value: 0},
                 } as ServiceControlOptions
             }, new OpcUaConnection(null, null)) as ServiceControl;
-            expect(() => da1.checkExistenceOfAllDataItems()).to.throw('No TagName variable found for generating');
+            da1.logParsingErrors();
+            expect(da1.hasBeenCompletelyParsed()).to.equal(false);
         });
 
         it('should create AnaView', async () => {

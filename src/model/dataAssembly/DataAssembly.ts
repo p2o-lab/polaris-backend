@@ -56,6 +56,7 @@ export class DataAssembly extends EventEmitter {
     public writeDataItem: DataItem<any> = null;
     public readDataItem: DataItem<any>;
     public requestedValue: string;
+    public parsingErrors: string[] = [];
     public parameterRequest: Parameter;
 
     constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
@@ -189,21 +190,20 @@ export class DataAssembly extends EventEmitter {
 
     public createDataItem(options: DataAssemblyOptions, name: string, access: 'read' | 'write', type?) {
         if (!options.communication[name]) {
-            catDataAssembly.warn(`No variable "${name}" found during parsing of ` +
-                `DataAssembly "${this.name}" (type ${this.constructor.name})`);
             this.communication[name] = undefined;
+            this.parsingErrors.push(name);
         } else {
             this.communication[name] =
                 OpcUaDataItem.fromOptions(options.communication[name], this.connection, access, type);
         }
     }
 
-    public checkExistenceOfAllDataItems() {
-        Object.entries(this.communication).forEach(([key, entry]: [string, DataItem<any>]) => {
-            if (entry === undefined) {
-                throw new Error(`No ${key} variable found for generating DataAssembly ${this.name} ` +
-                    `of type ${this.interfaceClass}`);
-            }
-        });
+    public logParsingErrors() {
+        catDataAssembly.warn(`${this.parsingErrors.length} variables have not been found during parsing variable ` +
+            `"${this.name}" of type "${this.constructor.name}": ${JSON.stringify(this.parsingErrors)}`);
+    }
+
+    public hasBeenCompletelyParsed(): boolean {
+        return this.parsingErrors.length === 0;
     }
 }
