@@ -28,9 +28,8 @@ import {EventEmitter} from 'events';
 import * as delay from 'timeout-as-promise';
 import {catOperation} from '../../config/logging';
 import {Module} from '../core/Module';
+import {Procedure} from '../core/Procedure';
 import {Service} from '../core/Service';
-import {Strategy} from '../core/Strategy';
-import {Parameter} from './Parameter';
 
 /** Operation used in a [[Step]] of a [[Recipe]] or [[PetrinetState]]
  *
@@ -42,7 +41,7 @@ export class Operation {
 
     public module: Module;
     public service: Service;
-    public strategy: Strategy;
+    public procedure: Procedure;
     public command: ServiceCommand;
     public parameterOptions: ParameterOptions[];
     public readonly emitter: EventEmitter;
@@ -68,12 +67,12 @@ export class Operation {
 
         this.service = this.module.getService(options.service);
         if (options.strategy) {
-            this.strategy = this.service.strategies.find((strategy) => strategy.name === options.strategy);
+            this.procedure = this.service.procedures.find((procedure) => procedure.name === options.strategy);
         } else {
-            this.strategy = this.service.getDefaultStrategy();
+            this.procedure = this.service.getDefaultProcedure();
         }
-        if (!this.strategy) {
-            throw new Error(`Strategy '${options.strategy}' could not be found in ${ this.service.name }.`);
+        if (!this.procedure) {
+            throw new Error(`Procedure '${options.strategy}' could not be found in ${ this.service.name }.`);
         }
         if (options.command) {
             this.command = options.command;
@@ -96,9 +95,9 @@ export class Operation {
         this.state = 'executing';
         while (this.state === 'executing') {
             catOperation.info(`Perform operation ${ this.module.id }.${ this.service.name }.${ this.command }() ` +
-                `(Strategy: ${ this.strategy ? this.strategy.name : '' })`);
-            await this.service.executeCommandWithStrategyAndParameter(
-                this.command, this.strategy, this.parameterOptions)
+                `(Strategy: ${ this.procedure ? this.procedure.name : '' })`);
+            await this.service.executeCommandWithProcedureAndParameter(
+                this.command, this.procedure, this.parameterOptions)
                 .then(() => {
                     this.state = 'completed';
                     this.emitter.emit('changed', 'completed');
@@ -132,7 +131,7 @@ export class Operation {
         return {
             module: this.module.id,
             service: this.service.name,
-            strategy: this.strategy ? this.strategy.name : undefined,
+            strategy: this.procedure ? this.procedure.name : undefined,
             command: this.command,
             parameter: this.parameterOptions,
             state: this.state

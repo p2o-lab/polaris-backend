@@ -505,7 +505,7 @@ describe('DataAssembly', () => {
             await module.connect();
             moduleServer.startSimulation();
 
-            const da = module.services[0].strategies[0].parameters[0];
+            const da = module.services[0].procedures[0].parameters[0];
             const inputDa = module.variables[0];
             await da.subscribe();
             await inputDa.subscribe();

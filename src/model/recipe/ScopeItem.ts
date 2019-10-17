@@ -29,7 +29,7 @@ import {catScopeItem} from '../../config/logging';
 import {ServiceState} from '../core/enum';
 import {Module} from '../core/Module';
 import {Service} from '../core/Service';
-import {Strategy} from '../core/Strategy';
+import {Procedure} from '../core/Procedure';
 import {DataAssembly} from '../dataAssembly/DataAssembly';
 import {DataItem} from '../dataAssembly/DataItem';
 
@@ -96,21 +96,21 @@ export class ScopeItem {
 
         // find service
         const service: Service = module.services.find((s) => s.name === token);
-        let strategy: Strategy;
+        let procedure: Procedure;
         if (service) {
             catScopeItem.debug(`Found service "${service.name}" for expression "${variable}"`);
-            strategy = service.getCurrentStrategy();
-            if (!strategy) {
-                strategy = service.getDefaultStrategy();
+            procedure = service.getCurrentProcedure();
+            if (!procedure) {
+                procedure = service.getDefaultProcedure();
             }
             token = components.shift();
 
             const paramList = [].concat(
                 service.parameters,
-                strategy.parameters,
-                strategy.processValuesIn,
-                strategy.processValuesOut,
-                strategy.reportParameters);
+                procedure.parameters,
+                procedure.processValuesIn,
+                procedure.processValuesOut,
+                procedure.reportParameters);
             dataAssembly = paramList.find((p) => p.name === token);
             if (!dataAssembly) {
                 if (token === 'state') {
@@ -118,7 +118,7 @@ export class ScopeItem {
                 } else {
                     catScopeItem.warn(`Could not evaluate variable "${variable}": ` +
                         `Token "${token}" not found as service parameter ` +
-                        `in service ${service.qualifiedName}.${strategy.name}`);
+                        `in service ${service.qualifiedName}.${procedure.name}`);
                     return null;
                 }
             }

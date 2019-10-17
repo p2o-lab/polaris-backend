@@ -33,7 +33,7 @@ import {ModulTestOpMode} from './ModulTestOpMode';
 
 export class TestServerService {
     public varStatus: number = 0;
-    public varStrategy: number = 1;
+    public varProcedure: number = 1;
     public varCommand: number = 0;
     public varCommandEnable: number = 0;
     public opMode: ModulTestOpMode;
@@ -86,10 +86,10 @@ export class TestServerService {
             dataType: 'UInt32',
             value: {
                 get: () => {
-                    return new Variant({dataType: DataType.UInt32, value: this.varStrategy});
+                    return new Variant({dataType: DataType.UInt32, value: this.varProcedure});
                 },
                 set: (variant) => {
-                    this.varStrategy = parseInt(variant.value, 10);
+                    this.varProcedure = parseInt(variant.value, 10);
                     return StatusCodes.Good;
                 }
             }
@@ -102,7 +102,7 @@ export class TestServerService {
             dataType: 'UInt32',
             value: {
                 get: () => {
-                    return new Variant({dataType: DataType.UInt32, value: this.varStrategy});
+                    return new Variant({dataType: DataType.UInt32, value: this.varProcedure});
                 }
             }
         });

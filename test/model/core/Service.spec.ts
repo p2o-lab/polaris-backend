@@ -83,22 +83,22 @@ describe('Service', () => {
         });
 
         it('should get default strategy', () => {
-            const strategy = service.getDefaultStrategy();
+            const strategy = service.getDefaultProcedure();
             expect(strategy.name).to.equal('Strategy 1');
         });
 
         it('should find strategy', () => {
-            const strategy = service.getStrategyByNameOrDefault('Strategy 1');
+            const strategy = service.getProcedureByNameOrDefault('Strategy 1');
             expect(strategy.name).to.equal('Strategy 1');
         });
 
         it('should find strategy 2', () => {
-            const strategy = service.getStrategyByNameOrDefault('StrategyNotThere');
+            const strategy = service.getProcedureByNameOrDefault('StrategyNotThere');
             expect(strategy).to.equal(undefined);
         });
 
         it('should get undefined when getting current strategy when not connected', () => {
-            expect(service.getCurrentStrategy()).to.equal(undefined);
+            expect(service.getCurrentProcedure()).to.equal(undefined);
         });
     });
 
@@ -130,7 +130,7 @@ describe('Service', () => {
         });
 
         it('should get default strategy for default strategy', () => {
-            expect(service.getCurrentStrategy()).to.equal(service.getDefaultStrategy());
+            expect(service.getCurrentProcedure()).to.equal(service.getDefaultProcedure());
         });
 
         it('should find parameter', () => {

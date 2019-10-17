@@ -199,7 +199,7 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
                         timestampPfe: new Date(),
                         module: module.id,
                         service: data.service.name,
-                        strategy: data.strategy.name,
+                        procedure: data.procedure.name,
                         command: ServiceCommand[data.command],
                         parameter: data.parameter ? data.parameter.map((param) => {
                             return {name: param.name, value: param.value};
@@ -339,7 +339,7 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
                     timestampPfe: new Date(),
                     module: 'virtualServices',
                     service: virtualService.name,
-                    strategy: null,
+                    procedure: null,
                     command: ServiceCommand[data.command],
                     parameter: data.parameter ? data.parameter.map((param) => {
                         return {name: param.name, value: param.value};
