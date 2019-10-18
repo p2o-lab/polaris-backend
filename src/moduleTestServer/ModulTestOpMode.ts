@@ -27,7 +27,7 @@ import {Namespace, UAObject} from 'node-opcua-address-space';
 import {StatusCodes} from 'node-opcua-constants';
 import {DataType, Variant} from 'node-opcua-variant';
 import {catTestServer} from '../config/logging';
-import {OpMode} from '../model/core/enum';
+import {OpMode} from '../model/dataAssembly/mixins/OpMode';
 
 export class ModulTestOpMode {
     public opMode: number = 0;
