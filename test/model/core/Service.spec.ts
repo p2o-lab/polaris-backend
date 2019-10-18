@@ -28,14 +28,13 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
 import * as parseJson from 'json-parse-better-errors';
-import {
-    isAutomaticState, isExtSource, isOffState, OpMode,
-    ServiceState
-} from '../../../src/model/core/enum';
+import {ServiceState} from '../../../src/model/core/enum';
 import {Module} from '../../../src/model/core/Module';
 import {Service} from '../../../src/model/core/Service';
+import {OpMode} from '../../../src/model/dataAssembly/mixins/OpMode';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 import {TestServerService} from '../../../src/moduleTestServer/ModuleTestService';
+import {Operation} from '../../../src/model/recipe/Operation';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -189,15 +188,15 @@ describe('Service', () => {
 
         it('waitForOpModeSpecificTest', async () => {
             testService.opMode.opMode = 0;
-            await service.waitForOpModeToPassSpecificTest(isOffState);
+            await service.serviceControl.waitForOpModeToPassSpecificTest('Off');
             expect(service.serviceControl.getOpMode()).to.equal(0);
 
             service.setOperationMode();
 
-            await service.waitForOpModeToPassSpecificTest(isAutomaticState);
+            await service.serviceControl.waitForOpModeToPassSpecificTest('Automatic');
             expect(service.serviceControl.getOpMode()).to.equal(OpMode.stateAutAct + OpMode.srcIntAct);
 
-            await service.waitForOpModeToPassSpecificTest(isExtSource);
+            await service.serviceControl.waitForOpModeToPassSpecificTest('External');
             expect(service.serviceControl.getOpMode()).to.equal(OpMode.stateAutAct);
         });
 
