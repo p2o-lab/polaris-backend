@@ -37,11 +37,10 @@ import {DataAssemblyFactory} from '../../../src/model/dataAssembly/DataAssemblyF
 import {ExtIntDigOp} from '../../../src/model/dataAssembly/DigOp';
 import {DigMon} from '../../../src/model/dataAssembly/DigView';
 import {MonAnaDrv} from '../../../src/model/dataAssembly/Drv';
+import {OpMode} from '../../../src/model/dataAssembly/mixins/OpMode';
 import {ServiceControl} from '../../../src/model/dataAssembly/ServiceControl';
 import {StrView} from '../../../src/model/dataAssembly/Str';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
-import {TestServerVariable} from '../../../src/moduleTestServer/ModuleTestVariable';
-import {OpMode} from '../../../src/model/dataAssembly/mixins/OpMode';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;

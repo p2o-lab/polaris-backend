@@ -35,7 +35,6 @@ import {Service} from '../../../src/model/core/Service';
 import {OpMode} from '../../../src/model/dataAssembly/mixins/OpMode';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 import {TestServerService} from '../../../src/moduleTestServer/ModuleTestService';
-import {Operation} from '../../../src/model/recipe/Operation';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
