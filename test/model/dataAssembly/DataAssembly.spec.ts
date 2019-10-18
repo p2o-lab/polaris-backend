@@ -497,7 +497,7 @@ describe('DataAssembly', () => {
             expect(da.writeDataItem.value).to.equal(12);
         }).timeout(5000);
 
-        it('should set continous value', async () => {
+        it('should set continuous value', async () => {
             const daModule = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString())
                 .modules[0];
             const module = new Module(daModule);
@@ -556,7 +556,13 @@ describe('DataAssembly', () => {
                 expect(json).to.have.property('max');
                 expect(json).to.have.property('unit');
             }
-        }).timeout(5000);
+
+            await da.setToManualOperationMode();
+            expect(da.opModeToJson()).to.deep.equal({state: 'manual', source: undefined});
+
+            await da.setToAutomaticOperationMode();
+            expect(da.opModeToJson()).to.deep.equal({state: 'automatic', source: 'external'});
+        }).timeout(8000);
 
         it('should create StrView', async () => {
             const daJson = {

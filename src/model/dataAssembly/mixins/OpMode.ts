@@ -69,23 +69,17 @@ export function OpModeDA<TBase extends Constructor<DataAssembly>>(Base: TBase) {
             switch (expectedOpMode) {
                 case 'Automatic':
                     return this.isAutomaticState();
-                    break;
                 case 'Manual':
                     return this.isManualState();
-                    break;
                 case 'External':
                     return this.isExtSource();
-                    break;
                 case 'Off':
                     return this.isOffState();
-                    break;
             }
         }
 
         public async waitForOpModeToPassSpecificTest(expectedOpMode: 'Off' | 'Automatic' | 'External' | 'Manual') {
-            if (!this.subscriptionActive) {
-                await this.subscribe();
-            }
+            await this.subscribe();
             return new Promise((resolve) => {
                 if (this.isOpMode(expectedOpMode)) {
                     resolve();
@@ -126,7 +120,7 @@ export function OpModeDA<TBase extends Constructor<DataAssembly>>(Base: TBase) {
         }
 
         public async setToManualOperationMode() {
-            if (this.isManualState()) {
+            if (!this.isManualState()) {
                 this.writeOpMode(OpMode.stateManOp);
                 await this.waitForOpModeToPassSpecificTest('Manual');
             }
