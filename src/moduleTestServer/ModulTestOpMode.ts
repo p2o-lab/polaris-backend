@@ -26,7 +26,7 @@
 import {Namespace, UAObject} from 'node-opcua-address-space';
 import {StatusCodes} from 'node-opcua-constants';
 import {DataType, Variant} from 'node-opcua-variant';
-import {OperationMode} from '../model/core/enum';
+import {OperationMode} from '../model/dataAssembly/mixins/OpMode';
 
 export class ModulTestOpMode {
     public opMode: OperationMode = OperationMode.Offline;
@@ -97,12 +97,10 @@ export class ModulTestOpMode {
                 set: (variant) => {
                     this.stateOffOp = variant.value;
                     if (this.stateOffOp) {
-                        global.setInterval(() => {
-                            if (this.stateOpAct && !this.stateChannel) {
-                                this.opMode = OperationMode.Offline;
-                            }
-                            this.stateOffOp = false;
-                        }, 100);
+                        if (this.stateOpAct && !this.stateChannel) {
+                            this.opMode = OperationMode.Offline;
+                        }
+                        this.stateOffOp = false;
                     }
                     return StatusCodes.Good;
                 }
@@ -120,12 +118,10 @@ export class ModulTestOpMode {
                 set: (variant) => {
                     this.stateOpOp = variant.value;
                     if (this.stateOpOp) {
-                        global.setInterval(() => {
-                            if (!this.stateChannel) {
-                                this.opMode = OperationMode.Operator;
-                            }
-                            this.stateOpOp = false;
-                        }, 100);
+                        if (!this.stateChannel) {
+                            this.opMode = OperationMode.Operator;
+                        }
+                        this.stateOpOp = false;
                     }
                     return StatusCodes.Good;
                 }
@@ -143,12 +139,10 @@ export class ModulTestOpMode {
                 set: (variant) => {
                     this.stateAutOp = variant.value;
                     if (this.stateAutOp) {
-                        global.setInterval(() => {
-                            if (this.stateOpAct && this.stateOpAct && !this.stateChannel) {
-                                this.opMode = OperationMode.Automatic;
-                            }
-                            this.stateAutOp = false;
-                        }, 100);
+                        if (this.stateOpAct && !this.stateChannel) {
+                            this.opMode = OperationMode.Automatic;
+                        }
+                        this.stateAutOp = false;
                     }
                     return StatusCodes.Good;
                 }
@@ -190,12 +184,14 @@ export class ModulTestOpMode {
         });
     }
 
-    public stateOpAct(): boolean {
+    public get stateOpAct(): boolean {
         return this.opMode === OperationMode.Operator;
     }
-    public stateAutAct(): boolean {
+
+    public get stateAutAct(): boolean {
         return this.opMode === OperationMode.Automatic;
     }
+
     public get stateOffAct(): boolean {
         return this.opMode === OperationMode.Offline;
     }

@@ -26,8 +26,9 @@
 import {BaseDataAssemblyRuntime, DataAssembly} from './DataAssembly';
 import {OpcUaDataItem} from './DataItem';
 import {OpModeDA, OpModeRuntime} from './mixins/OpMode';
+import {SourceModeDA, SourceModeRuntime} from './mixins/SourceMode';
 
-export type ServiceControlRuntime  = BaseDataAssemblyRuntime & OpModeRuntime & {
+export type ServiceControlRuntime  = BaseDataAssemblyRuntime & OpModeRuntime & SourceModeRuntime & {
     CommandMan: OpcUaDataItem<number>;
     CommandExt: OpcUaDataItem<number>;
     CommandEnable: OpcUaDataItem<number>;
@@ -38,7 +39,7 @@ export type ServiceControlRuntime  = BaseDataAssemblyRuntime & OpModeRuntime & {
     CurrentStrategy: OpcUaDataItem<number>;
 };
 
-export class ServiceControl extends OpModeDA(DataAssembly) {
+export class ServiceControl extends OpModeDA(SourceModeDA(DataAssembly)) {
     public readonly communication: ServiceControlRuntime;
 
     constructor(options, connection) {

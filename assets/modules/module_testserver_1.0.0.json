@@ -103,9 +103,45 @@
                       "namespace_index": "urn:NodeOPCUA-Server-default",
                       "node_id": "Service1.Factor.OSLevel"
                     },
-                    "OpMode": {
+                    "StateChannel": {
                       "namespace_index": "urn:NodeOPCUA-Server-default",
-                      "node_id": "Service1.Factor.OpMode"
+                      "node_id": "Service1.Factor.StateChannel"
+                    },
+                    "StateOffAut": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.Factor.StateOffAut"
+                    },
+                    "StateOpAut": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.Factor.StateOpAut"
+                    },
+                    "StateAutAut": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.Factor.StateAutAut"
+                    },
+                    "StateOffOp": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.Factor.StateOffOp"
+                    },
+                    "StateOpOp": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.Factor.StateOpOp"
+                    },
+                    "StateAutOp": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.Factor.StateAutOp"
+                    },
+                    "StateOffAct": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.Factor.StateOffAct"
+                    },
+                    "StateOpAct": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.Factor.StateOpAct"
+                    },
+                    "StateAutAct": {
+                      "namespace_index": "urn:NodeOPCUA-Server-default",
+                      "node_id": "Service1.Factor.StateAutAct"
                     }
                   }
                 },

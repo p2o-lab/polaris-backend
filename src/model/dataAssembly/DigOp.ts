@@ -29,6 +29,7 @@ import {DataAssembly} from './DataAssembly';
 import {OpModeDA} from './mixins/OpMode';
 import {ScaleSettingsDA} from './mixins/ScaleSettings';
 import {UnitDA} from './mixins/Unit';
+import {SourceModeDA} from './mixins/SourceMode';
 
 export class ExtDigOp extends ScaleSettingsDA(UnitDA(DataAssembly)) {
     public readonly communication: AnaOpRuntime;
@@ -44,7 +45,7 @@ export class ExtDigOp extends ScaleSettingsDA(UnitDA(DataAssembly)) {
     }
 }
 
-export class ExtIntDigOp extends OpModeDA(ExtDigOp) {
+export class ExtIntDigOp extends OpModeDA(SourceModeDA(ExtDigOp)) {
 
 }
 

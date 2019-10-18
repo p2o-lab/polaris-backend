@@ -37,10 +37,9 @@ import {Category} from 'typescript-logging';
 import {catService} from '../../config/logging';
 import {DataAssembly} from '../dataAssembly/DataAssembly';
 import {DataAssemblyFactory} from '../dataAssembly/DataAssemblyFactory';
-import {OpcUaDataItem} from '../dataAssembly/DataItem';
 import {ServiceControl} from '../dataAssembly/ServiceControl';
 import {BaseService, BaseServiceEvents} from './BaseService';
-import {controlEnableToJson, OperationMode, opModetoJson, ServiceControlEnable, ServiceMtpCommand, ServiceState} from './enum';
+import {controlEnableToJson, ServiceControlEnable, ServiceMtpCommand, ServiceState} from './enum';
 import {Module} from './Module';
 import {OpcUaConnection} from './OpcUaConnection';
 import {Strategy} from './Strategy';
@@ -111,7 +110,9 @@ export class Service extends BaseService {
         this.serviceControl = new ServiceControl(
             {name: this._name, interface_class: 'ServiceControl', communication: serviceOptions.communication},
             connection);
-        this.serviceControl.checkExistenceOfAllDataItems();
+        if (!this.serviceControl.hasBeenCompletelyParsed()) {
+            throw new Error(`Service Control not fully defined in options`);
+        }
 
         this.strategies = serviceOptions.strategies
             .map((option) => new Strategy(option, connection));
@@ -147,8 +148,8 @@ export class Service extends BaseService {
             })
             .on('OpMode', () => {
                 this.logger.debug(`[${this.qualifiedName}] Current OpMode changed: ` +
-                    `${opModetoJson(this.serviceControl.getOperationMode())}`);
-                this.eventEmitter.emit('opMode', opModetoJson(this.serviceControl.getOperationMode()));
+                    `${this.serviceControl.opModeToJson()}`);
+                this.eventEmitter.emit('opMode', this.serviceControl.opModeToJson());
             })
             .on('State', () => {
                 this.logger.debug(`[${this.qualifiedName}] State changed: ` +
@@ -194,7 +195,7 @@ export class Service extends BaseService {
         const currentStrategy = this.getCurrentStrategy();
         return {
             name: this.name,
-            opMode: opModetoJson(this.serviceControl.getOperationMode()),
+            opMode: this.serviceControl.opModeToJson(),
             status: ServiceState[this.state],
             strategies: this.strategies.map((strategy) => strategy.toJson()),
             currentStrategy: currentStrategy ? currentStrategy.name : null,

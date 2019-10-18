@@ -27,7 +27,6 @@ import {OpcUaNodeOptions, ServiceControlOptions} from '@p2olab/polaris-interface
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
-import {isAutomaticState, isManualState, isOffState, OperationMode, opModetoJson} from '../../../src/model/core/enum';
 import {Module} from '../../../src/model/core/Module';
 import {OpcUaConnection} from '../../../src/model/core/OpcUaConnection';
 import {AdvAnaOp, AnaServParam, ExtAnaOp, ExtIntAnaOp} from '../../../src/model/dataAssembly/AnaOp';
@@ -38,10 +37,11 @@ import {DataAssemblyFactory} from '../../../src/model/dataAssembly/DataAssemblyF
 import {ExtIntDigOp} from '../../../src/model/dataAssembly/DigOp';
 import {DigMon} from '../../../src/model/dataAssembly/DigView';
 import {MonAnaDrv} from '../../../src/model/dataAssembly/Drv';
+import {OperationMode} from '../../../src/model/dataAssembly/mixins/OpMode';
 import {ServiceControl} from '../../../src/model/dataAssembly/ServiceControl';
 import {StrView} from '../../../src/model/dataAssembly/Str';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
-import {TestServerVariable} from '../../../src/moduleTestServer/ModuleTestVariable';
+import {SourceMode} from '../../../src/model/dataAssembly/mixins/SourceMode';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -117,13 +117,13 @@ describe('DataAssembly', () => {
                     } as any,
                     interface_class: 'analogitem'
                 }, undefined)
-            ).to.throw('No module for data assembly');
+            ).to.throw('No connection defined for creating data assembly');
         });
 
         it('should fail without provided module', async () => {
             expect(() => DataAssemblyFactory.create(
                 {name: 'test', interface_class: 'none', communication: null}, null)
-            ).to.throw(/No module for data assembly/);
+            ).to.throw('No connection defined for creating data assembly');
 
         });
 
@@ -167,7 +167,7 @@ describe('DataAssembly', () => {
                     OpMode: {value: 0}
                 } as ServiceControlOptions
             }, new OpcUaConnection(null, null)) as ServiceControl;
-            da1.checkExistenceOfAllDataItems();
+            expect(da1.hasBeenCompletelyParsed()).to.equal(true);
         });
 
         it('should have false check for ServiceControl', async () => {
@@ -183,7 +183,7 @@ describe('DataAssembly', () => {
                     CommandEnable: {value: 0},
                 } as ServiceControlOptions
             }, new OpcUaConnection(null, null)) as ServiceControl;
-            expect(() => da1.checkExistenceOfAllDataItems()).to.throw('No TagName variable found for generating');
+            expect(da1.hasBeenCompletelyParsed()).to.equal(false);
         });
 
         it('should create AnaView', async () => {
@@ -498,7 +498,7 @@ describe('DataAssembly', () => {
             expect(da.writeDataItem.value).to.equal(12);
         }).timeout(5000);
 
-        it('should set continous value', async () => {
+        it('should set continuous value', async () => {
             const daModule = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString())
                 .modules[0];
             const module = new Module(daModule);
@@ -532,21 +532,22 @@ describe('DataAssembly', () => {
             expect(da instanceof ExtAnaOp).to.equal(true);
             expect(da instanceof ExtIntAnaOp).to.equal(true);
             expect(da instanceof AdvAnaOp).to.equal(false);
-            expect(da.communication.OpMode.value).to.equal(0);
 
-            await da.waitForOpModeToPassSpecificTest(isOffState);
-            let opMode = da.getOpMode();
-            expect(opModetoJson(opMode)).to.deep.equal({state: 'off', source: undefined});
+            await da.waitForOpModeToPassSpecificTest(OperationMode.Offline);
+            expect(da.opModeToJson()).to.deep.equal({state: 'off', source: undefined});
 
-            moduleServer.services[0].factor.opMode.opMode = OperationMode.stateManAct;
-            await da.waitForOpModeToPassSpecificTest(isManualState);
-            opMode = da.getOpMode();
-            expect(opModetoJson(opMode)).to.deep.equal({state: 'manual', source: undefined});
+            expect(da.classicOpMode).to.equal(false);
+            await da.writeOpMode(OperationMode.Operator);
+            await da.waitForOpModeToPassSpecificTest(OperationMode.Operator);
+            expect(da.opModeToJson()).to.deep.equal({state: 'manual', source: undefined});
 
-            moduleServer.services[0].factor.opMode.opMode = OperationMode.stateAutAct;
-            await da.waitForOpModeToPassSpecificTest(isAutomaticState);
-            opMode = da.getOpMode();
-            expect(opModetoJson(opMode)).to.deep.equal({state: 'automatic', source: 'external'});
+            moduleServer.services[0].factor.opMode.opMode = OperationMode.Automatic;
+            await da.waitForOpModeToPassSpecificTest(OperationMode.Automatic);
+            expect(da.opModeToJson()).to.deep.equal({state: 'automatic', source: undefined});
+
+            da.setToExternalSourceMode();
+            await da.waitForSourceModeToPassSpecificTest(SourceMode.Manual);
+            expect(da.opModeToJson()).to.deep.equal({state: 'automatic', source: undefined});
 
             if (da instanceof ExtIntAnaOp) {
                 expect(da.communication.VOut).to.have.property('nodeId', 'Service1.Factor.V');
@@ -560,7 +561,13 @@ describe('DataAssembly', () => {
                 expect(json).to.have.property('max');
                 expect(json).to.have.property('unit');
             }
-        }).timeout(5000);
+
+            await da.setToManualOperationMode();
+            expect(da.opModeToJson()).to.deep.equal({state: 'manual', source: undefined});
+
+            await da.setToAutomaticOperationMode();
+            expect(da.opModeToJson()).to.deep.equal({state: 'automatic', source: undefined});
+        }).timeout(8000);
 
         it('should create StrView', async () => {
             const daJson = {
