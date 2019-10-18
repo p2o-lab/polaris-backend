@@ -110,7 +110,9 @@ export class Service extends BaseService {
         this.serviceControl = new ServiceControl(
             {name: this._name, interface_class: 'ServiceControl', communication: serviceOptions.communication},
             connection);
-        this.serviceControl.checkExistenceOfAllDataItems();
+        if (!this.serviceControl.hasBeenCompletelyParsed()) {
+            throw new Error(`Service Control not fully defined in options`);
+        }
 
         this.strategies = serviceOptions.strategies
             .map((option) => new Strategy(option, connection));

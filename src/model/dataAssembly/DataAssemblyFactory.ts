@@ -87,6 +87,8 @@ export class DataAssemblyFactory {
             type = DataAssembly;
         }
 
-        return new type(variableOptions, connection);
+        const instance: DataAssembly = new type(variableOptions, connection);
+        instance.logParsingErrors();
+        return instance;
     }
 }
