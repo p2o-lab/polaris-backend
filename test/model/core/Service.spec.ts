@@ -29,7 +29,7 @@ import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
 import * as parseJson from 'json-parse-better-errors';
 import {
-    isAutomaticState, isExtSource, isOffState, OpMode,
+    isAutomaticState, isExtSource, isOffState, OperationMode,
     ServiceState
 } from '../../../src/model/core/enum';
 import {Module} from '../../../src/model/core/Module';
@@ -185,20 +185,6 @@ describe('Service', () => {
                 stop: true,
                 unhold: false
             });
-        });
-
-        it('waitForOpModeSpecificTest', async () => {
-            testService.opMode.opMode = 0;
-            await service.waitForOpModeToPassSpecificTest(isOffState);
-            expect(service.serviceControl.getOpMode()).to.equal(0);
-
-            service.setOperationMode();
-
-            await service.waitForOpModeToPassSpecificTest(isAutomaticState);
-            expect(service.serviceControl.getOpMode()).to.equal(OpMode.stateAutAct + OpMode.srcIntAct);
-
-            await service.waitForOpModeToPassSpecificTest(isExtSource);
-            expect(service.serviceControl.getOpMode()).to.equal(OpMode.stateAutAct);
         });
 
         it('full service state cycle', async () => {

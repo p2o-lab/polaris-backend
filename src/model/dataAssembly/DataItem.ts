@@ -120,7 +120,7 @@ export class OpcUaDataItem<T> extends DataItem<T> {
         return this;
     }
 
-    public write(value: number | string) {
+    public write(value: number | string | boolean) {
         this.logger.debug(`write: ${value} to ${this.nodeId}`);
         return this.connection.writeOpcUaNode(this.nodeId, this.namespaceIndex, value, this.dataType);
     }

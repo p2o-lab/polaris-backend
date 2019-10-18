@@ -170,7 +170,7 @@ export class  OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionE
         }
     }
 
-    public async writeOpcUaNode(nodeId: string, namespaceUrl: string, value: number | string, dataType) {
+    public async writeOpcUaNode(nodeId: string, namespaceUrl: string, value: number | string | boolean, dataType) {
         if (!this.isConnected()) {
             throw new Error(`Can not write node since OPC UA connection to module ${this.id} is not established`);
         } else {

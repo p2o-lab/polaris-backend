@@ -40,7 +40,7 @@ import {DataAssemblyFactory} from '../dataAssembly/DataAssemblyFactory';
 import {OpcUaDataItem} from '../dataAssembly/DataItem';
 import {ServiceControl} from '../dataAssembly/ServiceControl';
 import {BaseService, BaseServiceEvents} from './BaseService';
-import {controlEnableToJson, OpMode, opModetoJson, ServiceControlEnable, ServiceMtpCommand, ServiceState} from './enum';
+import {controlEnableToJson, OperationMode, opModetoJson, ServiceControlEnable, ServiceMtpCommand, ServiceState} from './enum';
 import {Module} from './Module';
 import {OpcUaConnection} from './OpcUaConnection';
 import {Strategy} from './Strategy';
@@ -147,8 +147,8 @@ export class Service extends BaseService {
             })
             .on('OpMode', () => {
                 this.logger.debug(`[${this.qualifiedName}] Current OpMode changed: ` +
-                    `${opModetoJson(this.serviceControl.getOpMode())}`);
-                this.eventEmitter.emit('opMode', opModetoJson(this.serviceControl.getOpMode()));
+                    `${opModetoJson(this.serviceControl.getOperationMode())}`);
+                this.eventEmitter.emit('opMode', opModetoJson(this.serviceControl.getOperationMode()));
             })
             .on('State', () => {
                 this.logger.debug(`[${this.qualifiedName}] State changed: ` +
@@ -194,7 +194,7 @@ export class Service extends BaseService {
         const currentStrategy = this.getCurrentStrategy();
         return {
             name: this.name,
-            opMode: opModetoJson(this.serviceControl.getOpMode()),
+            opMode: opModetoJson(this.serviceControl.getOperationMode()),
             status: ServiceState[this.state],
             strategies: this.strategies.map((strategy) => strategy.toJson()),
             currentStrategy: currentStrategy ? currentStrategy.name : null,
@@ -318,10 +318,6 @@ export class Service extends BaseService {
         } else {
             return this.serviceControl.setToManualOperationMode();
         }
-    }
-
-    public async waitForOpModeToPassSpecificTest(testFunction: (opMode: OpMode) => boolean) {
-        return this.serviceControl.waitForOpModeToPassSpecificTest(testFunction);
     }
 
     public findInputParameter(parameterName: string): DataAssembly {

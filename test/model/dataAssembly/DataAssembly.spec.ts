@@ -27,7 +27,7 @@ import {OpcUaNodeOptions, ServiceControlOptions} from '@p2olab/polaris-interface
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
-import {isAutomaticState, isManualState, isOffState, OpMode, opModetoJson} from '../../../src/model/core/enum';
+import {isAutomaticState, isManualState, isOffState, OperationMode, opModetoJson} from '../../../src/model/core/enum';
 import {Module} from '../../../src/model/core/Module';
 import {OpcUaConnection} from '../../../src/model/core/OpcUaConnection';
 import {AdvAnaOp, AnaServParam, ExtAnaOp, ExtIntAnaOp} from '../../../src/model/dataAssembly/AnaOp';
@@ -538,12 +538,12 @@ describe('DataAssembly', () => {
             let opMode = da.getOpMode();
             expect(opModetoJson(opMode)).to.deep.equal({state: 'off', source: undefined});
 
-            moduleServer.services[0].factor.opMode.opMode = OpMode.stateManAct;
+            moduleServer.services[0].factor.opMode.opMode = OperationMode.stateManAct;
             await da.waitForOpModeToPassSpecificTest(isManualState);
             opMode = da.getOpMode();
             expect(opModetoJson(opMode)).to.deep.equal({state: 'manual', source: undefined});
 
-            moduleServer.services[0].factor.opMode.opMode = OpMode.stateAutAct;
+            moduleServer.services[0].factor.opMode.opMode = OperationMode.stateAutAct;
             await da.waitForOpModeToPassSpecificTest(isAutomaticState);
             opMode = da.getOpMode();
             expect(opModetoJson(opMode)).to.deep.equal({state: 'automatic', source: 'external'});

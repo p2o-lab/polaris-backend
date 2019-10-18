@@ -85,54 +85,45 @@ export enum ServiceMtpCommand {
     COMPLETE = 1024
 }
 
-export enum OpMode {
-    stateLiOp = 1,
-    stateOffLi = 2,
-    stateOffOp = 4,
-    stateManLi = 8,
-    stateManOp = 16,
-    stateAutLi = 32,
-    stateAutOp = 64,
-    stateManAct = 128,
-    stateAutAct = 256,
-    srcLiOp = 512,
-    srcExtLi = 1024,
-    srcIntLi = 2048,
-    srcIntOp = 4096,
-    srcExtOp = 8192,
-    srcIntAct = 16384
+export enum OperationMode {
+    Offline,
+    Operator,
+    Automatic
 }
 
-export function opModetoJson(opMode: OpMode): OpModeInterface {
-    let source: 'external' | 'internal';
+export enum SourceMode {
+    Manual,
+    Intern
+}
+
+export function opModetoJson(opMode: OperationMode): OpModeInterface {
     let state;
     if (isManualState(opMode)) {
-        state = 'manual';
+        state = 'operator';
     } else if (isAutomaticState(opMode)) {
         state = 'automatic';
-        source = isExtSource(opMode) ? 'external' : 'internal';
     } else if (isOffState(opMode)) {
-        state = 'off';
+        state = 'offline';
     }
-    return {state: state, source: source};
+    return {state: state, source: undefined};
 }
 
-export function isOffState(opMode: OpMode): boolean {
-    return (opMode & (OpMode.stateAutAct | OpMode.stateManAct)) === 0;
+export function isOffState(opMode: OperationMode): boolean {
+    return (opMode === OperationMode.Offline);
 }
 
-export function isAutomaticState(opMode: OpMode): boolean {
-    return (opMode & OpMode.stateAutAct) === OpMode.stateAutAct;
+export function isAutomaticState(opMode: OperationMode): boolean {
+    return (opMode === OperationMode.Automatic);
 }
 
-export function isManualState(opMode: OpMode): boolean {
-    return (opMode & OpMode.stateManAct) === OpMode.stateManAct;
+export function isManualState(opMode: OperationMode): boolean {
+    return (opMode === OperationMode.Operator);
 }
 
-export function isExtSource(opMode: OpMode): boolean {
-    return (opMode & OpMode.srcIntAct) === 0;
+export function isExtSource(sourceMode: SourceMode): boolean {
+    return (sourceMode === SourceMode.Manual);
 }
 
-export function isIntSource(opMode: OpMode): boolean {
-    return (opMode & OpMode.srcIntAct) === OpMode.srcIntAct;
+export function isIntSource(sourceMode: SourceMode): boolean {
+    return (sourceMode === SourceMode.Intern);
 }

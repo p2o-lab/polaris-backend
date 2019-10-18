@@ -23,13 +23,11 @@
  * SOFTWARE.
  */
 
-/* tslint:disable:max-classes-per-file */
 import {BaseDataAssemblyRuntime, DataAssembly} from './DataAssembly';
 import {OpcUaDataItem} from './DataItem';
-import {OpModeDA} from './mixins/OpMode';
+import {OpModeDA, OpModeRuntime} from './mixins/OpMode';
 
-export interface ServiceControlRuntime extends BaseDataAssemblyRuntime {
-    OpMode: OpcUaDataItem<number>;
+export type ServiceControlRuntime  = BaseDataAssemblyRuntime & OpModeRuntime & {
     CommandMan: OpcUaDataItem<number>;
     CommandExt: OpcUaDataItem<number>;
     CommandEnable: OpcUaDataItem<number>;
@@ -38,7 +36,7 @@ export interface ServiceControlRuntime extends BaseDataAssemblyRuntime {
     StrategyExt: OpcUaDataItem<number>;
     StrategyInt: OpcUaDataItem<number>;
     CurrentStrategy: OpcUaDataItem<number>;
-}
+};
 
 export class ServiceControl extends OpModeDA(DataAssembly) {
     public readonly communication: ServiceControlRuntime;
