@@ -525,6 +525,7 @@ describe('DataAssembly', () => {
                 .modules[0].services[0];
             const da: ServiceControl = DataAssemblyFactory.create(
                     {...daJson, interface_class: 'ServiceControl'} as any, connection) as ServiceControl;
+            expect(da.classicOpMode).to.equal(true);
 
             await da.subscribe();
             expect(da.name).to.equal('Service1');
@@ -544,6 +545,7 @@ describe('DataAssembly', () => {
                 .modules[0].services[0];
             const da: ServiceControl = DataAssemblyFactory.create(
                 {...daJson, interface_class: 'ServiceControl'} as any, connection) as ServiceControl;
+            expect(da.classicOpMode).to.equal(false);
 
             await da.subscribe();
             expect(da.name).to.equal('Service1');
