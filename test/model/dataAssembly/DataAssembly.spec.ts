@@ -520,6 +520,44 @@ describe('DataAssembly', () => {
             expect(da.getValue()).to.equal(11);
         }).timeout(5000);
 
+        it('should create ServiceControl old', async () => {
+            const daJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString())
+                .modules[0].services[0];
+            const da: ServiceControl = DataAssemblyFactory.create(
+                    {...daJson, interface_class: 'ServiceControl'} as any, connection) as ServiceControl;
+
+            await da.subscribe();
+            expect(da.name).to.equal('Service1');
+            expect(da instanceof ServiceControl).to.equal(true);
+
+            expect(da.getOperationMode()).to.equal(OperationMode.Offline);
+
+            await da.setToManualOperationMode();
+            expect(da.getOperationMode()).to.equal(OperationMode.Operator);
+
+            await da.setToAutomaticOperationMode();
+            expect(da.getOperationMode()).to.equal(OperationMode.Automatic);
+        }).timeout(4000);
+
+        it('should create ServiceControl new', async () => {
+            const daJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0_2.json').toString())
+                .modules[0].services[0];
+            const da: ServiceControl = DataAssemblyFactory.create(
+                {...daJson, interface_class: 'ServiceControl'} as any, connection) as ServiceControl;
+
+            await da.subscribe();
+            expect(da.name).to.equal('Service1');
+            expect(da instanceof ServiceControl).to.equal(true);
+
+            expect(da.getOperationMode()).to.equal(OperationMode.Offline);
+
+            await da.setToManualOperationMode();
+            expect(da.getOperationMode()).to.equal(OperationMode.Operator);
+
+            await da.setToAutomaticOperationMode();
+            expect(da.getOperationMode()).to.equal(OperationMode.Automatic);
+        }).timeout(4000);
+
         it('should create ExtIntAnaOp', async () => {
             const daJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString())
                 .modules[0].services[0].strategies[0].parameters[0];

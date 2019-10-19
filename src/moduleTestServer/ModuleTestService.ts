@@ -29,6 +29,7 @@ import {ServiceControlEnable, ServiceMtpCommand, ServiceState} from '../model/co
 import {TestServerNumericVariable} from './ModuleTestNumericVariable';
 import Timeout = NodeJS.Timeout;
 import {ModuleTestOpMode} from './ModuleTestOpMode';
+import {ModuleTestOpMode2} from './ModuleTestOpMode2';
 import {TestServerStringVariable} from './ModuleTestStringVariable';
 
 export class TestServerService {
@@ -37,6 +38,7 @@ export class TestServerService {
     public varCommand: number = 0;
     public varCommandEnable: number = 0;
     public opMode: ModuleTestOpMode;
+    public opModeNew: ModuleTestOpMode2;
     public readonly serviceName: string;
 
     public readonly offset: TestServerNumericVariable;
@@ -120,6 +122,7 @@ export class TestServerService {
         });
 
         this.opMode = new ModuleTestOpMode(ns, serviceNode, this.serviceName);
+        this.opModeNew = new ModuleTestOpMode2(ns, serviceNode, this.serviceName);
 
         ns.addVariable({
             componentOf: serviceNode,
