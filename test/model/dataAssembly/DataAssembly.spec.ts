@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import {OpcUaNodeOptions, ServiceControlOptions} from '@p2olab/polaris-interface';
+import {OpcUaNodeOptions, OperationMode, ServiceControlOptions, SourceMode} from '@p2olab/polaris-interface';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
@@ -37,11 +37,9 @@ import {DataAssemblyFactory} from '../../../src/model/dataAssembly/DataAssemblyF
 import {ExtIntDigOp} from '../../../src/model/dataAssembly/DigOp';
 import {DigMon} from '../../../src/model/dataAssembly/DigView';
 import {MonAnaDrv} from '../../../src/model/dataAssembly/Drv';
-import {OperationMode} from '../../../src/model/dataAssembly/mixins/OpMode';
 import {ServiceControl} from '../../../src/model/dataAssembly/ServiceControl';
 import {StrView} from '../../../src/model/dataAssembly/Str';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
-import {SourceMode} from '../../../src/model/dataAssembly/mixins/SourceMode';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -534,20 +532,22 @@ describe('DataAssembly', () => {
             expect(da instanceof AdvAnaOp).to.equal(false);
 
             await da.waitForOpModeToPassSpecificTest(OperationMode.Offline);
-            expect(da.opModeToJson()).to.deep.equal({state: 'off', source: undefined});
+            expect(da.getOperationMode()).to.equal(OperationMode.Offline);
+            expect(da.getOperationMode()).to.equal('offline');
 
-            expect(da.classicOpMode).to.equal(false);
+            expect(da.classicOpMode).to.equal(true);
             await da.writeOpMode(OperationMode.Operator);
             await da.waitForOpModeToPassSpecificTest(OperationMode.Operator);
-            expect(da.opModeToJson()).to.deep.equal({state: 'manual', source: undefined});
+            expect(da.getOperationMode()).to.equal('operator');
 
-            moduleServer.services[0].factor.opMode.opMode = OperationMode.Automatic;
+            da.setToAutomaticOperationMode();
             await da.waitForOpModeToPassSpecificTest(OperationMode.Automatic);
-            expect(da.opModeToJson()).to.deep.equal({state: 'automatic', source: undefined});
+            expect(da.getOperationMode()).to.equal('automatic');
 
             da.setToExternalSourceMode();
             await da.waitForSourceModeToPassSpecificTest(SourceMode.Manual);
-            expect(da.opModeToJson()).to.deep.equal({state: 'automatic', source: undefined});
+            expect(da.getSourceMode()).to.equal(SourceMode.Manual);
+            expect(da.getSourceMode()).to.equal('manual');
 
             if (da instanceof ExtIntAnaOp) {
                 expect(da.communication.VOut).to.have.property('nodeId', 'Service1.Factor.V');
@@ -563,10 +563,10 @@ describe('DataAssembly', () => {
             }
 
             await da.setToManualOperationMode();
-            expect(da.opModeToJson()).to.deep.equal({state: 'manual', source: undefined});
+            expect(da.getOperationMode()).to.equal(OperationMode.Operator);
 
             await da.setToAutomaticOperationMode();
-            expect(da.opModeToJson()).to.deep.equal({state: 'automatic', source: undefined});
+            expect(da.getOperationMode()).to.equal(OperationMode.Automatic);
         }).timeout(8000);
 
         it('should create StrView', async () => {

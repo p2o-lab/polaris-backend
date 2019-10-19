@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import {OpModeInterface} from '@p2olab/polaris-interface';
+import {OperationMode} from '@p2olab/polaris-interface';
 import {catDataAssembly} from '../../../config/logging';
 import {BaseDataAssemblyRuntime, DataAssembly} from '../DataAssembly';
 import {OpcUaDataItem} from '../DataItem';
@@ -45,12 +45,6 @@ export enum OpMode {
     srcIntOp = 4096,
     srcExtOp = 8192,
     srcIntAct = 16384
-}
-
-export enum OperationMode {
-    Offline,
-    Operator,
-    Automatic
 }
 
 export type OpModeRuntime = BaseDataAssemblyRuntime & {
@@ -127,7 +121,6 @@ export function OpModeDA<TBase extends Constructor<DataAssembly>>(Base: TBase) {
                 } else {
                     const da = this;
                     this.on('changed', function test() {
-                        //console.log(da.opModeToJson())
                         if (da.isOpMode(expectedOpMode)) {
                             this.removeListener('OpMode', test);
                             resolve();
@@ -141,62 +134,47 @@ export function OpModeDA<TBase extends Constructor<DataAssembly>>(Base: TBase) {
          * Set data assembly to automatic operation mode and source to external source
          */
         public async setToAutomaticOperationMode(): Promise<void> {
-            catDataAssembly.debug(`[${this.name}] Current opMode = ${this.opModeToJson()}`);
+            catDataAssembly.debug(`[${this.name}] Current opMode = ${this.getOperationMode()}`);
             if (this.isOffState()) {
                 catDataAssembly.trace(`[${this.name}] First go to Manual state`);
-                if (this.classicOpMode) {
-                    this.writeOpModeClassic(OpMode.stateManOp);
-                } else {
-                    this.writeOpMode(OperationMode.Operator);
-                }
+                this.writeOpMode(OperationMode.Operator);
                 await this.waitForOpModeToPassSpecificTest(OperationMode.Operator);
             }
 
             if (this.isManualState()) {
                 catDataAssembly.trace(`[${this.name}] Then to automatic`);
-                if (this.classicOpMode) {
-                    this.writeOpModeClassic(OpMode.stateAutOp);
-                } else {
-                    this.writeOpMode(OperationMode.Automatic);
-                }
+                this.writeOpMode(OperationMode.Automatic);
                 await this.waitForOpModeToPassSpecificTest(OperationMode.Automatic);
             }
-/*
-            if (!this.isExtSource()) {
-                catDataAssembly.trace(`[${this.name}] Finally to Ext`);
-                if (this.classicOpMode) {
-                    this.writeOpModeClassic(OpMode.srcExtOp);
-                }
-                await this.waitForOpModeToPassSpecificTest('External');
-            }
-            */
         }
 
         public async setToManualOperationMode() {
             if (!this.isManualState()) {
-                if (this.classicOpMode) {
-                    this.writeOpModeClassic(OpMode.stateManOp);
-                } else {
-                    this.writeOpMode(OperationMode.Operator);
-                }
+                this.writeOpMode(OperationMode.Operator);
                 await this.waitForOpModeToPassSpecificTest(OperationMode.Operator);
             }
         }
 
-        public async writeOpModeClassic(opMode: OpMode) {
-            catDataAssembly.debug(`[${this.name}] Write opMode: ${opMode as number}`);
-            await this.communication.OpMode.write(opMode);
-            catDataAssembly.debug(`[${this.name}] Setting opMode successfully`);
-        }
-
         public async writeOpMode(opMode: OperationMode) {
-            catDataAssembly.debug(`[${this.name}] Write opMode: ${opMode as number}`);
+            catDataAssembly.debug(`[${this.name}] Write opMode: ${opMode}`);
             if (opMode === OperationMode.Automatic) {
-                await this.communication.StateAutOp.write(true);
+                if (this.classicOpMode) {
+                    await this.communication.OpMode.write(OpMode.stateAutOp);
+                } else {
+                    await this.communication.StateAutOp.write(true);
+                }
             } else if (opMode === OperationMode.Operator) {
-                await this.communication.StateOpOp.write(true);
+                if (this.classicOpMode) {
+                    await this.communication.OpMode.write(OpMode.stateManOp);
+                } else {
+                    await this.communication.StateOpOp.write(true);
+                }
             } else if (opMode === OperationMode.Offline) {
-                await this.communication.StateOffOp.write(true);
+                if (this.classicOpMode) {
+                    await this.communication.OpMode.write(OpMode.stateOffOp);
+                } else {
+                    await this.communication.StateOffOp.write(true);
+                }
             }
             catDataAssembly.debug(`[${this.name}] Setting opMode successfully`);
         }
@@ -223,20 +201,6 @@ export function OpModeDA<TBase extends Constructor<DataAssembly>>(Base: TBase) {
             } else {
                 return this.communication.StateOpAct.value === true;
             }
-        }
-
-        public opModeToJson(): OpModeInterface {
-            let source: 'external' | 'internal';
-            let state;
-            if (this.isManualState()) {
-                state = 'manual';
-            } else if (this.isAutomaticState()) {
-                state = 'automatic';
-                //source = this.isExtSource() ? 'external' : 'internal';
-            } else if (this.isOffState()) {
-                state = 'off';
-            }
-            return {state: state, source: source};
         }
     };
 }

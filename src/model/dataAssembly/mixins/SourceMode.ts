@@ -23,17 +23,12 @@
  * SOFTWARE.
  */
 
-import {OpModeInterface} from '@p2olab/polaris-interface';
+import {SourceMode} from '@p2olab/polaris-interface';
 import {catDataAssembly} from '../../../config/logging';
 import {BaseDataAssemblyRuntime, DataAssembly} from '../DataAssembly';
 import {OpcUaDataItem} from '../DataItem';
 import {Constructor} from './mixins';
 import {OpMode} from './OpMode';
-
-export enum SourceMode {
-    Manual,
-    Intern
-}
 
 export type SourceModeRuntime = BaseDataAssemblyRuntime & {
     OpMode: OpcUaDataItem<number>;
@@ -120,7 +115,7 @@ export function SourceModeDA<TBase extends Constructor<DataAssembly>>(Base: TBas
         }
 
         public async writeSourceMode(sourceMode: SourceMode) {
-            catDataAssembly.debug(`[${this.name}] Write sourceMode: ${sourceMode as number}`);
+            catDataAssembly.debug(`[${this.name}] Write sourceMode: ${sourceMode}`);
             if (sourceMode === SourceMode.Manual) {
                 if (this.classicOpMode) {
                     await this.communication.OpMode.write(OpMode.srcExtOp);
@@ -134,7 +129,7 @@ export function SourceModeDA<TBase extends Constructor<DataAssembly>>(Base: TBas
                     await this.communication.SrcIntOp.write(true);
                 }
             }
-            catDataAssembly.debug(`[${this.name}] Setting opMode successfully`);
+            catDataAssembly.debug(`[${this.name}] Setting sourceMode successfully`);
         }
 
         public isExtSource(): boolean {
