@@ -27,16 +27,16 @@ import {DataType, Namespace, StatusCodes, Variant} from 'node-opcua';
 import {catTestServer} from '../config/logging';
 import {ServiceControlEnable, ServiceMtpCommand, ServiceState} from '../model/core/enum';
 import {TestServerNumericVariable} from './ModuleTestNumericVariable';
-import {TestServerStringVariable} from './ModuleTestStringVariable';
 import Timeout = NodeJS.Timeout;
-import {ModulTestOpMode} from './ModulTestOpMode';
+import {ModuleTestOpMode} from './ModuleTestOpMode';
+import {TestServerStringVariable} from './ModuleTestStringVariable';
 
 export class TestServerService {
     public varStatus: number = 0;
     public varStrategy: number = 1;
     public varCommand: number = 0;
     public varCommandEnable: number = 0;
-    public opMode: ModulTestOpMode;
+    public opMode: ModuleTestOpMode;
     public readonly serviceName: string;
 
     public readonly offset: TestServerNumericVariable;
@@ -119,7 +119,7 @@ export class TestServerService {
             }
         });
 
-        this.opMode = new ModulTestOpMode(ns, serviceNode, this.serviceName);
+        this.opMode = new ModuleTestOpMode(ns, serviceNode, this.serviceName);
 
         ns.addVariable({
             componentOf: serviceNode,

@@ -23,12 +23,12 @@
  * SOFTWARE.
  */
 
+import {OperationMode} from '@p2olab/polaris-interface';
 import {Namespace, UAObject} from 'node-opcua-address-space';
 import {StatusCodes} from 'node-opcua-constants';
 import {DataType, Variant} from 'node-opcua-variant';
-import {OperationMode} from '@p2olab/polaris-interface';
 
-export class ModulTestOpModeNew {
+export class ModuleTestOpMode2 {
     public opMode: OperationMode = OperationMode.Offline;
     public stateChannel: boolean = false;
     public stateOffAut: boolean = false;

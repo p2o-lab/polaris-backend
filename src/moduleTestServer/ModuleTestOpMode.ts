@@ -29,7 +29,7 @@ import {DataType, Variant} from 'node-opcua-variant';
 import {catTestServer} from '../config/logging';
 import {OpMode} from '../model/dataAssembly/mixins/OpMode';
 
-export class ModulTestOpMode {
+export class ModuleTestOpMode {
     public opMode: number = 0;
 
     constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
