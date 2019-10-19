@@ -536,9 +536,12 @@ describe('DataAssembly', () => {
             await da.setToManualOperationMode();
             expect(da.getOperationMode()).to.equal(OperationMode.Operator);
 
+            await da.writeOpMode(OperationMode.Offline);
+            await da.waitForOpModeToPassSpecificTest(OperationMode.Offline);
+
             await da.setToAutomaticOperationMode();
             expect(da.getOperationMode()).to.equal(OperationMode.Automatic);
-        }).timeout(4000);
+        }).timeout(8000);
 
         it('should create ServiceControl new', async () => {
             const daJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0_2.json').toString())
@@ -556,9 +559,12 @@ describe('DataAssembly', () => {
             await da.setToManualOperationMode();
             expect(da.getOperationMode()).to.equal(OperationMode.Operator);
 
+            await da.writeOpMode(OperationMode.Offline);
+            await da.waitForOpModeToPassSpecificTest(OperationMode.Offline);
+
             await da.setToAutomaticOperationMode();
             expect(da.getOperationMode()).to.equal(OperationMode.Automatic);
-        }).timeout(4000);
+        }).timeout(8000);
 
         it('should create ExtIntAnaOp', async () => {
             const daJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString())
