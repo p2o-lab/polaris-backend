@@ -31,6 +31,7 @@ import {OpModeDA, OpModeRuntime} from './mixins/OpMode';
 import {ScaleSettingsDA, ScaleSettingsRuntime} from './mixins/ScaleSettings';
 import {UnitDA, UnitDataAssemblyRuntime} from './mixins/Unit';
 import {ValueLimitationDA, ValueLimitationRuntime} from './mixins/ValueLimitation';
+import {SourceModeDA, SourceModeRuntime} from './mixins/SourceMode';
 
 export type AnaOpRuntime = BaseDataAssemblyRuntime &
     UnitDataAssemblyRuntime & ValueLimitationRuntime &
@@ -54,11 +55,11 @@ export class ExtAnaOp extends ValueLimitationDA(ScaleSettingsDA(UnitDA(DataAssem
     }
 }
 
-export type ExtIntAnaOpRuntime = AnaOpRuntime & OpModeRuntime & {
+export type ExtIntAnaOpRuntime = AnaOpRuntime & OpModeRuntime & SourceModeRuntime & {
     VInt: OpcUaDataItem<number>;
 };
 
-export class ExtIntAnaOp extends OpModeDA(ExtAnaOp) {
+export class ExtIntAnaOp extends OpModeDA(SourceModeDA(ExtAnaOp)) {
 
     public readonly communication: ExtIntAnaOpRuntime;
 

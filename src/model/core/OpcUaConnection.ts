@@ -170,7 +170,7 @@ export class  OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionE
         }
     }
 
-    public async writeOpcUaNode(nodeId: string, namespaceUrl: string, value: number | string, dataType) {
+    public async writeOpcUaNode(nodeId: string, namespaceUrl: string, value: number | string | boolean, dataType) {
         if (!this.isConnected()) {
             throw new Error(`Can not write node since OPC UA connection to module ${this.id} is not established`);
         } else {
@@ -182,7 +182,7 @@ export class  OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionE
             this.logger.debug(`[${this.id}] Write ${nodeId} - ${JSON.stringify(variant)}`);
             const statusCode = await this.session.writeSingleNode(this.resolveNodeId(nodeId, namespaceUrl), variant);
             if (statusCode.value !== 0) {
-                this.logger.warn(`Error while writing to opcua: ${statusCode.description}`);
+                this.logger.warn(`Error while writing to opcua ${nodeId}=${value}: ${statusCode.description}`);
                 throw new Error(statusCode.description);
             }
         }

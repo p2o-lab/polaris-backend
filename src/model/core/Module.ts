@@ -26,11 +26,10 @@
 import {
     ControlEnableInterface,
     ModuleInterface,
-    ModuleOptions,
-    OpModeInterface,
+    ModuleOptions, OperationMode,
     ParameterInterface,
     ServiceCommand,
-    ServiceInterface,
+    ServiceInterface, SourceMode,
     VariableChange
 } from '@p2olab/polaris-interface';
 import {EventEmitter} from 'events';
@@ -88,7 +87,8 @@ interface ModuleEvents {
      */
     opModeChanged: {
         service: Service,
-        opMode: OpModeInterface
+        operationMode: OperationMode,
+        sourceMode: SourceMode
     };
     /**
      * Notify when a variable inside a module changes
@@ -344,13 +344,9 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
                         this.emit('serviceCompleted', service);
                     }
                 })
-                .on('opMode', (opMode: OpModeInterface) => {
+                .on('opMode', (opMode) => {
                     this.logger.debug(`[${this.id}] opMode changed: ${service.name} = ${JSON.stringify(opMode)}`);
-                    const entry = {
-                        service,
-                        opMode
-                    };
-                    this.emit('opModeChanged', entry);
+                    this.emit('opModeChanged', {service: service, ...opMode});
                 })
                 .on('parameterChanged', (data) => {
                     this.logger.debug(`[${this.id}] parameter changed: ` +

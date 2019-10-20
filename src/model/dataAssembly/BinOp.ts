@@ -27,6 +27,7 @@
 import {BaseDataAssemblyRuntime, DataAssembly} from './DataAssembly';
 import {OpcUaDataItem} from './DataItem';
 import {OpModeDA} from './mixins/OpMode';
+import {SourceModeDA} from './mixins/SourceMode';
 
 export type ExtBinOpRuntime = BaseDataAssemblyRuntime & {
     VExt: OpcUaDataItem<boolean>;
@@ -54,7 +55,7 @@ export class ExtBinOp extends DataAssembly {
 
 }
 
-export class ExtIntBinOp extends OpModeDA(ExtBinOp) {
+export class ExtIntBinOp extends OpModeDA(SourceModeDA(ExtBinOp)) {
 }
 
 export class AdvBinOp extends ExtIntBinOp {

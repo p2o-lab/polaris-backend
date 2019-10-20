@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import {OpcUaNodeOptions, ServiceControlOptions} from '@p2olab/polaris-interface';
+import {OpcUaNodeOptions, OperationMode, ServiceControlOptions, SourceMode} from '@p2olab/polaris-interface';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
@@ -37,7 +37,6 @@ import {DataAssemblyFactory} from '../../../src/model/dataAssembly/DataAssemblyF
 import {ExtIntDigOp} from '../../../src/model/dataAssembly/DigOp';
 import {DigMon} from '../../../src/model/dataAssembly/DigView';
 import {MonAnaDrv} from '../../../src/model/dataAssembly/Drv';
-import {OpMode} from '../../../src/model/dataAssembly/mixins/OpMode';
 import {ServiceControl} from '../../../src/model/dataAssembly/ServiceControl';
 import {StrView} from '../../../src/model/dataAssembly/Str';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
@@ -521,6 +520,52 @@ describe('DataAssembly', () => {
             expect(da.getValue()).to.equal(11);
         }).timeout(5000);
 
+        it('should create ServiceControl old', async () => {
+            const daJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString())
+                .modules[0].services[0];
+            const da: ServiceControl = DataAssemblyFactory.create(
+                    {...daJson, interface_class: 'ServiceControl'} as any, connection) as ServiceControl;
+            expect(da.classicOpMode).to.equal(true);
+
+            await da.subscribe();
+            expect(da.name).to.equal('Service1');
+            expect(da instanceof ServiceControl).to.equal(true);
+
+            expect(da.getOperationMode()).to.equal(OperationMode.Offline);
+
+            await da.setToManualOperationMode();
+            expect(da.getOperationMode()).to.equal(OperationMode.Operator);
+
+            await da.writeOpMode(OperationMode.Offline);
+            await da.waitForOpModeToPassSpecificTest(OperationMode.Offline);
+
+            await da.setToAutomaticOperationMode();
+            expect(da.getOperationMode()).to.equal(OperationMode.Automatic);
+        }).timeout(8000);
+
+        it('should create ServiceControl new', async () => {
+            const daJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0_2.json').toString())
+                .modules[0].services[0];
+            const da: ServiceControl = DataAssemblyFactory.create(
+                {...daJson, interface_class: 'ServiceControl'} as any, connection) as ServiceControl;
+            expect(da.classicOpMode).to.equal(false);
+
+            await da.subscribe();
+            expect(da.name).to.equal('Service1');
+            expect(da instanceof ServiceControl).to.equal(true);
+
+            expect(da.getOperationMode()).to.equal(OperationMode.Offline);
+
+            await da.setToManualOperationMode();
+            expect(da.getOperationMode()).to.equal(OperationMode.Operator);
+
+            await da.writeOpMode(OperationMode.Offline);
+            await da.waitForOpModeToPassSpecificTest(OperationMode.Offline);
+
+            await da.setToAutomaticOperationMode();
+            expect(da.getOperationMode()).to.equal(OperationMode.Automatic);
+        }).timeout(8000);
+
         it('should create ExtIntAnaOp', async () => {
             const daJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString())
                 .modules[0].services[0].strategies[0].parameters[0];
@@ -531,18 +576,24 @@ describe('DataAssembly', () => {
             expect(da instanceof ExtAnaOp).to.equal(true);
             expect(da instanceof ExtIntAnaOp).to.equal(true);
             expect(da instanceof AdvAnaOp).to.equal(false);
-            expect(da.communication.OpMode.value).to.equal(0);
 
-            await da.waitForOpModeToPassSpecificTest('Off');
-            expect(da.opModeToJson()).to.deep.equal({state: 'off', source: undefined});
+            await da.waitForOpModeToPassSpecificTest(OperationMode.Offline);
+            expect(da.getOperationMode()).to.equal(OperationMode.Offline);
+            expect(da.getOperationMode()).to.equal('offline');
 
-            moduleServer.services[0].factor.opMode.opMode = OpMode.stateManAct;
-            await da.waitForOpModeToPassSpecificTest('Manual');
-            expect(da.opModeToJson()).to.deep.equal({state: 'manual', source: undefined});
+            expect(da.classicOpMode).to.equal(true);
+            await da.writeOpMode(OperationMode.Operator);
+            await da.waitForOpModeToPassSpecificTest(OperationMode.Operator);
+            expect(da.getOperationMode()).to.equal('operator');
 
-            moduleServer.services[0].factor.opMode.opMode = OpMode.stateAutAct;
-            await da.waitForOpModeToPassSpecificTest('Automatic');
-            expect(da.opModeToJson()).to.deep.equal({state: 'automatic', source: 'external'});
+            da.setToAutomaticOperationMode();
+            await da.waitForOpModeToPassSpecificTest(OperationMode.Automatic);
+            expect(da.getOperationMode()).to.equal('automatic');
+
+            da.setToExternalSourceMode();
+            await da.waitForSourceModeToPassSpecificTest(SourceMode.Manual);
+            expect(da.getSourceMode()).to.equal(SourceMode.Manual);
+            expect(da.getSourceMode()).to.equal('manual');
 
             if (da instanceof ExtIntAnaOp) {
                 expect(da.communication.VOut).to.have.property('nodeId', 'Service1.Factor.V');
@@ -558,10 +609,10 @@ describe('DataAssembly', () => {
             }
 
             await da.setToManualOperationMode();
-            expect(da.opModeToJson()).to.deep.equal({state: 'manual', source: undefined});
+            expect(da.getOperationMode()).to.equal(OperationMode.Operator);
 
             await da.setToAutomaticOperationMode();
-            expect(da.opModeToJson()).to.deep.equal({state: 'automatic', source: 'external'});
+            expect(da.getOperationMode()).to.equal(OperationMode.Automatic);
         }).timeout(8000);
 
         it('should create StrView', async () => {

@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import {OpModeInterface} from '@p2olab/polaris-interface';
+import {OperationMode} from '@p2olab/polaris-interface';
 import {catDataAssembly} from '../../../config/logging';
 import {BaseDataAssemblyRuntime, DataAssembly} from '../DataAssembly';
 import {OpcUaDataItem} from '../DataItem';
@@ -49,6 +49,17 @@ export enum OpMode {
 
 export type OpModeRuntime = BaseDataAssemblyRuntime & {
     OpMode: OpcUaDataItem<number>;
+
+    StateChannel: OpcUaDataItem<boolean>;
+    StateOffAut: OpcUaDataItem<boolean>;
+    StateOpAut: OpcUaDataItem<boolean>;
+    StateAutAut: OpcUaDataItem<boolean>;
+    StateOffOp: OpcUaDataItem<boolean>;
+    StateOpOp: OpcUaDataItem<boolean>;
+    StateAutOp: OpcUaDataItem<boolean>;
+    StateOpAct: OpcUaDataItem<boolean>;
+    StateAutAct: OpcUaDataItem<boolean>;
+    StateOffAct: OpcUaDataItem<boolean>;
 };
 
 // tslint:disable-next-line:variable-name
@@ -56,36 +67,60 @@ export function OpModeDA<TBase extends Constructor<DataAssembly>>(Base: TBase) {
     return class extends Base {
         public communication: OpModeRuntime;
 
+        public classicOpMode: boolean;
+
         constructor(...args: any[]) {
             super(...args);
-            this.createDataItem(args[0], 'OpMode', 'write');
+            if (args[0].communication.OpMode) {
+                this.classicOpMode = true;
+                this.createDataItem(args[0], 'OpMode', 'write');
+            } else {
+                this.classicOpMode = false;
+                this.createDataItem(args[0], 'StateChannel', 'read', 'boolean');
+
+                this.createDataItem(args[0], 'StateOffAut', 'read', 'boolean');
+                this.createDataItem(args[0], 'StateOpAut', 'read', 'boolean');
+                this.createDataItem(args[0], 'StateAutAut', 'read', 'boolean');
+
+                this.createDataItem(args[0], 'StateOffOp', 'write', 'boolean');
+                this.createDataItem(args[0], 'StateOpOp', 'write', 'boolean');
+                this.createDataItem(args[0], 'StateAutOp', 'write', 'boolean');
+
+                this.createDataItem(args[0], 'StateOffAct', 'read', 'boolean');
+                this.createDataItem(args[0], 'StateOpAct', 'read', 'boolean');
+                this.createDataItem(args[0], 'StateAutAct', 'read', 'boolean');
+            }
         }
 
-        public getOpMode(): OpMode {
-            return this.communication.OpMode.value as OpMode;
+        public getOperationMode(): OperationMode {
+            if (this.isOffState()) {
+                return OperationMode.Offline;
+            } else if (this.isManualState()) {
+                return OperationMode.Operator;
+            } else if (this.isAutomaticState()) {
+                return OperationMode.Automatic;
+            }
         }
 
-        public isOpMode(expectedOpMode: 'Off' | 'Automatic' | 'External' | 'Manual') {
+        public isOpMode(expectedOpMode: OperationMode) {
             switch (expectedOpMode) {
-                case 'Automatic':
+                case OperationMode.Automatic:
                     return this.isAutomaticState();
-                case 'Manual':
+                case OperationMode.Operator:
                     return this.isManualState();
-                case 'External':
-                    return this.isExtSource();
-                case 'Off':
+                case OperationMode.Offline:
                     return this.isOffState();
             }
         }
 
-        public async waitForOpModeToPassSpecificTest(expectedOpMode: 'Off' | 'Automatic' | 'External' | 'Manual') {
+        public async waitForOpModeToPassSpecificTest(expectedOpMode: OperationMode) {
             await this.subscribe();
             return new Promise((resolve) => {
                 if (this.isOpMode(expectedOpMode)) {
                     resolve();
                 } else {
                     const da = this;
-                    this.on('OpMode', function test() {
+                    this.on('changed', function test() {
                         if (da.isOpMode(expectedOpMode)) {
                             this.removeListener('OpMode', test);
                             resolve();
@@ -99,71 +134,73 @@ export function OpModeDA<TBase extends Constructor<DataAssembly>>(Base: TBase) {
          * Set data assembly to automatic operation mode and source to external source
          */
         public async setToAutomaticOperationMode(): Promise<void> {
-            catDataAssembly.debug(`[${this.name}] Current opMode = ${this.communication.OpMode.value}`);
+            catDataAssembly.debug(`[${this.name}] Current opMode = ${this.getOperationMode()}`);
             if (this.isOffState()) {
                 catDataAssembly.trace(`[${this.name}] First go to Manual state`);
-                this.writeOpMode(OpMode.stateManOp);
-                await this.waitForOpModeToPassSpecificTest('Manual');
+                this.writeOpMode(OperationMode.Operator);
+                await this.waitForOpModeToPassSpecificTest(OperationMode.Operator);
             }
 
             if (this.isManualState()) {
                 catDataAssembly.trace(`[${this.name}] Then to automatic`);
-                this.writeOpMode(OpMode.stateAutOp);
-                await this.waitForOpModeToPassSpecificTest('Automatic');
-            }
-
-            if (!this.isExtSource()) {
-                catDataAssembly.trace(`[${this.name}] Finally to Ext`);
-                this.writeOpMode(OpMode.srcExtOp);
-                await this.waitForOpModeToPassSpecificTest('External');
+                this.writeOpMode(OperationMode.Automatic);
+                await this.waitForOpModeToPassSpecificTest(OperationMode.Automatic);
             }
         }
 
         public async setToManualOperationMode() {
             if (!this.isManualState()) {
-                this.writeOpMode(OpMode.stateManOp);
-                await this.waitForOpModeToPassSpecificTest('Manual');
+                this.writeOpMode(OperationMode.Operator);
+                await this.waitForOpModeToPassSpecificTest(OperationMode.Operator);
             }
         }
 
-        public async writeOpMode(opMode: OpMode) {
-            catDataAssembly.debug(`[${this.name}] Write opMode: ${opMode as number}`);
-            await this.communication.OpMode.write(opMode);
+        public async writeOpMode(opMode: OperationMode) {
+            catDataAssembly.debug(`[${this.name}] Write opMode: ${opMode}`);
+            if (opMode === OperationMode.Automatic) {
+                if (this.classicOpMode) {
+                    await this.communication.OpMode.write(OpMode.stateAutOp);
+                } else {
+                    await this.communication.StateAutOp.write(true);
+                }
+            } else if (opMode === OperationMode.Operator) {
+                if (this.classicOpMode) {
+                    await this.communication.OpMode.write(OpMode.stateManOp);
+                } else {
+                    await this.communication.StateOpOp.write(true);
+                }
+            } else if (opMode === OperationMode.Offline) {
+                if (this.classicOpMode) {
+                    await this.communication.OpMode.write(OpMode.stateOffOp);
+                } else {
+                    await this.communication.StateOffOp.write(true);
+                }
+            }
             catDataAssembly.debug(`[${this.name}] Setting opMode successfully`);
         }
 
         public isOffState(): boolean {
-            return (this.getOpMode() & (OpMode.stateAutAct | OpMode.stateManAct)) === 0;
+            if (this.classicOpMode) {
+                return (this.communication.OpMode.value & (OpMode.stateAutAct | OpMode.stateManAct)) === 0;
+            } else {
+                return this.communication.StateOffAct.value === true;
+            }
         }
 
         public isAutomaticState(): boolean {
-            return (this.getOpMode() & OpMode.stateAutAct) === OpMode.stateAutAct;
+            if (this.classicOpMode) {
+                return (this.communication.OpMode.value & OpMode.stateAutAct) === OpMode.stateAutAct;
+            } else {
+                return this.communication.StateAutAct.value === true;
+            }
         }
 
         public isManualState(): boolean {
-            return (this.getOpMode() & OpMode.stateManAct) === OpMode.stateManAct;
-        }
-
-        public isExtSource(): boolean {
-            return (this.getOpMode() & OpMode.srcIntAct) === 0;
-        }
-
-        public isIntSource(): boolean {
-            return (this.getOpMode() & OpMode.srcIntAct) === OpMode.srcIntAct;
-        }
-
-        public opModeToJson(): OpModeInterface {
-            let source: 'external' | 'internal';
-            let state;
-            if (this.isManualState()) {
-                state = 'manual';
-            } else if (this.isAutomaticState()) {
-                state = 'automatic';
-                source = this.isExtSource() ? 'external' : 'internal';
-            } else if (this.isOffState()) {
-                state = 'off';
+            if (this.classicOpMode) {
+                return (this.communication.OpMode.value & OpMode.stateManAct) === OpMode.stateManAct;
+            } else {
+                return this.communication.StateOpAct.value === true;
             }
-            return {state: state, source: source};
         }
     };
 }
