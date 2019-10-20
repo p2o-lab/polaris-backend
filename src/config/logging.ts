@@ -52,6 +52,7 @@ export const catServer = new Category('server');
 export const catTestServer = new Category('testserver');
 
 export const catVirtualService = new Category('VirtualService');
+export const catAggregatedService = new Category('AggregatedService', catVirtualService);
 export const catTimer = new Category('Timer', catVirtualService);
 
 // Custom logging

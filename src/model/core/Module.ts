@@ -26,17 +26,16 @@
 import {
     ControlEnableInterface,
     ModuleInterface,
-    ModuleOptions,
-    OpModeInterface,
+    ModuleOptions, OperationMode,
     ParameterInterface,
     ServiceCommand,
-    ServiceInterface
+    ServiceInterface, SourceMode,
+    VariableChange
 } from '@p2olab/polaris-interface';
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Category} from 'typescript-logging';
 import {catModule} from '../../config/logging';
-import {VariableLogEntry} from '../../logging/archive';
 import {DataAssembly} from '../dataAssembly/DataAssembly';
 import {DataAssemblyFactory} from '../dataAssembly/DataAssemblyFactory';
 import {DataItemEmitter} from '../dataAssembly/DataItem';
@@ -44,6 +43,16 @@ import {ServiceState} from './enum';
 import {OpcUaConnection} from './OpcUaConnection';
 import {Service} from './Service';
 import {Strategy} from './Strategy';
+
+export interface ParameterChange {
+    timestampModule: Date;
+    service: Service;
+    strategy: string;
+    parameter: string;
+    value: any;
+    unit: string;
+    parameterType: 'parameter' | 'processValueIn' | 'processValueOut' | 'reportValue';
+}
 
 /**
  * Events emitted by [[Module]]
@@ -69,8 +78,6 @@ interface ModuleEvents {
      * @event stateChanged
      */
     stateChanged: {
-        timestampPfe: Date,
-        timestampModule: Date,
         service: Service,
         state: ServiceState
     };
@@ -80,27 +87,20 @@ interface ModuleEvents {
      */
     opModeChanged: {
         service: Service,
-        opMode: OpModeInterface
+        operationMode: OperationMode,
+        sourceMode: SourceMode
     };
     /**
      * Notify when a variable inside a module changes
      * @event variableChanged
      */
-    variableChanged: VariableLogEntry;
+    variableChanged: VariableChange;
 
     /**
      * Notify when
      * @event parameterChanged
      */
-    parameterChanged: {
-        timestampPfe: Date,
-        timestampModule: Date,
-        service: string,
-        strategy: string;
-        parameter: string;
-        value: any;
-        unit: string;
-    };
+    parameterChanged: ParameterChange;
 
     /**
      * whenever a command is executed from the POL
@@ -108,7 +108,6 @@ interface ModuleEvents {
      */
     commandExecuted: {
         service: Service,
-        timestampPfe: Date,
         strategy: Strategy,
         command: ServiceCommand,
         parameter: ParameterInterface[]
@@ -133,20 +132,21 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
 
     public readonly options: ModuleOptions;
     public readonly id: string;
-    public readonly hmiUrl: string;
     public readonly services: Service[];
     public readonly variables: DataAssembly[];
-    public readonly logger: Category;
-
     // module is protected and can't be deleted by the user
     public protected: boolean = false;
-
     public readonly connection: OpcUaConnection;
+
+    private readonly description: string;
+    private readonly hmiUrl: string;
+    private readonly logger: Category;
 
     constructor(options: ModuleOptions, protectedModule: boolean = false) {
         super();
         this.options = options;
         this.id = options.id;
+        this.description = options.description;
         this.protected = protectedModule;
         this.hmiUrl = options.hmi_url;
         this.connection = new OpcUaConnection(this.id, options.opcua_server_url, options.username, options.password)
@@ -160,6 +160,17 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
         if (options.process_values) {
             this.variables = options.process_values
                 .map((variableOptions) => DataAssemblyFactory.create(variableOptions, this.connection));
+        }
+    }
+
+    public getService(serviceName: string): Service {
+        const service = this.services.find((s) => s.name === serviceName);
+        if (service) {
+            return service;
+        } else if (!serviceName && this.services.length === 1) {
+            return this.services[0];
+        } else {
+            throw new Error(`[${this.id}] Could not find service with name ${serviceName}`);
         }
     }
 
@@ -195,6 +206,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
     public json(): ModuleInterface {
         return {
             id: this.id,
+            description: this.description,
             endpoint: this.connection.endpoint,
             hmiUrl: this.hmiUrl,
             connected: this.isConnected(),
@@ -227,7 +239,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
      */
     public abort(): Promise<void[]> {
         this.logger.info(`[${this.id}] Abort all services`);
-        const tasks = this.services.map((service) => service.execute(ServiceCommand.abort));
+        const tasks = this.services.map((service) => service.executeCommand(ServiceCommand.abort));
         return Promise.all(tasks);
     }
 
@@ -236,9 +248,9 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
      */
     public pause(): Promise<void[]> {
         this.logger.info(`[${this.id}] Pause all running services`);
-        const tasks = this.services.map(async (service) => {
-            if (service.state === ServiceState.EXECUTE) {
-                return service.execute(ServiceCommand.pause);
+        const tasks = this.services.map((service) => {
+            if (service.isCommandExecutable(ServiceCommand.pause)) {
+                return service.executeCommand(ServiceCommand.pause);
             }
         });
         return Promise.all(tasks);
@@ -249,9 +261,9 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
      */
     public resume(): Promise<void[]> {
         this.logger.info(`[${this.id}] Resume all paused services`);
-        const tasks = this.services.map(async (service) => {
-            if (service.state === ServiceState.PAUSED) {
-                return service.execute(ServiceCommand.resume);
+        const tasks = this.services.map((service) => {
+            if (service.isCommandExecutable(ServiceCommand.resume)) {
+                return service.executeCommand(ServiceCommand.resume);
             }
         });
         return Promise.all(tasks);
@@ -263,8 +275,8 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
     public stop(): Promise<void[]> {
         this.logger.info(`[${this.id}] Stop all non-idle services`);
         const tasks = this.services.map((service) => {
-            if (service.state !== ServiceState.IDLE) {
-                return service.execute(ServiceCommand.stop);
+            if (service.isCommandExecutable(ServiceCommand.stop)) {
+                return service.executeCommand(ServiceCommand.stop);
             }
         });
         return Promise.all(tasks);
@@ -275,7 +287,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
      */
     public reset(): Promise<void[]> {
         this.logger.info(`[${this.id}] Reset all services`);
-        const tasks = this.services.map((service) => service.execute(ServiceCommand.reset));
+        const tasks = this.services.map((service) => service.executeCommand(ServiceCommand.reset));
         return Promise.all(tasks);
     }
 
@@ -286,7 +298,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
                 variable.on('V', (data) => {
                     this.logger.debug(`[${this.id}] variable changed: ${variable.name} = ` +
                         `${data.value} ${variable.getUnit()}`);
-                    const entry: VariableLogEntry = {
+                    const entry: VariableChange = {
                         timestampPfe: new Date(),
                         timestampModule: data.timestamp,
                         module: this.id,
@@ -311,7 +323,6 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
                 .on('commandExecuted', (data) => {
                     this.emit('commandExecuted', {
                         service,
-                        timestampPfe: data.timestamp,
                         strategy: data.strategy,
                         command: data.command,
                         parameter: data.parameter
@@ -333,38 +344,21 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
                         this.emit('serviceCompleted', service);
                     }
                 })
-                .on('opMode', (opMode: OpModeInterface) => {
+                .on('opMode', (opMode) => {
                     this.logger.debug(`[${this.id}] opMode changed: ${service.name} = ${JSON.stringify(opMode)}`);
-                    const entry = {
-                        service,
-                        opMode
-                    };
-                    this.emit('opModeChanged', entry);
+                    this.emit('opModeChanged', {service: service, ...opMode});
                 })
-                .on('variableChanged', (data) => {
-                    this.logger.debug(`[${this.id}] service variable changed: ` +
-                        `${data.strategy.name}.${data.parameter} = ${data.value}`);
-                    const entry = {
-                        timestampPfe: new Date(),
-                        timestampModule: new Date(),
-                        module: this.id,
-                        variable: `${service.name}.${data.strategy.name}.${data.parameter}`,
-                        value: data.value,
-                        unit: data.unit
-                    };
-                    this.emit('variableChanged', entry);
-                }).on('parameterChanged', (data) => {
+                .on('parameterChanged', (data) => {
                     this.logger.debug(`[${this.id}] parameter changed: ` +
-                        `${data.strategy.name}.${data.parameter} = ${data.value}`);
-                    const entry = {
-                        timestampPfe: new Date(),
-                        timestampModule: new Date(),
-                        module: this.id,
-                        service: service.name,
+                        `${data.strategy.name}.${data.parameter} = ${data.parameter.value}`);
+                    const entry: ParameterChange = {
+                        timestampModule: data.parameter.timestamp,
+                        service: service,
                         strategy: data.strategy.id,
-                        parameter: data.parameter,
-                        value: data.value,
-                        unit: data.unit
+                        parameter: data.parameter.name,
+                        value: data.parameter.value,
+                        unit: data.parameter.unit,
+                        parameterType: data.parameterType
                     };
                     this.emit('parameterChanged', entry);
                 });

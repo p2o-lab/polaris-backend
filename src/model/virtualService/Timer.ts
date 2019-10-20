@@ -33,18 +33,20 @@ export class Timer extends VirtualService {
 
     private durationMs: number;
     private timestampStart: Date;
-    private _remainingTime: number;
     private elapsedTime: number;
     private timerId: Timeout;
     private timerUpdateId: Timeout;
+    private _remainingTime: number;
 
-    private get remainingTime(): number {
+    private get remainingTime() {
         return this._remainingTime;
     }
+
     private set remainingTime(value: number) {
         this._remainingTime = value;
-        this.processValuesOut.find((p) => p.name === 'remainingTime').value = this._remainingTime;
-        this.eventEmitter.emit('variableChanged', {parameter: 'remainingTime', value: this._remainingTime, unit: 'ms'});
+        const param = this.processValuesOut.find((p) => p.name === 'remainingTime');
+        param.value = this._remainingTime;
+        this.eventEmitter.emit('parameterChanged', {parameter: param, parameterType: 'processValueOut'});
     }
 
     constructor(options) {
@@ -53,7 +55,7 @@ export class Timer extends VirtualService {
     }
 
     protected initParameter() {
-        this.parameters = [
+        this.procedureParameters = [
             {name: 'duration', value: 10000, min: 1, unit: 'ms'},
             {name: 'updateRate', value: 1000, min: 100, unit: 'ms'}
         ];
@@ -64,21 +66,25 @@ export class Timer extends VirtualService {
     }
 
     protected async onStarting(): Promise<void> {
-        this.durationMs = this.parameters.find((p) => p.name === 'duration').value as number;
+        this.durationMs = this.procedureParameters.find((p) => p.name === 'duration').value as number;
         this.timestampStart = new Date();
         this.elapsedTime = 0;
         this.remainingTime = this.durationMs;
-
-        await catTimer.info(`timer on starting: ${this.remainingTime}`);
+        catTimer.info(`timer on starting: ${this.remainingTime}`);
     }
 
     protected async onExecute() {
+        // clear timers is important when timer is restarted
+        global.clearTimeout(this.timerId);
+        global.clearInterval(this.timerUpdateId);
+
+        // set timers
         this.timerId = global.setTimeout(() => {
             super.complete();
-            this.timerUpdateId.unref();
+            global.clearInterval(this.timerUpdateId);
         }, this.remainingTime);
 
-        const updateRate = this.parameters.find((p) => p.name === 'updateRate').value as number;
+        const updateRate = this.procedureParameters.find((p) => p.name === 'updateRate').value as number;
         this.timerUpdateId = global.setInterval(() => {
             this.remainingTime = this.remainingTime - updateRate;
         }, updateRate);
@@ -95,16 +101,19 @@ export class Timer extends VirtualService {
 
     protected async onResuming(): Promise<void> {
         this.timestampStart = new Date();
-        await catTimer.info(`timer on resuming (${this.remainingTime})`);
+        catTimer.info(`timer on resuming (${this.remainingTime})`);
     }
 
     protected async onCompleting() {
         this.onStopping();
     }
+
     protected async onAborting() {
         this.onStopping();
     }
+
     protected async onStopping() {
+        catTimer.info(`timer stopped`);
         global.clearTimeout(this.timerId);
         global.clearInterval(this.timerUpdateId);
     }

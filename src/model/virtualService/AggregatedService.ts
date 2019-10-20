@@ -24,8 +24,11 @@
  */
 
 import {ParameterInterface} from '@p2olab/polaris-interface';
-import {ServiceState} from '../core/enum';
+import {Category} from 'typescript-logging';
+import {catAggregatedService} from '../../config/logging';
+import {BaseService} from '../core/BaseService';
 import {Module} from '../core/Module';
+import {Service} from '../core/Service';
 import {Petrinet, PetrinetOptions} from './aggregatedService/Petrinet';
 import {VirtualService} from './VirtualService';
 import {VirtualServiceOptions} from './VirtualServiceFactory';
@@ -34,6 +37,7 @@ export interface AggregatedServiceOptions extends VirtualServiceOptions {
     type: 'aggregatedService';
     description: string;
     version: string;
+    necessaryServices: Array<{ module: string; service: string }>;
     parameters: ParameterInterface[];
     stateMachine: StateMachineOptions;
     commandEnable: CommandEnableOptions;
@@ -79,11 +83,12 @@ export interface StateMachineOptions {
     stopping: PetrinetOptions;
     holding: PetrinetOptions;
     unholding: PetrinetOptions;
+    // if omitted, all necessary services are reset
+    resetting: PetrinetOptions;
     // following states should not perform any actions which can be defined by the user
     // idle
     // paused
     // completed
-    // resetting
 }
 
 /** Virtual Service which can be started.
@@ -93,84 +98,102 @@ export class AggregatedService extends VirtualService {
     public static type: string = 'aggregatedService';
 
     // necessary modules
-    public modules: Set<Module> = new Set<Module>();
+    public readonly modules: Set<Module> = new Set<Module>();
+    public readonly services: Service[];
 
     // dynamic properties
-    public currentState: ServiceState;
     public _lastStatusChange: Date;
-    private commandEnableExpression: CommandEnableOptions;
-    private options: AggregatedServiceOptions;
+    private readonly commandEnableExpression: CommandEnableOptions;
+    private readonly options: AggregatedServiceOptions;
 
-    private starting: Petrinet;
-    private execute: Petrinet;
-    private completing: Petrinet;
-    private stopping: Petrinet;
-    private pausing: Petrinet;
-    private resuming: Petrinet;
-    private aborting: Petrinet;
-    private holding: Petrinet;
-    private unholding: Petrinet;
+    private readonly stateMachines: Map<string, Petrinet>;
+
+    private logger: Category;
 
     constructor(options: AggregatedServiceOptions, modules: Module[]) {
         super(options.name);
         this.options = options;
         this._lastStatusChange = new Date();
+        this.logger = catAggregatedService;
 
         if (options.commandEnable) {
             this.commandEnableExpression = options.commandEnable;
         }
 
-        this.starting = new Petrinet(options.stateMachine.starting, modules);
-        this.execute = new Petrinet(options.stateMachine.execute, modules);
-        this.completing = new Petrinet(options.stateMachine.completing, modules);
-        this.stopping = new Petrinet(options.stateMachine.stopping, modules);
-        this.pausing = new Petrinet(options.stateMachine.pausing, modules);
-        this.resuming = new Petrinet(options.stateMachine.resuming, modules);
-        this.aborting = new Petrinet(options.stateMachine.aborting, modules);
-        this.holding = new Petrinet(options.stateMachine.holding, modules);
-        this.unholding = new Petrinet(options.stateMachine.unholding, modules);
+        this.services = options.necessaryServices.map((opts) => {
+            const module = modules.find((m) => m.id === opts.module);
+            return module.getService(opts.service);
+        });
+
+        this.stateMachines = new Map<string, Petrinet>();
+        Object.keys(options.stateMachine).forEach((stateMachineName: string) => {
+            this.stateMachines.set(stateMachineName, new Petrinet(options.stateMachine[stateMachineName], modules));
+        });
 
         this.initParameter();
     }
 
     protected initParameter() {
-        this.parameters = this.options.parameters;
+        this.procedureParameters = this.options.parameters;
         this.selfCompleting = true;
     }
 
-    protected async onStarting(): Promise<void> {
-        await this.starting.run();
+    protected onStarting(): Promise<void> {
+        return this.runPetriNetOrDefault('starting', (service) => service.start(), 'EXECUTE');
     }
 
     protected async onExecute(): Promise<void> {
-        await this.execute.run();
+        return this.runPetriNetOrDefault('execute');
     }
 
     protected async onPausing(): Promise<void> {
-        await this.pausing.run();
+        return this.runPetriNetOrDefault('pausing', (service) => service.pause(), 'PAUSED');
     }
 
     protected async onCompleting(): Promise<void> {
-        await this.pausing.run();
+        return this.runPetriNetOrDefault('completing', (service) => service.complete(), 'COMPLETED');
     }
 
     protected async onResuming(): Promise<void> {
-        await this.resuming.run();
+        return this.runPetriNetOrDefault('resuming', (service) => service.resume(), 'EXECUTE');
     }
 
     protected async onAborting(): Promise<void> {
-        await this.aborting.run();
+        return this.runPetriNetOrDefault('aborting', (service) => service.abort(), 'ABORTED');
     }
 
     protected async onStopping(): Promise<void> {
-        await this.stopping.run();
+        return this.runPetriNetOrDefault('stopping', (service) => service.stop(), 'STOPPED');
     }
 
     protected async onUnholding(): Promise<void> {
-        await this.unholding.run();
+        return this.runPetriNetOrDefault('unholding', (service) => service.unhold(), 'EXECUTE');
     }
 
     protected async onHolding(): Promise<void> {
-        await this.holding.run();
+        return this.runPetriNetOrDefault('holding');
+    }
+
+    protected async onRestarting(): Promise<void> {
+        return this.runPetriNetOrDefault('restarting', (service) => service.restart(), 'EXECUTE');
+    }
+
+    protected async onResetting(): Promise<void> {
+        return this.runPetriNetOrDefault('resetting', (service) => service.reset(), 'IDLE');
+    }
+
+    private async runPetriNetOrDefault(petrinetName: string,
+                                       command: (service: BaseService) => Promise<void> = null,
+                                       stateName: string = null) {
+        const petrinet: Petrinet = this.stateMachines.get(petrinetName);
+        if (petrinet) {
+            await petrinet.run();
+        } else if (command && stateName) {
+            this.logger.info(`use default behaviour for ${petrinetName}`);
+            await Promise.all(this.services.map(async (service) => {
+                command(service);
+                await service.waitForStateChange(stateName);
+            }));
+        }
     }
 }

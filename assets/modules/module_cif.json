@@ -7,6 +7,8 @@
         {
           "name": "Test_Service.Service1",
           "communication": {
+            "TagName": { "value":  "Service1"},
+            "TagDescription": {"value": "Sample service with different parameters"},
             "OSLevel": {
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service1.OSLevel",
@@ -229,6 +231,7 @@
             "TagName": {
               "value": "service2"
             },
+            "TagDescription": {"value": "Sample service with different parameters"},
             "OSLevel": {
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service2.OSLevel",
@@ -448,6 +451,8 @@
         {
           "name": "Test_Service.Nachfuellen",
           "communication": {
+            "TagName": { "value":  "Nachfuellen"},
+            "TagDescription": {"value": "Sample service with different parameters"},
             "OSLevel": {
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Nachfuellen.OSLevel",
@@ -579,6 +584,8 @@
         {
           "name": "Test_Service.Entleeren",
           "communication": {
+            "TagName": { "value":  "Entleeren"},
+            "TagDescription": {"value": "Sample service with different parameters"},
             "OSLevel": {
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Entleeren.OSLevel",
@@ -686,6 +693,8 @@
         {
           "name": "Test_Service.Dosieren",
           "communication": {
+            "TagName": { "value":  "Dosieren"},
+            "TagDescription": {"value": "Sample service with different parameters"},
             "OSLevel": {
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Dosieren.OSLevel",
@@ -817,6 +826,8 @@
         {
           "name": "Test_Service.Vorlegen",
           "communication": {
+            "TagName": { "value":  "Vorlegen"},
+            "TagDescription": {"value": "Sample service with different parameters"},
             "OSLevel": {
               "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
               "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Vorlegen.OSLevel",

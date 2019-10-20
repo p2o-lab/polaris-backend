@@ -25,6 +25,7 @@
 
 import {ControlEnableInterface, ParameterInterface, ParameterOptions, ServiceCommand} from '@p2olab/polaris-interface';
 import {EventEmitter} from 'events';
+import {timeout} from 'promise-timeout';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {catService} from '../../config/logging';
 import {Parameter} from '../recipe/Parameter';
@@ -50,15 +51,17 @@ export interface BaseServiceEvents {
      * @event commandExecuted
      */
     commandExecuted: {
-        timestamp: Date,
         strategy: Strategy,
         command: ServiceCommand,
         parameter: ParameterInterface[],
         scope?: any[]
     };
-    variableChanged: { strategy?: Strategy; parameter: string; value: number, unit: string };
 
-    parameterChanged: { strategy?: Strategy; parameter: string, value: number, unit: string };
+    parameterChanged: {
+        strategy?: Strategy;
+        parameter: ParameterInterface;
+        parameterType: 'parameter' | 'processValueIn' | 'processValueOut' | 'reportValue'
+    };
 }
 
 type BaseServiceEmitter = StrictEventEmitter<EventEmitter, BaseServiceEvents>;
@@ -85,10 +88,6 @@ export abstract class BaseService {
     public abstract get controlEnable(): ControlEnableInterface
 
     public readonly eventEmitter: BaseServiceEmitter;
-    public parameters: ParameterInterface[] = [];
-    public processValuesIn: ParameterInterface[] = [];
-    public processValuesOut: ParameterInterface[] = [];
-    public reportValues: ParameterInterface[] = [];
 
     // name of the base service
     protected _name: string;
@@ -121,7 +120,7 @@ export abstract class BaseService {
      * @param {ServiceCommand} command
      * @returns {Promise<boolean>}
      */
-    public async executeCommand(command: ServiceCommand): Promise<boolean> {
+    public async executeCommand(command: ServiceCommand) {
         if (!this.isCommandExecutable(command)) {
             catService.info(`[${this.qualifiedName}] ControlOp does not allow command ${command}`);
             throw new Error(`[${this.qualifiedName}] ControlOp does not allow command ${command}`);
@@ -151,13 +150,41 @@ export abstract class BaseService {
         return result;
     }
 
-    protected abstract async start();
-    protected abstract async stop();
-    protected abstract async reset();
-    protected abstract async complete();
-    protected abstract async abort();
-    protected abstract async unhold();
-    protected abstract async pause();
-    protected abstract async resume();
-    protected abstract async restart();
+    /**
+     * resolve when service changes to expectedState
+     * @param {string} expectedState
+     * @returns {Promise<void>}
+     */
+    public waitForStateChange(expectedState: string): Promise<void> {
+        return new Promise((resolve) => {
+            const service = this;
+            service.eventEmitter.on('state', function test(state) {
+                if (ServiceState[state] === expectedState) {
+                    service.eventEmitter.removeListener('state', test);
+                    resolve();
+                }
+            });
+        });
+    }
+
+    /**
+     * resolve when service changes to expectedState
+     * rejects after ms milliseconds
+     * @param {string} expectedState
+     * @param {number} ms           max time before promise is rejected
+     * @returns {Promise<void>}
+     */
+    public async waitForStateChangeWithTimeout(expectedState: string, ms = 1000): Promise<void> {
+        return await timeout(await this.waitForStateChange(expectedState), ms);
+    }
+
+    public abstract async start();
+    public abstract async stop();
+    public abstract async reset();
+    public abstract async complete();
+    public abstract async abort();
+    public abstract async unhold();
+    public abstract async pause();
+    public abstract async resume();
+    public abstract async restart();
 }

@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import {OperationInterface, OperationOptions, ServiceCommand} from '@p2olab/polaris-interface';
+import {OperationInterface, OperationOptions, ParameterOptions, ServiceCommand} from '@p2olab/polaris-interface';
 import {EventEmitter} from 'events';
 import * as delay from 'timeout-as-promise';
 import {catOperation} from '../../config/logging';
@@ -36,11 +36,15 @@ import {Parameter} from './Parameter';
  *
  */
 export class Operation {
+
+    private static MAX_RETRIES: number = 10;
+    private static RETRY_DELAY: number = 500;
+
     public module: Module;
     public service: Service;
     public strategy: Strategy;
     public command: ServiceCommand;
-    public parameters: Parameter[];
+    public parameterOptions: ParameterOptions[];
     public readonly emitter: EventEmitter;
     private state: 'executing' | 'completed' | 'aborted';
 
@@ -62,15 +66,11 @@ export class Operation {
             throw new Error('No modules specified');
         }
 
-        this.service = this.module.services.find((service) => service.name === options.service);
-        if (this.service === undefined) {
-            throw new Error(`Service ${ this.module.id }.${ options.service } not found in modules ` +
-            `(${JSON.stringify(modules.map((m) => m.id))})`);
-        }
+        this.service = this.module.getService(options.service);
         if (options.strategy) {
             this.strategy = this.service.strategies.find((strategy) => strategy.name === options.strategy);
         } else {
-            this.strategy = this.service.defaultStrategy;
+            this.strategy = this.service.getDefaultStrategy();
         }
         if (!this.strategy) {
             throw new Error(`Strategy '${options.strategy}' could not be found in ${ this.service.name }.`);
@@ -79,42 +79,42 @@ export class Operation {
             this.command = options.command;
         }
         if (options.parameter) {
-            this.parameters = options.parameter.map(
-                (paramOptions) => new Parameter(paramOptions, this.service, this.strategy, modules)
-            );
+            this.parameterOptions = options.parameter || [];
         }
         this.emitter = new EventEmitter();
     }
 
     /**
-     * Execute Operation at runtime during recipe run
+     * Execute Operation at runtime.
      *
-     * Try as long as command can be executed
-     * @returns {Promise<void>}
+     * There are a maximum of Operation.MAX_RETRIES retries of this operation
+     * for example if command can not be executed due to commandEnable.
+     * Between retries there is a delay of Operation.RETRY_DELAY milliseconds.
      */
     public async execute(): Promise<void> {
         let numberOfTries = 0;
-        const MAX_TRIES = 10;
         this.state = 'executing';
         while (this.state === 'executing') {
             catOperation.info(`Perform operation ${ this.module.id }.${ this.service.name }.${ this.command }() ` +
                 `(Strategy: ${ this.strategy ? this.strategy.name : '' })`);
-            await this.service.execute(this.command, this.strategy, this.parameters)
+            await this.service.executeCommandWithStrategyAndParameter(
+                this.command, this.strategy, this.parameterOptions)
                 .then(() => {
                     this.state = 'completed';
                     this.emitter.emit('changed', 'completed');
                     this.emitter.removeAllListeners('changed');
                 })
-                .catch(async () => {
+                .catch(async (err) => {
                     numberOfTries++;
-                    if (numberOfTries === MAX_TRIES) {
+                    catOperation.debug(`Operation could not be executed due to error: : ${err.toString()}`);
+                    if (numberOfTries === Operation.MAX_RETRIES) {
                         this.state = 'aborted';
                         this.emitter.emit('changed', 'aborted');
                         this.emitter.removeAllListeners('changed');
                         catOperation.warn('Could not execute operation. Stop restarting');
                     } else {
-                        catOperation.warn('Could not execute operation. Another try in 500ms');
-                        await delay(500);
+                        catOperation.warn(`Could not execute operation. Another try in ${Operation.RETRY_DELAY}ms`);
+                        await delay(Operation.RETRY_DELAY);
                     }
                 });
         }
@@ -134,7 +134,7 @@ export class Operation {
             service: this.service.name,
             strategy: this.strategy ? this.strategy.name : undefined,
             command: this.command,
-            parameter: this.parameters ? this.parameters.map((param) => param.options) : undefined,
+            parameter: this.parameterOptions,
             state: this.state
         };
     }

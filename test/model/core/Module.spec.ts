@@ -63,7 +63,7 @@ describe('Module', () => {
             await module.connect();
 
             const json = module.json();
-            expect(json).to.have.property('id', 'CIF');
+            expect(json).to.have.property('id', 'ModuleTestServer');
             expect(json).to.have.property('endpoint', 'opc.tcp://127.0.0.1:4334/ModuleTestServer');
             expect(json).to.have.property('protected', false);
             expect(json).to.have.property('services')
@@ -77,10 +77,9 @@ describe('Module', () => {
             expect(module.variables[0].communication.WQC.listenerCount('changed')).to.equal(1);
             expect(module.services[0].eventEmitter.listenerCount('parameterChanged')).to.equal(1);
 
-            const errorMsg = module.services[0].strategies[0].parameters[2] as StrView;
+            const errorMsg = module.services[0].strategies[0].processValuesOut[0] as StrView;
             expect(errorMsg.communication.WQC.listenerCount('changed')).to.equal(1);
             expect(errorMsg.communication.Text.listenerCount('changed')).to.equal(1);
-            expect(errorMsg.listenerCount('Text')).to.equal(1);
 
             await Promise.all([
                 new Promise((resolve) => module.on('parameterChanged', resolve)),
@@ -94,12 +93,9 @@ describe('Module', () => {
             const moduleJson =
                 JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8')).modules[0];
             const module = new Module(moduleJson);
-            const param = module.services[0].strategies[0].parameters[2];
-            expect(param.listenerCount('Text')).to.equal(0);
 
             await module.connect();
-            expect(module.connection.monitoredItemSize()).to.equal(48);
-            expect(param.listenerCount('Text')).to.equal(1);
+            expect(module.connection.monitoredItemSize()).to.equal(88);
 
             await Promise.all([
                 new Promise((resolve) => module.on('parameterChanged', resolve)),
@@ -110,7 +106,7 @@ describe('Module', () => {
             expect(module.connection.monitoredItemSize()).to.equal(0);
 
             await module.connect();
-            expect(module.connection.monitoredItemSize()).to.equal(48);
+            expect(module.connection.monitoredItemSize()).to.equal(88);
             await Promise.all([
                 new Promise((resolve) => module.on('parameterChanged', resolve)),
                 new Promise((resolve) => module.on('variableChanged', resolve)),

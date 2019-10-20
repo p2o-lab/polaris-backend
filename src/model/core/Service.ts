@@ -24,14 +24,11 @@
  */
 
 import {
-    ControlEnableInterface,
-    OpModeInterface,
-    ParameterInterface,
+    ControlEnableInterface, OperationMode,
     ParameterOptions,
     ServiceCommand,
     ServiceInterface,
-    ServiceOptions,
-    StrategyInterface
+    ServiceOptions, SourceMode
 } from '@p2olab/polaris-interface';
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
@@ -39,11 +36,10 @@ import {Category} from 'typescript-logging';
 import {catService} from '../../config/logging';
 import {DataAssembly} from '../dataAssembly/DataAssembly';
 import {DataAssemblyFactory} from '../dataAssembly/DataAssemblyFactory';
-import {OpcUaDataItem} from '../dataAssembly/DataItem';
 import {ServiceControl} from '../dataAssembly/ServiceControl';
-import {Parameter} from '../recipe/Parameter';
 import {BaseService, BaseServiceEvents} from './BaseService';
-import {controlEnableToJson, OpMode, opModetoJson, ServiceControlEnable, ServiceMtpCommand, ServiceState} from './enum';
+import {controlEnableToJson, ServiceControlEnable, ServiceMtpCommand, ServiceState} from './enum';
+import {Module} from './Module';
 import {OpcUaConnection} from './OpcUaConnection';
 import {Strategy} from './Strategy';
 
@@ -51,7 +47,10 @@ import {Strategy} from './Strategy';
  * Events emitted by [[Service]]
  */
 interface ServiceEvents extends BaseServiceEvents {
-    opMode: OpModeInterface;
+    opMode: {
+        operationMode: OperationMode,
+        sourceMode: SourceMode
+    };
 }
 
 type ServiceEmitter = StrictEventEmitter<EventEmitter, ServiceEvents>;
@@ -69,63 +68,24 @@ export class Service extends BaseService {
     }
 
     public get controlEnable(): ControlEnableInterface {
-        return controlEnableToJson(this.commandEnableNode.value as ServiceControlEnable);
+        return controlEnableToJson(this.serviceControl.communication.CommandEnable.value as ServiceControlEnable);
     }
 
     public get state(): ServiceState {
-        return this.statusNode.value as ServiceState;
+        return this.serviceControl.communication.State.value as ServiceState;
     }
 
     public get lastStatusChange(): Date {
-        return this.statusNode.timestamp;
+        return this.serviceControl.communication.State.timestamp;
     }
 
-    public get defaultStrategy(): Strategy {
-        return this.strategies.find((strategy) => strategy.defaultStrategy);
-    }
-
-    get opMode(): OpMode {
-        return this.opModeNode.value as OpMode;
-    }
-
-    get opModeNode(): OpcUaDataItem<number> {
-        return this.serviceControl.communication.OpMode;
-    }
-
-    get statusNode(): OpcUaDataItem<number> {
-        return this.serviceControl.communication.State;
-    }
-
-    get currentStrategyNode(): OpcUaDataItem<number> {
-        return this.serviceControl.communication.CurrentStrategy;
-    }
-
-    get strategyExtNode(): OpcUaDataItem<number> {
-        return this.serviceControl.communication.StrategyExt;
-    }
-
-    get strategyManNode(): OpcUaDataItem<number> {
-        return this.serviceControl.communication.StrategyMan;
-    }
-
-    get commandEnableNode(): OpcUaDataItem<number> {
-        return this.serviceControl.communication.CommandEnable;
-    }
-
-    get commandExtNode(): OpcUaDataItem<number> {
-        return this.serviceControl.communication.CommandExt;
-    }
-
-    get commandManNode(): OpcUaDataItem<number> {
-        return this.serviceControl.communication.CommandMan;
+    public get currentStrategy() {
+        return this.serviceControl.communication.CurrentStrategy.value;
     }
 
     public readonly eventEmitter: ServiceEmitter;
     public readonly strategies: Strategy[] = [];
     public readonly parameters: DataAssembly[] = [];
-    public readonly processValuesIn: DataAssembly[] = [];
-    public readonly processValuesOut: DataAssembly[] = [];
-    public readonly reportParameters: DataAssembly[] = [];
     public readonly connection: OpcUaConnection;
     // use ControlExt (true) or ControlOp (false)
     public readonly automaticMode: boolean;
@@ -152,7 +112,9 @@ export class Service extends BaseService {
         this.serviceControl = new ServiceControl(
             {name: this._name, interface_class: 'ServiceControl', communication: serviceOptions.communication},
             connection);
-        this.checkServiceControl();
+        if (!this.serviceControl.hasBeenCompletelyParsed()) {
+            throw new Error(`Service Control not fully defined in options`);
+        }
 
         this.strategies = serviceOptions.strategies
             .map((option) => new Strategy(option, connection));
@@ -161,25 +123,17 @@ export class Service extends BaseService {
             this.parameters = serviceOptions.parameters
                 .map((options) => DataAssemblyFactory.create(options, connection));
         }
-        if (serviceOptions.processValuesIn) {
-            this.processValuesIn = serviceOptions.processValuesIn
-                .map((pvOptions) => DataAssemblyFactory.create(pvOptions, connection));
-        }
-        if (serviceOptions.processValuesOut) {
-            this.processValuesOut = serviceOptions.processValuesOut
-                .map((pvOptions) => DataAssemblyFactory.create(pvOptions, connection));
-        }
-        if (serviceOptions.reportParameters) {
-            this.reportParameters = serviceOptions.reportParameters
-                .map((pvOptions) => DataAssemblyFactory.create(pvOptions, connection));
-        }
+    }
+
+    public getDefaultStrategy(): Strategy {
+        return this.strategies.find((strategy) => strategy.defaultStrategy);
     }
 
     /**
      * Get current strategy from internal memory.
      */
     public getCurrentStrategy(): Strategy {
-        return this.strategies.find((strat) => parseInt(strat.id, 10) === this.currentStrategyNode.value);
+        return this.strategies.find((strat) => parseInt(strat.id, 10) === this.currentStrategy);
     }
 
     /**
@@ -194,25 +148,18 @@ export class Service extends BaseService {
                     `${JSON.stringify(this.controlEnable)}`);
                 this.eventEmitter.emit('controlEnable', this.controlEnable);
             })
-            .on('CommandExt', () => {
-                this.logger.debug(`[${this.qualifiedName}] CommandExt changed: ` +
-                    `${ServiceMtpCommand[this.commandExtNode.value as ServiceMtpCommand]}`);
-            })
-            .on('CommandMan', () => {
-                this.logger.debug(`[${this.qualifiedName}] CommandMan changed: ` +
-                    `${ServiceMtpCommand[this.commandManNode.value as ServiceMtpCommand]}`);
-            })
-            .on('CurrentStrategy', () => {
-                this.logger.debug(`[${this.qualifiedName}] Current Strategy changed: ` +
-                    `${this.currentStrategyNode.value}`);
-            })
             .on('OpMode', () => {
-                this.logger.info(`[${this.qualifiedName}] Current OpMode changed: ${this.opModeNode.value}`);
-                this.eventEmitter.emit('opMode', opModetoJson(this.opMode));
+                this.logger.debug(`[${this.qualifiedName}] Current OpMode changed: ` +
+                    `${this.serviceControl.getOperationMode()}`);
+                this.eventEmitter.emit('opMode',
+                    {
+                        operationMode: this.serviceControl.getOperationMode(),
+                        sourceMode: this.serviceControl.getSourceMode()
+                    });
             })
             .on('State', () => {
-                this.logger.info(`[${this.qualifiedName}] State changed: ` +
-                    `${ServiceState[this.statusNode.value as ServiceState]}`);
+                this.logger.debug(`[${this.qualifiedName}] State changed: ` +
+                    `${ServiceState[this.state]}`);
                 this.eventEmitter.emit('state', this.state);
                 if (this.state === ServiceState.COMPLETED ||
                     this.state === ServiceState.ABORTED ||
@@ -225,42 +172,14 @@ export class Service extends BaseService {
 
         tasks.concat(
             this.parameters.map((param) => {
-                param.on('V', (data) => {
-                    this.eventEmitter.emit('variableChanged', {
-                        parameter: param.name,
-                        value: data,
-                        unit: param.getUnit()
-                    });
-                });
                 return param.subscribe();
-            }),
-            this.processValuesIn.map((pv) => {
-                pv.on('V', (data) => {
-                    this.eventEmitter.emit('variableChanged', {
-                        parameter: pv.name,
-                        value: data,
-                        unit: pv.getUnit()
-                    });
-                });
-                return pv.subscribe();
-            }),
-            this.processValuesOut.map((pv) => {
-                pv.on('V', (data) => {
-                    this.eventEmitter.emit('variableChanged', {
-                        parameter: pv.name,
-                        value: data,
-                        unit: pv.getUnit()
-                    });
-                });
-                return pv.subscribe();
             }),
             this.strategies.map((strategy) => {
                 strategy.on('parameterChanged', (data) => {
                     this.eventEmitter.emit('parameterChanged', {
                         strategy,
-                        parameter: data.parameter.name,
-                        value: data.value,
-                        unit: data.parameter.getUnit()
+                        parameter: data.parameter,
+                        parameterType: data.parameterType
                     });
                 });
                 return strategy.subscribe();
@@ -272,8 +191,6 @@ export class Service extends BaseService {
     public unsubscribe() {
         this.serviceControl.unsubscribe();
         this.parameters.forEach((param) => param.unsubscribe());
-        this.processValuesIn.forEach((pv) => pv.unsubscribe());
-        this.processValuesOut.forEach((pv) => pv.unsubscribe());
         this.strategies.forEach((strategy) => strategy.unsubscribe());
     }
 
@@ -281,19 +198,15 @@ export class Service extends BaseService {
      * get JSON overview about service and its state, opMode, strategies, parameters and controlEnable
      */
     public getOverview(): ServiceInterface {
-        const strategies = this.getStrategies();
-        const params = this.getCurrentParameters();
         const currentStrategy = this.getCurrentStrategy();
         return {
             name: this.name,
-            opMode: opModetoJson(this.opMode),
+            operationMode: this.serviceControl.getOperationMode(),
+            sourceMode: this.serviceControl.getSourceMode(),
             status: ServiceState[this.state],
-            strategies: strategies,
+            strategies: this.strategies.map((strategy) => strategy.toJson()),
             currentStrategy: currentStrategy ? currentStrategy.name : null,
-            parameters: params,
-            processValuesIn: [],
-            processValuesOut: [],
-            reportParameters: [],
+            parameters: this.parameters.map((param) => param.toJson()),
             controlEnable: this.controlEnable,
             lastChange: this.lastStatusChange ?
                 (new Date().getTime() - this.lastStatusChange.getTime()) / 1000 :
@@ -302,48 +215,15 @@ export class Service extends BaseService {
     }
 
     /**
-     * Get all strategies for service with its current strategyParameters
-     */
-    public getStrategies(): StrategyInterface[] {
-        return this.strategies.map((strategy) => {
-            return {
-                id: strategy.id,
-                name: strategy.name,
-                default: strategy.defaultStrategy,
-                sc: strategy.selfCompleting,
-                parameters: this.getCurrentParameters(strategy)
-            };
-        });
-    }
-
-    /** get current parameters
-     * from strategy or service (if strategy is undefined)
-     * @param {Strategy} strategy
-     */
-    public getCurrentParameters(strategy?: Strategy): ParameterInterface[] {
-        let params: DataAssembly[] = [];
-        if (strategy) {
-            params = strategy.parameters;
-        } else {
-            params = this.parameters;
-        }
-        let paramInterface = [];
-        if (params) {
-            paramInterface = params.map((param) => param.toJson());
-        }
-        return paramInterface;
-    }
-
-    /**
      * Set strategy and strategy parameters and execute a command for service on PEA
      * @param {ServiceCommand} command  command to be executed on PEA
      * @param {Strategy}    strategy  strategy to be set on PEA
-     * @param {Parameter[]|ParameterOptions[]} parameters     strategyParameters to be set on PEA
+     * @param {ParameterOptions[]} parameters     parameters to be set on PEA
      * @returns {Promise<void>}
      */
-    public async execute(command?: ServiceCommand,
-                         strategy?: Strategy,
-                         parameters?: Array<Parameter | ParameterOptions>): Promise<void> {
+    public async executeCommandWithStrategyAndParameter(command: ServiceCommand,
+                                                        strategy: Strategy,
+                                                        parameters: ParameterOptions[]): Promise<void> {
         if (!this.connection.isConnected()) {
             throw new Error('Module is not connected');
         }
@@ -351,22 +231,27 @@ export class Service extends BaseService {
         if (strategy) {
             await this.setStrategy(strategy);
         }
-        if (!strategy) {
-            strategy = await this.getCurrentStrategy();
+        if (parameters) {
+            await this.setParameters(parameters);
         }
-        if (command) {
-            await this.executeCommand(command);
-        }
-
-        this.eventEmitter.emit('commandExecuted', {
-            timestamp: new Date(),
-            strategy: strategy,
-            command: command,
-            parameter: this.getCurrentParameters(strategy)
-        });
+        await this.executeCommand(command);
     }
 
     // overridden method from Base Service
+    public async executeCommand(command: ServiceCommand) {
+        if (!this.connection.isConnected()) {
+            throw new Error('Module is not connected');
+        }
+        await super.executeCommand(command);
+        const currentStrategy = this.getCurrentStrategy();
+        this.eventEmitter.emit('commandExecuted', {
+            strategy: currentStrategy,
+            command: command,
+            parameter: currentStrategy.parameters.map((param) => param.toJson())
+        });
+        this.logger.info(`[${this.qualifiedName}] ${command} executed`);
+        }
+
     public start() {
         return this.sendCommand(ServiceMtpCommand.START);
     }
@@ -403,88 +288,54 @@ export class Service extends BaseService {
         return this.sendCommand(ServiceMtpCommand.RESUME);
     }
 
-    /**
-     * Set service configuration strategyParameters for adaption to environment. Can set also process values
-     * @param {ParameterOptions[]} parameters
-     * @returns {Promise<any[]>}
-     */
-    public setServiceParameters(parameters: ParameterOptions[]): Promise<any[]> {
-        this.logger.info(`[${this.qualifiedName}] Set service parameters: ${JSON.stringify(parameters)}`);
-        const tasks = parameters.map((paramOptions: ParameterOptions) => {
-            const param: Parameter = new Parameter(paramOptions, this);
-            return param.updateValueOnModule();
-        });
-        return Promise.all(tasks);
-    }
-
     /** Set strategy
      * Use default strategy if strategy is omitted
-     *
-     * @param {StrategyInterface|string} strategy    object or name of desired strategy
-     * @param {(Parameter|ParameterOptions)[]} parameters
      * @returns {Promise<void>}
      */
 
-    public async setStrategy(strategy?: Strategy | string, parameters?: Parameter[]): Promise<void> {
-        // get strategy from input parameters
-        let strat: Strategy;
-        if (!strategy) {
-            strat = this.defaultStrategy;
-        } else if (typeof strategy === 'string') {
-            strat = this.strategies.find((strati) => strati.name === strategy);
-        } else {
-            strat = strategy;
-        }
+    public async setStrategy(strategy: Strategy): Promise<void> {
+        this.logger.debug(`[${this.qualifiedName}] set strategy: ${strategy.name}`);
 
         // first set opMode and then set strategy
         await this.setOperationMode();
         const node = this.automaticMode ?
             this.serviceControl.communication.StrategyExt : this.serviceControl.communication.StrategyMan;
-        await node.write(strat.id);
-        if (parameters) {
-            this.setParameters(parameters);
-        }
+        await node.write(strategy.id);
     }
 
-    /** Set both service parameter and strategy parameter
-     *
-     * @param parameters
-     */
-    public async setParameters(parameters: Array<Parameter | ParameterOptions> = []): Promise<void> {
-        const params: Parameter[] = await Promise.all(parameters.map(async (param) => {
-            if (param instanceof Parameter) {
-                return param;
-            } else {
-                const strat = await this.getCurrentStrategy();
-                return new Parameter(param, this, strat);
-            }
-        }));
-        const tasks = params.map((param: Parameter) => param.updateValueOnModule());
-        const paramResults = await Promise.all(tasks);
-        this.logger.trace(`[${this.qualifiedName}] Set Parameter Promises: ${JSON.stringify(paramResults)}`);
-        await this.listenToServiceParameters(params);
-    }
-
-    public setOperationMode(): Promise<void> {
-        if (this.automaticMode) {
-            return this.serviceControl.setToAutomaticOperationMode();
+    public getStrategyByNameOrDefault(strategyName: string) {
+        let strategy: Strategy;
+        if (!strategyName) {
+            strategy = this.getDefaultStrategy();
         } else {
-            return this.serviceControl.setToManualOperationMode();
+            strategy = this.strategies.find((strati) => strati.name === strategyName);
+        }
+        return strategy;
+    }
+
+    public async setParameters(parameterOptions: ParameterOptions[], modules: Module[] = []) {
+        parameterOptions.map((p) => {
+            const dataAssembly = this.findInputParameter(p.name);
+            dataAssembly.setValue(p, modules);
+        });
+    }
+
+    public async setOperationMode() {
+        if (this.automaticMode) {
+            await this.serviceControl.setToAutomaticOperationMode();
+            await this.serviceControl.setToExternalSourceMode();
+        } else {
+            await this.serviceControl.setToManualOperationMode();
         }
     }
 
-    public async waitForOpModeToPassSpecificTest(testFunction: (opMode: OpMode) => boolean) {
-        return this.serviceControl.waitForOpModeToPassSpecificTest(testFunction);
-    }
-
-    private listenToServiceParameters(parameters: Parameter[]) {
-        parameters.forEach((param) => {
-            if (param.continuous) {
-                const listener: EventEmitter = param.listenToParameter();
-                listener.on('changed', () => param.updateValueOnModule());
-                this.serviceParametersEventEmitters.push(listener);
-            }
-        });
+    public findInputParameter(parameterName: string): DataAssembly {
+        const parameterList = [].concat(
+            this.parameters,
+            this.getCurrentStrategy().parameters,
+            this.getCurrentStrategy().processValuesIn
+        );
+        return parameterList.find((obj) => (obj.name === parameterName));
     }
 
     /**
@@ -496,45 +347,14 @@ export class Service extends BaseService {
     }
 
     private async sendCommand(command: ServiceMtpCommand) {
-        this.logger.info(`[${this.qualifiedName}] Send command ${ServiceMtpCommand[command]}`);
+        this.logger.debug(`[${this.qualifiedName}] Send command ${ServiceMtpCommand[command]}`);
         await this.setOperationMode();
 
-        const node = this.automaticMode ? this.commandExtNode : this.commandManNode;
+        const node = this.automaticMode ?
+            this.serviceControl.communication.CommandExt :
+            this.serviceControl.communication.CommandMan;
         await node.write(command);
-        this.logger.info(`[${this.qualifiedName}] Command ${ServiceMtpCommand[command]} written`);
+        this.logger.trace(`[${this.qualifiedName}] Command ${ServiceMtpCommand[command]} written`);
     }
 
-    private checkServiceControl() {
-        if (!this.opModeNode) {
-            throw new Error(`No OpMode variable in service ${this.qualifiedName} during parsing`);
-        }
-
-        if (!this.statusNode) {
-            throw new Error(`No status variable in service ${this.qualifiedName} during parsing`);
-        }
-
-        if (!this.commandEnableNode) {
-            throw new Error(`No commandEnable variable in service ${this.qualifiedName} during parsing`);
-        }
-
-        if (!this.commandExtNode) {
-            throw new Error(`No commandExt variable in service ${this.qualifiedName} during parsing`);
-        }
-
-        if (!this.commandManNode) {
-            throw new Error(`No commandMan variable in service ${this.qualifiedName} during parsing`);
-        }
-
-        if (!this.strategyExtNode) {
-            throw new Error(`No strategyExt variable in service ${this.qualifiedName} during parsing`);
-        }
-
-        if (!this.strategyManNode) {
-            throw new Error(`No strategyMan variable in service ${this.qualifiedName} during parsing`);
-        }
-
-        if (!this.currentStrategyNode) {
-            throw new Error(`No currentStrategy variable in service ${this.name} during parsing`);
-        }
-    }
 }

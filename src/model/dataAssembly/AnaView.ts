@@ -42,16 +42,10 @@ export class AnaView extends ScaleSettingsDA(UnitDA(DataAssembly)) {
     constructor(options, connection: OpcUaConnection) {
         super(options, connection);
         this.createDataItem(options, 'V', 'read');
+        this.type = 'number';
+        this.readDataItem = this.communication.V;
     }
 
-    public toJson(): ParameterInterface {
-        return {
-            ...super.toJson(),
-            value: this.communication.V.value,
-            type: 'number',
-            readonly: true
-        };
-    }
 }
 
 export class AnaMon extends MonitorSettings(AnaView) {

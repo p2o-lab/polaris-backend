@@ -34,7 +34,6 @@ import {Module} from '../../../src/model/core/Module';
 import {Player} from '../../../src/model/recipe/Player';
 import {Recipe} from '../../../src/model/recipe/Recipe';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
-import {waitForStateChange} from '../../helper';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -97,19 +96,19 @@ describe('Player', () => {
 
             player.start();
             expect(player.status).to.equal(RecipeState.running);
-            await waitForStateChange(service, 'STARTING', 2000);
-            await waitForStateChange(service, 'EXECUTE');
-            await waitForStateChange(service, 'COMPLETING', 2000);
-            await waitForStateChange(service, 'COMPLETED', 2000);
-            await waitForStateChange(service, 'IDLE');
+            await service.waitForStateChangeWithTimeout('STARTING', 2000);
+            await service.waitForStateChangeWithTimeout('EXECUTE');
+            await service.waitForStateChangeWithTimeout('COMPLETING', 2000);
+            await service.waitForStateChangeWithTimeout('COMPLETED', 2000);
+            await service.waitForStateChangeWithTimeout('IDLE');
 
             // here the second run of the recipe should automatically start, since first recipe is finished
 
-            await waitForStateChange(service, 'STARTING', 2000);
-            await waitForStateChange(service, 'EXECUTE', 2000);
-            await waitForStateChange(service, 'COMPLETING', 2000);
-            await waitForStateChange(service, 'COMPLETED', 2000);
-            await waitForStateChange(service, 'IDLE');
+            await service.waitForStateChangeWithTimeout('STARTING', 2000);
+            await service.waitForStateChangeWithTimeout('EXECUTE', 2000);
+            await service.waitForStateChangeWithTimeout('COMPLETING', 2000);
+            await service.waitForStateChangeWithTimeout('COMPLETED', 2000);
+            await service.waitForStateChangeWithTimeout('IDLE');
 
             await delay(50);
 
@@ -141,19 +140,19 @@ describe('Player', () => {
 
             player.start();
             expect(player.status).to.equal(RecipeState.running);
-            await waitForStateChange(service, 'STARTING');
-            await waitForStateChange(service, 'EXECUTE');
-            await waitForStateChange(service, 'COMPLETING', 2000);
-            await waitForStateChange(service, 'COMPLETED', 2000);
-            await waitForStateChange(service, 'IDLE');
+            await service.waitForStateChangeWithTimeout('STARTING');
+            await service.waitForStateChangeWithTimeout('EXECUTE');
+            await service.waitForStateChangeWithTimeout('COMPLETING', 2000);
+            await service.waitForStateChangeWithTimeout('COMPLETED', 2000);
+            await service.waitForStateChangeWithTimeout('IDLE');
 
             // here the second run of the recipe should automatically start, since first recipe is finished
 
-            await waitForStateChange(service, 'STARTING', 2000);
-            await waitForStateChange(service, 'EXECUTE', 2000);
-            await waitForStateChange(service, 'COMPLETING', 2000);
-            await waitForStateChange(service, 'COMPLETED', 2000);
-            await waitForStateChange(service, 'IDLE');
+            await service.waitForStateChangeWithTimeout('STARTING', 2000);
+            await service.waitForStateChangeWithTimeout('EXECUTE', 2000);
+            await service.waitForStateChangeWithTimeout('COMPLETING', 2000);
+            await service.waitForStateChangeWithTimeout('COMPLETED', 2000);
+            await service.waitForStateChangeWithTimeout('IDLE');
 
             await delay(10);
 
@@ -187,34 +186,33 @@ describe('Player', () => {
 
             player.start();
             expect(player.status).to.equal(RecipeState.running);
-            await waitForStateChange(service, 'STARTING', 2000);
-            await waitForStateChange(service, 'EXECUTE');
+            await service.waitForStateChangeWithTimeout('STARTING', 2000);
+            await service.waitForStateChangeWithTimeout('EXECUTE');
 
             player.pause();
-            await waitForStateChange(service, 'PAUSING');
-            await waitForStateChange(service, 'PAUSED');
+            await service.waitForStateChangeWithTimeout('PAUSING');
+            await service.waitForStateChangeWithTimeout('PAUSED');
             expect(player.status).to.equal(RecipeState.paused);
 
             player.start();
-            await waitForStateChange(service, 'RESUMING');
-            await waitForStateChange(service, 'EXECUTE');
+            await service.waitForStateChangeWithTimeout('RESUMING');
+            await service.waitForStateChangeWithTimeout('EXECUTE');
             expect(service.state).to.equal(ServiceState.EXECUTE);
             expect(player.status).to.equal(RecipeState.running);
 
-            await waitForStateChange(service, 'COMPLETING', 2000);
-            await waitForStateChange(service, 'COMPLETED');
+            await service.waitForStateChangeWithTimeout('COMPLETING', 2000);
+            await service.waitForStateChangeWithTimeout('COMPLETED');
 
-            await waitForStateChange(service, 'IDLE');
+            await service.waitForStateChangeWithTimeout('IDLE');
 
             // here the second run of the recipe should automatically start, since first recipe is finished
 
-            await waitForStateChange(service, 'STARTING', 2000);
-            await waitForStateChange(service, 'EXECUTE');
+            await service.waitForStateChangeWithTimeout('STARTING', 2000);
+            await service.waitForStateChangeWithTimeout('EXECUTE');
 
-            await player.stop();
-
-            await waitForStateChange(service, 'STOPPING');
-            await waitForStateChange(service, 'STOPPED');
+            player.stop();
+            await service.waitForStateChangeWithTimeout('STOPPING');
+            await service.waitForStateChangeWithTimeout('STOPPED');
 
             expect(player.status).to.equal(RecipeState.stopped);
             player.reset();

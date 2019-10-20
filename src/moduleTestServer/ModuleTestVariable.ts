@@ -23,24 +23,22 @@
  * SOFTWARE.
  */
 
-import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
+import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
 import {catTestServer} from '../config/logging';
-import {OpMode} from '../model/core/enum';
+import { ModuleTestOpMode } from './ModuleTestOpMode';
 
 export abstract class TestServerVariable {
 
     public readonly name: string;
-    public opMode: number = 0;
+    public opMode: ModuleTestOpMode;
     public wqc: number = 0;
     public osLevel: number = 0;
-    protected simulation: boolean;
     protected variableNode: UAObject;
 
-    constructor(namespace: Namespace, rootNode: UAObject, variableName: string, simulation = false) {
+    constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
         catTestServer.info(`Add variable ${variableName}`);
 
         this.name = variableName;
-        this.simulation = simulation;
 
         this.variableNode = namespace.addObject({
             organizedBy: rootNode,
@@ -71,39 +69,6 @@ export abstract class TestServerVariable {
             }
         });
 
-        namespace.addVariable({
-            componentOf: this.variableNode,
-            nodeId: `ns=1;s=${variableName}.OpMode`,
-            browseName: `${variableName}.OpMode`,
-            dataType: DataType.UInt32,
-            value: {
-                get: () => {
-                    catTestServer.debug(`[${variableName}] Get Opmode in testserver ${this.opMode}`);
-                    return new Variant({dataType: DataType.UInt32, value: this.opMode});
-                },
-                set: (variant) => {
-                    const opModeInt = parseInt(variant.value, 10);
-                    if (opModeInt === OpMode.stateManOp) {
-                        this.opMode = this.opMode & ~OpMode.stateAutAct;
-                        this.opMode = this.opMode | OpMode.stateManAct;
-                    } else if (opModeInt === OpMode.stateAutOp) {
-                        this.opMode = this.opMode & ~OpMode.stateManAct;
-                        this.opMode = this.opMode | OpMode.stateAutAct;
-                        this.opMode = this.opMode | OpMode.srcIntAct;
-                    } else if (opModeInt === OpMode.srcExtOp) {
-                        this.opMode = this.opMode & ~OpMode.srcIntAct;
-                    } else {
-                        return StatusCodes.Bad;
-                    }
-                    catTestServer.debug(`[${variableName}] Set Opmode in testserver ${variant} ` +
-                        `${opModeInt} -> ${this.opMode}`);
-                    return StatusCodes.Good;
-                }
-            }
-        });
+        this.opMode = new ModuleTestOpMode(namespace, this.variableNode, variableName);
     }
-
-    public abstract startSimulation();
-
-    public abstract stopSimulation();
 }

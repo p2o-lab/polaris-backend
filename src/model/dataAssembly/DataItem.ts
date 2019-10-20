@@ -68,7 +68,7 @@ export class OpcUaDataItem<T> extends DataItem<T> {
 
     public static fromOptions<type extends number | string | boolean>(
         options: OpcUaNodeOptions, connection: OpcUaConnection,
-        access: 'read' | 'write', type = 'number'): OpcUaDataItem<type> {
+        access: 'read' | 'write', type: 'number' | 'string' | 'boolean' = 'number'): OpcUaDataItem<type> {
         const item = new OpcUaDataItem<type>();
 
         if (options) {
@@ -77,6 +77,8 @@ export class OpcUaDataItem<T> extends DataItem<T> {
                     item.value = parseFloat(options.value) as type;
                 } else if (type === 'string') {
                     item.value = options.value.toString() as type;
+                } else if (type === 'boolean') {
+                    item.value = !!options.value as type;
                 } else {
                     item.value = options.value as type;
                 }
@@ -118,11 +120,8 @@ export class OpcUaDataItem<T> extends DataItem<T> {
         return this;
     }
 
-    public unsubscribe() {
-        this.logger.debug('unsubscribe from data item');
-    }
-
-    public write(value: number | string) {
+    public write(value: number | string | boolean) {
+        this.logger.debug(`write: ${value} to ${this.nodeId}`);
         return this.connection.writeOpcUaNode(this.nodeId, this.namespaceIndex, value, this.dataType);
     }
 

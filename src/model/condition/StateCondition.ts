@@ -37,12 +37,7 @@ export class StateCondition extends ModuleCondition {
 
     constructor(options: StateConditionOptions, modules: Module[]) {
         super(options, modules);
-        if (this.module.services) {
-            this.service = this.module.services.find((service) => service.name === options.service);
-        }
-        if (!this.service) {
-            throw new Error(`Service "${options.service}" not found in provided module ${this.module.id}`);
-        }
+        this.service = this.module.getService(options.service);
         const mapping = {
             'idle': ServiceState.IDLE,
             'starting': ServiceState.STARTING,
@@ -80,7 +75,7 @@ export class StateCondition extends ModuleCondition {
 
     private check = (expectedState: ServiceState) => {
         this._fulfilled = (expectedState === this.state);
-        catCondition.info(`StateCondition ${this.service.qualifiedName}: actual=${ServiceState[expectedState]}` +
+        catCondition.debug(`StateCondition ${this.service.qualifiedName}: actual=${ServiceState[expectedState]}` +
             ` ; condition=${ServiceState[this.state]} -> ${this._fulfilled}`);
         this.emit('stateChanged', this._fulfilled);
     }

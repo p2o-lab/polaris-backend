@@ -24,7 +24,6 @@
  * SOFTWARE.
  */
 
-import {ParameterInterface} from '@p2olab/polaris-interface';
 import {OpcUaConnection} from '../core/OpcUaConnection';
 import {BaseDataAssemblyRuntime, DataAssembly} from './DataAssembly';
 import {OpcUaDataItem} from './DataItem';
@@ -32,6 +31,7 @@ import {OpModeDA, OpModeRuntime} from './mixins/OpMode';
 import {ScaleSettingsDA, ScaleSettingsRuntime} from './mixins/ScaleSettings';
 import {UnitDA, UnitDataAssemblyRuntime} from './mixins/Unit';
 import {ValueLimitationDA, ValueLimitationRuntime} from './mixins/ValueLimitation';
+import {SourceModeDA, SourceModeRuntime} from './mixins/SourceMode';
 
 export type AnaOpRuntime = BaseDataAssemblyRuntime &
     UnitDataAssemblyRuntime & ValueLimitationRuntime &
@@ -46,32 +46,26 @@ export class ExtAnaOp extends ValueLimitationDA(ScaleSettingsDA(UnitDA(DataAssem
 
     constructor(options, connection: OpcUaConnection) {
         super(options, connection);
-
         this.createDataItem(options, 'VOut', 'read');
         this.createDataItem(options, 'VRbk', 'read');
         this.createDataItem(options, 'VExt', 'write');
-    }
-
-    public toJson(): ParameterInterface {
-        return {
-            ...super.toJson(),
-            value: this.communication.VOut.value,
-            type: 'number',
-            readonly: false
-        };
+        this.writeDataItem = this.communication.VExt;
+        this.readDataItem = this.communication.VRbk;
+        this.type = 'number';
     }
 }
 
-export type ExtIntAnaOpRuntime = AnaOpRuntime & OpModeRuntime & {
+export type ExtIntAnaOpRuntime = AnaOpRuntime & OpModeRuntime & SourceModeRuntime & {
     VInt: OpcUaDataItem<number>;
 };
 
-export class ExtIntAnaOp extends OpModeDA(ExtAnaOp) {
+export class ExtIntAnaOp extends OpModeDA(SourceModeDA(ExtAnaOp)) {
 
     public readonly communication: ExtIntAnaOpRuntime;
 
     constructor(options, connection: OpcUaConnection) {
         super(options, connection);
+        this.type = 'number';
         this.createDataItem(options, 'VInt', 'read');
     }
 }

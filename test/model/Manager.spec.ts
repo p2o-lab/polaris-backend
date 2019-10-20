@@ -32,7 +32,6 @@ import {ServiceState} from '../../src/model/core/enum';
 import {Service} from '../../src/model/core/Service';
 import {Manager} from '../../src/model/Manager';
 import {ModuleTestServer} from '../../src/moduleTestServer/ModuleTestServer';
-import {waitForStateChange} from '../helper';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -91,7 +90,7 @@ describe('Manager', () => {
         it('should prevent removing a protected module', async () => {
             const manager = new Manager();
             manager.loadModule(
-                JSON.parse(fs.readFileSync('assets/modules/achema_demonstrator/modules_achema.json').toString()),
+                JSON.parse(fs.readFileSync('assets/modules/module_cif.json').toString()),
                 true);
             await expect(manager.removeModule(manager.modules[0].id)).to.be.rejectedWith(/is protected/);
         });
@@ -129,6 +128,14 @@ describe('Manager', () => {
         expect(() => manager.removeVirtualService('timer1')).to.throw('not available');
     });
 
+    it('should instantiate and run virtual service', async () => {
+        const manager = new Manager();
+        manager.instantiateVirtualService({name: 'timer1', type: 'timer'});
+        manager.virtualServices[0].setParameters([{name: 'duration', value: 100}]);
+        manager.virtualServices[0].start();
+        await manager.virtualServices[0].waitForStateChangeWithTimeout('COMPLETED');
+    });
+
     describe('test with test module', function() {
         this.timeout(5000);
         let moduleServer: ModuleTestServer;
@@ -155,24 +162,24 @@ describe('Manager', () => {
             const service2 = module.services[1];
 
             module.connect();
-            await waitForStateChange(service2, 'IDLE', 2000);
-            service2.execute(ServiceCommand.start);
-            await waitForStateChange(service2, 'EXECUTE');
+            await service2.waitForStateChangeWithTimeout('IDLE', 2000);
+            service2.executeCommand(ServiceCommand.start);
+            await service2.waitForStateChangeWithTimeout('EXECUTE');
 
             await manager.stopAllServices();
-            await waitForStateChange(service2, 'STOPPED');
+            await service2.waitForStateChangeWithTimeout('STOPPED');
             expect(service2.state).to.equal(ServiceState.STOPPED);
 
             await manager.abortAllServices();
             await Promise.all([
-                    waitForStateChange(service1, 'ABORTED'),
-                    waitForStateChange(service2, 'ABORTED')]
+                    service1.waitForStateChangeWithTimeout('ABORTED'),
+                    service2.waitForStateChangeWithTimeout('ABORTED')]
             );
             expect(service1.state).to.equal(ServiceState.ABORTED);
             expect(service2.state).to.equal(ServiceState.ABORTED);
 
             await manager.resetAllServices();
-            await waitForStateChange(service2, 'IDLE');
+            await service2.waitForStateChangeWithTimeout('IDLE');
             expect(service2.state).to.equal(ServiceState.IDLE);
 
             await manager.removeModule(module.id);
@@ -191,13 +198,13 @@ describe('Manager', () => {
             const service = module.services[1];
 
             module.connect();
-            await waitForStateChange(service, 'IDLE', 2000);
-            service.execute(ServiceCommand.start);
-            await waitForStateChange(service, 'EXECUTE');
+            await service.waitForStateChangeWithTimeout('IDLE', 2000);
+            service.executeCommand(ServiceCommand.start);
+            await service.waitForStateChangeWithTimeout('EXECUTE');
 
-            service.execute(ServiceCommand.complete);
-            await waitForStateChange(service, 'COMPLETED');
-            await waitForStateChange(service, 'IDLE');
+            service.executeCommand(ServiceCommand.complete);
+            await service.waitForStateChangeWithTimeout('COMPLETED');
+            await service.waitForStateChangeWithTimeout('IDLE');
         });
 
     });

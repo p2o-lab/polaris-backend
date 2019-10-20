@@ -23,7 +23,6 @@
  * SOFTWARE.
  */
 
-import {ParameterInterface} from '@p2olab/polaris-interface';
 import {BaseDataAssemblyRuntime, DataAssembly} from './DataAssembly';
 import {OpcUaDataItem} from './DataItem';
 
@@ -42,14 +41,8 @@ export class StrView extends DataAssembly {
     constructor(options, connection) {
         super(options, connection);
         this.createDataItem(options, 'Text', 'read', 'string');
+        this.type = 'string';
+        this.readDataItem = this.communication.Text;
     }
 
-    public toJson(): ParameterInterface {
-        return {
-            ...super.toJson(),
-            value: this.Text.value,
-            type: 'string',
-            readonly: true
-        };
-    }
 }

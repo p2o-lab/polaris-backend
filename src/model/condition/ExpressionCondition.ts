@@ -64,7 +64,7 @@ export class ExpressionCondition extends Condition {
 
     public listen(): Condition {
         this.scopeArray.forEach((item) => {
-            item.dataAssembly.on(item.variableName, this.boundOnChanged);
+            item.dataAssembly.on('changed', this.boundOnChanged);
         });
         return this;
     }
@@ -84,14 +84,14 @@ export class ExpressionCondition extends Condition {
         });
         const assign = require('assign-deep');
         const scope = assign(...tasks);
-        catCondition.info(`Scope: ${JSON.stringify(scope)}`);
+        catCondition.trace(`Scope: ${JSON.stringify(scope)}`);
         return this.expression.evaluate(scope);
     }
 
     public clear() {
         super.clear();
         this.scopeArray.forEach((item) => {
-            item.dataAssembly.removeListener(item.variableName, this.boundOnChanged);
+            item.dataAssembly.removeListener('changed', this.boundOnChanged);
         });
     }
 

@@ -23,6 +23,7 @@
  * SOFTWARE.
  */
 
+import {BackendNotification} from '@p2olab/polaris-interface';
 import * as fs from 'fs';
 import * as request from 'supertest';
 import * as WebSocket from 'ws';
@@ -257,27 +258,34 @@ describe('Routes', () => {
                 // wait until first update of state via websocket
                 const ws = new WebSocket('ws:/localhost:3000');
                 await new Promise((resolve) => ws.on('message', function incoming(msg) {
-                    const data = JSON.parse(msg.toString());
-                    if (data.data && data.data.status) {
+                    const data: BackendNotification = JSON.parse(msg.toString());
+                    if (data.message === 'service' && data.service.status) {
                         ws.removeListener('message', incoming);
                         resolve();
                     }
                 }));
 
-                await request(app).get('/api/module/CIF')
+                await request(app).get('/api/module/ModuleTestServer')
+                    .expect(200)
+                    .expect('Content-Type', 'application/json; charset=utf-8')
+                    .expect(/"connected":true/)
+                    .expect(/"status":"IDLE"/);
+
+                await request(app).post('/api/module/ModuleTestServer/service/Service1')
+                    .send({name: 'Parameter001', value: 2})
                     .expect(200)
                     .expect('Content-Type', /json/)
                     .expect(/"status":"IDLE"/);
 
-                await request(app).post('/api/module/CIF/disconnect')
+                await request(app).post('/api/module/ModuleTestServer/disconnect')
                     .expect(200)
                     .expect('Content-Type', /json/)
                     .expect(/"status":"Succesfully disconnected"/);
 
-                await request(app).delete('/api/module/CIF')
+                await request(app).delete('/api/module/ModuleTestServer')
                     .expect(200)
                     .expect('Content-Type', /json/)
-                    .expect({status: 'Successful deleted', id: 'CIF'});
+                    .expect({status: 'Successful deleted', id: 'ModuleTestServer'});
             });
         });
     });

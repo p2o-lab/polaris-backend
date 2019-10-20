@@ -27,14 +27,11 @@ import {ServiceCommand} from '@p2olab/polaris-interface';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
-import {ClientSession, OPCUAClient} from 'node-opcua-client';
-import {OPCUAServer} from 'node-opcua-server';
 import * as delay from 'timeout-as-promise';
 import {Module} from '../../../src/model/core/Module';
 import {Service} from '../../../src/model/core/Service';
 import {Operation} from '../../../src/model/recipe/Operation';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
-import {waitForStateChange} from '../../helper';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -73,15 +70,15 @@ describe('Operation', () => {
 
         it('should fail with wrong service name', () => {
             expect(() => new Operation({
-                module: 'CIF',
+                module: 'ModuleTestServer',
                 service: 'test',
                 command: null
-            }, [module])).to.throw('not found');
+            }, [module])).to.throw('Could not find service with name test');
         });
 
         it('should fail with wrong strategy name', () => {
             expect(() => new Operation({
-                module: 'CIF',
+                module: 'ModuleTestServer',
                 service: 'Service1',
                 strategy: 'dd',
                 command: null
@@ -90,13 +87,13 @@ describe('Operation', () => {
 
         it('should work', () => {
             const op = new Operation({
-                module: 'CIF', service: 'Service1', command: 'start' as any,
+                module: 'ModuleTestServer', service: 'Service1', command: 'start' as any,
                 parameter: [{name: 'Parameter001', value: 3}]
             }, [module]);
             expect(op).to.have.property('module');
             expect(op.json()).to.deep.equal({
                 command: 'start',
-                module: 'CIF',
+                module: 'ModuleTestServer',
                 parameter: [
                     {
                         name: 'Parameter001',
@@ -116,7 +113,7 @@ describe('Operation', () => {
         let module: Module;
         let service: Service;
 
-        beforeEach(async function () {
+        beforeEach(async function() {
             this.timeout(5000);
             moduleServer = new ModuleTestServer();
             await moduleServer.start();
@@ -134,6 +131,18 @@ describe('Operation', () => {
             await moduleServer.shutdown();
         });
 
+        it('should execute operation', async () => {
+            const operation = new Operation({
+                service: 'Service1',
+                command: 'start' as ServiceCommand
+            }, [module]);
+
+            operation.execute();
+
+            await service.waitForStateChangeWithTimeout('EXECUTE', 3000);
+            expect(operation.json()).to.have.property('state', 'completed');
+        });
+
         it('should try execute operation until it works', async () => {
             const operation = new Operation({
                 service: 'Service1',
@@ -144,9 +153,9 @@ describe('Operation', () => {
             await delay(300);
             expect(operation.json()).to.have.property('state', 'executing');
             // set precondition for operation
-            service.execute(ServiceCommand.start);
+            service.executeCommand(ServiceCommand.start);
 
-            await waitForStateChange(service, 'COMPLETED', 3000);
+            await service.waitForStateChangeWithTimeout('COMPLETED', 3000);
             expect(operation.json()).to.have.property('state', 'completed');
 
         }).timeout(10000);

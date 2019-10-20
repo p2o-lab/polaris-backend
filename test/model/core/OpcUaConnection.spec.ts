@@ -65,7 +65,7 @@ describe('OpcUaConnection', () => {
             await connection.connect();
             expect(connection.isConnected()).to.equal(true);
 
-            const result = await connection.readOpcUaNode('Service1.Parameter1.VExt', 'urn:NodeOPCUA-Server-default');
+            const result = await connection.readOpcUaNode('Service1.Offset.VExt', 'urn:NodeOPCUA-Server-default');
             expect(result.statusCode.value).to.equal(0);
             expect(result.statusCode.description).to.equal('No Error');
             expect(result.value.value).to.equal(20);
@@ -80,7 +80,7 @@ describe('OpcUaConnection', () => {
             await connection.connect();
             expect(connection.isConnected()).to.equal(true);
 
-            const result = await connection.listenToOpcUaNode('Service1.ErrorMsg.Text', 'urn:NodeOPCUA-Server-default');
+            const result = await connection.listenToOpcUaNode('Service1.CurrentTime.Text', 'urn:NodeOPCUA-Server-default');
             expect(result.statusCode.value).to.equal(0);
             expect(result.statusCode.description).to.equal('No Error');
 
@@ -96,21 +96,23 @@ describe('OpcUaConnection', () => {
             await connection.connect();
             expect(connection.isConnected()).to.equal(true);
 
-            const result = await connection.listenToOpcUaNode('Service1.ErrorMsg.Text', 'urn:NodeOPCUA-Server-default');
-            expect(result.statusCode.value).to.equal(0);
-            expect(result.statusCode.description).to.equal('No Error');
+            const firstListener = await connection.listenToOpcUaNode(
+                'Service1.CurrentTime.Text', 'urn:NodeOPCUA-Server-default');
+            expect(firstListener.statusCode.value).to.equal(0);
+            expect(firstListener.statusCode.description).to.equal('No Error');
             expect(connection.monitoredItemSize()).to.equal(1);
 
-            await new Promise((resolve) => result.on('changed', resolve));
+            await new Promise((resolve) => firstListener.on('changed', resolve));
 
             await connection.disconnect();
             expect(connection.monitoredItemSize()).to.equal(0);
             await connection.connect();
 
-            const res2 = await connection.listenToOpcUaNode('Service1.ErrorMsg.Text', 'urn:NodeOPCUA-Server-default');
+            const secondListener = await connection.listenToOpcUaNode(
+                'Service1.CurrentTime.Text', 'urn:NodeOPCUA-Server-default');
             await new Promise((resolve, reject) => {
-                result.on('changed', reject);
-                res2.on('changed', resolve);
+                firstListener.on('changed', reject);
+                secondListener.on('changed', resolve);
             });
             expect(connection.monitoredItemSize()).to.equal(1);
         });
@@ -122,10 +124,10 @@ describe('OpcUaConnection', () => {
             await connection.connect();
             expect(connection.isConnected()).to.equal(true);
 
-            await connection.listenToOpcUaNode('Service1.Parameter1.VExt', 'urn:NodeOPCUA-Server-default');
+            await connection.listenToOpcUaNode('Service1.Offset.VExt', 'urn:NodeOPCUA-Server-default');
             expect(connection.monitoredItemSize()).equals(1);
 
-            await connection.listenToOpcUaNode('Service1.Parameter1.VExt', 'urn:NodeOPCUA-Server-default');
+            await connection.listenToOpcUaNode('Service1.Offset.VExt', 'urn:NodeOPCUA-Server-default');
             expect(connection.monitoredItemSize()).equals(1);
 
             await expect(connection.listenToOpcUaNode('notexistant', 'urn:NodeOPCUA-Server-default'))
