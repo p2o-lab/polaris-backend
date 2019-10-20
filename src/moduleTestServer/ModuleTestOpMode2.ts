@@ -28,6 +28,7 @@ import {Namespace, UAObject} from 'node-opcua-address-space';
 import {StatusCodes} from 'node-opcua-constants';
 import {DataType, Variant} from 'node-opcua-variant';
 
+/** new version of OpMode for testserver */
 export class ModuleTestOpMode2 {
     public opMode: OperationMode = OperationMode.Offline;
     public stateChannel: boolean = false;
