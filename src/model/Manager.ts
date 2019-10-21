@@ -325,7 +325,7 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
     }
 
     public instantiateVirtualService(options: VirtualServiceOptions) {
-        const virtualService = VirtualServiceFactory.create(options);
+        const virtualService = VirtualServiceFactory.create(options, this.modules);
         catManager.info(`instantiated virtual Service ${virtualService.name}`);
         virtualService.eventEmitter
             .on('controlEnable', () => {
