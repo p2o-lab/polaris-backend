@@ -110,7 +110,7 @@ export class AggregatedService extends VirtualService {
 
     private logger: Category;
 
-    constructor(options: AggregatedServiceOptions, modules: Module[], virtualServices: VirtualService[]) {
+    constructor(options: AggregatedServiceOptions, modules: Module[], virtualServices: VirtualService[] = []) {
         super(options.name);
         this.options = options;
         this._lastStatusChange = new Date();
