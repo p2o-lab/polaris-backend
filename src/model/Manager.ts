@@ -53,7 +53,7 @@ interface ManagerEvents {
 
 type ManagerEmitter = StrictEventEmitter<EventEmitter, ManagerEvents>;
 
-interface LoadModuleOptions {
+export interface LoadModuleOptions {
     module?: ModuleOptions;
     modules?: ModuleOptions[];
     subplants?: Array<{ modules: ModuleOptions[] }>;
