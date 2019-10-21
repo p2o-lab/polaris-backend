@@ -170,7 +170,7 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
                     this.emit('notify', { message: 'module', module: module.json()});
                 })
                 .on('controlEnable', ({service}) => {
-                    this.emit('notify', {message: 'service', moduleId: module.id, service: service.getOverview()});
+                    this.emit('notify', {message: 'service', moduleId: module.id, service: service.json()});
                 })
                 .on('variableChanged', (data) => {
                     const logEntry: VariableChange = {
@@ -191,7 +191,7 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
                     this.emit('notify', {
                         message: 'service',
                         moduleId: module.id,
-                        service: parameterChange.service.getOverview()
+                        service: parameterChange.service.json()
                     });
                 })
                 .on('commandExecuted', (data) => {
@@ -221,10 +221,10 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
                     if (this.player.currentRecipeRun) {
                         this.player.currentRecipeRun.serviceLog.push(logEntry);
                     }
-                    this.emit('notify', {message: 'service', moduleId: module.id, service: service.getOverview()});
+                    this.emit('notify', {message: 'service', moduleId: module.id, service: service.json()});
                 })
                 .on('opModeChanged', ({service}) => {
-                    this.emit('notify', {message: 'service', moduleId: module.id, service: service.getOverview()});
+                    this.emit('notify', {message: 'service', moduleId: module.id, service: service.json()});
                 })
                 .on('serviceCompleted', (service: Service) => {
                     this.performAutoReset(service);
