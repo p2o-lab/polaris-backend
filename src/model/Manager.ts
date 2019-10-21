@@ -363,6 +363,7 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
                 }
                 this.emit('notify', {message: 'virtualService', virtualService: virtualService.json()});
             });
+        this.emit('notify', {message: 'virtualService', virtualService: virtualService.json()});
         this.virtualServices.push(virtualService);
     }
 
