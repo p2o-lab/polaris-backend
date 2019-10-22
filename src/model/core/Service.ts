@@ -197,7 +197,7 @@ export class Service extends BaseService {
     /**
      * get JSON overview about service and its state, opMode, strategies, parameters and controlEnable
      */
-    public getOverview(): ServiceInterface {
+    public json(): ServiceInterface {
         const currentStrategy = this.getCurrentStrategy();
         return {
             name: this.name,
@@ -212,29 +212,6 @@ export class Service extends BaseService {
                 (new Date().getTime() - this.lastStatusChange.getTime()) / 1000 :
                 undefined
         };
-    }
-
-    /**
-     * Set strategy and strategy parameters and execute a command for service on PEA
-     * @param {ServiceCommand} command  command to be executed on PEA
-     * @param {Strategy}    strategy  strategy to be set on PEA
-     * @param {ParameterOptions[]} parameters     parameters to be set on PEA
-     * @returns {Promise<void>}
-     */
-    public async executeCommandWithStrategyAndParameter(command: ServiceCommand,
-                                                        strategy: Strategy,
-                                                        parameters: ParameterOptions[]): Promise<void> {
-        if (!this.connection.isConnected()) {
-            throw new Error('Module is not connected');
-        }
-        this.logger.info(`[${this.qualifiedName}] Execute ${command} (${strategy ? strategy.name : ''})`);
-        if (strategy) {
-            await this.setStrategy(strategy);
-        }
-        if (parameters) {
-            await this.setParameters(parameters);
-        }
-        await this.executeCommand(command);
     }
 
     // overridden method from Base Service

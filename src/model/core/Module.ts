@@ -176,7 +176,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
 
     public getServiceStates(): ServiceInterface[] {
         this.logger.trace(`[${this.id}] check service states`);
-        return this.services.map((service) => service.getOverview());
+        return this.services.map((service) => service.json());
     }
 
     public async connect() {

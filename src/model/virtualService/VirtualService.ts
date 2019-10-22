@@ -235,13 +235,13 @@ export abstract class VirtualService extends BaseService {
     // Internal
     private setState(newState: ServiceState) {
         catVirtualService.info(`[${this.name}] state changed to ${ServiceState[newState]}`);
-        this.eventEmitter.emit('state', newState);
         this._state = newState;
+        this.eventEmitter.emit('state', newState);
     }
 
     private setControlEnable(controlEnable: ControlEnableInterface) {
-        this.eventEmitter.emit('controlEnable', controlEnable);
         this._controlEnable = controlEnable;
+        this.eventEmitter.emit('controlEnable', controlEnable);
     }
 
     private async gotoStarting(): Promise<void> {
