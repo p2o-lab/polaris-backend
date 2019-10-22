@@ -88,8 +88,6 @@ export class Service extends BaseService {
     public readonly strategies: Strategy[] = [];
     public readonly parameters: WritableDataAssembly[] = [];
     public readonly connection: OpcUaConnection;
-    // use ControlExt (true) or ControlOp (false)
-    public readonly automaticMode: boolean;
     public readonly serviceControl: ServiceControl;
     private readonly logger: Category;
     private serviceParametersEventEmitters: EventEmitter[];
@@ -102,8 +100,6 @@ export class Service extends BaseService {
         if (!serviceOptions.name) {
             throw new Error('No service name provided');
         }
-
-        this.automaticMode = true;
         this.connection = connection;
         this.serviceParametersEventEmitters = [];
 
@@ -276,9 +272,7 @@ export class Service extends BaseService {
 
         // first set opMode and then set strategy
         await this.setOperationMode();
-        const node = this.automaticMode ?
-            this.serviceControl.communication.StrategyExt : this.serviceControl.communication.StrategyMan;
-        await node.write(strategy.id);
+        await this.serviceControl.communication.StrategyExt.write(strategy.id);
     }
 
     public getStrategyByNameOrDefault(strategyName: string) {
@@ -299,12 +293,8 @@ export class Service extends BaseService {
     }
 
     public async setOperationMode() {
-        if (this.automaticMode) {
-            await this.serviceControl.setToAutomaticOperationMode();
-            await this.serviceControl.setToExternalSourceMode();
-        } else {
-            await this.serviceControl.setToManualOperationMode();
-        }
+        await this.serviceControl.setToAutomaticOperationMode();
+        await this.serviceControl.setToExternalSourceMode();
     }
 
     public findInputParameter(parameterName: string): WritableDataAssembly {
@@ -328,10 +318,7 @@ export class Service extends BaseService {
         this.logger.debug(`[${this.qualifiedName}] Send command ${ServiceMtpCommand[command]}`);
         await this.setOperationMode();
 
-        const node = this.automaticMode ?
-            this.serviceControl.communication.CommandExt :
-            this.serviceControl.communication.CommandMan;
-        await node.write(command);
+        await this.serviceControl.communication.CommandExt.write(command);
         this.logger.trace(`[${this.qualifiedName}] Command ${ServiceMtpCommand[command]} written`);
     }
 
