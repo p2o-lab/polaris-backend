@@ -24,9 +24,10 @@
  * SOFTWARE.
  */
 
-import {BaseDataAssemblyRuntime, DataAssembly} from './DataAssembly';
+import {BaseDataAssemblyRuntime} from './DataAssembly';
 import {OpcUaDataItem} from './DataItem';
 import {OpModeRuntime} from './mixins/OpMode';
+import {WritableDataAssembly} from './WritableDataAssembly';
 
 export type AnaDrvRuntime = BaseDataAssemblyRuntime & OpModeRuntime & {
     FwdEn: OpcUaDataItem<boolean>;
@@ -64,7 +65,7 @@ export type AnaDrvRuntime = BaseDataAssemblyRuntime & OpModeRuntime & {
     ResetLi: OpcUaDataItem<boolean>;
 };
 
-export class AnaDrv extends DataAssembly {
+export class AnaDrv extends WritableDataAssembly {
 
     public readonly communication: AnaDrvRuntime;
 
@@ -72,6 +73,7 @@ export class AnaDrv extends DataAssembly {
         super(options, connection);
         this.createDataItem(options, 'RpmFbk', 'read');
         this.readDataItem = this.communication.RpmFbk;
+        this.writeDataItem = this.communication.RpmExt;
         this.type = 'number';
     }
 }

@@ -24,10 +24,11 @@
  * SOFTWARE.
  */
 
-import {BaseDataAssemblyRuntime, DataAssembly} from './DataAssembly';
+import {BaseDataAssemblyRuntime} from './DataAssembly';
 import {OpcUaDataItem} from './DataItem';
 import {OpModeDA} from './mixins/OpMode';
 import {SourceModeDA} from './mixins/SourceMode';
+import {WritableDataAssembly} from './WritableDataAssembly';
 
 export type ExtBinOpRuntime = BaseDataAssemblyRuntime & {
     VExt: OpcUaDataItem<boolean>;
@@ -37,7 +38,7 @@ export type ExtBinOpRuntime = BaseDataAssemblyRuntime & {
     VState1: OpcUaDataItem<string>;
 };
 
-export class ExtBinOp extends DataAssembly {
+export class ExtBinOp extends WritableDataAssembly {
 
     public readonly communication: ExtBinOpRuntime;
 

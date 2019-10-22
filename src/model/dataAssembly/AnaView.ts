@@ -24,7 +24,6 @@
  * SOFTWARE.
  */
 
-import {ParameterInterface} from '@p2olab/polaris-interface';
 import {OpcUaConnection} from '../core/OpcUaConnection';
 import {BaseDataAssemblyRuntime, DataAssembly} from './DataAssembly';
 import {OpcUaDataItem} from './DataItem';

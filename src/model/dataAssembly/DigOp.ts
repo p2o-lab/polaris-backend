@@ -25,13 +25,13 @@
  */
 
 import {AnaOpRuntime} from './AnaOp';
-import {DataAssembly} from './DataAssembly';
 import {OpModeDA} from './mixins/OpMode';
 import {ScaleSettingsDA} from './mixins/ScaleSettings';
-import {UnitDA} from './mixins/Unit';
 import {SourceModeDA} from './mixins/SourceMode';
+import {UnitDA} from './mixins/Unit';
+import {WritableDataAssembly} from './WritableDataAssembly';
 
-export class ExtDigOp extends ScaleSettingsDA(UnitDA(DataAssembly)) {
+export class ExtDigOp extends ScaleSettingsDA(UnitDA(WritableDataAssembly)) {
     public readonly communication: AnaOpRuntime;
 
     constructor(options, connection) {

@@ -37,11 +37,13 @@ import {catService} from '../../config/logging';
 import {DataAssembly} from '../dataAssembly/DataAssembly';
 import {DataAssemblyFactory} from '../dataAssembly/DataAssemblyFactory';
 import {ServiceControl} from '../dataAssembly/ServiceControl';
+import {WritableDataAssembly} from '../dataAssembly/WritableDataAssembly';
 import {BaseService, BaseServiceEvents} from './BaseService';
 import {controlEnableToJson, ServiceControlEnable, ServiceMtpCommand, ServiceState} from './enum';
 import {Module} from './Module';
 import {OpcUaConnection} from './OpcUaConnection';
 import {Strategy} from './Strategy';
+
 
 /**
  * Events emitted by [[Service]]
@@ -306,7 +308,7 @@ export class Service extends BaseService {
         }
     }
 
-    public findInputParameter(parameterName: string): DataAssembly {
+    public findInputParameter(parameterName: string): WritableDataAssembly {
         const parameterList = [].concat(
             this.parameters,
             this.getCurrentStrategy().parameters,

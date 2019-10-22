@@ -23,10 +23,11 @@
  * SOFTWARE.
  */
 
-import {BaseDataAssemblyRuntime, DataAssembly} from './DataAssembly';
+import {BaseDataAssemblyRuntime} from './DataAssembly';
 import {OpcUaDataItem} from './DataItem';
 import {OpModeDA, OpModeRuntime} from './mixins/OpMode';
 import {SourceModeDA, SourceModeRuntime} from './mixins/SourceMode';
+import {WritableDataAssembly} from './WritableDataAssembly';
 
 export type ServiceControlRuntime  = BaseDataAssemblyRuntime & OpModeRuntime & SourceModeRuntime & {
     CommandMan: OpcUaDataItem<number>;
@@ -39,7 +40,7 @@ export type ServiceControlRuntime  = BaseDataAssemblyRuntime & OpModeRuntime & S
     CurrentStrategy: OpcUaDataItem<number>;
 };
 
-export class ServiceControl extends OpModeDA(SourceModeDA(DataAssembly)) {
+export class ServiceControl extends OpModeDA(SourceModeDA(WritableDataAssembly)) {
     public readonly communication: ServiceControlRuntime;
 
     constructor(options, connection) {
@@ -52,6 +53,9 @@ export class ServiceControl extends OpModeDA(SourceModeDA(DataAssembly)) {
         this.createDataItem(options, 'StrategyExt', 'write');
         this.createDataItem(options, 'StrategyInt', 'read');
         this.createDataItem(options, 'CurrentStrategy', 'read');
+
+        this.readDataItem = this.communication.State;
+        this.writeDataItem = this.communication.CommandExt;
     }
 
 }

@@ -27,7 +27,6 @@ import {DataAssemblyOptions, ParameterInterface, ParameterOptions} from '@p2olab
 import {EventEmitter} from 'events';
 import {catDataAssembly} from '../../config/logging';
 import {OpcUaConnection} from '../core/OpcUaConnection';
-import {Parameter} from '../recipe/Parameter';
 import {DataItem, OpcUaDataItem} from './DataItem';
 
 export interface BaseDataAssemblyRuntime {
@@ -53,11 +52,8 @@ export class DataAssembly extends EventEmitter {
     public subscriptionActive: boolean;
     public readonly connection: OpcUaConnection;
     public type: string = 'number';
-    public writeDataItem: DataItem<any> = null;
     public readDataItem: DataItem<any>;
-    public requestedValue: string;
     public parsingErrors: string[] = [];
-    public parameterRequest: Parameter;
 
     constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
         super();
@@ -120,49 +116,6 @@ export class DataAssembly extends EventEmitter {
             });
     }
 
-    /**
-     * Set parameter on module
-     * @param paramValue
-     * @param {string} variable
-     */
-    public async setParameter(paramValue: any, variable?: string) {
-        let dataItem: DataItem<any>;
-        if (variable) {
-            dataItem = this.communication[variable];
-        } else {
-            dataItem = this.writeDataItem;
-        }
-        catDataAssembly.debug(`Set Parameter: ${this.name} (${variable}) -> ${JSON.stringify(paramValue)}`);
-        await dataItem.write(paramValue);
-    }
-
-    public async setValue(p: ParameterOptions, modules: any[]) {
-        catDataAssembly.debug(`set value: ${JSON.stringify(p)}`);
-        if (p.value) {
-            this.requestedValue = p.value.toString();
-
-            if (this.parameterRequest) {
-                this.parameterRequest.unlistenToScopeArray();
-
-                if (this.parameterRequest.eventEmitter) {
-                    this.parameterRequest.eventEmitter.removeListener('changed', this.setParameter);
-                }
-            }
-
-            this.parameterRequest = new Parameter(p, modules);
-
-            const value = this.parameterRequest.getValue();
-            catDataAssembly.trace(`calculated value: ${value}`);
-            await this.setParameter(value);
-
-            if (this.parameterRequest.options.continuous) {
-                catDataAssembly.trace(`Continous parameter change`);
-                this.parameterRequest.listenToScopeArray()
-                    .on('changed', (data) => this.setParameter(data));
-            }
-        }
-    }
-
     public getValue() {
         return this.readDataItem ? this.readDataItem.value : undefined;
     }
@@ -171,19 +124,12 @@ export class DataAssembly extends EventEmitter {
         return this.readDataItem ? this.readDataItem.timestamp : undefined;
     }
 
-    public getUnit(): string {
-        catDataAssembly.trace(`Try to access not existing unit in ${this.name}`);
-        return null;
-    }
-
     public toJson(): ParameterInterface {
         return {
             name: this.name,
             value: this.getValue(),
-            requestedValue: this.requestedValue,
-            unit: this.getUnit(),
             type: this.type,
-            readonly: this.writeDataItem === null,
+            readonly: true,
             timestamp: this.getLastUpdate()
         };
     }
