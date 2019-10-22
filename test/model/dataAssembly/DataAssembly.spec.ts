@@ -40,6 +40,7 @@ import {MonAnaDrv} from '../../../src/model/dataAssembly/Drv';
 import {ServiceControl} from '../../../src/model/dataAssembly/ServiceControl';
 import {StrView} from '../../../src/model/dataAssembly/Str';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
+import {WritableDataAssembly} from '../../../src/model/dataAssembly/WritableDataAssembly';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -66,10 +67,8 @@ describe('DataAssembly', () => {
             expect(da1.toJson()).to.deep.equal({
                 name: 'xyz',
                 readonly: true,
-                requestedValue: undefined,
                 timestamp: undefined,
                 type: 'number',
-                unit: null,
                 value: undefined
             });
 
@@ -291,10 +290,8 @@ describe('DataAssembly', () => {
             expect(da1.toJson()).to.deep.equal({
                 name: 'binview1',
                 readonly: true,
-                requestedValue: undefined,
                 timestamp: undefined,
                 type: 'boolean',
-                unit: null,
                 value: true
             });
 
@@ -333,10 +330,8 @@ describe('DataAssembly', () => {
             expect(da1.toJson()).to.deep.equal({
                 name: 'binmon1',
                 readonly: true,
-                requestedValue: undefined,
                 timestamp: undefined,
                 type: 'boolean',
-                unit: null,
                 value: true
             });
         });
@@ -360,7 +355,6 @@ describe('DataAssembly', () => {
             expect(da1.toJson()).to.deep.equal({
                 name: 'digmon1',
                 readonly: true,
-                requestedValue: undefined,
                 timestamp: undefined,
                 type: 'number',
                 unit: 'L',
@@ -414,11 +408,10 @@ describe('DataAssembly', () => {
             expect(da1 instanceof MonAnaDrv).to.equal(true);
             expect(da1.toJson()).to.deep.equal({
                 name: 'MonAnaDrv1',
-                readonly: true,
+                readonly: false,
                 requestedValue: undefined,
                 timestamp: undefined,
                 type: 'number',
-                unit: null,
                 value: 50,
             });
         });
@@ -503,7 +496,7 @@ describe('DataAssembly', () => {
             await module.connect();
             moduleServer.startSimulation();
 
-            const da = module.services[0].strategies[0].parameters[0];
+            const da = module.services[0].strategies[0].parameters[0] as WritableDataAssembly;
             const inputDa = module.variables[0];
             await da.subscribe();
             await inputDa.subscribe();

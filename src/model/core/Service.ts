@@ -44,7 +44,6 @@ import {Module} from './Module';
 import {OpcUaConnection} from './OpcUaConnection';
 import {Strategy} from './Strategy';
 
-
 /**
  * Events emitted by [[Service]]
  */
@@ -87,7 +86,7 @@ export class Service extends BaseService {
 
     public readonly eventEmitter: ServiceEmitter;
     public readonly strategies: Strategy[] = [];
-    public readonly parameters: DataAssembly[] = [];
+    public readonly parameters: WritableDataAssembly[] = [];
     public readonly connection: OpcUaConnection;
     // use ControlExt (true) or ControlOp (false)
     public readonly automaticMode: boolean;
@@ -123,7 +122,7 @@ export class Service extends BaseService {
 
         if (serviceOptions.parameters) {
             this.parameters = serviceOptions.parameters
-                .map((options) => DataAssemblyFactory.create(options, connection));
+                .map((options) => DataAssemblyFactory.create(options, connection) as WritableDataAssembly);
         }
     }
 
