@@ -155,7 +155,7 @@ describe('Service', () => {
 
         it('should provide correct JSON', () => {
             expect(ServiceState[service.state]).to.equal('IDLE');
-            const result = service.getOverview();
+            const result = service.json();
             expect(result).to.have.property('status', 'IDLE');
         });
 
@@ -217,7 +217,7 @@ describe('Service', () => {
         });
 
         it('full service state cycle', async () => {
-            let result = service.getOverview();
+            let result = service.json();
             expect(result).to.have.property('status', 'IDLE');
             expect(result).to.have.property('controlEnable')
                 .to.deep.equal({
@@ -239,7 +239,7 @@ describe('Service', () => {
 
             await service.setOperationMode();
 
-            result = service.getOverview();
+            result = service.json();
             expect(result).to.have.property('status', 'IDLE');
             expect(result).to.have.property('controlEnable')
                 .to.deep.equal({

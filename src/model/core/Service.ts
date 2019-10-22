@@ -197,7 +197,7 @@ export class Service extends BaseService {
     /**
      * get JSON overview about service and its state, opMode, strategies, parameters and controlEnable
      */
-    public getOverview(): ServiceInterface {
+    public json(): ServiceInterface {
         const currentStrategy = this.getCurrentStrategy();
         return {
             name: this.name,
