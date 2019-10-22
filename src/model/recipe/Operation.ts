@@ -27,10 +27,10 @@ import {OperationInterface, OperationOptions, ParameterOptions, ServiceCommand} 
 import {EventEmitter} from 'events';
 import * as delay from 'timeout-as-promise';
 import {catOperation} from '../../config/logging';
+import {BaseService} from '../core/BaseService';
 import {Module} from '../core/Module';
-import {Service} from '../core/Service';
 import {Strategy} from '../core/Strategy';
-import {Parameter} from './Parameter';
+import {Service} from '../core/Service';
 
 /** Operation used in a [[Step]] of a [[Recipe]] or [[PetrinetState]]
  *
@@ -41,7 +41,7 @@ export class Operation {
     private static RETRY_DELAY: number = 500;
 
     public module: Module;
-    public service: Service;
+    public service: BaseService;
     public strategy: Strategy;
     public command: ServiceCommand;
     public parameterOptions: ParameterOptions[];
@@ -67,13 +67,15 @@ export class Operation {
         }
 
         this.service = this.module.getService(options.service);
-        if (options.strategy) {
-            this.strategy = this.service.strategies.find((strategy) => strategy.name === options.strategy);
-        } else {
-            this.strategy = this.service.getDefaultStrategy();
-        }
-        if (!this.strategy) {
-            throw new Error(`Strategy '${options.strategy}' could not be found in ${ this.service.name }.`);
+        if (this.service instanceof Service) {
+            if (options.strategy) {
+                this.strategy = this.service.strategies.find((strategy) => strategy.name === options.strategy);
+            } else {
+                this.strategy = this.service.getDefaultStrategy();
+            }
+            if (!this.strategy) {
+                throw new Error(`Strategy '${options.strategy}' could not be found in ${this.service.name}.`);
+            }
         }
         if (options.command) {
             this.command = options.command;
@@ -97,26 +99,30 @@ export class Operation {
         while (this.state === 'executing') {
             catOperation.info(`Perform operation ${ this.module.id }.${ this.service.name }.${ this.command }() ` +
                 `(Strategy: ${ this.strategy ? this.strategy.name : '' })`);
-            await this.service.executeCommandWithStrategyAndParameter(
-                this.command, this.strategy, this.parameterOptions)
-                .then(() => {
-                    this.state = 'completed';
-                    this.emitter.emit('changed', 'completed');
+            if (this.service instanceof Service && this.strategy) {
+                await this.service.setStrategy(this.strategy);
+            }
+            if (this.parameterOptions) {
+                await this.service.setParameters(this.parameterOptions);
+            }
+            try {
+                await this.service.executeCommand(this.command);
+                this.state = 'completed';
+                this.emitter.emit('changed', 'completed');
+                this.emitter.removeAllListeners('changed');
+            } catch (err) {
+                numberOfTries++;
+                catOperation.debug(`Operation could not be executed due to error: : ${err.toString()}`);
+                if (numberOfTries === Operation.MAX_RETRIES) {
+                    this.state = 'aborted';
+                    this.emitter.emit('changed', 'aborted');
                     this.emitter.removeAllListeners('changed');
-                })
-                .catch(async (err) => {
-                    numberOfTries++;
-                    catOperation.debug(`Operation could not be executed due to error: : ${err.toString()}`);
-                    if (numberOfTries === Operation.MAX_RETRIES) {
-                        this.state = 'aborted';
-                        this.emitter.emit('changed', 'aborted');
-                        this.emitter.removeAllListeners('changed');
-                        catOperation.warn('Could not execute operation. Stop restarting');
-                    } else {
-                        catOperation.warn(`Could not execute operation. Another try in ${Operation.RETRY_DELAY}ms`);
-                        await delay(Operation.RETRY_DELAY);
-                    }
-                });
+                    catOperation.warn('Could not execute operation. Stop restarting');
+                } else {
+                    catOperation.warn(`Could not execute operation. Another try in ${Operation.RETRY_DELAY}ms`);
+                    await delay(Operation.RETRY_DELAY);
+                }
+            }
         }
 
         catOperation.info(`Operation ${ this.module.id }.${ this.service.name }.${ this.command }() executed`);
