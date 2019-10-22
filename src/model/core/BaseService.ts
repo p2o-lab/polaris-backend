@@ -23,13 +23,21 @@
  * SOFTWARE.
  */
 
-import {ControlEnableInterface, ParameterInterface, ParameterOptions, ServiceCommand} from '@p2olab/polaris-interface';
+import {
+    BaseServiceInterface,
+    ControlEnableInterface,
+    ParameterInterface,
+    ParameterOptions,
+    ServiceCommand,
+    ServiceInterface
+} from '@p2olab/polaris-interface';
 import {EventEmitter} from 'events';
 import {timeout} from 'promise-timeout';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {catService} from '../../config/logging';
 import {Parameter} from '../recipe/Parameter';
 import {ServiceState} from './enum';
+import {Module} from './Module';
 import {Strategy} from './Strategy';
 
 /**
@@ -101,7 +109,9 @@ export abstract class BaseService {
         this.eventEmitter = new EventEmitter();
     }
 
-    public abstract setParameters(parameters: Array<Parameter|ParameterOptions>): Promise<void>;
+    public abstract json(): BaseServiceInterface;
+
+    public abstract setParameters(parameters: Array<Parameter|ParameterOptions>, modules?: Module[]): Promise<void>;
 
     /**
      * allow controlEnable to execute specified command

@@ -52,7 +52,7 @@ serviceRouter.post('/:moduleId/service/:serviceName', asyncHandler(async (req: R
     if (req.body.parameters) {
         await service.setParameters(req.body.parameters, manager.modules);
     }
-    res.json(service.getOverview());
+    res.json(service.json());
 }));
 
 /**
@@ -96,5 +96,5 @@ serviceRouter.post('/:moduleId/service/:serviceName/:command', asyncHandler(asyn
 serviceRouter.get('/:moduleId/service/:serviceName', asyncHandler(async (req: Request, res: Response) => {
     const manager: Manager = req.app.get('manager');
     const service = manager.getService(req.params.moduleId, req.params.serviceName);
-    res.json(service.getOverview());
+    res.json(service.json());
 }));

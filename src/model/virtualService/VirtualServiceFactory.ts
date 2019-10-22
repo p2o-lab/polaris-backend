@@ -39,7 +39,9 @@ export interface VirtualServiceOptions {
 }
 
 export class VirtualServiceFactory {
- public static create(options: VirtualServiceOptions, modules?: Module[]): VirtualService {
+ public static create(options: VirtualServiceOptions,
+                      modules?: Module[],
+                      virtualServices?: VirtualService[]): VirtualService {
      if (options.type === Timer.type) {
          return new Timer(options.name);
      } else  if (options.type === Storage.type) {
@@ -49,7 +51,7 @@ export class VirtualServiceFactory {
      } else if (options.type === PidController.type) {
          return new PidController(options.name);
      } else if (options.type === AggregatedService.type) {
-         return new AggregatedService(options as AggregatedServiceOptions, modules);
+         return new AggregatedService(options as AggregatedServiceOptions, modules, virtualServices);
      } else {
          throw new Error(`Unknown virtual service type ${options.type}`);
      }
