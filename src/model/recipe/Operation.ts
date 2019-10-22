@@ -29,8 +29,8 @@ import * as delay from 'timeout-as-promise';
 import {catOperation} from '../../config/logging';
 import {BaseService} from '../core/BaseService';
 import {Module} from '../core/Module';
-import {Strategy} from '../core/Strategy';
 import {Service} from '../core/Service';
+import {Strategy} from '../core/Strategy';
 
 /** Operation used in a [[Step]] of a [[Recipe]] or [[PetrinetState]]
  *
