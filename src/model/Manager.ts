@@ -34,7 +34,7 @@ import StrictEventEmitter from 'strict-event-emitter-types';
 import {catManager} from '../config/logging';
 import {ServiceLogEntry} from '../logging/archive';
 import {ServiceState} from './core/enum';
-import {Module} from './core/Module';
+import {Module, ParameterChange} from './core/Module';
 import {Service} from './core/Service';
 import {Player} from './recipe/Player';
 import {Recipe} from './recipe/Recipe';
@@ -172,22 +172,14 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
                 .on('controlEnable', ({service}) => {
                     this.emit('notify', {message: 'service', moduleId: module.id, service: service.json()});
                 })
-                .on('variableChanged', (data) => {
-                    const logEntry: VariableChange = {
-                        timestampPfe: data.timestampPfe,
-                        timestampModule: data.timestampModule,
-                        module: module.id,
-                        value: data.value,
-                        variable: data.variable,
-                        unit: data.unit
-                    };
-                    this.variableArchive.push(logEntry);
+                .on('variableChanged', (variableChange: VariableChange) => {
+                    this.variableArchive.push(variableChange);
                     if (this.player.currentRecipeRun) {
-                        this.player.currentRecipeRun.variableLog.push(logEntry);
+                        this.player.currentRecipeRun.variableLog.push(variableChange);
                     }
-                    this.emit('notify', {message: 'variable', variable: logEntry});
+                    this.emit('notify', {message: 'variable', variable: variableChange});
                 })
-                .on('parameterChanged', (parameterChange) => {
+                .on('parameterChanged', (parameterChange: ParameterChange) => {
                     this.emit('notify', {
                         message: 'service',
                         moduleId: module.id,
