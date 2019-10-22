@@ -29,8 +29,8 @@ import * as fs from 'fs';
 import {ServiceState} from '../../../src/model/core/enum';
 import {Module} from '../../../src/model/core/Module';
 import {AggregatedService, AggregatedServiceOptions} from '../../../src/model/virtualService/AggregatedService';
-import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 import {Timer} from '../../../src/model/virtualService/Timer';
+import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 
 describe('AggregatedService', () => {
 
@@ -47,15 +47,12 @@ describe('AggregatedService', () => {
             ],
             description: 'boring sync',
             version: '1.0.0',
-            parameters: [
-                {
-                    name: 'duration',
-                    type: 'number'
-                }
-            ],
+            parameters: [],
             commandEnable: undefined,
             stateMachine: {} as any
         }, [], [t1, t2]);
+        expect(as.services).to.have.lengthOf(2);
+        expect(as.modules).to.have.lengthOf(0);
     });
 
     describe('with test server', () => {
@@ -182,8 +179,8 @@ describe('AggregatedService', () => {
         }).timeout(5000);
 
         it('should work with complete cycle', async () => {
-            const aggregatedServiceJson: AggregatedServiceOptions =
-                JSON.parse(fs.readFileSync('assets/virtualService/aggregatedService_moduletestserver_small.json', 'utf8'));
+            const aggregatedServiceJson: AggregatedServiceOptions = JSON.parse(
+                fs.readFileSync('assets/virtualService/aggregatedService_moduletestserver_small.json', 'utf8'));
             const as = new AggregatedService(aggregatedServiceJson, [module1, module2]);
 
             as.start();
