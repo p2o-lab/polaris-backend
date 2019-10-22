@@ -1,0 +1,558 @@
+{
+  "id": "CIF",
+  "opcua_server_url": "opc.tcp://10.6.51.200:4840",
+  "services": [
+    {
+      "name": "Test_Service.Service1",
+      "communication": {
+        "TagName": {
+          "value": "Service1"
+        },
+        "TagDescription": {
+          "value": "Sample service with different parameters"
+        },
+        "OSLevel": {
+          "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+          "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service1.OSLevel",
+          "data_type": "Byte"
+        },
+        "WQC": {
+          "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+          "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service1.WQC",
+          "data_type": "Byte"
+        },
+        "OpMode": {
+          "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+          "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service1.OpMode.binary",
+          "data_type": "UInt64"
+        },
+        "CommandMan": {
+          "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+          "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service1.ControlOp",
+          "data_type": "UInt64"
+        },
+        "StrategyMan": {
+          "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+          "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service1.StrategyOp",
+          "data_type": "UInt64"
+        },
+        "ControlInt": {
+          "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+          "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service1.ControlInt",
+          "data_type": "UInt64"
+        },
+        "StrategyInt": {
+          "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+          "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service1.StrategyInt",
+          "data_type": "UInt64"
+        },
+        "CommandExt": {
+          "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+          "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service1.ControlExt",
+          "data_type": "UInt64"
+        },
+        "StrategyExt": {
+          "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+          "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service1.StrategyExt",
+          "data_type": "UInt64"
+        },
+        "State": {
+          "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+          "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service1.State.binary",
+          "data_type": "UInt64"
+        },
+        "CommandEnable": {
+          "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+          "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service1.ControlEnable.binary",
+          "data_type": "UInt64"
+        },
+        "CurrentStrategy": {
+          "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+          "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service1.CurrentStrategy",
+          "data_type": "UInt64"
+        }
+      },
+      "strategies": [
+        {
+          "id": "1",
+          "name": "Strategy 1",
+          "default": true,
+          "sc": false,
+          "parameters": [
+            {
+              "name": "var1",
+              "interface_class": "ExtAnaOp",
+              "communication": {
+                "WQC": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service1.var1.WQC",
+                  "data_type": "Byte"
+                },
+                "OSLevel": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service1.var1.OSLevel",
+                  "data_type": "Byte"
+                },
+                "VOut": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service1.var1.VOut",
+                  "data_type": "Double"
+                },
+                "VSclMin": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service1.var1.VSclMin",
+                  "data_type": "Double"
+                },
+                "VSclMax": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service1.var1.VSclMax",
+                  "data_type": "Double"
+                },
+                "VUnit": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service1.var1.VUnit",
+                  "data_type": "Int32"
+                },
+                "VMin": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service1.var1.VMin",
+                  "data_type": "Double"
+                },
+                "VMax": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service1.var1.VMax",
+                  "data_type": "Double"
+                },
+                "VExt": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service1.var1.VExt",
+                  "data_type": "Double"
+                },
+                "VRbk": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service1.var1.VRbk",
+                  "data_type": "Double"
+                }
+              }
+            },
+            {
+              "name": "var2",
+              "interface_class": "ExtDigOp",
+              "communication": {
+                "WQC": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service1.var2.WQC",
+                  "data_type": "Byte"
+                },
+                "OSLevel": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service1.var2.OSLevel",
+                  "data_type": "Byte"
+                },
+                "VOut": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service1.var2.VOut",
+                  "data_type": "Int64"
+                },
+                "VSclMin": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service1.var2.VSclMin",
+                  "data_type": "Int64"
+                },
+                "VSclMax": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service1.var2.VSclMax",
+                  "data_type": "Int64"
+                },
+                "VUnit": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service1.var2.VUnit",
+                  "data_type": "Int32"
+                },
+                "VMin": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service1.var2.VMin",
+                  "data_type": "Int64"
+                },
+                "VMax": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service1.var2.VMax",
+                  "data_type": "Int64"
+                },
+                "VExt": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service1.var2.VExt",
+                  "data_type": "Int64"
+                },
+                "VRbk": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service1.var2.VRbk",
+                  "data_type": "Int64"
+                }
+              }
+            },
+            {
+              "name": "var3",
+              "interface_class": "ExtBinOp",
+              "communication": {
+                "WQC": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service1.var3.WQC",
+                  "data_type": "Byte"
+                },
+                "OSLevel": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service1.var3.OSLevel",
+                  "data_type": "Byte"
+                },
+                "VOut": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service1.var3.VOut",
+                  "data_type": "Boolean"
+                },
+                "VState0": {
+                  "value": "TODO"
+                },
+                "VState1": {
+                  "value": "TODO"
+                },
+                "VExt": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service1.var3.VExt",
+                  "data_type": "Boolean"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Test_Service.Service2",
+      "communication": {
+        "TagName": {
+          "value": "service2"
+        },
+        "TagDescription": {
+          "value": "Sample service with different parameters"
+        },
+        "OSLevel": {
+          "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+          "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service2.OSLevel",
+          "data_type": "Byte"
+        },
+        "WQC": {
+          "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+          "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service2.WQC",
+          "data_type": "Byte"
+        },
+        "OpMode": {
+          "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+          "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service2.OpMode.binary",
+          "data_type": "UInt64"
+        },
+        "CommandMan": {
+          "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+          "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service2.ControlOp",
+          "data_type": "UInt64"
+        },
+        "StrategyMan": {
+          "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+          "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service2.StrategyOp",
+          "data_type": "UInt64"
+        },
+        "ControlInt": {
+          "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+          "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service2.ControlInt",
+          "data_type": "UInt64"
+        },
+        "StrategyInt": {
+          "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+          "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service2.StrategyInt",
+          "data_type": "UInt64"
+        },
+        "CommandExt": {
+          "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+          "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service2.ControlExt",
+          "data_type": "UInt64"
+        },
+        "StrategyExt": {
+          "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+          "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service2.StrategyExt",
+          "data_type": "UInt64"
+        },
+        "State": {
+          "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+          "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service2.State.binary",
+          "data_type": "UInt64"
+        },
+        "CommandEnable": {
+          "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+          "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service2.ControlEnable.binary",
+          "data_type": "UInt64"
+        },
+        "CurrentStrategy": {
+          "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+          "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service2.CurrentStrategy",
+          "data_type": "UInt64"
+        }
+      },
+      "strategies": [
+        {
+          "id": "1",
+          "name": "Strategy 1",
+          "default": true,
+          "sc": false,
+          "parameters": [
+            {
+              "name": "var1",
+              "interface_class": "ExtAnaOp",
+              "communication": {
+                "WQC": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service2.var1.WQC",
+                  "data_type": "Byte"
+                },
+                "OSLevel": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service2.var1.OSLevel",
+                  "data_type": "Byte"
+                },
+                "VOut": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service2.var1.VOut",
+                  "data_type": "Double"
+                },
+                "VSclMin": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service2.var1.VSclMin",
+                  "data_type": "Double"
+                },
+                "VSclMax": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service2.var1.VSclMax",
+                  "data_type": "Double"
+                },
+                "VUnit": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service2.var1.VUnit",
+                  "data_type": "Int32"
+                },
+                "VMin": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service2.var1.VMin",
+                  "data_type": "Double"
+                },
+                "VMax": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service2.var1.VMax",
+                  "data_type": "Double"
+                },
+                "VExt": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service2.var1.VExt",
+                  "data_type": "Double"
+                },
+                "VRbk": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service2.var1.VRbk",
+                  "data_type": "Double"
+                }
+              }
+            },
+            {
+              "name": "var2",
+              "interface_class": "ExtDigOp",
+              "communication": {
+                "WQC": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service2.var2.WQC",
+                  "data_type": "Byte"
+                },
+                "OSLevel": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service2.var2.OSLevel",
+                  "data_type": "Byte"
+                },
+                "VOut": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service2.var2.VOut",
+                  "data_type": "Int64"
+                },
+                "VSclMin": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service2.var2.VSclMin",
+                  "data_type": "Int64"
+                },
+                "VSclMax": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service2.var2.VSclMax",
+                  "data_type": "Int64"
+                },
+                "VUnit": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service2.var2.VUnit",
+                  "data_type": "Int32"
+                },
+                "VMin": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service2.var2.VMin",
+                  "data_type": "Int64"
+                },
+                "VMax": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service2.var2.VMax",
+                  "data_type": "Int64"
+                },
+                "VExt": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service2.var2.VExt",
+                  "data_type": "Int64"
+                },
+                "VRbk": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service2.var2.VRbk",
+                  "data_type": "Int64"
+                }
+              }
+            },
+            {
+              "name": "var3",
+              "interface_class": "ExtBinOp",
+              "communication": {
+                "WQC": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service2.var3.WQC",
+                  "data_type": "Byte"
+                },
+                "OSLevel": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service2.var3.OSLevel",
+                  "data_type": "Byte"
+                },
+                "VOut": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service2.var3.VOut",
+                  "data_type": "Boolean"
+                },
+                "VState0": {
+                  "value": "TODO"
+                },
+                "VState1": {
+                  "value": "TODO"
+                },
+                "VExt": {
+                  "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+                  "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_Service.Service2.var3.VExt",
+                  "data_type": "Boolean"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "process_values": [
+    {
+      "name": "Test_BinVlv.V001",
+      "communication": {
+        "WQC": {
+          "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+          "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_BinVlv.V001.WQC",
+          "data_type": "Byte"
+        },
+        "OSLevel": {
+          "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+          "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_BinVlv.V001.OSLevel",
+          "data_type": "Byte"
+        },
+        "OpMode": {
+          "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+          "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_BinVlv.V001.OpMode.binary",
+          "data_type": "UInt64"
+        },
+        "SafePos": {
+          "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+          "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_BinVlv.V001.SafePos",
+          "data_type": "Boolean"
+        },
+        "OpenFbkEn": {
+          "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+          "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_BinVlv.V001.OpenFbkEn",
+          "data_type": "Boolean"
+        },
+        "CloseFbkEn": {
+          "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+          "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_BinVlv.V001.CloseFbkEn",
+          "data_type": "Boolean"
+        },
+        "OpenOp": {
+          "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+          "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_BinVlv.V001.OpenOp",
+          "data_type": "Boolean"
+        },
+        "CloseOp": {
+          "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+          "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_BinVlv.V001.CloseOp",
+          "data_type": "Boolean"
+        },
+        "OpenLi": {
+          "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+          "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_BinVlv.V001.OpenLi",
+          "data_type": "Boolean"
+        },
+        "CloseLi": {
+          "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+          "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_BinVlv.V001.CloseLi",
+          "data_type": "Boolean"
+        },
+        "Ctrl": {
+          "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+          "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_BinVlv.V001.Ctrl",
+          "data_type": "Boolean"
+        },
+        "OpenFbk": {
+          "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+          "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_BinVlv.V001.OpenFbk",
+          "data_type": "Boolean"
+        },
+        "CloseFbk": {
+          "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+          "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_BinVlv.V001.CloseFbk",
+          "data_type": "Boolean"
+        }
+      }
+    },
+    {
+      "name": "Test_AnaView.L004",
+      "interface_class": "AnaView",
+      "communication": {
+        "WQC": {
+          "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+          "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_AnaView.L004.WQC",
+          "data_type": "Byte"
+        },
+        "OSLevel": {
+          "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+          "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_AnaView.L001.rPV_ScaleHigh",
+          "data_type": "Byte"
+        },
+        "V": {
+          "namespace_index": "CODESYSSPV3/3S/IecVarAccess",
+          "node_id": "|var|WAGO 750-8202 PFC200 2ETH RS.Application.Test_AnaView.L001_PV.rPV",
+          "data_type": "Double"
+        },
+        "VSclMin": {
+          "value": 0
+        },
+        "VSclMax": {
+          "value": "35.5"
+        },
+        "VUnit": {
+          "value": 1038
+        }
+      }
+    }
+  ]
+}
