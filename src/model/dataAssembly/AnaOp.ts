@@ -25,13 +25,14 @@
  */
 
 import {OpcUaConnection} from '../core/OpcUaConnection';
-import {BaseDataAssemblyRuntime, DataAssembly} from './DataAssembly';
+import {BaseDataAssemblyRuntime} from './DataAssembly';
 import {OpcUaDataItem} from './DataItem';
 import {OpModeDA, OpModeRuntime} from './mixins/OpMode';
 import {ScaleSettingsDA, ScaleSettingsRuntime} from './mixins/ScaleSettings';
+import {SourceModeDA, SourceModeRuntime} from './mixins/SourceMode';
 import {UnitDA, UnitDataAssemblyRuntime} from './mixins/Unit';
 import {ValueLimitationDA, ValueLimitationRuntime} from './mixins/ValueLimitation';
-import {SourceModeDA, SourceModeRuntime} from './mixins/SourceMode';
+import {WritableDataAssembly} from './WritableDataAssembly';
 
 export type AnaOpRuntime = BaseDataAssemblyRuntime &
     UnitDataAssemblyRuntime & ValueLimitationRuntime &
@@ -41,7 +42,7 @@ export type AnaOpRuntime = BaseDataAssemblyRuntime &
     VExt: OpcUaDataItem<number>;
 };
 
-export class ExtAnaOp extends ValueLimitationDA(ScaleSettingsDA(UnitDA(DataAssembly))) {
+export class ExtAnaOp extends ValueLimitationDA(ScaleSettingsDA(UnitDA(WritableDataAssembly))) {
     public readonly communication: AnaOpRuntime;
 
     constructor(options, connection: OpcUaConnection) {

@@ -37,6 +37,7 @@ import {catService} from '../../config/logging';
 import {DataAssembly} from '../dataAssembly/DataAssembly';
 import {DataAssemblyFactory} from '../dataAssembly/DataAssemblyFactory';
 import {ServiceControl} from '../dataAssembly/ServiceControl';
+import {WritableDataAssembly} from '../dataAssembly/WritableDataAssembly';
 import {BaseService, BaseServiceEvents} from './BaseService';
 import {controlEnableToJson, ServiceControlEnable, ServiceMtpCommand, ServiceState} from './enum';
 import {Module} from './Module';
@@ -85,7 +86,7 @@ export class Service extends BaseService {
 
     public readonly eventEmitter: ServiceEmitter;
     public readonly strategies: Strategy[] = [];
-    public readonly parameters: DataAssembly[] = [];
+    public readonly parameters: WritableDataAssembly[] = [];
     public readonly connection: OpcUaConnection;
     public readonly serviceControl: ServiceControl;
     private readonly logger: Category;
@@ -117,7 +118,7 @@ export class Service extends BaseService {
 
         if (serviceOptions.parameters) {
             this.parameters = serviceOptions.parameters
-                .map((options) => DataAssemblyFactory.create(options, connection));
+                .map((options) => DataAssemblyFactory.create(options, connection) as WritableDataAssembly);
         }
     }
 
@@ -296,7 +297,7 @@ export class Service extends BaseService {
         await this.serviceControl.setToExternalSourceMode();
     }
 
-    public findInputParameter(parameterName: string): DataAssembly {
+    public findInputParameter(parameterName: string): WritableDataAssembly {
         const parameterList = [].concat(
             this.parameters,
             this.getCurrentStrategy().parameters,
