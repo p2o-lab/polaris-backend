@@ -25,37 +25,38 @@
 
 import {StateConditionOptions} from '@p2olab/polaris-interface';
 import {catCondition} from '../../config/logging';
+import {BaseService} from '../core/BaseService';
 import {ServiceState} from '../core/enum';
 import {Module} from '../core/Module';
-import {Service} from '../core/Service';
 import {Condition} from './Condition';
 import {ModuleCondition} from './ModuleCondition';
 
+const mapping = {
+    'idle': ServiceState.IDLE,
+    'starting': ServiceState.STARTING,
+    'execute': ServiceState.EXECUTE,
+    'completing': ServiceState.COMPLETING,
+    'completed': ServiceState.COMPLETED,
+    'resetting': ServiceState.RESETTING,
+    'pausing': ServiceState.PAUSING,
+    'paused': ServiceState.PAUSED,
+    'resuming': ServiceState.RESUMING,
+    'holding': ServiceState.HOLDING,
+    'held': ServiceState.HELD,
+    'unholding': ServiceState.UNHOLDING,
+    'stopping': ServiceState.STOPPING,
+    'stopped': ServiceState.STOPPED,
+    'aborting': ServiceState.ABORTING,
+    'aborted': ServiceState.ABORTED
+};
+
 export class StateCondition extends ModuleCondition {
-    public readonly service: Service;
+    public readonly service: BaseService;
     public readonly state: ServiceState;
 
     constructor(options: StateConditionOptions, modules: Module[]) {
         super(options, modules);
         this.service = this.module.getService(options.service);
-        const mapping = {
-            'idle': ServiceState.IDLE,
-            'starting': ServiceState.STARTING,
-            'execute': ServiceState.EXECUTE,
-            'completing': ServiceState.COMPLETING,
-            'completed': ServiceState.COMPLETED,
-            'resetting': ServiceState.RESETTING,
-            'pausing': ServiceState.PAUSING,
-            'paused': ServiceState.PAUSED,
-            'resuming': ServiceState.RESUMING,
-            'holding': ServiceState.HOLDING,
-            'held': ServiceState.HELD,
-            'unholding': ServiceState.UNHOLDING,
-            'stopping': ServiceState.STOPPING,
-            'stopped': ServiceState.STOPPED,
-            'aborting': ServiceState.ABORTING,
-            'aborted': ServiceState.ABORTED
-        };
         this.state = mapping[options.state.toLowerCase()];
         if (!this.state) {
             throw new Error(`State ${options.state} is not a valid state for a condition (${JSON.stringify(options)}`);
