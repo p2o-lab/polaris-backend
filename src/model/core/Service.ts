@@ -214,29 +214,6 @@ export class Service extends BaseService {
         };
     }
 
-    /**
-     * Set strategy and strategy parameters and execute a command for service on PEA
-     * @param {ServiceCommand} command  command to be executed on PEA
-     * @param {Strategy}    strategy  strategy to be set on PEA
-     * @param {ParameterOptions[]} parameters     parameters to be set on PEA
-     * @returns {Promise<void>}
-     */
-    public async executeCommandWithStrategyAndParameter(command: ServiceCommand,
-                                                        strategy: Strategy,
-                                                        parameters: ParameterOptions[]): Promise<void> {
-        if (!this.connection.isConnected()) {
-            throw new Error('Module is not connected');
-        }
-        this.logger.info(`[${this.qualifiedName}] Execute ${command} (${strategy ? strategy.name : ''})`);
-        if (strategy) {
-            await this.setStrategy(strategy);
-        }
-        if (parameters) {
-            await this.setParameters(parameters);
-        }
-        await this.executeCommand(command);
-    }
-
     // overridden method from Base Service
     public async executeCommand(command: ServiceCommand) {
         if (!this.connection.isConnected()) {
