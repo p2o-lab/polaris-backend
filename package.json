@@ -67,7 +67,7 @@
     "strict-event-emitter-types": "^2.0.0",
     "supertest": "^4.0.2",
     "ts-node": "^8.3.0",
-    "tslint": "^5.19.0",
+    "tslint": "^5.20.0",
     "typedoc": "^0.15.0",
     "typescript": "^3.6.2"
   },
