@@ -31,8 +31,8 @@ import {
 } from '@p2olab/polaris-interface';
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
-import {catManager} from '../config/logging';
 import {ServiceLogEntry} from '../logging/archive';
+import {catManager} from '../logging/logging';
 import {ServiceState} from './core/enum';
 import {Module, ParameterChange} from './core/Module';
 import {Service} from './core/Service';

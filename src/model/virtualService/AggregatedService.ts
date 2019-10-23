@@ -25,7 +25,7 @@
 
 import {ParameterInterface} from '@p2olab/polaris-interface';
 import {Category} from 'typescript-logging';
-import {catAggregatedService} from '../../config/logging';
+import {catAggregatedService} from '../../logging/logging';
 import {BaseService} from '../core/BaseService';
 import {Module} from '../core/Module';
 import {Service} from '../core/Service';

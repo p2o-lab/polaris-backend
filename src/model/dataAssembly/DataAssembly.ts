@@ -25,7 +25,7 @@
 
 import {DataAssemblyOptions, ParameterInterface, ParameterOptions} from '@p2olab/polaris-interface';
 import {EventEmitter} from 'events';
-import {catDataAssembly} from '../../config/logging';
+import {catDataAssembly} from '../../logging/logging';
 import {OpcUaConnection} from '../core/OpcUaConnection';
 import {DataItem, OpcUaDataItem} from './DataItem';
 

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018 Markus Graube <markus.graube@tu.dresden.de>,
+ * Copyright (c) 2019 Markus Graube <markus.graube@tu.dresden.de>,
  * Chair for Process Control Systems, Technische Universität Dresden
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,9 +25,14 @@
 
 import * as cors from 'cors';
 import * as express from 'express';
+import {Request} from 'express';
+import {Response} from 'express';
+import {NextFunction} from 'express';
+import {catServer} from '../logging/logging';
+import {Manager} from '../model/Manager';
 
 export default class Middleware {
-    public static init(app: express.Application): void {
+    public static init(app: express.Application, manager: Manager): void {
 
         // express middleware
         app.use(express.json({limit: '10mb'}));
@@ -48,6 +53,14 @@ export default class Middleware {
                 ' Access-Control-Allow-Credentials'
             );
             res.header('Access-Control-Allow-Credentials', 'true');
+            next();
+        });
+
+        // Provide manager in all requests
+        app.set('manager', manager);
+        // Logging all requests
+        app.use((req: Request, res: Response, next: NextFunction) => {
+            catServer.info(`${req.method} ${req.url} - Body: ${JSON.stringify(req.body)}`);
             next();
         });
     }

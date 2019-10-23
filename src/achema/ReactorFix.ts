@@ -29,7 +29,7 @@
 import { ClientSession } from 'node-opcua';
 import {DataType, Variant, VariantArrayType} from 'node-opcua-variant';
 import * as delay from 'timeout-as-promise';
-import {catOpc} from '../config/logging';
+import {catOpc} from '../logging/logging';
 
 export async function fixReactor(session: ClientSession) {
     const nodeIdsReactor = [
