@@ -60,7 +60,7 @@ export default class Middleware {
         app.set('manager', manager);
         // Logging all requests
         app.use((req: Request, res: Response, next: NextFunction) => {
-            catServer.info(`${req.method} ${req.url} - Body: ${JSON.stringify(req.body)}`);
+            catServer.info(`${req.method} ${req.url}`);
             next();
         });
     }

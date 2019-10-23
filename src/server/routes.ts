@@ -47,7 +47,7 @@ export default class Routes {
 
         // Error handling
         app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-            catServer.warn(`Internal server error (HTTP 500): ${err.toString()}`);
+            catServer.error(`Internal server error (HTTP 500): ${err.toString()}`, err);
             res.status(500).send({ status: 'error', error: err.toString(), stack: err.stack });
         });
 

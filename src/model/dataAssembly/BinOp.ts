@@ -44,11 +44,11 @@ export class ExtBinOp extends WritableDataAssembly {
 
     constructor(options, module) {
         super(options, module);
-        this.createDataItem(options, 'VExt', 'write', 'boolean');
-        this.createDataItem(options, 'VRbk', 'read', 'boolean');
-        this.createDataItem(options, 'VOut', 'read', 'boolean');
-        this.createDataItem(options, 'VState0', 'read', 'string');
-        this.createDataItem(options, 'VState1', 'read', 'string');
+        this.communication.VExt = this.createDataItem('VExt', 'write', 'boolean');
+        this.communication.VRbk = this.createDataItem('VRbk', 'read', 'boolean');
+        this.communication.VOut = this.createDataItem('VOut', 'read', 'boolean');
+        this.communication.VState0 = this.createDataItem('VState0', 'read', 'string');
+        this.communication.VState1 = this.createDataItem('VState1', 'read', 'string');
         this.type = 'boolean';
         this.writeDataItem = this.communication.VExt;
         this.readDataItem = this.communication.VOut;

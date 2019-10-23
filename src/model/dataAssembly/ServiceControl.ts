@@ -45,14 +45,14 @@ export class ServiceControl extends OpModeDA(SourceModeDA(WritableDataAssembly))
 
     constructor(options, connection) {
         super(options, connection);
-        this.createDataItem(options, 'CommandMan', 'write');
-        this.createDataItem(options, 'CommandExt', 'write');
-        this.createDataItem(options, 'CommandEnable', 'read');
-        this.createDataItem(options, 'State', 'read');
-        this.createDataItem(options, 'StrategyMan', 'write');
-        this.createDataItem(options, 'StrategyExt', 'write');
-        this.createDataItem(options, 'StrategyInt', 'read');
-        this.createDataItem(options, 'CurrentStrategy', 'read');
+        this.communication.CommandMan = this.createDataItem(['CommandMan', 'ControlOp'], 'write');
+        this.communication.CommandExt = this.createDataItem(['CommandExt', 'ControlExt'], 'write');
+        this.communication.CommandEnable = this.createDataItem(['CommandEnable', 'ControlEnable'], 'read');
+        this.communication.State = this.createDataItem('State', 'read');
+        this.communication.StrategyMan = this.createDataItem(['StrategyMan', 'StrategyOp'], 'write');
+        this.communication.StrategyExt = this.createDataItem('StrategyExt', 'write');
+        this.communication.StrategyInt = this.createDataItem('StrategyInt', 'read');
+        this.communication.CurrentStrategy = this.createDataItem(['CurrentStrategy', 'Strategy'], 'read');
 
         this.readDataItem = this.communication.State;
         this.writeDataItem = this.communication.CommandExt;

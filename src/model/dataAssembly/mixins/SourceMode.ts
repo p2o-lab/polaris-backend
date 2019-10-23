@@ -53,19 +53,19 @@ export function SourceModeDA<TBase extends Constructor<DataAssembly>>(Base: TBas
             super(...args);
             if (args[0].communication.OpMode) {
                 this.classicOpMode = true;
-                this.createDataItem(args[0], 'OpMode', 'write');
+                this.communication.OpMode = this.createDataItem('OpMode', 'write');
             } else {
                 this.classicOpMode = false;
-                this.createDataItem(args[0], 'SrcChannel', 'read', 'boolean');
+                this.communication.SrcChannel = this.createDataItem('SrcChannel', 'read', 'boolean');
 
-                this.createDataItem(args[0], 'SrcManAut', 'read', 'boolean');
-                this.createDataItem(args[0], 'SrcIntAut', 'read', 'boolean');
+                this.communication.SrcManAut = this.createDataItem('SrcManAut', 'read', 'boolean');
+                this.communication.SrcIntAut = this.createDataItem('SrcIntAut', 'read', 'boolean');
 
-                this.createDataItem(args[0], 'SrcManOp', 'write', 'boolean');
-                this.createDataItem(args[0], 'SrcIntOp', 'write', 'boolean');
+                this.communication.SrcManOp = this.createDataItem('SrcManOp', 'write', 'boolean');
+                this.communication.SrcIntOp = this.createDataItem('SrcIntOp', 'write', 'boolean');
 
-                this.createDataItem(args[0], 'SrcManAct', 'read', 'boolean');
-                this.createDataItem(args[0], 'SrcIntAct', 'read', 'boolean');
+                this.communication.SrcManAct = this.createDataItem('SrcManAct', 'read', 'boolean');
+                this.communication.SrcIntAct = this.createDataItem('SrcIntAct', 'read', 'boolean');
             }
         }
 
