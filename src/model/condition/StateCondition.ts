@@ -24,7 +24,7 @@
  */
 
 import {StateConditionOptions} from '@p2olab/polaris-interface';
-import {catCondition} from '../../config/logging';
+import {catCondition} from '../../logging/logging';
 import {BaseService} from '../core/BaseService';
 import {ServiceState} from '../core/enum';
 import {Module} from '../core/Module';

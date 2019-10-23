@@ -26,10 +26,9 @@
 import * as net from 'net';
 import {AddressSpace, DataType, Namespace, Variant} from 'node-opcua';
 import {OPCUAServer} from 'node-opcua-server';
-import {catTestServer} from '../config/logging';
+import {catTestServer} from '../logging/logging';
 import {TestServerNumericVariable} from './ModuleTestNumericVariable';
 import {TestServerService} from './ModuleTestService';
-import {TestServerVariable} from './ModuleTestVariable';
 
 function validUserFunc(username: string, password: string): boolean {
     catTestServer.info(`Try to login with ${username}:${password}`);

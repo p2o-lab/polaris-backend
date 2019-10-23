@@ -27,7 +27,7 @@ import {ParameterInterface, StrategyInterface, StrategyOptions} from '@p2olab/po
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Category} from 'typescript-logging';
-import {catStrategy} from '../../config/logging';
+import {catStrategy} from '../../logging/logging';
 import {DataAssembly} from '../dataAssembly/DataAssembly';
 import {DataAssemblyFactory} from '../dataAssembly/DataAssemblyFactory';
 import {WritableDataAssembly} from '../dataAssembly/WritableDataAssembly';

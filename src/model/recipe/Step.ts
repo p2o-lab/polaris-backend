@@ -26,7 +26,7 @@
 import {OperationOptions, StepInterface, TransitionOptions} from '@p2olab/polaris-interface';
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
-import {catRecipe} from '../../config/logging';
+import {catRecipe} from '../../logging/logging';
 import {Module} from '../core/Module';
 import {Operation} from './Operation';
 import {Transition} from './Transition';

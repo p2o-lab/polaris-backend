@@ -34,7 +34,7 @@ import {
 import {EventEmitter} from 'events';
 import {timeout} from 'promise-timeout';
 import StrictEventEmitter from 'strict-event-emitter-types';
-import {catService} from '../../config/logging';
+import {catService} from '../../logging/logging';
 import {Parameter} from '../recipe/Parameter';
 import {ServiceState} from './enum';
 import {Module} from './Module';

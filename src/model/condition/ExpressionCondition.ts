@@ -25,7 +25,7 @@
 
 import {ExpressionConditionOptions, ScopeOptions} from '@p2olab/polaris-interface';
 import {Expression} from 'expr-eval';
-import {catCondition} from '../../config/logging';
+import {catCondition} from '../../logging/logging';
 import {Module} from '../core/Module';
 import {ScopeItem} from '../recipe/ScopeItem';
 import {Condition} from './Condition';

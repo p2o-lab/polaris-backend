@@ -26,7 +26,7 @@
 import {ServiceCommand} from '@p2olab/polaris-interface';
 import {Request, Response, Router} from 'express';
 import * as asyncHandler from 'express-async-handler';
-import {catServer} from '../../config/logging';
+import {catServer} from '../../logging/logging';
 import {Manager} from '../../model/Manager';
 
 export const serviceRouter: Router = Router();
