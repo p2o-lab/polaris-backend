@@ -23,9 +23,7 @@
  * SOFTWARE.
  */
 
-import {Namespace, UAObject} from 'node-opcua-address-space';
-import {StatusCodes} from 'node-opcua-constants';
-import {DataType, Variant} from 'node-opcua-variant';
+import { DataType, Namespace, StatusCodes, UAObject, Variant } from 'node-opcua';
 import {catTestServer} from '../logging/logging';
 import {OpMode} from '../model/dataAssembly/mixins/OpMode';
 

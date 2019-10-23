@@ -87,7 +87,7 @@ describe('Module', () => {
                 new Promise((resolve) => module.on('stateChanged', resolve))
             ]);
             await module.disconnect();
-        });
+        }).timeout(3000);
 
         it('should work after reconnect', async () => {
             const moduleJson =
