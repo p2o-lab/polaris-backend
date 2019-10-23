@@ -33,8 +33,7 @@ import {
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Category} from 'typescript-logging';
-import {catService} from '../../config/logging';
-import {DataAssembly} from '../dataAssembly/DataAssembly';
+import {catService} from '../../logging/logging';
 import {DataAssemblyFactory} from '../dataAssembly/DataAssemblyFactory';
 import {ServiceControl} from '../dataAssembly/ServiceControl';
 import {WritableDataAssembly} from '../dataAssembly/WritableDataAssembly';

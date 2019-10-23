@@ -24,7 +24,7 @@
  */
 
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {catDataAssembly} from '../../config/logging';
+import {catDataAssembly} from '../../logging/logging';
 import {OpcUaConnection} from '../core/OpcUaConnection';
 import {AdvAnaOp, AnaServParam, ExtAnaOp, ExtIntAnaOp} from './AnaOp';
 import {AnaMon, AnaView} from './AnaView';

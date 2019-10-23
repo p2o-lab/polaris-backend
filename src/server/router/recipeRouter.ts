@@ -24,7 +24,7 @@
  */
 
 import {Request, Response, Router} from 'express';
-import {catServer} from '../../config/logging';
+import {catServer} from '../../logging/logging';
 import {Manager} from '../../model/Manager';
 
 export const recipeRouter: Router = Router();

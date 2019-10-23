@@ -35,7 +35,7 @@ import {
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Category} from 'typescript-logging';
-import {catModule} from '../../config/logging';
+import {catModule} from '../../logging/logging';
 import {DataAssembly} from '../dataAssembly/DataAssembly';
 import {DataAssemblyFactory} from '../dataAssembly/DataAssemblyFactory';
 import {DataItemEmitter} from '../dataAssembly/DataItem';

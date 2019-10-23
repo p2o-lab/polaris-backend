@@ -25,8 +25,7 @@
 
 import * as express from 'express';
 import {NextFunction, Request, Response, static as expressStatic} from 'express';
-import {catServer} from '../config/logging';
-import {Manager} from '../model/Manager';
+import {catServer} from '../logging/logging';
 import {coreRouter} from './router/coreRouter';
 import {moduleRouter} from './router/moduleRouter';
 import {playerRouter} from './router/playerRouter';
@@ -36,16 +35,7 @@ import {serviceRouter} from './router/serviceRouter';
 import {virtualServiceRouter} from './router/virtualServiceRouter';
 
 export default class Routes {
-    public static init(app: express.Application, manager: Manager): void {
-
-        // Provide manager in all requests
-        app.set('manager', manager);
-        // Logging all requests
-        app.use((req: Request, res: Response, next: NextFunction) => {
-            catServer.info(`${req.method} ${req.url} - Body: ${JSON.stringify(req.body)}`);
-            next();
-        });
-
+    public static init(app: express.Application): void {
         app.use('/doc', expressStatic('apidoc'));
         app.use('/api/module', moduleRouter);
         app.use('/api/module', serviceRouter);

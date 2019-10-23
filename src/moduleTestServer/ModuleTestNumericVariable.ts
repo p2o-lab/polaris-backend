@@ -25,7 +25,7 @@
 
 import {DataType, StatusCodes, Variant} from 'node-opcua';
 import Timeout = NodeJS.Timeout;
-import {catTestServer} from '../config/logging';
+import {catTestServer} from '../logging/logging';
 import {TestServerVariable} from './ModuleTestVariable';
 
 export class TestServerNumericVariable extends TestServerVariable {

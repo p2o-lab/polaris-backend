@@ -23,9 +23,8 @@
  * SOFTWARE.
  */
 
-// tslint:disable-next-line:variable-name
 import {ParameterInterface, ParameterOptions} from '@p2olab/polaris-interface';
-import {catDataAssembly} from '../../config/logging';
+import {catDataAssembly} from '../../logging/logging';
 import {Parameter} from '../recipe/Parameter';
 import {DataAssembly} from './DataAssembly';
 import {DataItem} from './DataItem';

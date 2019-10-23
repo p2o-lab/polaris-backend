@@ -26,7 +26,7 @@
 import {OperationInterface, OperationOptions, ParameterOptions, ServiceCommand} from '@p2olab/polaris-interface';
 import {EventEmitter} from 'events';
 import * as delay from 'timeout-as-promise';
-import {catOperation} from '../../config/logging';
+import {catOperation} from '../../logging/logging';
 import {BaseService} from '../core/BaseService';
 import {Module} from '../core/Module';
 import {Service} from '../core/Service';

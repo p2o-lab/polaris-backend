@@ -24,7 +24,7 @@
  */
 
 import {SourceMode} from '@p2olab/polaris-interface';
-import {catDataAssembly} from '../../../config/logging';
+import {catDataAssembly} from '../../../logging/logging';
 import {BaseDataAssemblyRuntime, DataAssembly} from '../DataAssembly';
 import {OpcUaDataItem} from '../DataItem';
 import {Constructor} from './mixins';

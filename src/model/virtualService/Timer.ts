@@ -24,7 +24,7 @@
  */
 
 import Timeout = NodeJS.Timeout;
-import {catTimer} from '../../config/logging';
+import {catTimer} from '../../logging/logging';
 import {VirtualService} from './VirtualService';
 
 export class Timer extends VirtualService {

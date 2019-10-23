@@ -27,7 +27,7 @@ import {Request, Response, Router} from 'express';
 import * as asyncHandler from 'express-async-handler';
 import yn from 'yn';
 import {version} from '../../../package.json';
-import {messages} from '../../config/logging';
+import {messages} from '../../logging/logging';
 import {Manager} from '../../model/Manager';
 
 export const coreRouter: Router = Router();

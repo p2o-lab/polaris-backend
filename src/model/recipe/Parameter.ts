@@ -29,7 +29,7 @@ import {EventEmitter} from 'events';
 import {Expression} from 'expr-eval';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Category} from 'typescript-logging';
-import {catParameter} from '../../config/logging';
+import {catParameter} from '../../logging/logging';
 import {Module} from '../core/Module';
 import {ScopeItem} from './ScopeItem';
 
