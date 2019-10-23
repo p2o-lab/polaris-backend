@@ -48,7 +48,7 @@ coreRouter.post('/shutdown', (req: Request, res: Response) => {
  * @apiGroup Manager
  */
 coreRouter.get('/version', (req: Request, res: Response) => {
-    res.json({version});
+    res.json({version: version});
 });
 
 /**
