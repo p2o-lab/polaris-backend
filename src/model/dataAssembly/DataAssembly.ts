@@ -54,9 +54,11 @@ export class DataAssembly extends EventEmitter {
     public type: string = 'number';
     public readDataItem: DataItem<any>;
     public parsingErrors: string[] = [];
+    public options: DataAssemblyOptions;
 
     constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
         super();
+        this.options = options;
         this.name = options.name;
         this.interfaceClass = options.interface_class;
         this.communication = {} as BaseDataAssemblyRuntime;
@@ -70,10 +72,10 @@ export class DataAssembly extends EventEmitter {
         if (!options.communication) {
             throw new Error('Communication variables missing while creating DataAssembly');
         }
-        this.createDataItem(options, 'TagName', 'read', 'string');
-        this.createDataItem(options, 'TagDescription', 'read');
-        this.createDataItem(options, 'OSLevel', 'write');
-        this.createDataItem(options, 'WQC', 'read');
+        this.communication.TagName = this.createDataItem('TagName', 'read', 'string');
+        this.communication.TagDescription = this.createDataItem('TagDescription', 'read');
+        this.communication.OSLevel = this.createDataItem('OSLevel', 'write');
+        this.communication.WQC = this.createDataItem('WQC', 'read');
     }
 
     /**
@@ -134,22 +136,24 @@ export class DataAssembly extends EventEmitter {
         };
     }
 
-    public createDataItem(options: DataAssemblyOptions, name: string, access: 'read' | 'write', type?) {
-        if (!options.communication[name]) {
-            this.communication[name] = undefined;
-            this.parsingErrors.push(name);
-        } else {
-            this.communication[name] =
-                OpcUaDataItem.fromOptions(options.communication[name], this.connection, access, type);
+    /** Creates a data item from provided options of DataAssembly by
+     * finding first name to match one of the communication options
+     */
+    public createDataItem(name: string | string[],
+                          access: 'read' | 'write',
+                          type?: 'number' | 'string' | 'boolean'): OpcUaDataItem<any> {
+        const names = typeof name === 'string' ? [name] : name;
+        for (const value of names) {
+            if (this.options.communication[value]) {
+                return OpcUaDataItem.fromOptions(this.options.communication[value], this.connection, access, type);
+            }
         }
+        this.parsingErrors.push(names[0]);
+        return undefined;
     }
 
     public logParsingErrors() {
         catDataAssembly.warn(`${this.parsingErrors.length} variables have not been found during parsing variable ` +
             `"${this.name}" of type "${this.constructor.name}": ${JSON.stringify(this.parsingErrors)}`);
-    }
-
-    public hasBeenCompletelyParsed(): boolean {
-        return this.parsingErrors.length === 0;
     }
 }

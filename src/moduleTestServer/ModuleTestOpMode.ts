@@ -58,7 +58,7 @@ export class ModuleTestOpMode {
                     } else {
                         return StatusCodes.Bad;
                     }
-                    catTestServer.info(`[${variableName}] Set Opmode in testserver ${opModeInt} -> ${this.opMode}`);
+                    catTestServer.debug(`[${variableName}] Set Opmode in testserver ${opModeInt} -> ${this.opMode}`);
                     return StatusCodes.Good;
                 }
             }

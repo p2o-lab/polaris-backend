@@ -39,8 +39,8 @@ import {DigMon} from '../../../src/model/dataAssembly/DigView';
 import {MonAnaDrv} from '../../../src/model/dataAssembly/Drv';
 import {ServiceControl} from '../../../src/model/dataAssembly/ServiceControl';
 import {StrView} from '../../../src/model/dataAssembly/Str';
-import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 import {WritableDataAssembly} from '../../../src/model/dataAssembly/WritableDataAssembly';
+import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -58,9 +58,9 @@ describe('DataAssembly', () => {
                     TagDescription: null,
                     TagName: {},
                     WQC: null,
-                    V: { value: 22 },
-                    VState0: { value: 'on'},
-                    VState1: { value: 'off'}
+                    V: {value: 22},
+                    VState0: {value: 'on'},
+                    VState1: {value: 'off'}
                 } as any
             }, new OpcUaConnection(null, null));
             expect(da1 instanceof DataAssembly).to.equal(true);
@@ -124,6 +124,52 @@ describe('DataAssembly', () => {
 
         });
 
+        it('should have correct createDataItem method', async () => {
+            const options = {
+                name: 'test', interface_class: 'DataAssembly', communication: {
+                    OSLevel: {
+                        namespace_index: 'CODESYSSPV3/3S/IecVarAccess',
+                        node_id: 'i=1',
+                        data_type: 'Float'
+                    },
+                    TagDescription: {
+                        namespace_index: 'CODESYSSPV3/3S/IecVarAccess',
+                        node_id: 'i=2',
+                        data_type: 'Float'
+                    },
+                    TagName: {
+                        namespace_index: 'CODESYSSPV3/3S/IecVarAccess',
+                        node_id: 'i=3',
+                        data_type: 'Float'
+                    },
+                    WQC: {
+                        namespace_index: 'CODESYSSPV3/3S/IecVarAccess',
+                        node_id: 'i=4',
+                        data_type: 'Float'
+                    },
+                    CurrentStrategy: {
+                        namespace_index: 'CODESYSSPV3/3S/IecVarAccess',
+                        node_id: 'i=5',
+                        data_type: 'Int'
+                    }
+                } as any
+            };
+            const da1 = new DataAssembly(options, new OpcUaConnection(null, null));
+            expect(da1.communication.WQC).to.not.equal(undefined);
+            expect(da1.communication.TagName).to.not.equal(undefined);
+
+            expect(da1.createDataItem('NotThere', 'read')).to.equal(undefined);
+            expect(da1.createDataItem(['notThere', 'neitherThere'], 'read')).to.equal(undefined);
+            expect(da1.createDataItem('TagName', 'read')).to.not.equal(undefined);
+            expect(da1.createDataItem(['notThere', 'TagName'], 'read')).to.not.equal(undefined);
+            expect(da1.createDataItem(['CurrentStrategy', 'TagName'], 'read'))
+                .to.have.property('nodeId', 'i=5');
+            expect(da1.createDataItem(['abc', 'CurrentStrategy', 'TagName'], 'read'))
+                .to.have.property('nodeId', 'i=5');
+
+            expect(da1.parsingErrors).to.have.lengthOf(2);
+        });
+
         it('should create ServiceControl', async () => {
             const da1 = DataAssemblyFactory.create({
                 name: 'serviceControl1',
@@ -149,14 +195,14 @@ describe('DataAssembly', () => {
                 name: 'serviceControl1',
                 interface_class: 'ServiceControl',
                 communication: {
-                    OSLevel: { value: 0},
+                    OSLevel: {value: 0},
                     TagDescription: {value: 0},
                     WQC: {value: 0},
                     CommandMan: {value: 0},
                     CommandExt: {value: 0},
                     CommandEnable: {value: 0},
                     State: {value: 0},
-                    TagName: { value: 'a'},
+                    TagName: {value: 'a'},
                     CurrentStrategy: {value: 0},
                     StrategyInt: {value: 0},
                     StrategyExt: {value: 0},
@@ -164,7 +210,6 @@ describe('DataAssembly', () => {
                     OpMode: {value: 0}
                 } as ServiceControlOptions
             }, new OpcUaConnection(null, null)) as ServiceControl;
-            expect(da1.hasBeenCompletelyParsed()).to.equal(true);
         });
 
         it('should have false check for ServiceControl', async () => {
@@ -172,7 +217,7 @@ describe('DataAssembly', () => {
                 name: 'serviceControl1',
                 interface_class: 'ServiceControl',
                 communication: {
-                    OSLevel: { value: 0},
+                    OSLevel: {value: 0},
                     TagDescription: {value: 0},
                     WQC: {value: 0},
                     CommandMan: {value: 0},
@@ -180,7 +225,6 @@ describe('DataAssembly', () => {
                     CommandEnable: {value: 0},
                 } as ServiceControlOptions
             }, new OpcUaConnection(null, null)) as ServiceControl;
-            expect(da1.hasBeenCompletelyParsed()).to.equal(false);
         });
 
         it('should create AnaView', async () => {
@@ -281,9 +325,9 @@ describe('DataAssembly', () => {
                     TagDescription: null,
                     TagName: {},
                     WQC: null,
-                    V: { value: 22 },
-                    VState0: { value: 'on'},
-                    VState1: { value: 'off'}
+                    V: {value: 22},
+                    VState0: {value: 'on'},
+                    VState1: {value: 'off'}
                 } as any
             }, new OpcUaConnection(null, null));
             expect(da1 instanceof BinView).to.equal(true);
@@ -303,9 +347,9 @@ describe('DataAssembly', () => {
                     TagDescription: null,
                     TagName: {},
                     WQC: null,
-                    V: { value: 0 },
-                    VState0: { value: 'on'},
-                    VState1: { value: 'off'}
+                    V: {value: 0},
+                    VState0: {value: 'on'},
+                    VState1: {value: 'off'}
                 } as any
             }, new OpcUaConnection(null, null));
             expect(da2.toJson().value).to.equal(false);
@@ -517,7 +561,7 @@ describe('DataAssembly', () => {
             const daJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString())
                 .modules[0].services[0];
             const da: ServiceControl = DataAssemblyFactory.create(
-                    {...daJson, interface_class: 'ServiceControl'} as any, connection) as ServiceControl;
+                {...daJson, interface_class: 'ServiceControl'} as any, connection) as ServiceControl;
             expect(da.classicOpMode).to.equal(true);
 
             await da.subscribe();

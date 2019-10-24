@@ -71,7 +71,7 @@ export class AnaDrv extends WritableDataAssembly {
 
     constructor(options, connection) {
         super(options, connection);
-        this.createDataItem(options, 'RpmFbk', 'read');
+        this.communication.RpmFbk = this.createDataItem('RpmFbk', 'read');
         this.readDataItem = this.communication.RpmFbk;
         this.writeDataItem = this.communication.RpmExt;
         this.type = 'number';

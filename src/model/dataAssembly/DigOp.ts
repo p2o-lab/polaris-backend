@@ -36,9 +36,9 @@ export class ExtDigOp extends ScaleSettingsDA(UnitDA(WritableDataAssembly)) {
 
     constructor(options, connection) {
         super(options, connection);
-        this.createDataItem(options, 'VOut', 'read');
-        this.createDataItem(options, 'VRbk', 'read');
-        this.createDataItem(options, 'VExt', 'write');
+        this.communication.VOut = this.createDataItem('VOut', 'read');
+        this.communication.VRbk = this.createDataItem('VRbk', 'read');
+        this.communication.VExt = this.createDataItem('VExt', 'write');
         this.type = 'number';
         this.writeDataItem = this.communication.VExt;
         this.readDataItem = this.communication.VRbk;

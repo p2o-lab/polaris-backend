@@ -55,24 +55,24 @@ export function MonitorSettings<TBase extends Constructor<DataAssembly>>(Base: T
 
         constructor(...args: any[]) {
             super(...args);
-            this.createDataItem(args[0], 'VAHEn', 'write');
-            this.createDataItem(args[0], 'VAHLim', 'write');
-            this.createDataItem(args[0], 'VAHAct', 'write');
-            this.createDataItem(args[0], 'VWHEn', 'write');
-            this.createDataItem(args[0], 'VWHLim', 'write');
-            this.createDataItem(args[0], 'VWHAct', 'write');
-            this.createDataItem(args[0], 'VTHEn', 'write');
-            this.createDataItem(args[0], 'VTHLim', 'write');
-            this.createDataItem(args[0], 'VTHAct', 'write');
-            this.createDataItem(args[0], 'VALEn', 'write');
-            this.createDataItem(args[0], 'VALLim', 'write');
-            this.createDataItem(args[0], 'VALAct', 'write');
-            this.createDataItem(args[0], 'VWLEn', 'write');
-            this.createDataItem(args[0], 'VWLLim', 'write');
-            this.createDataItem(args[0], 'VWLAct', 'write');
-            this.createDataItem(args[0], 'VTLEn', 'write');
-            this.createDataItem(args[0], 'VTLLim', 'write');
-            this.createDataItem(args[0], 'VTLAct', 'write');
+            this.communication.VAHEn = this.createDataItem('VAHEn', 'write');
+            this.communication.VAHLim = this.createDataItem('VAHLim', 'write');
+            this.communication.VAHAct = this.createDataItem('VAHAct', 'write');
+            this.communication.VWHEn = this.createDataItem('VWHEn', 'write');
+            this.communication.VWHLim = this.createDataItem('VWHLim', 'write');
+            this.communication.VWHAct = this.createDataItem('VWHAct', 'write');
+            this.communication.VTHEn = this.createDataItem('VTHEn', 'write');
+            this.communication.VTHLim = this.createDataItem('VTHLim', 'write');
+            this.communication.VTHAct = this.createDataItem('VTHAct', 'write');
+            this.communication.VALEn = this.createDataItem('VALEn', 'write');
+            this.communication.VALLim = this.createDataItem('VALLim', 'write');
+            this.communication.VALAct = this.createDataItem('VALAct', 'write');
+            this.communication.VWLEn = this.createDataItem('VWLEn', 'write');
+            this.communication.VWLLim = this.createDataItem('VWLLim', 'write');
+            this.communication.VWLAct = this.createDataItem('VWLAct', 'write');
+            this.communication.VTLEn = this.createDataItem('VTLEn', 'write');
+            this.communication.VTLLim = this.createDataItem('VTLLim', 'write');
+            this.communication.VTLAct = this.createDataItem('VTLAct', 'write');
         }
     };
 }

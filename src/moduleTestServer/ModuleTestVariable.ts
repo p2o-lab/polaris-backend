@@ -36,7 +36,7 @@ export abstract class TestServerVariable {
     protected variableNode: UAObject;
 
     constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
-        catTestServer.info(`Add variable ${variableName}`);
+        catTestServer.debug(`Add variable ${variableName}`);
 
         this.name = variableName;
 

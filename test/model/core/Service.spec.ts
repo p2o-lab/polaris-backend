@@ -76,15 +76,6 @@ describe('Service', () => {
         expect(service.name).to.equal('Service1');
     });
 
-    it('should reject creating it with not all variables defined for serviceControl', () => {
-        const json: ServiceOptions =
-            parseJson(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8'), null, 60)
-                .modules[0].services[0];
-        json.communication.OpMode = null;
-        expect(() => new Service(json, new OpcUaConnection(null, null), 'root'))
-            .to.throw('Service Control not fully defined in options');
-    });
-
     context('with ModuleTestServer', () => {
         let module: Module;
         let service: Service;

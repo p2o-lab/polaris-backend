@@ -41,8 +41,8 @@ export function ValueLimitationDA<TBase extends Constructor<DataAssembly>>(Base:
 
         constructor(...args: any[]) {
             super(...args);
-            this.createDataItem(args[0], 'VMax', 'read');
-            this.createDataItem(args[0], 'VMin', 'read');
+            this.communication.VMax = this.createDataItem('VMax', 'read');
+            this.communication.VMin = this.createDataItem('VMin', 'read');
         }
 
         public toJson(): ParameterInterface {

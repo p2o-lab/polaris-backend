@@ -38,9 +38,9 @@ export class BinView extends DataAssembly {
 
     constructor(options, module) {
         super(options, module);
-        this.createDataItem(options, 'V', 'read', 'boolean');
-        this.createDataItem(options, 'VState0', 'read', 'string');
-        this.createDataItem(options, 'VState1', 'read', 'string');
+        this.communication.V = this.createDataItem('V', 'read', 'boolean');
+        this.communication.VState0 = this.createDataItem('VState0', 'read', 'string');
+        this.communication.VState1 = this.createDataItem('VState1', 'read', 'string');
         this.type = 'boolean';
         this.readDataItem = this.communication.V;
     }
@@ -59,9 +59,9 @@ export class BinMon extends BinView {
 
     constructor(options, module) {
         super(options, module);
-        this.createDataItem(options, 'VFlutTi', 'read', 'number');
-        this.createDataItem(options, 'VFlutEn', 'write', 'boolean');
-        this.createDataItem(options, 'VFlutCnt', 'read', 'number');
-        this.createDataItem(options, 'VFlutAct', 'read', 'boolean');
+        this.communication.VFlutTi = this.createDataItem('VFlutTi', 'read', 'number');
+        this.communication.VFlutEn = this.createDataItem('VFlutEn', 'write', 'boolean');
+        this.communication.VFlutCnt = this.createDataItem('VFlutCnt', 'read', 'number');
+        this.communication.VFlutAct = this.createDataItem('VFlutAct', 'read', 'boolean');
     }
 }
