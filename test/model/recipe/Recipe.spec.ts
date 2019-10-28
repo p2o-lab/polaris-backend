@@ -93,7 +93,8 @@ describe('Recipe', () => {
         let moduleServer: ModuleTestServer;
         let module: Module;
 
-        beforeEach(async () => {
+        beforeEach(async function() {
+            this.timeout(5000);
             moduleServer = new ModuleTestServer();
             await moduleServer.start();
 
@@ -140,11 +141,10 @@ describe('Recipe', () => {
 
             await expect(recipe.stop()).to.be.rejectedWith('Can only stop running recipe');
             await recipe.start();
-            await delay(100);
+            await delay(50);
             await recipe.stop();
             await expect(recipe.stop()).to.be.rejectedWith('Can only stop running recipe');
-            await delay(100);
-        }).timeout(5000);
+        });
 
     });
 
