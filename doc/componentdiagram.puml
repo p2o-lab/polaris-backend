@@ -1,31 +1,35 @@
 @startuml
 skinparam monochrome true
 
-package "Module (PEA)" {
-    [Services] -- [OPC UA Server]
+package "Module (PEA)" as PEA {
+    [Services] - [OPC UA Server]
 }
 
 node "Process Orchestation Layer (POL)" {
-    package "polaris-backend" {
-        [Express] - [Manager/Module/Service]
-        [Manager/Module/Service] - [OPC UA Client]
+    package "polaris-backend" as backend {
+        [NodeJs]
     }
 
-    package "polaris-frontend" {
-        [Angular] -right- [Express] : HTTP, Websocket
+    package "polaris-frontend" as frontend {
+        [Angular] <-> [NodeJs] : HTTP, Websocket
     }
 
     package "polaris-interface" {
         () interface as if
     }
+    
+    package "mtp-converter" {
+        [NodeJs/Python]
+    }
 }
 
-if .. [Express] : import
+
+if .. [NodeJs] : import
 if .. [Angular] : import
 
-[OPC UA Server] <-left-> [OPC UA Client] : OPC UA
+[OPC UA Server] <--> [NodeJs] : OPC UA
 
-(MTP) <.. [Services]
-(MTP) ..> [Manager/Module/Service]
+[Services] .> [NodeJs/Python]: MTP
+[NodeJs/Python] .> [NodeJs] : JSON
 
 @enduml
