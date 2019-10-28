@@ -25,9 +25,8 @@
 
 import {DataAssemblyOptions, ParameterInterface, ParameterOptions} from '@p2olab/polaris-interface';
 import {EventEmitter} from 'events';
-import {catDataAssembly} from '../../config/logging';
+import {catDataAssembly} from '../../logging/logging';
 import {OpcUaConnection} from '../core/OpcUaConnection';
-import {Parameter} from '../recipe/Parameter';
 import {DataItem, OpcUaDataItem} from './DataItem';
 
 export interface BaseDataAssemblyRuntime {
@@ -53,14 +52,13 @@ export class DataAssembly extends EventEmitter {
     public subscriptionActive: boolean;
     public readonly connection: OpcUaConnection;
     public type: string = 'number';
-    public writeDataItem: DataItem<any> = null;
     public readDataItem: DataItem<any>;
-    public requestedValue: string;
     public parsingErrors: string[] = [];
-    public parameterRequest: Parameter;
+    public options: DataAssemblyOptions;
 
     constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
         super();
+        this.options = options;
         this.name = options.name;
         this.interfaceClass = options.interface_class;
         this.communication = {} as BaseDataAssemblyRuntime;
@@ -74,10 +72,10 @@ export class DataAssembly extends EventEmitter {
         if (!options.communication) {
             throw new Error('Communication variables missing while creating DataAssembly');
         }
-        this.createDataItem(options, 'TagName', 'read', 'string');
-        this.createDataItem(options, 'TagDescription', 'read');
-        this.createDataItem(options, 'OSLevel', 'write');
-        this.createDataItem(options, 'WQC', 'read');
+        this.communication.TagName = this.createDataItem('TagName', 'read', 'string');
+        this.communication.TagDescription = this.createDataItem('TagDescription', 'read');
+        this.communication.OSLevel = this.createDataItem('OSLevel', 'write');
+        this.communication.WQC = this.createDataItem('WQC', 'read');
     }
 
     /**
@@ -120,49 +118,6 @@ export class DataAssembly extends EventEmitter {
             });
     }
 
-    /**
-     * Set parameter on module
-     * @param paramValue
-     * @param {string} variable
-     */
-    public async setParameter(paramValue: any, variable?: string) {
-        let dataItem: DataItem<any>;
-        if (variable) {
-            dataItem = this.communication[variable];
-        } else {
-            dataItem = this.writeDataItem;
-        }
-        catDataAssembly.debug(`Set Parameter: ${this.name} (${variable}) -> ${JSON.stringify(paramValue)}`);
-        await dataItem.write(paramValue);
-    }
-
-    public async setValue(p: ParameterOptions, modules: any[]) {
-        catDataAssembly.debug(`set value: ${JSON.stringify(p)}`);
-        if (p.value) {
-            this.requestedValue = p.value.toString();
-
-            if (this.parameterRequest) {
-                this.parameterRequest.unlistenToScopeArray();
-
-                if (this.parameterRequest.eventEmitter) {
-                    this.parameterRequest.eventEmitter.removeListener('changed', this.setParameter);
-                }
-            }
-
-            this.parameterRequest = new Parameter(p, modules);
-
-            const value = this.parameterRequest.getValue();
-            catDataAssembly.trace(`calculated value: ${value}`);
-            await this.setParameter(value);
-
-            if (this.parameterRequest.options.continuous) {
-                catDataAssembly.trace(`Continous parameter change`);
-                this.parameterRequest.listenToScopeArray()
-                    .on('changed', (data) => this.setParameter(data));
-            }
-        }
-    }
-
     public getValue() {
         return this.readDataItem ? this.readDataItem.value : undefined;
     }
@@ -171,39 +126,34 @@ export class DataAssembly extends EventEmitter {
         return this.readDataItem ? this.readDataItem.timestamp : undefined;
     }
 
-    public getUnit(): string {
-        catDataAssembly.trace(`Try to access not existing unit in ${this.name}`);
-        return null;
-    }
-
     public toJson(): ParameterInterface {
         return {
             name: this.name,
             value: this.getValue(),
-            requestedValue: this.requestedValue,
-            unit: this.getUnit(),
             type: this.type,
-            readonly: this.writeDataItem === null,
+            readonly: true,
             timestamp: this.getLastUpdate()
         };
     }
 
-    public createDataItem(options: DataAssemblyOptions, name: string, access: 'read' | 'write', type?) {
-        if (!options.communication[name]) {
-            this.communication[name] = undefined;
-            this.parsingErrors.push(name);
-        } else {
-            this.communication[name] =
-                OpcUaDataItem.fromOptions(options.communication[name], this.connection, access, type);
+    /** Creates a data item from provided options of DataAssembly by
+     * finding first name to match one of the communication options
+     */
+    public createDataItem(name: string | string[],
+                          access: 'read' | 'write',
+                          type?: 'number' | 'string' | 'boolean'): OpcUaDataItem<any> {
+        const names = typeof name === 'string' ? [name] : name;
+        for (const value of names) {
+            if (this.options.communication[value]) {
+                return OpcUaDataItem.fromOptions(this.options.communication[value], this.connection, access, type);
+            }
         }
+        this.parsingErrors.push(names[0]);
+        return undefined;
     }
 
     public logParsingErrors() {
         catDataAssembly.warn(`${this.parsingErrors.length} variables have not been found during parsing variable ` +
             `"${this.name}" of type "${this.constructor.name}": ${JSON.stringify(this.parsingErrors)}`);
-    }
-
-    public hasBeenCompletelyParsed(): boolean {
-        return this.parsingErrors.length === 0;
     }
 }

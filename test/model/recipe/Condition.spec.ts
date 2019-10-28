@@ -28,7 +28,7 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
 import * as delay from 'timeout-as-promise';
-import {catCondition} from '../../../src/config/logging';
+import {catCondition} from '../../../src/logging/logging';
 import {ConditionFactory} from '../../../src/model/condition/ConditionFactory';
 import {ExpressionCondition} from '../../../src/model/condition/ExpressionCondition';
 import {TimeCondition} from '../../../src/model/condition/TimeCondition';

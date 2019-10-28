@@ -29,7 +29,7 @@ import {
     ParameterOptions,
     VirtualServiceInterface
 } from '@p2olab/polaris-interface';
-import {catVirtualService} from '../../config/logging';
+import {catVirtualService} from '../../logging/logging';
 import {BaseService} from '../core/BaseService';
 import {ServiceState} from '../core/enum';
 import {Parameter} from '../recipe/Parameter';

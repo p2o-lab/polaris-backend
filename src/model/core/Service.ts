@@ -33,10 +33,10 @@ import {
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Category} from 'typescript-logging';
-import {catService} from '../../config/logging';
-import {DataAssembly} from '../dataAssembly/DataAssembly';
+import {catService} from '../../logging/logging';
 import {DataAssemblyFactory} from '../dataAssembly/DataAssemblyFactory';
 import {ServiceControl} from '../dataAssembly/ServiceControl';
+import {WritableDataAssembly} from '../dataAssembly/WritableDataAssembly';
 import {BaseService, BaseServiceEvents} from './BaseService';
 import {controlEnableToJson, ServiceControlEnable, ServiceMtpCommand, ServiceState} from './enum';
 import {Module} from './Module';
@@ -85,10 +85,8 @@ export class Service extends BaseService {
 
     public readonly eventEmitter: ServiceEmitter;
     public readonly strategies: Strategy[] = [];
-    public readonly parameters: DataAssembly[] = [];
+    public readonly parameters: WritableDataAssembly[] = [];
     public readonly connection: OpcUaConnection;
-    // use ControlExt (true) or ControlOp (false)
-    public readonly automaticMode: boolean;
     public readonly serviceControl: ServiceControl;
     private readonly logger: Category;
     private serviceParametersEventEmitters: EventEmitter[];
@@ -101,8 +99,6 @@ export class Service extends BaseService {
         if (!serviceOptions.name) {
             throw new Error('No service name provided');
         }
-
-        this.automaticMode = true;
         this.connection = connection;
         this.serviceParametersEventEmitters = [];
 
@@ -112,16 +108,13 @@ export class Service extends BaseService {
         this.serviceControl = new ServiceControl(
             {name: this._name, interface_class: 'ServiceControl', communication: serviceOptions.communication},
             connection);
-        if (!this.serviceControl.hasBeenCompletelyParsed()) {
-            throw new Error(`Service Control not fully defined in options`);
-        }
 
         this.strategies = serviceOptions.strategies
             .map((option) => new Strategy(option, connection));
 
         if (serviceOptions.parameters) {
             this.parameters = serviceOptions.parameters
-                .map((options) => DataAssemblyFactory.create(options, connection));
+                .map((options) => DataAssemblyFactory.create(options, connection) as WritableDataAssembly);
         }
     }
 
@@ -275,9 +268,7 @@ export class Service extends BaseService {
 
         // first set opMode and then set strategy
         await this.setOperationMode();
-        const node = this.automaticMode ?
-            this.serviceControl.communication.StrategyExt : this.serviceControl.communication.StrategyMan;
-        await node.write(strategy.id);
+        await this.serviceControl.communication.StrategyExt.write(strategy.id);
     }
 
     public getStrategyByNameOrDefault(strategyName: string) {
@@ -298,15 +289,11 @@ export class Service extends BaseService {
     }
 
     public async setOperationMode() {
-        if (this.automaticMode) {
-            await this.serviceControl.setToAutomaticOperationMode();
-            await this.serviceControl.setToExternalSourceMode();
-        } else {
-            await this.serviceControl.setToManualOperationMode();
-        }
+        await this.serviceControl.setToAutomaticOperationMode();
+        await this.serviceControl.setToExternalSourceMode();
     }
 
-    public findInputParameter(parameterName: string): DataAssembly {
+    public findInputParameter(parameterName: string): WritableDataAssembly {
         const parameterList = [].concat(
             this.parameters,
             this.getCurrentStrategy().parameters,
@@ -327,10 +314,7 @@ export class Service extends BaseService {
         this.logger.debug(`[${this.qualifiedName}] Send command ${ServiceMtpCommand[command]}`);
         await this.setOperationMode();
 
-        const node = this.automaticMode ?
-            this.serviceControl.communication.CommandExt :
-            this.serviceControl.communication.CommandMan;
-        await node.write(command);
+        await this.serviceControl.communication.CommandExt.write(command);
         this.logger.trace(`[${this.qualifiedName}] Command ${ServiceMtpCommand[command]} written`);
     }
 

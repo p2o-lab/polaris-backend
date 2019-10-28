@@ -35,7 +35,7 @@ import {
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Category} from 'typescript-logging';
-import {catModule} from '../../config/logging';
+import {catModule} from '../../logging/logging';
 import {DataAssembly} from '../dataAssembly/DataAssembly';
 import {DataAssemblyFactory} from '../dataAssembly/DataAssemblyFactory';
 import {DataItemEmitter} from '../dataAssembly/DataItem';
@@ -296,15 +296,14 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
             this.variables.map((variable: DataAssembly) => {
                 catModule.debug(`[${this.id}] subscribe to process variable ${variable.name}`);
                 variable.on('V', (data) => {
-                    this.logger.debug(`[${this.id}] variable changed: ${variable.name} = ` +
-                        `${data.value} ${variable.getUnit()}`);
+                    this.logger.debug(`[${this.id}] variable changed: ${JSON.stringify(variable.toJson())}`);
                     const entry: VariableChange = {
                         timestampPfe: new Date(),
                         timestampModule: data.timestamp,
                         module: this.id,
                         variable: variable.name,
                         value: data.value,
-                        unit: variable.getUnit()
+                        unit: variable.toJson().unit
                     };
                     this.emit('variableChanged', entry);
                 });

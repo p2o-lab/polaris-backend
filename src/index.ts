@@ -28,7 +28,7 @@
 import * as commandLineArgs from 'command-line-args';
 import * as commandLineUsage from 'command-line-usage';
 import * as fs from 'fs';
-import {catModule} from './config/logging';
+import {catModule} from './logging/logging';
 import {Manager} from './model/Manager';
 import {ExternalTrigger} from './server/ExternalTrigger';
 import {Server} from './server/server';

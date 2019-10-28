@@ -24,7 +24,7 @@
  */
 
 import {DataType, Namespace, StatusCodes, Variant} from 'node-opcua';
-import {catTestServer} from '../config/logging';
+import {catTestServer} from '../logging/logging';
 import {ServiceControlEnable, ServiceMtpCommand, ServiceState} from '../model/core/enum';
 import {TestServerNumericVariable} from './ModuleTestNumericVariable';
 import Timeout = NodeJS.Timeout;

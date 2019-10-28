@@ -24,9 +24,7 @@
  */
 
 import {OperationMode} from '@p2olab/polaris-interface';
-import {Namespace, UAObject} from 'node-opcua-address-space';
-import {StatusCodes} from 'node-opcua-constants';
-import {DataType, Variant} from 'node-opcua-variant';
+import { DataType, Namespace, StatusCodes, UAObject, Variant } from 'node-opcua';
 
 /** new version of OpMode for testserver */
 export class ModuleTestOpMode2 {
