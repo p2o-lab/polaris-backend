@@ -23,10 +23,8 @@
  * SOFTWARE.
  */
 
-import {Namespace, UAObject} from 'node-opcua-address-space';
-import {StatusCodes} from 'node-opcua-constants';
-import {DataType, Variant} from 'node-opcua-variant';
-import {catTestServer} from '../config/logging';
+import { DataType, Namespace, StatusCodes, UAObject, Variant } from 'node-opcua';
+import {catTestServer} from '../logging/logging';
 import {OpMode} from '../model/dataAssembly/mixins/OpMode';
 
 export class ModuleTestOpMode {
@@ -60,7 +58,7 @@ export class ModuleTestOpMode {
                     } else {
                         return StatusCodes.Bad;
                     }
-                    catTestServer.info(`[${variableName}] Set Opmode in testserver ${opModeInt} -> ${this.opMode}`);
+                    catTestServer.debug(`[${variableName}] Set Opmode in testserver ${opModeInt} -> ${this.opMode}`);
                     return StatusCodes.Good;
                 }
             }

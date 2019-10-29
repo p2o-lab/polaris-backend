@@ -28,7 +28,7 @@ import {Manager} from '../../model/Manager';
 
 import * as asyncHandler from 'express-async-handler';
 import {constants} from 'http2';
-import {catModule, catServer} from '../../config/logging';
+import {catModule, catServer} from '../../logging/logging';
 
 export const moduleRouter: Router = Router();
 

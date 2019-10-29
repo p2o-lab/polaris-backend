@@ -26,7 +26,7 @@
 import {PlayerInterface, RecipeState, Repeat} from '@p2olab/polaris-interface';
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
-import {catManager, catPlayer} from '../../config/logging';
+import {catManager, catPlayer} from '../../logging/logging';
 import {Recipe} from './Recipe';
 import {RecipeRun} from './RecipeRun';
 

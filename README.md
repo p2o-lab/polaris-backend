@@ -13,6 +13,8 @@ A HTML user interface for this project is provided via the [polaris-frontend](ht
 [![codecov](https://codecov.io/gh/p2o-lab/polaris-backend/branch/develop/graph/badge.svg)](https://codecov.io/gh/p2o-lab/polaris-backend)
 
 
+![Polaris component diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/p2o-lab/polaris-backend/develop/doc/componentdiagram.puml)
+
 ## Installation and Deployment
 ### Dependencies
 All dependencies are installed via NPM

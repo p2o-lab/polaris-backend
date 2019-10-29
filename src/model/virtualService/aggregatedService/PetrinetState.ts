@@ -24,7 +24,7 @@
  */
 
 import {OperationOptions} from '@p2olab/polaris-interface';
-import {catRecipe} from '../../../config/logging';
+import {catRecipe} from '../../../logging/logging';
 import {Module} from '../../core/Module';
 import {Operation} from '../../recipe/Operation';
 import {PetrinetTransition} from './PetrinetTransition';

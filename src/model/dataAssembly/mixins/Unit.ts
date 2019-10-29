@@ -41,7 +41,7 @@ export function UnitDA<TBase extends Constructor<DataAssembly>>(Base: TBase) {
 
         constructor(...args: any[]) {
             super(...args);
-            this.createDataItem(args[0], 'VUnit', 'read');
+            this.communication.VUnit = this.createDataItem('VUnit', 'read');
         }
 
         public getUnit(): string {

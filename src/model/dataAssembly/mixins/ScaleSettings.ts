@@ -41,8 +41,8 @@ export function ScaleSettingsDA<TBase extends Constructor<DataAssembly>>(Base: T
 
         constructor(...args: any[]) {
             super(...args);
-            this.createDataItem(args[0], 'VSclMax', 'read');
-            this.createDataItem(args[0], 'VSclMin', 'read');
+            this.communication.VSclMax = this.createDataItem('VSclMax', 'read');
+            this.communication.VSclMin = this.createDataItem('VSclMin', 'read');
         }
 
         public toJson(): ParameterInterface {

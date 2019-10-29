@@ -43,7 +43,7 @@ import {timeout} from 'promise-timeout';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Category} from 'typescript-logging';
 import {fixReactor} from '../../achema/ReactorFix';
-import {catOpc} from '../../config/logging';
+import {catOpc} from '../../logging/logging';
 
 /**
  * Events emitted by [[OpcUaConnection]]

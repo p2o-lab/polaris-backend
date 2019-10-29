@@ -1,0 +1,45 @@
+@startuml
+skinparam monochrome true
+
+frame POL {
+node Polaris-VirtualServices {
+ card "CombinedDoseFill (AggregatedService)" as AggregatedService1
+ card "SpecialRecipe (AggregatedService)" as AggregatedService2
+ card Timer1
+ }
+}
+
+AggregatedService2 ..> AggregatedService1
+AggregatedService2 ..> Timer1
+
+frame PEA-layer {
+
+    node PEA2 {
+      card "Service Fill" as PEA2S1
+      card "Service 2" as PEA2S2
+   entity V2.1
+      entity "T2.1"
+    }
+
+    node PEA1 {
+      card "Service Dose" as PEA1S1
+      card "Service 2" as PEA1S2
+      entity "P1.1"
+      entity "V1.1"
+    }
+
+}
+
+AggregatedService1 ..> PEA1S1
+AggregatedService1 ..> PEA2S1
+
+PEA1S1 ..> P1.1
+PEA1S1 ..> V1.1
+
+PEA2S1 ..> V2.1
+
+P1.1 ->> V1.1
+V1.1 ->> V2.1
+V2.1 ->> T2.1
+
+@enduml
