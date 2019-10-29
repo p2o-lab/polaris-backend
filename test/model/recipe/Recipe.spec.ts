@@ -93,7 +93,8 @@ describe('Recipe', () => {
         let moduleServer: ModuleTestServer;
         let module: Module;
 
-        beforeEach(async () => {
+        beforeEach(async function() {
+            this.timeout(5000);
             moduleServer = new ModuleTestServer();
             await moduleServer.start();
 
