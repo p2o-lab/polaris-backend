@@ -58,7 +58,7 @@
     "@types/node": "^13.7.6",
     "@types/uuid": "^3.4.5",
     "@types/ws": "^7.2.0",
-    "apidoc": "^0.20.0",
+    "apidoc": "^0.22.1",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "chai-http": "^4.3.0",
