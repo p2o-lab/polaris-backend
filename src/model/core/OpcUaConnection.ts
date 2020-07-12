@@ -94,6 +94,10 @@ export class  OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionE
             this.logger.debug(`[${this.id}] Already connected`);
             return Promise.resolve();
         } else {
+            if (this.endpoint === undefined) {
+                this.logger.warn(`Error while connecting to opcua. Endpoint undefined.`);
+                throw new Error('cannot be established');
+            }
             this.client = await this.createAndConnectClient();
             this.session = await this.createSession();
             this.namespaceArray = await this.readNameSpaceArray();

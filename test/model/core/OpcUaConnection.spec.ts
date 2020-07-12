@@ -40,7 +40,7 @@ describe('OpcUaConnection', () => {
     });
 
     it('should reject connecting to a server with not existing endpoint', async () => {
-        const connection = new OpcUaConnection('test', 'opc.tcp://127.0.0.1:4444');
+        const connection = new OpcUaConnection('test', undefined);
         expect(connection.isConnected()).to.equal(false);
         await expect(connection.connect()).to.be.rejectedWith('cannot be established');
         expect(connection.isConnected()).to.equal(false);
