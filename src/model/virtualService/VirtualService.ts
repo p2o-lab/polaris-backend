@@ -100,12 +100,12 @@ export abstract class VirtualService extends BaseService {
         catVirtualService.info(`Set parameter: ${JSON.stringify(parameters)}`);
         parameters.forEach((pNew) => {
             const pOld = [].concat(this.procedureParameters, this.processValuesIn)
-                .find((param) => param.name === pNew.name);
-            if (!pOld) {
-                throw new Error('try to write not existing variable');
+                .find((param) => param?.name === pNew.name);
+            if (pOld === undefined) {
+                throw new Error('tried to write a non-existent variable');
             }
             if (pOld.readonly) {
-                throw new Error('try to write to readonly variable');
+                throw new Error('tried to write a readonly variable');
             }
             Object.assign(pOld, pNew);
         });
