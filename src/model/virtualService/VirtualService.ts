@@ -101,7 +101,7 @@ export abstract class VirtualService extends BaseService {
         parameters.forEach((pNew) => {
             const pOld = [].concat(this.procedureParameters, this.processValuesIn)
                 .find((param) => param?.name === pNew.name);
-            if (pOld === undefined) {
+            if (!pOld) {
                 throw new Error('tried to write a non-existent variable');
             }
             if (pOld.readonly) {
