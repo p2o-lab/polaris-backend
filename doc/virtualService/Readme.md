@@ -5,6 +5,8 @@ Virtual Services / POL Services
 
 
 
+## Aggregated Services
+*Aggregated Services* can be called like any other service. They can control several other services (both PEA services and POL services) from several PEAs. However, they cannot control the field devices inside the PEAs.
 
 
 |                                  | (PEA-)Service                              | Aggregated Service                                     |
@@ -16,3 +18,4 @@ Virtual Services / POL Services
 | Control                          | PEA internal field devices or PEA-services | PEA-services from different PEAs or other POL-Services |
 | Static description/configuration | MTP                                        | Polaris specific solution                              |
 
+![Polaris component diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/p2o-lab/polaris-backend/develop/doc/virtualService/aggregated-service-context.puml)

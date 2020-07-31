@@ -150,7 +150,7 @@ describe('Operation', () => {
             }, [module]);
 
             operation.execute();
-            await delay(300);
+            await delay(200);
             expect(operation.json()).to.have.property('state', 'executing');
             // set precondition for operation
             service.executeCommand(ServiceCommand.start);
@@ -158,7 +158,7 @@ describe('Operation', () => {
             await service.waitForStateChangeWithTimeout('COMPLETED', 3000);
             expect(operation.json()).to.have.property('state', 'completed');
 
-        }).timeout(10000);
+        }).timeout(3000);
 
         it('should try execute operation until it is stopped', async () => {
             const operation = new Operation({
@@ -167,12 +167,12 @@ describe('Operation', () => {
             }, [module]);
 
             operation.execute();
-            await delay(600);
+            await delay(200);
             expect(operation.json()).to.have.property('state', 'executing');
             operation.stop();
             expect(operation.json()).to.have.property('state', 'aborted');
 
-        }).timeout(10000);
+        });
 
         it('should try execute operation until timeout', async () => {
             const operation = new Operation({
@@ -186,8 +186,7 @@ describe('Operation', () => {
             await delay(2050);
             expect(operation.json()).to.have.property('state', 'aborted');
 
-        }).timeout(10000);
-
+        }).timeout(8000);
     });
 
 });
