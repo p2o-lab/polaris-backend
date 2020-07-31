@@ -23,4 +23,5 @@
  * SOFTWARE.
  */
 
+// see https://basarat.gitbooks.io/typescript/docs/types/mixins.html
 export type Constructor<T = {}> = new (...args: any[]) => T;

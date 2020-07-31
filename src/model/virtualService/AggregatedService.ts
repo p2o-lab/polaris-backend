@@ -25,7 +25,7 @@
 
 import {ParameterInterface} from '@p2olab/polaris-interface';
 import {Category} from 'typescript-logging';
-import {catAggregatedService} from '../../config/logging';
+import {catAggregatedService} from '../../logging/logging';
 import {BaseService} from '../core/BaseService';
 import {Module} from '../core/Module';
 import {Service} from '../core/Service';
@@ -99,7 +99,7 @@ export class AggregatedService extends VirtualService {
 
     // necessary modules
     public readonly modules: Set<Module> = new Set<Module>();
-    public readonly services: Service[];
+    public readonly services: BaseService[];
 
     // dynamic properties
     public _lastStatusChange: Date;
@@ -110,7 +110,7 @@ export class AggregatedService extends VirtualService {
 
     private logger: Category;
 
-    constructor(options: AggregatedServiceOptions, modules: Module[]) {
+    constructor(options: AggregatedServiceOptions, modules: Module[], virtualServices: VirtualService[] = []) {
         super(options.name);
         this.options = options;
         this._lastStatusChange = new Date();
@@ -121,8 +121,12 @@ export class AggregatedService extends VirtualService {
         }
 
         this.services = options.necessaryServices.map((opts) => {
-            const module = modules.find((m) => m.id === opts.module);
-            return module.getService(opts.service);
+            if (opts.module) {
+                const module = modules.find((m) => m.id === opts.module);
+                return module.getService(opts.service);
+            } else {
+                return virtualServices.find((vs) => vs.name === opts.service);
+            }
         });
 
         this.stateMachines = new Map<string, Petrinet>();

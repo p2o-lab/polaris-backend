@@ -23,7 +23,8 @@
  * SOFTWARE.
  */
 
-import {expect} from 'chai';
+import * as chai from 'chai';
+import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
 import * as parseJson from 'json-parse-better-errors';
 import * as delay from 'timeout-as-promise';
@@ -33,6 +34,9 @@ import {FunctionGenerator} from '../../../src/model/virtualService/FunctionGener
 import {Storage} from '../../../src/model/virtualService/Storage';
 import {Timer} from '../../../src/model/virtualService/Timer';
 import {VirtualServiceFactory} from '../../../src/model/virtualService/VirtualServiceFactory';
+
+chai.use(chaiAsPromised);
+const expect = chai.expect;
 
 describe('VirtualService', () => {
 
@@ -133,9 +137,8 @@ describe('VirtualService', () => {
                 'value': 10000
             });
 
-            await timer.setParameters([{name: 'duron', value: 1000}]).then(expect.fail, (err) => err);
-
-            await timer.setParameters([{name: 'remainingTime', value: 1000}]).then(expect.fail, (err) => err);
+            await expect(timer.setParameters([{name: 'duron', value: 1000}])).to.be.rejectedWith('tried to write a non-existent variable');
+            await expect(timer.setParameters([{name: 'remainingTime', value: 1000}])).to.be.rejectedWith('tried to write a non-existent variable');
 
             await timer.setParameters([{name: 'duration', value: 100}, {name: 'updateRate', value: 10}]);
 

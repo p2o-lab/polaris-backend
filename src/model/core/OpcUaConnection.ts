@@ -43,7 +43,7 @@ import {timeout} from 'promise-timeout';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Category} from 'typescript-logging';
 import {fixReactor} from '../../achema/ReactorFix';
-import {catOpc} from '../../config/logging';
+import {catOpc} from '../../logging/logging';
 
 /**
  * Events emitted by [[OpcUaConnection]]
@@ -94,6 +94,10 @@ export class  OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionE
             this.logger.debug(`[${this.id}] Already connected`);
             return Promise.resolve();
         } else {
+            if (this.endpoint === undefined) {
+                this.logger.warn(`Error while connecting to opcua. Endpoint undefined.`);
+                throw new Error('cannot be established');
+            }
             this.client = await this.createAndConnectClient();
             this.session = await this.createSession();
             this.namespaceArray = await this.readNameSpaceArray();
@@ -170,7 +174,7 @@ export class  OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionE
         }
     }
 
-    public async writeOpcUaNode(nodeId: string, namespaceUrl: string, value: number | string, dataType) {
+    public async writeOpcUaNode(nodeId: string, namespaceUrl: string, value: number | string | boolean, dataType) {
         if (!this.isConnected()) {
             throw new Error(`Can not write node since OPC UA connection to module ${this.id} is not established`);
         } else {
@@ -182,7 +186,7 @@ export class  OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionE
             this.logger.debug(`[${this.id}] Write ${nodeId} - ${JSON.stringify(variant)}`);
             const statusCode = await this.session.writeSingleNode(this.resolveNodeId(nodeId, namespaceUrl), variant);
             if (statusCode.value !== 0) {
-                this.logger.warn(`Error while writing to opcua: ${statusCode.description}`);
+                this.logger.warn(`Error while writing to opcua ${nodeId}=${value}: ${statusCode.description}`);
                 throw new Error(statusCode.description);
             }
         }

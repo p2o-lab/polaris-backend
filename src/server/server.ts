@@ -27,9 +27,9 @@ import {BackendNotification} from '@p2olab/polaris-interface';
 import * as express from 'express';
 import * as http from 'http';
 import * as WebSocket from 'ws';
-import {catServer} from '../config/logging';
-import Middleware from '../config/middleware';
+import {catServer} from '../logging/logging';
 import {Manager} from '../model/Manager';
+import Middleware from './middleware';
 import Routes from './routes';
 import * as serverHandlers from './serverHandlers';
 
@@ -42,8 +42,8 @@ export class Server {
 
     constructor(manager: Manager) {
         this.app = express();
-        Middleware.init(this.app);
-        Routes.init(this.app, manager);
+        Middleware.init(this.app, manager);
+        Routes.init(this.app);
 
         manager.on('notify', (notification) => this.notifyClients(notification));
     }

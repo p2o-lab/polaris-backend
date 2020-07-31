@@ -25,12 +25,14 @@
  */
 
 import {OpcUaConnection} from '../core/OpcUaConnection';
-import {BaseDataAssemblyRuntime, DataAssembly} from './DataAssembly';
+import {BaseDataAssemblyRuntime} from './DataAssembly';
 import {OpcUaDataItem} from './DataItem';
 import {OpModeDA, OpModeRuntime} from './mixins/OpMode';
 import {ScaleSettingsDA, ScaleSettingsRuntime} from './mixins/ScaleSettings';
+import {SourceModeDA, SourceModeRuntime} from './mixins/SourceMode';
 import {UnitDA, UnitDataAssemblyRuntime} from './mixins/Unit';
 import {ValueLimitationDA, ValueLimitationRuntime} from './mixins/ValueLimitation';
+import {WritableDataAssembly} from './WritableDataAssembly';
 
 export type AnaOpRuntime = BaseDataAssemblyRuntime &
     UnitDataAssemblyRuntime & ValueLimitationRuntime &
@@ -40,32 +42,32 @@ export type AnaOpRuntime = BaseDataAssemblyRuntime &
     VExt: OpcUaDataItem<number>;
 };
 
-export class ExtAnaOp extends ValueLimitationDA(ScaleSettingsDA(UnitDA(DataAssembly))) {
+export class ExtAnaOp extends ValueLimitationDA(ScaleSettingsDA(UnitDA(WritableDataAssembly))) {
     public readonly communication: AnaOpRuntime;
 
     constructor(options, connection: OpcUaConnection) {
         super(options, connection);
-        this.createDataItem(options, 'VOut', 'read');
-        this.createDataItem(options, 'VRbk', 'read');
-        this.createDataItem(options, 'VExt', 'write');
+        this.communication.VOut = this.createDataItem('VOut', 'read');
+        this.communication.VRbk = this.createDataItem('VRbk', 'read');
+        this.communication.VExt = this.createDataItem('VExt', 'write');
         this.writeDataItem = this.communication.VExt;
         this.readDataItem = this.communication.VRbk;
         this.type = 'number';
     }
 }
 
-export type ExtIntAnaOpRuntime = AnaOpRuntime & OpModeRuntime & {
+export type ExtIntAnaOpRuntime = AnaOpRuntime & OpModeRuntime & SourceModeRuntime & {
     VInt: OpcUaDataItem<number>;
 };
 
-export class ExtIntAnaOp extends OpModeDA(ExtAnaOp) {
+export class ExtIntAnaOp extends OpModeDA(SourceModeDA(ExtAnaOp)) {
 
     public readonly communication: ExtIntAnaOpRuntime;
 
     constructor(options, connection: OpcUaConnection) {
         super(options, connection);
         this.type = 'number';
-        this.createDataItem(options, 'VInt', 'read');
+        this.communication.VInt = this.createDataItem('VInt', 'read');
     }
 }
 

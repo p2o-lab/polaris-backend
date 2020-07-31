@@ -108,7 +108,7 @@ export class OpcUaDataItem<T> extends DataItem<T> {
             await this.read();
         }
         const monitoredItem = await timeout(
-            this.connection.listenToOpcUaNode(this.nodeId, this.namespaceIndex, samplingInterval), 1000);
+            this.connection.listenToOpcUaNode(this.nodeId, this.namespaceIndex, samplingInterval), 2000);
         monitoredItem.on('changed', (dataValue) => {
             this.logger.debug(`[${this.connection.id}] Variable Changed (${this.nodeId}) ` +
                 `= ${dataValue.value.value.toString()}`);
@@ -120,7 +120,7 @@ export class OpcUaDataItem<T> extends DataItem<T> {
         return this;
     }
 
-    public write(value: number | string) {
+    public write(value: number | string | boolean) {
         this.logger.debug(`write: ${value} to ${this.nodeId}`);
         return this.connection.writeOpcUaNode(this.nodeId, this.namespaceIndex, value, this.dataType);
     }

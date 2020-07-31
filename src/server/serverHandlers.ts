@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import {catServer} from '../config/logging';
+import {catServer} from '../logging/logging';
 
 export function normalizePort(val: number | string): number | string | boolean {
     const port: number = (typeof val === 'string') ? parseInt(val, 10) : val;

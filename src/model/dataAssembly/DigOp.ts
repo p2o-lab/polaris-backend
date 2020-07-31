@@ -25,26 +25,27 @@
  */
 
 import {AnaOpRuntime} from './AnaOp';
-import {DataAssembly} from './DataAssembly';
 import {OpModeDA} from './mixins/OpMode';
 import {ScaleSettingsDA} from './mixins/ScaleSettings';
+import {SourceModeDA} from './mixins/SourceMode';
 import {UnitDA} from './mixins/Unit';
+import {WritableDataAssembly} from './WritableDataAssembly';
 
-export class ExtDigOp extends ScaleSettingsDA(UnitDA(DataAssembly)) {
+export class ExtDigOp extends ScaleSettingsDA(UnitDA(WritableDataAssembly)) {
     public readonly communication: AnaOpRuntime;
 
     constructor(options, connection) {
         super(options, connection);
-        this.createDataItem(options, 'VOut', 'read');
-        this.createDataItem(options, 'VRbk', 'read');
-        this.createDataItem(options, 'VExt', 'write');
+        this.communication.VOut = this.createDataItem('VOut', 'read');
+        this.communication.VRbk = this.createDataItem('VRbk', 'read');
+        this.communication.VExt = this.createDataItem('VExt', 'write');
         this.type = 'number';
         this.writeDataItem = this.communication.VExt;
         this.readDataItem = this.communication.VRbk;
     }
 }
 
-export class ExtIntDigOp extends OpModeDA(ExtDigOp) {
+export class ExtIntDigOp extends OpModeDA(SourceModeDA(ExtDigOp)) {
 
 }
 

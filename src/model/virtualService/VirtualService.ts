@@ -29,7 +29,7 @@ import {
     ParameterOptions,
     VirtualServiceInterface
 } from '@p2olab/polaris-interface';
-import {catVirtualService} from '../../config/logging';
+import {catVirtualService} from '../../logging/logging';
 import {BaseService} from '../core/BaseService';
 import {ServiceState} from '../core/enum';
 import {Parameter} from '../recipe/Parameter';
@@ -100,12 +100,12 @@ export abstract class VirtualService extends BaseService {
         catVirtualService.info(`Set parameter: ${JSON.stringify(parameters)}`);
         parameters.forEach((pNew) => {
             const pOld = [].concat(this.procedureParameters, this.processValuesIn)
-                .find((param) => param.name === pNew.name);
+                .find((param) => param?.name === pNew.name);
             if (!pOld) {
-                throw new Error('try to write not existing variable');
+                throw new Error('tried to write a non-existent variable');
             }
             if (pOld.readonly) {
-                throw new Error('try to write to readonly variable');
+                throw new Error('tried to write a readonly variable');
             }
             Object.assign(pOld, pNew);
         });
@@ -235,13 +235,13 @@ export abstract class VirtualService extends BaseService {
     // Internal
     private setState(newState: ServiceState) {
         catVirtualService.info(`[${this.name}] state changed to ${ServiceState[newState]}`);
-        this.eventEmitter.emit('state', newState);
         this._state = newState;
+        this.eventEmitter.emit('state', newState);
     }
 
     private setControlEnable(controlEnable: ControlEnableInterface) {
-        this.eventEmitter.emit('controlEnable', controlEnable);
         this._controlEnable = controlEnable;
+        this.eventEmitter.emit('controlEnable', controlEnable);
     }
 
     private async gotoStarting(): Promise<void> {

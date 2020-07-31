@@ -25,7 +25,7 @@
 
 import {ScopeOptions} from '@p2olab/polaris-interface';
 import {Expression, Parser} from 'expr-eval';
-import {catScopeItem} from '../../config/logging';
+import {catScopeItem} from '../../logging/logging';
 import {ServiceState} from '../core/enum';
 import {Module} from '../core/Module';
 import {Service} from '../core/Service';

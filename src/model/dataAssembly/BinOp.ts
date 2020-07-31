@@ -24,9 +24,11 @@
  * SOFTWARE.
  */
 
-import {BaseDataAssemblyRuntime, DataAssembly} from './DataAssembly';
+import {BaseDataAssemblyRuntime} from './DataAssembly';
 import {OpcUaDataItem} from './DataItem';
 import {OpModeDA} from './mixins/OpMode';
+import {SourceModeDA} from './mixins/SourceMode';
+import {WritableDataAssembly} from './WritableDataAssembly';
 
 export type ExtBinOpRuntime = BaseDataAssemblyRuntime & {
     VExt: OpcUaDataItem<boolean>;
@@ -36,17 +38,17 @@ export type ExtBinOpRuntime = BaseDataAssemblyRuntime & {
     VState1: OpcUaDataItem<string>;
 };
 
-export class ExtBinOp extends DataAssembly {
+export class ExtBinOp extends WritableDataAssembly {
 
     public readonly communication: ExtBinOpRuntime;
 
     constructor(options, module) {
         super(options, module);
-        this.createDataItem(options, 'VExt', 'write', 'boolean');
-        this.createDataItem(options, 'VRbk', 'read', 'boolean');
-        this.createDataItem(options, 'VOut', 'read', 'boolean');
-        this.createDataItem(options, 'VState0', 'read', 'string');
-        this.createDataItem(options, 'VState1', 'read', 'string');
+        this.communication.VExt = this.createDataItem('VExt', 'write', 'boolean');
+        this.communication.VRbk = this.createDataItem('VRbk', 'read', 'boolean');
+        this.communication.VOut = this.createDataItem('VOut', 'read', 'boolean');
+        this.communication.VState0 = this.createDataItem('VState0', 'read', 'string');
+        this.communication.VState1 = this.createDataItem('VState1', 'read', 'string');
         this.type = 'boolean';
         this.writeDataItem = this.communication.VExt;
         this.readDataItem = this.communication.VOut;
@@ -54,7 +56,7 @@ export class ExtBinOp extends DataAssembly {
 
 }
 
-export class ExtIntBinOp extends OpModeDA(ExtBinOp) {
+export class ExtIntBinOp extends OpModeDA(SourceModeDA(ExtBinOp)) {
 }
 
 export class AdvBinOp extends ExtIntBinOp {

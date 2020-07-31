@@ -23,13 +23,11 @@
  * SOFTWARE.
  */
 
-import {Namespace, UAObject} from 'node-opcua-address-space';
-import {StatusCodes} from 'node-opcua-constants';
-import {DataType, Variant} from 'node-opcua-variant';
-import {catTestServer} from '../config/logging';
-import {OpMode} from '../model/core/enum';
+import { DataType, Namespace, StatusCodes, UAObject, Variant } from 'node-opcua';
+import {catTestServer} from '../logging/logging';
+import {OpMode} from '../model/dataAssembly/mixins/OpMode';
 
-export class ModulTestOpMode {
+export class ModuleTestOpMode {
     public opMode: number = 0;
 
     constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
@@ -54,11 +52,13 @@ export class ModulTestOpMode {
                         this.opMode = this.opMode | OpMode.srcIntAct;
                     } else if (opModeInt === OpMode.srcExtOp) {
                         this.opMode = this.opMode & ~OpMode.srcIntAct;
+                    } else if (opModeInt === OpMode.stateOffOp) {
+                        this.opMode = this.opMode & ~OpMode.stateAutAct;
+                        this.opMode = this.opMode & ~OpMode.stateManAct;
                     } else {
                         return StatusCodes.Bad;
                     }
-                    catTestServer.debug(`[${variableName}] Set Opmode in testserver ${variant} ` +
-                        `${opModeInt} -> ${this.opMode}`);
+                    catTestServer.debug(`[${variableName}] Set Opmode in testserver ${opModeInt} -> ${this.opMode}`);
                     return StatusCodes.Good;
                 }
             }

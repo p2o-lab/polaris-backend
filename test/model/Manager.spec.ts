@@ -23,14 +23,14 @@
  * SOFTWARE.
  */
 
-import {ServiceCommand} from '@p2olab/polaris-interface';
+import {AggregatedServiceOptions, ModuleOptions, ServiceCommand} from '@p2olab/polaris-interface';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
 import * as parseJson from 'json-parse-better-errors';
 import {ServiceState} from '../../src/model/core/enum';
 import {Service} from '../../src/model/core/Service';
-import {Manager} from '../../src/model/Manager';
+import {LoadModuleOptions, Manager} from '../../src/model/Manager';
 import {ModuleTestServer} from '../../src/moduleTestServer/ModuleTestServer';
 
 chai.use(chaiAsPromised);
@@ -205,6 +205,21 @@ describe('Manager', () => {
             service.executeCommand(ServiceCommand.complete);
             await service.waitForStateChangeWithTimeout('COMPLETED');
             await service.waitForStateChangeWithTimeout('IDLE');
+        });
+
+        it('should load two PEA and an aggregated service', async () => {
+            const manager = new Manager();
+
+            const moduleJson: LoadModuleOptions = parseJson(
+                fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8'), null, 60);
+            moduleJson.modules[0].id = 'PEA1';
+            manager.loadModule(moduleJson);
+            moduleJson.modules[0].id = 'PEA2';
+            manager.loadModule(moduleJson);
+
+            const asJson: AggregatedServiceOptions = parseJson(
+                fs.readFileSync('assets/virtualService/aggregatedService_moduletestserver.json', 'utf8'), null, 60);
+            manager.instantiateVirtualService(asJson);
         });
 
     });

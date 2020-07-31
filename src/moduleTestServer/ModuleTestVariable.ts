@@ -23,20 +23,20 @@
  * SOFTWARE.
  */
 
-import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {catTestServer} from '../config/logging';
-import { ModulTestOpMode } from './ModulTestOpMode';
+import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
+import {catTestServer} from '../logging/logging';
+import { ModuleTestOpMode } from './ModuleTestOpMode';
 
 export abstract class TestServerVariable {
 
     public readonly name: string;
-    public opMode: ModulTestOpMode;
+    public opMode: ModuleTestOpMode;
     public wqc: number = 0;
     public osLevel: number = 0;
     protected variableNode: UAObject;
 
     constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
-        catTestServer.info(`Add variable ${variableName}`);
+        catTestServer.debug(`Add variable ${variableName}`);
 
         this.name = variableName;
 
@@ -69,6 +69,6 @@ export abstract class TestServerVariable {
             }
         });
 
-        this.opMode = new ModulTestOpMode(namespace, this.variableNode, variableName);
+        this.opMode = new ModuleTestOpMode(namespace, this.variableNode, variableName);
     }
 }

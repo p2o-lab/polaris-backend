@@ -27,9 +27,10 @@ import {ParameterInterface, StrategyInterface, StrategyOptions} from '@p2olab/po
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Category} from 'typescript-logging';
-import {catStrategy} from '../../config/logging';
+import {catStrategy} from '../../logging/logging';
 import {DataAssembly} from '../dataAssembly/DataAssembly';
 import {DataAssemblyFactory} from '../dataAssembly/DataAssemblyFactory';
+import {WritableDataAssembly} from '../dataAssembly/WritableDataAssembly';
 import {OpcUaConnection} from './OpcUaConnection';
 
 export interface StrategyEvents {
@@ -46,10 +47,10 @@ export class Strategy extends (EventEmitter as new() => StrategyEmitter) {
     public readonly name: string;
     public readonly defaultStrategy: boolean;
     public readonly selfCompleting: boolean;
-    public readonly processValuesIn: DataAssembly[] = [];
+    public readonly processValuesIn: WritableDataAssembly[] = [];
     public readonly processValuesOut: DataAssembly[] = [];
     public readonly reportParameters: DataAssembly[] = [];
-    public readonly parameters: DataAssembly[] = [];
+    public readonly parameters: WritableDataAssembly[] = [];
     private readonly logger: Category;
 
     constructor(options: StrategyOptions, connection: OpcUaConnection) {
@@ -58,10 +59,13 @@ export class Strategy extends (EventEmitter as new() => StrategyEmitter) {
         this.name = options.name;
         this.defaultStrategy = options.default;
         this.selfCompleting = options.sc;
-        this.parameters = options.parameters.map((paramOpts) => DataAssemblyFactory.create(paramOpts, connection));
+        if (options.parameters) {
+            this.parameters = options.parameters
+                .map((paramOpts) => DataAssemblyFactory.create(paramOpts, connection) as WritableDataAssembly);
+        }
         if (options.processValuesIn) {
             this.processValuesIn = options.processValuesIn
-                .map((pvOptions) => DataAssemblyFactory.create(pvOptions, connection));
+                .map((pvOptions) => DataAssemblyFactory.create(pvOptions, connection) as WritableDataAssembly);
         }
         if (options.processValuesOut) {
             this.processValuesOut = options.processValuesOut

@@ -27,7 +27,7 @@ import {RecipeInterface, RecipeOptions, RecipeState} from '@p2olab/polaris-inter
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {v4} from 'uuid';
-import {catRecipe} from '../../config/logging';
+import {catRecipe} from '../../logging/logging';
 import {Module} from '../core/Module';
 import {Step} from './Step';
 import {Transition} from './Transition';

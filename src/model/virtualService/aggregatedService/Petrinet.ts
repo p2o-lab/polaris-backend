@@ -24,7 +24,7 @@
  */
 
 import {EventEmitter} from 'events';
-import {catRecipe} from '../../../config/logging';
+import {catRecipe} from '../../../logging/logging';
 import {Module} from '../../core/Module';
 import {PetrinetState, PetrinetStateOptions} from './PetrinetState';
 import {PetrinetTransition, PetrinetTransitionOptions} from './PetrinetTransition';

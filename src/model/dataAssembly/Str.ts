@@ -40,7 +40,7 @@ export class StrView extends DataAssembly {
 
     constructor(options, connection) {
         super(options, connection);
-        this.createDataItem(options, 'Text', 'read', 'string');
+        this.communication.Text = this.createDataItem('Text', 'read', 'string');
         this.type = 'string';
         this.readDataItem = this.communication.Text;
     }

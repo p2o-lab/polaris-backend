@@ -23,16 +23,14 @@
  * SOFTWARE.
  */
 
-import {ServiceCommand} from '@p2olab/polaris-interface';
+import {OperationMode, ServiceCommand, ServiceOptions, SourceMode} from '@p2olab/polaris-interface';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
 import * as parseJson from 'json-parse-better-errors';
-import {
-    isAutomaticState, isExtSource, isOffState, OpMode,
-    ServiceState
-} from '../../../src/model/core/enum';
+import {ServiceState} from '../../../src/model/core/enum';
 import {Module} from '../../../src/model/core/Module';
+import {OpcUaConnection} from '../../../src/model/core/OpcUaConnection';
 import {Service} from '../../../src/model/core/Service';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 import {TestServerService} from '../../../src/moduleTestServer/ModuleTestService';
@@ -56,7 +54,7 @@ describe('Service', () => {
         it('should fail with missing module', () => {
             expect(() => new Service(
                 {name: 'test', parameters: null, communication: null, strategies: null}, null, null)
-            ).to.throw('No module');
+            ).to.throw('No connection defined for creating data assembly');
         });
 
     });
@@ -68,6 +66,14 @@ describe('Service', () => {
         const module = new Module(moduleJson);
         const service = module.services[0];
         await expect(service.executeCommand(ServiceCommand.start)).to.be.rejectedWith('Module is not connected');
+    });
+
+    it('should create service from module test server json', () => {
+        const json =
+            parseJson(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8'), null, 60)
+                .modules[0].services[0];
+        const service = new Service(json, new OpcUaConnection(null, null), 'root');
+        expect(service.name).to.equal('Service1');
     });
 
     context('with ModuleTestServer', () => {
@@ -140,7 +146,7 @@ describe('Service', () => {
 
         it('should provide correct JSON', () => {
             expect(ServiceState[service.state]).to.equal('IDLE');
-            const result = service.getOverview();
+            const result = service.json();
             expect(result).to.have.property('status', 'IDLE');
         });
 
@@ -189,20 +195,20 @@ describe('Service', () => {
 
         it('waitForOpModeSpecificTest', async () => {
             testService.opMode.opMode = 0;
-            await service.waitForOpModeToPassSpecificTest(isOffState);
-            expect(service.serviceControl.getOpMode()).to.equal(0);
+            await service.serviceControl.waitForOpModeToPassSpecificTest(OperationMode.Offline);
+            expect(service.serviceControl.getOperationMode()).to.equal(OperationMode.Offline);
 
             service.setOperationMode();
 
-            await service.waitForOpModeToPassSpecificTest(isAutomaticState);
-            expect(service.serviceControl.getOpMode()).to.equal(OpMode.stateAutAct + OpMode.srcIntAct);
+            await service.serviceControl.waitForOpModeToPassSpecificTest(OperationMode.Automatic);
+            expect(service.serviceControl.getOperationMode()).to.equal(OperationMode.Automatic);
 
-            await service.waitForOpModeToPassSpecificTest(isExtSource);
-            expect(service.serviceControl.getOpMode()).to.equal(OpMode.stateAutAct);
+            await service.serviceControl.waitForSourceModeToPassSpecificTest(SourceMode.Manual);
+            expect(service.serviceControl.getSourceMode()).to.equal(SourceMode.Manual);
         });
 
         it('full service state cycle', async () => {
-            let result = service.getOverview();
+            let result = service.json();
             expect(result).to.have.property('status', 'IDLE');
             expect(result).to.have.property('controlEnable')
                 .to.deep.equal({
@@ -219,14 +225,12 @@ describe('Service', () => {
 
             expect(result).to.have.property('currentStrategy', 'Strategy 1');
             expect(result).to.have.property('name', 'Service1');
-            expect(result).to.have.property('opMode').to.deep.equal({
-                state: 'off',
-                source: undefined
-            });
+            expect(result).to.have.property('operationMode').to.equal('offline');
+            expect(result).to.have.property('sourceMode').to.equal('manual');
 
             await service.setOperationMode();
 
-            result = service.getOverview();
+            result = service.json();
             expect(result).to.have.property('status', 'IDLE');
             expect(result).to.have.property('controlEnable')
                 .to.deep.equal({
@@ -243,10 +247,9 @@ describe('Service', () => {
 
             expect(result).to.have.property('currentStrategy', 'Strategy 1');
             expect(result).to.have.property('name', 'Service1');
-            expect(result).to.have.property('opMode').to.deep.equal({
-                state: 'automatic',
-                source: 'external'
-            });
+            expect(result).to.have.property('operationMode').to.equal('automatic');
+            expect(result).to.have.property('sourceMode').to.equal('manual');
+
             expect(result.strategies[0].processValuesIn).to.have.length(1);
             expect(result.strategies[0].processValuesIn[0].value).to.equal(1);
             expect(result.strategies[0].processValuesOut).to.have.length(3);

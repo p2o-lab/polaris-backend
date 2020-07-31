@@ -24,7 +24,6 @@
  * SOFTWARE.
  */
 
-import {ParameterInterface} from '@p2olab/polaris-interface';
 import {OpcUaConnection} from '../core/OpcUaConnection';
 import {BaseDataAssemblyRuntime, DataAssembly} from './DataAssembly';
 import {OpcUaDataItem} from './DataItem';
@@ -41,7 +40,7 @@ export class AnaView extends ScaleSettingsDA(UnitDA(DataAssembly)) {
 
     constructor(options, connection: OpcUaConnection) {
         super(options, connection);
-        this.createDataItem(options, 'V', 'read');
+        this.communication.V = this.createDataItem('V', 'read');
         this.type = 'number';
         this.readDataItem = this.communication.V;
     }

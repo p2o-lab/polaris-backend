@@ -23,11 +23,10 @@
  * SOFTWARE.
  */
 
-import {OpcUaNodeOptions, ServiceControlOptions} from '@p2olab/polaris-interface';
+import {OpcUaNodeOptions, OperationMode, ServiceControlOptions, SourceMode} from '@p2olab/polaris-interface';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
-import {isAutomaticState, isManualState, isOffState, OpMode, opModetoJson} from '../../../src/model/core/enum';
 import {Module} from '../../../src/model/core/Module';
 import {OpcUaConnection} from '../../../src/model/core/OpcUaConnection';
 import {AdvAnaOp, AnaServParam, ExtAnaOp, ExtIntAnaOp} from '../../../src/model/dataAssembly/AnaOp';
@@ -40,8 +39,8 @@ import {DigMon} from '../../../src/model/dataAssembly/DigView';
 import {MonAnaDrv} from '../../../src/model/dataAssembly/Drv';
 import {ServiceControl} from '../../../src/model/dataAssembly/ServiceControl';
 import {StrView} from '../../../src/model/dataAssembly/Str';
+import {WritableDataAssembly} from '../../../src/model/dataAssembly/WritableDataAssembly';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
-import {TestServerVariable} from '../../../src/moduleTestServer/ModuleTestVariable';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -59,19 +58,17 @@ describe('DataAssembly', () => {
                     TagDescription: null,
                     TagName: {},
                     WQC: null,
-                    V: { value: 22 },
-                    VState0: { value: 'on'},
-                    VState1: { value: 'off'}
+                    V: {value: 22},
+                    VState0: {value: 'on'},
+                    VState1: {value: 'off'}
                 } as any
             }, new OpcUaConnection(null, null));
             expect(da1 instanceof DataAssembly).to.equal(true);
             expect(da1.toJson()).to.deep.equal({
                 name: 'xyz',
                 readonly: true,
-                requestedValue: undefined,
                 timestamp: undefined,
                 type: 'number',
-                unit: null,
                 value: undefined
             });
 
@@ -117,14 +114,60 @@ describe('DataAssembly', () => {
                     } as any,
                     interface_class: 'analogitem'
                 }, undefined)
-            ).to.throw('No module for data assembly');
+            ).to.throw('No connection defined for creating data assembly');
         });
 
         it('should fail without provided module', async () => {
             expect(() => DataAssemblyFactory.create(
                 {name: 'test', interface_class: 'none', communication: null}, null)
-            ).to.throw(/No module for data assembly/);
+            ).to.throw('No connection defined for creating data assembly');
 
+        });
+
+        it('should have correct createDataItem method', async () => {
+            const options = {
+                name: 'test', interface_class: 'DataAssembly', communication: {
+                    OSLevel: {
+                        namespace_index: 'CODESYSSPV3/3S/IecVarAccess',
+                        node_id: 'i=1',
+                        data_type: 'Float'
+                    },
+                    TagDescription: {
+                        namespace_index: 'CODESYSSPV3/3S/IecVarAccess',
+                        node_id: 'i=2',
+                        data_type: 'Float'
+                    },
+                    TagName: {
+                        namespace_index: 'CODESYSSPV3/3S/IecVarAccess',
+                        node_id: 'i=3',
+                        data_type: 'Float'
+                    },
+                    WQC: {
+                        namespace_index: 'CODESYSSPV3/3S/IecVarAccess',
+                        node_id: 'i=4',
+                        data_type: 'Float'
+                    },
+                    CurrentStrategy: {
+                        namespace_index: 'CODESYSSPV3/3S/IecVarAccess',
+                        node_id: 'i=5',
+                        data_type: 'Int'
+                    }
+                } as any
+            };
+            const da1 = new DataAssembly(options, new OpcUaConnection(null, null));
+            expect(da1.communication.WQC).to.not.equal(undefined);
+            expect(da1.communication.TagName).to.not.equal(undefined);
+
+            expect(da1.createDataItem('NotThere', 'read')).to.equal(undefined);
+            expect(da1.createDataItem(['notThere', 'neitherThere'], 'read')).to.equal(undefined);
+            expect(da1.createDataItem('TagName', 'read')).to.not.equal(undefined);
+            expect(da1.createDataItem(['notThere', 'TagName'], 'read')).to.not.equal(undefined);
+            expect(da1.createDataItem(['CurrentStrategy', 'TagName'], 'read'))
+                .to.have.property('nodeId', 'i=5');
+            expect(da1.createDataItem(['abc', 'CurrentStrategy', 'TagName'], 'read'))
+                .to.have.property('nodeId', 'i=5');
+
+            expect(da1.parsingErrors).to.have.lengthOf(2);
         });
 
         it('should create ServiceControl', async () => {
@@ -152,14 +195,14 @@ describe('DataAssembly', () => {
                 name: 'serviceControl1',
                 interface_class: 'ServiceControl',
                 communication: {
-                    OSLevel: { value: 0},
+                    OSLevel: {value: 0},
                     TagDescription: {value: 0},
                     WQC: {value: 0},
                     CommandMan: {value: 0},
                     CommandExt: {value: 0},
                     CommandEnable: {value: 0},
                     State: {value: 0},
-                    TagName: { value: 'a'},
+                    TagName: {value: 'a'},
                     CurrentStrategy: {value: 0},
                     StrategyInt: {value: 0},
                     StrategyExt: {value: 0},
@@ -167,7 +210,6 @@ describe('DataAssembly', () => {
                     OpMode: {value: 0}
                 } as ServiceControlOptions
             }, new OpcUaConnection(null, null)) as ServiceControl;
-            da1.checkExistenceOfAllDataItems();
         });
 
         it('should have false check for ServiceControl', async () => {
@@ -175,7 +217,7 @@ describe('DataAssembly', () => {
                 name: 'serviceControl1',
                 interface_class: 'ServiceControl',
                 communication: {
-                    OSLevel: { value: 0},
+                    OSLevel: {value: 0},
                     TagDescription: {value: 0},
                     WQC: {value: 0},
                     CommandMan: {value: 0},
@@ -183,7 +225,6 @@ describe('DataAssembly', () => {
                     CommandEnable: {value: 0},
                 } as ServiceControlOptions
             }, new OpcUaConnection(null, null)) as ServiceControl;
-            expect(() => da1.checkExistenceOfAllDataItems()).to.throw('No TagName variable found for generating');
         });
 
         it('should create AnaView', async () => {
@@ -284,19 +325,17 @@ describe('DataAssembly', () => {
                     TagDescription: null,
                     TagName: {},
                     WQC: null,
-                    V: { value: 22 },
-                    VState0: { value: 'on'},
-                    VState1: { value: 'off'}
+                    V: {value: 22},
+                    VState0: {value: 'on'},
+                    VState1: {value: 'off'}
                 } as any
             }, new OpcUaConnection(null, null));
             expect(da1 instanceof BinView).to.equal(true);
             expect(da1.toJson()).to.deep.equal({
                 name: 'binview1',
                 readonly: true,
-                requestedValue: undefined,
                 timestamp: undefined,
                 type: 'boolean',
-                unit: null,
                 value: true
             });
 
@@ -308,9 +347,9 @@ describe('DataAssembly', () => {
                     TagDescription: null,
                     TagName: {},
                     WQC: null,
-                    V: { value: 0 },
-                    VState0: { value: 'on'},
-                    VState1: { value: 'off'}
+                    V: {value: 0},
+                    VState0: {value: 'on'},
+                    VState1: {value: 'off'}
                 } as any
             }, new OpcUaConnection(null, null));
             expect(da2.toJson().value).to.equal(false);
@@ -335,10 +374,8 @@ describe('DataAssembly', () => {
             expect(da1.toJson()).to.deep.equal({
                 name: 'binmon1',
                 readonly: true,
-                requestedValue: undefined,
                 timestamp: undefined,
                 type: 'boolean',
-                unit: null,
                 value: true
             });
         });
@@ -362,7 +399,6 @@ describe('DataAssembly', () => {
             expect(da1.toJson()).to.deep.equal({
                 name: 'digmon1',
                 readonly: true,
-                requestedValue: undefined,
                 timestamp: undefined,
                 type: 'number',
                 unit: 'L',
@@ -416,11 +452,10 @@ describe('DataAssembly', () => {
             expect(da1 instanceof MonAnaDrv).to.equal(true);
             expect(da1.toJson()).to.deep.equal({
                 name: 'MonAnaDrv1',
-                readonly: true,
+                readonly: false,
                 requestedValue: undefined,
                 timestamp: undefined,
                 type: 'number',
-                unit: null,
                 value: 50,
             });
         });
@@ -498,14 +533,14 @@ describe('DataAssembly', () => {
             expect(da.writeDataItem.value).to.equal(12);
         }).timeout(5000);
 
-        it('should set continous value', async () => {
+        it('should set continuous value', async () => {
             const daModule = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString())
                 .modules[0];
             const module = new Module(daModule);
             await module.connect();
             moduleServer.startSimulation();
 
-            const da = module.services[0].strategies[0].parameters[0];
+            const da = module.services[0].strategies[0].parameters[0] as WritableDataAssembly;
             const inputDa = module.variables[0];
             await da.subscribe();
             await inputDa.subscribe();
@@ -522,6 +557,52 @@ describe('DataAssembly', () => {
             expect(da.getValue()).to.equal(11);
         }).timeout(5000);
 
+        it('should create ServiceControl old', async () => {
+            const daJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString())
+                .modules[0].services[0];
+            const da: ServiceControl = DataAssemblyFactory.create(
+                {...daJson, interface_class: 'ServiceControl'} as any, connection) as ServiceControl;
+            expect(da.classicOpMode).to.equal(true);
+
+            await da.subscribe();
+            expect(da.name).to.equal('Service1');
+            expect(da instanceof ServiceControl).to.equal(true);
+
+            expect(da.getOperationMode()).to.equal(OperationMode.Offline);
+
+            await da.setToManualOperationMode();
+            expect(da.getOperationMode()).to.equal(OperationMode.Operator);
+
+            await da.writeOpMode(OperationMode.Offline);
+            await da.waitForOpModeToPassSpecificTest(OperationMode.Offline);
+
+            await da.setToAutomaticOperationMode();
+            expect(da.getOperationMode()).to.equal(OperationMode.Automatic);
+        }).timeout(8000);
+
+        it('should create ServiceControl new', async () => {
+            const daJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0_2.json').toString())
+                .modules[0].services[0];
+            const da: ServiceControl = DataAssemblyFactory.create(
+                {...daJson, interface_class: 'ServiceControl'} as any, connection) as ServiceControl;
+            expect(da.classicOpMode).to.equal(false);
+
+            await da.subscribe();
+            expect(da.name).to.equal('Service1');
+            expect(da instanceof ServiceControl).to.equal(true);
+
+            expect(da.getOperationMode()).to.equal(OperationMode.Offline);
+
+            await da.setToManualOperationMode();
+            expect(da.getOperationMode()).to.equal(OperationMode.Operator);
+
+            await da.writeOpMode(OperationMode.Offline);
+            await da.waitForOpModeToPassSpecificTest(OperationMode.Offline);
+
+            await da.setToAutomaticOperationMode();
+            expect(da.getOperationMode()).to.equal(OperationMode.Automatic);
+        }).timeout(8000);
+
         it('should create ExtIntAnaOp', async () => {
             const daJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString())
                 .modules[0].services[0].strategies[0].parameters[0];
@@ -532,21 +613,24 @@ describe('DataAssembly', () => {
             expect(da instanceof ExtAnaOp).to.equal(true);
             expect(da instanceof ExtIntAnaOp).to.equal(true);
             expect(da instanceof AdvAnaOp).to.equal(false);
-            expect(da.communication.OpMode.value).to.equal(0);
 
-            await da.waitForOpModeToPassSpecificTest(isOffState);
-            let opMode = da.getOpMode();
-            expect(opModetoJson(opMode)).to.deep.equal({state: 'off', source: undefined});
+            await da.waitForOpModeToPassSpecificTest(OperationMode.Offline);
+            expect(da.getOperationMode()).to.equal(OperationMode.Offline);
+            expect(da.getOperationMode()).to.equal('offline');
 
-            moduleServer.services[0].factor.opMode.opMode = OpMode.stateManAct;
-            await da.waitForOpModeToPassSpecificTest(isManualState);
-            opMode = da.getOpMode();
-            expect(opModetoJson(opMode)).to.deep.equal({state: 'manual', source: undefined});
+            expect(da.classicOpMode).to.equal(true);
+            await da.writeOpMode(OperationMode.Operator);
+            await da.waitForOpModeToPassSpecificTest(OperationMode.Operator);
+            expect(da.getOperationMode()).to.equal('operator');
 
-            moduleServer.services[0].factor.opMode.opMode = OpMode.stateAutAct;
-            await da.waitForOpModeToPassSpecificTest(isAutomaticState);
-            opMode = da.getOpMode();
-            expect(opModetoJson(opMode)).to.deep.equal({state: 'automatic', source: 'external'});
+            da.setToAutomaticOperationMode();
+            await da.waitForOpModeToPassSpecificTest(OperationMode.Automatic);
+            expect(da.getOperationMode()).to.equal('automatic');
+
+            da.setToExternalSourceMode();
+            await da.waitForSourceModeToPassSpecificTest(SourceMode.Manual);
+            expect(da.getSourceMode()).to.equal(SourceMode.Manual);
+            expect(da.getSourceMode()).to.equal('manual');
 
             if (da instanceof ExtIntAnaOp) {
                 expect(da.communication.VOut).to.have.property('nodeId', 'Service1.Factor.V');
@@ -560,7 +644,13 @@ describe('DataAssembly', () => {
                 expect(json).to.have.property('max');
                 expect(json).to.have.property('unit');
             }
-        }).timeout(5000);
+
+            await da.setToManualOperationMode();
+            expect(da.getOperationMode()).to.equal(OperationMode.Operator);
+
+            await da.setToAutomaticOperationMode();
+            expect(da.getOperationMode()).to.equal(OperationMode.Automatic);
+        }).timeout(8000);
 
         it('should create StrView', async () => {
             const daJson = {

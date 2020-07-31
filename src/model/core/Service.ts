@@ -24,23 +24,21 @@
  */
 
 import {
-    ControlEnableInterface,
-    OpModeInterface,
+    ControlEnableInterface, OperationMode,
     ParameterOptions,
     ServiceCommand,
     ServiceInterface,
-    ServiceOptions
+    ServiceOptions, SourceMode
 } from '@p2olab/polaris-interface';
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Category} from 'typescript-logging';
-import {catService} from '../../config/logging';
-import {DataAssembly} from '../dataAssembly/DataAssembly';
+import {catService} from '../../logging/logging';
 import {DataAssemblyFactory} from '../dataAssembly/DataAssemblyFactory';
-import {OpcUaDataItem} from '../dataAssembly/DataItem';
 import {ServiceControl} from '../dataAssembly/ServiceControl';
+import {WritableDataAssembly} from '../dataAssembly/WritableDataAssembly';
 import {BaseService, BaseServiceEvents} from './BaseService';
-import {controlEnableToJson, OpMode, opModetoJson, ServiceControlEnable, ServiceMtpCommand, ServiceState} from './enum';
+import {controlEnableToJson, ServiceControlEnable, ServiceMtpCommand, ServiceState} from './enum';
 import {Module} from './Module';
 import {OpcUaConnection} from './OpcUaConnection';
 import {Strategy} from './Strategy';
@@ -49,7 +47,10 @@ import {Strategy} from './Strategy';
  * Events emitted by [[Service]]
  */
 interface ServiceEvents extends BaseServiceEvents {
-    opMode: OpModeInterface;
+    opMode: {
+        operationMode: OperationMode,
+        sourceMode: SourceMode
+    };
 }
 
 type ServiceEmitter = StrictEventEmitter<EventEmitter, ServiceEvents>;
@@ -84,10 +85,8 @@ export class Service extends BaseService {
 
     public readonly eventEmitter: ServiceEmitter;
     public readonly strategies: Strategy[] = [];
-    public readonly parameters: DataAssembly[] = [];
+    public readonly parameters: WritableDataAssembly[] = [];
     public readonly connection: OpcUaConnection;
-    // use ControlExt (true) or ControlOp (false)
-    public readonly automaticMode: boolean;
     public readonly serviceControl: ServiceControl;
     private readonly logger: Category;
     private serviceParametersEventEmitters: EventEmitter[];
@@ -100,8 +99,6 @@ export class Service extends BaseService {
         if (!serviceOptions.name) {
             throw new Error('No service name provided');
         }
-
-        this.automaticMode = true;
         this.connection = connection;
         this.serviceParametersEventEmitters = [];
 
@@ -111,14 +108,13 @@ export class Service extends BaseService {
         this.serviceControl = new ServiceControl(
             {name: this._name, interface_class: 'ServiceControl', communication: serviceOptions.communication},
             connection);
-        this.serviceControl.checkExistenceOfAllDataItems();
 
         this.strategies = serviceOptions.strategies
             .map((option) => new Strategy(option, connection));
 
         if (serviceOptions.parameters) {
             this.parameters = serviceOptions.parameters
-                .map((options) => DataAssemblyFactory.create(options, connection));
+                .map((options) => DataAssemblyFactory.create(options, connection) as WritableDataAssembly);
         }
     }
 
@@ -147,8 +143,12 @@ export class Service extends BaseService {
             })
             .on('OpMode', () => {
                 this.logger.debug(`[${this.qualifiedName}] Current OpMode changed: ` +
-                    `${opModetoJson(this.serviceControl.getOpMode())}`);
-                this.eventEmitter.emit('opMode', opModetoJson(this.serviceControl.getOpMode()));
+                    `${this.serviceControl.getOperationMode()}`);
+                this.eventEmitter.emit('opMode',
+                    {
+                        operationMode: this.serviceControl.getOperationMode(),
+                        sourceMode: this.serviceControl.getSourceMode()
+                    });
             })
             .on('State', () => {
                 this.logger.debug(`[${this.qualifiedName}] State changed: ` +
@@ -190,11 +190,12 @@ export class Service extends BaseService {
     /**
      * get JSON overview about service and its state, opMode, strategies, parameters and controlEnable
      */
-    public getOverview(): ServiceInterface {
+    public json(): ServiceInterface {
         const currentStrategy = this.getCurrentStrategy();
         return {
             name: this.name,
-            opMode: opModetoJson(this.serviceControl.getOpMode()),
+            operationMode: this.serviceControl.getOperationMode(),
+            sourceMode: this.serviceControl.getSourceMode(),
             status: ServiceState[this.state],
             strategies: this.strategies.map((strategy) => strategy.toJson()),
             currentStrategy: currentStrategy ? currentStrategy.name : null,
@@ -204,29 +205,6 @@ export class Service extends BaseService {
                 (new Date().getTime() - this.lastStatusChange.getTime()) / 1000 :
                 undefined
         };
-    }
-
-    /**
-     * Set strategy and strategy parameters and execute a command for service on PEA
-     * @param {ServiceCommand} command  command to be executed on PEA
-     * @param {Strategy}    strategy  strategy to be set on PEA
-     * @param {ParameterOptions[]} parameters     parameters to be set on PEA
-     * @returns {Promise<void>}
-     */
-    public async executeCommandWithStrategyAndParameter(command: ServiceCommand,
-                                                        strategy: Strategy,
-                                                        parameters: ParameterOptions[]): Promise<void> {
-        if (!this.connection.isConnected()) {
-            throw new Error('Module is not connected');
-        }
-        this.logger.info(`[${this.qualifiedName}] Execute ${command} (${strategy ? strategy.name : ''})`);
-        if (strategy) {
-            await this.setStrategy(strategy);
-        }
-        if (parameters) {
-            await this.setParameters(parameters);
-        }
-        await this.executeCommand(command);
     }
 
     // overridden method from Base Service
@@ -290,9 +268,7 @@ export class Service extends BaseService {
 
         // first set opMode and then set strategy
         await this.setOperationMode();
-        const node = this.automaticMode ?
-            this.serviceControl.communication.StrategyExt : this.serviceControl.communication.StrategyMan;
-        await node.write(strategy.id);
+        await this.serviceControl.communication.StrategyExt.write(strategy.id);
     }
 
     public getStrategyByNameOrDefault(strategyName: string) {
@@ -312,19 +288,12 @@ export class Service extends BaseService {
         });
     }
 
-    public setOperationMode(): Promise<void> {
-        if (this.automaticMode) {
-            return this.serviceControl.setToAutomaticOperationMode();
-        } else {
-            return this.serviceControl.setToManualOperationMode();
-        }
+    public async setOperationMode() {
+        await this.serviceControl.setToAutomaticOperationMode();
+        await this.serviceControl.setToExternalSourceMode();
     }
 
-    public async waitForOpModeToPassSpecificTest(testFunction: (opMode: OpMode) => boolean) {
-        return this.serviceControl.waitForOpModeToPassSpecificTest(testFunction);
-    }
-
-    public findInputParameter(parameterName: string): DataAssembly {
+    public findInputParameter(parameterName: string): WritableDataAssembly {
         const parameterList = [].concat(
             this.parameters,
             this.getCurrentStrategy().parameters,
@@ -345,10 +314,7 @@ export class Service extends BaseService {
         this.logger.debug(`[${this.qualifiedName}] Send command ${ServiceMtpCommand[command]}`);
         await this.setOperationMode();
 
-        const node = this.automaticMode ?
-            this.serviceControl.communication.CommandExt :
-            this.serviceControl.communication.CommandMan;
-        await node.write(command);
+        await this.serviceControl.communication.CommandExt.write(command);
         this.logger.trace(`[${this.qualifiedName}] Command ${ServiceMtpCommand[command]} written`);
     }
 

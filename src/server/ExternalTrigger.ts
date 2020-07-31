@@ -26,7 +26,7 @@
 import {AttributeIds, NodeId, resolveNodeId} from 'node-opcua';
 import {ClientSession, ClientSubscription, OPCUAClient,
     TimestampsToReturn} from 'node-opcua-client';
-import {catOpc} from '../config/logging';
+import {catOpc} from '../logging/logging';
 
 export class ExternalTrigger {
     private endpoint: string;

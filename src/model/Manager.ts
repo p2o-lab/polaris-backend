@@ -31,10 +31,10 @@ import {
 } from '@p2olab/polaris-interface';
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
-import {catManager} from '../config/logging';
 import {ServiceLogEntry} from '../logging/archive';
+import {catManager} from '../logging/logging';
 import {ServiceState} from './core/enum';
-import {Module} from './core/Module';
+import {Module, ParameterChange} from './core/Module';
 import {Service} from './core/Service';
 import {Player} from './recipe/Player';
 import {Recipe} from './recipe/Recipe';
@@ -53,7 +53,7 @@ interface ManagerEvents {
 
 type ManagerEmitter = StrictEventEmitter<EventEmitter, ManagerEvents>;
 
-interface LoadModuleOptions {
+export interface LoadModuleOptions {
     module?: ModuleOptions;
     modules?: ModuleOptions[];
     subplants?: Array<{ modules: ModuleOptions[] }>;
@@ -170,28 +170,20 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
                     this.emit('notify', { message: 'module', module: module.json()});
                 })
                 .on('controlEnable', ({service}) => {
-                    this.emit('notify', {message: 'service', moduleId: module.id, service: service.getOverview()});
+                    this.emit('notify', {message: 'service', moduleId: module.id, service: service.json()});
                 })
-                .on('variableChanged', (data) => {
-                    const logEntry: VariableChange = {
-                        timestampPfe: data.timestampPfe,
-                        timestampModule: data.timestampModule,
-                        module: module.id,
-                        value: data.value,
-                        variable: data.variable,
-                        unit: data.unit
-                    };
-                    this.variableArchive.push(logEntry);
+                .on('variableChanged', (variableChange: VariableChange) => {
+                    this.variableArchive.push(variableChange);
                     if (this.player.currentRecipeRun) {
-                        this.player.currentRecipeRun.variableLog.push(logEntry);
+                        this.player.currentRecipeRun.variableLog.push(variableChange);
                     }
-                    this.emit('notify', {message: 'variable', variable: logEntry});
+                    this.emit('notify', {message: 'variable', variable: variableChange});
                 })
-                .on('parameterChanged', (parameterChange) => {
+                .on('parameterChanged', (parameterChange: ParameterChange) => {
                     this.emit('notify', {
                         message: 'service',
                         moduleId: module.id,
-                        service: parameterChange.service.getOverview()
+                        service: parameterChange.service.json()
                     });
                 })
                 .on('commandExecuted', (data) => {
@@ -221,10 +213,10 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
                     if (this.player.currentRecipeRun) {
                         this.player.currentRecipeRun.serviceLog.push(logEntry);
                     }
-                    this.emit('notify', {message: 'service', moduleId: module.id, service: service.getOverview()});
+                    this.emit('notify', {message: 'service', moduleId: module.id, service: service.json()});
                 })
                 .on('opModeChanged', ({service}) => {
-                    this.emit('notify', {message: 'service', moduleId: module.id, service: service.getOverview()});
+                    this.emit('notify', {message: 'service', moduleId: module.id, service: service.json()});
                 })
                 .on('serviceCompleted', (service: Service) => {
                     this.performAutoReset(service);
@@ -325,7 +317,7 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
     }
 
     public instantiateVirtualService(options: VirtualServiceOptions) {
-        const virtualService = VirtualServiceFactory.create(options);
+        const virtualService = VirtualServiceFactory.create(options, this.modules);
         catManager.info(`instantiated virtual Service ${virtualService.name}`);
         virtualService.eventEmitter
             .on('controlEnable', () => {
@@ -363,6 +355,7 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
                 }
                 this.emit('notify', {message: 'virtualService', virtualService: virtualService.json()});
             });
+        this.emit('notify', {message: 'virtualService', virtualService: virtualService.json()});
         this.virtualServices.push(virtualService);
     }
 
