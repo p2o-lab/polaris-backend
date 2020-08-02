@@ -27,25 +27,25 @@ import {ParameterInterface, StrategyInterface, StrategyOptions} from '@p2olab/po
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Category} from 'typescript-logging';
-import {catStrategy} from '../../logging/logging';
+import {catProcedure} from '../../logging/logging';
 import {DataAssembly} from '../dataAssembly/DataAssembly';
 import {DataAssemblyFactory} from '../dataAssembly/DataAssemblyFactory';
 import {WritableDataAssembly} from '../dataAssembly/WritableDataAssembly';
 import {OpcUaConnection} from './OpcUaConnection';
 
-export interface StrategyEvents {
+export interface ProcedureEvents {
     parameterChanged: {
         parameter: ParameterInterface;
         parameterType: 'parameter' | 'processValueIn' | 'processValueOut' | 'reportValue'
     };
 }
 
-type StrategyEmitter = StrictEventEmitter<EventEmitter, StrategyEvents>;
+type ProcedureEmitter = StrictEventEmitter<EventEmitter, ProcedureEvents>;
 
-export class Strategy extends (EventEmitter as new() => StrategyEmitter) {
+export class Procedure extends (EventEmitter as new() => ProcedureEmitter) {
     public readonly id: string;
     public readonly name: string;
-    public readonly defaultStrategy: boolean;
+    public readonly defaultProcedure: boolean;
     public readonly selfCompleting: boolean;
     public readonly processValuesIn: WritableDataAssembly[] = [];
     public readonly processValuesOut: DataAssembly[] = [];
@@ -57,7 +57,7 @@ export class Strategy extends (EventEmitter as new() => StrategyEmitter) {
         super();
         this.id = options.id;
         this.name = options.name;
-        this.defaultStrategy = options.default;
+        this.defaultProcedure = options.default;
         this.selfCompleting = options.sc;
         if (options.parameters) {
             this.parameters = options.parameters
@@ -75,11 +75,11 @@ export class Strategy extends (EventEmitter as new() => StrategyEmitter) {
             this.reportParameters = options.reportParameters
                 .map((pvOptions) => DataAssemblyFactory.create(pvOptions, connection));
         }
-        this.logger = catStrategy;
+        this.logger = catProcedure;
     }
 
-    public async subscribe(): Promise<Strategy> {
-        this.logger.debug(`Subscribe to strategy ${this.name}: ${JSON.stringify(this.parameters.map((p) => p.name))}`);
+    public async subscribe(): Promise<Procedure> {
+        this.logger.debug(`Subscribe to procedure ${this.name}: ${JSON.stringify(this.parameters.map((p) => p.name))}`);
         await Promise.all([
             this.parameters.map((param) => {
                 param.on('changed',
@@ -102,7 +102,7 @@ export class Strategy extends (EventEmitter as new() => StrategyEmitter) {
                 return param.subscribe();
             })
         ]);
-        this.logger.debug(`Subscribed to strategy ${this.name}: ${JSON.stringify(this.parameters.map((p) => p.name))}`);
+        this.logger.debug(`Subscribed to procedure ${this.name}`);
         return this;
     }
 
@@ -117,7 +117,7 @@ export class Strategy extends (EventEmitter as new() => StrategyEmitter) {
         return {
             id: this.id,
             name: this.name,
-            default: this.defaultStrategy,
+            default: this.defaultProcedure,
             sc: this.selfCompleting,
             parameters: this.parameters.map((param) => param.toJson()),
             processValuesIn: this.processValuesIn.map((param) => param.toJson()),

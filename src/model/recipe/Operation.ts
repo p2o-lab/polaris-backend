@@ -29,8 +29,8 @@ import * as delay from 'timeout-as-promise';
 import {catOperation} from '../../logging/logging';
 import {BaseService} from '../core/BaseService';
 import {Module} from '../core/Module';
+import {Procedure} from '../core/Procedure';
 import {Service} from '../core/Service';
-import {Strategy} from '../core/Strategy';
 
 /** Operation used in a [[Step]] of a [[Recipe]] or [[PetrinetState]]
  *
@@ -42,7 +42,7 @@ export class Operation {
 
     public module: Module;
     public service: BaseService;
-    public strategy: Strategy;
+    public procedure: Procedure;
     public command: ServiceCommand;
     public parameterOptions: ParameterOptions[];
     public readonly emitter: EventEmitter;
@@ -69,12 +69,12 @@ export class Operation {
         this.service = this.module.getService(options.service);
         if (this.service instanceof Service) {
             if (options.strategy) {
-                this.strategy = this.service.strategies.find((strategy) => strategy.name === options.strategy);
+                this.procedure = this.service.procedures.find((procedure) => procedure.name === options.strategy);
             } else {
-                this.strategy = this.service.getDefaultStrategy();
+                this.procedure = this.service.getDefaultProcedure();
             }
-            if (!this.strategy) {
-                throw new Error(`Strategy '${options.strategy}' could not be found in ${this.service.name}.`);
+            if (!this.procedure) {
+                throw new Error(`Procedure '${options.strategy}' could not be found in ${this.service.name}.`);
             }
         }
         if (options.command) {
@@ -98,9 +98,9 @@ export class Operation {
         this.state = 'executing';
         while (this.state === 'executing') {
             catOperation.info(`Perform operation ${ this.module.id }.${ this.service.name }.${ this.command }() ` +
-                `(Strategy: ${ this.strategy ? this.strategy.name : '' })`);
-            if (this.service instanceof Service && this.strategy) {
-                await this.service.setStrategy(this.strategy);
+                `(Procedure: ${ this.procedure ? this.procedure.name : '' })`);
+            if (this.service instanceof Service && this.procedure) {
+                await this.service.setProcedure(this.procedure);
             }
             if (this.parameterOptions) {
                 await this.service.setParameters(this.parameterOptions);
@@ -138,7 +138,7 @@ export class Operation {
         return {
             module: this.module.id,
             service: this.service.name,
-            strategy: this.strategy ? this.strategy.name : undefined,
+            strategy: this.procedure ? this.procedure.name : undefined,
             command: this.command,
             parameter: this.parameterOptions,
             state: this.state

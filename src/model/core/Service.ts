@@ -41,7 +41,7 @@ import {BaseService, BaseServiceEvents} from './BaseService';
 import {controlEnableToJson, ServiceControlEnable, ServiceMtpCommand, ServiceState} from './enum';
 import {Module} from './Module';
 import {OpcUaConnection} from './OpcUaConnection';
-import {Strategy} from './Strategy';
+import {Procedure} from './Procedure';
 
 /**
  * Events emitted by [[Service]]
@@ -79,12 +79,12 @@ export class Service extends BaseService {
         return this.serviceControl.communication.State.timestamp;
     }
 
-    public get currentStrategy() {
+    public get currentProcedure() {
         return this.serviceControl.communication.CurrentStrategy.value;
     }
 
     public readonly eventEmitter: ServiceEmitter;
-    public readonly strategies: Strategy[] = [];
+    public readonly procedures: Procedure[] = [];
     public readonly parameters: WritableDataAssembly[] = [];
     public readonly connection: OpcUaConnection;
     public readonly serviceControl: ServiceControl;
@@ -109,8 +109,8 @@ export class Service extends BaseService {
             {name: this._name, interface_class: 'ServiceControl', communication: serviceOptions.communication},
             connection);
 
-        this.strategies = serviceOptions.strategies
-            .map((option) => new Strategy(option, connection));
+        this.procedures = serviceOptions.strategies
+            .map((option) => new Procedure(option, connection));
 
         if (serviceOptions.parameters) {
             this.parameters = serviceOptions.parameters
@@ -118,19 +118,19 @@ export class Service extends BaseService {
         }
     }
 
-    public getDefaultStrategy(): Strategy {
-        return this.strategies.find((strategy) => strategy.defaultStrategy);
+    public getDefaultProcedure(): Procedure {
+        return this.procedures.find((procedure) => procedure.defaultProcedure);
     }
 
     /**
-     * Get current strategy from internal memory.
+     * Get current procedure from internal memory.
      */
-    public getCurrentStrategy(): Strategy {
-        return this.strategies.find((strat) => parseInt(strat.id, 10) === this.currentStrategy);
+    public getCurrentProcedure(): Procedure {
+        return this.procedures.find((proc) => parseInt(proc.id, 10) === this.currentProcedure);
     }
 
     /**
-     * Notify about changes in to serviceControl, strategies, configuration parameters and process values
+     * Notify about changes in to serviceControl, procedures, configuration parameters and process values
      * via events and log messages
      */
     public async subscribeToService(): Promise<ServiceEmitter> {
@@ -167,15 +167,15 @@ export class Service extends BaseService {
             this.parameters.map((param) => {
                 return param.subscribe();
             }),
-            this.strategies.map((strategy) => {
-                strategy.on('parameterChanged', (data) => {
+            this.procedures.map((procedure) => {
+                procedure.on('parameterChanged', (data) => {
                     this.eventEmitter.emit('parameterChanged', {
-                        strategy,
+                        procedure,
                         parameter: data.parameter,
                         parameterType: data.parameterType
                     });
                 });
-                return strategy.subscribe();
+                return procedure.subscribe();
             }));
         await Promise.all(tasks);
         return this.eventEmitter;
@@ -184,21 +184,21 @@ export class Service extends BaseService {
     public unsubscribe() {
         this.serviceControl.unsubscribe();
         this.parameters.forEach((param) => param.unsubscribe());
-        this.strategies.forEach((strategy) => strategy.unsubscribe());
+        this.procedures.forEach((procedure) => procedure.unsubscribe());
     }
 
     /**
-     * get JSON overview about service and its state, opMode, strategies, parameters and controlEnable
+     * get JSON overview about service and its state, opMode, procedures, parameters and controlEnable
      */
     public json(): ServiceInterface {
-        const currentStrategy = this.getCurrentStrategy();
+        const currentProcedure = this.getCurrentProcedure();
         return {
             name: this.name,
             operationMode: this.serviceControl.getOperationMode(),
             sourceMode: this.serviceControl.getSourceMode(),
             status: ServiceState[this.state],
-            strategies: this.strategies.map((strategy) => strategy.toJson()),
-            currentStrategy: currentStrategy ? currentStrategy.name : null,
+            strategies: this.procedures.map((procedure) => procedure.toJson()),
+            currentStrategy: currentProcedure ? currentProcedure.name : null,
             parameters: this.parameters.map((param) => param.toJson()),
             controlEnable: this.controlEnable,
             lastChange: this.lastStatusChange ?
@@ -213,11 +213,11 @@ export class Service extends BaseService {
             throw new Error('Module is not connected');
         }
         await super.executeCommand(command);
-        const currentStrategy = this.getCurrentStrategy();
+        const currentProcedure = this.getCurrentProcedure();
         this.eventEmitter.emit('commandExecuted', {
-            strategy: currentStrategy,
+            procedure: currentProcedure,
             command: command,
-            parameter: currentStrategy.parameters.map((param) => param.toJson())
+            parameter: currentProcedure.parameters.map((param) => param.toJson())
         });
         this.logger.info(`[${this.qualifiedName}] ${command} executed`);
         }
@@ -258,27 +258,27 @@ export class Service extends BaseService {
         return this.sendCommand(ServiceMtpCommand.RESUME);
     }
 
-    /** Set strategy
-     * Use default strategy if strategy is omitted
+    /** Set procedure
+     * Use default procedure if procedure is omitted
      * @returns {Promise<void>}
      */
 
-    public async setStrategy(strategy: Strategy): Promise<void> {
-        this.logger.debug(`[${this.qualifiedName}] set strategy: ${strategy.name}`);
+    public async setProcedure(procedure: Procedure): Promise<void> {
+        this.logger.debug(`[${this.qualifiedName}] set procedure: ${procedure.name}`);
 
-        // first set opMode and then set strategy
+        // first set opMode and then set procedure
         await this.setOperationMode();
-        await this.serviceControl.communication.StrategyExt.write(strategy.id);
+        await this.serviceControl.communication.StrategyExt.write(procedure.id);
     }
 
-    public getStrategyByNameOrDefault(strategyName: string) {
-        let strategy: Strategy;
-        if (!strategyName) {
-            strategy = this.getDefaultStrategy();
+    public getProcedureByNameOrDefault(procedureName: string) {
+        let procedure: Procedure;
+        if (!procedureName) {
+            procedure = this.getDefaultProcedure();
         } else {
-            strategy = this.strategies.find((strati) => strati.name === strategyName);
+            procedure = this.procedures.find((proc) => proc.name === procedureName);
         }
-        return strategy;
+        return procedure;
     }
 
     public async setParameters(parameterOptions: ParameterOptions[], modules: Module[] = []) {
@@ -296,8 +296,8 @@ export class Service extends BaseService {
     public findInputParameter(parameterName: string): WritableDataAssembly {
         const parameterList = [].concat(
             this.parameters,
-            this.getCurrentStrategy().parameters,
-            this.getCurrentStrategy().processValuesIn
+            this.getCurrentProcedure().parameters,
+            this.getCurrentProcedure().processValuesIn
         );
         return parameterList.find((obj) => (obj.name === parameterName));
     }

@@ -29,7 +29,7 @@ export interface ServiceLogEntry {
     module: string;
     service: string;
     state?: string;
-    strategy?: string;
+    procedure?: string;
     command?: string;
     parameter?: any[];
 }

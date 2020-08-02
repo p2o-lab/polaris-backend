@@ -46,8 +46,8 @@ serviceRouter.post('/:moduleId/service/:serviceName', asyncHandler(async (req: R
     const manager: Manager = req.app.get('manager');
     const service = manager.getService(req.params.moduleId, req.params.serviceName);
     if (req.body.strategy) {
-        const strategy = service.getStrategyByNameOrDefault(req.body.strategy);
-        await service.setStrategy(strategy);
+        const procedure = service.getProcedureByNameOrDefault(req.body.strategy);
+        await service.setProcedure(procedure);
     }
     if (req.body.parameters) {
         await service.setParameters(req.body.parameters, manager.modules);
@@ -70,8 +70,8 @@ serviceRouter.post('/:moduleId/service/:serviceName/:command', asyncHandler(asyn
     const manager: Manager = req.app.get('manager');
     const service = manager.getService(req.params.moduleId, req.params.serviceName);
     if (req.body.strategy) {
-        const strategy = service.getStrategyByNameOrDefault(req.body.strategy);
-        await service.setStrategy(strategy);
+        const procedure = service.getProcedureByNameOrDefault(req.body.strategy);
+        await service.setProcedure(procedure);
     }
     if (req.body.parameters) {
         await service.setParameters(req.body.parameters, manager.modules);

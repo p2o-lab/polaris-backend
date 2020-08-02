@@ -42,12 +42,12 @@ import {DataItemEmitter} from '../dataAssembly/DataItem';
 import {ServiceState} from './enum';
 import {OpcUaConnection} from './OpcUaConnection';
 import {Service} from './Service';
-import {Strategy} from './Strategy';
+import {Procedure} from './Procedure';
 
 export interface ParameterChange {
     timestampModule: Date;
     service: Service;
-    strategy: string;
+    procedure: string;
     parameter: string;
     value: any;
     unit: string;
@@ -108,7 +108,7 @@ interface ModuleEvents {
      */
     commandExecuted: {
         service: Service,
-        strategy: Strategy,
+        procedure: Procedure,
         command: ServiceCommand,
         parameter: ParameterInterface[]
     };
@@ -322,7 +322,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
                 .on('commandExecuted', (data) => {
                     this.emit('commandExecuted', {
                         service,
-                        strategy: data.strategy,
+                        procedure: data.procedure,
                         command: data.command,
                         parameter: data.parameter
                     });
@@ -349,11 +349,11 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
                 })
                 .on('parameterChanged', (data) => {
                     this.logger.debug(`[${this.id}] parameter changed: ` +
-                        `${data.strategy.name}.${data.parameter} = ${data.parameter.value}`);
+                        `${data.procedure.name}.${data.parameter} = ${data.parameter.value}`);
                     const entry: ParameterChange = {
                         timestampModule: data.parameter.timestamp,
                         service: service,
-                        strategy: data.strategy.id,
+                        procedure: data.procedure.id,
                         parameter: data.parameter.name,
                         value: data.parameter.value,
                         unit: data.parameter.unit,

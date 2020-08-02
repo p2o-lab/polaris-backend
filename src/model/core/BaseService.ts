@@ -38,7 +38,7 @@ import {catService} from '../../logging/logging';
 import {Parameter} from '../recipe/Parameter';
 import {ServiceState} from './enum';
 import {Module} from './Module';
-import {Strategy} from './Strategy';
+import {Procedure} from './Procedure';
 
 /**
  * Events emitted by [[BaseService]]
@@ -59,14 +59,14 @@ export interface BaseServiceEvents {
      * @event commandExecuted
      */
     commandExecuted: {
-        strategy: Strategy,
+        procedure: Procedure,
         command: ServiceCommand,
         parameter: ParameterInterface[],
         scope?: any[]
     };
 
     parameterChanged: {
-        strategy?: Strategy;
+        procedure?: Procedure;
         parameter: ParameterInterface;
         parameterType: 'parameter' | 'processValueIn' | 'processValueOut' | 'reportValue'
     };

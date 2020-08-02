@@ -77,7 +77,7 @@ describe('Module', () => {
             expect(module.variables[0].communication.WQC.listenerCount('changed')).to.equal(1);
             expect(module.services[0].eventEmitter.listenerCount('parameterChanged')).to.equal(1);
 
-            const errorMsg = module.services[0].strategies[0].processValuesOut[0] as StrView;
+            const errorMsg = module.services[0].procedures[0].processValuesOut[0] as StrView;
             expect(errorMsg.communication.WQC.listenerCount('changed')).to.equal(1);
             expect(errorMsg.communication.Text.listenerCount('changed')).to.equal(1);
 

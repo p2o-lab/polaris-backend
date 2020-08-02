@@ -88,23 +88,23 @@ describe('Service', () => {
             service = module.services[0];
         });
 
-        it('should get default strategy', () => {
-            const strategy = service.getDefaultStrategy();
-            expect(strategy.name).to.equal('Strategy 1');
+        it('should get default procedure', () => {
+            const procedure = service.getDefaultProcedure();
+            expect(procedure.name).to.equal('Strategy 1');
         });
 
-        it('should find strategy', () => {
-            const strategy = service.getStrategyByNameOrDefault('Strategy 1');
-            expect(strategy.name).to.equal('Strategy 1');
+        it('should find procedure', () => {
+            const procedure = service.getProcedureByNameOrDefault('Strategy 1');
+            expect(procedure.name).to.equal('Strategy 1');
         });
 
-        it('should find strategy 2', () => {
-            const strategy = service.getStrategyByNameOrDefault('StrategyNotThere');
-            expect(strategy).to.equal(undefined);
+        it('should find procedure 2', () => {
+            const procedure = service.getProcedureByNameOrDefault('ProcedureNotThere');
+            expect(procedure).to.equal(undefined);
         });
 
-        it('should get undefined when getting current strategy when not connected', () => {
-            expect(service.getCurrentStrategy()).to.equal(undefined);
+        it('should get undefined when getting current procedure when not connected', () => {
+            expect(service.getCurrentProcedure()).to.equal(undefined);
         });
     });
 
@@ -135,8 +135,8 @@ describe('Service', () => {
             await moduleServer.shutdown();
         });
 
-        it('should get default strategy for default strategy', () => {
-            expect(service.getCurrentStrategy()).to.equal(service.getDefaultStrategy());
+        it('should get default procedure for default procedure', () => {
+            expect(service.getCurrentProcedure()).to.equal(service.getDefaultProcedure());
         });
 
         it('should find parameter', () => {

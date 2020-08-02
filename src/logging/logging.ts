@@ -44,7 +44,7 @@ export const catOperation = new Category('operation', catRecipe);
 export const catPlayer = new Category('player');
 export const catModule = new Category('module');
 export const catService = new Category('service');
-export const catStrategy = new Category('strategy', catService);
+export const catProcedure = new Category('procedure', catService);
 
 export const catManager = new Category('manager');
 export const catOpc = new Category('opcua');
