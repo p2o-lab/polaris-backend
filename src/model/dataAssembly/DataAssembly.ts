@@ -96,7 +96,7 @@ export class DataAssembly extends EventEmitter {
                         dataItem.namespaceIndex)
                     .map(([key, dataItem]: [string, OpcUaDataItem<any>]) => {
                         dataItem.on('changed', () => {
-                            catDataAssembly.debug(`Emit ${this.name}.${key} = ${dataItem.value}`);
+                            catDataAssembly.trace(`Emit ${this.name}.${key} = ${dataItem.value}`);
                             this.emit(key, dataItem);
                             this.emit('changed');
                         });

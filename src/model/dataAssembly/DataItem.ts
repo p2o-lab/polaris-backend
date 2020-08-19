@@ -105,16 +105,16 @@ export class OpcUaDataItem<T> extends DataItem<T> {
 
     public async subscribe(samplingInterval = 1000): Promise<OpcUaDataItem<T>> {
         if (this.value === undefined) {
-            await this.read();
+            //await this.read();
         }
-        const monitoredItem = await timeout(
-            this.connection.listenToOpcUaNode(this.nodeId, this.namespaceIndex, samplingInterval), 2000);
-        monitoredItem.on('changed', (dataValue) => {
-            this.logger.debug(`[${this.connection.id}] Variable Changed (${this.nodeId}) ` +
-                `= ${dataValue.value.value.toString()}`);
-            this.value = dataValue.value.value;
-            this.timestamp = dataValue.serverTimestamp;
-            this.emit('changed', {value: this.value, timestamp: this.timestamp});
+        this.connection.addOpcUaNode(this.namespaceIndex, this.nodeId);
+        this.connection.eventEmitter.on(this.nodeId,
+            (dataValue) => {
+                this.logger.debug(`[${this.connection.id}] Variable Changed (${this.nodeId}) ` +
+                    `= ${dataValue.value.value.toString()}`);
+                this.value = dataValue.value.value;
+                this.timestamp = dataValue.serverTimestamp;
+                this.emit('changed', {value: this.value, timestamp: this.timestamp});
         });
         this.logger.debug(`subscribed to Data Item ${this.nodeId}`);
         return this;

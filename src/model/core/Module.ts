@@ -183,6 +183,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
         await this.connection.connect();
         await this.subscribeToAllVariables();
         await this.subscribeToAllServices();
+        await this.connection.startListening();
         this.logger.info(`[${this.id}] Successfully subscribed to ${this.connection.monitoredItemSize()} assemblies`);
     }
 
