@@ -152,7 +152,6 @@ export class  OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionE
     }
 
     public addOpcUaNode(nodeId: string, namespaceUrl?: string) {
-        //console.log('add', nodeId, namespaceUrl)
         let nodeIdResolved;
         if (namespaceUrl) {
             nodeIdResolved = this.resolveNodeId(nodeId, namespaceUrl);
@@ -180,13 +179,11 @@ export class  OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionE
                 queueSize: 10
             }, TimestampsToReturn.Both)
         ;
-        monitoredItemGroup.on('initialized', () => console.log('initialized'))
-            .on('err', (msg) => console.log('err', msg))
-            .on('changed', (monitoredItem: ClientMonitoredItemBase, dataValue: DataValue) => {
+        monitoredItemGroup.on('changed', (monitoredItem: ClientMonitoredItemBase, dataValue: DataValue) => {
                 this.logger.trace(`[${this.id}] ${monitoredItem.itemToMonitor.nodeId.toString()} changed to ${dataValue}`);
                 this.eventEmitter.emit(monitoredItem.itemToMonitor.nodeId.toString(), dataValue);
             });
-        monitoredItemGroup.setMonitoringMode(MonitoringMode.Reporting);
+        await monitoredItemGroup.setMonitoringMode(MonitoringMode.Reporting);
         return this.eventEmitter;
     }
 
