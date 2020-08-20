@@ -78,6 +78,14 @@ describe('ScopeItem', () => {
         expect(extraction.scopeItems[0].name).to.equal('ModuleTestServer.Variable__003');
     });
 
+    it('should work for @', () => {
+        const extraction = ScopeItem.extractFromExpressionString('2 + @ModuleTestServer.Variable001',
+            [moduleTestServer]);
+        expect(extraction.scopeItems).to.have.lengthOf(1);
+        expect((extraction.scopeItems[0].dataItem as OpcUaDataItem<any>).nodeId).to.equal('Variable1.V');
+        expect(extraction.scopeItems[0].name).to.equal('ModuleTestServer.Variable001');
+    });
+
     it('should return null without modules', () => {
         expect(ScopeItem.extractFromExpressionVariable('Variable001', []))
             .to.equal(null);
