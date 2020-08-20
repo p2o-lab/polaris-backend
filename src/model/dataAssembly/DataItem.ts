@@ -87,8 +87,8 @@ export class OpcUaDataItem<T> extends DataItem<T> {
 
             item.namespaceIndex = options.namespace_index;
             item.nodeId = options.node_id;
-            if ((item.nodeId == null || item.namespaceIndex == null) && item.value == null) {
-                catDataItem.warn('At least node id or value have to be specified during parsing of DataItem');
+            if ((!item.nodeId || !item.namespaceIndex) && !item.value) {
+                catDataItem.warn(`At least node id or value have to be specified during parsing of DataItem: ${JSON.stringify(options)}`);
             }
         }
         item.access = access;
@@ -104,23 +104,22 @@ export class OpcUaDataItem<T> extends DataItem<T> {
     private connection: OpcUaConnection;
 
     public async subscribe(samplingInterval = 1000): Promise<OpcUaDataItem<T>> {
-        if (this.value === undefined) {
-            //await this.read();
-        }
-        this.connection.addOpcUaNode(this.namespaceIndex, this.nodeId);
-        this.connection.eventEmitter.on(this.nodeId,
+        const eventName = this.connection.addOpcUaNode(this.nodeId, this.namespaceIndex);
+        this.connection.eventEmitter.on(eventName,
             (dataValue) => {
                 this.logger.debug(`[${this.connection.id}] Variable Changed (${this.nodeId}) ` +
                     `= ${dataValue.value.value.toString()}`);
                 this.value = dataValue.value.value;
+                this.dataType = DataType[dataValue.value.dataType];
                 this.timestamp = dataValue.serverTimestamp;
                 this.emit('changed', {value: this.value, timestamp: this.timestamp});
         });
+        await new Promise((resolve) => this.on('changed', resolve));
         this.logger.debug(`subscribed to Data Item ${this.nodeId}`);
         return this;
     }
 
-    public write(value: number | string | boolean) {
+    public async write(value: number | string | boolean) {
         this.logger.debug(`write: ${value} to ${this.nodeId}`);
         return this.connection.writeOpcUaNode(this.nodeId, this.namespaceIndex, value, this.dataType);
     }
