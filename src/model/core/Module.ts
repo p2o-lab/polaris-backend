@@ -181,8 +181,11 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
 
     public async connect() {
         await this.connection.connect();
-        await this.subscribeToAllVariables();
-        await this.subscribeToAllServices();
+
+        const pv = this.subscribeToAllVariables();
+        const pa = this.subscribeToAllServices();
+        await this.connection.startListening();
+        await Promise.all([pv, pa]);
         this.logger.info(`[${this.id}] Successfully subscribed to ${this.connection.monitoredItemSize()} assemblies`);
     }
 
@@ -349,7 +352,7 @@ export class Module extends (EventEmitter as new() => ModuleEmitter) {
                 })
                 .on('parameterChanged', (data) => {
                     this.logger.debug(`[${this.id}] parameter changed: ` +
-                        `${data.strategy.name}.${data.parameter} = ${data.parameter.value}`);
+                        `${data.strategy.name}.${data.parameter.name} = ${data.parameter.value}`);
                     const entry: ParameterChange = {
                         timestampModule: data.parameter.timestamp,
                         service: service,

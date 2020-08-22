@@ -31,6 +31,7 @@ import {
     ClientSubscription,
     coerceNodeId,
     DataValue,
+    MonitoringMode,
     OPCUAClient,
     TimestampsToReturn,
     UserIdentityInfo,
@@ -39,6 +40,7 @@ import {
     Variant,
     VariantArrayType
 } from 'node-opcua';
+import {ClientMonitoredItemGroup} from 'node-opcua-client/source/client_monitored_item_group';
 import {timeout} from 'promise-timeout';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Category} from 'typescript-logging';
@@ -67,10 +69,11 @@ export class  OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionE
 
     public readonly endpoint: string;
     public readonly id: string;
+    public readonly eventEmitter: EventEmitter;
     private session: ClientSession;
     private client: OPCUAClient;
     private subscription: ClientSubscription;
-    private readonly monitoredItems: Map<string, ClientMonitoredItemBase>;
+    private readonly items: Map<string, string>;
     private namespaceArray: string[];
     private readonly logger: Category;
     private readonly username: string;
@@ -81,9 +84,10 @@ export class  OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionE
         this.id = moduleId;
         this.endpoint = endpoint;
         this.logger = catOpc;
-        this.monitoredItems = new Map<string, ClientMonitoredItemBase>();
         this.username = username;
         this.password = password;
+        this.eventEmitter = new EventEmitter();
+        this.items = new Map<string, string>();
     }
 
     /**
@@ -130,7 +134,7 @@ export class  OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionE
             await timeout(this.client.disconnect(), 1000);
             this.client = undefined;
         }
-        this.monitoredItems.clear();
+        this.items.clear();
         this.logger.info(`[${this.id}] OPC UA connection disconnected`);
     }
 
@@ -147,31 +151,40 @@ export class  OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionE
         return await this.session.readVariableValue(nodeIdResolved);
     }
 
-    public async listenToOpcUaNode(nodeId: string,
-                                   namespaceUrl: string,
-                                   samplingInterval = 100): Promise<ClientMonitoredItemBase> {
-        const nodeIdResolved = this.resolveNodeId(nodeId, namespaceUrl);
-        const monitoredItemKey = nodeIdResolved.toString();
-        if (this.monitoredItems.has(monitoredItemKey)) {
-            return this.monitoredItems.get(monitoredItemKey);
+    public addOpcUaNode(nodeId: string, namespaceUrl?: string) {
+        let nodeIdResolved;
+        if (namespaceUrl) {
+            nodeIdResolved = this.resolveNodeId(nodeId, namespaceUrl);
         } else {
-            const monitoredItem = await this.subscription.monitor({
-                    nodeId: nodeIdResolved,
-                    attributeId: AttributeIds.Value
-                },
-                {
-                    samplingInterval,
-                    discardOldest: true,
-                    queueSize: 1
-                }, TimestampsToReturn.Both);
-
-            if (monitoredItem.statusCode.value !== 0) {
-                throw new Error(monitoredItem.statusCode.description);
-            }
-            this.logger.debug(`[${this.id}] subscribed to opc ua Variable ${monitoredItemKey} `);
-            this.monitoredItems.set(monitoredItemKey, monitoredItem);
-            return monitoredItem;
+            nodeIdResolved = nodeId;
         }
+
+        const monitoredItemKey = nodeIdResolved.toString();
+        this.items.set(nodeId, monitoredItemKey);
+        return monitoredItemKey;
+    }
+
+    public async startListening(samplingInterval = 100): Promise<EventEmitter> {
+        const options = Array.from(this.items.values()).map((item) => {
+            return {
+                nodeId: item,
+                attributeId: AttributeIds.Value
+            };
+        });
+        const monitoredItemGroup: ClientMonitoredItemGroup = await this.subscription.monitorItems(
+            options,
+            {
+                samplingInterval,
+                discardOldest: true,
+                queueSize: 10
+            }, TimestampsToReturn.Both)
+        ;
+        monitoredItemGroup.on('changed', (monitoredItem: ClientMonitoredItemBase, dataValue: DataValue) => {
+                this.logger.trace(`[${this.id}] ${monitoredItem.itemToMonitor.nodeId.toString()} changed to ${dataValue}`);
+                this.eventEmitter.emit(monitoredItem.itemToMonitor.nodeId.toString(), dataValue);
+            });
+        await monitoredItemGroup.setMonitoringMode(MonitoringMode.Reporting);
+        return this.eventEmitter;
     }
 
     public async writeOpcUaNode(nodeId: string, namespaceUrl: string, value: number | string | boolean, dataType) {
@@ -193,7 +206,7 @@ export class  OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionE
     }
 
     public monitoredItemSize(): number {
-        return this.monitoredItems.size;
+        return this.items.size;
     }
 
     /**
@@ -220,7 +233,7 @@ export class  OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionE
     private async readNameSpaceArray() {
         const result: DataValue = await this.session.readVariableValue('ns=0;i=2255');
         const namespaceArray = result.value.value;
-        this.logger.debug(`[${this.id}] Got namespace array: ${JSON.stringify(namespaceArray)}`);
+        this.logger.info(`[${this.id}] Got namespace array: ${JSON.stringify(namespaceArray)}`);
         return namespaceArray;
     }
 

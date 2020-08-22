@@ -161,8 +161,7 @@ describe('Manager', () => {
             const service1 = module.services[0];
             const service2 = module.services[1];
 
-            module.connect();
-            await service2.waitForStateChangeWithTimeout('IDLE', 2000);
+            await module.connect();
             service2.executeCommand(ServiceCommand.start);
             await service2.waitForStateChangeWithTimeout('EXECUTE');
 
@@ -197,8 +196,7 @@ describe('Manager', () => {
             const module = manager.modules[0];
             const service = module.services[1];
 
-            module.connect();
-            await service.waitForStateChangeWithTimeout('IDLE', 2000);
+            await module.connect();
             service.executeCommand(ServiceCommand.start);
             await service.waitForStateChangeWithTimeout('EXECUTE');
 
