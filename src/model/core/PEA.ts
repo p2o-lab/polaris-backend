@@ -23,6 +23,7 @@
  * SOFTWARE.
  */
 
+import {catModule} from '@/logging/logging';
 import {
     ControlEnableInterface,
     ModuleInterface,
@@ -35,17 +36,16 @@ import {
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Category} from 'typescript-logging';
-import {catModule} from '../../logging/logging';
 import {DataAssembly} from '../dataAssembly/DataAssembly';
 import {DataAssemblyFactory} from '../dataAssembly/DataAssemblyFactory';
 import {DataItemEmitter} from '../dataAssembly/DataItem';
 import {ServiceState} from './enum';
 import {OpcUaConnection} from './OpcUaConnection';
-import {Service} from './Service';
 import {Procedure} from './Procedure';
+import {Service} from './Service';
 
 export interface ParameterChange {
-    timestampModule: Date;
+    timestampPEA: Date;
     service: Service;
     procedure: string;
     parameter: string;
@@ -57,14 +57,14 @@ export interface ParameterChange {
 /**
  * Events emitted by [[PEA]]
  */
-interface ModuleEvents {
+interface PEAEvents {
     /**
-     * when module successfully connects to PEA
+     * when POL successfully connects to PEA
      * @event connected
      */
     connected: void;
     /**
-     * when module is disconnected from PEA
+     * when POL is disconnected from PEA
      * @event disconnected
      */
     disconnected: void;
@@ -91,13 +91,13 @@ interface ModuleEvents {
         sourceMode: SourceMode
     };
     /**
-     * Notify when a variable inside a module changes
+     * Notify when a variable inside a PEA changes
      * @event variableChanged
      */
     variableChanged: VariableChange;
 
     /**
-     * Notify when
+     * Notify when a parameter changes
      * @event parameterChanged
      */
     parameterChanged: ParameterChange;
@@ -120,21 +120,21 @@ interface ModuleEvents {
     serviceCompleted: Service;
 }
 
-type ModuleEmitter = StrictEventEmitter<EventEmitter, ModuleEvents>;
+type PEAEmitter = StrictEventEmitter<EventEmitter, PEAEvents>;
 
 /**
  * PEA (PEA) with its services and variables
  *
- * in order to interact with a module, you must first [[connect]] to it
+ * in order to interact with a PEA, you must first [[connect]] to it
  *
  */
-export class PEA extends (EventEmitter as new() => ModuleEmitter) {
+export class PEA extends (EventEmitter as new() => PEAEmitter) {
 
     public readonly options: ModuleOptions;
     public readonly id: string;
     public readonly services: Service[];
     public readonly variables: DataAssembly[];
-    // module is protected and can't be deleted by the user
+    // PEA is protected and can't be deleted by the user
     public protected: boolean = false;
     public readonly connection: OpcUaConnection;
 
@@ -142,12 +142,12 @@ export class PEA extends (EventEmitter as new() => ModuleEmitter) {
     private readonly hmiUrl: string;
     private readonly logger: Category;
 
-    constructor(options: ModuleOptions, protectedModule: boolean = false) {
+    constructor(options: ModuleOptions, protectedPEA: boolean = false) {
         super();
         this.options = options;
         this.id = options.id;
         this.description = options.description;
-        this.protected = protectedModule;
+        this.protected = protectedPEA;
         this.hmiUrl = options.hmi_url;
         this.connection = new OpcUaConnection(this.id, options.opcua_server_url, options.username, options.password)
             .on('connected', () => this.emit('connected'))
@@ -187,21 +187,21 @@ export class PEA extends (EventEmitter as new() => ModuleEmitter) {
     }
 
     /**
-     * Close session and disconnect from server of module
+     * Close session and disconnect from PEA
      *
      */
     public async disconnect(): Promise<void> {
-        this.logger.info(`[${this.id}] Disconnect module`);
+        this.logger.info(`[${this.id}] Disconnect PEA`);
         await this.unsubscribeFromAllVariables();
         await this.unsubscribeFromAllServices();
         this.services.forEach((s) => s.unsubscribe());
         await this.connection.disconnect();
         this.emit('disconnected');
-        this.logger.info(`[${this.id}] Module disconnected`);
+        this.logger.info(`[${this.id}] PEA disconnected`);
     }
 
     /**
-     * Get JSON serialisation of module
+     * Get JSON serialisation of PEA
      */
     public json(): ModuleInterface {
         return {
@@ -217,7 +217,7 @@ export class PEA extends (EventEmitter as new() => ModuleEmitter) {
     }
 
     /**
-     * is module connected to physical PEA
+     * is POL connected to PEA
      * @returns {boolean}
      */
     public isConnected(): boolean {
@@ -227,7 +227,7 @@ export class PEA extends (EventEmitter as new() => ModuleEmitter) {
     public listenToDataAssembly(dataAssemblyName: string, variableName: string): DataItemEmitter {
         const dataAssembly: DataAssembly = this.variables.find((variable) => variable.name === dataAssemblyName);
         if (!dataAssembly) {
-            throw new Error(`ProcessValue ${dataAssemblyName} is not specified for module ${this.id}`);
+            throw new Error(`ProcessValue ${dataAssemblyName} is not specified for PEA ${this.id}`);
         }
         const emitter: EventEmitter = new EventEmitter();
         dataAssembly.on(variableName, (data) => emitter.emit('changed', data));
@@ -235,7 +235,7 @@ export class PEA extends (EventEmitter as new() => ModuleEmitter) {
     }
 
     /**
-     * Abort all services in module
+     * Abort all services in PEA
      */
     public abort(): Promise<void[]> {
         this.logger.info(`[${this.id}] Abort all services`);
@@ -244,7 +244,7 @@ export class PEA extends (EventEmitter as new() => ModuleEmitter) {
     }
 
     /**
-     * Pause all services in module which are currently paused
+     * Pause all services in PEA which are currently running
      */
     public pause(): Promise<void[]> {
         this.logger.info(`[${this.id}] Pause all running services`);
@@ -257,7 +257,7 @@ export class PEA extends (EventEmitter as new() => ModuleEmitter) {
     }
 
     /**
-     * Resume all services in module which are currently paused
+     * Resume all services in PEA which are currently paused
      */
     public resume(): Promise<void[]> {
         this.logger.info(`[${this.id}] Resume all paused services`);
@@ -270,7 +270,7 @@ export class PEA extends (EventEmitter as new() => ModuleEmitter) {
     }
 
     /**
-     * Stop all services in module
+     * Stop all non-idle services in PEA
      */
     public stop(): Promise<void[]> {
         this.logger.info(`[${this.id}] Stop all non-idle services`);
@@ -283,7 +283,7 @@ export class PEA extends (EventEmitter as new() => ModuleEmitter) {
     }
 
     /**
-     * Reset all services in module
+     * Reset all services in PEA
      */
     public reset(): Promise<void[]> {
         this.logger.info(`[${this.id}] Reset all services`);
@@ -351,7 +351,7 @@ export class PEA extends (EventEmitter as new() => ModuleEmitter) {
                     this.logger.debug(`[${this.id}] parameter changed: ` +
                         `${data.procedure.name}.${data.parameter} = ${data.parameter.value}`);
                     const entry: ParameterChange = {
-                        timestampModule: data.parameter.timestamp,
+                        timestampPEA: data.parameter.timestamp,
                         service: service,
                         procedure: data.procedure.id,
                         parameter: data.parameter.name,
