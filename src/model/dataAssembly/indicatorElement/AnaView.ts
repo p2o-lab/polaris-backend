@@ -24,12 +24,12 @@
  * SOFTWARE.
  */
 
-import {OpcUaConnection} from 'src/model/connection/OpcUaConnection';
-import {BaseDataAssemblyRuntime, DataAssembly} from './DataAssembly';
-import {OpcUaDataItem} from './DataItem';
-import {MonitorSettings} from './mixins/MonitorSettings';
-import {ScaleSettingsDA, ScaleSettingsRuntime} from './mixins/ScaleSettings';
-import {UnitDA, UnitDataAssemblyRuntime} from './mixins/Unit';
+import {OpcUaConnection} from '@/model/connection/OpcUaConnection';
+import {BaseDataAssemblyRuntime, DataAssembly} from 'src/model/dataAssembly/DataAssembly';
+import {OpcUaDataItem} from 'src/model/dataAssembly/DataItem';
+import {MonitorSettings} from 'src/model/dataAssembly/mixins/MonitorSettings';
+import {ScaleSettingsDA, ScaleSettingsRuntime} from 'src/model/dataAssembly/mixins/ScaleSettings';
+import {UnitDA, UnitDataAssemblyRuntime} from 'src/model/dataAssembly/mixins/Unit';
 
 export type AnaViewRuntime = BaseDataAssemblyRuntime & UnitDataAssemblyRuntime & ScaleSettingsRuntime & {
     V: OpcUaDataItem<number>;

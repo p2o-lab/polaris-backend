@@ -36,7 +36,7 @@ import {timeout} from 'promise-timeout';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {catService} from '../../logging/logging';
 import {Parameter} from '../recipe/Parameter';
-import {ServiceState} from './enum';
+import {ServiceState} from 'src/model/dataAssembly/enum';
 import {PEA} from 'src/model/core/PEA';
 import {Procedure} from './Procedure';
 

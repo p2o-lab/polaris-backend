@@ -28,7 +28,7 @@ import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
 import * as parseJson from 'json-parse-better-errors';
 import * as delay from 'timeout-as-promise';
-import {controlEnableToJson, ServiceState} from '../../../src/model/core/enum';
+import {controlEnableToJson, ServiceState} from '@/model/dataAssembly/enum';
 import {Manager} from '../../../src/model/Manager';
 import {FunctionGenerator} from '../../../src/model/virtualService/FunctionGenerator';
 import {Storage} from '../../../src/model/virtualService/Storage';

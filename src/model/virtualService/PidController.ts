@@ -25,7 +25,7 @@
 
 import {ParameterOptions} from '@p2olab/polaris-interface';
 import * as Controller from 'node-pid-controller';
-import {ServiceState} from '../core/enum';
+import {ServiceState} from 'src/model/dataAssembly/enum';
 import {Parameter} from '../recipe/Parameter';
 import {VirtualService} from './VirtualService';
 

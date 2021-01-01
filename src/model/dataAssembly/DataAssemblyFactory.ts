@@ -26,17 +26,17 @@
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {catDataAssembly} from '../../logging/logging';
 import {OpcUaConnection} from 'src/model/connection/OpcUaConnection';
-import {AdvAnaOp, AnaServParam, ExtAnaOp, ExtIntAnaOp} from './AnaOp';
-import {AnaMon, AnaView} from './AnaView';
-import {AdvBinOp, BinServParam, ExtBinOp, ExtIntBinOp} from './BinOp';
-import {BinMon, BinView} from './BinView';
+import {AdvAnaOp, AnaServParam, ExtAnaOp, ExtIntAnaOp} from 'src/model/dataAssembly/operationElement/AnaOp';
+import {AnaMon, AnaView} from 'src/model/dataAssembly/indicatorElement/AnaView';
+import {AdvBinOp, BinServParam, ExtBinOp, ExtIntBinOp} from 'src/model/dataAssembly/operationElement/BinOp';
+import {BinMon, BinView} from 'src/model/dataAssembly/indicatorElement/BinView';
 import {DataAssembly} from './DataAssembly';
-import {AdvDigOp, DigServParam, ExtDigOp, ExtIntDigOp} from './DigOp';
-import {DigMon, DigView} from './DigView';
-import {AnaDrv, MonAnaDrv} from './Drv';
+import {AdvDigOp, DigServParam, ExtDigOp, ExtIntDigOp} from 'src/model/dataAssembly/operationElement/DigOp';
+import {DigMon, DigView} from 'src/model/dataAssembly/indicatorElement/DigView';
+import {AnaDrv, MonAnaDrv} from 'src/model/dataAssembly/activeElement/Drv';
 import {ServiceControl} from './ServiceControl';
-import {StrView} from './Str';
-import {AnaVlv, BinVlv, MonAnaVlv, MonBinVlv} from './Vlv';
+import {StrView} from 'src/model/dataAssembly/indicatorElement/Str';
+import {AnaVlv, BinVlv, MonAnaVlv, MonBinVlv} from 'src/model/dataAssembly/activeElement/Vlv';
 
 export class DataAssemblyFactory {
     public static create(variableOptions: DataAssemblyOptions, connection: OpcUaConnection): DataAssembly {

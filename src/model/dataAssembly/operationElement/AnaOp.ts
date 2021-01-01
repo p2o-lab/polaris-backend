@@ -24,15 +24,15 @@
  * SOFTWARE.
  */
 
-import {OpcUaConnection} from 'src/model/connection/OpcUaConnection';
-import {BaseDataAssemblyRuntime} from './DataAssembly';
-import {OpcUaDataItem} from './DataItem';
-import {OpModeDA, OpModeRuntime} from './mixins/OpMode';
-import {ScaleSettingsDA, ScaleSettingsRuntime} from './mixins/ScaleSettings';
-import {SourceModeDA, SourceModeRuntime} from './mixins/SourceMode';
-import {UnitDA, UnitDataAssemblyRuntime} from './mixins/Unit';
-import {ValueLimitationDA, ValueLimitationRuntime} from './mixins/ValueLimitation';
-import {WritableDataAssembly} from './WritableDataAssembly';
+import {OpcUaConnection} from '@/model/connection/OpcUaConnection';
+import {BaseDataAssemblyRuntime} from 'src/model/dataAssembly/DataAssembly';
+import {OpcUaDataItem} from 'src/model/dataAssembly/DataItem';
+import {OpModeDA, OpModeRuntime} from 'src/model/dataAssembly/mixins/OpMode';
+import {ScaleSettingsDA, ScaleSettingsRuntime} from 'src/model/dataAssembly/mixins/ScaleSettings';
+import {SourceModeDA, SourceModeRuntime} from 'src/model/dataAssembly/mixins/SourceMode';
+import {UnitDA, UnitDataAssemblyRuntime} from 'src/model/dataAssembly/mixins/Unit';
+import {ValueLimitationDA, ValueLimitationRuntime} from 'src/model/dataAssembly/mixins/ValueLimitation';
+import {WritableDataAssembly} from 'src/model/dataAssembly/WritableDataAssembly';
 
 export type AnaOpRuntime = BaseDataAssemblyRuntime &
     UnitDataAssemblyRuntime & ValueLimitationRuntime &

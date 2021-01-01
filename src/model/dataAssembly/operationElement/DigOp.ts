@@ -24,12 +24,12 @@
  * SOFTWARE.
  */
 
-import {AnaOpRuntime} from './AnaOp';
-import {OpModeDA} from './mixins/OpMode';
-import {ScaleSettingsDA} from './mixins/ScaleSettings';
-import {SourceModeDA} from './mixins/SourceMode';
-import {UnitDA} from './mixins/Unit';
-import {WritableDataAssembly} from './WritableDataAssembly';
+import {AnaOpRuntime} from '@/model/dataAssembly/operationElement/AnaOp';
+import {OpModeDA} from 'src/model/dataAssembly/mixins/OpMode';
+import {ScaleSettingsDA} from 'src/model/dataAssembly/mixins/ScaleSettings';
+import {SourceModeDA} from 'src/model/dataAssembly/mixins/SourceMode';
+import {UnitDA} from 'src/model/dataAssembly/mixins/Unit';
+import {WritableDataAssembly} from 'src/model/dataAssembly/WritableDataAssembly';
 
 export class ExtDigOp extends ScaleSettingsDA(UnitDA(WritableDataAssembly)) {
     public readonly communication: AnaOpRuntime;

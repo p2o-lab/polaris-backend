@@ -33,7 +33,7 @@ import {ConditionFactory} from '../../../src/model/condition/ConditionFactory';
 import {ExpressionCondition} from '@/model/condition/custom/ExpressionCondition';
 import {TimeCondition} from '@/model/condition/custom/TimeCondition';
 import {TrueCondition} from '@/model/condition/custom/TrueCondition';
-import {ServiceState} from '../../../src/model/core/enum';
+import {ServiceState} from '@/model/dataAssembly/enum';
 import {PEA} from '@/model/core/PEA';
 import {TestServerNumericVariable} from '../../../src/moduleTestServer/ModuleTestNumericVariable';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';

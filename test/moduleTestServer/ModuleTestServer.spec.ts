@@ -26,7 +26,7 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {ClientSession, OPCUAClient} from 'node-opcua-client';
-import {controlEnableToJson, ServiceState} from '../../src/model/core/enum';
+import {controlEnableToJson, ServiceState} from '@/model/dataAssembly/enum';
 import {ModuleTestServer} from '../../src/moduleTestServer/ModuleTestServer';
 
 chai.use(chaiAsPromised);

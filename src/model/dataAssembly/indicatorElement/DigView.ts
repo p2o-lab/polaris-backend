@@ -24,11 +24,11 @@
  * SOFTWARE.
  */
 
-import {AnaViewRuntime} from './AnaView';
-import {DataAssembly} from './DataAssembly';
-import {MonitorSettings} from './mixins/MonitorSettings';
-import {ScaleSettingsDA} from './mixins/ScaleSettings';
-import {UnitDA} from './mixins/Unit';
+import {AnaViewRuntime} from '@/model/dataAssembly/indicatorElement/AnaView';
+import {DataAssembly} from 'src/model/dataAssembly/DataAssembly';
+import {MonitorSettings} from 'src/model/dataAssembly/mixins/MonitorSettings';
+import {ScaleSettingsDA} from 'src/model/dataAssembly/mixins/ScaleSettings';
+import {UnitDA} from 'src/model/dataAssembly/mixins/Unit';
 
 export class DigView extends ScaleSettingsDA(UnitDA(DataAssembly)) {
     public readonly communication: AnaViewRuntime;

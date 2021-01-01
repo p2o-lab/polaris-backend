@@ -26,7 +26,7 @@
 import {ModuleOptions} from '@p2olab/polaris-interface';
 import {expect} from 'chai';
 import * as fs from 'fs';
-import {ServiceState} from '../../../src/model/core/enum';
+import {ServiceState} from '@/model/dataAssembly/enum';
 import {PEA} from '@/model/core/PEA';
 import {AggregatedService, AggregatedServiceOptions} from '../../../src/model/virtualService/AggregatedService';
 import {Timer} from '../../../src/model/virtualService/Timer';

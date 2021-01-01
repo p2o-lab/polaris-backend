@@ -27,7 +27,7 @@ import {StateConditionOptions} from '@p2olab/polaris-interface';
 import {catCondition} from 'src/logging/logging';
 import {Condition, PEACondition} from 'src/model/condition';
 import {BaseService} from 'src/model/core/BaseService';
-import {ServiceState} from 'src/model/core/enum';
+import {ServiceState} from '@/model/dataAssembly/enum';
 import {PEA} from '@/model/core/PEA';
 
 const mapping = {

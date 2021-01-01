@@ -29,7 +29,7 @@ import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
 import {timeout} from 'promise-timeout';
 import * as delay from 'timeout-as-promise';
-import {ServiceState} from '../../../src/model/core/enum';
+import {ServiceState} from '@/model/dataAssembly/enum';
 import {PEA} from '@/model/core/PEA';
 import {Player} from '../../../src/model/recipe/Player';
 import {Recipe} from '../../../src/model/recipe/Recipe';

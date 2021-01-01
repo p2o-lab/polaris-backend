@@ -28,7 +28,7 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
 import * as parseJson from 'json-parse-better-errors';
-import {ServiceState} from '../../../src/model/core/enum';
+import {ServiceState} from '@/model/dataAssembly/enum';
 import {PEA} from '@/model/core/PEA';
 import {OpcUaConnection} from '@/model/connection/OpcUaConnection';
 import {Service} from '../../../src/model/core/Service';

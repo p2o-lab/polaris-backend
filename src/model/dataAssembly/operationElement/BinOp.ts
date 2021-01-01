@@ -24,11 +24,11 @@
  * SOFTWARE.
  */
 
-import {BaseDataAssemblyRuntime} from './DataAssembly';
-import {OpcUaDataItem} from './DataItem';
-import {OpModeDA} from './mixins/OpMode';
-import {SourceModeDA} from './mixins/SourceMode';
-import {WritableDataAssembly} from './WritableDataAssembly';
+import {BaseDataAssemblyRuntime} from 'src/model/dataAssembly/DataAssembly';
+import {OpcUaDataItem} from 'src/model/dataAssembly/DataItem';
+import {OpModeDA} from 'src/model/dataAssembly/mixins/OpMode';
+import {SourceModeDA} from 'src/model/dataAssembly/mixins/SourceMode';
+import {WritableDataAssembly} from 'src/model/dataAssembly/WritableDataAssembly';
 
 export type ExtBinOpRuntime = BaseDataAssemblyRuntime & {
     VExt: OpcUaDataItem<boolean>;

@@ -26,7 +26,7 @@
 import {ScopeOptions} from '@p2olab/polaris-interface';
 import {Expression, Parser} from 'expr-eval';
 import {catScopeItem} from '../../logging/logging';
-import {ServiceState} from '../core/enum';
+import {ServiceState} from 'src/model/dataAssembly/enum';
 import {PEA} from 'src/model/core/PEA';
 import {Service} from '../core/Service';
 import {Procedure} from '../core/Procedure';

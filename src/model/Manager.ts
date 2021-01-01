@@ -33,7 +33,7 @@ import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {ServiceLogEntry} from '../logging/archive';
 import {catManager} from '../logging/logging';
-import {ServiceState} from './core/enum';
+import {ServiceState} from 'src/model/dataAssembly/enum';
 import {PEA, ParameterChange} from 'src/model/core/PEA';
 import {Service} from './core/Service';
 import {Player} from './recipe/Player';

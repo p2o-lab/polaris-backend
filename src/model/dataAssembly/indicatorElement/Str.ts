@@ -23,8 +23,8 @@
  * SOFTWARE.
  */
 
-import {BaseDataAssemblyRuntime, DataAssembly} from './DataAssembly';
-import {OpcUaDataItem} from './DataItem';
+import {BaseDataAssemblyRuntime, DataAssembly} from 'src/model/dataAssembly/DataAssembly';
+import {OpcUaDataItem} from 'src/model/dataAssembly/DataItem';
 
 export type StrRuntime = BaseDataAssemblyRuntime & {
     Text: OpcUaDataItem<string>;

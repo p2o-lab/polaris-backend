@@ -24,10 +24,10 @@
  * SOFTWARE.
  */
 
-import {BaseDataAssemblyRuntime} from './DataAssembly';
-import {OpcUaDataItem} from './DataItem';
-import {OpModeRuntime} from './mixins/OpMode';
-import {WritableDataAssembly} from './WritableDataAssembly';
+import {BaseDataAssemblyRuntime} from 'src/model/dataAssembly/DataAssembly';
+import {OpcUaDataItem} from 'src/model/dataAssembly/DataItem';
+import {OpModeRuntime} from 'src/model/dataAssembly/mixins/OpMode';
+import {WritableDataAssembly} from 'src/model/dataAssembly/WritableDataAssembly';
 
 export type AnaDrvRuntime = BaseDataAssemblyRuntime & OpModeRuntime & {
     FwdEn: OpcUaDataItem<boolean>;

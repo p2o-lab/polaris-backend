@@ -24,9 +24,9 @@
 * SOFTWARE.
 */
 
-import {BaseDataAssemblyRuntime, DataAssembly} from './DataAssembly';
-import {OpcUaDataItem} from './DataItem';
-import {OpModeRuntime} from './mixins/OpMode';
+import {BaseDataAssemblyRuntime, DataAssembly} from 'src/model/dataAssembly/DataAssembly';
+import {OpcUaDataItem} from 'src/model/dataAssembly/DataItem';
+import {OpModeRuntime} from 'src/model/dataAssembly/mixins/OpMode';
 
 export type BinVlvRuntime = BaseDataAssemblyRuntime & OpModeRuntime & {
     SafePos: OpcUaDataItem<boolean>;
