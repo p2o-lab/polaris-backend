@@ -30,7 +30,7 @@ import {Expression} from 'expr-eval';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Category} from 'typescript-logging';
 import {catParameter} from '../../logging/logging';
-import {Module} from '../core/Module';
+import {PEA} from 'src/model/core/PEA';
 import {ScopeItem} from './ScopeItem';
 
 /**
@@ -67,9 +67,9 @@ export class Parameter {
     /**
      *
      * @param {ParameterOptions} parameterOptions
-     * @param {Module[]} modules        modules where expression can be matched
+     * @param {PEA[]} modules        modules where expression can be matched
      */
-    constructor(parameterOptions: ParameterOptions, modules: Module[] = []) {
+    constructor(parameterOptions: ParameterOptions, modules: PEA[] = []) {
         catParameter.info(`Create Parameter: ${JSON.stringify(parameterOptions)}`);
 
         this.options = parameterOptions;

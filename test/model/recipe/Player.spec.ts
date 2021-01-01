@@ -30,7 +30,7 @@ import * as fs from 'fs';
 import {timeout} from 'promise-timeout';
 import * as delay from 'timeout-as-promise';
 import {ServiceState} from '../../../src/model/core/enum';
-import {Module} from '../../../src/model/core/Module';
+import {PEA} from '@/model/core/PEA';
 import {Player} from '../../../src/model/recipe/Player';
 import {Recipe} from '../../../src/model/recipe/Recipe';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
@@ -56,7 +56,7 @@ describe('Player', () => {
         it('should run a simple test recipe', async () => {
             const moduleJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString())
                 .modules[0];
-            const module = new Module(moduleJson);
+            const module = new PEA(moduleJson);
             await module.connect();
             // now test recipe
             const recipeJson = JSON.parse(
@@ -76,7 +76,7 @@ describe('Player', () => {
 
             const moduleJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString())
                 .modules[0];
-            const module = new Module(moduleJson);
+            const module = new PEA(moduleJson);
             const service = module.services[0];
 
             await module.connect();
@@ -122,7 +122,7 @@ describe('Player', () => {
 
             const moduleJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString())
                 .modules[0];
-            const module = new Module(moduleJson);
+            const module = new PEA(moduleJson);
             const service = module.services[0];
 
             await module.connect();
@@ -166,7 +166,7 @@ describe('Player', () => {
 
             const moduleJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString())
                 .modules[0];
-            const module = new Module(moduleJson);
+            const module = new PEA(moduleJson);
             const service = module.services[0];
 
             await module.connect();

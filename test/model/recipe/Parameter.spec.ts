@@ -25,7 +25,7 @@
 
 import {expect} from 'chai';
 import * as fs from 'fs';
-import {Module} from '../../../src/model/core/Module';
+import {PEA} from '@/model/core/PEA';
 import {Service} from '../../../src/model/core/Service';
 import {Parameter} from '../../../src/model/recipe/Parameter';
 import {TestServerNumericVariable} from '../../../src/moduleTestServer/ModuleTestNumericVariable';
@@ -35,12 +35,12 @@ describe('Parameter', () => {
 
     context('static', () => {
         let service: Service;
-        let module: Module;
+        let module: PEA;
 
         before(() => {
             const file = fs.readFileSync('assets/modules/module_cif.json');
 
-            module = new Module(JSON.parse(file.toString()).modules[0]);
+            module = new PEA(JSON.parse(file.toString()).modules[0]);
             service = module.services[0];
         });
 
@@ -98,7 +98,7 @@ describe('Parameter', () => {
 
     context('with ModuleTestServer', () => {
         let service: Service;
-        let module: Module;
+        let module: PEA;
         let moduleTestServer: ModuleTestServer;
 
         beforeEach(async function before() {
@@ -107,7 +107,7 @@ describe('Parameter', () => {
             await moduleTestServer.start();
             const moduleJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8'))
                 .modules[0];
-            module = new Module(moduleJson);
+            module = new PEA(moduleJson);
             service = module.services[0];
             await module.connect();
         });

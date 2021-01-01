@@ -29,7 +29,7 @@ import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
 import * as parseJson from 'json-parse-better-errors';
 import {ServiceState} from '../../../src/model/core/enum';
-import {Module} from '../../../src/model/core/Module';
+import {PEA} from '@/model/core/PEA';
 import {OpcUaConnection} from '../../../src/model/core/OpcUaConnection';
 import {Service} from '../../../src/model/core/Service';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
@@ -63,9 +63,9 @@ describe('Service', () => {
         const moduleJson =
             parseJson(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8'), null, 60)
                 .modules[0];
-        const module = new Module(moduleJson);
+        const module = new PEA(moduleJson);
         const service = module.services[0];
-        await expect(service.executeCommand(ServiceCommand.start)).to.be.rejectedWith('Module is not connected');
+        await expect(service.executeCommand(ServiceCommand.start)).to.be.rejectedWith('PEA is not connected');
     });
 
     it('should create service from module test server json', () => {
@@ -77,14 +77,14 @@ describe('Service', () => {
     });
 
     context('with ModuleTestServer', () => {
-        let module: Module;
+        let module: PEA;
         let service: Service;
 
         before(() => {
             const moduleJson =
                 parseJson(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8'), null, 60)
                     .modules[0];
-            module = new Module(moduleJson);
+            module = new PEA(moduleJson);
             service = module.services[0];
         });
 
@@ -112,7 +112,7 @@ describe('Service', () => {
         let moduleServer: ModuleTestServer;
         let service: Service;
         let testService: TestServerService;
-        let module: Module;
+        let module: PEA;
 
         beforeEach(async function() {
             this.timeout(5000);
@@ -124,7 +124,7 @@ describe('Service', () => {
             const moduleJson =
                 parseJson(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8'), null, 60)
                     .modules[0];
-            module = new Module(moduleJson);
+            module = new PEA(moduleJson);
             service = module.services[0];
             await module.connect();
         });

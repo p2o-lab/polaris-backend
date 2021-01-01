@@ -26,11 +26,11 @@
 import {AndConditionOptions} from '@p2olab/polaris-interface';
 import {catCondition} from 'src/logging/logging';
 import {Condition, TwoOperandCondition} from 'src/model/condition';
-import {Module} from 'src/model/core/Module';
+import {PEA} from '@/model/core/PEA';
 
 export class AndCondition extends TwoOperandCondition {
 
-    constructor(options: AndConditionOptions, modules: Module[]) {
+    constructor(options: AndConditionOptions, modules: PEA[]) {
         super(options, modules);
         catCondition.trace(`Add AndCondition: ${options}`);
     }

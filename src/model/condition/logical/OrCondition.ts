@@ -26,11 +26,11 @@
 import {OrConditionOptions} from '@p2olab/polaris-interface';
 import {catCondition} from 'src/logging/logging';
 import {Condition, TwoOperandCondition} from 'src/model/condition';
-import {Module} from 'src/model/core/Module';
+import {PEA} from '@/model/core/PEA';
 
 export class OrCondition extends TwoOperandCondition {
 
-    constructor(options: OrConditionOptions, modules: Module[]) {
+    constructor(options: OrConditionOptions, modules: PEA[]) {
         super(options, modules);
         catCondition.trace(`Add OrCondition: ${options}`);
     }

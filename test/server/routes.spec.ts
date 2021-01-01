@@ -180,7 +180,7 @@ describe('Routes', () => {
         it('should throw 404 when get not existing module', async () => {
             await request(app).get('/api/module/abc1234')
                 .expect(404)
-                .expect('Error: Module with id abc1234 not found');
+                .expect('Error: PEA with id abc1234 not found');
         });
 
         it('should provide download for not existing modules', async () => {
@@ -222,7 +222,7 @@ describe('Routes', () => {
                 .send(null)
                 .expect(500)
                 .expect('Content-Type', /json/)
-                .expect(/Error: Module with id test not found/);
+                .expect(/Error: PEA with id test not found/);
         });
 
         it('should fail while disconnecting from a not existing module', async () => {
@@ -230,7 +230,7 @@ describe('Routes', () => {
                 .send(null)
                 .expect(500)
                 .expect('Content-Type', /json/)
-                .expect(/Error: Module with id test not found/);
+                .expect(/Error: PEA with id test not found/);
         });
 
         describe('with test module', () => {

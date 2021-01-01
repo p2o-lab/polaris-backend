@@ -25,12 +25,12 @@
 
 import {StateConditionOptions, VariableConditionOptions} from '@p2olab/polaris-interface';
 import {Condition} from 'src/model/condition/Condition';
-import {Module} from 'src/model/core/Module';
+import {PEA} from '@/model/core/PEA';
 
 export abstract class PEACondition extends Condition {
-    protected readonly module: Module;
+    protected readonly module: PEA;
 
-    constructor(options: StateConditionOptions | VariableConditionOptions, modules: Module[]) {
+    constructor(options: StateConditionOptions | VariableConditionOptions, modules: PEA[]) {
         super(options);
         if (options.module) {
             this.module = modules.find((module) => module.id === options.module);
@@ -43,7 +43,7 @@ export abstract class PEACondition extends Condition {
     }
 
     public getUsedModules() {
-        return new Set<Module>().add(this.module);
+        return new Set<PEA>().add(this.module);
     }
 
 }

@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import {Module} from '@/model/core/Module';
+import {PEA} from '@/model/core/PEA';
 import {ConditionOptions} from '@p2olab/polaris-interface';
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
@@ -68,7 +68,7 @@ export abstract class Condition extends (EventEmitter as new() => ConditionEmitt
         this.removeAllListeners('stateChanged');
     }
 
-    public abstract getUsedModules(): Set<Module>;
+    public abstract getUsedModules(): Set<PEA>;
 
     public json(): ConditionOptions {
         return this.options;

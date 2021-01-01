@@ -27,7 +27,7 @@ import {OpcUaNodeOptions, OperationMode, ServiceControlOptions, SourceMode} from
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
-import {Module} from '../../../src/model/core/Module';
+import {PEA} from '@/model/core/PEA';
 import {OpcUaConnection} from '../../../src/model/core/OpcUaConnection';
 import {AdvAnaOp, AnaServParam, ExtAnaOp, ExtIntAnaOp} from '../../../src/model/dataAssembly/AnaOp';
 import {AnaView} from '../../../src/model/dataAssembly/AnaView';
@@ -536,7 +536,7 @@ describe('DataAssembly', () => {
         it('should set continuous value', async () => {
             const daModule = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString())
                 .modules[0];
-            const module = new Module(daModule);
+            const module = new PEA(daModule);
             await module.connect();
             moduleServer.startSimulation();
 

@@ -27,7 +27,7 @@ import {OperationOptions, StepInterface, TransitionOptions} from '@p2olab/polari
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {catRecipe} from '../../logging/logging';
-import {Module} from '../core/Module';
+import {PEA} from 'src/model/core/PEA';
 import {Operation} from './Operation';
 import {Transition} from './Transition';
 
@@ -63,7 +63,7 @@ export class Step {
     public transitions: Transition[];
     public readonly eventEmitter: StrictEventEmitter<EventEmitter, StepEvents>;
 
-    constructor(options: StepOptions, modules: Module[]) {
+    constructor(options: StepOptions, modules: PEA[]) {
         if (options.name) {
             this.name = options.name;
         } else {
@@ -86,8 +86,8 @@ export class Step {
         this.eventEmitter = new EventEmitter();
     }
 
-    public getUsedModules(): Set<Module> {
-        let set = new Set<Module>(this.operations.map((op) => op.module));
+    public getUsedModules(): Set<PEA> {
+        let set = new Set<PEA>(this.operations.map((op) => op.module));
         this.transitions.forEach((tr) => {
             set = new Set([...set, ...tr.getUsedModules()]);
         });

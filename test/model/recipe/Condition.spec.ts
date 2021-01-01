@@ -34,7 +34,7 @@ import {ExpressionCondition} from '@/model/condition/custom/ExpressionCondition'
 import {TimeCondition} from '@/model/condition/custom/TimeCondition';
 import {TrueCondition} from '@/model/condition/custom/TrueCondition';
 import {ServiceState} from '../../../src/model/core/enum';
-import {Module} from '../../../src/model/core/Module';
+import {PEA} from '@/model/core/PEA';
 import {TestServerNumericVariable} from '../../../src/moduleTestServer/ModuleTestNumericVariable';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 import {waitForVariableChange} from '../../helper';
@@ -159,7 +159,7 @@ describe('Condition', () => {
                 const moduleJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8'))
                     .modules[0];
 
-                const module = new Module(moduleJson);
+                const module = new PEA(moduleJson);
                 const expr = ConditionFactory.create({
                     type: ConditionType.expression,
                     expression: 'sin(a)^2 + cos(ModuleTestServer.Variable001)^2 < 0.5',
@@ -181,7 +181,7 @@ describe('Condition', () => {
 
     describe('with ModuleTestServer', () => {
         let moduleServer: ModuleTestServer;
-        let module: Module;
+        let module: PEA;
         let var0: TestServerNumericVariable;
 
         beforeEach(async function() {
@@ -193,7 +193,7 @@ describe('Condition', () => {
             const moduleJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8'))
                 .modules[0];
 
-            module = new Module(moduleJson);
+            module = new PEA(moduleJson);
             await module.connect();
         });
 

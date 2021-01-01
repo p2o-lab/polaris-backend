@@ -26,7 +26,7 @@
 /**
  * Create Condition
  * @param {ConditionOptions} options    options for creating Condition
- * @param {Module[]} modules    modules to be used for evaluating module name in expressions
+ * @param {PEA[]} modules    modules to be used for evaluating module name in expressions
  * @returns Condition
  */
 import {catCondition} from '@/logging/logging';
@@ -41,7 +41,7 @@ import {
     TrueCondition,
     VariableCondition
 } from '@/model/condition';
-import {Module} from '@/model/core/Module';
+import {PEA} from '@/model/core/PEA';
 import {
     AndConditionOptions,
     ConditionOptions,
@@ -55,7 +55,7 @@ import {
 } from '@p2olab/polaris-interface';
 
 export class ConditionFactory {
-    public static create(options: ConditionOptions | string, modules: Module[]): Condition {
+    public static create(options: ConditionOptions | string, modules: PEA[]): Condition {
         catCondition.trace(`Create Condition: ${JSON.stringify(options)}`);
         if (typeof options === 'string') {
             return new ExpressionCondition({

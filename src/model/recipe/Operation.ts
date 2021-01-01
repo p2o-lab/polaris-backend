@@ -28,7 +28,7 @@ import {EventEmitter} from 'events';
 import * as delay from 'timeout-as-promise';
 import {catOperation} from '../../logging/logging';
 import {BaseService} from '../core/BaseService';
-import {Module} from '../core/Module';
+import {PEA} from 'src/model/core/PEA';
 import {Procedure} from '../core/Procedure';
 import {Service} from '../core/Service';
 
@@ -40,7 +40,7 @@ export class Operation {
     private static MAX_RETRIES: number = 10;
     private static RETRY_DELAY: number = 500;
 
-    public module: Module;
+    public module: PEA;
     public service: BaseService;
     public procedure: Procedure;
     public command: ServiceCommand;
@@ -48,7 +48,7 @@ export class Operation {
     public readonly emitter: EventEmitter;
     private state: 'executing' | 'completed' | 'aborted';
 
-    constructor(options: OperationOptions, modules: Module[]) {
+    constructor(options: OperationOptions, modules: PEA[]) {
         if (modules) {
             if (options.module) {
                 this.module = modules.find((module) => module.id === options.module);

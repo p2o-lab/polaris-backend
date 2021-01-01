@@ -37,7 +37,7 @@ import StrictEventEmitter from 'strict-event-emitter-types';
 import {catService} from '../../logging/logging';
 import {Parameter} from '../recipe/Parameter';
 import {ServiceState} from './enum';
-import {Module} from './Module';
+import {PEA} from 'src/model/core/PEA';
 import {Procedure} from './Procedure';
 
 /**
@@ -111,7 +111,7 @@ export abstract class BaseService {
 
     public abstract json(): BaseServiceInterface;
 
-    public abstract setParameters(parameters: Array<Parameter|ParameterOptions>, modules?: Module[]): Promise<void>;
+    public abstract setParameters(parameters: Array<Parameter|ParameterOptions>, modules?: PEA[]): Promise<void>;
 
     /**
      * allow controlEnable to execute specified command

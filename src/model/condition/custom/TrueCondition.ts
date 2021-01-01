@@ -24,7 +24,7 @@
  */
 
 import {Condition} from 'src/model/condition/Condition';
-import {Module} from 'src/model/core/Module';
+import {PEA} from '@/model/core/PEA';
 
 /**
  * Condition which is always true
@@ -41,7 +41,7 @@ export class TrueCondition extends Condition {
         return this;
     }
 
-    public getUsedModules(): Set<Module> {
-        return new Set<Module>();
+    public getUsedModules(): Set<PEA> {
+        return new Set<PEA>();
     }
 }

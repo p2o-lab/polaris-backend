@@ -28,7 +28,7 @@ import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {v4} from 'uuid';
 import {catRecipe} from '../../logging/logging';
-import {Module} from '../core/Module';
+import {PEA} from 'src/model/core/PEA';
 import {Step} from './Step';
 import {Transition} from './Transition';
 
@@ -72,7 +72,7 @@ export class Recipe extends (EventEmitter as new() => RecipeEmitter) {
     public readonly protected: boolean;
 
     // necessary modules
-    public modules: Set<Module> = new Set<Module>();
+    public modules: Set<PEA> = new Set<PEA>();
     public readonly initialStep: Step;
     public readonly steps: Step[];
 
@@ -82,7 +82,7 @@ export class Recipe extends (EventEmitter as new() => RecipeEmitter) {
     public lastChange: Date;
     private stepListener: EventEmitter;
 
-    constructor(options: RecipeOptions, modules: Module[], protectedRecipe: boolean = false) {
+    constructor(options: RecipeOptions, modules: PEA[], protectedRecipe: boolean = false) {
         super();
         this.id = v4();
         if (options.name) {
@@ -196,7 +196,7 @@ export class Recipe extends (EventEmitter as new() => RecipeEmitter) {
             throw new Error('Can only stop running recipe');
         }
         catRecipe.info(`Stop recipe ${this.name}`);
-        await Promise.all(Array.from(this.modules).map((module: Module) => module.stop()));
+        await Promise.all(Array.from(this.modules).map((module: PEA) => module.stop()));
         this.status = RecipeState.stopped;
         if (this.stepListener) {
             this.stepListener.removeAllListeners('completed');

@@ -26,7 +26,7 @@
 import {VariableConditionOptions} from '@p2olab/polaris-interface';
 import {catCondition} from 'src/logging/logging';
 import {Condition, PEACondition} from 'src/model/condition';
-import {Module} from 'src/model/core/Module';
+import {PEA} from '@/model/core/PEA';
 
 export class VariableCondition extends PEACondition {
     public readonly dataStructure: string;
@@ -34,7 +34,7 @@ export class VariableCondition extends PEACondition {
     public readonly value: string | number;
     public readonly operator: '==' | '<' | '>' | '<=' | '>=';
 
-    constructor(options: VariableConditionOptions, modules: Module[]) {
+    constructor(options: VariableConditionOptions, modules: PEA[]) {
         super(options, modules);
         if (!options.dataAssembly) {
             throw new Error(`Condition does not have 'dataAssembly' ${JSON.stringify(options)}`);

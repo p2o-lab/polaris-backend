@@ -26,7 +26,7 @@
 import {TimeConditionOptions} from '@p2olab/polaris-interface';
 import {catCondition} from 'src/logging/logging';
 import {Condition} from 'src/model/condition/Condition';
-import {Module} from 'src/model/core/Module';
+import {PEA} from '@/model/core/PEA';
 import Timeout = NodeJS.Timeout;
 
 export class TimeCondition extends Condition {
@@ -62,7 +62,7 @@ export class TimeCondition extends Condition {
         }
     }
 
-    public getUsedModules(): Set<Module> {
-        return new Set<Module>();
+    public getUsedModules(): Set<PEA> {
+        return new Set<PEA>();
     }
 }

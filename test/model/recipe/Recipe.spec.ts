@@ -29,7 +29,7 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
 import * as delay from 'timeout-as-promise';
-import {Module} from '../../../src/model/core/Module';
+import {PEA} from '@/model/core/PEA';
 import {Recipe} from '../../../src/model/recipe/Recipe';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 
@@ -91,7 +91,7 @@ describe('Recipe', () => {
     describe('with module test server', () => {
 
         let moduleServer: ModuleTestServer;
-        let module: Module;
+        let module: PEA;
 
         beforeEach(async function() {
             this.timeout(5000);
@@ -100,7 +100,7 @@ describe('Recipe', () => {
 
             const moduleJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString())
                 .modules[0];
-            module = new Module(moduleJson);
+            module = new PEA(moduleJson);
             await module.connect();
         });
 
@@ -155,13 +155,13 @@ describe('Recipe', () => {
         before(() => {
             let file = fs.readFileSync('assets/modules/achema_demonstrator/modules_achema.json');
             let options = JSON.parse(file.toString());
-            modules.push(new Module(options.modules[0]));
-            modules.push(new Module(options.modules[1]));
-            modules.push(new Module(options.modules[2]));
+            modules.push(new PEA(options.modules[0]));
+            modules.push(new PEA(options.modules[1]));
+            modules.push(new PEA(options.modules[2]));
 
             file = fs.readFileSync('assets/modules/module_cif.json');
             options = JSON.parse(file.toString());
-            modules.push(new Module(options.modules[0]));
+            modules.push(new PEA(options.modules[0]));
         });
 
         it('should load the achema json', (done) => {

@@ -28,7 +28,7 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
 import * as delay from 'timeout-as-promise';
-import {Module} from '../../../src/model/core/Module';
+import {PEA} from '@/model/core/PEA';
 import {Service} from '../../../src/model/core/Service';
 import {Operation} from '../../../src/model/recipe/Operation';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
@@ -45,7 +45,7 @@ describe('Operation', () => {
         before(() => {
             const moduleJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString())
                 .modules[0];
-            module = new Module(moduleJson);
+            module = new PEA(moduleJson);
         });
 
         it('should fail with missing options', () => {
@@ -110,7 +110,7 @@ describe('Operation', () => {
     describe('OPC UA server mockup', () => {
 
         let moduleServer: ModuleTestServer;
-        let module: Module;
+        let module: PEA;
         let service: Service;
 
         beforeEach(async function() {
@@ -120,7 +120,7 @@ describe('Operation', () => {
 
             const moduleJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString())
                 .modules[0];
-            module = new Module(moduleJson);
+            module = new PEA(moduleJson);
             service = module.services[0];
 
             await module.connect();

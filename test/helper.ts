@@ -23,9 +23,9 @@
  * SOFTWARE.
  */
 
-import {Module} from '../src/model/core/Module';
+import {PEA} from '@/model/core/PEA';
 
-export function waitForParameterChange(module: Module, parameterName: string, expected = null) {
+export function waitForParameterChange(module: PEA, parameterName: string, expected = null) {
     return new Promise((resolve) =>
         module.on('parameterChanged', (data) => {
             if (data.parameter === parameterName && (expected === null || data.value === expected)) {
@@ -36,7 +36,7 @@ export function waitForParameterChange(module: Module, parameterName: string, ex
     );
 }
 
-export function waitForVariableChange(module: Module, variableName: string, expected = null) {
+export function waitForVariableChange(module: PEA, variableName: string, expected = null) {
     return new Promise((resolve) =>
         module.on('variableChanged', function test(data) {
             if (data.variable === variableName && (expected === null || data.value === expected)) {

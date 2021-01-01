@@ -26,7 +26,7 @@
 import {ConditionType, ServiceCommand} from '@p2olab/polaris-interface';
 import {expect} from 'chai';
 import * as fs from 'fs';
-import {Module} from '../../../src/model/core/Module';
+import {PEA} from '@/model/core/PEA';
 import {Step} from '../../../src/model/recipe/Step';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 
@@ -51,7 +51,7 @@ describe('Step', () => {
     describe('with module test server', () => {
 
         let moduleServer: ModuleTestServer;
-        let module: Module;
+        let module: PEA;
 
         beforeEach(async function() {
             this.timeout(5000);
@@ -60,7 +60,7 @@ describe('Step', () => {
 
             const moduleJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString())
                 .modules[0];
-            module = new Module(moduleJson);
+            module = new PEA(moduleJson);
             await module.connect();
 
         });

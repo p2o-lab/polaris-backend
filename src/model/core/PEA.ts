@@ -55,7 +55,7 @@ export interface ParameterChange {
 }
 
 /**
- * Events emitted by [[Module]]
+ * Events emitted by [[PEA]]
  */
 interface ModuleEvents {
     /**
@@ -123,12 +123,12 @@ interface ModuleEvents {
 type ModuleEmitter = StrictEventEmitter<EventEmitter, ModuleEvents>;
 
 /**
- * Module (PEA) with its services and variables
+ * PEA (PEA) with its services and variables
  *
  * in order to interact with a module, you must first [[connect]] to it
  *
  */
-export class Module extends (EventEmitter as new() => ModuleEmitter) {
+export class PEA extends (EventEmitter as new() => ModuleEmitter) {
 
     public readonly options: ModuleOptions;
     public readonly id: string;

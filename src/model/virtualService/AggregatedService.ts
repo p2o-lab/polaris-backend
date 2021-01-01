@@ -27,7 +27,7 @@ import {ParameterInterface} from '@p2olab/polaris-interface';
 import {Category} from 'typescript-logging';
 import {catAggregatedService} from '../../logging/logging';
 import {BaseService} from '../core/BaseService';
-import {Module} from '../core/Module';
+import {PEA} from 'src/model/core/PEA';
 import {Service} from '../core/Service';
 import {Petrinet, PetrinetOptions} from './aggregatedService/Petrinet';
 import {VirtualService} from './VirtualService';
@@ -98,7 +98,7 @@ export class AggregatedService extends VirtualService {
     public static type: string = 'aggregatedService';
 
     // necessary modules
-    public readonly modules: Set<Module> = new Set<Module>();
+    public readonly modules: Set<PEA> = new Set<PEA>();
     public readonly services: BaseService[];
 
     // dynamic properties
@@ -110,7 +110,7 @@ export class AggregatedService extends VirtualService {
 
     private logger: Category;
 
-    constructor(options: AggregatedServiceOptions, modules: Module[], virtualServices: VirtualService[] = []) {
+    constructor(options: AggregatedServiceOptions, modules: PEA[], virtualServices: VirtualService[] = []) {
         super(options.name);
         this.options = options;
         this._lastStatusChange = new Date();

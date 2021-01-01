@@ -36,7 +36,7 @@ export const serviceRouter: Router = Router();
  * @apiName ConfigureService
  * @apiDescription Configure strategy and parameters of service
  * @apiGroup Service
- * @apiParam {string} moduleId    Module id
+ * @apiParam {string} moduleId    PEA id
  * @apiParam {string} serviceName   Name of service
  * @apiParam {string} strategy      Name of strategy
  * @apiParam {ParameterOptions[]} [parameters]    Service Strategy Parameters
@@ -59,7 +59,7 @@ serviceRouter.post('/:moduleId/service/:serviceName', asyncHandler(async (req: R
  * @api {post} /module/:moduleId/service/:serviceName/:command   Call service
  * @apiName CallService
  * @apiGroup Service
- * @apiParam {string} moduleId      Module id
+ * @apiParam {string} moduleId      PEA id
  * @apiParam {string} serviceName   Name of service
  * @apiParam {string="start","stop","abort","complete","pause","unhold","reset"} command       Command name
  * @apiParam {string} [strategy]      Name of strategy
@@ -90,7 +90,7 @@ serviceRouter.post('/:moduleId/service/:serviceName/:command', asyncHandler(asyn
  * @api {get} /module/:moduleId/service/:serviceName    Get service statusNode
  * @apiName GetService
  * @apiGroup Service
- * @apiParam {string} moduleId      Module id
+ * @apiParam {string} moduleId      PEA id
  * @apiParam {string} serviceName   Name of service
  */
 serviceRouter.get('/:moduleId/service/:serviceName', asyncHandler(async (req: Request, res: Response) => {

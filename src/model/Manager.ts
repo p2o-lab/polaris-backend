@@ -34,7 +34,7 @@ import StrictEventEmitter from 'strict-event-emitter-types';
 import {ServiceLogEntry} from '../logging/archive';
 import {catManager} from '../logging/logging';
 import {ServiceState} from './core/enum';
-import {Module, ParameterChange} from './core/Module';
+import {PEA, ParameterChange} from 'src/model/core/PEA';
 import {Service} from './core/Service';
 import {Player} from './recipe/Player';
 import {Recipe} from './recipe/Recipe';
@@ -74,7 +74,7 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
     public readonly recipes: Recipe[] = [];
 
     // loaded modules
-    public readonly modules: Module[] = [];
+    public readonly modules: PEA[] = [];
 
     // instantiated virtual services
     public readonly virtualServices: VirtualService[] = [];
@@ -107,7 +107,7 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
             });
     }
 
-    public getModule(moduleId: string): Module {
+    public getModule(moduleId: string): PEA {
         const module = this.modules.find((mod) => mod.id === moduleId);
         if (module) {
             return module;
@@ -121,10 +121,10 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
      * Skip module if already a module with same id is registered
      * @param options           options for creating modules
      * @param {boolean} protectedModules  should modules be protected from being deleted
-     * @returns {Module[]}  created modules
+     * @returns {PEA[]}  created modules
      */
-    public loadModule(options: LoadModuleOptions, protectedModules: boolean = false): Module[] {
-        const newModules: Module[] = [];
+    public loadModule(options: LoadModuleOptions, protectedModules: boolean = false): PEA[] {
+        const newModules: PEA[] = [];
         if (!options) {
             throw new Error('No modules defined in supplied options');
         }
@@ -135,7 +135,7 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
                         catManager.warn(`Module ${moduleOptions.id} already in registered modules`);
                         throw new Error(`Module ${moduleOptions.id} already in registered modules`);
                     } else {
-                        newModules.push(new Module(moduleOptions, protectedModules));
+                        newModules.push(new PEA(moduleOptions, protectedModules));
                     }
                 });
             });
@@ -145,7 +145,7 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
                     catManager.warn(`Module ${moduleOptions.id} already in registered modules`);
                     throw new Error(`Module ${moduleOptions.id} already in registered modules`);
                 } else {
-                    newModules.push(new Module(moduleOptions, protectedModules));
+                    newModules.push(new PEA(moduleOptions, protectedModules));
                 }
             });
         } else if (options.module) {
@@ -154,19 +154,19 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
                 catManager.warn(`Module ${moduleOptions.id} already in registered modules`);
                 throw new Error(`Module ${moduleOptions.id} already in registered modules`);
             } else {
-                newModules.push(new Module(moduleOptions, protectedModules));
+                newModules.push(new PEA(moduleOptions, protectedModules));
             }
         } else {
             throw new Error('No modules defined in supplied options');
         }
         this.modules.push(...newModules);
-        newModules.forEach((module: Module) => {
+        newModules.forEach((module: PEA) => {
             module
                 .on('connected', () => {
                     this.emit('notify', { message: 'module', module: module.json()});
                 })
                 .on('disconnected', () => {
-                    catManager.info('Module disconnected');
+                    catManager.info('PEA disconnected');
                     this.emit('notify', { message: 'module', module: module.json()});
                 })
                 .on('controlEnable', ({service}) => {
@@ -303,13 +303,13 @@ export class Manager extends (EventEmitter as new() => ManagerEmitter) {
     }
 
     /**
-     * find [Service] of a [Module] registered in manager
+     * find [Service] of a [PEA] registered in manager
      * @param {string} moduleName
      * @param {string} serviceName
      * @returns {Service}
      */
     public getService(moduleName: string, serviceName: string): Service {
-        const module: Module = this.modules.find((mod) => mod.id === moduleName);
+        const module: PEA = this.modules.find((mod) => mod.id === moduleName);
         if (!module) {
             throw new Error(`Module with id ${moduleName} not registered`);
         }

@@ -35,7 +35,7 @@ export const moduleRouter: Router = Router();
 /**
  * @api {get} /module/    Get all modules
  * @apiName GetModules
- * @apiGroup Module
+ * @apiGroup PEA
  */
 moduleRouter.get('', asyncHandler(async (req: Request, res: Response) => {
     const manager: Manager = req.app.get('manager');
@@ -45,8 +45,8 @@ moduleRouter.get('', asyncHandler(async (req: Request, res: Response) => {
 /**
  * @api {get} /module/:id    Get module
  * @apiName GetModule
- * @apiGroup Module
- * @apiParam {string} id    Module id
+ * @apiGroup PEA
+ * @apiParam {string} id    PEA id
  */
 moduleRouter.get('/:id', (req: Request, res: Response) => {
     const manager: Manager = req.app.get('manager');
@@ -60,8 +60,8 @@ moduleRouter.get('/:id', (req: Request, res: Response) => {
 /**
  * @api {get} /module/:id/download    Download module options
  * @apiName GetModuleDownload
- * @apiGroup Module
- * @apiParam {string} id    Module id
+ * @apiGroup PEA
+ * @apiParam {string} id    PEA id
  */
 moduleRouter.get('/:id/download', (req: Request, res: Response) => {
     const manager: Manager = req.app.get('manager');
@@ -71,8 +71,8 @@ moduleRouter.get('/:id/download', (req: Request, res: Response) => {
 /**
  * @api {put} /module    Add module
  * @apiName PutModule
- * @apiGroup Module
- * @apiParam {ModuleOptions} module    Module to be added
+ * @apiGroup PEA
+ * @apiParam {ModuleOptions} module    PEA to be added
  */
 moduleRouter.put('', (req, res) => {
     catServer.info(`Load module`);
@@ -88,8 +88,8 @@ moduleRouter.put('', (req, res) => {
 /**
  * @api {delete} /module/:id    Delete module
  * @apiName DeleteModule
- * @apiGroup Module
- * @apiParam {string} id    Module id to be deleted
+ * @apiGroup PEA
+ * @apiParam {string} id    PEA id to be deleted
  */
 moduleRouter.delete('/:id', asyncHandler(async (req: Request, res: Response) => {
     const manager: Manager = req.app.get('manager');
@@ -104,8 +104,8 @@ moduleRouter.delete('/:id', asyncHandler(async (req: Request, res: Response) => 
 /**
  * @api {post} /module/:id/connect    Connect module
  * @apiName ConnectModule
- * @apiGroup Module
- * @apiParam {string} id    Module id
+ * @apiGroup PEA
+ * @apiParam {string} id    PEA id
  */
 moduleRouter.post('/:id/connect', asyncHandler(async (req: Request, res: Response) => {
     const manager: Manager = req.app.get('manager');
@@ -117,8 +117,8 @@ moduleRouter.post('/:id/connect', asyncHandler(async (req: Request, res: Respons
 /**
  * @api {post} /module/:id/disconnect    Disconnect module
  * @apiName DisconnectModule
- * @apiGroup Module
- * @apiParam {string} id    Module id
+ * @apiGroup PEA
+ * @apiParam {string} id    PEA id
  */
 moduleRouter.post('/:id/disconnect', asyncHandler(async (req: Request, res: Response) => {
     const manager: Manager = req.app.get('manager');
@@ -131,7 +131,7 @@ moduleRouter.post('/:id/disconnect', asyncHandler(async (req: Request, res: Resp
  * @api {post} /module/abort    Abort all services
  * @apiName AbortAllServices
  * @apiDescription Abort all services from all modules
- * @apiGroup Module
+ * @apiGroup PEA
  */
 moduleRouter.post('/abort', asyncHandler(async (req: Request, res: Response) => {
     const manager: Manager = req.app.get('manager');
@@ -143,7 +143,7 @@ moduleRouter.post('/abort', asyncHandler(async (req: Request, res: Response) => 
  * @api {post} /module/stop    Stop all services
  * @apiName StopAllServices
  * @apiDescription Abort all services from all modules
- * @apiGroup Module
+ * @apiGroup PEA
  */
 moduleRouter.post('/stop', asyncHandler(async (req: Request, res: Response) => {
     const manager: Manager = req.app.get('manager');
@@ -155,7 +155,7 @@ moduleRouter.post('/stop', asyncHandler(async (req: Request, res: Response) => {
  * @api {post} /module/reset    Reset all services
  * @apiName ResetAllServices
  * @apiDescription Reset all services from all modules
- * @apiGroup Module
+ * @apiGroup PEA
  */
 moduleRouter.post('/reset', asyncHandler(async (req: Request, res: Response) => {
     const manager: Manager = req.app.get('manager');

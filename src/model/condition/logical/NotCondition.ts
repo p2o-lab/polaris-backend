@@ -26,12 +26,12 @@
 import {NotConditionOptions} from '@p2olab/polaris-interface';
 import {catCondition} from 'src/logging/logging';
 import {Condition, ConditionFactory} from 'src/model/condition';
-import {Module} from 'src/model/core/Module';
+import {PEA} from '@/model/core/PEA';
 
 export class NotCondition extends Condition {
     public condition: Condition;
 
-    constructor(options: NotConditionOptions, modules: Module[]) {
+    constructor(options: NotConditionOptions, modules: PEA[]) {
         super(options);
         catCondition.trace(`Add NotCondition: ${options}`);
         this.condition = ConditionFactory.create(options.condition, modules);
@@ -51,7 +51,7 @@ export class NotCondition extends Condition {
         return this;
     }
 
-    public getUsedModules(): Set<Module> {
+    public getUsedModules(): Set<PEA> {
         return this.condition.getUsedModules();
     }
 }

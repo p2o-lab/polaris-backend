@@ -26,7 +26,7 @@
 import {expect} from 'chai';
 import {Expression} from 'expr-eval';
 import * as fs from 'fs';
-import {Module} from '../../../src/model/core/Module';
+import {PEA} from '@/model/core/PEA';
 import {OpcUaDataItem} from '../../../src/model/dataAssembly/DataItem';
 import {ScopeItem} from '../../../src/model/recipe/ScopeItem';
 import {TestServerNumericVariable} from '../../../src/moduleTestServer/ModuleTestNumericVariable';
@@ -38,13 +38,13 @@ import {waitForParameterChange, waitForVariableChange} from '../../helper';
  */
 describe('ScopeItem', () => {
 
-    let moduleTestServer: Module;
-    let moduleDosierer: Module;
+    let moduleTestServer: PEA;
+    let moduleDosierer: PEA;
 
     before(() => {
-        moduleDosierer = new Module(
+        moduleDosierer = new PEA(
             JSON.parse(fs.readFileSync('assets/modules/module_dosierer_1.1.0.json').toString()).modules[0]);
-        moduleTestServer = new Module(
+        moduleTestServer = new PEA(
             JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString()).modules[0]);
     });
 

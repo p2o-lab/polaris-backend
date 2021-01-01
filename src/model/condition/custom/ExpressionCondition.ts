@@ -27,7 +27,7 @@ import {ExpressionConditionOptions, ScopeOptions} from '@p2olab/polaris-interfac
 import {Expression} from 'expr-eval';
 import {catCondition} from 'src/logging/logging';
 import {Condition} from 'src/model/condition/Condition';
-import {Module} from 'src/model/core/Module';
+import {PEA} from '@/model/core/PEA';
 import {ScopeItem} from 'src/model/recipe/ScopeItem';
 
 export class ExpressionCondition extends Condition {
@@ -38,9 +38,9 @@ export class ExpressionCondition extends Condition {
     /**
      *
      * @param {ExpressionConditionOptions} options
-     * @param {Module[]} modules
+     * @param {PEA[]} modules
      */
-    constructor(options: ExpressionConditionOptions, modules: Module[] = []) {
+    constructor(options: ExpressionConditionOptions, modules: PEA[] = []) {
         super(options);
         catCondition.info(`Add ExpressionCondition: ${options.expression} ` +
             `(${JSON.stringify(modules.map((m) => m.id))})`);
@@ -58,8 +58,8 @@ export class ExpressionCondition extends Condition {
         this._fulfilled = false;
     }
 
-    public getUsedModules(): Set<Module> {
-        return new Set<Module>([...this.scopeArray.map((sa) => sa.module)]);
+    public getUsedModules(): Set<PEA> {
+        return new Set<PEA>([...this.scopeArray.map((sa) => sa.module)]);
     }
 
     public listen(): Condition {

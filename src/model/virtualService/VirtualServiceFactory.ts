@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import {Module} from '../core/Module';
+import {PEA} from 'src/model/core/PEA';
 import {
     AggregatedService, AggregatedServiceOptions
 } from './AggregatedService';
@@ -40,7 +40,7 @@ export interface VirtualServiceOptions {
 
 export class VirtualServiceFactory {
  public static create(options: VirtualServiceOptions,
-                      modules?: Module[],
+                      modules?: PEA[],
                       virtualServices?: VirtualService[]): VirtualService {
      if (options.type === Timer.type) {
          return new Timer(options.name);

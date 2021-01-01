@@ -28,7 +28,7 @@ import {catCondition} from 'src/logging/logging';
 import {Condition, PEACondition} from 'src/model/condition';
 import {BaseService} from 'src/model/core/BaseService';
 import {ServiceState} from 'src/model/core/enum';
-import {Module} from 'src/model/core/Module';
+import {PEA} from '@/model/core/PEA';
 
 const mapping = {
     'idle': ServiceState.IDLE,
@@ -53,7 +53,7 @@ export class StateCondition extends PEACondition {
     public readonly service: BaseService;
     public readonly state: ServiceState;
 
-    constructor(options: StateConditionOptions, modules: Module[]) {
+    constructor(options: StateConditionOptions, modules: PEA[]) {
         super(options, modules);
         this.service = this.module.getService(options.service);
         this.state = mapping[options.state.toLowerCase()];

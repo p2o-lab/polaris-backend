@@ -27,7 +27,7 @@ import {ScopeOptions} from '@p2olab/polaris-interface';
 import {Expression, Parser} from 'expr-eval';
 import {catScopeItem} from '../../logging/logging';
 import {ServiceState} from '../core/enum';
-import {Module} from '../core/Module';
+import {PEA} from 'src/model/core/PEA';
 import {Service} from '../core/Service';
 import {Procedure} from '../core/Procedure';
 import {DataAssembly} from '../dataAssembly/DataAssembly';
@@ -38,10 +38,10 @@ export class ScopeItem {
     /**
      *
      * @param {string} expression
-     * @param {Module[]} modules
+     * @param {PEA[]} modules
      * @param {string[]}   ignoredNames   don't try to find scopeItems for this variable names
      */
-    public static extractFromExpressionString(expression: string, modules: Module[], ignoredNames: string[] = [])
+    public static extractFromExpressionString(expression: string, modules: PEA[], ignoredNames: string[] = [])
         : { expression: Expression, scopeItems: ScopeItem[] } {
         const parser: Parser = new Parser({allowMemberAccess: true});
         const value = expression.replace(new RegExp('\\\\.', 'g'), '__')
@@ -58,10 +58,10 @@ export class ScopeItem {
     /**
      *
      * @param {ScopeOptions} item
-     * @param {Module[]} modules    modules to be searched in for variable names (default: all modules in manager)
+     * @param {PEA[]} modules    modules to be searched in for variable names (default: all modules in manager)
      * @returns {ScopeItem}
      */
-    public static extractFromScopeOptions(item: ScopeOptions, modules: Module[]): ScopeItem {
+    public static extractFromScopeOptions(item: ScopeOptions, modules: PEA[]): ScopeItem {
         const module = modules.find((m) => m.id === item.module);
         const dataAssembly = module.variables.find((v) => v.name === item.dataAssembly);
         return new ScopeItem(item.name, module, dataAssembly, item.variable);
@@ -71,10 +71,10 @@ export class ScopeItem {
      * Extract scope item from expression variable
      *
      * @param {string} variable
-     * @param {Module[]} modules    modules to be searched in for variable names
+     * @param {PEA[]} modules    modules to be searched in for variable names
      * @returns {ScopeItem}
      */
-    public static extractFromExpressionVariable(variable: string, modules: Module[]): ScopeItem {
+    public static extractFromExpressionVariable(variable: string, modules: PEA[]): ScopeItem {
         catScopeItem.debug(`Extract ScopeItem from "${variable}"`);
         let dataAssembly: DataAssembly;
         const components = variable.split('.').map((tokenT: string) => tokenT.replace(new RegExp('__', 'g'), '.'));
@@ -144,11 +144,11 @@ export class ScopeItem {
     /** name of variable which should be replaced in value */
     public readonly name: string;
     public readonly dataAssembly: DataAssembly;
-    public readonly module: Module;
+    public readonly module: PEA;
     public readonly variableName: string;
     public readonly dataItem: DataItem<any>;
 
-    constructor(name: string, module: Module, dataAssembly: DataAssembly, variableName?: string) {
+    constructor(name: string, module: PEA, dataAssembly: DataAssembly, variableName?: string) {
         this.name = name;
         this.module = module;
         this.dataAssembly = dataAssembly;

@@ -39,7 +39,7 @@ import {ServiceControl} from '../dataAssembly/ServiceControl';
 import {WritableDataAssembly} from '../dataAssembly/WritableDataAssembly';
 import {BaseService, BaseServiceEvents} from './BaseService';
 import {controlEnableToJson, ServiceControlEnable, ServiceMtpCommand, ServiceState} from './enum';
-import {Module} from './Module';
+import {PEA} from 'src/model/core/PEA';
 import {OpcUaConnection} from './OpcUaConnection';
 import {Procedure} from './Procedure';
 
@@ -56,7 +56,7 @@ interface ServiceEvents extends BaseServiceEvents {
 type ServiceEmitter = StrictEventEmitter<EventEmitter, ServiceEvents>;
 
 /**
- * Service of a [[Module]]
+ * Service of a [[PEA]]
  *
  * after connection to a real PEA, commands can be triggered and states can be retrieved
  *
@@ -210,7 +210,7 @@ export class Service extends BaseService {
     // overridden method from Base Service
     public async executeCommand(command: ServiceCommand) {
         if (!this.connection.isConnected()) {
-            throw new Error('Module is not connected');
+            throw new Error('PEA is not connected');
         }
         await super.executeCommand(command);
         const currentProcedure = this.getCurrentProcedure();
@@ -281,7 +281,7 @@ export class Service extends BaseService {
         return procedure;
     }
 
-    public async setParameters(parameterOptions: ParameterOptions[], modules: Module[] = []) {
+    public async setParameters(parameterOptions: ParameterOptions[], modules: PEA[] = []) {
         parameterOptions.map((p) => {
             const dataAssembly = this.findInputParameter(p.name);
             dataAssembly.setValue(p, modules);

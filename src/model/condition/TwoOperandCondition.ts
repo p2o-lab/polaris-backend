@@ -24,14 +24,14 @@
  */
 
 import {AndConditionOptions, OrConditionOptions} from '@p2olab/polaris-interface';
-import {Module} from '../core/Module';
+import {PEA} from 'src/model/core/PEA';
 import {Condition} from './Condition';
 import {ConditionFactory} from './ConditionFactory';
 
 export abstract class TwoOperandCondition extends Condition {
     public conditions: Condition[] = [];
 
-    constructor(options: AndConditionOptions | OrConditionOptions, modules: Module[]) {
+    constructor(options: AndConditionOptions | OrConditionOptions, modules: PEA[]) {
         super(options);
         this.conditions = options.conditions.map((option) => {
             return ConditionFactory.create(option, modules);
@@ -44,8 +44,8 @@ export abstract class TwoOperandCondition extends Condition {
         this.conditions.forEach((cond) => cond.clear());
     }
 
-    public getUsedModules(): Set<Module> {
-        const set = new Set<Module>();
+    public getUsedModules(): Set<PEA> {
+        const set = new Set<PEA>();
         this.conditions.forEach((cond) => {
             Array.from(cond.getUsedModules()).forEach((module) => {
                 set.add(module);

@@ -30,10 +30,10 @@ VirtualService <|-- Other
 class VirtualServices
 
 class Manager
-class Module
+class PEA
 
-Module *-- "*" Service
-Manager o-- "*" Module
+PEA *-- "*" Service
+Manager o-- "*" PEA
 Manager o-- "1" VirtualServices
 VirtualServices *-- "*" VirtualService
 

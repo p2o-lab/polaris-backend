@@ -27,7 +27,7 @@ import {ModuleOptions} from '@p2olab/polaris-interface';
 import {expect} from 'chai';
 import * as fs from 'fs';
 import {ServiceState} from '../../../src/model/core/enum';
-import {Module} from '../../../src/model/core/Module';
+import {PEA} from '@/model/core/PEA';
 import {AggregatedService, AggregatedServiceOptions} from '../../../src/model/virtualService/AggregatedService';
 import {Timer} from '../../../src/model/virtualService/Timer';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
@@ -58,8 +58,8 @@ describe('AggregatedService', () => {
     describe('with test server', () => {
         let moduleServer1: ModuleTestServer;
         let moduleServer2: ModuleTestServer;
-        let module1: Module;
-        let module2: Module;
+        let module1: PEA;
+        let module2: PEA;
 
         beforeEach(async function() {
             this.timeout(5000);
@@ -74,12 +74,12 @@ describe('AggregatedService', () => {
 
             moduleJson.id = 'PEA1';
             moduleJson.opcua_server_url = 'opc.tcp://127.0.0.1:4334/ModuleTestServer';
-            module1 = new Module(moduleJson);
+            module1 = new PEA(moduleJson);
             await module1.connect();
 
             moduleJson.id = 'PEA2';
             moduleJson.opcua_server_url = 'opc.tcp://127.0.0.1:4335/ModuleTestServer';
-            module2 = new Module(moduleJson);
+            module2 = new PEA(moduleJson);
             await module2.connect();
         });
 

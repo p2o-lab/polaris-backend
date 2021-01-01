@@ -26,7 +26,7 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
-import {Module} from '../../../src/model/core/Module';
+import {PEA} from '@/model/core/PEA';
 import {StrView} from '../../../src/model/dataAssembly/Str';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 
@@ -37,7 +37,7 @@ describe('Module', () => {
 
     it('should load the cif module json', () => {
         const f = fs.readFileSync('assets/modules/module_cif.json');
-        const module = new Module(JSON.parse(f.toString()).modules[0]);
+        const module = new PEA(JSON.parse(f.toString()).modules[0]);
         expect(module).to.have.property('id', 'CIF');
         expect(module.services).to.have.length(6);
     });
@@ -59,7 +59,7 @@ describe('Module', () => {
         it('should connect to module, provide correct json output and disconnect', async () => {
             const moduleJson =
                 JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8')).modules[0];
-            const module = new Module(moduleJson);
+            const module = new PEA(moduleJson);
             await module.connect();
 
             const json = module.json();
@@ -92,7 +92,7 @@ describe('Module', () => {
         it('should work after reconnect', async () => {
             const moduleJson =
                 JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8')).modules[0];
-            const module = new Module(moduleJson);
+            const module = new PEA(moduleJson);
 
             await module.connect();
             expect(module.connection.monitoredItemSize()).to.be.greaterThan(80);

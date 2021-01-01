@@ -25,7 +25,7 @@
 
 import {EventEmitter} from 'events';
 import {catRecipe} from '../../../logging/logging';
-import {Module} from '../../core/Module';
+import {PEA} from 'src/model/core/PEA';
 import {PetrinetState, PetrinetStateOptions} from './PetrinetState';
 import {PetrinetTransition, PetrinetTransitionOptions} from './PetrinetTransition';
 
@@ -46,7 +46,7 @@ export class Petrinet {
     public readonly initialTransition: PetrinetTransition;
     public readonly activeStates: PetrinetState[];
 
-    constructor(options: PetrinetOptions, modules: Module[]) {
+    constructor(options: PetrinetOptions, modules: PEA[]) {
         this.options = options;
         this.activeStates = [];
         this.eventEmitter = new EventEmitter();
