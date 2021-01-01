@@ -30,7 +30,7 @@ import * as fs from 'fs';
 import * as parseJson from 'json-parse-better-errors';
 import {ServiceState} from '../../../src/model/core/enum';
 import {PEA} from '@/model/core/PEA';
-import {OpcUaConnection} from '../../../src/model/core/OpcUaConnection';
+import {OpcUaConnection} from '@/model/connection/OpcUaConnection';
 import {Service} from '../../../src/model/core/Service';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 import {TestServerService} from '../../../src/moduleTestServer/ModuleTestService';

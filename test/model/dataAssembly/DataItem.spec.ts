@@ -25,7 +25,7 @@
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {OpcUaConnection} from '../../../src/model/core/OpcUaConnection';
+import {OpcUaConnection} from '@/model/connection/OpcUaConnection';
 import {OpcUaDataItem} from '../../../src/model/dataAssembly/DataItem';
 import {ModuleTestServer} from '../../../src/moduleTestServer/ModuleTestServer';
 

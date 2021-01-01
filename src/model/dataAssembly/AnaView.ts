@@ -24,7 +24,7 @@
  * SOFTWARE.
  */
 
-import {OpcUaConnection} from '../core/OpcUaConnection';
+import {OpcUaConnection} from 'src/model/connection/OpcUaConnection';
 import {BaseDataAssemblyRuntime, DataAssembly} from './DataAssembly';
 import {OpcUaDataItem} from './DataItem';
 import {MonitorSettings} from './mixins/MonitorSettings';

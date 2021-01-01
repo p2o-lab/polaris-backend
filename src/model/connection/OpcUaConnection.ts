@@ -40,9 +40,9 @@ import {
     VariantArrayType
 } from 'node-opcua';
 import {timeout} from 'promise-timeout';
+import {catOpc} from 'src/logging/logging';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Category} from 'typescript-logging';
-import {catOpc} from '../../logging/logging';
 
 /**
  * Events emitted by [[OpcUaConnection]]

@@ -30,7 +30,7 @@ import {DataType} from 'node-opcua-client';
 import {timeout} from 'promise-timeout';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Category} from 'typescript-logging';
-import {OpcUaConnection} from '../core/OpcUaConnection';
+import {OpcUaConnection} from 'src/model/connection/OpcUaConnection';
 
 const catDataItem = new Category('DataItem');
 

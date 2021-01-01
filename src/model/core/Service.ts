@@ -40,7 +40,7 @@ import {WritableDataAssembly} from '../dataAssembly/WritableDataAssembly';
 import {BaseService, BaseServiceEvents} from './BaseService';
 import {controlEnableToJson, ServiceControlEnable, ServiceMtpCommand, ServiceState} from './enum';
 import {PEA} from 'src/model/core/PEA';
-import {OpcUaConnection} from './OpcUaConnection';
+import {OpcUaConnection} from 'src/model/connection/OpcUaConnection';
 import {Procedure} from './Procedure';
 
 /**

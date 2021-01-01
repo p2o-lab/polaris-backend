@@ -40,7 +40,7 @@ import {DataAssembly} from '../dataAssembly/DataAssembly';
 import {DataAssemblyFactory} from '../dataAssembly/DataAssemblyFactory';
 import {DataItemEmitter} from '../dataAssembly/DataItem';
 import {ServiceState} from './enum';
-import {OpcUaConnection} from './OpcUaConnection';
+import {OpcUaConnection} from 'src/model/connection/OpcUaConnection';
 import {Procedure} from './Procedure';
 import {Service} from './Service';
 

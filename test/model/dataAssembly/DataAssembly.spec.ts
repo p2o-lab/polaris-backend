@@ -28,7 +28,7 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
 import {PEA} from '@/model/core/PEA';
-import {OpcUaConnection} from '../../../src/model/core/OpcUaConnection';
+import {OpcUaConnection} from '@/model/connection/OpcUaConnection';
 import {AdvAnaOp, AnaServParam, ExtAnaOp, ExtIntAnaOp} from '../../../src/model/dataAssembly/AnaOp';
 import {AnaView} from '../../../src/model/dataAssembly/AnaView';
 import {BinMon, BinView} from '../../../src/model/dataAssembly/BinView';

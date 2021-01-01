@@ -31,7 +31,7 @@ import {catProcedure} from '../../logging/logging';
 import {DataAssembly} from '../dataAssembly/DataAssembly';
 import {DataAssemblyFactory} from '../dataAssembly/DataAssemblyFactory';
 import {WritableDataAssembly} from '../dataAssembly/WritableDataAssembly';
-import {OpcUaConnection} from './OpcUaConnection';
+import {OpcUaConnection} from 'src/model/connection/OpcUaConnection';
 
 export interface ProcedureEvents {
     parameterChanged: {
