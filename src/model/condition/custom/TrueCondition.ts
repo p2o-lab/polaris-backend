@@ -23,34 +23,25 @@
  * SOFTWARE.
  */
 
-import {AndConditionOptions, OrConditionOptions} from '@p2olab/polaris-interface';
-import {Module} from '../core/Module';
-import {Condition} from './Condition';
-import {ConditionFactory} from './ConditionFactory';
+import {Condition} from 'src/model/condition/Condition';
+import {Module} from 'src/model/core/Module';
 
-export abstract class AggregateCondition extends Condition {
-    public conditions: Condition[] = [];
+/**
+ * Condition which is always true
+ */
+export class TrueCondition extends Condition {
 
-    constructor(options: AndConditionOptions | OrConditionOptions, modules: Module[]) {
+    constructor(options) {
         super(options);
-        this.conditions = options.conditions.map((option) => {
-            return ConditionFactory.create(option, modules);
-        });
-        this._fulfilled = false;
+        this._fulfilled = true;
     }
 
-    public clear() {
-        super.clear();
-        this.conditions.forEach((cond) => cond.clear());
+    public listen(): Condition {
+        this.emit('stateChanged', true);
+        return this;
     }
 
     public getUsedModules(): Set<Module> {
-        const set = new Set<Module>();
-        this.conditions.forEach((cond) => {
-            Array.from(cond.getUsedModules()).forEach((module) => {
-                set.add(module);
-            });
-        });
-        return set;
+        return new Set<Module>();
     }
 }

@@ -24,12 +24,11 @@
  */
 
 import {StateConditionOptions} from '@p2olab/polaris-interface';
-import {catCondition} from '../../logging/logging';
-import {BaseService} from '../core/BaseService';
-import {ServiceState} from '../core/enum';
-import {Module} from '../core/Module';
-import {Condition} from './Condition';
-import {ModuleCondition} from './ModuleCondition';
+import {catCondition} from 'src/logging/logging';
+import {Condition, PEACondition} from 'src/model/condition';
+import {BaseService} from 'src/model/core/BaseService';
+import {ServiceState} from 'src/model/core/enum';
+import {Module} from 'src/model/core/Module';
 
 const mapping = {
     'idle': ServiceState.IDLE,
@@ -50,7 +49,7 @@ const mapping = {
     'aborted': ServiceState.ABORTED
 };
 
-export class StateCondition extends ModuleCondition {
+export class StateCondition extends PEACondition {
     public readonly service: BaseService;
     public readonly state: ServiceState;
 

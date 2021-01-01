@@ -24,12 +24,11 @@
  */
 
 import {VariableConditionOptions} from '@p2olab/polaris-interface';
-import {catCondition} from '../../logging/logging';
-import {Module} from '../core/Module';
-import {Condition} from './Condition';
-import {ModuleCondition} from './ModuleCondition';
+import {catCondition} from 'src/logging/logging';
+import {Condition, PEACondition} from 'src/model/condition';
+import {Module} from 'src/model/core/Module';
 
-export class VariableCondition extends ModuleCondition {
+export class VariableCondition extends PEACondition {
     public readonly dataStructure: string;
     public readonly variable: string;
     public readonly value: string | number;

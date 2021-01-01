@@ -23,25 +23,34 @@
  * SOFTWARE.
  */
 
+import {AndConditionOptions, OrConditionOptions} from '@p2olab/polaris-interface';
 import {Module} from '../core/Module';
 import {Condition} from './Condition';
+import {ConditionFactory} from './ConditionFactory';
 
-/**
- * Condition which is always true
- */
-export class TrueCondition extends Condition {
+export abstract class TwoOperandCondition extends Condition {
+    public conditions: Condition[] = [];
 
-    constructor(options) {
+    constructor(options: AndConditionOptions | OrConditionOptions, modules: Module[]) {
         super(options);
-        this._fulfilled = true;
+        this.conditions = options.conditions.map((option) => {
+            return ConditionFactory.create(option, modules);
+        });
+        this._fulfilled = false;
     }
 
-    public listen(): Condition {
-        this.emit('stateChanged', true);
-        return this;
+    public clear() {
+        super.clear();
+        this.conditions.forEach((cond) => cond.clear());
     }
 
     public getUsedModules(): Set<Module> {
-        return new Set<Module>();
+        const set = new Set<Module>();
+        this.conditions.forEach((cond) => {
+            Array.from(cond.getUsedModules()).forEach((module) => {
+                set.add(module);
+            });
+        });
+        return set;
     }
 }

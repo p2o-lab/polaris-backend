@@ -23,10 +23,10 @@
  * SOFTWARE.
  */
 
+import {Module} from '@/model/core/Module';
 import {ConditionOptions} from '@p2olab/polaris-interface';
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
-import {Module} from '../core/Module';
 
 /**
  * Events emitted by [[Condition]]
@@ -48,9 +48,9 @@ export abstract class Condition extends (EventEmitter as new() => ConditionEmitt
     }
 
     protected _fulfilled: boolean = false;
-    private options: ConditionOptions;
+    private readonly options: ConditionOptions;
 
-    constructor(options: ConditionOptions) {
+    protected constructor(options: ConditionOptions) {
         super();
         this.options = options;
     }

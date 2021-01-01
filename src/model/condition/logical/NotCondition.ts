@@ -23,27 +23,35 @@
  * SOFTWARE.
  */
 
-import {StateConditionOptions, VariableConditionOptions} from '@p2olab/polaris-interface';
-import {Module} from '../core/Module';
-import {Condition} from './Condition';
+import {NotConditionOptions} from '@p2olab/polaris-interface';
+import {catCondition} from 'src/logging/logging';
+import {Condition, ConditionFactory} from 'src/model/condition';
+import {Module} from 'src/model/core/Module';
 
-export abstract class ModuleCondition extends Condition {
-    protected readonly module: Module;
+export class NotCondition extends Condition {
+    public condition: Condition;
 
-    constructor(options: StateConditionOptions | VariableConditionOptions, modules: Module[]) {
+    constructor(options: NotConditionOptions, modules: Module[]) {
         super(options);
-        if (options.module) {
-            this.module = modules.find((module) => module.id === options.module);
-        } else if (modules.length === 1) {
-            this.module = modules[0];
-        }
-        if (!this.module) {
-            throw new Error(`Could not find module ${options.module} in ${JSON.stringify(modules.map((m) => m.id))}`);
-        }
+        catCondition.trace(`Add NotCondition: ${options}`);
+        this.condition = ConditionFactory.create(options.condition, modules);
+        this._fulfilled = !this.condition.fulfilled;
     }
 
-    public getUsedModules() {
-        return new Set<Module>().add(this.module);
+    public clear() {
+        super.clear();
+        this.condition.clear();
     }
 
+    public listen(): Condition {
+        this.condition.listen().on('stateChanged', (state) => {
+            this._fulfilled = !state;
+            this.emit('stateChanged', this._fulfilled);
+        });
+        return this;
+    }
+
+    public getUsedModules(): Set<Module> {
+        return this.condition.getUsedModules();
+    }
 }

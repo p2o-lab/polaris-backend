@@ -23,46 +23,28 @@
  * SOFTWARE.
  */
 
-import {TimeConditionOptions} from '@p2olab/polaris-interface';
-import {catCondition} from '../../logging/logging';
-import {Module} from '../core/Module';
-import {Condition} from './Condition';
-import Timeout = NodeJS.Timeout;
+import {OrConditionOptions} from '@p2olab/polaris-interface';
+import {catCondition} from 'src/logging/logging';
+import {Condition, TwoOperandCondition} from 'src/model/condition';
+import {Module} from 'src/model/core/Module';
 
-export class TimeCondition extends Condition {
+export class OrCondition extends TwoOperandCondition {
 
-    private timer: Timeout;
-    private duration: number;
-
-    constructor(options: TimeConditionOptions) {
-        super(options);
-        if (options.duration <= 0) {
-            throw new Error('Duration is negative');
-        }
-        this.duration = options.duration * 1000;
-        this._fulfilled = false;
-        catCondition.trace(`Add TimeCondition: ${JSON.stringify(options)}`);
+    constructor(options: OrConditionOptions, modules: Module[]) {
+        super(options, modules);
+        catCondition.trace(`Add OrCondition: ${options}`);
     }
 
     public listen(): Condition {
-        catCondition.debug(`Start Timer: ${this.duration}`);
-        this.timer = global.setTimeout(() => {
-                catCondition.debug(`TimeCondition finished: ${this.duration}`);
-                this._fulfilled = true;
-                this.emit('stateChanged', this._fulfilled);
-            },
-            this.duration);
+        this.conditions.forEach((condition) => {
+            condition.listen().on('stateChanged', (status) => {
+                const oldState = this._fulfilled;
+                this._fulfilled = this.conditions.some((cond) => cond.fulfilled);
+                if (oldState !== this._fulfilled) {
+                    this.emit('stateChanged', this._fulfilled);
+                }
+            });
+        });
         return this;
-    }
-
-    public clear(): void {
-        super.clear();
-        if (this.timer) {
-            global.clearTimeout(this.timer);
-        }
-    }
-
-    public getUsedModules(): Set<Module> {
-        return new Set<Module>();
     }
 }

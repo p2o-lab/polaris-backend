@@ -25,10 +25,10 @@
 
 import {ExpressionConditionOptions, ScopeOptions} from '@p2olab/polaris-interface';
 import {Expression} from 'expr-eval';
-import {catCondition} from '../../logging/logging';
-import {Module} from '../core/Module';
-import {ScopeItem} from '../recipe/ScopeItem';
-import {Condition} from './Condition';
+import {catCondition} from 'src/logging/logging';
+import {Condition} from 'src/model/condition/Condition';
+import {Module} from 'src/model/core/Module';
+import {ScopeItem} from 'src/model/recipe/ScopeItem';
 
 export class ExpressionCondition extends Condition {
 
