@@ -42,7 +42,6 @@ import {
 import {timeout} from 'promise-timeout';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Category} from 'typescript-logging';
-import {fixReactor} from '../../achema/ReactorFix';
 import {catOpc} from '../../logging/logging';
 
 /**
@@ -102,11 +101,6 @@ export class  OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionE
             this.session = await this.createSession();
             this.namespaceArray = await this.readNameSpaceArray();
             this.subscription = await this.createSubscription();
-
-            if (this.endpoint === 'opc.tcp://10.6.51.22:4840') {
-                await fixReactor(this.session)
-                    .catch((err) => this.logger.warn(`Something wrong during fixing reactor ${JSON.stringify(err)}`));
-            }
 
             this.logger.info(`[${this.id}] Successfully connected`);
             this.emit('connected');
