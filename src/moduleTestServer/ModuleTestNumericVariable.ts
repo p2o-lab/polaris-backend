@@ -105,7 +105,7 @@ export class TestServerNumericVariable extends TestServerVariable {
                 },
                 set: (variant) => {
                     this.vext = parseFloat(variant.value);
-                    catTestServer.debug(`Set Vext of ${this.name} to ${variant.value} -> ${this.vext}`);
+                    catTestServer.debug(`Set VExt of ${this.name} to ${variant.value} -> ${this.vext}`);
                     setTimeout(() => {
                         this.v = this.vext;
                     }, 500);
@@ -123,9 +123,9 @@ export class TestServerNumericVariable extends TestServerVariable {
         const amplitude = this.sclMax - this.sclMin;
         const average = (this.sclMax + this.sclMin) / 2;
         this.interval = global.setInterval(() => {
-            time = time + 0.05;
-            this.v = average + 0.5 * amplitude * Math.sin(2 * f1 * time + 3 * f2);
-        }, 100);
+            time = time + 0.5;
+            this.v = average + 0.5 * amplitude * Math.sin(0.01 * (1 + f1) * time + Math.PI * f2);
+        }, 500);
     }
 
     public stopRandomOscillation() {

@@ -45,7 +45,8 @@ describe('Module', () => {
     context('with module server', () => {
         let moduleServer: ModuleTestServer;
 
-        before(async () => {
+        before(async function() {
+            this.timeout(4000);
             moduleServer = new ModuleTestServer();
             await moduleServer.start();
             moduleServer.startSimulation();
@@ -60,7 +61,13 @@ describe('Module', () => {
             const moduleJson =
                 JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8')).modules[0];
             const module = new Module(moduleJson);
-            await module.connect();
+            module.connect();
+
+            await Promise.all([
+                new Promise((resolve) => module.on('parameterChanged', resolve)),
+                new Promise((resolve) => module.on('variableChanged', resolve)),
+                new Promise((resolve) => module.on('stateChanged', resolve))
+            ]);
 
             const json = module.json();
             expect(json).to.have.property('id', 'ModuleTestServer');
@@ -73,46 +80,39 @@ describe('Module', () => {
             expect(module.services[0].serviceControl.listenerCount('State')).to.equal(1);
 
             expect(module.variables[0].listenerCount('V')).to.equal(1);
-            expect(module.variables[0].communication.WQC.listenerCount('changed')).to.equal(1);
-            expect(module.variables[0].communication.WQC.listenerCount('changed')).to.equal(1);
+            expect(module.variables[0].communication.WQC.listenerCount('changed')).to.equal(2);
             expect(module.services[0].eventEmitter.listenerCount('parameterChanged')).to.equal(1);
 
             const errorMsg = module.services[0].strategies[0].processValuesOut[0] as StrView;
-            expect(errorMsg.communication.WQC.listenerCount('changed')).to.equal(1);
-            expect(errorMsg.communication.Text.listenerCount('changed')).to.equal(1);
+            expect(errorMsg.communication.WQC.listenerCount('changed')).to.equal(2);
+            expect(errorMsg.communication.Text.listenerCount('changed')).to.equal(2);
 
-            await Promise.all([
-                new Promise((resolve) => module.on('parameterChanged', resolve)),
-                new Promise((resolve) => module.on('variableChanged', resolve)),
-                new Promise((resolve) => module.on('stateChanged', resolve))
-            ]);
             await module.disconnect();
-        }).timeout(3000);
+        });
 
         it('should work after reconnect', async () => {
             const moduleJson =
                 JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json', 'utf8')).modules[0];
             const module = new Module(moduleJson);
 
-            await module.connect();
-            expect(module.connection.monitoredItemSize()).to.be.greaterThan(80);
-
+            module.connect();
             await Promise.all([
                 new Promise((resolve) => module.on('parameterChanged', resolve)),
                 new Promise((resolve) => module.on('variableChanged', resolve)),
                 new Promise((resolve) => module.on('stateChanged', resolve))
             ]);
+            expect(module.connection.monitoredItemSize()).to.be.greaterThan(80);
             await module.disconnect();
             expect(module.connection.monitoredItemSize()).to.equal(0);
 
-            await module.connect();
-            expect(module.connection.monitoredItemSize()).to.be.greaterThan(80);
+            module.connect();
             await Promise.all([
                 new Promise((resolve) => module.on('parameterChanged', resolve)),
                 new Promise((resolve) => module.on('variableChanged', resolve)),
                 new Promise((resolve) => module.on('stateChanged', resolve))
             ]);
-        }).timeout(5000);
+            expect(module.connection.monitoredItemSize()).to.be.greaterThan(80);
+        });
 
     });
 

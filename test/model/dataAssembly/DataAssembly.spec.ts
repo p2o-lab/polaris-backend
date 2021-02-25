@@ -466,7 +466,8 @@ describe('DataAssembly', () => {
         let moduleServer: ModuleTestServer;
         let connection: OpcUaConnection;
 
-        beforeEach(async () => {
+        beforeEach(async function() {
+            this.timeout(4000);
             moduleServer = new ModuleTestServer();
             await moduleServer.start();
 
@@ -474,39 +475,28 @@ describe('DataAssembly', () => {
             await connection.connect();
         });
 
-        afterEach(async () => {
+        afterEach(async function() {
+            this.timeout(4000);
             await connection.disconnect();
             await moduleServer.shutdown();
         });
 
-        it('should subscribe and unsubscribe from ExtIntAnaOp', async () => {
+        it('should subscribe to ExtIntAnaOp', async () => {
             const daJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString())
                 .modules[0].services[0].strategies[0].parameters[0];
             const da = DataAssemblyFactory.create(daJson as any, connection) as ExtIntAnaOp;
 
-            await da.subscribe();
+            da.subscribe();
+            connection.startListening();
+            await new Promise((resolve) => da.on('changed', resolve));
 
-            da.setParameter(2);
-            await new Promise((resolve) => da.on('changed', () => {
-                if (da.writeDataItem.value === 2) {
-                    resolve();
-                }
-            }));
-            expect(da.writeDataItem.value).to.equal(2);
+            da.setParameter(4);
+            await new Promise((resolve) => da.on('changed', resolve));
+            expect(da.writeDataItem.value).to.equal(4);
 
-            await da.setParameter(3, 'VExt');
-            await new Promise((resolve) => da.on('changed', () => {
-                if (da.writeDataItem.value === 3) {
-                    resolve();
-                }
-            }));
-
-            da.unsubscribe();
-            da.setParameter(2);
-            await Promise.race([
-                new Promise((resolve, reject) => da.on('changed', reject)),
-                new Promise((resolve) => setTimeout(resolve, 500))
-            ]);
+            da.setParameter(3, 'VExt');
+            await new Promise((resolve) => da.on('changed', resolve));
+            expect(da.writeDataItem.value).to.equal(3);
         }).timeout(5000);
 
         it('should set value', async () => {
@@ -514,48 +504,44 @@ describe('DataAssembly', () => {
                 .modules[0].services[0].strategies[0].parameters[0];
             const da = DataAssemblyFactory.create(daJson as any, connection) as ExtIntAnaOp;
 
-            await da.subscribe();
+            da.subscribe();
+            connection.startListening();
+            await new Promise((resolve) => da.on('changed', resolve));
 
-            await da.setValue({value: 11, name: 'abc'}, []);
-            await new Promise((resolve) => da.on('changed', () => {
-                if (da.writeDataItem.value === 11) {
-                    resolve();
-                }
-            }));
+            da.setValue({value: 11, name: 'abc'}, []);
+            await new Promise((resolve) => da.on('changed', resolve));
             expect(da.writeDataItem.value).to.equal(11);
 
-            await da.setValue({value: 12, name: 'abc'}, []);
-            await new Promise((resolve) => da.on('changed', () => {
-                if (da.writeDataItem.value === 12) {
-                    resolve();
-                }
-            }));
+            da.setValue({value: 12, name: 'abc'}, []);
+            await new Promise((resolve) => da.on('changed', resolve));
             expect(da.writeDataItem.value).to.equal(12);
-        }).timeout(5000);
+        });
 
         it('should set continuous value', async () => {
             const daModule = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString())
                 .modules[0];
+            moduleServer.startSimulation();
             const module = new Module(daModule);
             await module.connect();
-            moduleServer.startSimulation();
 
             const da = module.services[0].strategies[0].parameters[0] as WritableDataAssembly;
             const inputDa = module.variables[0];
-            await da.subscribe();
-            await inputDa.subscribe();
 
-            await new Promise((resolve) => inputDa.on('changed', () => resolve()));
+            expect(da.name).to.equal('Factor');
+            expect(da.readDataItem.value).to.equal(2);
+            expect(inputDa.name).to.equal('Variable001');
 
-            da.setValue({value: '2 * ModuleTestServer.Variable001', name: da.name, continuous: true}, [module]);
+            await new Promise((resolve) => inputDa.once('changed', resolve));
+
             const inputValue = inputDa.getValue();
-            await new Promise((resolve) => da.on('changed', () => resolve()));
+            await da.setValue({value: '2 * ModuleTestServer.Variable001', name: da.name, continuous: true}, [module]);
+            await new Promise((resolve) => da.once('VRbk', resolve));
             expect(da.getValue()).to.be.closeTo(2 * inputValue, 0.05 * inputValue);
 
             await da.setValue({value: '11', name: da.name}, []);
-            await new Promise((resolve) => da.on('changed', () => resolve()));
+            await new Promise((resolve) => da.on('VRbk', resolve));
             expect(da.getValue()).to.equal(11);
-        }).timeout(5000);
+        });
 
         it('should create ServiceControl old', async () => {
             const daJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString())
@@ -564,7 +550,9 @@ describe('DataAssembly', () => {
                 {...daJson, interface_class: 'ServiceControl'} as any, connection) as ServiceControl;
             expect(da.classicOpMode).to.equal(true);
 
-            await da.subscribe();
+            const p = da.subscribe();
+            connection.startListening();
+            await p;
             expect(da.name).to.equal('Service1');
             expect(da instanceof ServiceControl).to.equal(true);
 
@@ -578,7 +566,7 @@ describe('DataAssembly', () => {
 
             await da.setToAutomaticOperationMode();
             expect(da.getOperationMode()).to.equal(OperationMode.Automatic);
-        }).timeout(8000);
+        });
 
         it('should create ServiceControl new', async () => {
             const daJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0_2.json').toString())
@@ -587,7 +575,10 @@ describe('DataAssembly', () => {
                 {...daJson, interface_class: 'ServiceControl'} as any, connection) as ServiceControl;
             expect(da.classicOpMode).to.equal(false);
 
-            await da.subscribe();
+            const p = da.subscribe();
+            connection.startListening();
+            await p;
+
             expect(da.name).to.equal('Service1');
             expect(da instanceof ServiceControl).to.equal(true);
 
@@ -601,14 +592,17 @@ describe('DataAssembly', () => {
 
             await da.setToAutomaticOperationMode();
             expect(da.getOperationMode()).to.equal(OperationMode.Automatic);
-        }).timeout(8000);
+        });
 
         it('should create ExtIntAnaOp', async () => {
             const daJson = JSON.parse(fs.readFileSync('assets/modules/module_testserver_1.0.0.json').toString())
                 .modules[0].services[0].strategies[0].parameters[0];
             const da = DataAssemblyFactory.create(daJson as any, connection) as ExtIntAnaOp;
 
-            await da.subscribe();
+            const p = da.subscribe();
+            connection.startListening();
+            await p;
+
             expect(da.name).to.equal('Factor');
             expect(da instanceof ExtAnaOp).to.equal(true);
             expect(da instanceof ExtIntAnaOp).to.equal(true);
@@ -687,7 +681,9 @@ describe('DataAssembly', () => {
             expect(da instanceof StrView).to.equal(true);
 
             if (da instanceof StrView) {
-                await da.subscribe();
+                const p = da.subscribe();
+                connection.startListening();
+                await p;
                 expect(da.OSLevel).to.have.property('dataType', 'UInt32');
                 expect(da.OSLevel).to.have.property('namespaceIndex', 'urn:NodeOPCUA-Server-default');
                 expect(da.OSLevel).to.have.property('nodeId', 'Service1.CurrentTime.OSLevel');
