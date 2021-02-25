@@ -1,0 +1,21 @@
+@startuml
+'https://plantuml.com/class-diagram
+!include ServiceControl/ServiceControl.puml
+!include ./activeElement/ActiveElement.puml
+!include ./_extensions/basicDefinitions.puml
+!include ./DiagnosticElement/diagnosticElement.puml
+!include ./IndicatorElement/indicatorElement.puml
+!include ./InputElement/inputElement.puml
+!include ./OperationElement/operationElement.puml
+
+abstract class DataAssembly
+
+DataAssembly <|-- ActiveElement
+DataAssembly <|-- BasicDefinition
+DataAssembly <|-- DiagnosticElement
+DataAssembly <|-- IndicatorElement
+DataAssembly <|-- InputElement
+DataAssembly <|-- OperationElement
+DataAssembly <|-- ServiceControl
+
+@enduml

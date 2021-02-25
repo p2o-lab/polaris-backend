@@ -1,0 +1,16 @@
+@startuml
+'https://plantuml.com/class-diagram
+!include portObject/PortObject.puml
+!include termination/Termination.puml
+!include Junction.puml
+
+class TopologyObject{
+X
+Y
+}
+
+TopologyObject *-down- Junction
+TopologyObject *-down- Termination
+TopologyObject *-right- PortObject
+
+@enduml

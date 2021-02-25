@@ -1,0 +1,17 @@
+@startuml
+'https://plantuml.com/class-diagram
+!include FunctionLine.puml
+!include MeasurementLine.puml
+!include Pipe.puml
+!include ../portObject/PortObject.puml
+
+class Connection{
+Edgepath
+}
+
+Connection <|-- FunctionLine
+Connection <|-- MeasurementLine
+Connection <|-- Pipe
+Connection *-- PortObject
+
+@enduml

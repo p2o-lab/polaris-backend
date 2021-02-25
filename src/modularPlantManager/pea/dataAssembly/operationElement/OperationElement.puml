@@ -1,0 +1,19 @@
+@startuml
+'https://plantuml.com/class-diagram
+!include ./servParam/ServParam.puml
+!include man/anaMan/AnaMan.puml
+!include man/binMan/BinMan.puml
+!include man/dintMan/DIntMan.puml
+
+abstract class OperationElement
+
+OperationElement *- OperationElementSpec
+OperationElementSpec ..> OperationElementMockup : <<use>>
+OperationElement *- OperationElementMockup
+
+OperationElement <|-- ServParam
+OperationElement <|-- AnaMan
+OperationElement <|-- BinMan
+OperationElement <|-- DIntMan
+
+@enduml

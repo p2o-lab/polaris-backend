@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018 Markus Graube <markus.graube@tu.dresden.de>,
+ * Copyright (c) 2021 P2O-Lab <p2o-lab@mailbox.tu-dresden.de>,
  * Chair for Process Control Systems, Technische Universität Dresden
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,52 +24,32 @@
  */
 
 import {
-    Category,
-    CategoryConfiguration,
-    CategoryLogFormat,
-    CategoryServiceFactory,
-    LoggerType,
-    LogLevel,
-    RuntimeSettings
+	Category,
+	CategoryConfiguration,
+	CategoryLogFormat,
+	CategoryServiceFactory,
+	LoggerType,
+	LogLevel,
+	RuntimeSettings
 } from 'typescript-logging';
 import {CustomLogger} from './CustomLogger';
-
-// Create categories, they will autoregister themselves
-export const catRecipe = new Category('recipe');
-export const catDataAssembly = new Category('dataAssembly');
-export const catParameter = new Category('parameter', catRecipe);
-export const catScopeItem = new Category('scopeItem', catRecipe);
-export const catCondition = new Category('condition', catRecipe);
-export const catOperation = new Category('operation', catRecipe);
-export const catPlayer = new Category('player');
-export const catModule = new Category('module');
-export const catService = new Category('service');
-export const catProcedure = new Category('procedure', catService);
-
-export const catManager = new Category('manager');
-export const catOpc = new Category('opcua');
-export const catServer = new Category('server');
-export const catTestServer = new Category('testserver');
-
-export const catVirtualService = new Category('VirtualService');
-export const catAggregatedService = new Category('AggregatedService', catVirtualService);
-export const catTimer = new Category('Timer', catVirtualService);
 
 // Custom logging
 export const messages: string[] = [];
 
-const logLevelMapping = {
-    'ERROR': LogLevel.Error,
-    'WARN': LogLevel.Warn,
-    'INFO': LogLevel.Info,
-    'DEBUG': LogLevel.Debug,
-    'TRACE': LogLevel.Trace
+const logLevelMapping: { [key: string]: LogLevel } = {
+	'ERROR': LogLevel.Error,
+	'WARN': LogLevel.Warn,
+	'INFO': LogLevel.Info,
+	'DEBUG': LogLevel.Debug,
+	'TRACE': LogLevel.Trace
 };
-const logLevel = logLevelMapping[(process.env.LOGLEVEL || '').toUpperCase()] || LogLevel.Info;
+
+const logLevel: LogLevel = process.env.LOGLEVEL ? logLevelMapping[(process.env.LOGLEVEL).toUpperCase()] : LogLevel.Info;
 
 // Configure to use our custom logger, note the callback which returns our CustomLogger from above.
 const config = new CategoryConfiguration(
-    logLevel, LoggerType.Custom, new CategoryLogFormat(),
-    (category: Category, runtimeSettings: RuntimeSettings) => new CustomLogger(category, runtimeSettings, messages)
+	logLevel, LoggerType.Custom, new CategoryLogFormat(),
+	(category: Category, runtimeSettings: RuntimeSettings) => new CustomLogger(category, runtimeSettings, messages)
 );
 CategoryServiceFactory.setDefaultConfiguration(config);

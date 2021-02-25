@@ -1,0 +1,187 @@
+{
+  "version": "0.2.0",
+  "name": "DoseFill",
+  "type": "aggregatedService",
+  "description": "Combined Dose from Dose PEA and fill from reactor",
+  "necessaryServices": [
+    {
+      "pea": "Dose",
+      "service": "DoseAmount"
+    },
+    {
+      "pea": "React",
+      "service": "Fill_Service"
+    }
+  ],
+  "parameters": [
+    {
+      "name": "SetVolume",
+      "type": "ExtAnaOp",
+      "default": "0",
+      "unit": "1038"
+    }
+  ],
+  "stateMachine": {
+    "starting": {
+      "initialTransition": "t1",
+      "states": [
+        {
+          "id": "Init",
+          "operations": [
+            {
+              "pea": "Dose",
+              "service": "DoseAmount",
+              "command": "start",
+              "parameters": [
+                {
+                  "name": "SetVolume",
+                  "value": "SetVolume"
+                }
+              ]
+            },
+            {
+              "pea": "React",
+              "service": "Fill_Service",
+              "command": "start"
+            }
+          ],
+          "nextTransitions": [
+            "t2"
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "id": "t1",
+          "nextStates": [
+            "Init"
+          ]
+        },
+        {
+          "id": "t2",
+          "condition": "Dose.DoseAmount.state=='EXECUTE' and React.Fill.state=='EXECUTE'",
+          "nextStates": [
+            "finished"
+          ]
+        }
+      ]
+    },
+    "pausing": {
+      "initialTransition": "t1",
+      "states": [
+        {
+          "id": "Init",
+          "operations": [
+            {
+              "pea": "Dose",
+              "service": "DoseAmount",
+              "command": "pause"
+            },
+            {
+              "pea": "React",
+              "service": "Fill_Service",
+              "command": "pause"
+            }
+          ],
+          "nextTransitions": [
+            "t2"
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "id": "t1",
+          "nextStates": [
+            "Init"
+          ]
+        },
+        {
+          "id": "t2",
+          "nextStates": [
+            "finished"
+          ]
+        }
+      ]
+    },
+    "resuming": {
+      "initialTransition": "t1",
+      "states": [
+        {
+          "id": "Init",
+          "operations": [
+            {
+              "pea": "Dose",
+              "service": "DoseAmount",
+              "command": "resume"
+            },
+            {
+              "pea": "React",
+              "service": "Fill_Service",
+              "command": "resume"
+            }
+          ],
+          "nextTransitions": [
+            "t2"
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "id": "t1",
+          "nextStates": [
+            "Init"
+          ]
+        },
+        {
+          "id": "t2",
+          "nextStates": [
+            "finished"
+          ]
+        }
+      ]
+    },
+    "completing": {
+      "initialTransition": "t1",
+      "states": [
+        {
+          "id": "Init",
+          "operations": [
+            {
+              "pea": "Dose",
+              "service": "DoseAmount",
+              "command": "complete"
+            },
+            {
+              "pea": "React",
+              "service": "Fill_Service",
+              "command": "complete"
+            }
+          ],
+          "nextTransitions": [
+            "t2"
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "id": "t1",
+          "nextStates": [
+            "Init"
+          ]
+        },
+        {
+          "id": "t2",
+          "nextStates": [
+            "finished"
+          ]
+        }
+      ]
+    }
+  },
+  "commandEnable": {
+    "start": "Dose.DoseAmount.commandEnable.start && React.Fill.commandEnable.start",
+    "pause": "Dose.DoseAmount.commandEnable.pause && React.Fill.commandEnable.pause",
+    "resume": "Dose.DoseAmount.commandEnable.resume && React.Fill.commandEnable.resume",
+    "complete": false
+  }
+}

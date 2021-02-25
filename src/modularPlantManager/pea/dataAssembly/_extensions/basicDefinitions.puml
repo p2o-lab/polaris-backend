@@ -1,0 +1,31 @@
+@startuml
+'https://plantuml.com/class-diagram
+!include feedbackMonitoringDA/FeedbackMonitoringDA.puml
+!include interlockDA/InterlockDA.puml
+!include limitMonitoringDA/LimitMonitoringDA.puml
+!include opModeDA/OpModeDA.puml
+!include osLevelDA/OSLevelDA.puml
+!include resetDA/ResetDA.puml
+!include scaleSettingsDA/ScaleSettingDA.puml
+!include serviceSourceModeDA/ServiceSourceModeDA.puml
+!include sourceModeDA/SourceModeDA.puml
+!include unitDA/UnitDA.puml
+!include valueLimitationDA/ValueLimitationDA.puml
+!include wqcDA/WQCDA.puml
+
+abstract class DataAssembly
+
+DataAssembly <|-- FeedbackMonitoringDA
+DataAssembly <|-- InterlockDA
+DataAssembly <|-- LimitMonitoringDA
+DataAssembly <|-- OpModeDA
+DataAssembly <|-- OSLevelDA
+DataAssembly <|-- ResetDA
+DataAssembly <|-- ScaleSettingDA
+DataAssembly <|-- ServiceSourceModeDA
+DataAssembly <|-- SourceModeDA
+DataAssembly <|-- UnitDA
+DataAssembly <|-- ValueLimitationDA
+DataAssembly <|-- WQCDA
+
+@enduml

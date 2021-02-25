@@ -1,0 +1,10 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class FunctionLine{
+Start: LogicalPort
+End: LogicalPort
+
+}
+
+@enduml

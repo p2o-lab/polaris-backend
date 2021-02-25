@@ -1,0 +1,8 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+BinServParam *- BinServParamSpec
+BinServParamSpec ..> BinServParamMockup : <<use>>
+BinServParam *- BinServParamMockup
+
+@enduml

@@ -1,0 +1,9 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class VariableCondition
+
+VariableCondition *- VariableConditionSpec
+VariableConditionSpec *- VariableConditionJson
+
+@enduml

@@ -1,0 +1,13 @@
+@startuml
+'https://plantuml.com/class-diagram
+!include anaDrv/AnaDrv.puml
+!include binDrv/BinDrv.puml
+
+Drv *- DrvSpec
+DrvSpec ..> DrvMockup : <<use>>
+Drv *- DrvMockup
+
+Drv <|-- AnaDrv
+Drv <|-- BinDrv
+
+@enduml

@@ -1,0 +1,17 @@
+@startuml
+'https://plantuml.com/class-diagram
+!include procedure/Procedure.puml
+
+class Service{
+    name: string
+    parameters: ServiceParameter[]
+}
+
+Service *-down- "1..*" Procedure: has
+Service *-left- "0..*" ConfigurationParameter
+
+abstract class ServiceParameter
+
+ServiceParameter <|-- ConfigurationParameter
+
+@enduml

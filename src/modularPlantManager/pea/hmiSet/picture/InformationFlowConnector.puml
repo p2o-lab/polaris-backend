@@ -1,0 +1,11 @@
+@startuml
+'https://plantuml.com/class-diagram
+!include LogicalPort.puml
+!include MeasurementPoint.puml
+
+interface InformationFlowConnector
+
+InformationFlowConnector "1" <-- "2" LogicalPort
+InformationFlowConnector "1" <-- "2" MeasurementPoint
+
+@enduml

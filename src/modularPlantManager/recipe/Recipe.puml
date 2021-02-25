@@ -1,0 +1,8 @@
+@startuml
+'https://plantuml.com/class-diagram
+!include step/Step.puml
+
+class Recipe
+
+Recipe "1" *-- "*" Step: contains >
+@enduml

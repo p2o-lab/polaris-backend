@@ -1,0 +1,8 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+BinMon *- BinMonSpec
+BinMonSpec ..> BinMonMockup : <<use>>
+BinMon *- BinMonMockup
+
+@enduml

@@ -1,0 +1,11 @@
+@startuml
+'https://plantuml.com/class-diagram
+!include AnaMon.puml
+
+AnaView *- AnaViewSpec
+AnaViewSpec ..> AnaViewMockup : <<use>>
+AnaView *- AnaViewMockup
+
+AnaView <|-- AnaMon
+
+@enduml

@@ -1,0 +1,9 @@
+@startuml
+'https://plantuml.com/class-diagram
+!include Question.puml
+
+class ServiceInteraction
+
+ServiceInteraction *-down- "1..*" Question
+
+@enduml

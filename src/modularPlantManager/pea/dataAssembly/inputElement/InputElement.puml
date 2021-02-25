@@ -1,0 +1,17 @@
+@startuml
+'https://plantuml.com/class-diagram
+!include processValueIn/AnaProcessValueIn/AnaProcessValueIn.puml
+!include processValueIn/BinProcessValueIn/BinProcessValueIn.puml
+!include processValueIn/DIntProcessValueIn/DIntProcessValueIn.puml
+
+abstract class InputElement
+
+InputElement *- InputElementSpec
+InputElementSpec ..> InputElementMockup : <<use>>
+InputElement *- InputElementMockup
+
+InputElement <|-- AnaProcessValueIn
+InputElement <|-- BinProcessValueIn
+InputElement <|-- DIntProcessValueIn
+
+@enduml

@@ -1,0 +1,11 @@
+@startuml
+'https://plantuml.com/class-diagram
+!include InformationFlowConnector.puml
+!include MassFlowConnector.puml
+
+interface ConnectorInterface
+
+ConnectorInterface <|-- InformationFlowConnector
+ConnectorInterface <|-- MassFlowConnector
+
+@enduml

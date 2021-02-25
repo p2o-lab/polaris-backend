@@ -1,0 +1,9 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class ExpressionCondition
+
+ExpressionCondition *- ExpressionConditionSpec
+ExpressionConditionSpec *- ExpressionConditionJson
+
+@enduml

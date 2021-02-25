@@ -1,0 +1,9 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class AndCondition
+
+AndCondition *- AndConditionSpec
+AndConditionSpec *- AndConditionJson
+
+@enduml

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018 Markus Graube <markus.graube@tu.dresden.de>,
+ * Copyright (c) 2021 P2O-Lab <p2o-lab@mailbox.tu-dresden.de>,
  * Chair for Process Control Systems, Technische Universität Dresden
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,33 +23,24 @@
  * SOFTWARE.
  */
 
+import {
+	modularPlantManagerRouter
+} from './router';
+
 import * as express from 'express';
-import {NextFunction, Request, Response, static as expressStatic} from 'express';
-import {catServer} from '../logging/logging';
-import {coreRouter} from './router/coreRouter';
-import {moduleRouter} from './router/moduleRouter';
-import {playerRouter} from './router/playerRouter';
-import {recipeRouter} from './router/recipeRouter';
-import {recipeRunRouter} from './router/recipeRunRouter';
-import {serviceRouter} from './router/serviceRouter';
-import {virtualServiceRouter} from './router/virtualServiceRouter';
+import {Request, Response, static as expressStatic} from 'express';
+import {catServer} from './server';
 
 export default class Routes {
-    public static init(app: express.Application): void {
-        app.use('/doc', expressStatic('apidoc'));
-        app.use('/api/module', moduleRouter);
-        app.use('/api/module', serviceRouter);
-        app.use('/api/recipeRun', recipeRunRouter);
-        app.use('/api/recipe', recipeRouter);
-        app.use('/api/player', playerRouter);
-        app.use('/api/virtualService', virtualServiceRouter);
-        app.use('/api', coreRouter);
+	public static init(app: express.Application): void {
+		app.use('/doc', expressStatic('apidoc'));
+		app.use('/api', modularPlantManagerRouter);
 
-        // Error handling
-        app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-            catServer.error(`Internal server error (HTTP 500): ${err.toString()}`, err);
-            res.status(500).send({ status: 'error', error: err.toString(), stack: err.stack });
-        });
-
-    }
+		// Error handling
+		app.use(function (err: Error, req: Request, res: Response, next: () => void) {
+			catServer.error(`Internal server error (HTTP 500): ${err.toString()}`, err);
+			res.status(500).send({status: 'error', error: err.toString(), stack: err.stack});
+			next();
+		});
+	}
 }

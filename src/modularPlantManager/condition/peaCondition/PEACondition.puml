@@ -1,0 +1,14 @@
+@startuml
+'https://plantuml.com/class-diagram
+!include ServiceStateCondition.puml
+!include VariableCondition.puml
+
+abstract class PEACondition
+
+PEACondition *- PEAConditionSpec
+PEAConditionSpec *- PEAConditionJson
+
+PEACondition <|-- ServiceStateCondition
+PEACondition <|-- VariableCondition
+
+@enduml

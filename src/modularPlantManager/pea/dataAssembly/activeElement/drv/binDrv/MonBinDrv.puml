@@ -1,0 +1,10 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class MonBinDrv
+
+MonBinDrv *- MonBinDrvSpec
+MonBinDrvSpec ..> MonBinDrvMockup : <<use>>
+MonBinDrv *- MonBinDrvMockup
+
+@enduml

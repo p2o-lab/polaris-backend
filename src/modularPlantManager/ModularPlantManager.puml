@@ -1,0 +1,16 @@
+@startuml
+'https://plantuml.com/class-diagram
+!include ./recipe/Recipe.puml
+!include ./recipe/RecipeRun.puml
+!include ./polService/POLService.puml
+!include ./recipe/Player.puml
+!include ./pea/PEA.puml
+
+class ModularPlantManager
+
+ModularPlantManager "1" o-- "*" RecipeRun
+ModularPlantManager "1" o-- "1" Player
+ModularPlantManager "1" o-- "*" PEA
+ModularPlantManager  o-- "*" POLService
+
+@enduml

@@ -1,0 +1,11 @@
+@startuml
+'https://plantuml.com/class-diagram
+!include DIntMon.puml
+
+DIntView *- DIntViewSpec
+DIntViewSpec ..> DIntViewMockup : <<use>>
+DIntView *- DIntViewMockup
+
+DIntView <|-- DIntMon
+
+@enduml

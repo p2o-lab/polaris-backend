@@ -1,0 +1,9 @@
+@startuml
+'https://plantuml.com/class-diagram
+!include Answer.puml
+
+class Question
+
+Question *-- "1..*" Answer
+
+@enduml

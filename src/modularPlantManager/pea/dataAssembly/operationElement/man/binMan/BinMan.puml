@@ -1,0 +1,10 @@
+@startuml
+'https://plantuml.com/class-diagram
+!include BinManInt.puml
+
+BinMan *- BinManSpec
+BinManSpec ..> BinManMockup : <<use>>
+BinMan *- BinManMockup
+
+BinMan <|-- BinManInt
+@enduml

@@ -1,0 +1,8 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+HealthStateView *- HealthStateViewSpec
+HealthStateViewSpec ..> HealthStateViewMockup : <<use>>
+HealthStateView *- HealthStateViewMockup
+
+@enduml

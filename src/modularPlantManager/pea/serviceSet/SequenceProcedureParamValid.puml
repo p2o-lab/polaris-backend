@@ -1,0 +1,100 @@
+@startuml
+
+skinparam monochrome false
+
+participant POL
+participant ProcedureParam
+participant Service
+
+rnote over ProcedureParam
+ VMin = 0.0
+ VMax = 20.0
+ VOut = 0.0
+ VReq = 0.0
+ ParamOpMode: Automatic
+endrnote
+rnote over Service
+  State: Idle
+endrnote
+
+POL -> ProcedureParam : VExt:=10.0
+
+rnote over ProcedureParam
+ VOut = 0.0
+ VReq = 10.0
+endrnote
+
+POL <- ProcedureParam : VReq:=10.0
+
+hnote over POL #00FF00: VReq==VExt?
+
+activate Service
+
+POL -> Service : Service.Start
+rnote over Service
+  StateCur: Starting
+endrnote
+ProcedureParam <- Service
+
+rnote over ProcedureParam
+ VOut = 10.0 (Frozen)
+ VReq = 10.0
+endrnote
+rnote over Service
+  StateCur: Execute
+endrnote
+
+POL -> ProcedureParam : VExt:=15.0
+
+rnote over ProcedureParam
+ VOut = 10.0 (Frozen)
+ VReq = 15.0
+endrnote
+
+POL <- ProcedureParam : VReq:=15.0
+
+hnote over POL #00FF00: VReq==VExt?
+
+POL -> Service : Service.Restart
+rnote over Service
+  StateCur: Starting
+endrnote
+ProcedureParam <- Service
+
+rnote over ProcedureParam
+ VOut = 15.0 (Frozen)
+ VReq = 15.0
+endrnote
+rnote over Service
+  StateCur: Execute
+endrnote
+...
+POL -> ProcedureParam : VExt:=25.0
+
+rnote over ProcedureParam
+ VOut = 15.0 (Frozen)
+ VReq = 20.0
+endrnote
+
+POL <- ProcedureParam : VReq:=20.0
+
+hnote over POL #FF0000: VReq==VExt?
+rnote over POL
+Choice:
+Execute Anyway?
+endrnote
+POL -> Service : Service.Restart
+rnote over Service
+  StateCur: Starting
+endrnote
+
+ProcedureParam <- Service
+
+rnote over ProcedureParam
+ VOut = 20.0 (Frozen)
+ VReq = 20.0;
+endrnote
+rnote over Service
+  StateCur:Execute
+endrnote
+@enduml

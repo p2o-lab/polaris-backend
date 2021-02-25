@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018 Markus Graube <markus.graube@tu.dresden.de>,
+ * Copyright (c) 2021 P2O-Lab <p2o-lab@mailbox.tu-dresden.de>,
  * Chair for Process Control Systems, Technische Universität Dresden
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,12 +24,12 @@
  */
 
 export interface ServiceLogEntry {
-    timestampPfe: Date;
-    timestampModule?: Date;
-    module: string;
-    service: string;
-    state?: string;
-    procedure?: string;
-    command?: string;
-    parameter?: any[];
+	timestampPOL: Date;
+	timestampPEA?: Date;
+	pea: string;
+	service: string;
+	state?: string;
+	procedure?: string;
+	command?: string;
+	parameter?: any[];
 }

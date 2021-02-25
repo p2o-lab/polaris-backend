@@ -1,0 +1,92 @@
+{
+  "version": "0.2.0",
+  "name": "DoseFill one-after-anpther",
+  "type": "aggregatedService",
+  "description": "Start PEA2.Service1 after PEA1.Service has been started",
+  "necessaryServices": [
+    {
+      "pea": "PEA1",
+      "service": "Service1"
+    },
+    {
+      "pea": "PEA2",
+      "service": "Service1"
+    }
+  ],
+  "parameters": [
+    {
+      "name": "CombinedParameter",
+      "type": "ExtAnaOp",
+      "default": "0",
+      "unit": "1038"
+    }
+  ],
+  "stateMachine": {
+    "starting": {
+      "initialTransition": "t1",
+      "states": [
+        {
+          "id": "S1",
+          "operations": [
+            {
+              "pea": "PEA1",
+              "service": "Service1",
+              "command": "start",
+              "parameters": [
+                {
+                  "name": "Parameter001",
+                  "value": "SetVolume"
+                }
+              ]
+            }
+          ],
+          "nextTransitions": [
+            "t2"
+          ]
+        },
+        {
+          "id": "S2",
+          "operations": [
+            {
+              "pea": "PEA2",
+              "service": "Service1",
+              "command": "start",
+              "parameters": [
+                {
+                  "name": "Parameter001",
+                  "value": "SetVolume"
+                }
+              ]
+            }
+          ],
+          "nextTransitions": [
+            "t3"
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "id": "t1",
+          "nextStates": [
+            "S1"
+          ]
+        },
+        {
+          "id": "t2",
+          "condition": "PEA1.Service1.state == 'EXECUTE'",
+          "nextStates": [
+            "S2"
+          ]
+        },
+        {
+          "id": "t3",
+          "condition": "PEA2.Service1.state == 'EXECUTE'",
+          "nextStates": [
+            "finished"
+          ]
+        }
+      ]
+    }
+  },
+  "commandEnable": {}
+}

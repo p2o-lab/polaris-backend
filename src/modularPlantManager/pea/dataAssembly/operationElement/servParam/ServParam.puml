@@ -1,0 +1,19 @@
+@startuml
+'https://plantuml.com/class-diagram
+!include anaServParam/AnaServParam.puml
+!include binServParam/BinServParam.puml
+!include dIntServParam/DIntServParam.puml
+!include stringServParam/StringServParam.puml
+
+abstract class ServParam
+
+ServParam *- ServParamSpec
+ServParamSpec ..> ServParamMockup : <<use>>
+ServParam *- ServParamMockup
+
+ServParam <|-- AnaServParam
+ServParam <|-- BinServParam
+ServParam <|-- DIntServParam
+ServParam <|-- StringServParam
+
+@enduml

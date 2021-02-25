@@ -1,0 +1,59 @@
+@startuml
+
+skinparam monochrome true
+
+
+participant Spec
+participant MockupServer
+participant MockupServer.Object
+participant Polaris_Backend
+
+
+group construct MockupServer
+Spec -> MockupServer: new MockupServer(port)
+Spec <- MockupServer: Response(namespace, rootObject)
+activate MockupServer
+end
+
+group populate MockupServer for specific test
+Spec -> MockupServer: add Object(namespace, rootObject)
+MockupServer -> MockupServer.Object: new Object(namespace, rootObject)
+end
+Spec -> MockupServer: start()
+activate MockupServer.Object
+group get MockupServer JSON
+Spec -> MockupServer: getMockupServerJSON()
+group collect partial instance JSON
+MockupServer -> MockupServer.Object: getObjectMockupJSON()
+MockupServer <- MockupServer.Object: ObjectMockupJSON
+end
+Spec <- MockupServer: MockupServerJSON
+end
+Spec -> Polaris_Backend: load Object(MockupServerJSON)
+
+group connect Objects
+Spec -> Polaris_Backend: Connect Object
+activate Polaris_Backend
+Polaris_Backend -> MockupServer.Object: connect()
+Polaris_Backend <-> MockupServer.Object: initialize
+end
+
+group execute tests
+Spec -> MockupServer.Object: Inject ObjectChanges
+Spec -> Polaris_Backend: Test Instructions
+end
+
+group disconnect Objects
+Spec -> Polaris_Backend: Disconnect Object
+Polaris_Backend -> MockupServer.Object: disconnect()
+Spec <- Polaris_Backend: Response
+deactivate Polaris_Backend
+end
+
+group destruct MockupServer
+Spec -> MockupServer: shutdown()
+MockupServer --> MockupServer.Object
+deactivate MockupServer
+deactivate MockupServer.Object
+end
+@enduml

@@ -1,0 +1,27 @@
+@startuml
+
+skinparam monochrome false
+
+participant POL
+participant DataAssembly
+
+rnote over DataAssembly
+ State = false
+endrnote
+
+
+POL --> DataAssembly : Set := true
+POL <-- DataAssembly : Set := false
+rnote over DataAssembly
+ State = true
+endrnote
+POL <-- DataAssembly : State == true
+...
+POL --> DataAssembly : Reset := true
+POL <-- DataAssembly : Reset := false
+rnote over DataAssembly
+ State = false
+endrnote
+POL <-- DataAssembly : State == false
+
+@enduml

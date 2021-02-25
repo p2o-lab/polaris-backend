@@ -1,0 +1,19 @@
+@startuml
+'https://plantuml.com/class-diagram
+!include portObject/PortObject.puml
+
+class VisualObject{
+Width
+Height
+X
+Y
+ZIndex
+Rotation
+eClassVersion
+eClassClassificationClass
+eClassIRDI
+}
+
+VisualObject *-- PortObject
+
+@enduml

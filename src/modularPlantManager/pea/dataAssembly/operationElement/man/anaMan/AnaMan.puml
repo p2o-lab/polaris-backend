@@ -1,0 +1,9 @@
+@startuml
+'https://plantuml.com/class-diagram
+!include AnaManInt.puml
+
+AnaMan *- AnaManSpec
+AnaManSpec ..> AnaManMockup : <<use>>
+AnaMan *- AnaManMockup
+
+@enduml

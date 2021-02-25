@@ -1,0 +1,13 @@
+@startuml
+'https://plantuml.com/class-diagram
+!include MonBinVlv.puml
+
+class BinVlv
+
+BinVlv *- BinVlvSpec
+BinVlvSpec ..> BinVlvMockup : <<use>>
+BinVlv *- BinVlvMockup
+
+BinVlv <|-- MonBinVlv
+
+@enduml

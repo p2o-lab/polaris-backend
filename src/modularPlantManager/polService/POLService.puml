@@ -1,0 +1,17 @@
+@startuml
+'https://plantuml.com/class-diagram
+!include polServiceInstances/aggregatedService/AggregatedService.puml
+
+abstract class POLService
+
+abstract class BaseService
+
+BaseService <|-- POLService
+
+POLService <|-- AggregatedService
+POLService <|-- FunctionGenerator
+POLService <|-- PidController
+POLService <|-- Timer
+POLService <|-- Storage
+
+@enduml

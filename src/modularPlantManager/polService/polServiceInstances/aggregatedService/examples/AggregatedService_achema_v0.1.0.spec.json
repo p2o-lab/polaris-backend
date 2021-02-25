@@ -1,0 +1,403 @@
+{
+  "version": "0.2.0",
+  "name": "Recipe ACHEMA",
+  "description": "Advanced recipe for ACHEMA 2018 as virtual service",
+  "stateMachine": {
+    "starting": {
+      "initialTransition": "t1",
+      "states": [
+        {
+          "id": "Init",
+          "operations": [
+            {
+              "pea": "Temper",
+              "service": "Tempering",
+              "procedure": "SetpointRampTempering",
+              "command": "start",
+              "parameter": [
+                {
+                  "name": "RampDuration",
+                  "value": 60
+                },
+                {
+                  "name": "RampEndtemperature",
+                  "value": 20
+                }
+              ]
+            },
+            {
+              "pea": "React",
+              "service": "Empty_Service",
+              "procedure": "Empty_Full",
+              "command": "start",
+              "parameter": [
+                {
+                  "name": "Empty_Level_Tank_DeadBand",
+                  "value": 0.5
+                },
+                {
+                  "name": "Empty_VolFlow",
+                  "value": 3
+                }
+              ]
+            }
+          ],
+          "nextTransitions": [
+            "t2"
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "id": "t1",
+          "condition": true,
+          "nextStates": [
+            "Init"
+          ]
+        },
+        {
+          "id": "t2",
+          "condition": {
+            "type": "state",
+            "pea": "Temper",
+            "service": "Tempering",
+            "state": "running"
+          },
+          "nextStates": [
+            "finished"
+          ]
+        }
+      ]
+    },
+    "execute": {
+      "initialTransition": "t1",
+      "states": [
+        {
+          "id": "Vorlegen",
+          "operations": [
+            {
+              "pea": "React",
+              "service": "Empty_Service",
+              "command": "reset"
+            },
+            {
+              "pea": "Dose",
+              "service": "DoseAmount",
+              "command": "start",
+              "parameter": [
+                {
+                  "name": "SetVolume",
+                  "value": 1
+                },
+                {
+                  "name": "SetDuration",
+                  "value": 30
+                }
+              ]
+            },
+            {
+              "pea": "React",
+              "service": "Fill_Service",
+              "command": "start",
+              "parameters": [
+                {
+                  "name": "Fill_Level_Max",
+                  "value": 1.5
+                }
+              ]
+            },
+            {
+              "pea": "React",
+              "service": "Stir_Service",
+              "procedure": "Stirring_Continous",
+              "command": "start",
+              "parameter": [
+                {
+                  "name": "Stir_Rotation",
+                  "value": 100
+                }
+              ]
+            }
+          ],
+          "nextTransitions": [
+            "t2"
+          ]
+        },
+        {
+          "id": "Reagieren",
+          "operations": [
+            {
+              "pea": "Dose",
+              "service": "DoseAmount",
+              "command": "start",
+              "parameter": [
+                {
+                  "name": "SetVolume",
+                  "value": "1"
+                },
+                {
+                  "name": "SetDuration",
+                  "value": "60"
+                }
+              ]
+            },
+            {
+              "pea": "React",
+              "service": "Stir_Service",
+              "procedure": "Stirring_Continous",
+              "command": "restart",
+              "parameter": [
+                {
+                  "name": "Stir_Rotation",
+                  "value": 200
+                }
+              ]
+            },
+            {
+              "pea": "React",
+              "service": "Aerate_Service",
+              "procedure": "Aerate_Continous",
+              "command": "start"
+            },
+            {
+              "pea": "Temper",
+              "service": "Tempering",
+              "procedure": "SetpointRampTempering",
+              "parameter": [
+                {
+                  "name": "RampDuration",
+                  "value": 60
+                },
+                {
+                  "name": "RampEndtemperature",
+                  "value": 21
+                }
+              ]
+            }
+          ],
+          "nextTransitions": [
+            "t3"
+          ]
+        },
+        {
+          "id": "Ruhen",
+          "operations": [
+            {
+              "pea": "React",
+              "service": "Fill_Service",
+              "command": "complete"
+            }
+          ],
+          "nextTransitions": [
+            "t4"
+          ]
+        },
+        {
+          "id": "StopAerate",
+          "operations": [
+            {
+              "pea": "React",
+              "service": "Aerate_Service",
+              "command": "complete"
+            }
+          ],
+          "nextTransitions": [
+            "t5"
+          ]
+        },
+        {
+          "id": "Abkuehlen",
+          "operations": [
+            {
+              "pea": "Temper",
+              "service": "Tempering",
+              "procedure": "SetpointRampTempering",
+              "parameter": [
+                {
+                  "name": "RampDuration",
+                  "value": 60
+                },
+                {
+                  "name": "RampEndtemperature",
+                  "value": 20
+                }
+              ]
+            }
+          ],
+          "nextTransitions": [
+            "t6"
+          ]
+        },
+        {
+          "id": "StopCoolDown",
+          "operations": [
+            {
+              "pea": "Temper",
+              "service": "Tempering",
+              "command": "complete"
+            },
+            {
+              "pea": "React",
+              "service": "Stir_Service",
+              "command": "complete"
+            }
+          ],
+          "nextTransitions": [
+            "t7"
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "id": "t1",
+          "nextStates": [
+            "Vorlegen"
+          ]
+        },
+        {
+          "id": "t2",
+          "condition": {
+            "type": "and",
+            "conditions": [
+              {
+                "type": "state",
+                "pea": "Dose",
+                "service": "DoseAmount",
+                "state": "completed"
+              },
+              {
+                "type": "state",
+                "pea": "Temper",
+                "service": "Tempering",
+                "state": "running"
+              }
+            ]
+          },
+          "nextStates": [
+            "Reagieren"
+          ]
+        },
+        {
+          "id": "t3",
+          "condition": {
+            "type": "and",
+            "conditions": [
+              {
+                "type": "state",
+                "pea": "Dose",
+                "service": "DoseAmount",
+                "state": "idle"
+              },
+              {
+                "type": "variable",
+                "pea": "Temper",
+                "dataAssembly": "TI",
+                "operator": ">=",
+                "value": 20.95
+              }
+            ]
+          },
+          "nextStates": [
+            "Ruhen"
+          ]
+        },
+        {
+          "id": "t4",
+          "condition": {
+            "type": "time",
+            "duration": 20
+          },
+          "nextStates": [
+            "StopAerate"
+          ]
+        },
+        {
+          "id": "t5",
+          "condition": {
+            "type": "state",
+            "pea": "React",
+            "service": "Aerate_Service",
+            "state": "completed"
+          },
+          "nextStates": [
+            "Abkuehlen"
+          ]
+        },
+        {
+          "id": "t6",
+          "condition": {
+            "type": "variable",
+            "pea": "Temper",
+            "dataAssembly": "TI",
+            "operator": "<=",
+            "value": 20.1
+          },
+          "nextStates": [
+            "StopCoolDown"
+          ]
+        },
+        {
+          "id": "t7",
+          "condition": {
+            "type": "state",
+            "pea": "React",
+            "service": "Stir_Service",
+            "state": "idle"
+          },
+          "nextStates": [
+            "finished"
+          ]
+        }
+      ]
+    },
+    "completing": {
+      "initialTransition": "t1",
+      "transitions": [
+        {
+          "id": "t1",
+          "nextStates": [
+            "Entleeren"
+          ]
+        },
+        {
+          "id": "t2",
+          "condition": {
+            "type": "state",
+            "pea": "React",
+            "service": "Empty_Service",
+            "state": "completed"
+          },
+          "nextStates": [
+            "finished"
+          ]
+        }
+      ],
+      "states": [
+        {
+          "id": "Entleeren",
+          "operations": [
+            {
+              "pea": "React",
+              "service": "Empty_Service",
+              "procedure": "Empty_Full",
+              "command": "start"
+            }
+          ],
+          "nextTransitions": [
+            "t2"
+          ]
+        }
+      ]
+    },
+    "aborting": {
+      "initialTransition": "",
+      "transitions": [],
+      "states": []
+    }
+  },
+  "commandEnable": {
+    "start": true,
+    "pause": false,
+    "complete": false
+  }
+}

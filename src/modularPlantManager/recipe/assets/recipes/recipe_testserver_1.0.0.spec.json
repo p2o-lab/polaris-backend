@@ -1,0 +1,96 @@
+{
+  "version": "1.0.0",
+  "name": "Test recipe for testserver pea",
+  "author": "Markus Graube",
+  "initial_step": "S0.CheckInitialConditions",
+  "steps": [
+    {
+      "name": "S0.CheckInitialConditions",
+      "operations": [],
+      "transitions": [
+        {
+          "next_step": "S1",
+          "condition": {
+            "type": "state",
+            "pea": "ModuleTestServer",
+            "service": "Service1",
+            "state": "idle"
+          }
+        }
+      ]
+    },
+    {
+      "name": "S1",
+      "operations": [
+        {
+          "pea": "ModuleTestServer",
+          "service": "Service1",
+          "command": "start",
+          "parameter": []
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "S2",
+          "condition": {
+            "type": "and",
+            "conditions": [
+              {
+                "type": "time",
+                "duration": 1
+              },
+              {
+                "type": "state",
+                "pea": "ModuleTestServer",
+                "service": "Service1",
+                "state": "execute"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "S2",
+      "operations": [
+        {
+          "pea": "ModuleTestServer",
+          "service": "Service1",
+          "command": "complete"
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "S3",
+          "condition": {
+            "type": "state",
+            "pea": "ModuleTestServer",
+            "service": "Service1",
+            "state": "completed"
+          }
+        }
+      ]
+    },
+    {
+      "name": "S3",
+      "operations": [
+        {
+          "pea": "ModuleTestServer",
+          "service": "Service1",
+          "command": "reset"
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "finished",
+          "condition": {
+            "type": "state",
+            "pea": "ModuleTestServer",
+            "service": "Service1",
+            "state": "idle"
+          }
+        }
+      ]
+    }
+  ]
+}

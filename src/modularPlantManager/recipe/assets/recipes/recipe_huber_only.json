@@ -1,0 +1,139 @@
+{
+  "version": "1.0.0",
+  "name": "Simples Testrezept nur für Temperier-PEA von Huber",
+  "author": "Markus Graube",
+  "initial_step": "S1",
+  "steps": [
+    {
+      "name": "S1",
+      "operations": [
+        {
+          "pea": "Temper",
+          "service": "Tempering",
+          "procedure": "ContinuousTempering",
+          "command": "start",
+          "parameter": [
+            {
+              "name": "Setpoint",
+              "value": "25"
+            }
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "S2",
+          "condition": {
+            "type": "time",
+            "duration": "30"
+          }
+        }
+      ]
+    },
+    {
+      "name": "S2",
+      "description": "try to change parameters without reset",
+      "operations": [
+        {
+          "pea": "Temper",
+          "service": "Tempering",
+          "parameter": [
+            {
+              "name": "Setpoint",
+              "value": "26"
+            }
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "S3",
+          "condition": {
+            "type": "time",
+            "duration": "30"
+          }
+        }
+      ]
+    },
+    {
+      "name": "S3",
+      "description": "try to change procedure without reset",
+      "operations": [
+        {
+          "pea": "Temper",
+          "service": "Tempering",
+          "procedure": "SetpointRampTempering",
+          "parameter": [
+            {
+              "name": "RampDuration",
+              "value": 60
+            },
+            {
+              "name": "RampEndtemperature",
+              "value": 20
+            }
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "S4",
+          "condition": {
+            "type": "time",
+            "duration": 60
+          }
+        }
+      ]
+    },
+    {
+      "name": "S4",
+      "operations": [
+        {
+          "pea": "Temper",
+          "service": "Tempering",
+          "procedure": "SetpointRampTempering",
+          "parameter": [
+            {
+              "name": "RampDuration",
+              "value": 60
+            },
+            {
+              "name": "RampEndtemperature",
+              "value": 22
+            }
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "S5",
+          "condition": {
+            "type": "time",
+            "duration": 60
+          }
+        }
+      ]
+    },
+    {
+      "name": "S5",
+      "operations": [
+        {
+          "pea": "Temper",
+          "service": "Tempering",
+          "command": "complete"
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "finished",
+          "condition": {
+            "type": "state",
+            "pea": "Temper",
+            "service": "Tempering",
+            "state": "idle"
+          }
+        }
+      ]
+    }
+  ]
+}

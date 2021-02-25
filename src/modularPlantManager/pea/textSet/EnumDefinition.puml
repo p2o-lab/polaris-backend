@@ -1,0 +1,9 @@
+@startuml
+'https://plantuml.com/class-diagram
+!include EnumItem.puml
+
+class EnumDefinition
+
+EnumDefinition *-down- "1..*" EnumItem
+
+@enduml

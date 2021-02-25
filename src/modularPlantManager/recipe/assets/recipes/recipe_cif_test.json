@@ -1,0 +1,77 @@
+{
+  "version": "1.0.0",
+  "name": "Testrezept für CIF Modul",
+  "author": "Markus Graube",
+  "initial_step": "S1",
+  "steps": [
+    {
+      "name": "S1",
+      "operations": [
+        {
+          "pea": "CIF",
+          "service": "Test_Service.Vorlegen",
+          "command": "start",
+          "parameter": [
+            {
+              "name": "SollVolumen",
+              "value": "max(0.2,min(28,0.1*a))",
+              "scope": [
+                {
+                  "name": "a",
+                  "pea": "CIF",
+                  "dataAssembly": "Test_AnaView.L004",
+                  "variable": "V"
+                }
+              ]
+            },
+            {
+              "name": "SollDauer",
+              "value": "5^2"
+            }
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "S2",
+          "condition": {
+            "type": "and",
+            "conditions": [
+              {
+                "type": "time",
+                "duration": 1
+              },
+              {
+                "type": "state",
+                "pea": "CIF",
+                "service": "Test_Service.Vorlegen",
+                "state": "execute"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "S2",
+      "operations": [
+        {
+          "pea": "CIF",
+          "service": "Test_Service.Vorlegen",
+          "command": "complete"
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "finished",
+          "condition": {
+            "type": "state",
+            "pea": "CIF",
+            "service": "Test_Service.Vorlegen",
+            "state": "completed"
+          }
+        }
+      ]
+    }
+  ]
+}

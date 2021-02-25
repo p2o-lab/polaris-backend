@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018 Markus Graube <markus.graube@tu.dresden.de>,
+ * Copyright (c) 2021 P2O-Lab <p2o-lab@mailbox.tu-dresden.de>,
  * Chair for Process Control Systems, Technische Universität Dresden
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,38 +23,38 @@
  * SOFTWARE.
  */
 
-import {catServer} from '../logging/logging';
+import {catServer} from './server';
 
 export function normalizePort(val: number | string): number | string | boolean {
-    const port: number = (typeof val === 'string') ? parseInt(val, 10) : val;
+	const port: number = (typeof val === 'string') ? parseInt(val, 10) : val;
 
-    if (isNaN(port)) {
-        return val;
-    }
-    if (port >= 0) {
-        return port;
-    }
+	if (isNaN(port)) {
+		return val;
+	}
+	if (port >= 0) {
+		return port;
+	}
 
-    return false;
+	return false;
 }
 
 export function onError(error: NodeJS.ErrnoException, port: number | string | boolean): void {
-    if (error.syscall !== 'listen') {
-        throw error;
-    }
+	if (error.syscall !== 'listen') {
+		throw error;
+	}
 
-    const bind: string = (typeof port === 'string') ? 'Pipe ' + port : 'Port ' + port;
+	const bind: string = (typeof port === 'string') ? 'Pipe ' + port : 'Port ' + port;
 
-    switch (error.code) {
-    case 'EACCES':
-        catServer.warn(`${bind} requires elevated privileges`);
-        process.exit(1);
-        break;
-    case 'EADDRINUSE':
-        catServer.warn(`${bind} is already in use`);
-        process.exit(1);
-        break;
-    default:
-        throw error;
-    }
+	switch (error.code) {
+		case 'EACCES':
+			catServer.warn(`${bind} requires elevated privileges`);
+			process.exit(1);
+			break;
+		case 'EADDRINUSE':
+			catServer.warn(`${bind} is already in use`);
+			process.exit(1);
+			break;
+		default:
+			throw error;
+	}
 }

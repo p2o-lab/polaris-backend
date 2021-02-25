@@ -1,0 +1,9 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class BinProcessValueIn
+
+BinProcessValueIn *- BinProcessValueInSpec
+BinProcessValueInSpec ..> BinProcessValueInMockup : <<use>>
+BinProcessValueIn *- BinProcessValueInMockup
+@enduml

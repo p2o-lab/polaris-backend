@@ -1,0 +1,100 @@
+{
+  "initialTransition": "t1",
+  "states": [
+    {
+      "id": "s1a",
+      "operations": [],
+      "nextTransitions": [
+        "t2"
+      ]
+    },
+    {
+      "id": "s1b",
+      "operations": [],
+      "nextTransitions": [
+        "t2"
+      ]
+    },
+    {
+      "id": "s2",
+      "operations": [],
+      "nextTransitions": [
+        "t3a",
+        "t3b"
+      ]
+    },
+    {
+      "id": "s3a",
+      "operations": [],
+      "nextTransitions": [
+        "t4a"
+      ]
+    },
+    {
+      "id": "s3b",
+      "operations": [],
+      "nextTransitions": [
+        "t4b"
+      ]
+    },
+    {
+      "id": "s4",
+      "operations": [],
+      "nextTransitions": [
+        "t5"
+      ]
+    }
+  ],
+  "transitions": [
+    {
+      "id": "t1",
+      "condition": "undefined",
+      "nextStates": [
+        "s1a",
+        "s1b"
+      ]
+    },
+    {
+      "id": "t2",
+      "condition": "undefined",
+      "nextStates": [
+        "s2"
+      ]
+    },
+    {
+      "id": "t3a",
+      "condition": "undefined",
+      "nextStates": [
+        "s3a"
+      ]
+    },
+    {
+      "id": "t3b",
+      "condition": "undefined",
+      "nextStates": [
+        "s3b"
+      ]
+    },
+    {
+      "id": "t4a",
+      "condition": "undefined",
+      "nextStates": [
+        "s4"
+      ]
+    },
+    {
+      "id": "t4b",
+      "condition": "undefined",
+      "nextStates": [
+        "s4"
+      ]
+    },
+    {
+      "id": "t5",
+      "condition": "undefined",
+      "nextStates": [
+        "finished"
+      ]
+    }
+  ]
+}

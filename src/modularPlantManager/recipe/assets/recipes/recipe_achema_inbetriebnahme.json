@@ -1,0 +1,375 @@
+{
+  "version": "0.1.0",
+  "name": "Inbetriebnahme für ACHEMA-Demonstrator",
+  "description": "Befüllt Schläuche zwischen Dosierer und Reaktor. Rührt Gasblasen aus Kühlmedium",
+  "author": "Markus Graube",
+  "initial_step": "Startup.Init.1",
+  "steps": [
+    {
+      "name": "Startup.Init.1",
+      "operations": [
+        {
+          "pea": "Dose",
+          "service": "Fill",
+          "command": "start"
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "Startup.Init.2",
+          "condition": {
+            "type": "state",
+            "pea": "Dose",
+            "service": "Fill",
+            "state": "execute"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Startup.Init.2",
+      "operations": [
+        {
+          "pea": "React",
+          "service": "Empty_Service",
+          "procedure": "Empty_Full",
+          "command": "start",
+          "parameter": [
+            {
+              "name": "Empty_Level_Tank_DeadBand",
+              "value": 0.5
+            },
+            {
+              "name": "Empty_VolFlow",
+              "value": 3
+            }
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "condition": {
+            "type": "and",
+            "conditions": [
+              {
+                "type": "state",
+                "pea": "React",
+                "service": "Empty_Service",
+                "state": "idle"
+              },
+              {
+                "type": "time",
+                "duration": 4
+              }
+            ]
+          },
+          "next_step": "Running.Vorlegen"
+        }
+      ]
+    },
+    {
+      "name": "Running.Vorlegen",
+      "operations": [
+        {
+          "pea": "Dose",
+          "service": "Fill",
+          "command": "complete"
+        },
+        {
+          "pea": "Dose",
+          "service": "DoseAmount",
+          "command": "start",
+          "parameter": [
+            {
+              "name": "SetVolume",
+              "value": 1
+            },
+            {
+              "name": "SetDuration",
+              "value": 30
+            }
+          ]
+        },
+        {
+          "pea": "React",
+          "service": "Fill_Service",
+          "command": "start",
+          "parameters": [
+            {
+              "name": "Fill_Level_Max",
+              "value": 1.5
+            }
+          ]
+        },
+        {
+          "pea": "React",
+          "service": "Stir_Service",
+          "procedure": "Stirring_Continous",
+          "command": "start",
+          "parameter": [
+            {
+              "name": "Stir_Rotation",
+              "value": 100
+            }
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "Running.Reagieren",
+          "condition": {
+            "type": "state",
+            "pea": "Dose",
+            "service": "DoseAmount",
+            "state": "completed"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Running.Reagieren",
+      "operations": [
+        {
+          "pea": "Dose",
+          "service": "DoseAmount",
+          "command": "start",
+          "parameter": [
+            {
+              "name": "SetVolume",
+              "value": "1"
+            },
+            {
+              "name": "SetDuration",
+              "value": "60"
+            }
+          ]
+        },
+        {
+          "pea": "React",
+          "service": "Stir_Service",
+          "procedure": "Stirring_Continous",
+          "command": "restart",
+          "parameter": [
+            {
+              "name": "Stir_Rotation",
+              "value": 200
+            }
+          ]
+        },
+        {
+          "pea": "React",
+          "service": "Aerate_Service",
+          "procedure": "Aerate_Continous",
+          "command": "start"
+        },
+        {
+          "pea": "Temper",
+          "service": "Tempering",
+          "procedure": "SetpointRampTempering",
+          "command": "start",
+          "parameter": [
+            {
+              "name": "RampDuration",
+              "value": 30
+            },
+            {
+              "name": "RampEndtemperature",
+              "value": 20
+            }
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "Running.Ruhen",
+          "condition": {
+            "type": "and",
+            "conditions": [
+              {
+                "type": "state",
+                "pea": "Dose",
+                "service": "DoseAmount",
+                "state": "idle"
+              },
+              {
+                "type": "variable",
+                "pea": "Temper",
+                "dataAssembly": "TI",
+                "operator": "<=",
+                "value": 20
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Running.Ruhen",
+      "operations": [],
+      "transitions": [
+        {
+          "next_step": "Running.Ruhen.Stop",
+          "condition": {
+            "type": "time",
+            "duration": 30
+          }
+        }
+      ]
+    },
+    {
+      "name": "Running.Ruhen.Stop",
+      "operations": [
+        {
+          "pea": "React",
+          "service": "Aerate_Service",
+          "command": "complete"
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "Running.Aufheizen",
+          "condition": {
+            "type": "state",
+            "pea": "React",
+            "service": "Aerate_Service",
+            "state": "completed"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Running.Aufheizen",
+      "operations": [
+        {
+          "pea": "Temper",
+          "service": "Tempering",
+          "procedure": "SetpointRampTempering",
+          "command": "start",
+          "parameter": [
+            {
+              "name": "RampDuration",
+              "value": 30
+            },
+            {
+              "name": "RampEndtemperature",
+              "value": 25
+            }
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "Running.Aufheizen.Stop",
+          "condition": {
+            "type": "variable",
+            "pea": "Temper",
+            "dataAssembly": "TI",
+            "operator": ">=",
+            "value": 25
+          }
+        }
+      ]
+    },
+    {
+      "name": "Running.Aufheizen.Stop",
+      "operations": [
+        {
+          "pea": "Temper",
+          "service": "Tempering",
+          "command": "complete"
+        },
+        {
+          "pea": "React",
+          "service": "Stir_Service",
+          "command": "complete"
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "Shutdown.Entleeren.Start",
+          "condition": {
+            "type": "and",
+            "conditions": [
+              {
+                "type": "state",
+                "pea": "Temper",
+                "service": "Tempering",
+                "state": "idle"
+              },
+              {
+                "type": "state",
+                "pea": "React",
+                "service": "Stir_Service",
+                "state": "idle"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Shutdown.Entleeren.Start",
+      "operations": [
+        {
+          "pea": "Dose",
+          "service": "Fill",
+          "command": "start"
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "Shutdown.Entleeren.Running",
+          "condition": {
+            "type": "state",
+            "pea": "Dose",
+            "service": "Fill",
+            "state": "execute"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Shutdown.Entleeren.Running",
+      "operations": [
+        {
+          "pea": "React",
+          "service": "Empty_Service",
+          "procedure": "Empty_Full",
+          "command": "start"
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "Shutdown.Entleeren.Stop",
+          "condition": {
+            "type": "state",
+            "pea": "React",
+            "service": "Empty_Service",
+            "state": "completed"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Shutdown.Entleeren.Stop",
+      "operations": [
+        {
+          "pea": "Dose",
+          "service": "Fill",
+          "command": "complete"
+        }
+      ],
+      "transitions": [
+        {
+          "next_step": "finished",
+          "condition": {
+            "type": "state",
+            "pea": "Dose",
+            "service": "Fill",
+            "state": "idle"
+          }
+        }
+      ]
+    }
+  ]
+}

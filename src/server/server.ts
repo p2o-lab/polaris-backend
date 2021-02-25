@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018 Markus Graube <markus.graube@tu.dresden.de>,
+ * Copyright (c) 2021 P2O-Lab <p2o-lab@mailbox.tu-dresden.de>,
  * Chair for Process Control Systems, Technische Universität Dresden
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,75 +24,95 @@
  */
 
 import {BackendNotification} from '@p2olab/polaris-interface';
-import * as express from 'express';
-import * as http from 'http';
-import * as WebSocket from 'ws';
-import {catServer} from '../logging/logging';
-import {Manager} from '../model/Manager';
+import {ModularPlantManager} from '../modularPlantManager';
 import Middleware from './middleware';
 import Routes from './routes';
 import * as serverHandlers from './serverHandlers';
 
+import * as express from 'express';
+import * as http from 'http';
+import {Category} from 'typescript-logging';
+import * as WebSocket from 'ws';
+import {AddressInfo} from 'ws';
+
+export const catServer = new Category('server');
+
 export class Server {
 
-    public readonly app: express.Application;
-    public wss: WebSocket.Server;
-    private httpServer: http.Server;
-    private interval: NodeJS.Timeout;
+	public readonly app: express.Application;
+	public wss?: WebSocket.Server;
+	private httpServer?: http.Server;
+	private interval?: NodeJS.Timeout;
 
-    constructor(manager: Manager) {
-        this.app = express();
-        Middleware.init(this.app, manager);
-        Routes.init(this.app);
+	constructor(manager: ModularPlantManager) {
+		this.app = express();
+		Middleware.init(this.app, manager);
+		Routes.init(this.app);
 
-        manager.on('notify', (notification) => this.notifyClients(notification));
-    }
+		manager.on('notify', (notification) => this.notifyClients(notification));
+	}
 
-    public startHttpServer(port: number | string | boolean) {
-        this.httpServer = http.createServer(this.app);
+	/**
+	 * Method to start a http-Server on specified port
+	 * @param port - port of http-Server
+	 */
+	public startHttpServer(port: number | string | boolean): void {
+		this.httpServer = http.createServer(this.app);
+		this.app.set('port', port);
+		this.httpServer.listen(port);
+		this.httpServer.on('error', (error) => serverHandlers.onError(error, port));
+		this.httpServer.on('listening', () => {
+			if (!this.httpServer){
+				throw new Error('http.Server undefined!');
+			}
+			const addr: (AddressInfo | string | null) = this.httpServer.address();
+			if(addr != null) {
+				const bind: string = (typeof addr === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
+				catServer.info(`Listening on ${bind}`);
+			}
+		});
+	}
+	/**
+	 * Method for the initialization of a new socket on http-webserver.
+	 */
+	public initSocketServer(): void {
+		if (this.httpServer) {
+			this.wss = new WebSocket.Server({server: this.httpServer});
+			this.wss.on('connection', (ws: WebSocket, req: http.IncomingMessage) => {
+				catServer.info(`WS Client connected: ${req.connection.remoteAddress}`);
+				this.interval = global.setInterval(function ping() {
+					ws.send(JSON.stringify({message: 'ping'}));
+				}, 3000);
+			});
+		} else {
+			throw new Error('Running HTTP server is required');
+		}
+	}
 
-        this.app.set('port', port);
-        this.httpServer.listen(port);
-        this.httpServer.on('error', (error) => serverHandlers.onError(error, port));
-        this.httpServer.on('listening', () => {
-            const addr: any = this.httpServer.address();
-            const bind: string = (typeof addr === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
-            catServer.info(`Listening on ${bind}`);
-        });
-    }
-
-    public async stop() {
-        global.clearInterval(this.interval);
-        await this.httpServer.close();
-        this.httpServer = null;
-        await this.wss.close();
-        this.wss = null;
-    }
-
-    public initSocketServer() {
-        if (this.httpServer) {
-            this.wss = new WebSocket.Server({server: this.httpServer});
-            this.wss.on('connection', (ws: WebSocket, req: http.IncomingMessage) => {
-                catServer.info(`WS Client connected: ${req.connection.remoteAddress}`);
-                this.interval = global.setInterval(function ping() {
-                    ws.send(JSON.stringify({message: 'ping'}));
-                }, 3000);
-            });
-        } else {
-            throw new Error('Running HTTP server is required');
-        }
-    }
-
-    /** Notify all clients via websockets about refresh of data
-     */
-    private notifyClients(notification: BackendNotification) {
-        catServer.trace(`WS refresh published: ${JSON.stringify(notification)}`);
-        if (this.wss) {
-            this.wss.clients.forEach((client) => {
-                if (client.readyState === WebSocket.OPEN) {
-                    client.send(JSON.stringify(notification));
-                }
-            });
-        }
-    }
+	/**
+	 * Method for notification of all clients via websockets about a data refresh
+	 * @param notification - {@link BackendNotification} to be sent to all clients within websocket
+	 */
+	private notifyClients(notification: BackendNotification): void {
+		catServer.trace(`WS refresh published: ${JSON.stringify(notification)}`);
+		if (this.wss) {
+			this.wss.clients.forEach((client) => {
+				if (client.readyState === WebSocket.OPEN) {
+					client.send(JSON.stringify(notification));
+				}
+			});
+		}
+	}
+	/**
+	 * Method to stop the server and close all related websockets
+	 */
+	public async stop(): Promise<void> {
+		if (this.interval) {
+			global.clearInterval(this.interval);
+		}
+		this.httpServer?.close();
+		this.httpServer = undefined;
+		await this.wss?.close();
+		this.wss = undefined;
+	}
 }

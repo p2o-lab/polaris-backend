@@ -1,0 +1,17 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class Procedure
+
+Procedure *-- "0..*" ProcedureParameter
+Procedure *-- "0..*" ProcessValueIn
+Procedure *-- "0..*" ReportValue
+Procedure *-- "0..*" ProcessValueOut
+
+abstract class ServiceParameter
+
+ServiceParameter <|-up- ProcedureParameter
+ServiceParameter <|-up- ProcessValueIn
+ServiceParameter <|-up- ReportValue
+ServiceParameter <|-up- ProcessValueOut
+@enduml
