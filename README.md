@@ -57,22 +57,3 @@ http://localhost:3000
 
 
 Its documentation is served by the application under the path **/doc** (e.g. http://localhost:3000/doc)
-
-## Test Process Equipment Assembly
-Polaris can serve a test PEA with an OPC UA server via port 4334. It has two services with some parameters and some other variables which change over time. You can start this testserver via
-```
-npm run testserver
-```
-
-or
-
-```
-./bin/test-pea
-```
-
-or via docker container
-```
-docker run -p 4334:4334 p2olab/test-pea
-```
-
-The corresponding JSON file `assets/modules/module_testserver_1.0.0.json` can be directly loaded in Polaris.
