@@ -30,7 +30,7 @@ import {
 	ClientSession,
 	ClientSubscription,
 	coerceNodeId,
-	DataValue, NodeId,
+	DataValue, MonitoringMode, NodeId,
 	OPCUAClient,
 	TimestampsToReturn,
 	UserIdentityInfo,
@@ -40,6 +40,7 @@ import {
 	VariantArrayType
 } from 'node-opcua';
 import {timeout} from 'promise-timeout';
+import {ClientMonitoredItemGroup} from 'node-opcua-client/source/client_monitored_item_group';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Category} from 'typescript-logging';
 
@@ -67,10 +68,11 @@ export class OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionEm
 
 	public readonly endpoint: string;
 	public readonly id: string;
+	public readonly eventEmitter: EventEmitter;
 	private session: ClientSession | undefined;
 	private client: OPCUAClient | undefined;
 	private subscription: ClientSubscription | undefined;
-	private readonly monitoredItems: Map<string, ClientMonitoredItemBase>;
+	private readonly items: Map<string, string>;
 	private namespaceArray!: string[];
 	private readonly logger: Category;
 	private readonly username: string | undefined;
@@ -81,9 +83,10 @@ export class OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionEm
 		this.id = targetId;
 		this.endpoint = endpoint;
 		this.logger = catOpcUA;
-		this.monitoredItems = new Map<string, ClientMonitoredItemBase>();
 		this.username = username;
 		this.password = password;
+		this.eventEmitter = new EventEmitter();
+		this.items = new Map<string, string>();
 	}
 
 	/**
@@ -125,7 +128,7 @@ export class OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionEm
 			await timeout(this.client.disconnect(), 1000);
 			this.client = undefined;
 		}
-		this.monitoredItems.clear();
+		this.items.clear();
 		this.logger.info(`[${this.id}] OPC UA connection disconnected`);
 	}
 
@@ -142,36 +145,41 @@ export class OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionEm
 
 	}
 
-	public async listenToOpcUaNode(nodeId: string, namespaceUrl: string, samplingInterval = 100): Promise<ClientMonitoredItemBase> {
-		const nodeIdResolved = this.resolveNodeId(nodeId, namespaceUrl);
-		const monitoredItemKey = nodeIdResolved.toString();
-		if (this.monitoredItems && this.monitoredItems.has(monitoredItemKey)) {
-			const mI = this.monitoredItems.get(monitoredItemKey);
-			if (!mI){
-				throw new Error('Monitored Item not found');
-			}
-			return mI;
+	public addOpcUaNode(nodeId: string, namespaceUrl?: string): string {
+		let nodeIdResolved;
+		if (namespaceUrl) {
+			nodeIdResolved = this.resolveNodeId(nodeId, namespaceUrl);
 		} else {
-			if(!this.subscription){
-				throw new Error('Subscription undefined');
-			}
-			const monitoredItem = await this.subscription.monitor({
-					nodeId: nodeIdResolved,
-					attributeId: AttributeIds.Value
-				},
-				{
-					samplingInterval,
-					discardOldest: true,
-					queueSize: 1
-				}, TimestampsToReturn.Both);
-
-			if (monitoredItem.statusCode.value !== 0) {
-				throw new Error(monitoredItem.statusCode.description);
-			}
-			this.logger.debug(`[${this.id}] subscribed to opc ua Variable ${monitoredItemKey} `);
-			this.monitoredItems.set(monitoredItemKey, monitoredItem);
-			return monitoredItem;
+			nodeIdResolved = nodeId;
 		}
+
+		const monitoredItemKey = nodeIdResolved.toString();
+		this.items.set(nodeId, monitoredItemKey);
+		return monitoredItemKey;
+	}
+
+	public async startListening(samplingInterval = 100): Promise<EventEmitter> {
+		const options = Array.from(this.items.values()).map((item) => {
+			return {
+				nodeId: item,
+				attributeId: AttributeIds.Value
+			};
+		});
+		if (!this.subscription){throw new Error('Subscription is undefined');}
+		const monitoredItemGroup: ClientMonitoredItemGroup = await this.subscription.monitorItems(
+			options,
+			{
+				samplingInterval,
+				discardOldest: true,
+				queueSize: 10
+			}, TimestampsToReturn.Both)
+		;
+		monitoredItemGroup.on('changed', (monitoredItem: ClientMonitoredItemBase, dataValue: DataValue) => {
+				this.logger.trace(`[${this.id}] ${monitoredItem.itemToMonitor.nodeId.toString()} changed to ${dataValue}`);
+				this.eventEmitter.emit(monitoredItem.itemToMonitor.nodeId.toString(), dataValue);
+			});
+		await monitoredItemGroup.setMonitoringMode(MonitoringMode.Reporting);
+		return this.eventEmitter;
 	}
 
 	public async writeOpcUaNode(nodeId: string, namespaceUrl: string, value: number | string | boolean,
@@ -198,7 +206,7 @@ export class OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionEm
 	}
 
 	public monitoredItemSize(): number {
-		return this.monitoredItems.size;
+		return this.items.size;
 	}
 
 	/**
@@ -229,7 +237,7 @@ export class OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionEm
 			throw new Error('Could not read Node ns=0;i=2255');
 		}
 		const namespaceArray = result.value.value;
-		this.logger.debug(`[${this.id}] Got namespace array: ${JSON.stringify(namespaceArray)}`);
+		this.logger.info(`[${this.id}] Got namespace array: ${JSON.stringify(namespaceArray)}`);
 		return namespaceArray;
 	}
 

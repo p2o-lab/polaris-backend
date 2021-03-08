@@ -38,7 +38,6 @@ import {
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
-import {PEAMockup} from '../PEA.mockup';
 import {MockupServer} from '../../_utils';
 
 chai.use(chaiAsPromised);
@@ -225,7 +224,8 @@ describe('DataAssembly', () => {
 		let mockupServer: MockupServer;
 		let connection: OpcUaConnection;
 
-		beforeEach(async () => {
+		beforeEach(async function() {
+			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.start();
 
@@ -233,7 +233,8 @@ describe('DataAssembly', () => {
 			await connection.connect();
 		});
 
-		afterEach(async () => {
+		afterEach(async function() {
+			this.timeout(4000);
 			await connection.disconnect();
 			await mockupServer.shutdown();
 		});
@@ -246,27 +247,30 @@ describe('DataAssembly', () => {
 
 			const da = pea.services[0].procedures[0].parameters[0] as ServParam;
 			const inputDa = pea.variables[0];
-			await da.subscribe();
-			await inputDa.subscribe();
+			expect(da.name).to.equal('Factor');
+			expect(da.defaultReadDataItem?.value).to.equal(2);
+			expect(inputDa.name).to.equal('Variable001');
 
-			await new Promise((resolve) => inputDa.on('changed', () => resolve()));
+			await new Promise((resolve) => inputDa.once('changed', resolve));
 
-			da.setValue({value: '2 * PEATestServer.Variable001', name: da.name, continuous: true}, [pea]);
 			const inputValue = inputDa.getDefaultReadValue();
-			await new Promise((resolve) => da.on('changed', () => resolve()));
+			await da.setValue({value: '2 * ModuleTestServer.Variable001', name: da.name, continuous: true}, [pea]);
+			await new Promise((resolve) => da.once('VRbk', resolve));
 			expect(da.getDefaultReadValue()).to.be.closeTo(2 * inputValue, 0.05 * inputValue);
 
 			await da.setValue({value: '11', name: da.name}, []);
-			await new Promise((resolve) => da.on('changed', () => resolve()));
+			await new Promise((resolve) => da.on('VRbk', resolve));
 			expect(da.getDefaultReadValue()).to.equal(11);
-		}).timeout(5000);
+		});
 
 		it('should create ServiceControl', async () => {
 			const daJson = JSON.parse(fs.readFileSync('assets/ModularAutomation/pea_testserver_1.0.0.json').toString())
 				.peas[0].services[0];
 			const da: ServiceControl = DataAssemblyFactory.create(
 				{...daJson, interfaceClass: 'ServiceControl'} as any, connection) as ServiceControl;
-			await da.subscribe();
+			const p = da.subscribe();
+			connection.startListening();
+			await p;
 			expect(da.name).to.equal('Service1');
 			expect(da instanceof ServiceControl).to.equal(true);
 
@@ -280,7 +284,7 @@ describe('DataAssembly', () => {
 
 			await da.setToAutomaticOperationMode();
 			expect(da.getOperationMode()).to.equal(OperationMode.Automatic);
-		}).timeout(8000);
+		});
 	});
 
 });

@@ -160,7 +160,6 @@ describe('ModularPlantManager', () => {
 			const service2 = pea.services[1];
 
 			await pea.connect();
-			await service2.waitForStateChangeWithTimeout('IDLE', 2000);
 			await service2.executeCommand(ServiceCommand.start);
 			await service2.waitForStateChangeWithTimeout('EXECUTE');
 
@@ -196,7 +195,6 @@ describe('ModularPlantManager', () => {
 			const service = pea.services[1];
 
 			await pea.connect();
-			await service.waitForStateChangeWithTimeout('IDLE', 2000);
 			await service.executeCommand(ServiceCommand.start);
 			await service.waitForStateChangeWithTimeout('EXECUTE');
 

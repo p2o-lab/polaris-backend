@@ -48,7 +48,8 @@ describe('PEA', () => {
 		let peaMockup: PEAMockup;
 		let mockupServer: MockupServer;
 
-		before(async () => {
+		before(async function() {
+			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.start();
 		});
@@ -63,6 +64,12 @@ describe('PEA', () => {
 			const pea = new PEA(peaJson);
 			await pea.connect();
 
+			await Promise.all([
+				new Promise((resolve) => pea.on('parameterChanged', resolve)),
+				new Promise((resolve) => pea.on('variableChanged', resolve)),
+				new Promise((resolve) => pea.on('stateChanged', resolve))
+			]);
+
 			const json = pea.json();
 			expect(json).to.have.property('id', 'PEATestServer');
 			expect(json).to.have.property('endpoint', 'opc.tcp://127.0.0.1:4334/PEATestServer');
@@ -76,16 +83,11 @@ describe('PEA', () => {
 			expect(pea.services[0].eventEmitter.listenerCount('parameterChanged')).to.equal(1);
 
 			const errorMsg = pea.services[0].procedures[0].processValuesOut[0] as StringView;
-			expect(errorMsg.communication.WQC.listenerCount('changed')).to.equal(1);
-			expect(errorMsg.communication.Text?.listenerCount('changed')).to.equal(1);
+			expect(errorMsg.communication.WQC.listenerCount('changed')).to.equal(2);
+			expect(errorMsg.communication.Text?.listenerCount('changed')).to.equal(2);
 
-			await Promise.all([
-				new Promise((resolve) => pea.on('parameterChanged', resolve)),
-				new Promise((resolve) => pea.on('variableChanged', resolve)),
-				new Promise((resolve) => pea.on('stateChanged', resolve))
-			]);
 			await pea.disconnect();
-		}).timeout(3000);
+		});
 
 		it('should work after reconnect', async () => {
 			const peaJson =
@@ -93,24 +95,23 @@ describe('PEA', () => {
 			const pea = new PEA(peaJson);
 
 			await pea.connect();
-			expect(pea.connection.monitoredItemSize()).to.be.greaterThan(80);
-
 			await Promise.all([
 				new Promise((resolve) => pea.on('parameterChanged', resolve)),
 				new Promise((resolve) => pea.on('variableChanged', resolve)),
 				new Promise((resolve) => pea.on('stateChanged', resolve))
 			]);
+			expect(pea.connection.monitoredItemSize()).to.be.greaterThan(80);
 			await pea.disconnect();
 			expect(pea.connection.monitoredItemSize()).to.equal(0);
 
 			await pea.connect();
-			expect(pea.connection.monitoredItemSize()).to.be.greaterThan(80);
 			await Promise.all([
 				new Promise((resolve) => pea.on('parameterChanged', resolve)),
 				new Promise((resolve) => pea.on('variableChanged', resolve)),
 				new Promise((resolve) => pea.on('stateChanged', resolve))
 			]);
-		}).timeout(5000);
+			expect(pea.connection.monitoredItemSize()).to.be.greaterThan(80);
+		});
 
 	});
 

@@ -199,18 +199,18 @@ describe('Parameter', () => {
 				value: '2 * PEATestServer.Variable001.V'
 			}, [pea]);
 			expect(param.scopeArray[0].dataAssembly.listenerCount('changed')).to.equal(0);
-			expect(param.scopeArray[0].dataItem.listenerCount('changed')).to.equal(1);
+			expect(param.scopeArray[0].dataItem.listenerCount('changed')).to.equal(2);
 
 			param.listenToScopeArray();
 			param.listenToScopeArray();
 			param.listenToScopeArray();
 			param.listenToScopeArray();
 			expect(param.scopeArray[0].dataAssembly.listenerCount('changed')).to.equal(1);
-			expect(param.scopeArray[0].dataItem.listenerCount('changed')).to.equal(1);
+			expect(param.scopeArray[0].dataItem.listenerCount('changed')).to.equal(2);
 
 			param.unlistenToScopeArray();
 			expect(param.scopeArray[0].dataAssembly.listenerCount('changed')).to.equal(0);
-			expect(param.scopeArray[0].dataItem.listenerCount('changed')).to.equal(1);
+			expect(param.scopeArray[0].dataItem.listenerCount('changed')).to.equal(2);
 		});
 
 	});

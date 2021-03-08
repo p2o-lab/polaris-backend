@@ -82,11 +82,11 @@ describe('OpcUaConnection', () => {
 			await connection.connect();
 			expect(connection.isConnected()).to.equal(true);
 
-			const result = await connection.listenToOpcUaNode('Service1.CurrentTime.Text', 'urn:NodeOPCUA-Server-default');
-			expect(result.statusCode.value).to.equal(0);
-			expect(result.statusCode.description).to.equal('No Error');
+			const eventName = connection.addOpcUaNode('Service1.CurrentTime.Text', 'urn:NodeOPCUA-Server-default');
+			expect(eventName).to.equal('ns=1;s=Service1.CurrentTime.Text');
 
-			await new Promise((resolve) => result.on('changed', resolve));
+			const eventEmitter = await connection.startListening();
+			await new Promise((resolve) => eventEmitter.on(eventName, resolve));
 
 			await connection.disconnect();
 		});
@@ -98,23 +98,24 @@ describe('OpcUaConnection', () => {
 			await connection.connect();
 			expect(connection.isConnected()).to.equal(true);
 
-			const firstListener = await connection.listenToOpcUaNode(
+			const eventName1 = connection.addOpcUaNode(
 				'Service1.CurrentTime.Text', 'urn:NodeOPCUA-Server-default');
-			expect(firstListener.statusCode.value).to.equal(0);
-			expect(firstListener.statusCode.description).to.equal('No Error');
+			await connection.startListening();
+
 			expect(connection.monitoredItemSize()).to.equal(1);
 
-			await new Promise((resolve) => firstListener.on('changed', resolve));
+			await new Promise((resolve) => connection.eventEmitter.on(eventName1, resolve));
 
 			await connection.disconnect();
 			expect(connection.monitoredItemSize()).to.equal(0);
 			await connection.connect();
 
-			const secondListener = await connection.listenToOpcUaNode(
+			const eventName2 = connection.addOpcUaNode(
 				'Service1.CurrentTime.Text', 'urn:NodeOPCUA-Server-default');
+			expect(eventName1).to.equal(eventName2);
+			await connection.startListening();
 			await new Promise((resolve, reject) => {
-				firstListener.on('changed', reject);
-				secondListener.on('changed', resolve);
+				connection.eventEmitter.on(eventName1, resolve);
 			});
 			expect(connection.monitoredItemSize()).to.equal(1);
 		});
@@ -126,25 +127,24 @@ describe('OpcUaConnection', () => {
 			await connection.connect();
 			expect(connection.isConnected()).to.equal(true);
 
-			await connection.listenToOpcUaNode('Service1.Offset.VExt', 'urn:NodeOPCUA-Server-default');
+			connection.addOpcUaNode('Service1.Offset.VExt', 'urn:NodeOPCUA-Server-default');
 			expect(connection.monitoredItemSize()).equals(1);
 
-			await connection.listenToOpcUaNode('Service1.Offset.VExt', 'urn:NodeOPCUA-Server-default');
+			connection.addOpcUaNode('Service1.Offset.VExt', 'urn:NodeOPCUA-Server-default');
 			expect(connection.monitoredItemSize()).equals(1);
 
-			await expect(connection.listenToOpcUaNode('notexistant', 'urn:NodeOPCUA-Server-default'))
-				.to.be.rejectedWith('does not exist');
-			expect(connection.monitoredItemSize()).equals(1);
+			connection.addOpcUaNode('notexistant', 'urn:NodeOPCUA-Server-default');
 
-			await expect(connection.listenToOpcUaNode('notexistant', 'urn:nan'))
-				.to.be.rejectedWith('Could not resolve namespace');
-			expect(connection.monitoredItemSize()).equals(1);
-
-			await connection.listenToOpcUaNode('Service1.OpMode', 'urn:NodeOPCUA-Server-default');
 			expect(connection.monitoredItemSize()).equals(2);
 
-			await connection.disconnect();
+			expect(() => connection.addOpcUaNode('notexistant', 'urn:nan'))
+				.to.throw('Could not resolve namespace');
+			expect(connection.monitoredItemSize()).equals(2);
 
+			connection.addOpcUaNode('Service1.OpMode', 'urn:NodeOPCUA-Server-default');
+			expect(connection.monitoredItemSize()).equals(3);
+			await connection.startListening();
+			await connection.disconnect();
 		}).timeout(50000);
 
 		it('should connect with username and password', async () => {

@@ -179,8 +179,10 @@ export class PEA extends (EventEmitter as new() => PEAEmitter) {
 
 	public async connect(): Promise<void> {
 		await this.connection.connect();
-		await this.subscribeToAllVariables();
-		await this.subscribeToAllServices();
+		const pv = this.subscribeToAllVariables();
+		const pa = this.subscribeToAllServices();
+		await this.connection.startListening();
+		await Promise.all([pv, pa]);
 		this.logger.info(`[${this.id}] Successfully subscribed to ${this.connection.monitoredItemSize()} assemblies`);
 	}
 
@@ -349,7 +351,7 @@ export class PEA extends (EventEmitter as new() => PEAEmitter) {
 				})
 				.on('parameterChanged', (data) => {
 					this.logger.debug(`[${this.id}] parameter changed: ` +
-						`${data.procedure?.name}.${data.parameter} = ${data.parameter.value}`);
+						`${data.procedure?.name}.${data.parameter.name} = ${data.parameter.value}`);
 					const entry: ParameterChange = {
 						timestampPEA: data.parameter.timestamp!,
 						service: service,

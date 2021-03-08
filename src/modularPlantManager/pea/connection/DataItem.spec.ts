@@ -133,10 +133,12 @@ describe('DataItem', () => {
 					dataType: 'String'
 				}, connection, 'write', 'string');
 
-			const a = await di.subscribe();
-			expect(di.value).to.equal('initial value');
+			await di.subscribe();
 
-			await new Promise((resolve) => a.on('changed', resolve));
+			await connection.startListening();
+
+			await new Promise((resolve) => di.on('changed', resolve));
+			expect(di.value).to.equal('initial value');
 		});
 
 		it('should subscribe, disconnect and resubscribe', async () => {
@@ -147,14 +149,16 @@ describe('DataItem', () => {
 					dataType: 'String'
 				}, connection, 'write', 'string');
 
-			const a = await di.subscribe();
-			await new Promise((resolve) => a.on('changed', resolve));
+			await di.subscribe();
+			await connection.startListening();
+			await new Promise((resolve) => di.on('changed', resolve));
 
 			await connection.disconnect();
 			await connection.connect();
 
-			const a1 = await di.subscribe();
-			await new Promise((resolve) => a1.on('changed', resolve));
+			await di.subscribe();
+			await connection.startListening();
+			await new Promise((resolve) => di.on('changed', resolve));
 		});
 
 		it('should write', async () => {
