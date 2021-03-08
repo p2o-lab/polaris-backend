@@ -23,12 +23,12 @@
  * SOFTWARE.
  */
 
-import {ModularPlantManager} from '../modularPlantManager';
-import {Server} from './server';
+import {ModularPlantManager} from '../../../modularPlantManager';
+import {Server} from '../../server';
 
 import {Application} from 'express';
 
-describe('Routes', () => {
+describe('PlayerRoutes', () => {
 	const request = require('supertest');
 	let app: Application;
 	let appServer: Server;
@@ -44,9 +44,11 @@ describe('Routes', () => {
 		await appServer.stop();
 	});
 
-	it('should give code 404 for not existing routes', (done) => {
-		request(app).get('/api/notExisting')
-			.expect(404, done);
+	context('#playerRoutes', () => {
+		it('should provide player', (done) => {
+			request(app).get('/api/player')
+				.expect('Content-Type', /json/)
+				.expect(200, done);
+		});
 	});
-
 });

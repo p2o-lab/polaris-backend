@@ -31,7 +31,6 @@ import * as asyncHandler from 'express-async-handler';
 import yn from 'yn';
 import {version} from '../../../package.json';
 import {peaRouter} from './peaRouter/peaRouter';
-import {serviceRouter} from './peaRouter/serviceRouter';
 import {recipeRunRouter} from './recipeRouter/recipeRunRouter';
 import {recipeRouter} from './recipeRouter/recipeRouter';
 import {playerRouter} from './recipeRouter/playerRouter';
@@ -40,7 +39,6 @@ import {polServiceRouter} from './polServiceRouter/polServiceRouter';
 export const modularPlantManagerRouter: Router = Router();
 
 modularPlantManagerRouter.use('/pea', peaRouter);
-modularPlantManagerRouter.use('/pea', serviceRouter);
 modularPlantManagerRouter.use('/polService', polServiceRouter);
 modularPlantManagerRouter.use('/recipeRun', recipeRunRouter);
 modularPlantManagerRouter.use('/recipe', recipeRouter);
@@ -95,7 +93,7 @@ modularPlantManagerRouter.post('/autoReset', asyncHandler(async (req: Request, r
  * @apiDescription Abort all services from all PEAs
  * @apiGroup ModularPlantManager
  */
-peaRouter.post('/abort', asyncHandler(async (req: Request, res: Response) => {
+modularPlantManagerRouter.post('/abortAllServices', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
 	await manager.abortAllServices();
 	res.json({status: 'aborted all services from all PEAs'});
@@ -107,19 +105,19 @@ peaRouter.post('/abort', asyncHandler(async (req: Request, res: Response) => {
  * @apiDescription Abort all services from all PEAs
  * @apiGroup ModularPlantManager
  */
-peaRouter.post('/stop', asyncHandler(async (req: Request, res: Response) => {
+modularPlantManagerRouter.post('/stopAllServices', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
 	await manager.stopAllServices();
 	res.json({status: 'stopped all services from all PEAs'});
 }));
 
 /**
- * @api {post} /pea/reset    Reset all services
+ * @api {post} /resetAllServices    Reset all services
  * @apiName ResetAllServices
  * @apiDescription Reset all services on all PEAs
  * @apiGroup ModularPlantManager
  */
-peaRouter.post('/reset', asyncHandler(async (req: Request, res: Response) => {
+modularPlantManagerRouter.post('/resetAllServices', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
 	await manager.resetAllServices();
 	res.json({status: 'reset all services from all PEAs'});

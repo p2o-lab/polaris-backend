@@ -29,6 +29,7 @@ import {Request, Response, Router} from 'express';
 import * as asyncHandler from 'express-async-handler';
 import {constants} from 'http2';
 import {catServer} from '../../server';
+import {ServiceCommand} from '@p2olab/polaris-interface';
 
 export const peaRouter: Router = Router();
 
@@ -125,4 +126,76 @@ peaRouter.post('/:id/disconnect', asyncHandler(async (req: Request, res: Respons
 	const pea = manager.getPEA(req.params.id);
 	await pea.disconnect();
 	res.json({pea: pea.id, status: 'Successfully disconnected'});
+}));
+
+/**
+ * @api {post} /pea/:peaId/service/:serviceName    Configure service
+ * @apiName ConfigureService
+ * @apiDescription Configure procedure and parameters of service
+ * @apiGroup PEA
+ * @apiParam {string} peaId    PEA id
+ * @apiParam {string} serviceName   Name of service
+ * @apiParam {string} procedure      Name of procedure
+ * @apiParam {ParameterOptions[]} [parameters]    Service Procedure Parameters
+ */
+peaRouter.post('/:peaId/service/:serviceName', asyncHandler(async (req: Request, res: Response) => {
+	catServer.info(`Set Procedure: ${req.body.procedure}; Parameters: ${JSON.stringify(req.body.parameters)}`);
+	const manager: ModularPlantManager = req.app.get('manager');
+	const service = manager.getService(req.params.peaId, req.params.serviceName);
+	if (req.body.procedure) {
+		const procedure = service.getProcedureByNameOrDefault(req.body.procedure);
+		if (procedure) {
+			await service.setProcedure(procedure);
+		}
+	}
+	if (req.body.parameters) {
+		await service.setParameters(req.body.parameters, manager.peas);
+	}
+	res.json(service.json());
+}));
+
+/**
+ * @api {post} /pea/:peaId/service/:serviceName/:command   Call service
+ * @apiName CallService
+ * @apiGroup PEA
+ * @apiParam {string} peaId      PEA id
+ * @apiParam {string} serviceName   Name of service
+ * @apiParam {string="start","stop","abort","complete","pause","unhold","reset"} command       Command name
+ * @apiParam {string} [procedure]      Name of procedure
+ * @apiParam {ParameterOptions[]} [parameters]    Service Strategy Parameters
+ */
+peaRouter.post('/:peaId/service/:serviceName/:command', asyncHandler(async (req: Request, res: Response) => {
+	catServer.debug(`Call service: ${JSON.stringify(req.params)} ${JSON.stringify(req.body)}`);
+	const manager: ModularPlantManager = req.app.get('manager');
+	const service = manager.getService(req.params.peaId, req.params.serviceName);
+	if (req.body.procedure) {
+		const procedure = service.getProcedureByNameOrDefault(req.body.procedure);
+		if (procedure) {
+			await service.setProcedure(procedure);
+		}
+	}
+	if (req.body.parameters) {
+		await service.setParameters(req.body.parameters, manager.peas);
+	}
+	const command = req.params.command as ServiceCommand;
+	await service.executeCommand(command);
+	res.json({
+		pea: req.params.peaId,
+		service: service.name,
+		command: req.params.command,
+		status: 'Command succesfully send'
+	});
+}));
+
+/**
+ * @api {get} /pea/:PEAId/service/:serviceName    Get service statusNode
+ * @apiName GetService
+ * @apiGroup PEA
+ * @apiParam {string} peaId      PEA id
+ * @apiParam {string} serviceName   Name of service
+ */
+peaRouter.get('/:peaId/service/:serviceName', asyncHandler(async (req: Request, res: Response) => {
+	const manager: ModularPlantManager = req.app.get('manager');
+	const service = manager.getService(req.params.peaId, req.params.serviceName);
+	res.json(service.json());
 }));
