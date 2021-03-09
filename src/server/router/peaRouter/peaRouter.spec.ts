@@ -67,18 +67,30 @@ describe('PEARoutes', () => {
 				.expect(500);
 		});
 
-		it('should fail wile loading pea with empty content', async () => {
-			await request(app).put('/api/pea')
-				.send({})
-				.expect('Content-Type', /json/)
-				.expect(500);
+		context('loading PEA by Options', () => {
+			it('should fail while loading pea with empty content', async () => {
+				await request(app).put('/api/pea/addByOptions')
+					.send({})
+					.expect('Content-Type', /json/)
+					.expect(500);
+			});
+
+			it('should fail while loading pea without content', async () => {
+				await request(app).put('/api/pea/addByOptions')
+					.send(null)
+					.expect('Content-Type', /json/)
+					.expect(500);
+			});
 		});
 
-		it('should fail while loading pea without content', async () => {
-			await request(app).put('/api/pea')
-				.send(null)
-				.expect('Content-Type', /json/)
-				.expect(500);
+		context('loading PEA via PiMAd', () => {
+			it('should work with dummy implementation', async () => {
+				await request(app).put('/api/pea/addByPiMAd')
+					.send({})
+					.expect(200)
+					.expect('Content-Type', /json/)
+					.expect(/PiMAd-Hello-World/);
+			});
 		});
 
 		it('should fail while connecting a not existing pea', async () => {
@@ -112,7 +124,7 @@ describe('PEARoutes', () => {
 			it('should load, get, disconnect and delete pea', async () => {
 				const options =
 					JSON.parse(fs.readFileSync('assets/peas/pea_testserver_1.0.0.json').toString()).peas[0];
-				await request(app).put('/api/pea')
+				await request(app).put('/api/pea/addByOptions')
 					.send({pea: options})
 					.expect(200)
 					.expect('Content-Type', /json/)
@@ -146,10 +158,10 @@ describe('PEARoutes', () => {
 					.expect('Content-Type', /json/)
 					.expect(/"status":"Succesfully disconnected"/);
 
-				await request(app).delete('/api/pea/PEATestServer')
+				await request(app).delete('/api/pea/PEAMockupServer')
 					.expect(200)
 					.expect('Content-Type', /json/)
-					.expect({status: 'Successful deleted', id: 'PEATestServer'});
+					.expect({status: 'Successful deleted', id: 'PEAMockupServer'});
 			});
 		});
 	});

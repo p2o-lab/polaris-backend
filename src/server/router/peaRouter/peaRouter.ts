@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import {catPEA, ModularPlantManager} from '../../../modularPlantManager';
+import {ModularPlantManager} from '../../../modularPlantManager';
 
 import {Request, Response, Router} from 'express';
 import * as asyncHandler from 'express-async-handler';
@@ -34,7 +34,34 @@ import {ServiceCommand} from '@p2olab/polaris-interface';
 export const peaRouter: Router = Router();
 
 /**
- * @api {get} /pea/    Get all PEAs
+ * @api {put} /addByOptions    Add PEA via PEA-options directly
+ * @apiName PutPEA
+ * @apiGroup PEA
+ * @apiParam {PEAOptions} pea    PEA to be added
+ */
+peaRouter.put('/addByOptions', (req, res) => {
+	catServer.info('Load PEA via PEA-Options');
+	const manager: ModularPlantManager = req.app.get('manager');
+	const newPEAs = manager.load(req.body);
+/*	newPEAs.forEach((p) =>
+		p.connect()
+			.catch(() => catPEA.warn(`Could not connect to PEA ${p.id}`))
+	);*/
+	res.json(newPEAs.map((m) => m.json()));
+});
+
+/**
+ * @api {put} /addByPiMAd Add PEA via PiMAd.
+ * @apiName PutPEA
+ * @apiGroup PEA
+ * @apiParam {PEAOptions} pea PEA to be added.
+ */
+peaRouter.put('/addByPiMAd', (req, res) => {
+	res.json('PiMAd-Hello-World\n');
+});
+
+/**
+ * @api {get}    Get all PEAs
  * @apiName GetPEAs
  * @apiGroup PEA
  */
@@ -44,92 +71,75 @@ peaRouter.get('', asyncHandler(async (req: Request, res: Response) => {
 }));
 
 /**
- * @api {get} /pea/:id    Get PEA
+ * @api {get} /:peaId    Get PEA
  * @apiName GetPEA
  * @apiGroup PEA
- * @apiParam {string} id    PEA id
+ * @apiParam {string} peaId    ID of PEA to be received as json
  */
-peaRouter.get('/:id', (req: Request, res: Response) => {
+peaRouter.get('/:peaId', (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
 	try {
-		res.json(manager.getPEA(req.params.id).json());
+		res.json(manager.getPEA(req.params.peaId).json());
 	} catch (err) {
 		res.status(constants.HTTP_STATUS_NOT_FOUND).send(err.toString());
 	}
 });
 
 /**
- * @api {get} /pea/:id/download    Download PEA options
+ * @api {get} /:peaId/download    Download PEA options by ID
  * @apiName GetModuleDownload
  * @apiGroup PEA
- * @apiParam {string} id    PEA ID
+ * @apiParam {string} peaId    ID of PEA to download related options.
  */
-peaRouter.get('/:id/download', (req: Request, res: Response) => {
+peaRouter.get('/:peaId/download', (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
-	res.json(manager.getPEA(req.params.id).options);
+	res.json(manager.getPEA(req.params.peaId).options);
 });
 
 /**
- * @api {put} /pea    Add PEA
- * @apiName PutPEA
+ * @api {post} /:peaId/connect    Connect PEA by ID
+ * @apiName ConnectPEA
  * @apiGroup PEA
- * @apiParam {PEAOptions} pea    PEA to be added
+ * @apiParam {string} peaId    ID of PEA to be connected.
  */
-peaRouter.put('', (req, res) => {
-	catServer.info('Load PEA');
+peaRouter.post('/:peaId/connect', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
-	const newPEAs = manager.load(req.body);
-	newPEAs.forEach((p) =>
-		p.connect()
-			.catch(() => catPEA.warn(`Could not connect to PEA ${p.id}`))
-	);
-	res.json(newPEAs.map((m) => m.json()));
-});
+	const pea = manager.getPEA(req.params.peaId);
+	await pea.connect();
+	res.json({pea: pea.id, status: 'Successfully connected'});
+}));
 
 /**
- * @api {delete} /pea/:id    Delete PEA
+ * @api {post} /:peaId/disconnect    Disconnect PEA
+ * @apiName DisconnectPEA
+ * @apiGroup PEA
+ * @apiParam {string} peaId    ID of PEA to be disconnected.
+ */
+peaRouter.post('/:peaId/disconnect', asyncHandler(async (req: Request, res: Response) => {
+	const manager: ModularPlantManager = req.app.get('manager');
+	const pea = manager.getPEA(req.params.peaId);
+	await pea.disconnect();
+	res.json({pea: pea.id, status: 'Successfully disconnected'});
+}));
+
+/**
+ * @api {delete} /:peaId    Delete PEA by ID
  * @apiName DeletePEA
  * @apiGroup PEA
- * @apiParam {string} id    PEA ID to be deleted
+ * @apiParam {string} peaId    ID of PEA to be deleted
  */
-peaRouter.delete('/:id', asyncHandler(async (req: Request, res: Response) => {
+peaRouter.delete('/:peaId', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
 	try {
-		await manager.removePEA(req.params.id);
-		res.send({status: 'Successful deleted', id: req.params.id});
+		await manager.removePEA(req.params.peaId);
+		res.send({status: 'Successful deleted', peaId: req.params.peaId});
 	} catch (err) {
 		res.status(404).send(err.toString());
 	}
 }));
 
 /**
- * @api {post} /pea/:id/connect    Connect PEA
- * @apiName ConnectPEA
- * @apiGroup PEA
- * @apiParam {string} id    PEA id
- */
-peaRouter.post('/:id/connect', asyncHandler(async (req: Request, res: Response) => {
-	const manager: ModularPlantManager = req.app.get('manager');
-	const pea = manager.getPEA(req.params.id);
-	await pea.connect();
-	res.json({pea: pea.id, status: 'Successfully connected'});
-}));
-
-/**
- * @api {post} /pea/:id/disconnect    Disconnect PEA
- * @apiName DisconnectPEA
- * @apiGroup PEA
- * @apiParam {string} id    PEA ID
- */
-peaRouter.post('/:id/disconnect', asyncHandler(async (req: Request, res: Response) => {
-	const manager: ModularPlantManager = req.app.get('manager');
-	const pea = manager.getPEA(req.params.id);
-	await pea.disconnect();
-	res.json({pea: pea.id, status: 'Successfully disconnected'});
-}));
-
-/**
- * @api {post} /pea/:peaId/service/:serviceName    Configure service
+ * @api {post} /:peaId/service/:serviceName    Configure service
  * @apiName ConfigureService
  * @apiDescription Configure procedure and parameters of service
  * @apiGroup PEA
@@ -155,7 +165,7 @@ peaRouter.post('/:peaId/service/:serviceName', asyncHandler(async (req: Request,
 }));
 
 /**
- * @api {post} /pea/:peaId/service/:serviceName/:command   Call service
+ * @api {post} /:peaId/service/:serviceName/:command   Call service
  * @apiName CallService
  * @apiGroup PEA
  * @apiParam {string} peaId      PEA id
