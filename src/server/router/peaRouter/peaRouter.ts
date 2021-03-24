@@ -57,7 +57,7 @@ peaRouter.put('/addByOptions', (req, res) => {
  * @apiParam {PEAOptions} pea PEA to be added.
  */
 peaRouter.put('/addByPiMAd', (req, res) => {
-	res.json('PiMAd-Hello-World\n');
+	res.status(200).send('PiMAd-Hello-World\n');
 });
 
 /**

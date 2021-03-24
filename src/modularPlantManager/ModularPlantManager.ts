@@ -28,6 +28,7 @@ import {
 	RecipeOptions,
 	ServiceCommand, VariableChange
 } from '@p2olab/polaris-interface';
+import {PEAPool, PEAPoolVendor} from '@p2olab/pimad-core';
 import {ServiceLogEntry} from '../logging';
 import {ParameterChange, PEA, Service} from './pea';
 import {ServiceState} from './pea/dataAssembly';
@@ -71,9 +72,12 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 	public serviceArchive: ServiceLogEntry[] = [];
 	// autoreset timeout in milliseconds
 	private _autoresetTimeout = 500;
+	// PiMAd-core
+	private peaPool: PEAPool;
 
 	constructor() {
 		super();
+		this.peaPool = new PEAPoolVendor().buyDependencyPEAPool();
 		this.player = new Player()
 			.on('started', () => {
 				this.emit('notify', {message: 'player', player: this.player.json()});
