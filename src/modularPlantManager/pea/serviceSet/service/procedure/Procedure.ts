@@ -39,9 +39,7 @@ import {
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Category} from 'typescript-logging';
-import {catPEAService} from '../Service';
-
-export const catProcedure = new Category('procedure', catPEAService);
+import {catProcedure} from '../../../../../logging';
 
 export interface ProcedureEvents {
 	parameterChanged: {

@@ -28,7 +28,7 @@ import {PetrinetState, PetrinetStateOptions} from './PetrinetState';
 import {PetrinetTransition, PetrinetTransitionOptions} from './PetrinetTransition';
 
 import {EventEmitter} from 'events';
-import {catRecipe} from '../../../../recipe';
+import {catRecipe} from '../../../../../logging';
 
 export interface PetrinetOptions {
 	states: PetrinetStateOptions[];

@@ -23,19 +23,10 @@
  * SOFTWARE.
  */
 
-import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
-import {catPEAMockup} from '../../PEA.mockup';
-import {getOpModeDAMockupReferenceJSON, OpModeDAMockup} from '../_extensions/opModeDA/OpModeDA.mockup';
-import {
-	getServiceSourceModeDAMockupReferenceJSON,
-	ServiceSourceModeDAMockup
-} from '../_extensions/serviceSourceModeDA/ServiceSourceModeDA.mockup';
+import {Namespace, UAObject} from 'node-opcua';
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../_extensions/wqcDA/WQCDA.mockup';
 import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../_extensions/osLevelDA/OSLevelDA.mockup';
-import {getServParamMockupReferenceJSON} from '../operationElement/servParam/ServParam.mockup';
 import {getDataAssemblyMockupReferenceJSON} from '../DataAssembly.mockup';
-import {getSourceModeDAMockupReferenceJSON} from '../_extensions/sourceModeDA/SourceModeDA.mockup';
-
 
 export function getActiveElementMockupReferenceJSON(
 	namespace = 1,

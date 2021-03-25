@@ -39,8 +39,7 @@ import {Procedure, Service} from './serviceSet';
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Category} from 'typescript-logging';
-
-export const catPEA = new Category('pea');
+import {catPEA} from '../../logging';
 
 export interface ParameterChange {
 	timestampPEA: Date;
@@ -308,7 +307,7 @@ export class PEA extends (EventEmitter as new() => PEAEmitter) {
 					};
 					this.emit('variableChanged', entry);
 				});
-				return variable.subscribe(1000);
+				return variable.subscribe();
 			})
 		);
 	}

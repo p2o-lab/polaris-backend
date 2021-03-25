@@ -43,8 +43,7 @@ import {timeout} from 'promise-timeout';
 import {ClientMonitoredItemGroup} from 'node-opcua-client/source/client_monitored_item_group';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Category} from 'typescript-logging';
-
-export const catOpcUA = new Category('OpcUA');
+import {catOpcUA} from '../../../logging';
 
 /**
  * Events emitted by {@link OpcUaConnection}

@@ -26,7 +26,7 @@
 import {ModularPlantManager} from '../../../modularPlantManager';
 
 import {Request, Response, Router} from 'express';
-import {catServer} from '../../server';
+import {catServer} from '../../../logging';
 
 export const recipeRouter: Router = Router();
 

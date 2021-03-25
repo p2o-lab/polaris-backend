@@ -34,6 +34,33 @@ import {
 } from 'typescript-logging';
 import {CustomLogger} from './CustomLogger';
 
+export const catManager = new Category('Manager');
+export const catPEA = new Category('PEA');
+export const catDataAssembly = new Category('dataAssembly', catPEA);
+export const catService = new Category('service');
+export const catPEAService = new Category('service', catService);
+export const catProcedure = new Category('procedure', catPEAService);
+export const catPEAMockup = new Category('PEA-Mockup');
+
+export const catDataItem = new Category('DataItem');
+export const catOpcUA = new Category('OpcUA');
+export const catOpcUaDataItem = new Category('OpcUaDataItem', catDataItem);
+
+export const catPOLService = new Category('POLService');
+export const catAggregatedService = new Category('AggregatedService', catPOLService);
+export const catTimer = new Category('Timer', catPOLService);
+
+export const catServer = new Category('server');
+export const catMiddleware = new Category('Middleware');
+export const catMockupServer = new Category('MockupServer');
+
+export const catRecipe = new Category('recipe');
+export const catScopeItem = new Category('scopeItem', catRecipe);
+export const catParameter = new Category('parameter', catRecipe);
+export const catOperation = new Category('operation', catRecipe);
+
+export const catPlayer = new Category('player');
+
 // Custom logging
 export const messages: string[] = [];
 

@@ -25,7 +25,7 @@
 
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
 import {OpModeDAMockup} from '../../../pea/dataAssembly/_extensions/opModeDA/OpModeDA.mockup';
-import {catPEAMockup} from '../../../pea/PEA.mockup';
+import {catPEAMockup} from '../../../../logging';
 
 export abstract class PEATestVariable {
 

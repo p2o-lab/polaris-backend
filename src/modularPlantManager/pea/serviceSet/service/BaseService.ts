@@ -39,8 +39,7 @@ import {timeout} from 'promise-timeout';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Category} from 'typescript-logging';
 import {Procedure} from './procedure/Procedure';
-
-export const catService = new Category('service');
+import {catService} from '../../../../logging';
 
 /**
  * Events emitted by [[BaseService]]

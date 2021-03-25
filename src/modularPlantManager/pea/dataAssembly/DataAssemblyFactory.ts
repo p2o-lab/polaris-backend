@@ -28,14 +28,14 @@ import {OpcUaConnection} from '../connection';
 import {
 	AnaDrv, AnaMan, AnaManInt, AnaMon, AnaProcessValueIn, AnaServParam, AnaView, AnaVlv,
 	BinDrv, BinMan, BinManInt, BinMon, BinProcessValueIn, BinServParam, BinView, BinVlv,
-	catDataAssembly,
-	DataAssembly, DIntMan, DIntManInt, DIntMon, DIntProcessValueIn, DIntServParam, DIntView,
+		DataAssembly, DIntMan, DIntManInt, DIntMon, DIntProcessValueIn, DIntServParam, DIntView,
 	HealthStateView,
 	LockView16, LockView4, LockView8,
 	MonAnaDrv, MonAnaVlv, MonBinDrv, MonBinVlv,
 	PIDCtrl,
 	ServiceControl, StringServParam, StringView
 } from './index';
+import {catDataAssembly} from '../../../logging';
 
 export class DataAssemblyFactory {
 	public static create(variableOptions: DataAssemblyOptions, connection: OpcUaConnection): DataAssembly {

@@ -25,8 +25,9 @@
 
 import {OperationOptions} from '@p2olab/polaris-interface';
 import {PEA} from '../../../../pea';
-import {catRecipe, Operation} from '../../../../recipe';
+import {Operation} from '../../../../recipe';
 import {PetrinetTransition} from './PetrinetTransition';
+import {catRecipe} from '../../../../../logging';
 
 export interface PetrinetStateOptions {
 	id: string;

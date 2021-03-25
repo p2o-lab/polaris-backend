@@ -28,8 +28,8 @@ import {ModularPlantManager} from '../../../modularPlantManager';
 import {Request, Response, Router} from 'express';
 import * as asyncHandler from 'express-async-handler';
 import {constants} from 'http2';
-import {catServer} from '../../server';
 import {ServiceCommand} from '@p2olab/polaris-interface';
+import {catServer} from '../../../logging';
 
 export const peaRouter: Router = Router();
 

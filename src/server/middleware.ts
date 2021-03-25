@@ -28,9 +28,7 @@ import {ModularPlantManager} from '../modularPlantManager';
 import * as cors from 'cors';
 import * as express from 'express';
 import {NextFunction, Request, Response} from 'express';
-import {Category} from 'typescript-logging';
-
-export const catMiddleware = new Category('Middleware');
+import {catMiddleware} from '../logging';
 
 export default class Middleware {
 	public static init(app: express.Application, manager: ModularPlantManager): void {

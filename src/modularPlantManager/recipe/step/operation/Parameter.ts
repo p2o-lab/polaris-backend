@@ -25,17 +25,16 @@
 
 import {ParameterOptions, ScopeOptions} from '@p2olab/polaris-interface';
 import {PEA} from '../../../pea';
-import {catRecipe, ScopeItem} from '../../index';
 
 import {EventEmitter} from 'events';
 import {Expression} from 'expr-eval';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Category} from 'typescript-logging';
+import {catParameter} from '../../../../logging';
+import {ScopeItem} from '../../ScopeItem';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const assign = require('assign-deep');
-
-export const catParameter = new Category('parameter', catRecipe);
 
 /**
  * Static or Dynamic Parameter. Dynamic Parameters can depend on variables of the same or

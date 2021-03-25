@@ -29,7 +29,7 @@ import {
 
 import * as express from 'express';
 import {Request, Response, static as expressStatic} from 'express';
-import {catServer} from './server';
+import {catServer} from '../logging';
 
 export default class Routes {
 	public static init(app: express.Application): void {

@@ -29,9 +29,7 @@ import {RecipeRun} from './RecipeRun';
 
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
-import {Category} from 'typescript-logging';
-
-export const catPlayer = new Category('player');
+import {catPlayer} from '../../logging';
 
 /**
  * Events emitted by [[Player]]

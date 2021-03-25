@@ -27,8 +27,9 @@
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Category} from 'typescript-logging';
+import {catDataItem} from '../../../logging';
 
-export const catDataItem = new Category('DataItem');
+
 
 /**
  * Events emitted by [[DataItem]]

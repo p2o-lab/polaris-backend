@@ -35,7 +35,8 @@ import {PEA} from '../../PEA';
 import {
 	WQCDA, WQCRuntime
 } from '../_extensions';
-import {BaseDataAssemblyRuntime, catDataAssembly, DataAssembly} from '../DataAssembly';
+import {BaseDataAssemblyRuntime, DataAssembly} from '../DataAssembly';
+import {catDataAssembly} from '../../../../logging';
 
 export type InputElementRuntime = BaseDataAssemblyRuntime & WQCRuntime;
 

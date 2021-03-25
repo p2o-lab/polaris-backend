@@ -29,8 +29,9 @@ import {DataItem, OpcUaConnection} from '../../connection';
 import {
 	OSLevelDA, OSLevelRuntime
 } from '../_extensions';
-import {BaseDataAssemblyRuntime, catDataAssembly, DataAssembly} from '../DataAssembly';
+import {BaseDataAssemblyRuntime, DataAssembly} from '../DataAssembly';
 import {PEA} from '../../PEA';
+import {catDataAssembly} from '../../../../logging';
 
 export type OperationElementRuntime = BaseDataAssemblyRuntime & OSLevelRuntime;
 

@@ -28,7 +28,7 @@ import {ModularPlantManager} from '../../../modularPlantManager';
 
 import {Request, Response, Router} from 'express';
 import * as asyncHandler from 'express-async-handler';
-import {catServer} from '../../server';
+import {catServer} from '../../../logging';
 
 export const polServiceRouter: Router = Router();
 

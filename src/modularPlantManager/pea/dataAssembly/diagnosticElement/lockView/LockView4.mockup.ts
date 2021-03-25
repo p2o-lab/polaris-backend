@@ -24,9 +24,9 @@
  */
 
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
-import {catPEAMockup} from '../../../PEA.mockup';
 import {getDataAssemblyMockupReferenceJSON} from '../../DataAssembly.mockup';
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../_extensions/wqcDA/WQCDA.mockup';
+import {catPEAMockup} from '../../../../../logging';
 
 export function getLockView4MockupReferenceJSON(
 	namespace = 1,

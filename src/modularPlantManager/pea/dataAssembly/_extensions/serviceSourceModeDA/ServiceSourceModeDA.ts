@@ -25,8 +25,9 @@
 
 import {ServiceSourceMode} from '@p2olab/polaris-interface';
 import {OpcUaDataItem} from '../../../connection';
-import {BaseDataAssemblyRuntime, catDataAssembly, DataAssembly} from '../../DataAssembly';
+import {BaseDataAssemblyRuntime, DataAssembly} from '../../DataAssembly';
 import {Constructor} from '../_helper';
+import {catDataAssembly} from '../../../../../logging';
 
 export interface ServiceSourceModeRuntime extends BaseDataAssemblyRuntime {
 	SrcChannel: OpcUaDataItem<boolean>;

@@ -23,11 +23,10 @@
  * SOFTWARE.
  */
 
-import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
-import {catPEAMockup} from '../../PEA.mockup';
+import {Namespace, UAObject} from 'node-opcua';
 import {getDataAssemblyMockupReferenceJSON} from '../DataAssembly.mockup';
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../_extensions/wqcDA/WQCDA.mockup';
-import {getInputElementMockupReferenceJSON} from '../inputElement/InputElement.mockup';
+import {catPEAMockup} from '../../../../logging';
 
 export function getIndicatorElementMockupReferenceJSON(
 	namespace = 1,

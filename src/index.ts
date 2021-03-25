@@ -24,13 +24,14 @@
  */
 
 /* tslint:disable:no-console */
-import {catPEA, ModularPlantManager} from './modularPlantManager';
+import {ModularPlantManager} from './modularPlantManager';
 import {ExternalTrigger, Server} from './server';
 import * as serverHandlers from './server/serverHandlers';
 
 import * as commandLineArgs from 'command-line-args';
 import * as commandLineUsage from 'command-line-usage';
 import * as fs from 'fs';
+import {catPEA} from './logging';
 
 const optionDefinitions = [
 	{

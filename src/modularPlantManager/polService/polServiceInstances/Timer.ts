@@ -25,10 +25,8 @@
 
 // eslint-disable-next-line no-undef
 import Timeout = NodeJS.Timeout;
-import {Category} from 'typescript-logging';
-import {catPOLService, POLService} from '../POLService';
-
-export const catTimer = new Category('Timer', catPOLService);
+import {POLService} from '../POLService';
+import {catTimer} from '../../../logging';
 
 export class Timer extends POLService {
 

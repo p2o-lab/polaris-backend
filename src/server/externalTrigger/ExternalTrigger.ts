@@ -28,7 +28,7 @@ import {
 	ClientSession, ClientSubscription, OPCUAClient,
 	TimestampsToReturn
 } from 'node-opcua-client';
-import {catServer} from '../server';
+import {catServer} from '../../logging';
 
 export class ExternalTrigger {
 	private readonly endpoint: string;

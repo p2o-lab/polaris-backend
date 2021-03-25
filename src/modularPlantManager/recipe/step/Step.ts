@@ -30,7 +30,7 @@ import {Transition} from './transition/Transition';
 
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
-import {catRecipe} from '../Recipe';
+import {catRecipe} from '../../../logging';
 
 export interface StepOptions {
 	name: string;

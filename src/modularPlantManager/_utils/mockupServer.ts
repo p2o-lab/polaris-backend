@@ -24,12 +24,10 @@
  */
 
 
-import {Category} from 'typescript-logging';
 import {OPCUAServer} from 'node-opcua-server';
 import * as net from 'net';
 import {AddressSpace, DataType, Namespace, UAObject, Variant} from 'node-opcua';
-
-export const catMockupServer = new Category('MockupServer');
+import {catMockupServer} from '../../logging';
 
 function validUserFunc(username: string, password: string): boolean {
 	catMockupServer.info(`Try to login with ${username}:${password}`);

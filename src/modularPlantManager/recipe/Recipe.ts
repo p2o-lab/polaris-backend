@@ -30,10 +30,8 @@ import {Transition} from './step/transition/Transition';
 
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
-import {Category} from 'typescript-logging';
 import {v4} from 'uuid';
-
-export const catRecipe = new Category('recipe');
+import {catRecipe} from '../../logging';
 
 /**
  * Events emitted by [[Recipe]]

@@ -27,10 +27,7 @@ import {DataAssemblyOptions, ParameterInterface} from '@p2olab/polaris-interface
 import {DataItem, OpcUaConnection, OpcUaDataItem} from '../connection';
 
 import {EventEmitter} from 'events';
-import {Category} from 'typescript-logging';
-import {catPEA} from '../PEA';
-
-export const catDataAssembly = new Category('dataAssembly', catPEA);
+import {catDataAssembly} from '../../../logging';
 
 export interface BaseDataAssemblyRuntime {
 	TagName: OpcUaDataItem<string>;
@@ -78,7 +75,7 @@ export class DataAssembly extends EventEmitter {
 	 * The appropriate variables are detected via the type of the DataAssembly
 	 * @param samplingInterval
 	 */
-	public async subscribe(samplingInterval = 1000): Promise<DataAssembly> {
+	public async subscribe(): Promise<DataAssembly> {
 		if (!this.subscriptionActive) {
 			catDataAssembly.debug(`Subscribe to ${this.name} ` +
 				`with variables ${Object.keys(this.communication)}`);
@@ -94,7 +91,7 @@ export class DataAssembly extends EventEmitter {
 							this.emit(key, dataItem);
 							this.emit('changed');
 						});
-						return dataItem.subscribe(samplingInterval);
+						return dataItem.subscribe();
 					})
 			);
 			this.subscriptionActive = true;

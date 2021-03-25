@@ -27,7 +27,7 @@ import {Category} from 'typescript-logging';
 import {ServiceMockup} from './serviceSet/service/Service.mockup';
 import {PEATestNumericVariable} from '../_utils';
 
-export const catPEAMockup = new Category('PEAMockup');
+
 
 export function getPEAMockupReferenceJSON(
 	namespace = 1,

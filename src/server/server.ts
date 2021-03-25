@@ -31,11 +31,9 @@ import * as serverHandlers from './serverHandlers';
 
 import * as express from 'express';
 import * as http from 'http';
-import {Category} from 'typescript-logging';
 import * as WebSocket from 'ws';
 import {AddressInfo} from 'ws';
-
-export const catServer = new Category('server');
+import {catServer} from '../logging';
 
 export class Server {
 

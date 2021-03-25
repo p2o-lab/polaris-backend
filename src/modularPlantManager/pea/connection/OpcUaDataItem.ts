@@ -28,11 +28,8 @@ import {OpcUaNodeOptions} from '@p2olab/polaris-interface';
 import {OpcUaConnection} from './OpcUaConnection';
 
 import {DataType} from 'node-opcua-client';
-import {timeout} from 'promise-timeout';
-import {catDataItem, DataItem} from './DataItem';
-import {Category} from 'typescript-logging';
-
-const catOpcUaDataItem = new Category('OpcUaDataItem', catDataItem);
+import {DataItem} from './DataItem';
+import {catDataItem} from '../../../logging';
 
 export class OpcUaDataItem<T> extends DataItem<T> {
 
@@ -72,7 +69,7 @@ export class OpcUaDataItem<T> extends DataItem<T> {
 		return item;
 	}
 
-	public async subscribe(samplingInterval = 1000): Promise<OpcUaDataItem<T>> {
+	public async subscribe(): Promise<OpcUaDataItem<T>> {
 		const eventName = this.connection.addOpcUaNode(this.nodeId, this.namespaceIndex);
 		this.connection.eventEmitter.on(eventName,
 			(dataValue) => {

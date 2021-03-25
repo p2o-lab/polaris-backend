@@ -27,10 +27,7 @@ import {OperationInterface, OperationOptions, ParameterOptions, ServiceCommand} 
 import {BaseService, PEA, Procedure, Service} from '../../../pea';
 
 import {EventEmitter} from 'events';
-import {Category} from 'typescript-logging';
-import {catRecipe} from '../../Recipe';
-
-export const catOperation = new Category('operation', catRecipe);
+import {catOperation} from '../../../../logging';
 
 /** Operation used in a [[Step]] of a [[Recipe]] or [[PetrinetState]]
  *

@@ -29,10 +29,7 @@ import {DataItem} from '../pea/connection';
 import {DataAssembly, ServiceState} from '../pea/dataAssembly';
 
 import {Expression, Parser} from 'expr-eval';
-import {Category} from 'typescript-logging';
-import {catRecipe} from './Recipe';
-
-export const catScopeItem = new Category('scopeItem', catRecipe);
+import {catScopeItem} from '../../logging';
 
 export class ScopeItem {
 

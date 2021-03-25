@@ -29,7 +29,7 @@ import {
 	ServiceCommand, VariableChange
 } from '@p2olab/polaris-interface';
 import {PEAPool, PEAPoolVendor} from '@p2olab/pimad-core';
-import {ServiceLogEntry} from '../logging';
+import {catManager, ServiceLogEntry} from '../logging';
 import {ParameterChange, PEA, Service} from './pea';
 import {ServiceState} from './pea/dataAssembly';
 import {POLService, POLServiceFactory} from './polService';
@@ -37,9 +37,6 @@ import {Player, Recipe} from './recipe';
 
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
-import {Category} from 'typescript-logging';
-
-export const catManager = new Category('Manager');
 
 interface ModularPlantManagerEvents {
 	/**

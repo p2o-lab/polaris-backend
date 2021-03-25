@@ -42,10 +42,11 @@ import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Category} from 'typescript-logging';
 import {PEA} from '../../PEA';
-import {BaseService, BaseServiceEvents, catService} from './BaseService';
+import {BaseService, BaseServiceEvents} from './BaseService';
 import {Procedure} from './procedure/Procedure';
+import {catService} from '../../../../logging';
 
-export const catPEAService = new Category('service', catService);
+
 
 /**
  * Events emitted by [[Service]]
@@ -170,7 +171,7 @@ export class Service extends BaseService {
 				}
 			});
 		const tasks = [];
-		tasks.push(this.serviceControl.subscribe(50));
+		tasks.push(this.serviceControl.subscribe());
 
 		tasks.concat(
 			this.parameters.map((param) => {

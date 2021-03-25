@@ -33,9 +33,7 @@ import {BaseService} from '../pea';
 import {ServiceState} from '../pea/dataAssembly';
 import {Parameter} from '../recipe';
 
-import {Category} from 'typescript-logging';
-
-export const catPOLService = new Category('POLService');
+import {catPOLService} from '../../logging';
 
 /**
  * A generic function block following the service state machine
