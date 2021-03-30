@@ -108,8 +108,8 @@ describe('PEARoutes', () => {
 				.expect('Content-Type', /json/)
 				.expect(/Error: PEA with id test not found/);
 		});
-
-		describe('with mockup pea', () => {
+		/*
+		describe('with PEAMockup', () => {
 			let mockupServer: MockupServer;
 
 			before(async () => {
@@ -164,6 +164,7 @@ describe('PEARoutes', () => {
 					.expect({status: 'Successful deleted', id: 'PEAMockupServer'});
 			});
 		});
+		*/
 	});
 
 });
