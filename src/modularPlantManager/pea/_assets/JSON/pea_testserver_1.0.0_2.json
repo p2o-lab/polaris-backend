@@ -1,8 +1,8 @@
 {
   "peas": [
     {
-      "id": "ModuleTestServer",
-      "opcua_server_url": "opc.tcp://127.0.0.1:4334/ModuleTestServer",
+      "id": "PEAMockup",
+      "opcua_server_url": "opc.tcp://127.0.0.1:4334/PEAMockup",
       "services": [
         {
           "name": "Service1",

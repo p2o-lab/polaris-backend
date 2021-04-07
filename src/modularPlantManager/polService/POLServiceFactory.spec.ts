@@ -213,9 +213,10 @@ describe('POLServiceFactory', () => {
 			await timer.waitForStateChangeWithTimeout('ABORTED');
 			expect(timer.state).to.equal(ServiceState.ABORTED);
 
-			expect(timer.controlEnable).to.deep.equal({
+			expect(timer.commandEnable).to.deep.equal({
 				abort: false,
 				complete: false,
+				hold: false,
 				pause: false,
 				reset: true,
 				restart: false,

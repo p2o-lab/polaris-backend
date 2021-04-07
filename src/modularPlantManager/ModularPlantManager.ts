@@ -37,6 +37,7 @@ import {Player, Recipe} from './recipe';
 
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
+import {LastChainElementImporterFactory, MTPFreeze202001ImporterFactory} from '@p2olab/pimad-core/dist/Converter/Importer/Importer';
 
 interface ModularPlantManagerEvents {
 	/**
@@ -75,6 +76,11 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 	constructor() {
 		super();
 		this.peaPool = new PEAPoolVendor().buyDependencyPEAPool();
+		const mtpFreeze202001Importer = new MTPFreeze202001ImporterFactory().create();
+		const fImporter = new LastChainElementImporterFactory();
+		mtpFreeze202001Importer.initialize(fImporter.create());
+		this.peaPool.initialize(mtpFreeze202001Importer);
+
 		this.player = new Player()
 			.on('started', () => {
 				this.emit('notify', {message: 'player', player: this.player.json()});
@@ -110,7 +116,11 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 			throw Error(`PEA with id ${peaId} not found`);
 		}
 	}
-
+	public addPEAToPimadPool(file: object) {
+		this.peaPool.addPEA(file, () => {
+			// test
+		});
+	}
 	/**
 	 * Load PEAs from JSON according to TopologyGenerator output or to simplified JSON
 	 * Skip PEA if already a PEA with same ID is registered

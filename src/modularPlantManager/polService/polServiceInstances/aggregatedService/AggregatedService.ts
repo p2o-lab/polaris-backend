@@ -26,13 +26,13 @@
 import {ParameterInterface} from '@p2olab/polaris-interface';
 import {BaseService, PEA, Service} from '../../../pea';
 import {POLService} from '../../POLService';
-import {VirtualServiceOptions} from '../../POLServiceFactory';
+import {POLServiceOptions} from '../../POLServiceFactory';
 import {Petrinet, PetrinetOptions} from './petrinet';
 
 import {Category} from 'typescript-logging';
 import {catAggregatedService} from '../../../../logging';
 
-export interface AggregatedServiceOptions extends VirtualServiceOptions {
+export interface AggregatedServiceOptions extends POLServiceOptions {
 	type: 'aggregatedService';
 	description: string;
 	version: string;

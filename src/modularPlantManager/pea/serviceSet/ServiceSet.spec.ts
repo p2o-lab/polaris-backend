@@ -159,7 +159,7 @@ describe('ServiceSet', () => {
 		it('should reject command if not command enabled', async () => {
 			expect(service.name).to.equal('Service1');
 			expect(ServiceState[service.state]).to.equal('IDLE');
-			expect(service.controlEnable).to.deep.equal({
+			expect(service.commandEnable).to.deep.equal({
 				abort: true,
 				complete: false,
 				pause: false,
@@ -174,7 +174,7 @@ describe('ServiceSet', () => {
 
 			await service.executeCommand(ServiceCommand.start);
 			await service.waitForStateChangeWithTimeout('STARTING');
-			expect(service.controlEnable).to.deep.equal({
+			expect(service.commandEnable).to.deep.equal({
 				abort: true,
 				complete: false,
 				pause: false,
@@ -188,7 +188,7 @@ describe('ServiceSet', () => {
 			});
 
 			await expect(service.executeCommand(ServiceCommand.resume)).to.be.rejectedWith('ControlOp');
-			expect(service.controlEnable).to.deep.equal({
+			expect(service.commandEnable).to.deep.equal({
 				abort: true,
 				complete: false,
 				pause: false,

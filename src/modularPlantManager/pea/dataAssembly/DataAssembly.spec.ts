@@ -101,14 +101,14 @@ describe('DataAssembly', () => {
 					} as any,
 					interfaceClass: 'analogitem'
 				}, emptyOPCUAConnection)
-			).to.throw('No connection defined for creating data assembly');
+			).to.throw('Cannot set property \'TagName\' of undefined');
 		});
 
 		it('should fail without provided PEA', async () => {
 			expect(() => DataAssemblyFactory.create(
 				{name: 'test', interfaceClass: 'none', communication: {} as BaseDataAssemblyOptions},
 				emptyOPCUAConnection)
-			).to.throw('No connection defined for creating DataAssembly');
+			).to.throw('createDataItem Failed');
 
 		});
 

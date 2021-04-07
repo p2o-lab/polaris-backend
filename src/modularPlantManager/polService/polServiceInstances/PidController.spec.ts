@@ -131,7 +131,7 @@ describe('POLService', () => {
 
 			const json = timer.json().procedures[0];
 			expect(json.parameters).to.have.lengthOf(2);
-			expect(json.processValuesIn).to.equal(undefined);
+			expect(json.processValuesIn).to.equal([]);
 			expect(json.processValuesOut).to.have.lengthOf(1);
 			expect(json.reportParameters).to.equal(undefined);
 			expect(json.parameters[0]).to.deep.equal({
@@ -213,9 +213,10 @@ describe('POLService', () => {
 			await timer.waitForStateChangeWithTimeout('ABORTED');
 			expect(timer.state).to.equal(ServiceState.ABORTED);
 
-			expect(timer.controlEnable).to.deep.equal({
+			expect(timer.commandEnable).to.deep.equal({
 				abort: false,
 				complete: false,
+				hold: false,
 				pause: false,
 				reset: true,
 				restart: false,

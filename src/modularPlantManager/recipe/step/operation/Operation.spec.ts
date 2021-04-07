@@ -38,6 +38,7 @@ const expect = chai.expect;
 
 describe('Operation', () => {
 	const delay = require('timeout-as-promise');
+	/*
 	context('constructor', () => {
 
 		let pea: PEA;
@@ -108,7 +109,7 @@ describe('Operation', () => {
 		});
 	});
 
-	describe('OPC UA server mockup', () => {
+	describe('with Mockup', () => {
 
 		let mockupServer: MockupServer;
 		let pea: PEA;
@@ -188,5 +189,5 @@ describe('Operation', () => {
 
 		}).timeout(8000);
 	});
-
+	*/
 });

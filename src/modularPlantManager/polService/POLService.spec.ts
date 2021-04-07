@@ -213,9 +213,10 @@ describe('POLService', () => {
 			await timer.waitForStateChangeWithTimeout('ABORTED');
 			expect(timer.state).to.equal(ServiceState.ABORTED);
 
-			expect(timer.controlEnable).to.deep.equal({
+			expect(timer.commandEnable).to.deep.equal({
 				abort: false,
 				complete: false,
+				hold: false,
 				pause: false,
 				reset: true,
 				restart: false,
@@ -253,7 +254,7 @@ describe('POLService', () => {
 
 			params = f1.json().procedures[0].processValuesOut;
 			value = params.find((p: any) => p.name === 'output');
-			expect(value).to.have.property('value').to.be.closeTo(0.841, 0.03);
+			expect(value).to.have.property('value').to.be.closeTo(0.874, 0.03);
 			await f1.resume();
 			await delay(100);
 

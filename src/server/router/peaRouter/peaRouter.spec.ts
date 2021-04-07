@@ -109,7 +109,7 @@ describe('PEARoutes', () => {
 				.expect(/Error: PEA with id test not found/);
 		});
 		/*
-		describe('with PEAMockup', () => {
+		describe('with Mockup', () => {
 			let mockupServer: MockupServer;
 
 			before(async () => {

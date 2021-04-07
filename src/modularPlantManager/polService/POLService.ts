@@ -24,7 +24,7 @@
  */
 
 import {
-	ControlEnableInterface,
+	CommandEnableInterface,
 	ParameterInterface,
 	ParameterOptions,
 	POLServiceInterface
@@ -63,9 +63,9 @@ export abstract class POLService extends BaseService {
 		};
 	}
 
-	protected _controlEnable: ControlEnableInterface;
+	protected _controlEnable: CommandEnableInterface;
 
-	public get controlEnable(): ControlEnableInterface {
+	public get commandEnable(): CommandEnableInterface {
 		return this._controlEnable;
 	}
 
@@ -91,9 +91,10 @@ export abstract class POLService extends BaseService {
 				processValuesOut: this.processValuesOut,
 				reportParameters: this.reportParameters
 			}],
+			currentProcedure: '0',
 			parameters: [],
 			status: ServiceState[this.state],
-			controlEnable: this.controlEnable,
+			controlEnable: this.commandEnable,
 			lastChange: (new Date().getTime() - this.lastStatusChange.getTime()) / 1000
 		};
 	}
@@ -254,7 +255,7 @@ export abstract class POLService extends BaseService {
 		this.eventEmitter.emit('state', newState);
 	}
 
-	private setControlEnable(controlEnable: ControlEnableInterface): void {
+	private setControlEnable(controlEnable: CommandEnableInterface): void {
 		this._controlEnable = controlEnable;
 		this.eventEmitter.emit('controlEnable', controlEnable);
 	}

@@ -25,7 +25,7 @@
 
 import {
 	BaseServiceInterface,
-	ControlEnableInterface,
+	CommandEnableInterface,
 	ParameterInterface,
 	ParameterOptions,
 	ServiceCommand
@@ -37,7 +37,6 @@ import {ServiceState} from './enum';
 import {EventEmitter} from 'events';
 import {timeout} from 'promise-timeout';
 import StrictEventEmitter from 'strict-event-emitter-types';
-import {Category} from 'typescript-logging';
 import {Procedure} from './procedure/Procedure';
 import {catService} from '../../../../logging';
 
@@ -54,7 +53,7 @@ export interface BaseServiceEvents {
 	 * Notify when controlEnableNode changes
 	 * @event controlEnable
 	 */
-	controlEnable: ControlEnableInterface;
+	controlEnable: CommandEnableInterface;
 	/**
 	 * whenever a commandNode is executed from the POL
 	 * @event commandExecuted
@@ -89,7 +88,7 @@ export abstract class BaseService {
 
 	public abstract get state(): ServiceState;
 
-	public abstract get controlEnable(): ControlEnableInterface
+	public abstract get commandEnable(): CommandEnableInterface
 
 	// name of the base service
 	protected _name!: string;
@@ -116,12 +115,12 @@ export abstract class BaseService {
 	public abstract setParameters(parameters: Array<Parameter | ParameterOptions>, peaSet?: PEA[]): Promise<void>;
 
 	/**
-	 * allow controlEnable to execute specified command
+	 * allow commandEnable to execute specified command
 	 * @param {ServiceCommand} command
 	 * @returns {Promise<boolean>}
 	 */
 	public isCommandExecutable(command: ServiceCommand): boolean {
-		const controlEnable: ControlEnableInterface = this.controlEnable;
+		const controlEnable: CommandEnableInterface = this.commandEnable;
 		catService.debug(`[${this.qualifiedName}] ControlEnable: ${JSON.stringify(controlEnable)}`);
 		return controlEnable[command];
 	}

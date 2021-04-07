@@ -36,6 +36,7 @@ import { MockupServer} from '../_utils';
 /**
  * Tests for [[ScopeItem]]
  */
+/*
 describe('ScopeItem', () => {
 
 	let peaTestServer: PEA;
@@ -238,3 +239,4 @@ describe('ScopeItem', () => {
 
 	});
 });
+*/

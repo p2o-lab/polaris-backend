@@ -164,7 +164,7 @@ describe('Player', () => {
 
 		it('should run the test recipe two times with several player interactions (pause, resume, stop)', async () => {
 
-			const peaJson = JSON.parse(fs.readFileSync('assets/peas/pea_testserver_1.0.0.json').toString())
+			const peaJson = JSON.parse(fs.readFileSync('src/modularPlantManager/pea/_assets/JSON/pea_testserver_1.0.0.json').toString())
 				.peas[0];
 			const pea = new PEA(peaJson);
 			const service = pea.services[0];
@@ -221,7 +221,7 @@ describe('Player', () => {
 		}).timeout(10000);
 
 	});
-
+	/*
 	context('local', () => {
 		let recipeWaitShort: Recipe;
 		let recipeWaitLocal: Recipe;
@@ -359,5 +359,5 @@ describe('Player', () => {
 
 		}).timeout(5000);
 	});
-
+	*/
 });

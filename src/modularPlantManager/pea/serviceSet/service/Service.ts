@@ -24,7 +24,7 @@
  */
 
 import {
-	ControlEnableInterface, OperationMode, ParameterInterface,
+	CommandEnableInterface, OperationMode, ParameterInterface,
 	ParameterOptions,
 	ServiceCommand,
 	ServiceInterface,
@@ -108,7 +108,7 @@ export class Service extends BaseService {
 		return `${this._parentId}.${this.name}`;
 	}
 
-	public get controlEnable(): ControlEnableInterface {
+	public get commandEnable(): CommandEnableInterface {
 		return controlEnableToJson(this.serviceControl.communication.CommandEn.value as ServiceControlEnable);
 	}
 
@@ -148,8 +148,8 @@ export class Service extends BaseService {
 		this.serviceControl
 			.on('CommandEnable', () => {
 				this.logger.debug(`[${this.qualifiedName}] ControlEnable changed: ` +
-					`${JSON.stringify(this.controlEnable)}`);
-				this.eventEmitter.emit('controlEnable', this.controlEnable);
+					`${JSON.stringify(this.commandEnable)}`);
+				this.eventEmitter.emit('controlEnable', this.commandEnable);
 			})
 			.on('OpMode', () => {
 				this.logger.debug(`[${this.qualifiedName}] Current OpMode changed: ` +
@@ -201,7 +201,7 @@ export class Service extends BaseService {
 	}
 
 	/**
-	 * get JSON overview about service and its state, opMode, procedures, parameters and controlEnable
+	 * get JSON overview about service and its state, opMode, procedures, parameters and commandEnable
 	 */
 	public json(): ServiceInterface {
 		return {
@@ -212,7 +212,7 @@ export class Service extends BaseService {
 			procedures: this.procedures.map((procedure) => procedure.toJson()),
 			currentProcedure: this.getCurrentProcedure().name,
 			parameters: this.parameters.map((param) => param.toJson()),
-			controlEnable: this.controlEnable,
+			controlEnable: this.commandEnable,
 			lastChange: (new Date().getTime() - this.lastStatusChange.getTime()) / 1000,
 		};
 	}

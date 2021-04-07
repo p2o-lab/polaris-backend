@@ -24,12 +24,12 @@
  */
 
 import {
-	ControlEnableInterface,
+	CommandEnableInterface, DataAssemblyOptions,
 	OperationMode,
 	ParameterInterface, PEAInterface,
 	PEAOptions,
 	ServiceCommand,
-	ServiceInterface, ServiceSourceMode,
+	ServiceInterface, ServiceOptions, ServiceSourceMode,
 	VariableChange
 } from '@p2olab/polaris-interface';
 import {DataItemEmitter, OpcUaConnection} from './connection';
@@ -66,10 +66,10 @@ interface PEAEvents {
 	 */
 	disconnected: void;
 	/**
-	 * when controlEnable of one service changes
-	 * @event controlEnable
+	 * when commandEnable of one service changes
+	 * @event commandEnable
 	 */
-	controlEnable: { service: Service; controlEnable: ControlEnableInterface };
+	controlEnable: { service: Service; controlEnable: CommandEnableInterface };
 	/**
 	 * Notify when a service changes its state
 	 * @event stateChanged
@@ -152,11 +152,11 @@ export class PEA extends (EventEmitter as new() => PEAEmitter) {
 		this.logger = catPEA;
 
 		if (options.services) {
-			this.services = options.services.map((serviceOpts) => new Service(serviceOpts, this.connection, this.id));
+			this.services = options.services.map((serviceOpts: ServiceOptions) => new Service(serviceOpts, this.connection, this.id));
 		}
 		if (options.processValues) {
 			this.variables = options.processValues
-				.map((variableOptions) => DataAssemblyFactory.create(variableOptions, this.connection));
+				.map((variableOptions: DataAssemblyOptions) => DataAssemblyFactory.create(variableOptions, this.connection));
 		}
 	}
 
@@ -328,7 +328,7 @@ export class PEA extends (EventEmitter as new() => PEAEmitter) {
 						parameter: data.parameter
 					});
 				})
-				.on('controlEnable', (controlEnable: ControlEnableInterface) => {
+				.on('controlEnable', (controlEnable: CommandEnableInterface) => {
 					this.emit('controlEnable', {service, controlEnable});
 				})
 				.on('state', (state) => {

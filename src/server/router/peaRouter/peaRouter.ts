@@ -57,6 +57,8 @@ peaRouter.put('/addByOptions', (req, res) => {
  * @apiParam {PEAOptions} pea PEA to be added.
  */
 peaRouter.put('/addByPiMAd', (req, res) => {
+	const manager: ModularPlantManager = req.app.get('manager');
+	manager.addPEAToPimadPool(req.body);
 	res.status(200).send('PiMAd-Hello-World\n');
 });
 

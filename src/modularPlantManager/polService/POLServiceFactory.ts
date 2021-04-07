@@ -33,13 +33,13 @@ import {
 	Storage, Timer
 } from './';
 
-export interface VirtualServiceOptions {
+export interface POLServiceOptions {
 	name: string;
 	type: string;
 }
 
 export class POLServiceFactory {
-	public static create(options: VirtualServiceOptions, peaSet?: PEA[], virtualServices?: POLService[]): POLService {
+	public static create(options: POLServiceOptions, peaSet?: PEA[], polServices?: POLService[]): POLService {
 		if (options.type === Timer.type) {
 			return new Timer(options.name);
 		} else if (options.type === Storage.type) {
@@ -49,12 +49,12 @@ export class POLServiceFactory {
 		} else if (options.type === PidController.type) {
 			return new PidController(options.name);
 		} else if (options.type === AggregatedService.type) {
-			if (!peaSet || !virtualServices) {
+			if (!peaSet || !polServices) {
 				throw new Error('Args missing to generate Aggregated Service.');
 			}
-			return new AggregatedService(options as AggregatedServiceOptions, peaSet, virtualServices);
+			return new AggregatedService(options as AggregatedServiceOptions, peaSet, polServices);
 		} else {
-			throw new Error('Unknown virtual service type ${options.type}');
+			throw new Error('Unknown pol service type ${options.type}');
 		}
 	}
 }

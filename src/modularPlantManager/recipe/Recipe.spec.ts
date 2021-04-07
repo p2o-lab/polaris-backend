@@ -103,132 +103,132 @@ describe('Recipe', () => {
 	});
 
 
+	/*
+		describe('with Mockup', () => {
 
-	describe('with pea test server', () => {
+			let peaMockup: PEAMockup;
+			let mockupServer: MockupServer;
+			let pea: PEA;
 
-		let peaMockup: PEAMockup;
-		let mockupServer: MockupServer;
-		let pea: PEA;
+			before(async function () {
+				this.timeout(5000);
+				mockupServer = new MockupServer();
 
-		before(async function () {
-			this.timeout(5000);
-			mockupServer = new MockupServer();
+				// TODO: Setup of TestScenario
 
-			// TODO: Setup of TestScenario
+				await mockupServer.start();
 
-			await mockupServer.start();
-
-			// should be obsolete
-			const peaJson = JSON.parse(fs.readFileSync('assets/peas/pea_testserver_1.0.0.json').toString())
-				.peas[0];
-			pea = new PEA(peaJson);
-			await pea.connect();
-		});
-
-		after(async () => {
-			await mockupServer.shutdown();
-		});
-
-		it('runs test recipe successfully', async () => {
-			const recipeJson = JSON.parse(
-				fs.readFileSync('assets/recipes/test/recipe_testserver_2services_1.0.0.json').toString());
-			const recipe = new Recipe(recipeJson, [pea]);
-
-			await recipe.start();
-
-			await new Promise((resolve) => {
-				recipe.on('completed', resolve);
+				// should be obsolete
+				const peaJson = JSON.parse(fs.readFileSync('assets/peas/pea_testserver_1.0.0.json').toString())
+					.peas[0];
+				pea = new PEA(peaJson);
+				await pea.connect();
 			});
-		}).timeout(5000);
 
-		it('should only run one recipe at a time', async () => {
-			// now test recipe
-			const recipeJson = JSON.parse(
-				fs.readFileSync('assets/recipes/test/recipe_testserver_2services_1.0.0.json').toString());
-			const recipe = new Recipe(recipeJson, [pea]);
-
-			await recipe.start();
-			await expect(recipe.start()).to.be.rejectedWith(/already running/);
-			await new Promise((resolve) => {
-				recipe.on('completed', resolve);
+			after(async () => {
+				await mockupServer.shutdown();
 			});
-		}).timeout(5000);
 
-		it('should only allow to stop running recipe', async () => {
-			const recipeJson = JSON.parse(
-				fs.readFileSync('assets/recipes/test/recipe_testserver_2services_1.0.0.json').toString());
-			const recipe = new Recipe(recipeJson, [pea]);
+			it('runs test recipe successfully', async () => {
+				const recipeJson = JSON.parse(
+					fs.readFileSync('assets/recipes/test/recipe_testserver_2services_1.0.0.json').toString());
+				const recipe = new Recipe(recipeJson, [pea]);
 
-			await expect(recipe.stop()).to.be.rejectedWith('Can only stop running recipe');
-			await recipe.start();
-			await delay(50);
-			await recipe.stop();
-			await expect(recipe.stop()).to.be.rejectedWith('Can only stop running recipe');
+				await recipe.start();
+
+				await new Promise((resolve) => {
+					recipe.on('completed', resolve);
+				});
+			}).timeout(5000);
+
+			it('should only run one recipe at a time', async () => {
+				// now test recipe
+				const recipeJson = JSON.parse(
+					fs.readFileSync('assets/recipes/test/recipe_testserver_2services_1.0.0.json').toString());
+				const recipe = new Recipe(recipeJson, [pea]);
+
+				await recipe.start();
+				await expect(recipe.start()).to.be.rejectedWith(/already running/);
+				await new Promise((resolve) => {
+					recipe.on('completed', resolve);
+				});
+			}).timeout(5000);
+
+			it('should only allow to stop running recipe', async () => {
+				const recipeJson = JSON.parse(
+					fs.readFileSync('assets/recipes/test/recipe_testserver_2services_1.0.0.json').toString());
+				const recipe = new Recipe(recipeJson, [pea]);
+
+				await expect(recipe.stop()).to.be.rejectedWith('Can only stop running recipe');
+				await recipe.start();
+				await delay(50);
+				await recipe.stop();
+				await expect(recipe.stop()).to.beejectedWith('Can only stop running recipe');
+			});
+
 		});
+		/*
+		describe('achema demonstrator recipes', () => {
 
-	});
+			const peas: PEA[] = [];
 
-	describe('achema demonstrator recipes', () => {
+			before(() => {
+				let file = fs.readFileSync('assets/peas/achema_demonstrator/peas_achema.json');
+				let options = JSON.parse(file.toString());
+				peas.push(new PEA(options.peas[0]));
+				peas.push(new PEA(options.peas[1]));
+				peas.push(new PEA(options.peas[2]));
 
-		const peas: PEA[] = [];
+				file = fs.readFileSync('assets/peas/pea_cif.json');
+				options = JSON.parse(file.toString());
+				peas.push(new PEA(options.peas[0]));
+			});
 
-		before(() => {
-			let file = fs.readFileSync('assets/peas/achema_demonstrator/peas_achema.json');
-			let options = JSON.parse(file.toString());
-			peas.push(new PEA(options.peas[0]));
-			peas.push(new PEA(options.peas[1]));
-			peas.push(new PEA(options.peas[2]));
+			it('should load the achema json', (done) => {
+				fs.readFile('assets/recipes/recipe_achema_v0.2.0.json', async (err, file) => {
+					const options = JSON.parse(file.toString());
+					const recipe = new Recipe(options, peas);
+					expect(peas).to.have.length(4);
+					expect(recipe.peaSet).to.have.length(3);
 
-			file = fs.readFileSync('assets/peas/pea_cif.json');
-			options = JSON.parse(file.toString());
-			peas.push(new PEA(options.peas[0]));
-		});
+					const json: RecipeInterface = await recipe.json();
+					expect(json).to.have.property('protected', false);
+					expect(json).to.have.property('peas')
+						.to.deep.equal(['Temper', 'React', 'Dose']);
+					expect(json).to.have.property('options')
+						.to.have.property('initial_step', 'Startup.Init');
+					expect(json).to.have.property('status', 'idle');
 
-		it('should load the achema json', (done) => {
-			fs.readFile('assets/recipes/recipe_achema_v0.2.0.json', async (err, file) => {
-				const options = JSON.parse(file.toString());
-				const recipe = new Recipe(options, peas);
-				expect(peas).to.have.length(4);
-				expect(recipe.peaSet).to.have.length(3);
+					const step = recipe.steps[0];
+					expect(step.json()).to.have.property('name', 'Startup.Init');
 
-				const json: RecipeInterface = await recipe.json();
-				expect(json).to.have.property('protected', false);
-				expect(json).to.have.property('peas')
-					.to.deep.equal(['Temper', 'React', 'Dose']);
-				expect(json).to.have.property('options')
-					.to.have.property('initial_step', 'Startup.Init');
-				expect(json).to.have.property('status', 'idle');
+					done();
+				});
+			});
 
-				const step = recipe.steps[0];
-				expect(step.json()).to.have.property('name', 'Startup.Init');
+			it('should load all asset recipes', () => {
+				const path = 'assets/recipes/';
+				fs.readdirSync(path).forEach((filename) => {
+					const completePath = path + filename;
+					if (fs.statSync(completePath).isFile()) {
+						it(`should load recipe ${completePath}`, () => {
+							const file = fs.readFileSync(completePath);
+							const options: RecipeOptions = JSON.parse(file.toString());
+							const recipe = new Recipe(options, peas);
+							expect(recipe.name).to.equal(options.name);
+						});
+					}
+				});
+			});
 
-				done();
+			it('should load the huber recipe json', (done) => {
+				fs.readFile('assets/recipes/recipe_huber_only.json', (err, file) => {
+					const options = JSON.parse(file.toString());
+					const recipe = new Recipe(options, peas);
+					assert.strictEqual(recipe.peaSet.size, 1);
+					done();
+				});
 			});
 		});
-
-		it('should load all asset recipes', () => {
-			const path = 'assets/recipes/';
-			fs.readdirSync(path).forEach((filename) => {
-				const completePath = path + filename;
-				if (fs.statSync(completePath).isFile()) {
-					it(`should load recipe ${completePath}`, () => {
-						const file = fs.readFileSync(completePath);
-						const options: RecipeOptions = JSON.parse(file.toString());
-						const recipe = new Recipe(options, peas);
-						expect(recipe.name).to.equal(options.name);
-					});
-				}
-			});
-		});
-
-		it('should load the huber recipe json', (done) => {
-			fs.readFile('assets/recipes/recipe_huber_only.json', (err, file) => {
-				const options = JSON.parse(file.toString());
-				const recipe = new Recipe(options, peas);
-				assert.strictEqual(recipe.peaSet.size, 1);
-				done();
-			});
-		});
-	});
-
+		*/
 });
