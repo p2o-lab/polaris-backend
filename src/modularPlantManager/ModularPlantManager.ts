@@ -37,7 +37,6 @@ import {Player, Recipe} from './recipe';
 
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
-import {LastChainElementImporterFactory, MTPFreeze202001ImporterFactory} from '@p2olab/pimad-core/dist/Converter/Importer/Importer';
 
 interface ModularPlantManagerEvents {
 	/**
@@ -71,15 +70,12 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 	// autoreset timeout in milliseconds
 	private _autoresetTimeout = 500;
 	// PiMAd-core
-	private peaPool: PEAPool;
+	public peaPool: PEAPool;
 
 	constructor() {
 		super();
 		this.peaPool = new PEAPoolVendor().buyDependencyPEAPool();
-		const mtpFreeze202001Importer = new MTPFreeze202001ImporterFactory().create();
-		const fImporter = new LastChainElementImporterFactory();
-		mtpFreeze202001Importer.initialize(fImporter.create());
-		this.peaPool.initialize(mtpFreeze202001Importer);
+		this.peaPool.initializeMTPFreeze202001Importer();
 
 		this.player = new Player()
 			.on('started', () => {
@@ -116,9 +112,9 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 			throw Error(`PEA with id ${peaId} not found`);
 		}
 	}
-	public addPEAToPimadPool(file: object) {
-		this.peaPool.addPEA(file, () => {
-			// test
+	public addPEAToPimadPool(file: File): void {
+		this.peaPool.addPEA(file, (response) => {
+			const test = response;
 		});
 	}
 	/**

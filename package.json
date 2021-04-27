@@ -41,11 +41,13 @@
     "polaris-backend": "./bin/polaris-backend"
   },
   "dependencies": {
-    "@p2olab/pimad-core": "0.0.1alpha1",
+    "@p2olab/pimad-core": "0.0.1alpha3",
     "@p2olab/pimad-types": "1.0.0",
     "@p2olab/polaris-interface": "3.0.0-alpha0.7",
+    "@types/adm-zip": "^0.4.34",
     "@types/pino": "^6.3.6",
     "@types/promise-timeout": "^1.3.0",
+    "adm-zip": "^0.5.5",
     "assign-deep": "^1.0.1",
     "command-line-args": "^5.1.1",
     "command-line-usage": "^6.0.2",
