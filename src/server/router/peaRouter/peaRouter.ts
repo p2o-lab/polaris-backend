@@ -56,15 +56,16 @@ peaRouter.put('/addByOptions', (req, res) => {
  * @apiGroup PEA
  * @apiParam {PEAOptions} pea PEA to be added.
  */
-peaRouter.put('/addByPiMAd', (req, res) => {
-	const manager: ModularPlantManager = req.app.get('manager');
-	catServer.info(req.body);
-	//const uploadedFile = req.get('uploadedFile') as FormData;
-	//const fileName = uploadedFile.name;
+peaRouter.post('/addByPiMAd', (req, res) => {
+	var formidable = require('formidable');
+	var form = new formidable.IncomingForm();
+	form.parse(req, function(err:any, fields:any, files:any) {
+		var file: File = files.uploadedFile;
+		const manager: ModularPlantManager = req.app.get('manager');
+		console.log(file)
+		manager.addPEAToPimadPool(file);
+	});
 
-	//console.log(req.get('uploadedFile'))
-
-	manager.addPEAToPimadPool(req.body);
 	res.status(200).send('PiMAd-Hello-World\n');
 });
 

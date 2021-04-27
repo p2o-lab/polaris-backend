@@ -55,6 +55,7 @@
     "expr-eval": "^2.0.2",
     "express": "^4.17.1",
     "express-async-handler": "^1.1.4",
+    "formidable": "^1.2.2",
     "json-parse-better-errors": "^1.0.2",
     "node-opcua": "^2.31.0",
     "node-pid-controller": "^1.0.1",
