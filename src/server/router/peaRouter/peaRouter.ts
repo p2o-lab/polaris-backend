@@ -56,10 +56,14 @@ peaRouter.put('/addByOptions', (req, res) => {
  * @apiGroup PEA
  * @apiParam {PEAOptions} pea PEA to be added.
  */
-peaRouter.post('/addByPiMAd', (req, res) => {
+peaRouter.put('/addByPiMAd', (req, res) => {
 	const manager: ModularPlantManager = req.app.get('manager');
-	const uploadedFile = req.get('uploadedFile') as FormData;
-	const fileName = uploadedFile.name;
+	catServer.info(req.body);
+	//const uploadedFile = req.get('uploadedFile') as FormData;
+	//const fileName = uploadedFile.name;
+
+	//console.log(req.get('uploadedFile'))
+
 	manager.addPEAToPimadPool(req.body);
 	res.status(200).send('PiMAd-Hello-World\n');
 });
