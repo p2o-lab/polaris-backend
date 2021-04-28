@@ -50,22 +50,32 @@ peaRouter.put('/addByOptions', (req, res) => {
 	res.json(newPEAs.map((m) => m.json()));
 });
 
+var upload = require('multer')({ dest: 'uploads/' });
 /**
  * @api {put} /addByPiMAd Add PEA via PiMAd.
  * @apiName PutPEA
  * @apiGroup PEA
  * @apiParam {PEAOptions} pea PEA to be added.
  */
-peaRouter.post('/addByPiMAd', (req, res) => {
-	var formidable = require('formidable');
-	var form = new formidable.IncomingForm();
-	form.parse(req, function(err:any, fields:any, files:any) {
-		var file: File = files.uploadedFile;
-		const manager: ModularPlantManager = req.app.get('manager');
-		console.log(file)
-		manager.addPEAToPimadPool(file);
-	});
+peaRouter.post('/addByPiMAd', upload.single('uploadedFile'),(req, res) => {
+	const fs = require('fs');
+	const originalname = (req as MulterRequest).file.originalname;
 
+	let buffer: Buffer;
+	 fs.readFile((req as MulterRequest).file.path, function read(err: any, data: any) {
+		if (err) {
+			throw err;
+		}
+		buffer = data;
+
+		 const myPimadFileObject: pimadFileObject ={
+		 	 name: originalname,
+			 type: originalname.split('.')[1],
+			 buffer: buffer,
+			 bufferEncoding: "binary"
+		 }
+		 console.log(myPimadFileObject);
+	});
 	res.status(200).send('PiMAd-Hello-World\n');
 });
 
@@ -218,3 +228,12 @@ peaRouter.get('/:peaId/service/:serviceName', asyncHandler(async (req: Request, 
 	const service = manager.getService(req.params.peaId, req.params.serviceName);
 	res.json(service.json());
 }));
+interface MulterRequest extends Request {
+	file: any;
+}
+export type pimadFileObject = {
+	name: string;
+	type: 'aml' | 'xml' | 'zip' | 'mtp';
+	buffer: Buffer;
+	bufferEncoding: string;
+}

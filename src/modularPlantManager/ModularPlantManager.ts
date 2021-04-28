@@ -113,8 +113,10 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 		}
 	}
 	public addPEAToPimadPool(file: File): void {
+		//console.log(file)
 		this.peaPool.addPEA(file, (response) => {
 			const test = response;
+
 		});
 	}
 	/**
