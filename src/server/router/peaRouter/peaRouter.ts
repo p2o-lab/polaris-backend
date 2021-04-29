@@ -50,33 +50,30 @@ peaRouter.put('/addByOptions', (req, res) => {
 	res.json(newPEAs.map((m) => m.json()));
 });
 
-var upload = require('multer')({ dest: 'uploads/' });
+// set up multer for receiving uploaded File
+const multer = require('multer');
+const storage = multer.diskStorage({
+	destination: (req: any, file: any, cb: (arg0: null, arg1: string) => void) => {
+		cb(null, './public/uploads')
+	},
+	filename: (req: any, file: { fieldname: string; originalname: any; }, cb: (arg0: null, arg1: string) => void) => {
+		cb(null, file.originalname)
+	}
+});
+const upload = multer({storage: storage})
+
 /**
- * @api {put} /addByPiMAd Add PEA via PiMAd.
+ * @api {put} /addByPiMAd Add PEA via PiMAd. (Receiving FormData from Frontend and parse with Multer lib)
  * @apiName PutPEA
  * @apiGroup PEA
  * @apiParam {PEAOptions} pea PEA to be added.
  */
 peaRouter.post('/addByPiMAd', upload.single('uploadedFile'),(req, res) => {
-	const fs = require('fs');
-	const originalname = (req as MulterRequest).file.originalname;
-
-	let buffer: Buffer;
-	 fs.readFile((req as MulterRequest).file.path, function read(err: any, data: any) {
-		if (err) {
-			throw err;
-		}
-		buffer = data;
-
-		 const myPimadFileObject: pimadFileObject ={
-		 	 name: originalname,
-			 type: originalname.split('.')[1],
-			 buffer: buffer,
-			 bufferEncoding: "binary"
-		 }
-		 console.log(myPimadFileObject);
-	});
+	const filePath: string = (req as MulterRequest).file.path;
+	const manager: ModularPlantManager = req.app.get('manager')
+	manager.addPEAToPimadPool(filePath);
 	res.status(200).send('PiMAd-Hello-World\n');
+
 });
 
 /**
@@ -228,12 +225,10 @@ peaRouter.get('/:peaId/service/:serviceName', asyncHandler(async (req: Request, 
 	const service = manager.getService(req.params.peaId, req.params.serviceName);
 	res.json(service.json());
 }));
+
+/**
+ *This interface is needed for Multer to work correctly.
+ */
 interface MulterRequest extends Request {
 	file: any;
-}
-export type pimadFileObject = {
-	name: string;
-	type: 'aml' | 'xml' | 'zip' | 'mtp';
-	buffer: Buffer;
-	bufferEncoding: string;
 }

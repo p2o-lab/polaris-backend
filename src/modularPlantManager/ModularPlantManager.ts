@@ -112,9 +112,9 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 			throw Error(`PEA with id ${peaId} not found`);
 		}
 	}
-	public addPEAToPimadPool(file: File): void {
+	public addPEAToPimadPool(filePath: string ): void {
 		//console.log(file)
-		this.peaPool.addPEA(file, (response) => {
+		this.peaPool.addPEA(filePath, (response) => {
 			const test = response;
 
 		});
