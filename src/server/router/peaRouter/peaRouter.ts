@@ -71,8 +71,12 @@ const upload = multer({storage: storage})
 peaRouter.post('/addByPiMAd', upload.single('uploadedFile'),(req, res) => {
 	const filePath: string = (req as MulterRequest).file.path;
 	const manager: ModularPlantManager = req.app.get('manager')
-	manager.addPEAToPimadPool(filePath);
-	res.status(200).send('PiMAd-Hello-World\n');
+	let object= {source:filePath};
+	manager.addPEAToPimadPool(object, response => {
+		res.status(200).send('"'+response.getMessage()+'"');
+		console.log(response)
+
+	})
 
 });
 

@@ -41,7 +41,7 @@
     "polaris-backend": "./bin/polaris-backend"
   },
   "dependencies": {
-    "@p2olab/pimad-core": "0.0.1alpha3",
+    "@p2olab/pimad-core": "0.0.1alpha4",
     "@p2olab/pimad-types": "1.0.0",
     "@p2olab/polaris-interface": "3.0.0-alpha0.7",
     "@types/adm-zip": "^0.4.34",

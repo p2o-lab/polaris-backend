@@ -28,7 +28,7 @@ import {
 	RecipeOptions,
 	ServiceCommand, VariableChange
 } from '@p2olab/polaris-interface';
-import {PEAPool, PEAPoolVendor} from '@p2olab/pimad-core';
+import {Backbone, PEAPool, PEAPoolVendor} from '@p2olab/pimad-core';
 import {catManager, ServiceLogEntry} from '../logging';
 import {ParameterChange, PEA, Service} from './pea';
 import {ServiceState} from './pea/dataAssembly';
@@ -37,6 +37,7 @@ import {Player, Recipe} from './recipe';
 
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
+import PiMAdResponse = Backbone.PiMAdResponse;
 
 interface ModularPlantManagerEvents {
 	/**
@@ -112,11 +113,9 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 			throw Error(`PEA with id ${peaId} not found`);
 		}
 	}
-	public addPEAToPimadPool(filePath: string ): void {
-		//console.log(file)
-		this.peaPool.addPEA(filePath, (response) => {
-			const test = response;
-
+	public addPEAToPimadPool(filePath: { source:string}, callback: (response: PiMAdResponse) => void) {
+	this.peaPool.addPEA(filePath, (response: PiMAdResponse) => {
+			callback(response);
 		});
 	}
 	/**
