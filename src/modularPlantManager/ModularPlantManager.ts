@@ -113,10 +113,16 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 			throw Error(`PEA with id ${peaId} not found`);
 		}
 	}
-	public addPEAToPimadPool(filePath: { source:string}, callback: (response: PiMAdResponse) => void) {
-	this.peaPool.addPEA(filePath, (response: PiMAdResponse) => {
+	public getAllPEAsFromPimadPool(callback: (response: PiMAdResponse) => void){
+		this.peaPool.getAllPEAs((response: PiMAdResponse, peas) => {
+			if (response.getMessage() === 'Success!')
 			callback(response);
 		});
+	}
+	public addPEAToPimadPool(filePath: { source: string}, callback: (response: PiMAdResponse) => void) {
+		this.peaPool.addPEA(filePath, (response: PiMAdResponse) => {
+				callback(response);
+			});
 	}
 	/**
 	 * Load PEAs from JSON according to TopologyGenerator output or to simplified JSON

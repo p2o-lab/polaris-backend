@@ -54,13 +54,13 @@ peaRouter.put('/addByOptions', (req, res) => {
 const multer = require('multer');
 const storage = multer.diskStorage({
 	destination: (req: any, file: any, cb: (arg0: null, arg1: string) => void) => {
-		cb(null, './public/uploads')
+		cb(null, './public/uploads');
 	},
-	filename: (req: any, file: { fieldname: string; originalname: any; }, cb: (arg0: null, arg1: string) => void) => {
-		cb(null, file.originalname)
+	filename: (req: any, file: { fieldname: string; originalname: any }, cb: (arg0: null, arg1: string) => void) => {
+		cb(null, file.originalname);
 	}
 });
-const upload = multer({storage: storage})
+const upload = multer({storage: storage});
 
 /**
  * @api {put} /addByPiMAd Add PEA via PiMAd. (Receiving FormData from Frontend and parse with Multer lib)
@@ -70,13 +70,11 @@ const upload = multer({storage: storage})
  */
 peaRouter.post('/addByPiMAd', upload.single('uploadedFile'),(req, res) => {
 	const filePath: string = (req as MulterRequest).file.path;
-	const manager: ModularPlantManager = req.app.get('manager')
-	let object= {source:filePath};
+	const manager: ModularPlantManager = req.app.get('manager');
+	const object = {source:filePath};
 	manager.addPEAToPimadPool(object, response => {
 		res.status(200).send('"'+response.getMessage()+'"');
-		console.log(response)
-
-	})
+	});
 
 });
 
@@ -87,7 +85,10 @@ peaRouter.post('/addByPiMAd', upload.single('uploadedFile'),(req, res) => {
  */
 peaRouter.get('', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
-	res.json(await manager.getPEAs());
+	manager.getAllPEAsFromPimadPool(response => {
+		res.status(200).send(response.getContent());
+		}
+	);
 }));
 
 /**
