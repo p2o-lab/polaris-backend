@@ -113,12 +113,24 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 			throw Error(`PEA with id ${peaId} not found`);
 		}
 	}
+
+	/**
+	 * Delete PEA from Pimad-Pool by given Pimad-Identifier
+	 * @param peaId	Pimad-Identifier
+	 * @param callback Response from PiMad...
+	 */
+	public deletePEAFromPimadPool(peaId: string, callback: (response: PiMAdResponse) => void) {
+		this.peaPool.deletePEA(peaId,(response: PiMAdResponse) => {
+				callback(response);
+		});
+	}
+
 	public getAllPEAsFromPimadPool(callback: (response: PiMAdResponse) => void){
 		this.peaPool.getAllPEAs((response: PiMAdResponse, peas) => {
-			if (response.getMessage() === 'Success!')
 			callback(response);
 		});
 	}
+
 	public addPEAToPimadPool(filePath: { source: string}, callback: (response: PiMAdResponse) => void) {
 		this.peaPool.addPEA(filePath, (response: PiMAdResponse) => {
 				callback(response);
@@ -237,6 +249,7 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 	public async removePEA(peaID: string): Promise<void> {
 		catManager.info(`Remove PEA ${peaID}`);
 		const pea = this.getPEA(peaID);
+		console.log(this.getPEA(peaID));
 		if (pea.protected) {
 			throw new Error(`PEA ${peaID} is protected and can't be deleted`);
 		}

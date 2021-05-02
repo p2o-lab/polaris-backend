@@ -53,9 +53,6 @@ peaRouter.put('/addByOptions', (req, res) => {
 // set up multer for receiving uploaded File
 const multer = require('multer');
 const storage = multer.diskStorage({
-	destination: (req: any, file: any, cb: (arg0: null, arg1: string) => void) => {
-		cb(null, './public/uploads');
-	},
 	filename: (req: any, file: { fieldname: string; originalname: any }, cb: (arg0: null, arg1: string) => void) => {
 		cb(null, file.originalname);
 	}
@@ -144,11 +141,12 @@ peaRouter.post('/:peaId/disconnect', asyncHandler(async (req: Request, res: Resp
 }));
 
 /**
- * @api {delete} /:peaId    Delete PEA by ID
+ * @api {delete} /:peaId    Delete PEA  by ID
  * @apiName DeletePEA
  * @apiGroup PEA
  * @apiParam {string} peaId    ID of PEA to be deleted
  */
+/*
 peaRouter.delete('/:peaId', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
 	try {
@@ -157,7 +155,26 @@ peaRouter.delete('/:peaId', asyncHandler(async (req: Request, res: Response) => 
 	} catch (err) {
 		res.status(404).send(err.toString());
 	}
+}));*/
+
+
+/**
+ * @api {delete} /:peaId    Delete PEA  by ID
+ * @apiName DeletePEA
+ * @apiGroup PEA
+ * @apiParam {string} peaId    ID of PEA to be deleted
+ */
+
+peaRouter.delete('/:peaId', asyncHandler(async (req: Request, res: Response) => {
+	const manager: ModularPlantManager = req.app.get('manager');
+	manager.deletePEAFromPimadPool(req.params.peaId,response => {
+			res.status(200).send('"'+response.getMessage()+'"');
+			//console.log('response.getMessage()');
+		}
+	);
 }));
+
+
 
 /**
  * @api {post} /:peaId/service/:serviceName    Configure service
