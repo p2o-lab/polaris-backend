@@ -30,6 +30,7 @@ import * as asyncHandler from 'express-async-handler';
 import {constants} from 'http2';
 import {ServiceCommand} from '@p2olab/polaris-interface';
 import {catServer} from '../../../logging';
+import * as path from "path";
 
 export const peaRouter: Router = Router();
 
@@ -49,10 +50,17 @@ peaRouter.put('/addByOptions', (req, res) => {
 	);*/
 	res.json(newPEAs.map((m) => m.json()));
 });
+const fs = require('fs');
 
 // set up multer for receiving uploaded File
 const multer = require('multer');
+if (!fs.existsSync('uploads/')){
+	fs.mkdirSync('uploads/');
+}
 const storage = multer.diskStorage({
+	destination: function (req: any, file: any, cb:any) {
+		cb(null, path.join('uploads/'))
+	},
 	filename: (req: any, file: { fieldname: string; originalname: any }, cb: (arg0: null, arg1: string) => void) => {
 		cb(null, file.originalname);
 	}
@@ -60,13 +68,14 @@ const storage = multer.diskStorage({
 const upload = multer({storage: storage});
 
 /**
- * @api {put} /addByPiMAd Add PEA via PiMAd. (Receiving FormData from Frontend and parse with Multer lib)
- * @apiName PutPEA
+ * @api {post} /addByPiMAd Add PEA via PiMAd. (Receiving FormData from Frontend and parse with Multer lib)
+ * @apiName PostPEA
  * @apiGroup PEA
  * @apiParam {PEAOptions} pea PEA to be added.
  */
 peaRouter.post('/addByPiMAd', upload.single('uploadedFile'),(req, res) => {
-	const filePath: string = (req as MulterRequest).file.path;
+	let filePath: string = (req as MulterRequest).file.path;
+	filePath = filePath.replace("\\", "/")
 	const manager: ModularPlantManager = req.app.get('manager');
 	const object = {source:filePath};
 	manager.addPEAToPimadPool(object, response => {
