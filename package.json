@@ -12,7 +12,8 @@
     "Markus Graube",
     "Sebastian Heinze",
     "Christoph Jesaja Heidelbach <christoph.jesaja.heidelbach@gmail.com>",
-    "Julius Lorenz <julius.lorenz@tu-dresden.de>"
+    "Julius Lorenz <julius.lorenz@tu-dresden.de>",
+    "Tuan Son Dinh <tuansondinh96@gmail.com"
   ],
   "scripts": {
     "apidoc": "npm run clrApiDoc && apidoc -i src/server/ -o apidoc",
@@ -41,7 +42,7 @@
     "polaris-backend": "./bin/polaris-backend"
   },
   "dependencies": {
-    "@p2olab/pimad-core": "0.0.1alpha7",
+    "@p2olab/pimad-core": "0.0.1alpha8",
     "@p2olab/pimad-types": "1.0.0",
     "@p2olab/polaris-interface": "3.0.0-alpha0.9",
     "@types/adm-zip": "^0.4.34",
