@@ -125,11 +125,21 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 		});
 	}
 
+	/**
+	 * Get All PEAs from PiMAd-Pool
+	 * @param callback - contains a list of PEAs
+	 */
 	public getAllPEAsFromPimadPool(callback: (response: PiMAdResponse) => void){
 		this.peaPool.getAllPEAs((response: PiMAdResponse) => {
 			callback(response);
 		});
 	}
+
+	/**
+	 * add PEA to PiMaD-Pool by given filepath
+	 * @param filePath - filepath of the uploaded file in /uploads
+	 * @param callback - contains Success or Failure Message
+	 */
 
 	public addPEAToPimadPool(filePath: { source: string}, callback: (response: PiMAdResponse) => void) {
 		this.peaPool.addPEA(filePath, (response: PiMAdResponse) => {
@@ -249,7 +259,7 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 	public async removePEA(peaID: string): Promise<void> {
 		catManager.info(`Remove PEA ${peaID}`);
 		const pea = this.getPEA(peaID);
-		console.log(this.getPEA(peaID));
+
 		if (pea.protected) {
 			throw new Error(`PEA ${peaID} is protected and can't be deleted`);
 		}
