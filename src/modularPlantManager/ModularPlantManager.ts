@@ -126,7 +126,7 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 	}
 
 	public getAllPEAsFromPimadPool(callback: (response: PiMAdResponse) => void){
-		this.peaPool.getAllPEAs((response: PiMAdResponse, peas) => {
+		this.peaPool.getAllPEAs((response: PiMAdResponse) => {
 			callback(response);
 		});
 	}
