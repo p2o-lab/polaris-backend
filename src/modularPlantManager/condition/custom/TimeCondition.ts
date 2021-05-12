@@ -25,7 +25,7 @@
 
 import {TimeConditionOptions} from '@p2olab/polaris-interface';
 import {PEA} from '../../pea';
-import {Condition} from '../condition';
+import {Condition} from '../Condition';
 
 export class TimeCondition extends Condition {
 
