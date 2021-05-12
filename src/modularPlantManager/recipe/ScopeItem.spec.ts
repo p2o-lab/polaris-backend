@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import {PEA} from '../PEA';
+import {PEA} from '../pea/PEA';
 import {OpcUaDataItem} from '../pea/connection';
 import {ScopeItem} from './ScopeItem';
 
