@@ -30,6 +30,7 @@ import * as asyncHandler from 'express-async-handler';
 import {constants} from 'http2';
 import {ServiceCommand} from '@p2olab/polaris-interface';
 import {catServer} from '../../../logging';
+import * as path from "path";
 
 export const peaRouter: Router = Router();
 
@@ -50,16 +51,42 @@ peaRouter.put('/addByOptions', (req, res) => {
 	res.json(newPEAs.map((m) => m.json()));
 });
 
+// TODO: Place this code somewhere else?
+// set up Multer for parsing uploaded file
+const fs = require('fs');
+const multer = require('multer');
+// create uploads directory
+if (!fs.existsSync('uploads/')){
+	fs.mkdirSync('uploads/');
+}
+// set up filename and destination
+const storage = multer.diskStorage({
+	destination: function (req: any, file: any, cb:any) {
+		cb(null, path.join('uploads/'));
+	},
+	filename: (req: any, file: { fieldname: string; originalname: any }, cb: (arg0: null, arg1: string) => void) => {
+		cb(null, file.originalname);
+	}
+});
+const upload = multer({storage: storage});
+
 /**
- * @api {put} /addByPiMAd Add PEA via PiMAd.
- * @apiName PutPEA
+ * @api {post} /addByPiMAd Add PEA via PiMAd. (Receiving FormData from Frontend and parse with Multer lib)
+ * @apiName PostPEA
  * @apiGroup PEA
  * @apiParam {PEAOptions} pea PEA to be added.
  */
-peaRouter.put('/addByPiMAd', (req, res) => {
+peaRouter.post('/addByPiMAd', upload.single('uploadedFile'),(req, res) => {
+	// parse filepath of uploaded file
+	let filePath: string = (req as MulterRequest).file.path;
+	//create object to pass to PiMAd
+	const object = {source:filePath};
+
 	const manager: ModularPlantManager = req.app.get('manager');
-	manager.addPEAToPimadPool(req.body);
-	res.status(200).send('PiMAd-Hello-World\n');
+	manager.addPEAToPimadPool(object, response => {
+		// TODO: handle failure case
+		res.status(200).send('"'+response.getMessage()+'"');
+	});
 });
 
 /**
@@ -69,7 +96,11 @@ peaRouter.put('/addByPiMAd', (req, res) => {
  */
 peaRouter.get('', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
-	res.json(await manager.getPEAs());
+	manager.getAllPEAsFromPimadPool(response => {
+		// TODO: handle failure case
+		res.status(200).send(response.getContent());
+		}
+	);
 }));
 
 /**
@@ -125,11 +156,12 @@ peaRouter.post('/:peaId/disconnect', asyncHandler(async (req: Request, res: Resp
 }));
 
 /**
- * @api {delete} /:peaId    Delete PEA by ID
+ * @api {delete} /:peaId    Delete PEA  by ID
  * @apiName DeletePEA
  * @apiGroup PEA
  * @apiParam {string} peaId    ID of PEA to be deleted
  */
+/*
 peaRouter.delete('/:peaId', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
 	try {
@@ -138,6 +170,22 @@ peaRouter.delete('/:peaId', asyncHandler(async (req: Request, res: Response) => 
 	} catch (err) {
 		res.status(404).send(err.toString());
 	}
+}));*/
+
+/**
+ * @api {delete} /:peaId    Delete PEA  by ID
+ * @apiName DeletePEA
+ * @apiGroup PEA
+ * @apiParam {string} peaId    ID of PEA to be deleted
+ */
+
+peaRouter.delete('/:peaId', asyncHandler(async (req: Request, res: Response) => {
+	const manager: ModularPlantManager = req.app.get('manager');
+	manager.deletePEAFromPimadPool(req.params.peaId,response => {
+		// TODO: handle failure case
+		res.status(200).send('"'+response.getMessage()+'"');
+		}
+	);
 }));
 
 /**
@@ -211,3 +259,10 @@ peaRouter.get('/:peaId/service/:serviceName', asyncHandler(async (req: Request, 
 	const service = manager.getService(req.params.peaId, req.params.serviceName);
 	res.json(service.json());
 }));
+
+/**
+ *This interface is needed for Multer to work correctly.
+ */
+interface MulterRequest extends Request {
+	file: any;
+}

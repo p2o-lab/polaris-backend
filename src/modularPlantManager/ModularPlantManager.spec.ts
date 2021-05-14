@@ -33,6 +33,7 @@ import * as fs from 'fs';
 import {expect} from 'chai';
 import 'mocha';
 import {MockupServer} from './_utils';
+import * as AdmZip from 'adm-zip';
 
 describe('ModularPlantManager', () => {
 	const parseJson = require('json-parse-better-errors');
@@ -43,6 +44,11 @@ describe('ModularPlantManager', () => {
 			const modularPlantManager = new ModularPlantManager();
 			expect(() => modularPlantManager.load({})).to.throw();
 			expect(() => modularPlantManager.load({someattribute: 'abc'} as any)).to.throw();
+		});
+
+		it('should load mtp via PiMAd', () => {
+			const modularPlantManager = new ModularPlantManager();
+
 		});
 
 		it('should load PEAs', () => {

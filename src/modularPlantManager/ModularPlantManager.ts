@@ -28,7 +28,7 @@ import {
 	RecipeOptions,
 	ServiceCommand, VariableChange
 } from '@p2olab/polaris-interface';
-import {PEAPool, PEAPoolVendor} from '@p2olab/pimad-core';
+import {Backbone, PEAPool, PEAPoolVendor} from '@p2olab/pimad-core';
 import {catManager, ServiceLogEntry} from '../logging';
 import {ParameterChange, PEA, Service} from './pea';
 import {ServiceState} from './pea/dataAssembly';
@@ -37,7 +37,7 @@ import {Player, Recipe} from './recipe';
 
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
-import {LastChainElementImporterFactory, MTPFreeze202001ImporterFactory} from '@p2olab/pimad-core/dist/Converter/Importer/Importer';
+import PiMAdResponse = Backbone.PiMAdResponse;
 
 interface ModularPlantManagerEvents {
 	/**
@@ -71,15 +71,12 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 	// autoreset timeout in milliseconds
 	private _autoresetTimeout = 500;
 	// PiMAd-core
-	private peaPool: PEAPool;
+	public peaPool: PEAPool;
 
 	constructor() {
 		super();
 		this.peaPool = new PEAPoolVendor().buyDependencyPEAPool();
-		const mtpFreeze202001Importer = new MTPFreeze202001ImporterFactory().create();
-		const fImporter = new LastChainElementImporterFactory();
-		mtpFreeze202001Importer.initialize(fImporter.create());
-		this.peaPool.initialize(mtpFreeze202001Importer);
+		this.peaPool.initializeMTPFreeze202001Importer();
 
 		this.player = new Player()
 			.on('started', () => {
@@ -116,10 +113,38 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 			throw Error(`PEA with id ${peaId} not found`);
 		}
 	}
-	public addPEAToPimadPool(file: object) {
-		this.peaPool.addPEA(file, () => {
-			// test
+
+	/**
+	 * Delete PEA from Pimad-Pool by given Pimad-Identifier
+	 * @param peaId	Pimad-Identifier
+	 * @param callback Response from PiMad...
+	 */
+	public deletePEAFromPimadPool(peaId: string, callback: (response: PiMAdResponse) => void) {
+		this.peaPool.deletePEA(peaId,(response: PiMAdResponse) => {
+				callback(response);
 		});
+	}
+
+	/**
+	 * Get All PEAs from PiMAd-Pool
+	 * @param callback - contains a list of PEAs
+	 */
+	public getAllPEAsFromPimadPool(callback: (response: PiMAdResponse) => void){
+		this.peaPool.getAllPEAs((response: PiMAdResponse) => {
+			callback(response);
+		});
+	}
+
+	/**
+	 * add PEA to PiMaD-Pool by given filepath
+	 * @param filePath - filepath of the uploaded file in /uploads
+	 * @param callback - contains Success or Failure Message
+	 */
+
+	public addPEAToPimadPool(filePath: { source: string}, callback: (response: PiMAdResponse) => void) {
+		this.peaPool.addPEA(filePath, (response: PiMAdResponse) => {
+				callback(response);
+			});
 	}
 	/**
 	 * Load PEAs from JSON according to TopologyGenerator output or to simplified JSON
@@ -234,6 +259,7 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 	public async removePEA(peaID: string): Promise<void> {
 		catManager.info(`Remove PEA ${peaID}`);
 		const pea = this.getPEA(peaID);
+
 		if (pea.protected) {
 			throw new Error(`PEA ${peaID} is protected and can't be deleted`);
 		}

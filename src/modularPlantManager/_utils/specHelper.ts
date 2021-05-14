@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import {PEA} from '../PEA';
+import {PEA} from '../pea/PEA';
 
 export function waitForParameterChange(pea: PEA, parameterName: string, expected?: number | string | boolean): Promise<unknown> {
 	return new Promise((resolve) =>

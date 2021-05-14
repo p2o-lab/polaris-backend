@@ -26,7 +26,7 @@
 import {ExpressionConditionOptions, ScopeOptions} from '@p2olab/polaris-interface';
 import {PEA} from '../../pea';
 import {ScopeItem} from '../../recipe';
-import {Condition} from '../condition';
+import {Condition} from '../Condition';
 
 import {Expression} from 'expr-eval';
 export class ExpressionCondition extends Condition {
