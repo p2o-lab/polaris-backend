@@ -24,20 +24,28 @@
  */
 
 import {
-	BackendNotification, PEAInterface, PEAOptions, POLServiceInterface, POLServiceOptions,
+	BackendNotification,
+	BaseDataAssemblyOptions,
+	DataAssemblyOptions, OpcUaNodeOptions,
+	PEAInterface,
+	POLServiceInterface,
+	POLServiceOptions,
+	PEAOptions,
 	RecipeOptions,
-	ServiceCommand, VariableChange
+	ServiceCommand,
+	VariableChange
 } from '@p2olab/polaris-interface';
-import {Backbone, PEAPool, PEAPoolVendor} from '@p2olab/pimad-core';
+import {Backbone, ModuleAutomation, PEAPool, PEAPoolVendor} from '@p2olab/pimad-core';
 import {catManager, ServiceLogEntry} from '../logging';
-import {ParameterChange, PEA, Service} from './pea';
+import {ParameterChange, PEAController, Service} from './pea';
 import {ServiceState} from './pea/dataAssembly';
 import {POLService, POLServiceFactory} from './polService';
 import {Player, Recipe} from './recipe';
-
+import {PEA} from '@p2olab/pimad-core/dist/ModuleAutomation'
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import PiMAdResponse = Backbone.PiMAdResponse;
+import DataAssembly = ModuleAutomation.DataAssembly;
 
 interface ModularPlantManagerEvents {
 	/**
@@ -62,7 +70,7 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 	// loaded recipes
 	public readonly recipes: Recipe[] = [];
 	// loaded PEAs
-	public readonly peas: PEA[] = [];
+	public readonly peas: PEAController[] = [];
 	// instantiated POL services
 	public readonly polServices: POLService[] = [];
 	public readonly player: Player;
@@ -71,12 +79,12 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 	// autoreset timeout in milliseconds
 	private _autoresetTimeout = 500;
 	// PiMAd-core
-	public peaPool: PEAPool;
+	public peaControllerPool: PEAPool;
 
 	constructor() {
 		super();
-		this.peaPool = new PEAPoolVendor().buyDependencyPEAPool();
-		this.peaPool.initializeMTPFreeze202001Importer();
+		this.peaControllerPool = new PEAPoolVendor().buyDependencyPEAPool();
+		this.peaControllerPool.initializeMTPFreeze202001Importer();
 
 		this.player = new Player()
 			.on('started', () => {
@@ -105,7 +113,7 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 		this._autoreset = value;
 	}
 
-	public getPEA(peaId: string): PEA {
+	public getPEAController(peaId: string): PEAController {
 		const pea = this.peas.find((p) => p.id === peaId);
 		if (pea) {
 			return pea;
@@ -113,14 +121,24 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 			throw Error(`PEA with id ${peaId} not found`);
 		}
 	}
+	/**
+	 * Delete PEAController from Pimad-Pool by given Pimad-Identifier
+	 * @param peaId	Pimad-Identifier
+	 * @param callback Response from PiMad...
+	 */
+	public getPEAFromPimadPool(peaId: string, callback: (response: PiMAdResponse) => void) {
+		this.peaControllerPool.getPEA(peaId,(response: PiMAdResponse) => {
+			callback(response);
+		});
+	}
 
 	/**
-	 * Delete PEA from Pimad-Pool by given Pimad-Identifier
+	 * Delete PEAController from Pimad-Pool by given Pimad-Identifier
 	 * @param peaId	Pimad-Identifier
 	 * @param callback Response from PiMad...
 	 */
 	public deletePEAFromPimadPool(peaId: string, callback: (response: PiMAdResponse) => void) {
-		this.peaPool.deletePEA(peaId,(response: PiMAdResponse) => {
+		this.peaControllerPool.deletePEA(peaId,(response: PiMAdResponse) => {
 				callback(response);
 		});
 	}
@@ -130,73 +148,109 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 	 * @param callback - contains a list of PEAs
 	 */
 	public getAllPEAsFromPimadPool(callback: (response: PiMAdResponse) => void){
-		this.peaPool.getAllPEAs((response: PiMAdResponse) => {
+		this.peaControllerPool.getAllPEAs((response: PiMAdResponse) => {
 			callback(response);
 		});
 	}
 
 	/**
-	 * add PEA to PiMaD-Pool by given filepath
+	 * add PEAController to PiMaD-Pool by given filepath
 	 * @param filePath - filepath of the uploaded file in /uploads
 	 * @param callback - contains Success or Failure Message
 	 */
 
 	public addPEAToPimadPool(filePath: { source: string}, callback: (response: PiMAdResponse) => void) {
-		this.peaPool.addPEA(filePath, (response: PiMAdResponse) => {
+		this.peaControllerPool.addPEA(filePath, (response: PiMAdResponse) => {
 				callback(response);
 			});
 	}
 	/**
 	 * Load PEAs from JSON according to TopologyGenerator output or to simplified JSON
-	 * Skip PEA if already a PEA with same ID is registered
-	 * @param options           options for PEA creation
+	 * Skip PEAController if already a PEAController with same ID is registered
+	 * @param options           options for PEAController creation
 	 * @param {boolean} protectedPEAs  should PEAs be protected from being deleted
-	 * @returns {PEA[]}  created PEAs
+	 * @returns {PEAController[]}  created PEAs
 	 */
-	public load(options: LoadOptions, protectedPEAs = false): PEA[] {
-		const newPEAs: PEA[] = [];
+	public loadPEAController(options: Options, protectedPEAs = false): PEAController[] {
+		const newPEAs: PEAController[] = [];
 		if (!options) {
 			throw new Error('No PEAs defined in supplied options');
 		}
-		if (options.subMP) {
+
+		/*if (options.subMP) {
 			options.subMP.forEach((subMPOptions) => {
 				subMPOptions.peas.forEach((peaOptions: PEAOptions) => {
-					if (this.peas.find((p) => p.id === peaOptions.id)) {
-						catManager.warn(`PEA ${peaOptions.id} already in registered PEAs`);
-						throw new Error(`PEA ${peaOptions.id} already in registered PEAs`);
+					if (this.peas.find((p) => p.id === peaOptions.pea.getPiMAdIdentifier())) {
+						catManager.warn(`PEAController ${peaOptions.pea.getPiMAdIdentifier()} already in registered PEAs`);
+						throw new Error(`PEAController ${peaOptions.pea.getPiMAdIdentifier()} already in registered PEAs`);
 					} else {
-						newPEAs.push(new PEA(peaOptions, protectedPEAs));
+						newPEAs.push(new PEAController(peaOptions, protectedPEAs));
 					}
 				});
 			});
 		} else if (options.peas) {
 			options.peas.forEach((peaOptions: PEAOptions) => {
-				if (this.peas.find((p) => p.id === peaOptions.id)) {
-					catManager.warn(`PEA ${peaOptions.id} already in registered PEAs`);
-					throw new Error(`PEA ${peaOptions.id} already in registered PEAs`);
+				if (this.peas.find((p) => p.id === peaOptions.pea.getPiMAdIdentifier())) {
+					catManager.warn(`PEAController ${peaOptions.pea.getPiMAdIdentifier()} already in registered PEAs`);
+					throw new Error(`PEAController ${peaOptions.pea.getPiMAdIdentifier()} already in registered PEAs`);
 				} else {
-					newPEAs.push(new PEA(peaOptions, protectedPEAs));
+					newPEAs.push(new PEAController(peaOptions, protectedPEAs));
 				}
-			});
-		} else if (options.pea) {
-			const peaOptions = options.pea;
-			if (this.peas.find((p) => p.id === peaOptions.id)) {
-				catManager.warn(`PEA ${peaOptions.id} already in registered PEAs`);
-				throw new Error(`PEA ${peaOptions.id} already in registered PEAs`);
+			});*/
+		else {
+			this.getPEAFromPimadPool(options.id, response => {
+				if(response.getMessage()==='Success!'){
+					/*const peaModel : PEA = response.getContent() as PEA;
+					const dataAssemblyModels = peaModel.getAllDataAssemblies().getContent() as DataAssembly[]
+					let count = 0;
+					let dataAssemblyOptionsArray: DataAssemblyOptions[] = [];
+
+					//peaOptions.dataAssemblies[0].cIData
+					dataAssemblyModels.map( dataAssembly => {
+						let baseDataAssemblyOptions: {[k: string]: any, TagName: OpcUaNodeOptions, TagDescription: OpcUaNodeOptions} ={TagName: {} as OpcUaNodeOptions, TagDescription: {} as OpcUaNodeOptions}
+						let dataItemModels = dataAssembly.getAllDataItems(((response1, dataItems) =>
+								dataItems.map(dataItem=>{
+									dataItem.getName((response2, name) => baseDataAssemblyOptions[name] = dataItem as unknown as OpcUaNodeOptions)
+								})
+						))
+						let dataAssemblyOptions: DataAssemblyOptions = {
+							name: '',
+							interfaceClass: '',
+							communication: baseDataAssemblyOptions
+						}
+						dataAssemblyOptionsArray.push(dataAssemblyOptions);
+					})
+					const peaOptions: PEAOptions = {
+						id: "",
+						services: [],
+						username: '',
+						password: '',
+						hmiUrl: '',
+						opcuaServerUrl: '',
+						processValues: dataAssemblyOptionsArray
+
+					}*/
+					//newPEAs.push(new PEAController(peaOptions, protectedPEAs));
+				}
+
+			})
+
+			//const peaOptions = options.pea;
+			/*if (this.peas.find((p) => p.id === peaOptions.pea.getPiMAdIdentifier())) {
+				catManager.warn(`PEAController ${peaOptions.pea.getPiMAdIdentifier()} already in registered PEAs`);
+				throw new Error(`PEAController ${peaOptions.pea.getPiMAdIdentifier()} already in registered PEAs`);
 			} else {
-				newPEAs.push(new PEA(peaOptions, protectedPEAs));
-			}
-		} else {
-			throw new Error('No PEAs defined in supplied options');
+				newPEAs.push(new PEAController(peaOptions, protectedPEAs));
+			}*/
 		}
 		this.peas.push(...newPEAs);
-		newPEAs.forEach((p: PEA) => {
+		/*newPEAs.forEach((p: PEAController) => {
 			p
 				.on('connected', () => {
 					this.emit('notify', {message: 'pea', pea: p.json()});
 				})
 				.on('disconnected', () => {
-					catManager.info('PEA disconnected');
+					catManager.info('PEAController disconnected');
 					this.emit('notify', {message: 'pea', pea: p.json()});
 				})
 				.on('controlEnable', ({service}) => {
@@ -252,13 +306,13 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 					this.performAutoReset(service);
 				});
 			this.emit('notify', {message: 'pea', pea: p.json()});
-		});
+		});*/
 		return newPEAs;
 	}
 
-	public async removePEA(peaID: string): Promise<void> {
+	public async removePEAController(peaID: string): Promise<void> {
 		catManager.info(`Remove PEA ${peaID}`);
-		const pea = this.getPEA(peaID);
+		const pea = this.getPEAController(peaID);
 
 		if (pea.protected) {
 			throw new Error(`PEA ${peaID} is protected and can't be deleted`);
@@ -266,7 +320,7 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 
 		catManager.debug(`Disconnecting pea ${peaID} ...`);
 		await pea.disconnect()
-			.catch((err) => catManager.warn('Something wrong while disconnecting from PEA: ' + err.toString()));
+			.catch((err) => catManager.warn('Something wrong while disconnecting from PEAController: ' + err.toString()));
 
 		catManager.debug(`Deleting pea ${peaID} ...`);
 		const index = this.peas.indexOf(pea, 0);
@@ -275,7 +329,7 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 		}
 	}
 
-	public getPEAs(): PEAInterface[] {
+	public getAllPEAControllers(): PEAInterface[] {
 		return this.peas.map((pea) => pea.json());
 	}
 
@@ -334,13 +388,13 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 	}
 
 	/**
-	 * find [Service] of a [PEA] registered in manager
+	 * find [Service] of a [PEAController] registered in manager
 	 * @param {string} peaName
 	 * @param {string} serviceName
 	 * @returns {Service}
 	 */
 	public getService(peaName: string, serviceName: string): Service {
-		const pea: PEA | undefined = this.peas.find((p) => p.id === peaName);
+		const pea: PEAController | undefined = this.peas.find((p) => p.id === peaName);
 		if (!pea) {
 			throw new Error(`PEA with ID ${peaName} not registered`);
 		}
@@ -422,4 +476,10 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 			}, this._autoresetTimeout);
 		}
 	}
+}
+interface Options{
+	id: string,
+	username: string,
+	password: string,
+	opcuaServerUrl: string
 }

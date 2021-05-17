@@ -24,7 +24,7 @@
  */
 
 import {ParameterOptions, ScopeOptions} from '@p2olab/polaris-interface';
-import {PEA} from '../../../pea';
+import {PEAController} from '../../../pea';
 
 import {EventEmitter} from 'events';
 import {Expression} from 'expr-eval';
@@ -49,7 +49,7 @@ export class Parameter {
 	/**
 	 * Expression to be calculated and used as value.
 	 * Can contain variables, which can be declared inside scopeArray or by using correct variable names
-	 * following this syntax "[pea].[processValue].[variable]". PEA can be omitted if only one PEA
+	 * following this syntax "[pea].[processValue].[variable]". PEAController can be omitted if only one PEAController
 	 * is loaded. TestServerVariable can be omitted. Then "V" is used as variable.
 	 * "." in the name of PEAs or processVariables can be escaped with "\\."
 	 * @example
@@ -73,7 +73,7 @@ export class Parameter {
 	 * @param peas PEAs where expression can be matched
 	 *
 	 */
-	constructor(parameterOptions: ParameterOptions, peas: PEA[] = []) {
+	constructor(parameterOptions: ParameterOptions, peas: PEAController[] = []) {
 		catParameter.info(`Create Parameter: ${JSON.stringify(parameterOptions)}`);
 
 		this.options = parameterOptions;

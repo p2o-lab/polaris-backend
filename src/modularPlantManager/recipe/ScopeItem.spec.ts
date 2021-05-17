@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import {PEA} from '../pea/PEA';
+import {PEAController} from '../PEA';
 import {OpcUaDataItem} from '../pea/connection';
 import {ScopeItem} from './ScopeItem';
 
@@ -39,13 +39,13 @@ import { MockupServer} from '../_utils';
 /*
 describe('ScopeItem', () => {
 
-	let peaTestServer: PEA;
-	let peaDosierer: PEA;
+	let peaTestServer: PEAController;
+	let peaDosierer: PEAController;
 
 	before(() => {
-		peaDosierer = new PEA(
+		peaDosierer = new PEAController(
 			JSON.parse(fs.readFileSync('assets/peas/pea_dosierer_1.1.0.json').toString()).peas[0]);
-		peaTestServer = new PEA(
+		peaTestServer = new PEAController(
 			JSON.parse(fs.readFileSync('assets/peas/pea_testserver_1.0.0.json').toString()).peas[0]);
 	});
 
@@ -141,7 +141,7 @@ describe('ScopeItem', () => {
 		expect(item).to.equal(null);
 	});
 
-	it('should return null when no PEA is given and more than one PEA available', () => {
+	it('should return null when no PEAController is given and more than one PEAController available', () => {
 		expect(ScopeItem.extractFromExpressionVariable('Variable001', [peaTestServer, peaDosierer]))
 			.to.equal(null);
 	});

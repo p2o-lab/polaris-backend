@@ -42,8 +42,8 @@ describe('ModularPlantManager', () => {
 
 		it('should reject loading PEAs with empty options', () => {
 			const modularPlantManager = new ModularPlantManager();
-			expect(() => modularPlantManager.load({})).to.throw();
-			expect(() => modularPlantManager.load({someattribute: 'abc'} as any)).to.throw();
+			expect(() => modularPlantManager.loadPEAController({})).to.throw();
+			expect(() => modularPlantManager.loadPEAController({someattribute: 'abc'} as any)).to.throw();
 		});
 
 		it('should load mtp via PiMAd', () => {
@@ -54,33 +54,33 @@ describe('ModularPlantManager', () => {
 		it('should load PEAs', () => {
 			const peasJson = JSON.parse(fs.readFileSync('assets/peas/pea_cif.json').toString());
 			const modularPlantManager = new ModularPlantManager();
-			modularPlantManager.load(peasJson);
-			expect(() => modularPlantManager.load(peasJson)).to.throw('already in registered PEAs');
+			modularPlantManager.loadPEAController(peasJson);
+			expect(() => modularPlantManager.loadPEAController(peasJson)).to.throw('already in registered PEAs');
 		});
 
-		it('should load with single PEA', () => {
+		it('should loadPEAControllerPEAController with single PEAController', () => {
 			const peasJson = JSON.parse(fs.readFileSync('assets/peas/pea_cif.json').toString());
 			const peaJson = peasJson.peas[0];
 			const modularPlantManager = new ModularPlantManager();
-			modularPlantManager.load({pea: peaJson});
-			expect(() => modularPlantManager.load({pea: peaJson})).to.throw('already in registered PEAs');
+			modularPlantManager.loadPEAController({pea: peaJson});
+			expect(() => modularPlantManager.loadPEAController({pea: peaJson})).to.throw('already in registered PEAs');
 		});
 
 		it('should load with subMP options', () => {
 			const peasJson = JSON.parse(fs.readFileSync('assets/peas/pea_cif.json').toString());
 			const modularPlantManager = new ModularPlantManager();
-			modularPlantManager.load({subMP: [peasJson]});
-			expect(() => modularPlantManager.load({subMP: [peasJson]})).to.throw('already in registered PEAs');
+			modularPlantManager.loadPEAController({subMP: [peasJson]});
+			expect(() => modularPlantManager.loadPEAController({subMP: [peasJson]})).to.throw('already in registered PEAs');
 		});
 
 		it('should load the Achema PEAs', async () => {
 			const modularPlantManager = new ModularPlantManager();
-			const peas = modularPlantManager.load(
+			const peas = modularPlantManager.loadPEAController(
 				JSON.parse(fs.readFileSync('assets/peas/achema_demonstrator/peas_achema.json').toString()),
 				true);
 			expect(peas).to.have.lengthOf(3);
 
-			expect(modularPlantManager.load).to.have.lengthOf(3);
+			expect(modularPlantManager.loadPEAController).to.have.lengthOf(3);
 
 			const service = modularPlantManager.getService('Dose', 'Fill');
 			expect(service).to.be.instanceOf(Service);
@@ -88,15 +88,15 @@ describe('ModularPlantManager', () => {
 			expect(() => modularPlantManager.getService('Dose', 'NoService')).to.throw();
 			expect(() => modularPlantManager.getService('NoPEA', 'NoService')).to.throw();
 
-			await expect(modularPlantManager.removePEA('something')).to.be.rejectedWith('PEA with id something not found');
+			await expect(modularPlantManager.removePEAController('something')).to.be.rejectedWith('PEAController with id something not found');
 		});
 
-		it('should prevent removing a protected PEA', async () => {
+		it('should prevent removing a protected PEAController', async () => {
 			const modularPlantManager = new ModularPlantManager();
-			modularPlantManager.load(
+			modularPlantManager.loadPEAController(
 				JSON.parse(fs.readFileSync('assets/peas/pea_cif.json').toString()),
 				true);
-			await expect(modularPlantManager.removePEA(modularPlantManager.peas[0].id)).to.be.rejectedWith(/is protected/);
+			await expect(modularPlantManager.removePEAController(modularPlantManager.peas[0].id)).to.be.rejectedWith(/is protected/);
 		});
 	});
 
@@ -153,12 +153,12 @@ describe('ModularPlantManager', () => {
 			await mockupServer.shutdown();
 		});
 
-		it('should load from options, stop, abort and reset manager and remove PEA', async () => {
+		it('should load from options, stop, abort and reset manager and remove PEAController', async () => {
 			const peaJson = parseJson(
 				fs.readFileSync('assets/peas/pea_testserver_1.0.0.json', 'utf8'), null, 60);
 
 			const modularPlantManager = new ModularPlantManager();
-			modularPlantManager.load(peaJson);
+			modularPlantManager.loadPEAController(peaJson);
 			expect(modularPlantManager.peas).to.have.lengthOf(1);
 
 			const pea = modularPlantManager.peas[0];
@@ -195,7 +195,7 @@ describe('ModularPlantManager', () => {
 
 			const modularPlantManager = new ModularPlantManager();
 			modularPlantManager.autoreset = true;
-			modularPlantManager.load(peaJson);
+			modularPlantManager.loadPEAController(peaJson);
 
 			const pea = modularPlantManager.peas[0];
 			const service = pea.services[1];
@@ -216,9 +216,9 @@ describe('ModularPlantManager', () => {
 				fs.readFileSync('assets/peas/pea_testserver_1.0.0.json', 'utf8'), null, 60);
 
 			//peaJson.peas[0].id = 'PEA1';
-			modularPlantManager.load(peaJson);
+			modularPlantManager.loadPEAController(peaJson);
 			//peaJson.peas[0].id = 'PEA2';
-			modularPlantManager.load(peaJson);
+			modularPlantManager.loadPEAController(peaJson);
 
 			const asJson: AggregatedServiceOptions = parseJson(
 				fs.readFileSync('assets/polService/aggregatedService_peatestserver.json', 'utf8'), null, 60);

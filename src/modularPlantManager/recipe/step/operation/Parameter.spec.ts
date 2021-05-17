@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import {PEA, Service} from '../../../pea';
+import {PEAController, Service} from '../../../pea';
 import {Parameter} from '../../index';
 
 import {expect} from 'chai';
@@ -34,12 +34,12 @@ describe('Parameter', () => {
 	/*
 		context('static', () => {
 			let service: Service;
-			let pea: PEA;
+			let pea: PEAController;
 
 			before(() => {
 				const file = fs.readFileSync('assets/peas/pea_cif.json');
 
-				pea = new PEA(JSON.parse(file.toString()).peas[0]);
+				pea = new PEAController(JSON.parse(file.toString()).peas[0]);
 				service = pea.services[0];
 			});
 
@@ -97,7 +97,7 @@ describe('Parameter', () => {
 		/*
 		context('with Mockup', () => {
 			let service: Service;
-			let pea: PEA;
+			let pea: PEAController;
 			let mockupServer: MockupServer;
 
 			beforeEach(async function before() {
@@ -106,7 +106,7 @@ describe('Parameter', () => {
 				await mockupServer.start();
 				const peaJson = JSON.parse(fs.readFileSync('assets/peas/pea_testserver_1.0.0.json', 'utf8'))
 					.peas[0];
-				pea = new PEA(peaJson);
+				pea = new PEAController(peaJson);
 				service = pea.services[0];
 				await pea.connect();
 			});

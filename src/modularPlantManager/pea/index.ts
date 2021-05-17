@@ -1,2 +1,2 @@
-export * from './PEA';
+export * from './PEAController';
 export * from './serviceSet';

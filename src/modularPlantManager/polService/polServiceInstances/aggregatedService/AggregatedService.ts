@@ -24,7 +24,7 @@
  */
 
 import {ParameterInterface} from '@p2olab/polaris-interface';
-import {BaseService, PEA, Service} from '../../../pea';
+import {BaseService, PEAController, Service} from '../../../pea';
 import {POLService} from '../../POLService';
 import {POLServiceOptions} from '../../POLServiceFactory';
 import {Petrinet, PetrinetOptions} from './petrinet';
@@ -97,7 +97,7 @@ export class AggregatedService extends POLService {
 	public static type = 'aggregatedService';
 
 	// necessary PEAs
-	public readonly peas: Set<PEA> = new Set<PEA>();
+	public readonly peas: Set<PEAController> = new Set<PEAController>();
 	public readonly services: (Service | POLService)[];
 
 	// dynamic properties
@@ -109,7 +109,7 @@ export class AggregatedService extends POLService {
 
 	private logger: Category;
 
-	constructor(options: AggregatedServiceOptions, peas: PEA[], virtualServices?: POLService[]) {
+	constructor(options: AggregatedServiceOptions, peas: PEAController[], virtualServices?: POLService[]) {
 		super(options.name);
 		this.options = options;
 		this._lastStatusChange = new Date();

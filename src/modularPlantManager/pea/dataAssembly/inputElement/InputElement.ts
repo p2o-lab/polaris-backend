@@ -31,7 +31,7 @@ import {
 } from '@p2olab/polaris-interface';
 import {Parameter} from '../../../recipe';
 import {DataItem, OpcUaConnection} from '../../connection';
-import {PEA} from '../../PEA';
+import {PEAController} from '../../PEAController';
 import {
 	WQCDA, WQCRuntime
 } from '../_extensions';
@@ -49,7 +49,7 @@ export class InputElement extends WQCDA(DataAssembly) {
 	}
 
 	/**
-	 * Set parameter on PEA
+	 * Set parameter on PEAController
 	 * @param paramValue
 	 * @param {string} variable
 	 */
@@ -60,7 +60,7 @@ export class InputElement extends WQCDA(DataAssembly) {
 		await dataItem?.write(paramValue);
 	}
 
-	public async setValue(p: ParameterOptions, peas: PEA[]): Promise<void> {
+	public async setValue(p: ParameterOptions, peas: PEAController[]): Promise<void> {
 		catDataAssembly.debug(`set value: ${JSON.stringify(p)}`);
 		if (p.value) {
 			this.requestedValue = p.value.toString();

@@ -24,7 +24,7 @@
  */
 
 import {StringView} from './dataAssembly';
-import {PEA} from './PEA';
+import {PEAController} from './PEAController';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
@@ -37,14 +37,14 @@ const expect = chai.expect;
 
 describe('PEA', () => {
 
-	it('should load the cif PEA json', () => {
+	it('should load the cif PEAController json', () => {
 		const f = fs.readFileSync('assets/peas/pea_cif.json');
-		const pea = new PEA(JSON.parse(f.toString()).peas[0]);
+		const pea = new PEAController(JSON.parse(f.toString()).peas[0]);
 		expect(pea).to.have.property('id', 'CIF');
 		expect(pea.services).to.have.length(6);
 	});
 
-	context('with PEA server', () => {
+	context('with PEAController server', () => {
 		let peaMockup: PEAMockup;
 		let mockupServer: MockupServer;
 
@@ -58,10 +58,10 @@ describe('PEA', () => {
 			await mockupServer.shutdown();
 		});
 
-		it('should connect to PEA, provide correct json output and disconnect', async () => {
+		it('should connect to PEAController, provide correct json output and disconnect', async () => {
 			const peaJson =
 				JSON.parse(fs.readFileSync('assets/peas/pea_testserver_1.0.0.json', 'utf8')).peas[0];
-			const pea = new PEA(peaJson);
+			const pea = new PEAController(peaJson);
 			await pea.connect();
 
 			await Promise.all([
@@ -92,7 +92,7 @@ describe('PEA', () => {
 		it('should work after reconnect', async () => {
 			const peaJson =
 				JSON.parse(fs.readFileSync('assets/peas/pea_testserver_1.0.0.json', 'utf8')).peas[0];
-			const pea = new PEA(peaJson);
+			const pea = new PEAController(peaJson);
 
 			await pea.connect();
 			await Promise.all([

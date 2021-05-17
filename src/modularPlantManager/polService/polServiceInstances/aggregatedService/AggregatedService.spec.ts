@@ -24,7 +24,7 @@
  */
 
 import {PEAOptions} from '@p2olab/polaris-interface';
-import {PEA} from '../../../pea';
+import {PEAController} from '../../../pea';
 import {ServiceState} from '../../../pea/dataAssembly';
 import {Timer} from '../Timer';
 import {
@@ -64,8 +64,8 @@ describe('AggregatedService', () => {
 	describe('with Mockup', () => {
 		let mockupServer1: MockupServer;
 		let mockupServer2: MockupServer;
-		let pea1: PEA;
-		let pea2: PEA;
+		let pea1: PEAController;
+		let pea2: PEAController;
 
 		beforeEach(async function () {
 			const peaJson: PEAOptions =
@@ -78,7 +78,7 @@ describe('AggregatedService', () => {
 
 			peaJson.id = 'PEA1';
 			peaJson.opcuaServerUrl = 'opc.tcp://127.0.0.1:4334/PEATestServer';
-			pea1 = new PEA(peaJson);
+			pea1 = new PEAController(peaJson);
 			await pea1.connect();
 
 			mockupServer2 = new MockupServer(4335);
@@ -87,7 +87,7 @@ describe('AggregatedService', () => {
 
 			peaJson.id = 'PEA2';
 			peaJson.opcuaServerUrl = 'opc.tcp://127.0.0.1:4335/PEATestServer';
-			pea2 = new PEA(peaJson);
+			pea2 = new PEAController(peaJson);
 			await pea2.connect();
 		});
 

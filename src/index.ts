@@ -129,7 +129,7 @@ if (options) {
 			console.log(`Load PEAs from ${options.peas}`);
 			options.peas.forEach((pea: string) => {
 				const peasOptions = JSON.parse(fs.readFileSync(pea).toString());
-				manager.load(peasOptions, true);
+				manager.loadPEAController(peasOptions, true);
 			});
 			manager.peas.forEach((p) =>
 				p.connect()

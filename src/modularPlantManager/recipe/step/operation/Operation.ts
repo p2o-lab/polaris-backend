@@ -24,7 +24,7 @@
  */
 
 import {OperationInterface, OperationOptions, ParameterOptions, ServiceCommand} from '@p2olab/polaris-interface';
-import {BaseService, PEA, Procedure, Service} from '../../../pea';
+import {BaseService, PEAController, Procedure, Service} from '../../../pea';
 
 import {EventEmitter} from 'events';
 import {catOperation} from '../../../../logging';
@@ -37,7 +37,7 @@ export class Operation {
 	private static MAX_RETRIES = 10;
 	private static RETRY_DELAY = 500;
 
-	public pea: PEA | undefined;
+	public pea: PEAController | undefined;
 	public service: BaseService;
 	public procedure!: Procedure | undefined;
 	public command!: ServiceCommand;
@@ -45,7 +45,7 @@ export class Operation {
 	public readonly emitter: EventEmitter;
 	private state!: 'executing' | 'completed' | 'aborted';
 
-	constructor(options: OperationOptions, peas: PEA[]) {
+	constructor(options: OperationOptions, peas: PEAController[]) {
 		if (peas) {
 			if (options.pea) {
 				this.pea = peas.find((p) => p.id === options.pea);
@@ -57,7 +57,7 @@ export class Operation {
 				this.pea = peas[0];
 			} else {
 				throw new Error(`Operation ${JSON.stringify(options)} has no PEA specified ` +
-					'and there is more than one PEA loaded');
+					'and there is more than one PEAController loaded');
 			}
 		} else {
 			throw new Error('No PEAs specified');

@@ -59,7 +59,7 @@ describe('PEARoutes', () => {
 		it('should throw 404 when get not existing pea', async () => {
 			await request(app).get('/api/pea/abc1234')
 				.expect(404)
-				.expect('Error: PEA with id abc1234 not found');
+				.expect('Error: PEAController with id abc1234 not found');
 		});
 
 		it('should provide download for not existing peas', async () => {
@@ -67,7 +67,7 @@ describe('PEARoutes', () => {
 				.expect(500);
 		});
 
-		context('loading PEA by Options', () => {
+		context('loading PEAController by Options', () => {
 			it('should fail while loading pea with empty content', async () => {
 				await request(app).put('/api/pea/addByOptions')
 					.send({})
@@ -83,7 +83,7 @@ describe('PEARoutes', () => {
 			});
 		});
 
-		context('loading PEA via PiMAd', () => {
+		context('loading PEAController via PiMAd', () => {
 			it('should work with dummy implementation', async () => {
 				await request(app).put('/api/pea/addByPiMAd')
 					.send({})
@@ -98,7 +98,7 @@ describe('PEARoutes', () => {
 				.send(null)
 				.expect(500)
 				.expect('Content-Type', /json/)
-				.expect(/Error: PEA with id test not found/);
+				.expect(/Error: PEAController with id test not found/);
 		});
 
 		it('should fail while disconnecting from a not existing pea', async () => {
@@ -106,7 +106,7 @@ describe('PEARoutes', () => {
 				.send(null)
 				.expect(500)
 				.expect('Content-Type', /json/)
-				.expect(/Error: PEA with id test not found/);
+				.expect(/Error: PEAController with id test not found/);
 		});
 		/*
 		describe('with Mockup', () => {

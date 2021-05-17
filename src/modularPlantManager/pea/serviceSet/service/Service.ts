@@ -41,7 +41,7 @@ import {
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Category} from 'typescript-logging';
-import {PEA} from '../../PEA';
+import {PEAController} from '../../PEAController';
 import {BaseService, BaseServiceEvents} from './BaseService';
 import {Procedure} from './procedure/Procedure';
 import {catService} from '../../../../logging';
@@ -61,9 +61,9 @@ interface ServiceEvents extends BaseServiceEvents {
 type ServiceEmitter = StrictEventEmitter<EventEmitter, ServiceEvents>;
 
 /**
- * Service of a [[PEA]]
+ * Service of a [[PEAController]]
  *
- * after connection to a real PEA, commands can be triggered and states can be retrieved
+ * after connection to a real PEAController, commands can be triggered and states can be retrieved
  *
  */
 export class Service extends BaseService {
@@ -220,7 +220,7 @@ export class Service extends BaseService {
 	// overridden method from Base Service
 	public async executeCommand(command: ServiceCommand): Promise<void> {
 		if (!this.connection.isConnected()) {
-			throw new Error('PEA is not connected');
+			throw new Error('PEAController is not connected');
 		}
 		await super.executeCommand(command);
 		const currentProcedure = this.getCurrentProcedure();
@@ -295,7 +295,7 @@ export class Service extends BaseService {
 		return procedure;
 	}
 
-	public async setParameters(parameterOptions: ParameterOptions[], peaSet: PEA[] = []): Promise<void> {
+	public async setParameters(parameterOptions: ParameterOptions[], peaSet: PEAController[] = []): Promise<void> {
 		parameterOptions.map((p) => {
 			const dataAssembly = this.findInputParameter(p.name);
 			dataAssembly?.setValue(p, peaSet);

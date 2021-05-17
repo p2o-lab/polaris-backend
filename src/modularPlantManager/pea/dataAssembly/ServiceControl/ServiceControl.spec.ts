@@ -30,7 +30,7 @@ import {
 	ServiceControlOptions
 } from '@p2olab/polaris-interface';
 import {OpcUaConnection} from '../../connection';
-import {PEA} from '../../PEA';
+import {PEAController} from '../../PEAController';
 import {
 	AnaMan,
 	DataAssemblyFactory,
@@ -167,7 +167,7 @@ describe('ServiceControl', () => {
 			const daPEA = JSON.parse(
 				fs.readFileSync('assets/ModularAutomation/pea_testserver_1.0.0.json').toString())
 				.peas[0];
-			const pea = new PEA(daPEA);
+			const pea = new PEAController(daPEA);
 			await pea.connect();
 			peaServer.startSimulation();
 

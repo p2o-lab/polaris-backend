@@ -28,7 +28,7 @@ import {
 	OpcUaNodeOptions
 } from '@p2olab/polaris-interface';
 import {OpcUaConnection} from '../connection';
-import {PEA} from '../PEA';
+import {PEAController} from '../PEAController';
 import {
 	AnaMan,
 	BinMon, BinView, DataAssembly, DataAssemblyFactory,
@@ -104,7 +104,7 @@ describe('DataAssemblyFactory', () => {
 			).to.throw('Cannot set property \'TagName\' of undefined');
 		});
 
-		it('should fail without provided PEA', async () => {
+		it('should fail without provided PEAController', async () => {
 			expect(() => DataAssemblyFactory.create(
 				{name: 'test', interfaceClass: 'none', communication: {} as BaseDataAssemblyOptions},
 				emptyOPCUAConnection)
@@ -347,7 +347,7 @@ describe('DataAssemblyFactory', () => {
 		it('should set continuous value', async () => {
 			const daPEA = JSON.parse(fs.readFileSync('assets/ModularAutomation/pea_testserver_1.0.0.json').toString())
 				.peas[0];
-			const pea = new PEA(daPEA);
+			const pea = new PEAController(daPEA);
 			await pea.connect();
 
 			const da = pea.services[0].procedures[0].parameters[0] as ServParam;

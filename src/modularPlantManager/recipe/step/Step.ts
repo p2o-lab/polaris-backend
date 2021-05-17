@@ -24,7 +24,7 @@
  */
 
 import {OperationOptions, StepInterface, TransitionOptions} from '@p2olab/polaris-interface';
-import {PEA} from '../../pea';
+import {PEAController} from '../../pea';
 import {Operation} from './operation/Operation';
 import {Transition} from './transition/Transition';
 
@@ -64,7 +64,7 @@ export class Step {
 	public transitions: Transition[];
 	public readonly eventEmitter: StrictEventEmitter<EventEmitter, StepEvents>;
 
-	constructor(options: StepOptions, peaSet: PEA[]) {
+	constructor(options: StepOptions, peaSet: PEAController[]) {
 		if (options.name) {
 			this.name = options.name;
 		} else {
@@ -87,8 +87,8 @@ export class Step {
 		this.eventEmitter = new EventEmitter();
 	}
 
-	public getUsedPEAs(): Set<PEA> {
-		let set = new Set<PEA>(this.operations.map((op: Operation) => op.pea!));
+	public getUsedPEAs(): Set<PEAController> {
+		let set = new Set<PEAController>(this.operations.map((op: Operation) => op.pea!));
 		this.transitions.forEach((tr) => {
 			set = new Set([...set, ...tr.getUsedPEAs()]);
 		});

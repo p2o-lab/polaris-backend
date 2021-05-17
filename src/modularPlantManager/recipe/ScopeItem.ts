@@ -24,7 +24,7 @@
  */
 
 import {ScopeOptions} from '@p2olab/polaris-interface';
-import {PEA, Procedure, Service} from '../pea';
+import {PEAController, Procedure, Service} from '../pea';
 import {DataItem} from '../pea/connection';
 import {DataAssembly, ServiceState} from '../pea/dataAssembly';
 
@@ -36,11 +36,11 @@ export class ScopeItem {
 	/** name of variable which should be replaced in value */
 	public readonly name: string;
 	public readonly dataAssembly: DataAssembly;
-	public readonly pea: PEA;
+	public readonly pea: PEAController;
 	public readonly variableName: string;
 	public readonly dataItem: DataItem<any>;
 
-	constructor(name: string, pea: PEA, dataAssembly: DataAssembly, variableName = '') {
+	constructor(name: string, pea: PEAController, dataAssembly: DataAssembly, variableName = '') {
 		this.name = name;
 		this.pea = pea;
 		this.dataAssembly = dataAssembly;
@@ -55,7 +55,7 @@ export class ScopeItem {
 	 * @param peas PEAs to be searched in for variable names (default: all PEAs in manager)
 	 * @param {string[]} ignoredNames don't try to find scopeItems for this variable names
 	 */
-	public static extractFromExpressionString(expression: string, peas: PEA[], ignoredNames: string[] = []): { expression: Expression; scopeItems: ScopeItem[] } {
+	public static extractFromExpressionString(expression: string, peas: PEAController[], ignoredNames: string[] = []): { expression: Expression; scopeItems: ScopeItem[] } {
 		const parser: Parser = new Parser({allowMemberAccess: true});
 		const value = expression.replace(new RegExp('\\\\.', 'g'), '__')
 			.replace('@', '');
@@ -71,10 +71,10 @@ export class ScopeItem {
 	/**
 	 *
 	 * @param {ScopeOptions} item
-	 * @param {PEA[]} peas to be searched in for variable names (default: all PEAs in manager)
+	 * @param {PEAController[]} peas to be searched in for variable names (default: all PEAs in manager)
 	 * @returns {ScopeItem}
 	 */
-	public static extractFromScopeOptions(item: ScopeOptions, peas: PEA[]): ScopeItem {
+	public static extractFromScopeOptions(item: ScopeOptions, peas: PEAController[]): ScopeItem {
 		const pea = peas.find((peaObj) => peaObj.id === item.pea);
 		if (!pea){
 			throw new Error(`PEA "${item.pea}" couldn't be found`);
@@ -90,16 +90,16 @@ export class ScopeItem {
 	 * Extract scope item from expression variable
 	 *
 	 * @param {string} variable
-	 * @param {PEA[]} peas to be searched in for variable names
+	 * @param {PEAController[]} peas to be searched in for variable names
 	 * @returns {ScopeItem}
 	 */
-	public static extractFromExpressionVariable(variable: string, peas: PEA[]): ScopeItem {
+	public static extractFromExpressionVariable(variable: string, peas: PEAController[]): ScopeItem {
 		catScopeItem.debug(`Extract ScopeItem from "${variable}"`);
 		let dataAssembly: DataAssembly | undefined;
 		const components = variable.split('.').map((tokenT: string) => tokenT.replace(new RegExp('__', 'g'), '.'));
 		let token = components.shift();
 
-		// find PEA
+		// find PEAController
 		let pea = peas.find((p) => p.id === token);
 		if (pea === undefined) {
 			if (peas.length === 1) {

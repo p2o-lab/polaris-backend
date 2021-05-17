@@ -30,7 +30,7 @@ import {
 	OSLevelDA, OSLevelRuntime
 } from '../_extensions';
 import {BaseDataAssemblyRuntime, DataAssembly} from '../DataAssembly';
-import {PEA} from '../../PEA';
+import {PEAController} from '../../PEAController';
 import {catDataAssembly} from '../../../../logging';
 
 export type OperationElementRuntime = BaseDataAssemblyRuntime & OSLevelRuntime;
@@ -45,7 +45,7 @@ export class OperationElement extends OSLevelDA(DataAssembly) {
 	}
 
 	/**
-	 * Set parameter on PEA
+	 * Set parameter on PEAController
 	 * @param paramValue
 	 * @param {string} variable
 	 */
@@ -56,7 +56,7 @@ export class OperationElement extends OSLevelDA(DataAssembly) {
 		await dataItem?.write(paramValue);
 	}
 
-	public async setValue(p: ParameterOptions, peas: PEA[]): Promise<void> {
+	public async setValue(p: ParameterOptions, peas: PEAController[]): Promise<void> {
 		catDataAssembly.debug(`set value: ${JSON.stringify(p)}`);
 		if (p.value) {
 			this.requestedValue = p.value.toString();

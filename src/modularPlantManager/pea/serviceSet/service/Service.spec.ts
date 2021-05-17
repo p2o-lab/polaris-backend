@@ -31,7 +31,7 @@ import {
 	SourceMode
 } from '@p2olab/polaris-interface';
 import {OpcUaConnection} from '../../connection';
-import {PEA, Service} from '../../index';
+import {PEAController, Service} from '../../index';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
@@ -60,7 +60,7 @@ describe('Service', () => {
 			).to.throw('No service name');
 		});
 
-		it('should fail with missing PEA', () => {
+		it('should fail with missing PEAController', () => {
 			expect(() => new Service(
 				{name: 'test', parameters: [], communication: {} as ServiceControlOptions, procedures: []},
 				opcUAConnection, '')
@@ -73,9 +73,9 @@ describe('Service', () => {
 		const peaJson =
 			parseJson(fs.readFileSync('assets/peas/pea_testserver_1.0.0.json', 'utf8'), null, 60)
 				.peas[0];
-		const pea = new PEA(peaJson);
+		const pea = new PEAController(peaJson);
 		const service = pea.services[0];
-		await expect(service.executeCommand(ServiceCommand.start)).to.be.rejectedWith('PEA is not connected');
+		await expect(service.executeCommand(ServiceCommand.start)).to.be.rejectedWith('PEAController is not connected');
 	});
 
 	it('should create service from PEATestServer json', () => {
@@ -88,7 +88,7 @@ describe('Service', () => {
 
 	// eslint-disable-next-line no-undef
 	context('with PEATestServer', () => {
-		let pea: PEA;
+		let pea: PEAController;
 		let service: Service;
 
 		// eslint-disable-next-line no-undef
@@ -96,7 +96,7 @@ describe('Service', () => {
 			const peaJson =
 				parseJson(fs.readFileSync('assets/peas/pea_testserver_1.0.0.json', 'utf8'), null, 60)
 					.peas[0];
-			pea = new PEA(peaJson);
+			pea = new PEAController(peaJson);
 			service = pea.services[0];
 		});
 
@@ -125,7 +125,7 @@ describe('Service', () => {
 		let peaServer: PEAMockup;
 		let service: Service;
 		//let testService: TestServerService;
-		let pea: PEA;
+		let pea: PEAController;
 
 		beforeEach(async function () {
 			this.timeout(5000);
@@ -137,7 +137,7 @@ describe('Service', () => {
 			const peaJson =
 				parseJson(fs.readFileSync('assets/peas/pea_testserver_1.0.0.json', 'utf8'), null, 60)
 					.peas[0];
-			pea = new PEA(peaJson);
+			pea = new PEAController(peaJson);
 			service = pea.services[0];
 			await pea.connect();
 		});

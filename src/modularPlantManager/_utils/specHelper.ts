@@ -23,9 +23,9 @@
  * SOFTWARE.
  */
 
-import {PEA} from '../pea/PEA';
+import {PEAController} from '../PEA';
 
-export function waitForParameterChange(pea: PEA, parameterName: string, expected?: number | string | boolean): Promise<unknown> {
+export function waitForParameterChange(pea: PEAController, parameterName: string, expected?: number | string | boolean): Promise<unknown> {
 	return new Promise((resolve) =>
 		pea.on('parameterChanged', (data) => {
 			if (data.parameter === parameterName && (expected === undefined || data.value === expected)) {
@@ -36,7 +36,7 @@ export function waitForParameterChange(pea: PEA, parameterName: string, expected
 	);
 }
 
-export function waitForVariableChange(pea: PEA, variableName: string, expected?: number | string | boolean): Promise<unknown> {
+export function waitForVariableChange(pea: PEAController, variableName: string, expected?: number | string | boolean): Promise<unknown> {
 	return new Promise((resolve) =>
 		pea.on('variableChanged', function test(data) {
 			if (data.variable === variableName && (expected === undefined || data.value === expected)) {

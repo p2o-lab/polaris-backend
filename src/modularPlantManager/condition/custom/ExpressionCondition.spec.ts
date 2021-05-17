@@ -24,7 +24,7 @@
  */
 
 import {ConditionType} from '@p2olab/polaris-interface';
-import {PEA} from '../../pea';
+import {PEAController} from '../../pea';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
@@ -46,7 +46,7 @@ describe('ConditionFactory', () => {
 
 	describe('with MockupServer', () => {
 		let mockupServer: MockupServer;
-		let pea: PEA;
+		let pea: PEAController;
 		let var0: PEATestNumericVariable;
 
 		beforeEach(async function () {

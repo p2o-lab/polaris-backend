@@ -24,7 +24,7 @@
  */
 
 import {OperationOptions, ServiceCommand} from '@p2olab/polaris-interface';
-import {PEA, Service} from '../../../pea';
+import {PEAController, Service} from '../../../pea';
 import {Operation} from '../../index';
 
 import * as chai from 'chai';
@@ -41,12 +41,12 @@ describe('Operation', () => {
 	/*
 	context('constructor', () => {
 
-		let pea: PEA;
+		let pea: PEAController;
 
 		before(() => {
 			const peaJson = JSON.parse(fs.readFileSync('assets/peas/pea_testserver_1.0.0.json').toString())
 				.peas[0];
-			pea = new PEA(peaJson);
+			pea = new PEAController(peaJson);
 		});
 
 		it('should fail with missing options', () => {
@@ -112,7 +112,7 @@ describe('Operation', () => {
 	describe('with Mockup', () => {
 
 		let mockupServer: MockupServer;
-		let pea: PEA;
+		let pea: PEAController;
 		let service: Service;
 
 		beforeEach(async function () {
@@ -122,7 +122,7 @@ describe('Operation', () => {
 
 			const peaJson = JSON.parse(fs.readFileSync('assets/peas/pea_testserver_1.0.0.json').toString())
 				.peas[0];
-			pea = new PEA(peaJson);
+			pea = new PEAController(peaJson);
 			service = pea.services[0];
 
 			await pea.connect();

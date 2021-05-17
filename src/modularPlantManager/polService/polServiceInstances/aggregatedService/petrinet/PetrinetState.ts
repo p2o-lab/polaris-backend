@@ -24,7 +24,7 @@
  */
 
 import {OperationOptions} from '@p2olab/polaris-interface';
-import {PEA} from '../../../../pea';
+import {PEAController} from '../../../../pea';
 import {Operation} from '../../../../recipe';
 import {PetrinetTransition} from './PetrinetTransition';
 import {catRecipe} from '../../../../../logging';
@@ -43,7 +43,7 @@ export class PetrinetState {
 	public operationCompleted: boolean;
 	private operations: Operation[];
 
-	constructor(options: PetrinetStateOptions, peas: PEA[]) {
+	constructor(options: PetrinetStateOptions, peas: PEAController[]) {
 		this.id = options.id;
 		this.options = options;
 		this.operations = options.operations.map((op) => new Operation(op, peas));
