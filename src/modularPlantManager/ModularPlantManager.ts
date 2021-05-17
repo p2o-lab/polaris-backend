@@ -36,7 +36,7 @@ import {
 	VariableChange
 } from '@p2olab/polaris-interface';
 import {Backbone, ModuleAutomation, PEAPool, PEAPoolVendor} from '@p2olab/pimad-core';
-import {catManager, ServiceLogEntry} from '../logging';
+import {catManager, catOpcUA, ServiceLogEntry} from '../logging';
 import {ParameterChange, PEAController, Service} from './pea';
 import {ServiceState} from './pea/dataAssembly';
 import {POLService, POLServiceFactory} from './polService';
@@ -200,22 +200,46 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 		else {
 			this.getPEAFromPimadPool(options.id, response => {
 				if(response.getMessage()==='Success!'){
-					/*const peaModel : PEA = response.getContent() as PEA;
+					//get PEAModel
+					const peaModel : PEA = response.getContent() as PEA;
+					//get DataAssemblyModels
 					const dataAssemblyModels = peaModel.getAllDataAssemblies().getContent() as DataAssembly[]
-					let count = 0;
+					// this is the Array we will fill up
 					let dataAssemblyOptionsArray: DataAssemblyOptions[] = [];
-
-					//peaOptions.dataAssemblies[0].cIData
+					// iterate through every dataAssemblyModel and create DataAssemblyOptions with BaseDataAssemblyOptions
 					dataAssemblyModels.map( dataAssembly => {
-						let baseDataAssemblyOptions: {[k: string]: any, TagName: OpcUaNodeOptions, TagDescription: OpcUaNodeOptions} ={TagName: {} as OpcUaNodeOptions, TagDescription: {} as OpcUaNodeOptions}
-						let dataItemModels = dataAssembly.getAllDataItems(((response1, dataItems) =>
+						// WP
+						let baseDataAssemblyOptions: {[k: string]: any, TagName: OpcUaNodeOptions, TagDescription: OpcUaNodeOptions} ={TagName: {nodeId:''} as OpcUaNodeOptions, TagDescription: {nodeId:''} as OpcUaNodeOptions}
+						let dataAssemblyName ='', dataAssemblyInterfaceClass='';
+						// get name
+						dataAssembly.getName(((response,name)=>{
+							dataAssemblyName = name;
+						}))
+						//get metamodelref
+						dataAssembly.getMetaModelRef(((response,metaModelRef)=>{
+							dataAssemblyInterfaceClass = metaModelRef;
+						}))
+
+						dataAssembly.getAllDataItems(((response1, dataItems) =>
 								dataItems.map(dataItem=>{
-									dataItem.getName((response2, name) => baseDataAssemblyOptions[name] = dataItem as unknown as OpcUaNodeOptions)
+									let namespaceIndex ='', d;
+
+									/*dataItem.getCommunicationInterfaceData(((response2,communicationsInterfaceData) =>
+											communicationsInterfaceData
+									))*/
+									const opcUaNodeOptions : OpcUaNodeOptions = {
+										nodeId:'',
+										namespaceIndex:'',
+										dataType:''
+									}
+									dataItem.getName((response2, name) => baseDataAssemblyOptions[name] = opcUaNodeOptions)
+
 								})
 						))
+
 						let dataAssemblyOptions: DataAssemblyOptions = {
-							name: '',
-							interfaceClass: '',
+							name: dataAssemblyName,
+							interfaceClass: dataAssemblyInterfaceClass,
 							communication: baseDataAssemblyOptions
 						}
 						dataAssemblyOptionsArray.push(dataAssemblyOptions);
@@ -228,9 +252,10 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 						hmiUrl: '',
 						opcuaServerUrl: '',
 						processValues: dataAssemblyOptionsArray
+					}
+					console.log(dataAssemblyOptionsArray)
 
-					}*/
-					//newPEAs.push(new PEAController(peaOptions, protectedPEAs));
+					newPEAs.push(new PEAController(peaOptions, protectedPEAs));
 				}
 
 			})
