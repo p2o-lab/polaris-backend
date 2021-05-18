@@ -206,7 +206,7 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 	 */
 	public json(): PEAInterface {
 		return {
-			name: "",
+			name: '',
 			pimadIdentifier: this.id,
 			description: this.description,
 			endpoint: this.connection.endpoint,

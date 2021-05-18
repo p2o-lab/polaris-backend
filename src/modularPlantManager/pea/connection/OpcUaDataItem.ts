@@ -40,8 +40,8 @@ export class OpcUaDataItem<T> extends DataItem<T> {
 	private connection!: OpcUaConnection;
 
 	public static fromOptions<type extends number | string | boolean>(
-		options: OpcUaNodeOptions, connection: OpcUaConnection,
-		access: 'read' | 'write', type: 'number' | 'string' | 'boolean' = 'number'): OpcUaDataItem<type> {
+		options: OpcUaNodeOptions, connection: OpcUaConnection, // attention! before-> type: ... = 'number'
+		access: 'read' | 'write', type: 'number' | 'string' | 'boolean' = 'string'): OpcUaDataItem<type> {
 		const item = new OpcUaDataItem<type>();
 
 		if (options) {
