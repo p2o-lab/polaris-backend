@@ -93,7 +93,7 @@ export class DataAssemblyFactory {
 			'DIntServParam': DIntServParam,
 			'StringServParam': StringServParam
 		};
-		let type = types[variableOptions.interfaceClass as keyof typeof types];
+		let type = types[variableOptions.interfaceClass.split('/').pop() as keyof typeof types];
 		if (!type) {
 			if (!variableOptions.interfaceClass) {
 				catDataAssembly.debug(`No Interface Class specified for DataAssembly ${variableOptions.name}. ` +
