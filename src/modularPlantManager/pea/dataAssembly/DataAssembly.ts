@@ -64,6 +64,9 @@ export class DataAssembly extends EventEmitter {
 		if (!options.communication) {
 			throw new Error('Creating DataAssembly Error: No Communication variables found in DataAssemblyOptions');
 		}
+		// initialize communication
+		this.communication = {TagName: {} as OpcUaDataItem<any>, TagDescription: {} as OpcUaDataItem<any>};
+
 		this.communication.TagName = this.createDataItem('TagName', 'read', 'string');
 		this.communication.TagDescription = this.createDataItem('TagDescription', 'read', 'string');
 
