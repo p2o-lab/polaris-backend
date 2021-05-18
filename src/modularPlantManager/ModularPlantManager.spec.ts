@@ -24,7 +24,7 @@
  */
 
 import {AggregatedServiceOptions, ServiceCommand} from '@p2olab/polaris-interface';
-import {LoadOptions, ModularPlantManager} from './ModularPlantManager';
+import {LoadOptions, ModularPlantManager, Options} from './ModularPlantManager';
 import {Service} from './pea';
 import {ServiceState} from './pea/dataAssembly';
 
@@ -34,31 +34,47 @@ import {expect} from 'chai';
 import 'mocha';
 import {MockupServer} from './_utils';
 import * as AdmZip from 'adm-zip';
+import {PEA} from '@p2olab/pimad-core/dist/ModuleAutomation';
+import {logger} from '@p2olab/pimad-core';
 
 describe('ModularPlantManager', () => {
 	const parseJson = require('json-parse-better-errors');
 
 	context('loading', () => {
 
-		it('should reject loading PEAs with empty options', () => {
+	/*	it('should reject loading PEAs with empty options', () => {
 			const modularPlantManager = new ModularPlantManager();
 			expect(() => modularPlantManager.loadPEAController({})).to.throw();
 			expect(() => modularPlantManager.loadPEAController({someattribute: 'abc'} as any)).to.throw();
-		});
+		});*/
 
 		it('should load mtp via PiMAd', () => {
 			const modularPlantManager = new ModularPlantManager();
 
 		});
-
+		// WP
 		it('should load PEAs', () => {
-			const peasJson = JSON.parse(fs.readFileSync('assets/peas/pea_cif.json').toString());
 			const modularPlantManager = new ModularPlantManager();
-			modularPlantManager.loadPEAController(peasJson);
-			expect(() => modularPlantManager.loadPEAController(peasJson)).to.throw('already in registered PEAs');
+			modularPlantManager.addPEAToPimadPool({source:'uploads/Module.zip'}, response => {
+				if(response.getMessage()=='Success!') {
+					const peaModel: PEA= response.getContent() as PEA;
+					const options: Options= {
+						id: peaModel.getPiMAdIdentifier(),
+						username: '',
+						password: '',
+						opcuaServerUrl: ''
+					};
+					modularPlantManager.loadPEAController(options);
+
+				}
+
+			});
+			//const peasJson = JSON.parse(fs.readFileSync('assets/peas/pea_cif.json').toString());
+			//modularPlantManager.loadPEAController(peasJson);
+			//expect(() => modularPlantManager.loadPEAController(peasJson)).to.throw('already in registered PEAs');
 		});
 
-		it('should loadPEAControllerPEAController with single PEAController', () => {
+		/*it('should loadPEAControllerPEAController with single PEAController', () => {
 			const peasJson = JSON.parse(fs.readFileSync('assets/peas/pea_cif.json').toString());
 			const peaJson = peasJson.peas[0];
 			const modularPlantManager = new ModularPlantManager();
@@ -72,7 +88,7 @@ describe('ModularPlantManager', () => {
 			modularPlantManager.loadPEAController({subMP: [peasJson]});
 			expect(() => modularPlantManager.loadPEAController({subMP: [peasJson]})).to.throw('already in registered PEAs');
 		});
-
+*/
 		it('should load the Achema PEAs', async () => {
 			const modularPlantManager = new ModularPlantManager();
 			const peas = modularPlantManager.loadPEAController(
@@ -185,7 +201,7 @@ describe('ModularPlantManager', () => {
 			await service2.waitForStateChangeWithTimeout('IDLE');
 			expect(service2.state).to.equal(ServiceState.IDLE);
 
-			await modularPlantManager.removePEA(pea.id);
+			//await modularPlantManager.removePEA(pea.id);
 			expect(modularPlantManager.peas).to.have.lengthOf(0);
 		}).timeout(5000);
 
@@ -216,9 +232,9 @@ describe('ModularPlantManager', () => {
 				fs.readFileSync('assets/peas/pea_testserver_1.0.0.json', 'utf8'), null, 60);
 
 			//peaJson.peas[0].id = 'PEA1';
-			modularPlantManager.loadPEAController(peaJson);
+		//	modularPlantManager.loadPEAController(peaJson);
 			//peaJson.peas[0].id = 'PEA2';
-			modularPlantManager.loadPEAController(peaJson);
+		//	modularPlantManager.loadPEAController(peaJson);
 
 			const asJson: AggregatedServiceOptions = parseJson(
 				fs.readFileSync('assets/polService/aggregatedService_peatestserver.json', 'utf8'), null, 60);
