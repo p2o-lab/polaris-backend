@@ -34,7 +34,7 @@ import {expect} from 'chai';
 import 'mocha';
 import {MockupServer} from './_utils';
 import * as AdmZip from 'adm-zip';
-import {PEA} from '@p2olab/pimad-core/dist/ModuleAutomation';
+import {PEAModel} from '@p2olab/pimad-core/dist/ModuleAutomation';
 import {logger} from '@p2olab/pimad-core';
 
 describe('ModularPlantManager', () => {
@@ -53,26 +53,29 @@ describe('ModularPlantManager', () => {
 
 		});
 		// WP
-		it('should load PEAs', () => {
+		it('should load PEAs', (done) => {
 			const modularPlantManager = new ModularPlantManager();
 			modularPlantManager.addPEAToPimadPool({source:'uploads/Module.zip'}, response => {
 				if(response.getMessage()=='Success!') {
-					const peaModel: PEA= response.getContent() as PEA;
+					const peaModel: PEAModel = response.getContent() as PEAModel;
 					const options: Options= {
 						id: peaModel.getPiMAdIdentifier(),
 						username: '',
 						password: '',
 						opcuaServerUrl: ''
 					};
-					modularPlantManager.loadPEAController(options);
+					//const peaControllers = modularPlantManager.loadPEAController(options);
+					//console.log(peaControllers);
 
+					// we are currently only parsing 1 PEAController
+					expect(modularPlantManager.loadPEAController(options)).to.have.lengthOf(1);
+					done();
 				}
-
 			});
 			//const peasJson = JSON.parse(fs.readFileSync('assets/peas/pea_cif.json').toString());
 			//modularPlantManager.loadPEAController(peasJson);
 			//expect(() => modularPlantManager.loadPEAController(peasJson)).to.throw('already in registered PEAs');
-		});
+		}).timeout(5000); // overwrite timeout, because this could take longer
 
 		/*it('should loadPEAControllerPEAController with single PEAController', () => {
 			const peasJson = JSON.parse(fs.readFileSync('assets/peas/pea_cif.json').toString());

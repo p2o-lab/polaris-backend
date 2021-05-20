@@ -77,7 +77,7 @@ const upload = multer({storage: storage});
  */
 peaRouter.post('/addByPiMAd', upload.single('uploadedFile'),(req, res) => {
 	// parse filepath of uploaded file
-	let filePath: string = (req as MulterRequest).file.path;
+	const filePath: string = (req as MulterRequest).file.path;
 	//create object to pass to PiMAd
 	const object = {source:filePath};
 

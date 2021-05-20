@@ -32,7 +32,7 @@ import {
 } from '@p2olab/polaris-interface';
 import {OpcUaConnection} from '../../connection';
 import {
-	controlEnableToJson, DataAssemblyFactory,
+	controlEnableToJson, DataAssemblyControllerFactory,
 	InputElement, ServiceControl,
 	ServiceControlEnable, ServiceMtpCommand,
 	ServiceState, ServParam
@@ -91,16 +91,16 @@ export class Service extends BaseService {
 		this.logger = catService;
 
 		this.serviceControl = new ServiceControl(
-			{name: this._name, interfaceClass: 'ServiceControl', communication: serviceOptions.communication},
+			{name: this._name, metaModelRef: 'ServiceControl', dataItems: serviceOptions.communication},
 			connection);
 
 		this.procedures = serviceOptions.procedures
 			.map((option) => new Procedure(option, connection));
 
-		// TODO: Check what happens if DataAssembly already exists --> Is that a matter?
+		// TODO: Check what happens if DataAssemblyController already exists --> Is that a matter?
 		if (serviceOptions.parameters) {
 			this.parameters = serviceOptions.parameters
-				.map((options) => DataAssemblyFactory.create(options, connection) as ServParam);
+				.map((options) => DataAssemblyControllerFactory.create(options, connection) as ServParam);
 		}
 	}
 

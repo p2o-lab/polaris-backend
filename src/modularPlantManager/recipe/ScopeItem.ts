@@ -26,7 +26,7 @@
 import {ScopeOptions} from '@p2olab/polaris-interface';
 import {PEAController, Procedure, Service} from '../pea';
 import {DataItem} from '../pea/connection';
-import {DataAssembly, ServiceState} from '../pea/dataAssembly';
+import {DataAssemblyController, ServiceState} from '../pea/dataAssembly';
 
 import {Expression, Parser} from 'expr-eval';
 import {catScopeItem} from '../../logging';
@@ -35,12 +35,12 @@ export class ScopeItem {
 
 	/** name of variable which should be replaced in value */
 	public readonly name: string;
-	public readonly dataAssembly: DataAssembly;
+	public readonly dataAssembly: DataAssemblyController;
 	public readonly pea: PEAController;
 	public readonly variableName: string;
 	public readonly dataItem: DataItem<any>;
 
-	constructor(name: string, pea: PEAController, dataAssembly: DataAssembly, variableName = '') {
+	constructor(name: string, pea: PEAController, dataAssembly: DataAssemblyController, variableName = '') {
 		this.name = name;
 		this.pea = pea;
 		this.dataAssembly = dataAssembly;
@@ -95,7 +95,7 @@ export class ScopeItem {
 	 */
 	public static extractFromExpressionVariable(variable: string, peas: PEAController[]): ScopeItem {
 		catScopeItem.debug(`Extract ScopeItem from "${variable}"`);
-		let dataAssembly: DataAssembly | undefined;
+		let dataAssembly: DataAssemblyController | undefined;
 		const components = variable.split('.').map((tokenT: string) => tokenT.replace(new RegExp('__', 'g'), '.'));
 		let token = components.shift();
 
@@ -127,18 +127,18 @@ export class ScopeItem {
 			}
 			token = components.shift();
 
-			dataAssembly = service.parameters.find((p: DataAssembly) => p.name === token);
+			dataAssembly = service.parameters.find((p: DataAssemblyController) => p.name === token);
 			if (!dataAssembly) {
-				procedure.parameters.find((p: DataAssembly) => p.name === token);
+				procedure.parameters.find((p: DataAssemblyController) => p.name === token);
 			}
 			if (!dataAssembly) {
-				procedure.processValuesIn.find((p: DataAssembly) => p.name === token);
+				procedure.processValuesIn.find((p: DataAssemblyController) => p.name === token);
 			}
 			if (!dataAssembly) {
-				procedure.processValuesOut.find((p: DataAssembly) => p.name === token);
+				procedure.processValuesOut.find((p: DataAssemblyController) => p.name === token);
 			}
 			if (!dataAssembly) {
-				procedure.reportParameters.find((p: DataAssembly) => p.name === token);
+				procedure.reportParameters.find((p: DataAssemblyController) => p.name === token);
 			}
 
 			if (!dataAssembly) {
@@ -151,7 +151,7 @@ export class ScopeItem {
 				}
 			}
 		} else {
-			// find DataAssembly in ProcessValues
+			// find DataAssemblyController in ProcessValues
 			if (pea.variables.find((v) => v.name === token)) {
 				dataAssembly = pea.variables.find((v) => v.name === token);
 			} else {
@@ -166,7 +166,7 @@ export class ScopeItem {
 				`in PEA ${pea.id}: ${pea.variables.map((v) => v.name)}`);
 		}
 
-		// find DataAssembly variable
+		// find DataAssemblyController variable
 		token = components.shift();
 
 		return new ScopeItem(variable, pea, dataAssembly, token);

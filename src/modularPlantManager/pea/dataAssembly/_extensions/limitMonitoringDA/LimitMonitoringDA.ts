@@ -25,7 +25,7 @@
 
 import {OpcUaDataItem} from '../../../connection';
 import {Constructor} from '../_helper';
-import {BaseDataAssemblyRuntime, DataAssembly} from '../../DataAssembly';
+import {BaseDataAssemblyRuntime, DataAssemblyController} from '../../DataAssemblyController';
 
 export type LimitMonitoringRuntime = BaseDataAssemblyRuntime & {
 	VAHEn: OpcUaDataItem<boolean>;
@@ -50,7 +50,7 @@ export type LimitMonitoringRuntime = BaseDataAssemblyRuntime & {
 
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export function LimitMonitoringDA<TBase extends Constructor<DataAssembly>>(Base: TBase) {
+export function LimitMonitoringDA<TBase extends Constructor<DataAssemblyController>>(Base: TBase) {
 	return class extends Base {
 		public communication!: LimitMonitoringRuntime;
 

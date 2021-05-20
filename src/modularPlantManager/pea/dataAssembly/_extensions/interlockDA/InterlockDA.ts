@@ -24,7 +24,7 @@
  */
 
 import {OpcUaDataItem} from '../../../connection';
-import {BaseDataAssemblyRuntime, DataAssembly} from '../../DataAssembly';
+import {BaseDataAssemblyRuntime, DataAssemblyController} from '../../DataAssemblyController';
 import {Constructor} from '../_helper';
 
 export type InterlockRuntime = BaseDataAssemblyRuntime & {
@@ -37,7 +37,7 @@ export type InterlockRuntime = BaseDataAssemblyRuntime & {
 };
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export function InterlockDA<TBase extends Constructor<DataAssembly>>(Base: TBase) {
+export function InterlockDA<TBase extends Constructor<DataAssemblyController>>(Base: TBase) {
 	return class extends Base {
 		public communication!: InterlockRuntime;
 

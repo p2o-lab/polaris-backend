@@ -35,12 +35,12 @@ import {PEAController} from '../../PEAController';
 import {
 	WQCDA, WQCRuntime
 } from '../_extensions';
-import {BaseDataAssemblyRuntime, DataAssembly} from '../DataAssembly';
+import {BaseDataAssemblyRuntime, DataAssemblyController} from '../DataAssemblyController';
 import {catDataAssembly} from '../../../../logging';
 
 export type InputElementRuntime = BaseDataAssemblyRuntime & WQCRuntime;
 
-export class InputElement extends WQCDA(DataAssembly) {
+export class InputElement extends WQCDA(DataAssemblyController) {
 	public parameterRequest: Parameter | undefined;
 	public requestedValue = '';
 

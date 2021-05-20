@@ -25,7 +25,7 @@
 
 import {OperationMode} from '@p2olab/polaris-interface';
 import {OpcUaDataItem} from '../../../connection';
-import {BaseDataAssemblyRuntime, DataAssembly} from '../../DataAssembly';
+import {BaseDataAssemblyRuntime, DataAssemblyController} from '../../DataAssemblyController';
 import {Constructor} from '../_helper';
 import {catDataAssembly} from '../../../../../logging';
 
@@ -43,7 +43,7 @@ export type OpModeRuntime = BaseDataAssemblyRuntime & {
 };
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export function OpModeDA<TBase extends Constructor<DataAssembly>>(Base: TBase) {
+export function OpModeDA<TBase extends Constructor<DataAssemblyController>>(Base: TBase) {
 	return class extends Base {
 		public communication!: OpModeRuntime;
 

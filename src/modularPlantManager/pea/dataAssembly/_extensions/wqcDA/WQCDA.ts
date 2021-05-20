@@ -25,7 +25,7 @@
 
 import {OpcUaDataItem} from '../../../connection';
 import {BaseDataAssemblyRuntime, Constructor} from '../../index';
-import {DataAssembly} from '../../DataAssembly';
+import {DataAssemblyController} from '../../DataAssemblyController';
 
 export interface WQCRuntime extends BaseDataAssemblyRuntime {
 	WQC: OpcUaDataItem<number>;
@@ -33,14 +33,14 @@ export interface WQCRuntime extends BaseDataAssemblyRuntime {
 
 // tslint:disable-next-line:variable-name
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export function WQCDA<TBase extends Constructor<DataAssembly>>(Base: TBase) {
+export function WQCDA<TBase extends Constructor<DataAssemblyController>>(Base: TBase) {
 	return class extends Base {
 		public communication!: WQCRuntime;
 
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		constructor(...args: any[]) {
 			super(...args);
-			this.communication.WQC = this.createDataItem('WQC', 'read');
+			//this.communication.WQC = this.createDataItem('WQC', 'read');
 		}
 
 		get WQC(): number | undefined {

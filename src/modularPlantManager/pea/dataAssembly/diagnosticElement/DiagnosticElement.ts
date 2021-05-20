@@ -30,12 +30,12 @@ import {
 	WQCDA, WQCRuntime
 } from '../_extensions';
 import {
-	BaseDataAssemblyRuntime, DataAssembly,
-} from '../DataAssembly';
+	BaseDataAssemblyRuntime, DataAssemblyController,
+} from '../DataAssemblyController';
 
 export type DiagnosticElementRuntime = BaseDataAssemblyRuntime & WQCRuntime & OSLevelRuntime;
 
-export class DiagnosticElement extends OSLevelDA(WQCDA(DataAssembly)) {
+export class DiagnosticElement extends OSLevelDA(WQCDA(DataAssemblyController)) {
 	public readonly communication!: DiagnosticElementRuntime;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {

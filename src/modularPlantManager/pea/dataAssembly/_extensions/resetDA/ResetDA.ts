@@ -25,7 +25,7 @@
 
 import {OpcUaDataItem} from '../../../connection';
 import {Constructor} from '../_helper';
-import {BaseDataAssemblyRuntime, DataAssembly} from '../../DataAssembly';
+import {BaseDataAssemblyRuntime, DataAssemblyController} from '../../DataAssemblyController';
 
 export interface ResetRuntime extends BaseDataAssemblyRuntime {
 	ResetOp: OpcUaDataItem<boolean>;
@@ -34,7 +34,7 @@ export interface ResetRuntime extends BaseDataAssemblyRuntime {
 
 // tslint:disable-next-line:variable-name
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export function ResetDA<TBase extends Constructor<DataAssembly>>(Base: TBase) {
+export function ResetDA<TBase extends Constructor<DataAssemblyController>>(Base: TBase) {
 	return class extends Base {
 		public communication!: ResetRuntime;
 

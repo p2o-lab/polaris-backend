@@ -25,7 +25,7 @@
 
 import {OpcUaConnection, OpcUaDataItem} from '../../connection';
 import {
-	BaseDataAssemblyRuntime, DataAssembly,
+	BaseDataAssemblyRuntime, DataAssemblyController,
 	OpModeDA, OpModeRuntime,
 	ServiceSourceModeDA, ServiceSourceModeRuntime,
 	WQCDA, WQCRuntime
@@ -50,7 +50,7 @@ export type ServiceControlRuntime = BaseDataAssemblyRuntime & OpModeRuntime & Se
 	PosTextID: OpcUaDataItem<number>;
 };
 
-export class ServiceControl extends WQCDA(OpModeDA(ServiceSourceModeDA(DataAssembly))) {
+export class ServiceControl extends WQCDA(OpModeDA(ServiceSourceModeDA(DataAssemblyController))) {
 	public readonly communication!: ServiceControlRuntime;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {

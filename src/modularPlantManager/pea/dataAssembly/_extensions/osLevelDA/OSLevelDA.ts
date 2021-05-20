@@ -25,14 +25,14 @@
 
 import {OpcUaDataItem} from '../../../connection';
 import {Constructor} from '../_helper';
-import {BaseDataAssemblyRuntime, DataAssembly} from '../../DataAssembly';
+import {BaseDataAssemblyRuntime, DataAssemblyController} from '../../DataAssemblyController';
 
 export interface OSLevelRuntime extends BaseDataAssemblyRuntime {
 	OSLevel: OpcUaDataItem<number>;
 }
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export function OSLevelDA<TBase extends Constructor<DataAssembly>>(Base: TBase) {
+export function OSLevelDA<TBase extends Constructor<DataAssemblyController>>(Base: TBase) {
 	return class extends Base {
 		public communication!: OSLevelRuntime;
 

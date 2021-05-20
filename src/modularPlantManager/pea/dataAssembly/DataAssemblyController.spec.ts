@@ -31,7 +31,7 @@ import {
 import {OpcUaConnection} from '../connection';
 import {PEAController} from '../PEAController';
 import {
-	BinMon, BinView, DataAssembly, DataAssemblyFactory,
+	BinMon, BinView, DataAssemblyController, DataAssemblyControllerFactory,
 	DIntMon, MonAnaDrv, ServiceControl, ServParam
 } from './index';
 
@@ -49,11 +49,11 @@ describe('DataAssembly', () => {
 
 	describe('static', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
-		it('should use default DataAssembly when provided type not found', () => {
-			const da1 = DataAssemblyFactory.create({
+		it('should use default DataAssemblyController when provided type not found', () => {
+			const da1 = DataAssemblyControllerFactory.create({
 				name: 'xyz',
-				interfaceClass: 'SomethingStrange',
-				communication: {
+				metaModelRef: 'SomethingStrange',
+				dataItems: {
 					OSLevel: null,
 					TagDescription: null,
 					TagName: {},
@@ -63,7 +63,7 @@ describe('DataAssembly', () => {
 					VState1: {value: 'off'}
 				} as any
 			}, emptyOPCUAConnection);
-			expect(da1 instanceof DataAssembly).to.equal(true);
+			expect(da1 instanceof DataAssemblyController).to.equal(true);
 			expect(da1.toJson()).to.deep.equal({
 				name: 'xyz',
 				readonly: true,
@@ -72,7 +72,7 @@ describe('DataAssembly', () => {
 				value: undefined
 			});
 
-			const da2 = DataAssemblyFactory.create({
+			const da2 = DataAssemblyControllerFactory.create({
 				name: 'xyz2',
 				communication: {
 					OSLevel: null,
@@ -81,7 +81,7 @@ describe('DataAssembly', () => {
 					WQC: null
 				}
 			} as any, emptyOPCUAConnection);
-			expect(da2 instanceof DataAssembly).to.equal(true);
+			expect(da2 instanceof DataAssemblyController).to.equal(true);
 		});
 
 		it('should fail with xyz', () => {
@@ -90,23 +90,23 @@ describe('DataAssembly', () => {
 				nodeId: 'i=12',
 				dataType: 'Float'
 			};
-			expect(() => new DataAssembly({
+			expect(() => new DataAssemblyController({
 					name: 'name',
-					communication: {
+					dataItems: {
 						TagName: opcUaNode as OpcUaNodeOptions,
 						TagDescription: opcUaNode as OpcUaNodeOptions,
 						OSLevel: opcUaNode as OpcUaNodeOptions,
 						WQC: null,
 						access: 'read'
 					} as any,
-					interfaceClass: 'analogitem'
+					metaModelRef: 'analogitem'
 				}, emptyOPCUAConnection)
 			).to.throw('Cannot set property \'TagName\' of undefined');
 		});
 
 		it('should fail without provided PEAController', async () => {
-			expect(() => DataAssemblyFactory.create(
-				{name: 'test', interfaceClass: 'none', communication: {} as BaseDataAssemblyOptions},
+			expect(() => DataAssemblyControllerFactory.create(
+				{name: 'test', metaModelRef: 'none', dataItems: {} as BaseDataAssemblyOptions},
 				emptyOPCUAConnection)
 			).to.throw('createDataItem Failed');
 
@@ -115,15 +115,15 @@ describe('DataAssembly', () => {
 		it('should have correct createDataItem method', async () => {
 			const daOptions: BaseDataAssemblyOptions =
 				parseJson(fs.readFileSync(
-					'assets/ModularAutomation/PEA_Reference/MTPContent/Json/DataAssembly/DataAssembly.json',
+					'assets/ModularAutomation/PEA_Reference/MTPContent/Json/DataAssemblyController/DataAssemblyController.json',
 					'utf8'), null, 60);
 
 			const options: DataAssemblyOptions = {
 				name: 'test',
-				interfaceClass: 'DataAssembly',
-				communication: daOptions
+				metaModelRef: 'DataAssembly',
+				dataItems: daOptions
 			};
-			const da1 = new DataAssembly(options, emptyOPCUAConnection);
+			const da1 = new DataAssemblyController(options, emptyOPCUAConnection);
 			expect(da1.communication.TagName).to.not.equal(undefined);
 			expect(da1.communication.TagDescription).to.not.equal(undefined);
 		});
@@ -131,12 +131,12 @@ describe('DataAssembly', () => {
 		it('should create ServiceControl', async () => {
 			const daOptions: ServiceControlOptions =
 				parseJson(fs.readFileSync(
-					'assets/ModularAutomation/PEA_Reference/MTPContent/Json/DataAssembly/ServiceControl.json',
+					'assets/ModularAutomation/PEA_Reference/MTPContent/Json/DataAssemblyController/ServiceControl.json',
 					'utf8'), null, 60);
-			const da1: ServiceControl = DataAssemblyFactory.create({
+			const da1: ServiceControl = DataAssemblyControllerFactory.create({
 				name: 'serviceControl1',
-				interfaceClass: 'ServiceControl',
-				communication: daOptions
+				metaModelRef: 'ServiceControl',
+				dataItems: daOptions
 			}, emptyOPCUAConnection) as ServiceControl;
 			expect(da1 instanceof ServiceControl).to.equal(true);
 			expect(da1.communication.CommandExt).to.not.equal(undefined);
@@ -147,24 +147,24 @@ describe('DataAssembly', () => {
 		it('should create BinView', async () => {
 			const daOptions: BinViewOptions =
 				parseJson(fs.readFileSync(
-					'assets/ModularAutomation/PEA_Reference/MTPContent/Json/DataAssembly/indicatorElement/BinView.json',
+					'assets/ModularAutomation/PEA_Reference/MTPContent/Json/DataAssemblyController/indicatorElement/BinView.json',
 					'utf8'), null, 60);
 			daOptions.V.value = 22;
 			daOptions.VState0.value = 'on';
 			daOptions.VState1.value = 'off';
-			const da1: BinView = DataAssemblyFactory.create({
+			const da1: BinView = DataAssemblyControllerFactory.create({
 				name: 'binview1',
-				interfaceClass: 'BinView',
-				communication: daOptions
+				metaModelRef: 'BinView',
+				dataItems: daOptions
 			}, emptyOPCUAConnection) as BinView;
 			expect(da1 instanceof BinView).to.equal(true);
 			expect(da1.communication.V?.value).to.equal(true);
 
 			daOptions.V.value = 0;
-			const da2 = DataAssemblyFactory.create({
+			const da2 = DataAssemblyControllerFactory.create({
 				name: 'binview2',
-				interfaceClass: 'BinView',
-				communication: daOptions
+				metaModelRef: 'BinView',
+				dataItems: daOptions
 			}, emptyOPCUAConnection) as BinView;
 			expect(da2.communication.V?.value).to.equal(false);
 		});
@@ -172,13 +172,13 @@ describe('DataAssembly', () => {
 		it('should create BinMon', async () => {
 			const daOptions: BinMonOptions =
 				parseJson(fs.readFileSync(
-					'assets/ModularAutomation/PEA_Reference/MTPContent/Json/DataAssembly/indicatorElement/BinMon.json',
+					'assets/ModularAutomation/PEA_Reference/MTPContent/Json/DataAssemblyController/indicatorElement/BinMon.json',
 					'utf8'), null, 60);
 			daOptions.V.value = true;
-			const da1 = DataAssemblyFactory.create({
+			const da1 = DataAssemblyControllerFactory.create({
 				name: 'binmon1',
-				interfaceClass: 'BinMon',
-				communication: daOptions
+				metaModelRef: 'BinMon',
+				dataItems: daOptions
 			}, emptyOPCUAConnection) as BinMon;
 			expect(da1 instanceof BinMon).to.equal(true);
 			expect(da1.communication.V?.value).to.equal(true);
@@ -187,16 +187,16 @@ describe('DataAssembly', () => {
 		it('should create DIntMon', async () => {
 			const daOptions: DIntMonOptions =
 				parseJson(fs.readFileSync(
-					'assets/ModularAutomation/PEA_Reference/MTPContent/Json/DataAssembly/indicatorElement/DIntMon.json',
+					'assets/ModularAutomation/PEA_Reference/MTPContent/Json/DataAssemblyController/indicatorElement/DIntMon.json',
 					'utf8'), null, 60);
 			daOptions.V.value = 23;
 			daOptions.VUnit.value = 1038;
 			daOptions.VSclMax.value = 100;
 			daOptions.VSclMin.value = 0;
-			const da1 = DataAssemblyFactory.create({
+			const da1 = DataAssemblyControllerFactory.create({
 				name: 'digmon1',
-				interfaceClass: 'DigMon',
-				communication: daOptions
+				metaModelRef: 'DigMon',
+				dataItems: daOptions
 			}, emptyOPCUAConnection) as DIntMon;
 			expect(da1 instanceof DIntMon).to.equal(true);
 			expect(da1.communication.VUnit?.value).to.equal('L');
@@ -208,11 +208,11 @@ describe('DataAssembly', () => {
 		it('should create MonAnaDrv', async () => {
 			const daOptions: MonAnaDrvOptions =
 				parseJson(fs.readFileSync(
-					'assets/ModularAutomation/PEA_Reference/MTPContent/Json/DataAssembly/activeElement/drv/MonAnaDrv.json',
+					'assets/ModularAutomation/PEA_Reference/MTPContent/Json/DataAssemblyController/activeElement/drv/MonAnaDrv.json',
 					'utf8'), null, 60);
-			const da1 = DataAssemblyFactory.create({
+			const da1 = DataAssemblyControllerFactory.create({
 				name: 'MonAnaDrv1',
-				interfaceClass: 'MonAnaDrv',
+				metaModelRef: 'MonAnaDrv',
 				communication: daOptions
 			} as any, emptyOPCUAConnection) as MonAnaDrv;
 			expect(da1 instanceof MonAnaDrv).to.equal(true);
@@ -266,8 +266,8 @@ describe('DataAssembly', () => {
 		it('should create ServiceControl', async () => {
 			const daJson = JSON.parse(fs.readFileSync('assets/ModularAutomation/pea_testserver_1.0.0.json').toString())
 				.peas[0].services[0];
-			const da: ServiceControl = DataAssemblyFactory.create(
-				{...daJson, interfaceClass: 'ServiceControl'} as any, connection) as ServiceControl;
+			const da: ServiceControl = DataAssemblyControllerFactory.create(
+				{...daJson, metaModelRef: 'ServiceControl'} as any, connection) as ServiceControl;
 			const p = da.subscribe();
 			connection.startListening();
 			await p;

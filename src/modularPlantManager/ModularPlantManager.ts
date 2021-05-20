@@ -48,7 +48,7 @@ import {ParameterChange, PEAController, Service} from './pea';
 import {ServiceState} from './pea/dataAssembly';
 import {POLService, POLServiceFactory} from './polService';
 import {Player, Recipe} from './recipe';
-import {PEA} from '@p2olab/pimad-core/dist/ModuleAutomation';
+import {PEAModel} from '@p2olab/pimad-core/dist/ModuleAutomation';
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import PiMAdResponse = Backbone.PiMAdResponse;
@@ -206,12 +206,13 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 				}
 			});*/
 		else {
+			// TODO: als separate Funktion auslagern
 			this.getPEAFromPimadPool(options.id, response => {
 				if(response.getMessage()==='Success!'){
 					//get PEAModel
-					const peaModel: PEA = response.getContent() as PEA;
+					const peaModel: PEAModel = response.getContent() as PEAModel;
 					//get DataAssemblyModels from  PEAModel/PiMAd
-					const dataAssemblyModels = peaModel.getAllDataAssemblies().getContent() as DataAssembly[];
+					const dataAssemblyModels: DataAssembly[] = (peaModel.getAllDataAssemblies().getContent() as {data: DataAssembly[]}).data;
 					// this is the Array we will fill up later on
 					const dataAssemblyOptionsArray: DataAssemblyOptions[] = [];
 
@@ -260,7 +261,7 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 													nodeId = identifier);
 												// get namespaceIndex from PiMAd and assign it to variable
 												nodeID.getNamespaceIndex((response, mNamespace) =>
-													namespaceIndex = mNamespace);
+													namespaceIndex = mNamespace as unknown as string);
 											});
 										}else dataItem.getValue((response, mValue) => value = mValue);
 									});
@@ -281,11 +282,12 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 						// create dataAssemblyOptions with information collected above
 						const dataAssemblyOptions: DataAssemblyOptions = {
 							name: dataAssemblyName,
-							interfaceClass: dataAssemblyInterfaceClass,
-							communication: baseDataAssemblyOptions
+							metaModelRef: dataAssemblyInterfaceClass,
+							dataItems: baseDataAssemblyOptions
 						};
-
-						dataAssemblyOptionsArray.push(dataAssemblyOptions);
+						if(dataAssemblyOptions.name=='BinVlvFillLeft') {
+							dataAssemblyOptionsArray.push(dataAssemblyOptions);
+						}
 					});
 					// create PEAOptions
 					const peaOptions: PEAOptions = {
@@ -295,7 +297,7 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 						password: '',
 						hmiUrl: '',
 						opcuaServerUrl: '',
-						processValues: dataAssemblyOptionsArray
+						dataAssemblies: dataAssemblyOptionsArray
 					};
 
 					//console.log(dataAssemblyOptionsArray);

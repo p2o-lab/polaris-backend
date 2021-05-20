@@ -26,11 +26,11 @@
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {OpcUaConnection} from '../../connection';
 import {OSLevelDA, OSLevelRuntime, WQCDA, WQCRuntime} from '../_extensions';
-import {BaseDataAssemblyRuntime, DataAssembly} from '../DataAssembly';
+import {BaseDataAssemblyRuntime, DataAssemblyController} from '../DataAssemblyController';
 
 export type ActiveElementRuntime = BaseDataAssemblyRuntime & WQCRuntime & OSLevelRuntime;
 
-export class ActiveElement extends OSLevelDA(WQCDA(DataAssembly)) {
+export class ActiveElement extends OSLevelDA(WQCDA(DataAssemblyController)) {
 
 	public readonly communication: ActiveElementRuntime = {} as ActiveElementRuntime;
 

@@ -25,7 +25,7 @@
 
 import {ParameterInterface} from '@p2olab/polaris-interface';
 import {OpcUaDataItem} from '../../../connection';
-import {BaseDataAssemblyRuntime, DataAssembly} from '../../DataAssembly';
+import {BaseDataAssemblyRuntime, DataAssemblyController} from '../../DataAssemblyController';
 import {Constructor} from '../_helper';
 
 export type ValueLimitationRuntime = BaseDataAssemblyRuntime & {
@@ -35,7 +35,7 @@ export type ValueLimitationRuntime = BaseDataAssemblyRuntime & {
 
 // tslint:disable-next-line:variable-name
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export function ValueLimitationDA<TBase extends Constructor<DataAssembly>>(Base: TBase) {
+export function ValueLimitationDA<TBase extends Constructor<DataAssemblyController>>(Base: TBase) {
 
 	return class extends Base {
 		public communication!: ValueLimitationRuntime;

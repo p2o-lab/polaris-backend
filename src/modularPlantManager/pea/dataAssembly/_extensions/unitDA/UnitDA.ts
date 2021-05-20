@@ -26,7 +26,7 @@
 import {ParameterInterface} from '@p2olab/polaris-interface';
 import {OpcUaDataItem} from '../../../connection';
 import {Constructor} from '../_helper';
-import {BaseDataAssemblyRuntime, DataAssembly} from '../../DataAssembly';
+import {BaseDataAssemblyRuntime, DataAssemblyController} from '../../DataAssemblyController';
 
 export interface UnitDataAssemblyRuntime extends BaseDataAssemblyRuntime {
 	VUnit: OpcUaDataItem<number>;
@@ -993,7 +993,7 @@ export const UNIT: Array<{ value: number; unit: string; name: string; nameEnglis
 
 // tslint:disable-next-line:variable-name
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export function UnitDA<TBase extends Constructor<DataAssembly>>(Base: TBase) {
+export function UnitDA<TBase extends Constructor<DataAssemblyController>>(Base: TBase) {
 
 	return class extends Base {
 		public communication!: UnitDataAssemblyRuntime;

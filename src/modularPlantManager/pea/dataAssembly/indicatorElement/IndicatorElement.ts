@@ -29,12 +29,12 @@ import {
 	WQCDA, WQCRuntime
 } from '../_extensions';
 import {
-	BaseDataAssemblyRuntime, DataAssembly
-} from '../DataAssembly';
+	BaseDataAssemblyRuntime, DataAssemblyController
+} from '../DataAssemblyController';
 
 export type IndicatorElementRuntime = BaseDataAssemblyRuntime & WQCRuntime;
 
-export class IndicatorElement extends WQCDA(DataAssembly) {
+export class IndicatorElement extends WQCDA(DataAssemblyController) {
 	public readonly communication!: IndicatorElementRuntime;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {

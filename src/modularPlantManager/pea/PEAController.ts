@@ -32,7 +32,7 @@ import {
 	VariableChange
 } from '@p2olab/polaris-interface';
 import {DataItemEmitter, OpcUaConnection} from './connection';
-import {DataAssembly, DataAssemblyFactory, ServiceState} from './dataAssembly';
+import {DataAssemblyController, DataAssemblyControllerFactory, ServiceState} from './dataAssembly';
 import {Procedure, Service} from './serviceSet';
 
 import {EventEmitter} from 'events';
@@ -129,7 +129,7 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 	public readonly options: PEAOptions;
 	public readonly id: string;
 	public readonly services: Service[] = [];
-	public readonly variables: DataAssembly[] = [];
+	public readonly variables: DataAssemblyController[] = [];
 	// PEAController is protected and can't be deleted by the user
 	public protected = false;
 	public readonly connection: OpcUaConnection;
@@ -154,12 +154,10 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 			this.services = options.services.map((serviceOpts: ServiceOptions) => new Service(serviceOpts, this.connection, this.id));
 		}*/
 
-		 if (options) {
-			this.variables = options.processValues
-				.map((variableOptions: DataAssemblyOptions) => DataAssemblyFactory.create(variableOptions, this.connection));
+		if (options) {
+			this.variables = options.dataAssemblies
+				.map((variableOptions: DataAssemblyOptions) => DataAssemblyControllerFactory.create(variableOptions, this.connection));
 		}
-		 //console.log((options.pea.getAllDataAssemblies().getContent() as DataAssemblyOptions[])[0].name);
-
 	}
 
 	public getService(serviceName: string): Service {
@@ -227,7 +225,7 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 	}
 
 	public listenToDataAssembly(dataAssemblyName: string, variableName: string): DataItemEmitter {
-		const dataAssembly: DataAssembly | undefined = this.variables.find(
+		const dataAssembly: DataAssemblyController | undefined = this.variables.find(
 			(variable) => variable.name === dataAssemblyName);
 		if (!dataAssembly) {
 			throw new Error(`ProcessValue ${dataAssemblyName} is not specified for PEA ${this.id}`);
@@ -294,9 +292,9 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 		return Promise.all(tasks);
 	}
 
-	private subscribeToAllVariables(): Promise<DataAssembly[]> {
+	private subscribeToAllVariables(): Promise<DataAssemblyController[]> {
 		return Promise.all(
-			this.variables.map((variable: DataAssembly) => {
+			this.variables.map((variable: DataAssemblyController) => {
 				this.logger.debug(`[${this.id}] subscribe to process variable ${variable.name}`);
 				variable.on('V', (data) => {
 					this.logger.debug(`[${this.id}] variable changed: ${JSON.stringify(variable.toJson())}`);
@@ -316,7 +314,7 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 	}
 
 	private unsubscribeFromAllVariables(): void {
-		this.variables.forEach((variable: DataAssembly) => variable.unsubscribe());
+		this.variables.forEach((variable: DataAssemblyController) => variable.unsubscribe());
 	}
 
 	// eslint-disable-next-line @typescript-eslint/explicit-function-return-type

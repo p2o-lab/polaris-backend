@@ -25,7 +25,7 @@
 
 import {ServiceSourceMode} from '@p2olab/polaris-interface';
 import {OpcUaDataItem} from '../../../connection';
-import {BaseDataAssemblyRuntime, DataAssembly} from '../../DataAssembly';
+import {BaseDataAssemblyRuntime, DataAssemblyController} from '../../DataAssemblyController';
 import {Constructor} from '../_helper';
 import {catDataAssembly} from '../../../../../logging';
 
@@ -41,7 +41,7 @@ export interface ServiceSourceModeRuntime extends BaseDataAssemblyRuntime {
 
 // tslint:disable-next-line:variable-name
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export function ServiceSourceModeDA<TBase extends Constructor<DataAssembly>>(Base: TBase) {
+export function ServiceSourceModeDA<TBase extends Constructor<DataAssemblyController>>(Base: TBase) {
 	return class extends Base {
 		public communication!: ServiceSourceModeRuntime;
 

@@ -29,13 +29,13 @@ import {DataItem, OpcUaConnection} from '../../connection';
 import {
 	OSLevelDA, OSLevelRuntime
 } from '../_extensions';
-import {BaseDataAssemblyRuntime, DataAssembly} from '../DataAssembly';
+import {BaseDataAssemblyRuntime, DataAssemblyController} from '../DataAssemblyController';
 import {PEAController} from '../../PEAController';
 import {catDataAssembly} from '../../../../logging';
 
 export type OperationElementRuntime = BaseDataAssemblyRuntime & OSLevelRuntime;
 
-export class OperationElement extends OSLevelDA(DataAssembly) {
+export class OperationElement extends OSLevelDA(DataAssemblyController) {
 	public communication!: OperationElementRuntime;
 	public parameterRequest: Parameter | undefined;
 	public requestedValue = '';

@@ -31,7 +31,7 @@ import {
 } from '@p2olab/polaris-interface';
 import {OpcUaConnection} from '../../../connection';
 import {
-	DataAssemblyFactory,
+	DataAssemblyControllerFactory,
 	IndicatorElement, InputElement,
 	ServParam
 } from '../../../dataAssembly';
@@ -68,17 +68,17 @@ export class Procedure extends (EventEmitter as new() => ProcedureEmitter) {
 		this.defaultProcedure = options.isDefault;
 		this.selfCompleting = options.isSelfCompleting;
 		if (options.parameters) {
-			this.parameters = options.parameters.map((daOptions: DataAssemblyOptions) => DataAssemblyFactory.create(daOptions, connection) as ServParam);
+			this.parameters = options.parameters.map((daOptions: DataAssemblyOptions) => DataAssemblyControllerFactory.create(daOptions, connection) as ServParam);
 		}
 		if (options.processValuesIn) {
-			this.processValuesIn = options.processValuesIn.map((daOptions: DataAssemblyOptions) => DataAssemblyFactory.create(daOptions, connection) as InputElement);
+			this.processValuesIn = options.processValuesIn.map((daOptions: DataAssemblyOptions) => DataAssemblyControllerFactory.create(daOptions, connection) as InputElement);
 		}
 		if (options.processValuesOut) {
-			this.processValuesOut = options.processValuesOut.map((daOptions: DataAssemblyOptions) => DataAssemblyFactory.create(daOptions, connection) as IndicatorElement);
+			this.processValuesOut = options.processValuesOut.map((daOptions: DataAssemblyOptions) => DataAssemblyControllerFactory.create(daOptions, connection) as IndicatorElement);
 		}
 		if (options.reportParameters) {
 			this.reportParameters = options.reportParameters
-				.map((daOptions: DataAssemblyOptions) => DataAssemblyFactory.create(daOptions, connection) as IndicatorElement);
+				.map((daOptions: DataAssemblyOptions) => DataAssemblyControllerFactory.create(daOptions, connection) as IndicatorElement);
 		}
 		this.logger = catProcedure;
 	}

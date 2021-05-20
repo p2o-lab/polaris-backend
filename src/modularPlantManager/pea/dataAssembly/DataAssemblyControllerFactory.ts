@@ -28,7 +28,7 @@ import {OpcUaConnection} from '../connection';
 import {
 	AnaDrv, AnaMan, AnaManInt, AnaMon, AnaProcessValueIn, AnaServParam, AnaView, AnaVlv,
 	BinDrv, BinMan, BinManInt, BinMon, BinProcessValueIn, BinServParam, BinView, BinVlv,
-		DataAssembly, DIntMan, DIntManInt, DIntMon, DIntProcessValueIn, DIntServParam, DIntView,
+		DataAssemblyController, DIntMan, DIntManInt, DIntMon, DIntProcessValueIn, DIntServParam, DIntView,
 	HealthStateView,
 	LockView16, LockView4, LockView8,
 	MonAnaDrv, MonAnaVlv, MonBinDrv, MonBinVlv,
@@ -37,12 +37,12 @@ import {
 } from './index';
 import {catDataAssembly} from '../../../logging';
 
-export class DataAssemblyFactory {
-	public static create(variableOptions: DataAssemblyOptions, connection: OpcUaConnection): DataAssembly {
-		catDataAssembly.debug(`Create DataAssembly ${variableOptions.name} (${variableOptions.interfaceClass})`);
+export class DataAssemblyControllerFactory {
+	public static create(variableOptions: DataAssemblyOptions, connection: OpcUaConnection): DataAssemblyController {
+		catDataAssembly.debug(`Create DataAssembly ${variableOptions.name} (${variableOptions.metaModelRef})`);
 		const types = {
-			'DataAssembly': DataAssembly,
-			// DataAssembly
+			'DataAssembly': DataAssemblyController,
+			// DataAssemblyController
 			'ServiceControl': ServiceControl,
 			// Active Elements
 			'PIDCtrl': PIDCtrl,
@@ -93,16 +93,16 @@ export class DataAssemblyFactory {
 			'DIntServParam': DIntServParam,
 			'StringServParam': StringServParam
 		};
-		let type = types[variableOptions.interfaceClass.split('/').pop() as keyof typeof types];
+		let type = types[variableOptions.metaModelRef.split('/').pop() as keyof typeof types];
 		if (!type) {
-			if (!variableOptions.interfaceClass) {
+			if (!variableOptions.metaModelRef) {
 				catDataAssembly.debug(`No Interface Class specified for DataAssembly ${variableOptions.name}. ` +
-					'Fallback to standard DataAssembly.');
+					'Fallback to standard DataAssemblyController.');
 			} else {
-				catDataAssembly.warn(`No DataAssembly implemented for ${variableOptions.interfaceClass} ` +
+				catDataAssembly.warn(`No DataAssembly implemented for ${variableOptions.metaModelRef} ` +
 					`of ${variableOptions.name}. Fallback to standard DataAssembly.`);
 			}
-			type = DataAssembly;
+			type = DataAssemblyController;
 		}
 
 		return new type(variableOptions, connection);
