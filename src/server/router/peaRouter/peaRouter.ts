@@ -55,9 +55,12 @@ peaRouter.post('/loadPEA', (req, res) => {
 const fs = require('fs');
 const multer = require('multer');
 // create uploads directory
-if (!fs.existsSync('uploads/')){
-	fs.mkdirSync('uploads/');
-}
+if (fs.existsSync('uploads/')) {
+	// delete uploads folder, because it could contain files, which haven't been deleted successfully due to crash
+	fs.rmdirSync('uploads/', {recursive: true});
+}// create new uploads folder
+fs.mkdirSync('uploads/');
+
 // set up filename and destination
 const storage = multer.diskStorage({
 	destination: function (req: any, file: any, cb: any) {
@@ -83,8 +86,13 @@ peaRouter.post('/addByPiMAd', upload.single('uploadedFile'),(req, res) => {
 
 	const manager: ModularPlantManager = req.app.get('manager');
 	manager.addPEAToPimadPool(object, response => {
-		// TODO: handle failure case
-		res.status(200).send('"'+response.getMessage()+'"');
+		if(response.getMessage()=='Success!'){
+			res.status(200).send('"'+response.getMessage()+'"');
+		}else{
+			res.status(500).send('"'+response.getMessage()+'"');
+		}
+		// delete file
+		fs.unlinkSync(filePath);
 	});
 });
 
@@ -96,8 +104,11 @@ peaRouter.post('/addByPiMAd', upload.single('uploadedFile'),(req, res) => {
 peaRouter.get('', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
 	manager.getAllPEAsFromPimadPool(response => {
-		// TODO: handle failure case
-		res.status(200).send(response.getContent());
+			if (response.getMessage() == 'Success!') {
+				res.status(200).send(response.getContent());
+			} else {
+				res.status(500).send('"'+response.getMessage()+'"');
+			}
 		}
 	);
 }));
