@@ -29,7 +29,7 @@ import * as asyncHandler from 'express-async-handler';
 import {constants} from 'http2';
 import {ServiceCommand} from '@p2olab/polaris-interface';
 import {catServer} from '../../../logging';
-import * as path from "path";
+import * as path from 'path';
 
 export const peaRouter: Router = Router();
 
@@ -60,7 +60,7 @@ if (!fs.existsSync('uploads/')){
 }
 // set up filename and destination
 const storage = multer.diskStorage({
-	destination: function (req: any, file: any, cb:any) {
+	destination: function (req: any, file: any, cb: any) {
 		cb(null, path.join('uploads/'));
 	},
 	filename: (req: any, file: { fieldname: string; originalname: any }, cb: (arg0: null, arg1: string) => void) => {
