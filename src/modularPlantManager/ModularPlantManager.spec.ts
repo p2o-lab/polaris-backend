@@ -75,7 +75,7 @@ describe('ModularPlantManager', () => {
 			//const peasJson = JSON.parse(fs.readFileSync('assets/peas/pea_cif.json').toString());
 			//modularPlantManager.loadPEAController(peasJson);
 			//expect(() => modularPlantManager.loadPEAController(peasJson)).to.throw('already in registered PEAs');
-		}).timeout(5000); // overwrite timeout, because this could take longer
+		}).timeout(10000); // overwrite timeout, because this could take longer
 
 		/*it('should loadPEAControllerPEAController with single PEAController', () => {
 			const peasJson = JSON.parse(fs.readFileSync('assets/peas/pea_cif.json').toString());

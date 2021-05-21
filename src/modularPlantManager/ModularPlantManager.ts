@@ -253,7 +253,7 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 									// get cIData from PiMAd
 									dataItem.getCommunicationInterfaceData((response2, cIData) => {
 										// check if dataItem has an cIData
-										if(Object.keys(cIData).length != 0){
+										if(cIData){
 											// get NodeId object from PiMAd
 											(cIData as OPCUANodeCommunication).getNodeId((response, nodeID) => {
 												// get NodeId from PiMAd and assign it to variable
@@ -263,7 +263,11 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 												nodeID.getNamespaceIndex((response, mNamespace) =>
 													namespaceIndex = mNamespace as unknown as string);
 											});
-										}else dataItem.getValue((response, mValue) => value = mValue);
+										}else {
+											// it's a static DataItem
+											// TODO: currently only string supported?
+											dataItem.getValue((response, mValue) => value = mValue);
+										}
 									});
 
 									const opcUaNodeOptions: OpcUaNodeOptions = {
@@ -274,7 +278,7 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 									};
 									// get Name of DataItem from PiMAd
 									dataItem.getName((response2, name) =>
-										baseDataAssemblyOptions[name] = opcUaNodeOptions);
+										baseDataAssemblyOptions[name as string] = opcUaNodeOptions);
 								})
 						));
 
