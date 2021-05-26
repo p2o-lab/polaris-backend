@@ -33,13 +33,31 @@ export type BinManIntRuntime = BinManRuntime & SourceModeRuntime & WQCRuntime & 
 	VInt: OpcUaDataItem<boolean>;
 };
 
-export class BinManInt extends SourceModeDA(WQCDA(BinMan)) {
+export class BinManInt extends BinMan {
 
 	public readonly communication!: BinManIntRuntime;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
 
+		this.communication.WQC = this.createDataItem('WQC', 'read');
 		this.communication.VInt = this.createDataItem('VInt', 'read');
+
+		//SourceMode
+		this.communication.SrcChannel = this.createDataItem('SrcChannel', 'read', 'boolean');
+
+		this.communication.SrcManAut = this.createDataItem('SrcManAut', 'read', 'boolean');
+		this.communication.SrcIntAut = this.createDataItem('SrcIntAut', 'read', 'boolean');
+
+		this.communication.SrcManOp = this.createDataItem('SrcManOp', 'write', 'boolean');
+		this.communication.SrcIntOp = this.createDataItem('SrcIntOp', 'write', 'boolean');
+
+		this.communication.SrcManAct = this.createDataItem('SrcManAct', 'read', 'boolean');
+		this.communication.SrcIntAct = this.createDataItem('SrcIntAct', 'read', 'boolean');
 	}
+
+	get WQC(): number | undefined {
+		return this.communication.WQC.value;
+	}
+
 }

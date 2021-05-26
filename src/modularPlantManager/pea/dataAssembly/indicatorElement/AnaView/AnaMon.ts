@@ -24,10 +24,64 @@
  * SOFTWARE.
  */
 
-import {LimitMonitoringDA, LimitMonitoringRuntime} from '../../_extensions';
 import {AnaView, AnaViewRuntime} from './AnaView';
+import {BaseDataAssemblyRuntime} from '../../DataAssemblyController';
+import {OpcUaConnection, OpcUaDataItem} from '../../../connection';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 
-export type AnaMonRuntime = AnaViewRuntime & LimitMonitoringRuntime;
+export class AnaMon extends AnaView {
+    public communication!: AnaMonRuntime;
+    constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
+        super(options, connection);
 
-export class AnaMon extends LimitMonitoringDA(AnaView) {
+        this.communication.OSLevel = this.createDataItem('OSLevel', 'write');
+
+        this.communication.VAHEn = this.createDataItem('VAHEn', 'read');
+        this.communication.VAHLim = this.createDataItem('VAHLim', 'write');
+        this.communication.VAHAct = this.createDataItem('VAHAct', 'read');
+        this.communication.VWHEn = this.createDataItem('VWHEn', 'read');
+        this.communication.VWHLim = this.createDataItem('VWHLim', 'write');
+        this.communication.VWHAct = this.createDataItem('VWHAct', 'read');
+        this.communication.VTHEn = this.createDataItem('VTHEn', 'read');
+        this.communication.VTHLim = this.createDataItem('VTHLim', 'write');
+        this.communication.VTHAct = this.createDataItem('VTHAct', 'read');
+        this.communication.VALEn = this.createDataItem('VALEn', 'read');
+        this.communication.VALLim = this.createDataItem('VALLim', 'write');
+        this.communication.VALAct = this.createDataItem('VALAct', 'read');
+        this.communication.VWLEn = this.createDataItem('VWLEn', 'read');
+        this.communication.VWLLim = this.createDataItem('VWLLim', 'write');
+        this.communication.VWLAct = this.createDataItem('VWLAct', 'read');
+        this.communication.VTLEn = this.createDataItem('VTLEn', 'read');
+        this.communication.VTLLim = this.createDataItem('VTLLim', 'write');
+        this.communication.VTLAct = this.createDataItem('VTLAct', 'read');
+    }
+    get OSLevel(): number | undefined {
+        return this.communication.OSLevel.value;
+    }
 }
+
+export type AnaMonRuntime = AnaViewRuntime & LimitMonitoringRuntime & {
+    OSLevel: OpcUaDataItem<number>;
+};
+
+type LimitMonitoringRuntime = BaseDataAssemblyRuntime & {
+    VAHEn: OpcUaDataItem<boolean>;
+    VAHLim: OpcUaDataItem<number>;
+    VAHAct: OpcUaDataItem<boolean>;
+    VWHEn: OpcUaDataItem<boolean>;
+    VWHLim: OpcUaDataItem<number>;
+    VWHAct: OpcUaDataItem<boolean>;
+    VTHEn: OpcUaDataItem<boolean>;
+    VTHLim: OpcUaDataItem<number>;
+    VTHAct: OpcUaDataItem<boolean>;
+    VALEn: OpcUaDataItem<boolean>;
+    VALLim: OpcUaDataItem<number>;
+    VALAct: OpcUaDataItem<boolean>;
+    VWLEn: OpcUaDataItem<boolean>;
+    VWLLim: OpcUaDataItem<number>;
+    VWLAct: OpcUaDataItem<boolean>;
+    VTLEn: OpcUaDataItem<boolean>;
+    VTLLim: OpcUaDataItem<number>;
+    VTLAct: OpcUaDataItem<boolean>;
+};
+

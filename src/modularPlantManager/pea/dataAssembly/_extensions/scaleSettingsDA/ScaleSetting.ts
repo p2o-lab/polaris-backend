@@ -1,4 +1,3 @@
-/* tslint:disable:max-classes-per-file */
 /*
  * MIT License
  *
@@ -24,33 +23,26 @@
  * SOFTWARE.
  */
 
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaConnection, OpcUaDataItem} from '../../../connection';
-import {BinView, BinViewRuntime} from './BinView';
+import {ParameterInterface} from '@p2olab/polaris-interface';
+import {OpcUaDataItem} from '../../../connection';
+import {Constructor} from '../_helper';
+import {BaseDataAssemblyRuntime, DataAssemblyController} from '../../DataAssemblyController';
+import {AnaView} from '../../indicatorElement';
 
-export type BinMonRuntime = BinViewRuntime & {
-	VFlutTi: OpcUaDataItem<number>;
-	VFlutEn: OpcUaDataItem<boolean>;
-	VFlutCnt: OpcUaDataItem<number>;
-	VFlutAct: OpcUaDataItem<boolean>;
-	OSLevel: OpcUaDataItem<number>;
-};
+export interface ScaleSettingsRuntime extends BaseDataAssemblyRuntime {
+	VSclMin: OpcUaDataItem<number>;
+	VSclMax: OpcUaDataItem<number>;
+}
 
-export class BinMon extends BinView {
-
-	public readonly communication!: BinMonRuntime;
-
-	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
-		super(options, connection);
-
-		this.communication.OSLevel = this.createDataItem('OSLevel', 'write');
-
-		this.communication.VFlutTi = this.createDataItem('VFlutTi', 'read', 'number');
-		this.communication.VFlutEn = this.createDataItem('VFlutEn', 'write', 'boolean');
-		this.communication.VFlutCnt = this.createDataItem('VFlutCnt', 'read', 'number');
-		this.communication.VFlutAct = this.createDataItem('VFlutAct', 'read', 'boolean');
-	}
-	get OSLevel(): number | undefined {
-		return this.communication.OSLevel.value;
-	}
+// tslint:disable-next-line:variable-name
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export class ScaleSetting {
+	vSclMax: OpcUaDataItem<any>;
+	vSclMin: OpcUaDataItem<any>;
+		constructor(dataAssemblyController: any) {
+			this.vSclMax= dataAssemblyController.createDataItem('VSclMax', 'read');
+			this.vSclMin = dataAssemblyController.createDataItem('VSclMin', 'read');
+			dataAssemblyController.communication.VSclMin = this.vSclMin;
+			dataAssemblyController.communication.VSclMax = this.vSclMax;
+		}
 }

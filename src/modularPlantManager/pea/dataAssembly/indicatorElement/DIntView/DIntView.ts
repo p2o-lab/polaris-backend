@@ -24,23 +24,46 @@
  * SOFTWARE.
  */
 
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {DataAssemblyOptions, ParameterInterface} from '@p2olab/polaris-interface';
 import {OpcUaConnection} from '../../../connection';
 import {
-	ScaleSettingDA,
+	ScaleSettingDA, UNIT,
 	UnitDA
 } from '../../_extensions';
 import {AnaViewRuntime} from '../AnaView/AnaView';
 import {IndicatorElement} from '../IndicatorElement';
 
-export class DIntView extends ScaleSettingDA(UnitDA(IndicatorElement)) {
+
+export class DIntView extends IndicatorElement {
 	public readonly communication!: AnaViewRuntime;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
 		this.communication.V = this.createDataItem('V', 'read');
+		this.communication.VSclMax = this.createDataItem('VSclMax', 'read');
+		this.communication.VSclMin = this.createDataItem('VSclMin', 'read');
+		this.communication.VUnit = this.createDataItem('VUnit', 'read');
+
 
 		this.defaultReadDataItem = this.communication.V;
 		this.defaultReadDataItemType = 'number';
+	}
+	public getUnit(): string {
+		const unit = UNIT.find((item) => item.value === this.communication.VUnit?.value);
+		return unit ? unit.unit : '';
+	}
+
+	public scaleSettingsToJson(): ParameterInterface {
+		return {
+			...super.toJson(),
+			unit: this.getUnit()
+		};
+	}
+	public unitToJson(): ParameterInterface {
+		return {
+			...super.toJson(),
+			max: this.communication.VSclMax?.value,
+			min: this.communication.VSclMin?.value
+		};
 	}
 }

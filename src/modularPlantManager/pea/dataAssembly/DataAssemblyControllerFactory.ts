@@ -42,8 +42,10 @@ export class DataAssemblyControllerFactory {
 		catDataAssembly.debug(`Create DataAssembly ${variableOptions.name} (${variableOptions.metaModelRef})`);
 		const types = {
 			'DataAssembly': DataAssemblyController,
+			'AnaMon': AnaMon,
+
 			// DataAssemblyController
-			'ServiceControl': ServiceControl,
+			/*'ServiceControl': ServiceControl,
 			// Active Elements
 			'PIDCtrl': PIDCtrl,
 			// >Drives
@@ -91,7 +93,7 @@ export class DataAssemblyControllerFactory {
 			'AnaServParam': AnaServParam,
 			'BinServParam': BinServParam,
 			'DIntServParam': DIntServParam,
-			'StringServParam': StringServParam
+			'StringServParam': StringServParam*/
 		};
 		let type = types[variableOptions.metaModelRef.split('/').pop() as keyof typeof types];
 		if (!type) {

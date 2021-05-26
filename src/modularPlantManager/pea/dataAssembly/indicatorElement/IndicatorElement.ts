@@ -24,7 +24,7 @@
  */
 
 import {DataAssemblyOptions, ParameterInterface} from '@p2olab/polaris-interface';
-import {OpcUaConnection} from '../../connection';
+import {OpcUaConnection, OpcUaDataItem} from '../../connection';
 import {
 	WQCDA, WQCRuntime
 } from '../_extensions';
@@ -32,13 +32,20 @@ import {
 	BaseDataAssemblyRuntime, DataAssemblyController
 } from '../DataAssemblyController';
 
-export type IndicatorElementRuntime = BaseDataAssemblyRuntime & WQCRuntime;
+export type IndicatorElementRuntime = BaseDataAssemblyRuntime & {
+	WQC: OpcUaDataItem<number>;
+}
 
-export class IndicatorElement extends WQCDA(DataAssemblyController) {
+export class IndicatorElement extends DataAssemblyController {
 	public readonly communication!: IndicatorElementRuntime;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
+		this.communication.WQC = this.createDataItem('WQC', 'read');
+	}
+
+	get WQC(): number | undefined {
+		return this.communication.WQC.value;
 	}
 
 	public toJson(): ParameterInterface {

@@ -25,7 +25,7 @@
 
 import {DataAssemblyOptions, ParameterInterface, ParameterOptions} from '@p2olab/polaris-interface';
 import {Parameter} from '../../../recipe';
-import {DataItem, OpcUaConnection} from '../../connection';
+import {DataItem, OpcUaConnection, OpcUaDataItem} from '../../connection';
 import {
 	OSLevelDA, OSLevelRuntime
 } from '../_extensions';
@@ -33,15 +33,23 @@ import {BaseDataAssemblyRuntime, DataAssemblyController} from '../DataAssemblyCo
 import {PEAController} from '../../PEAController';
 import {catDataAssembly} from '../../../../logging';
 
-export type OperationElementRuntime = BaseDataAssemblyRuntime & OSLevelRuntime;
+export type OperationElementRuntime = BaseDataAssemblyRuntime & {
+	OSLevel: OpcUaDataItem<number>;
 
-export class OperationElement extends OSLevelDA(DataAssemblyController) {
+}
+
+export class OperationElement extends DataAssemblyController {
 	public communication!: OperationElementRuntime;
 	public parameterRequest: Parameter | undefined;
 	public requestedValue = '';
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
+		this.communication.OSLevel = this.createDataItem('OSLevel', 'write');
+	}
+
+	get OSLevel(): number | undefined {
+		return this.communication.OSLevel.value;
 	}
 
 	/**

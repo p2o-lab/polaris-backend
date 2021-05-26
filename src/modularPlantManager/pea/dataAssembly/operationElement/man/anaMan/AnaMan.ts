@@ -42,7 +42,7 @@ export type AnaManRuntime =
 	VMan: OpcUaDataItem<number>;
 };
 
-export class AnaMan extends ValueLimitationDA(ScaleSettingDA(UnitDA(OperationElement))) {
+export class AnaMan extends OperationElement {
 	public readonly communication!: AnaManRuntime;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
@@ -50,6 +50,12 @@ export class AnaMan extends ValueLimitationDA(ScaleSettingDA(UnitDA(OperationEle
 		this.communication.VOut = this.createDataItem('VOut', 'read');
 		this.communication.VRbk = this.createDataItem('VRbk', 'read');
 		this.communication.VMan = this.createDataItem('VMan', 'write');
+
+		// TODO: We can see repitition here, maybe use function or something
+		this.communication.VSclMax = this.createDataItem('VSclMax', 'read');
+		this.communication.VSclMin = this.createDataItem('VSclMin', 'read');
+
+		this.communication.VUnit = this.createDataItem('VUnit', 'read');
 
 		this.defaultReadDataItem = this.communication.VOut;
 		this.defaultReadDataItemType = 'number';

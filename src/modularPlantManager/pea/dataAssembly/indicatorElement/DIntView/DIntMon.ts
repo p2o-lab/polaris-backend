@@ -24,8 +24,39 @@
  * SOFTWARE.
  */
 
-import {LimitMonitoringDA} from '../../_extensions';
 import {DIntView} from './DIntView';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {OpcUaConnection} from '../../../connection';
+import {AnaMonRuntime} from '../AnaView/AnaMon';
 
-export class DIntMon extends LimitMonitoringDA(DIntView) {
+export class DIntMon extends DIntView {
+    public communication!: AnaMonRuntime;
+    constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
+        super(options, connection);
+
+        this.communication.OSLevel = this.createDataItem('OSLevel', 'write');
+
+        this.communication.VAHEn = this.createDataItem('VAHEn', 'read');
+        this.communication.VAHLim = this.createDataItem('VAHLim', 'write');
+        this.communication.VAHAct = this.createDataItem('VAHAct', 'read');
+        this.communication.VWHEn = this.createDataItem('VWHEn', 'read');
+        this.communication.VWHLim = this.createDataItem('VWHLim', 'write');
+        this.communication.VWHAct = this.createDataItem('VWHAct', 'read');
+        this.communication.VTHEn = this.createDataItem('VTHEn', 'read');
+        this.communication.VTHLim = this.createDataItem('VTHLim', 'write');
+        this.communication.VTHAct = this.createDataItem('VTHAct', 'read');
+        this.communication.VALEn = this.createDataItem('VALEn', 'read');
+        this.communication.VALLim = this.createDataItem('VALLim', 'write');
+        this.communication.VALAct = this.createDataItem('VALAct', 'read');
+        this.communication.VWLEn = this.createDataItem('VWLEn', 'read');
+        this.communication.VWLLim = this.createDataItem('VWLLim', 'write');
+        this.communication.VWLAct = this.createDataItem('VWLAct', 'read');
+        this.communication.VTLEn = this.createDataItem('VTLEn', 'read');
+        this.communication.VTLLim = this.createDataItem('VTLLim', 'write');
+        this.communication.VTLAct = this.createDataItem('VTLAct', 'read');
+    }
+    get OSLevel(): number | undefined {
+        return this.communication.OSLevel.value;
+    }
+
 }

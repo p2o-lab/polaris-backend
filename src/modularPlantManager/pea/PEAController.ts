@@ -156,8 +156,11 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 
 		if (options) {
 			this.variables = options.dataAssemblies
-				.map((variableOptions: DataAssemblyOptions) => DataAssemblyControllerFactory.create(variableOptions, this.connection));
+				.map((variableOptions: DataAssemblyOptions) =>
+					DataAssemblyControllerFactory.create(variableOptions, this.connection)
+				);
 		}
+
 	}
 
 	public getService(serviceName: string): Service {

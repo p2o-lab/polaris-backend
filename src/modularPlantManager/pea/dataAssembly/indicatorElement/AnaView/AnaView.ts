@@ -24,28 +24,47 @@
  * SOFTWARE.
  */
 
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {DataAssemblyOptions, ParameterInterface} from '@p2olab/polaris-interface';
 import {OpcUaConnection, OpcUaDataItem} from '../../../connection';
-import {
-	ScaleSettingDA, ScaleSettingsRuntime,
-	UnitDA, UnitDataAssemblyRuntime
-} from '../../_extensions';
-import {
-	IndicatorElement, IndicatorElementRuntime
-} from '../IndicatorElement';
+import {ScaleSettingsRuntime, UNIT, UnitDA, UnitDataAssemblyRuntime} from '../../_extensions';
+import {IndicatorElement, IndicatorElementRuntime} from '../IndicatorElement';
+import {ScaleSetting} from '../../_extensions/scaleSettingsDA/ScaleSetting';
+
 
 export type AnaViewRuntime = IndicatorElementRuntime & UnitDataAssemblyRuntime & ScaleSettingsRuntime & {
 	V: OpcUaDataItem<number>;
 };
 
-export class AnaView extends ScaleSettingDA(UnitDA(IndicatorElement)) {
+export class AnaView extends IndicatorElement {
 	public readonly communication!: AnaViewRuntime;
+	public readonly scaleSetting: ScaleSetting;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
 		this.communication.V = this.createDataItem('V', 'read');
+		this.communication.VUnit = this.createDataItem('VUnit', 'read');
+
+		this.scaleSetting = new ScaleSetting(this);
 
 		this.defaultReadDataItem = this.communication.V;
 		this.defaultReadDataItemType = 'number';
+	}
+	public getUnit(): string {
+		const unit = UNIT.find((item) => item.value === this.communication.VUnit?.value);
+		return unit ? unit.unit : '';
+	}
+
+	public scaleSettingsToJson(): ParameterInterface {
+		return {
+			...super.toJson(),
+			unit: this.getUnit()
+		};
+	}
+	public unitToJson(): ParameterInterface {
+		return {
+			...super.toJson(),
+			max: this.communication.VSclMax?.value,
+			min: this.communication.VSclMin?.value
+		};
 	}
 }

@@ -282,14 +282,14 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 								})
 						));
 
-						console.log(baseDataAssemblyOptions);
 						// create dataAssemblyOptions with information collected above
 						const dataAssemblyOptions: DataAssemblyOptions = {
 							name: dataAssemblyName,
 							metaModelRef: dataAssemblyInterfaceClass,
 							dataItems: baseDataAssemblyOptions
 						};
-						if(dataAssemblyOptions.name=='BinVlvFillLeft') {
+						// dataAssemblyOptionsArray.push(dataAssemblyOptions);
+						if(dataAssemblyOptions.metaModelRef.includes('AnaMon')) {
 							dataAssemblyOptionsArray.push(dataAssemblyOptions);
 						}
 					});

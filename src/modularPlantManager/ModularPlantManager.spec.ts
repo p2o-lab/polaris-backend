@@ -55,7 +55,7 @@ describe('ModularPlantManager', () => {
 		// WP
 		it('should load PEAs', (done) => {
 			const modularPlantManager = new ModularPlantManager();
-			modularPlantManager.addPEAToPimadPool({source:'uploads/Module.zip'}, response => {
+			modularPlantManager.addPEAToPimadPool({source:'local/Module.zip'}, response => {
 				if(response.getMessage()=='Success!') {
 					const peaModel: PEAModel = response.getContent() as PEAModel;
 					const options: Options= {
