@@ -32,6 +32,8 @@ import {
 	ValueLimitationDA, ValueLimitationRuntime
 } from '../../../_extensions';
 import {OperationElement, OperationElementRuntime} from '../../OperationElement';
+import {ScaleSettings} from '../../../_extensions/scaleSettingsDA/ScaleSetting';
+import {UnitSettings} from '../../../_extensions/unitDA/UnitSettings';
 
 export type AnaManRuntime =
 	OperationElementRuntime & UnitDataAssemblyRuntime
@@ -44,6 +46,8 @@ export type AnaManRuntime =
 
 export class AnaMan extends OperationElement {
 	public readonly communication!: AnaManRuntime;
+	public readonly scaleSettings: ScaleSettings;
+	public readonly unitSettings: UnitSettings;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
@@ -51,11 +55,11 @@ export class AnaMan extends OperationElement {
 		this.communication.VRbk = this.createDataItem('VRbk', 'read');
 		this.communication.VMan = this.createDataItem('VMan', 'write');
 
-		// TODO: We can see repitition here, maybe use function or something
-		this.communication.VSclMax = this.createDataItem('VSclMax', 'read');
-		this.communication.VSclMin = this.createDataItem('VSclMin', 'read');
+		this.unitSettings = new UnitSettings(this);
+		this.unitSettings.initializeUnitSettings(this);
 
-		this.communication.VUnit = this.createDataItem('VUnit', 'read');
+		this.scaleSettings = new ScaleSettings(this);
+		this.scaleSettings.initializeScaleSettings(this);
 
 		this.defaultReadDataItem = this.communication.VOut;
 		this.defaultReadDataItemType = 'number';

@@ -35,7 +35,6 @@ import {catDataAssembly} from '../../../../logging';
 
 export type OperationElementRuntime = BaseDataAssemblyRuntime & {
 	OSLevel: OpcUaDataItem<number>;
-
 }
 
 export class OperationElement extends DataAssemblyController {
