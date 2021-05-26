@@ -34,15 +34,17 @@ export interface ScaleSettingsRuntime extends BaseDataAssemblyRuntime {
 	VSclMax: OpcUaDataItem<number>;
 }
 
-// tslint:disable-next-line:variable-name
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export class ScaleSetting {
+export class ScaleSettings {
 	vSclMax: OpcUaDataItem<any>;
 	vSclMin: OpcUaDataItem<any>;
 		constructor(dataAssemblyController: any) {
 			this.vSclMax= dataAssemblyController.createDataItem('VSclMax', 'read');
 			this.vSclMin = dataAssemblyController.createDataItem('VSclMin', 'read');
+
+		}
+		initializeScaleSettings(dataAssemblyController: any){
 			dataAssemblyController.communication.VSclMin = this.vSclMin;
 			dataAssemblyController.communication.VSclMax = this.vSclMax;
 		}
+
 }

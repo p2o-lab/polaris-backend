@@ -1,4 +1,3 @@
-/* tslint:disable:max-classes-per-file */
 /*
  * MIT License
  *
@@ -24,31 +23,30 @@
  * SOFTWARE.
  */
 
-import {AnaView, AnaViewRuntime} from './AnaView';
-import {OpcUaConnection, OpcUaDataItem} from '../../../connection';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {LimitMonitoring, LimitMonitoringRuntime} from '../../_extensions/limitMonitoringDA/LimitMonitoring';
+import {ParameterInterface} from '@p2olab/polaris-interface';
+import {OpcUaDataItem} from '../../../connection';
+import {BaseDataAssemblyRuntime, DataAssemblyController} from '../../DataAssemblyController';
+import {Constructor} from '../_helper';
 
-export class AnaMon extends AnaView {
-    public communication!: AnaMonRuntime;
-    public limitMonitoring: LimitMonitoring;
-    constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
-        super(options, connection);
-
-        this.communication.OSLevel = this.createDataItem('OSLevel', 'write');
-
-        this.limitMonitoring = new LimitMonitoring(this);
-        this.limitMonitoring.initializeScaleSettings(this);
-    }
-
-    get OSLevel(): number | undefined {
-        return this.communication.OSLevel.value;
-    }
-}
-
-export type AnaMonRuntime = AnaViewRuntime & LimitMonitoringRuntime & {
-    OSLevel: OpcUaDataItem<number>;
+export type ValueLimitationRuntime = BaseDataAssemblyRuntime & {
+	VMin: OpcUaDataItem<number>;
+	VMax: OpcUaDataItem<number>;
 };
 
+// tslint:disable-next-line:variable-name
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export class ValueLimitation{
+	readonly vMin: OpcUaDataItem<number>;
+	readonly vMax: OpcUaDataItem<number>;
 
+	constructor(dAController: any) {
+		this.vMax = dAController.createDataItem('VMax', 'read');
+		this.vMin = dAController.createDataItem('VMin', 'read');
+	}
 
+	initializeValueLimitations(dAController: any){
+		dAController.communication.VMin = this.vMin;
+		dAController.communication.VMax = this.vMax;
+	}
+
+}

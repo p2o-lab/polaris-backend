@@ -32,22 +32,29 @@ import {
 } from '../../_extensions';
 import {AnaViewRuntime} from '../AnaView/AnaView';
 import {IndicatorElement} from '../IndicatorElement';
+import {UnitSettings} from '../../_extensions/unitDA/UnitSettings';
+import {ScaleSettings} from '../../_extensions/scaleSettingsDA/ScaleSetting';
 
 
 export class DIntView extends IndicatorElement {
 	public readonly communication!: AnaViewRuntime;
+	public readonly scaleSettings: ScaleSettings;
+	public readonly unitSettings: UnitSettings;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
 		this.communication.V = this.createDataItem('V', 'read');
-		this.communication.VSclMax = this.createDataItem('VSclMax', 'read');
-		this.communication.VSclMin = this.createDataItem('VSclMin', 'read');
-		this.communication.VUnit = this.createDataItem('VUnit', 'read');
 
+		this.unitSettings = new UnitSettings(this);
+		this.unitSettings.initializeUnitSettings(this);
+
+		this.scaleSettings = new ScaleSettings(this);
+		this.scaleSettings.initializeScaleSettings(this);
 
 		this.defaultReadDataItem = this.communication.V;
 		this.defaultReadDataItemType = 'number';
 	}
+	//TODO WIP
 	public getUnit(): string {
 		const unit = UNIT.find((item) => item.value === this.communication.VUnit?.value);
 		return unit ? unit.unit : '';
