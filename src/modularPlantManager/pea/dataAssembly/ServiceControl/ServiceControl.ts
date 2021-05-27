@@ -39,7 +39,7 @@ export type ServiceControlRuntime = BaseDataAssemblyRuntime & OpModeRuntime & Se
 	CommandEn: OpcUaDataItem<number>;
 	StateCur: OpcUaDataItem<number>;
 
-	ProcedureOP: OpcUaDataItem<number>;
+	ProcedureOp: OpcUaDataItem<number>;
 	ProcedureExt: OpcUaDataItem<number>;
 	ProcedureInt: OpcUaDataItem<number>;
 	ProcedureCur: OpcUaDataItem<number>;
@@ -74,7 +74,7 @@ export class ServiceControl extends DataAssemblyController {
 		this.communication.CommandEn = this.createDataItem('CommandEn', 'read');
 		this.communication.StateCur = this.createDataItem('StateCur', 'read');
 
-		this.communication.ProcedureOP = this.createDataItem('ProcedureOP', 'write');
+		this.communication.ProcedureOp = this.createDataItem('ProcedureOp', 'write');
 		this.communication.ProcedureExt = this.createDataItem('ProcedureExt', 'write');
 		this.communication.ProcedureInt = this.createDataItem('ProcedureInt', 'read');
 		this.communication.ProcedureCur = this.createDataItem('ProcedureCur', 'read');
