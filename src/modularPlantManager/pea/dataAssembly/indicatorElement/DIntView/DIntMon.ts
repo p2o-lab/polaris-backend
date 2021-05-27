@@ -28,13 +28,17 @@ import {DIntView} from './DIntView';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {OpcUaConnection} from '../../../connection';
 import {AnaMonRuntime} from '../AnaView/AnaMon';
+import {OSLevel} from '../../_extensions/osLevelDA/OSLevel';
 
 export class DIntMon extends DIntView {
     public communication!: AnaMonRuntime;
+    public readonly osLevel: OSLevel;
+
     constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
         super(options, connection);
 
-        this.communication.OSLevel = this.createDataItem('OSLevel', 'write');
+        this.osLevel = new OSLevel(this);
+        this.osLevel.initializeOSLevel(this);
 
         this.communication.VAHEn = this.createDataItem('VAHEn', 'read');
         this.communication.VAHLim = this.createDataItem('VAHLim', 'write');
@@ -55,8 +59,6 @@ export class DIntMon extends DIntView {
         this.communication.VTLLim = this.createDataItem('VTLLim', 'write');
         this.communication.VTLAct = this.createDataItem('VTLAct', 'read');
     }
-    get OSLevel(): number | undefined {
-        return this.communication.OSLevel.value;
-    }
+
 
 }

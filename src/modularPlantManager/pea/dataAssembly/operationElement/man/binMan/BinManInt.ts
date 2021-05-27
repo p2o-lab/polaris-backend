@@ -29,6 +29,7 @@ import {OpcUaConnection, OpcUaDataItem} from '../../../../connection';
 import {SourceModeDA, SourceModeRuntime, WQCDA, WQCRuntime} from '../../../_extensions';
 import {BinMan, BinManRuntime} from './BinMan';
 import {SourceModeController} from '../../../_extensions/sourceModeDA/SourceModeController';
+import {WQC} from '../../../_extensions/wqcDA/WQC';
 
 export type BinManIntRuntime = BinManRuntime & SourceModeRuntime & WQCRuntime & {
 	VInt: OpcUaDataItem<boolean>;
@@ -38,20 +39,17 @@ export class BinManInt extends BinMan {
 
 	public readonly communication!: BinManIntRuntime;
 	public readonly sourceMode: SourceModeController;
+	public readonly wqc: WQC;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
 
-		this.communication.WQC = this.createDataItem('WQC', 'read');
+		this.wqc = new WQC(this);
+		this.wqc.initializeWQC(this);
+
 		this.communication.VInt = this.createDataItem('VInt', 'read');
 
 		this.sourceMode = new SourceModeController(this);
 		this.sourceMode.initializeSourceMode(this);
-
 	}
-
-	get WQC(): number | undefined {
-		return this.communication.WQC.value;
-	}
-
 }

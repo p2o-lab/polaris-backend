@@ -35,19 +35,24 @@ import {
 } from '../OperationElement';
 import {ServiceSourceModeController} from '../../_extensions/serviceSourceModeDA/ServiceSourceModeController';
 import {OpModeController} from '../../_extensions/opModeDA/OpModeController';
+import {WQC} from '../../_extensions/wqcDA/WQC';
 
 export type ServParamRuntime = OperationElementRuntime & OpModeRuntime & ServiceSourceModeRuntime & WQCRuntime & {
 	Sync: OpcUaDataItem<boolean>;
 };
 
 export class ServParam extends OperationElement {
+	//TODO: check accessablity? (private, readonly, public?)
 	public readonly communication!: ServParamRuntime;
 	serviceSourceMode: ServiceSourceModeController;
 	opMode: OpModeController;
+	public readonly wqc: WQC;
 
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
+		this.wqc = new WQC(this);
+		this.wqc.initializeWQC(this);
 
 		this.serviceSourceMode = new ServiceSourceModeController(this);
 		this.serviceSourceMode.initializeServiceSourceMode(this);
@@ -57,8 +62,5 @@ export class ServParam extends OperationElement {
 
 		this.communication.WQC = this.createDataItem('WQC', 'read');
 		this.communication.Sync = this.createDataItem('Sync', 'read', 'boolean');
-	}
-	get WQC(): number | undefined {
-		return this.communication.WQC.value;
 	}
 }

@@ -31,21 +31,19 @@ import {
 import {
 	BaseDataAssemblyRuntime, DataAssemblyController
 } from '../DataAssemblyController';
+import {WQC} from '../_extensions/wqcDA/WQC';
 
-export type IndicatorElementRuntime = BaseDataAssemblyRuntime & {
-	WQC: OpcUaDataItem<number>;
-}
+export type IndicatorElementRuntime = BaseDataAssemblyRuntime & WQCRuntime
 
 export class IndicatorElement extends DataAssemblyController {
 	public readonly communication!: IndicatorElementRuntime;
+	wqc: WQC;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
-		this.communication.WQC = this.createDataItem('WQC', 'read');
-	}
 
-	get WQC(): number | undefined {
-		return this.communication.WQC.value;
+		this.wqc = new WQC(this);
+		this.wqc.initializeWQC(this);
 	}
 
 	public toJson(): ParameterInterface {

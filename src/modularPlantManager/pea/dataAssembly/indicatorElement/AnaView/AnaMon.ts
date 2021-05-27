@@ -28,27 +28,28 @@ import {AnaView, AnaViewRuntime} from './AnaView';
 import {OpcUaConnection, OpcUaDataItem} from '../../../connection';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {LimitMonitoring, LimitMonitoringRuntime} from '../../_extensions/limitMonitoringDA/LimitMonitoring';
+import {OSLevel, OSLevelRuntime} from '../../_extensions/osLevelDA/OSLevel';
+
+export type AnaMonRuntime = AnaViewRuntime & LimitMonitoringRuntime & OSLevelRuntime
 
 export class AnaMon extends AnaView {
+
     public communication!: AnaMonRuntime;
     public limitMonitoring: LimitMonitoring;
+    osLevel: OSLevel;
+
     constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
         super(options, connection);
 
-        this.communication.OSLevel = this.createDataItem('OSLevel', 'write');
+        this.osLevel = new OSLevel(this);
+        this.osLevel.initializeOSLevel(this);
 
         this.limitMonitoring = new LimitMonitoring(this);
         this.limitMonitoring.initializeScaleSettings(this);
     }
 
-    get OSLevel(): number | undefined {
-        return this.communication.OSLevel.value;
-    }
 }
 
-export type AnaMonRuntime = AnaViewRuntime & LimitMonitoringRuntime & {
-    OSLevel: OpcUaDataItem<number>;
-};
 
 
 

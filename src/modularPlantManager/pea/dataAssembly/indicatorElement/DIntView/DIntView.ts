@@ -54,11 +54,7 @@ export class DIntView extends IndicatorElement {
 		this.defaultReadDataItem = this.communication.V;
 		this.defaultReadDataItemType = 'number';
 	}
-	//TODO WIP
-	public getUnit(): string {
-		const unit = UNIT.find((item) => item.value === this.communication.VUnit?.value);
-		return unit ? unit.unit : '';
-	}
+/*	//TODO WIP
 
 	public scaleSettingsToJson(): ParameterInterface {
 		return {
@@ -72,5 +68,5 @@ export class DIntView extends IndicatorElement {
 			max: this.communication.VSclMax?.value,
 			min: this.communication.VSclMin?.value
 		};
-	}
+	}*/
 }

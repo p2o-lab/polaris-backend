@@ -32,24 +32,22 @@ import {
 import {BaseDataAssemblyRuntime, DataAssemblyController} from '../DataAssemblyController';
 import {PEAController} from '../../PEAController';
 import {catDataAssembly} from '../../../../logging';
+import {OSLevel} from '../_extensions/osLevelDA/OSLevel';
 
-export type OperationElementRuntime = BaseDataAssemblyRuntime & {
-	OSLevel: OpcUaDataItem<number>;
-}
+export type OperationElementRuntime = BaseDataAssemblyRuntime & OSLevelRuntime
 
 export class OperationElement extends DataAssemblyController {
 	public communication!: OperationElementRuntime;
 	public parameterRequest: Parameter | undefined;
 	public requestedValue = '';
+	public readonly osLevel: OSLevel;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
-		this.communication.OSLevel = this.createDataItem('OSLevel', 'write');
+		this.osLevel = new OSLevel(this);
+		this.osLevel.initializeOSLevel(this);
 	}
 
-	get OSLevel(): number | undefined {
-		return this.communication.OSLevel.value;
-	}
 
 	/**
 	 * Set parameter on PEAController

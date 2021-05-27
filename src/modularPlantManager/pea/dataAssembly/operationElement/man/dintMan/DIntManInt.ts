@@ -29,6 +29,7 @@ import {SourceModeDA, SourceModeRuntime, WQCDA, WQCRuntime} from '../../../_exte
 import {DIntMan, DIntManRuntime} from './DIntMan';
 import {OpcUaConnection, OpcUaDataItem} from '../../../../connection';
 import {SourceModeController} from '../../../_extensions/sourceModeDA/SourceModeController';
+import {WQC} from '../../../_extensions/wqcDA/WQC';
 
 export type DIntManIntRuntime = DIntManRuntime & SourceModeRuntime & WQCRuntime & {
 	VInt: OpcUaDataItem<number>;
@@ -38,6 +39,7 @@ export class DIntManInt extends DIntMan {
 
 	public readonly communication!: DIntManIntRuntime;
 	public readonly sourceMode: SourceModeController;
+	public readonly wqc: WQC;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
@@ -45,7 +47,8 @@ export class DIntManInt extends DIntMan {
 		this.sourceMode = new SourceModeController(this);
 		this.sourceMode.initializeSourceMode(this);
 
-		this.communication.WQC = this.createDataItem('WQC', 'read');
+		this.wqc = new WQC(this);
+		this.wqc.initializeWQC(this);
 
 		this.communication.VInt = this.createDataItem('VInt', 'read');
 	}

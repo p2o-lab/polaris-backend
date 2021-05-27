@@ -29,6 +29,7 @@ import {OpcUaConnection, OpcUaDataItem} from '../../../../connection';
 import {SourceModeDA, SourceModeRuntime, WQCDA, WQCRuntime} from '../../../_extensions';
 import {AnaMan, AnaManRuntime} from './AnaMan';
 import {SourceModeController} from '../../../_extensions/sourceModeDA/SourceModeController';
+import {WQC} from '../../../_extensions/wqcDA/WQC';
 
 export type AnaManIntRuntime = AnaManRuntime & SourceModeRuntime & WQCRuntime & {
 	VInt: OpcUaDataItem<number>;
@@ -38,11 +39,13 @@ export class AnaManInt extends AnaMan {
 
 	public readonly communication!: AnaManIntRuntime;
 	public readonly sourceMode: SourceModeController;
+	public readonly wqc: WQC;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
 
-		this.communication.WQC = this.createDataItem('WQC', 'read');
+		this.wqc = new WQC(this);
+		this.wqc.initializeWQC(this);
 
 		this.sourceMode = new SourceModeController(this);
 		this.sourceMode.initializeSourceMode(this);
