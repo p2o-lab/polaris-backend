@@ -33,17 +33,27 @@ import {
 import {
 	InputElement, InputElementRuntime,
 } from '../../InputElement';
+import {UnitSettings} from '../../../_extensions/unitDA/UnitSettings';
+import {ScaleSettings} from '../../../_extensions/scaleSettingsDA/ScaleSettings';
 
 export type DIntProcessValueInRuntime = InputElementRuntime & UnitDataAssemblyRuntime & ScaleSettingsRuntime & {
 	VExt: OpcUaDataItem<number>;
 };
 
-export class DIntProcessValueIn extends ScaleSettingDA(UnitDA(InputElement)) {
+export class DIntProcessValueIn extends InputElement {
 	public readonly communication!: DIntProcessValueInRuntime;
+	private readonly scaleSettings: ScaleSettings;
+	private readonly unitSettings: UnitSettings;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
 		this.communication.VExt = this.createDataItem('VExt', 'read');
+
+		this.unitSettings = new UnitSettings(this);
+		this.unitSettings.initializeUnitSettings(this);
+
+		this.scaleSettings = new ScaleSettings(this);
+		this.scaleSettings.initializeScaleSettings(this);
 
 		this.defaultReadDataItem = this.communication.VExt;
 		this.defaultReadDataItemType = 'number';
