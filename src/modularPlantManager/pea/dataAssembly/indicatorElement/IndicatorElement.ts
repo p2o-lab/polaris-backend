@@ -25,9 +25,7 @@
 
 import {DataAssemblyOptions, ParameterInterface} from '@p2olab/polaris-interface';
 import {OpcUaConnection, OpcUaDataItem} from '../../connection';
-import {
-	WQCDA, WQCRuntime
-} from '../_extensions';
+import {WQCRuntime} from '../_extensions';
 import {
 	BaseDataAssemblyRuntime, DataAssemblyController
 } from '../DataAssemblyController';

@@ -32,20 +32,6 @@ export interface UnitDataAssemblyRuntime extends BaseDataAssemblyRuntime {
 	VUnit: OpcUaDataItem<number>;
 }
 
-//TODO: can still be improved, i know
-export class UnitSettings {
-
-	vUnit: OpcUaDataItem<number>;
-
-	constructor(dataAssemblyController: any) {
-		this.vUnit= dataAssemblyController.createDataItem('VUnit', 'read');
-	}
-
-	initializeUnitSettings(dataAssemblyController: any){
-		dataAssemblyController.communication.VUnit = this.vUnit;
-	}
-}
-
 /**
  * physical unit as they are used within the MTP
  */
@@ -1004,4 +990,23 @@ export const UNIT: Array<{ value: number; unit: string; name: string; nameEnglis
 	},
 	{value: 1999, unit: 'spezial', name: 'Spezielle Einheiten', nameEnglish: 'Special units'}
 ];
+
+export class UnitSettings {
+
+	private readonly vUnit: OpcUaDataItem<number>;
+
+	constructor(dataAssemblyController: any) {
+		this.vUnit= dataAssemblyController.createDataItem('VUnit', 'read');
+	}
+
+	initializeUnitSettings(dataAssemblyController: any){
+		dataAssemblyController.communication.VUnit = this.vUnit;
+	}
+
+	public getUnit(): string {
+		const unit = UNIT.find((item) => item.value === this.vUnit?.value);
+		return unit ? unit.unit : '';
+	}
+}
+
 

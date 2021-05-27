@@ -26,10 +26,7 @@
 
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {OpcUaConnection, OpcUaDataItem} from '../../../connection';
-import {
-	OpModeDA, OpModeRuntime,
-	SourceModeDA, SourceModeRuntime
-} from '../../_extensions';
+import {OpModeRuntime, SourceModeRuntime} from '../../_extensions';
 import {ActiveElement, ActiveElementRuntime} from '../ActiveElement';
 import {SourceModeController} from '../../_extensions/sourceModeDA/SourceModeController';
 import {OpModeController} from '../../_extensions/opModeDA/OpModeController';

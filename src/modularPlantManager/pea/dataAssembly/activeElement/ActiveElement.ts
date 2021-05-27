@@ -25,7 +25,7 @@
 
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {OpcUaConnection} from '../../connection';
-import {OSLevelDA, OSLevelRuntime, WQCDA, WQCRuntime} from '../_extensions';
+import {OSLevelRuntime, WQCRuntime} from '../_extensions';
 import {BaseDataAssemblyRuntime, DataAssemblyController} from '../DataAssemblyController';
 import {OSLevel} from '../_extensions/osLevelDA/OSLevel';
 import {WQC} from '../_extensions/wqcDA/WQC';

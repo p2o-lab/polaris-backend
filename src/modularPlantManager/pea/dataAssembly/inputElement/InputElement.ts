@@ -32,9 +32,7 @@ import {
 import {Parameter} from '../../../recipe';
 import {DataItem, OpcUaConnection} from '../../connection';
 import {PEAController} from '../../PEAController';
-import {
-	WQCDA, WQCRuntime
-} from '../_extensions';
+import {WQCRuntime} from '../_extensions';
 import {BaseDataAssemblyRuntime, DataAssemblyController} from '../DataAssemblyController';
 import {catDataAssembly} from '../../../../logging';
 import {WQC} from '../_extensions/wqcDA/WQC';

@@ -25,10 +25,7 @@
 
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {OpcUaConnection, OpcUaDataItem} from '../../../connection';
-import {
-	OpModeDA, OpModeRuntime,
-	ServiceSourceModeDA, ServiceSourceModeRuntime,
-	WQCDA, WQCRuntime
+import {OpModeRuntime, ServiceSourceModeRuntime, WQCRuntime
 } from '../../_extensions';
 import {
 	OperationElement, OperationElementRuntime,

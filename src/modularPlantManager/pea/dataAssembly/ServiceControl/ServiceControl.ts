@@ -25,10 +25,7 @@
 
 import {OpcUaConnection, OpcUaDataItem} from '../../connection';
 import {
-	BaseDataAssemblyRuntime, DataAssemblyController,
-	OpModeDA, OpModeRuntime,
-	ServiceSourceModeDA, ServiceSourceModeRuntime,
-	WQCDA, WQCRuntime
+	BaseDataAssemblyRuntime, DataAssemblyController, OpModeRuntime, ServiceSourceModeRuntime, WQCRuntime
 } from '../index';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {WQC} from '../_extensions/wqcDA/WQC';
@@ -92,5 +89,4 @@ export class ServiceControl extends DataAssemblyController {
 		this.defaultWriteDataItem = this.communication.CommandExt;
 		this.defaultWriteDataItemType = 'number';
 	}
-
 }

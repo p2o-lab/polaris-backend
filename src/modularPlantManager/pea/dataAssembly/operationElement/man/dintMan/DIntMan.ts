@@ -27,9 +27,9 @@
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {OpcUaConnection, OpcUaDataItem} from '../../../../connection';
 import {
-	ScaleSettingDA, ScaleSettingsRuntime,
-	UnitDA, UnitDataAssemblyRuntime,
-	ValueLimitationDA, ValueLimitationRuntime
+	ScaleSettingsRuntime,
+	UnitDataAssemblyRuntime,
+	ValueLimitationRuntime
 } from '../../../_extensions';
 import {OperationElement, OperationElementRuntime} from '../../OperationElement';
 import {ValueLimitation} from '../../../_extensions/valueLimitationDA/ValueLimitation';

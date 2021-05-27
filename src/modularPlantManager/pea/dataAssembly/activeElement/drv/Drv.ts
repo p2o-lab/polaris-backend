@@ -26,11 +26,7 @@
 
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {OpcUaConnection, OpcUaDataItem} from '../../../connection';
-import {
-	InterlockDA, InterlockRuntime,
-	OpModeRuntime,
-	ResetDA, ResetRuntime
-} from '../../_extensions';
+import {InterlockRuntime, OpModeRuntime, ResetRuntime} from '../../_extensions';
 import {ActiveElement, ActiveElementRuntime} from '../ActiveElement';
 import {Reset} from '../../_extensions/resetDA/Reset';
 import {Interlock} from '../../_extensions/interlockDA/Interlock';

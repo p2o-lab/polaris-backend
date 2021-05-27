@@ -25,7 +25,7 @@
  */
 
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {SourceModeDA, SourceModeRuntime, WQCDA, WQCRuntime} from '../../../_extensions';
+import {SourceModeRuntime, WQCRuntime} from '../../../_extensions';
 import {DIntMan, DIntManRuntime} from './DIntMan';
 import {OpcUaConnection, OpcUaDataItem} from '../../../../connection';
 import {SourceModeController} from '../../../_extensions/sourceModeDA/SourceModeController';

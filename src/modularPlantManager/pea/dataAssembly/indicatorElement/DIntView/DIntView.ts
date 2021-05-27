@@ -26,10 +26,7 @@
 
 import {DataAssemblyOptions, ParameterInterface} from '@p2olab/polaris-interface';
 import {OpcUaConnection} from '../../../connection';
-import {
-	ScaleSettingDA, UNIT,
-	UnitDA
-} from '../../_extensions';
+import {UNIT,} from '../../_extensions';
 import {AnaViewRuntime} from '../AnaView/AnaView';
 import {IndicatorElement} from '../IndicatorElement';
 import {UnitSettings} from '../../_extensions/unitDA/UnitSettings';

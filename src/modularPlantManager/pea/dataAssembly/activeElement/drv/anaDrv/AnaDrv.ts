@@ -27,7 +27,7 @@
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {OpcUaConnection, OpcUaDataItem} from '../../../../connection';
 import {Drv, DrvRuntime} from '../Drv';
-import {SourceModeDA, SourceModeRuntime} from '../../../_extensions';
+import {SourceModeRuntime} from '../../../_extensions';
 import {SourceModeController} from '../../../_extensions/sourceModeDA/SourceModeController';
 
 export type AnaDrvRuntime = DrvRuntime & SourceModeRuntime & {

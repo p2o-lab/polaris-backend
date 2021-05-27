@@ -26,10 +26,7 @@
 
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {OpcUaConnection, OpcUaDataItem} from '../../../../connection';
-import {
-	ScaleSettingDA, ScaleSettingsRuntime,
-	UnitDA, UnitDataAssemblyRuntime
-} from '../../../_extensions';
+import {ScaleSettingsRuntime, UnitDataAssemblyRuntime} from '../../../_extensions';
 import {
 	InputElement, InputElementRuntime,
 } from '../../InputElement';

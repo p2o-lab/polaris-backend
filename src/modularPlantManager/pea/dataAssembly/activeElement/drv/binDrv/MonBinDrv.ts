@@ -26,7 +26,7 @@
 
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {OpcUaConnection} from '../../../../connection';
-import {FeedbackMonitoringDA, FeedbackMonitoringRuntime} from '../../../_extensions';
+import {FeedbackMonitoringRuntime} from '../../../_extensions';
 import {BinDrv, BinDrvRuntime} from './BinDrv';
 import {FeedbackMonitoring} from '../../../_extensions/feedbackMonitoringDA/FeedbackMonitoring';
 
