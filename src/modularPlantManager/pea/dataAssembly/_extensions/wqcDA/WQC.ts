@@ -31,20 +31,18 @@ export interface WQCRuntime extends BaseDataAssemblyRuntime {
 	WQC: OpcUaDataItem<number>;
 }
 
-// tslint:disable-next-line:variable-name
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export function WQCDA<TBase extends Constructor<DataAssemblyController>>(Base: TBase) {
-	return class extends Base {
-		public communication!: WQCRuntime;
+export class WQC {
+	private readonly wqc: OpcUaDataItem<number>;
 
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		constructor(...args: any[]) {
-			super(...args);
-			//this.communication.WQC = this.createDataItem('WQC', 'read');
-		}
+	constructor(dAController: any) {
+		this.wqc = dAController.createDataItem('WQC', 'read');
+	}
 
-		get WQC(): number | undefined {
-			return this.communication.WQC.value;
-		}
-	};
+	initializeWQC(dAController: any){
+		dAController.communication.WQC = this.wqc;
+	}
+
+	get WQC(): number | undefined {
+		return this.wqc.value;
+	}
 }

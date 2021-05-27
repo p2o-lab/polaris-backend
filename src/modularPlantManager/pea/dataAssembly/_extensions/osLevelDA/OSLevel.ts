@@ -31,19 +31,21 @@ export interface OSLevelRuntime extends BaseDataAssemblyRuntime {
 	OSLevel: OpcUaDataItem<number>;
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export function OSLevelDA<TBase extends Constructor<DataAssemblyController>>(Base: TBase) {
-	return class extends Base {
-		public communication!: OSLevelRuntime;
+export class OSLevel {
+	//TODO: maybe instance variables are not neccessary? set communication variable directly?
+	private osLevel: OpcUaDataItem<number>;
 
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		constructor(...args: any[]) {
-			super(...args);
-			this.communication.OSLevel = this.createDataItem('OSLevel', 'write');
+		constructor(dAController: any) {
+			this.osLevel = dAController.createDataItem('OSLevel', 'write');
+		}
+
+		public initializeOSLevel(dAController: any){
+			dAController.communication.OSLevel = this.osLevel;
+
 		}
 
 		get OSLevel(): number | undefined {
-			return this.communication.OSLevel.value;
+			return this.osLevel.value;
 		}
-	};
+
 }
