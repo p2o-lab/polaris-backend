@@ -32,17 +32,17 @@ export interface WQCRuntime extends BaseDataAssemblyRuntime {
 }
 
 export class WQC {
-	private readonly wqc: OpcUaDataItem<number>;
+	private dAController: any;
 
 	constructor(dAController: any) {
-		this.wqc = dAController.createDataItem('WQC', 'read');
+		this.dAController = dAController;
 	}
 
-	initializeWQC(dAController: any){
-		dAController.communication.WQC = this.wqc;
+	setCommunication(){
+		//this.dAController.communication.WQC = this.dAController.createDataItem('WQC', 'read');
 	}
 
 	get WQC(): number | undefined {
-		return this.wqc.value;
+		return this.dAController.communication.WQC.value;
 	}
 }

@@ -35,16 +35,23 @@ export interface ScaleSettingsRuntime extends BaseDataAssemblyRuntime {
 }
 
 export class ScaleSettings {
-	vSclMax: OpcUaDataItem<any>;
-	vSclMin: OpcUaDataItem<any>;
-		constructor(dataAssemblyController: any) {
-			this.vSclMax= dataAssemblyController.createDataItem('VSclMax', 'read');
-			this.vSclMin = dataAssemblyController.createDataItem('VSclMin', 'read');
+		private dAController: any;
 
+		constructor(dAController: any) {
+			this.dAController = dAController;
 		}
-		initializeScaleSettings(dataAssemblyController: any){
-			dataAssemblyController.communication.VSclMin = this.vSclMin;
-			dataAssemblyController.communication.VSclMax = this.vSclMax;
+
+		setCommunication(){
+			this.dAController.communication.VSclMax = this.dAController.createDataItem('VSclMax', 'read');
+			this.dAController.communication.VSclMin = this.dAController.createDataItem('VSclMin', 'read');
 		}
+
+	//TODO: adjust function
+/*	public scaleSettingsToJson(): ParameterInterface {
+		return {
+			...super.toJson(),
+			unit: this.getUnit()
+		};
+	}*/
 
 }

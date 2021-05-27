@@ -32,20 +32,18 @@ export interface OSLevelRuntime extends BaseDataAssemblyRuntime {
 }
 
 export class OSLevel {
-	//TODO: maybe instance variables are not neccessary? set communication variable directly?
-	private osLevel: OpcUaDataItem<number>;
+	private dAController: any;
 
-		constructor(dAController: any) {
-			this.osLevel = dAController.createDataItem('OSLevel', 'write');
-		}
+	constructor(dAController: any) {
+		this.dAController = dAController;
+	}
 
-		public initializeOSLevel(dAController: any){
-			dAController.communication.OSLevel = this.osLevel;
+	public setCommunication(){
+		//this.dAController.communication.OSLevel = this.dAController.createDataItem('OSLevel', 'write');
 
-		}
+	}
 
-		get OSLevel(): number | undefined {
-			return this.osLevel.value;
-		}
-
+	get OSLevel(): number | undefined {
+		return this.dAController.communication.OSLevel.value;
+	}
 }

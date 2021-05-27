@@ -42,10 +42,10 @@ export class AnaMon extends AnaView {
         super(options, connection);
 
         this.osLevel = new OSLevel(this);
-        this.osLevel.initializeOSLevel(this);
+        this.osLevel.setCommunication();
 
         this.limitMonitoring = new LimitMonitoring(this);
-        this.limitMonitoring.initializeScaleSettings(this);
+        this.limitMonitoring.setCommunication();
     }
 
 }

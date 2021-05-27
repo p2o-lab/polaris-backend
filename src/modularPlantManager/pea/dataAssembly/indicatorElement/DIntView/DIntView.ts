@@ -26,7 +26,6 @@
 
 import {DataAssemblyOptions, ParameterInterface} from '@p2olab/polaris-interface';
 import {OpcUaConnection} from '../../../connection';
-import {UNIT,} from '../../_extensions';
 import {AnaViewRuntime} from '../AnaView/AnaView';
 import {IndicatorElement} from '../IndicatorElement';
 import {UnitSettings} from '../../_extensions/unitDA/UnitSettings';
@@ -43,27 +42,12 @@ export class DIntView extends IndicatorElement {
 		this.communication.V = this.createDataItem('V', 'read');
 
 		this.unitSettings = new UnitSettings(this);
-		this.unitSettings.initializeUnitSettings(this);
+		this.unitSettings.setCommunication();
 
 		this.scaleSettings = new ScaleSettings(this);
-		this.scaleSettings.initializeScaleSettings(this);
+		this.scaleSettings.setCommunication();
 
 		this.defaultReadDataItem = this.communication.V;
 		this.defaultReadDataItemType = 'number';
 	}
-/*	//TODO WIP
-
-	public scaleSettingsToJson(): ParameterInterface {
-		return {
-			...super.toJson(),
-			unit: this.getUnit()
-		};
-	}
-	public unitToJson(): ParameterInterface {
-		return {
-			...super.toJson(),
-			max: this.communication.VSclMax?.value,
-			min: this.communication.VSclMin?.value
-		};
-	}*/
 }

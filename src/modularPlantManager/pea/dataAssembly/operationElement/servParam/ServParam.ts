@@ -25,12 +25,15 @@
 
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {OpcUaConnection, OpcUaDataItem} from '../../../connection';
-import {OpModeRuntime, ServiceSourceModeRuntime, WQCRuntime
+import {OpModeRuntime, WQCRuntime
 } from '../../_extensions';
 import {
 	OperationElement, OperationElementRuntime,
 } from '../OperationElement';
-import {ServiceSourceModeController} from '../../_extensions/serviceSourceModeDA/ServiceSourceModeController';
+import {
+	ServiceSourceModeController,
+	ServiceSourceModeRuntime
+} from '../../_extensions/serviceSourceModeDA/ServiceSourceModeController';
 import {OpModeController} from '../../_extensions/opModeDA/OpModeController';
 import {WQC} from '../../_extensions/wqcDA/WQC';
 
@@ -45,19 +48,17 @@ export class ServParam extends OperationElement {
 	opMode: OpModeController;
 	public readonly wqc: WQC;
 
-
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
 		this.wqc = new WQC(this);
-		this.wqc.initializeWQC(this);
+		this.wqc.setCommunication();
 
 		this.serviceSourceMode = new ServiceSourceModeController(this);
-		this.serviceSourceMode.initializeServiceSourceMode(this);
+		this.serviceSourceMode.setCommunication();
 
 		this.opMode = new OpModeController(this);
 		this.opMode.initializeOpMode(this);
 
-		this.communication.WQC = this.createDataItem('WQC', 'read');
 		this.communication.Sync = this.createDataItem('Sync', 'read', 'boolean');
 	}
 }

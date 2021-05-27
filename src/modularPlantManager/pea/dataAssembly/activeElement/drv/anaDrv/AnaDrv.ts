@@ -57,7 +57,7 @@ export class AnaDrv extends Drv {
 		super(options, connection);
 
 		this.sourceMode = new SourceModeController(this);
-		this.sourceMode.initializeSourceMode(this);
+		this.sourceMode.setCommunication();
 
 		this.communication.RpmSclMax = this.createDataItem('RpmFbk', 'read', 'number');
 		this.communication.RpmSclMin = this.createDataItem('RpmFbk', 'read', 'number');

@@ -37,28 +37,18 @@ export type InterlockRuntime = BaseDataAssemblyRuntime & {
 };
 
 export class Interlock{
-	permEn: OpcUaDataItem<boolean>;
-	permit: OpcUaDataItem<boolean>;
-	intlEn: OpcUaDataItem<boolean>;
-	interlock: OpcUaDataItem<boolean>;
-	protEn: OpcUaDataItem<boolean>;
-	protect: OpcUaDataItem<boolean>;
-	
+	private dAController: any;
+
 	constructor(dAController: any) {
-		this.permEn = dAController.createDataItem('PermEn', 'read');
-		this.permit = dAController.createDataItem('Permit', 'read');
-		this.intlEn = dAController.createDataItem('IntlEn', 'read');
-		this.interlock = dAController.createDataItem('Interlock', 'read');
-		this.protEn = dAController.createDataItem('ProtEn', 'read');
-		this.protect = dAController.createDataItem('Protect', 'read');
+		this.dAController = dAController;
 	}
 
-	public initializeInterlock(dAController: any){
-		dAController.communication.PermEn = this.permEn;
-		dAController.communication.Permit = this.permit;
-		dAController.communication.IntlEn = this.intlEn;
-		dAController.communication.Interlock = this.interlock;
-		dAController.communication.ProtEn = this.protEn;
-		dAController.communication.Protect = this.protect;
+	public setCommunication(){
+		this.dAController.communication.PermEn = this.dAController.createDataItem('PermEn', 'read');
+		this.dAController.communication.Permit = this.dAController.createDataItem('Permit', 'read');
+		this.dAController.communication.IntlEn = this.dAController.createDataItem('IntlEn', 'read');
+		this.dAController.communication.Interlock = this.dAController.createDataItem('Interlock', 'read');
+		this.dAController.communication.ProtEn = this.dAController.createDataItem('ProtEn', 'read');
+		this.dAController.communication.Protect = this.dAController.createDataItem('Protect', 'read');
 	}
 }

@@ -288,10 +288,10 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 							metaModelRef: dataAssemblyInterfaceClass,
 							dataItems: baseDataAssemblyOptions
 						};
-						// dataAssemblyOptionsArray.push(dataAssemblyOptions);
-						if(dataAssemblyOptions.metaModelRef.includes('AnaMon')) {
+						dataAssemblyOptionsArray.push(dataAssemblyOptions);
+						/*if(dataAssemblyOptions.metaModelRef.includes('AnaMon')) {
 							dataAssemblyOptionsArray.push(dataAssemblyOptions);
-						}
+						}*/
 					});
 					// create PEAOptions
 					const peaOptions: PEAOptions = {

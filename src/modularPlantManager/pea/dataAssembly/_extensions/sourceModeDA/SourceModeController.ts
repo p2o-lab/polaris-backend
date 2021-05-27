@@ -23,10 +23,9 @@
  * SOFTWARE.
  */
 
-//import {SourceModeController} from '@p2olab/polaris-interface';
+import {SourceMode} from '@p2olab/polaris-interface';
 import {OpcUaDataItem} from '../../../connection';
-import {BaseDataAssemblyRuntime, DataAssemblyController} from '../../DataAssemblyController';
-import {Constructor} from '../_helper';
+import {BaseDataAssemblyRuntime} from '../../DataAssemblyController';
 import {catDataAssembly} from '../../../../../logging';
 
 export interface SourceModeRuntime extends BaseDataAssemblyRuntime {
@@ -40,98 +39,86 @@ export interface SourceModeRuntime extends BaseDataAssemblyRuntime {
 }
 
 export class SourceModeController {
-	private srcChannel: OpcUaDataItem<boolean>;
-	private srcIntAct: OpcUaDataItem<boolean>;
-	private srcIntAut: OpcUaDataItem<boolean>;
-	private srcIntOp: OpcUaDataItem<boolean>;
-	private srcManAct: OpcUaDataItem<boolean>;
-	private srcManAut: OpcUaDataItem<boolean>;
-	private srcManOp: OpcUaDataItem<boolean>;
+	private dAController: any;
 
 	constructor(dAController: any) {
-		this.srcChannel = dAController.createDataItem('SrcChannel', 'read', 'boolean');
-		this.srcManAut = dAController.createDataItem('SrcManAut', 'read', 'boolean');
-		this.srcIntAut = dAController.createDataItem('SrcIntAut', 'read', 'boolean');
-		this.srcManOp = dAController.createDataItem('SrcManOp', 'write', 'boolean');
-		this.srcIntOp = dAController.createDataItem('SrcIntOp', 'write', 'boolean');
-		this.srcManAct = dAController.createDataItem('SrcManAct', 'read', 'boolean');
-		this.srcIntAct = dAController.createDataItem('SrcIntAct', 'read', 'boolean');
+		this.dAController = dAController;
 	}
 
-	initializeSourceMode(dAController: any){
-		dAController.communication.SrcChannel = this.srcChannel;
-		dAController.communication.SrcManAut = this.srcManAut;
-		dAController.communication.SrcIntAut = this.srcIntAut;
-		dAController.communication.SrcManOp = this.srcManOp;
-		dAController.communication.SrcIntOp = this.srcIntOp;
-		dAController.communication.SrcManAct = this.srcManAct;
-		dAController.communication.SrcIntAct = this.srcIntAct;
+	setCommunication(){
+		this.dAController.communication.SrcChannel = this.dAController.createDataItem('SrcChannel', 'read', 'boolean');
+		this.dAController.communication.SrcManAut = this.dAController.createDataItem('SrcManAut', 'read', 'boolean');
+		this.dAController.communication.SrcIntAut = this.dAController.createDataItem('SrcIntAut', 'read', 'boolean');
+		this.dAController.communication.SrcManOp = this.dAController.createDataItem('SrcManOp', 'write', 'boolean');
+		this.dAController.communication.SrcIntOp = this.dAController.createDataItem('SrcIntOp', 'write', 'boolean');
+		this.dAController.communication.SrcManAct = this.dAController.createDataItem('SrcManAct', 'read', 'boolean');
+		this.dAController.communication.SrcIntAct = this.dAController.createDataItem('SrcIntAct', 'read', 'boolean');
 	}
 
-/*		public getSourceMode(): SourceModeController {
-			if (this.isExtSource()) {
-				return SourceModeController.Manual;
-			} else if (this.isIntSource()) {
-				return SourceModeController.Intern;
+	public getSourceMode(): SourceMode {
+		if (this.isExtSource()) {
+			return SourceMode.Manual;
+		} else if (this.isIntSource()) {
+			return SourceMode.Intern;
+		}
+		return SourceMode.Manual;
+	}
+
+	public isSourceMode(expectedSourceMode: SourceMode): boolean {
+		switch (expectedSourceMode) {
+			case SourceMode.Intern:
+				return this.isIntSource();
+			case SourceMode.Manual:
+				return this.isExtSource();
+		}
+	}
+
+	public async waitForSourceModeToPassSpecificTest(expectedSourceMode: SourceMode): Promise<void> {
+		await this.dAController.subscribe();
+		return new Promise((resolve) => {
+			if (this.isSourceMode(expectedSourceMode)) {
+				resolve();
+			} else {
+				// eslint-disable-next-line @typescript-eslint/no-this-alias
+				const da = this;
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				this.dAController.on('changed', function test(this: any) {
+					if (da.isSourceMode(expectedSourceMode)) {
+						this.removeListener('OpMode', test);
+						resolve();
+					}
+				});
 			}
-			return SourceModeController.Manual;
-		}
+		});
+	}
 
-		public isSourceMode(expectedSourceMode: SourceModeController): boolean {
-			switch (expectedSourceMode) {
-				case SourceModeController.Intern:
-					return this.isIntSource();
-				case SourceModeController.Manual:
-					return this.isExtSource();
-			}
+	/**
+	 * Set data assembly to external source mode
+	 */
+	public async setToExternalSourceMode(): Promise<void> {
+		if (!this.isExtSource()) {
+			catDataAssembly.trace(`[${this.dAController.name}] Finally to Ext`);
+			await this.writeSourceMode(SourceMode.Manual);
+			await this.waitForSourceModeToPassSpecificTest(SourceMode.Manual);
 		}
+	}
 
-		public async waitForSourceModeToPassSpecificTest(expectedSourceMode: SourceModeController): Promise<void> {
-			await this.subscribe();
-			return new Promise((resolve) => {
-				if (this.isSourceMode(expectedSourceMode)) {
-					resolve();
-				} else {
-					// eslint-disable-next-line @typescript-eslint/no-this-alias
-					const da = this;
-					// eslint-disable-next-line @typescript-eslint/no-explicit-any
-					this.on('changed', function test(this: any) {
-						if (da.isSourceMode(expectedSourceMode)) {
-							this.removeListener('OpMode', test);
-							resolve();
-						}
-					});
-				}
-			});
+	public async writeSourceMode(sourceMode: SourceMode): Promise<void> {
+		catDataAssembly.debug(`[${this.dAController.name}] Write sourceMode: ${sourceMode}`);
+		if (sourceMode === SourceMode.Manual) {
+			await this.dAController.communication.SrcManOp.write(true);
+		} else if (sourceMode === SourceMode.Intern) {
+			await this.dAController.communication.SrcIntOp.write(true);
 		}
+		catDataAssembly.debug(`[${this.dAController.name}] Setting sourceMode successfully`);
+	}
 
-		/!**
-		 * Set data assembly to external source mode
-		 *!/
-		public async setToExternalSourceMode(): Promise<void> {
-			if (!this.isExtSource()) {
-				catDataAssembly.trace(`[${this.name}] Finally to Ext`);
-				await this.writeSourceMode(SourceModeController.Manual);
-				await this.waitForSourceModeToPassSpecificTest(SourceModeController.Manual);
-			}
-		}
+	public isExtSource(): boolean {
+		return this.dAController.communication.SrcManAct?.value === true;
+	}
 
-		public async writeSourceMode(sourceMode: SourceModeController): Promise<void> {
-			catDataAssembly.debug(`[${this.name}] Write sourceMode: ${sourceMode}`);
-			if (sourceMode === SourceModeController.Manual) {
-				await this.communication.SrcManOp.write(true);
-			} else if (sourceMode === SourceModeController.Intern) {
-				await this.communication.SrcIntOp.write(true);
-			}
-			catDataAssembly.debug(`[${this.name}] Setting sourceMode successfully`);
-		}
-
-		public isExtSource(): boolean {
-			return this.communication.SrcManAct?.value === true;
-		}
-
-		public isIntSource(): boolean {
-			return this.communication.SrcIntAct?.value === true;
-		}*/
+	public isIntSource(): boolean {
+		return this.dAController.communication.SrcIntAct?.value === true;
+	}
 
 }

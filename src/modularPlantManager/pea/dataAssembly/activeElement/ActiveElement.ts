@@ -42,9 +42,9 @@ export class ActiveElement extends DataAssemblyController {
 		super(options, connection);
 
 		this.osLevel = new OSLevel(this);
-		this.osLevel.initializeOSLevel(this);
+		this.osLevel.setCommunication();
 
 		this.wqc = new WQC(this);
-		this.wqc.initializeWQC(this);
+		this.wqc.setCommunication();
 	}
 }

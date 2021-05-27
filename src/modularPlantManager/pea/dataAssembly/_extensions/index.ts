@@ -5,7 +5,6 @@ export * from './opModeDA/OpModeController';
 export * from './osLevelDA/OSLevel';
 export * from './resetDA/Reset';
 export * from './scaleSettingsDA/ScaleSettings';
-export * from './serviceSourceModeDA/ServiceSourceMode';
 export * from './sourceModeDA/SourceModeController';
 export * from './unitDA/UnitSettings';
 export * from './valueLimitationDA/ValueLimitation';

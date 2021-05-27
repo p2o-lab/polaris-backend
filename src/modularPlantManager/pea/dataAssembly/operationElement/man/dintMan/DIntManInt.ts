@@ -45,10 +45,10 @@ export class DIntManInt extends DIntMan {
 		super(options, connection);
 
 		this.sourceMode = new SourceModeController(this);
-		this.sourceMode.initializeSourceMode(this);
+		this.sourceMode.setCommunication();
 
 		this.wqc = new WQC(this);
-		this.wqc.initializeWQC(this);
+		this.wqc.setCommunication();
 
 		this.communication.VInt = this.createDataItem('VInt', 'read');
 	}

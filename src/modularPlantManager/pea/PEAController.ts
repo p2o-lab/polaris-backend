@@ -160,7 +160,6 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 					DataAssemblyControllerFactory.create(variableOptions, this.connection)
 				);
 		}
-
 	}
 
 	public getService(serviceName: string): Service {

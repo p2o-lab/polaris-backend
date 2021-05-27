@@ -38,7 +38,7 @@ export class DIntMon extends DIntView {
         super(options, connection);
 
         this.osLevel = new OSLevel(this);
-        this.osLevel.initializeOSLevel(this);
+        this.osLevel.setCommunication();
 
         this.communication.VAHEn = this.createDataItem('VAHEn', 'read');
         this.communication.VAHLim = this.createDataItem('VAHLim', 'write');

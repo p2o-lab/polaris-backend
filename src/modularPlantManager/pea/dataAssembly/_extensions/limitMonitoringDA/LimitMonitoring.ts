@@ -27,69 +27,6 @@ import {OpcUaDataItem} from '../../../connection';
 import {Constructor} from '../_helper';
 import {BaseDataAssemblyRuntime, DataAssemblyController} from '../../DataAssemblyController';
 
-export class LimitMonitoring {
-	vAHEn: OpcUaDataItem<any>;
-	vAHLim: OpcUaDataItem<any>;
-	vAHAct: OpcUaDataItem<any>;
-	vWHEn: OpcUaDataItem<any>;
-	vWHLim: OpcUaDataItem<any>;
-	vWHAct: OpcUaDataItem<any>;
-	vTHEn: OpcUaDataItem<any>;
-	vTHLim: OpcUaDataItem<any>;
-	vTHAct: OpcUaDataItem<any>;
-	vALEn: OpcUaDataItem<any>;
-	vALLim: OpcUaDataItem<any>;
-	vALAct: OpcUaDataItem<any>;
-	vWLEn: OpcUaDataItem<any>;
-	vWLLim: OpcUaDataItem<any>;
-	vWLAct: OpcUaDataItem<any>;
-	vTLEn: OpcUaDataItem<any>;
-	vTLLim: OpcUaDataItem<any>;
-	vTLAct: OpcUaDataItem<any>;
-
-	constructor(dataAssemblyController: any) {
-		this.vAHEn = dataAssemblyController.createDataItem('VAHEn', 'read');
-		this.vAHLim = dataAssemblyController.createDataItem('VAHLim', 'write');
-		this.vAHAct = dataAssemblyController.createDataItem('VAHAct', 'read');
-		this.vWHEn = dataAssemblyController.createDataItem('VWHEn', 'read');
-		this.vWHLim = dataAssemblyController.createDataItem('VWHLim', 'write');
-		this.vWHAct = dataAssemblyController.createDataItem('VWHAct', 'read');
-		this.vTHEn = dataAssemblyController.createDataItem('VTHEn', 'read');
-		this.vTHLim = dataAssemblyController.createDataItem('VTHLim', 'write');
-		this.vTHAct = dataAssemblyController.createDataItem('VTHAct', 'read');
-		this.vALEn = dataAssemblyController.createDataItem('VALEn', 'read');
-		this.vALLim = dataAssemblyController.createDataItem('VALLim', 'write');
-		this.vALAct = dataAssemblyController.createDataItem('VALAct', 'read');
-		this.vWLEn = dataAssemblyController.createDataItem('VWLEn', 'read');
-		this.vWLLim = dataAssemblyController.createDataItem('VWLLim', 'write');
-		this.vWLAct = dataAssemblyController.createDataItem('VWLAct', 'read');
-		this.vTLEn = dataAssemblyController.createDataItem('VTLEn', 'read');
-		this.vTLLim = dataAssemblyController.createDataItem('VTLLim', 'write');
-		this.vTLAct = dataAssemblyController.createDataItem('VTLAct', 'read');
-	}
-	initializeScaleSettings(dataAssemblyController: any){
-		dataAssemblyController.VAHEn = this.vAHEn;
-		dataAssemblyController.VAHLim = this.vAHLim;
-		dataAssemblyController.VAHAct = this.vAHAct;
-		dataAssemblyController.VWHEn = this.vWHEn;
-		dataAssemblyController.VWHLim = this.vWHLim;
-		dataAssemblyController.VWHAct = this.vWHAct;
-		dataAssemblyController.VTHEn = this.vTHEn;
-		dataAssemblyController.VTHLim = this.vTHLim;
-		dataAssemblyController.VTHAct = this.vTHAct;
-		dataAssemblyController.VALEn = this.vALEn;
-		dataAssemblyController.VALLim = this.vALLim;
-		dataAssemblyController.VALAct = this.vALAct;
-		dataAssemblyController.VWLEn = this.vWLEn;
-		dataAssemblyController.VWLLim = this.vWHLim;
-		dataAssemblyController.VWLAct = this.vWLAct;
-		dataAssemblyController.VTLEn = this.vTLEn;
-		dataAssemblyController.VTLLim = this.vTLLim;
-		dataAssemblyController.VTLAct = this.vTLAct;
-	}
-
-}
-
 export type LimitMonitoringRuntime = BaseDataAssemblyRuntime & {
 	VAHEn: OpcUaDataItem<boolean>;
 	VAHLim: OpcUaDataItem<number>;
@@ -110,3 +47,35 @@ export type LimitMonitoringRuntime = BaseDataAssemblyRuntime & {
 	VTLLim: OpcUaDataItem<number>;
 	VTLAct: OpcUaDataItem<boolean>;
 };
+
+export class LimitMonitoring {
+	private dAController: any;
+
+	constructor(dAController: any) {
+		this.dAController = dAController;
+	}
+
+	setCommunication(){
+		this.dAController.communication.VAHEn = this.dAController.createDataItem('VAHEn', 'read');
+		this.dAController.communication.VAHLim = this.dAController.createDataItem('VAHLim', 'write');
+		this.dAController.communication.VAHAct = this.dAController.createDataItem('VAHAct', 'read');
+		this.dAController.communication.VWHEn = this.dAController.createDataItem('VWHEn', 'read');
+		this.dAController.communication.VWHLim = this.dAController.createDataItem('VWHLim', 'write');
+		this.dAController.communication.VWHAct = this.dAController.createDataItem('VWHAct', 'read');
+		this.dAController.communication.VTHEn = this.dAController.createDataItem('VTHEn', 'read');
+		this.dAController.communication.VTHLim = this.dAController.createDataItem('VTHLim', 'write');
+		this.dAController.communication.VTHAct = this.dAController.createDataItem('VTHAct', 'read');
+		this.dAController.communication.VALEn = this.dAController.createDataItem('VALEn', 'read');
+		this.dAController.communication.VALLim = this.dAController.createDataItem('VALLim', 'write');
+		this.dAController.communication.VALAct = this.dAController.createDataItem('VALAct', 'read');
+		this.dAController.communication.VWLEn = this.dAController.createDataItem('VWLEn', 'read');
+		this.dAController.communication.VWLLim = this.dAController.createDataItem('VWLLim', 'write');
+		this.dAController.communication.VWLAct = this.dAController.createDataItem('VWLAct', 'read');
+		this.dAController.communication.VTLEn = this.dAController.createDataItem('VTLEn', 'read');
+		this.dAController.communication.VTLLim = this.dAController.createDataItem('VTLLim', 'write');
+		this.dAController.communication.VTLAct = this.dAController.createDataItem('VTLAct', 'read');
+	}
+
+}
+
+

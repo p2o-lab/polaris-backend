@@ -42,103 +42,89 @@ export interface ServiceSourceModeRuntime extends BaseDataAssemblyRuntime {
 
 export class ServiceSourceModeController{
 
-	private srcChannel: OpcUaDataItem<boolean>;
-	private srcIntAct: OpcUaDataItem<boolean>;
-	private srcIntAut: OpcUaDataItem<boolean>;
-	private srcIntOp: OpcUaDataItem<boolean>;
-	private srcExtAct: OpcUaDataItem<boolean>;
-	private srcExtAut: OpcUaDataItem<boolean>;
-	private srcExtOp: OpcUaDataItem<boolean>;
+
+	private dAController: any;
 
 	constructor(dAController: any) {
-		this.srcChannel = dAController.createDataItem('SrcChannel', 'read', 'boolean');
-
-		this.srcExtAut = dAController.createDataItem('SrcExtAut', 'read', 'boolean');
-		this.srcIntAut = dAController.createDataItem('SrcIntAut', 'read', 'boolean');
-
-		this.srcExtOp = dAController.createDataItem('SrcExtOp', 'write', 'boolean');
-		this.srcIntOp = dAController.createDataItem('SrcIntOp', 'write', 'boolean');
-
-		this.srcExtAct = dAController.createDataItem('SrcExtAct', 'read', 'boolean');
-		this.srcIntAct = dAController.createDataItem('SrcIntAct', 'read', 'boolean');
+		this.dAController = dAController;
 	}
 
-	initializeServiceSourceMode(dAController: any){
-		dAController.communication.SrcChannel = this.srcChannel;
+	setCommunication(){
+		this.dAController.communicationsrcChannel = this.dAController.createDataItem('SrcChannel', 'read', 'boolean');
 
-		dAController.communication.SrcExtAct = this.srcExtAct;
-		dAController.communication.SrcExtAut = this.srcExtAut;
-		dAController.communication.SrcExtOp = this.srcExtOp;
+		this.dAController.communicationsrcExtAut = this.dAController.createDataItem('SrcExtAut', 'read', 'boolean');
+		this.dAController.communicationsrcIntAut = this.dAController.createDataItem('SrcIntAut', 'read', 'boolean');
 
-		dAController.communication.SrcIntAct = this.srcIntAct;
-		dAController.communication.SrcIntAut = this.srcIntAut;
-		dAController.communication.SrcIntOp = this.srcIntOp;
+		this.dAController.communicationsrcExtOp = this.dAController.createDataItem('SrcExtOp', 'write', 'boolean');
+		this.dAController.communicationsrcIntOp = this.dAController.createDataItem('SrcIntOp', 'write', 'boolean');
+
+		this.dAController.communicationsrcExtAct = this.dAController.createDataItem('SrcExtAct', 'read', 'boolean');
+		this.dAController.communicationsrcIntAct = this.dAController.createDataItem('SrcIntAct', 'read', 'boolean');
 	}
-/*
-		public getServiceSourceMode(): ServiceSourceMode {
-			if (this.isExtSource()) {
-				return ServiceSourceMode.Extern;
-			} else if (this.isIntSource()) {
-				return ServiceSourceMode.Intern;
-			}
+
+	public getServiceSourceMode(): ServiceSourceMode {
+		if (this.isExtSource()) {
 			return ServiceSourceMode.Extern;
+		} else if (this.isIntSource()) {
+			return ServiceSourceMode.Intern;
 		}
+		return ServiceSourceMode.Extern;
+	}
 
-		public isServiceSourceMode(expectedServiceSourceMode: ServiceSourceMode): boolean {
-			switch (expectedServiceSourceMode) {
-				case ServiceSourceMode.Intern:
-					return this.isIntSource();
-				case ServiceSourceMode.Extern:
-					return this.isExtSource();
+	public isServiceSourceMode(expectedServiceSourceMode: ServiceSourceMode): boolean {
+		switch (expectedServiceSourceMode) {
+			case ServiceSourceMode.Intern:
+				return this.isIntSource();
+			case ServiceSourceMode.Extern:
+				return this.isExtSource();
+		}
+	}
+
+	public async waitForServiceSourceModeToPassSpecificTest(expectedServiceSourceMode: ServiceSourceMode): Promise<unknown> {
+		await this.dAController.subscribe();
+		return new Promise((resolve) => {
+			if (this.isServiceSourceMode(expectedServiceSourceMode)) {
+				resolve();
+			} else {
+				// eslint-disable-next-line @typescript-eslint/no-this-alias
+				const da = this;
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				this.dAController.on('changed', function test(this: any) {
+					if (da.isServiceSourceMode(expectedServiceSourceMode)) {
+						this.removeListener('OpMode', test);
+						resolve();
+					}
+				});
 			}
-		}
+		});
+	}
 
-		public async waitForServiceSourceModeToPassSpecificTest(expectedServiceSourceMode: ServiceSourceMode): Promise<unknown> {
-			await this.subscribe();
-			return new Promise((resolve) => {
-				if (this.isServiceSourceMode(expectedServiceSourceMode)) {
-					resolve();
-				} else {
-					// eslint-disable-next-line @typescript-eslint/no-this-alias
-					const da = this;
-					// eslint-disable-next-line @typescript-eslint/no-explicit-any
-					this.on('changed', function test(this: any) {
-						if (da.isServiceSourceMode(expectedServiceSourceMode)) {
-							this.removeListener('OpMode', test);
-							resolve();
-						}
-					});
-				}
-			});
+	/**
+	 * Set data assembly to external ServiceSourceMode
+	 */
+	public async setToExternalServiceSourceMode(): Promise<void> {
+		if (!this.isExtSource()) {
+			catDataAssembly.trace(`[${this.dAController.name}] Finally to Ext`);
+			await this.writeServiceSourceMode(ServiceSourceMode.Extern);
+			await this.waitForServiceSourceModeToPassSpecificTest(ServiceSourceMode.Extern);
 		}
+	}
 
-		/!**
-		 * Set data assembly to external ServiceSourceMode
-		 *!/
-		public async setToExternalServiceSourceMode(): Promise<void> {
-			if (!this.isExtSource()) {
-				catDataAssembly.trace(`[${this.name}] Finally to Ext`);
-				await this.writeServiceSourceMode(ServiceSourceMode.Extern);
-				await this.waitForServiceSourceModeToPassSpecificTest(ServiceSourceMode.Extern);
-			}
+	public async writeServiceSourceMode(serviceSourceMode: ServiceSourceMode): Promise<void> {
+		catDataAssembly.debug(`[${this.dAController.name}] Write serviceSourceMode: ${serviceSourceMode}`);
+		if (serviceSourceMode === ServiceSourceMode.Extern) {
+			await this.dAController.communication.SrcExtOp.write(true);
+		} else if (serviceSourceMode === ServiceSourceMode.Intern) {
+			await this.dAController.communication.SrcIntOp.write(true);
 		}
+		catDataAssembly.debug(`[${this.dAController.name}] Setting serviceSourceMode successfully`);
+	}
 
-		public async writeServiceSourceMode(serviceSourceMode: ServiceSourceMode): Promise<void> {
-			catDataAssembly.debug(`[${this.name}] Write serviceSourceMode: ${serviceSourceMode}`);
-			if (serviceSourceMode === ServiceSourceMode.Extern) {
-				await this.communication.SrcExtOp.write(true);
-			} else if (serviceSourceMode === ServiceSourceMode.Intern) {
-				await this.communication.SrcIntOp.write(true);
-			}
-			catDataAssembly.debug(`[${this.name}] Setting serviceSourceMode successfully`);
-		}
+	public isExtSource(): boolean {
+		return this.dAController.communication.SrcExtAct.value === true;
+	}
 
-		public isExtSource(): boolean {
-			return this.communication.SrcExtAct.value === true;
-		}
-
-		public isIntSource(): boolean {
-			return this.communication.SrcIntAct.value === true;
-		}
-		*/
+	public isIntSource(): boolean {
+		return this.dAController.communication.SrcIntAct.value === true;
+	}
 }

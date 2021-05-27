@@ -33,17 +33,15 @@ export interface ResetRuntime extends BaseDataAssemblyRuntime {
 }
 
 export class Reset {
-	private resetOp: OpcUaDataItem<boolean>;
-	private resetAut: OpcUaDataItem<boolean>;
+	private dAController: any;
 
 	constructor(dAController: any) {
-		this.resetOp = dAController.createDataItem('ResetOp', 'write');
-		this.resetAut = dAController.createDataItem('ResetAut', 'write');
+		this.dAController = dAController;
 	}
 
-	public initializeReset(dAController: any){
-		dAController.communication.ResetOp = this.resetOp;
-		dAController.communication.ResetAut = this.resetAut;
+	public setCommunication(){
+		this.dAController.communication.ResetOp= this.dAController.createDataItem('ResetOp', 'write');
+		this.dAController.communication.ResetAut = this.dAController.createDataItem('ResetAut', 'write');
 	}
 
 }

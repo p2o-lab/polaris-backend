@@ -45,10 +45,10 @@ export class AnaManInt extends AnaMan {
 		super(options, connection);
 
 		this.wqc = new WQC(this);
-		this.wqc.initializeWQC(this);
+		this.wqc.setCommunication();
 
 		this.sourceMode = new SourceModeController(this);
-		this.sourceMode.initializeSourceMode(this);
+		this.sourceMode.setCommunication();
 
 		this.communication.VInt = this.createDataItem('VInt', 'read');
 	}

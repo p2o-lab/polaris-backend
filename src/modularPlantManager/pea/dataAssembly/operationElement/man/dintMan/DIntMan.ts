@@ -56,10 +56,10 @@ export class DIntMan extends OperationElement {
 		this.communication.VMan = this.createDataItem('VMan', 'write');
 
 		this.valueLimitation = new ValueLimitation(this);
-		this.valueLimitation.initializeValueLimitations(this);
+		this.valueLimitation.setCommunication();
 
 		this.scaleSettings = new ScaleSettings(this);
-		this.scaleSettings.initializeScaleSettings(this);
+		this.scaleSettings.setCommunication();
 
 		this.defaultReadDataItem = this.communication.VOut;
 		this.defaultReadDataItemType = 'number';

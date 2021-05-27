@@ -37,28 +37,19 @@ export interface FeedbackMonitoringRuntime extends BaseDataAssemblyRuntime {
 }
 
 export class FeedbackMonitoring {
-	monEn: OpcUaDataItem<boolean>;
-	monSafePos: OpcUaDataItem<boolean>;
-	monStatErr: OpcUaDataItem<boolean>;
-	monDynErr: OpcUaDataItem<boolean>;
-	monStatTi: OpcUaDataItem<number>;
-	monDynTi: OpcUaDataItem<number>;
+	private dAController: any;
 	
 	constructor(dAController: any) {
-		this.monEn = dAController.createDataItem('MonEn', 'write');
-		this.monSafePos = dAController.createDataItem('MonSafePos', 'read');
-		this.monStatErr = dAController.createDataItem('MonStatErr', 'read');
-		this.monDynErr = dAController.createDataItem('MonDynErr', 'read');
-		this.monStatTi = dAController.createDataItem('MonStatTi', 'read');
-		this.monDynTi = dAController.createDataItem('MonDynTi', 'read');
+		this.dAController = dAController;
+
 	}
 
-	public initializeFeedbackMonitoring(dAController: any){
-		dAController.communication.MonEn = this.monEn;
-		dAController.communication.MonSafePos = this.monSafePos;
-		dAController.communication.MonStatErr = this.monStatErr;
-		dAController.communication.MonDynErr = this.monDynErr;
-		dAController.communication.MonStatTi = this.monStatTi;
-		dAController.communication.MonDynTi = this.monDynTi;
+	public setCommunication() {
+		this.dAController.communication.MonEn = this.dAController.createDataItem('MonEn', 'write');
+		this.dAController.communication.MonSafePos = this.dAController.createDataItem('MonSafePos', 'read');
+		this.dAController.communication.MonStatErr = this.dAController.createDataItem('MonStatErr', 'read');
+		this.dAController.communication.MonDynErr = this.dAController.createDataItem('MonDynErr', 'read');
+		this.dAController.communication.MonStatTi = this.dAController.createDataItem('MonStatTi', 'read');
+		this.dAController.communication.MonDynTi = this.dAController.createDataItem('MonDynTi', 'read');
 	}
 }

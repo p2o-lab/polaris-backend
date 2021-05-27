@@ -42,6 +42,6 @@ export class MonBinVlv extends BinVlv {
 		super(options, connection);
 
 		this.feedBackMonitoring = new FeedbackMonitoring(this);
-		this.feedBackMonitoring.initializeFeedbackMonitoring(this);
+		this.feedBackMonitoring.setCommunication();
 	}
 }

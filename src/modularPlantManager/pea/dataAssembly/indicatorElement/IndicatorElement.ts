@@ -41,7 +41,7 @@ export class IndicatorElement extends DataAssemblyController {
 		super(options, connection);
 
 		this.wqc = new WQC(this);
-		this.wqc.initializeWQC(this);
+		this.wqc.setCommunication();
 	}
 
 	public toJson(): ParameterInterface {

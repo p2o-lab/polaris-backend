@@ -43,7 +43,7 @@ export class OperationElement extends DataAssemblyController {
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
 		this.osLevel = new OSLevel(this);
-		this.osLevel.initializeOSLevel(this);
+		this.osLevel.setCommunication();
 	}
 
 

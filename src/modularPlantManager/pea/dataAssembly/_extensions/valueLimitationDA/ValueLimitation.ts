@@ -33,20 +33,15 @@ export type ValueLimitationRuntime = BaseDataAssemblyRuntime & {
 	VMax: OpcUaDataItem<number>;
 };
 
-// tslint:disable-next-line:variable-name
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export class ValueLimitation{
-	readonly vMin: OpcUaDataItem<number>;
-	readonly vMax: OpcUaDataItem<number>;
+	private dAController: any;
 
 	constructor(dAController: any) {
-		this.vMax = dAController.createDataItem('VMax', 'read');
-		this.vMin = dAController.createDataItem('VMin', 'read');
+		this.dAController = dAController;
 	}
 
-	initializeValueLimitations(dAController: any){
-		dAController.communication.VMin = this.vMin;
-		dAController.communication.VMax = this.vMax;
+	setCommunication(){
+		this.dAController.communication.VMax = this.dAController.createDataItem('VMax', 'read');
+		this.dAController.communication.VMin = this.dAController.createDataItem('VMin', 'read');
 	}
-
 }

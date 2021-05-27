@@ -23,7 +23,6 @@
  * SOFTWARE.
  */
 
-import {UnitDA} from './UnitDA';
 import {OpcUaConnection} from '../../../connection';
 
 import * as chai from 'chai';
