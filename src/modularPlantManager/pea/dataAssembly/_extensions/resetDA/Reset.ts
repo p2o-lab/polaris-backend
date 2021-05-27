@@ -23,29 +23,27 @@
  * SOFTWARE.
  */
 
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaConnection} from '../../connection';
-import {OSLevelDA, OSLevelRuntime, WQCDA, WQCRuntime} from '../_extensions';
-import {BaseDataAssemblyRuntime, DataAssemblyController} from '../DataAssemblyController';
+import {OpcUaDataItem} from '../../../connection';
+import {Constructor} from '../_helper';
+import {BaseDataAssemblyRuntime, DataAssemblyController} from '../../DataAssemblyController';
 
-export type ActiveElementRuntime = BaseDataAssemblyRuntime & WQCRuntime & OSLevelRuntime;
+export interface ResetRuntime extends BaseDataAssemblyRuntime {
+	ResetOp: OpcUaDataItem<boolean>;
+	ResetAut: OpcUaDataItem<boolean>;
+}
 
-export class ActiveElement extends DataAssemblyController {
+export class Reset {
+	private resetOp: OpcUaDataItem<boolean>;
+	private resetAut: OpcUaDataItem<boolean>;
 
-	public readonly communication: ActiveElementRuntime = {} as ActiveElementRuntime;
-
-	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
-		super(options, connection);
-
-		//TODO: maybe do composition for OSLevel and WQC to avoid code repetition
-		this.communication.OSLevel = this.createDataItem('OSLevel', 'write');
-		this.communication.WQC = this.createDataItem('WQC', 'read');
+	constructor(dAController: any) {
+		this.resetOp = dAController.createDataItem('ResetOp', 'write');
+		this.resetAut = dAController.createDataItem('ResetAut', 'write');
 	}
 
-	get OSLevel(): number | undefined {
-		return this.communication.OSLevel.value;
+	public initializeReset(dAController: any){
+		dAController.communication.ResetOp = this.resetOp;
+		dAController.communication.ResetAut = this.resetAut;
 	}
-	get WQC(): number | undefined {
-		return this.communication.WQC.value;
-	}
+
 }

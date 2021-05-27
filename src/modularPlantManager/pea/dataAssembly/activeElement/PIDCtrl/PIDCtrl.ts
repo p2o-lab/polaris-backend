@@ -31,6 +31,8 @@ import {
 	SourceModeDA, SourceModeRuntime
 } from '../../_extensions';
 import {ActiveElement, ActiveElementRuntime} from '../ActiveElement';
+import {SourceModeController} from '../../_extensions/sourceModeDA/SourceModeController';
+import {OpModeController} from '../../_extensions/opModeDA/OpModeController';
 
 export type PIDCtrlRuntime = ActiveElementRuntime & OpModeRuntime & SourceModeRuntime & {
 	PV: OpcUaDataItem<number>;
@@ -62,11 +64,18 @@ export type PIDCtrlRuntime = ActiveElementRuntime & OpModeRuntime & SourceModeRu
 	Td: OpcUaDataItem<number>;
 };
 
-export class PIDCtrl extends SourceModeDA(OpModeDA(ActiveElement)) {
+export class PIDCtrl extends ActiveElement {
 	public readonly communication!: PIDCtrlRuntime;
+	sourceMode: SourceModeController;
+	opMode: OpModeController;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
+
+		this.sourceMode = new SourceModeController(this);
+		this.sourceMode.initializeSourceMode(this);
+		this.opMode = new OpModeController(this);
+		this.opMode.initializeOpMode(this);
 
 		this.communication.PV = this.createDataItem('PV', 'read', 'number');
 		this.communication.PVSclMin = this.createDataItem('PVSclMin', 'read', 'number');

@@ -28,6 +28,7 @@ import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {OpcUaConnection, OpcUaDataItem} from '../../../../connection';
 import {Vlv, VlvRuntime} from '../Vlv';
 import {SourceModeDA, SourceModeRuntime} from '../../../_extensions';
+import {SourceModeController} from '../../../_extensions/sourceModeDA/SourceModeController';
 
 export type AnaVlvRuntime = VlvRuntime & SourceModeRuntime & {
 	Pos: OpcUaDataItem<number>;
@@ -46,11 +47,15 @@ export type AnaVlvRuntime = VlvRuntime & SourceModeRuntime & {
 	CloseAct: OpcUaDataItem<boolean>;
 };
 
-export class AnaVlv extends SourceModeDA(Vlv) {
+export class AnaVlv extends Vlv {
 	public readonly communication!: AnaVlvRuntime;
+	sourceMode: SourceModeController;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
+
+		this.sourceMode = new SourceModeController(this);
+		this.sourceMode.initializeSourceMode(this);
 
 		this.communication.Pos = this.createDataItem('Pos', 'read', 'number');
 		this.communication.PosFbk = this.createDataItem('PosFbk', 'read', 'number');

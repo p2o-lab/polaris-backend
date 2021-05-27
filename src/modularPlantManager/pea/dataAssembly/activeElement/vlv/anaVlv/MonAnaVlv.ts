@@ -28,6 +28,7 @@ import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {OpcUaConnection, OpcUaDataItem} from '../../../../connection';
 import {FeedbackMonitoringDA, FeedbackMonitoringRuntime} from '../../../_extensions';
 import {AnaVlv, AnaVlvRuntime} from './AnaVlv';
+import {FeedbackMonitoring} from '../../../_extensions/feedbackMonitoringDA/FeedbackMonitoring';
 
 export type MonAnaVlvRuntime = AnaVlvRuntime & FeedbackMonitoringRuntime & {
 	PosReachedFbk: OpcUaDataItem<boolean>;
@@ -36,11 +37,15 @@ export type MonAnaVlvRuntime = AnaVlvRuntime & FeedbackMonitoringRuntime & {
 	MonPosErr: OpcUaDataItem<boolean>;
 };
 
-export class MonAnaVlv extends FeedbackMonitoringDA(AnaVlv) {
+export class MonAnaVlv extends AnaVlv {
 	public readonly communication!: MonAnaVlvRuntime;
+	feedBackMonitoring: FeedbackMonitoring;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
+
+		this.feedBackMonitoring = new FeedbackMonitoring(this);
+		this.feedBackMonitoring.initializeFeedbackMonitoring(this);
 
 		this.communication.PosReachedFbk = this.createDataItem('PosReachedFbk', 'read', 'boolean');
 		this.communication.PosTolerance = this.createDataItem('PosTolerance', 'read', 'number');

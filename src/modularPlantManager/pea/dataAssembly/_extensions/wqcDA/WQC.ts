@@ -23,29 +23,28 @@
  * SOFTWARE.
  */
 
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaConnection} from '../../connection';
-import {OSLevelDA, OSLevelRuntime, WQCDA, WQCRuntime} from '../_extensions';
-import {BaseDataAssemblyRuntime, DataAssemblyController} from '../DataAssemblyController';
+import {OpcUaDataItem} from '../../../connection';
+import {BaseDataAssemblyRuntime, Constructor} from '../../index';
+import {DataAssemblyController} from '../../DataAssemblyController';
 
-export type ActiveElementRuntime = BaseDataAssemblyRuntime & WQCRuntime & OSLevelRuntime;
+export interface WQCRuntime extends BaseDataAssemblyRuntime {
+	WQC: OpcUaDataItem<number>;
+}
 
-export class ActiveElement extends DataAssemblyController {
+// tslint:disable-next-line:variable-name
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export function WQCDA<TBase extends Constructor<DataAssemblyController>>(Base: TBase) {
+	return class extends Base {
+		public communication!: WQCRuntime;
 
-	public readonly communication: ActiveElementRuntime = {} as ActiveElementRuntime;
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		constructor(...args: any[]) {
+			super(...args);
+			//this.communication.WQC = this.createDataItem('WQC', 'read');
+		}
 
-	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
-		super(options, connection);
-
-		//TODO: maybe do composition for OSLevel and WQC to avoid code repetition
-		this.communication.OSLevel = this.createDataItem('OSLevel', 'write');
-		this.communication.WQC = this.createDataItem('WQC', 'read');
-	}
-
-	get OSLevel(): number | undefined {
-		return this.communication.OSLevel.value;
-	}
-	get WQC(): number | undefined {
-		return this.communication.WQC.value;
-	}
+		get WQC(): number | undefined {
+			return this.communication.WQC.value;
+		}
+	};
 }

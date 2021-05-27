@@ -32,13 +32,18 @@ import {
 import {
 	BinVlv, BinVlvRuntime
 } from './BinVlv';
+import {FeedbackMonitoring} from '../../../_extensions/feedbackMonitoringDA/FeedbackMonitoring';
 
 export type MonBinVlvRuntime = BinVlvRuntime & FeedbackMonitoringRuntime;
 
-export class MonBinVlv extends FeedbackMonitoringDA(BinVlv) {
+export class MonBinVlv extends BinVlv {
 	public readonly communication!: MonBinVlvRuntime;
+	feedBackMonitoring: FeedbackMonitoring;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
+
+		this.feedBackMonitoring = new FeedbackMonitoring(this);
+		this.feedBackMonitoring.initializeFeedbackMonitoring(this);
 	}
 }
