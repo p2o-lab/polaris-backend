@@ -31,6 +31,9 @@ import {
 	WQCDA, WQCRuntime
 } from '../index';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {WQC} from '../_extensions/wqcDA/WQC';
+import {OpModeController} from '../_extensions/opModeDA/OpModeController';
+import {ServiceSourceModeController} from '../_extensions/serviceSourceModeDA/ServiceSourceModeController';
 
 export type ServiceControlRuntime = BaseDataAssemblyRuntime & OpModeRuntime & ServiceSourceModeRuntime & WQCRuntime & {
 	CommandOp: OpcUaDataItem<number>;
@@ -50,11 +53,24 @@ export type ServiceControlRuntime = BaseDataAssemblyRuntime & OpModeRuntime & Se
 	PosTextID: OpcUaDataItem<number>;
 };
 
-export class ServiceControl extends WQCDA(OpModeDA(ServiceSourceModeDA(DataAssemblyController))) {
+export class ServiceControl extends DataAssemblyController {
 	public readonly communication!: ServiceControlRuntime;
+	wqc: WQC;
+	opMode: OpModeController;
+	serviceSourceMode: ServiceSourceModeController;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
+
+		this.wqc = new WQC(this);
+		this.wqc.initializeWQC(this);
+
+		this.opMode = new OpModeController(this);
+		this.opMode.initializeOpMode(this);
+
+		this.serviceSourceMode = new ServiceSourceModeController(this);
+		this.serviceSourceMode.initializeServiceSourceMode(this);
+
 		this.communication.CommandOp = this.createDataItem('CommandOp', 'write');
 		this.communication.CommandInt = this.createDataItem('CommandInt', 'write');
 		this.communication.CommandExt = this.createDataItem('CommandExt', 'write');
