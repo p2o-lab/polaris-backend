@@ -28,6 +28,7 @@ import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {OpcUaConnection, OpcUaDataItem} from '../../../../connection';
 import {SourceModeDA, SourceModeRuntime, WQCDA, WQCRuntime} from '../../../_extensions';
 import {BinMan, BinManRuntime} from './BinMan';
+import {SourceModeController} from '../../../_extensions/sourceModeDA/SourceModeController';
 
 export type BinManIntRuntime = BinManRuntime & SourceModeRuntime & WQCRuntime & {
 	VInt: OpcUaDataItem<boolean>;
@@ -36,6 +37,7 @@ export type BinManIntRuntime = BinManRuntime & SourceModeRuntime & WQCRuntime & 
 export class BinManInt extends BinMan {
 
 	public readonly communication!: BinManIntRuntime;
+	public readonly sourceMode: SourceModeController;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
@@ -43,17 +45,9 @@ export class BinManInt extends BinMan {
 		this.communication.WQC = this.createDataItem('WQC', 'read');
 		this.communication.VInt = this.createDataItem('VInt', 'read');
 
-		//SourceMode
-		this.communication.SrcChannel = this.createDataItem('SrcChannel', 'read', 'boolean');
+		this.sourceMode = new SourceModeController(this);
+		this.sourceMode.initializeSourceMode(this);
 
-		this.communication.SrcManAut = this.createDataItem('SrcManAut', 'read', 'boolean');
-		this.communication.SrcIntAut = this.createDataItem('SrcIntAut', 'read', 'boolean');
-
-		this.communication.SrcManOp = this.createDataItem('SrcManOp', 'write', 'boolean');
-		this.communication.SrcIntOp = this.createDataItem('SrcIntOp', 'write', 'boolean');
-
-		this.communication.SrcManAct = this.createDataItem('SrcManAct', 'read', 'boolean');
-		this.communication.SrcIntAct = this.createDataItem('SrcIntAct', 'read', 'boolean');
 	}
 
 	get WQC(): number | undefined {

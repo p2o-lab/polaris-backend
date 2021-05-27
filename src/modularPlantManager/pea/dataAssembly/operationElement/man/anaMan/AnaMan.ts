@@ -32,7 +32,7 @@ import {
 	ValueLimitationDA, ValueLimitationRuntime
 } from '../../../_extensions';
 import {OperationElement, OperationElementRuntime} from '../../OperationElement';
-import {ScaleSettings} from '../../../_extensions/scaleSettingsDA/ScaleSetting';
+import {ScaleSettings} from '../../../_extensions/scaleSettingsDA/ScaleSettings';
 import {UnitSettings} from '../../../_extensions/unitDA/UnitSettings';
 
 export type AnaManRuntime =

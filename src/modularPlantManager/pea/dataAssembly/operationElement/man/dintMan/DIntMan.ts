@@ -33,7 +33,7 @@ import {
 } from '../../../_extensions';
 import {OperationElement, OperationElementRuntime} from '../../OperationElement';
 import {ValueLimitation} from '../../../_extensions/valueLimitationDA/ValueLimitation';
-import {ScaleSettings} from '../../../_extensions/scaleSettingsDA/ScaleSetting';
+import {ScaleSettings} from '../../../_extensions/scaleSettingsDA/ScaleSettings';
 
 export type DIntManRuntime =
 	OperationElementRuntime & UnitDataAssemblyRuntime

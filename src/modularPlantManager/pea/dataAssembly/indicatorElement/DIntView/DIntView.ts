@@ -33,7 +33,7 @@ import {
 import {AnaViewRuntime} from '../AnaView/AnaView';
 import {IndicatorElement} from '../IndicatorElement';
 import {UnitSettings} from '../../_extensions/unitDA/UnitSettings';
-import {ScaleSettings} from '../../_extensions/scaleSettingsDA/ScaleSetting';
+import {ScaleSettings} from '../../_extensions/scaleSettingsDA/ScaleSettings';
 
 
 export class DIntView extends IndicatorElement {
