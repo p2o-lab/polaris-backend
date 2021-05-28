@@ -58,17 +58,12 @@ describe('ModularPlantManager', () => {
 			modularPlantManager.addPEAToPimadPool({source:'local/Module.zip'}, response => {
 				if(response.getMessage()=='Success!') {
 					const peaModel: PEAModel = response.getContent() as PEAModel;
-					const options: Options= {
-						id: peaModel.getPiMAdIdentifier(),
-						username: '',
-						password: '',
-						opcuaServerUrl: ''
-					};
+
 					//const peaControllers = modularPlantManager.loadPEAController(options);
 					//console.log(peaControllers);
 
 					// we are currently only parsing 1 PEAController
-					expect(modularPlantManager.loadPEAController(options)).to.have.lengthOf(1);
+					modularPlantManager.loadPEAController(peaModel.getPiMAdIdentifier());
 					done();
 				}
 			});

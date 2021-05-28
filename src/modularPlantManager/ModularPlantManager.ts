@@ -303,6 +303,7 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 					});
 					// create PEAOptions
 					const peaOptions: PEAOptions = {
+						name: peaModel.getName(),
 						id: this.generateUniqueIdentifier(),
 						pimadIdentifier: pimadIdentifier,
 						services: [],
@@ -560,9 +561,3 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 		}
 	}
 }
-/*export interface Options{
-	id: string;
-	username: string;
-	password: string;
-	opcuaServerUrl: string;
-}*/

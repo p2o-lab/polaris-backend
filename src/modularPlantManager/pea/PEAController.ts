@@ -129,6 +129,7 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 	public readonly options: PEAOptions;
 	public readonly id: string;
 	public readonly pimadIdentifier: string;
+	public readonly name: string;
 
 	public readonly services: Service[] = [];
 	public readonly variables: DataAssemblyController[] = [];
@@ -144,6 +145,7 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 		super();
 		this.options = options;
 		this.pimadIdentifier = options.pimadIdentifier;
+		this.name = options.name;
 		this.id = options.id;
 		this.description = options.description || '';
 		this.protected = protectedPEA;
@@ -210,8 +212,9 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 	 */
 	public json(): PEAInterface {
 		return {
-			name: '',
-			pimadIdentifier: this.id,
+			name: this.name,
+			id: this.id,
+			pimadIdentifier: this.pimadIdentifier,
 			description: this.description,
 			endpoint: this.connection.endpoint,
 			hmiUrl: this.hmiUrl,
