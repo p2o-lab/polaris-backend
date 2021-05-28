@@ -128,6 +128,8 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 
 	public readonly options: PEAOptions;
 	public readonly id: string;
+	public readonly pimadIdentifier: string;
+
 	public readonly services: Service[] = [];
 	public readonly variables: DataAssemblyController[] = [];
 	// PEAController is protected and can't be deleted by the user
@@ -141,10 +143,12 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 	constructor(options: PEAOptions, protectedPEA = false) {
 		super();
 		this.options = options;
+		this.pimadIdentifier = options.pimadIdentifier;
 		this.id = options.id;
 		this.description = options.description || '';
 		this.protected = protectedPEA;
 		this.hmiUrl = options.hmiUrl || '';
+
 		this.connection = new OpcUaConnection(this.id, options.opcuaServerUrl, options.username, options.password)
 			.on('connected', () => this.emit('connected'))
 			.on('disconnected', () => this.emit('disconnected'));
