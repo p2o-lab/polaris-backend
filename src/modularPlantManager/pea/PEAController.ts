@@ -26,7 +26,7 @@
 import {
 	CommandEnableInterface, DataAssemblyOptions,
 	OperationMode,
-	ParameterInterface, PEAInterface, PEAOptions,
+	ParameterInterface, PEAInterface, PEAOptions, ServerSettingsOptions,
 	ServiceCommand,
 	ServiceInterface, ServiceOptions, ServiceSourceMode,
 	VariableChange
@@ -135,7 +135,7 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 	public readonly variables: DataAssemblyController[] = [];
 	// PEAController is protected and can't be deleted by the user
 	public protected = false;
-	public readonly connection: OpcUaConnection;
+	public connection: OpcUaConnection;
 
 	private readonly description: string;
 	private readonly hmiUrl: string;
@@ -166,6 +166,12 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 					DataAssemblyControllerFactory.create(variableOptions, this.connection)
 				);
 		}
+	}
+
+	public setConnection(options: ServerSettingsOptions){
+		this.connection = new OpcUaConnection(this.id, options.serverUrl, options.username, options.password)
+			.on('connected', () => this.emit('connected'))
+			.on('disconnected', () => this.emit('disconnected'));
 	}
 
 	public getService(serviceName: string): Service {

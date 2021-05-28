@@ -24,7 +24,7 @@
  */
 
 import {AggregatedServiceOptions, ServiceCommand} from '@p2olab/polaris-interface';
-import {LoadOptions, ModularPlantManager, Options} from './ModularPlantManager';
+import {LoadOptions, ModularPlantManager} from './ModularPlantManager';
 import {Service} from './pea';
 import {ServiceState} from './pea/dataAssembly';
 

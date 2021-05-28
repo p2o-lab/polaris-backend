@@ -187,6 +187,12 @@ peaRouter.post('/:peaId/disconnect', asyncHandler(async (req: Request, res: Resp
 	res.json({pea: pea.id, status: 'Successfully disconnected'});
 }));
 
+peaRouter.post('/updateSettings', asyncHandler(async (req: Request, res: Response) => {
+	const manager: ModularPlantManager = req.app.get('manager');
+	manager.updateServerSettings(req.body.options);
+	res.json({pea: req.body.options.id, status: 'Successfully updated Settings'});
+}));
+
 /**
  * @api {delete} /:peaId    Delete PEAController  by ID
  * @apiName DeletePEA

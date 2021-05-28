@@ -33,7 +33,7 @@ import {
 	PEAOptions,
 	RecipeOptions,
 	ServiceCommand,
-	VariableChange
+	VariableChange, ServerSettingsOptions
 } from '@p2olab/polaris-interface';
 import {
 	Backbone,
@@ -179,6 +179,12 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 		this.peaControllerPool.addPEA(filePath, (response: PiMAdResponse) => {
 				callback(response);
 			});
+	}
+
+	public updateServerSettings(options: ServerSettingsOptions){
+		const pea = this.getPEAController(options.id);
+		pea.setConnection(options);
+		console.log(pea.connection);
 	}
 	/**
 	 * Load PEAs from JSON according to TopologyGenerator output or to simplified JSON
