@@ -153,11 +153,11 @@ export class Service extends BaseService {
 			})
 			.on('OpMode', () => {
 				this.logger.debug(`[${this.qualifiedName}] Current OpMode changed: ` +
-					`${this.serviceControl.getOperationMode()}`);
+					`${this.serviceControl.opMode.getOperationMode()}`);
 				this.eventEmitter.emit('opMode',
 					{
-						operationMode: this.serviceControl.getOperationMode(),
-						sourceMode: this.serviceControl.getServiceSourceMode()
+						operationMode: this.serviceControl.opMode.getOperationMode(),
+						sourceMode: this.serviceControl.serviceSourceMode.getServiceSourceMode()
 					});
 			})
 			.on('State', () => {
@@ -206,8 +206,8 @@ export class Service extends BaseService {
 	public json(): ServiceInterface {
 		return {
 			name: this.name,
-			operationMode: this.serviceControl.getOperationMode(),
-			serviceSourceMode: this.serviceControl.getServiceSourceMode(),
+			operationMode: this.serviceControl.opMode.getOperationMode(),
+			serviceSourceMode: this.serviceControl.serviceSourceMode.getServiceSourceMode(),
 			status: ServiceState[this.state],
 			procedures: this.procedures.map((procedure) => procedure.toJson()),
 			currentProcedure: this.getCurrentProcedure().name,
@@ -298,13 +298,13 @@ export class Service extends BaseService {
 	public async setParameters(parameterOptions: ParameterOptions[], peaSet: PEAController[] = []): Promise<void> {
 		parameterOptions.map((p) => {
 			const dataAssembly = this.findInputParameter(p.name);
-			dataAssembly?.setValue(p, peaSet);
+			//dataAssembly?.setValue(p, peaSet);
 		});
 	}
 
 	public async setOperationMode(): Promise<void> {
-		await this.serviceControl.setToAutomaticOperationMode();
-		await this.serviceControl.setToExternalServiceSourceMode();
+		await this.serviceControl.opMode.setToAutomaticOperationMode();
+		await this.serviceControl.serviceSourceMode.setToExternalServiceSourceMode();
 	}
 
 	public findInputParameter(parameterName: string): InputElement | ServParam | undefined {

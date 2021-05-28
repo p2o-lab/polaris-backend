@@ -24,28 +24,33 @@
  * SOFTWARE.
  */
 
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {DataAssemblyOptions, ParameterInterface} from '@p2olab/polaris-interface';
 import {OpcUaConnection, OpcUaDataItem} from '../../../connection';
-import {
-	ScaleSettingDA, ScaleSettingsRuntime,
-	UnitDA, UnitDataAssemblyRuntime
-} from '../../_extensions';
-import {
-	IndicatorElement, IndicatorElementRuntime
-} from '../IndicatorElement';
-
+import {ScaleSettingsRuntime, UnitDataAssemblyRuntime} from '../../_extensions';
+import {IndicatorElement, IndicatorElementRuntime} from '../IndicatorElement';
+import {ScaleSettings} from '../../_extensions/scaleSettingsDA/ScaleSettings';
+import {UnitSettings} from '../../_extensions/unitDA/UnitSettings';
 export type AnaViewRuntime = IndicatorElementRuntime & UnitDataAssemblyRuntime & ScaleSettingsRuntime & {
 	V: OpcUaDataItem<number>;
 };
 
-export class AnaView extends ScaleSettingDA(UnitDA(IndicatorElement)) {
+export class AnaView extends IndicatorElement {
 	public readonly communication!: AnaViewRuntime;
+	private readonly scaleSettings: ScaleSettings;
+	private readonly unitSettings: UnitSettings;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
 		this.communication.V = this.createDataItem('V', 'read');
 
+		this.unitSettings = new UnitSettings(this);
+		this.unitSettings.setCommunication();
+
+		this.scaleSettings = new ScaleSettings(this);
+		this.scaleSettings.setCommunication();
+
 		this.defaultReadDataItem = this.communication.V;
 		this.defaultReadDataItemType = 'number';
 	}
+
 }

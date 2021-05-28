@@ -68,7 +68,7 @@ describe('ServiceSet', () => {
 
 	it('should reject command if not connected', async () => {
 		const peaJson =
-			parseJson(fs.readFileSync('assets/peas/pea_testserver_1.0.0.json', 'utf8'), null, 60)
+			parseJson(fs.readFileSync('src/modularPlantManager/pea/_assets/JSON/pea_testserver_1.0.0_2.json', 'utf8'), null, 60)
 				.peas[0];
 		const pea = new PEAController(peaJson);
 		const service = pea.services[0];
@@ -77,7 +77,7 @@ describe('ServiceSet', () => {
 
 	it('should create service from PEATestServer json', () => {
 		const json =
-			parseJson(fs.readFileSync('assets/peas/pea_testserver_1.0.0.json', 'utf8'), null, 60)
+			parseJson(fs.readFileSync('src/modularPlantManager/pea/_assets/JSON/pea_testserver_1.0.0_2.json', 'utf8'), null, 60)
 				.peas[0].services[0];
 		const service = new Service(json, opcUAConnection, 'root');
 		expect(service.name).to.equal('Service1');
@@ -204,16 +204,16 @@ describe('ServiceSet', () => {
 
 		it('waitForOpModeSpecificTest', async () => {
 			//testService.opMode.opMode = OperationMode.Offline;
-			await service.serviceControl.waitForOpModeToPassSpecificTest(OperationMode.Offline);
-			expect(service.serviceControl.getOperationMode()).to.equal(OperationMode.Offline);
+			await service.serviceControl.opMode.waitForOpModeToPassSpecificTest(OperationMode.Offline);
+			expect(service.serviceControl.opMode.getOperationMode()).to.equal(OperationMode.Offline);
 
 			service.setOperationMode();
 
-			await service.serviceControl.waitForOpModeToPassSpecificTest(OperationMode.Automatic);
-			expect(service.serviceControl.getOperationMode()).to.equal(OperationMode.Automatic);
+			await service.serviceControl.opMode.waitForOpModeToPassSpecificTest(OperationMode.Automatic);
+			expect(service.serviceControl.opMode.getOperationMode()).to.equal(OperationMode.Automatic);
 
-			await service.serviceControl.waitForServiceSourceModeToPassSpecificTest(ServiceSourceMode.Extern);
-			expect(service.serviceControl.getServiceSourceMode()).to.equal(ServiceSourceMode.Extern);
+			await service.serviceControl.serviceSourceMode.waitForServiceSourceModeToPassSpecificTest(ServiceSourceMode.Extern);
+			expect(service.serviceControl.serviceSourceMode.getServiceSourceMode()).to.equal(ServiceSourceMode.Extern);
 		});
 
 		it('full service state cycle', async () => {

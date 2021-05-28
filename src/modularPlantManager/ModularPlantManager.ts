@@ -33,7 +33,7 @@ import {
 	PEAOptions,
 	RecipeOptions,
 	ServiceCommand,
-	VariableChange
+	VariableChange, ServerSettingsOptions
 } from '@p2olab/polaris-interface';
 import {
 	Backbone,
@@ -54,6 +54,8 @@ import StrictEventEmitter from 'strict-event-emitter-types';
 import PiMAdResponse = Backbone.PiMAdResponse;
 import DataAssembly = ModuleAutomation.DataAssembly;
 import {OPCUANodeCommunication} from '@p2olab/pimad-core/dist/ModuleAutomation/CommunicationInterfaceData';
+import { v4 as uuidv4 } from 'uuid';
+
 
 interface ModularPlantManagerEvents {
 	/**
@@ -121,6 +123,12 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 		this._autoreset = value;
 	}
 
+	private generateUniqueIdentifier(): string {
+		// ...the extinction of all life on earth will occur long before you have a collision (with uuid) (stackoverflow.com)
+		const identifier = uuidv4();
+		return identifier;
+	}
+
 	public getPEAController(peaId: string): PEAController {
 		const pea = this.peas.find((p) => p.id === peaId);
 		if (pea) {
@@ -172,16 +180,22 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 				callback(response);
 			});
 	}
+
+	public updateServerSettings(options: ServerSettingsOptions){
+		const pea = this.getPEAController(options.id);
+		pea.setConnection(options);
+		console.log(pea.connection);
+	}
 	/**
 	 * Load PEAs from JSON according to TopologyGenerator output or to simplified JSON
 	 * Skip PEAController if already a PEAController with same ID is registered
 	 * @param options           options for PEAController creation
 	 * @param {boolean} protectedPEAs  should PEAs be protected from being deleted
-	 * @returns {PEAController[]}  created PEAs
+	 * @returns
 	 */
-	public loadPEAController(options: Options, protectedPEAs = false): PEAController[] {
+	public loadPEAController(pimadIdentifier: string, protectedPEAs = false) {
 		const newPEAs: PEAController[] = [];
-		if (!options) {
+		if (!pimadIdentifier) {
 			throw new Error('No PEAs defined in supplied options');
 		}
 
@@ -207,7 +221,7 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 			});*/
 		else {
 			// TODO: als separate Funktion auslagern
-			this.getPEAFromPimadPool(options.id, response => {
+			this.getPEAFromPimadPool(pimadIdentifier, response => {
 				if(response.getMessage()==='Success!'){
 					//get PEAModel
 					const peaModel: PEAModel = response.getContent() as PEAModel;
@@ -282,20 +296,22 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 								})
 						));
 
-						console.log(baseDataAssemblyOptions);
 						// create dataAssemblyOptions with information collected above
 						const dataAssemblyOptions: DataAssemblyOptions = {
 							name: dataAssemblyName,
 							metaModelRef: dataAssemblyInterfaceClass,
 							dataItems: baseDataAssemblyOptions
 						};
-						if(dataAssemblyOptions.name=='BinVlvFillLeft') {
+						dataAssemblyOptionsArray.push(dataAssemblyOptions);
+						/*if(dataAssemblyOptions.metaModelRef.includes('AnaMon')) {
 							dataAssemblyOptionsArray.push(dataAssemblyOptions);
-						}
+						}*/
 					});
 					// create PEAOptions
 					const peaOptions: PEAOptions = {
-						id: '',
+						name: peaModel.getName(),
+						id: this.generateUniqueIdentifier(),
+						pimadIdentifier: pimadIdentifier,
 						services: [],
 						username: '',
 						password: '',
@@ -382,7 +398,6 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 				});
 			this.emit('notify', {message: 'pea', pea: p.json()});
 		});*/
-		return newPEAs;
 	}
 
 	public async removePEAController(peaID: string): Promise<void> {
@@ -551,10 +566,4 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 			}, this._autoresetTimeout);
 		}
 	}
-}
-export interface Options{
-	id: string;
-	username: string;
-	password: string;
-	opcuaServerUrl: string;
 }

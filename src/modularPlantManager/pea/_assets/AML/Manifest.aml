@@ -12450,7 +12450,7 @@
 				<Description>MTP PID Controller Object Class</Description>
 				<Version>0.1.0</Version>
 				<Attribute Name="OpMode" Unit="" AttributeDataType="xs:unsignedLong">
-					<Description>Operation Mode Mask (see OeprationModes, ExtendedOperation - and SourceMode used)</Description>
+					<Description>Operation Mode Mask (see OeprationModes, ExtendedOperation - and SourceModeController used)</Description>
 					<DefaultValue>16640</DefaultValue>
 					<Value />
 					<RefSemantic CorrespondingAttributePath="mtp:standard" />
@@ -12798,7 +12798,7 @@
 				<Description>MTP AnaDrv Object Class</Description>
 				<Version>0.1.0</Version>
 				<Attribute Name="OpMode" Unit="" AttributeDataType="xs:unsignedLong">
-					<Description>Operation Mode Mask (see OeprationModes, ExtendedOperation - and SourceMode used)</Description>
+					<Description>Operation Mode Mask (see OeprationModes, ExtendedOperation - and SourceModeController used)</Description>
 					<DefaultValue>16640</DefaultValue>
 					<Value />
 					<RefSemantic CorrespondingAttributePath="mtp:standard" />
@@ -13258,7 +13258,7 @@
 				<Description>MTP AnaVlv Object Class</Description>
 				<Version>0.1.0</Version>
 				<Attribute Name="OpMode" Unit="" AttributeDataType="xs:unsignedLong">
-					<Description>Operation Mode Mask (see OeprationModes, ExtendedOperation - and SourceMode used)</Description>
+					<Description>Operation Mode Mask (see OeprationModes, ExtendedOperation - and SourceModeController used)</Description>
 					<DefaultValue>16640</DefaultValue>
 					<Value />
 					<RefSemantic CorrespondingAttributePath="mtp:standard" />
@@ -14106,7 +14106,7 @@
 			<Description>MTP Service Control Object Class for cross-vendor approach</Description>
 			<AdditionalInformation>cross-vendor approach for ACHEMA 2018</AdditionalInformation>
 			<Attribute Name="OpMode" Unit="" AttributeDataType="xs:unsignedLong">
-				<Description>Operation Mode Mask (see OeprationModes, ExtendedOperation - and SourceMode used)</Description>
+				<Description>Operation Mode Mask (see OeprationModes, ExtendedOperation - and SourceModeController used)</Description>
 				<DefaultValue>16640</DefaultValue>
 				<Value />
 				<RefSemantic CorrespondingAttributePath="mtp:standard" />

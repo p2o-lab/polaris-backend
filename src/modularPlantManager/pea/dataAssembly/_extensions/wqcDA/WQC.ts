@@ -24,32 +24,25 @@
  */
 
 import {OpcUaDataItem} from '../../../connection';
-import {BaseDataAssemblyRuntime, DataAssemblyController} from '../../DataAssemblyController';
-import {Constructor} from '../_helper';
+import {BaseDataAssemblyRuntime, Constructor} from '../../index';
+import {DataAssemblyController} from '../../DataAssemblyController';
 
-export type InterlockRuntime = BaseDataAssemblyRuntime & {
-	PermEn: OpcUaDataItem<boolean>;
-	Permit: OpcUaDataItem<boolean>;
-	IntlEn: OpcUaDataItem<boolean>;
-	Interlock: OpcUaDataItem<boolean>;
-	ProtEn: OpcUaDataItem<boolean>;
-	Protect: OpcUaDataItem<boolean>;
-};
+export interface WQCRuntime extends BaseDataAssemblyRuntime {
+	WQC: OpcUaDataItem<number>;
+}
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export function InterlockDA<TBase extends Constructor<DataAssemblyController>>(Base: TBase) {
-	return class extends Base {
-		public communication!: InterlockRuntime;
+export class WQC {
+	private dAController: any;
 
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		constructor(...args: any[]) {
-			super(...args);
-			this.communication.PermEn = this.createDataItem('PermEn', 'read');
-			this.communication.Permit = this.createDataItem('Permit', 'read');
-			this.communication.IntlEn = this.createDataItem('IntlEn', 'read');
-			this.communication.Interlock = this.createDataItem('Interlock', 'read');
-			this.communication.ProtEn = this.createDataItem('ProtEn', 'read');
-			this.communication.Protect = this.createDataItem('Protect', 'read');
-		}
-	};
+	constructor(dAController: any) {
+		this.dAController = dAController;
+	}
+
+	setCommunication(){
+		//this.dAController.communication.WQC = this.dAController.createDataItem('WQC', 'read');
+	}
+
+	get WQC(): number | undefined {
+		return this.dAController.communication.WQC.value;
+	}
 }

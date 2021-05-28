@@ -42,7 +42,7 @@ export class DataAssemblyControllerFactory {
 		catDataAssembly.debug(`Create DataAssembly ${variableOptions.name} (${variableOptions.metaModelRef})`);
 		const types = {
 			'DataAssembly': DataAssemblyController,
-			// DataAssemblyController
+
 			'ServiceControl': ServiceControl,
 			// Active Elements
 			'PIDCtrl': PIDCtrl,

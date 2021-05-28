@@ -24,7 +24,7 @@
  */
 
 import {AggregatedServiceOptions, ServiceCommand} from '@p2olab/polaris-interface';
-import {LoadOptions, ModularPlantManager, Options} from './ModularPlantManager';
+import {LoadOptions, ModularPlantManager} from './ModularPlantManager';
 import {Service} from './pea';
 import {ServiceState} from './pea/dataAssembly';
 
@@ -55,20 +55,15 @@ describe('ModularPlantManager', () => {
 		// WP
 		it('should load PEAs', (done) => {
 			const modularPlantManager = new ModularPlantManager();
-			modularPlantManager.addPEAToPimadPool({source:'uploads/Module.zip'}, response => {
+			modularPlantManager.addPEAToPimadPool({source:'local/Module.zip'}, response => {
 				if(response.getMessage()=='Success!') {
 					const peaModel: PEAModel = response.getContent() as PEAModel;
-					const options: Options= {
-						id: peaModel.getPiMAdIdentifier(),
-						username: '',
-						password: '',
-						opcuaServerUrl: ''
-					};
+
 					//const peaControllers = modularPlantManager.loadPEAController(options);
 					//console.log(peaControllers);
 
 					// we are currently only parsing 1 PEAController
-					expect(modularPlantManager.loadPEAController(options)).to.have.lengthOf(1);
+					modularPlantManager.loadPEAController(peaModel.getPiMAdIdentifier());
 					done();
 				}
 			});

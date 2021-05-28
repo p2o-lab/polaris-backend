@@ -24,26 +24,31 @@
  */
 
 import {OpcUaDataItem} from '../../../connection';
-import {Constructor} from '../_helper';
 import {BaseDataAssemblyRuntime, DataAssemblyController} from '../../DataAssemblyController';
+import {Constructor} from '../_helper';
 
-export interface OSLevelRuntime extends BaseDataAssemblyRuntime {
-	OSLevel: OpcUaDataItem<number>;
-}
+export type InterlockRuntime = BaseDataAssemblyRuntime & {
+	PermEn: OpcUaDataItem<boolean>;
+	Permit: OpcUaDataItem<boolean>;
+	IntlEn: OpcUaDataItem<boolean>;
+	Interlock: OpcUaDataItem<boolean>;
+	ProtEn: OpcUaDataItem<boolean>;
+	Protect: OpcUaDataItem<boolean>;
+};
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export function OSLevelDA<TBase extends Constructor<DataAssemblyController>>(Base: TBase) {
-	return class extends Base {
-		public communication!: OSLevelRuntime;
+export class Interlock{
+	private dAController: any;
 
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		constructor(...args: any[]) {
-			super(...args);
-			this.communication.OSLevel = this.createDataItem('OSLevel', 'write');
-		}
+	constructor(dAController: any) {
+		this.dAController = dAController;
+	}
 
-		get OSLevel(): number | undefined {
-			return this.communication.OSLevel.value;
-		}
-	};
+	public setCommunication(){
+		this.dAController.communication.PermEn = this.dAController.createDataItem('PermEn', 'read');
+		this.dAController.communication.Permit = this.dAController.createDataItem('Permit', 'read');
+		this.dAController.communication.IntlEn = this.dAController.createDataItem('IntlEn', 'read');
+		this.dAController.communication.Interlock = this.dAController.createDataItem('Interlock', 'read');
+		this.dAController.communication.ProtEn = this.dAController.createDataItem('ProtEn', 'read');
+		this.dAController.communication.Protect = this.dAController.createDataItem('Protect', 'read');
+	}
 }

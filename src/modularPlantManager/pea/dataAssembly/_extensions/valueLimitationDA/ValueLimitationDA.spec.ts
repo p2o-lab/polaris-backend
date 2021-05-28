@@ -24,7 +24,6 @@
  */
 
 import {OpcUaConnection} from '../../../connection';
-import {ValueLimitationDA} from './ValueLimitationDA';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';

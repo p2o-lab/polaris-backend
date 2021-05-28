@@ -32,17 +32,16 @@ export interface ResetRuntime extends BaseDataAssemblyRuntime {
 	ResetAut: OpcUaDataItem<boolean>;
 }
 
-// tslint:disable-next-line:variable-name
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export function ResetDA<TBase extends Constructor<DataAssemblyController>>(Base: TBase) {
-	return class extends Base {
-		public communication!: ResetRuntime;
+export class Reset {
+	private dAController: any;
 
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		constructor(...args: any[]) {
-			super(...args);
-			this.communication.ResetOp = this.createDataItem('ResetOp', 'write');
-			this.communication.ResetAut = this.createDataItem('ResetAut', 'write');
-		}
-	};
+	constructor(dAController: any) {
+		this.dAController = dAController;
+	}
+
+	public setCommunication(){
+		this.dAController.communication.ResetOp= this.dAController.createDataItem('ResetOp', 'write');
+		this.dAController.communication.ResetAut = this.dAController.createDataItem('ResetAut', 'write');
+	}
+
 }

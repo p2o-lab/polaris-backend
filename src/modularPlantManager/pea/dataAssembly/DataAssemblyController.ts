@@ -144,6 +144,8 @@ export class DataAssemblyController extends EventEmitter {
 	/**
 	 * Creates a data item from provided options of DataAssemblyController by
 	 * finding first name to match one of the communication options
+	 *
+	 * TODO: Maybe rework this function, because it's hard to understand.
 	 */
 	public createDataItem(name: string | string[], access: 'read' | 'write', type?: 'number' | 'string' | 'boolean', silent = false): OpcUaDataItem<any> {
 		const names = typeof name === 'string' ? [name] : name;

@@ -27,11 +27,13 @@
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {OpcUaConnection, OpcUaDataItem} from '../../../../connection';
 import {
-	ScaleSettingDA, ScaleSettingsRuntime,
-	UnitDA, UnitDataAssemblyRuntime,
-	ValueLimitationDA, ValueLimitationRuntime
+	ScaleSettingsRuntime,
+	UnitDataAssemblyRuntime,
+	ValueLimitationRuntime
 } from '../../../_extensions';
 import {OperationElement, OperationElementRuntime} from '../../OperationElement';
+import {ScaleSettings} from '../../../_extensions/scaleSettingsDA/ScaleSettings';
+import {UnitSettings} from '../../../_extensions/unitDA/UnitSettings';
 
 export type AnaManRuntime =
 	OperationElementRuntime & UnitDataAssemblyRuntime
@@ -42,14 +44,22 @@ export type AnaManRuntime =
 	VMan: OpcUaDataItem<number>;
 };
 
-export class AnaMan extends ValueLimitationDA(ScaleSettingDA(UnitDA(OperationElement))) {
+export class AnaMan extends OperationElement {
 	public readonly communication!: AnaManRuntime;
+	public readonly scaleSettings: ScaleSettings;
+	public readonly unitSettings: UnitSettings;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
 		this.communication.VOut = this.createDataItem('VOut', 'read');
 		this.communication.VRbk = this.createDataItem('VRbk', 'read');
 		this.communication.VMan = this.createDataItem('VMan', 'write');
+
+		this.unitSettings = new UnitSettings(this);
+		this.unitSettings.setCommunication();
+
+		this.scaleSettings = new ScaleSettings(this);
+		this.scaleSettings.setCommunication();
 
 		this.defaultReadDataItem = this.communication.VOut;
 		this.defaultReadDataItemType = 'number';

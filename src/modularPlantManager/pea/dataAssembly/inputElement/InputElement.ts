@@ -32,27 +32,31 @@ import {
 import {Parameter} from '../../../recipe';
 import {DataItem, OpcUaConnection} from '../../connection';
 import {PEAController} from '../../PEAController';
-import {
-	WQCDA, WQCRuntime
-} from '../_extensions';
+import {WQCRuntime} from '../_extensions';
 import {BaseDataAssemblyRuntime, DataAssemblyController} from '../DataAssemblyController';
 import {catDataAssembly} from '../../../../logging';
+import {WQC} from '../_extensions/wqcDA/WQC';
 
-export type InputElementRuntime = BaseDataAssemblyRuntime & WQCRuntime;
+export type InputElementRuntime = WQCRuntime;
 
-export class InputElement extends WQCDA(DataAssemblyController) {
+export class InputElement extends DataAssemblyController {
 	public parameterRequest: Parameter | undefined;
 	public requestedValue = '';
 
+	wqc: WQC;
+
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
-	}
 
-	/**
+		this.wqc = new WQC(this);
+		this.wqc.setCommunication();
+	}
+/*
+	/!**
 	 * Set parameter on PEAController
 	 * @param paramValue
 	 * @param {string} variable
-	 */
+	 *!/
 	public async setParameter(paramValue: string | number, variable?: string): Promise<void> {
 		const dataItem: DataItem<any> | undefined = (variable) ?
 			this.communication[variable as keyof InputElementOptions] : this.defaultWriteDataItem;
@@ -85,7 +89,7 @@ export class InputElement extends WQCDA(DataAssemblyController) {
 					.on('changed', (data) => this.setParameter(data));
 			}
 		}
-	}
+	}*/
 
 	public toJson(): ParameterInterface {
 		return {

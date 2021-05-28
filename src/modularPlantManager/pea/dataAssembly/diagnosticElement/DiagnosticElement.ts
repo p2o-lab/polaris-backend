@@ -25,20 +25,27 @@
 
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {OpcUaConnection} from '../../connection';
-import {
-	OSLevelDA, OSLevelRuntime,
-	WQCDA, WQCRuntime
-} from '../_extensions';
+import {OSLevelRuntime, WQCRuntime} from '../_extensions';
 import {
 	BaseDataAssemblyRuntime, DataAssemblyController,
 } from '../DataAssemblyController';
+import {OSLevel} from '../_extensions/osLevelDA/OSLevel';
+import {WQC} from '../_extensions/wqcDA/WQC';
 
 export type DiagnosticElementRuntime = BaseDataAssemblyRuntime & WQCRuntime & OSLevelRuntime;
 
-export class DiagnosticElement extends OSLevelDA(WQCDA(DataAssemblyController)) {
+export class DiagnosticElement extends DataAssemblyController {
 	public readonly communication!: DiagnosticElementRuntime;
+	osLevel: OSLevel;
+	wqc: WQC;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
+
+		this.osLevel = new OSLevel(this);
+		this.osLevel.setCommunication();
+
+		this.wqc = new WQC(this);
+		this.wqc.setCommunication();
 	}
 }

@@ -199,16 +199,16 @@ describe('ServiceControl', () => {
 			expect(da.name).to.equal('Service1');
 			expect(da instanceof ServiceControl).to.equal(true);
 
-			expect(da.getOperationMode()).to.equal(OperationMode.Offline);
+			expect(da.opMode.getOperationMode()).to.equal(OperationMode.Offline);
 
-			await da.setToOperatorOperationMode();
-			expect(da.getOperationMode()).to.equal(OperationMode.Operator);
+			await da.opMode.setToOperatorOperationMode();
+			expect(da.opMode.getOperationMode()).to.equal(OperationMode.Operator);
 
-			await da.writeOpMode(OperationMode.Offline);
-			await da.waitForOpModeToPassSpecificTest(OperationMode.Offline);
+			await da.opMode.writeOpMode(OperationMode.Offline);
+			await da.opMode.waitForOpModeToPassSpecificTest(OperationMode.Offline);
 
-			await da.setToAutomaticOperationMode();
-			expect(da.getOperationMode()).to.equal(OperationMode.Automatic);
+			await da.opMode.setToAutomaticOperationMode();
+			expect(da.opMode.getOperationMode()).to.equal(OperationMode.Automatic);
 		}).timeout(8000);
 
 		it('should create ServiceControl new', async () => {
@@ -222,16 +222,16 @@ describe('ServiceControl', () => {
 			expect(da.name).to.equal('Service1');
 			expect(da instanceof ServiceControl).to.equal(true);
 
-			expect(da.getOperationMode()).to.equal(OperationMode.Offline);
+			expect(da.opMode.getOperationMode()).to.equal(OperationMode.Offline);
 
-			await da.setToOperatorOperationMode();
-			expect(da.getOperationMode()).to.equal(OperationMode.Operator);
+			await da.opMode.setToOperatorOperationMode();
+			expect(da.opMode.getOperationMode()).to.equal(OperationMode.Operator);
 
-			await da.writeOpMode(OperationMode.Offline);
-			await da.waitForOpModeToPassSpecificTest(OperationMode.Offline);
+			await da.opMode.writeOpMode(OperationMode.Offline);
+			await da.opMode.waitForOpModeToPassSpecificTest(OperationMode.Offline);
 
-			await da.setToAutomaticOperationMode();
-			expect(da.getOperationMode()).to.equal(OperationMode.Automatic);
+			await da.opMode.setToAutomaticOperationMode();
+			expect(da.opMode.getOperationMode()).to.equal(OperationMode.Automatic);
 		}).timeout(8000);
 
 	});

@@ -27,7 +27,8 @@
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {OpcUaConnection, OpcUaDataItem} from '../../../../connection';
 import {Drv, DrvRuntime} from '../Drv';
-import {SourceModeDA, SourceModeRuntime} from '../../../_extensions';
+import {SourceModeRuntime} from '../../../_extensions';
+import {SourceModeController} from '../../../_extensions/sourceModeDA/SourceModeController';
 
 export type AnaDrvRuntime = DrvRuntime & SourceModeRuntime & {
 	RpmSclMax: OpcUaDataItem<number>;
@@ -47,12 +48,17 @@ export type AnaDrvRuntime = DrvRuntime & SourceModeRuntime & {
 	RpmRbk: OpcUaDataItem<number>;
 };
 
-export class AnaDrv extends SourceModeDA(Drv) {
+export class AnaDrv extends Drv {
 
 	public readonly communication!: AnaDrvRuntime;
+	sourceMode: SourceModeController;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
+
+		this.sourceMode = new SourceModeController(this);
+		this.sourceMode.setCommunication();
+
 		this.communication.RpmSclMax = this.createDataItem('RpmFbk', 'read', 'number');
 		this.communication.RpmSclMin = this.createDataItem('RpmFbk', 'read', 'number');
 

@@ -23,36 +23,27 @@
  * SOFTWARE.
  */
 
-import {ParameterInterface} from '@p2olab/polaris-interface';
 import {OpcUaDataItem} from '../../../connection';
-import {BaseDataAssemblyRuntime, DataAssemblyController} from '../../DataAssemblyController';
 import {Constructor} from '../_helper';
+import {BaseDataAssemblyRuntime, DataAssemblyController} from '../../DataAssemblyController';
 
-export type ValueLimitationRuntime = BaseDataAssemblyRuntime & {
-	VMin: OpcUaDataItem<number>;
-	VMax: OpcUaDataItem<number>;
-};
+export interface OSLevelRuntime extends BaseDataAssemblyRuntime {
+	OSLevel: OpcUaDataItem<number>;
+}
 
-// tslint:disable-next-line:variable-name
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export function ValueLimitationDA<TBase extends Constructor<DataAssemblyController>>(Base: TBase) {
+export class OSLevel {
+	private dAController: any;
 
-	return class extends Base {
-		public communication!: ValueLimitationRuntime;
+	constructor(dAController: any) {
+		this.dAController = dAController;
+	}
 
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		constructor(...args: any[]) {
-			super(...args);
-			this.communication.VMax = this.createDataItem('VMax', 'read');
-			this.communication.VMin = this.createDataItem('VMin', 'read');
-		}
+	public setCommunication(){
+		//this.dAController.communication.OSLevel = this.dAController.createDataItem('OSLevel', 'write');
 
-		public toJson(): ParameterInterface {
-			return {
-				...super.toJson(),
-				max: this.communication.VMax?.value,
-				min: this.communication.VMin?.value
-			};
-		}
-	};
+	}
+
+	get OSLevel(): number | undefined {
+		return this.dAController.communication.OSLevel.value;
+	}
 }

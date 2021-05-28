@@ -1,4 +1,3 @@
-/* tslint:disable:max-classes-per-file */
 /*
  * MIT License
  *
@@ -24,32 +23,35 @@
  * SOFTWARE.
  */
 
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {SourceModeRuntime, WQCRuntime} from '../../../_extensions';
-import {DIntMan, DIntManRuntime} from './DIntMan';
-import {OpcUaConnection, OpcUaDataItem} from '../../../../connection';
-import {SourceModeController} from '../../../_extensions/sourceModeDA/SourceModeController';
-import {WQC} from '../../../_extensions/wqcDA/WQC';
+import {ParameterInterface} from '@p2olab/polaris-interface';
+import {OpcUaDataItem} from '../../../connection';
+import {Constructor} from '../_helper';
+import {BaseDataAssemblyRuntime, DataAssemblyController} from '../../DataAssemblyController';
+import {AnaView} from '../../indicatorElement';
 
-export type DIntManIntRuntime = DIntManRuntime & SourceModeRuntime & WQCRuntime & {
-	VInt: OpcUaDataItem<number>;
-};
+export interface ScaleSettingsRuntime extends BaseDataAssemblyRuntime {
+	VSclMin: OpcUaDataItem<number>;
+	VSclMax: OpcUaDataItem<number>;
+}
 
-export class DIntManInt extends DIntMan {
+export class ScaleSettings {
+		private dAController: any;
 
-	public readonly communication!: DIntManIntRuntime;
-	public readonly sourceMode: SourceModeController;
-	public readonly wqc: WQC;
+		constructor(dAController: any) {
+			this.dAController = dAController;
+		}
 
-	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
-		super(options, connection);
+		setCommunication(){
+			this.dAController.communication.VSclMax = this.dAController.createDataItem('VSclMax', 'read');
+			this.dAController.communication.VSclMin = this.dAController.createDataItem('VSclMin', 'read');
+		}
 
-		this.sourceMode = new SourceModeController(this);
-		this.sourceMode.setCommunication();
+	//TODO: adjust function
+/*	public scaleSettingsToJson(): ParameterInterface {
+		return {
+			...super.toJson(),
+			unit: this.getUnit()
+		};
+	}*/
 
-		this.wqc = new WQC(this);
-		this.wqc.setCommunication();
-
-		this.communication.VInt = this.createDataItem('VInt', 'read');
-	}
 }

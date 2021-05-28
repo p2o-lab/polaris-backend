@@ -23,36 +23,33 @@
  * SOFTWARE.
  */
 
-import {ParameterInterface} from '@p2olab/polaris-interface';
 import {OpcUaDataItem} from '../../../connection';
-import {Constructor} from '../_helper';
 import {BaseDataAssemblyRuntime, DataAssemblyController} from '../../DataAssemblyController';
+import {Constructor} from '../_helper';
 
-export interface ScaleSettingsRuntime extends BaseDataAssemblyRuntime {
-	VSclMin: OpcUaDataItem<number>;
-	VSclMax: OpcUaDataItem<number>;
+export interface FeedbackMonitoringRuntime extends BaseDataAssemblyRuntime {
+	MonEn: OpcUaDataItem<boolean>;
+	MonSafePos: OpcUaDataItem<boolean>;
+	MonStatErr: OpcUaDataItem<boolean>;
+	MonDynErr: OpcUaDataItem<boolean>;
+	MonStatTi: OpcUaDataItem<number>;
+	MonDynTi: OpcUaDataItem<number>;
 }
 
-// tslint:disable-next-line:variable-name
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export function ScaleSettingDA<TBase extends Constructor<DataAssemblyController>>(Base: TBase) {
+export class FeedbackMonitoring {
+	private dAController: any;
+	
+	constructor(dAController: any) {
+		this.dAController = dAController;
 
-	return class extends Base {
-		public communication!: ScaleSettingsRuntime;
+	}
 
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		constructor(...args: any[]) {
-			super(...args);
-			this.communication.VSclMax = this.createDataItem('VSclMax', 'read');
-			this.communication.VSclMin = this.createDataItem('VSclMin', 'read');
-		}
-
-		public toJson(): ParameterInterface {
-			return {
-				...super.toJson(),
-				max: this.communication.VSclMax?.value,
-				min: this.communication.VSclMin?.value
-			};
-		}
-	};
+	public setCommunication() {
+		this.dAController.communication.MonEn = this.dAController.createDataItem('MonEn', 'write');
+		this.dAController.communication.MonSafePos = this.dAController.createDataItem('MonSafePos', 'read');
+		this.dAController.communication.MonStatErr = this.dAController.createDataItem('MonStatErr', 'read');
+		this.dAController.communication.MonDynErr = this.dAController.createDataItem('MonDynErr', 'read');
+		this.dAController.communication.MonStatTi = this.dAController.createDataItem('MonStatTi', 'read');
+		this.dAController.communication.MonDynTi = this.dAController.createDataItem('MonDynTi', 'read');
+	}
 }

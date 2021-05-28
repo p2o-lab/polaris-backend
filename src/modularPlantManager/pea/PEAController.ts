@@ -26,7 +26,7 @@
 import {
 	CommandEnableInterface, DataAssemblyOptions,
 	OperationMode,
-	ParameterInterface, PEAInterface, PEAOptions,
+	ParameterInterface, PEAInterface, PEAOptions, ServerSettingsOptions,
 	ServiceCommand,
 	ServiceInterface, ServiceOptions, ServiceSourceMode,
 	VariableChange
@@ -128,11 +128,14 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 
 	public readonly options: PEAOptions;
 	public readonly id: string;
+	public readonly pimadIdentifier: string;
+	public readonly name: string;
+
 	public readonly services: Service[] = [];
 	public readonly variables: DataAssemblyController[] = [];
 	// PEAController is protected and can't be deleted by the user
 	public protected = false;
-	public readonly connection: OpcUaConnection;
+	public connection: OpcUaConnection;
 
 	private readonly description: string;
 	private readonly hmiUrl: string;
@@ -141,10 +144,13 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 	constructor(options: PEAOptions, protectedPEA = false) {
 		super();
 		this.options = options;
+		this.pimadIdentifier = options.pimadIdentifier;
+		this.name = options.name;
 		this.id = options.id;
 		this.description = options.description || '';
 		this.protected = protectedPEA;
 		this.hmiUrl = options.hmiUrl || '';
+
 		this.connection = new OpcUaConnection(this.id, options.opcuaServerUrl, options.username, options.password)
 			.on('connected', () => this.emit('connected'))
 			.on('disconnected', () => this.emit('disconnected'));
@@ -156,8 +162,16 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 
 		if (options) {
 			this.variables = options.dataAssemblies
-				.map((variableOptions: DataAssemblyOptions) => DataAssemblyControllerFactory.create(variableOptions, this.connection));
+				.map((variableOptions: DataAssemblyOptions) =>
+					DataAssemblyControllerFactory.create(variableOptions, this.connection)
+				);
 		}
+	}
+
+	public setConnection(options: ServerSettingsOptions){
+		this.connection = new OpcUaConnection(this.id, options.serverUrl, options.username, options.password)
+			.on('connected', () => this.emit('connected'))
+			.on('disconnected', () => this.emit('disconnected'));
 	}
 
 	public getService(serviceName: string): Service {
@@ -204,8 +218,9 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 	 */
 	public json(): PEAInterface {
 		return {
-			name: '',
-			pimadIdentifier: this.id,
+			name: this.name,
+			id: this.id,
+			pimadIdentifier: this.pimadIdentifier,
 			description: this.description,
 			endpoint: this.connection.endpoint,
 			hmiUrl: this.hmiUrl,

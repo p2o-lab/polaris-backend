@@ -25,12 +25,15 @@
 
 import {OpcUaConnection, OpcUaDataItem} from '../../connection';
 import {
-	BaseDataAssemblyRuntime, DataAssemblyController,
-	OpModeDA, OpModeRuntime,
-	ServiceSourceModeDA, ServiceSourceModeRuntime,
-	WQCDA, WQCRuntime
+	BaseDataAssemblyRuntime, DataAssemblyController, OpModeRuntime, WQCRuntime
 } from '../index';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {WQC} from '../_extensions/wqcDA/WQC';
+import {OpModeController} from '../_extensions/opModeDA/OpModeController';
+import {
+	ServiceSourceModeController,
+	ServiceSourceModeRuntime
+} from '../_extensions/serviceSourceModeDA/ServiceSourceModeController';
 
 export type ServiceControlRuntime = BaseDataAssemblyRuntime & OpModeRuntime & ServiceSourceModeRuntime & WQCRuntime & {
 	CommandOp: OpcUaDataItem<number>;
@@ -39,7 +42,7 @@ export type ServiceControlRuntime = BaseDataAssemblyRuntime & OpModeRuntime & Se
 	CommandEn: OpcUaDataItem<number>;
 	StateCur: OpcUaDataItem<number>;
 
-	ProcedureOP: OpcUaDataItem<number>;
+	ProcedureOp: OpcUaDataItem<number>;
 	ProcedureExt: OpcUaDataItem<number>;
 	ProcedureInt: OpcUaDataItem<number>;
 	ProcedureCur: OpcUaDataItem<number>;
@@ -50,18 +53,31 @@ export type ServiceControlRuntime = BaseDataAssemblyRuntime & OpModeRuntime & Se
 	PosTextID: OpcUaDataItem<number>;
 };
 
-export class ServiceControl extends WQCDA(OpModeDA(ServiceSourceModeDA(DataAssemblyController))) {
+export class ServiceControl extends DataAssemblyController {
 	public readonly communication!: ServiceControlRuntime;
+	wqc: WQC;
+	opMode: OpModeController;
+	serviceSourceMode: ServiceSourceModeController;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
+
+		this.wqc = new WQC(this);
+		this.wqc.setCommunication();
+
+		this.opMode = new OpModeController(this);
+		this.opMode.initializeOpMode(this);
+
+		this.serviceSourceMode = new ServiceSourceModeController(this);
+		this.serviceSourceMode.setCommunication();
+
 		this.communication.CommandOp = this.createDataItem('CommandOp', 'write');
 		this.communication.CommandInt = this.createDataItem('CommandInt', 'write');
 		this.communication.CommandExt = this.createDataItem('CommandExt', 'write');
 		this.communication.CommandEn = this.createDataItem('CommandEn', 'read');
 		this.communication.StateCur = this.createDataItem('StateCur', 'read');
 
-		this.communication.ProcedureOP = this.createDataItem('ProcedureOP', 'write');
+		this.communication.ProcedureOp = this.createDataItem('ProcedureOp', 'write');
 		this.communication.ProcedureExt = this.createDataItem('ProcedureExt', 'write');
 		this.communication.ProcedureInt = this.createDataItem('ProcedureInt', 'read');
 		this.communication.ProcedureCur = this.createDataItem('ProcedureCur', 'read');
@@ -76,5 +92,4 @@ export class ServiceControl extends WQCDA(OpModeDA(ServiceSourceModeDA(DataAssem
 		this.defaultWriteDataItem = this.communication.CommandExt;
 		this.defaultWriteDataItemType = 'number';
 	}
-
 }
