@@ -80,6 +80,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({storage: storage});
 
+
 /**
  * @api {post} /addByPiMAd Add PEAController via PiMAd. (Receiving FormData from Frontend and parse with Multer lib)
  * @apiName PostPEA
@@ -151,6 +152,19 @@ peaRouter.get('/:peaId', (req: Request, res: Response) => {
 });
 
 /**
+ * @api {get} /:peaId/getServerSettings
+ * @apiName
+ * @apiGroup PEAController
+ * @apiParam {string} peaId
+ */
+peaRouter.get('/:peaId/getServerSettings', (req: Request, res: Response) => {
+	const manager: ModularPlantManager = req.app.get('manager');
+	const peaController = manager.getPEAController(req.params.peaId).connection;
+	const body = {serverUrl: peaController.endpoint, username: peaController.username, password: peaController.password};
+	res.json(body);
+});
+
+/**
  * @api {get} /:peaId/download    Download PEAController options by ID
  * @apiName GetModuleDownload
  * @apiGroup PEAController
@@ -190,7 +204,8 @@ peaRouter.post('/:peaId/disconnect', asyncHandler(async (req: Request, res: Resp
 peaRouter.post('/updateSettings', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
 	manager.updateServerSettings(req.body.options);
-	res.json({pea: req.body.options.id, status: 'Successfully updated Settings'});
+	//TODO handle failure
+	res.status(200).send('"'+'Success!'+'"');
 }));
 
 /**

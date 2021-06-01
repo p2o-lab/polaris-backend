@@ -74,8 +74,8 @@ export class OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionEm
 	private readonly items: Map<string, string>;
 	private namespaceArray!: string[];
 	private readonly logger: Category;
-	private readonly username: string | undefined;
-	private readonly password: string | undefined;
+	readonly username: string | undefined;
+	readonly password: string | undefined;
 
 	constructor(targetId: string, endpoint: string, username?: string, password?: string) {
 		super();
