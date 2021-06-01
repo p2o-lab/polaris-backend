@@ -64,6 +64,10 @@ describe('ModularPlantManager', () => {
 
 					// we are currently only parsing 1 PEAController
 					modularPlantManager.loadPEAController(peaModel.getPiMAdIdentifier());
+					expect(modularPlantManager.peas.length).equal(1);
+/*					const peaController = modularPlantManager.peas[0];
+					peaController.setConnection({username:'', password: '', serverUrl: 'opc.tcp://127.0.0.1:4334/', id: peaController.id})
+					modularPlantManager.peas[0].connect();*/
 					done();
 				}
 			});

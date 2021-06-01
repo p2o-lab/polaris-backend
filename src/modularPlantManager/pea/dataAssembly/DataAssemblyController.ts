@@ -80,7 +80,7 @@ export class DataAssemblyController extends EventEmitter {
 	 */
 	public async subscribe(): Promise<DataAssemblyController> {
 		if (!this.subscriptionActive) {
-			catDataAssembly.debug(`Subscribe to ${this.name} ` +
+			catDataAssembly.info(`Subscribe to ${this.name} ` +
 				`with variables ${Object.keys(this.communication)}`);
 			await Promise.all(
 				Object.entries(this.communication)
@@ -98,7 +98,7 @@ export class DataAssemblyController extends EventEmitter {
 					})
 			);
 			this.subscriptionActive = true;
-			catDataAssembly.debug(`successfully subscribed to all variables from ${this.name}`);
+			catDataAssembly.info(`successfully subscribed to all variables from ${this.name}`);
 		}
 		return this;
 	}
@@ -120,10 +120,10 @@ export class DataAssemblyController extends EventEmitter {
 		return obj[key];
 	}
 
-	/**
+/*	/!**
 	 * Creates a data item from provided options of DataAssemblyController by
 	 * finding first name to match one of the communication options
-	 */
+	 *!/
 	public populateDataItems(silent = false): OpcUaDataItem<any> {
 		for (const communicationKey of Object.keys(this.communication)) {
 			try {
@@ -139,7 +139,7 @@ export class DataAssemblyController extends EventEmitter {
 			this.logParsingErrors();
 		}
 		throw new Error('Cant create DataItem');
-	}
+	}*/
 
 	/**
 	 * Creates a data item from provided options of DataAssemblyController by

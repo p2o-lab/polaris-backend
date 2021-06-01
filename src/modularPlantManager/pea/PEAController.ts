@@ -151,14 +151,17 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 		this.protected = protectedPEA;
 		this.hmiUrl = options.hmiUrl || '';
 
+		// only temporarily for testing
+		this.options.opcuaServerUrl = 'opc.tcp://localhost:4334';
+
 		this.connection = new OpcUaConnection(this.id, options.opcuaServerUrl, options.username, options.password)
 			.on('connected', () => this.emit('connected'))
 			.on('disconnected', () => this.emit('disconnected'));
 		this.logger = catPEA;
 
-		/*if (options.) {
+		if (options.services) {
 			this.services = options.services.map((serviceOpts: ServiceOptions) => new Service(serviceOpts, this.connection, this.id));
-		}*/
+		}
 
 		if (options) {
 			this.variables = options.dataAssemblies
@@ -190,12 +193,17 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 		return this.services.map((service) => service.json());
 	}
 
+	/**
+	 *
+	 */
 	public async connect(): Promise<void> {
 		await this.connection.connect();
 		const pv = this.subscribeToAllVariables();
 		const pa = this.subscribeToAllServices();
+
 		await this.connection.startListening();
 		await Promise.all([pv, pa]);
+
 		this.logger.info(`[${this.id}] Successfully subscribed to ${this.connection.monitoredItemSize()} assemblies`);
 	}
 
@@ -310,9 +318,9 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 	private subscribeToAllVariables(): Promise<DataAssemblyController[]> {
 		return Promise.all(
 			this.variables.map((variable: DataAssemblyController) => {
-				this.logger.debug(`[${this.id}] subscribe to process variable ${variable.name}`);
+				this.logger.info(`[${this.id}] subscribe to process variable ${variable.name}`);
 				variable.on('V', (data) => {
-					this.logger.debug(`[${this.id}] variable changed: ${JSON.stringify(variable.toJson())}`);
+					this.logger.info(`[${this.id}] variable changed: ${JSON.stringify(variable.toJson())}`);
 					const entry: VariableChange = {
 						timestampPOL: new Date(),
 						timestampPEA: data.timestamp,
@@ -348,7 +356,7 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 					this.emit('controlEnable', {service, controlEnable});
 				})
 				.on('state', (state) => {
-					this.logger.debug(`[${this.id}] state changed: ${service.name} = ${ServiceState[state]}`);
+					this.logger.info(`[${this.id}] state changed: ${service.name} = ${ServiceState[state]}`);
 					const entry = {
 						timestampPOL: new Date(),
 						timestampPEA: service.lastStatusChange,
@@ -361,11 +369,11 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 					}
 				})
 				.on('opMode', (opMode) => {
-					this.logger.debug(`[${this.id}] opMode changed: ${service.name} = ${JSON.stringify(opMode)}`);
+					this.logger.info(`[${this.id}] opMode changed: ${service.name} = ${JSON.stringify(opMode)}`);
 					this.emit('opModeChanged', {service: service, ...opMode});
 				})
 				.on('parameterChanged', (data) => {
-					this.logger.debug(`[${this.id}] parameter changed: ` +
+					this.logger.info(`[${this.id}] parameter changed: ` +
 						`${data.procedure?.name}.${data.parameter.name} = ${data.parameter.value}`);
 					const entry: ParameterChange = {
 						timestampPEA: data.parameter.timestamp!,

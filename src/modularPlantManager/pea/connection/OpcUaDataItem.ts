@@ -73,7 +73,7 @@ export class OpcUaDataItem<T> extends DataItem<T> {
 		const eventName = this.connection.addOpcUaNode(this.nodeId, this.namespaceIndex);
 		this.connection.eventEmitter.on(eventName,
 			(dataValue) => {
-				this.logger.debug(`[${this.connection.id}] Variable Changed (${this.nodeId}) ` +
+				this.logger.info(`[${this.connection.id}] Variable Changed (${this.nodeId}) ` +
 					`= ${dataValue.value.value.toString()}`);
 				this.value = dataValue.value.value;
 				this.dataType = DataType[dataValue.value.dataType];
@@ -81,7 +81,7 @@ export class OpcUaDataItem<T> extends DataItem<T> {
 				this.emit('changed', {value: this.value, timestamp: this.timestamp});
 			});
 		await new Promise((resolve) => this.on('changed', resolve));
-		this.logger.debug(`subscribed to Data Item ${this.nodeId}`);
+		this.logger.info(`subscribed to Data Item ${this.nodeId}`);
 		return this;
 	}
 

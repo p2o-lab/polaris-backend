@@ -275,7 +275,9 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 													nodeId = identifier);
 												// get namespaceIndex from PiMAd and assign it to variable
 												nodeID.getNamespaceIndex((response, mNamespace) =>
-													namespaceIndex = mNamespace as unknown as string);
+													//namespaceIndex = mNamespace as unknown as string);
+												// temporarily for testing
+													namespaceIndex='urn:DESKTOP-6QLO5BB:NodeOPCUA-Server');
 											});
 										}else {
 											// it's a static DataItem
