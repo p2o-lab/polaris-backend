@@ -24,7 +24,7 @@ module.exports =  {
         semi: ["error", "always"],
         "linebreak-style": [
             "error",
-            "unix"
+            "windows"
         ]
     },
     env: {

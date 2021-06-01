@@ -33,7 +33,7 @@ import {
 	PEAOptions,
 	RecipeOptions,
 	ServiceCommand,
-	VariableChange, ServerSettingsOptions
+	VariableChange, ServerSettingsOptions, ServiceOptions
 } from '@p2olab/polaris-interface';
 import {
 	Backbone,
@@ -41,7 +41,7 @@ import {
 	logger,
 	ModuleAutomation,
 	PEAPool,
-	PEAPoolVendor
+	PEAPoolVendor, ServiceModel
 } from '@p2olab/pimad-core';
 import {catManager, catOpcUA, ServiceLogEntry} from '../logging';
 import {ParameterChange, PEAController, Service} from './pea';
@@ -55,6 +55,8 @@ import PiMAdResponse = Backbone.PiMAdResponse;
 import DataAssembly = ModuleAutomation.DataAssembly;
 import {OPCUANodeCommunication} from '@p2olab/pimad-core/dist/ModuleAutomation/CommunicationInterfaceData';
 import { v4 as uuidv4 } from 'uuid';
+import {ServiceControlOptions} from '@p2olab/polaris-interface/dist/core/dataAssembly';
+import {ProcedureOptions} from '@p2olab/polaris-interface/dist/service/options';
 
 
 interface ModularPlantManagerEvents {
@@ -91,10 +93,18 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 	// PiMAd-core
 	public peaControllerPool: PEAPool;
 
+	// these are helper variables to keep the functions small
+	private dataAssemblyOptionsArray: DataAssemblyOptions[];
+	//WIP
+	private serviceOptions: any;
+
 	constructor() {
 		super();
 		this.peaControllerPool = new PEAPoolVendor().buyDependencyPEAPool();
 		this.peaControllerPool.initializeMTPFreeze202001Importer();
+
+		this.dataAssemblyOptionsArray=[];
+		this.serviceOptions= {name:'', communication:{TagName: {} as OpcUaNodeOptions, TagDescription: {} as OpcUaNodeOptions}, procedures: []};
 
 		this.player = new Player()
 			.on('started', () => {
@@ -184,7 +194,7 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 	public updateServerSettings(options: ServerSettingsOptions){
 		const pea = this.getPEAController(options.id);
 		pea.setConnection(options);
-		console.log(pea.connection);
+		//console.log(pea.connection);
 	}
 	/**
 	 * Load PEAs from JSON according to TopologyGenerator output or to simplified JSON
@@ -228,87 +238,13 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 					//get DataAssemblyModels from  PEAModel/PiMAd
 					const dataAssemblyModels: DataAssembly[] = (peaModel.getAllDataAssemblies().getContent() as {data: DataAssembly[]}).data;
 					// this is the Array we will fill up later on
-					const dataAssemblyOptionsArray: DataAssemblyOptions[] = [];
+					const ServiceModels: ServiceModel[] = (peaModel.getAllServices().getContent() as {data: ServiceModel[]}).data;
+					console.log(ServiceModels);
 
-					// iterate through every dataAssemblyModel and create DataAssemblyOptions with BaseDataAssemblyOptions
-					dataAssemblyModels.map( dataAssembly => {
-						// Initializing baseDataAssemblyOptions, which will be filled during an iteration below
-						const baseDataAssemblyOptions:
-							{
-								[k: string]: any;
-								TagName: OpcUaNodeOptions;
-								TagDescription: OpcUaNodeOptions;
-							} =
-							{
-							TagName: {} as OpcUaNodeOptions,
-							TagDescription: {} as OpcUaNodeOptions
-							};
-						// Initializing dataAssemblyName, dataAssemblyInterfaceClass
-						let dataAssemblyName ='', dataAssemblyInterfaceClass='';
-						// get dataAssemblyName from PEAModel
-						dataAssembly.getName(((response,name)=>{
-							// assign dataAssemblyName
-							dataAssemblyName = name;
-						}));
-						//get metamodelref from PEAModel/Pimad
-						dataAssembly.getMetaModelRef(((response,metaModelRef)=>{
-							// assign InterfaceClass/MetaModelRef
-							dataAssemblyInterfaceClass = metaModelRef;
-						}));
+					// TODO: do we have to wait till this function finished?
+					this.createDataAssemblyOptionsArray(dataAssemblyModels);
+					this.createServiceOptionsArray(ServiceModels);
 
-						dataAssembly.getAllDataItems(((response1, dataItems) =>
-								dataItems.map(dataItem=>{
-									// Initializing variables, which will be assigned later
-									let namespaceIndex ='', nodeId='', dataType='', value: undefined | string;
-									// get value from PiMAd (only for TagName and TagDescription)
-									// get dataType from PiMAd
-									dataItem.getDataType((response, mDataType)=>
-										dataType= mDataType);
-									// get cIData from PiMAd
-									dataItem.getCommunicationInterfaceData((response2, cIData) => {
-										// check if dataItem has an cIData
-										if(cIData){
-											// get NodeId object from PiMAd
-											(cIData as OPCUANodeCommunication).getNodeId((response, nodeID) => {
-												// get NodeId from PiMAd and assign it to variable
-												nodeID.getNodeIdIdentifier((response, identifier) =>
-													nodeId = identifier);
-												// get namespaceIndex from PiMAd and assign it to variable
-												nodeID.getNamespaceIndex((response, mNamespace) =>
-													//namespaceIndex = mNamespace as unknown as string);
-												// temporarily for testing
-													namespaceIndex='urn:DESKTOP-6QLO5BB:NodeOPCUA-Server');
-											});
-										}else {
-											// it's a static DataItem
-											// TODO: currently only string supported?
-											dataItem.getValue((response, mValue) => value = mValue);
-										}
-									});
-
-									const opcUaNodeOptions: OpcUaNodeOptions = {
-										nodeId: nodeId,
-										namespaceIndex: namespaceIndex,
-										dataType: dataType,
-										value: value
-									};
-									// get Name of DataItem from PiMAd
-									dataItem.getName((response2, name) =>
-										baseDataAssemblyOptions[name as string] = opcUaNodeOptions);
-								})
-						));
-
-						// create dataAssemblyOptions with information collected above
-						const dataAssemblyOptions: DataAssemblyOptions = {
-							name: dataAssemblyName,
-							metaModelRef: dataAssemblyInterfaceClass,
-							dataItems: baseDataAssemblyOptions
-						};
-						dataAssemblyOptionsArray.push(dataAssemblyOptions);
-						/*if(dataAssemblyOptions.metaModelRef.includes('AnaMon')) {
-							dataAssemblyOptionsArray.push(dataAssemblyOptions);
-						}*/
-					});
 					// create PEAOptions
 					const peaOptions: PEAOptions = {
 						name: peaModel.getName(),
@@ -319,7 +255,7 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 						password: '',
 						hmiUrl: '',
 						opcuaServerUrl: '',
-						dataAssemblies: dataAssemblyOptionsArray
+						dataAssemblies: this.dataAssemblyOptionsArray
 					};
 
 					//console.log(dataAssemblyOptionsArray);
@@ -400,6 +336,252 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 				});
 			this.emit('notify', {message: 'pea', pea: p.json()});
 		});*/
+	}
+
+	private createServiceOptionsArray(serviceModels: ServiceModel[]){
+		serviceModels.map(serviceModel =>{
+			const baseDataAssemblyOptions:
+				{
+					[k: string]: any;
+					TagName: OpcUaNodeOptions;
+					TagDescription: OpcUaNodeOptions;
+				} =
+				{
+					TagName: {} as OpcUaNodeOptions,
+					TagDescription: {} as OpcUaNodeOptions
+				};
+
+			let procedureOptionsArray: ProcedureOptions[] = [], serviceName: string | undefined ='';
+
+			serviceModel.getName(((response, name) => serviceName = name));
+
+			serviceModel.getAllProcedures((response, mProcedures) =>
+				mProcedures.map(procedure => {
+					const baseDataAssemblyOptionsProcedure:
+						{
+							[k: string]: any;
+							TagName: OpcUaNodeOptions;
+							TagDescription: OpcUaNodeOptions;
+						} =
+						{
+							TagName: {} as OpcUaNodeOptions,
+							TagDescription: {} as OpcUaNodeOptions
+						};
+
+					let procedureOptions: ProcedureOptions;
+					let id='', procedureName: string | undefined ='';
+					let isDefault = false, isSelfCompleting = false;
+					procedure.getName((response1, name1) => procedureName = name1);
+					procedure.getAllAttributes((response1, attributes) => {
+						attributes.forEach(attribute => {
+							const name: string = (attribute.getName().getContent() as{data: string}).data;
+							const value = (attribute.getValue().getContent() as{data: string}).data;
+							switch(name){
+								case('IsSelfCompleting'):
+									isSelfCompleting = Boolean(JSON.parse(value));
+									break;
+								case('IsDefault'):
+									isDefault = Boolean(JSON.parse(value));
+									break;
+								case('ProcedureID'):
+									id = value;
+							}
+						});
+					});
+					procedure.getDataAssembly((response1, dataAssembly) =>
+						dataAssembly.getAllDataItems((response2, dataItems) =>
+							dataItems.map(dataItem => {
+								let namespaceIndex ='', nodeId='', dataType='', value: undefined | string;
+								// get value from PiMAd (only for TagName and TagDescription)
+								// get dataType from PiMAd
+								dataItem.getDataType((response, mDataType)=>
+									dataType= mDataType);
+								// get cIData from PiMAd
+								dataItem.getCommunicationInterfaceData((response2, cIData) => {
+									// check if dataItem has an cIData
+									if(cIData){
+										// get NodeId object from PiMAd
+										(cIData as OPCUANodeCommunication).getNodeId((response, nodeID) => {
+											// get NodeId from PiMAd and assign it to variable
+											nodeID.getNodeIdIdentifier((response, identifier) =>
+												nodeId = identifier);
+											// get namespaceIndex from PiMAd and assign it to variable
+											nodeID.getNamespaceIndex((response, mNamespace) =>{
+												namespaceIndex='urn:DESKTOP-6QLO5BB:NodeOPCUA-Server';
+												//namespaceIndex = mNamespace as unknown as string;
+											});
+										});
+									}else {
+										// it's a static DataItem
+										// TODO: currently only string supported?
+										dataItem.getValue((response, mValue) => value = mValue);
+										//namespaceIndex='urn:DESKTOP-6QLO5BB:NodeOPCUA-Server';
+									}
+								});
+								const opcUaNodeOptions: OpcUaNodeOptions = {
+									nodeId: nodeId,
+									namespaceIndex: namespaceIndex,
+									dataType: dataType,
+									value: value
+								};
+								// get Name of DataItem from PiMAd
+								dataItem.getName((response2, name) =>
+								{
+									baseDataAssemblyOptionsProcedure[name as string] = opcUaNodeOptions;
+								});
+							})
+						)
+					);
+/*					procedureOptions = {
+						id: id,
+						name: procedureName,
+						isSelfCompleting: isSelfCompleting,
+						isDefault: isDefault,
+					};*/
+				})
+			);
+
+			serviceModel.getDataAssembly((response, dataAssembly) =>
+				dataAssembly.getAllDataItems((response1, dataItems) =>
+					dataItems.map(dataItem => {
+						let namespaceIndex ='', nodeId='', dataType='', value: undefined | string;
+						// get value from PiMAd (only for TagName and TagDescription)
+						// get dataType from PiMAd
+						dataItem.getDataType((response, mDataType)=>
+							dataType= mDataType);
+						// get cIData from PiMAd
+						dataItem.getCommunicationInterfaceData((response2, cIData) => {
+							// check if dataItem has an cIData
+							if(cIData){
+								// get NodeId object from PiMAd
+								(cIData as OPCUANodeCommunication).getNodeId((response, nodeID) => {
+									// get NodeId from PiMAd and assign it to variable
+									nodeID.getNodeIdIdentifier((response, identifier) =>
+										nodeId = identifier);
+									// get namespaceIndex from PiMAd and assign it to variable
+									nodeID.getNamespaceIndex((response, mNamespace) =>{
+										namespaceIndex='urn:DESKTOP-6QLO5BB:NodeOPCUA-Server';
+										//namespaceIndex = mNamespace as unknown as string;
+									});
+								});
+							}else {
+								// it's a static DataItem
+								// TODO: currently only string supported?
+								dataItem.getValue((response, mValue) => value = mValue);
+								//namespaceIndex='urn:DESKTOP-6QLO5BB:NodeOPCUA-Server';
+							}
+						});
+						const opcUaNodeOptions: OpcUaNodeOptions = {
+							nodeId: nodeId,
+							namespaceIndex: namespaceIndex,
+							dataType: dataType,
+							value: value
+						};
+						// get Name of DataItem from PiMAd
+						dataItem.getName((response2, name) =>
+						{
+							baseDataAssemblyOptions[name as string] = opcUaNodeOptions;
+						});
+					}) ));
+
+			this.serviceOptions = {
+				name: serviceName,
+				communication: baseDataAssemblyOptions,
+				procedures: procedureOptionsArray,
+			};
+		});
+	}
+
+	/**
+	 * TODO: This function is still to big
+	 * @param dataAssemblyModels
+	 * @private
+	 */
+	private createDataAssemblyOptionsArray(dataAssemblyModels: DataAssembly[]){
+		//TODO: parse endpoint
+		// iterate through every dataAssemblyModel and create DataAssemblyOptions with BaseDataAssemblyOptions
+		dataAssemblyModels.map( dataAssembly => {
+			// Initializing baseDataAssemblyOptions, which will be filled during an iteration below
+			const baseDataAssemblyOptions:
+				{
+					[k: string]: any;
+					TagName: OpcUaNodeOptions;
+					TagDescription: OpcUaNodeOptions;
+				} =
+				{
+					TagName: {} as OpcUaNodeOptions,
+					TagDescription: {} as OpcUaNodeOptions
+				};
+
+			// Initializing dataAssemblyName, dataAssemblyInterfaceClass
+			let dataAssemblyName ='', dataAssemblyInterfaceClass='';
+
+			// get dataAssemblyName from PEAModel
+			dataAssembly.getName(((response,name)=>{
+				// assign dataAssemblyName
+				dataAssemblyName = name;
+			}));
+
+			//get metamodelref from PEAModel/Pimad
+			dataAssembly.getMetaModelRef(((response,metaModelRef)=>{
+				// assign InterfaceClass/MetaModelRef
+				dataAssemblyInterfaceClass = metaModelRef;
+			}));
+
+			dataAssembly.getAllDataItems(((response1, dataItems) =>
+					dataItems.map(dataItem=>{
+						// Initializing variables, which will be assigned later
+						let namespaceIndex ='', nodeId='', dataType='', value: undefined | string;
+						// get value from PiMAd (only for TagName and TagDescription)
+						// get dataType from PiMAd
+						dataItem.getDataType((response, mDataType)=>
+							dataType= mDataType);
+						// get cIData from PiMAd
+						dataItem.getCommunicationInterfaceData((response2, cIData) => {
+							// check if dataItem has an cIData
+							if(cIData){
+								// get NodeId object from PiMAd
+								(cIData as OPCUANodeCommunication).getNodeId((response, nodeID) => {
+									// get NodeId from PiMAd and assign it to variable
+									nodeID.getNodeIdIdentifier((response, identifier) =>
+										nodeId = identifier);
+									// get namespaceIndex from PiMAd and assign it to variable
+									nodeID.getNamespaceIndex((response, mNamespace) =>{
+										namespaceIndex='urn:DESKTOP-6QLO5BB:NodeOPCUA-Server';
+										//namespaceIndex = mNamespace as unknown as string;
+									});
+								});
+							}else {
+								// it's a static DataItem
+								// TODO: currently only string supported?
+								dataItem.getValue((response, mValue) => value = mValue);
+								//namespaceIndex='urn:DESKTOP-6QLO5BB:NodeOPCUA-Server';
+							}
+						});
+
+						const opcUaNodeOptions: OpcUaNodeOptions = {
+							nodeId: nodeId,
+							namespaceIndex: namespaceIndex,
+							dataType: dataType,
+							value: value
+						};
+						// get Name of DataItem from PiMAd
+						dataItem.getName((response2, name) =>
+						{
+							baseDataAssemblyOptions[name as string] = opcUaNodeOptions;
+						});
+					})
+			));
+
+			// create dataAssemblyOptions with information collected above
+			const dataAssemblyOptions: DataAssemblyOptions = {
+				name: dataAssemblyName,
+				metaModelRef: dataAssemblyInterfaceClass,
+				dataItems: baseDataAssemblyOptions
+			};
+
+			this.dataAssemblyOptionsArray.push(dataAssemblyOptions);
+		});
 	}
 
 	public async removePEAController(peaID: string): Promise<void> {
