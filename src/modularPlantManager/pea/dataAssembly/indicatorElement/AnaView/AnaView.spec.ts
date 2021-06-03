@@ -28,6 +28,10 @@ import {AnaView} from './AnaView';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import * as baseDataAssemblyOptions from '../../../../../../tests/anaview.json';
+import {ServiceControl} from '../../ServiceControl/ServiceControl';
+import {DataAssemblyControllerFactory} from '../../DataAssemblyControllerFactory';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -36,7 +40,22 @@ describe('AnaView', () => {
 
 	describe('static', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
-		it('should create AnaView', async () => { /* TODO: Add Test */
+		it('should create AnaView', async () => {
+
+			const dataAssemblyOptions: DataAssemblyOptions = {
+				name: 'Variable',
+				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/AnaView',
+				dataItems: baseDataAssemblyOptions
+			};
+			const da1: AnaView = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as AnaView;
+			expect(da1 instanceof AnaView).to.equal(true);
+			expect(da1.communication.V).to.not.equal(undefined);
+			expect(da1.communication.WQC).to.not.equal(undefined);
+			expect(da1.communication.VSclMax).to.not.equal(undefined);
+			expect(da1.communication.VSclMin).to.not.equal(undefined);
+			expect(da1.communication.TagName).to.not.equal(undefined);
+			expect(da1.communication.TagDescription).to.not.equal(undefined);
+			expect(da1.communication.VUnit).to.not.equal(undefined);
 		});
 
 	});

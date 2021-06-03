@@ -91,15 +91,15 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 	// autoreset timeout in milliseconds
 	private _autoresetTimeout = 500;
 	// PiMAd-core
-	public peaControllerPool: PEAPool;
+	public pimadPool: PEAPool;
 
 	// these are helper variables to keep the functions small
 	private dataAssemblyOptionsArray: DataAssemblyOptions[];
 
 	constructor() {
 		super();
-		this.peaControllerPool = new PEAPoolVendor().buyDependencyPEAPool();
-		this.peaControllerPool.initializeMTPFreeze202001Importer();
+		this.pimadPool = new PEAPoolVendor().buyDependencyPEAPool();
+		this.pimadPool.initializeMTPFreeze202001Importer();
 
 		this.dataAssemblyOptionsArray=[];
 
@@ -152,7 +152,7 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 	 * @param callback Response from PiMad...
 	 */
 	public getPEAFromPimadPool(peaId: string, callback: (response: PiMAdResponse) => void) {
-		this.peaControllerPool.getPEA(peaId,(response: PiMAdResponse) => {
+		this.pimadPool.getPEA(peaId,(response: PiMAdResponse) => {
 			callback(response);
 		});
 	}
@@ -163,7 +163,7 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 	 * @param callback Response from PiMad...
 	 */
 	public deletePEAFromPimadPool(peaId: string, callback: (response: PiMAdResponse) => void) {
-		this.peaControllerPool.deletePEA(peaId,(response: PiMAdResponse) => {
+		this.pimadPool.deletePEA(peaId,(response: PiMAdResponse) => {
 				callback(response);
 		});
 	}
@@ -173,7 +173,7 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 	 * @param callback - contains a list of PEAs
 	 */
 	public getAllPEAsFromPimadPool(callback: (response: PiMAdResponse) => void){
-		this.peaControllerPool.getAllPEAs((response: PiMAdResponse) => {
+		this.pimadPool.getAllPEAs((response: PiMAdResponse) => {
 			callback(response);
 		});
 	}
@@ -185,7 +185,7 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 	 */
 
 	public addPEAToPimadPool(filePath: { source: string}, callback: (response: PiMAdResponse) => void) {
-		this.peaControllerPool.addPEA(filePath, (response: PiMAdResponse) => {
+		this.pimadPool.addPEA(filePath, (response: PiMAdResponse) => {
 				callback(response);
 			});
 	}
@@ -334,9 +334,7 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 		return newPEAs;
 	}
 
-
-
-	/**	//TODO: parse endpoint
+	/**
 	 * @param dataAssemblyModels
 	 * @private
 	 */

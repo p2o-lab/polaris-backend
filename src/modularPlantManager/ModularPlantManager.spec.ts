@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import {AggregatedServiceOptions, ServiceCommand} from '@p2olab/polaris-interface';
+import {AggregatedServiceOptions, ServerSettingsOptions, ServiceCommand} from '@p2olab/polaris-interface';
 import {LoadOptions, ModularPlantManager} from './ModularPlantManager';
 import {Service} from './pea';
 import {ServiceState} from './pea/dataAssembly';
@@ -39,6 +39,60 @@ import {logger} from '@p2olab/pimad-core';
 
 describe('ModularPlantManager', () => {
 	const parseJson = require('json-parse-better-errors');
+
+	context('functions', () => {
+		let modularPlantManager = new ModularPlantManager();
+		let pimadId = '';
+
+		beforeEach(() => {
+			return new Promise((resolve) => {
+				modularPlantManager = new ModularPlantManager();
+				modularPlantManager.addPEAToPimadPool({source: 'tests/PiMAd-core.0-0-1.mtp'}, response => {
+					const peaModel = response.getContent() as PEAModel;
+					pimadId = peaModel.getPiMAdIdentifier();
+					resolve();
+				});
+			});
+		});
+
+		it('getPEAController() (& loadPEAControlle())', (done) => {
+			const peaId = modularPlantManager.loadPEAController(pimadId)[0].id;
+			expect(modularPlantManager.peas.length).equal(1);
+			expect(() => modularPlantManager.getPEAController(peaId)).not.to.throw();
+			done();
+		});
+
+
+		it('getPEAController() to fail', () => {
+			expect(() => modularPlantManager.getPEAController('')).to.throw();
+		});
+
+		it('deletePEAFromPimadPool()', (done) => {
+			modularPlantManager.deletePEAFromPimadPool(pimadId, response1 => {
+				expect(response1.getMessage()).equal('Success!');
+				modularPlantManager.getAllPEAsFromPimadPool(response2 => {
+					expect(response2.getContent()).to.be.empty;
+					done();
+				});
+			});
+		});
+
+		it('updateServerSettings()', () => {
+			// instantiate PEAController first
+			const peaId = modularPlantManager.loadPEAController(pimadId)[0].id;
+			const options: ServerSettingsOptions = {
+				id: peaId,
+				username: 'Bob',
+				password: '1234',
+				serverUrl: 'url',
+			};
+			modularPlantManager.updateServerSettings(options);
+			expect(modularPlantManager.getPEAController(peaId).connection.endpoint).equals('url');
+			expect(modularPlantManager.getPEAController(peaId).connection.username).equals('Bob');
+			expect(modularPlantManager.getPEAController(peaId).connection.password).equals('1234');
+		});
+	});
+
 
 	context('loading', () => {
 

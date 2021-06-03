@@ -39,7 +39,7 @@ export class OSLevel {
 	}
 
 	public setCommunication(){
-		//this.dAController.communication.OSLevel = this.dAController.createDataItem('OSLevel', 'write');
+		this.dAController.communication.OSLevel = this.dAController.createDataItem('OSLevel', 'write');
 
 	}
 

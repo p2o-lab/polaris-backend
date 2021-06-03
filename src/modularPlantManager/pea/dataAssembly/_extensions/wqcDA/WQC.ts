@@ -39,7 +39,7 @@ export class WQC {
 	}
 
 	setCommunication(){
-		//this.dAController.communication.WQC = this.dAController.createDataItem('WQC', 'read');
+		this.dAController.communication.WQC = this.dAController.createDataItem('WQC', 'read');
 	}
 
 	get WQC(): number | undefined {
