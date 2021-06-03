@@ -26,7 +26,7 @@
 import {
 	CommandEnableInterface, DataAssemblyOptions,
 	OperationMode,
-	ParameterInterface, PEAInterface, PEAOptions, ServerSettingsOptions,
+	ParameterInterface, PEAInterface, PEAOptions, ProcessValuesInterface, ServerSettingsOptions,
 	ServiceCommand,
 	ServiceInterface, ServiceOptions, ServiceSourceMode,
 	VariableChange
@@ -144,7 +144,7 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 	// contains all DAControllers after subscription
 	private dAControllers: DataAssemblyController[];
 	// contains all variables (used in function json())
-	private processValues: any;
+	private processValues: ProcessValuesInterface[];
 
 	constructor(options: PEAOptions, protectedPEA = false) {
 		super();
@@ -417,7 +417,7 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 	 */
 	private createProcessValues(){
 		this.dAControllers.forEach((dAController) => {
-			const dataAssembly: {name: string; dataItems: any[] } = {name: '', dataItems: []};
+			const dataAssembly: ProcessValuesInterface = {name: '', dataItems: []};
 			const dataItems = dAController.communication as { [key: string]: any };
 
 			dataAssembly.name= dAController.name;
