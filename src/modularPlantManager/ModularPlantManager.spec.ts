@@ -48,34 +48,21 @@ describe('ModularPlantManager', () => {
 			expect(() => modularPlantManager.loadPEAController({someattribute: 'abc'} as any)).to.throw();
 		});*/
 
-		it('should load mtp via PiMAd', () => {
-			const modularPlantManager = new ModularPlantManager();
-
-		});
-		// WP
 		it('should load PEAs', (done) => {
 			const modularPlantManager = new ModularPlantManager();
-			modularPlantManager.addPEAToPimadPool({source:'local/Module.zip'}, response => {
+			// add PEAModel to PiMAd first
+			modularPlantManager.addPEAToPimadPool({source:'tests/test.zip'}, response => {
 				if(response.getMessage()=='Success!') {
 					const peaModel: PEAModel = response.getContent() as PEAModel;
-
-					//const peaControllers = modularPlantManager.loadPEAController(options);
-					//console.log(peaControllers);
-
-					// we are currently only parsing 1 PEAController
 					modularPlantManager.loadPEAController(peaModel.getPiMAdIdentifier());
 					expect(modularPlantManager.peas.length).equal(1);
 					done();
-					//const peaController = modularPlantManager.peas[0];
-					//peaController.setConnection({username:'', password: '', serverUrl: 'opc.tcp://127.0.0.1:4334/', id: peaController.id})
-					//modularPlantManager.peas[0].connect();
-
 				}
 			});
 			//const peasJson = JSON.parse(fs.readFileSync('assets/peas/pea_cif.json').toString());
 			//modularPlantManager.loadPEAController(peasJson);
 			//expect(() => modularPlantManager.loadPEAController(peasJson)).to.throw('already in registered PEAs');
-		}).timeout(5000); // overwrite timeout, because this could take longer
+		}); // overwrite timeout, because this could take longer
 
 		/*it('should loadPEAControllerPEAController with single PEAController', () => {
 			const peasJson = JSON.parse(fs.readFileSync('assets/peas/pea_cif.json').toString());

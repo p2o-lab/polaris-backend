@@ -60,7 +60,7 @@ describe('PEA', () => {
 
 		it('should connect to PEAController, provide correct json output and disconnect', async () => {
 			const peaJson =
-				JSON.parse(fs.readFileSync('assets/peas/pea_testserver_1.0.0.json', 'utf8')).peas[0];
+				JSON.parse(fs.readFileSync('src/modularPlantManager/pea/_assets/JSON/pea_testserver_1.0.0_2.json', 'utf8')).peas[0];
 			const pea = new PEAController(peaJson);
 			await pea.connect();
 

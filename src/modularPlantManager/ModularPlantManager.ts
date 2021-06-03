@@ -143,11 +143,8 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 	 */
 	public getPEAController(peaId: string): PEAController {
 		const pea = this.peas.find((p) => p.id === peaId);
-		if (pea) {
-			return pea;
-		} else {
-			throw Error(`PEA with id ${peaId} not found`);
-		}
+		if (pea) return pea;
+		else throw Error(`PEA with id ${peaId} not found`);
 	}
 	/**
 	 * Delete PEAController from Pimad-Pool by given Pimad-Identifier
@@ -207,7 +204,7 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 	 * @param {string} pimadIdentifier
 	 * @param {boolean} protectedPEAs  should PEAs be protected from being deleted
 	 */
-	public loadPEAController(pimadIdentifier: string, protectedPEAs = false){
+	public loadPEAController(pimadIdentifier: string, protectedPEAs = false): PEAController[]{
 		const newPEAs: PEAController[] = [];
 		if (!pimadIdentifier) {
 			throw new Error('No PEAs defined in supplied options');
@@ -329,7 +326,10 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 				});
 			this.emit('notify', {message: 'pea', pea: p.json()});
 		});
+		return newPEAs;
 	}
+
+
 
 	/**	//TODO: parse endpoint
 	 * @param dataAssemblyModels
