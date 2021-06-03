@@ -37,11 +37,11 @@ import {
 } from '@p2olab/polaris-interface';
 import {
 	Backbone,
-	CommunicationInterfaceData,
+	CommunicationInterfaceData, DataItemModel,
 	logger,
 	ModuleAutomation,
 	PEAPool,
-	PEAPoolVendor, ServiceModel
+	PEAPoolVendor,
 } from '@p2olab/pimad-core';
 import {catManager, catOpcUA, ServiceLogEntry} from '../logging';
 import {ParameterChange, PEAController, Service} from './pea';
@@ -236,12 +236,17 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 					const peaModel: PEAModel = response.getContent() as PEAModel;
 					//get DataAssemblyModels from  PEAModel/PiMAd
 					const dataAssemblyModels: DataAssembly[] = (peaModel.getAllDataAssemblies().getContent() as {data: DataAssembly[]}).data;
-					// this is the Array we will fill up later on
+
+					let endpoint: string | undefined ='';
 
 					// Services are not handled yet
-					const ServiceModels: ServiceModel[] = (peaModel.getAllServices().getContent() as {data: ServiceModel[]}).data;
+					// const ServiceModels: ServiceModel[] = (peaModel.getAllServices().getContent() as {data: ServiceModel[]}).data;
 
 					this.createDataAssemblyOptionsArray(dataAssemblyModels);
+
+					//get endpoint
+					const dataItemModels = (peaModel.getEndpoint().getContent() as {data: DataItemModel[]}).data;
+					dataItemModels[0].getValue((response1, value) => endpoint = value);
 
 					// create PEAOptions
 					const peaOptions: PEAOptions = {
@@ -252,7 +257,7 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 						username: '',
 						password: '',
 						hmiUrl: '',
-						opcuaServerUrl: '',
+						opcuaServerUrl: endpoint,
 						dataAssemblies: this.dataAssemblyOptionsArray
 					};
 					// create PEAController and push to newPEAs list
