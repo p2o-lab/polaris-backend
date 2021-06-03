@@ -31,7 +31,7 @@ import {
 	ServiceInterface, ServiceOptions, ServiceSourceMode,
 	VariableChange
 } from '@p2olab/polaris-interface';
-import {DataItemEmitter, OpcUaConnection} from './connection';
+import {DataItemEmitter, OpcUaConnection, OpcUaDataItem} from './connection';
 import {DataAssemblyController, DataAssemblyControllerFactory, ServiceState} from './dataAssembly';
 import {Procedure, Service} from './serviceSet';
 
@@ -141,6 +141,11 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 	private readonly hmiUrl: string;
 	private readonly logger: Category;
 
+	// contains all DAControllers after subscription
+	private dAControllers: DataAssemblyController[];
+	// contains all variables (used in function json())
+	private processValues: any;
+
 	constructor(options: PEAOptions, protectedPEA = false) {
 		super();
 		this.options = options;
@@ -150,9 +155,13 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 		this.description = options.description || '';
 		this.protected = protectedPEA;
 		this.hmiUrl = options.hmiUrl || '';
+		this.dAControllers=[];
+		this.processValues = [];
 
-		// only temporarily for testing
-		this.options.opcuaServerUrl = 'opc.tcp://localhost:4334';
+		/**
+		 * this can be used for testing
+		 * this.options.opcuaServerUrl = 'opc.tcp://localhost:4334';
+		 */
 
 		this.connection = new OpcUaConnection(this.id, options.opcuaServerUrl, options.username, options.password)
 			.on('connected', () => this.emit('connected'))
@@ -169,7 +178,15 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 					DataAssemblyControllerFactory.create(variableOptions, this.connection)
 				);
 		}
+
+		this.on('variableChanged', (entry: VariableChange)=> {
+			// clear list first
+			this.processValues.length= 0;
+			// update this.processValues
+			if(entry.pea == this.id) this.createProcessValues();
+		});
 	}
+
 
 	public setConnection(options: ServerSettingsOptions){
 		this.connection = new OpcUaConnection(this.id, options.serverUrl, options.username, options.password)
@@ -193,23 +210,22 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 		return this.services.map((service) => service.json());
 	}
 
-	/**
-	 *
-	 */
 	public async connect(): Promise<void> {
 		await this.connection.connect();
 		const pv = this.subscribeToAllVariables();
 		const pa = this.subscribeToAllServices();
-
 		await this.connection.startListening();
-		await Promise.all([pv, pa]);
 
+		//after subscribing-> assign DAControllers to instance variable, which will be processed to this.processValues later
+		await pv.then(value => this.dAControllers = value);
+		this.createProcessValues();
+
+		await Promise.all([pv,pa]);
 		this.logger.info(`[${this.id}] Successfully subscribed to ${this.connection.monitoredItemSize()} assemblies`);
 	}
 
 	/**
 	 * Close session and disconnect from PEAController
-	 *
 	 */
 	public async disconnect(): Promise<void> {
 		this.logger.info(`[${this.id}] Disconnect PEA`);
@@ -223,6 +239,7 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 
 	/**
 	 * Get JSON serialisation of PEAController
+	 * @returns {PEAInterface} (can be passed to frontend e.g.)
 	 */
 	public json(): PEAInterface {
 		return {
@@ -234,7 +251,7 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 			hmiUrl: this.hmiUrl,
 			connected: this.isConnected(),
 			services: this.getServiceStates(),
-			processValues: [],
+			processValues: this.processValues,
 			protected: this.protected
 		};
 	}
@@ -319,7 +336,7 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 		return Promise.all(
 			this.variables.map((variable: DataAssemblyController) => {
 				this.logger.info(`[${this.id}] subscribe to process variable ${variable.name}`);
-				variable.on('V', (data) => {
+				variable.on('V', (data: OpcUaDataItem<any>) => {
 					this.logger.info(`[${this.id}] variable changed: ${JSON.stringify(variable.toJson())}`);
 					const entry: VariableChange = {
 						timestampPOL: new Date(),
@@ -394,4 +411,20 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 		this.services.forEach((service) => service.unsubscribe());
 	}
 
+	/**
+	 * this function will extract the variables/DataItems out of this.dAControllers and push it to this.processValues
+	 * @private
+	 */
+	private createProcessValues(){
+		this.dAControllers.forEach((dAController) => {
+			const dataAssembly: {name: string; dataItems: any[] } = {name: '', dataItems: []};
+			const dataItems = dAController.communication as { [key: string]: any };
+
+			dataAssembly.name= dAController.name;
+			for(const key in dataItems){
+				dataAssembly.dataItems.push({[key]: (dataItems[key] as OpcUaDataItem<any>).value});
+			}
+			this.processValues.push(dataAssembly);
+		});
+	}
 }

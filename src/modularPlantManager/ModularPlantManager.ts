@@ -95,8 +95,6 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 
 	// these are helper variables to keep the functions small
 	private dataAssemblyOptionsArray: DataAssemblyOptions[];
-	//WIP
-	private serviceOptions: any;
 
 	constructor() {
 		super();
@@ -104,7 +102,6 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 		this.peaControllerPool.initializeMTPFreeze202001Importer();
 
 		this.dataAssemblyOptionsArray=[];
-		this.serviceOptions= {name:'', communication:{TagName: {} as OpcUaNodeOptions, TagDescription: {} as OpcUaNodeOptions}, procedures: []};
 
 		this.player = new Player()
 			.on('started', () => {
@@ -134,11 +131,16 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 	}
 
 	private generateUniqueIdentifier(): string {
-		// ...the extinction of all life on earth will occur long before you have a collision (with uuid) (stackoverflow.com)
+		// the extinction of all life on earth will occur long before you have a collision (with uuid) (stackoverflow.com)
 		const identifier = uuidv4();
 		return identifier;
 	}
 
+	/**
+	 * get PEAController by given identifier
+	 * @param peaId
+	 * @returns {PEAController}
+	 */
 	public getPEAController(peaId: string): PEAController {
 		const pea = this.peas.find((p) => p.id === peaId);
 		if (pea) {
@@ -191,24 +193,25 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 			});
 	}
 
+	/**
+	 * update server settings of PEAController
+	 * @param {ServerSettingsOptions} options
+	 */
 	public updateServerSettings(options: ServerSettingsOptions){
 		const pea = this.getPEAController(options.id);
 		pea.setConnection(options);
-		//console.log(pea.connection);
 	}
+
 	/**
-	 * Load PEAs from JSON according to TopologyGenerator output or to simplified JSON
-	 * Skip PEAController if already a PEAController with same ID is registered
-	 * @param options           options for PEAController creation
+	 * Load PEAControllers by given pimadIdentifier
+	 * @param {string} pimadIdentifier
 	 * @param {boolean} protectedPEAs  should PEAs be protected from being deleted
-	 * @returns
 	 */
-	public loadPEAController(pimadIdentifier: string, protectedPEAs = false) {
+	public loadPEAController(pimadIdentifier: string, protectedPEAs = false){
 		const newPEAs: PEAController[] = [];
 		if (!pimadIdentifier) {
 			throw new Error('No PEAs defined in supplied options');
 		}
-
 		/*if (options.subMP) {
 			options.subMP.forEach((subMPOptions) => {
 				subMPOptions.peas.forEach((peaOptions: PEAOptions) => {
@@ -230,7 +233,6 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 				}
 			});*/
 		else {
-			// TODO: als separate Funktion auslagern
 			this.getPEAFromPimadPool(pimadIdentifier, response => {
 				if(response.getMessage()==='Success!'){
 					//get PEAModel
@@ -238,12 +240,11 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 					//get DataAssemblyModels from  PEAModel/PiMAd
 					const dataAssemblyModels: DataAssembly[] = (peaModel.getAllDataAssemblies().getContent() as {data: DataAssembly[]}).data;
 					// this is the Array we will fill up later on
-					const ServiceModels: ServiceModel[] = (peaModel.getAllServices().getContent() as {data: ServiceModel[]}).data;
-					console.log(ServiceModels);
 
-					// TODO: do we have to wait till this function finished?
+					// Services are not handled yet
+					const ServiceModels: ServiceModel[] = (peaModel.getAllServices().getContent() as {data: ServiceModel[]}).data;
+
 					this.createDataAssemblyOptionsArray(dataAssemblyModels);
-					this.createServiceOptionsArray(ServiceModels);
 
 					// create PEAOptions
 					const peaOptions: PEAOptions = {
@@ -257,23 +258,15 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 						opcuaServerUrl: '',
 						dataAssemblies: this.dataAssemblyOptionsArray
 					};
-
-					//console.log(dataAssemblyOptionsArray);
+					// create PEAController and push to newPEAs list
 					newPEAs.push(new PEAController(peaOptions, protectedPEAs));
 				}
-
 			});
-
-			//const peaOptions = options.pea;
-			/*if (this.peas.find((p) => p.id === peaOptions.pea.getPiMAdIdentifier())) {
-				catManager.warn(`PEAController ${peaOptions.pea.getPiMAdIdentifier()} already in registered PEAs`);
-				throw new Error(`PEAController ${peaOptions.pea.getPiMAdIdentifier()} already in registered PEAs`);
-			} else {
-				newPEAs.push(new PEAController(peaOptions, protectedPEAs));
-			}*/
 		}
+
 		this.peas.push(...newPEAs);
-		/*newPEAs.forEach((p: PEAController) => {
+
+		newPEAs.forEach((p: PEAController) => {
 			p
 				.on('connected', () => {
 					this.emit('notify', {message: 'pea', pea: p.json()});
@@ -335,170 +328,14 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 					this.performAutoReset(service);
 				});
 			this.emit('notify', {message: 'pea', pea: p.json()});
-		});*/
-	}
-
-	private createServiceOptionsArray(serviceModels: ServiceModel[]){
-		serviceModels.map(serviceModel =>{
-			const baseDataAssemblyOptions:
-				{
-					[k: string]: any;
-					TagName: OpcUaNodeOptions;
-					TagDescription: OpcUaNodeOptions;
-				} =
-				{
-					TagName: {} as OpcUaNodeOptions,
-					TagDescription: {} as OpcUaNodeOptions
-				};
-
-			let procedureOptionsArray: ProcedureOptions[] = [], serviceName: string | undefined ='';
-
-			serviceModel.getName(((response, name) => serviceName = name));
-
-			serviceModel.getAllProcedures((response, mProcedures) =>
-				mProcedures.map(procedure => {
-					const baseDataAssemblyOptionsProcedure:
-						{
-							[k: string]: any;
-							TagName: OpcUaNodeOptions;
-							TagDescription: OpcUaNodeOptions;
-						} =
-						{
-							TagName: {} as OpcUaNodeOptions,
-							TagDescription: {} as OpcUaNodeOptions
-						};
-
-					let procedureOptions: ProcedureOptions;
-					let id='', procedureName: string | undefined ='';
-					let isDefault = false, isSelfCompleting = false;
-					procedure.getName((response1, name1) => procedureName = name1);
-					procedure.getAllAttributes((response1, attributes) => {
-						attributes.forEach(attribute => {
-							const name: string = (attribute.getName().getContent() as{data: string}).data;
-							const value = (attribute.getValue().getContent() as{data: string}).data;
-							switch(name){
-								case('IsSelfCompleting'):
-									isSelfCompleting = Boolean(JSON.parse(value));
-									break;
-								case('IsDefault'):
-									isDefault = Boolean(JSON.parse(value));
-									break;
-								case('ProcedureID'):
-									id = value;
-							}
-						});
-					});
-					procedure.getDataAssembly((response1, dataAssembly) =>
-						dataAssembly.getAllDataItems((response2, dataItems) =>
-							dataItems.map(dataItem => {
-								let namespaceIndex ='', nodeId='', dataType='', value: undefined | string;
-								// get value from PiMAd (only for TagName and TagDescription)
-								// get dataType from PiMAd
-								dataItem.getDataType((response, mDataType)=>
-									dataType= mDataType);
-								// get cIData from PiMAd
-								dataItem.getCommunicationInterfaceData((response2, cIData) => {
-									// check if dataItem has an cIData
-									if(cIData){
-										// get NodeId object from PiMAd
-										(cIData as OPCUANodeCommunication).getNodeId((response, nodeID) => {
-											// get NodeId from PiMAd and assign it to variable
-											nodeID.getNodeIdIdentifier((response, identifier) =>
-												nodeId = identifier);
-											// get namespaceIndex from PiMAd and assign it to variable
-											nodeID.getNamespaceIndex((response, mNamespace) =>{
-												namespaceIndex='urn:DESKTOP-6QLO5BB:NodeOPCUA-Server';
-												//namespaceIndex = mNamespace as unknown as string;
-											});
-										});
-									}else {
-										// it's a static DataItem
-										// TODO: currently only string supported?
-										dataItem.getValue((response, mValue) => value = mValue);
-										//namespaceIndex='urn:DESKTOP-6QLO5BB:NodeOPCUA-Server';
-									}
-								});
-								const opcUaNodeOptions: OpcUaNodeOptions = {
-									nodeId: nodeId,
-									namespaceIndex: namespaceIndex,
-									dataType: dataType,
-									value: value
-								};
-								// get Name of DataItem from PiMAd
-								dataItem.getName((response2, name) =>
-								{
-									baseDataAssemblyOptionsProcedure[name as string] = opcUaNodeOptions;
-								});
-							})
-						)
-					);
-/*					procedureOptions = {
-						id: id,
-						name: procedureName,
-						isSelfCompleting: isSelfCompleting,
-						isDefault: isDefault,
-					};*/
-				})
-			);
-
-			serviceModel.getDataAssembly((response, dataAssembly) =>
-				dataAssembly.getAllDataItems((response1, dataItems) =>
-					dataItems.map(dataItem => {
-						let namespaceIndex ='', nodeId='', dataType='', value: undefined | string;
-						// get value from PiMAd (only for TagName and TagDescription)
-						// get dataType from PiMAd
-						dataItem.getDataType((response, mDataType)=>
-							dataType= mDataType);
-						// get cIData from PiMAd
-						dataItem.getCommunicationInterfaceData((response2, cIData) => {
-							// check if dataItem has an cIData
-							if(cIData){
-								// get NodeId object from PiMAd
-								(cIData as OPCUANodeCommunication).getNodeId((response, nodeID) => {
-									// get NodeId from PiMAd and assign it to variable
-									nodeID.getNodeIdIdentifier((response, identifier) =>
-										nodeId = identifier);
-									// get namespaceIndex from PiMAd and assign it to variable
-									nodeID.getNamespaceIndex((response, mNamespace) =>{
-										namespaceIndex='urn:DESKTOP-6QLO5BB:NodeOPCUA-Server';
-										//namespaceIndex = mNamespace as unknown as string;
-									});
-								});
-							}else {
-								// it's a static DataItem
-								// TODO: currently only string supported?
-								dataItem.getValue((response, mValue) => value = mValue);
-								//namespaceIndex='urn:DESKTOP-6QLO5BB:NodeOPCUA-Server';
-							}
-						});
-						const opcUaNodeOptions: OpcUaNodeOptions = {
-							nodeId: nodeId,
-							namespaceIndex: namespaceIndex,
-							dataType: dataType,
-							value: value
-						};
-						// get Name of DataItem from PiMAd
-						dataItem.getName((response2, name) =>
-						{
-							baseDataAssemblyOptions[name as string] = opcUaNodeOptions;
-						});
-					}) ));
-
-			this.serviceOptions = {
-				name: serviceName,
-				communication: baseDataAssemblyOptions,
-				procedures: procedureOptionsArray,
-			};
 		});
 	}
 
-	/**
-	 * TODO: This function is still to big
+	/**	//TODO: parse endpoint
 	 * @param dataAssemblyModels
 	 * @private
 	 */
 	private createDataAssemblyOptionsArray(dataAssemblyModels: DataAssembly[]){
-		//TODO: parse endpoint
 		// iterate through every dataAssemblyModel and create DataAssemblyOptions with BaseDataAssemblyOptions
 		dataAssemblyModels.map( dataAssembly => {
 			// Initializing baseDataAssemblyOptions, which will be filled during an iteration below
@@ -547,15 +384,16 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 										nodeId = identifier);
 									// get namespaceIndex from PiMAd and assign it to variable
 									nodeID.getNamespaceIndex((response, mNamespace) =>{
-										namespaceIndex='urn:DESKTOP-6QLO5BB:NodeOPCUA-Server';
-										//namespaceIndex = mNamespace as unknown as string;
+										namespaceIndex = mNamespace as unknown as string;
+										/**
+										 * use this for testing with test-pea
+										 * namespaceIndex='urn:DESKTOP-6QLO5BB:NodeOPCUA-Server';
+										 */
 									});
 								});
 							}else {
 								// it's a static DataItem
-								// TODO: currently only string supported?
 								dataItem.getValue((response, mValue) => value = mValue);
-								//namespaceIndex='urn:DESKTOP-6QLO5BB:NodeOPCUA-Server';
 							}
 						});
 
@@ -579,18 +417,22 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 				metaModelRef: dataAssemblyInterfaceClass,
 				dataItems: baseDataAssemblyOptions
 			};
-
+			/** use this for test-pea
+			 * if(dataAssemblyName.includes('Variable')) this.dataAssemblyOptionsArray.push(dataAssemblyOptions);
+			 */
 			this.dataAssemblyOptionsArray.push(dataAssemblyOptions);
 		});
 	}
 
+	/**
+	 * Remove PEAController by given identifier
+	 * @param peaID
+	 */
 	public async removePEAController(peaID: string): Promise<void> {
 		catManager.info(`Remove PEA ${peaID}`);
 		const pea = this.getPEAController(peaID);
 
-		if (pea.protected) {
-			throw new Error(`PEA ${peaID} is protected and can't be deleted`);
-		}
+		if (pea.protected) throw new Error(`PEA ${peaID} is protected and can't be deleted`);
 
 		catManager.debug(`Disconnecting pea ${peaID} ...`);
 		await pea.disconnect()
@@ -598,11 +440,13 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 
 		catManager.debug(`Deleting pea ${peaID} ...`);
 		const index = this.peas.indexOf(pea, 0);
-		if (index > -1) {
-			this.peas.splice(index, 1);
-		}
+		if (pea) this.peas.splice(index, 1);
 	}
 
+	/**
+	 * get all PEAControllers as json
+	 * @returns {PEAInterface[]}
+	 */
 	public getAllPEAControllers(): PEAInterface[] {
 		return this.peas.map((pea) => pea.json());
 	}

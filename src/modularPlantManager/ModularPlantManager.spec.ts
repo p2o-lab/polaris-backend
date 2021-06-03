@@ -65,16 +65,17 @@ describe('ModularPlantManager', () => {
 					// we are currently only parsing 1 PEAController
 					modularPlantManager.loadPEAController(peaModel.getPiMAdIdentifier());
 					expect(modularPlantManager.peas.length).equal(1);
-/*					const peaController = modularPlantManager.peas[0];
-					peaController.setConnection({username:'', password: '', serverUrl: 'opc.tcp://127.0.0.1:4334/', id: peaController.id})
-					modularPlantManager.peas[0].connect();*/
 					done();
+					//const peaController = modularPlantManager.peas[0];
+					//peaController.setConnection({username:'', password: '', serverUrl: 'opc.tcp://127.0.0.1:4334/', id: peaController.id})
+					//modularPlantManager.peas[0].connect();
+
 				}
 			});
 			//const peasJson = JSON.parse(fs.readFileSync('assets/peas/pea_cif.json').toString());
 			//modularPlantManager.loadPEAController(peasJson);
 			//expect(() => modularPlantManager.loadPEAController(peasJson)).to.throw('already in registered PEAs');
-		}).timeout(10000); // overwrite timeout, because this could take longer
+		}).timeout(5000); // overwrite timeout, because this could take longer
 
 		/*it('should loadPEAControllerPEAController with single PEAController', () => {
 			const peasJson = JSON.parse(fs.readFileSync('assets/peas/pea_cif.json').toString());
