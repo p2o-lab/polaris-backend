@@ -389,7 +389,7 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 									nodeID.getNamespaceIndex((response, mNamespace) =>{
 										namespaceIndex = mNamespace as unknown as string;
 										/**
-										 * use this for testing with test-pea
+										 * use this for testing with test-pea with your own namespaceIndex
 										 * namespaceIndex='urn:DESKTOP-6QLO5BB:NodeOPCUA-Server';
 										 */
 									});
@@ -420,9 +420,7 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 				metaModelRef: dataAssemblyInterfaceClass,
 				dataItems: baseDataAssemblyOptions
 			};
-			/** use this for test-pea
-			 * if(dataAssemblyName.includes('Variable')) this.dataAssemblyOptionsArray.push(dataAssemblyOptions);
-			 */
+
 			this.dataAssemblyOptionsArray.push(dataAssemblyOptions);
 		});
 	}
