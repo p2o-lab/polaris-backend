@@ -1,0 +1,26 @@
+{
+    "TagName": {
+      "nodeId": "",
+      "namespaceIndex": "",
+      "dataType": "xs:string",
+      "value": "Variable"
+    },
+    "TagDescription": {
+      "nodeId": "",
+      "namespaceIndex": "",
+      "dataType": "xs:string",
+      "value": "Test"
+    },
+    "WQC": {
+      "nodeId": "Variable.WQC",
+      "namespaceIndex": "localhost",
+      "dataType": "xs:IDREF"
+    },
+    "Text": {
+      "nodeId": "Variable.Text",
+      "namespaceIndex": "localhost",
+      "dataType": "xs:IDREF"
+    }
+}
+
+

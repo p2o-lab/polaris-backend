@@ -28,6 +28,9 @@ import {AnaMon} from './AnaMon';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import * as baseDataAssemblyOptions from '../../../../../../tests/anamon.json';
+import {DataAssemblyControllerFactory} from '../../DataAssemblyControllerFactory';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -36,9 +39,47 @@ describe('AnaMon', () => {
 
 	describe('static', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
-		it('should create AnaMon', async () => { /* TODO: Add Test */
+		it('should create AnaMon', async () => {
+
+			const dataAssemblyOptions: DataAssemblyOptions = {
+				name: 'Variable',
+				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/AnaMon',
+				dataItems: baseDataAssemblyOptions
+			};
+			const da1: AnaMon= DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as AnaMon;
+			expect(da1 instanceof AnaMon).to.equal(true);
+			expect(da1.communication.V).to.not.equal(undefined);
+			expect(da1.communication.WQC).to.not.equal(undefined);
+			expect(da1.communication.VSclMax).to.not.equal(undefined);
+			expect(da1.communication.VSclMin).to.not.equal(undefined);
+			expect(da1.communication.TagName).to.not.equal(undefined);
+			expect(da1.communication.TagDescription).to.not.equal(undefined);
+			expect(da1.communication.VUnit).to.not.equal(undefined);
+
+			expect(da1.communication.OSLevel).to.not.equal(undefined);
+			expect(da1.communication.VAHEn).to.not.equal(undefined);
+			expect(da1.communication.VAHLim).to.not.equal(undefined);
+			expect(da1.communication.VAHAct).to.not.equal(undefined);
+
+			expect(da1.communication.VWHEn).to.not.equal(undefined);
+			expect(da1.communication.VWHLim).to.not.equal(undefined);
+			expect(da1.communication.VWHAct).to.not.equal(undefined);
+
+			expect(da1.communication.VTHEn).to.not.equal(undefined);
+			expect(da1.communication.VTHLim).to.not.equal(undefined);
+			expect(da1.communication.VTHAct).to.not.equal(undefined);
+
+			expect(da1.communication.VTLEn).to.not.equal(undefined);
+			expect(da1.communication.VTLLim).to.not.equal(undefined);
+			expect(da1.communication.VTLAct).to.not.equal(undefined);
+
+			expect(da1.communication.VWLEn).to.not.equal(undefined);
+			expect(da1.communication.VWLLim).to.not.equal(undefined);
+			expect(da1.communication.VWLAct).to.not.equal(undefined);
+
+			expect(da1.communication.VALEn).to.not.equal(undefined);
+			expect(da1.communication.VALLim).to.not.equal(undefined);
+			expect(da1.communication.VALAct).to.not.equal(undefined);
 		});
-
 	});
-
 });

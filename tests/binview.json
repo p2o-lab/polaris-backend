@@ -1,0 +1,36 @@
+{
+    "TagName": {
+      "nodeId": "",
+      "namespaceIndex": "",
+      "dataType": "xs:string",
+      "value": "Variable"
+    },
+    "TagDescription": {
+      "nodeId": "",
+      "namespaceIndex": "",
+      "dataType": "xs:string",
+      "value": "Test"
+    },
+    "WQC": {
+      "nodeId": "Variable.WQC",
+      "namespaceIndex": "localhost",
+      "dataType": "xs:IDREF"
+    },
+    "V": {
+      "nodeId": "Variable.V",
+      "namespaceIndex": "localhost",
+      "dataType": "xs:IDREF"
+    },
+    "VState0": {
+      "nodeId": "Variable.VState0",
+      "namespaceIndex": "localhost",
+      "dataType": "xs:IDREF"
+    },
+    "VState1": {
+      "nodeId": "Variable.VState1",
+      "namespaceIndex": "localhost",
+      "dataType": "xs:IDREF"
+    }
+}
+
+

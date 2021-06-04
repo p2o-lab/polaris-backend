@@ -57,7 +57,5 @@ describe('AnaView', () => {
 			expect(da1.communication.TagDescription).to.not.equal(undefined);
 			expect(da1.communication.VUnit).to.not.equal(undefined);
 		});
-
 	});
-
 });
