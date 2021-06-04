@@ -132,7 +132,7 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 	public readonly name: string;
 
 	public readonly services: Service[] = [];
-	public readonly variables: DataAssemblyController[] = [];
+	public variables: DataAssemblyController[] = [];
 	// PEAController is protected and can't be deleted by the user
 	public protected = false;
 	public connection: OpcUaConnection;
@@ -187,11 +187,20 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 		});
 	}
 
-
+	/**
+	 * recreate OPCUAConnection and dAControllers with new settings.
+	 * TODO: need better function name
+	 * @param options {ServerSettingsOptions}
+	 */
 	public setConnection(options: ServerSettingsOptions){
 		this.connection = new OpcUaConnection(this.id, options.serverUrl, options.username, options.password)
 			.on('connected', () => this.emit('connected'))
 			.on('disconnected', () => this.emit('disconnected'));
+		// rebuild dAControllers with new connection
+		this.variables = this.options.dataAssemblies
+			.map((variableOptions: DataAssemblyOptions) =>
+				DataAssemblyControllerFactory.create(variableOptions, this.connection)
+			);
 	}
 
 	public getService(serviceName: string): Service {
