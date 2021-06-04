@@ -159,7 +159,7 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 		this.processValues = [];
 
 		/**
-		 * this can be used for testing
+		 * this can be used for testing or set the server url over the frontend
 		 * this.options.opcuaServerUrl = 'opc.tcp://localhost:4334';
 		 */
 

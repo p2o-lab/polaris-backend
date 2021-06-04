@@ -27,14 +27,14 @@ import {ModularPlantManager} from '../../../modularPlantManager';
 import {Request, Response, Router} from 'express';
 import * as asyncHandler from 'express-async-handler';
 import {constants} from 'http2';
-import {ServiceCommand} from '@p2olab/polaris-interface';
+import {ServerSettingsOptions, ServiceCommand} from '@p2olab/polaris-interface';
 import {catServer} from '../../../logging';
 import * as path from 'path';
 
 export const peaRouter: Router = Router();
 
 /**
- * @api {put} /addByOptions    Load/Instantiate PEAController via PEAController-options directly
+ * @api {post} /addByOptions    Load/Instantiate PEAController via PEAController-options directly
  * @apiName PostPEA
  * @apiGroup PEAController
  * @apiParam {PEAOptions} pea    PiMAdIdentifier
@@ -42,20 +42,12 @@ export const peaRouter: Router = Router();
 peaRouter.post('/loadPEA', (req, res) => {
 	catServer.info('Load PEAController via PEAController-Options');
 	const manager: ModularPlantManager = req.app.get('manager');
-/*	newPEAs.forEach((p) =>
-		p.connect()
-			.catch(() => catPEA.warn(`Could not connect to PEAController ${p.id}`))
-	);*/
-	// res.json(newPEAs.map((m) => m.json()));
 	try {
 		manager.loadPEAController(req.body.id);
 		res.status(200).send('"Success!"');
-
 	} catch (err) {
 		res.status(500).send(err.toString());
 	}
-
-
 });
 
 // TODO: Place this code somewhere else?
@@ -159,9 +151,14 @@ peaRouter.get('/:peaId', (req: Request, res: Response) => {
  */
 peaRouter.get('/:peaId/getServerSettings', (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
-	const peaController = manager.getPEAController(req.params.peaId).connection;
-	const body = {serverUrl: peaController.endpoint, username: peaController.username, password: peaController.password};
-	res.json(body);
+	try{
+		const peaControllerCon = manager.getPEAController(req.params.peaId).connection;
+		const body= {serverUrl: peaControllerCon.endpoint, username: peaControllerCon.username, password: peaControllerCon.password};
+		res.status(200).send(body);
+	}catch (e) {
+		res.status(500).send(e.toString());
+	}
+
 });
 
 /**
@@ -172,9 +169,12 @@ peaRouter.get('/:peaId/getServerSettings', (req: Request, res: Response) => {
  */
 peaRouter.post('/updateSettings', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
-	manager.updateServerSettings(req.body.options);
-	//TODO handle failure
-	res.status(200).send('"'+'Success!'+'"');
+	try{
+		manager.updateServerSettings(req.body.options);
+		res.status(200).send('"'+'Success!'+'"');
+	} catch(e){
+		res.status(500).send(e.toString());
+	}
 }));
 
 /**
@@ -196,9 +196,14 @@ peaRouter.get('/:peaId/download', (req: Request, res: Response) => {
  */
 peaRouter.post('/:peaId/connect', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
-	const pea = manager.getPEAController(req.params.peaId);
-	await pea.connect();
-	res.json({id: pea.id, status: 'Successfully connected'});
+	try{
+		const pea = manager.getPEAController(req.params.peaId);
+		await pea.connect();
+		res.status(200).send({id: pea.id, status: 'Successfully connected'});
+	} catch (e) {
+		res.status(500).send(e.toString());
+	}
+
 }));
 
 /**
@@ -209,9 +214,14 @@ peaRouter.post('/:peaId/connect', asyncHandler(async (req: Request, res: Respons
  */
 peaRouter.post('/:peaId/disconnect', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
-	const pea = manager.getPEAController(req.params.peaId);
-	await pea.disconnect();
-	res.json({id: pea.id, status: 'Successfully disconnected'});
+	try{
+		const pea = manager.getPEAController(req.params.peaId);
+		await pea.disconnect();
+		res.status(200).send({id: pea.id, status: 'Successfully disconnected'});
+	}catch (e) {
+		res.status(500).send(e.toString());
+	}
+
 }));
 
 /**
@@ -241,8 +251,11 @@ peaRouter.delete('/:peaId', asyncHandler(async (req: Request, res: Response) => 
 peaRouter.delete('/PiMAd/:peaId', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
 	manager.deletePEAFromPimadPool(req.params.peaId,response => {
-		// TODO: handle failure case
-		res.status(200).send('"'+response.getMessage()+'"');
+		if(response.getMessage()=='Success!'){
+			res.status(200).send('"'+response.getMessage()+'"');
+		} else {
+			res.status(500).send('"'+response.getMessage()+'"');
+		}
 	});
 }));
 
