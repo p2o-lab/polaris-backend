@@ -24,7 +24,7 @@
  */
 
 import {ConditionType, ServiceCommand} from '@p2olab/polaris-interface';
-import {PEA} from '../../pea';
+import {PEAController} from '../../pea';
 import {Step} from './Step';
 
 import {expect} from 'chai';
@@ -66,7 +66,7 @@ describe('Step', () => {
 			await mockupServer.start();
 			const peaJson = JSON.parse(fs.readFileSync('assets/peas/pea_testserver_1.0.0.json').toString())
 				.peas[0];
-			pea = new PEA(peaJson);
+			pea = new PEAController(peaJson);
 			await pea.connect();
 			const step = new Step({
 				name: 'S0.CheckInitialConditions',

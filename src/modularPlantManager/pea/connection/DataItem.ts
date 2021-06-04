@@ -43,7 +43,7 @@ export interface DataItemEvents {
 }
 
 export type DataItemEmitter = StrictEventEmitter<EventEmitter, DataItemEvents>;
-
+//change name
 export abstract class DataItem<T> extends (EventEmitter as new() => DataItemEmitter) {
 	// data type of data item
 	public dataType!: string;

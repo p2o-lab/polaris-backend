@@ -24,7 +24,7 @@
  */
 
 import {ConditionOptions} from '@p2olab/polaris-interface';
-import {PEA} from '../pea';
+import {PEAController} from '../pea';
 
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
@@ -45,9 +45,9 @@ type ConditionEmitter = StrictEventEmitter<EventEmitter, ConditionEvents>;
 export abstract class Condition extends (EventEmitter as new() => ConditionEmitter) {
 
 	private readonly options: ConditionOptions;
-	protected readonly usedPEA: PEA | undefined;
+	protected readonly usedPEA: PEAController | undefined;
 
-	protected constructor(options: ConditionOptions, peaSet: PEA[]) {
+	protected constructor(options: ConditionOptions, peaSet: PEAController[]) {
 		// eslint-disable-next-line constructor-super
 		super();
 		this.options = options;
@@ -77,8 +77,8 @@ export abstract class Condition extends (EventEmitter as new() => ConditionEmitt
 	}
 
 
-	public getUsedPEAs(): Set<PEA> {
-		const set = new Set<PEA>();
+	public getUsedPEAs(): Set<PEAController> {
+		const set = new Set<PEAController>();
 		if (this.usedPEA) {
 			set.add(this.usedPEA);
 		}

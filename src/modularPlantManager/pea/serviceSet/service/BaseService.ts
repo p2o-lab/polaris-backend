@@ -31,7 +31,7 @@ import {
 	ServiceCommand
 } from '@p2olab/polaris-interface';
 import {Parameter} from '../../../recipe';
-import {PEA} from '../../PEA';
+import {PEAController} from '../../PEAController';
 import {ServiceState} from './enum';
 
 import {EventEmitter} from 'events';
@@ -112,7 +112,7 @@ export abstract class BaseService {
 
 	public abstract json(): BaseServiceInterface;
 
-	public abstract setParameters(parameters: Array<Parameter | ParameterOptions>, peaSet?: PEA[]): Promise<void>;
+	public abstract setParameters(parameters: Array<Parameter | ParameterOptions>, peaSet?: PEAController[]): Promise<void>;
 
 	/**
 	 * allow commandEnable to execute specified command

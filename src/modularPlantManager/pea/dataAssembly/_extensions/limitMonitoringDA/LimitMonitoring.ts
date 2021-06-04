@@ -25,7 +25,7 @@
 
 import {OpcUaDataItem} from '../../../connection';
 import {Constructor} from '../_helper';
-import {BaseDataAssemblyRuntime, DataAssembly} from '../../DataAssembly';
+import {BaseDataAssemblyRuntime, DataAssemblyController} from '../../DataAssemblyController';
 
 export type LimitMonitoringRuntime = BaseDataAssemblyRuntime & {
 	VAHEn: OpcUaDataItem<boolean>;
@@ -48,33 +48,34 @@ export type LimitMonitoringRuntime = BaseDataAssemblyRuntime & {
 	VTLAct: OpcUaDataItem<boolean>;
 };
 
+export class LimitMonitoring {
+	private dAController: any;
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export function LimitMonitoringDA<TBase extends Constructor<DataAssembly>>(Base: TBase) {
-	return class extends Base {
-		public communication!: LimitMonitoringRuntime;
+	constructor(dAController: any) {
+		this.dAController = dAController;
+	}
 
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		constructor(...args: any[]) {
-			super(...args);
-			this.communication.VAHEn = this.createDataItem('VAHEn', 'read');
-			this.communication.VAHLim = this.createDataItem('VAHLim', 'write');
-			this.communication.VAHAct = this.createDataItem('VAHAct', 'read');
-			this.communication.VWHEn = this.createDataItem('VWHEn', 'read');
-			this.communication.VWHLim = this.createDataItem('VWHLim', 'write');
-			this.communication.VWHAct = this.createDataItem('VWHAct', 'read');
-			this.communication.VTHEn = this.createDataItem('VTHEn', 'read');
-			this.communication.VTHLim = this.createDataItem('VTHLim', 'write');
-			this.communication.VTHAct = this.createDataItem('VTHAct', 'read');
-			this.communication.VALEn = this.createDataItem('VALEn', 'read');
-			this.communication.VALLim = this.createDataItem('VALLim', 'write');
-			this.communication.VALAct = this.createDataItem('VALAct', 'read');
-			this.communication.VWLEn = this.createDataItem('VWLEn', 'read');
-			this.communication.VWLLim = this.createDataItem('VWLLim', 'write');
-			this.communication.VWLAct = this.createDataItem('VWLAct', 'read');
-			this.communication.VTLEn = this.createDataItem('VTLEn', 'read');
-			this.communication.VTLLim = this.createDataItem('VTLLim', 'write');
-			this.communication.VTLAct = this.createDataItem('VTLAct', 'read');
-		}
-	};
+	setCommunication(){
+		this.dAController.communication.VAHEn = this.dAController.createDataItem('VAHEn', 'read');
+		this.dAController.communication.VAHLim = this.dAController.createDataItem('VAHLim', 'write');
+		this.dAController.communication.VAHAct = this.dAController.createDataItem('VAHAct', 'read');
+		this.dAController.communication.VWHEn = this.dAController.createDataItem('VWHEn', 'read');
+		this.dAController.communication.VWHLim = this.dAController.createDataItem('VWHLim', 'write');
+		this.dAController.communication.VWHAct = this.dAController.createDataItem('VWHAct', 'read');
+		this.dAController.communication.VTHEn = this.dAController.createDataItem('VTHEn', 'read');
+		this.dAController.communication.VTHLim = this.dAController.createDataItem('VTHLim', 'write');
+		this.dAController.communication.VTHAct = this.dAController.createDataItem('VTHAct', 'read');
+		this.dAController.communication.VALEn = this.dAController.createDataItem('VALEn', 'read');
+		this.dAController.communication.VALLim = this.dAController.createDataItem('VALLim', 'write');
+		this.dAController.communication.VALAct = this.dAController.createDataItem('VALAct', 'read');
+		this.dAController.communication.VWLEn = this.dAController.createDataItem('VWLEn', 'read');
+		this.dAController.communication.VWLLim = this.dAController.createDataItem('VWLLim', 'write');
+		this.dAController.communication.VWLAct = this.dAController.createDataItem('VWLAct', 'read');
+		this.dAController.communication.VTLEn = this.dAController.createDataItem('VTLEn', 'read');
+		this.dAController.communication.VTLLim = this.dAController.createDataItem('VTLLim', 'write');
+		this.dAController.communication.VTLAct = this.dAController.createDataItem('VTLAct', 'read');
+	}
+
 }
+
+

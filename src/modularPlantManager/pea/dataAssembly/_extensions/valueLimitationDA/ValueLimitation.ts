@@ -25,7 +25,7 @@
 
 import {ParameterInterface} from '@p2olab/polaris-interface';
 import {OpcUaDataItem} from '../../../connection';
-import {BaseDataAssemblyRuntime, DataAssembly} from '../../DataAssembly';
+import {BaseDataAssemblyRuntime, DataAssemblyController} from '../../DataAssemblyController';
 import {Constructor} from '../_helper';
 
 export type ValueLimitationRuntime = BaseDataAssemblyRuntime & {
@@ -33,26 +33,15 @@ export type ValueLimitationRuntime = BaseDataAssemblyRuntime & {
 	VMax: OpcUaDataItem<number>;
 };
 
-// tslint:disable-next-line:variable-name
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export function ValueLimitationDA<TBase extends Constructor<DataAssembly>>(Base: TBase) {
+export class ValueLimitation{
+	private dAController: any;
 
-	return class extends Base {
-		public communication!: ValueLimitationRuntime;
+	constructor(dAController: any) {
+		this.dAController = dAController;
+	}
 
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		constructor(...args: any[]) {
-			super(...args);
-			this.communication.VMax = this.createDataItem('VMax', 'read');
-			this.communication.VMin = this.createDataItem('VMin', 'read');
-		}
-
-		public toJson(): ParameterInterface {
-			return {
-				...super.toJson(),
-				max: this.communication.VMax?.value,
-				min: this.communication.VMin?.value
-			};
-		}
-	};
+	setCommunication(){
+		this.dAController.communication.VMax = this.dAController.createDataItem('VMax', 'read');
+		this.dAController.communication.VMin = this.dAController.createDataItem('VMin', 'read');
+	}
 }

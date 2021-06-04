@@ -24,7 +24,7 @@
  */
 
 import {ConditionOptions} from '@p2olab/polaris-interface';
-import {PEA} from '../../pea';
+import {PEAController} from '../../pea';
 import {Condition} from '../Condition';
 
 /**
@@ -42,7 +42,7 @@ export class TrueCondition extends Condition {
 		return this;
 	}
 
-	public getUsedPEAs(): Set<PEA> {
-		return new Set<PEA>();
+	public getUsedPEAs(): Set<PEAController> {
+		return new Set<PEAController>();
 	}
 }

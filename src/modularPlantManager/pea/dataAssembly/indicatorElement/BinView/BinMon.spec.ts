@@ -28,6 +28,9 @@ import {BinMon} from './BinMon';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import * as baseDataAssemblyOptions from '../../../../../../tests/binmon.json';
+import {DataAssemblyControllerFactory} from '../../DataAssemblyControllerFactory';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -36,9 +39,26 @@ describe('BinMon', () => {
 
 	describe('static', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
-		it('should create BinMon', async () => { /* TODO: Add Test */
+		it('should create BinMon', async () => {
+
+			const dataAssemblyOptions: DataAssemblyOptions = {
+				name: 'Variable',
+				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/BinMon',
+				dataItems: baseDataAssemblyOptions
+			};
+			const da1: BinMon = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as BinMon;
+			expect(da1 instanceof BinMon).to.equal(true);
+			expect(da1.communication.TagName).to.not.equal(undefined);
+			expect(da1.communication.TagDescription).to.not.equal(undefined);
+			expect(da1.communication.WQC).to.not.equal(undefined);
+			expect(da1.communication.V).to.not.equal(undefined);
+			expect(da1.communication.VState0).to.not.equal(undefined);
+			expect(da1.communication.VState1).to.not.equal(undefined);
+			expect(da1.communication.OSLevel).to.not.equal(undefined);
+			expect(da1.communication.VFlutEn).to.not.equal(undefined);
+			expect(da1.communication.VFlutTi).to.not.equal(undefined);
+			expect(da1.communication.VFlutCnt).to.not.equal(undefined);
+			expect(da1.communication.VFlutAct).to.not.equal(undefined);
 		});
-
 	});
-
 });

@@ -24,31 +24,30 @@
  */
 
 import {ModularPlantManager} from '../../../modularPlantManager';
-
 import {Request, Response, Router} from 'express';
 import * as asyncHandler from 'express-async-handler';
 import {constants} from 'http2';
-import {ServiceCommand} from '@p2olab/polaris-interface';
+import {ServerSettingsOptions, ServiceCommand} from '@p2olab/polaris-interface';
 import {catServer} from '../../../logging';
-import * as path from "path";
+import * as path from 'path';
 
 export const peaRouter: Router = Router();
 
 /**
- * @api {put} /addByOptions    Add PEA via PEA-options directly
- * @apiName PutPEA
- * @apiGroup PEA
- * @apiParam {PEAOptions} pea    PEA to be added
+ * @api {post} /addByOptions    Load/Instantiate PEAController via PEAController-options directly
+ * @apiName PostPEA
+ * @apiGroup PEAController
+ * @apiParam {PEAOptions} pea    PiMAdIdentifier
  */
-peaRouter.put('/addByOptions', (req, res) => {
-	catServer.info('Load PEA via PEA-Options');
+peaRouter.post('/loadPEA', (req, res) => {
+	catServer.info('Load PEAController via PEAController-Options');
 	const manager: ModularPlantManager = req.app.get('manager');
-	const newPEAs = manager.load(req.body);
-/*	newPEAs.forEach((p) =>
-		p.connect()
-			.catch(() => catPEA.warn(`Could not connect to PEA ${p.id}`))
-	);*/
-	res.json(newPEAs.map((m) => m.json()));
+	try {
+		manager.loadPEAController(req.body.id);
+		res.status(200).send('"Success!"');
+	} catch (err) {
+		res.status(500).send(err.toString());
+	}
 });
 
 // TODO: Place this code somewhere else?
@@ -56,12 +55,15 @@ peaRouter.put('/addByOptions', (req, res) => {
 const fs = require('fs');
 const multer = require('multer');
 // create uploads directory
-if (!fs.existsSync('uploads/')){
-	fs.mkdirSync('uploads/');
-}
+if (fs.existsSync('uploads/')) {
+	// delete uploads folder, because it could contain files, which haven't been deleted successfully due to crash
+	fs.rmdirSync('uploads/', {recursive: true});
+}// create new uploads folder
+fs.mkdirSync('uploads/');
+
 // set up filename and destination
 const storage = multer.diskStorage({
-	destination: function (req: any, file: any, cb:any) {
+	destination: function (req: any, file: any, cb: any) {
 		cb(null, path.join('uploads/'));
 	},
 	filename: (req: any, file: { fieldname: string; originalname: any }, cb: (arg0: null, arg1: string) => void) => {
@@ -70,130 +72,199 @@ const storage = multer.diskStorage({
 });
 const upload = multer({storage: storage});
 
+
 /**
- * @api {post} /addByPiMAd Add PEA via PiMAd. (Receiving FormData from Frontend and parse with Multer lib)
+ * @api {post} /addByPiMAd Add PEAController via PiMAd. (Receiving FormData from Frontend and parse with Multer lib)
  * @apiName PostPEA
- * @apiGroup PEA
- * @apiParam {PEAOptions} pea PEA to be added.
+ * @apiGroup PEAController
+ * @apiParam {PEAOptions} pea PEAController to be added.
  */
 peaRouter.post('/addByPiMAd', upload.single('uploadedFile'),(req, res) => {
 	// parse filepath of uploaded file
-	let filePath: string = (req as MulterRequest).file.path;
+	const filePath: string = (req as MulterRequest).file.path;
 	//create object to pass to PiMAd
 	const object = {source:filePath};
 
 	const manager: ModularPlantManager = req.app.get('manager');
 	manager.addPEAToPimadPool(object, response => {
-		// TODO: handle failure case
-		res.status(200).send('"'+response.getMessage()+'"');
+		if(response.getMessage()=='Success!'){
+			res.status(200).send('"'+response.getMessage()+'"');
+		}else{
+			res.status(500).send('"'+response.getMessage()+'"');
+		}
+		// delete file
+		fs.unlinkSync(filePath);
 	});
 });
 
 /**
- * @api {get}    Get all PEAs
- * @apiName GetPEAs
- * @apiGroup PEA
+ * @api {get} Get all PEAs from PiMAd
+ * @apiName GetPiMAdPEAs
+ * @apiGroup PEAController
  */
-peaRouter.get('', asyncHandler(async (req: Request, res: Response) => {
+peaRouter.get('/PiMAdPEAs', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
 	manager.getAllPEAsFromPimadPool(response => {
-		// TODO: handle failure case
-		res.status(200).send(response.getContent());
+			if (response.getMessage() == 'Success!') {
+				res.status(200).send(response.getContent());
+			} else {
+				res.status(500).send('"'+response.getMessage()+'"');
+			}
 		}
 	);
 }));
 
 /**
- * @api {get} /:peaId    Get PEA
+ * @api {get} Get all PEAControllers
+ * @apiName GetPEAControllers
+ * @apiGroup PEAController
+ */
+peaRouter.get('', asyncHandler(async (req: Request, res: Response) => {
+	const manager: ModularPlantManager = req.app.get('manager');
+	try {
+		res.json(manager.getAllPEAControllers());
+	} catch (err) {
+		res.status(500).send(err.toString());
+	}
+}));
+
+/**
+ * @api {get} /:peaId    Get PEAController
  * @apiName GetPEA
- * @apiGroup PEA
- * @apiParam {string} peaId    ID of PEA to be received as json
+ * @apiGroup PEAController
+ * @apiParam {string} peaId    ID of PEAController to be received as json
  */
 peaRouter.get('/:peaId', (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
 	try {
-		res.json(manager.getPEA(req.params.peaId).json());
+		res.send(manager.getPEAController(req.params.peaId).json());
 	} catch (err) {
 		res.status(constants.HTTP_STATUS_NOT_FOUND).send(err.toString());
 	}
 });
 
 /**
- * @api {get} /:peaId/download    Download PEA options by ID
- * @apiName GetModuleDownload
- * @apiGroup PEA
- * @apiParam {string} peaId    ID of PEA to download related options.
+ * @api {get} /:peaId/getServerSettings
+ * @apiName GetSettings
+ * @apiGroup PEAController
+ * @apiParam {string} peaId
  */
-peaRouter.get('/:peaId/download', (req: Request, res: Response) => {
+peaRouter.get('/:peaId/getServerSettings', (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
-	res.json(manager.getPEA(req.params.peaId).options);
+	try{
+		const peaControllerCon = manager.getPEAController(req.params.peaId).connection;
+		const body= {serverUrl: peaControllerCon.endpoint, username: peaControllerCon.username, password: peaControllerCon.password};
+		res.status(200).send(body);
+	}catch (e) {
+		res.status(500).send(e.toString());
+	}
+
 });
 
 /**
- * @api {post} /:peaId/connect    Connect PEA by ID
+ * @api {post} /updateSettings
+ * @apiName PostSettings
+ * @apiGroup PEAController
+ * @apiParam {ServerSettingsOptions}  [options]
+ */
+peaRouter.post('/updateSettings', asyncHandler(async (req: Request, res: Response) => {
+	const manager: ModularPlantManager = req.app.get('manager');
+	try{
+		manager.updateServerSettings(req.body.options);
+		res.status(200).send('"'+'Success!'+'"');
+	} catch(e){
+		res.status(500).send(e.toString());
+	}
+}));
+
+/**
+ * @api {get} /:peaId/download    Download PEAController options by ID
+ * @apiName GetModuleDownload
+ * @apiGroup PEAController
+ * @apiParam {string} peaId    ID of PEAController to download related options.
+ */
+peaRouter.get('/:peaId/download', (req: Request, res: Response) => {
+	const manager: ModularPlantManager = req.app.get('manager');
+	res.json(manager.getPEAController(req.params.peaId).options);
+});
+
+/**
+ * @api {post} /:peaId/connect    Connect PEAController by ID
  * @apiName ConnectPEA
- * @apiGroup PEA
- * @apiParam {string} peaId    ID of PEA to be connected.
+ * @apiGroup PEAController
+ * @apiParam {string} peaId    ID of PEAController to be connected.
  */
 peaRouter.post('/:peaId/connect', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
-	const pea = manager.getPEA(req.params.peaId);
-	await pea.connect();
-	res.json({pea: pea.id, status: 'Successfully connected'});
+	try{
+		const pea = manager.getPEAController(req.params.peaId);
+		await pea.connect();
+		res.status(200).send({id: pea.id, status: 'Successfully connected'});
+	} catch (e) {
+		res.status(500).send(e.toString());
+	}
+
 }));
 
 /**
- * @api {post} /:peaId/disconnect    Disconnect PEA
+ * @api {post} /:peaId/disconnect    Disconnect PEAController
  * @apiName DisconnectPEA
- * @apiGroup PEA
- * @apiParam {string} peaId    ID of PEA to be disconnected.
+ * @apiGroup PEAController
+ * @apiParam {string} peaId    ID of PEAController to be disconnected.
  */
 peaRouter.post('/:peaId/disconnect', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
-	const pea = manager.getPEA(req.params.peaId);
-	await pea.disconnect();
-	res.json({pea: pea.id, status: 'Successfully disconnected'});
+	try{
+		const pea = manager.getPEAController(req.params.peaId);
+		await pea.disconnect();
+		res.status(200).send({id: pea.id, status: 'Successfully disconnected'});
+	}catch (e) {
+		res.status(500).send(e.toString());
+	}
+
 }));
 
 /**
- * @api {delete} /:peaId    Delete PEA  by ID
+ * @api {delete} /:peaId    Delete PEAController  by ID
  * @apiName DeletePEA
- * @apiGroup PEA
- * @apiParam {string} peaId    ID of PEA to be deleted
+ * @apiGroup PEAController
+ * @apiParam {string} peaId    ID of PEAController to be deleted
  */
-/*
+
 peaRouter.delete('/:peaId', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
 	try {
-		await manager.removePEA(req.params.peaId);
-		res.send({status: 'Successful deleted', peaId: req.params.peaId});
+		await manager.removePEAController(req.params.peaId);
+		res.status(200).send('"Success!"');
 	} catch (err) {
 		res.status(404).send(err.toString());
 	}
-}));*/
+}));
 
 /**
- * @api {delete} /:peaId    Delete PEA  by ID
- * @apiName DeletePEA
- * @apiGroup PEA
- * @apiParam {string} peaId    ID of PEA to be deleted
+ * @api {delete} /:peaId    Delete PiMAdPEA  by identifier
+ * @apiName DeletePiMAdPEA
+ * @apiGroup PiMAdPEA
+ * @apiParam {string} pimadIdentifier
  */
 
-peaRouter.delete('/:peaId', asyncHandler(async (req: Request, res: Response) => {
+peaRouter.delete('/PiMAd/:peaId', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
 	manager.deletePEAFromPimadPool(req.params.peaId,response => {
-		// TODO: handle failure case
-		res.status(200).send('"'+response.getMessage()+'"');
+		if(response.getMessage()=='Success!'){
+			res.status(200).send('"'+response.getMessage()+'"');
+		} else {
+			res.status(500).send('"'+response.getMessage()+'"');
 		}
-	);
+	});
 }));
 
 /**
  * @api {post} /:peaId/service/:serviceName    Configure service
  * @apiName ConfigureService
  * @apiDescription Configure procedure and parameters of service
- * @apiGroup PEA
- * @apiParam {string} peaId    PEA id
+ * @apiGroup PEAController
+ * @apiParam {string} peaId    PEAController id
  * @apiParam {string} serviceName   Name of service
  * @apiParam {string} procedure      Name of procedure
  * @apiParam {ParameterOptions[]} [parameters]    Service Procedure Parameters
@@ -217,8 +288,8 @@ peaRouter.post('/:peaId/service/:serviceName', asyncHandler(async (req: Request,
 /**
  * @api {post} /:peaId/service/:serviceName/:command   Call service
  * @apiName CallService
- * @apiGroup PEA
- * @apiParam {string} peaId      PEA id
+ * @apiGroup PEAController
+ * @apiParam {string} peaId      PEAController id
  * @apiParam {string} serviceName   Name of service
  * @apiParam {string="start","stop","abort","complete","pause","unhold","reset"} command       Command name
  * @apiParam {string} [procedure]      Name of procedure
@@ -250,8 +321,8 @@ peaRouter.post('/:peaId/service/:serviceName/:command', asyncHandler(async (req:
 /**
  * @api {get} /pea/:PEAId/service/:serviceName    Get service statusNode
  * @apiName GetService
- * @apiGroup PEA
- * @apiParam {string} peaId      PEA id
+ * @apiGroup PEAController
+ * @apiParam {string} peaId      PEAController id
  * @apiParam {string} serviceName   Name of service
  */
 peaRouter.get('/:peaId/service/:serviceName', asyncHandler(async (req: Request, res: Response) => {

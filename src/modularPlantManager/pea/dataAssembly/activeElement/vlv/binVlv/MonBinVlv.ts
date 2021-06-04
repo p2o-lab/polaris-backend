@@ -26,19 +26,22 @@
 
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {OpcUaConnection} from '../../../../connection';
-import {
-	FeedbackMonitoringDA, FeedbackMonitoringRuntime
-} from '../../../_extensions';
+import {FeedbackMonitoringRuntime} from '../../../_extensions';
 import {
 	BinVlv, BinVlvRuntime
 } from './BinVlv';
+import {FeedbackMonitoring} from '../../../_extensions/feedbackMonitoringDA/FeedbackMonitoring';
 
 export type MonBinVlvRuntime = BinVlvRuntime & FeedbackMonitoringRuntime;
 
-export class MonBinVlv extends FeedbackMonitoringDA(BinVlv) {
+export class MonBinVlv extends BinVlv {
 	public readonly communication!: MonBinVlvRuntime;
+	feedBackMonitoring: FeedbackMonitoring;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
+
+		this.feedBackMonitoring = new FeedbackMonitoring(this);
+		this.feedBackMonitoring.setCommunication();
 	}
 }

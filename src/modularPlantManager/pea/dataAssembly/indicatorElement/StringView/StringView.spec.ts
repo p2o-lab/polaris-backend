@@ -25,20 +25,30 @@
 
 import {OpcUaConnection} from '../../../connection';
 import {StringView} from './StringView';
-
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import * as baseDataAssemblyOptions from '../../../../../../tests/stringview.json';
+import {DataAssemblyControllerFactory} from '../../DataAssemblyControllerFactory';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('StringView', () => {
-
 	describe('static', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
-		it('should create StringView', async () => { /* TODO: Add Test */
+		it('should create StringView', async () => {
+			const dataAssemblyOptions: DataAssemblyOptions = {
+				name: 'Variable',
+				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/StringView',
+				dataItems: baseDataAssemblyOptions
+			};
+			const da1: StringView = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as StringView;
+			expect(da1 instanceof StringView).to.equal(true);
+			expect(da1.communication.TagName).to.not.equal(undefined);
+			expect(da1.communication.TagDescription).to.not.equal(undefined);
+			expect(da1.communication.WQC).to.not.equal(undefined);
+			expect(da1.communication.Text).to.not.equal(undefined);
 		});
-
 	});
-
 });

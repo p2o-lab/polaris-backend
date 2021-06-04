@@ -23,27 +23,41 @@
  * SOFTWARE.
  */
 
+import {ParameterInterface} from '@p2olab/polaris-interface';
 import {OpcUaDataItem} from '../../../connection';
 import {Constructor} from '../_helper';
-import {BaseDataAssemblyRuntime, DataAssembly} from '../../DataAssembly';
+import {BaseDataAssemblyRuntime, DataAssemblyController} from '../../DataAssemblyController';
+import {UNIT} from './Unit';
 
-export interface OSLevelRuntime extends BaseDataAssemblyRuntime {
-	OSLevel: OpcUaDataItem<number>;
+export interface UnitDataAssemblyRuntime extends BaseDataAssemblyRuntime {
+	VUnit: OpcUaDataItem<number>;
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export function OSLevelDA<TBase extends Constructor<DataAssembly>>(Base: TBase) {
-	return class extends Base {
-		public communication!: OSLevelRuntime;
+export class UnitSettings {
 
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		constructor(...args: any[]) {
-			super(...args);
-			this.communication.OSLevel = this.createDataItem('OSLevel', 'write');
-		}
+	private dAController: any;
 
-		get OSLevel(): number | undefined {
-			return this.communication.OSLevel.value;
-		}
-	};
+	constructor(dAController: any) {
+		this.dAController = dAController;
+	}
+
+	setCommunication(){
+		this.dAController.communication.VUnit = this.dAController.createDataItem('VUnit', 'read');
+	}
+
+	public getUnit(): string {
+		const unit = UNIT.find((item) => item.value === this.dAController.communication.VUnit?.value);
+		return unit ? unit.unit : '';
+	}
+
+	// TODO: adjust function
+/*	public unitToJson(): ParameterInterface {
+		return {
+			...super.toJson(),
+			max: this.communication.VSclMax?.value,
+			min: this.communication.VSclMin?.value
+		};
+	}*/
 }
+
+

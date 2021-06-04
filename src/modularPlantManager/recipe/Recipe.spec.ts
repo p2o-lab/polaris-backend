@@ -24,7 +24,7 @@
  */
 
 import {ConditionType, RecipeInterface, RecipeOptions} from '@p2olab/polaris-interface';
-import {PEA} from '../pea';
+import {PEAController} from '../pea';
 import {Recipe} from './Recipe';
 
 import * as assert from 'assert';
@@ -108,7 +108,7 @@ describe('Recipe', () => {
 
 			let peaMockup: PEAMockup;
 			let mockupServer: MockupServer;
-			let pea: PEA;
+			let pea: PEAController;
 
 			before(async function () {
 				this.timeout(5000);
@@ -121,7 +121,7 @@ describe('Recipe', () => {
 				// should be obsolete
 				const peaJson = JSON.parse(fs.readFileSync('assets/peas/pea_testserver_1.0.0.json').toString())
 					.peas[0];
-				pea = new PEA(peaJson);
+				pea = new PEAController(peaJson);
 				await pea.connect();
 			});
 
@@ -170,18 +170,18 @@ describe('Recipe', () => {
 		/*
 		describe('achema demonstrator recipes', () => {
 
-			const peas: PEA[] = [];
+			const peas: PEAController[] = [];
 
 			before(() => {
 				let file = fs.readFileSync('assets/peas/achema_demonstrator/peas_achema.json');
 				let options = JSON.parse(file.toString());
-				peas.push(new PEA(options.peas[0]));
-				peas.push(new PEA(options.peas[1]));
-				peas.push(new PEA(options.peas[2]));
+				peas.push(new PEAController(options.peas[0]));
+				peas.push(new PEAController(options.peas[1]));
+				peas.push(new PEAController(options.peas[2]));
 
 				file = fs.readFileSync('assets/peas/pea_cif.json');
 				options = JSON.parse(file.toString());
-				peas.push(new PEA(options.peas[0]));
+				peas.push(new PEAController(options.peas[0]));
 			});
 
 			it('should load the achema json', (done) => {

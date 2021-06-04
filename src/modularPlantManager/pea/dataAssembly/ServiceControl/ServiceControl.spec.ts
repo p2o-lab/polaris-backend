@@ -30,10 +30,10 @@ import {
 	ServiceControlOptions
 } from '@p2olab/polaris-interface';
 import {OpcUaConnection} from '../../connection';
-import {PEA} from '../../PEA';
+import {PEAController} from '../../PEAController';
 import {
 	AnaMan,
-	DataAssemblyFactory,
+	DataAssemblyControllerFactory,
 	ServiceControl, ServParam
 } from '../index';
 
@@ -53,12 +53,12 @@ describe('ServiceControl', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
 		it('should create ServiceControl', async () => {
 			const daOptions: BaseDataAssemblyOptions = parseJson(fs.readFileSync(
-				'assets/ModularAutomation/PEA_Reference/MTPContent/Json/DataAssembly/ServiceControl.json',
+				'assets/ModularAutomation/PEA_Reference/MTPContent/Json/DataAssemblyController/ServiceControl.json',
 				'utf8'), null, 60);
-			const da1: ServiceControl = DataAssemblyFactory.create({
+			const da1: ServiceControl = DataAssemblyControllerFactory.create({
 				name: 'serviceControl1',
-				interfaceClass: 'ServiceControl',
-				communication: daOptions
+				metaModelRef: 'ServiceControl',
+				dataItems: daOptions
 			} as DataAssemblyOptions, emptyOPCUAConnection) as ServiceControl;
 			expect(da1 instanceof ServiceControl).to.equal(true);
 			expect(da1.communication.CommandExt).to.not.equal(undefined);
@@ -68,7 +68,7 @@ describe('ServiceControl', () => {
 
 		it('should have correct check for ServiceControl', async () => {
 			const daOptions: ServiceControlOptions = parseJson(fs.readFileSync(
-				'assets/ModularAutomation/PEA_Reference/MTPContent/Json/DataAssembly/ServiceControl.json',
+				'assets/ModularAutomation/PEA_Reference/MTPContent/Json/DataAssemblyController/ServiceControl.json',
 				'utf8'), null, 60);
 			daOptions.TagName.value = 'a';
 			daOptions.TagDescription.value = 'b';
@@ -83,10 +83,10 @@ describe('ServiceControl', () => {
 			daOptions.ProcedureExt.value = 0;
 			daOptions.ProcedureOp.value = 0;
 			daOptions.OpMode.value = 0;
-			const da1: ServiceControl = DataAssemblyFactory.create({
+			const da1: ServiceControl = DataAssemblyControllerFactory.create({
 				name: 'serviceControl1',
-				interfaceClass: 'ServiceControl',
-				communication: daOptions
+				metaModelRef: 'ServiceControl',
+				dataItems: daOptions
 			} as DataAssemblyOptions, emptyOPCUAConnection) as ServiceControl;
 		});
 	});
@@ -111,7 +111,7 @@ describe('ServiceControl', () => {
 			const daJson = JSON.parse(
 				fs.readFileSync('assets/ModularAutomation/pea_testserver_1.0.0.json').toString())
 				.peas[0].services[0].procedures[0].parameters[0];
-			const da = DataAssemblyFactory.create(daJson as any, connection) as AnaMan;
+			const da = DataAssemblyControllerFactory.create(daJson as any, connection) as AnaMan;
 
 			await da.subscribe();
 
@@ -142,7 +142,7 @@ describe('ServiceControl', () => {
 			const daJson = JSON.parse(
 				fs.readFileSync('assets/ModularAutomation/pea_testserver_1.0.0.json').toString())
 				.peas[0].services[0].procedures[0].parameters[0];
-			const da = DataAssemblyFactory.create(daJson as any, connection) as AnaMan;
+			const da = DataAssemblyControllerFactory.create(daJson as any, connection) as AnaMan;
 
 			await da.subscribe();
 
@@ -167,7 +167,7 @@ describe('ServiceControl', () => {
 			const daPEA = JSON.parse(
 				fs.readFileSync('assets/ModularAutomation/pea_testserver_1.0.0.json').toString())
 				.peas[0];
-			const pea = new PEA(daPEA);
+			const pea = new PEAController(daPEA);
 			await pea.connect();
 			peaServer.startSimulation();
 
@@ -192,46 +192,46 @@ describe('ServiceControl', () => {
 			const daJson = JSON.parse(
 				fs.readFileSync('assets/ModularAutomation/pea_testserver_1.0.0.json').toString())
 				.peas[0].services[0];
-			const da: ServiceControl = DataAssemblyFactory.create(
-				{...daJson, interfaceClass: 'ServiceControl'} as any, connection) as ServiceControl;
+			const da: ServiceControl = DataAssemblyControllerFactory.create(
+				{...daJson, metaModelRef: 'ServiceControl'} as any, connection) as ServiceControl;
 
 			await da.subscribe();
 			expect(da.name).to.equal('Service1');
 			expect(da instanceof ServiceControl).to.equal(true);
 
-			expect(da.getOperationMode()).to.equal(OperationMode.Offline);
+			expect(da.opMode.getOperationMode()).to.equal(OperationMode.Offline);
 
-			await da.setToOperatorOperationMode();
-			expect(da.getOperationMode()).to.equal(OperationMode.Operator);
+			await da.opMode.setToOperatorOperationMode();
+			expect(da.opMode.getOperationMode()).to.equal(OperationMode.Operator);
 
-			await da.writeOpMode(OperationMode.Offline);
-			await da.waitForOpModeToPassSpecificTest(OperationMode.Offline);
+			await da.opMode.writeOpMode(OperationMode.Offline);
+			await da.opMode.waitForOpModeToPassSpecificTest(OperationMode.Offline);
 
-			await da.setToAutomaticOperationMode();
-			expect(da.getOperationMode()).to.equal(OperationMode.Automatic);
+			await da.opMode.setToAutomaticOperationMode();
+			expect(da.opMode.getOperationMode()).to.equal(OperationMode.Automatic);
 		}).timeout(8000);
 
 		it('should create ServiceControl new', async () => {
 			const daJson = JSON.parse(
 				fs.readFileSync('assets/ModularAutomation/pea_testserver_1.0.0_2.json').toString())
 				.peas[0].services[0];
-			const da: ServiceControl = DataAssemblyFactory.create(
-				{...daJson, interfaceClass: 'ServiceControl'} as any, connection) as ServiceControl;
+			const da: ServiceControl = DataAssemblyControllerFactory.create(
+				{...daJson, metaModelRef: 'ServiceControl'} as any, connection) as ServiceControl;
 
 			await da.subscribe();
 			expect(da.name).to.equal('Service1');
 			expect(da instanceof ServiceControl).to.equal(true);
 
-			expect(da.getOperationMode()).to.equal(OperationMode.Offline);
+			expect(da.opMode.getOperationMode()).to.equal(OperationMode.Offline);
 
-			await da.setToOperatorOperationMode();
-			expect(da.getOperationMode()).to.equal(OperationMode.Operator);
+			await da.opMode.setToOperatorOperationMode();
+			expect(da.opMode.getOperationMode()).to.equal(OperationMode.Operator);
 
-			await da.writeOpMode(OperationMode.Offline);
-			await da.waitForOpModeToPassSpecificTest(OperationMode.Offline);
+			await da.opMode.writeOpMode(OperationMode.Offline);
+			await da.opMode.waitForOpModeToPassSpecificTest(OperationMode.Offline);
 
-			await da.setToAutomaticOperationMode();
-			expect(da.getOperationMode()).to.equal(OperationMode.Automatic);
+			await da.opMode.setToAutomaticOperationMode();
+			expect(da.opMode.getOperationMode()).to.equal(OperationMode.Automatic);
 		}).timeout(8000);
 
 	});

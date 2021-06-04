@@ -42,22 +42,22 @@ export function getPEAMockupReferenceJSON(
 					processValues: [
 						{
 							name: 'Variable001',
-							interfaceClass: 'AnaView',
+							metaModelRef: 'AnaView',
 							communication: '' //TODO Add Mockup here
 						},
 						{
 							name: 'Variable002',
-							interfaceClass: 'AnaView',
+							metaModelRef: 'AnaView',
 							communication: '' //TODO Add Mockup here
 						},
 						{
 							name: 'Variable003',
-							interfaceClass: 'AnaView',
+							metaModelRef: 'AnaView',
 							communication: '' //TODO Add Mockup here
 						},
 						{
 							name: 'PvIntegral',
-							interfaceClass: 'AnaView',
+							metaModelRef: 'AnaView',
 							communication: '' //TODO Add Mockup here
 						}
 					]

@@ -26,14 +26,13 @@
 import {
 	CommandEnableInterface, DataAssemblyOptions,
 	OperationMode,
-	ParameterInterface, PEAInterface,
-	PEAOptions,
+	ParameterInterface, PEAInterface, PEAOptions, ProcessValuesInterface, ServerSettingsOptions,
 	ServiceCommand,
 	ServiceInterface, ServiceOptions, ServiceSourceMode,
 	VariableChange
 } from '@p2olab/polaris-interface';
-import {DataItemEmitter, OpcUaConnection} from './connection';
-import {DataAssembly, DataAssemblyFactory, ServiceState} from './dataAssembly';
+import {DataItemEmitter, OpcUaConnection, OpcUaDataItem} from './connection';
+import {DataAssemblyController, DataAssemblyControllerFactory, ServiceState} from './dataAssembly';
 import {Procedure, Service} from './serviceSet';
 
 import {EventEmitter} from 'events';
@@ -52,16 +51,16 @@ export interface ParameterChange {
 }
 
 /**
- * Events emitted by [[PEA]]
+ * Events emitted by [[PEAController]]
  */
 interface PEAEvents {
 	/**
-	 * when POL successfully connects to PEA
+	 * when POL successfully connects to PEAController
 	 * @event connected
 	 */
 	connected: void;
 	/**
-	 * when POL is disconnected from PEA
+	 * when POL is disconnected from PEAController
 	 * @event disconnected
 	 */
 	disconnected: void;
@@ -88,7 +87,7 @@ interface PEAEvents {
 		sourceMode: ServiceSourceMode;
 	};
 	/**
-	 * Notify when a variable inside a PEA changes
+	 * Notify when a variable inside a PEAController changes
 	 * @event variableChanged
 	 */
 	variableChanged: VariableChange;
@@ -120,32 +119,45 @@ interface PEAEvents {
 type PEAEmitter = StrictEventEmitter<EventEmitter, PEAEvents>;
 
 /**
- * PEA with its Services and DataAssemblies
+ * PEAController with its Services and DataAssemblies
  *
- * in order to interact with a PEA, you must first [[connect]] to it
+ * in order to interact with a PEAController, you must first [[connect]] to it
  *
  */
-export class PEA extends (EventEmitter as new() => PEAEmitter) {
+export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 
 	public readonly options: PEAOptions;
 	public readonly id: string;
+	public readonly pimadIdentifier: string;
+	public readonly name: string;
+
 	public readonly services: Service[] = [];
-	public readonly variables: DataAssembly[] = [];
-	// PEA is protected and can't be deleted by the user
+	public variables: DataAssemblyController[] = [];
+	// PEAController is protected and can't be deleted by the user
 	public protected = false;
-	public readonly connection: OpcUaConnection;
+	public connection: OpcUaConnection;
 
 	private readonly description: string;
 	private readonly hmiUrl: string;
 	private readonly logger: Category;
 
+	// contains all DAControllers after subscription
+	private dAControllers: DataAssemblyController[];
+	// contains all variables (used in function json())
+	private processValues: ProcessValuesInterface[];
+
 	constructor(options: PEAOptions, protectedPEA = false) {
 		super();
 		this.options = options;
+		this.pimadIdentifier = options.pimadIdentifier;
+		this.name = options.name;
 		this.id = options.id;
 		this.description = options.description || '';
 		this.protected = protectedPEA;
 		this.hmiUrl = options.hmiUrl || '';
+		this.dAControllers=[];
+		this.processValues = [];
+
 		this.connection = new OpcUaConnection(this.id, options.opcuaServerUrl, options.username, options.password)
 			.on('connected', () => this.emit('connected'))
 			.on('disconnected', () => this.emit('disconnected'));
@@ -154,10 +166,36 @@ export class PEA extends (EventEmitter as new() => PEAEmitter) {
 		if (options.services) {
 			this.services = options.services.map((serviceOpts: ServiceOptions) => new Service(serviceOpts, this.connection, this.id));
 		}
-		if (options.processValues) {
-			this.variables = options.processValues
-				.map((variableOptions: DataAssemblyOptions) => DataAssemblyFactory.create(variableOptions, this.connection));
+
+		if (options) {
+			this.variables = options.dataAssemblies
+				.map((variableOptions: DataAssemblyOptions) =>
+					DataAssemblyControllerFactory.create(variableOptions, this.connection)
+				);
 		}
+
+		this.on('variableChanged', (entry: VariableChange)=> {
+			// clear list first
+			this.processValues.length= 0;
+			// update this.processValues
+			if(entry.pea == this.id) this.createProcessValues();
+		});
+	}
+
+	/**
+	 * recreate OPCUAConnection and dAControllers with new settings.
+	 * TODO: need better function name
+	 * @param options {ServerSettingsOptions}
+	 */
+	public setConnection(options: ServerSettingsOptions){
+		this.connection = new OpcUaConnection(this.id, options.serverUrl, options.username, options.password)
+			.on('connected', () => this.emit('connected'))
+			.on('disconnected', () => this.emit('disconnected'));
+		// rebuild dAControllers with new connection
+		this.variables = this.options.dataAssemblies
+			.map((variableOptions: DataAssemblyOptions) =>
+				DataAssemblyControllerFactory.create(variableOptions, this.connection)
+			);
 	}
 
 	public getService(serviceName: string): Service {
@@ -181,13 +219,17 @@ export class PEA extends (EventEmitter as new() => PEAEmitter) {
 		const pv = this.subscribeToAllVariables();
 		const pa = this.subscribeToAllServices();
 		await this.connection.startListening();
-		await Promise.all([pv, pa]);
+
+		//after subscribing-> assign DAControllers to instance variable, which will be processed to this.processValues later
+		await pv.then(value => this.dAControllers = value);
+		this.createProcessValues();
+
+		await Promise.all([pv,pa]);
 		this.logger.info(`[${this.id}] Successfully subscribed to ${this.connection.monitoredItemSize()} assemblies`);
 	}
 
 	/**
-	 * Close session and disconnect from PEA
-	 *
+	 * Close session and disconnect from PEAController
 	 */
 	public async disconnect(): Promise<void> {
 		this.logger.info(`[${this.id}] Disconnect PEA`);
@@ -200,24 +242,26 @@ export class PEA extends (EventEmitter as new() => PEAEmitter) {
 	}
 
 	/**
-	 * Get JSON serialisation of PEA
+	 * Get JSON serialisation of PEAController
+	 * @returns {PEAInterface} (can be passed to frontend e.g.)
 	 */
 	public json(): PEAInterface {
 		return {
-			name: "",
-			pimadIdentifier: this.id,
+			name: this.name,
+			id: this.id,
+			pimadIdentifier: this.pimadIdentifier,
 			description: this.description,
 			endpoint: this.connection.endpoint,
 			hmiUrl: this.hmiUrl,
 			connected: this.isConnected(),
 			services: this.getServiceStates(),
-			processValues: [],
+			processValues: this.processValues,
 			protected: this.protected
 		};
 	}
 
 	/**
-	 * is POL connected to PEA
+	 * is POL connected to PEAController
 	 * @returns {boolean}
 	 */
 	public isConnected(): boolean {
@@ -225,7 +269,7 @@ export class PEA extends (EventEmitter as new() => PEAEmitter) {
 	}
 
 	public listenToDataAssembly(dataAssemblyName: string, variableName: string): DataItemEmitter {
-		const dataAssembly: DataAssembly | undefined = this.variables.find(
+		const dataAssembly: DataAssemblyController | undefined = this.variables.find(
 			(variable) => variable.name === dataAssemblyName);
 		if (!dataAssembly) {
 			throw new Error(`ProcessValue ${dataAssemblyName} is not specified for PEA ${this.id}`);
@@ -236,7 +280,7 @@ export class PEA extends (EventEmitter as new() => PEAEmitter) {
 	}
 
 	/**
-	 * Abort all services in PEA
+	 * Abort all services in PEAController
 	 */
 	public abort(): Promise<void[]> {
 		this.logger.info(`[${this.id}] Abort all services`);
@@ -245,7 +289,7 @@ export class PEA extends (EventEmitter as new() => PEAEmitter) {
 	}
 
 	/**
-	 * Pause all services in PEA which are currently running
+	 * Pause all services in PEAController which are currently running
 	 */
 	public pause(): Promise<void[]> {
 		this.logger.info(`[${this.id}] Pause all running services`);
@@ -258,7 +302,7 @@ export class PEA extends (EventEmitter as new() => PEAEmitter) {
 	}
 
 	/**
-	 * Resume all services in PEA which are currently paused
+	 * Resume all services in PEAController which are currently paused
 	 */
 	public resume(): Promise<void[]> {
 		this.logger.info(`[${this.id}] Resume all paused services`);
@@ -271,7 +315,7 @@ export class PEA extends (EventEmitter as new() => PEAEmitter) {
 	}
 
 	/**
-	 * Stop all non-idle services in PEA
+	 * Stop all non-idle services in PEAController
 	 */
 	public stop(): Promise<void[]> {
 		this.logger.info(`[${this.id}] Stop all non-idle services`);
@@ -284,7 +328,7 @@ export class PEA extends (EventEmitter as new() => PEAEmitter) {
 	}
 
 	/**
-	 * Reset all services in PEA
+	 * Reset all services in PEAController
 	 */
 	public reset(): Promise<void[]> {
 		this.logger.info(`[${this.id}] Reset all services`);
@@ -292,12 +336,12 @@ export class PEA extends (EventEmitter as new() => PEAEmitter) {
 		return Promise.all(tasks);
 	}
 
-	private subscribeToAllVariables(): Promise<DataAssembly[]> {
+	private subscribeToAllVariables(): Promise<DataAssemblyController[]> {
 		return Promise.all(
-			this.variables.map((variable: DataAssembly) => {
-				this.logger.debug(`[${this.id}] subscribe to process variable ${variable.name}`);
-				variable.on('V', (data) => {
-					this.logger.debug(`[${this.id}] variable changed: ${JSON.stringify(variable.toJson())}`);
+			this.variables.map((variable: DataAssemblyController) => {
+				this.logger.info(`[${this.id}] subscribe to process variable ${variable.name}`);
+				variable.on('V', (data: OpcUaDataItem<any>) => {
+					this.logger.info(`[${this.id}] variable changed: ${JSON.stringify(variable.toJson())}`);
 					const entry: VariableChange = {
 						timestampPOL: new Date(),
 						timestampPEA: data.timestamp,
@@ -314,7 +358,7 @@ export class PEA extends (EventEmitter as new() => PEAEmitter) {
 	}
 
 	private unsubscribeFromAllVariables(): void {
-		this.variables.forEach((variable: DataAssembly) => variable.unsubscribe());
+		this.variables.forEach((variable: DataAssemblyController) => variable.unsubscribe());
 	}
 
 	// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
@@ -333,7 +377,7 @@ export class PEA extends (EventEmitter as new() => PEAEmitter) {
 					this.emit('controlEnable', {service, controlEnable});
 				})
 				.on('state', (state) => {
-					this.logger.debug(`[${this.id}] state changed: ${service.name} = ${ServiceState[state]}`);
+					this.logger.info(`[${this.id}] state changed: ${service.name} = ${ServiceState[state]}`);
 					const entry = {
 						timestampPOL: new Date(),
 						timestampPEA: service.lastStatusChange,
@@ -346,11 +390,11 @@ export class PEA extends (EventEmitter as new() => PEAEmitter) {
 					}
 				})
 				.on('opMode', (opMode) => {
-					this.logger.debug(`[${this.id}] opMode changed: ${service.name} = ${JSON.stringify(opMode)}`);
+					this.logger.info(`[${this.id}] opMode changed: ${service.name} = ${JSON.stringify(opMode)}`);
 					this.emit('opModeChanged', {service: service, ...opMode});
 				})
 				.on('parameterChanged', (data) => {
-					this.logger.debug(`[${this.id}] parameter changed: ` +
+					this.logger.info(`[${this.id}] parameter changed: ` +
 						`${data.procedure?.name}.${data.parameter.name} = ${data.parameter.value}`);
 					const entry: ParameterChange = {
 						timestampPEA: data.parameter.timestamp!,
@@ -371,4 +415,20 @@ export class PEA extends (EventEmitter as new() => PEAEmitter) {
 		this.services.forEach((service) => service.unsubscribe());
 	}
 
+	/**
+	 * this function will extract the variables/DataItems out of this.dAControllers and push it to this.processValues
+	 * @private
+	 */
+	private createProcessValues(){
+		this.dAControllers.forEach((dAController) => {
+			const dataAssembly: ProcessValuesInterface = {name: '', dataItems: []};
+			const dataItems = dAController.communication as { [key: string]: any };
+
+			dataAssembly.name= dAController.name;
+			for(const key in dataItems){
+				dataAssembly.dataItems.push({[key]: (dataItems[key] as OpcUaDataItem<any>).value});
+			}
+			this.processValues.push(dataAssembly);
+		});
+	}
 }

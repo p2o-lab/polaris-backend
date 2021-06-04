@@ -24,7 +24,7 @@
  */
 
 import {RecipeState} from '@p2olab/polaris-interface';
-import {PEA} from '../pea';
+import {PEAController} from '../pea';
 import {ServiceState} from '../pea/dataAssembly';
 import {Player, Recipe} from './index';
 
@@ -56,7 +56,7 @@ describe('Player', () => {
 		it('should run a simple test recipe', async () => {
 			const peaJson = JSON.parse(fs.readFileSync('assets/peas/pea_testserver_1.0.0.json').toString())
 				.peas[0];
-			const pea = new PEA(peaJson);
+			const pea = new PEAController(peaJson);
 			await pea.connect();
 			// now test recipe
 			const recipeJson = JSON.parse(
@@ -76,7 +76,7 @@ describe('Player', () => {
 
 			const peaJson = JSON.parse(fs.readFileSync('assets/peas/pea_testserver_1.0.0.json').toString())
 				.peas[0];
-			const pea = new PEA(peaJson);
+			const pea = new PEAController(peaJson);
 			const service = pea.services[0];
 
 			await pea.connect();
@@ -122,7 +122,7 @@ describe('Player', () => {
 
 			const peaJson = JSON.parse(fs.readFileSync('assets/peas/pea_testserver_1.0.0.json').toString())
 				.peas[0];
-			const pea = new PEA(peaJson);
+			const pea = new PEAController(peaJson);
 			const service = pea.services[0];
 
 			await pea.connect();
@@ -166,7 +166,7 @@ describe('Player', () => {
 
 			const peaJson = JSON.parse(fs.readFileSync('src/modularPlantManager/pea/_assets/JSON/pea_testserver_1.0.0.json').toString())
 				.peas[0];
-			const pea = new PEA(peaJson);
+			const pea = new PEAController(peaJson);
 			const service = pea.services[0];
 
 			await pea.connect();

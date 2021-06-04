@@ -24,10 +24,32 @@
  * SOFTWARE.
  */
 
-import {LimitMonitoringDA, LimitMonitoringRuntime} from '../../_extensions';
 import {AnaView, AnaViewRuntime} from './AnaView';
+import {OpcUaConnection, OpcUaDataItem} from '../../../connection';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {LimitMonitoring, LimitMonitoringRuntime} from '../../_extensions/limitMonitoringDA/LimitMonitoring';
+import {OSLevel, OSLevelRuntime} from '../../_extensions/osLevelDA/OSLevel';
 
-export type AnaMonRuntime = AnaViewRuntime & LimitMonitoringRuntime;
+export type AnaMonRuntime = AnaViewRuntime & LimitMonitoringRuntime & OSLevelRuntime
 
-export class AnaMon extends LimitMonitoringDA(AnaView) {
+export class AnaMon extends AnaView {
+
+    public communication!: AnaMonRuntime;
+    public limitMonitoring: LimitMonitoring;
+    osLevel: OSLevel;
+
+    constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
+        super(options, connection);
+
+        this.osLevel = new OSLevel(this);
+        this.osLevel.setCommunication();
+
+        this.limitMonitoring = new LimitMonitoring(this);
+        this.limitMonitoring.setCommunication();
+    }
+
 }
+
+
+
+

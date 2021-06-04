@@ -86,7 +86,7 @@
           parameters: [
             {
               name: SetVolume,
-              interfaceClass: AnaMan,
+              metaModelRef: AnaMan,
               communication: '' //TODO Add Mockup here
             }
           ]
@@ -173,7 +173,7 @@
           parameters: [
             {
               name: SetVolume,
-              interfaceClass: ExtAnaOp,
+              metaModelRef: ExtAnaOp,
               communication: {
                 WQC: {
                   namespaceIndex: P2OGalaxy,
@@ -229,7 +229,7 @@
             },
             {
               name: SetDuration,
-              interfaceClass: ExtAnaOp,
+              metaModelRef: ExtAnaOp,
               communication: {
                 WQC: {
                   namespaceIndex: P2OGalaxy,
@@ -367,7 +367,7 @@
           parameters: [
             {
               name: SetVolumeFlow,
-              interfaceClass: ExtAnaOp,
+              metaModelRef: ExtAnaOp,
               communication: {
                 WQC: {
                   namespaceIndex: P2OGalaxy,

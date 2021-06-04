@@ -25,27 +25,30 @@
 
 import {DataAssemblyOptions, ParameterInterface, ParameterOptions} from '@p2olab/polaris-interface';
 import {Parameter} from '../../../recipe';
-import {DataItem, OpcUaConnection} from '../../connection';
-import {
-	OSLevelDA, OSLevelRuntime
-} from '../_extensions';
-import {BaseDataAssemblyRuntime, DataAssembly} from '../DataAssembly';
-import {PEA} from '../../PEA';
+import {DataItem, OpcUaConnection, OpcUaDataItem} from '../../connection';
+import {OSLevelRuntime} from '../_extensions';
+import {BaseDataAssemblyRuntime, DataAssemblyController} from '../DataAssemblyController';
+import {PEAController} from '../../PEAController';
 import {catDataAssembly} from '../../../../logging';
+import {OSLevel} from '../_extensions/osLevelDA/OSLevel';
 
-export type OperationElementRuntime = BaseDataAssemblyRuntime & OSLevelRuntime;
+export type OperationElementRuntime = BaseDataAssemblyRuntime & OSLevelRuntime
 
-export class OperationElement extends OSLevelDA(DataAssembly) {
+export class OperationElement extends DataAssemblyController {
 	public communication!: OperationElementRuntime;
 	public parameterRequest: Parameter | undefined;
 	public requestedValue = '';
+	public readonly osLevel: OSLevel;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
+		this.osLevel = new OSLevel(this);
+		this.osLevel.setCommunication();
 	}
 
+
 	/**
-	 * Set parameter on PEA
+	 * Set parameter on PEAController
 	 * @param paramValue
 	 * @param {string} variable
 	 */
@@ -56,7 +59,7 @@ export class OperationElement extends OSLevelDA(DataAssembly) {
 		await dataItem?.write(paramValue);
 	}
 
-	public async setValue(p: ParameterOptions, peas: PEA[]): Promise<void> {
+	public async setValue(p: ParameterOptions, peas: PEAController[]): Promise<void> {
 		catDataAssembly.debug(`set value: ${JSON.stringify(p)}`);
 		if (p.value) {
 			this.requestedValue = p.value.toString();

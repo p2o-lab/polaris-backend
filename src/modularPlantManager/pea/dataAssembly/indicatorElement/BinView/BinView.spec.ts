@@ -25,10 +25,12 @@
 
 import {OpcUaConnection} from '../../../connection';
 import {BinView} from './BinView';
-
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {PEAMockup} from '../../../PEA.mockup';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import * as baseDataAssemblyOptions from '../../../../../../tests/binview.json';
+import {AnaView} from '../AnaView/AnaView';
+import {DataAssemblyControllerFactory} from '../../DataAssemblyControllerFactory';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -37,7 +39,21 @@ describe('BinView', () => {
 
 	describe('static', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
-		it('should create BinView', async () => { /* TODO: Add Test */
+		it('should create BinView', async () => {
+
+			const dataAssemblyOptions: DataAssemblyOptions = {
+				name: 'Variable',
+				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/BinView',
+				dataItems: baseDataAssemblyOptions
+			};
+			const da1: BinView = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as BinView;
+			expect(da1 instanceof BinView).to.equal(true);
+			expect(da1.communication.TagName).to.not.equal(undefined);
+			expect(da1.communication.TagDescription).to.not.equal(undefined);
+			expect(da1.communication.WQC).to.not.equal(undefined);
+			expect(da1.communication.V).to.not.equal(undefined);
+			expect(da1.communication.VState0).to.not.equal(undefined);
+			expect(da1.communication.VState1).to.not.equal(undefined);
 		});
 
 	});

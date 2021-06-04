@@ -34,10 +34,10 @@ export interface BaseDataAssemblyRuntime {
 	TagDescription: OpcUaDataItem<string>;
 }
 
-export class DataAssembly extends EventEmitter {
+export class DataAssemblyController extends EventEmitter {
 
 	public readonly name: string;
-	public readonly interfaceClass: string;
+	public readonly metaModelRef: string;
 	public readonly communication!: BaseDataAssemblyRuntime;
 	public subscriptionActive: boolean;
 	public readonly connection: OpcUaConnection;
@@ -53,31 +53,34 @@ export class DataAssembly extends EventEmitter {
 		super();
 		this.options = options;
 		this.name = options.name;
-		this.interfaceClass = options.interfaceClass;
+		this.metaModelRef = options.metaModelRef;
 		this.subscriptionActive = false;
 
 		this.connection = connection;
 		if (!this.connection) {
-			throw new Error('Creating DataAssembly Error: No OpcUaConnection provided');
+			throw new Error('Creating DataAssemblyController Error: No OpcUaConnection provided');
 		}
 
-		if (!options.communication) {
-			throw new Error('Creating DataAssembly Error: No Communication variables found in DataAssemblyOptions');
+		if (!options.dataItems) {
+			throw new Error('Creating DataAssemblyController Error: No Communication variables found in DataAssemblyOptions');
 		}
+		// initialize communication
+		this.communication = {TagName: {} as OpcUaDataItem<any>, TagDescription: {} as OpcUaDataItem<any>};
+
 		this.communication.TagName = this.createDataItem('TagName', 'read', 'string');
 		this.communication.TagDescription = this.createDataItem('TagDescription', 'read', 'string');
 
 	}
 
 	/**
-	 * subscribe to all changes in any of the variables of a DataAssembly
+	 * subscribe to all changes in any of the variables of a DataAssemblyController
 	 *
-	 * The appropriate variables are detected via the type of the DataAssembly
+	 * The appropriate variables are detected via the type of the DataAssemblyController
 	 * @param samplingInterval
 	 */
-	public async subscribe(): Promise<DataAssembly> {
+	public async subscribe(): Promise<DataAssemblyController> {
 		if (!this.subscriptionActive) {
-			catDataAssembly.debug(`Subscribe to ${this.name} ` +
+			catDataAssembly.info(`Subscribe to ${this.name} ` +
 				`with variables ${Object.keys(this.communication)}`);
 			await Promise.all(
 				Object.entries(this.communication)
@@ -95,13 +98,13 @@ export class DataAssembly extends EventEmitter {
 					})
 			);
 			this.subscriptionActive = true;
-			catDataAssembly.debug(`successfully subscribed to all variables from ${this.name}`);
+			catDataAssembly.info(`successfully subscribed to all variables from ${this.name}`);
 		}
 		return this;
 	}
 
 	/**
-	 * unsubscribe to all changes in any of the variables of a DataAssembly
+	 * unsubscribe to all changes in any of the variables of a DataAssemblyController
 	 *
 	 */
 	public unsubscribe(): void {
@@ -117,16 +120,16 @@ export class DataAssembly extends EventEmitter {
 		return obj[key];
 	}
 
-	/**
-	 * Creates a data item from provided options of DataAssembly by
+/*	/!**
+	 * Creates a data item from provided options of DataAssemblyController by
 	 * finding first name to match one of the communication options
-	 */
+	 *!/
 	public populateDataItems(silent = false): OpcUaDataItem<any> {
 		for (const communicationKey of Object.keys(this.communication)) {
 			try {
 				this.communication[communicationKey as keyof BaseDataAssemblyRuntime] =
 					OpcUaDataItem.fromOptions(this.getDataAssemblyProperty(
-						this.options.communication, communicationKey as keyof BaseDataAssemblyRuntime),
+						this.options.dataItems, communicationKey as keyof BaseDataAssemblyRuntime),
 						this.connection, 'write'); // TODO: do generic AccessTyping
 			} catch (e) {
 				this.parsingErrors.push(communicationKey);
@@ -136,18 +139,20 @@ export class DataAssembly extends EventEmitter {
 			this.logParsingErrors();
 		}
 		throw new Error('Cant create DataItem');
-	}
+	}*/
 
 	/**
-	 * Creates a data item from provided options of DataAssembly by
+	 * Creates a data item from provided options of DataAssemblyController by
 	 * finding first name to match one of the communication options
+	 *
+	 * TODO: Maybe rework this function, because it's hard to understand.
 	 */
 	public createDataItem(name: string | string[], access: 'read' | 'write', type?: 'number' | 'string' | 'boolean', silent = false): OpcUaDataItem<any> {
 		const names = typeof name === 'string' ? [name] : name;
 		for (const [key, value] of names.entries()) {
-			if (this.options.communication[value as keyof BaseDataAssemblyRuntime]) {
+			if (this.options.dataItems[value as keyof BaseDataAssemblyRuntime]) {
 				return OpcUaDataItem.fromOptions(this.getDataAssemblyProperty(
-					this.options.communication, value as keyof BaseDataAssemblyRuntime),
+					this.options.dataItems, value as keyof BaseDataAssemblyRuntime),
 					this.connection, access);
 			}
 		}

@@ -31,7 +31,7 @@ import {
 	SourceMode
 } from '@p2olab/polaris-interface';
 import {OpcUaConnection} from '../../connection';
-import {PEA, Service} from '../../index';
+import {PEAController, Service} from '../../index';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
@@ -60,7 +60,7 @@ describe('Service', () => {
 			).to.throw('No service name');
 		});
 
-		it('should fail with missing PEA', () => {
+		it('should fail with missing PEAController', () => {
 			expect(() => new Service(
 				{name: 'test', parameters: [], communication: {} as ServiceControlOptions, procedures: []},
 				opcUAConnection, '')
@@ -73,14 +73,14 @@ describe('Service', () => {
 		const peaJson =
 			parseJson(fs.readFileSync('assets/peas/pea_testserver_1.0.0.json', 'utf8'), null, 60)
 				.peas[0];
-		const pea = new PEA(peaJson);
+		const pea = new PEAController(peaJson);
 		const service = pea.services[0];
-		await expect(service.executeCommand(ServiceCommand.start)).to.be.rejectedWith('PEA is not connected');
+		await expect(service.executeCommand(ServiceCommand.start)).to.be.rejectedWith('PEAController is not connected');
 	});
 
 	it('should create service from PEATestServer json', () => {
 		const json =
-			parseJson(fs.readFileSync('assets/peas/pea_testserver_1.0.0.json', 'utf8'), null, 60)
+			parseJson(fs.readFileSync('src/modularPlantManager/pea/_assets/JSON/pea_testserver_1.0.0_2.json', 'utf8'), null, 60)
 				.peas[0].services[0];
 		const service = new Service(json, opcUAConnection, 'root');
 		expect(service.name).to.equal('Service1');
@@ -88,7 +88,7 @@ describe('Service', () => {
 
 	// eslint-disable-next-line no-undef
 	context('with PEATestServer', () => {
-		let pea: PEA;
+		let pea: PEAController;
 		let service: Service;
 
 		// eslint-disable-next-line no-undef
@@ -96,7 +96,7 @@ describe('Service', () => {
 			const peaJson =
 				parseJson(fs.readFileSync('assets/peas/pea_testserver_1.0.0.json', 'utf8'), null, 60)
 					.peas[0];
-			pea = new PEA(peaJson);
+			pea = new PEAController(peaJson);
 			service = pea.services[0];
 		});
 
@@ -125,7 +125,7 @@ describe('Service', () => {
 		let peaServer: PEAMockup;
 		let service: Service;
 		//let testService: TestServerService;
-		let pea: PEA;
+		let pea: PEAController;
 
 		beforeEach(async function () {
 			this.timeout(5000);
@@ -137,7 +137,7 @@ describe('Service', () => {
 			const peaJson =
 				parseJson(fs.readFileSync('assets/peas/pea_testserver_1.0.0.json', 'utf8'), null, 60)
 					.peas[0];
-			pea = new PEA(peaJson);
+			pea = new PEAController(peaJson);
 			service = pea.services[0];
 			await pea.connect();
 		});
@@ -210,16 +210,16 @@ describe('Service', () => {
 
 		it('waitForOpModeSpecificTest', async () => {
 			//testService.opMode.opMode = OperationMode.Offline;
-			await service.serviceControl.waitForOpModeToPassSpecificTest(OperationMode.Offline);
-			expect(service.serviceControl.getOperationMode()).to.equal(OperationMode.Offline);
+			await service.serviceControl.opMode.waitForOpModeToPassSpecificTest(OperationMode.Offline);
+			expect(service.serviceControl.opMode.getOperationMode()).to.equal(OperationMode.Offline);
 
 			service.setOperationMode();
 
-			await service.serviceControl.waitForOpModeToPassSpecificTest(OperationMode.Automatic);
-			expect(service.serviceControl.getOperationMode()).to.equal(OperationMode.Automatic);
+			await service.serviceControl.opMode.waitForOpModeToPassSpecificTest(OperationMode.Automatic);
+			expect(service.serviceControl.opMode.getOperationMode()).to.equal(OperationMode.Automatic);
 
-			await service.serviceControl.waitForServiceSourceModeToPassSpecificTest(ServiceSourceMode.Extern);
-			expect(service.serviceControl.getServiceSourceMode()).to.equal(ServiceSourceMode.Extern);
+			await service.serviceControl.serviceSourceMode.waitForServiceSourceModeToPassSpecificTest(ServiceSourceMode.Extern);
+			expect(service.serviceControl.serviceSourceMode.getServiceSourceMode()).to.equal(ServiceSourceMode.Extern);
 		});
 
 		it('full service state cycle', async () => {

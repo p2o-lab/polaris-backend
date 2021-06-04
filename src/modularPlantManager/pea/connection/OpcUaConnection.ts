@@ -50,12 +50,12 @@ import {catOpcUA} from '../../../logging';
  */
 interface OpcUaConnectionEvents {
 	/**
-	 * when target e.g. PEA successfully connects to POL
+	 * when target e.g. PEAController successfully connects to POL
 	 * @event connected
 	 */
 	connected: void;
 	/**
-	 * when target e.g. PEA is disconnected from POL
+	 * when target e.g. PEAController is disconnected from POL
 	 * @event disconnected
 	 */
 	disconnected: void;
@@ -74,8 +74,8 @@ export class OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionEm
 	private readonly items: Map<string, string>;
 	private namespaceArray!: string[];
 	private readonly logger: Category;
-	private readonly username: string | undefined;
-	private readonly password: string | undefined;
+	readonly username: string | undefined;
+	readonly password: string | undefined;
 
 	constructor(targetId: string, endpoint: string, username?: string, password?: string) {
 		super();
@@ -132,7 +132,7 @@ export class OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionEm
 	}
 
 	/**
-	 * is pea connected to physical PEA
+	 * is pea connected to physical PEAController
 	 * @returns {boolean}
 	 */
 	public isConnected(): boolean {

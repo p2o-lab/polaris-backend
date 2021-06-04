@@ -23,36 +23,26 @@
  * SOFTWARE.
  */
 
-import {ParameterInterface} from '@p2olab/polaris-interface';
 import {OpcUaDataItem} from '../../../connection';
-import {Constructor} from '../_helper';
-import {BaseDataAssemblyRuntime, DataAssembly} from '../../DataAssembly';
+import {BaseDataAssemblyRuntime, Constructor} from '../../index';
+import {DataAssemblyController} from '../../DataAssemblyController';
 
-export interface ScaleSettingsRuntime extends BaseDataAssemblyRuntime {
-	VSclMin: OpcUaDataItem<number>;
-	VSclMax: OpcUaDataItem<number>;
+export interface WQCRuntime extends BaseDataAssemblyRuntime {
+	WQC: OpcUaDataItem<number>;
 }
 
-// tslint:disable-next-line:variable-name
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export function ScaleSettingDA<TBase extends Constructor<DataAssembly>>(Base: TBase) {
+export class WQC {
+	private dAController: any;
 
-	return class extends Base {
-		public communication!: ScaleSettingsRuntime;
+	constructor(dAController: any) {
+		this.dAController = dAController;
+	}
 
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		constructor(...args: any[]) {
-			super(...args);
-			this.communication.VSclMax = this.createDataItem('VSclMax', 'read');
-			this.communication.VSclMin = this.createDataItem('VSclMin', 'read');
-		}
+	setCommunication(){
+		this.dAController.communication.WQC = this.dAController.createDataItem('WQC', 'read');
+	}
 
-		public toJson(): ParameterInterface {
-			return {
-				...super.toJson(),
-				max: this.communication.VSclMax?.value,
-				min: this.communication.VSclMin?.value
-			};
-		}
-	};
+	get WQC(): number | undefined {
+		return this.dAController.communication.WQC.value;
+	}
 }

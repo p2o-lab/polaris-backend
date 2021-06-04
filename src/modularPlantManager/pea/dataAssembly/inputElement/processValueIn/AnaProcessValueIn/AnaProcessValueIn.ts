@@ -26,24 +26,31 @@
 
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {OpcUaConnection, OpcUaDataItem} from '../../../../connection';
-import {
-	ScaleSettingDA, ScaleSettingsRuntime,
-	UnitDA, UnitDataAssemblyRuntime
-} from '../../../_extensions';
+import {ScaleSettingsRuntime, UnitDataAssemblyRuntime} from '../../../_extensions';
 import {
 	InputElement, InputElementRuntime,
 } from '../../InputElement';
+import {ScaleSettings} from '../../../_extensions/scaleSettingsDA/ScaleSettings';
+import {UnitSettings} from '../../../_extensions/unitDA/UnitSettings';
 
 export type AnaProcessValueInRuntime = InputElementRuntime & UnitDataAssemblyRuntime & ScaleSettingsRuntime & {
 	VExt: OpcUaDataItem<number>;
 };
 
-export class AnaProcessValueIn extends ScaleSettingDA(UnitDA(InputElement)) {
+export class AnaProcessValueIn extends InputElement {
 	public readonly communication!: AnaProcessValueInRuntime;
+	private readonly scaleSettings: ScaleSettings;
+	private readonly unitSettings: UnitSettings;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
 		this.communication.VExt = this.createDataItem('VExt', 'read', 'number');
+
+		this.unitSettings = new UnitSettings(this);
+		this.unitSettings.setCommunication();
+
+		this.scaleSettings = new ScaleSettings(this);
+		this.scaleSettings.setCommunication();
 
 		this.defaultReadDataItem = this.communication.VExt;
 		this.defaultReadDataItemType = 'number';

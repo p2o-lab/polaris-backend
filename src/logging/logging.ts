@@ -40,7 +40,7 @@ export const catDataAssembly = new Category('dataAssembly', catPEA);
 export const catService = new Category('service');
 export const catPEAService = new Category('service', catService);
 export const catProcedure = new Category('procedure', catPEAService);
-export const catPEAMockup = new Category('PEA-Mockup');
+export const catPEAMockup = new Category('PEAController-Mockup');
 
 export const catDataItem = new Category('DataItem');
 export const catOpcUA = new Category('OpcUA');

@@ -24,32 +24,32 @@
  */
 
 import {OpcUaDataItem} from '../../../connection';
-import {BaseDataAssemblyRuntime, DataAssembly} from '../../DataAssembly';
+import {BaseDataAssemblyRuntime, DataAssemblyController} from '../../DataAssemblyController';
 import {Constructor} from '../_helper';
 
-export type InterlockRuntime = BaseDataAssemblyRuntime & {
-	PermEn: OpcUaDataItem<boolean>;
-	Permit: OpcUaDataItem<boolean>;
-	IntlEn: OpcUaDataItem<boolean>;
-	Interlock: OpcUaDataItem<boolean>;
-	ProtEn: OpcUaDataItem<boolean>;
-	Protect: OpcUaDataItem<boolean>;
-};
+export interface FeedbackMonitoringRuntime extends BaseDataAssemblyRuntime {
+	MonEn: OpcUaDataItem<boolean>;
+	MonSafePos: OpcUaDataItem<boolean>;
+	MonStatErr: OpcUaDataItem<boolean>;
+	MonDynErr: OpcUaDataItem<boolean>;
+	MonStatTi: OpcUaDataItem<number>;
+	MonDynTi: OpcUaDataItem<number>;
+}
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export function InterlockDA<TBase extends Constructor<DataAssembly>>(Base: TBase) {
-	return class extends Base {
-		public communication!: InterlockRuntime;
+export class FeedbackMonitoring {
+	private dAController: any;
+	
+	constructor(dAController: any) {
+		this.dAController = dAController;
 
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		constructor(...args: any[]) {
-			super(...args);
-			this.communication.PermEn = this.createDataItem('PermEn', 'read');
-			this.communication.Permit = this.createDataItem('Permit', 'read');
-			this.communication.IntlEn = this.createDataItem('IntlEn', 'read');
-			this.communication.Interlock = this.createDataItem('Interlock', 'read');
-			this.communication.ProtEn = this.createDataItem('ProtEn', 'read');
-			this.communication.Protect = this.createDataItem('Protect', 'read');
-		}
-	};
+	}
+
+	public setCommunication() {
+		this.dAController.communication.MonEn = this.dAController.createDataItem('MonEn', 'write');
+		this.dAController.communication.MonSafePos = this.dAController.createDataItem('MonSafePos', 'read');
+		this.dAController.communication.MonStatErr = this.dAController.createDataItem('MonStatErr', 'read');
+		this.dAController.communication.MonDynErr = this.dAController.createDataItem('MonDynErr', 'read');
+		this.dAController.communication.MonStatTi = this.dAController.createDataItem('MonStatTi', 'read');
+		this.dAController.communication.MonDynTi = this.dAController.createDataItem('MonDynTi', 'read');
+	}
 }

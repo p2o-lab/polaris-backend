@@ -32,7 +32,7 @@ import {
 } from '@p2olab/polaris-interface';
 import {OpcUaConnection} from '../../connection';
 import {
-	controlEnableToJson, DataAssemblyFactory,
+	controlEnableToJson, DataAssemblyControllerFactory,
 	InputElement, ServiceControl,
 	ServiceControlEnable, ServiceMtpCommand,
 	ServiceState, ServParam
@@ -41,7 +41,7 @@ import {
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Category} from 'typescript-logging';
-import {PEA} from '../../PEA';
+import {PEAController} from '../../PEAController';
 import {BaseService, BaseServiceEvents} from './BaseService';
 import {Procedure} from './procedure/Procedure';
 import {catService} from '../../../../logging';
@@ -61,9 +61,9 @@ interface ServiceEvents extends BaseServiceEvents {
 type ServiceEmitter = StrictEventEmitter<EventEmitter, ServiceEvents>;
 
 /**
- * Service of a [[PEA]]
+ * Service of a [[PEAController]]
  *
- * after connection to a real PEA, commands can be triggered and states can be retrieved
+ * after connection to a real PEAController, commands can be triggered and states can be retrieved
  *
  */
 export class Service extends BaseService {
@@ -91,16 +91,16 @@ export class Service extends BaseService {
 		this.logger = catService;
 
 		this.serviceControl = new ServiceControl(
-			{name: this._name, interfaceClass: 'ServiceControl', communication: serviceOptions.communication},
+			{name: this._name, metaModelRef: 'ServiceControl', dataItems: serviceOptions.communication},
 			connection);
 
 		this.procedures = serviceOptions.procedures
 			.map((option) => new Procedure(option, connection));
 
-		// TODO: Check what happens if DataAssembly already exists --> Is that a matter?
+		// TODO: Check what happens if DataAssemblyController already exists --> Is that a matter?
 		if (serviceOptions.parameters) {
 			this.parameters = serviceOptions.parameters
-				.map((options) => DataAssemblyFactory.create(options, connection) as ServParam);
+				.map((options) => DataAssemblyControllerFactory.create(options, connection) as ServParam);
 		}
 	}
 
@@ -153,11 +153,11 @@ export class Service extends BaseService {
 			})
 			.on('OpMode', () => {
 				this.logger.debug(`[${this.qualifiedName}] Current OpMode changed: ` +
-					`${this.serviceControl.getOperationMode()}`);
+					`${this.serviceControl.opMode.getOperationMode()}`);
 				this.eventEmitter.emit('opMode',
 					{
-						operationMode: this.serviceControl.getOperationMode(),
-						sourceMode: this.serviceControl.getServiceSourceMode()
+						operationMode: this.serviceControl.opMode.getOperationMode(),
+						sourceMode: this.serviceControl.serviceSourceMode.getServiceSourceMode()
 					});
 			})
 			.on('State', () => {
@@ -206,8 +206,8 @@ export class Service extends BaseService {
 	public json(): ServiceInterface {
 		return {
 			name: this.name,
-			operationMode: this.serviceControl.getOperationMode(),
-			serviceSourceMode: this.serviceControl.getServiceSourceMode(),
+			operationMode: this.serviceControl.opMode.getOperationMode(),
+			serviceSourceMode: this.serviceControl.serviceSourceMode.getServiceSourceMode(),
 			status: ServiceState[this.state],
 			procedures: this.procedures.map((procedure) => procedure.toJson()),
 			currentProcedure: this.getCurrentProcedure().name,
@@ -220,7 +220,7 @@ export class Service extends BaseService {
 	// overridden method from Base Service
 	public async executeCommand(command: ServiceCommand): Promise<void> {
 		if (!this.connection.isConnected()) {
-			throw new Error('PEA is not connected');
+			throw new Error('PEAController is not connected');
 		}
 		await super.executeCommand(command);
 		const currentProcedure = this.getCurrentProcedure();
@@ -295,16 +295,16 @@ export class Service extends BaseService {
 		return procedure;
 	}
 
-	public async setParameters(parameterOptions: ParameterOptions[], peaSet: PEA[] = []): Promise<void> {
+	public async setParameters(parameterOptions: ParameterOptions[], peaSet: PEAController[] = []): Promise<void> {
 		parameterOptions.map((p) => {
 			const dataAssembly = this.findInputParameter(p.name);
-			dataAssembly?.setValue(p, peaSet);
+			//dataAssembly?.setValue(p, peaSet);
 		});
 	}
 
 	public async setOperationMode(): Promise<void> {
-		await this.serviceControl.setToAutomaticOperationMode();
-		await this.serviceControl.setToExternalServiceSourceMode();
+		await this.serviceControl.opMode.setToAutomaticOperationMode();
+		await this.serviceControl.serviceSourceMode.setToExternalServiceSourceMode();
 	}
 
 	public findInputParameter(parameterName: string): InputElement | ServParam | undefined {

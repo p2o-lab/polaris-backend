@@ -25,20 +25,30 @@
  */
 
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {SourceModeDA, SourceModeRuntime, WQCDA, WQCRuntime} from '../../../_extensions';
+import {SourceModeRuntime, WQCRuntime} from '../../../_extensions';
 import {DIntMan, DIntManRuntime} from './DIntMan';
 import {OpcUaConnection, OpcUaDataItem} from '../../../../connection';
+import {SourceModeController} from '../../../_extensions/sourceModeDA/SourceModeController';
+import {WQC} from '../../../_extensions/wqcDA/WQC';
 
 export type DIntManIntRuntime = DIntManRuntime & SourceModeRuntime & WQCRuntime & {
 	VInt: OpcUaDataItem<number>;
 };
 
-export class DIntManInt extends SourceModeDA(WQCDA(DIntMan)) {
+export class DIntManInt extends DIntMan {
 
 	public readonly communication!: DIntManIntRuntime;
+	public readonly sourceMode: SourceModeController;
+	public readonly wqc: WQC;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
+
+		this.sourceMode = new SourceModeController(this);
+		this.sourceMode.setCommunication();
+
+		this.wqc = new WQC(this);
+		this.wqc.setCommunication();
 
 		this.communication.VInt = this.createDataItem('VInt', 'read');
 	}

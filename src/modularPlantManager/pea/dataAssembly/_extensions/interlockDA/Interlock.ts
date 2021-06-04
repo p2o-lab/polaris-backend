@@ -24,25 +24,31 @@
  */
 
 import {OpcUaDataItem} from '../../../connection';
+import {BaseDataAssemblyRuntime, DataAssemblyController} from '../../DataAssemblyController';
 import {Constructor} from '../_helper';
-import {BaseDataAssemblyRuntime, DataAssembly} from '../../DataAssembly';
 
-export interface ResetRuntime extends BaseDataAssemblyRuntime {
-	ResetOp: OpcUaDataItem<boolean>;
-	ResetAut: OpcUaDataItem<boolean>;
-}
+export type InterlockRuntime = BaseDataAssemblyRuntime & {
+	PermEn: OpcUaDataItem<boolean>;
+	Permit: OpcUaDataItem<boolean>;
+	IntlEn: OpcUaDataItem<boolean>;
+	Interlock: OpcUaDataItem<boolean>;
+	ProtEn: OpcUaDataItem<boolean>;
+	Protect: OpcUaDataItem<boolean>;
+};
 
-// tslint:disable-next-line:variable-name
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export function ResetDA<TBase extends Constructor<DataAssembly>>(Base: TBase) {
-	return class extends Base {
-		public communication!: ResetRuntime;
+export class Interlock{
+	private dAController: any;
 
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		constructor(...args: any[]) {
-			super(...args);
-			this.communication.ResetOp = this.createDataItem('ResetOp', 'write');
-			this.communication.ResetAut = this.createDataItem('ResetAut', 'write');
-		}
-	};
+	constructor(dAController: any) {
+		this.dAController = dAController;
+	}
+
+	public setCommunication(){
+		this.dAController.communication.PermEn = this.dAController.createDataItem('PermEn', 'read');
+		this.dAController.communication.Permit = this.dAController.createDataItem('Permit', 'read');
+		this.dAController.communication.IntlEn = this.dAController.createDataItem('IntlEn', 'read');
+		this.dAController.communication.Interlock = this.dAController.createDataItem('Interlock', 'read');
+		this.dAController.communication.ProtEn = this.dAController.createDataItem('ProtEn', 'read');
+		this.dAController.communication.Protect = this.dAController.createDataItem('Protect', 'read');
+	}
 }

@@ -28,7 +28,9 @@ import {DIntView} from './DIntView';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {PEAMockup} from '../../../PEA.mockup';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import * as baseDataAssemblyOptions from '../../../../../../tests/dintview.json';
+import {DataAssemblyControllerFactory} from '../../DataAssemblyControllerFactory';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -37,7 +39,21 @@ describe('DIntView', () => {
 
 	describe('static', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
-		it('should create DIntView', async () => { /* TODO: Add Test */
+		it('should create DIntView', async () => {
+			const dataAssemblyOptions: DataAssemblyOptions = {
+				name: 'Variable',
+				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/DIntView',
+				dataItems: baseDataAssemblyOptions
+			};
+			const da1: DIntView = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as DIntView;
+			expect(da1 instanceof DIntView).to.equal(true);
+			expect(da1.communication.V).to.not.equal(undefined);
+			expect(da1.communication.WQC).to.not.equal(undefined);
+			expect(da1.communication.VSclMax).to.not.equal(undefined);
+			expect(da1.communication.VSclMin).to.not.equal(undefined);
+			expect(da1.communication.TagName).to.not.equal(undefined);
+			expect(da1.communication.TagDescription).to.not.equal(undefined);
+			expect(da1.communication.VUnit).to.not.equal(undefined);
 		});
 
 	});

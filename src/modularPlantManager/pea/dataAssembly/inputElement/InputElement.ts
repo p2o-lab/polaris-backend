@@ -31,28 +31,32 @@ import {
 } from '@p2olab/polaris-interface';
 import {Parameter} from '../../../recipe';
 import {DataItem, OpcUaConnection} from '../../connection';
-import {PEA} from '../../PEA';
-import {
-	WQCDA, WQCRuntime
-} from '../_extensions';
-import {BaseDataAssemblyRuntime, DataAssembly} from '../DataAssembly';
+import {PEAController} from '../../PEAController';
+import {WQCRuntime} from '../_extensions';
+import {BaseDataAssemblyRuntime, DataAssemblyController} from '../DataAssemblyController';
 import {catDataAssembly} from '../../../../logging';
+import {WQC} from '../_extensions/wqcDA/WQC';
 
-export type InputElementRuntime = BaseDataAssemblyRuntime & WQCRuntime;
+export type InputElementRuntime = WQCRuntime;
 
-export class InputElement extends WQCDA(DataAssembly) {
+export class InputElement extends DataAssemblyController {
 	public parameterRequest: Parameter | undefined;
 	public requestedValue = '';
 
+	wqc: WQC;
+
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
-	}
 
-	/**
-	 * Set parameter on PEA
+		this.wqc = new WQC(this);
+		this.wqc.setCommunication();
+	}
+/*
+	/!**
+	 * Set parameter on PEAController
 	 * @param paramValue
 	 * @param {string} variable
-	 */
+	 *!/
 	public async setParameter(paramValue: string | number, variable?: string): Promise<void> {
 		const dataItem: DataItem<any> | undefined = (variable) ?
 			this.communication[variable as keyof InputElementOptions] : this.defaultWriteDataItem;
@@ -60,7 +64,7 @@ export class InputElement extends WQCDA(DataAssembly) {
 		await dataItem?.write(paramValue);
 	}
 
-	public async setValue(p: ParameterOptions, peas: PEA[]): Promise<void> {
+	public async setValue(p: ParameterOptions, peas: PEAController[]): Promise<void> {
 		catDataAssembly.debug(`set value: ${JSON.stringify(p)}`);
 		if (p.value) {
 			this.requestedValue = p.value.toString();
@@ -85,7 +89,7 @@ export class InputElement extends WQCDA(DataAssembly) {
 					.on('changed', (data) => this.setParameter(data));
 			}
 		}
-	}
+	}*/
 
 	public toJson(): ParameterInterface {
 		return {

@@ -24,33 +24,24 @@
  */
 
 import {OpcUaDataItem} from '../../../connection';
-import {BaseDataAssemblyRuntime, DataAssembly} from '../../DataAssembly';
 import {Constructor} from '../_helper';
+import {BaseDataAssemblyRuntime, DataAssemblyController} from '../../DataAssemblyController';
 
-export interface FeedbackMonitoringRuntime extends BaseDataAssemblyRuntime {
-	MonEn: OpcUaDataItem<boolean>;
-	MonSafePos: OpcUaDataItem<boolean>;
-	MonStatErr: OpcUaDataItem<boolean>;
-	MonDynErr: OpcUaDataItem<boolean>;
-	MonStatTi: OpcUaDataItem<number>;
-	MonDynTi: OpcUaDataItem<number>;
+export interface ResetRuntime extends BaseDataAssemblyRuntime {
+	ResetOp: OpcUaDataItem<boolean>;
+	ResetAut: OpcUaDataItem<boolean>;
 }
 
+export class Reset {
+	private dAController: any;
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export function FeedbackMonitoringDA<TBase extends Constructor<DataAssembly>>(Base: TBase) {
-	return class extends Base {
-		public communication!: FeedbackMonitoringRuntime;
+	constructor(dAController: any) {
+		this.dAController = dAController;
+	}
 
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		constructor(...args: any[]) {
-			super(...args);
-			this.communication.MonEn = this.createDataItem('MonEn', 'write');
-			this.communication.MonSafePos = this.createDataItem('MonSafePos', 'read');
-			this.communication.MonStatErr = this.createDataItem('MonStatErr', 'read');
-			this.communication.MonDynErr = this.createDataItem('MonDynErr', 'read');
-			this.communication.MonStatTi = this.createDataItem('MonStatTi', 'read');
-			this.communication.MonDynTi = this.createDataItem('MonDynTi', 'read');
-		}
-	};
+	public setCommunication(){
+		this.dAController.communication.ResetOp= this.dAController.createDataItem('ResetOp', 'write');
+		this.dAController.communication.ResetAut = this.dAController.createDataItem('ResetAut', 'write');
+	}
+
 }

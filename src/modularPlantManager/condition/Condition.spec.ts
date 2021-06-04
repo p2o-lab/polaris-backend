@@ -24,7 +24,7 @@
  */
 
 import {ConditionOptions, ConditionType} from '@p2olab/polaris-interface';
-import {PEA} from '../pea';
+import {PEAController} from '../pea';
 import {MockupServer, PEATestNumericVariable, waitForVariableChange} from '../_utils';
 import {ServiceState} from '../pea/dataAssembly';
 import {
@@ -147,7 +147,7 @@ describe('Condition', () => {
 				const peaJson = JSON.parse(fs.readFileSync('assets/peas/pea_testserver_1.0.0.json', 'utf8'))
 					.peas[0];
 
-				const pea = new PEA(peaJson);
+				const pea = new PEAController(peaJson);
 				const expr = ConditionFactory.create({
 					type: ConditionType.expression,
 					expression: 'sin(a)^2 + cos(PEATestServer.Variable001)^2 < 0.5',
@@ -167,9 +167,9 @@ describe('Condition', () => {
 
 	});
 
-	describe('with MockupServer containing a PEA', () => {
+	describe('with MockupServer containing a PEAController', () => {
 		let mockupServer: MockupServer;
-		let pea: PEA;
+		let pea: PEAController;
 		let var0: PEATestNumericVariable;
 
 		beforeEach(async function () {
@@ -181,7 +181,7 @@ describe('Condition', () => {
 			const peaJson = JSON.parse(fs.readFileSync('assets/peas/pea_testserver_1.0.0.json', 'utf8'))
 				.peas[0];
 
-			pea = new PEA(peaJson);
+			pea = new PEAController(peaJson);
 			await pea.connect();
 		});
 

@@ -24,27 +24,26 @@
  */
 
 import {OpcUaDataItem} from '../../../connection';
-import {BaseDataAssemblyRuntime, Constructor} from '../../index';
-import {DataAssembly} from '../../DataAssembly';
+import {Constructor} from '../_helper';
+import {BaseDataAssemblyRuntime, DataAssemblyController} from '../../DataAssemblyController';
 
-export interface WQCRuntime extends BaseDataAssemblyRuntime {
-	WQC: OpcUaDataItem<number>;
+export interface OSLevelRuntime extends BaseDataAssemblyRuntime {
+	OSLevel: OpcUaDataItem<number>;
 }
 
-// tslint:disable-next-line:variable-name
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export function WQCDA<TBase extends Constructor<DataAssembly>>(Base: TBase) {
-	return class extends Base {
-		public communication!: WQCRuntime;
+export class OSLevel {
+	private dAController: any;
 
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		constructor(...args: any[]) {
-			super(...args);
-			this.communication.WQC = this.createDataItem('WQC', 'read');
-		}
+	constructor(dAController: any) {
+		this.dAController = dAController;
+	}
 
-		get WQC(): number | undefined {
-			return this.communication.WQC.value;
-		}
-	};
+	public setCommunication(){
+		this.dAController.communication.OSLevel = this.dAController.createDataItem('OSLevel', 'write');
+
+	}
+
+	get OSLevel(): number | undefined {
+		return this.dAController.communication.OSLevel.value;
+	}
 }
