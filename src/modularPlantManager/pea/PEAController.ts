@@ -158,11 +158,6 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 		this.dAControllers=[];
 		this.processValues = [];
 
-		/**
-		 * this can be used for testing or set the server url over the frontend
-		 * this.options.opcuaServerUrl = 'opc.tcp://localhost:4334';
-		 */
-
 		this.connection = new OpcUaConnection(this.id, options.opcuaServerUrl, options.username, options.password)
 			.on('connected', () => this.emit('connected'))
 			.on('disconnected', () => this.emit('disconnected'));
