@@ -25,7 +25,6 @@
 
 import {
 	BackendNotification,
-	BaseDataAssemblyOptions,
 	DataAssemblyOptions, OpcUaNodeOptions,
 	PEAInterface,
 	POLServiceInterface,
@@ -33,13 +32,10 @@ import {
 	PEAOptions,
 	RecipeOptions,
 	ServiceCommand,
-	VariableChange, ServerSettingsOptions, ServiceOptions
+	VariableChange, ServerSettingsOptions, ServiceOptions, DataAssemblyModel, PEAModel
 } from '@p2olab/polaris-interface';
 import {
 	Backbone,
-	CommunicationInterfaceData, DataItemModel,
-	logger,
-	ModuleAutomation,
 	PEAPool,
 	PEAPoolVendor,
 } from '@p2olab/pimad-core';
@@ -48,15 +44,10 @@ import {ParameterChange, PEAController, Service} from './pea';
 import {ServiceState} from './pea/dataAssembly';
 import {POLService, POLServiceFactory} from './polService';
 import {Player, Recipe} from './recipe';
-import {PEAModel} from '@p2olab/pimad-core/dist/ModuleAutomation';
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import PiMAdResponse = Backbone.PiMAdResponse;
-import DataAssembly = ModuleAutomation.DataAssembly;
-import {OPCUANodeCommunication} from '@p2olab/pimad-core/dist/ModuleAutomation/CommunicationInterfaceData';
 import { v4 as uuidv4 } from 'uuid';
-import {ServiceControlOptions} from '@p2olab/polaris-interface/dist/core/dataAssembly';
-import {ProcedureOptions} from '@p2olab/polaris-interface/dist/service/options';
 
 
 interface ModularPlantManagerEvents {
@@ -233,9 +224,9 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 			this.getPEAFromPimadPool(pimadIdentifier, response => {
 				if(response.getMessage()==='Success!'){
 					//get PEAModel
-					const peaModel = response.getContent() as PEAModelInterface;
+					const peaModel = response.getContent() as PEAModel;
 					//get DataAssemblyModels from  PEAModel/PiMAd
-					const dataAssemblyModels: DataAssemblyInterface[] = peaModel.dataAssemblies;
+					const dataAssemblyModels: DataAssemblyModel[] = peaModel.dataAssemblies;
 
 					let endpoint: string | undefined ='';
 
@@ -338,7 +329,7 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 	 * @param dataAssemblyModels
 	 * @private
 	 */
-	private createDataAssemblyOptionsArray(dataAssemblyModels: DataAssemblyInterface[]){
+	private createDataAssemblyOptionsArray(dataAssemblyModels: DataAssemblyModel[]){
 		// iterate through every dataAssemblyModel and create DataAssemblyOptions with BaseDataAssemblyOptions
 		dataAssemblyModels.map( dataAssembly => {
 			// Initializing baseDataAssemblyOptions, which will be filled during an iteration below
@@ -356,15 +347,16 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 			// Initializing dataAssemblyName, dataAssemblyInterfaceClass
 			const dataAssemblyName =dataAssembly.name;
 			const dataAssemblyInterfaceClass= dataAssembly.metaModelRef;
-			const dataItems = dataAssembly.dataItems
+			const dataItems = dataAssembly.dataItems;
 			dataItems.map(dataItem=>{
 				// Initializing variables, which will be assigned later
-				let namespaceIndex ='', nodeId='', dataType=dataItem.dataType, value: undefined | string;
+				let namespaceIndex ='', nodeId='', value: undefined | string;
+				const dataType=dataItem.dataType;
 				const cIData = dataItem.cIData;
 				if(cIData){
 					nodeId= cIData.nodeId.identifier;
-					//namespaceIndex = cIData.nodeId.namespaceIndex;
-					namespaceIndex='urn:DESKTOP-6QLO5BB:NodeOPCUA-Server';
+					namespaceIndex = cIData.nodeId.namespaceIndex;
+					//namespaceIndex='urn:DESKTOP-QNK1RES:NodeOPCUA-Server';
 				} else {
 					value = dataItem.value;
 				}
@@ -375,6 +367,7 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 					dataType: dataType,
 					value: value
 				};
+
 				baseDataAssemblyOptions[dataItem.name as string] = opcUaNodeOptions;
 			});
 
@@ -561,69 +554,6 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 	}
 }
 
-
-	export interface NodeId {
-		initialized: boolean;
-		namespaceIndex: string;
-		identifier: string;
-	}
-
-	export interface CIData {
-		initialized: boolean;
-		nodeId: NodeId;
-	}
-
-	export interface DataItemInterface {
-		initialized: boolean;
-		dataType: string;
-		name: string;
-		value: string;
-		defaultValue: string;
-		description: string;
-		pimadIdentifier: string;
-		cIData: CIData;
-		dataSourceIdentifier: string;
-		metaModelRef: string;
-	}
-
-	export interface DataAssemblyInterface {
-		dataItems: DataItemInterface[];
-		dataSourceIdentifier: string;
-		description: string;
-		name: string;
-		initialized: boolean;
-		metaModelRef: string;
-		pimadIdentifier: string;
-
-	}
-
-	export interface DataModelVersion {
-		major: number;
-		minor: number;
-		patch: number;
-		initialized: boolean;
-	}
-
-	export interface Endpoint {
-		initialized: boolean;
-		dataType: string;
-		name: string;
-		value: string;
-		defaultValue: string;
-		description: string;
-		pimadIdentifier: string;
-	}
-	export interface PEAModelInterface {
-		dataAssemblies: DataAssemblyInterface[];
-		dataModel: string;
-		dataModelVersion: DataModelVersion;
-		feas: any[];
-		name: string;
-		endpoint: Endpoint[];
-		pimadIdentifier: string;
-		services: any[];
-		initialized: boolean;
-	}
 
 
 
