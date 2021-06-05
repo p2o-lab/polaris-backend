@@ -233,9 +233,9 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 			this.getPEAFromPimadPool(pimadIdentifier, response => {
 				if(response.getMessage()==='Success!'){
 					//get PEAModel
-					const peaModel: PEAModel = response.getContent() as PEAModel;
+					const peaModel = response.getContent() as PEAModelInterface;
 					//get DataAssemblyModels from  PEAModel/PiMAd
-					const dataAssemblyModels: DataAssembly[] = (peaModel.getAllDataAssemblies().getContent() as {data: DataAssembly[]}).data;
+					const dataAssemblyModels: DataAssemblyInterface[] = peaModel.dataAssemblies;
 
 					let endpoint: string | undefined ='';
 
@@ -245,12 +245,12 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 					this.createDataAssemblyOptionsArray(dataAssemblyModels);
 
 					//get endpoint
-					const dataItemModels = (peaModel.getEndpoint().getContent() as {data: DataItemModel[]}).data;
-					dataItemModels[0].getValue((response1, value) => endpoint = value);
+					const endpoints = peaModel.endpoint;
+					endpoint = endpoints[0].value;
 
 					// create PEAOptions
 					const peaOptions: PEAOptions = {
-						name: peaModel.getName(),
+						name: peaModel.name,
 						id: this.generateUniqueIdentifier(),
 						pimadIdentifier: pimadIdentifier,
 						services: [],
@@ -338,7 +338,7 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 	 * @param dataAssemblyModels
 	 * @private
 	 */
-	private createDataAssemblyOptionsArray(dataAssemblyModels: DataAssembly[]){
+	private createDataAssemblyOptionsArray(dataAssemblyModels: DataAssemblyInterface[]){
 		// iterate through every dataAssemblyModel and create DataAssemblyOptions with BaseDataAssemblyOptions
 		dataAssemblyModels.map( dataAssembly => {
 			// Initializing baseDataAssemblyOptions, which will be filled during an iteration below
@@ -354,65 +354,29 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 				};
 
 			// Initializing dataAssemblyName, dataAssemblyInterfaceClass
-			let dataAssemblyName ='', dataAssemblyInterfaceClass='';
+			const dataAssemblyName =dataAssembly.name;
+			const dataAssemblyInterfaceClass= dataAssembly.metaModelRef;
+			const dataItems = dataAssembly.dataItems
+			dataItems.map(dataItem=>{
+				// Initializing variables, which will be assigned later
+				let namespaceIndex ='', nodeId='', dataType=dataItem.dataType, value: undefined | string;
+				const cIData = dataItem.cIData;
+				if(cIData){
+					nodeId= cIData.nodeId.identifier;
+					//namespaceIndex = cIData.nodeId.namespaceIndex;
+					namespaceIndex='urn:DESKTOP-6QLO5BB:NodeOPCUA-Server';
+				} else {
+					value = dataItem.value;
+				}
 
-			// get dataAssemblyName from PEAModel
-			dataAssembly.getName(((response,name)=>{
-				// assign dataAssemblyName
-				dataAssemblyName = name;
-			}));
-
-			//get metamodelref from PEAModel/Pimad
-			dataAssembly.getMetaModelRef(((response,metaModelRef)=>{
-				// assign InterfaceClass/MetaModelRef
-				dataAssemblyInterfaceClass = metaModelRef;
-			}));
-
-			dataAssembly.getAllDataItems(((response1, dataItems) =>
-					dataItems.map(dataItem=>{
-						// Initializing variables, which will be assigned later
-						let namespaceIndex ='', nodeId='', dataType='', value: undefined | string;
-						// get value from PiMAd (only for TagName and TagDescription)
-						// get dataType from PiMAd
-						dataItem.getDataType((response, mDataType)=>
-							dataType= mDataType);
-						// get cIData from PiMAd
-						dataItem.getCommunicationInterfaceData((response2, cIData) => {
-							// check if dataItem has an cIData
-							if(cIData){
-								// get NodeId object from PiMAd
-								(cIData as OPCUANodeCommunication).getNodeId((response, nodeID) => {
-									// get NodeId from PiMAd and assign it to variable
-									nodeID.getNodeIdIdentifier((response, identifier) =>
-										nodeId = identifier);
-									// get namespaceIndex from PiMAd and assign it to variable
-									nodeID.getNamespaceIndex((response, mNamespace) =>{
-										namespaceIndex = mNamespace as unknown as string;
-										/**
-										 * use this for testing with test-pea with your own namespaceIndex
-										 * namespaceIndex='urn:DESKTOP-6QLO5BB:NodeOPCUA-Server';
-										 */
-									});
-								});
-							}else {
-								// it's a static DataItem
-								dataItem.getValue((response, mValue) => value = mValue);
-							}
-						});
-
-						const opcUaNodeOptions: OpcUaNodeOptions = {
-							nodeId: nodeId,
-							namespaceIndex: namespaceIndex,
-							dataType: dataType,
-							value: value
-						};
-						// get Name of DataItem from PiMAd
-						dataItem.getName((response2, name) =>
-						{
-							baseDataAssemblyOptions[name as string] = opcUaNodeOptions;
-						});
-					})
-			));
+				const opcUaNodeOptions: OpcUaNodeOptions = {
+					nodeId: nodeId,
+					namespaceIndex: namespaceIndex,
+					dataType: dataType,
+					value: value
+				};
+				baseDataAssemblyOptions[dataItem.name as string] = opcUaNodeOptions;
+			});
 
 			// create dataAssemblyOptions with information collected above
 			const dataAssemblyOptions: DataAssemblyOptions = {
@@ -596,3 +560,70 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 		}
 	}
 }
+
+
+	export interface NodeId {
+		initialized: boolean;
+		namespaceIndex: string;
+		identifier: string;
+	}
+
+	export interface CIData {
+		initialized: boolean;
+		nodeId: NodeId;
+	}
+
+	export interface DataItemInterface {
+		initialized: boolean;
+		dataType: string;
+		name: string;
+		value: string;
+		defaultValue: string;
+		description: string;
+		pimadIdentifier: string;
+		cIData: CIData;
+		dataSourceIdentifier: string;
+		metaModelRef: string;
+	}
+
+	export interface DataAssemblyInterface {
+		dataItems: DataItemInterface[];
+		dataSourceIdentifier: string;
+		description: string;
+		name: string;
+		initialized: boolean;
+		metaModelRef: string;
+		pimadIdentifier: string;
+
+	}
+
+	export interface DataModelVersion {
+		major: number;
+		minor: number;
+		patch: number;
+		initialized: boolean;
+	}
+
+	export interface Endpoint {
+		initialized: boolean;
+		dataType: string;
+		name: string;
+		value: string;
+		defaultValue: string;
+		description: string;
+		pimadIdentifier: string;
+	}
+	export interface PEAModelInterface {
+		dataAssemblies: DataAssemblyInterface[];
+		dataModel: string;
+		dataModelVersion: DataModelVersion;
+		feas: any[];
+		name: string;
+		endpoint: Endpoint[];
+		pimadIdentifier: string;
+		services: any[];
+		initialized: boolean;
+	}
+
+
+
