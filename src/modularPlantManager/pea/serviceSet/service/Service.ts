@@ -131,11 +131,12 @@ export class Service extends BaseService {
 	/**
 	 * Get current procedure from internal memory.
 	 */
-	public getCurrentProcedure(): Procedure {
+	public getCurrentProcedure(): Procedure |undefined{
 		const curProc = this.procedures.find((proc) => parseInt(proc.id, 10) === this.currentProcedure);
-		if (!curProc) {
+		// TODO: why throw error? program will crash if there is no current procedure
+/*		if (!curProc) {
 			throw new Error('Current Procedure not found.');
-		}
+		}*/
 		return curProc;
 	}
 
@@ -190,7 +191,20 @@ export class Service extends BaseService {
 				}
 			)*/
 		);
-		await Promise.all(tasks);
+		//TODO: does this work?
+		const procedures = this.procedures.map((procedure) => {
+				procedure.on('parameterChanged', (data) => {
+					this.eventEmitter.emit('parameterChanged', {
+						procedure,
+						parameter: data.parameter,
+						parameterType: data.parameterType
+					});
+				});
+				return procedure.subscribe();
+			}
+		);
+
+		await Promise.all([tasks, procedures]);
 		return this.eventEmitter;
 	}
 
@@ -210,10 +224,11 @@ export class Service extends BaseService {
 			serviceSourceMode: this.serviceControl.serviceSourceMode.getServiceSourceMode(),
 			status: ServiceState[this.state],
 			procedures: this.procedures.map((procedure) => procedure.toJson()),
-			currentProcedure: this.getCurrentProcedure().name,
+			currentProcedure: this.getCurrentProcedure()?.name,
 			parameters: this.parameters.map((param) => param.toJson()),
 			controlEnable: this.commandEnable,
-			lastChange: (new Date().getTime() - this.lastStatusChange.getTime()) / 1000,
+		//	lastChange: (new Date().getTime() - this.lastStatusChange.getTime()) / 1000,
+			lastChange: new Date().getTime() // dummy
 		};
 	}
 
@@ -224,12 +239,14 @@ export class Service extends BaseService {
 		}
 		await super.executeCommand(command);
 		const currentProcedure = this.getCurrentProcedure();
-		this.eventEmitter.emit('commandExecuted', {
-			procedure: currentProcedure,
-			command: command,
-			parameter: currentProcedure?.parameters.map((param) => param.toJson() as ParameterInterface)
-		});
-		this.logger.info(`[${this.qualifiedName}] ${command} executed`);
+		if(currentProcedure){
+			this.eventEmitter.emit('commandExecuted', {
+				procedure: currentProcedure,
+				command: command,
+				parameter: currentProcedure?.parameters.map((param) => param.toJson() as ParameterInterface)
+			});
+			this.logger.info(`[${this.qualifiedName}] ${command} executed`);
+		}
 	}
 
 	public start(): Promise<void> {
