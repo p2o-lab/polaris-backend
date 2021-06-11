@@ -39,7 +39,7 @@ import {
 	DataAssemblyModel,
 	PEAModel,
 	DataItemModel,
-	ServiceControlOptions
+	ServiceControlOptions, ProcedureModel, ServiceModel
 } from '@p2olab/polaris-interface';
 import {
 	Backbone,
@@ -236,17 +236,20 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 				if(response.getMessage()==='Success!'){
 					//get PEAModel
 					const peaModel = response.getContent() as PEAModel;
-					//get DataAssemblyModels from  PEAModel/PiMAd
+					//get DataAssemblyModels from PEAModel/PiMAd
 					const dataAssemblyModels: DataAssemblyModel[] = peaModel.dataAssemblies;
+					//get ServiceModels from PEAModel/PiMAd
 					const serviceModels: ServiceModel[] = peaModel.services;
 
 					let endpoint: string | undefined ='';
 
+					//iterate through dataAssemblyModels and create DataAssemblyOptions
 					dataAssemblyModels.forEach(dataAssemblyModel => {
 						const dataAssemblyOptions = PiMAdParser.createDataAssemblyOptions(dataAssemblyModel);
 						this.dataAssemblyOptionsArray.push(dataAssemblyOptions);
 					});
 
+					//iterate through serviceModels and create ServiceOptions
 					serviceModels.forEach(serviceModel=> {
 						const procedureOptionsArray: ProcedureOptions[] = [];
 						
@@ -254,8 +257,6 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 						procedureModels.forEach(procedure =>{
 							const procedureName = procedure.name;
 							let isDefault: any, isSelfCompleting: any, procedureID='';
-							const dataAssemblyModel: DataAssemblyModel = procedure.dataAssembly;
-
 							procedure.attributes.forEach(attribute =>{
 								switch(attribute.name){
 									case ('IsSelfCompleting'):
@@ -270,28 +271,25 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 								}
 							});
 
-							const dataAssemblyOptions = PiMAdParser.createDataAssemblyOptions(procedure.dataAssembly as DataAssemblyModel);
-							const dataAssemblyOptionsArray = [];
-							dataAssemblyOptionsArray.push(dataAssemblyOptions);
+							const procedureDataAssemblyOptionsArray = [PiMAdParser.createDataAssemblyOptions(procedure.dataAssembly as DataAssemblyModel)];
 							const procedureOptions: ProcedureOptions = {
 								id: procedureID,
 								name: procedureName,
 								isDefault : isDefault as boolean,
 								isSelfCompleting: isSelfCompleting as boolean,
-								parameters: dataAssemblyOptionsArray,
+								parameters: procedureDataAssemblyOptionsArray,
 							};
 							procedureOptionsArray.push(procedureOptions);
 						});
-						const dataAssemblyOptions = PiMAdParser.createDataAssemblyOptions(serviceModel.dataAssembly as DataAssemblyModel);
+
+						const serviceDataAssemblyOptions = PiMAdParser.createDataAssemblyOptions(serviceModel.dataAssembly as DataAssemblyModel);
 
 						const serviceOptions: ServiceOptions = {
 							name: serviceModel.name,
-							communication: dataAssemblyOptions.dataItems as unknown as ServiceControlOptions,
+							communication: serviceDataAssemblyOptions.dataItems as unknown as ServiceControlOptions,
 							procedures: procedureOptionsArray
-
 						};
 						this.servicesOptionsArray.push(serviceOptions);
-
 					});
 
 					//get endpoint
