@@ -51,19 +51,19 @@ export class OpModeController {
 	}
 
 	initializeOpMode(dAController: any){
-		this.dAController.StateChannel = dAController.createDataItem('StateChannel', 'read', 'boolean');
+		this.dAController.communication.StateChannel = dAController.createDataItem('StateChannel', 'read', 'boolean');
 
-		this.dAController.StateOffAut = dAController.createDataItem('StateOffAut', 'read', 'boolean');
-		this.dAController.StateOpAut = dAController.createDataItem('StateOpAut', 'read', 'boolean');
-		this.dAController.StateAutAut = dAController.createDataItem('StateAutAut', 'read', 'boolean');
+		this.dAController.communication.StateOffAut = dAController.createDataItem('StateOffAut', 'read', 'boolean');
+		this.dAController.communication.StateOpAut = dAController.createDataItem('StateOpAut', 'read', 'boolean');
+		this.dAController.communication.StateAutAut = dAController.createDataItem('StateAutAut', 'read', 'boolean');
 
-		this.dAController.StateOffOp = dAController.createDataItem('StateOffOp', 'write', 'boolean');
-		this.dAController.StateOpOp = dAController.createDataItem('StateOpOp', 'write', 'boolean');
-		this.dAController.StateAutOp = dAController.createDataItem('StateAutOp', 'write', 'boolean');
+		this.dAController.communication.StateOffOp = dAController.createDataItem('StateOffOp', 'write', 'boolean');
+		this.dAController.communication.StateOpOp = dAController.createDataItem('StateOpOp', 'write', 'boolean');
+		this.dAController.communication.StateAutOp = dAController.createDataItem('StateAutOp', 'write', 'boolean');
 
-		this.dAController.StateOffAct = dAController.createDataItem('StateOffAct', 'read', 'boolean');
-		this.dAController.StateOpAct = dAController.createDataItem('StateOpAct', 'read', 'boolean');
-		this.dAController.StateAutAct = dAController.createDataItem('StateAutAct', 'read', 'boolean');
+		this.dAController.communication.StateOffAct = dAController.createDataItem('StateOffAct', 'read', 'boolean');
+		this.dAController.communication.StateOpAct = dAController.createDataItem('StateOpAct', 'read', 'boolean');
+		this.dAController.communication.StateAutAct = dAController.createDataItem('StateAutAct', 'read', 'boolean');
 	}
 
 	public getOperationMode(): OperationMode {
