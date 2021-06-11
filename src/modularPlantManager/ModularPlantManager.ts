@@ -25,14 +25,21 @@
 
 import {
 	BackendNotification,
-	DataAssemblyOptions, OpcUaNodeOptions,
+	DataAssemblyOptions,
+	OpcUaNodeOptions,
 	PEAInterface,
 	POLServiceInterface,
 	POLServiceOptions,
 	PEAOptions,
 	RecipeOptions,
 	ServiceCommand,
-	VariableChange, ServerSettingsOptions, ServiceOptions, DataAssemblyModel, PEAModel
+	VariableChange,
+	ServerSettingsOptions,
+	ServiceOptions,
+	DataAssemblyModel,
+	PEAModel,
+	DataItemModel,
+	ServiceControlOptions
 } from '@p2olab/polaris-interface';
 import {
 	Backbone,
@@ -48,6 +55,8 @@ import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import PiMAdResponse = Backbone.PiMAdResponse;
 import { v4 as uuidv4 } from 'uuid';
+import {PiMAdParser} from './PiMAdParser';
+import {ProcedureOptions} from '@p2olab/polaris-interface/dist/service/options';
 
 
 interface ModularPlantManagerEvents {
@@ -86,6 +95,7 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 
 	// these are helper variables to keep the functions small
 	private dataAssemblyOptionsArray: DataAssemblyOptions[];
+	private servicesOptionsArray: ServiceOptions[];
 
 	constructor() {
 		super();
@@ -93,6 +103,7 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 		this.pimadPool.initializeMTPFreeze202001Importer();
 
 		this.dataAssemblyOptionsArray=[];
+		this.servicesOptionsArray=[];
 
 		this.player = new Player()
 			.on('started', () => {
@@ -227,13 +238,61 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 					const peaModel = response.getContent() as PEAModel;
 					//get DataAssemblyModels from  PEAModel/PiMAd
 					const dataAssemblyModels: DataAssemblyModel[] = peaModel.dataAssemblies;
+					const serviceModels: ServiceModel[] = peaModel.services;
 
 					let endpoint: string | undefined ='';
 
-					// Services are not handled yet
-					// const ServiceModels: ServiceModel[] = (peaModel.getAllServices().getContent() as {data: ServiceModel[]}).data;
+					dataAssemblyModels.forEach(dataAssemblyModel => {
+						const dataAssemblyOptions = PiMAdParser.createDataAssemblyOptions(dataAssemblyModel);
+						this.dataAssemblyOptionsArray.push(dataAssemblyOptions);
+					});
 
-					this.createDataAssemblyOptionsArray(dataAssemblyModels);
+					serviceModels.forEach(serviceModel=> {
+						const procedureOptionsArray: ProcedureOptions[] = [];
+						
+						const procedureModels: ProcedureModel[] = serviceModel.procedures;
+						procedureModels.forEach(procedure =>{
+							const procedureName = procedure.name;
+							let isDefault: any, isSelfCompleting: any, procedureID='';
+							const dataAssemblyModel: DataAssemblyModel = procedure.dataAssembly;
+
+							procedure.attributes.forEach(attribute =>{
+								switch(attribute.name){
+									case ('IsSelfCompleting'):
+										isSelfCompleting = JSON.parse(attribute.value);
+										break;
+									case ('IsDefault'):
+										isDefault = JSON.parse(attribute.value);
+										break;
+									case ('ProcedureID'):
+										procedureID = JSON.parse(attribute.value);
+										break;
+								}
+							});
+
+							const dataAssemblyOptions = PiMAdParser.createDataAssemblyOptions(procedure.dataAssembly as DataAssemblyModel);
+							const dataAssemblyOptionsArray = [];
+							dataAssemblyOptionsArray.push(dataAssemblyOptions);
+							const procedureOptions: ProcedureOptions = {
+								id: procedureID,
+								name: procedureName,
+								isDefault : isDefault as boolean,
+								isSelfCompleting: isSelfCompleting as boolean,
+								parameters: dataAssemblyOptionsArray,
+							};
+							procedureOptionsArray.push(procedureOptions);
+						});
+						const dataAssemblyOptions = PiMAdParser.createDataAssemblyOptions(serviceModel.dataAssembly as DataAssemblyModel);
+
+						const serviceOptions: ServiceOptions = {
+							name: serviceModel.name,
+							communication: dataAssemblyOptions.dataItems as unknown as ServiceControlOptions,
+							procedures: procedureOptionsArray
+
+						};
+						this.servicesOptionsArray.push(serviceOptions);
+
+					});
 
 					//get endpoint
 					const endpoints = peaModel.endpoint;
@@ -244,7 +303,7 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 						name: peaModel.name,
 						id: this.generateUniqueIdentifier(),
 						pimadIdentifier: pimadIdentifier,
-						services: [],
+						services: this.servicesOptionsArray,
 						username: '',
 						password: '',
 						hmiUrl: '',
@@ -259,7 +318,7 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 
 		this.peas.push(...newPEAs);
 
-		newPEAs.forEach((p: PEAController) => {
+	/*	newPEAs.forEach((p: PEAController) => {
 			p
 				.on('connected', () => {
 					this.emit('notify', {message: 'pea', pea: p.json()});
@@ -321,65 +380,8 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 					this.performAutoReset(service);
 				});
 			this.emit('notify', {message: 'pea', pea: p.json()});
-		});
+		});*/
 		return newPEAs;
-	}
-
-	/**
-	 * @param dataAssemblyModels
-	 * @private
-	 */
-	private createDataAssemblyOptionsArray(dataAssemblyModels: DataAssemblyModel[]){
-		// iterate through every dataAssemblyModel and create DataAssemblyOptions with BaseDataAssemblyOptions
-		dataAssemblyModels.map( dataAssembly => {
-			// Initializing baseDataAssemblyOptions, which will be filled during an iteration below
-			const baseDataAssemblyOptions:
-				{
-					[k: string]: any;
-					TagName: OpcUaNodeOptions;
-					TagDescription: OpcUaNodeOptions;
-				} =
-				{
-					TagName: {} as OpcUaNodeOptions,
-					TagDescription: {} as OpcUaNodeOptions
-				};
-
-			// Initializing dataAssemblyName, dataAssemblyInterfaceClass
-			const dataAssemblyName =dataAssembly.name;
-			const dataAssemblyInterfaceClass= dataAssembly.metaModelRef;
-			const dataItems = dataAssembly.dataItems;
-			dataItems.map(dataItem=>{
-				// Initializing variables, which will be assigned later
-				let namespaceIndex ='', nodeId='', value: undefined | string;
-				const dataType=dataItem.dataType;
-				const cIData = dataItem.cIData;
-				if(cIData){
-					nodeId= cIData.nodeId.identifier;
-					namespaceIndex = cIData.nodeId.namespaceIndex;
-					//namespaceIndex='urn:DESKTOP-QNK1RES:NodeOPCUA-Server';
-				} else {
-					value = dataItem.value;
-				}
-
-				const opcUaNodeOptions: OpcUaNodeOptions = {
-					nodeId: nodeId,
-					namespaceIndex: namespaceIndex,
-					dataType: dataType,
-					value: value
-				};
-
-				baseDataAssemblyOptions[dataItem.name as string] = opcUaNodeOptions;
-			});
-
-			// create dataAssemblyOptions with information collected above
-			const dataAssemblyOptions: DataAssemblyOptions = {
-				name: dataAssemblyName,
-				metaModelRef: dataAssemblyInterfaceClass,
-				dataItems: baseDataAssemblyOptions
-			};
-
-			this.dataAssemblyOptionsArray.push(dataAssemblyOptions);
-		});
 	}
 
 	/**
