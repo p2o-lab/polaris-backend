@@ -32,7 +32,12 @@ import {
 	VariableChange
 } from '@p2olab/polaris-interface';
 import {DataItemEmitter, OpcUaConnection, OpcUaDataItem} from './connection';
-import {DataAssemblyController, DataAssemblyControllerFactory, ServiceState} from './dataAssembly';
+import {
+	DataAssemblyController,
+	DataAssemblyControllerFactory, ServiceControl,
+	ServiceControlRuntime,
+	ServiceState
+} from './dataAssembly';
 import {Procedure, Service} from './serviceSet';
 
 import {EventEmitter} from 'events';
@@ -221,7 +226,11 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 		await this.connection.startListening();
 
 		//after subscribing-> assign DAControllers to instance variable, which will be processed to this.processValues later
-		await pv.then(value => this.dAControllers = value);
+		await pv.then(value => {
+			this.dAControllers = value;
+			//this.variables = this.dAControllers;
+		});
+		//variables for frontend - testpea
 		this.createProcessValues();
 
 		await Promise.all([pv,pa]);

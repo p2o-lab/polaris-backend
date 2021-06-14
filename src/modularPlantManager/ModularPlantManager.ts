@@ -316,7 +316,7 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 
 		this.peas.push(...newPEAs);
 
-	/*	newPEAs.forEach((p: PEAController) => {
+		newPEAs.forEach((p: PEAController) => {
 			p
 				.on('connected', () => {
 					this.emit('notify', {message: 'pea', pea: p.json()});
@@ -378,7 +378,7 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 					this.performAutoReset(service);
 				});
 			this.emit('notify', {message: 'pea', pea: p.json()});
-		});*/
+		});
 		return newPEAs;
 	}
 

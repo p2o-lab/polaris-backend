@@ -72,7 +72,7 @@ export class Service extends BaseService {
 	public readonly procedures: Procedure[] = [];
 	public readonly parameters: ServParam[] = [];
 	public readonly connection: OpcUaConnection;
-	public readonly serviceControl: ServiceControl;
+	public serviceControl: ServiceControl;
 	private readonly logger: Category;
 	private serviceParametersEventEmitters: EventEmitter[];
 	private readonly _parentId: string;
@@ -172,13 +172,17 @@ export class Service extends BaseService {
 				}
 			});
 		const tasks = [];
-		tasks.push(this.serviceControl.subscribe());
+		//tasks.push(this.serviceControl.subscribe());
+		const psc = this.serviceControl.subscribe();
+		await psc.then(value => {
+			this.serviceControl = value as ServiceControl;
+		});
 
-		tasks.concat(
+/*		tasks.concat(
 			this.parameters.map((param) => {
 				return param.subscribe();
 			})
-			/*, TODO: Check this section
+			/!*, TODO: Check this section
 			this.procedures.map((procedure) => {
 				procedure.on('parameterChanged', (data) => {
 					this.eventEmitter.emit('parameterChanged', {
@@ -189,8 +193,8 @@ export class Service extends BaseService {
 					});
 				return procedure.subscribe();
 				}
-			)*/
-		);
+			)*!/
+		);*/
 		//TODO: does this work?
 		const procedures = this.procedures.map((procedure) => {
 				procedure.on('parameterChanged', (data) => {
@@ -204,7 +208,7 @@ export class Service extends BaseService {
 			}
 		);
 
-		await Promise.all([tasks, procedures]);
+		await Promise.all([procedures]);
 		return this.eventEmitter;
 	}
 

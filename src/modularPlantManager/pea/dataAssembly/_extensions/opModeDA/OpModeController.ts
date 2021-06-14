@@ -109,20 +109,23 @@ export class OpModeController {
 
 	/**
 	 * Set data assembly to automatic operation mode and source to external source
+	 *
 	 */
 	public async setToAutomaticOperationMode(): Promise<void> {
-		catDataAssembly.debug(`[${this.dAController.name}] Current opMode = ${this.getOperationMode()}`);
+		catDataAssembly.info(`[${this.dAController.name}] Current opMode = ${this.getOperationMode()}`);
 		if (this.isOffState()) {
 			catDataAssembly.trace(`[${this.dAController.name}] First go to Manual state`);
 			this.writeOpMode(OperationMode.Operator);
 			await this.waitForOpModeToPassSpecificTest(OperationMode.Operator);
 		}
+		catDataAssembly.info(`[${this.dAController.name}] Current opMode = ${this.getOperationMode()}`);
 
 		if (this.isManualState()) {
 			catDataAssembly.trace(`[${this.dAController.name}] Then to automatic`);
 			this.writeOpMode(OperationMode.Automatic);
 			await this.waitForOpModeToPassSpecificTest(OperationMode.Automatic);
 		}
+		catDataAssembly.info(`[${this.dAController.name}] Current opMode = ${this.getOperationMode()}`);
 	}
 
 	public async setToOperatorOperationMode(): Promise<void> {
@@ -133,7 +136,7 @@ export class OpModeController {
 	}
 
 	public async writeOpMode(opMode: OperationMode): Promise<void> {
-		catDataAssembly.debug(`[${this.dAController.name}] Write opMode: ${opMode}`);
+		catDataAssembly.info(`[${this.dAController.name}] Write opMode: ${opMode}`);
 		if (opMode === OperationMode.Automatic) {
 			await this.dAController.communication.StateAutOp.write(true);
 		} else if (opMode === OperationMode.Operator) {
@@ -141,7 +144,7 @@ export class OpModeController {
 		} else if (opMode === OperationMode.Offline) {
 			await this.dAController.communication.StateOffOp.write(true);
 		}
-		catDataAssembly.debug(`[${this.dAController.name}] Setting opMode successfully`);
+		catDataAssembly.info(`[${this.dAController.name}] Setting opMode successfully`);
 	}
 
 	public isOffState(): boolean {
