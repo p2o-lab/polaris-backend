@@ -117,7 +117,8 @@ export class Service extends BaseService {
 	}
 
 	public get lastStatusChange(): Date {
-		return this.serviceControl.communication.StateCur.timestamp;
+		if(this.serviceControl.communication.StateCur.timestamp) return this.serviceControl.communication.StateCur.timestamp;
+		else return new Date();
 	}
 
 	public get currentProcedure(): number | undefined {
@@ -171,31 +172,12 @@ export class Service extends BaseService {
 					this.clearListeners();
 				}
 			});
-		const tasks = [];
-		//tasks.push(this.serviceControl.subscribe());
+
 		const psc = this.serviceControl.subscribe();
-		await psc.then(value => {
-			this.serviceControl = value as ServiceControl;
+		const par = this.parameters.map((param) => {
+			return param.subscribe();
 		});
 
-/*		tasks.concat(
-			this.parameters.map((param) => {
-				return param.subscribe();
-			})
-			/!*, TODO: Check this section
-			this.procedures.map((procedure) => {
-				procedure.on('parameterChanged', (data) => {
-					this.eventEmitter.emit('parameterChanged', {
-						procedure,
-						parameter: data.parameter,
-						parameterType: data.parameterType
-						});
-					});
-				return procedure.subscribe();
-				}
-			)*!/
-		);*/
-		//TODO: does this work?
 		const procedures = this.procedures.map((procedure) => {
 				procedure.on('parameterChanged', (data) => {
 					this.eventEmitter.emit('parameterChanged', {
@@ -208,7 +190,7 @@ export class Service extends BaseService {
 			}
 		);
 
-		await Promise.all([procedures]);
+		await Promise.all([procedures, psc, par]);
 		return this.eventEmitter;
 	}
 
@@ -231,8 +213,8 @@ export class Service extends BaseService {
 			currentProcedure: this.getCurrentProcedure()?.name,
 			parameters: this.parameters.map((param) => param.toJson()),
 			controlEnable: this.commandEnable,
-		//	lastChange: (new Date().getTime() - this.lastStatusChange.getTime()) / 1000,
-			lastChange: new Date().getTime() // dummy
+			lastChange: (new Date().getTime() - this.lastStatusChange.getTime()) / 1000,
+			//lastChange: new Date().getTime() // dummy
 		};
 	}
 
@@ -319,6 +301,7 @@ export class Service extends BaseService {
 	public async setParameters(parameterOptions: ParameterOptions[], peaSet: PEAController[] = []): Promise<void> {
 		parameterOptions.map((p) => {
 			const dataAssembly = this.findInputParameter(p.name);
+			//TODO: whats this below
 			//dataAssembly?.setValue(p, peaSet);
 		});
 	}
