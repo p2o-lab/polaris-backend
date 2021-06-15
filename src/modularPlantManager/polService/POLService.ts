@@ -95,7 +95,8 @@ export abstract class POLService extends BaseService {
 			parameters: [],
 			status: ServiceState[this.state],
 			controlEnable: this.commandEnable,
-			lastChange: (new Date().getTime() - this.lastStatusChange.getTime()) / 1000
+			lastChange: (new Date().getTime() - this.lastStatusChange.getTime()) / 1000,
+			peaId: ''
 		};
 	}
 
