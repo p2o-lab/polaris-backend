@@ -44,7 +44,7 @@
   "dependencies": {
     "@p2olab/pimad-core": "0.0.1alpha12",
     "@p2olab/pimad-types": "1.0.1-alpha1.0",
-    "@p2olab/polaris-interface": "3.0.0-alpha7",
+    "@p2olab/polaris-interface": "3.0.0-alpha8",
     "@types/adm-zip": "^0.4.34",
     "@types/pino": "^6.3.6",
     "@types/promise-timeout": "^1.3.0",
