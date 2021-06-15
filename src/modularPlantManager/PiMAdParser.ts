@@ -1,14 +1,12 @@
 import {DataAssemblyModel, DataAssemblyOptions, DataItemModel, OpcUaNodeOptions} from '@p2olab/polaris-interface';
 
+//TODO: maybe outsource more from MPM to this class
+/**
+ * This class helps parsing the PEAModel coming from PiMAd for creating PEAOptions
+ */
 export class PiMAdParser {
 
     static createDataAssemblyOptions(dataAssembly: DataAssemblyModel): DataAssemblyOptions {
-        let dataAssemblyOptions: DataAssemblyOptions ={ name:'', dataItems:{
-                TagName: {} as OpcUaNodeOptions,
-                TagDescription: {} as OpcUaNodeOptions
-            }, metaModelRef:''};
-
-
             // Initializing baseDataAssemblyOptions, which will be filled during an iteration below
             const baseDataAssemblyOptions:
                 {
@@ -33,7 +31,7 @@ export class PiMAdParser {
                 if(cIData){
                     nodeId= cIData.nodeId.identifier;
                     namespaceIndex = cIData.nodeId.namespaceIndex;
-                    namespaceIndex='urn:DESKTOP-6QLO5BB:NodeOPCUA-Server';
+                   // namespaceIndex='urn:DESKTOP-6QLO5BB:NodeOPCUA-Server';
                 } else {
                     value = dataItem.value;
                 }
@@ -49,13 +47,11 @@ export class PiMAdParser {
             });
 
             // create dataAssemblyOptions with information collected above
-            dataAssemblyOptions = {
+             const dataAssemblyOptions = {
                 name: dataAssemblyName,
                 metaModelRef: dataAssemblyInterfaceClass,
                 dataItems: baseDataAssemblyOptions
             };
-
         return dataAssemblyOptions;
-
     }
 }

@@ -226,11 +226,8 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 		await this.connection.startListening();
 
 		//after subscribing-> assign DAControllers to instance variable, which will be processed to this.processValues later
-		await pv.then(value => {
-			this.dAControllers = value;
-			//this.variables = this.dAControllers;
-		});
-		//variables for frontend - testpea
+		await pv.then(value => {this.dAControllers = value;});
+		//create process values for frontend (testpea)
 		this.createProcessValues();
 
 		await Promise.all([pv,pa]);
