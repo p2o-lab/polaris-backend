@@ -214,6 +214,7 @@ export class Service extends BaseService {
 			parameters: this.parameters.map((param) => param.toJson()),
 			controlEnable: this.commandEnable,
 			lastChange: (new Date().getTime() - this.lastStatusChange.getTime()) / 1000,
+			peaId: this._parentId,
 			//lastChange: new Date().getTime() // dummy
 		};
 	}
@@ -233,6 +234,9 @@ export class Service extends BaseService {
 			});
 			this.logger.info(`[${this.qualifiedName}] ${command} executed`);
 		}
+		//TODO: wait till variable/status changed (e.g. idle->execute)
+		//this is a hotfix
+		return new Promise(resolve => setTimeout(() => resolve(),500));
 	}
 
 	public start(): Promise<void> {
