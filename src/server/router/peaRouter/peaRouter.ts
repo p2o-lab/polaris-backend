@@ -23,11 +23,11 @@
  * SOFTWARE.
  */
 
-import {ModularPlantManager} from '../../../modularPlantManager';
+import {ModularPlantManager, ServiceState} from '../../../modularPlantManager';
 import {Request, Response, Router} from 'express';
 import * as asyncHandler from 'express-async-handler';
 import {constants} from 'http2';
-import {ServerSettingsOptions, ServiceCommand} from '@p2olab/polaris-interface';
+import {ServiceCommand} from '@p2olab/polaris-interface';
 import {catServer} from '../../../logging';
 import * as path from 'path';
 
@@ -298,24 +298,30 @@ peaRouter.post('/:peaId/service/:serviceName', asyncHandler(async (req: Request,
 peaRouter.post('/:peaId/service/:serviceName/:command', asyncHandler(async (req: Request, res: Response) => {
 	catServer.debug(`Call service: ${JSON.stringify(req.params)} ${JSON.stringify(req.body)}`);
 	const manager: ModularPlantManager = req.app.get('manager');
-	const service = manager.getService(req.params.peaId, req.params.serviceName);
-	if (req.body.procedure) {
-		const procedure = service.getProcedureByNameOrDefault(req.body.procedure);
-		if (procedure) {
-			await service.setProcedure(procedure);
+	try{
+		const service = manager.getService(req.params.peaId, req.params.serviceName);
+		if (req.body.procedure) {
+			const procedure = service.getProcedureByNameOrDefault(req.body.procedure);
+			if (procedure) {
+				await service.setProcedure(procedure);
+			}
 		}
+		if (req.body.parameters) {
+			await service.setParameters(req.body.parameters, manager.peas);
+		}
+		const command = req.params.command as ServiceCommand;
+		await service.executeCommandAndWaitForStateChange(command);
+		res.json({
+			pea: req.params.peaId,
+			service: service.name,
+			command: req.params.command,
+			status: 'Command succesfully send'
+		});
+	} catch (err) {
+		res.status(500).send(err.toString());
 	}
-	if (req.body.parameters) {
-		await service.setParameters(req.body.parameters, manager.peas);
-	}
-	const command = req.params.command as ServiceCommand;
-	await service.executeCommand(command);
-	res.json({
-		pea: req.params.peaId,
-		service: service.name,
-		command: req.params.command,
-		status: 'Command succesfully send'
-	});
+
+
 }));
 
 /**

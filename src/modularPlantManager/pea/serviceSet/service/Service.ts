@@ -219,7 +219,7 @@ export class Service extends BaseService {
 	}
 
 	// overridden method from Base Service
-	public async executeCommand(command: ServiceCommand): Promise<void> {
+	public async executeCommandAndWaitForStateChange(command: ServiceCommand): Promise<void> {
 		if (!this.connection.isConnected()) {
 			throw new Error('PEAController is not connected');
 		}
@@ -233,9 +233,29 @@ export class Service extends BaseService {
 			});
 			this.logger.info(`[${this.qualifiedName}] ${command} executed`);
 		}
-		//TODO: wait till variable/status changed (e.g. idle->execute)
-		//this is a hotfix
-		return new Promise(resolve => setTimeout(() => resolve(),500));
+		let expectedState='';
+		switch(command){
+			case('start'):
+				expectedState='EXECUTE';
+				break;
+			case('stop'):
+				expectedState='STOPPED';
+				break;
+			case('reset'):
+				expectedState='IDLE';
+				break;
+			case('abort'):
+				expectedState='ABORTED';
+				break;
+			case('complete'):
+				//TODO: it this legit?
+				expectedState='IDLE';
+				break;
+			case('restart'):
+				expectedState='EXECUTE';
+				break;
+		}
+		await this.waitForStateChangeWithTimeout(expectedState);
 	}
 
 	public start(): Promise<void> {

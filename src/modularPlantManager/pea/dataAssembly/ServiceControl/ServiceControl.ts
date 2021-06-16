@@ -83,11 +83,9 @@ export class ServiceControl extends DataAssemblyController {
 		this.communication.ProcedureCur = this.createDataItem('ProcedureCur', 'read');
 		this.communication.ProcedureReq = this.createDataItem('ProcedureReq', 'read');
 
-		//TODO: cannt subscribed to numeric
-
-/*		this.communication.InteractQuestionID = this.createDataItem('InteractQuestionID', 'read');
+		this.communication.InteractQuestionID = this.createDataItem('InteractQuestionID', 'read');
 		this.communication.InteractAnswerID = this.createDataItem('InteractAnswerID', 'write');
-		this.communication.PosTextID = this.createDataItem('PosTextID', 'read');*/
+		this.communication.PosTextID = this.createDataItem('PosTextID', 'read');
 
 		this.defaultReadDataItem = this.communication.StateCur;
 		this.defaultReadDataItemType = 'number';

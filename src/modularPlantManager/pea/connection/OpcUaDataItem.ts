@@ -78,7 +78,7 @@ export class OpcUaDataItem<T> extends DataItem<T> {
 				this.value = dataValue.value.value;
 				this.dataType = DataType[dataValue.value.dataType];
 				this.timestamp = dataValue.serverTimestamp;
-				this.emit('changed', {value: this.value, timestamp: this.timestamp});
+				this.emit('changed', {value: this.value, timestamp: this.timestamp, nodeId: this.nodeId});
 			});
 		await new Promise((resolve) => this.on('changed', resolve));
 		this.logger.info(`subscribed to Data Item ${this.nodeId}`);
