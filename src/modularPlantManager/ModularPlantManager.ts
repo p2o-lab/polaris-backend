@@ -208,6 +208,8 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 	 */
 	public loadPEAController(pimadIdentifier: string, protectedPEAs = false): PEAController[]{
 		const newPEAs: PEAController[] = [];
+		this.servicesOptionsArray=[];
+		this.dataAssemblyOptionsArray=[];
 		if (!pimadIdentifier) {
 			throw new Error('No PEAs defined in supplied options');
 		}
