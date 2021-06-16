@@ -199,7 +199,7 @@ peaRouter.post('/:peaId/connect', asyncHandler(async (req: Request, res: Respons
 	try{
 		const pea = manager.getPEAController(req.params.peaId);
 		await pea.connect();
-		res.status(200).send({id: pea.id, status: 'Successfully connected'});
+		res.status(200).send({peaId: pea.id, status: 'Successfully connected'});
 	} catch (e) {
 		res.status(500).send(e.toString());
 	}
@@ -217,7 +217,7 @@ peaRouter.post('/:peaId/disconnect', asyncHandler(async (req: Request, res: Resp
 	try{
 		const pea = manager.getPEAController(req.params.peaId);
 		await pea.disconnect();
-		res.status(200).send({id: pea.id, status: 'Successfully disconnected'});
+		res.status(200).send({peaId: pea.id, status: 'Successfully disconnected'});
 	}catch (e) {
 		res.status(500).send(e.toString());
 	}

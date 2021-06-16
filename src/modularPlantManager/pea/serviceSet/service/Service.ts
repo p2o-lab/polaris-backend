@@ -215,7 +215,6 @@ export class Service extends BaseService {
 			controlEnable: this.commandEnable,
 			lastChange: (new Date().getTime() - this.lastStatusChange.getTime()) / 1000,
 			peaId: this._parentId,
-			//lastChange: new Date().getTime() // dummy
 		};
 	}
 
