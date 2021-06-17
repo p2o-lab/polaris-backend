@@ -132,10 +132,11 @@ export abstract class BaseService {
 	 * @returns {Promise<boolean>}
 	 */
 	public async executeCommand(command: ServiceCommand): Promise<void> {
-		if (!this.isCommandExecutable(command)) {
+		//TODO: this check does not work properly
+	/*	if (!this.isCommandExecutable(command)) {
 			catService.info(`[${this.qualifiedName}] ControlOp does not allow command ${command}`);
 			throw new Error(`[${this.qualifiedName}] ControlOp does not allow command ${command}`);
-		}
+		}*/
 		let result;
 		if (command === ServiceCommand.start) {
 			result = this.start();

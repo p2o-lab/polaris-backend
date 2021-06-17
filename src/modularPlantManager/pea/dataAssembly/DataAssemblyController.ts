@@ -89,10 +89,11 @@ export class DataAssemblyController extends EventEmitter {
 						dataItem.nodeId &&
 						dataItem.namespaceIndex)
 					.map(([key, dataItem]: [string, OpcUaDataItem<any>]) => {
-						dataItem.on('changed', () => {
+						dataItem.on('changed', (info) => {
 							catDataAssembly.trace(`Emit ${this.name}.${key} = ${dataItem.value}`);
 							this.emit(key, dataItem);
 							this.emit('changed');
+							if(info.nodeId.includes('StateCur')) this.emit('State');
 						});
 						return dataItem.subscribe();
 					})

@@ -186,17 +186,27 @@ export class OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionEm
 		if (!this.isConnected()) {
 			throw new Error(`Can not write node since OPC UA connection to PEA ${this.id} is not established`);
 		} else {
+
 			const variant = Variant.coerce({
 				value: value,
 				dataType: dataType,
 				arrayType: VariantArrayType.Scalar
 			});
+
+			const nodeToWrite = {
+				nodeId: this.resolveNodeId(nodeId, namespaceUrl).toString(),
+				attributeId: AttributeIds.Value,
+				value: {
+					value: variant
+				}
+			};
+
 			this.logger.debug(`[${this.id}] Write ${nodeId} - ${JSON.stringify(variant)}`);
 			if (!this.session) {
 				throw new Error('Session is undefined');
 			}
-			const statusCode = await this.session.write(
-				{nodeId: this.resolveNodeId(nodeId, namespaceUrl), value: variant});
+			const statusCode = await this.session.write(nodeToWrite);
+
 			if (statusCode.value !== 0) {
 				this.logger.warn(`Error while writing to OpcUA ${nodeId}=${value}: ${statusCode.description}`);
 				throw new Error(statusCode.description);

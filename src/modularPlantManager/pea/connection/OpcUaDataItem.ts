@@ -78,7 +78,7 @@ export class OpcUaDataItem<T> extends DataItem<T> {
 				this.value = dataValue.value.value;
 				this.dataType = DataType[dataValue.value.dataType];
 				this.timestamp = dataValue.serverTimestamp;
-				this.emit('changed', {value: this.value, timestamp: this.timestamp});
+				this.emit('changed', {value: this.value, timestamp: this.timestamp, nodeId: this.nodeId});
 			});
 		await new Promise((resolve) => this.on('changed', resolve));
 		this.logger.info(`subscribed to Data Item ${this.nodeId}`);
@@ -86,7 +86,7 @@ export class OpcUaDataItem<T> extends DataItem<T> {
 	}
 
 	public async write(value: number | string | boolean): Promise<void> {
-		this.logger.debug(`write: ${value} to ${this.nodeId}`);
+		this.logger.info(`write: ${value} to ${this.nodeId}`);
 		return this.connection.writeOpcUaNode(this.nodeId, this.namespaceIndex, value, this.dataType);
 	}
 

@@ -39,7 +39,7 @@ export interface DataItemEvents {
 	 * when OpcUaNodeOptions changes its value
 	 * @event changed
 	 */
-	changed: { value: any; timestamp: Date };
+	changed: { value: any; timestamp: Date; nodeId: string };
 }
 
 export type DataItemEmitter = StrictEventEmitter<EventEmitter, DataItemEvents>;

@@ -50,16 +50,16 @@ export class ServiceSourceModeController{
 	}
 
 	setCommunication(){
-		this.dAController.communicationsrcChannel = this.dAController.createDataItem('SrcChannel', 'read', 'boolean');
+		this.dAController.communication.SrcChannel = this.dAController.createDataItem('SrcChannel', 'read', 'boolean');
 
-		this.dAController.communicationsrcExtAut = this.dAController.createDataItem('SrcExtAut', 'read', 'boolean');
-		this.dAController.communicationsrcIntAut = this.dAController.createDataItem('SrcIntAut', 'read', 'boolean');
+		this.dAController.communication.SrcExtAut = this.dAController.createDataItem('SrcExtAut', 'read', 'boolean');
+		this.dAController.communication.SrcIntAut = this.dAController.createDataItem('SrcIntAut', 'read', 'boolean');
 
-		this.dAController.communicationsrcExtOp = this.dAController.createDataItem('SrcExtOp', 'write', 'boolean');
-		this.dAController.communicationsrcIntOp = this.dAController.createDataItem('SrcIntOp', 'write', 'boolean');
+		this.dAController.communication.SrcExtOp = this.dAController.createDataItem('SrcExtOp', 'write', 'boolean');
+		this.dAController.communication.SrcIntOp = this.dAController.createDataItem('SrcIntOp', 'write', 'boolean');
 
-		this.dAController.communicationsrcExtAct = this.dAController.createDataItem('SrcExtAct', 'read', 'boolean');
-		this.dAController.communicationsrcIntAct = this.dAController.createDataItem('SrcIntAct', 'read', 'boolean');
+		this.dAController.communication.SrcExtAct = this.dAController.createDataItem('SrcExtAct', 'read', 'boolean');
+		this.dAController.communication.SrcIntAct = this.dAController.createDataItem('SrcIntAct', 'read', 'boolean');
 	}
 
 	public getServiceSourceMode(): ServiceSourceMode {

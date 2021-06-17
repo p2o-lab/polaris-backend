@@ -72,7 +72,7 @@ export class Service extends BaseService {
 	public readonly procedures: Procedure[] = [];
 	public readonly parameters: ServParam[] = [];
 	public readonly connection: OpcUaConnection;
-	public readonly serviceControl: ServiceControl;
+	public serviceControl: ServiceControl;
 	private readonly logger: Category;
 	private serviceParametersEventEmitters: EventEmitter[];
 	private readonly _parentId: string;
@@ -117,7 +117,8 @@ export class Service extends BaseService {
 	}
 
 	public get lastStatusChange(): Date {
-		return this.serviceControl.communication.StateCur.timestamp;
+		if(this.serviceControl.communication.StateCur.timestamp) return this.serviceControl.communication.StateCur.timestamp;
+		else return new Date();
 	}
 
 	public get currentProcedure(): number | undefined {
@@ -131,11 +132,12 @@ export class Service extends BaseService {
 	/**
 	 * Get current procedure from internal memory.
 	 */
-	public getCurrentProcedure(): Procedure {
+	public getCurrentProcedure(): Procedure |undefined{
 		const curProc = this.procedures.find((proc) => parseInt(proc.id, 10) === this.currentProcedure);
-		if (!curProc) {
+		// TODO: why throw error? program will crash if there is no current procedure
+/*		if (!curProc) {
 			throw new Error('Current Procedure not found.');
-		}
+		}*/
 		return curProc;
 	}
 
@@ -170,27 +172,25 @@ export class Service extends BaseService {
 					this.clearListeners();
 				}
 			});
-		const tasks = [];
-		tasks.push(this.serviceControl.subscribe());
 
-		tasks.concat(
-			this.parameters.map((param) => {
-				return param.subscribe();
-			})
-			/*, TODO: Check this section
-			this.procedures.map((procedure) => {
+		const psc = this.serviceControl.subscribe();
+		const par = this.parameters.map((param) => {
+			return param.subscribe();
+		});
+
+		const procedures = this.procedures.map((procedure) => {
 				procedure.on('parameterChanged', (data) => {
 					this.eventEmitter.emit('parameterChanged', {
 						procedure,
 						parameter: data.parameter,
 						parameterType: data.parameterType
-						});
 					});
+				});
 				return procedure.subscribe();
-				}
-			)*/
+			}
 		);
-		await Promise.all(tasks);
+
+		await Promise.all([procedures, psc, par]);
 		return this.eventEmitter;
 	}
 
@@ -210,26 +210,52 @@ export class Service extends BaseService {
 			serviceSourceMode: this.serviceControl.serviceSourceMode.getServiceSourceMode(),
 			status: ServiceState[this.state],
 			procedures: this.procedures.map((procedure) => procedure.toJson()),
-			currentProcedure: this.getCurrentProcedure().name,
+			currentProcedure: this.getCurrentProcedure()?.name,
 			parameters: this.parameters.map((param) => param.toJson()),
 			controlEnable: this.commandEnable,
 			lastChange: (new Date().getTime() - this.lastStatusChange.getTime()) / 1000,
+			peaId: this._parentId,
 		};
 	}
 
 	// overridden method from Base Service
-	public async executeCommand(command: ServiceCommand): Promise<void> {
+	public async executeCommandAndWaitForStateChange(command: ServiceCommand): Promise<void> {
 		if (!this.connection.isConnected()) {
 			throw new Error('PEAController is not connected');
 		}
 		await super.executeCommand(command);
 		const currentProcedure = this.getCurrentProcedure();
-		this.eventEmitter.emit('commandExecuted', {
-			procedure: currentProcedure,
-			command: command,
-			parameter: currentProcedure?.parameters.map((param) => param.toJson() as ParameterInterface)
-		});
-		this.logger.info(`[${this.qualifiedName}] ${command} executed`);
+		if(currentProcedure){
+			this.eventEmitter.emit('commandExecuted', {
+				procedure: currentProcedure,
+				command: command,
+				parameter: currentProcedure?.parameters.map((param) => param.toJson() as ParameterInterface)
+			});
+			this.logger.info(`[${this.qualifiedName}] ${command} executed`);
+		}
+		let expectedState='';
+		switch(command){
+			case('start'):
+				expectedState='EXECUTE';
+				break;
+			case('stop'):
+				expectedState='STOPPED';
+				break;
+			case('reset'):
+				expectedState='IDLE';
+				break;
+			case('abort'):
+				expectedState='ABORTED';
+				break;
+			case('complete'):
+				//TODO: it this legit?
+				expectedState='IDLE';
+				break;
+			case('restart'):
+				expectedState='EXECUTE';
+				break;
+		}
+		await this.waitForStateChangeWithTimeout(expectedState);
 	}
 
 	public start(): Promise<void> {
@@ -298,6 +324,7 @@ export class Service extends BaseService {
 	public async setParameters(parameterOptions: ParameterOptions[], peaSet: PEAController[] = []): Promise<void> {
 		parameterOptions.map((p) => {
 			const dataAssembly = this.findInputParameter(p.name);
+			//TODO: whats this below
 			//dataAssembly?.setValue(p, peaSet);
 		});
 	}
