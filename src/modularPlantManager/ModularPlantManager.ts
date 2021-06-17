@@ -93,17 +93,12 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 	// PiMAd-core
 	public pimadPool: PEAPool;
 
-	// these are helper variables to keep the functions small
-	private dataAssemblyOptionsArray: DataAssemblyOptions[];
-	private servicesOptionsArray: ServiceOptions[];
+
 
 	constructor() {
 		super();
 		this.pimadPool = new PEAPoolVendor().buyDependencyPEAPool();
 		this.pimadPool.initializeMTPFreeze202001Importer();
-
-		this.dataAssemblyOptionsArray=[];
-		this.servicesOptionsArray=[];
 
 		this.player = new Player()
 			.on('started', () => {
@@ -208,8 +203,7 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 	 */
 	public loadPEAController(pimadIdentifier: string, protectedPEAs = false): PEAController[]{
 		const newPEAs: PEAController[] = [];
-		this.servicesOptionsArray=[];
-		this.dataAssemblyOptionsArray=[];
+
 		if (!pimadIdentifier) {
 			throw new Error('No PEAs defined in supplied options');
 		}
@@ -236,79 +230,20 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 		else {
 			this.getPEAFromPimadPool(pimadIdentifier, response => {
 				if(response.getMessage()==='Success!'){
-					//get PEAModel
 					const peaModel = response.getContent() as PEAModel;
-					//get DataAssemblyModels from PEAModel/PiMAd
-					const dataAssemblyModels: DataAssemblyModel[] = peaModel.dataAssemblies;
-					//get ServiceModels from PEAModel/PiMAd
-					const serviceModels: ServiceModel[] = peaModel.services;
-
-					let endpoint: string | undefined ='';
-
-					//iterate through dataAssemblyModels and create DataAssemblyOptions
-					dataAssemblyModels.forEach(dataAssemblyModel => {
-						const dataAssemblyOptions = PiMAdParser.createDataAssemblyOptions(dataAssemblyModel);
-						this.dataAssemblyOptionsArray.push(dataAssemblyOptions);
-					});
-
-					//iterate through serviceModels and create ServiceOptions
-					serviceModels.forEach(serviceModel=> {
-						const procedureOptionsArray: ProcedureOptions[] = [];
-						
-						const procedureModels: ProcedureModel[] = serviceModel.procedures;
-						procedureModels.forEach(procedure =>{
-							const procedureName = procedure.name;
-							let isDefault: any, isSelfCompleting: any, procedureID='';
-							procedure.attributes.forEach(attribute =>{
-								switch(attribute.name){
-									case ('IsSelfCompleting'):
-										isSelfCompleting = JSON.parse(attribute.value);
-										break;
-									case ('IsDefault'):
-										isDefault = JSON.parse(attribute.value);
-										break;
-									case ('ProcedureID'):
-										procedureID = JSON.parse(attribute.value);
-										break;
-								}
-							});
-
-							const procedureDataAssemblyOptionsArray = [PiMAdParser.createDataAssemblyOptions(procedure.dataAssembly as DataAssemblyModel)];
-							const procedureOptions: ProcedureOptions = {
-								id: procedureID,
-								name: procedureName,
-								isDefault : isDefault as boolean,
-								isSelfCompleting: isSelfCompleting as boolean,
-								parameters: procedureDataAssemblyOptionsArray,
-							};
-							procedureOptionsArray.push(procedureOptions);
-						});
-
-						const serviceDataAssemblyOptions = PiMAdParser.createDataAssemblyOptions(serviceModel.dataAssembly as DataAssemblyModel);
-
-						const serviceOptions: ServiceOptions = {
-							name: serviceModel.name,
-							communication: serviceDataAssemblyOptions.dataItems as unknown as ServiceControlOptions,
-							procedures: procedureOptionsArray
-						};
-						this.servicesOptionsArray.push(serviceOptions);
-					});
-
-					//get endpoint
-					const endpoints = peaModel.endpoint;
-					endpoint = endpoints[0].value;
-
+					const pimadParserObject = PiMAdParser.createOptionsArrays(peaModel);
+					const endpoint = peaModel.endpoint[0].value;
 					// create PEAOptions
 					const peaOptions: PEAOptions = {
 						name: peaModel.name,
 						id: this.generateUniqueIdentifier(),
 						pimadIdentifier: pimadIdentifier,
-						services: this.servicesOptionsArray,
+						services: pimadParserObject.serviceOptionsArray,
 						username: '',
 						password: '',
 						hmiUrl: '',
 						opcuaServerUrl: endpoint,
-						dataAssemblies: this.dataAssemblyOptionsArray
+						dataAssemblies: pimadParserObject.dataAssemblyOptionsArray
 					};
 					// create PEAController and push to newPEAs list
 					newPEAs.push(new PEAController(peaOptions, protectedPEAs));
