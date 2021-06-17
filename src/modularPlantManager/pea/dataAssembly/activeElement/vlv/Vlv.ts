@@ -56,10 +56,10 @@ export class Vlv extends ActiveElement {
 		super(options, connection);
 
 		this.reset = new Reset(this);
-		this.reset.setCommunication();
+		this.reset.initialize();
 
 		this.interlock = new Interlock(this);
-		this.interlock.setCommunication();
+		this.interlock.initialize();
 
 		this.communication.SafePos = this.createDataItem('SafePos', 'read', 'boolean');
 		this.communication.SafePosEn = this.createDataItem('SafePosEn', 'read', 'boolean');

@@ -41,7 +41,7 @@ export class UnitSettings {
 		this.dAController = dAController;
 	}
 
-	setCommunication(){
+	initialize(){
 		this.dAController.communication.VUnit = this.dAController.createDataItem('VUnit', 'read');
 	}
 

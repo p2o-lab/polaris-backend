@@ -50,6 +50,6 @@ export class BinManInt extends BinMan {
 		this.communication.VInt = this.createDataItem('VInt', 'read');
 
 		this.sourceMode = new SourceModeController(this);
-		this.sourceMode.setCommunication();
+		this.sourceMode.initialize();
 	}
 }

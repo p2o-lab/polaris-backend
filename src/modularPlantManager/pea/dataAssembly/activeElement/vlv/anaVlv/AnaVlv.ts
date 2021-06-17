@@ -55,7 +55,7 @@ export class AnaVlv extends Vlv {
 		super(options, connection);
 
 		this.sourceMode = new SourceModeController(this);
-		this.sourceMode.setCommunication();
+		this.sourceMode.initialize();
 
 		this.communication.Pos = this.createDataItem('Pos', 'read', 'number');
 		this.communication.PosFbk = this.createDataItem('PosFbk', 'read', 'number');
