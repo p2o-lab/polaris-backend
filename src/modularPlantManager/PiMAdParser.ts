@@ -7,7 +7,7 @@ import {
 } from '@p2olab/polaris-interface';
 import {ProcedureOptions} from '@p2olab/polaris-interface/dist/service/options';
 
-export interface PiMAdParserInteface{
+export interface PiMAdParserInterface{
      dataAssemblyOptionsArray: DataAssemblyOptions[];
      serviceOptionsArray: ServiceOptions[];
 }
@@ -17,7 +17,7 @@ export interface PiMAdParserInteface{
  */
 export class PiMAdParser {
 
-    static createOptionsArrays(peaModel: PEAModel): PiMAdParserInteface {
+    static createOptionsArrays(peaModel: PEAModel): PiMAdParserInterface {
         const dataAssemblyOptionsArray = this.createDataAssemblyOptionsArray(peaModel.dataAssemblies);
         const servicesOptionsArray = this.createServiceOptionsArray(peaModel.services);
         return {dataAssemblyOptionsArray: dataAssemblyOptionsArray, serviceOptionsArray: servicesOptionsArray};
@@ -86,12 +86,12 @@ export class PiMAdParser {
             const baseDataAssemblyOptions:
                 {
                     [k: string]: any;
-                    TagName: OpcUaNodeOptions;
-                    TagDescription: OpcUaNodeOptions;
+                    TagName: string;
+                    TagDescription: string;
                 } =
                 {
-                    TagName: {} as OpcUaNodeOptions,
-                    TagDescription: {} as OpcUaNodeOptions
+                    TagName: '',
+                    TagDescription: ''
                 };
 
             // Initializing dataAssemblyName, dataAssemblyInterfaceClass
@@ -103,22 +103,20 @@ export class PiMAdParser {
                 let namespaceIndex ='', nodeId='', value: undefined | string;
                 const dataType=dataItem.dataType;
                 const cIData = dataItem.cIData;
-                if(cIData){
+                if(cIData){ //dynamic
                     nodeId= cIData.nodeId.identifier;
                     namespaceIndex = cIData.nodeId.namespaceIndex;
                    // namespaceIndex='urn:DESKTOP-6QLO5BB:NodeOPCUA-Server';
-                } else {
+                    const opcUaNodeOptions: OpcUaNodeOptions = {
+                        nodeId: nodeId,
+                        namespaceIndex: namespaceIndex,
+                        dataType: dataType,
+                    };
+                    baseDataAssemblyOptions[dataItem.name as string] = opcUaNodeOptions;
+                } else { // static
                     value = dataItem.value;
+                    baseDataAssemblyOptions[dataItem.name as string] = value;
                 }
-
-                const opcUaNodeOptions: OpcUaNodeOptions = {
-                    nodeId: nodeId,
-                    namespaceIndex: namespaceIndex,
-                    dataType: dataType,
-                    value: value
-                };
-
-                baseDataAssemblyOptions[dataItem.name as string] = opcUaNodeOptions;
             });
 
             // create dataAssemblyOptions with information collected above

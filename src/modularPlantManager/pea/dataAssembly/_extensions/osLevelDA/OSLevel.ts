@@ -28,19 +28,24 @@ import {Constructor} from '../_helper';
 import {BaseDataAssemblyRuntime, DataAssemblyController} from '../../DataAssemblyController';
 
 export interface OSLevelRuntime extends BaseDataAssemblyRuntime {
-	OSLevel: OpcUaDataItem<number>;
+	OSLevel: OpcUaDataItem<number>
 }
 
 export class OSLevel {
 	private dAController: any;
+	oslevel: string | undefined;
 
 	constructor(dAController: any) {
 		this.dAController = dAController;
 	}
 
-	public setCommunication(){
-		this.dAController.communication.OSLevel = this.dAController.createDataItem('OSLevel', 'write');
-
+	public initialize(){
+		if(typeof this.dAController.options.dataItems.OSLevel == 'string'){
+			this.oslevel = this.dAController.options.dataItems.OSLevel;
+		}
+		else{
+			this.dAController.communication.OSLevel = this.dAController.createDataItem('OSLevel', 'write');
+		}
 	}
 
 	get OSLevel(): number | undefined {

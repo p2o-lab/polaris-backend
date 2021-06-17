@@ -63,7 +63,7 @@ export class ServiceControl extends DataAssemblyController {
 		super(options, connection);
 
 		this.wqc = new WQC(this);
-		this.wqc.setCommunication();
+		this.wqc.initialize();
 
 		this.opMode = new OpModeController(this);
 		this.opMode.initializeOpMode(this);
