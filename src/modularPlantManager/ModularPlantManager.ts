@@ -25,7 +25,6 @@
 
 import {
 	BackendNotification,
-	BaseDataAssemblyOptions,
 	DataAssemblyOptions, OpcUaNodeOptions,
 	PEAInterface,
 	POLServiceInterface,
@@ -33,13 +32,10 @@ import {
 	PEAOptions,
 	RecipeOptions,
 	ServiceCommand,
-	VariableChange, ServerSettingsOptions, ServiceOptions
+	VariableChange, ServerSettingsOptions, ServiceOptions, DataAssemblyModel, PEAModel
 } from '@p2olab/polaris-interface';
 import {
 	Backbone,
-	CommunicationInterfaceData, DataItemModel,
-	logger,
-	ModuleAutomation,
 	PEAPool,
 	PEAPoolVendor,
 } from '@p2olab/pimad-core';
@@ -48,15 +44,10 @@ import {ParameterChange, PEAController, Service} from './pea';
 import {ServiceState} from './pea/dataAssembly';
 import {POLService, POLServiceFactory} from './polService';
 import {Player, Recipe} from './recipe';
-import {PEAModel} from '@p2olab/pimad-core/dist/ModuleAutomation';
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import PiMAdResponse = Backbone.PiMAdResponse;
-import DataAssembly = ModuleAutomation.DataAssembly;
-import {OPCUANodeCommunication} from '@p2olab/pimad-core/dist/ModuleAutomation/CommunicationInterfaceData';
 import { v4 as uuidv4 } from 'uuid';
-import {ServiceControlOptions} from '@p2olab/polaris-interface/dist/core/dataAssembly';
-import {ProcedureOptions} from '@p2olab/polaris-interface/dist/service/options';
 
 
 interface ModularPlantManagerEvents {
@@ -233,9 +224,9 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 			this.getPEAFromPimadPool(pimadIdentifier, response => {
 				if(response.getMessage()==='Success!'){
 					//get PEAModel
-					const peaModel: PEAModel = response.getContent() as PEAModel;
+					const peaModel = response.getContent() as PEAModel;
 					//get DataAssemblyModels from  PEAModel/PiMAd
-					const dataAssemblyModels: DataAssembly[] = (peaModel.getAllDataAssemblies().getContent() as {data: DataAssembly[]}).data;
+					const dataAssemblyModels: DataAssemblyModel[] = peaModel.dataAssemblies;
 
 					let endpoint: string | undefined ='';
 
@@ -245,12 +236,12 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 					this.createDataAssemblyOptionsArray(dataAssemblyModels);
 
 					//get endpoint
-					const dataItemModels = (peaModel.getEndpoint().getContent() as {data: DataItemModel[]}).data;
-					dataItemModels[0].getValue((response1, value) => endpoint = value);
+					const endpoints = peaModel.endpoint;
+					endpoint = endpoints[0].value;
 
 					// create PEAOptions
 					const peaOptions: PEAOptions = {
-						name: peaModel.getName(),
+						name: peaModel.name,
 						id: this.generateUniqueIdentifier(),
 						pimadIdentifier: pimadIdentifier,
 						services: [],
@@ -338,7 +329,7 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 	 * @param dataAssemblyModels
 	 * @private
 	 */
-	private createDataAssemblyOptionsArray(dataAssemblyModels: DataAssembly[]){
+	private createDataAssemblyOptionsArray(dataAssemblyModels: DataAssemblyModel[]){
 		// iterate through every dataAssemblyModel and create DataAssemblyOptions with BaseDataAssemblyOptions
 		dataAssemblyModels.map( dataAssembly => {
 			// Initializing baseDataAssemblyOptions, which will be filled during an iteration below
@@ -354,65 +345,31 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 				};
 
 			// Initializing dataAssemblyName, dataAssemblyInterfaceClass
-			let dataAssemblyName ='', dataAssemblyInterfaceClass='';
+			const dataAssemblyName =dataAssembly.name;
+			const dataAssemblyInterfaceClass= dataAssembly.metaModelRef;
+			const dataItems = dataAssembly.dataItems;
+			dataItems.map(dataItem=>{
+				// Initializing variables, which will be assigned later
+				let namespaceIndex ='', nodeId='', value: undefined | string;
+				const dataType=dataItem.dataType;
+				const cIData = dataItem.cIData;
+				if(cIData){
+					nodeId= cIData.nodeId.identifier;
+					namespaceIndex = cIData.nodeId.namespaceIndex;
+					//namespaceIndex='urn:DESKTOP-QNK1RES:NodeOPCUA-Server';
+				} else {
+					value = dataItem.value;
+				}
 
-			// get dataAssemblyName from PEAModel
-			dataAssembly.getName(((response,name)=>{
-				// assign dataAssemblyName
-				dataAssemblyName = name;
-			}));
+				const opcUaNodeOptions: OpcUaNodeOptions = {
+					nodeId: nodeId,
+					namespaceIndex: namespaceIndex,
+					dataType: dataType,
+					value: value
+				};
 
-			//get metamodelref from PEAModel/Pimad
-			dataAssembly.getMetaModelRef(((response,metaModelRef)=>{
-				// assign InterfaceClass/MetaModelRef
-				dataAssemblyInterfaceClass = metaModelRef;
-			}));
-
-			dataAssembly.getAllDataItems(((response1, dataItems) =>
-					dataItems.map(dataItem=>{
-						// Initializing variables, which will be assigned later
-						let namespaceIndex ='', nodeId='', dataType='', value: undefined | string;
-						// get value from PiMAd (only for TagName and TagDescription)
-						// get dataType from PiMAd
-						dataItem.getDataType((response, mDataType)=>
-							dataType= mDataType);
-						// get cIData from PiMAd
-						dataItem.getCommunicationInterfaceData((response2, cIData) => {
-							// check if dataItem has an cIData
-							if(cIData){
-								// get NodeId object from PiMAd
-								(cIData as OPCUANodeCommunication).getNodeId((response, nodeID) => {
-									// get NodeId from PiMAd and assign it to variable
-									nodeID.getNodeIdIdentifier((response, identifier) =>
-										nodeId = identifier);
-									// get namespaceIndex from PiMAd and assign it to variable
-									nodeID.getNamespaceIndex((response, mNamespace) =>{
-										namespaceIndex = mNamespace as unknown as string;
-										/**
-										 * use this for testing with test-pea with your own namespaceIndex
-										 * namespaceIndex='urn:DESKTOP-6QLO5BB:NodeOPCUA-Server';
-										 */
-									});
-								});
-							}else {
-								// it's a static DataItem
-								dataItem.getValue((response, mValue) => value = mValue);
-							}
-						});
-
-						const opcUaNodeOptions: OpcUaNodeOptions = {
-							nodeId: nodeId,
-							namespaceIndex: namespaceIndex,
-							dataType: dataType,
-							value: value
-						};
-						// get Name of DataItem from PiMAd
-						dataItem.getName((response2, name) =>
-						{
-							baseDataAssemblyOptions[name as string] = opcUaNodeOptions;
-						});
-					})
-			));
+				baseDataAssemblyOptions[dataItem.name as string] = opcUaNodeOptions;
+			});
 
 			// create dataAssemblyOptions with information collected above
 			const dataAssemblyOptions: DataAssemblyOptions = {
@@ -596,3 +553,7 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 		}
 	}
 }
+
+
+
+
