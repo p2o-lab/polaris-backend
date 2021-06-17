@@ -45,7 +45,7 @@ export class AnaManInt extends AnaMan {
 		super(options, connection);
 
 		this.wqc = new WQC(this);
-		this.wqc.setCommunication();
+		this.wqc.initialize();
 
 		this.sourceMode = new SourceModeController(this);
 		this.sourceMode.setCommunication();
