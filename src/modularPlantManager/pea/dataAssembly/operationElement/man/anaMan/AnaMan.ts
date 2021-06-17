@@ -56,10 +56,10 @@ export class AnaMan extends OperationElement {
 		this.communication.VMan = this.createDataItem('VMan', 'write');
 
 		this.unitSettings = new UnitSettings(this);
-		this.unitSettings.setCommunication();
+		this.unitSettings.initialize();
 
 		this.scaleSettings = new ScaleSettings(this);
-		this.scaleSettings.setCommunication();
+		this.scaleSettings.initialize();
 
 		this.defaultReadDataItem = this.communication.VOut;
 		this.defaultReadDataItemType = 'number';

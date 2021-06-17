@@ -41,7 +41,7 @@ export class ScaleSettings {
 			this.dAController = dAController;
 		}
 
-		setCommunication(){
+		initialize(){
 			this.dAController.communication.VSclMax = this.dAController.createDataItem('VSclMax', 'read');
 			this.dAController.communication.VSclMin = this.dAController.createDataItem('VSclMin', 'read');
 		}

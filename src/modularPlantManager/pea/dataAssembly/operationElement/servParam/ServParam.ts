@@ -54,7 +54,7 @@ export class ServParam extends OperationElement {
 		this.wqc.initialize();
 
 		this.serviceSourceMode = new ServiceSourceModeController(this);
-		this.serviceSourceMode.setCommunication();
+		this.serviceSourceMode.initialize();
 
 		this.opMode = new OpModeController(this);
 		this.opMode.initializeOpMode(this);

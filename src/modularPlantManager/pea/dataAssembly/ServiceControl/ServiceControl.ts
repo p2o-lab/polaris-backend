@@ -69,7 +69,7 @@ export class ServiceControl extends DataAssemblyController {
 		this.opMode.initializeOpMode(this);
 
 		this.serviceSourceMode = new ServiceSourceModeController(this);
-		this.serviceSourceMode.setCommunication();
+		this.serviceSourceMode.initialize();
 
 		this.communication.CommandOp = this.createDataItem('CommandOp', 'write');
 		this.communication.CommandInt = this.createDataItem('CommandInt', 'write');

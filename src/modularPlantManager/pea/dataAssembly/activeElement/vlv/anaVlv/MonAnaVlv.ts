@@ -45,7 +45,7 @@ export class MonAnaVlv extends AnaVlv {
 		super(options, connection);
 
 		this.feedBackMonitoring = new FeedbackMonitoring(this);
-		this.feedBackMonitoring.setCommunication();
+		this.feedBackMonitoring.initialize();
 
 		this.communication.PosReachedFbk = this.createDataItem('PosReachedFbk', 'read', 'boolean');
 		this.communication.PosTolerance = this.createDataItem('PosTolerance', 'read', 'number');
