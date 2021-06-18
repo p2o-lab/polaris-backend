@@ -25,8 +25,6 @@
 
 import {
 	BackendNotification,
-	DataAssemblyOptions,
-	OpcUaNodeOptions,
 	PEAInterface,
 	POLServiceInterface,
 	POLServiceOptions,
@@ -35,11 +33,7 @@ import {
 	ServiceCommand,
 	VariableChange,
 	ServerSettingsOptions,
-	ServiceOptions,
-	DataAssemblyModel,
 	PEAModel,
-	DataItemModel,
-	ServiceControlOptions, ProcedureModel, ServiceModel
 } from '@p2olab/polaris-interface';
 import {
 	Backbone,
@@ -93,8 +87,6 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 	// PiMAd-core
 	public pimadPool: PEAPool;
 
-
-
 	constructor() {
 		super();
 		this.pimadPool = new PEAPoolVendor().buyDependencyPEAPool();
@@ -127,7 +119,7 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 		this._autoreset = value;
 	}
 
-	private generateUniqueIdentifier(): string {
+	generateUniqueIdentifier(): string {
 		// the extinction of all life on earth will occur long before you have a collision (with uuid) (stackoverflow.com)
 		const identifier = uuidv4();
 		return identifier;
@@ -143,14 +135,20 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 		if (pea) return pea;
 		else throw Error(`PEA with id ${peaId} not found`);
 	}
+
 	/**
-	 * Delete PEAController from Pimad-Pool by given Pimad-Identifier
-	 * @param peaId	Pimad-Identifier
+	 * Get PEAController from Pimad-Pool by given Pimad-Identifier
+	 * @param pimadIdentifier	Pimad-Identifier
 	 * @param callback Response from PiMad...
 	 */
-	public getPEAFromPimadPool(peaId: string, callback: (response: PiMAdResponse) => void) {
-		this.pimadPool.getPEA(peaId,(response: PiMAdResponse) => {
-			callback(response);
+	public getPEAFromPimadPool(pimadIdentifier: string): Promise<PEAModel>{
+		return new Promise<PEAModel>(resolve => {
+			this.pimadPool.getPEA(pimadIdentifier, (response: PiMAdResponse) => {
+				if(response.getMessage()=='Success!') {
+					const peaModel = response.getContent() as PEAModel;
+					resolve(peaModel);
+				} else throw new Error('PiMAdPEA not found!');
+			});
 		});
 	}
 
@@ -180,7 +178,6 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 	 * @param filePath - filepath of the uploaded file in /uploads
 	 * @param callback - contains Success or Failure Message
 	 */
-
 	public addPEAToPimadPool(filePath: { source: string}, callback: (response: PiMAdResponse) => void) {
 		this.pimadPool.addPEA(filePath, (response: PiMAdResponse) => {
 				callback(response);
@@ -201,12 +198,17 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 	 * @param {string} pimadIdentifier
 	 * @param {boolean} protectedPEAs  should PEAs be protected from being deleted
 	 */
-	public loadPEAController(pimadIdentifier: string, protectedPEAs = false): PEAController[]{
+	public async loadPEAController(pimadIdentifier: string, protectedPEAs = false): Promise<PEAController[]>{
 		const newPEAs: PEAController[] = [];
-
-		if (!pimadIdentifier) {
-			throw new Error('No PEAs defined in supplied options');
+		if (pimadIdentifier) {
+			const peaOptions: PEAOptions = await PiMAdParser.createPEAOptions(pimadIdentifier, this);
+			newPEAs.push(new PEAController(peaOptions, protectedPEAs));
+			this.peas.push(...newPEAs);
+			this.setEventListeners(newPEAs);
+			return newPEAs;
 		}
+		else throw new Error('No valid PiMAd Identifier');
+
 		/*if (options.subMP) {
 			options.subMP.forEach((subMPOptions) => {
 				subMPOptions.peas.forEach((peaOptions: PEAOptions) => {
@@ -227,96 +229,6 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 					newPEAs.push(new PEAController(peaOptions, protectedPEAs));
 				}
 			});*/
-		else {
-			this.getPEAFromPimadPool(pimadIdentifier, response => {
-				if(response.getMessage()==='Success!'){
-					const peaModel = response.getContent() as PEAModel;
-					const pimadParserObject = PiMAdParser.createOptionsArrays(peaModel);
-					const endpoint = peaModel.endpoint[0].value;
-					// create PEAOptions
-					const peaOptions: PEAOptions = {
-						name: peaModel.name,
-						id: this.generateUniqueIdentifier(),
-						pimadIdentifier: pimadIdentifier,
-						services: pimadParserObject.serviceOptionsArray,
-						username: '',
-						password: '',
-						hmiUrl: '',
-						opcuaServerUrl: endpoint,
-						dataAssemblies: pimadParserObject.dataAssemblyOptionsArray
-					};
-					// create PEAController and push to newPEAs list
-					newPEAs.push(new PEAController(peaOptions, protectedPEAs));
-				}
-			});
-		}
-
-		this.peas.push(...newPEAs);
-
-		newPEAs.forEach((p: PEAController) => {
-			p
-				.on('connected', () => {
-					this.emit('notify', {message: 'pea', pea: p.json()});
-				})
-				.on('disconnected', () => {
-					catManager.info('PEAController disconnected');
-					this.emit('notify', {message: 'pea', pea: p.json()});
-				})
-				.on('controlEnable', ({service}) => {
-					this.emit('notify', {message: 'service', peaId: p.id, service: service.json()});
-				})
-				.on('variableChanged', (variableChange: VariableChange) => {
-					this.variableArchive.push(variableChange);
-					if (this.player.currentRecipeRun) {
-						this.player.currentRecipeRun.variableLog.push(variableChange);
-					}
-					this.emit('notify', {message: 'variable', variable: variableChange});
-				})
-				.on('parameterChanged', (parameterChange: ParameterChange) => {
-					this.emit('notify', {
-						message: 'service',
-						peaId: p.id,
-						service: parameterChange.service.json()
-					});
-				})
-				.on('commandExecuted', (data) => {
-					const logEntry: ServiceLogEntry = {
-						timestampPOL: new Date(),
-						pea: p.id,
-						service: data.service.name,
-						procedure: data.procedure.name,
-						command: ServiceCommand[data.command],
-						parameter: data.parameter ? data.parameter.map((param) => {
-							return {name: param.name, value: param.value};
-						}) : undefined
-					};
-					this.serviceArchive.push(logEntry);
-					if (this.player.currentRecipeRun) {
-						this.player.currentRecipeRun.serviceLog.push(logEntry);
-					}
-				})
-				.on('stateChanged', ({service, state}) => {
-					const logEntry: ServiceLogEntry = {
-						timestampPOL: new Date(),
-						pea: p.id,
-						service: service.name,
-						state: ServiceState[state]
-					};
-					this.serviceArchive.push(logEntry);
-					if (this.player.currentRecipeRun) {
-						this.player.currentRecipeRun.serviceLog.push(logEntry);
-					}
-					this.emit('notify', {message: 'service', peaId: p.id, service: service.json()});
-				})
-				.on('opModeChanged', ({service}) => {
-					this.emit('notify', {message: 'service', peaId: p.id, service: service.json()});
-				})
-				.on('serviceCompleted', (service: Service) => {
-					this.performAutoReset(service);
-				});
-			this.emit('notify', {message: 'pea', pea: p.json()});
-		});
-		return newPEAs;
 	}
 
 	/**
@@ -488,6 +400,78 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 				}
 			}, this._autoresetTimeout);
 		}
+	}
+
+	/**
+	 * set all event listeners for the new PEAControllers
+	 * @param newPEAs - new loaded/instantiated PEAControllers
+	 * @private
+	 */
+	private setEventListeners(newPEAs: PEAController[]): PEAController[] {
+		newPEAs.forEach((p: PEAController) => {
+			p
+				.on('connected', () => {
+					this.emit('notify', {message: 'pea', pea: p.json()});
+				})
+				.on('disconnected', () => {
+					catManager.info('PEAController disconnected');
+					this.emit('notify', {message: 'pea', pea: p.json()});
+				})
+				.on('controlEnable', ({service}) => {
+					this.emit('notify', {message: 'service', peaId: p.id, service: service.json()});
+				})
+				.on('variableChanged', (variableChange: VariableChange) => {
+					this.variableArchive.push(variableChange);
+					if (this.player.currentRecipeRun) {
+						this.player.currentRecipeRun.variableLog.push(variableChange);
+					}
+					this.emit('notify', {message: 'variable', variable: variableChange});
+				})
+				.on('parameterChanged', (parameterChange: ParameterChange) => {
+					this.emit('notify', {
+						message: 'service',
+						peaId: p.id,
+						service: parameterChange.service.json()
+					});
+				})
+				.on('commandExecuted', (data) => {
+					const logEntry: ServiceLogEntry = {
+						timestampPOL: new Date(),
+						pea: p.id,
+						service: data.service.name,
+						procedure: data.procedure.name,
+						command: ServiceCommand[data.command],
+						parameter: data.parameter ? data.parameter.map((param) => {
+							return {name: param.name, value: param.value};
+						}) : undefined
+					};
+					this.serviceArchive.push(logEntry);
+					if (this.player.currentRecipeRun) {
+						this.player.currentRecipeRun.serviceLog.push(logEntry);
+					}
+				})
+				.on('stateChanged', ({service, state}) => {
+					const logEntry: ServiceLogEntry = {
+						timestampPOL: new Date(),
+						pea: p.id,
+						service: service.name,
+						state: ServiceState[state]
+					};
+					this.serviceArchive.push(logEntry);
+					if (this.player.currentRecipeRun) {
+						this.player.currentRecipeRun.serviceLog.push(logEntry);
+					}
+					this.emit('notify', {message: 'service', peaId: p.id, service: service.json()});
+				})
+				.on('opModeChanged', ({service}) => {
+					this.emit('notify', {message: 'service', peaId: p.id, service: service.json()});
+				})
+				.on('serviceCompleted', (service: Service) => {
+					this.performAutoReset(service);
+				});
+			this.emit('notify', {message: 'pea', pea: p.json()});
+		});
+		return newPEAs;
 	}
 }
 

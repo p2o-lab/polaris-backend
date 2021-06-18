@@ -3,9 +3,10 @@ import {
     DataAssemblyOptions,
     DataItemModel,
     OpcUaNodeOptions,
-    PEAModel, ProcedureModel, ServiceControlOptions, ServiceModel, ServiceOptions
+    PEAModel, PEAOptions, ProcedureModel, ServiceControlOptions, ServiceModel, ServiceOptions
 } from '@p2olab/polaris-interface';
 import {ProcedureOptions} from '@p2olab/polaris-interface/dist/service/options';
+import {ModularPlantManager} from './ModularPlantManager';
 
 export interface PiMAdParserInterface{
      dataAssemblyOptionsArray: DataAssemblyOptions[];
@@ -17,13 +18,49 @@ export interface PiMAdParserInterface{
  */
 export class PiMAdParser {
 
-    static createOptionsArrays(peaModel: PEAModel): PiMAdParserInterface {
+    /**
+     * parent function, which will be called in ModularPlantManager
+     * @param pimadIdentifier {string} uuid4
+     * @param manager {ModularPlantManager}
+     * @return {Promise<PEAOptions>}
+     */
+    public static async createPEAOptions(pimadIdentifier: string, manager: ModularPlantManager): Promise<PEAOptions>{
+        const peaModel: PEAModel = await manager.getPEAFromPimadPool(pimadIdentifier);
+        const pimadParserObject = PiMAdParser.createOptionsArrays(peaModel);
+        const endpoint = peaModel.endpoint[0].value;
+        // create PEAOptions
+        const peaOptions: PEAOptions = {
+            name: peaModel.name,
+            id: manager.generateUniqueIdentifier(),
+            pimadIdentifier: pimadIdentifier,
+            services: pimadParserObject.serviceOptionsArray,
+            username: '',
+            password: '',
+            hmiUrl: '',
+            opcuaServerUrl: endpoint,
+            dataAssemblies: pimadParserObject.dataAssemblyOptionsArray
+        };
+        return peaOptions;
+    }
+
+    /**
+     * create DataAssemblyOptionsArray and ServiceOptionsArray, which are neccessary for PEAOptions
+     * @param peaModel{PEAModel}
+     * @private
+     * @return {PiMAdParserInterface}
+     */
+    private static createOptionsArrays(peaModel: PEAModel): PiMAdParserInterface {
         const dataAssemblyOptionsArray = this.createDataAssemblyOptionsArray(peaModel.dataAssemblies);
         const servicesOptionsArray = this.createServiceOptionsArray(peaModel.services);
         return {dataAssemblyOptionsArray: dataAssemblyOptionsArray, serviceOptionsArray: servicesOptionsArray};
     }
 
-    static createDataAssemblyOptionsArray(dataAssemblyModels: DataAssemblyModel[]): DataAssemblyOptions[]{
+    /**
+     * @param dataAssemblyModels {DataAssemblyModel[]}
+     * @return {DataAssemblyOptions[]}
+     * @private
+     */
+    private static createDataAssemblyOptionsArray(dataAssemblyModels: DataAssemblyModel[]): DataAssemblyOptions[]{
         const dataAssemblyOptionsArray: DataAssemblyOptions[]=[];
         dataAssemblyModels.forEach(dataAssemblyModel => {
             const dataAssemblyOptions = PiMAdParser.createDataAssemblyOptions(dataAssemblyModel);
@@ -32,7 +69,12 @@ export class PiMAdParser {
         return(dataAssemblyOptionsArray);
     }
 
-    static createServiceOptionsArray(serviceModels: ServiceModel[]): ServiceOptions[]{
+    /**
+     * @param dataAssemblyModels {ServiceModelModel[]}
+     * @return {ServiceOptions[]}
+     * @private
+     */
+    private static createServiceOptionsArray(serviceModels: ServiceModel[]): ServiceOptions[]{
         const servicesOptionsArray: ServiceOptions[] = [];
         serviceModels.forEach(serviceModel=> {
             const procedureOptionsArray = this.createProcedureOptionsArray(serviceModel.procedures);
@@ -49,12 +91,17 @@ export class PiMAdParser {
         return servicesOptionsArray;
     }
 
+    /**
+     * @param dataAssemblyModels {DataAssemblyModel[]}
+     * @return {DataAssemblyOptions[]}
+     * @private
+     */
     private static createProcedureOptionsArray(procedureModels: ProcedureModel[]): ProcedureOptions[] {
         const procedureOptionsArray: ProcedureOptions[] = [];
         procedureModels.forEach(procedure =>{
             const procedureName = procedure.name;
             let isDefault: any, isSelfCompleting: any, procedureID='';
-            procedure.attributes.forEach(attribute =>{
+            procedure.attributes.forEach((attribute: { name: any; value: string}) =>{
                 switch(attribute.name){
                     case ('IsSelfCompleting'):
                         isSelfCompleting = JSON.parse(attribute.value);
@@ -81,7 +128,13 @@ export class PiMAdParser {
         return procedureOptionsArray;
     }
 
-    static createDataAssemblyOptions(dataAssemblyModel: DataAssemblyModel): DataAssemblyOptions {
+    /**
+     *
+     * @param dataAssemblyModel {DataAssemblyModel}
+     * @private
+     * @return {DataAssemblyOptions}
+     */
+    private static createDataAssemblyOptions(dataAssemblyModel: DataAssemblyModel): DataAssemblyOptions {
         // Initializing baseDataAssemblyOptions, which will be filled during an iteration below
             const baseDataAssemblyOptions:
                 {
@@ -106,7 +159,7 @@ export class PiMAdParser {
                 if(cIData){ //dynamic
                     nodeId= cIData.nodeId.identifier;
                     namespaceIndex = cIData.nodeId.namespaceIndex;
-                   // namespaceIndex='urn:DESKTOP-6QLO5BB:NodeOPCUA-Server';
+                    namespaceIndex='urn:DESKTOP-6QLO5BB:NodeOPCUA-Server';
                     const opcUaNodeOptions: OpcUaNodeOptions = {
                         nodeId: nodeId,
                         namespaceIndex: namespaceIndex,
@@ -127,4 +180,5 @@ export class PiMAdParser {
             };
         return dataAssemblyOptions;
     }
+
 }
