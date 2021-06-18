@@ -159,7 +159,7 @@ export class PiMAdParser {
                 if(cIData){ //dynamic
                     nodeId= cIData.nodeId.identifier;
                     namespaceIndex = cIData.nodeId.namespaceIndex;
-                    namespaceIndex='urn:DESKTOP-6QLO5BB:NodeOPCUA-Server';
+                    //namespaceIndex='urn:DESKTOP-6QLO5BB:NodeOPCUA-Server';
                     const opcUaNodeOptions: OpcUaNodeOptions = {
                         nodeId: nodeId,
                         namespaceIndex: namespaceIndex,
