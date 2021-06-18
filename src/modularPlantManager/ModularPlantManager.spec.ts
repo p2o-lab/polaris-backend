@@ -44,6 +44,11 @@ const expect = chai.expect;
 describe('ModularPlantManager', () => {
 	const parseJson = require('json-parse-better-errors');
 
+	it('getAllPEAControllers()',  async() => {
+		const modularPlantManager = new ModularPlantManager();
+		expect(modularPlantManager.getAllPEAControllers()).empty;
+	});
+
 	it('addPEAToPimadPool()',  async() => {
 		const modularPlantManager = new ModularPlantManager();
 		const peaModel = await modularPlantManager.addPEAToPimadPool({source: 'tests/testpea.zip'});
@@ -55,10 +60,9 @@ describe('ModularPlantManager', () => {
 		return expect(modularPlantManager.addPEAToPimadPool({source: 'tests/stringview.json'})).to.be.rejected;
 	});
 
-	it('getAllPEAsFromPimadPool() to fail',  async() => {
+	it('getAllPEAsFromPimadPool(), empty',  async() => {
 		const modularPlantManager = new ModularPlantManager();
-		//TODO seems to be problem in pimad
-		return expect(modularPlantManager.getAllPEAsFromPimadPool()).to.be.rejected;
+		return expect(modularPlantManager.getAllPEAsFromPimadPool()).to.be.empty;
 	});
 
 	describe('functions, which need PiMAdPEA', () => {
@@ -66,18 +70,19 @@ describe('ModularPlantManager', () => {
 		let pimadId = '';
 
 		beforeEach(async () => {
-				modularPlantManager = new ModularPlantManager();
-				const peaModel = await modularPlantManager.addPEAToPimadPool({source: 'tests/testpea.zip'});
-				pimadId = peaModel.pimadIdentifier;
-			});
-		it('getPEAFromPimadPool()',  () => {
+			modularPlantManager = new ModularPlantManager();
+			const peaModel = await modularPlantManager.addPEAToPimadPool({source: 'tests/testpea.zip'});
+			pimadId = peaModel.pimadIdentifier;
+		});
+
+		it('getPEAFromPimadPool()', () => {
 			return expect(modularPlantManager.getPEAFromPimadPool(pimadId)).to.not.be.rejected;
 		});
-		it('getPEAFromPimadPool() to fail',  () => {
+		it('getPEAFromPimadPool() to fail', () => {
 			return expect(modularPlantManager.getPEAFromPimadPool('')).to.be.rejected;
 		});
 
-		it('getAllPEAsFromPimadPool()',  () => {
+		it('getAllPEAsFromPimadPool()', () => {
 			return expect(modularPlantManager.getAllPEAsFromPimadPool()).to.not.be.rejected;
 		});
 
@@ -93,25 +98,51 @@ describe('ModularPlantManager', () => {
 			return expect(modularPlantManager.loadPEAController('')).to.be.rejected;
 		});
 
-		it('getPEAController()', async () => {
+		it('deletePEAFromPimadPool()', () => {
+			return expect(modularPlantManager.deletePEAFromPimadPool(pimadId)).to.not.throw;
+		});
+		it('deletePEAFromPimadPool() to fail', () => {
+			return expect(modularPlantManager.deletePEAFromPimadPool('')).to.be.rejected;
+		});
+	});
+
+	describe('functions, which need PEAController instance', () => {
+		let peaId='';
+		let modularPlantManager: ModularPlantManager;
+		let pimadId = '';
+		before(async()=>{
+			modularPlantManager = new ModularPlantManager();
+			const peaModel = await modularPlantManager.addPEAToPimadPool({source: 'tests/testpea.zip'});
+			pimadId = peaModel.pimadIdentifier;
 			const peaControllers = await modularPlantManager.loadPEAController(pimadId);
 			const peaController = peaControllers[0];
-			const peaId = peaController.id;
+			peaId = peaController.id;
+		});
+
+		it('getPEAController()',  () => {
 			expect(() => modularPlantManager.getPEAController(peaId)).not.to.throw();
 		});
+
 		it('getPEAController() to fail', () => {
 			expect(() => modularPlantManager.getPEAController('')).to.throw();
 		});
 
-		it('deletePEAFromPimadPool()', () => {
-			return expect(modularPlantManager.deletePEAFromPimadPool(pimadId)).to.not.throw;
+		it('removePEAController()',  () => {
+			return expect(modularPlantManager.removePEAController(peaId)).to.not.rejected;
 		});
 
-		it('deletePEAFromPimadPool() to fail', () => {
-			return expect(modularPlantManager.deletePEAFromPimadPool('')).to.be.rejected;
+		it('removePEAController() to fail, wrong peaId', () => {
+			return expect(modularPlantManager.removePEAController('')).to.rejected;
 		});
-
-		it('updateServerSettings()', async() => {
+		it('removePEAController() to fail, protected', async() => {
+			const peaModel = await modularPlantManager.addPEAToPimadPool({source: 'tests/testpea.zip'});
+			pimadId = peaModel.pimadIdentifier;
+			const peaControllers = await modularPlantManager.loadPEAController(pimadId, true);
+			const peaController = peaControllers[0];
+			peaId = peaController.id;
+			return expect(modularPlantManager.removePEAController('')).to.rejected;
+		});
+		it('updateServerSettings()', async () => {
 			// instantiate PEAController first
 			const peaControllers = await modularPlantManager.loadPEAController(pimadId);
 			const peaController = peaControllers[0];
@@ -123,10 +154,31 @@ describe('ModularPlantManager', () => {
 				serverUrl: 'url',
 			};
 			modularPlantManager.updateServerSettings(options);
-			expect(modularPlantManager.getPEAController(peaId).connection.endpoint).equals('url');
-			expect(modularPlantManager.getPEAController(peaId).connection.username).equals('Bob');
-			expect(modularPlantManager.getPEAController(peaId).connection.password).equals('1234');
+			expect(peaController.connection.endpoint).equals('url');
+			expect(peaController.connection.username).equals('Bob');
+			expect(peaController.connection.password).equals('1234');
 		});
+
+		it('getAllPEAControllers()',  () => {
+			expect(modularPlantManager.getAllPEAControllers()).to.not.empty;
+		});
+
+		it('getService()',  async() => {
+			expect(()=>modularPlantManager.getService(peaId, 'Integral1')).to.not.throw();
+			expect(()=>modularPlantManager.getService(peaId, 'Integral2')).to.not.throw();
+			expect(()=>modularPlantManager.getService(peaId, 'Trigonometry')).to.not.throw();
+		});
+		it('getService() to fail, wrong peaId',  () => {
+			expect(()=>modularPlantManager.getService('', 'Integral1')).to.throw();
+		});
+		it('getService() to fail, wrong serviceName',  () => {
+			expect(()=>modularPlantManager.getService(peaId, '')).to.throw();
+		});
+		it('connect()',  async() => {
+			await modularPlantManager.getPEAController(peaId).connect();
+
+		});
+
 	});
 
 

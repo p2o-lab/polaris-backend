@@ -49,7 +49,7 @@ import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import PiMAdResponse = Backbone.PiMAdResponse;
 import { v4 as uuidv4 } from 'uuid';
-import {PiMAdParser} from './PiMAdParser';
+import {PiMAdParser} from './pea/PiMAdParser/PiMAdParser';
 import {ProcedureOptions} from '@p2olab/polaris-interface/dist/service/options';
 
 
@@ -173,7 +173,7 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 	public getAllPEAsFromPimadPool(): Promise<PEAModel[]>{
 		return new Promise((resolve, reject)=>{
 			this.pimadPool.getAllPEAs((response: PiMAdResponse) => {
-				if(response.getMessage()=='Success!') resolve();
+				if(response.getMessage()=='Success!') resolve(response.getContent() as PEAModel[]);
 				else reject(new Error((response.getMessage())));
 			});
 		});
