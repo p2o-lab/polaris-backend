@@ -44,7 +44,6 @@ describe('StringView', () => {
 				dataItems: baseDataAssemblyOptions
 			};
 			const da1: StringView = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as StringView;
-			expect(da1 instanceof StringView).to.equal(true);
 			expect(da1.tagName).to.equal('Variable');
 			expect(da1.tagDescription).to.equal('Test');
 			expect(da1.communication.WQC).to.not.equal(undefined);

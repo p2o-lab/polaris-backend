@@ -175,10 +175,8 @@ describe('ModularPlantManager', () => {
 			expect(()=>modularPlantManager.getService(peaId, '')).to.throw();
 		});
 		it('connect()',  async() => {
-			await modularPlantManager.getPEAController(peaId).connect();
-
+			//await modularPlantManager.getPEAController(peaId).connect();
 		});
-
 	});
 
 

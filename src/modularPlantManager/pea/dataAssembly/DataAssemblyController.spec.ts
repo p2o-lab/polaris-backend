@@ -1,4 +1,5 @@
 /*
+/!*
  * MIT License
  *
  * Copyright (c) 2021 P2O-Lab <p2o-lab@mailbox.tu-dresden.de>,
@@ -21,7 +22,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- */
+ *!/
 
 import {
 	BaseDataAssemblyOptions, BinMonOptions, BinViewOptions, DataAssemblyOptions, DIntMonOptions, MonAnaDrvOptions,
@@ -288,3 +289,4 @@ describe('DataAssembly', () => {
 	});
 
 });
+*/
