@@ -28,17 +28,37 @@ import {AnaMan} from './AnaMan';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+//we can use dintmanint.json, because its similiar to AnaManInt
+import * as baseDataAssemblyOptions from '../../../../../../../tests/dintmanint.json';
+import {DataAssemblyControllerFactory} from '../../../DataAssemblyControllerFactory';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('AnaMan', () => {
-
-	describe('static', () => {
+	describe('', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
-		it('should create AnaMan', async () => { /* TODO: Add Test */
+		it('should create AnaMan',  () => {
+			const dataAssemblyOptions: DataAssemblyOptions = {
+				name: 'Variable',
+				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperationElement/AnaMan',
+				dataItems: baseDataAssemblyOptions
+			};
+			const da1 = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as AnaMan;
+			expect(da1.communication.VOut).to.not.equal(undefined);
+			expect(da1.scaleSettings).to.not.be.undefined;
+			expect(da1.unitSettings).to.not.be.undefined;
+			expect(da1.valueLimitation).to.not.be.undefined;
+
+			expect(da1.communication.VMan).to.not.equal(undefined);
+			expect(da1.communication.VRbk).to.not.equal(undefined);
+			expect(da1.communication.VFbk).to.not.equal(undefined);
+
+			expect(da1.defaultReadDataItem).equal(da1.communication.VOut);
+			expect(da1.defaultReadDataItemType).to.equal('number');
+			expect(da1.defaultWriteDataItem).equal(da1.communication.VMan);
+			expect(da1.defaultWriteDataItemType).to.equal('number');
 		});
-
 	});
-
 });

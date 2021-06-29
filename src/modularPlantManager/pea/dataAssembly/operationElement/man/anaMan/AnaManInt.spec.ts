@@ -25,20 +25,30 @@
 
 import {OpcUaConnection} from '../../../../connection';
 import {AnaManInt} from './AnaManInt';
-
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import * as baseDataAssemblyOptions from '../../../../../../../tests/dintmanint.json';
+import {BinManInt} from '../binMan/BinManInt';
+import {DataAssemblyControllerFactory} from '../../../DataAssemblyControllerFactory';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('AnaManInt', () => {
-
-	describe('static', () => {
+	describe( '',() => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
-		it('should create AnaManInt', async () => { /* TODO: Add Test */
+		it('should create AnaManInt',  () => {
+			const dataAssemblyOptions: DataAssemblyOptions = {
+				name: 'Variable',
+				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperationElement/AnaManInt',
+				dataItems: baseDataAssemblyOptions
+			};
+			const da1: BinManInt = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as BinManInt;
+			expect(da1.sourceMode).to.be.not.undefined;
+			expect(da1.communication.VInt).to.not.equal(undefined);
+			expect(da1.wqc).to.not.equal(undefined);
+			//rest is tested in AnaMan
 		});
-
 	});
-
 });
