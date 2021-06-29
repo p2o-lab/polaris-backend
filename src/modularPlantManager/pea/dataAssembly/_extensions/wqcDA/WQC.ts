@@ -50,7 +50,7 @@ export class WQC {
 	}
 
 	get WQC(): number | undefined {
-		if(this.wqc) return this.wqc;
+		if(this.wqc != undefined) return this.wqc;
 		else return this.dAController.communication.WQC.value;
 	}
 }
