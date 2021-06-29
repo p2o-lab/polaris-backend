@@ -1,0 +1,52 @@
+{
+  "TagName": "Variable",
+  "TagDescription": "Test",
+  "OSLevel": {
+    "nodeId": "Variable.OSLevel",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "WQC": {
+    "nodeId": "Variable.WQC",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "SrcChannel": {
+    "nodeId": "Variable.SrcChannel",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "SrcManAut": {
+    "nodeId": "Variable.SrcManAut",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "SrcIntAut": {
+    "nodeId": "Variable.SrcIntAut",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "SrcIntOp": {
+    "nodeId": "Variable.SrcIntOp",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "SrcManOp": {
+    "nodeId": "Variable.SrcManOp",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "SrcIntAct": {
+    "nodeId": "Variable.SrcIntAct",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "SrcManAct": {
+    "nodeId": "Variable.SrcManAct",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  }
+}
+
+
+
