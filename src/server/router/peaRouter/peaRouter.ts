@@ -79,22 +79,19 @@ const upload = multer({storage: storage});
  * @apiGroup PEAController
  * @apiParam {PEAOptions} pea PEAController to be added.
  */
-peaRouter.post('/addByPiMAd', upload.single('uploadedFile'),(req, res) => {
+peaRouter.post('/addByPiMAd', upload.single('uploadedFile'),async (req, res) => {
 	// parse filepath of uploaded file
 	const filePath: string = (req as MulterRequest).file.path;
 	//create object to pass to PiMAd
 	const object = {source:filePath};
 
 	const manager: ModularPlantManager = req.app.get('manager');
-	manager.addPEAToPimadPool(object, response => {
-		if(response.getMessage()=='Success!'){
-			res.status(200).send('"'+response.getMessage()+'"');
-		}else{
-			res.status(500).send('"'+response.getMessage()+'"');
-		}
-		// delete file
-		fs.unlinkSync(filePath);
-	});
+	try{
+		await manager.addPEAToPimadPool(object);
+		res.status(200).send('"Success!"');
+	} catch(e){
+		res.status(500).send('"'+e.toString()+'"');
+	}
 });
 
 /**
@@ -104,14 +101,12 @@ peaRouter.post('/addByPiMAd', upload.single('uploadedFile'),(req, res) => {
  */
 peaRouter.get('/PiMAdPEAs', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
-	manager.getAllPEAsFromPimadPool(response => {
-			if (response.getMessage() == 'Success!') {
-				res.status(200).send(response.getContent());
-			} else {
-				res.status(500).send('"'+response.getMessage()+'"');
-			}
-		}
-	);
+	try{
+		const pimadPEAs = await manager.getAllPEAsFromPimadPool();
+		res.status(200).send(pimadPEAs);
+	} catch(e){
+		res.status(500).send('"'+e.toString()+'"');
+	}
 }));
 
 /**
@@ -250,13 +245,12 @@ peaRouter.delete('/:peaId', asyncHandler(async (req: Request, res: Response) => 
 
 peaRouter.delete('/PiMAd/:peaId', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
-	manager.deletePEAFromPimadPool(req.params.peaId,response => {
-		if(response.getMessage()=='Success!'){
-			res.status(200).send('"'+response.getMessage()+'"');
-		} else {
-			res.status(500).send('"'+response.getMessage()+'"');
-		}
-	});
+	try{
+		await manager.deletePEAFromPimadPool(req.params.peaId);
+		res.status(200).send('"Success!"');
+	} catch(e){
+		res.status(500).send('"'+e.toString()+'"');
+	}
 }));
 
 /**
