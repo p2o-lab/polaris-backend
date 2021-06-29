@@ -30,15 +30,28 @@ import {
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import * as baseDataAssemblyOptions from '../../../../../tests/binmanint.json';
+import {BinMon, IndicatorElement} from '../indicatorElement';
+import {DataAssemblyControllerFactory} from '../DataAssemblyControllerFactory';
+import {BinMan} from './man';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('OperationElement', () => {
-
-	describe('static', () => {
+	describe('should create OperationElement', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
-		it('should create OperationElement', async () => { /* TODO: Add Test */
+		it('should create OperationElement', () => {
+			const dataAssemblyOptions: DataAssemblyOptions = {
+				name: 'Variable',
+				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperationElement/BinMan',
+				dataItems: baseDataAssemblyOptions
+			};
+			const da1: OperationElement = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as OperationElement;
+			expect(da1).to.be.not.undefined;
+			expect(da1.osLevel).to.be.not.undefined;
+			expect(da1.communication).to.be.not.undefined;
 		});
 	});
 
