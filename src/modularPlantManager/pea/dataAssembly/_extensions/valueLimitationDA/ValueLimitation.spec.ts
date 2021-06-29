@@ -27,19 +27,33 @@ import {OpcUaConnection} from '../../../connection';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import * as baseDataAssemblyOptions from '../../../../../../tests/dintmanint.json';
+import {DataAssemblyController} from '../../DataAssemblyController';
+import {UnitSettings} from '../unitDA/UnitSettings';
+import {DIntMan} from '../../operationElement';
+import {ValueLimitation} from './ValueLimitation';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-describe('ValueLimitationDA', () => {
+describe('ValueLimitation', () => {
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const parseJson = require('json-parse-better-errors');
 
-	describe('static', () => {
+	describe('', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
-		it('should create ValueLimitationDA', async () => { /* TODO: Add Test */
+		it('should create ValueLimitationDA',  () => {
+			const dataAssemblyOptions: DataAssemblyOptions = {
+				name: 'Variable',
+				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperatorElement/DIntMan',
+				dataItems: baseDataAssemblyOptions
+			};
+			const da = new DataAssemblyController(dataAssemblyOptions, emptyOPCUAConnection);
+			const valueLimitation = new ValueLimitation(da);
+			expect(valueLimitation).to.not.be.undefined;
+			expect((da as DIntMan).communication.VMin).to.not.be.undefined;
+			expect((da as DIntMan).communication.VMax).to.not.be.undefined;
 		});
-
 	});
-
 });

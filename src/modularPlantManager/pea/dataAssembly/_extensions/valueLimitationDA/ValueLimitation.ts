@@ -38,6 +38,7 @@ export class ValueLimitation{
 
 	constructor(dAController: any) {
 		this.dAController = dAController;
+		this.initialize();
 	}
 
 	initialize(){

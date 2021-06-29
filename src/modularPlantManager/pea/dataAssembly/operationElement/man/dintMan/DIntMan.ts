@@ -28,7 +28,7 @@ import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {OpcUaConnection, OpcUaDataItem} from '../../../../connection';
 import {
 	ScaleSettingsRuntime,
-	UnitDataAssemblyRuntime,
+	UnitDataAssemblyRuntime, UnitSettings,
 	ValueLimitationRuntime
 } from '../../../_extensions';
 import {OperationElement, OperationElementRuntime} from '../../OperationElement';
@@ -48,6 +48,7 @@ export class DIntMan extends OperationElement {
 	public readonly communication!: DIntManRuntime;
 	public readonly valueLimitation: ValueLimitation;
 	public readonly scaleSettings: ScaleSettings;
+	public readonly unitSettings: UnitSettings;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
@@ -56,10 +57,8 @@ export class DIntMan extends OperationElement {
 		this.communication.VMan = this.createDataItem('VMan', 'write');
 
 		this.valueLimitation = new ValueLimitation(this);
-		this.valueLimitation.initialize();
-
 		this.scaleSettings = new ScaleSettings(this);
-		;
+		this.unitSettings = new UnitSettings(this);
 
 		this.defaultReadDataItem = this.communication.VOut;
 		this.defaultReadDataItemType = 'number';
