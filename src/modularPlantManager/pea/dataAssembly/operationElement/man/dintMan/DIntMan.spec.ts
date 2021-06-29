@@ -28,6 +28,10 @@ import {DIntMan} from './DIntMan';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import * as baseDataAssemblyOptions from '../../../../../../../tests/binmanint.json';
+import {BinMan} from '../binMan/BinMan';
+import {DataAssemblyControllerFactory} from '../../../DataAssemblyControllerFactory';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -36,7 +40,23 @@ describe('DIntMan', () => {
 
 	describe('static', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
-		it('should create DIntMan', async () => { /* TODO: Add Test */
+		it('should create DIntMan', async () => {
+			const dataAssemblyOptions: DataAssemblyOptions = {
+				name: 'Variable',
+				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperationElement/DIntMan',
+				dataItems: baseDataAssemblyOptions
+			};
+			const da1: DIntMan = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as DIntMan;
+			expect(da1.communication.VOut).to.not.equal(undefined);
+			expect(da1.scaleSettings).to.not.be.undefined;
+			expect(da1.unitSettings).to.not.be.undefined;
+			expect(da1.valueLimitation).to.not.be.undefined;
+			expect(da1.communication.VMan).to.not.equal(undefined);
+			expect(da1.communication.VRbk).to.not.equal(undefined);
+			expect(da1.defaultReadDataItem).equal(da1.communication.VOut);
+			expect(da1.defaultReadDataItemType).to.equal('boolean');
+			expect(da1.defaultWriteDataItem).equal(da1.communication.VMan);
+			expect(da1.defaultWriteDataItemType).to.equal('boolean');
 		});
 
 	});
