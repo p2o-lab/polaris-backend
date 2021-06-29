@@ -46,9 +46,7 @@ export class AnaManInt extends AnaMan {
 
 		this.wqc = new WQC(this);
 
-
 		this.sourceMode = new SourceModeController(this);
-		this.sourceMode.initialize();
 
 		this.communication.VInt = this.createDataItem('VInt', 'read');
 	}

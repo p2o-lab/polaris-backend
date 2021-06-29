@@ -43,9 +43,10 @@ export class SourceModeController {
 
 	constructor(dAController: any) {
 		this.dAController = dAController;
+		this.initialize();
 	}
 
-	initialize(){
+	private initialize(){
 		this.dAController.communication.SrcChannel = this.dAController.createDataItem('SrcChannel', 'read', 'boolean');
 		this.dAController.communication.SrcManAut = this.dAController.createDataItem('SrcManAut', 'read', 'boolean');
 		this.dAController.communication.SrcIntAut = this.dAController.createDataItem('SrcIntAut', 'read', 'boolean');
