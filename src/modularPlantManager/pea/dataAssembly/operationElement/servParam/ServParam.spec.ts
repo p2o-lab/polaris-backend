@@ -28,17 +28,28 @@ import {ServParam} from './ServParam';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import * as baseDataAssemblyOptions from '../../../../../../tests/anaserveparam.json';
+import {DataAssemblyControllerFactory} from '../../DataAssemblyControllerFactory';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('ServParam', () => {
 
-	describe('static', () => {
+	describe('', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
-		it('should create ServParam', async () => { /* TODO: Add Test */
+		it('should create ServParam', () => {
+			const dataAssemblyOptions: DataAssemblyOptions = {
+				name: 'Variable',
+				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperationElement/StringServParam',
+				dataItems: baseDataAssemblyOptions
+			};
+			const da1 = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as ServParam;
+			expect(da1.serviceSourceMode).to.not.be.undefined;
+			expect(da1.serviceOpMode).to.not.be.undefined;
+			expect(da1.wqc).to.not.be.undefined;
+			expect(da1.communication.Sync).to.not.be.undefined;
 		});
-
 	});
-
 });

@@ -1,0 +1,151 @@
+{
+    "TagName": "Variable",
+    "TagDescription": "Test",
+    "WQC": {
+      "nodeId": "Variable.WQC",
+      "namespaceIndex": "localhost",
+      "dataType": "xs:IDREF"
+    },
+    "VSclMin": {
+      "nodeId": "Variable.VSclMin",
+      "namespaceIndex": "localhost",
+      "dataType": "xs:IDREF"
+    },
+    "VSclMax": {
+      "nodeId": "Variable.VSclMax",
+      "namespaceIndex": "localhost",
+      "dataType": "xs:IDREF"
+    },
+    "VUnit": {
+      "nodeId": "Variable.VUnit",
+      "namespaceIndex": "localhost",
+      "dataType": "xs:IDREF"
+    },
+    "OSLevel": {
+      "nodeId": "Variable.OSLevel",
+      "namespaceIndex": "localhost",
+      "dataType": "xs:IDREF"
+    },
+    "SrcChannel": {
+      "nodeId": "Variable.SrcChannel",
+      "namespaceIndex": "localhost",
+      "dataType": "xs:IDREF"
+    },
+    "SrcExtAut": {
+      "nodeId": "Variable.SrcExtAut",
+      "namespaceIndex": "localhost",
+      "dataType": "xs:IDREF"
+    },
+    "SrcIntAut": {
+      "nodeId": "Variable.SrcIntAut",
+      "namespaceIndex": "localhost",
+      "dataType": "xs:IDREF"
+    },
+    "SrcIntOp": {
+      "nodeId": "Variable.SrcIntOp",
+      "namespaceIndex": "localhost",
+      "dataType": "xs:IDREF"
+    },
+    "SrcExtOp": {
+      "nodeId": "Variable.SrcExtOp",
+      "namespaceIndex": "localhost",
+      "dataType": "xs:IDREF"
+    },
+    "SrcIntAct": {
+      "nodeId": "Variable.SrcIntAct",
+      "namespaceIndex": "localhost",
+      "dataType": "xs:IDREF"
+    },
+    "SrcExtAct": {
+      "nodeId": "Variable.SrcExtAct",
+      "namespaceIndex": "localhost",
+      "dataType": "xs:IDREF"
+    },
+    "StateChannel": {
+      "nodeId": "Variable.StateChannel",
+      "namespaceIndex": "localhost",
+      "dataType": "xs:IDREF"
+    },
+    "StateOffAut": {
+      "nodeId": "Variable.StateOffAut",
+      "namespaceIndex": "localhost",
+      "dataType": "xs:IDREF"
+    },
+    "StateOpAut": {
+      "nodeId": "Variable.StateOpAut",
+      "namespaceIndex": "localhost",
+      "dataType": "xs:IDREF"
+    },
+    "StateAutAut": {
+      "nodeId": "Variable.StateAutAut",
+      "namespaceIndex": "localhost",
+      "dataType": "xs:IDREF"
+    },
+    "StateOffOp": {
+      "nodeId": "Variable.StateOffOp",
+      "namespaceIndex": "localhost",
+      "dataType": "xs:IDREF"
+    },
+    "StateOpOp": {
+      "nodeId": "Variable.StateOpOp",
+      "namespaceIndex": "localhost",
+      "dataType": "xs:IDREF"
+    },
+    "StateAutOp": {
+      "nodeId": "Variable.StateAutOp",
+      "namespaceIndex": "localhost",
+      "dataType": "xs:IDREF"
+    },
+    "StateOpAct": {
+      "nodeId": "Variable.StateOpAct",
+      "namespaceIndex": "localhost",
+      "dataType": "xs:IDREF"
+    },
+    "StateAutAct": {
+      "nodeId": "Variable.StateAutAct",
+      "namespaceIndex": "localhost",
+      "dataType": "xs:IDREF"
+    },
+    "StateOffAct": {
+      "nodeId": "Variable.StateOffAct",
+      "namespaceIndex": "localhost",
+      "dataType": "xs:IDREF"
+    },
+    "Sync": {
+      "nodeId": "Variable.Sync",
+      "namespaceIndex": "localhost",
+      "dataType": "xs:IDREF"
+    },
+    "VExt": {
+      "nodeId": "Variable.VExt",
+      "namespaceIndex": "localhost",
+      "dataType": "xs:IDREF"
+    },
+    "VOp": {
+      "nodeId": "Variable.VOp",
+      "namespaceIndex": "localhost",
+      "dataType": "xs:IDREF"
+    },
+    "VInt": {
+      "nodeId": "Variable.VInt",
+      "namespaceIndex": "localhost",
+      "dataType": "xs:IDREF"
+    },
+    "VOut": {
+      "nodeId": "Variable.VOut",
+      "namespaceIndex": "localhost",
+      "dataType": "xs:IDREF"
+    },
+    "VFbk": {
+      "nodeId": "Variable.VFbk",
+      "namespaceIndex": "localhost",
+      "dataType": "xs:IDREF"
+    },
+    "VReq": {
+      "nodeId": "Variable.VReq",
+      "namespaceIndex": "localhost",
+      "dataType": "xs:IDREF"
+    }
+}
+
+
