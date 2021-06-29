@@ -47,12 +47,12 @@ describe('DIntView', () => {
 			};
 			const da1: DIntView = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as DIntView;
 			expect(da1 instanceof DIntView).to.equal(true);
+			expect(da1.tagName).to.equal('Variable');
+			expect(da1.tagDescription).to.equal('Test');
 			expect(da1.communication.V).to.not.equal(undefined);
 			expect(da1.communication.WQC).to.not.equal(undefined);
 			expect(da1.communication.VSclMax).to.not.equal(undefined);
 			expect(da1.communication.VSclMin).to.not.equal(undefined);
-			expect(da1.tagName).to.not.equal(undefined);
-			expect(da1.tagDescription).to.not.equal(undefined);
 			expect(da1.communication.VUnit).to.not.equal(undefined);
 		});
 

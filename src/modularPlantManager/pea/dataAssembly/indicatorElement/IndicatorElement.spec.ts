@@ -27,17 +27,48 @@ import {OpcUaConnection} from '../../connection';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import * as baseDataAssemblyOptionsStatic from '../../../../../tests/binmon_static.json';
+import * as baseDataAssemblyOptions from '../../../../../tests/binmon.json';
+
+import {DataAssemblyControllerFactory} from '../DataAssemblyControllerFactory';
+import {IndicatorElement} from './IndicatorElement';
+import {BinMon} from './BinView/BinMon';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('IndicatorElement', () => {
 
-	describe('static', () => {
+	describe('static WQC', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
-		it('should create IndicatorElement', async () => { /* TODO: Add Test */
-		});
+		it('should create IndicatorElement', () => {
+			const dataAssemblyOptions: DataAssemblyOptions = {
+				name: 'Variable',
+				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/BinMon',
+				dataItems: baseDataAssemblyOptionsStatic
+			};
+			const da1: BinMon = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as BinMon;
 
+			expect(da1 instanceof IndicatorElement).to.equal(true);
+			expect(da1.communication.WQC).to.equal(undefined);
+			expect(da1.wqc.WQC).to.equal(0);
+		});
 	});
 
+	describe('dynamic WQC', ()=>{
+		const emptyOPCUAConnection = new OpcUaConnection('', '');
+		it('should create IndicatorElement', () => {
+			const dataAssemblyOptions: DataAssemblyOptions = {
+				name: 'Variable',
+				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/BinMon',
+				dataItems: baseDataAssemblyOptions
+			};
+			const da1: BinMon = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as BinMon;
+
+			expect(da1 instanceof IndicatorElement).to.equal(true);
+			expect(da1.communication.WQC).to.not.be.undefined;
+			expect(da1.wqc.WQC).to.be.undefined;
+		});
+	});
 });
