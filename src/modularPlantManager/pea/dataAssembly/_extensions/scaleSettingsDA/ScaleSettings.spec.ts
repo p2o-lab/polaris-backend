@@ -27,17 +27,30 @@ import {OpcUaConnection} from '../../../connection';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import * as baseDataAssemblyOptions from '../../../../../../tests/dintmanint.json';
+import {DataAssemblyController} from '../../DataAssemblyController';
+import {ScaleSettings} from './ScaleSettings';
+import {DIntMan} from '../../operationElement';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-describe('ScaleSettingsDA', () => {
-
-	describe('static', () => {
+describe('ScaleSettings', () => {
+	describe('', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
-		it('should create ScaleSettingsDA', async () => { /* TODO: Add Test */
+		it('should create ScaleSettings', async () => {
+			/* TODO: Add Test */
+			const dataAssemblyOptions: DataAssemblyOptions = {
+				name: 'Variable',
+				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperatorElement/DIntMan',
+				dataItems: baseDataAssemblyOptions
+			};
+			const da = new DataAssemblyController(dataAssemblyOptions, emptyOPCUAConnection);
+			const scaleSettings = new ScaleSettings(da);
+			expect(scaleSettings).to.not.be.undefined;
+			expect((da as DIntMan).communication.VSclMax).to.not.be.undefined;
+			expect((da as DIntMan).communication.VSclMin).to.not.be.undefined;
 		});
-
 	});
-
 });
