@@ -46,7 +46,6 @@ export class BinManInt extends BinMan {
 
 		this.wqc = new WQC(this);
 
-
 		this.communication.VInt = this.createDataItem('VInt', 'read');
 
 		this.sourceMode = new SourceModeController(this);

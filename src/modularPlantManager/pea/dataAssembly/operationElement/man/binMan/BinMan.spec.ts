@@ -28,17 +28,35 @@ import {BinMan} from './BinMan';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import * as baseDataAssemblyOptions from '../../../../../../../tests/binmanint.json';
+import {OperationElement} from '../../OperationElement';
+import {DataAssemblyControllerFactory} from '../../../DataAssemblyControllerFactory';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('BinMan', () => {
 
-	describe('static', () => {
+	describe('', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
-		it('should create BinMan', async () => { /* TODO: Add Test */
+		it('should create BinMan', () => { /* TODO: Add Test */
+			const dataAssemblyOptions: DataAssemblyOptions = {
+				name: 'Variable',
+				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperationElement/BinMan',
+				dataItems: baseDataAssemblyOptions
+			};
+			const da1: BinMan = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as BinMan;
+			expect(da1.communication.VOut).to.not.equal(undefined);
+			expect(da1.communication.VState0).to.not.equal(undefined);
+			expect(da1.communication.VState1).to.not.equal(undefined);
+			expect(da1.communication.VMan).to.not.equal(undefined);
+			expect(da1.communication.VRbk).to.not.equal(undefined);
+			expect(da1.communication.VFbk).to.not.equal(undefined);
+			expect(da1.defaultReadDataItem).equal(da1.communication.VOut);
+			expect(da1.defaultReadDataItemType).to.equal('boolean');
+			expect(da1.defaultWriteDataItem).equal(da1.communication.VMan);
+			expect(da1.defaultWriteDataItemType).to.equal('boolean');
 		});
-
 	});
-
 });
