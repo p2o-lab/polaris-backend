@@ -16,6 +16,16 @@
     "namespaceIndex": "localhost",
     "dataType": "xs:IDREF"
   },
+  "VMin": {
+    "nodeId": "Variable.VMin",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "VMax": {
+  "nodeId": "Variable.VMax",
+  "namespaceIndex": "localhost",
+  "dataType": "xs:IDREF"
+  },
   "VOut": {
     "nodeId": "Variable.VOut",
     "namespaceIndex": "localhost",

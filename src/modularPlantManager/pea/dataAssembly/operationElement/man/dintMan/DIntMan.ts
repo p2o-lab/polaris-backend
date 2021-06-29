@@ -41,6 +41,7 @@ export type DIntManRuntime =
 	& {
 	VOut: OpcUaDataItem<number>;
 	VRbk: OpcUaDataItem<number>;
+	VFbk: OpcUaDataItem<number>;
 	VMan: OpcUaDataItem<number>;
 };
 
@@ -54,7 +55,9 @@ export class DIntMan extends OperationElement {
 		super(options, connection);
 		this.communication.VOut = this.createDataItem('VOut', 'read');
 		this.communication.VRbk = this.createDataItem('VRbk', 'read');
+		this.communication.VFbk = this.createDataItem('VFbk', 'read');
 		this.communication.VMan = this.createDataItem('VMan', 'write');
+
 
 		this.valueLimitation = new ValueLimitation(this);
 		this.scaleSettings = new ScaleSettings(this);
