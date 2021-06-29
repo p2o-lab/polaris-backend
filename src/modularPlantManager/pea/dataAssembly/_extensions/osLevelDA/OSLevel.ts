@@ -37,6 +37,7 @@ export class OSLevel {
 
 	constructor(dAController: any) {
 		this.dAController = dAController;
+		this.initialize();
 	}
 
 	public initialize(){

@@ -37,6 +37,7 @@ export class WQC {
 
 	constructor(dAController: any) {
 		this.dAController = dAController;
+		this.initialize();
 	}
 
 	initialize(){

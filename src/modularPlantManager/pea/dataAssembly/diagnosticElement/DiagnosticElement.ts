@@ -41,6 +41,6 @@ export class DiagnosticElement extends DataAssemblyController {
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
 		this.wqc = new WQC(this);
-		this.wqc.initialize();
+
 	}
 }
