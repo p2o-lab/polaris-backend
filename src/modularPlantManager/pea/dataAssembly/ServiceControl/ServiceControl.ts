@@ -55,21 +55,18 @@ export type ServiceControlRuntime = BaseDataAssemblyRuntime & OpModeRuntime & Se
 
 export class ServiceControl extends DataAssemblyController {
 	public readonly communication!: ServiceControlRuntime;
-	wqc: WQC;
-	opMode: OpModeController;
-	serviceSourceMode: ServiceSourceModeController;
+	public readonly wqc: WQC;
+	public readonly opMode: OpModeController;
+	public readonly serviceSourceMode: ServiceSourceModeController;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
 
 		this.wqc = new WQC(this);
 
-
 		this.opMode = new OpModeController(this);
-		this.opMode.initializeOpMode(this);
 
 		this.serviceSourceMode = new ServiceSourceModeController(this);
-		this.serviceSourceMode.initialize();
 
 		this.communication.CommandOp = this.createDataItem('CommandOp', 'write');
 		this.communication.CommandInt = this.createDataItem('CommandInt', 'write');

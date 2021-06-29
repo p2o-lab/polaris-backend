@@ -41,15 +41,14 @@ export interface ServiceSourceModeRuntime extends BaseDataAssemblyRuntime {
 
 
 export class ServiceSourceModeController{
-
-
 	private dAController: any;
 
 	constructor(dAController: any) {
 		this.dAController = dAController;
+		this.initialize();
 	}
 
-	initialize(){
+	private initialize(){
 		this.dAController.communication.SrcChannel = this.dAController.createDataItem('SrcChannel', 'read', 'boolean');
 
 		this.dAController.communication.SrcExtAut = this.dAController.createDataItem('SrcExtAut', 'read', 'boolean');
