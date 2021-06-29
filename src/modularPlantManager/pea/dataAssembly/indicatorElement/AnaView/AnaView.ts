@@ -47,7 +47,7 @@ export class AnaView extends IndicatorElement {
 		this.unitSettings.initialize();
 
 		this.scaleSettings = new ScaleSettings(this);
-		this.scaleSettings.initialize();
+		;
 
 		this.defaultReadDataItem = this.communication.V;
 		this.defaultReadDataItemType = 'number';

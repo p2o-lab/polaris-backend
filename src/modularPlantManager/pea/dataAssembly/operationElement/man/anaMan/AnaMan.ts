@@ -31,9 +31,9 @@ import {
 	UnitDataAssemblyRuntime,
 	ValueLimitationRuntime
 } from '../../../_extensions';
-import {OperationElement, OperationElementRuntime} from '../../OperationElement';
 import {ScaleSettings} from '../../../_extensions/scaleSettingsDA/ScaleSettings';
 import {UnitSettings} from '../../../_extensions/unitDA/UnitSettings';
+import {OperationElement, OperationElementRuntime} from '../../OperationElement';
 
 export type AnaManRuntime =
 	OperationElementRuntime & UnitDataAssemblyRuntime
@@ -59,7 +59,7 @@ export class AnaMan extends OperationElement {
 		this.unitSettings.initialize();
 
 		this.scaleSettings = new ScaleSettings(this);
-		this.scaleSettings.initialize();
+		;
 
 		this.defaultReadDataItem = this.communication.VOut;
 		this.defaultReadDataItemType = 'number';
