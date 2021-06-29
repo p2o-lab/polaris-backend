@@ -56,7 +56,7 @@ export class AnaMan extends OperationElement {
 		this.communication.VMan = this.createDataItem('VMan', 'write');
 
 		this.unitSettings = new UnitSettings(this);
-		this.unitSettings.initialize();
+		
 
 		this.scaleSettings = new ScaleSettings(this);
 		;
