@@ -6,7 +6,7 @@ import {
     PEAModel, PEAOptions, ProcedureModel, ServiceControlOptions, ServiceModel, ServiceOptions
 } from '@p2olab/polaris-interface';
 import {ProcedureOptions} from '@p2olab/polaris-interface/dist/service/options';
-import {ModularPlantManager} from './ModularPlantManager';
+import {ModularPlantManager} from '../../ModularPlantManager';
 
 export interface PiMAdParserInterface{
      dataAssemblyOptionsArray: DataAssemblyOptions[];
