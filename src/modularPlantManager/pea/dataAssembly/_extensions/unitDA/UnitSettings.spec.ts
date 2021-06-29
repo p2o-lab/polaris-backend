@@ -27,17 +27,32 @@ import {OpcUaConnection} from '../../../connection';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import * as baseDataAssemblyOptions from '../../../../../../tests/dintmanint.json';
+import {DataAssemblyController} from '../../DataAssemblyController';
+import {ScaleSettings} from '../scaleSettingsDA/ScaleSettings';
+import {DIntMan} from '../../operationElement';
+import {UnitSettings} from './UnitSettings';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-describe('UnitDA', () => {
+describe('UnitSettings', () => {
 
-	describe('static', () => {
+	describe('', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
-		it('should create UnitDA', async () => { /* TODO: Add Test */
+		it('should create UnitSettings',  () => {
+			const dataAssemblyOptions: DataAssemblyOptions = {
+				name: 'Variable',
+				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperatorElement/DIntMan',
+				dataItems: baseDataAssemblyOptions
+			};
+			const da = new DataAssemblyController(dataAssemblyOptions, emptyOPCUAConnection);
+			const unitSettings = new UnitSettings(da);
+			expect(unitSettings).to.not.be.undefined;
+			expect((da as DIntMan).communication.VUnit).to.not.be.undefined;
+			expect(unitSettings.getUnit()).to.be.empty;
 		});
 
 	});
-
 });
