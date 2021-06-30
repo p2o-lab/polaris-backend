@@ -44,8 +44,8 @@ export function getResetDAMockupReferenceJSON(
 }
 
 export class ResetDAMockup {
-  protected resetOp = 0;
-  protected resetAut = 0;
+  protected resetOp = false;
+  protected resetAut = false;
   protected mockupNode: UAObject;
 
   constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
