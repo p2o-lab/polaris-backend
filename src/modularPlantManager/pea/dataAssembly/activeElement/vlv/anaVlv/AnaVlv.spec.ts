@@ -25,21 +25,45 @@
 
 import {OpcUaConnection} from '../../../../connection';
 import {AnaVlv} from './AnaVlv';
-
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import * as baseDataAssemblyOptions from '../../../../../../../tests/monanavlv.json';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('AnaVlv', () => {
-	const parseJson = require('json-parse-better-errors');
-
-	describe('static', () => {
+	describe('', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
-		it('should create AnaVlv', async () => { /* TODO: Add Test */
+		it('should create AnaVlv',  () => {
+			const dataAssemblyOptions: DataAssemblyOptions = {
+				name: 'Variable',
+				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperationElement/AnaVlv',
+				dataItems: baseDataAssemblyOptions
+			};
+			const da1 = new AnaVlv(dataAssemblyOptions, emptyOPCUAConnection);
+
+			expect(da1).to.not.be.undefined;
+
+			expect(da1.sourceMode).to.not.be.undefined;
+			expect(da1.interlock).to.not.be.undefined;
+			expect(da1.reset).to.not.be.undefined;
+			expect(da1.opMode).to.not.be.undefined;
+
+			expect(da1.communication.Pos).to.not.be.undefined;
+			expect(da1.communication.PosFbk).to.not.be.undefined;
+			expect(da1.communication.PosFbkCalc).to.not.be.undefined;
+			expect(da1.communication.PosRbk).to.not.be.undefined;
+			expect(da1.communication.PosInt).to.not.be.undefined;
+			expect(da1.communication.PosMan).to.not.be.undefined;
+			expect(da1.communication.PosUnit).to.not.be.undefined;
+			expect(da1.communication.PosSclMax).to.not.be.undefined;
+			expect(da1.communication.PosSclMin).to.not.be.undefined;
+			expect(da1.communication.PosMin).to.not.be.undefined;
+			expect(da1.communication.PosMax).to.not.be.undefined;
+			expect(da1.communication.OpenAct).to.not.be.undefined;
+			expect(da1.communication.CloseAct).to.not.be.undefined;
 		});
-
 	});
-
 });

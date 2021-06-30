@@ -28,6 +28,9 @@ import {MonBinVlv} from './MonBinVlv';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import * as baseDataAssemblyOptions from '../../../../../../../tests/monbinvlv.json';
+import {BinVlv} from './BinVlv';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -35,11 +38,18 @@ const expect = chai.expect;
 describe('MonBinVlv', () => {
 	const parseJson = require('json-parse-better-errors');
 
-	describe('static', () => {
+	describe('', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
-		it('should create MonBinVlv', async () => { /* TODO: Add Test */
+		it('should create MonBinVlv',  () => {
+			const dataAssemblyOptions: DataAssemblyOptions = {
+				name: 'Variable',
+				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperationElement/MonBinVlv',
+				dataItems: baseDataAssemblyOptions
+			};
+			const da1 = new MonBinVlv(dataAssemblyOptions, emptyOPCUAConnection);
+			expect(da1).to.not.be.undefined;
+			expect(da1.feedBackMonitoring).to.not.be.undefined;
+
 		});
-
 	});
-
 });

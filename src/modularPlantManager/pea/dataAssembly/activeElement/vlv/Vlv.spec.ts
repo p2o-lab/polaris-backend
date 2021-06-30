@@ -28,6 +28,10 @@ import {Vlv} from './Vlv';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import * as baseDataAssemblyOptions from '../../../../../../tests/monbinvlv.json';
+import {DataAssemblyControllerFactory} from '../../DataAssemblyControllerFactory';
+import {AnaServParam} from '../../operationElement';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -36,11 +40,33 @@ describe('Vlv', () => {
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const parseJson = require('json-parse-better-errors');
 
-	describe('static', () => {
+	describe('', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
-		it('should create Vlv', async () => { /* TODO: Add Test */
+		it('should create Vlv',  () => {
+			const dataAssemblyOptions: DataAssemblyOptions = {
+				name: 'Variable',
+				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperationElement/MonBinVlv',
+				dataItems: baseDataAssemblyOptions
+			};
+			const da1 = new Vlv(dataAssemblyOptions, emptyOPCUAConnection);
+			expect(da1).to.be.not.undefined;
+			expect(da1.osLevel).to.be.not.undefined;
+			expect(da1.wqc).to.be.not.undefined;
+			expect(da1.reset).to.be.not.undefined;
+			expect(da1.opMode).to.be.not.undefined;
+			expect(da1.interlock).to.be.not.undefined;
+
+			expect(da1.communication.SafePos).to.be.not.undefined;
+			expect(da1.communication.SafePosEn).to.be.not.undefined;
+			expect(da1.communication.SafePosAct).to.be.not.undefined;
+			expect(da1.communication.OpenAut).to.be.not.undefined;
+			expect(da1.communication.OpenFbk).to.be.not.undefined;
+			expect(da1.communication.OpenFbkCalc).to.be.not.undefined;
+			expect(da1.communication.OpenOp).to.be.not.undefined;
+			expect(da1.communication.CloseAut).to.be.not.undefined;
+			expect(da1.communication.CloseFbk).to.be.not.undefined;
+			expect(da1.communication.CloseFbkCalc).to.be.not.undefined;
+			expect(da1.communication.CloseOp).to.be.not.undefined;
 		});
-
 	});
-
 });

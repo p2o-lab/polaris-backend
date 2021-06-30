@@ -28,17 +28,26 @@ import {BinVlv} from './BinVlv';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import * as baseDataAssemblyOptions from '../../../../../../../tests/monbinvlv.json';
+import {Vlv} from '../Vlv';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('BinVlv', () => {
 
-	describe('static', () => {
+	describe('', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
-		it('should create BinVlv', async () => { /* TODO: Add Test */
+		it('should create BinVlv', () => {
+			const dataAssemblyOptions: DataAssemblyOptions = {
+				name: 'Variable',
+				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperationElement/BinVlv',
+				dataItems: baseDataAssemblyOptions
+			};
+			const da1 = new BinVlv(dataAssemblyOptions, emptyOPCUAConnection);
+			expect(da1).to.not.be.undefined;
+			expect(da1.communication.Ctrl).to.not.be.undefined;
 		});
-
 	});
-
 });

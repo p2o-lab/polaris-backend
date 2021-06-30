@@ -28,18 +28,29 @@ import {MonAnaVlv} from './MonAnaVlv';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import * as baseDataAssemblyOptions from '../../../../../../../tests/monanavlv.json';
+
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('MonAnaVlv', () => {
-	const parseJson = require('json-parse-better-errors');
-
-	describe('static', () => {
+	describe('', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
-		it('should create MonAnaVlv', async () => { /* TODO: Add Test */
+		it('should create MonAnaVlv', () => {
+			const dataAssemblyOptions: DataAssemblyOptions = {
+				name: 'Variable',
+				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperationElement/MonAnaVlv',
+				dataItems: baseDataAssemblyOptions
+			};
+			const da1 = new MonAnaVlv(dataAssemblyOptions, emptyOPCUAConnection);
+			expect(da1).to.not.be.undefined;
+			expect(da1.feedBackMonitoring).to.not.be.undefined;
+			expect(da1.communication.PosReachedFbk).to.not.be.undefined;
+			expect(da1.communication.PosTolerance).to.not.be.undefined;
+			expect(da1.communication.MonPosTi).to.not.be.undefined;
+			expect(da1.communication.MonPosErr).to.not.be.undefined;
 		});
-
 	});
-
 });
