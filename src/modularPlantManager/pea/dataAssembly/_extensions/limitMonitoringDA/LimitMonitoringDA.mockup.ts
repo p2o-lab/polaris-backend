@@ -124,23 +124,23 @@ export function getLimitMonitoringDAMockupReferenceJSON(
 
 export class LimitMonitoringDAMockup {
   protected varAHEn = false;
-  protected varAHLim: string | number | DataType | undefined = undefined;
+  protected varAHLim = 0;
   protected varAHAct = false;
   protected varWHEn = false;
-  protected varWHLim: string | number | DataType | undefined = undefined;
+  protected varWHLim = 0;
   protected varWHAct = false;
   protected varTHEn = false;
-  protected varTHLim: string | number | DataType | undefined = undefined;
+  protected varTHLim = 0
   protected varTHAct = false;
 
   protected varTLEn = false;
-  protected varTLLim: string | number | DataType | undefined = undefined;
+  protected varTLLim = 0;
   protected varTLAct = false;
   protected varWLEn = false;
-  protected varWLLim: string | number | DataType | undefined = undefined;
+  protected varWLLim = 0;
   protected varWLAct = false;
   protected varALEn = false;
-  protected varALLim: string | number | DataType | undefined = undefined;
+  protected varALLim = 0;
   protected varALAct = false;
   protected mockupNode: UAObject;
 
@@ -430,10 +430,7 @@ export class LimitMonitoringDAMockup {
         },
       },
     });
-
-
-
-    }
+  }
 
   public getLimitMonitoringDAInstanceMockupJSON() {
     return getLimitMonitoringDAMockupReferenceJSON(
