@@ -24,33 +24,18 @@
  */
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {getDataAssemblyMockupReferenceJSON} from '../../DataAssembly.mockup';
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../_extensions/wqcDA/WQCDA.mockup';
 import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../../_extensions/osLevelDA/OSLevelDA.mockup';
+import {getBinViewMockupReferenceJSON} from './BinView.mockup';
 
-export function getDIntMonMockupReferenceJSON(
+export function getBinMonMockupReferenceJSON(
 	namespace = 1,
 	objectBrowseName = 'P2OGalaxy') {
 	return (
 		{
-			...getDataAssemblyMockupReferenceJSON(namespace, objectBrowseName),
 			...getWQCDAMockupReferenceJSON(namespace, objectBrowseName),
 			...getOSLevelDAMockupReferenceJSON(namespace, objectBrowseName),
-			V: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.V`,
-				dataType: 'Boolean'
-			},
-			VState0: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VState0`,
-				dataType: 'String'
-			},
-			VState1: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VState1`,
-				dataType: 'String'
-			},
+			...getBinViewMockupReferenceJSON(namespace,objectBrowseName),
 			VFlutEn: {
 				namespaceIndex: `${namespace}`,
 				nodeId: `${objectBrowseName}.VFlutEn`,
@@ -75,7 +60,7 @@ export function getDIntMonMockupReferenceJSON(
 	);
 }
 
-export abstract class DIntMonMockup {
+export class BinMonMockup {
 
 	public readonly name: string;
 	protected v = false;
@@ -199,8 +184,8 @@ export abstract class DIntMonMockup {
 		});
 	}
 
-	public getDIntMonInstanceMockupJSON() {
-		return getDIntMonMockupReferenceJSON(
+	public getBinMonInstanceMockupJSON() {
+		return getBinMonMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
 			this.mockupNode.browseName.name || 'UnqualifiedName');
 	}

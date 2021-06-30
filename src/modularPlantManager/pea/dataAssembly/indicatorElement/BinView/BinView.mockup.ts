@@ -24,15 +24,13 @@
  */
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {getDataAssemblyMockupReferenceJSON} from '../../DataAssembly.mockup';
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../_extensions/wqcDA/WQCDA.mockup';
 
-export function getDIntViewMockupReferenceJSON(
+export function getBinViewMockupReferenceJSON(
 	namespace = 1,
 	objectBrowseName = 'P2OGalaxy') {
 	return (
 		{
-			...getDataAssemblyMockupReferenceJSON(namespace, objectBrowseName),
 			...getWQCDAMockupReferenceJSON(namespace, objectBrowseName),
 			V: {
 				namespaceIndex: `${namespace}`,
@@ -53,10 +51,10 @@ export function getDIntViewMockupReferenceJSON(
 	);
 }
 
-export abstract class DIntViewMockup {
+export class BinViewMockup {
 
 	public readonly name: string;
-	protected v = 0;
+	protected v = false;
 	public vState0 = 'state0_active';
 	public vState1 = 'state1_active';
 	public wqc: WQCDAMockup;
@@ -115,8 +113,8 @@ export abstract class DIntViewMockup {
 		});
 	}
 
-	public getDIntViewInstanceMockupJSON() {
-		return getDIntViewMockupReferenceJSON(
+	public getBinViewInstanceMockupJSON() {
+		return getBinViewMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
 			this.mockupNode.browseName.name || 'UnqualifiedName');
 	}

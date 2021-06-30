@@ -24,7 +24,6 @@
  */
 
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
-import {getDataAssemblyMockupReferenceJSON} from '../../DataAssembly.mockup';
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../_extensions/wqcDA/WQCDA.mockup';
 import {
 	getScaleSettingDAMockupReferenceJSON,
@@ -42,7 +41,6 @@ export function getDIntMonMockupReferenceJSON(
 	objectBrowseName = 'P2OGalaxy') {
 	return (
 		{
-			...getDataAssemblyMockupReferenceJSON(namespace, objectBrowseName),
 			...getWQCDAMockupReferenceJSON(namespace, objectBrowseName),
 			...getScaleSettingDAMockupReferenceJSON(namespace, objectBrowseName, 'Int32'),
 			...getUnitDAMockupReferenceJSON(namespace, objectBrowseName),
@@ -57,7 +55,7 @@ export function getDIntMonMockupReferenceJSON(
 	);
 }
 
-export abstract class DIntMonMockup {
+export class DIntMonMockup {
 
 	public readonly name: string;
 	protected v = 0;
