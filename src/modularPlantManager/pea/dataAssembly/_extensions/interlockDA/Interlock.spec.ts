@@ -27,15 +27,36 @@ import {OpcUaConnection} from '../../../connection';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import * as baseDataAssemblyOptions from '../../../../../../tests/monbinvlv.json';
+import {DataAssemblyController} from '../../DataAssemblyController';
+import {MonBinVlv} from '../../activeElement';
+import {FeedbackMonitoring} from '../feedbackMonitoringDA/FeedbackMonitoring';
+import {Interlock} from './Interlock';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-describe('FeedbackMonitoring', () => {
+describe('Interlock', () => {
+	const parseJson = require('json-parse-better-errors');
 
-	describe('static', () => {
+	describe('', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
-		it('should create FeedbackMonitoring', async () => { /* TODO: Add Test */
+		it('should create Interlock', () => {
+			const dataAssemblyOptions: DataAssemblyOptions = {
+				name: 'Variable',
+				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperationElement/MonBinVlv',
+				dataItems: baseDataAssemblyOptions
+			};
+			const da1 = new DataAssemblyController(dataAssemblyOptions, emptyOPCUAConnection) as MonBinVlv;
+			const interlock = new Interlock(da1); //this will set communication variables
+			expect(interlock).to.not.to.undefined;
+			expect(da1.communication.PermEn).to.not.to.undefined;
+			expect(da1.communication.Permit).to.not.to.undefined;
+			expect(da1.communication.IntlEn).to.not.to.undefined;
+			expect(da1.communication.Interlock).to.not.to.undefined;
+			expect(da1.communication.ProtEn).to.not.to.undefined;
+			expect(da1.communication.Protect).to.not.to.undefined;
 		});
 	});
 

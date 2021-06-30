@@ -27,19 +27,34 @@ import {OpcUaConnection} from '../../../connection';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
+import {DataAssemblyController} from '../../DataAssemblyController';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import * as baseDataAssemblyOptions from '../../../../../../tests/monbinvlv.json';
+import {FeedbackMonitoring} from './FeedbackMonitoring';
+import {MonBinVlv} from '../../activeElement';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-describe('Reset', () => {
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
-	const parseJson = require('json-parse-better-errors');
+describe('FeedbackMonitoring', () => {
 
-	describe('static', () => {
+	describe('', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
-		it('should create Reset', async () => { /* TODO: Add Test */
+		it('should create FeedbackMonitoring', () => {
+			const dataAssemblyOptions: DataAssemblyOptions = {
+				name: 'Variable',
+				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperationElement/MonBinVlv',
+				dataItems: baseDataAssemblyOptions
+			};
+			const da1 = new DataAssemblyController(dataAssemblyOptions, emptyOPCUAConnection) as MonBinVlv;
+			const feedbackMonitoring = new FeedbackMonitoring(da1);
+			expect(feedbackMonitoring).to.not.to.undefined;
+			expect(da1.communication.MonEn).to.not.to.undefined;
+			expect(da1.communication.MonSafePos).to.not.to.undefined;
+			expect(da1.communication.MonStatErr).to.not.to.undefined;
+			expect(da1.communication.MonDynErr).to.not.to.undefined;
+			expect(da1.communication.MonStatTi).to.not.to.undefined;
+			expect(da1.communication.MonDynTi).to.not.to.undefined;
 		});
-
 	});
-
 });
