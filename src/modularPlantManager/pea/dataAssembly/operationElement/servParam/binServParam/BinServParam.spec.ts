@@ -29,17 +29,34 @@ import {BinServParam} from './BinServParam';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {PEAMockup} from '../../../../PEA.mockup';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import * as baseDataAssemblyOptions from '../../../../../../../tests/binserveparam.json';
+import {DataAssemblyControllerFactory} from '../../../DataAssemblyControllerFactory';
+import {AnaServParam} from '../anaServParam/AnaServParam';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('BinServParam', () => {
 
-	describe('static', () => {
+	describe('', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
-		it('should create BinServParam', async () => { /* TODO: Add Test */
+		it('should create BinServParam', async () => {
+			const dataAssemblyOptions: DataAssemblyOptions = {
+				name: 'Variable',
+				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperationElement/BinServParam',
+				dataItems: baseDataAssemblyOptions
+			};
+			const da1 = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as BinServParam;
+
+			expect(da1.communication.VExt).to.not.be.undefined;
+			expect(da1.communication.VOp).to.not.be.undefined;
+			expect(da1.communication.VInt).to.not.be.undefined;
+			expect(da1.communication.VReq).to.not.be.undefined;
+			expect(da1.communication.VOut).to.not.be.undefined;
+			expect(da1.communication.VFbk).to.not.be.undefined;
+			expect(da1.communication.VState0).to.not.be.undefined;
+			expect(da1.communication.VState1).to.not.be.undefined;
 		});
-
 	});
-
 });

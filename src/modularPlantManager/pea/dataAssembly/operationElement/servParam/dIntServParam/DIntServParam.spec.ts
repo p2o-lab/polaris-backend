@@ -28,17 +28,35 @@ import {DIntServParam} from './DIntServParam';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import * as baseDataAssemblyOptions from '../../../../../../../tests/anaserveparam.json';
+import {DataAssemblyControllerFactory} from '../../../DataAssemblyControllerFactory';
+import {BinServParam} from '../binServParam/BinServParam';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('DIntServParam', () => {
 
-	describe('static', () => {
+	describe('', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
-		it('should create DIntServParam', async () => { /* TODO: Add Test */
+		it('should create DIntServParam',  () => {
+			const dataAssemblyOptions: DataAssemblyOptions = {
+				name: 'Variable',
+				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperationElement/DIntServParam',
+				dataItems: baseDataAssemblyOptions
+			};
+			const da1 = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as DIntServParam;
+			expect(da1.scaleSettings).to.not.be.undefined;
+			expect(da1.unitSettings).to.not.be.undefined;
+			expect(da1.valueLimitation).to.not.be.undefined;
+
+			expect(da1.communication.VExt).to.not.be.undefined;
+			expect(da1.communication.VOp).to.not.be.undefined;
+			expect(da1.communication.VInt).to.not.be.undefined;
+			expect(da1.communication.VReq).to.not.be.undefined;
+			expect(da1.communication.VOut).to.not.be.undefined;
+			expect(da1.communication.VFbk).to.not.be.undefined;
 		});
-
 	});
-
 });

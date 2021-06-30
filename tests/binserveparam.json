@@ -6,21 +6,6 @@
       "namespaceIndex": "localhost",
       "dataType": "xs:IDREF"
     },
-    "VSclMin": {
-      "nodeId": "Variable.VSclMin",
-      "namespaceIndex": "localhost",
-      "dataType": "xs:IDREF"
-    },
-    "VSclMax": {
-      "nodeId": "Variable.VSclMax",
-      "namespaceIndex": "localhost",
-      "dataType": "xs:IDREF"
-    },
-    "VUnit": {
-      "nodeId": "Variable.VUnit",
-      "namespaceIndex": "localhost",
-      "dataType": "xs:IDREF"
-    },
     "OSLevel": {
       "nodeId": "Variable.OSLevel",
       "namespaceIndex": "localhost",
@@ -146,13 +131,13 @@
       "namespaceIndex": "localhost",
       "dataType": "xs:IDREF"
     },
-    "VMin": {
-      "nodeId": "Variable.VMin",
+    "VState0": {
+      "nodeId": "Variable.VState",
       "namespaceIndex": "localhost",
       "dataType": "xs:IDREF"
     },
-    "VMax": {
-      "nodeId": "Variable.VMax",
+    "VState1": {
+      "nodeId": "Variable.VState1",
       "namespaceIndex": "localhost",
       "dataType": "xs:IDREF"
     }
