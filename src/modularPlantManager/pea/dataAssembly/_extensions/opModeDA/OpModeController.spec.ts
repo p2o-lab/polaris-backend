@@ -27,29 +27,38 @@ import {OpcUaConnection} from '../../../connection';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
+import {AnaServParam} from '../../operationElement';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from '../../../../../../tests/dintmanint.json';
+import * as baseDataAssemblyOptions from '../../../../../../tests/anaserveparam.json';
 import {DataAssemblyController} from '../../DataAssemblyController';
-import {ScaleSettings} from './ScaleSettings';
-import {DIntMan} from '../../operationElement';
+import {ServiceSourceModeController} from '../serviceSourceModeDA/ServiceSourceModeController';
+import {OpModeController} from './OpModeController';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-describe('ScaleSettings', () => {
+describe('OpMode', () => {
 	describe('', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
-		it('should create ScaleSettings', async () => {
+		it('should create OpMode', () => {
 			const dataAssemblyOptions: DataAssemblyOptions = {
 				name: 'Variable',
 				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperatorElement/DIntMan',
 				dataItems: baseDataAssemblyOptions
 			};
 			const da = new DataAssemblyController(dataAssemblyOptions, emptyOPCUAConnection);
-			const scaleSettings = new ScaleSettings(da);
-			expect(scaleSettings).to.not.be.undefined;
-			expect((da as DIntMan).communication.VSclMax).to.not.be.undefined;
-			expect((da as DIntMan).communication.VSclMin).to.not.be.undefined;
+			const opMode = new OpModeController(da);
+			expect(opMode).to.not.be.undefined;
+			expect((da as AnaServParam).communication.StateChannel).to.not.be.undefined;
+			expect((da as AnaServParam).communication.StateOffAut).to.not.be.undefined;
+			expect((da as AnaServParam).communication.StateOpAut).to.not.be.undefined;
+			expect((da as AnaServParam).communication.StateAutAut).to.not.be.undefined;
+			expect((da as AnaServParam).communication.StateOffOp).to.not.be.undefined;
+			expect((da as AnaServParam).communication.StateOpOp).to.not.be.undefined;
+			expect((da as AnaServParam).communication.StateAutOp).to.not.be.undefined;
+			expect((da as AnaServParam).communication.StateOpAct).to.not.be.undefined;
+			expect((da as AnaServParam).communication.StateAutAct).to.not.be.undefined;
+			expect((da as AnaServParam).communication.StateOffAct).to.not.be.undefined;
 		});
 	});
 });

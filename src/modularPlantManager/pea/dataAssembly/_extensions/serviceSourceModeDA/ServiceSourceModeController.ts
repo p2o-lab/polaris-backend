@@ -39,7 +39,7 @@ export interface ServiceSourceModeRuntime extends BaseDataAssemblyRuntime {
 	SrcExtOp: OpcUaDataItem<boolean>;
 }
 
-
+// TODO: Maybe rename this class
 export class ServiceSourceModeController{
 	private dAController: any;
 
