@@ -26,7 +26,7 @@
 
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {OpcUaConnection, OpcUaDataItem} from '../../../connection';
-import {InterlockRuntime, OpModeRuntime, ResetRuntime} from '../../_extensions';
+import {InterlockRuntime, OpModeController, OpModeRuntime, ResetRuntime} from '../../_extensions';
 import {ActiveElement, ActiveElementRuntime} from '../ActiveElement';
 import {Reset} from '../../_extensions/resetDA/Reset';
 import {Interlock} from '../../_extensions/interlockDA/Interlock';
@@ -49,17 +49,16 @@ export type VlvRuntime = ActiveElementRuntime & OpModeRuntime & InterlockRuntime
 
 export class Vlv extends ActiveElement {
 	public readonly communication!: VlvRuntime;
-	reset: Reset;
-	interlock: Interlock;
+	public readonly reset: Reset;
+	public readonly interlock: Interlock;
+	public readonly opMode: OpModeController;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
 
 		this.reset = new Reset(this);
-		this.reset.initialize();
-
 		this.interlock = new Interlock(this);
-		this.interlock.initialize();
+		this.opMode = new OpModeController(this);
 
 		this.communication.SafePos = this.createDataItem('SafePos', 'read', 'boolean');
 		this.communication.SafePosEn = this.createDataItem('SafePosEn', 'read', 'boolean');

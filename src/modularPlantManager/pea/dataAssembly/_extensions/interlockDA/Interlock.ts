@@ -41,9 +41,10 @@ export class Interlock{
 
 	constructor(dAController: any) {
 		this.dAController = dAController;
+		this.initialize();
 	}
 
-	public initialize(){
+	private initialize(){
 		this.dAController.communication.PermEn = this.dAController.createDataItem('PermEn', 'read');
 		this.dAController.communication.Permit = this.dAController.createDataItem('Permit', 'read');
 		this.dAController.communication.IntlEn = this.dAController.createDataItem('IntlEn', 'read');

@@ -40,11 +40,7 @@ export class ActiveElement extends DataAssemblyController {
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
-
 		this.osLevel = new OSLevel(this);
-		
-
 		this.wqc = new WQC(this);
-
 	}
 }

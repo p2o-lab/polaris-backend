@@ -37,9 +37,10 @@ export class Reset {
 
 	constructor(dAController: any) {
 		this.dAController = dAController;
+		this.initialize();
 	}
 
-	public initialize(){
+	private initialize(){
 		this.dAController.communication.ResetOp= this.dAController.createDataItem('ResetOp', 'write');
 		this.dAController.communication.ResetAut = this.dAController.createDataItem('ResetAut', 'write');
 	}

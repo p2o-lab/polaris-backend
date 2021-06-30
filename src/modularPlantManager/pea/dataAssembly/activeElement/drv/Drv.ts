@@ -64,10 +64,7 @@ export class Drv extends ActiveElement {
 		super(options, connection);
 
 		this.reset = new Reset(this);
-		this.reset.initialize();
-
 		this.interlock = new Interlock(this);
-		this.interlock.initialize();
 
 		this.communication.SafePos = this.createDataItem('SafePos', 'read', 'boolean');
 		this.communication.SafePosAct = this.createDataItem('SafePosAct', 'read', 'boolean');
