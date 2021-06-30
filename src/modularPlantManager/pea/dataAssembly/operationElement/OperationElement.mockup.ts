@@ -26,13 +26,12 @@
 import {Namespace, UAObject} from 'node-opcua';
 import {getFeedbackMonitoringDAMockupReferenceJSON} from '../_extensions/feedbackMonitoringDA/FeedbackMonitoringDA.mockup';
 import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../_extensions/osLevelDA/OSLevelDA.mockup';
-import {getDataAssemblyMockupReferenceJSON} from '../DataAssembly.mockup';
 
 export function getOperationElementMockupReferenceJSON(
 	namespace = 1,
 	objectBrowseName = 'P2OGalaxy') {
 	return (
-		{	...getDataAssemblyMockupReferenceJSON(namespace,objectBrowseName),
+		{	
 			...getOSLevelDAMockupReferenceJSON(namespace,objectBrowseName),
 		}
 	);

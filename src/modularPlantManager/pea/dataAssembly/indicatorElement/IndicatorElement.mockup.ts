@@ -24,7 +24,6 @@
  */
 
 import {Namespace, UAObject} from 'node-opcua';
-import {getDataAssemblyMockupReferenceJSON} from '../DataAssembly.mockup';
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../_extensions/wqcDA/WQCDA.mockup';
 import {catPEAMockup} from '../../../../logging';
 
@@ -33,13 +32,12 @@ export function getIndicatorElementMockupReferenceJSON(
 	objectBrowseName = 'P2OGalaxy') {
 	return (
 		{
-			...getDataAssemblyMockupReferenceJSON(namespace, objectBrowseName),
 			...getWQCDAMockupReferenceJSON(namespace, objectBrowseName)
 		}
 	);
 }
 
-export abstract class IndicatorElementMockup {
+export class IndicatorElementMockup {
 
 	public readonly name: string;
 	public wqc: WQCDAMockup;

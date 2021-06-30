@@ -26,14 +26,13 @@
 import {Namespace, UAObject} from 'node-opcua';
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../_extensions/wqcDA/WQCDA.mockup';
 import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../_extensions/osLevelDA/OSLevelDA.mockup';
-import {getDataAssemblyMockupReferenceJSON} from '../DataAssembly.mockup';
 
 export function getActiveElementMockupReferenceJSON(
 	namespace = 1,
 	objectBrowseName = 'P2OGalaxy') {
 
 	return ({
-			...getDataAssemblyMockupReferenceJSON(namespace,objectBrowseName),
+			
 			...getWQCDAMockupReferenceJSON(namespace,objectBrowseName),
 			...getOSLevelDAMockupReferenceJSON(namespace,objectBrowseName)
 		}
