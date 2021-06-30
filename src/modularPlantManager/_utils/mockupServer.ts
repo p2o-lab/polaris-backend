@@ -39,15 +39,14 @@ export class MockupServer {
 	public externalTrigger: boolean;
 	private server: OPCUAServer;
 	private initialized = false;
-	private namespace: Namespace | undefined = undefined;
-	private rootComponent: UAObject | undefined = undefined;
+	namespace: Namespace | undefined = undefined;
+	rootComponent: UAObject | undefined = undefined;
 	private readonly port: number;
 
 	constructor(port = 4334) {
 		this.port = port;
 		this.server = new OPCUAServer({port: this.port, userManager: {isValidUser: validUserFunc}});
 		this.externalTrigger = false;
-		this.initialize().then();
 	}
 
 	public async portInUse(): Promise<boolean> {
