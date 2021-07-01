@@ -28,6 +28,9 @@ import {PIDCtrl} from './PIDCtrl';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import * as baseDataAssemblyOptions from '../../../../../../tests/pidctrl.json';
+import {Vlv} from '../vlv';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -37,9 +40,51 @@ describe('PIDCtrl', () => {
 
 	describe('static', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
-		it('should create PIDCtrl', async () => { /* TODO: Add Test */
+		it('should create PIDCtrl', async () => {
+			const emptyOPCUAConnection = new OpcUaConnection('', '');
+			const dataAssemblyOptions: DataAssemblyOptions = {
+				name: 'Variable',
+				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperationElement/MonBinVlv',
+				dataItems: baseDataAssemblyOptions
+			};
+			const da1 = new PIDCtrl(dataAssemblyOptions, emptyOPCUAConnection);
+
+			expect(da1.wqc).to.be.not.undefined;
+			expect(da1.osLevel).to.not.be.undefined;
+			expect(da1.sourceMode).to.be.not.undefined;
+			expect(da1.opMode).to.be.not.undefined;
+
+			expect(da1.communication.PV).to.not.be.undefined;
+			expect(da1.communication.PVSclMax).to.not.be.undefined;
+			expect(da1.communication.PVSclMin).to.not.be.undefined;
+			expect(da1.communication.PVUnit).to.not.be.undefined;
+
+			expect(da1.communication.SP).to.not.be.undefined;
+			expect(da1.communication.SPSclMax).to.not.be.undefined;
+			expect(da1.communication.SPSclMin).to.not.be.undefined;
+			expect(da1.communication.SPUnit).to.not.be.undefined;
+
+			expect(da1.communication.SPMan).to.not.be.undefined;
+			expect(da1.communication.SPManMin).to.not.be.undefined;
+			expect(da1.communication.SPManMax).to.not.be.undefined;
+
+			expect(da1.communication.SPInt).to.not.be.undefined;
+			expect(da1.communication.SPIntMin).to.not.be.undefined;
+			expect(da1.communication.SPIntMax).to.not.be.undefined;
+
+			expect(da1.communication.MV).to.not.be.undefined;
+			expect(da1.communication.MVMan).to.not.be.undefined;
+			expect(da1.communication.MVMin).to.not.be.undefined;
+			expect(da1.communication.MVMax).to.not.be.undefined;
+			expect(da1.communication.MVSclMax).to.not.be.undefined;
+			expect(da1.communication.MVSclMin).to.not.be.undefined;
+			expect(da1.communication.MVUnit).to.not.be.undefined;
+
+			expect(da1.communication.P).to.not.be.undefined;
+			expect(da1.communication.Ti).to.not.be.undefined;
+			expect(da1.communication.Td).to.not.be.undefined;
+
+			expect(Object.keys(da1.communication).length).to.equal(43);
 		});
-
 	});
-
 });

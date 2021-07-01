@@ -31,17 +31,50 @@ import {
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {PEAMockup} from '../../../PEA.mockup';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import * as baseDataAssemblyOptions from '../../../../../../tests/monanadrv.json';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('Drv', () => {
-
-	describe('static', () => {
+	describe('', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
-		it('should create Drv', async () => { /* TODO: Add Test */
+		it('should create Drv',  () => {
+			const emptyOPCUAConnection = new OpcUaConnection('', '');
+			const dataAssemblyOptions: DataAssemblyOptions = {
+				name: 'Variable',
+				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/ActiveElement/AnaDrv',
+				dataItems: baseDataAssemblyOptions
+			};
+			const da1 = new Drv(dataAssemblyOptions, emptyOPCUAConnection);
+
+			expect(da1.reset).to.be.not.undefined;
+			expect(da1.interlock).to.not.be.undefined;
+			expect(da1.opMode).to.be.not.undefined;
+
+			expect(da1.communication.SafePos).to.not.be.undefined;
+			expect(da1.communication.SafePosAct).to.not.be.undefined;
+
+			expect(da1.communication.FwdAut).to.not.be.undefined;
+			expect(da1.communication.FwdCtrl).to.not.be.undefined;
+			expect(da1.communication.FwdEn).to.not.be.undefined;
+			expect(da1.communication.FwdFbk).to.not.be.undefined;
+			expect(da1.communication.FwdFbkCalc).to.not.be.undefined;
+			expect(da1.communication.FwdOp).to.not.be.undefined;
+
+			expect(da1.communication.RevAut).to.not.be.undefined;
+			expect(da1.communication.RevCtrl).to.not.be.undefined;
+			expect(da1.communication.RevEn).to.not.be.undefined;
+			expect(da1.communication.RevFbk).to.not.be.undefined;
+			expect(da1.communication.RevFbkCalc).to.not.be.undefined;
+			expect(da1.communication.RevOp).to.not.be.undefined;
+
+			expect(da1.communication.StopAut).to.not.be.undefined;
+			expect(da1.communication.StopOp).to.not.be.undefined;
+			expect(da1.communication.Trip).to.not.be.undefined;
+
+			expect(Object.keys(da1.communication).length).to.equal(37);
 		});
-
 	});
-
 });

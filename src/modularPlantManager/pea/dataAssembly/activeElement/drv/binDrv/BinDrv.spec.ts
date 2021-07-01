@@ -36,9 +36,9 @@ describe('BinDrv', () => {
 
 	describe('static', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
-		it('should create BinDrv', async () => { /* TODO: Add Test */
+		it('should create BinDrv', async () => {
+			// not needed,  BinDrv is same as Drv
 		});
 
 	});
-
 });

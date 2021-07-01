@@ -30,17 +30,29 @@ import {
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import * as baseDataAssemblyOptions from '../../../../../tests/pidctrl.json';
+import {Vlv} from './vlv';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('ActiveElement', () => {
 
-	describe('static', () => {
+	describe('', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
-		it('should create ActiveElement', async () => { /* TODO: Add Test */
+		it('should create ActiveElement', () => {
+			const emptyOPCUAConnection = new OpcUaConnection('', '');
+			const dataAssemblyOptions: DataAssemblyOptions = {
+				name: 'Variable',
+				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/ActiveElement/PIDCtrl',
+				dataItems: baseDataAssemblyOptions
+			};
+			const da1 = new ActiveElement(dataAssemblyOptions, emptyOPCUAConnection);
+			expect(da1).to.be.not.undefined;
+			expect(da1.wqc).to.be.not.undefined;
+			expect(da1.osLevel).to.not.be.undefined;
+
 		});
-
 	});
-
 });

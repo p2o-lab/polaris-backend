@@ -28,17 +28,26 @@ import {MonBinDrv} from './MonBinDrv';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+// MonBinDrv overlaps with MonAnaDrv
+import * as baseDataAssemblyOptions from '../../../../../../../tests/monanadrv.json';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('MonBinDrv', () => {
 
-	describe('static', () => {
+	describe('', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
-		it('should create MonBinDrv', async () => { /* TODO: Add Test */
+		it('should create MonBinDrv',() => {
+			const emptyOPCUAConnection = new OpcUaConnection('', '');
+			const dataAssemblyOptions: DataAssemblyOptions = {
+				name: 'Variable',
+				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/ActiveElement/MonBinDrv',
+				dataItems: baseDataAssemblyOptions
+			};
+			const da1 = new MonBinDrv(dataAssemblyOptions, emptyOPCUAConnection);
+			expect(da1.feedBackMonitoring).to.be.not.undefined;
 		});
-
 	});
-
 });

@@ -1,0 +1,219 @@
+{
+  "TagName": "Variable",
+  "TagDescription": "Test",
+  "WQC": {
+    "nodeId": "Variable.WQC",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "OSLevel": {
+    "nodeId": "Variable.OSLevel",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "StateChannel": {
+    "nodeId": "Variable.StateChannel",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "StateOffAut": {
+    "nodeId": "Variable.StateOffAut",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "StateOpAut": {
+    "nodeId": "Variable.StateOpAut",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "StateAutAut": {
+    "nodeId": "Variable.StateAutAut",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "StateOffOp": {
+    "nodeId": "Variable.StateOffOp",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "StateOpOp": {
+    "nodeId": "Variable.StateOpOp",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "StateAutOp": {
+    "nodeId": "Variable.StateAutOp",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "StateOpAct": {
+    "nodeId": "Variable.StateOpAct",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "StateAutAct": {
+    "nodeId": "Variable.StateAutAct",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "StateOffAct": {
+    "nodeId": "Variable.StateOffAct",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "SrcChannel": {
+    "nodeId": "Variable.SrcChannel",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "SrcManAut": {
+    "nodeId": "Variable.SrcManAut",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "SrcIntAut": {
+    "nodeId": "Variable.SrcIntAut",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "SrcIntOp": {
+    "nodeId": "Variable.SrcIntOp",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "SrcManOp": {
+    "nodeId": "Variable.SrcManOp",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "SrcIntAct": {
+    "nodeId": "Variable.SrcIntAct",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "SrcManAct": {
+    "nodeId": "Variable.SrcManAct",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "PV": {
+    "nodeId": "Variable.PV",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "PVSclMin": {
+    "nodeId": "Variable.PVSclMin",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "PVSclMax": {
+    "nodeId": "Variable.PVSclMax",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "PVUnit": {
+    "nodeId": "Variable.PVUnit",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "SP": {
+    "nodeId": "Variable.SP",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "SPSclMax": {
+    "nodeId": "Variable.SPVSclMax",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "SPSclMin": {
+    "nodeId": "Variable.SPVSclMin",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "SPUnit": {
+    "nodeId": "Variable.SPUnit",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "SPMan": {
+    "nodeId": "Variable.SPMan",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "SPManMin": {
+    "nodeId": "Variable.SPManMin",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "SPManMax": {
+    "nodeId": "Variable.SPManMax",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "SPInt": {
+    "nodeId": "Variable.SPInt",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "SPIntMin": {
+    "nodeId": "Variable.SPIntMin",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "SPIntMax": {
+    "nodeId": "Variable.SPIntMax",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "MV": {
+    "nodeId": "Variable.MV",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "MVMan": {
+    "nodeId": "Variable.MVMan",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "MVMin": {
+    "nodeId": "Variable.MVIntMin",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "MVMax": {
+    "nodeId": "Variable.MVIntMax",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "MVSclMax": {
+    "nodeId": "Variable.MVSclMax",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "MVSclMin": {
+    "nodeId": "Variable.MVSclMin",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "MVUnit": {
+    "nodeId": "Variable.MVUnit",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "P": {
+    "nodeId": "Variable.P",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "Ti": {
+    "nodeId": "Variable.Ti",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "Td": {
+    "nodeId": "Variable.Td",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  }
+}

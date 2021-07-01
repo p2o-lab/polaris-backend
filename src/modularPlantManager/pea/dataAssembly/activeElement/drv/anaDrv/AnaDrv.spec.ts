@@ -28,16 +28,40 @@ import {AnaDrv} from './AnaDrv';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import * as baseDataAssemblyOptions from '../../../../../../../tests/monanadrv.json';
 
 chai.use(chaiAsPromised);
+const expect = chai.expect;
 
 describe('AnaDrv', () => {
 
-	describe('static', () => {
+	describe('', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
-		it('should create AnaDrv', async () => { /* TODO: Add Test */
+		it('should create AnaDrv',  () => {
+			const dataAssemblyOptions: DataAssemblyOptions = {
+				name: 'Variable',
+				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/ActiveElement/AnaDrv',
+				dataItems: baseDataAssemblyOptions
+			};
+			const da1 = new AnaDrv(dataAssemblyOptions, emptyOPCUAConnection);
+			expect(da1.sourceMode).to.not.be.undefined;
+
+			expect(da1.communication.RpmSclMax).to.not.be.undefined;
+			expect(da1.communication.RpmSclMin).to.not.be.undefined;
+
+			expect(da1.communication.RpmUnit).to.not.be.undefined;
+
+			expect(da1.communication.RpmMin).to.not.be.undefined;
+			expect(da1.communication.RpmMax).to.not.be.undefined;
+
+			expect(da1.communication.RpmInt).to.not.be.undefined;
+			expect(da1.communication.RpmMan).to.not.be.undefined;
+			expect(da1.communication.Rpm).to.not.be.undefined;
+
+			expect(da1.communication.RpmFbk).to.not.be.undefined;
+			expect(da1.communication.RpmFbkCalc).to.not.be.undefined;
+			expect(da1.communication.RpmRbk).to.not.be.undefined;
 		});
-
 	});
-
 });
