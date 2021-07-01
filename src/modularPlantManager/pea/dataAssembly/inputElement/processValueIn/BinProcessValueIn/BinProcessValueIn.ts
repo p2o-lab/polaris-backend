@@ -42,6 +42,8 @@ export class BinProcessValueIn extends InputElement {
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
 		this.communication.VExt = this.createDataItem('VExt', 'read');
+		this.communication.VState0 = this.createDataItem('VState0','read'); //TODO: Check read, write?
+		this.communication.VState1 = this.createDataItem('VState1','read'); //TODO: Check read, write?
 
 		this.defaultReadDataItem = this.communication.VExt;
 		this.defaultReadDataItemType = 'boolean';

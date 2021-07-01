@@ -25,22 +25,30 @@
 
 import {OpcUaConnection} from '../../../../connection';
 import {BinProcessValueIn} from './BinProcessValueIn';
-
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import * as fs from 'fs';
 import {PEAMockup} from '../../../../PEA.mockup';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import * as baseDataAssemblyOptions from '../../../../../../../tests/binprocessvaluein.json';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('BinProcessValueIn', () => {
 
-	describe('static', () => {
+	describe('', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
-		it('should create BinProcessValueIn', async () => { /* TODO: Add Test */
+		it('should create BinProcessValueIn', () => {
+			const dataAssemblyOptions: DataAssemblyOptions = {
+				name: 'Variable',
+				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/InputElement/BinProcessValuesIn',
+				dataItems: baseDataAssemblyOptions
+			};
+			const da1 = new BinProcessValueIn(dataAssemblyOptions, emptyOPCUAConnection);
+			expect(da1).to.be.not.undefined;
+			expect(da1.communication.VExt).to.be.not.undefined;
+			expect(da1.communication.VState0).to.be.not.undefined;
+			expect(da1.communication.VState1).to.be.not.undefined;
 		});
-
 	});
-
 });

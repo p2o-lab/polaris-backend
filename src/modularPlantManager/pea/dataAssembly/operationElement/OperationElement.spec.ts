@@ -32,9 +32,7 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import * as baseDataAssemblyOptions from '../../../../../tests/binmanint.json';
-import {BinMon, IndicatorElement} from '../indicatorElement';
 import {DataAssemblyControllerFactory} from '../DataAssemblyControllerFactory';
-import {BinMan} from './man';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;

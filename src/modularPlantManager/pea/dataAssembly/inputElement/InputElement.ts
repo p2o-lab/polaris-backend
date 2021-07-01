@@ -49,7 +49,6 @@ export class InputElement extends DataAssemblyController {
 		super(options, connection);
 
 		this.wqc = new WQC(this);
-
 	}
 /*
 	/!**

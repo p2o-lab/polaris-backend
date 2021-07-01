@@ -28,17 +28,28 @@ import {DIntProcessValueIn} from './DIntProcessValueIn';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+// overlap with anaprocessvaluein
+import * as baseDataAssemblyOptions from '../../../../../../../tests/anaprocessvaluein.json';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('DIntProcessValueIn', () => {
-
 	describe('static', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
-		it('should create DIntProcessValueIn', async () => { /* TODO: Add Test */
+		it('should create DIntProcessValueIn', async () => {
+			const dataAssemblyOptions: DataAssemblyOptions = {
+				name: 'Variable',
+				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/InputElement/DIntProcessValuesIn',
+				dataItems: baseDataAssemblyOptions
+			};
+			const da1 = new DIntProcessValueIn(dataAssemblyOptions, emptyOPCUAConnection);
+			expect(da1).to.be.not.undefined;
+			expect(da1.communication.VExt).to.be.not.undefined;
+			expect(da1.communication.VSclMax).to.be.not.undefined;
+			expect(da1.communication.VSclMin).to.be.not.undefined;
+			expect(da1.communication.VUnit).to.be.not.undefined;
 		});
-
 	});
-
 });

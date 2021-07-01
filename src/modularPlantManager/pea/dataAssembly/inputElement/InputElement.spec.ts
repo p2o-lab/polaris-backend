@@ -22,12 +22,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 import {OpcUaConnection} from '../../connection';
 import {InputElement} from './InputElement';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import * as baseDataAssemblyOptions from '../../../../../tests/binmanint.json';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -36,9 +37,16 @@ describe('InputElement', () => {
 
 	describe('static', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
-		it('should create InputElement', async () => { /* TODO: Add Test */
+		it('should create InputElement', async () => {
+			const dataAssemblyOptions: DataAssemblyOptions = {
+				name: 'Variable',
+				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/InputElement/BinProcessValuesIn',
+				dataItems: baseDataAssemblyOptions
+			};
+			const da1 = new InputElement(dataAssemblyOptions, emptyOPCUAConnection);
+			expect(da1).to.be.not.undefined;
+			expect(da1.communication).to.be.not.undefined;
+			expect(da1.wqc).to.be.not.undefined;
 		});
-
 	});
-
 });
