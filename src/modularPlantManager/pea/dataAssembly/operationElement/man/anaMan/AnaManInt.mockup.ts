@@ -26,7 +26,7 @@
 // eslint-disable-next-line no-undef
 import Timeout = NodeJS.Timeout;
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {DataAssemblyMockup, getDataAssemblyMockupReferenceJSON} from '../../../DataAssembly.mockup';
+
 import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../../../_extensions/osLevelDA/OSLevelDA.mockup';
 import {getUnitDAMockupReferenceJSON, UnitDAMockup} from '../../../_extensions/unitDA/UnitDA.mockup';
 import {
@@ -41,38 +41,17 @@ import {
 	getSourceModeDAMockupReferenceJSON,
 	SourceModeDAMockup
 } from '../../../_extensions/sourceModeDA/SourceModeDA.mockup';
+import {getWQCDAMockupReferenceJSON} from '../../../_extensions/wqcDA/WQCDA.mockup';
+import {getAnaManMockupReferenceJSON} from './AnaMan.mockup';
 
 export function getAnaManIntMockupReferenceJSON(
 	namespace = 1,
 	objectBrowseName = 'P2OGalaxy') {
 
 	return ({
-			...getDataAssemblyMockupReferenceJSON(namespace,objectBrowseName),
-			...getOSLevelDAMockupReferenceJSON(namespace,objectBrowseName),
-			...getScaleSettingDAMockupReferenceJSON(namespace,objectBrowseName,'Float'),
-			...getValueLimitationDAMockupReferenceJSON(namespace,objectBrowseName, 'Float'),
-			...getUnitDAMockupReferenceJSON(namespace,objectBrowseName),
+			...getAnaManMockupReferenceJSON(namespace,objectBrowseName),
+			...getWQCDAMockupReferenceJSON(namespace,objectBrowseName),
 			...getSourceModeDAMockupReferenceJSON(namespace,objectBrowseName),
-			VOut: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VOut`,
-				dataType: 'Float'
-			},
-			VMan: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VMan`,
-				dataType: 'Float'
-			},
-			VRbk: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VRbk`,
-				dataType: 'Float'
-			},
-			VFbk: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VFbk`,
-				dataType: 'Float'
-			},
 			VInt: {
 				namespaceIndex: `${namespace}`,
 				nodeId: `${objectBrowseName}.VInt`,
@@ -82,7 +61,7 @@ export function getAnaManIntMockupReferenceJSON(
 	);
 }
 
-export class AnaManMockup {
+export class AnaManIntMockup {
 
 	public readonly name: string;
 	protected vRbk = 0;
@@ -90,7 +69,7 @@ export class AnaManMockup {
 	protected vOut = 0
 	protected vFbk = 0;
 	protected vInt = 0;
-	public readonly dataAssembly: DataAssemblyMockup;
+	
 	public readonly osLevel: OSLevelDAMockup;
 	public readonly scaleSettings: ScaleSettingDAMockup<DataType.Double>;
 	public readonly valueLimitation: ValueLimitationDAMockup<DataType.Double>;
@@ -107,7 +86,7 @@ export class AnaManMockup {
 			organizedBy: rootNode,
 			browseName: variableName
 		});
-		this.dataAssembly = new DataAssemblyMockup(namespace, this.mockupNode, this.name);
+		
 		this.osLevel = new OSLevelDAMockup(namespace, this.mockupNode, this.name);
 		this.scaleSettings = new ScaleSettingDAMockup(namespace, this.mockupNode, this.name, DataType.Double);
 		this.valueLimitation = new ValueLimitationDAMockup(namespace, this.mockupNode, this.name,DataType.Double);
@@ -175,7 +154,7 @@ export class AnaManMockup {
 		});
 	}
 
-	public getAnaManIntParamMockupJSON() {
+	public getAnaManIntMockupJSON() {
 		return getAnaManIntMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
 			this.mockupNode.browseName.name || 'UnqualifiedName');

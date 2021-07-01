@@ -26,7 +26,7 @@
 // eslint-disable-next-line no-undef
 import Timeout = NodeJS.Timeout;
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {DataAssemblyMockup, getDataAssemblyMockupReferenceJSON} from '../../../DataAssembly.mockup';
+
 import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../../../_extensions/osLevelDA/OSLevelDA.mockup';
 import {getUnitDAMockupReferenceJSON, UnitDAMockup} from '../../../_extensions/unitDA/UnitDA.mockup';
 import {
@@ -43,7 +43,6 @@ export function getAnaManMockupReferenceJSON(
 	objectBrowseName = 'P2OGalaxy') {
 
 	return ({
-			...getDataAssemblyMockupReferenceJSON(namespace,objectBrowseName),
 			...getOSLevelDAMockupReferenceJSON(namespace,objectBrowseName),
 			...getScaleSettingDAMockupReferenceJSON(namespace,objectBrowseName,'Float'),
 			...getValueLimitationDAMockupReferenceJSON(namespace,objectBrowseName, 'Float'),
@@ -80,7 +79,7 @@ export class AnaManMockup {
 	protected vMan = 0;
 	protected vOut = 0
 	protected vFbk = 0;
-	public readonly dataAssembly: DataAssemblyMockup;
+	
 	public readonly osLevel: OSLevelDAMockup;
 	public readonly scaleSettings: ScaleSettingDAMockup<DataType.Double>;
 	public readonly valueLimitation: ValueLimitationDAMockup<DataType.Double>;
@@ -96,7 +95,7 @@ export class AnaManMockup {
 			organizedBy: rootNode,
 			browseName: variableName
 		});
-		this.dataAssembly = new DataAssemblyMockup(namespace, this.mockupNode, this.name);
+		
 		this.osLevel = new OSLevelDAMockup(namespace, this.mockupNode, this.name);
 		this.scaleSettings = new ScaleSettingDAMockup(namespace, this.mockupNode, this.name, DataType.Double);
 		this.valueLimitation = new ValueLimitationDAMockup(namespace, this.mockupNode, this.name,DataType.Double);
@@ -152,7 +151,7 @@ export class AnaManMockup {
 		});
 	}
 
-	public getAnaManParamMockupJSON() {
+	public getAnaManMockupJSON() {
 		return getAnaManMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
 			this.mockupNode.browseName.name || 'UnqualifiedName');

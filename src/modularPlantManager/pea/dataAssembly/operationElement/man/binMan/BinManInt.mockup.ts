@@ -26,7 +26,7 @@
 // eslint-disable-next-line no-undef
 import Timeout = NodeJS.Timeout;
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {DataAssemblyMockup, getDataAssemblyMockupReferenceJSON} from '../../../DataAssembly.mockup';
+
 import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../../../_extensions/osLevelDA/OSLevelDA.mockup';
 import {getUnitDAMockupReferenceJSON, UnitDAMockup} from '../../../_extensions/unitDA/UnitDA.mockup';
 import {
@@ -41,35 +41,17 @@ import {
 	getSourceModeDAMockupReferenceJSON,
 	SourceModeDAMockup
 } from '../../../_extensions/sourceModeDA/SourceModeDA.mockup';
+import {getBinManMockupReferenceJSON} from './BinMan.mockup';
+import {getWQCDAMockupReferenceJSON} from '../../../_extensions/wqcDA/WQCDA.mockup';
 
 export function getBinManIntMockupReferenceJSON(
 	namespace = 1,
 	objectBrowseName = 'P2OGalaxy') {
 
 	return ({
-			...getDataAssemblyMockupReferenceJSON(namespace,objectBrowseName),
-			...getOSLevelDAMockupReferenceJSON(namespace,objectBrowseName),
+			...getBinManMockupReferenceJSON(),
+			...getWQCDAMockupReferenceJSON(),
 			...getSourceModeDAMockupReferenceJSON(namespace,objectBrowseName),
-			VOut: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VOut`,
-				dataType: 'Boolean'
-			},
-			VMan: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VMan`,
-				dataType: 'Boolean'
-			},
-			VRbk: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VRbk`,
-				dataType: 'Boolean'
-			},
-			VFbk: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VFbk`,
-				dataType: 'Boolean'
-			},
 			VInt: {
 				namespaceIndex: `${namespace}`,
 				nodeId: `${objectBrowseName}.VInt`,
@@ -79,17 +61,17 @@ export function getBinManIntMockupReferenceJSON(
 	);
 }
 
-export class BinManMockup {
+export class BinManIntMockup {
 
 	public readonly name: string;
 	protected vState0= 'off';
 	protected vState1= 'on';
-	protected vRbk = 0;
-	protected vMan = 0;
-	protected vOut = 0
-	protected vFbk = 0;
-	protected vInt = 0;
-	public readonly dataAssembly: DataAssemblyMockup;
+	protected vRbk = false;
+	protected vMan = false;
+	protected vOut = false;
+	protected vFbk = false;
+	protected vInt = false;
+	
 	public readonly osLevel: OSLevelDAMockup;
 	public readonly sourceMode: SourceModeDAMockup;
 	protected interval: Timeout | undefined;
@@ -103,7 +85,7 @@ export class BinManMockup {
 			organizedBy: rootNode,
 			browseName: variableName
 		});
-		this.dataAssembly = new DataAssemblyMockup(namespace, this.mockupNode, this.name);
+		
 		this.osLevel = new OSLevelDAMockup(namespace, this.mockupNode, this.name);
 		this.sourceMode = new SourceModeDAMockup(namespace, this.mockupNode, this.name);
 
@@ -192,7 +174,7 @@ export class BinManMockup {
 		});
 	}
 
-	public getBinManIntParamMockupJSON() {
+	public getBinManIntMockupJSON() {
 		return getBinManIntMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
 			this.mockupNode.browseName.name || 'UnqualifiedName');
@@ -200,7 +182,8 @@ export class BinManMockup {
 
 	public startCurrentTimeUpdate(): void {
 		this.interval = global.setInterval(() => {
-			this.vOut = Math.random();
+			//TODO: fix this?
+			//this.vOut = Math.random();
 		}, 1000);
 	}
 

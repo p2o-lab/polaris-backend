@@ -26,7 +26,7 @@
 // eslint-disable-next-line no-undef
 import Timeout = NodeJS.Timeout;
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {DataAssemblyMockup, getDataAssemblyMockupReferenceJSON} from '../../../DataAssembly.mockup';
+
 import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../../../_extensions/osLevelDA/OSLevelDA.mockup';
 import {getUnitDAMockupReferenceJSON, UnitDAMockup} from '../../../_extensions/unitDA/UnitDA.mockup';
 import {
@@ -47,11 +47,20 @@ export function getBinManMockupReferenceJSON(
 	objectBrowseName = 'P2OGalaxy') {
 
 	return ({
-			...getDataAssemblyMockupReferenceJSON(namespace,objectBrowseName),
 			...getOSLevelDAMockupReferenceJSON(namespace,objectBrowseName),
 			VOut: {
 				namespaceIndex: `${namespace}`,
 				nodeId: `${objectBrowseName}.VOut`,
+				dataType: 'Boolean'
+			},
+			VState0: {
+				namespaceIndex: `${namespace}`,
+				nodeId: `${objectBrowseName}.VState0`,
+				dataType: 'Boolean'
+			},
+			VState1: {
+				namespaceIndex: `${namespace}`,
+				nodeId: `${objectBrowseName}.VState1`,
 				dataType: 'Boolean'
 			},
 			VMan: {
@@ -78,11 +87,11 @@ export class BinManMockup {
 	public readonly name: string;
 	protected vState0= 'off';
 	protected vState1= 'on';
-	protected vRbk = 0;
-	protected vMan = 0;
-	protected vOut = 0
-	protected vFbk = 0;
-	public readonly dataAssembly: DataAssemblyMockup;
+	protected vRbk = false;
+	protected vMan = false;
+	protected vOut = false;
+	protected vFbk = false;
+	
 	public readonly osLevel: OSLevelDAMockup;
 	protected interval: Timeout | undefined;
 	protected mockupNode: UAObject;
@@ -95,7 +104,7 @@ export class BinManMockup {
 			organizedBy: rootNode,
 			browseName: variableName
 		});
-		this.dataAssembly = new DataAssemblyMockup(namespace, this.mockupNode, this.name);
+		
 		this.osLevel = new OSLevelDAMockup(namespace, this.mockupNode, this.name);
 
 		namespace.addVariable({
@@ -172,7 +181,7 @@ export class BinManMockup {
 		});
 	}
 
-	public getBinManParamMockupJSON() {
+	public getBinManMockupJSON() {
 		return getBinManMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
 			this.mockupNode.browseName.name || 'UnqualifiedName');
@@ -180,7 +189,8 @@ export class BinManMockup {
 
 	public startCurrentTimeUpdate(): void {
 		this.interval = global.setInterval(() => {
-			this.vOut = Math.random();
+			//TODO fix this
+			//this.vOut = Math.random();
 		}, 1000);
 	}
 

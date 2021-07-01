@@ -26,7 +26,7 @@
 // eslint-disable-next-line no-undef
 import Timeout = NodeJS.Timeout;
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {DataAssemblyMockup, getDataAssemblyMockupReferenceJSON} from '../../../DataAssembly.mockup';
+
 import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../../../_extensions/osLevelDA/OSLevelDA.mockup';
 import {getUnitDAMockupReferenceJSON, UnitDAMockup} from '../../../_extensions/unitDA/UnitDA.mockup';
 import {
@@ -41,48 +41,27 @@ import {
 	getSourceModeDAMockupReferenceJSON,
 	SourceModeDAMockup
 } from '../../../_extensions/sourceModeDA/SourceModeDA.mockup';
+import {getDIntManMockupReferenceJSON} from './DIntMan.mockup';
+import {getWQCDAMockupReferenceJSON} from '../../../_extensions/wqcDA/WQCDA.mockup';
 
 export function getDIntManIntMockupReferenceJSON(
 	namespace = 1,
 	objectBrowseName = 'P2OGalaxy') {
 
 	return ({
-			...getDataAssemblyMockupReferenceJSON(namespace,objectBrowseName),
-			...getOSLevelDAMockupReferenceJSON(namespace,objectBrowseName),
-			...getScaleSettingDAMockupReferenceJSON(namespace,objectBrowseName,'Int32'),
-			...getValueLimitationDAMockupReferenceJSON(namespace,objectBrowseName, 'Int32'),
-			...getUnitDAMockupReferenceJSON(namespace,objectBrowseName),
+			...getDIntManMockupReferenceJSON(),
+			...getWQCDAMockupReferenceJSON(),
 			...getSourceModeDAMockupReferenceJSON(namespace,objectBrowseName),
-			VOut: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VOut`,
-				dataType: 'Int32'
-			},
-			VMan: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VMan`,
-				dataType: 'Int32'
-			},
-			VRbk: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VRbk`,
-				dataType: 'Int32'
-			},
-			VFbk: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VFbk`,
-				dataType: 'Int32'
-			},
 			VInt: {
 				namespaceIndex: `${namespace}`,
 				nodeId: `${objectBrowseName}.VInt`,
-				dataType: 'Int32'
+				dataType: 'Boolean'
 			}
 		}
 	);
 }
 
-export class DIntManMockup {
+export class DIntManIntMockup {
 
 	public readonly name: string;
 	protected vRbk = 0;
@@ -90,7 +69,7 @@ export class DIntManMockup {
 	protected vOut = 0
 	protected vFbk = 0;
 	protected vInt = 0;
-	public readonly dataAssembly: DataAssemblyMockup;
+	
 	public readonly osLevel: OSLevelDAMockup;
 	public readonly scaleSettings: ScaleSettingDAMockup<DataType.Int32>;
 	public readonly valueLimitation: ValueLimitationDAMockup<DataType.Int32>;
@@ -107,7 +86,7 @@ export class DIntManMockup {
 			organizedBy: rootNode,
 			browseName: variableName
 		});
-		this.dataAssembly = new DataAssemblyMockup(namespace, this.mockupNode, this.name);
+		
 		this.osLevel = new OSLevelDAMockup(namespace, this.mockupNode, this.name);
 		this.scaleSettings = new ScaleSettingDAMockup(namespace, this.mockupNode, this.name, DataType.Int32);
 		this.valueLimitation = new ValueLimitationDAMockup(namespace, this.mockupNode, this.name,DataType.Int32);
@@ -175,7 +154,7 @@ export class DIntManMockup {
 		});
 	}
 
-	public getDIntManIntParamMockupJSON() {
+	public getDIntManIntMockupJSON() {
 		return getDIntManIntMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
 			this.mockupNode.browseName.name || 'UnqualifiedName');
