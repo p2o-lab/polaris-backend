@@ -26,7 +26,6 @@
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../../_extensions/wqcDA/WQCDA.mockup';
 import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../../../_extensions/osLevelDA/OSLevelDA.mockup';
-import {getDataAssemblyMockupReferenceJSON} from '../../../DataAssembly.mockup';
 import {getOpModeDAMockupReferenceJSON, OpModeDAMockup} from '../../../_extensions/opModeDA/OpModeDA.mockup';
 import {getInterlockDAMockupReferenceJSON, InterlockDAMockup} from '../../../_extensions/interlockDA/InterlockDA.mockup';
 import {getResetDAMockupReferenceJSON, ResetDAMockup} from '../../../_extensions/resetDA/ResetDA.mockup';
@@ -34,6 +33,8 @@ import {
 	getSourceModeDAMockupReferenceJSON,
 	SourceModeDAMockup
 } from '../../../_extensions/sourceModeDA/SourceModeDA.mockup';
+import {getActiveElementMockupReferenceJSON} from '../../ActiveElement.mockup';
+import {getDrvMockupReferenceJSON} from '../Drv.mockup';
 
 
 export function getAnaDrvMockupReferenceJSON(
@@ -41,98 +42,9 @@ export function getAnaDrvMockupReferenceJSON(
 	objectBrowseName = 'P2OGalaxy') {
 
 	return ({
-			...getDataAssemblyMockupReferenceJSON(namespace,objectBrowseName),
-			...getWQCDAMockupReferenceJSON(namespace,objectBrowseName),
-			...getOSLevelDAMockupReferenceJSON(namespace,objectBrowseName),
 			...getOpModeDAMockupReferenceJSON(namespace,objectBrowseName),
-			...getInterlockDAMockupReferenceJSON(namespace,objectBrowseName),
-			...getResetDAMockupReferenceJSON(namespace,objectBrowseName),
 			...getSourceModeDAMockupReferenceJSON(namespace,objectBrowseName),
-			SafePos: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.SafePos`,
-				dataType: 'Boolean'
-			},
-			SafePosAct: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.SafePosAct`,
-				dataType: 'Boolean'
-			},
-			FwdAut: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.FwdAut`,
-				dataType: 'Boolean'
-			},
-			FwdCtrl: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.FwdCtrl`,
-				dataType: 'Boolean'
-			},
-			FwdEn: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.FwdEn`,
-				dataType: 'Boolean'
-			},
-			FwdFbk: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.FwdFbk`,
-				dataType: 'Boolean'
-			},
-			FwdFbkCalc: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.FwdFbkCalc`,
-				dataType: 'Boolean'
-			},
-			FwdOp: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.FwdOp`,
-				dataType: 'Boolean'
-			},
-			RevAut: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.RevAut`,
-				dataType: 'Boolean'
-			},
-			RevCtrl: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.RevCtrl`,
-				dataType: 'Boolean'
-			},
-			RevEn: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.RevEn`,
-				dataType: 'Boolean'
-			},
-			RevFbk: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.RevFbk`,
-				dataType: 'Boolean'
-			},
-			RevFbkCalc: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.RevFbkCalc`,
-				dataType: 'Boolean'
-			},
-			RevOp: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.RevOp`,
-				dataType: 'Boolean'
-			},
-			StopAut: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.StopAut`,
-				dataType: 'Boolean'
-			},
-			StopOp: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.StopOp`,
-				dataType: 'Boolean'
-			},
-			Trip: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.Trip`,
-				dataType: 'Boolean'
-			},
+			...getDrvMockupReferenceJSON(),
 			RpmSclMax: {
 				namespaceIndex: `${namespace}`,
 				nodeId: `${objectBrowseName}.RpmSclMax`,

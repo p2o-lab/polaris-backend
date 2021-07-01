@@ -26,10 +26,10 @@
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../_extensions/wqcDA/WQCDA.mockup';
 import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../../_extensions/osLevelDA/OSLevelDA.mockup';
-import {getDataAssemblyMockupReferenceJSON} from '../../DataAssembly.mockup';
 import {getOpModeDAMockupReferenceJSON, OpModeDAMockup} from '../../_extensions/opModeDA/OpModeDA.mockup';
 import {getInterlockDAMockupReferenceJSON, InterlockDAMockup} from '../../_extensions/interlockDA/InterlockDA.mockup';
 import {getResetDAMockupReferenceJSON, ResetDAMockup} from '../../_extensions/resetDA/ResetDA.mockup';
+import {getActiveElementMockupReferenceJSON} from '../ActiveElement.mockup';
 
 
 export function getDrvMockupReferenceJSON(
@@ -37,9 +37,8 @@ export function getDrvMockupReferenceJSON(
 	objectBrowseName = 'P2OGalaxy') {
 
 	return ({
-			...getDataAssemblyMockupReferenceJSON(namespace,objectBrowseName),
-			...getWQCDAMockupReferenceJSON(namespace,objectBrowseName),
-			...getOSLevelDAMockupReferenceJSON(namespace,objectBrowseName),
+			
+			...getActiveElementMockupReferenceJSON(),
 			...getOpModeDAMockupReferenceJSON(namespace,objectBrowseName),
 			...getInterlockDAMockupReferenceJSON(namespace,objectBrowseName),
 			...getResetDAMockupReferenceJSON(namespace,objectBrowseName),

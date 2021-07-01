@@ -29,7 +29,7 @@ describe('ActiveElementMockup', () => {
             expect(mockup).to.not.be.undefined;
 
         });
-        it('getAnaServParamMockupReferenceJSON()',  () => {
+        it('getActiveElementMockupReferenceJSON()',  () => {
             const mockup = new ActiveElementMockup(mockupServer.namespace as Namespace,
                 mockupServer.rootComponent as UAObject, 'Variable');
             const json = mockup.getActiveElementMockupJSON();

@@ -26,7 +26,6 @@
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../../_extensions/wqcDA/WQCDA.mockup';
 import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../../../_extensions/osLevelDA/OSLevelDA.mockup';
-import {getDataAssemblyMockupReferenceJSON} from '../../../DataAssembly.mockup';
 import {getOpModeDAMockupReferenceJSON, OpModeDAMockup} from '../../../_extensions/opModeDA/OpModeDA.mockup';
 import {getInterlockDAMockupReferenceJSON, InterlockDAMockup} from '../../../_extensions/interlockDA/InterlockDA.mockup';
 import {getResetDAMockupReferenceJSON, ResetDAMockup} from '../../../_extensions/resetDA/ResetDA.mockup';
@@ -38,6 +37,7 @@ import {
 	FeedbackMonitoringDAMockup,
 	getFeedbackMonitoringDAMockupReferenceJSON
 } from '../../../_extensions/feedbackMonitoringDA/FeedbackMonitoringDA.mockup';
+import {getAnaDrvMockupReferenceJSON} from './AnaDrv.mockup';
 
 
 export function getMonAnaDrvMockupReferenceJSON(
@@ -45,154 +45,8 @@ export function getMonAnaDrvMockupReferenceJSON(
 	objectBrowseName = 'P2OGalaxy') {
 
 	return ({
-			...getDataAssemblyMockupReferenceJSON(namespace,objectBrowseName),
-			...getWQCDAMockupReferenceJSON(namespace,objectBrowseName),
-			...getOSLevelDAMockupReferenceJSON(namespace,objectBrowseName),
-			...getOpModeDAMockupReferenceJSON(namespace,objectBrowseName),
-			...getInterlockDAMockupReferenceJSON(namespace,objectBrowseName),
-			...getResetDAMockupReferenceJSON(namespace,objectBrowseName),
-			...getSourceModeDAMockupReferenceJSON(namespace,objectBrowseName),
+			...getAnaDrvMockupReferenceJSON(),
 			...getFeedbackMonitoringDAMockupReferenceJSON(namespace,objectBrowseName),
-			SafePos: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.SafePos`,
-				dataType: 'Boolean'
-			},
-			SafePosAct: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.SafePosAct`,
-				dataType: 'Boolean'
-			},
-			FwdAut: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.FwdAut`,
-				dataType: 'Boolean'
-			},
-			FwdCtrl: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.FwdCtrl`,
-				dataType: 'Boolean'
-			},
-			FwdEn: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.FwdEn`,
-				dataType: 'Boolean'
-			},
-			FwdFbk: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.FwdFbk`,
-				dataType: 'Boolean'
-			},
-			FwdFbkCalc: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.FwdFbkCalc`,
-				dataType: 'Boolean'
-			},
-			FwdOp: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.FwdOp`,
-				dataType: 'Boolean'
-			},
-			RevAut: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.RevAut`,
-				dataType: 'Boolean'
-			},
-			RevCtrl: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.RevCtrl`,
-				dataType: 'Boolean'
-			},
-			RevEn: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.RevEn`,
-				dataType: 'Boolean'
-			},
-			RevFbk: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.RevFbk`,
-				dataType: 'Boolean'
-			},
-			RevFbkCalc: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.RevFbkCalc`,
-				dataType: 'Boolean'
-			},
-			RevOp: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.RevOp`,
-				dataType: 'Boolean'
-			},
-			StopAut: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.StopAut`,
-				dataType: 'Boolean'
-			},
-			StopOp: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.StopOp`,
-				dataType: 'Boolean'
-			},
-			Trip: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.Trip`,
-				dataType: 'Boolean'
-			},
-			RpmSclMax: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.RpmSclMax`,
-				dataType: 'Float'
-			},
-			RpmSclMin: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.RpmSclMin`,
-				dataType: 'Float'
-			},
-			RpmUnit: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.RpmUnit`,
-				dataType: 'Int16'
-			},
-			RpmMax: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.RpmMax`,
-				dataType: 'Float'
-			},
-			RpmMin: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.RpmMin`,
-				dataType: 'Float'
-			},
-			RpmInt: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.RpmInt`,
-				dataType: 'Float'
-			},
-			RpmMan: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.RpmMan`,
-				dataType: 'Float'
-			},
-			Rpm: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.Rpm`,
-				dataType: 'Float'
-			},
-			RpmFbk: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.RpmFbk`,
-				dataType: 'Float'
-			},
-			RpmFbkCalc: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.RpmFbkCalc`,
-				dataType: 'Boolean'
-			},
-			RpmRbk: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.RpmRbk`,
-				dataType: 'Float'
-			},
 			RpmErr: {
 				namespaceIndex: `${namespace}`,
 				nodeId: `${objectBrowseName}.RpmErr`,
@@ -213,36 +67,6 @@ export function getMonAnaDrvMockupReferenceJSON(
 				nodeId: `${objectBrowseName}.RpmAHAct`,
 				dataType: 'Boolean'
 			},
-			RpmWHEn: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.RpmWHEn`,
-				dataType: 'Boolean'
-			},
-			RpmWHLim: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.RpmWHLim`,
-				dataType: 'Float'
-			},
-			RpmWHAct: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.RpmWHAct`,
-				dataType: 'Boolean'
-			},
-			RpmTHEn: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.RpmTHEn`,
-				dataType: 'Boolean'
-			},
-			RpmTHLim: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.RpmTHLim`,
-				dataType: 'Float'
-			},
-			RpmTHAct: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.RpmTHAct`,
-				dataType: 'Boolean'
-			},
 			RpmALEn: {
 				namespaceIndex: `${namespace}`,
 				nodeId: `${objectBrowseName}.RpmALEn`,
@@ -258,36 +82,6 @@ export function getMonAnaDrvMockupReferenceJSON(
 				nodeId: `${objectBrowseName}.RpmALAct`,
 				dataType: 'Boolean'
 			},
-			RpmWLEn: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.RpmWLEn`,
-				dataType: 'Boolean'
-			},
-			RpmWLLim: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.RpmWLLim`,
-				dataType: 'Float'
-			},
-			RpmWLAct: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.RpmWLAct`,
-				dataType: 'Boolean'
-			},
-			RpmTLEn: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.RpmTLEn`,
-				dataType: 'Boolean'
-			},
-			RpmTLLim: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.RpmTLLim`,
-				dataType: 'Float'
-			},
-			RpmTLAct: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.RpmTLAct`,
-				dataType: 'Boolean'
-			}
 		}
 	);
 }

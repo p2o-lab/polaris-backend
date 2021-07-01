@@ -32,7 +32,6 @@ export function getActiveElementMockupReferenceJSON(
 	objectBrowseName = 'P2OGalaxy') {
 
 	return ({
-			
 			...getWQCDAMockupReferenceJSON(namespace,objectBrowseName),
 			...getOSLevelDAMockupReferenceJSON(namespace,objectBrowseName)
 		}

@@ -24,11 +24,11 @@
  */
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {OpModeDAMockup} from '../../_extensions/opModeDA/OpModeDA.mockup';
+import {getOpModeDAMockupReferenceJSON, OpModeDAMockup} from '../../_extensions/opModeDA/OpModeDA.mockup';
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../_extensions/wqcDA/WQCDA.mockup';
 import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../../_extensions/osLevelDA/OSLevelDA.mockup';
-import {getDataAssemblyMockupReferenceJSON} from '../../DataAssembly.mockup';
 import {getSourceModeDAMockupReferenceJSON, SourceModeDAMockup} from '../../_extensions/sourceModeDA/SourceModeDA.mockup';
+import {getActiveElementMockupReferenceJSON} from '../ActiveElement.mockup';
 
 
 export function getPIDCtrlMockupReferenceJSON(
@@ -36,10 +36,9 @@ export function getPIDCtrlMockupReferenceJSON(
 	objectBrowseName = 'P2OGalaxy') {
 
 	return ({
-			...getDataAssemblyMockupReferenceJSON(namespace,objectBrowseName),
-			...getWQCDAMockupReferenceJSON(namespace,objectBrowseName),
-			...getOSLevelDAMockupReferenceJSON(namespace,objectBrowseName),
+			...getActiveElementMockupReferenceJSON(),
 			...getSourceModeDAMockupReferenceJSON(namespace,objectBrowseName),
+			...getOpModeDAMockupReferenceJSON(namespace, objectBrowseName),
 			PV: {
 				namespaceIndex: `${namespace}`,
 				nodeId: `${objectBrowseName}.PV`,
@@ -60,14 +59,9 @@ export function getPIDCtrlMockupReferenceJSON(
 				nodeId: `${objectBrowseName}.PVUnit`,
 				dataType: 'Int16'
 			},
-			SPMan: {
+			SP: {
 				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.SPMan`,
-				dataType: 'Float'
-			},
-			SPInt: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.SPInt`,
+				nodeId: `${objectBrowseName}.SP`,
 				dataType: 'Float'
 			},
 			SPSclMin: {
@@ -85,14 +79,9 @@ export function getPIDCtrlMockupReferenceJSON(
 				nodeId: `${objectBrowseName}.SPUnit`,
 				dataType: 'Int16'
 			},
-			SPIntMin: {
+			SPMan: {
 				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.SPIntMin`,
-				dataType: 'Float'
-			},
-			SPIntMax: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.SPIntMax`,
+				nodeId: `${objectBrowseName}.SPMan`,
 				dataType: 'Float'
 			},
 			SPManMin: {
@@ -105,19 +94,29 @@ export function getPIDCtrlMockupReferenceJSON(
 				nodeId: `${objectBrowseName}.SPManMax`,
 				dataType: 'Float'
 			},
-			SP: {
+			SPInt: {
 				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.SP`,
+				nodeId: `${objectBrowseName}.SPInt`,
 				dataType: 'Float'
 			},
-			MVMan: {
+			SPIntMin: {
 				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.MVMan`,
+				nodeId: `${objectBrowseName}.SPIntMin`,
+				dataType: 'Float'
+			},
+			SPIntMax: {
+				namespaceIndex: `${namespace}`,
+				nodeId: `${objectBrowseName}.SPIntMax`,
 				dataType: 'Float'
 			},
 			MV: {
 				namespaceIndex: `${namespace}`,
 				nodeId: `${objectBrowseName}.MV`,
+				dataType: 'Float'
+			},
+			MVMan: {
+				namespaceIndex: `${namespace}`,
+				nodeId: `${objectBrowseName}.MVMan`,
 				dataType: 'Float'
 			},
 			MVSclMin: {

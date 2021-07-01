@@ -26,7 +26,6 @@
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../../_extensions/wqcDA/WQCDA.mockup';
 import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../../../_extensions/osLevelDA/OSLevelDA.mockup';
-import {getDataAssemblyMockupReferenceJSON} from '../../../DataAssembly.mockup';
 import {getSourceModeDAMockupReferenceJSON} from '../../../_extensions/sourceModeDA/SourceModeDA.mockup';
 import {getOpModeDAMockupReferenceJSON, OpModeDAMockup} from '../../../_extensions/opModeDA/OpModeDA.mockup';
 import {getInterlockDAMockupReferenceJSON, InterlockDAMockup} from '../../../_extensions/interlockDA/InterlockDA.mockup';
@@ -35,6 +34,7 @@ import {
 	FeedbackMonitoringDAMockup,
 	getFeedbackMonitoringDAMockupReferenceJSON
 } from '../../../_extensions/feedbackMonitoringDA/FeedbackMonitoringDA.mockup';
+import {getAnaVlvMockupReferenceJSON} from './AnaVlv.mockup';
 
 
 export function getMonAnaVlvMockupReferenceJSON(
@@ -42,134 +42,8 @@ export function getMonAnaVlvMockupReferenceJSON(
 	objectBrowseName = 'P2OGalaxy') {
 
 	return ({
-			...getDataAssemblyMockupReferenceJSON(namespace,objectBrowseName),
-			...getWQCDAMockupReferenceJSON(namespace,objectBrowseName),
-			...getOSLevelDAMockupReferenceJSON(namespace,objectBrowseName),
-			...getSourceModeDAMockupReferenceJSON(namespace,objectBrowseName),
-			...getOpModeDAMockupReferenceJSON(namespace,objectBrowseName),
-			...getInterlockDAMockupReferenceJSON(namespace,objectBrowseName),
-			...getResetDAMockupReferenceJSON(namespace,objectBrowseName),
+			...getAnaVlvMockupReferenceJSON(),
 			...getFeedbackMonitoringDAMockupReferenceJSON(namespace,objectBrowseName),
-			SafePos: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.SafePos`,
-				dataType: 'Boolean'
-			},
-			SafePosEn: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.SafePosEn`,
-				dataType: 'Boolean'
-			},
-			SafePosAct: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.SafePosAct`,
-				dataType: 'Boolean'
-			},
-			OpenAut: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.OpenAut`,
-				dataType: 'Boolean'
-			},
-			OpenFbk: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.OpenFbk`,
-				dataType: 'Boolean'
-			},
-			OpenFbkCalc: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.OpenFbkCalc`,
-				dataType: 'Boolean'
-			},
-			OpenOp: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.OpenOp`,
-				dataType: 'Boolean'
-			},
-			CloseAut: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.CloseAut`,
-				dataType: 'Boolean'
-			},
-			CloseFbk: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.CloseFbk`,
-				dataType: 'Boolean'
-			},
-			CloseFbkCalc: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.CloseFbkCalc`,
-				dataType: 'Boolean'
-			},
-			CloseOp: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.CloseOp`,
-				dataType: 'Boolean'
-			},
-			Pos: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.Pos`,
-				dataType: 'Float'
-			},
-			PosFbk: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.PosFbk`,
-				dataType: 'Float'
-			},
-			PosFbkCalc: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.PosFbkCalc`,
-				dataType: 'Boolean'
-			},
-			PosRbk: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.PosRbk`,
-				dataType: 'Float'
-			},
-			PosInt: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.PosInt`,
-				dataType: 'Float'
-			},
-			PosMan: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.PosMan`,
-				dataType: 'Float'
-			},
-			PosUnit: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.PosUnit`,
-				dataType: 'Int16'
-			},
-			PosSclMin: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.PosSclMin`,
-				dataType: 'Float'
-			},
-			PosSclMax: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.PosSclMax`,
-				dataType: 'Float'
-			},
-			PosMin: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.PosMin`,
-				dataType: 'Float'
-			},
-			PosMax: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.PosMax`,
-				dataType: 'Float'
-			},
-			OpenAct: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.OpenAct`,
-				dataType: 'Boolean'
-			},
-			CloseAct: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.CloseAct`,
-				dataType: 'Boolean'
-			},
 			PosReachedFbk: {
 				namespaceIndex: `${namespace}`,
 				nodeId: `${objectBrowseName}.PosReachedFbk`,

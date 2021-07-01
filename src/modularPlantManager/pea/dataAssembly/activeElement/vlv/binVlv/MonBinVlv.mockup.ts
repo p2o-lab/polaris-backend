@@ -26,7 +26,6 @@
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../../_extensions/wqcDA/WQCDA.mockup';
 import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../../../_extensions/osLevelDA/OSLevelDA.mockup';
-import {getDataAssemblyMockupReferenceJSON} from '../../../DataAssembly.mockup';
 import {getOpModeDAMockupReferenceJSON, OpModeDAMockup} from '../../../_extensions/opModeDA/OpModeDA.mockup';
 import {getInterlockDAMockupReferenceJSON, InterlockDAMockup} from '../../../_extensions/interlockDA/InterlockDA.mockup';
 import {getResetDAMockupReferenceJSON, ResetDAMockup} from '../../../_extensions/resetDA/ResetDA.mockup';
@@ -34,6 +33,7 @@ import {
 	FeedbackMonitoringDAMockup,
 	getFeedbackMonitoringDAMockupReferenceJSON
 } from '../../../_extensions/feedbackMonitoringDA/FeedbackMonitoringDA.mockup';
+import {getBinVlvMockupReferenceJSON} from './BinVlv.mockup';
 
 
 export function getMonBinVlvMockupReferenceJSON(
@@ -41,73 +41,8 @@ export function getMonBinVlvMockupReferenceJSON(
 	objectBrowseName = 'P2OGalaxy') {
 
 	return ({
-			...getDataAssemblyMockupReferenceJSON(namespace,objectBrowseName),
-			...getWQCDAMockupReferenceJSON(namespace,objectBrowseName),
-			...getOSLevelDAMockupReferenceJSON(namespace,objectBrowseName),
-			...getOpModeDAMockupReferenceJSON(namespace,objectBrowseName),
-			...getInterlockDAMockupReferenceJSON(namespace,objectBrowseName),
-			...getResetDAMockupReferenceJSON(namespace,objectBrowseName),
+			...getBinVlvMockupReferenceJSON(),
 			...getFeedbackMonitoringDAMockupReferenceJSON(namespace,objectBrowseName),
-			SafePos: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.SafePos`,
-				dataType: 'Boolean'
-			},
-			SafePosEn: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.SafePosEn`,
-				dataType: 'Boolean'
-			},
-			SafePosAct: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.SafePosAct`,
-				dataType: 'Boolean'
-			},
-			OpenAut: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.OpenAut`,
-				dataType: 'Boolean'
-			},
-			OpenFbk: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.OpenFbk`,
-				dataType: 'Boolean'
-			},
-			OpenFbkCalc: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.OpenFbkCalc`,
-				dataType: 'Boolean'
-			},
-			OpenOp: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.OpenOp`,
-				dataType: 'Boolean'
-			},
-			CloseAut: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.CloseAut`,
-				dataType: 'Boolean'
-			},
-			CloseFbk: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.CloseFbk`,
-				dataType: 'Boolean'
-			},
-			CloseFbkCalc: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.CloseFbkCalc`,
-				dataType: 'Boolean'
-			},
-			CloseOp: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.CloseOp`,
-				dataType: 'Boolean'
-			},
-			Ctrl: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.Ctrl`,
-				dataType: 'Boolean'
-			}
 		}
 	);
 }
