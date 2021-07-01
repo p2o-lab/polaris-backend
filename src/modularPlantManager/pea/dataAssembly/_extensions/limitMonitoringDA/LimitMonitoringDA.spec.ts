@@ -28,19 +28,55 @@ import {OpcUaConnection} from '../../../connection';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {PEAMockup} from '../../../PEA.mockup';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import * as baseDataAssemblyOptions from '../../../../../../tests/anamon.json';
+import {MonAnaDrv} from '../../activeElement';
+import {LimitMonitoring} from './LimitMonitoring';
+import {DataAssemblyController} from '../../DataAssemblyController';
+import {AnaMon} from '../../indicatorElement';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('LimitMonitoring', () => {
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
-	const parseJson = require('json-parse-better-errors');
 
-	describe('static', () => {
+	describe('', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
-		it('should create LimitMonitoring', async () => { /* TODO: Add Test */
+		it('should create LimitMonitoring', async () => {
+			const dataAssemblyOptions: DataAssemblyOptions = {
+				name: 'Variable',
+				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/AnaMon',
+				dataItems: baseDataAssemblyOptions
+			};
+			const da1 = new AnaMon(dataAssemblyOptions, emptyOPCUAConnection);
+			const limitMonitoring = new LimitMonitoring(da1);
+
+			expect(limitMonitoring).to.not.be.undefined;
+
+			expect(da1.communication.VAHEn).to.not.be.undefined;
+			expect(da1.communication.VAHLim).to.not.be.undefined;
+			expect(da1.communication.VAHAct).to.not.be.undefined;
+
+			expect(da1.communication.VWHEn).to.not.be.undefined;
+			expect(da1.communication.VWHLim).to.not.be.undefined;
+			expect(da1.communication.VWHAct).to.not.be.undefined;
+
+			expect(da1.communication.VTHEn).to.not.be.undefined;
+			expect(da1.communication.VTHLim).to.not.be.undefined;
+			expect(da1.communication.VTHAct).to.not.be.undefined;
+
+			expect(da1.communication.VTLEn).to.not.be.undefined;
+			expect(da1.communication.VTLLim).to.not.be.undefined;
+			expect(da1.communication.VTLAct).to.not.be.undefined;
+
+			expect(da1.communication.VWLEn).to.not.be.undefined;
+			expect(da1.communication.VWLLim).to.not.be.undefined;
+			expect(da1.communication.VWLAct).to.not.be.undefined;
+
+			expect(da1.communication.VALEn).to.not.be.undefined;
+			expect(da1.communication.VALLim).to.not.be.undefined;
+			expect(da1.communication.VALAct).to.not.be.undefined;
+
 		});
-
 	});
-
 });
