@@ -24,12 +24,12 @@ describe('ServParamMockup', () => {
             //TODO: test more
 
         });
-        it('getServParamMockupReferenceJSON()',  () => {
+        it('getServParamMockupReferenceJSON(namespace, objectBrowseName)',  () => {
             const mockup = new ServParamMockup(mockupServer.namespace as Namespace,
                 mockupServer.rootComponent as UAObject, 'Variable');
             const json = mockup.getServParamMockupJSON();
             expect(json).not.to.be.undefined;
-            expect(Object.keys(json).length).to .equal(19);
+            expect(Object.keys(json).length).to .equal(20);
             //TODO: test more
         });
     });
