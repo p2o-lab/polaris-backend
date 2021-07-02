@@ -25,15 +25,14 @@
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../../_extensions/wqcDA/WQCDA.mockup';
-import {getDataAssemblyMockupReferenceJSON} from '../../../DataAssembly.mockup';
+import {getInputElementMockupReferenceJSON} from '../../InputElement.mockup';
 
 export function getBinProcessValueInMockupReferenceJSON(
-	namespace = 1,
-	objectBrowseName = 'P2OGalaxy') {
+	namespace: number,
+	objectBrowseName: string) {
 	return (
 		{
-			...getDataAssemblyMockupReferenceJSON(namespace, objectBrowseName),
-			...getWQCDAMockupReferenceJSON(namespace, objectBrowseName),
+			...getInputElementMockupReferenceJSON(namespace, objectBrowseName),
 			VExt: {
 				namespaceIndex: `${namespace}`,
 				nodeId: `${objectBrowseName}.VExt`,
@@ -57,7 +56,7 @@ export class BinProcessValueInMockup{
 
 	public readonly name: string;
 	public wqc: WQCDAMockup;
-	public vExt = 0;
+	public vExt = false;
 	public vState0 = 'state0_active';
 	public vState1 = 'state1_active';
 	protected mockupNode: UAObject;
@@ -122,6 +121,6 @@ export class BinProcessValueInMockup{
 	public getBinProcessValueInInstanceMockupJSON() {
 		return getBinProcessValueInMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name || 'UnqualifiedName');
+			this.mockupNode.browseName.name as string);
 	}
 }

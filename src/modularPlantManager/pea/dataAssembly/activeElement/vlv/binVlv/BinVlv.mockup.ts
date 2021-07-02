@@ -33,11 +33,11 @@ import {getVlvMockupReferenceJSON} from '../Vlv.mockup';
 
 
 export function getBinVlvMockupReferenceJSON(
-	namespace = 1,
-	objectBrowseName = 'P2OGalaxy') {
+	namespace: number,
+	objectBrowseName: string) {
 
 	return ({
-			...getVlvMockupReferenceJSON(),
+			...getVlvMockupReferenceJSON(namespace, objectBrowseName),
 			Ctrl: {
 				namespaceIndex: `${namespace}`,
 				nodeId: `${objectBrowseName}.Ctrl`,
@@ -221,6 +221,6 @@ export class BinVlvMockup {
 	public getBinVlvMockupJSON() {
 		return getBinVlvMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name || 'UnqualifiedName');
+			this.mockupNode.browseName.name as string);
 	}
 }

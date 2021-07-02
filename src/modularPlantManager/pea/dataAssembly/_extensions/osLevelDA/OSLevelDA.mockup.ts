@@ -26,8 +26,8 @@
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
 
 export function getOSLevelDAMockupReferenceJSON(
-    namespace = 1,
-    objectBrowseName = 'P2OGalaxy') {
+    namespace: number,
+    objectBrowseName: string) {
 
   return ({
     OSLevel:   {
@@ -65,6 +65,6 @@ export class OSLevelDAMockup {
   public getOSLevelDAInstanceMockupJSON() {
     return getOSLevelDAMockupReferenceJSON(
         this.mockupNode.namespaceIndex,
-        this.mockupNode.browseName.name || 'UnqualifiedName');
+        this.mockupNode.browseName.name as string);
   }
 }

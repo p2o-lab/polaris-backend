@@ -29,8 +29,8 @@ import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../../_extension
 import {getBinViewMockupReferenceJSON} from './BinView.mockup';
 
 export function getBinMonMockupReferenceJSON(
-	namespace = 1,
-	objectBrowseName = 'P2OGalaxy') {
+	namespace: number,
+	objectBrowseName: string) {
 	return (
 		{
 			...getWQCDAMockupReferenceJSON(namespace, objectBrowseName),
@@ -187,6 +187,6 @@ export class BinMonMockup {
 	public getBinMonInstanceMockupJSON() {
 		return getBinMonMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name || 'UnqualifiedName');
+			this.mockupNode.browseName.name as string);
 	}
 }

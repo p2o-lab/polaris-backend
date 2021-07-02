@@ -32,15 +32,14 @@ import {
 } from '../_extensions/serviceSourceModeDA/ServiceSourceModeDA.mockup';
 import {ServiceMtpCommand} from '../../serviceSet/service/enum';
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../_extensions/wqcDA/WQCDA.mockup';
-import {getDataAssemblyMockupReferenceJSON} from '../DataAssembly.mockup';
 import {getOSLevelDAMockupReferenceJSON} from '../_extensions/osLevelDA/OSLevelDA.mockup';
 
 export function getServiceControlMockupReferenceJSON(
-    namespace = 1,
+    namespace: number,
     objectBrowseName = `${namespace}`) {
   return (
       {
-          ...getDataAssemblyMockupReferenceJSON(namespace,objectBrowseName),
+          
           ...getWQCDAMockupReferenceJSON(namespace,objectBrowseName),
           ...getOSLevelDAMockupReferenceJSON(namespace,objectBrowseName),
           ...getServiceSourceModeDAMockupReferenceJSON(namespace,objectBrowseName),
@@ -325,9 +324,11 @@ export abstract class ServiceControlMockup {
 
   }
 
-  public getServiceControlInstanceMockupJSON(): BaseDataAssemblyOptions{
+  public getServiceControlInstanceMockupJSON(): {
+      ProcedureCur: { dataType: string; namespaceIndex: string; nodeId: string }; SrcExtOp: { dataType: string; namespaceIndex: string; nodeId: string }; InteractQuestionID: { dataType: string; namespaceIndex: string; nodeId: string }; StateAutAct: { dataType: string; namespaceIndex: string; nodeId: string }; CommandInt: { dataType: string; namespaceIndex: string; nodeId: string }; StateAutOp: { dataType: string; namespaceIndex: string; nodeId: string }; PosTextID: { dataType: string; namespaceIndex: string; nodeId: string }; OSLevel: { dataType: string; namespaceIndex: string; nodeId: string }; SrcExtAut: { dataType: string; namespaceIndex: string; nodeId: string }; SrcIntAct: { dataType: string; namespaceIndex: string; nodeId: string }; SrcExtAct: { dataType: string; namespaceIndex: string; nodeId: string }; StateOpAct: { dataType: string; namespaceIndex: string; nodeId: string }; InteractAnswerID: { dataType: string; namespaceIndex: string; nodeId: string }; StateOffAct: { dataType: string; namespaceIndex: string; nodeId: string }; SrcIntAut: { dataType: string; namespaceIndex: string; nodeId: string }; ProcedureExt: { dataType: string; namespaceIndex: string; nodeId: string }; StateCur: { dataType: string; namespaceIndex: string; nodeId: string }; StateOffOp: { dataType: string; namespaceIndex: string; nodeId: string }; ProcedureReq: { dataType: string; namespaceIndex: string; nodeId: string }; WQC: { dataType: string; namespaceIndex: string; nodeId: string }; StateOpOp: { dataType: string; namespaceIndex: string; nodeId: string }; CommandEn: { dataType: string; namespaceIndex: string; nodeId: string }; ProcedureInt: { dataType: string; namespaceIndex: string; nodeId: string }; CommandOp: { dataType: string; namespaceIndex: string; nodeId: string }; StateOpAut: { dataType: string; namespaceIndex: string; nodeId: string }; StateOffAut: { dataType: string; namespaceIndex: string; nodeId: string }; StateChannel: { dataType: string; namespaceIndex: string; nodeId: string }; CommandExt: { dataType: string; namespaceIndex: string; nodeId: string }; ProcedureOp: { dataType: string; namespaceIndex: string; nodeId: string }; StateAutAut: { dataType: string; namespaceIndex: string; nodeId: string }; SrcIntOp: { dataType: string; namespaceIndex: string; nodeId: string }; SrcChannel: { dataType: string; namespaceIndex: string; nodeId: string }
+  }{
     return getServiceControlMockupReferenceJSON(
         this.dataAssemblyNode.namespaceIndex,
-        this.dataAssemblyNode.browseName.name || 'UnqualifiedName');
+        this.dataAssemblyNode.browseName.name as string);
   }
 }

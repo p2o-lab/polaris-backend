@@ -26,22 +26,14 @@
 // eslint-disable-next-line no-undef
 import Timeout = NodeJS.Timeout;
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {getOpModeDAMockupReferenceJSON, OpModeDAMockup} from '../../../_extensions/opModeDA/OpModeDA.mockup';
-import {
-	getServiceSourceModeDAMockupReferenceJSON,
-	ServiceSourceModeDAMockup
-} from '../../../_extensions/serviceSourceModeDA/ServiceSourceModeDA.mockup';
-import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../../_extensions/wqcDA/WQCDA.mockup';
-
-import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../../../_extensions/osLevelDA/OSLevelDA.mockup';
-import {getServParamMockupReferenceJSON} from '../ServParam.mockup';
+import {getServParamMockupReferenceJSON, ServParamMockup} from '../ServParam.mockup';
 
 export function getStringServParamMockupReferenceJSON(
-	namespace = 1,
-	objectBrowseName = 'P2OGalaxy') {
+	namespace: number,
+	objectBrowseName: string) {
 
 	return ({
-			...getServParamMockupReferenceJSON(),
+			...getServParamMockupReferenceJSON(namespace, objectBrowseName),
 			VExt: {
 				namespaceIndex: `${namespace}`,
 				nodeId: `${objectBrowseName}.VExt`,
@@ -76,9 +68,8 @@ export function getStringServParamMockupReferenceJSON(
 	);
 }
 
-export class StringServParamMockup {
-
-	public readonly name: string;
+export class StringServParamMockup extends ServParamMockup{
+	
 	protected vExt = '';
 	protected vOp = '';
 	protected vInt = '';
@@ -86,27 +77,10 @@ export class StringServParamMockup {
 	protected vOut = '';
 	protected vFbk = '';
 	
-	public readonly osLevel: OSLevelDAMockup;
-	public readonly opMode: OpModeDAMockup;
-	public readonly serviceSourceMode: ServiceSourceModeDAMockup;
-	public readonly wqc: WQCDAMockup;
 	protected interval: Timeout | undefined;
-	protected mockupNode: UAObject;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
-
-		this.name = variableName;
-
-		this.mockupNode = namespace.addObject({
-			organizedBy: rootNode,
-			browseName: variableName
-		});
-
-		
-		this.osLevel = new OSLevelDAMockup(namespace, this.mockupNode, this.name);
-		this.opMode = new OpModeDAMockup(namespace, this.mockupNode, this.name);
-		this.serviceSourceMode = new ServiceSourceModeDAMockup(namespace, this.mockupNode, this.name);
-		this.wqc = new WQCDAMockup(namespace, this.mockupNode, this.name);
+		super(namespace,rootNode,variableName);
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
@@ -188,7 +162,7 @@ export class StringServParamMockup {
 	public getStringServParamMockupJSON() {
 		return getStringServParamMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name || 'UnqualifiedName');
+			this.mockupNode.browseName.name as string);
 	}
 
 	public startCurrentTimeUpdate(): void {
@@ -200,6 +174,8 @@ export class StringServParamMockup {
 	public stopCurrentTimeUpdate(): void {
 		if (this.interval) {
 			global.clearInterval(this.interval);
+		}else {
+			throw new Error('No interval defined.');
 		}
 	}
 }

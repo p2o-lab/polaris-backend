@@ -27,8 +27,8 @@ import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../_extensions/wqcDA/WQCDA.mockup';
 
 export function getBinViewMockupReferenceJSON(
-	namespace = 1,
-	objectBrowseName = 'P2OGalaxy') {
+	namespace: number,
+	objectBrowseName: string) {
 	return (
 		{
 			...getWQCDAMockupReferenceJSON(namespace, objectBrowseName),
@@ -116,6 +116,6 @@ export class BinViewMockup {
 	public getBinViewInstanceMockupJSON() {
 		return getBinViewMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name || 'UnqualifiedName');
+			this.mockupNode.browseName.name as string);
 	}
 }

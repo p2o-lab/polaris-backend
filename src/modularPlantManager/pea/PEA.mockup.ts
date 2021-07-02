@@ -30,8 +30,8 @@ import {PEATestNumericVariable} from '../_utils';
 
 
 export function getPEAMockupReferenceJSON(
-	namespace = 1,
-	objectBrowseName = 'P2OGalaxy'): any {
+	namespace: number,
+	objectBrowseName: string): any {
 
 	return ({
 			peas: [

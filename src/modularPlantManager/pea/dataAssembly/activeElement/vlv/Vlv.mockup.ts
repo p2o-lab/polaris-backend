@@ -34,11 +34,11 @@ import {getActiveElementMockupReferenceJSON} from '../ActiveElement.mockup';
 
 
 export function getVlvMockupReferenceJSON(
-	namespace = 1,
-	objectBrowseName = 'P2OGalaxy') {
+	namespace: number,
+	objectBrowseName: string) {
 
 	return ({
-			...getActiveElementMockupReferenceJSON(),
+			...getActiveElementMockupReferenceJSON(namespace, objectBrowseName),
 			...getOpModeDAMockupReferenceJSON(namespace,objectBrowseName),
 			...getInterlockDAMockupReferenceJSON(namespace,objectBrowseName),
 			...getResetDAMockupReferenceJSON(namespace,objectBrowseName),
@@ -261,6 +261,6 @@ export class VlvMockup {
 	public getVlvMockupJSON() {
 		return getVlvMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name || 'UnqualifiedName');
+			this.mockupNode.browseName.name as string);
 	}
 }

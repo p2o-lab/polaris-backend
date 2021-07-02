@@ -26,8 +26,8 @@
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 
 export function getLimitMonitoringDAMockupReferenceJSON(
-    namespace = 1,
-    objectBrowseName = 'P2OGalaxy') {
+    namespace: number,
+    objectBrowseName: string) {
   return ({
     VAHEn: {
       namespaceIndex: `${namespace}`,
@@ -122,7 +122,7 @@ export function getLimitMonitoringDAMockupReferenceJSON(
   });
 }
 
-export class LimitMonitoringDAMockup {
+export class LimitMonitoringDAMockup <T extends DataType.Double | DataType.Int32>{
   protected varAHEn = false;
   protected varAHLim = 0;
   protected varAHAct = false;
@@ -147,7 +147,7 @@ export class LimitMonitoringDAMockup {
   constructor(namespace: Namespace,
                         rootNode: UAObject,
                         variableName: string,
-                        limDataType: string | number | DataType | undefined ) {
+                        limDataType: T) {
 
     this.mockupNode = namespace.addObject({
       organizedBy: rootNode,
@@ -177,8 +177,6 @@ export class LimitMonitoringDAMockup {
 
         set: (variant: Variant) => {
           switch (typeof this.varAHLim) {
-            case 'undefined':
-              return StatusCodes.BadTypeDefinitionInvalid;
             case DataType.Double.toString():
               this.varAHLim = parseFloat(variant.value);
               return StatusCodes.Good;
@@ -223,8 +221,6 @@ export class LimitMonitoringDAMockup {
 
         set: (variant: Variant) => {
           switch (typeof this.varWHLim) {
-            case 'undefined':
-              return StatusCodes.BadTypeDefinitionInvalid;
             case DataType.Double.toString():
               this.varWHLim = parseFloat(variant.value);
               return StatusCodes.Good;
@@ -269,8 +265,6 @@ export class LimitMonitoringDAMockup {
 
         set: (variant: Variant) => {
           switch (typeof this.varTHLim) {
-            case 'undefined':
-              return StatusCodes.BadTypeDefinitionInvalid;
             case DataType.Double.toString():
               this.varTHLim = parseFloat(variant.value);
               return StatusCodes.Good;
@@ -315,8 +309,6 @@ export class LimitMonitoringDAMockup {
 
         set: (variant: Variant) => {
           switch (typeof this.varTLLim) {
-            case 'undefined':
-              return StatusCodes.BadTypeDefinitionInvalid;
             case DataType.Double.toString():
               this.varTLLim = parseFloat(variant.value);
               return StatusCodes.Good;
@@ -361,8 +353,6 @@ export class LimitMonitoringDAMockup {
 
         set: (variant: Variant) => {
           switch (typeof this.varWLLim) {
-            case 'undefined':
-              return StatusCodes.BadTypeDefinitionInvalid;
             case DataType.Double.toString():
               this.varWLLim = parseFloat(variant.value);
               return StatusCodes.Good;
@@ -407,8 +397,6 @@ export class LimitMonitoringDAMockup {
 
         set: (variant: Variant) => {
           switch (typeof this.varALLim) {
-            case 'undefined':
-              return StatusCodes.BadTypeDefinitionInvalid;
             case DataType.Double.toString():
               this.varALLim = parseFloat(variant.value);
               return StatusCodes.Good;
@@ -435,6 +423,6 @@ export class LimitMonitoringDAMockup {
   public getLimitMonitoringDAInstanceMockupJSON() {
     return getLimitMonitoringDAMockupReferenceJSON(
         this.mockupNode.namespaceIndex,
-        this.mockupNode.browseName.name || 'UnqualifiedName');
+        this.mockupNode.browseName.name as string);
   }
 }

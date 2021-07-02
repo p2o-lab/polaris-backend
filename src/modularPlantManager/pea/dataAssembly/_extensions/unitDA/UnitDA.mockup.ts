@@ -26,8 +26,8 @@
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
 
 export function getUnitDAMockupReferenceJSON(
-    namespace = 1,
-    objectBrowseName = 'P2OGalaxy') {
+    namespace: number,
+    objectBrowseName: string) {
 
   return ({
     VUnit:   {
@@ -65,6 +65,6 @@ export class UnitDAMockup {
   public getUnitDAInstanceMockupJSON() {
     return getUnitDAMockupReferenceJSON(
         this.mockupNode.namespaceIndex,
-        this.mockupNode.browseName.name || 'UnqualifiedName');
+        this.mockupNode.browseName.name as string);
   }
 }

@@ -28,8 +28,8 @@ import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../_extensions/wqcDA/WQC
 import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../_extensions/osLevelDA/OSLevelDA.mockup';
 
 export function getActiveElementMockupReferenceJSON(
-	namespace = 1,
-	objectBrowseName = 'P2OGalaxy') {
+	namespace: number,
+	objectBrowseName: string) {
 
 	return ({
 			...getWQCDAMockupReferenceJSON(namespace,objectBrowseName),
@@ -61,6 +61,6 @@ export class ActiveElementMockup {
 	public getActiveElementMockupJSON() {
 		return getActiveElementMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name || 'UnqualifiedName');
+			this.mockupNode.browseName.name as string);
 	}
 }

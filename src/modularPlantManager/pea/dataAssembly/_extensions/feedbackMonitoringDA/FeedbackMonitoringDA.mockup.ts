@@ -26,8 +26,8 @@
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 
 export function getFeedbackMonitoringDAMockupReferenceJSON(
-    namespace = 1,
-    objectBrowseName = 'P2OGalaxy') {
+    namespace: number,
+    objectBrowseName: string) {
   return ({
         MonEn: {
           namespaceIndex: `${namespace}`,
@@ -154,6 +154,6 @@ export class FeedbackMonitoringDAMockup {
   public getFeedbackMonitoringDAInstanceMockupJSON() {
     return getFeedbackMonitoringDAMockupReferenceJSON(
         this.mockupNode.namespaceIndex,
-        this.mockupNode.browseName.name || 'UnqualifiedName');
+        this.mockupNode.browseName.name as string);
   }
 }

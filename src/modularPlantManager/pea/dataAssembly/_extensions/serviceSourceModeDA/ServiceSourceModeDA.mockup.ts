@@ -28,8 +28,8 @@ import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 import {getUnitDAMockupReferenceJSON} from '../unitDA/UnitDA.mockup';
 
 export function getServiceSourceModeDAMockupReferenceJSON(
-	namespace = 1,
-	objectBrowseName = 'P2OGalaxy') {
+	namespace: number,
+	objectBrowseName: string) {
 
 	return ({
 			SrcChannel: {
@@ -203,6 +203,6 @@ export class ServiceSourceModeDAMockup {
 	public getServiceSourceModeDAInstanceMockupJSON() {
 		return getServiceSourceModeDAMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name || 'UnqualifiedName');
+			this.mockupNode.browseName.name as string);
 	}
 }

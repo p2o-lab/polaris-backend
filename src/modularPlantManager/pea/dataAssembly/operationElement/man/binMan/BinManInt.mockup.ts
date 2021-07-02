@@ -41,16 +41,16 @@ import {
 	getSourceModeDAMockupReferenceJSON,
 	SourceModeDAMockup
 } from '../../../_extensions/sourceModeDA/SourceModeDA.mockup';
-import {getBinManMockupReferenceJSON} from './BinMan.mockup';
-import {getWQCDAMockupReferenceJSON} from '../../../_extensions/wqcDA/WQCDA.mockup';
+import {BinManMockup, getBinManMockupReferenceJSON} from './BinMan.mockup';
+import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../../_extensions/wqcDA/WQCDA.mockup';
 
 export function getBinManIntMockupReferenceJSON(
-	namespace = 1,
-	objectBrowseName = 'P2OGalaxy') {
+	namespace: number,
+	objectBrowseName: string) {
 
 	return ({
-			...getBinManMockupReferenceJSON(),
-			...getWQCDAMockupReferenceJSON(),
+			...getBinManMockupReferenceJSON(namespace, objectBrowseName),
+			...getWQCDAMockupReferenceJSON(namespace, objectBrowseName),
 			...getSourceModeDAMockupReferenceJSON(namespace,objectBrowseName),
 			VInt: {
 				namespaceIndex: `${namespace}`,
@@ -61,106 +61,17 @@ export function getBinManIntMockupReferenceJSON(
 	);
 }
 
-export class BinManIntMockup {
-
-	public readonly name: string;
-	protected vState0= 'off';
-	protected vState1= 'on';
-	protected vRbk = false;
-	protected vMan = false;
-	protected vOut = false;
-	protected vFbk = false;
+export class BinManIntMockup extends BinManMockup {
 	protected vInt = false;
-	
-	public readonly osLevel: OSLevelDAMockup;
+	public readonly wqc: WQCDAMockup;
 	public readonly sourceMode: SourceModeDAMockup;
-	protected interval: Timeout | undefined;
-	protected mockupNode: UAObject;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
+		super(namespace, rootNode, variableName);
 
-		this.name = variableName;
-
-		this.mockupNode = namespace.addObject({
-			organizedBy: rootNode,
-			browseName: variableName
-		});
-		
-		this.osLevel = new OSLevelDAMockup(namespace, this.mockupNode, this.name);
+		this.wqc = new WQCDAMockup(namespace, this.mockupNode, this.name);
 		this.sourceMode = new SourceModeDAMockup(namespace, this.mockupNode, this.name);
 
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=1;s=${variableName}.VState0`,
-			browseName: `${variableName}.VState0`,
-			dataType: DataType.String,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.String, value: this.vState0});
-				},
-			},
-		});
-
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=1;s=${variableName}.VState1`,
-			browseName: `${variableName}.VState1`,
-			dataType: DataType.String,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.String, value: this.vState1});
-				},
-			},
-		});
-
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VMan`,
-			browseName: `${variableName}.VMan`,
-			dataType: DataType.Boolean,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.Boolean, value: this.vMan});
-				},
-				set: (variant: Variant): StatusCodes => {
-					this.vMan = variant.value;
-					return StatusCodes.Good;
-				},
-			},
-		});
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VOut`,
-			browseName: `${variableName}.VOut`,
-			dataType: DataType.Boolean,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.Boolean, value: this.vOut});
-				},
-			},
-		});
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VFbk`,
-			browseName: `${variableName}.VFbk`,
-			dataType: DataType.Boolean,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.Boolean, value: this.vFbk});
-				},
-			},
-		});
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VRbk`,
-			browseName: `${variableName}.VRbk`,
-			dataType: DataType.Boolean,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.Boolean, value: this.vRbk});
-				},
-			},
-		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
 			nodeId: `ns=${namespace};s=${variableName}.VInt`,
@@ -177,19 +88,6 @@ export class BinManIntMockup {
 	public getBinManIntMockupJSON() {
 		return getBinManIntMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name || 'UnqualifiedName');
-	}
-
-	public startCurrentTimeUpdate(): void {
-		this.interval = global.setInterval(() => {
-			//TODO: fix this?
-			//this.vOut = Math.random();
-		}, 1000);
-	}
-
-	public stopCurrentTimeUpdate(): void {
-		if (this.interval) {
-			global.clearInterval(this.interval);
-		}
+			this.mockupNode.browseName.name as string);
 	}
 }

@@ -27,8 +27,8 @@ import {OperationMode} from '@p2olab/polaris-interface';
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 
 export function getOpModeDAMockupReferenceJSON(
-	namespace = 1,
-	objectBrowseName = 'P2OGalaxy') {
+	namespace: number,
+	objectBrowseName: string) {
 
 	return ({
 			StateChannel: {
@@ -263,6 +263,6 @@ export class OpModeDAMockup {
 	public getOpModeDAInstanceMockupJSON() {
 		return getOpModeDAMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name || 'UnqualifiedName');
+			this.mockupNode.browseName.name as string);
 	}
 }

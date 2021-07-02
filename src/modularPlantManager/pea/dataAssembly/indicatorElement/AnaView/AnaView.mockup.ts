@@ -32,8 +32,8 @@ import {
 import {getUnitDAMockupReferenceJSON, UnitDAMockup} from '../../_extensions/unitDA/UnitDA.mockup';
 
 export function getAnaViewMockupReferenceJSON(
-	namespace = 1,
-	objectBrowseName = 'P2OGalaxy') {
+	namespace: number,
+	objectBrowseName: string) {
 	return (
 		{
 			...getWQCDAMockupReferenceJSON(namespace, objectBrowseName),
@@ -85,6 +85,6 @@ export class AnaViewMockup {
 	public getAnaViewInstanceMockupJSON() {
 		return getAnaViewMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name || 'UnqualifiedName');
+			this.mockupNode.browseName.name as string);
 	}
 }

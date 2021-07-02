@@ -9,7 +9,7 @@ const expect = chai.expect;
 
 describe('AnaManIntMockup', () => {
     describe('', () => {
-        let mockupServer: any;
+        let mockupServer: MockupServer;
         beforeEach(async()=>{
             mockupServer = new MockupServer();
             await mockupServer.initialize();

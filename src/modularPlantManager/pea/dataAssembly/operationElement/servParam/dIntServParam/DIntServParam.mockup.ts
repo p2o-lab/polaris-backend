@@ -43,17 +43,15 @@ import {
 	getValueLimitationDAMockupReferenceJSON,
 	ValueLimitationDAMockup
 } from '../../../_extensions/valueLimitationDA/ValueLimitationDA.mockup';
+import {getServParamMockupReferenceJSON, ServParamMockup} from '../ServParam.mockup';
+import {ServParam} from '../ServParam';
 
 export function getDIntServParamMockupReferenceJSON(
-	namespace = 1,
-	objectBrowseName = 'P2OGalaxy') {
+	namespace: number,
+	objectBrowseName: string) {
 
 	return ({
-			
-			...getOSLevelDAMockupReferenceJSON(namespace,objectBrowseName),
-			...getOpModeDAMockupReferenceJSON(namespace,objectBrowseName),
-			...getServiceSourceModeDAMockupReferenceJSON(namespace,objectBrowseName),
-			...getWQCDAMockupReferenceJSON(namespace,objectBrowseName),
+			...getServParamMockupReferenceJSON(namespace,objectBrowseName),
 			...getUnitDAMockupReferenceJSON(namespace,objectBrowseName),
 			...getScaleSettingDAMockupReferenceJSON(namespace,objectBrowseName,'Int32'),
 			...getValueLimitationDAMockupReferenceJSON(namespace,objectBrowseName, 'Int32'),
@@ -96,39 +94,23 @@ export function getDIntServParamMockupReferenceJSON(
 	);
 }
 
-export class DIntServParamMockup {
+export class DIntServParamMockup extends ServParamMockup {
 
-	public readonly name: string;
 	protected vExt = 0;
 	protected vOp = 0;
 	protected vInt = 0;
 	protected vReq = 0;
 	protected vOut = 0
 	protected vFbk = 0;
-	
-	public readonly osLevel: OSLevelDAMockup;
-	public readonly opMode: OpModeDAMockup;
-	public readonly serviceSourceMode: ServiceSourceModeDAMockup;
-	public readonly wqc: WQCDAMockup;
+
 	public readonly unit: UnitDAMockup;
 	public readonly scaleSettings: ScaleSettingDAMockup<DataType.Int32>;
 	public readonly valueLimitation: ValueLimitationDAMockup<DataType.Int32>;
 	protected interval: Timeout | undefined;
-	protected mockupNode: UAObject;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
+		super(namespace, rootNode, variableName);
 
-		this.name = variableName;
-
-		this.mockupNode = namespace.addObject({
-			organizedBy: rootNode,
-			browseName: variableName
-		});
-		
-		this.osLevel = new OSLevelDAMockup(namespace, this.mockupNode, this.name);
-		this.opMode = new OpModeDAMockup(namespace, this.mockupNode, this.name);
-		this.serviceSourceMode = new ServiceSourceModeDAMockup(namespace, this.mockupNode, this.name);
-		this.wqc = new WQCDAMockup(namespace, this.mockupNode, this.name);
 		this.unit = new UnitDAMockup(namespace, this.mockupNode, this.name);
 		this.scaleSettings = new ScaleSettingDAMockup(namespace, this.mockupNode, this.name, DataType.Int32);
 		this.valueLimitation = new ValueLimitationDAMockup(namespace, this.mockupNode, this.name,DataType.Int32);
@@ -212,7 +194,7 @@ export class DIntServParamMockup {
 	public getDIntServParamMockupJSON() {
 		return getDIntServParamMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name || 'UnqualifiedName');
+			this.mockupNode.browseName.name as string);
 	}
 
 	public startCurrentTimeUpdate(): void {
@@ -224,6 +206,8 @@ export class DIntServParamMockup {
 	public stopCurrentTimeUpdate(): void {
 		if (this.interval) {
 			global.clearInterval(this.interval);
+		}else {
+			throw new Error('No interval defined.');
 		}
 	}
 }

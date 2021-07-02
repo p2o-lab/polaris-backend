@@ -24,15 +24,14 @@
  */
 
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
-import {getDataAssemblyMockupReferenceJSON} from '../../DataAssembly.mockup';
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../_extensions/wqcDA/WQCDA.mockup';
 import {catPEAMockup} from '../../../../../logging';
 
 export function getLockView8MockupReferenceJSON(
-	namespace = 1,
-	objectBrowseName = 'P2OGalaxy') {
+	namespace: number,
+	objectBrowseName: string) {
 	return (
-		{	...getDataAssemblyMockupReferenceJSON(namespace,objectBrowseName),
+		{	
 			...getWQCDAMockupReferenceJSON(namespace,objectBrowseName),
 			Logic: {
 				namespaceIndex: `${namespace}`,
@@ -811,6 +810,6 @@ export abstract class LockView8Mockup {
 	public getLockView8InstanceMockupJSON() {
 		return getLockView8MockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name || 'UnqualifiedName');
+			this.mockupNode.browseName.name as string);
 	}
 }

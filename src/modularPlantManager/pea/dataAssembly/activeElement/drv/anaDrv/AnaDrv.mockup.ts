@@ -38,13 +38,13 @@ import {getDrvMockupReferenceJSON} from '../Drv.mockup';
 
 
 export function getAnaDrvMockupReferenceJSON(
-	namespace = 1,
-	objectBrowseName = 'P2OGalaxy') {
+	namespace: number,
+	objectBrowseName: string) {
 
 	return ({
 			...getOpModeDAMockupReferenceJSON(namespace,objectBrowseName),
 			...getSourceModeDAMockupReferenceJSON(namespace,objectBrowseName),
-			...getDrvMockupReferenceJSON(),
+			...getDrvMockupReferenceJSON(namespace,objectBrowseName),
 			RpmSclMax: {
 				namespaceIndex: `${namespace}`,
 				nodeId: `${objectBrowseName}.RpmSclMax`,
@@ -494,6 +494,6 @@ export class AnaDrvMockup {
 	public getAnaDrvMockupJSON() {
 		return getAnaDrvMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name || 'UnqualifiedName');
+			this.mockupNode.browseName.name as string);
 	}
 }

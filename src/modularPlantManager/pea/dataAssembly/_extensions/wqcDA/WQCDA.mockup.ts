@@ -26,8 +26,8 @@
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
 
 export function getWQCDAMockupReferenceJSON(
-    namespace = 1,
-    objectBrowseName = 'P2OGalaxy') {
+    namespace: number,
+    objectBrowseName: string) {
 
   return ({
     WQC:   {
@@ -65,6 +65,6 @@ export class WQCDAMockup {
   public getWQCDAInstanceMockupJSON() {
     return getWQCDAMockupReferenceJSON(
         this.mockupNode.namespaceIndex,
-        this.mockupNode.browseName.name || 'UnqualifiedName');
+        this.mockupNode.browseName.name as string);
   }
 }

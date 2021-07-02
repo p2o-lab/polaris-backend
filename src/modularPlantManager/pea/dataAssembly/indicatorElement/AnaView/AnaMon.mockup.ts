@@ -37,8 +37,8 @@ import {
 } from '../../_extensions/limitMonitoringDA/LimitMonitoringDA.mockup';
 
 export function getAnaMonMockupReferenceJSON(
-	namespace = 1,
-	objectBrowseName = 'P2OGalaxy') {
+	namespace: number,
+	objectBrowseName: string) {
 	return (
 		{
 			...getWQCDAMockupReferenceJSON(namespace, objectBrowseName),
@@ -63,7 +63,7 @@ export class AnaMonMockup {
 	public scaleSettings: ScaleSettingDAMockup<DataType.Double>;
 	public unit: UnitDAMockup;
 	public osLevel: OSLevelDAMockup;
-	public limitMonitoring: LimitMonitoringDAMockup;
+	public limitMonitoring: LimitMonitoringDAMockup<any>;
 	protected mockupNode: UAObject;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
@@ -96,6 +96,6 @@ export class AnaMonMockup {
 	public getAnaMonInstanceMockupJSON() {
 		return getAnaMonMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name || 'UnqualifiedName');
+			this.mockupNode.browseName.name as string);
 	}
 }

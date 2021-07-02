@@ -28,8 +28,8 @@ import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../_extensions/wqcDA/WQC
 import {catPEAMockup} from '../../../../logging';
 
 export function getIndicatorElementMockupReferenceJSON(
-	namespace = 1,
-	objectBrowseName = 'P2OGalaxy') {
+	namespace: number,
+	objectBrowseName: string) {
 	return (
 		{
 			...getWQCDAMockupReferenceJSON(namespace, objectBrowseName)
@@ -58,6 +58,6 @@ export class IndicatorElementMockup {
 	public getIndicatorElementInstanceMockupJSON() {
 		return getIndicatorElementMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name || 'UnqualifiedName');
+			this.mockupNode.browseName.name as string);
 	}
 }

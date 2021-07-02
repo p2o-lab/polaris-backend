@@ -30,13 +30,15 @@ import {
 } from '../../_extensions/serviceSourceModeDA/ServiceSourceModeDA.mockup';
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../_extensions/wqcDA/WQCDA.mockup';
 import {getOpModeDAMockupReferenceJSON, OpModeDAMockup} from '../../_extensions/opModeDA/OpModeDA.mockup';
+import {getOperationElementMockupReferenceJSON, OperationElementMockup} from '../OperationElement.mockup';
 
 
 export function getServParamMockupReferenceJSON(
-	namespace = 1,
-	objectBrowseName = 'P2OGalaxy') {
+	namespace: number,
+	objectBrowseName: string) {
 
 	return ({
+			...getOperationElementMockupReferenceJSON(namespace, objectBrowseName),
 			...getOpModeDAMockupReferenceJSON(namespace,objectBrowseName),
 			...getServiceSourceModeDAMockupReferenceJSON(namespace,objectBrowseName),
 			...getWQCDAMockupReferenceJSON(namespace,objectBrowseName),
@@ -49,23 +51,16 @@ export function getServParamMockupReferenceJSON(
 	);
 }
 
-export class ServParamMockup {
+export class ServParamMockup extends OperationElementMockup{
 
-	public readonly name: string;
 	public readonly varSync: boolean = false;
 	protected opMode: OpModeDAMockup;
 	protected serviceSourceMode: ServiceSourceModeDAMockup;
 	protected wqc: WQCDAMockup;
-	protected mockupNode: UAObject;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
+		super(namespace, rootNode, variableName);
 
-		this.name = variableName;
-
-		this.mockupNode = namespace.addObject({
-			organizedBy: rootNode,
-			browseName: this.name
-		});
 		this.opMode = new OpModeDAMockup(namespace, this.mockupNode, this.name);
 		this.serviceSourceMode = new ServiceSourceModeDAMockup(namespace, this.mockupNode, this.name);
 		this.wqc = new WQCDAMockup(namespace, this.mockupNode, this.name);
@@ -86,6 +81,6 @@ export class ServParamMockup {
 	public getServParamMockupJSON() {
 		return getServParamMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name || 'UnqualifiedName');
+			this.mockupNode.browseName.name as string);
 	}
 }

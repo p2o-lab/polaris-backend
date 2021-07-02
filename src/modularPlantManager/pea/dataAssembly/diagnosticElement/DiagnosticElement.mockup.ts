@@ -24,15 +24,14 @@
  */
 
 import {Namespace, UAObject} from 'node-opcua';
-import {getDataAssemblyMockupReferenceJSON} from '../DataAssembly.mockup';
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../_extensions/wqcDA/WQCDA.mockup';
 import {catPEAMockup} from '../../../../logging';
 
 export function getDiagnosticElementMockupReferenceJSON(
-	namespace = 1,
-	objectBrowseName = 'P2OGalaxy') {
+	namespace: number,
+	objectBrowseName: string) {
 	return (
-		{	...getDataAssemblyMockupReferenceJSON(namespace,objectBrowseName),
+		{	
 			...getWQCDAMockupReferenceJSON(namespace,objectBrowseName),
 		}
 	);
@@ -60,6 +59,6 @@ export abstract class DiagnosticElementMockup {
 	public getDiagnosticElementInstanceMockupJSON() {
 		return getDiagnosticElementMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name || 'UnqualifiedName');
+			this.mockupNode.browseName.name as string);
 	}
 }

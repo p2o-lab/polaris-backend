@@ -41,11 +41,11 @@ import {getAnaDrvMockupReferenceJSON} from './AnaDrv.mockup';
 
 
 export function getMonAnaDrvMockupReferenceJSON(
-	namespace = 1,
-	objectBrowseName = 'P2OGalaxy') {
+	namespace: number,
+	objectBrowseName: string) {
 
 	return ({
-			...getAnaDrvMockupReferenceJSON(),
+			...getAnaDrvMockupReferenceJSON(namespace, objectBrowseName),
 			...getFeedbackMonitoringDAMockupReferenceJSON(namespace,objectBrowseName),
 			RpmErr: {
 				namespaceIndex: `${namespace}`,
@@ -776,6 +776,6 @@ export class MonAnaDrvMockup {
 	public getMonAnaDrvMockupJSON() {
 		return getMonAnaDrvMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name || 'UnqualifiedName');
+			this.mockupNode.browseName.name as string);
 	}
 }

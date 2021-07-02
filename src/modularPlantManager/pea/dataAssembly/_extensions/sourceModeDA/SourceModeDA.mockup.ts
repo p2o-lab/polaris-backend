@@ -27,8 +27,8 @@ import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 import {SourceMode} from '@p2olab/polaris-interface';
 
 export function getSourceModeDAMockupReferenceJSON(
-    namespace = 1,
-    objectBrowseName = 'P2OGalaxy') {
+    namespace: number,
+    objectBrowseName: string) {
 
   return ({
     SrcChannel: {
@@ -199,6 +199,6 @@ export class SourceModeDAMockup {
   public getSourceModeDAInstanceMockupJSON() {
     return getSourceModeDAMockupReferenceJSON(
         this.mockupNode.namespaceIndex,
-        this.mockupNode.browseName.name || 'UnqualifiedName');
+        this.mockupNode.browseName.name as string);
   }
 }

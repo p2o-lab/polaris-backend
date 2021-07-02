@@ -32,8 +32,8 @@ import {getResetDAMockupReferenceJSON, ResetDAMockup} from '../../../_extensions
 
 
 export function getBinDrvMockupReferenceJSON(
-	namespace = 1,
-	objectBrowseName = 'P2OGalaxy') {
+	namespace: number,
+	objectBrowseName: string) {
 
 	return ({
 			
@@ -373,6 +373,6 @@ export class BinDrvMockup {
 	public getBinDrvMockupJSON() {
 		return getBinDrvMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name || 'UnqualifiedName');
+			this.mockupNode.browseName.name as string);
 	}
 }

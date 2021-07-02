@@ -32,11 +32,11 @@ import {getActiveElementMockupReferenceJSON} from '../ActiveElement.mockup';
 
 
 export function getPIDCtrlMockupReferenceJSON(
-	namespace = 1,
-	objectBrowseName = 'P2OGalaxy') {
+	namespace: number,
+	objectBrowseName: string) {
 
 	return ({
-			...getActiveElementMockupReferenceJSON(),
+			...getActiveElementMockupReferenceJSON(namespace,objectBrowseName),
 			...getSourceModeDAMockupReferenceJSON(namespace,objectBrowseName),
 			...getOpModeDAMockupReferenceJSON(namespace, objectBrowseName),
 			PV: {
@@ -491,6 +491,6 @@ export class PIDCtrlMockup {
 	public getPIDCtrlMockupJSON() {
 		return getPIDCtrlMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name || 'UnqualifiedName');
+			this.mockupNode.browseName.name as string);
 	}
 }

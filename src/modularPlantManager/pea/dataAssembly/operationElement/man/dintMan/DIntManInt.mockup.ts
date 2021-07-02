@@ -41,16 +41,16 @@ import {
 	getSourceModeDAMockupReferenceJSON,
 	SourceModeDAMockup
 } from '../../../_extensions/sourceModeDA/SourceModeDA.mockup';
-import {getDIntManMockupReferenceJSON} from './DIntMan.mockup';
-import {getWQCDAMockupReferenceJSON} from '../../../_extensions/wqcDA/WQCDA.mockup';
+import {DIntManMockup, getDIntManMockupReferenceJSON} from './DIntMan.mockup';
+import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../../_extensions/wqcDA/WQCDA.mockup';
 
 export function getDIntManIntMockupReferenceJSON(
-	namespace = 1,
-	objectBrowseName = 'P2OGalaxy') {
+	namespace: number,
+	objectBrowseName: string) {
 
 	return ({
-			...getDIntManMockupReferenceJSON(),
-			...getWQCDAMockupReferenceJSON(),
+			...getDIntManMockupReferenceJSON(namespace, objectBrowseName),
+			...getWQCDAMockupReferenceJSON(namespace, objectBrowseName),
 			...getSourceModeDAMockupReferenceJSON(namespace,objectBrowseName),
 			VInt: {
 				namespaceIndex: `${namespace}`,
@@ -61,86 +61,18 @@ export function getDIntManIntMockupReferenceJSON(
 	);
 }
 
-export class DIntManIntMockup {
+export class DIntManIntMockup extends DIntManMockup {
 
-	public readonly name: string;
-	protected vRbk = 0;
-	protected vMan = 0;
-	protected vOut = 0
-	protected vFbk = 0;
 	protected vInt = 0;
-	
-	public readonly osLevel: OSLevelDAMockup;
-	public readonly scaleSettings: ScaleSettingDAMockup<DataType.Int32>;
-	public readonly valueLimitation: ValueLimitationDAMockup<DataType.Int32>;
-	public readonly unit: UnitDAMockup;
+	public readonly wqc: WQCDAMockup;
 	public readonly sourceMode: SourceModeDAMockup;
-	protected interval: Timeout | undefined;
-	protected mockupNode: UAObject;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
+		super(namespace, rootNode, variableName);
 
-		this.name = variableName;
-
-		this.mockupNode = namespace.addObject({
-			organizedBy: rootNode,
-			browseName: variableName
-		});
-		
-		this.osLevel = new OSLevelDAMockup(namespace, this.mockupNode, this.name);
-		this.scaleSettings = new ScaleSettingDAMockup(namespace, this.mockupNode, this.name, DataType.Int32);
-		this.valueLimitation = new ValueLimitationDAMockup(namespace, this.mockupNode, this.name,DataType.Int32);
-		this.unit = new UnitDAMockup(namespace, this.mockupNode, this.name);
+		this.wqc = new WQCDAMockup(namespace, this.mockupNode, this.name);
 		this.sourceMode = new SourceModeDAMockup(namespace, this.mockupNode, this.name);
 
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VMan`,
-			browseName: `${variableName}.VMan`,
-			dataType: DataType.Int32,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.Int32, value: this.vMan});
-				},
-				set: (variant: Variant): StatusCodes => {
-					this.vMan = variant.value;
-					return StatusCodes.Good;
-				},
-			},
-		});
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VOut`,
-			browseName: `${variableName}.VOut`,
-			dataType: DataType.Int32,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.Int32, value: this.vOut});
-				},
-			},
-		});
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VFbk`,
-			browseName: `${variableName}.VFbk`,
-			dataType: DataType.Int32,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.Int32, value: this.vFbk});
-				},
-			},
-		});
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VRbk`,
-			browseName: `${variableName}.VRbk`,
-			dataType: DataType.Int32,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.Int32, value: this.vRbk});
-				},
-			},
-		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
 			nodeId: `ns=${namespace};s=${variableName}.VInt`,
@@ -157,18 +89,7 @@ export class DIntManIntMockup {
 	public getDIntManIntMockupJSON() {
 		return getDIntManIntMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name || 'UnqualifiedName');
+			this.mockupNode.browseName.name as string);
 	}
 
-	public startCurrentTimeUpdate(): void {
-		this.interval = global.setInterval(() => {
-			this.vOut = Math.random();
-		}, 1000);
-	}
-
-	public stopCurrentTimeUpdate(): void {
-		if (this.interval) {
-			global.clearInterval(this.interval);
-		}
-	}
 }

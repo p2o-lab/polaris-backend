@@ -38,11 +38,11 @@ import {getAnaVlvMockupReferenceJSON} from './AnaVlv.mockup';
 
 
 export function getMonAnaVlvMockupReferenceJSON(
-	namespace = 1,
-	objectBrowseName = 'P2OGalaxy') {
+	namespace: number,
+	objectBrowseName: string) {
 
 	return ({
-			...getAnaVlvMockupReferenceJSON(),
+			...getAnaVlvMockupReferenceJSON(namespace, objectBrowseName),
 			...getFeedbackMonitoringDAMockupReferenceJSON(namespace,objectBrowseName),
 			PosReachedFbk: {
 				namespaceIndex: `${namespace}`,
@@ -447,6 +447,6 @@ export class MonAnaVlvMockup {
 	public getMonAnaVlvMockupJSON() {
 		return getMonAnaVlvMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name || 'UnqualifiedName');
+			this.mockupNode.browseName.name as string);
 	}
 }

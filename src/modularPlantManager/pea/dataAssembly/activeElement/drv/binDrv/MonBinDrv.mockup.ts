@@ -36,8 +36,8 @@ import {
 
 
 export function getMonBinDrvMockupReferenceJSON(
-	namespace = 1,
-	objectBrowseName = 'P2OGalaxy') {
+	namespace: number,
+	objectBrowseName: string) {
 
 	return ({
 			
@@ -380,6 +380,6 @@ export class MonBinDrvMockup {
 	public getMonBinDrvMockupJSON() {
 		return getMonBinDrvMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name || 'UnqualifiedName');
+			this.mockupNode.browseName.name as string);
 	}
 }

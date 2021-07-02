@@ -39,8 +39,8 @@ import {
 } from '../../../_extensions/valueLimitationDA/ValueLimitationDA.mockup';
 
 export function getDIntManMockupReferenceJSON(
-	namespace = 1,
-	objectBrowseName = 'P2OGalaxy') {
+	namespace: number,
+	objectBrowseName: string) {
 
 	return ({
 			...getOSLevelDAMockupReferenceJSON(namespace,objectBrowseName),
@@ -153,19 +153,20 @@ export class DIntManMockup {
 	public getDIntManMockupJSON() {
 		return getDIntManMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name || 'UnqualifiedName');
+			this.mockupNode.browseName.name as string);
 	}
 
 	public startCurrentTimeUpdate(): void {
 		this.interval = global.setInterval(() => {
-			// TODO: fix this
-			// this.vOut = Math.random();
+			this.vOut = Math.random();
 		}, 1000);
 	}
 
 	public stopCurrentTimeUpdate(): void {
 		if (this.interval) {
 			global.clearInterval(this.interval);
+		}else {
+			throw new Error('No interval defined.');
 		}
 	}
 }

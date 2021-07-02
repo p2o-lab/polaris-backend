@@ -26,8 +26,8 @@
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
 
 export function getScaleSettingDAMockupReferenceJSON<T extends 'Float' | 'Int32' >(
-    namespace = 1,
-    objectBrowseName = 'P2OGalaxy',
+    namespace: number,
+    objectBrowseName: string,
     type: T) {
 
   return ({
@@ -86,7 +86,7 @@ export class ScaleSettingDAMockup<T extends DataType.Double | DataType.Int32> {
   public getScaleSettingDAInstanceMockupJSON() {
     return getScaleSettingDAMockupReferenceJSON(
         this.mockupNode.namespaceIndex,
-        this.mockupNode.browseName.name || 'UnqualifiedName',
+        this.mockupNode.browseName.name as string,
         (this.type === DataType.Double)? 'Float' : 'Int32'
         );
   }

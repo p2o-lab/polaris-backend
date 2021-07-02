@@ -39,8 +39,8 @@ import {
 } from '../../../_extensions/valueLimitationDA/ValueLimitationDA.mockup';
 
 export function getAnaManMockupReferenceJSON(
-	namespace = 1,
-	objectBrowseName = 'P2OGalaxy') {
+	namespace: number,
+	objectBrowseName: string) {
 
 	return ({
 			...getOSLevelDAMockupReferenceJSON(namespace,objectBrowseName),
@@ -100,7 +100,6 @@ export class AnaManMockup {
 		this.scaleSettings = new ScaleSettingDAMockup(namespace, this.mockupNode, this.name, DataType.Double);
 		this.valueLimitation = new ValueLimitationDAMockup(namespace, this.mockupNode, this.name,DataType.Double);
 		this.unit = new UnitDAMockup(namespace, this.mockupNode, this.name);
-
 		namespace.addVariable({
 			componentOf: this.mockupNode,
 			nodeId: `ns=${namespace};s=${variableName}.VMan`,
@@ -154,7 +153,7 @@ export class AnaManMockup {
 	public getAnaManMockupJSON() {
 		return getAnaManMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name || 'UnqualifiedName');
+			this.mockupNode.browseName.name as string);
 	}
 
 	public startCurrentTimeUpdate(): void {
@@ -166,6 +165,8 @@ export class AnaManMockup {
 	public stopCurrentTimeUpdate(): void {
 		if (this.interval) {
 			global.clearInterval(this.interval);
+		}else {
+			throw new Error('No interval defined.');
 		}
 	}
 }

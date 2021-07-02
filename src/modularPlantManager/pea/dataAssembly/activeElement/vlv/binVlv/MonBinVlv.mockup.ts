@@ -37,11 +37,11 @@ import {getBinVlvMockupReferenceJSON} from './BinVlv.mockup';
 
 
 export function getMonBinVlvMockupReferenceJSON(
-	namespace = 1,
-	objectBrowseName = 'P2OGalaxy') {
+	namespace: number,
+	objectBrowseName: string) {
 
 	return ({
-			...getBinVlvMockupReferenceJSON(),
+			...getBinVlvMockupReferenceJSON(namespace,objectBrowseName),
 			...getFeedbackMonitoringDAMockupReferenceJSON(namespace,objectBrowseName),
 		}
 	);
@@ -223,6 +223,6 @@ export class MonBinVlvMockup {
 	public getMonBinVlvMockupJSON() {
 		return getMonBinVlvMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name || 'UnqualifiedName');
+			this.mockupNode.browseName.name as string);
 	}
 }

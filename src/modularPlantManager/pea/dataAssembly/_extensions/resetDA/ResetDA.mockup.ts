@@ -26,8 +26,8 @@
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 
 export function getResetDAMockupReferenceJSON(
-    namespace = 1,
-    objectBrowseName = 'P2OGalaxy') {
+    namespace: number,
+    objectBrowseName: string) {
 
   return ({
     ResetOp: {
@@ -87,6 +87,6 @@ export class ResetDAMockup {
   public getResetDAInstanceMockupJSON() {
     return getResetDAMockupReferenceJSON(
         this.mockupNode.namespaceIndex,
-        this.mockupNode.browseName.name || 'UnqualifiedName');
+        this.mockupNode.browseName.name as string);
   }
 }

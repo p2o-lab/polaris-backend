@@ -28,8 +28,8 @@ import {getFeedbackMonitoringDAMockupReferenceJSON} from '../_extensions/feedbac
 import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../_extensions/osLevelDA/OSLevelDA.mockup';
 
 export function getOperationElementMockupReferenceJSON(
-	namespace = 1,
-	objectBrowseName = 'P2OGalaxy') {
+	namespace: number,
+	objectBrowseName: string) {
 	return (
 		{	
 			...getOSLevelDAMockupReferenceJSON(namespace,objectBrowseName),
@@ -56,8 +56,8 @@ export class OperationElementMockup {
 	}
 
 	public getOperationElementInstanceMockupJSON() {
-		return getFeedbackMonitoringDAMockupReferenceJSON(
+		return getOperationElementMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name || 'UnqualifiedName');
+			this.mockupNode.browseName.name as string);
 	}
 }

@@ -34,21 +34,15 @@ import {
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../../_extensions/wqcDA/WQCDA.mockup';
 
 import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../../../_extensions/osLevelDA/OSLevelDA.mockup';
+import {getServParamMockupReferenceJSON, ServParamMockup} from '../ServParam.mockup';
+import {BinServParam} from './BinServParam';
 
 export function getBinServParamMockupReferenceJSON(
-	namespace = 1,
-	objectBrowseName = 'P2OGalaxy') {
+	namespace: number,
+	objectBrowseName: string) {
 
 	return ({
-			...getOSLevelDAMockupReferenceJSON(namespace,objectBrowseName),
-			...getOpModeDAMockupReferenceJSON(namespace,objectBrowseName),
-			...getServiceSourceModeDAMockupReferenceJSON(namespace,objectBrowseName),
-			...getWQCDAMockupReferenceJSON(namespace,objectBrowseName),
-			Sync: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.Sync`,
-				dataType: 'Boolean'
-			},
+			...getServParamMockupReferenceJSON(namespace,objectBrowseName),
 			VExt: {
 				namespaceIndex: `${namespace}`,
 				nodeId: `${objectBrowseName}.VExt`,
@@ -93,35 +87,19 @@ export function getBinServParamMockupReferenceJSON(
 	);
 }
 
-export class BinServParamMockup {
+export class BinServParamMockup extends ServParamMockup{
 
-	public readonly name: string;
 	protected vExt = false;
 	protected vOp = false;
 	protected vInt = false;
 	protected vReq = false;
-	vOut = false;
+	protected vOut = false;
 	protected vFbk = false;
-	
-	public readonly osLevel: OSLevelDAMockup;
-	public readonly opMode: OpModeDAMockup;
-	public readonly serviceSourceMode: ServiceSourceModeDAMockup;
-	public readonly wqc: WQCDAMockup;
-	interval: Timeout | undefined;
-	protected mockupNode: UAObject;
+
+	protected interval: Timeout | undefined;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
-
-		this.name = variableName;
-
-		this.mockupNode = namespace.addObject({
-			organizedBy: rootNode,
-			browseName: variableName
-		});
-		this.osLevel = new OSLevelDAMockup(namespace, this.mockupNode, this.name);
-		this.opMode = new OpModeDAMockup(namespace, this.mockupNode, this.name);
-		this.serviceSourceMode = new ServiceSourceModeDAMockup(namespace, this.mockupNode, this.name);
-		this.wqc = new WQCDAMockup(namespace, this.mockupNode, this.name);
+		super(namespace, rootNode, variableName);
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
@@ -226,7 +204,7 @@ export class BinServParamMockup {
 	public getBinServParamMockupJSON() {
 		return getBinServParamMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name || 'UnqualifiedName');
+			this.mockupNode.browseName.name as string);
 	}
 
 	public startCurrentTimeUpdate(): void {
@@ -238,6 +216,8 @@ export class BinServParamMockup {
 	public stopCurrentTimeUpdate(): void {
 		if (this.interval) {
 			global.clearInterval(this.interval);
+		}else {
+			throw new Error('No interval defined.');
 		}
 	}
 }
