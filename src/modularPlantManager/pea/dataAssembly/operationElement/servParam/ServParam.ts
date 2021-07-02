@@ -51,10 +51,10 @@ export class ServParam extends OperationElement {
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
 		this.wqc = new WQC(this);
-		this.wqc.setCommunication();
+		this.wqc.initialize();
 
 		this.serviceSourceMode = new ServiceSourceModeController(this);
-		this.serviceSourceMode.setCommunication();
+		this.serviceSourceMode.initialize();
 
 		this.opMode = new OpModeController(this);
 		this.opMode.initializeOpMode(this);

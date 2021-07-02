@@ -43,9 +43,9 @@ export class DiagnosticElement extends DataAssemblyController {
 		super(options, connection);
 
 		this.osLevel = new OSLevel(this);
-		this.osLevel.setCommunication();
+		this.osLevel.initialize();
 
 		this.wqc = new WQC(this);
-		this.wqc.setCommunication();
+		this.wqc.initialize();
 	}
 }

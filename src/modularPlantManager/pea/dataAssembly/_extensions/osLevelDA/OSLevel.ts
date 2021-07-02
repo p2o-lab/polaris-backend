@@ -33,17 +33,24 @@ export interface OSLevelRuntime extends BaseDataAssemblyRuntime {
 
 export class OSLevel {
 	private dAController: any;
+	osLevel: number | undefined;
 
 	constructor(dAController: any) {
 		this.dAController = dAController;
 	}
 
-	public setCommunication(){
-		this.dAController.communication.OSLevel = this.dAController.createDataItem('OSLevel', 'write');
-
+	public initialize(){
+		//handle static and dynamic variables
+		if(typeof this.dAController.options.dataItems.OSLevel == 'string'){
+			this.osLevel = Number(this.dAController.options.dataItems.OSLevel);
+		}
+		else{
+			this.dAController.communication.OSLevel = this.dAController.createDataItem('OSLevel', 'write');
+		}
 	}
 
 	get OSLevel(): number | undefined {
-		return this.dAController.communication.OSLevel.value;
+		if(this.osLevel) return this.osLevel; //static
+		else return this.dAController.communication.OSLevel.value; //dynamic
 	}
 }

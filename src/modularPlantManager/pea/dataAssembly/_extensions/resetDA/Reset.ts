@@ -39,7 +39,7 @@ export class Reset {
 		this.dAController = dAController;
 	}
 
-	public setCommunication(){
+	public initialize(){
 		this.dAController.communication.ResetOp= this.dAController.createDataItem('ResetOp', 'write');
 		this.dAController.communication.ResetAut = this.dAController.createDataItem('ResetAut', 'write');
 	}

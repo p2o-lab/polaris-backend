@@ -70,7 +70,7 @@ export class PIDCtrl extends ActiveElement {
 		super(options, connection);
 
 		this.sourceMode = new SourceModeController(this);
-		this.sourceMode.setCommunication();
+		this.sourceMode.initialize();
 		this.opMode = new OpModeController(this);
 		this.opMode.initializeOpMode(this);
 

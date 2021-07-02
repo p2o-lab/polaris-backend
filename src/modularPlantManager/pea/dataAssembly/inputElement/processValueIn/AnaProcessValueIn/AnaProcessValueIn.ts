@@ -47,10 +47,10 @@ export class AnaProcessValueIn extends InputElement {
 		this.communication.VExt = this.createDataItem('VExt', 'read', 'number');
 
 		this.unitSettings = new UnitSettings(this);
-		this.unitSettings.setCommunication();
+		this.unitSettings.initialize();
 
 		this.scaleSettings = new ScaleSettings(this);
-		this.scaleSettings.setCommunication();
+		this.scaleSettings.initialize();
 
 		this.defaultReadDataItem = this.communication.VExt;
 		this.defaultReadDataItemType = 'number';

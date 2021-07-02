@@ -49,7 +49,7 @@ export class ServiceSourceModeController{
 		this.dAController = dAController;
 	}
 
-	setCommunication(){
+	initialize(){
 		this.dAController.communication.SrcChannel = this.dAController.createDataItem('SrcChannel', 'read', 'boolean');
 
 		this.dAController.communication.SrcExtAut = this.dAController.createDataItem('SrcExtAut', 'read', 'boolean');

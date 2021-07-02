@@ -29,9 +29,9 @@ import {DataItem, OpcUaConnection, OpcUaDataItem} from '../connection';
 import {EventEmitter} from 'events';
 import {catDataAssembly} from '../../../logging';
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface BaseDataAssemblyRuntime {
-	TagName: OpcUaDataItem<string>;
-	TagDescription: OpcUaDataItem<string>;
+
 }
 
 export class DataAssemblyController extends EventEmitter {
@@ -48,6 +48,8 @@ export class DataAssemblyController extends EventEmitter {
 	public defaultReadDataItemType: any;
 	public defaultWriteDataItem: DataItem<any> | undefined;
 	public defaultWriteDataItemType: any;
+	public readonly tagName: string;
+	public readonly tagDescription: string;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super();
@@ -65,11 +67,9 @@ export class DataAssemblyController extends EventEmitter {
 			throw new Error('Creating DataAssemblyController Error: No Communication variables found in DataAssemblyOptions');
 		}
 		// initialize communication
-		this.communication = {TagName: {} as OpcUaDataItem<any>, TagDescription: {} as OpcUaDataItem<any>};
-
-		this.communication.TagName = this.createDataItem('TagName', 'read', 'string');
-		this.communication.TagDescription = this.createDataItem('TagDescription', 'read', 'string');
-
+		this.communication = {};
+		this.tagName = options.dataItems.TagName;
+		this.tagDescription = options.dataItems.TagDescription;
 	}
 
 	/**

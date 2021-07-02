@@ -48,8 +48,10 @@ describe('BinMon', () => {
 			};
 			const da1: BinMon = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as BinMon;
 			expect(da1 instanceof BinMon).to.equal(true);
-			expect(da1.communication.TagName).to.not.equal(undefined);
-			expect(da1.communication.TagDescription).to.not.equal(undefined);
+			expect(da1.tagName).to.not.be.empty;
+
+			expect(da1.tagDescription).to.not.be.empty;
+			
 			expect(da1.communication.WQC).to.not.equal(undefined);
 			expect(da1.communication.V).to.not.equal(undefined);
 			expect(da1.communication.VState0).to.not.equal(undefined);

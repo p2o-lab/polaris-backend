@@ -45,11 +45,11 @@ export class BinManInt extends BinMan {
 		super(options, connection);
 
 		this.wqc = new WQC(this);
-		this.wqc.setCommunication();
+		this.wqc.initialize();
 
 		this.communication.VInt = this.createDataItem('VInt', 'read');
 
 		this.sourceMode = new SourceModeController(this);
-		this.sourceMode.setCommunication();
+		this.sourceMode.initialize();
 	}
 }

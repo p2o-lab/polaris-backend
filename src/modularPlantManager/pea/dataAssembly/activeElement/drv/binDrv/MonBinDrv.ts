@@ -40,6 +40,6 @@ export class MonBinDrv extends BinDrv {
 		super(options, connection);
 
 		this.feedBackMonitoring = new FeedbackMonitoring(this);
-		this.feedBackMonitoring.setCommunication();
+		this.feedBackMonitoring.initialize();
 	}
 }
