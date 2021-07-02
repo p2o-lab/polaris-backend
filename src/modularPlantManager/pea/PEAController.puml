@@ -1,0 +1,15 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class PEAController{
+    id
+    endpoint
+    client: OPCUAClient
+}
+
+PEAController *-- "0..*" DataAssemblyController
+PEAController *-- "0..*" ServiceSet
+PEAController *-- "0..*" TextSet
+PEAController *-- "0..*" HMISet
+
+@enduml

@@ -1,0 +1,19 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class PiMAdParser{
++ {static} createPEAOptions()
+- {static} createOptionsArrays()
+- {static} createDataAssemblyOptionsArray()
+- {static} createServiceOptionsArray()
+- {static} createProcedureOptionsArray()
+- {static} createDataAssemblyOptions()
+}
+interface PEAModel
+interface PEAOptions
+
+ModularPlantManager  <..> PiMAdParser: <<use>>
+
+PiMAdParser ..>PEAModel : <<use>>
+PiMAdParser ..>PEAOptions : <<creates>>
+@enduml
