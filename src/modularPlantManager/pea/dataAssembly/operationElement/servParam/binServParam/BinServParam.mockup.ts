@@ -32,7 +32,7 @@ import {
 	ServiceSourceModeDAMockup
 } from '../../../_extensions/serviceSourceModeDA/ServiceSourceModeDA.mockup';
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../../_extensions/wqcDA/WQCDA.mockup';
-import {DataAssemblyMockup, getDataAssemblyMockupReferenceJSON} from '../../../DataAssembly.mockup';
+
 import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../../../_extensions/osLevelDA/OSLevelDA.mockup';
 
 export function getBinServParamMockupReferenceJSON(
@@ -40,7 +40,6 @@ export function getBinServParamMockupReferenceJSON(
 	objectBrowseName = 'P2OGalaxy') {
 
 	return ({
-			...getDataAssemblyMockupReferenceJSON(namespace,objectBrowseName),
 			...getOSLevelDAMockupReferenceJSON(namespace,objectBrowseName),
 			...getOpModeDAMockupReferenceJSON(namespace,objectBrowseName),
 			...getServiceSourceModeDAMockupReferenceJSON(namespace,objectBrowseName),
@@ -101,14 +100,14 @@ export class BinServParamMockup {
 	protected vOp = false;
 	protected vInt = false;
 	protected vReq = false;
-	protected vOut = false;
+	vOut = false;
 	protected vFbk = false;
-	public readonly dataAssembly: DataAssemblyMockup;
+	
 	public readonly osLevel: OSLevelDAMockup;
 	public readonly opMode: OpModeDAMockup;
 	public readonly serviceSourceMode: ServiceSourceModeDAMockup;
 	public readonly wqc: WQCDAMockup;
-	protected interval: Timeout | undefined;
+	interval: Timeout | undefined;
 	protected mockupNode: UAObject;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
@@ -119,8 +118,6 @@ export class BinServParamMockup {
 			organizedBy: rootNode,
 			browseName: variableName
 		});
-
-		this.dataAssembly = new DataAssemblyMockup(namespace, this.mockupNode, this.name);
 		this.osLevel = new OSLevelDAMockup(namespace, this.mockupNode, this.name);
 		this.opMode = new OpModeDAMockup(namespace, this.mockupNode, this.name);
 		this.serviceSourceMode = new ServiceSourceModeDAMockup(namespace, this.mockupNode, this.name);

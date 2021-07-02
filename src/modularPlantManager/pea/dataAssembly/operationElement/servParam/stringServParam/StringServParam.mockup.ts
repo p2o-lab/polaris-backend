@@ -32,24 +32,16 @@ import {
 	ServiceSourceModeDAMockup
 } from '../../../_extensions/serviceSourceModeDA/ServiceSourceModeDA.mockup';
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../../_extensions/wqcDA/WQCDA.mockup';
-import {DataAssemblyMockup, getDataAssemblyMockupReferenceJSON} from '../../../DataAssembly.mockup';
+
 import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../../../_extensions/osLevelDA/OSLevelDA.mockup';
+import {getServParamMockupReferenceJSON} from '../ServParam.mockup';
 
 export function getStringServParamMockupReferenceJSON(
 	namespace = 1,
 	objectBrowseName = 'P2OGalaxy') {
 
 	return ({
-			...getDataAssemblyMockupReferenceJSON(namespace,objectBrowseName),
-			...getOSLevelDAMockupReferenceJSON(namespace,objectBrowseName),
-			...getOpModeDAMockupReferenceJSON(namespace,objectBrowseName),
-			...getServiceSourceModeDAMockupReferenceJSON(namespace,objectBrowseName),
-			...getWQCDAMockupReferenceJSON(namespace,objectBrowseName),
-			Sync: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.Sync`,
-				dataType: 'Boolean'
-			},
+			...getServParamMockupReferenceJSON(),
 			VExt: {
 				namespaceIndex: `${namespace}`,
 				nodeId: `${objectBrowseName}.VExt`,
@@ -93,7 +85,7 @@ export class StringServParamMockup {
 	protected vReq = '';
 	protected vOut = '';
 	protected vFbk = '';
-	public readonly dataAssembly: DataAssemblyMockup;
+	
 	public readonly osLevel: OSLevelDAMockup;
 	public readonly opMode: OpModeDAMockup;
 	public readonly serviceSourceMode: ServiceSourceModeDAMockup;
@@ -110,7 +102,7 @@ export class StringServParamMockup {
 			browseName: variableName
 		});
 
-		this.dataAssembly = new DataAssemblyMockup(namespace, this.mockupNode, this.name);
+		
 		this.osLevel = new OSLevelDAMockup(namespace, this.mockupNode, this.name);
 		this.opMode = new OpModeDAMockup(namespace, this.mockupNode, this.name);
 		this.serviceSourceMode = new ServiceSourceModeDAMockup(namespace, this.mockupNode, this.name);

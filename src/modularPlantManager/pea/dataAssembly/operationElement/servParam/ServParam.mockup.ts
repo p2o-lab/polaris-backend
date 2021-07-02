@@ -49,7 +49,7 @@ export function getServParamMockupReferenceJSON(
 	);
 }
 
-export abstract class ServParamMockup {
+export class ServParamMockup {
 
 	public readonly name: string;
 	public readonly varSync: boolean = false;
