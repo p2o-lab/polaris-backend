@@ -16,7 +16,7 @@ describe('UnitDAMockup', () => {
             await mockupServer.initialize();
         });
         afterEach(async () => {
-            await mockupServer.shutdown();
+
         });
         it('should create UnitDAMockup', async () => {
             const mockup= new UnitDAMockup(mockupServer.namespace as Namespace,

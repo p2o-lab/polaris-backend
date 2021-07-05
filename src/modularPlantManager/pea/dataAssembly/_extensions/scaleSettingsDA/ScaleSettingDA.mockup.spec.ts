@@ -3,6 +3,11 @@ import * as chaiAsPromised from 'chai-as-promised';
 import {DataType, Namespace, UAObject} from 'node-opcua';
 import {MockupServer} from '../../../../_utils';
 import {ScaleSettingDAMockup} from './ScaleSettingDA.mockup';
+import {OperationMode, ServiceSourceMode} from '@p2olab/polaris-interface';
+import {OpModeDAMockup} from '../opModeDA/OpModeDA.mockup';
+import {OpcUaConnection} from '../../../connection';
+import {namespaceUrl} from '../../../../../../tests/namespaceUrl';
+import {ServiceSourceModeDAMockup} from '../serviceSourceModeDA/ServiceSourceModeDA.mockup';
 
 
 chai.use(chaiAsPromised);
@@ -15,9 +20,7 @@ describe('ScaleSettingDAMockup', () => {
             mockupServer = new MockupServer();
             await mockupServer.initialize();
         });
-        afterEach(async () => {
-            await mockupServer.shutdown();
-        });
+
         it('should create ScaleSettingDAMockup, Double', async () => {
             const mockup= new ScaleSettingDAMockup(mockupServer.namespace as Namespace,
                 mockupServer.rootComponent as UAObject, 'Variable', DataType.Double);
@@ -44,5 +47,8 @@ describe('ScaleSettingDAMockup', () => {
             expect(json.VSclMax).to.not.be.undefined;
             expect(json.VSclMin).to.not.be.undefined;
         });
+
     });
+
+
 });

@@ -16,11 +16,12 @@ describe('WQCDAMockup', () => {
             await mockupServer.initialize();
         });
         afterEach(async () => {
-            await mockupServer.shutdown();
+
         });
         it('should create WQCDAMockup', async () => {
             const mockup= new WQCDAMockup(mockupServer.namespace as Namespace,
                 mockupServer.rootComponent as UAObject, 'Variable');
+
             expect(mockup).to.not.be.undefined;
 
         });

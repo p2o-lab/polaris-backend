@@ -162,8 +162,8 @@ export class SourceModeDAMockup {
                 this.srcMode = SourceMode.Manual;
                 this.srcIntAct = false;
                 this.srcManAct = true;
-              }
-            }
+              }//TODO else?
+            }//TODO else?
             this.srcManOp = false;
             return StatusCodes.Good;
           },

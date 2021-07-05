@@ -15,10 +15,6 @@ describe('InterlockDAMockup', () => {
             mockupServer = new MockupServer();
             await mockupServer.initialize();
         });
-        afterEach(async () => {
-            await mockupServer.shutdown();
-        });
-
         it('should create InterlockDAMockup', async () => {
             const mockup= new InterlockDAMockup(mockupServer.namespace as Namespace,
                 mockupServer.rootComponent as UAObject, 'Variable');

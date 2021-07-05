@@ -220,8 +220,8 @@ export class LimitMonitoringDAMockup <T extends DataType.Double | DataType.Int32
         },
 
         set: (variant: Variant) => {
-          switch (typeof this.varWHLim) {
-            case DataType.Double.toString():
+          switch (limDataType) {
+            case DataType.Double:
               this.varWHLim = parseFloat(variant.value);
               return StatusCodes.Good;
             default:
@@ -264,8 +264,8 @@ export class LimitMonitoringDAMockup <T extends DataType.Double | DataType.Int32
         },
 
         set: (variant: Variant) => {
-          switch (typeof this.varTHLim) {
-            case DataType.Double.toString():
+          switch (limDataType) {
+            case DataType.Double:
               this.varTHLim = parseFloat(variant.value);
               return StatusCodes.Good;
             default:
@@ -308,8 +308,8 @@ export class LimitMonitoringDAMockup <T extends DataType.Double | DataType.Int32
         },
 
         set: (variant: Variant) => {
-          switch (typeof this.varTLLim) {
-            case DataType.Double.toString():
+          switch (limDataType) {
+            case DataType.Double:
               this.varTLLim = parseFloat(variant.value);
               return StatusCodes.Good;
             default:
@@ -352,8 +352,8 @@ export class LimitMonitoringDAMockup <T extends DataType.Double | DataType.Int32
         },
 
         set: (variant: Variant) => {
-          switch (typeof this.varWLLim) {
-            case DataType.Double.toString():
+          switch (limDataType) {
+            case DataType.Double:
               this.varWLLim = parseFloat(variant.value);
               return StatusCodes.Good;
             default:
@@ -396,8 +396,8 @@ export class LimitMonitoringDAMockup <T extends DataType.Double | DataType.Int32
         },
 
         set: (variant: Variant) => {
-          switch (typeof this.varALLim) {
-            case DataType.Double.toString():
+          switch (limDataType) {
+            case DataType.Double:
               this.varALLim = parseFloat(variant.value);
               return StatusCodes.Good;
             default:

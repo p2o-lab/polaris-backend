@@ -3,6 +3,9 @@ import * as chaiAsPromised from 'chai-as-promised';
 import {Namespace, UAObject} from 'node-opcua';
 import {MockupServer} from '../../../../_utils';
 import {OSLevelDAMockup} from './OSLevelDA.mockup';
+import {OpModeDAMockup} from '../opModeDA/OpModeDA.mockup';
+import {OpcUaConnection} from '../../../connection';
+import {namespaceUrl} from '../../../../../../tests/namespaceUrl';
 
 
 chai.use(chaiAsPromised);
@@ -16,7 +19,7 @@ describe('OSLevelDAMockup', () => {
             await mockupServer.initialize();
         });
         afterEach(async () => {
-            await mockupServer.shutdown();
+
         });
         it('should create OSLevelDAMockup', async () => {
             const mockup= new OSLevelDAMockup(mockupServer.namespace as Namespace,
@@ -32,4 +35,5 @@ describe('OSLevelDAMockup', () => {
             expect(json.OSLevel).to.not.be.undefined;
         });
     });
+
 });

@@ -163,7 +163,7 @@ export class OpModeDAMockup {
 					if (this.stateOffOp) {
 						if (this.stateOpAct && !this.stateChannel) {
 							this.opMode = OperationMode.Offline;
-						}
+						} //TODO:else?
 						this.stateOffOp = false;
 					}
 					return StatusCodes.Good;
