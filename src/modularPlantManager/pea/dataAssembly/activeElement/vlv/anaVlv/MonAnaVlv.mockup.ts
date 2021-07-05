@@ -128,7 +128,7 @@ export class MonAnaVlvMockup {
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.SafePos`,
+			nodeId: `ns=${namespace.index};s=${variableName}.SafePos`,
 			browseName: `${variableName}.SafePos`,
 			dataType: DataType.Boolean,
 			value: {
@@ -139,7 +139,7 @@ export class MonAnaVlvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.SafePosEn`,
+			nodeId: `ns=${namespace.index};s=${variableName}.SafePosEn`,
 			browseName: `${variableName}.SafePosEn`,
 			dataType: DataType.Boolean,
 			value: {
@@ -150,7 +150,7 @@ export class MonAnaVlvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.OpenOp`,
+			nodeId: `ns=${namespace.index};s=${variableName}.OpenOp`,
 			browseName: `${variableName}.OpenOp`,
 			dataType: DataType.Boolean,
 			value: {
@@ -165,7 +165,7 @@ export class MonAnaVlvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.CloseOp`,
+			nodeId: `ns=${namespace.index};s=${variableName}.CloseOp`,
 			browseName: `${variableName}.CloseOp`,
 			dataType: DataType.Boolean,
 			value: {
@@ -180,7 +180,7 @@ export class MonAnaVlvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.OpenAut`,
+			nodeId: `ns=${namespace.index};s=${variableName}.OpenAut`,
 			browseName: `${variableName}.OpenAut`,
 			dataType: DataType.Boolean,
 			value: {
@@ -191,7 +191,7 @@ export class MonAnaVlvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.CloseAut`,
+			nodeId: `ns=${namespace.index};s=${variableName}.CloseAut`,
 			browseName: `${variableName}.CloseAut`,
 			dataType: DataType.Boolean,
 			value: {
@@ -202,7 +202,7 @@ export class MonAnaVlvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.OpenFbkCalc`,
+			nodeId: `ns=${namespace.index};s=${variableName}.OpenFbkCalc`,
 			browseName: `${variableName}.OpenFbkCalc`,
 			dataType: DataType.Boolean,
 			value: {
@@ -213,7 +213,7 @@ export class MonAnaVlvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.OpenFbk`,
+			nodeId: `ns=${namespace.index};s=${variableName}.OpenFbk`,
 			browseName: `${variableName}.OpenFbk`,
 			dataType: DataType.Boolean,
 			value: {
@@ -224,7 +224,7 @@ export class MonAnaVlvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.CloseFbkCalc`,
+			nodeId: `ns=${namespace.index};s=${variableName}.CloseFbkCalc`,
 			browseName: `${variableName}.CloseFbkCalc`,
 			dataType: DataType.Boolean,
 			value: {
@@ -235,7 +235,7 @@ export class MonAnaVlvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.CloseFbk`,
+			nodeId: `ns=${namespace.index};s=${variableName}.CloseFbk`,
 			browseName: `${variableName}.CloseFbk`,
 			dataType: DataType.Boolean,
 			value: {
@@ -246,7 +246,7 @@ export class MonAnaVlvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.OpenAct`,
+			nodeId: `ns=${namespace.index};s=${variableName}.OpenAct`,
 			browseName: `${variableName}.OpenAct`,
 			dataType: DataType.Boolean,
 			value: {
@@ -257,7 +257,7 @@ export class MonAnaVlvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.CloseAct`,
+			nodeId: `ns=${namespace.index};s=${variableName}.CloseAct`,
 			browseName: `${variableName}.CloseAct`,
 			dataType: DataType.Boolean,
 			value: {
@@ -268,7 +268,7 @@ export class MonAnaVlvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.PosSclMin`,
+			nodeId: `ns=${namespace.index};s=${variableName}.PosSclMin`,
 			browseName: `${variableName}.PosSclMin`,
 			dataType: DataType.Double,
 			value: {
@@ -280,7 +280,7 @@ export class MonAnaVlvMockup {
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.PosSclMax`,
+			nodeId: `ns=${namespace.index};s=${variableName}.PosSclMax`,
 			browseName: `${variableName}.PosSclMax`,
 			dataType: DataType.Double,
 			value: {
@@ -292,7 +292,7 @@ export class MonAnaVlvMockup {
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.PosUnit`,
+			nodeId: `ns=${namespace.index};s=${variableName}.PosUnit`,
 			browseName: `${variableName}.PosUnit`,
 			dataType: DataType.UInt32,
 			value: {
@@ -304,7 +304,7 @@ export class MonAnaVlvMockup {
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.PosMin`,
+			nodeId: `ns=${namespace.index};s=${variableName}.PosMin`,
 			browseName: `${variableName}.PosMin`,
 			dataType: DataType.Double,
 			value: {
@@ -316,7 +316,7 @@ export class MonAnaVlvMockup {
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.PosMax`,
+			nodeId: `ns=${namespace.index};s=${variableName}.PosMax`,
 			browseName: `${variableName}.PosMax`,
 			dataType: DataType.Double,
 			value: {
@@ -328,7 +328,7 @@ export class MonAnaVlvMockup {
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.PosInt`,
+			nodeId: `ns=${namespace.index};s=${variableName}.PosInt`,
 			browseName: `${variableName}.PosInt`,
 			dataType: DataType.Double,
 			value: {
@@ -340,7 +340,7 @@ export class MonAnaVlvMockup {
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.PosMan`,
+			nodeId: `ns=${namespace.index};s=${variableName}.PosMan`,
 			browseName: `${variableName}.PosMan`,
 			dataType: DataType.Double,
 			value: {
@@ -355,7 +355,7 @@ export class MonAnaVlvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.PosRbk`,
+			nodeId: `ns=${namespace.index};s=${variableName}.PosRbk`,
 			browseName: `${variableName}.PosRbk`,
 			dataType: DataType.Double,
 			value: {
@@ -366,7 +366,7 @@ export class MonAnaVlvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.Pos`,
+			nodeId: `ns=${namespace.index};s=${variableName}.Pos`,
 			browseName: `${variableName}.Pos`,
 			dataType: DataType.Double,
 			value: {
@@ -377,7 +377,7 @@ export class MonAnaVlvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.PosFbkCalc`,
+			nodeId: `ns=${namespace.index};s=${variableName}.PosFbkCalc`,
 			browseName: `${variableName}.PosFbkCalc`,
 			dataType: DataType.Boolean,
 			value: {
@@ -388,7 +388,7 @@ export class MonAnaVlvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.PosFbk`,
+			nodeId: `ns=${namespace.index};s=${variableName}.PosFbk`,
 			browseName: `${variableName}.PosFbk`,
 			dataType: DataType.Double,
 			value: {
@@ -400,7 +400,7 @@ export class MonAnaVlvMockup {
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.PosReachedFbk`,
+			nodeId: `ns=${namespace.index};s=${variableName}.PosReachedFbk`,
 			browseName: `${variableName}.PosReachedFbk`,
 			dataType: DataType.Boolean,
 			value: {
@@ -411,7 +411,7 @@ export class MonAnaVlvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.PosTolerance`,
+			nodeId: `ns=${namespace.index};s=${variableName}.PosTolerance`,
 			browseName: `${variableName}.PosTolerance`,
 			dataType: DataType.Double,
 			value: {
@@ -422,7 +422,7 @@ export class MonAnaVlvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.MonPosTi`,
+			nodeId: `ns=${namespace.index};s=${variableName}.MonPosTi`,
 			browseName: `${variableName}.MonPosTi`,
 			dataType: DataType.Double,
 			value: {
@@ -433,7 +433,7 @@ export class MonAnaVlvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.MonPosErr`,
+			nodeId: `ns=${namespace.index};s=${variableName}.MonPosErr`,
 			browseName: `${variableName}.MonPosErr`,
 			dataType: DataType.Boolean,
 			value: {

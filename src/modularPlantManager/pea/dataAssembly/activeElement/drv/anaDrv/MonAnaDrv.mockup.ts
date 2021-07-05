@@ -170,7 +170,7 @@ export class MonAnaDrvMockup {
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.SafePos`,
+			nodeId: `ns=${namespace.index};s=${variableName}.SafePos`,
 			browseName: `${variableName}.SafePos`,
 			dataType: DataType.Boolean,
 			value: {
@@ -181,7 +181,7 @@ export class MonAnaDrvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.SafePosAct`,
+			nodeId: `ns=${namespace.index};s=${variableName}.SafePosAct`,
 			browseName: `${variableName}.SafePosAct`,
 			dataType: DataType.Boolean,
 			value: {
@@ -193,7 +193,7 @@ export class MonAnaDrvMockup {
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.FwdEn`,
+			nodeId: `ns=${namespace.index};s=${variableName}.FwdEn`,
 			browseName: `${variableName}.FwdEn`,
 			dataType: DataType.Boolean,
 			value: {
@@ -204,7 +204,7 @@ export class MonAnaDrvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.RevEn`,
+			nodeId: `ns=${namespace.index};s=${variableName}.RevEn`,
 			browseName: `${variableName}.RevEn`,
 			dataType: DataType.Boolean,
 			value: {
@@ -215,7 +215,7 @@ export class MonAnaDrvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.StopOp`,
+			nodeId: `ns=${namespace.index};s=${variableName}.StopOp`,
 			browseName: `${variableName}.StopOp`,
 			dataType: DataType.Boolean,
 			value: {
@@ -230,7 +230,7 @@ export class MonAnaDrvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.FwdOp`,
+			nodeId: `ns=${namespace.index};s=${variableName}.FwdOp`,
 			browseName: `${variableName}.FwdOp`,
 			dataType: DataType.Boolean,
 			value: {
@@ -245,7 +245,7 @@ export class MonAnaDrvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.RevOp`,
+			nodeId: `ns=${namespace.index};s=${variableName}.RevOp`,
 			browseName: `${variableName}.RevOp`,
 			dataType: DataType.Boolean,
 			value: {
@@ -260,7 +260,7 @@ export class MonAnaDrvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.StopAut`,
+			nodeId: `ns=${namespace.index};s=${variableName}.StopAut`,
 			browseName: `${variableName}.StopAut`,
 			dataType: DataType.Boolean,
 			value: {
@@ -271,7 +271,7 @@ export class MonAnaDrvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.FwdAut`,
+			nodeId: `ns=${namespace.index};s=${variableName}.FwdAut`,
 			browseName: `${variableName}.FwdAut`,
 			dataType: DataType.Boolean,
 			value: {
@@ -282,7 +282,7 @@ export class MonAnaDrvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.RevAut`,
+			nodeId: `ns=${namespace.index};s=${variableName}.RevAut`,
 			browseName: `${variableName}.RevAut`,
 			dataType: DataType.Boolean,
 			value: {
@@ -293,7 +293,7 @@ export class MonAnaDrvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.FwdCtrl`,
+			nodeId: `ns=${namespace.index};s=${variableName}.FwdCtrl`,
 			browseName: `${variableName}.FwdCtrl`,
 			dataType: DataType.Boolean,
 			value: {
@@ -304,7 +304,7 @@ export class MonAnaDrvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.RevCtrl`,
+			nodeId: `ns=${namespace.index};s=${variableName}.RevCtrl`,
 			browseName: `${variableName}.RevCtrl`,
 			dataType: DataType.Boolean,
 			value: {
@@ -316,7 +316,7 @@ export class MonAnaDrvMockup {
 		
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.RevFbkCalc`,
+			nodeId: `ns=${namespace.index};s=${variableName}.RevFbkCalc`,
 			browseName: `${variableName}.RevFbkCalc`,
 			dataType: DataType.Boolean,
 			value: {
@@ -328,7 +328,7 @@ export class MonAnaDrvMockup {
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.RevFbk`,
+			nodeId: `ns=${namespace.index};s=${variableName}.RevFbk`,
 			browseName: `${variableName}.RevFbk`,
 			dataType: DataType.Boolean,
 			value: {
@@ -339,7 +339,7 @@ export class MonAnaDrvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.FwdFbkCalc`,
+			nodeId: `ns=${namespace.index};s=${variableName}.FwdFbkCalc`,
 			browseName: `${variableName}.FwdFbkCalc`,
 			dataType: DataType.Boolean,
 			value: {
@@ -350,7 +350,7 @@ export class MonAnaDrvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.FwdFbk`,
+			nodeId: `ns=${namespace.index};s=${variableName}.FwdFbk`,
 			browseName: `${variableName}.FwdFbk`,
 			dataType: DataType.Boolean,
 			value: {
@@ -362,7 +362,7 @@ export class MonAnaDrvMockup {
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.RpmSclMin`,
+			nodeId: `ns=${namespace.index};s=${variableName}.RpmSclMin`,
 			browseName: `${variableName}.RpmSclMin`,
 			dataType: DataType.Double,
 			value: {
@@ -374,7 +374,7 @@ export class MonAnaDrvMockup {
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.RpmSclMax`,
+			nodeId: `ns=${namespace.index};s=${variableName}.RpmSclMax`,
 			browseName: `${variableName}.RpmSclMax`,
 			dataType: DataType.Double,
 			value: {
@@ -386,7 +386,7 @@ export class MonAnaDrvMockup {
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.RpmUnit`,
+			nodeId: `ns=${namespace.index};s=${variableName}.RpmUnit`,
 			browseName: `${variableName}.RpmUnit`,
 			dataType: DataType.UInt32,
 			value: {
@@ -398,7 +398,7 @@ export class MonAnaDrvMockup {
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.RpmMin`,
+			nodeId: `ns=${namespace.index};s=${variableName}.RpmMin`,
 			browseName: `${variableName}.RpmMin`,
 			dataType: DataType.Double,
 			value: {
@@ -410,7 +410,7 @@ export class MonAnaDrvMockup {
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.RpmMax`,
+			nodeId: `ns=${namespace.index};s=${variableName}.RpmMax`,
 			browseName: `${variableName}.RpmMax`,
 			dataType: DataType.Double,
 			value: {
@@ -422,7 +422,7 @@ export class MonAnaDrvMockup {
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.RpmInt`,
+			nodeId: `ns=${namespace.index};s=${variableName}.RpmInt`,
 			browseName: `${variableName}.RpmInt`,
 			dataType: DataType.Double,
 			value: {
@@ -434,7 +434,7 @@ export class MonAnaDrvMockup {
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.RpmMan`,
+			nodeId: `ns=${namespace.index};s=${variableName}.RpmMan`,
 			browseName: `${variableName}.RpmMan`,
 			dataType: DataType.Double,
 			value: {
@@ -449,7 +449,7 @@ export class MonAnaDrvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.Rpm`,
+			nodeId: `ns=${namespace.index};s=${variableName}.Rpm`,
 			browseName: `${variableName}.Rpm`,
 			dataType: DataType.Double,
 			value: {
@@ -461,7 +461,7 @@ export class MonAnaDrvMockup {
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.RpmRbk`,
+			nodeId: `ns=${namespace.index};s=${variableName}.RpmRbk`,
 			browseName: `${variableName}.RpmRbk`,
 			dataType: DataType.Double,
 			value: {
@@ -473,7 +473,7 @@ export class MonAnaDrvMockup {
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.RpmFbkCalc`,
+			nodeId: `ns=${namespace.index};s=${variableName}.RpmFbkCalc`,
 			browseName: `${variableName}.RpmFbkCalc`,
 			dataType: DataType.Boolean,
 			value: {
@@ -484,7 +484,7 @@ export class MonAnaDrvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.RpmFbk`,
+			nodeId: `ns=${namespace.index};s=${variableName}.RpmFbk`,
 			browseName: `${variableName}.RpmFbk`,
 			dataType: DataType.Boolean,
 			value: {
@@ -496,7 +496,7 @@ export class MonAnaDrvMockup {
 
 		namespace.addVariable({
 			componentOf: rootNode,
-			nodeId: `ns=${namespace};s=${variableName}.RpmAHEn`,
+			nodeId: `ns=${namespace.index};s=${variableName}.RpmAHEn`,
 			browseName: `${variableName}.RpmAHEn`,
 			dataType: DataType.Boolean,
 			value: {
@@ -507,7 +507,7 @@ export class MonAnaDrvMockup {
 		});
 		namespace.addVariable({
 			componentOf: rootNode,
-			nodeId: `ns=${namespace};s=${variableName}.RpmAHLim`,
+			nodeId: `ns=${namespace.index};s=${variableName}.RpmAHLim`,
 			browseName: `${variableName}.RpmAHLim`,
 			dataType: DataType.Double,
 			value: {
@@ -531,7 +531,7 @@ export class MonAnaDrvMockup {
 		});
 		namespace.addVariable({
 			componentOf: rootNode,
-			nodeId: `ns=${namespace};s=${variableName}.RpmAHAct`,
+			nodeId: `ns=${namespace.index};s=${variableName}.RpmAHAct`,
 			browseName: `${variableName}.RpmAHAct`,
 			dataType: DataType.Boolean,
 			value: {
@@ -542,7 +542,7 @@ export class MonAnaDrvMockup {
 		});
 		namespace.addVariable({
 			componentOf: rootNode,
-			nodeId: `ns=${namespace};s=${variableName}.RpmWHEn`,
+			nodeId: `ns=${namespace.index};s=${variableName}.RpmWHEn`,
 			browseName: `${variableName}.RpmWHEn`,
 			dataType: DataType.Boolean,
 			value: {
@@ -553,7 +553,7 @@ export class MonAnaDrvMockup {
 		});
 		namespace.addVariable({
 			componentOf: rootNode,
-			nodeId: `ns=${namespace};s=${variableName}.RpmWHLim`,
+			nodeId: `ns=${namespace.index};s=${variableName}.RpmWHLim`,
 			browseName: `${variableName}.RpmWHLim`,
 			dataType: DataType.Double,
 			value: {
@@ -577,7 +577,7 @@ export class MonAnaDrvMockup {
 		});
 		namespace.addVariable({
 			componentOf: rootNode,
-			nodeId: `ns=${namespace};s=${variableName}.RpmWHAct`,
+			nodeId: `ns=${namespace.index};s=${variableName}.RpmWHAct`,
 			browseName: `${variableName}.RpmWHAct`,
 			dataType: DataType.Boolean,
 			value: {
@@ -588,7 +588,7 @@ export class MonAnaDrvMockup {
 		});
 		namespace.addVariable({
 			componentOf: rootNode,
-			nodeId: `ns=${namespace};s=${variableName}.RpmTHEn`,
+			nodeId: `ns=${namespace.index};s=${variableName}.RpmTHEn`,
 			browseName: `${variableName}.RpmTHEn`,
 			dataType: DataType.Boolean,
 			value: {
@@ -599,7 +599,7 @@ export class MonAnaDrvMockup {
 		});
 		namespace.addVariable({
 			componentOf: rootNode,
-			nodeId: `ns=${namespace};s=${variableName}.RpmTHLim`,
+			nodeId: `ns=${namespace.index};s=${variableName}.RpmTHLim`,
 			browseName: `${variableName}.RpmTHLim`,
 			dataType: DataType.Double,
 			value: {
@@ -623,7 +623,7 @@ export class MonAnaDrvMockup {
 		});
 		namespace.addVariable({
 			componentOf: rootNode,
-			nodeId: `ns=${namespace};s=${variableName}.RpmTHAct`,
+			nodeId: `ns=${namespace.index};s=${variableName}.RpmTHAct`,
 			browseName: `${variableName}.RpmTHAct`,
 			dataType: DataType.Boolean,
 			value: {
@@ -634,7 +634,7 @@ export class MonAnaDrvMockup {
 		});
 		namespace.addVariable({
 			componentOf: rootNode,
-			nodeId: `ns=${namespace};s=${variableName}.RpmTLEn`,
+			nodeId: `ns=${namespace.index};s=${variableName}.RpmTLEn`,
 			browseName: `${variableName}.RpmTLEn`,
 			dataType: DataType.Boolean,
 			value: {
@@ -645,7 +645,7 @@ export class MonAnaDrvMockup {
 		});
 		namespace.addVariable({
 			componentOf: rootNode,
-			nodeId: `ns=${namespace};s=${variableName}.RpmTLLim`,
+			nodeId: `ns=${namespace.index};s=${variableName}.RpmTLLim`,
 			browseName: `${variableName}.RpmTLLim`,
 			dataType: DataType.Double,
 			value: {
@@ -669,7 +669,7 @@ export class MonAnaDrvMockup {
 		});
 		namespace.addVariable({
 			componentOf: rootNode,
-			nodeId: `ns=${namespace};s=${variableName}.RpmTLAct`,
+			nodeId: `ns=${namespace.index};s=${variableName}.RpmTLAct`,
 			browseName: `${variableName}.RpmTLAct`,
 			dataType: DataType.Boolean,
 			value: {
@@ -680,7 +680,7 @@ export class MonAnaDrvMockup {
 		});
 		namespace.addVariable({
 			componentOf: rootNode,
-			nodeId: `ns=${namespace};s=${variableName}.RpmWLEn`,
+			nodeId: `ns=${namespace.index};s=${variableName}.RpmWLEn`,
 			browseName: `${variableName}.RpmWLEn`,
 			dataType: DataType.Boolean,
 			value: {
@@ -691,7 +691,7 @@ export class MonAnaDrvMockup {
 		});
 		namespace.addVariable({
 			componentOf: rootNode,
-			nodeId: `ns=${namespace};s=${variableName}.RpmWLLim`,
+			nodeId: `ns=${namespace.index};s=${variableName}.RpmWLLim`,
 			browseName: `${variableName}.RpmWLLim`,
 			dataType: DataType.Double,
 			value: {
@@ -715,7 +715,7 @@ export class MonAnaDrvMockup {
 		});
 		namespace.addVariable({
 			componentOf: rootNode,
-			nodeId: `ns=${namespace};s=${variableName}.RpmWLAct`,
+			nodeId: `ns=${namespace.index};s=${variableName}.RpmWLAct`,
 			browseName: `${variableName}.RpmWLAct`,
 			dataType: DataType.Boolean,
 			value: {
@@ -726,7 +726,7 @@ export class MonAnaDrvMockup {
 		});
 		namespace.addVariable({
 			componentOf: rootNode,
-			nodeId: `ns=${namespace};s=${variableName}.RpmALEn`,
+			nodeId: `ns=${namespace.index};s=${variableName}.RpmALEn`,
 			browseName: `${variableName}.RpmALEn`,
 			dataType: DataType.Boolean,
 			value: {
@@ -737,7 +737,7 @@ export class MonAnaDrvMockup {
 		});
 		namespace.addVariable({
 			componentOf: rootNode,
-			nodeId: `ns=${namespace};s=${variableName}.RpmALLim`,
+			nodeId: `ns=${namespace.index};s=${variableName}.RpmALLim`,
 			browseName: `${variableName}.RpmALLim`,
 			dataType: DataType.Double,
 			value: {
@@ -761,7 +761,7 @@ export class MonAnaDrvMockup {
 		});
 		namespace.addVariable({
 			componentOf: rootNode,
-			nodeId: `ns=${namespace};s=${variableName}.RpmALAct`,
+			nodeId: `ns=${namespace.index};s=${variableName}.RpmALAct`,
 			browseName: `${variableName}.RpmALAct`,
 			dataType: DataType.Boolean,
 			value: {

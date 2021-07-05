@@ -102,7 +102,7 @@ export class AnaManMockup {
 		this.unit = new UnitDAMockup(namespace, this.mockupNode, this.name);
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VMan`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VMan`,
 			browseName: `${variableName}.VMan`,
 			dataType: DataType.Double,
 			value: {
@@ -117,7 +117,7 @@ export class AnaManMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VOut`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VOut`,
 			browseName: `${variableName}.VOut`,
 			dataType: DataType.Double,
 			value: {
@@ -128,7 +128,7 @@ export class AnaManMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VFbk`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VFbk`,
 			browseName: `${variableName}.VFbk`,
 			dataType: DataType.Double,
 			value: {
@@ -139,7 +139,7 @@ export class AnaManMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VRbk`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VRbk`,
 			browseName: `${variableName}.VRbk`,
 			dataType: DataType.Double,
 			value: {

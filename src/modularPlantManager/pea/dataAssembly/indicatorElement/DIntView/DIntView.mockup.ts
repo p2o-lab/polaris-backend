@@ -71,7 +71,7 @@ export class DIntViewMockup {
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.V`,
+			nodeId: `ns=${namespace.index};s=${variableName}.V`,
 			browseName: `${variableName}.V`,
 			dataType: DataType.Int32,
 			value: {

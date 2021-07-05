@@ -149,7 +149,7 @@ export abstract class ServiceControlMockup {
 
       namespace.addVariable({
           componentOf: this.dataAssemblyNode,
-          nodeId: `ns=${namespace};s=${variableName}.CommandOp`,
+          nodeId: `ns=${namespace.index};s=${variableName}.CommandOp`,
           browseName: `${variableName}.CommandOp`,
           dataType: 'UInt32',
           value: {
@@ -174,7 +174,7 @@ export abstract class ServiceControlMockup {
       });
       namespace.addVariable({
           componentOf: this.dataAssemblyNode,
-          nodeId: `ns=${namespace};s=${variableName}.CommandInt`,
+          nodeId: `ns=${namespace.index};s=${variableName}.CommandInt`,
           browseName: `${variableName}.CommandInt`,
           dataType: 'UInt32',
           value: {
@@ -185,7 +185,7 @@ export abstract class ServiceControlMockup {
       });
       namespace.addVariable({
           componentOf: this.dataAssemblyNode,
-          nodeId: `ns=${namespace};s=${variableName}.CommandExt`,
+          nodeId: `ns=${namespace.index};s=${variableName}.CommandExt`,
           browseName: `${variableName}.CommandExt`,
           dataType: 'UInt32',
           value: {
@@ -211,7 +211,7 @@ export abstract class ServiceControlMockup {
 
       namespace.addVariable({
           componentOf: this.dataAssemblyNode,
-          nodeId: `ns=${namespace};s=${variableName}.ProcedureOp`,
+          nodeId: `ns=${namespace.index};s=${variableName}.ProcedureOp`,
           browseName: `${variableName}.ProcedureOp`,
           dataType: 'UInt32',
           value: {
@@ -231,7 +231,7 @@ export abstract class ServiceControlMockup {
       });
       namespace.addVariable({
           componentOf: this.dataAssemblyNode,
-          nodeId: `ns=${namespace};s=${variableName}.ProcedureInt`,
+          nodeId: `ns=${namespace.index};s=${variableName}.ProcedureInt`,
           browseName: `${variableName}.ProcedureInt`,
           dataType: 'UInt32',
           value: {
@@ -243,7 +243,7 @@ export abstract class ServiceControlMockup {
 
       namespace.addVariable({
           componentOf: this.dataAssemblyNode,
-          nodeId: `ns=${namespace};s=${variableName}.ProcedureExt`,
+          nodeId: `ns=${namespace.index};s=${variableName}.ProcedureExt`,
           browseName: `${variableName}.ProcedureExt`,
           dataType: 'UInt32',
           value: {
@@ -264,7 +264,7 @@ export abstract class ServiceControlMockup {
 
       namespace.addVariable({
           componentOf: this.dataAssemblyNode,
-          nodeId: `ns=${namespace};s=${variableName}.StateCur`,
+          nodeId: `ns=${namespace.index};s=${variableName}.StateCur`,
           browseName: `${variableName}.StateCur`,
           dataType: 'UInt32',
           value: {
@@ -276,7 +276,7 @@ export abstract class ServiceControlMockup {
 
       namespace.addVariable({
           componentOf: this.dataAssemblyNode,
-          nodeId: `ns=${namespace};s=${variableName}.CommandEn`,
+          nodeId: `ns=${namespace.index};s=${variableName}.CommandEn`,
           browseName: `${variableName}.CommandEn`,
           dataType: 'UInt32',
           value: {
@@ -288,7 +288,7 @@ export abstract class ServiceControlMockup {
 
       namespace.addVariable({
           componentOf: this.dataAssemblyNode,
-          nodeId: `ns=${namespace};s=${variableName}.ProcedureCur`,
+          nodeId: `ns=${namespace.index};s=${variableName}.ProcedureCur`,
           browseName: `${variableName}.ProcedureCur`,
           dataType: 'UInt32',
           value: {
@@ -300,7 +300,7 @@ export abstract class ServiceControlMockup {
 
       namespace.addVariable({
           componentOf: this.dataAssemblyNode,
-          nodeId: `ns=${namespace};s=${variableName}.ProcedureReq`,
+          nodeId: `ns=${namespace.index};s=${variableName}.ProcedureReq`,
           browseName: `${variableName}.ProcedureReq`,
           dataType: 'UInt32',
           value: {
@@ -312,7 +312,7 @@ export abstract class ServiceControlMockup {
 
       namespace.addVariable({
           componentOf: this.dataAssemblyNode,
-          nodeId: `ns=${namespace};s=${variableName}.PosTextID`,
+          nodeId: `ns=${namespace.index};s=${variableName}.PosTextID`,
           browseName: `${variableName}.PosTextID`,
           dataType: 'UInt32',
           value: {

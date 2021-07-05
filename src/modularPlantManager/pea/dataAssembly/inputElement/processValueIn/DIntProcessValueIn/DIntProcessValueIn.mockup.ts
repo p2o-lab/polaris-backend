@@ -69,7 +69,7 @@ export class DIntProcessValueInMockup{
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VExt`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VExt`,
 			browseName: `${variableName}.VExt`,
 			dataType: DataType.Int32,
 			value: {

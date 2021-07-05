@@ -72,7 +72,7 @@ export class BinViewMockup {
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.V`,
+			nodeId: `ns=${namespace.index};s=${variableName}.V`,
 			browseName: `${variableName}.V`,
 			dataType: DataType.Boolean,
 			value: {
@@ -83,7 +83,7 @@ export class BinViewMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VState0`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VState0`,
 			browseName: `${variableName}.VState0`,
 			dataType: DataType.String,
 			value: {
@@ -98,7 +98,7 @@ export class BinViewMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VState1`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VState1`,
 			browseName: `${variableName}.VState1`,
 			dataType: DataType.String,
 			value: {

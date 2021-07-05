@@ -57,7 +57,7 @@ export class ResetDAMockup {
 
     namespace.addVariable({
       componentOf: this.mockupNode,
-      nodeId: `ns=${namespace};s=${variableName}.ResetOp`,
+      nodeId: `ns=${namespace.index};s=${variableName}.ResetOp`,
       browseName: `${variableName}.ResetOp`,
       dataType: DataType.Boolean,
       value: {
@@ -73,7 +73,7 @@ export class ResetDAMockup {
 
     namespace.addVariable({
       componentOf: this.mockupNode,
-      nodeId: `ns=${namespace};s=${variableName}.ResetAut`,
+      nodeId: `ns=${namespace.index};s=${variableName}.ResetAut`,
       browseName: `${variableName}.ResetAut`,
       dataType: DataType.Boolean,
       value: {

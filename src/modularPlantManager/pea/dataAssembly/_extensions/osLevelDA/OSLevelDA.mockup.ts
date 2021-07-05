@@ -40,18 +40,19 @@ export function getOSLevelDAMockupReferenceJSON(
 
 export class OSLevelDAMockup {
   protected osLevel = 0;
-  protected mockupNode: UAObject;
+ protected mockupNode: UAObject;
 
   constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
 
-    this.mockupNode = namespace.addObject({
+    /*this.mockupNode = namespace.addObject({
       organizedBy: rootNode,
       browseName: variableName,
-    });
+    });*/
+    this.mockupNode = rootNode;
 
       namespace.addVariable({
         componentOf: rootNode,
-        nodeId: `ns=${namespace};s=${variableName}.OSLevel`,
+        nodeId: `ns=${namespace.index};s=${variableName}.OSLevel`,
         browseName: `${variableName}.OSLevel`,
         dataType: DataType.Byte,
         value: {

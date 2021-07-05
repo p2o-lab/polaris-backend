@@ -88,7 +88,7 @@ export class BinVlvMockup {
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.SafePos`,
+			nodeId: `ns=${namespace.index};s=${variableName}.SafePos`,
 			browseName: `${variableName}.SafePos`,
 			dataType: DataType.Boolean,
 			value: {
@@ -99,7 +99,7 @@ export class BinVlvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.SafePosEn`,
+			nodeId: `ns=${namespace.index};s=${variableName}.SafePosEn`,
 			browseName: `${variableName}.SafePosEn`,
 			dataType: DataType.Boolean,
 			value: {
@@ -110,7 +110,7 @@ export class BinVlvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.OpenOp`,
+			nodeId: `ns=${namespace.index};s=${variableName}.OpenOp`,
 			browseName: `${variableName}.OpenOp`,
 			dataType: DataType.Boolean,
 			value: {
@@ -125,7 +125,7 @@ export class BinVlvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.CloseOp`,
+			nodeId: `ns=${namespace.index};s=${variableName}.CloseOp`,
 			browseName: `${variableName}.CloseOp`,
 			dataType: DataType.Boolean,
 			value: {
@@ -140,7 +140,7 @@ export class BinVlvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.OpenAut`,
+			nodeId: `ns=${namespace.index};s=${variableName}.OpenAut`,
 			browseName: `${variableName}.OpenAut`,
 			dataType: DataType.Boolean,
 			value: {
@@ -151,7 +151,7 @@ export class BinVlvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.CloseAut`,
+			nodeId: `ns=${namespace.index};s=${variableName}.CloseAut`,
 			browseName: `${variableName}.CloseAut`,
 			dataType: DataType.Boolean,
 			value: {
@@ -162,7 +162,7 @@ export class BinVlvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.OpenFbkCalc`,
+			nodeId: `ns=${namespace.index};s=${variableName}.OpenFbkCalc`,
 			browseName: `${variableName}.OpenFbkCalc`,
 			dataType: DataType.Boolean,
 			value: {
@@ -173,7 +173,7 @@ export class BinVlvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.OpenFbk`,
+			nodeId: `ns=${namespace.index};s=${variableName}.OpenFbk`,
 			browseName: `${variableName}.OpenFbk`,
 			dataType: DataType.Boolean,
 			value: {
@@ -184,7 +184,7 @@ export class BinVlvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.CloseFbkCalc`,
+			nodeId: `ns=${namespace.index};s=${variableName}.CloseFbkCalc`,
 			browseName: `${variableName}.CloseFbkCalc`,
 			dataType: DataType.Boolean,
 			value: {
@@ -195,7 +195,7 @@ export class BinVlvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.CloseFbk`,
+			nodeId: `ns=${namespace.index};s=${variableName}.CloseFbk`,
 			browseName: `${variableName}.CloseFbk`,
 			dataType: DataType.Boolean,
 			value: {
@@ -207,7 +207,7 @@ export class BinVlvMockup {
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.Ctrl`,
+			nodeId: `ns=${namespace.index};s=${variableName}.Ctrl`,
 			browseName: `${variableName}.Ctrl`,
 			dataType: DataType.Boolean,
 			value: {

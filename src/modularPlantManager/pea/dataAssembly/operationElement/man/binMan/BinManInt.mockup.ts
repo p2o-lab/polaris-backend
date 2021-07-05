@@ -74,7 +74,7 @@ export class BinManIntMockup extends BinManMockup {
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VInt`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VInt`,
 			browseName: `${variableName}.VInt`,
 			dataType: DataType.Boolean,
 			value: {

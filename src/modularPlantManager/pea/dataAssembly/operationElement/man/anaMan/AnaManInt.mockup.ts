@@ -64,7 +64,7 @@ export class AnaManIntMockup extends AnaManMockup{
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VInt`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VInt`,
 			browseName: `${variableName}.VInt`,
 			dataType: DataType.Double,
 			value: {

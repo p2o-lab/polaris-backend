@@ -84,7 +84,7 @@ export class StringServParamMockup extends ServParamMockup{
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VExt`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VExt`,
 			browseName: `${variableName}.VExt`,
 			dataType: DataType.String,
 			value: {
@@ -99,7 +99,7 @@ export class StringServParamMockup extends ServParamMockup{
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VOp`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VOp`,
 			browseName: `${variableName}.VOp`,
 			dataType: DataType.String,
 			value: {
@@ -114,7 +114,7 @@ export class StringServParamMockup extends ServParamMockup{
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VInt`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VInt`,
 			browseName: `${variableName}.VInt`,
 			dataType: DataType.String,
 			value: {
@@ -125,7 +125,7 @@ export class StringServParamMockup extends ServParamMockup{
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VReq`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VReq`,
 			browseName: `${variableName}.VReq`,
 			dataType: DataType.String,
 			value: {
@@ -136,7 +136,7 @@ export class StringServParamMockup extends ServParamMockup{
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VOut`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VOut`,
 			browseName: `${variableName}.VOut`,
 			dataType: DataType.String,
 			value: {
@@ -147,7 +147,7 @@ export class StringServParamMockup extends ServParamMockup{
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VFbk`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VFbk`,
 			browseName: `${variableName}.VFbk`,
 			dataType: DataType.String,
 			value: {

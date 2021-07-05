@@ -92,7 +92,7 @@ export class ServiceSourceModeDAMockup {
 
 		namespace.addVariable({
 			componentOf: rootNode,
-			nodeId: `ns=${namespace};s=${variableName}.SrcChannel`,
+			nodeId: `ns=${namespace.index};s=${variableName}.SrcChannel`,
 			browseName: `${variableName}.SrcChannel`,
 			dataType: DataType.Boolean,
 			value: {
@@ -104,7 +104,7 @@ export class ServiceSourceModeDAMockup {
 
 		namespace.addVariable({
 			componentOf: rootNode,
-			nodeId: `ns=${namespace};s=${variableName}.SrcExtAut`,
+			nodeId: `ns=${namespace.index};s=${variableName}.SrcExtAut`,
 			browseName: `${variableName}.SrcExtAut`,
 			dataType: DataType.Boolean,
 			value: {
@@ -115,7 +115,7 @@ export class ServiceSourceModeDAMockup {
 		});
 		namespace.addVariable({
 			componentOf: rootNode,
-			nodeId: `ns=${namespace};s=${variableName}.SrcIntAut`,
+			nodeId: `ns=${namespace.index};s=${variableName}.SrcIntAut`,
 			browseName: `${variableName}.SrcIntAut`,
 			dataType: DataType.Boolean,
 			value: {
@@ -126,7 +126,7 @@ export class ServiceSourceModeDAMockup {
 		});
 		namespace.addVariable({
 			componentOf: rootNode,
-			nodeId: `ns=${namespace};s=${variableName}.SrcIntOp`,
+			nodeId: `ns=${namespace.index};s=${variableName}.SrcIntOp`,
 			browseName: `${variableName}.SrcIntOp`,
 			dataType: DataType.Boolean,
 			value: {
@@ -151,7 +151,7 @@ export class ServiceSourceModeDAMockup {
 
 		namespace.addVariable({
 			componentOf: rootNode,
-			nodeId: `ns=${namespace};s=${variableName}.SrcExtOp`,
+			nodeId: `ns=${namespace.index};s=${variableName}.SrcExtOp`,
 			browseName: `${variableName}.SrcExtOp`,
 			dataType: DataType.Boolean,
 			value: {
@@ -175,7 +175,7 @@ export class ServiceSourceModeDAMockup {
 
 		namespace.addVariable({
 			componentOf: rootNode,
-			nodeId: `ns=${namespace};s=${variableName}.SrcIntAct`,
+			nodeId: `ns=${namespace.index};s=${variableName}.SrcIntAct`,
 			browseName: `${variableName}.SrcIntAct`,
 			dataType: DataType.Boolean,
 			value: {
@@ -187,7 +187,7 @@ export class ServiceSourceModeDAMockup {
 		});
 		namespace.addVariable({
 			componentOf: rootNode,
-			nodeId: `ns=${namespace};s=${variableName}.SrcExtAct`,
+			nodeId: `ns=${namespace.index};s=${variableName}.SrcExtAct`,
 			browseName: `${variableName}.SrcExtAct`,
 			dataType: DataType.Boolean,
 			value: {

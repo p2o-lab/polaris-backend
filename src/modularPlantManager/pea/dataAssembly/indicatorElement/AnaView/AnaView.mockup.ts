@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
+import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../_extensions/wqcDA/WQCDA.mockup';
 import {
 	getScaleSettingDAMockupReferenceJSON,
@@ -60,7 +60,6 @@ export class AnaViewMockup {
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
 
 		this.name = variableName;
-
 		this.mockupNode = namespace.addObject({
 			organizedBy: rootNode,
 			browseName: variableName
@@ -68,10 +67,9 @@ export class AnaViewMockup {
 		this.wqc = new WQCDAMockup(namespace, this.mockupNode, this.name);
 		this.scaleSettings = new ScaleSettingDAMockup<DataType.Double>(namespace, this.mockupNode, this.name, DataType.Double);
 		this.unit = new UnitDAMockup(namespace, this.mockupNode, this.name);
-
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.V`,
+			nodeId: `ns=${namespace.index};s=${variableName}.V`,
 			browseName: `${variableName}.V`,
 			dataType: DataType.Double,
 			value: {

@@ -185,7 +185,7 @@ export class MonBinDrvMockup {
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.SafePos`,
+			nodeId: `ns=${namespace.index};s=${variableName}.SafePos`,
 			browseName: `${variableName}.SafePos`,
 			dataType: DataType.Boolean,
 			value: {
@@ -196,7 +196,7 @@ export class MonBinDrvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.SafePosAct`,
+			nodeId: `ns=${namespace.index};s=${variableName}.SafePosAct`,
 			browseName: `${variableName}.SafePosAct`,
 			dataType: DataType.Boolean,
 			value: {
@@ -208,7 +208,7 @@ export class MonBinDrvMockup {
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.FwdEn`,
+			nodeId: `ns=${namespace.index};s=${variableName}.FwdEn`,
 			browseName: `${variableName}.FwdEn`,
 			dataType: DataType.Boolean,
 			value: {
@@ -219,7 +219,7 @@ export class MonBinDrvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.RevEn`,
+			nodeId: `ns=${namespace.index};s=${variableName}.RevEn`,
 			browseName: `${variableName}.RevEn`,
 			dataType: DataType.Boolean,
 			value: {
@@ -230,7 +230,7 @@ export class MonBinDrvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.StopOp`,
+			nodeId: `ns=${namespace.index};s=${variableName}.StopOp`,
 			browseName: `${variableName}.StopOp`,
 			dataType: DataType.Boolean,
 			value: {
@@ -245,7 +245,7 @@ export class MonBinDrvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.FwdOp`,
+			nodeId: `ns=${namespace.index};s=${variableName}.FwdOp`,
 			browseName: `${variableName}.FwdOp`,
 			dataType: DataType.Boolean,
 			value: {
@@ -260,7 +260,7 @@ export class MonBinDrvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.RevOp`,
+			nodeId: `ns=${namespace.index};s=${variableName}.RevOp`,
 			browseName: `${variableName}.RevOp`,
 			dataType: DataType.Boolean,
 			value: {
@@ -275,7 +275,7 @@ export class MonBinDrvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.StopAut`,
+			nodeId: `ns=${namespace.index};s=${variableName}.StopAut`,
 			browseName: `${variableName}.StopAut`,
 			dataType: DataType.Boolean,
 			value: {
@@ -286,7 +286,7 @@ export class MonBinDrvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.FwdAut`,
+			nodeId: `ns=${namespace.index};s=${variableName}.FwdAut`,
 			browseName: `${variableName}.FwdAut`,
 			dataType: DataType.Boolean,
 			value: {
@@ -297,7 +297,7 @@ export class MonBinDrvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.RevAut`,
+			nodeId: `ns=${namespace.index};s=${variableName}.RevAut`,
 			browseName: `${variableName}.RevAut`,
 			dataType: DataType.Boolean,
 			value: {
@@ -308,7 +308,7 @@ export class MonBinDrvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.FwdCtrl`,
+			nodeId: `ns=${namespace.index};s=${variableName}.FwdCtrl`,
 			browseName: `${variableName}.FwdCtrl`,
 			dataType: DataType.Boolean,
 			value: {
@@ -319,7 +319,7 @@ export class MonBinDrvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.RevCtrl`,
+			nodeId: `ns=${namespace.index};s=${variableName}.RevCtrl`,
 			browseName: `${variableName}.RevCtrl`,
 			dataType: DataType.Boolean,
 			value: {
@@ -331,7 +331,7 @@ export class MonBinDrvMockup {
 		
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.RevFbkCalc`,
+			nodeId: `ns=${namespace.index};s=${variableName}.RevFbkCalc`,
 			browseName: `${variableName}.RevFbkCalc`,
 			dataType: DataType.Boolean,
 			value: {
@@ -343,7 +343,7 @@ export class MonBinDrvMockup {
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.RevFbk`,
+			nodeId: `ns=${namespace.index};s=${variableName}.RevFbk`,
 			browseName: `${variableName}.RevFbk`,
 			dataType: DataType.Boolean,
 			value: {
@@ -354,7 +354,7 @@ export class MonBinDrvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.FwdFbkCalc`,
+			nodeId: `ns=${namespace.index};s=${variableName}.FwdFbkCalc`,
 			browseName: `${variableName}.FwdFbkCalc`,
 			dataType: DataType.Boolean,
 			value: {
@@ -365,7 +365,7 @@ export class MonBinDrvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.FwdFbk`,
+			nodeId: `ns=${namespace.index};s=${variableName}.FwdFbk`,
 			browseName: `${variableName}.FwdFbk`,
 			dataType: DataType.Boolean,
 			value: {

@@ -66,8 +66,8 @@ export class ServParamMockup extends OperationElementMockup{
 		this.wqc = new WQCDAMockup(namespace, this.mockupNode, this.name);
 
 		namespace.addVariable({
-			componentOf: rootNode,
-			nodeId: `ns=${namespace};s=${variableName}.Sync`,
+			componentOf: this.mockupNode,
+			nodeId: `ns=${namespace.index};s=${variableName}.Sync`,
 			browseName: `${variableName}.Sync`,
 			dataType: DataType.Boolean,
 			value: {

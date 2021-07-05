@@ -44,14 +44,11 @@ export class UnitDAMockup {
 
   constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
 
-    this.mockupNode = namespace.addObject({
-      organizedBy: rootNode,
-      browseName: variableName,
-    });
+    this.mockupNode = rootNode;
 
       namespace.addVariable({
         componentOf: rootNode,
-        nodeId: `ns=${namespace};s=${variableName}.VUnit`,
+        nodeId: `ns=${namespace.index};s=${variableName}.VUnit`,
         browseName: `${variableName}.VUnit`,
         dataType: DataType.UInt32,
         value: {

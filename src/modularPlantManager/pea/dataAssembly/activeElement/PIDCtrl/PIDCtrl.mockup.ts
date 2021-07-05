@@ -216,7 +216,7 @@ export class PIDCtrlMockup {
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.PV`,
+			nodeId: `ns=${namespace.index};s=${variableName}.PV`,
 			browseName: `${variableName}.PV`,
 			dataType: DataType.Double,
 			value: {
@@ -227,7 +227,7 @@ export class PIDCtrlMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.PVSclMin`,
+			nodeId: `ns=${namespace.index};s=${variableName}.PVSclMin`,
 			browseName: `${variableName}.PVSclMin`,
 			dataType: DataType.Double,
 			value: {
@@ -238,7 +238,7 @@ export class PIDCtrlMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.PVSclMax`,
+			nodeId: `ns=${namespace.index};s=${variableName}.PVSclMax`,
 			browseName: `${variableName}.PVSclMax`,
 			dataType: DataType.Double,
 			value: {
@@ -249,7 +249,7 @@ export class PIDCtrlMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.PVUnit`,
+			nodeId: `ns=${namespace.index};s=${variableName}.PVUnit`,
 			browseName: `${variableName}.PVUnit`,
 			dataType: DataType.UInt32,
 			value: {
@@ -260,7 +260,7 @@ export class PIDCtrlMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.SPMan`,
+			nodeId: `ns=${namespace.index};s=${variableName}.SPMan`,
 			browseName: `${variableName}.SPMan`,
 			dataType: DataType.Double,
 			value: {
@@ -275,7 +275,7 @@ export class PIDCtrlMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.SPInt`,
+			nodeId: `ns=${namespace.index};s=${variableName}.SPInt`,
 			browseName: `${variableName}.SPInt`,
 			dataType: DataType.Double,
 			value: {
@@ -286,7 +286,7 @@ export class PIDCtrlMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.SPSclMin`,
+			nodeId: `ns=${namespace.index};s=${variableName}.SPSclMin`,
 			browseName: `${variableName}.SPSclMin`,
 			dataType: DataType.Double,
 			value: {
@@ -297,7 +297,7 @@ export class PIDCtrlMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.SPSclMax`,
+			nodeId: `ns=${namespace.index};s=${variableName}.SPSclMax`,
 			browseName: `${variableName}.SPSclMax`,
 			dataType: DataType.Double,
 			value: {
@@ -308,7 +308,7 @@ export class PIDCtrlMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.SPUnit`,
+			nodeId: `ns=${namespace.index};s=${variableName}.SPUnit`,
 			browseName: `${variableName}.SPUnit`,
 			dataType: DataType.UInt32,
 			value: {
@@ -319,7 +319,7 @@ export class PIDCtrlMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.SPIntMin`,
+			nodeId: `ns=${namespace.index};s=${variableName}.SPIntMin`,
 			browseName: `${variableName}.SPIntMin`,
 			dataType: DataType.Double,
 			value: {
@@ -330,7 +330,7 @@ export class PIDCtrlMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.SPIntMax`,
+			nodeId: `ns=${namespace.index};s=${variableName}.SPIntMax`,
 			browseName: `${variableName}.SPIntMax`,
 			dataType: DataType.Double,
 			value: {
@@ -341,7 +341,7 @@ export class PIDCtrlMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.SPManMin`,
+			nodeId: `ns=${namespace.index};s=${variableName}.SPManMin`,
 			browseName: `${variableName}.SPManMin`,
 			dataType: DataType.Double,
 			value: {
@@ -352,7 +352,7 @@ export class PIDCtrlMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.SPManMax`,
+			nodeId: `ns=${namespace.index};s=${variableName}.SPManMax`,
 			browseName: `${variableName}.SPManMax`,
 			dataType: DataType.Double,
 			value: {
@@ -363,7 +363,7 @@ export class PIDCtrlMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.SP`,
+			nodeId: `ns=${namespace.index};s=${variableName}.SP`,
 			browseName: `${variableName}.SP`,
 			dataType: DataType.Double,
 			value: {
@@ -374,7 +374,7 @@ export class PIDCtrlMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.MVMan`,
+			nodeId: `ns=${namespace.index};s=${variableName}.MVMan`,
 			browseName: `${variableName}.MVMan`,
 			dataType: DataType.Double,
 			value: {
@@ -389,7 +389,7 @@ export class PIDCtrlMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.MV`,
+			nodeId: `ns=${namespace.index};s=${variableName}.MV`,
 			browseName: `${variableName}.MV`,
 			dataType: DataType.Double,
 			value: {
@@ -400,7 +400,7 @@ export class PIDCtrlMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.MVMin`,
+			nodeId: `ns=${namespace.index};s=${variableName}.MVMin`,
 			browseName: `${variableName}.MVMin`,
 			dataType: DataType.Double,
 			value: {
@@ -411,7 +411,7 @@ export class PIDCtrlMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.MVMax`,
+			nodeId: `ns=${namespace.index};s=${variableName}.MVMax`,
 			browseName: `${variableName}.MVMax`,
 			dataType: DataType.Double,
 			value: {
@@ -422,7 +422,7 @@ export class PIDCtrlMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.MVUnit`,
+			nodeId: `ns=${namespace.index};s=${variableName}.MVUnit`,
 			browseName: `${variableName}.MVUnit`,
 			dataType: DataType.UInt32,
 			value: {
@@ -433,7 +433,7 @@ export class PIDCtrlMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.MVSclMin`,
+			nodeId: `ns=${namespace.index};s=${variableName}.MVSclMin`,
 			browseName: `${variableName}.MVSclMin`,
 			dataType: DataType.Double,
 			value: {
@@ -444,7 +444,7 @@ export class PIDCtrlMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.MVSclMax`,
+			nodeId: `ns=${namespace.index};s=${variableName}.MVSclMax`,
 			browseName: `${variableName}.MVSclMax`,
 			dataType: DataType.Double,
 			value: {
@@ -455,7 +455,7 @@ export class PIDCtrlMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.P`,
+			nodeId: `ns=${namespace.index};s=${variableName}.P`,
 			browseName: `${variableName}.P`,
 			dataType: DataType.Double,
 			value: {
@@ -466,7 +466,7 @@ export class PIDCtrlMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.Ti`,
+			nodeId: `ns=${namespace.index};s=${variableName}.Ti`,
 			browseName: `${variableName}.Ti`,
 			dataType: DataType.Double,
 			value: {
@@ -477,7 +477,7 @@ export class PIDCtrlMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.Td`,
+			nodeId: `ns=${namespace.index};s=${variableName}.Td`,
 			browseName: `${variableName}.Td`,
 			dataType: DataType.Double,
 			value: {

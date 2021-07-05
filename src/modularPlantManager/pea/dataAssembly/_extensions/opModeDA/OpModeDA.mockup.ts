@@ -105,7 +105,7 @@ export class OpModeDAMockup {
 
 		namespace.addVariable({
 			componentOf: rootNode,
-			nodeId: `ns=${namespace};s=${variableName}.StateChannel`,
+			nodeId: `ns=${namespace.index};s=${variableName}.StateChannel`,
 			browseName: `${variableName}.StateChannel`,
 			dataType: DataType.Boolean,
 			value: {
@@ -117,7 +117,7 @@ export class OpModeDAMockup {
 
 		namespace.addVariable({
 			componentOf: rootNode,
-			nodeId: `ns=${namespace};s=${variableName}.StateOffAut`,
+			nodeId: `ns=${namespace.index};s=${variableName}.StateOffAut`,
 			browseName: `${variableName}.StateOffAut`,
 			dataType: DataType.Boolean,
 			value: {
@@ -128,7 +128,7 @@ export class OpModeDAMockup {
 		});
 		namespace.addVariable({
 			componentOf: rootNode,
-			nodeId: `ns=${namespace};s=${variableName}.StateOpAut`,
+			nodeId: `ns=${namespace.index};s=${variableName}.StateOpAut`,
 			browseName: `${variableName}.StateOpAut`,
 			dataType: DataType.Boolean,
 			value: {
@@ -139,7 +139,7 @@ export class OpModeDAMockup {
 		});
 		namespace.addVariable({
 			componentOf: rootNode,
-			nodeId: `ns=${namespace};s=${variableName}.StateAutAut`,
+			nodeId: `ns=${namespace.index};s=${variableName}.StateAutAut`,
 			browseName: `${variableName}.StateAutAut`,
 			dataType: DataType.Boolean,
 			value: {
@@ -151,7 +151,7 @@ export class OpModeDAMockup {
 
 		namespace.addVariable({
 			componentOf: rootNode,
-			nodeId: `ns=${namespace};s=${variableName}.StateOffOp`,
+			nodeId: `ns=${namespace.index};s=${variableName}.StateOffOp`,
 			browseName: `${variableName}.StateOffOp`,
 			dataType: DataType.Boolean,
 			value: {
@@ -172,7 +172,7 @@ export class OpModeDAMockup {
 		});
 		namespace.addVariable({
 			componentOf: rootNode,
-			nodeId: `ns=${namespace};s=${variableName}.StateOpOp`,
+			nodeId: `ns=${namespace.index};s=${variableName}.StateOpOp`,
 			browseName: `${variableName}.StateOpOp`,
 			dataType: DataType.Boolean,
 			value: {
@@ -193,7 +193,7 @@ export class OpModeDAMockup {
 		});
 		namespace.addVariable({
 			componentOf: rootNode,
-			nodeId: `ns=${namespace};s=${variableName}.StateAutOp`,
+			nodeId: `ns=${namespace.index};s=${variableName}.StateAutOp`,
 			browseName: `${variableName}.StateAutOp`,
 			dataType: DataType.Boolean,
 			value: {
@@ -215,7 +215,7 @@ export class OpModeDAMockup {
 
 		namespace.addVariable({
 			componentOf: rootNode,
-			nodeId: `ns=${namespace};s=${variableName}.StateOffAct`,
+			nodeId: `ns=${namespace.index};s=${variableName}.StateOffAct`,
 			browseName: `${variableName}.StateOffAct`,
 			dataType: DataType.Boolean,
 			value: {
@@ -226,7 +226,7 @@ export class OpModeDAMockup {
 		});
 		namespace.addVariable({
 			componentOf: rootNode,
-			nodeId: `ns=${namespace};s=${variableName}.StateOpAct`,
+			nodeId: `ns=${namespace.index};s=${variableName}.StateOpAct`,
 			browseName: `${variableName}.StateOpAct`,
 			dataType: DataType.Boolean,
 			value: {
@@ -237,7 +237,7 @@ export class OpModeDAMockup {
 		});
 		namespace.addVariable({
 			componentOf: rootNode,
-			nodeId: `ns=${namespace};s=${variableName}.StateAutAct`,
+			nodeId: `ns=${namespace.index};s=${variableName}.StateAutAct`,
 			browseName: `${variableName}.StateAutAct`,
 			dataType: DataType.Boolean,
 			value: {

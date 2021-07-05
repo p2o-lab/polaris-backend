@@ -75,7 +75,7 @@ export class DIntManIntMockup extends DIntManMockup {
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VInt`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VInt`,
 			browseName: `${variableName}.VInt`,
 			dataType: DataType.Int32,
 			value: {

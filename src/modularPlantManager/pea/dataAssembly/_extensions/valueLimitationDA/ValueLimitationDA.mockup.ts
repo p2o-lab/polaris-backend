@@ -60,7 +60,7 @@ export class ValueLimitationDAMockup<T extends DataType.Double | DataType.Int32>
 
     namespace.addVariable({
       componentOf: this.mockupNode,
-      nodeId: `ns=${namespace};s=${variableName}.VMin`,
+      nodeId: `ns=${namespace.index};s=${variableName}.VMin`,
       browseName: `${variableName}.VMin`,
       dataType: this.type,
       value: {
@@ -72,7 +72,7 @@ export class ValueLimitationDAMockup<T extends DataType.Double | DataType.Int32>
 
     namespace.addVariable({
       componentOf: this.mockupNode,
-      nodeId: `ns=${namespace};s=${variableName}.VMax`,
+      nodeId: `ns=${namespace.index};s=${variableName}.VMax`,
       browseName: `${variableName}.VMax`,
       dataType: this.type,
       value: {

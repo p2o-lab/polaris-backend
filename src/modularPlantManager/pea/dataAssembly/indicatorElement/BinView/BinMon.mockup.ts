@@ -87,7 +87,7 @@ export class BinMonMockup {
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.V`,
+			nodeId: `ns=${namespace.index};s=${variableName}.V`,
 			browseName: `${variableName}.V`,
 			dataType: DataType.Boolean,
 			value: {
@@ -98,7 +98,7 @@ export class BinMonMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VState0`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VState0`,
 			browseName: `${variableName}.VState0`,
 			dataType: DataType.String,
 			value: {
@@ -113,7 +113,7 @@ export class BinMonMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VState1`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VState1`,
 			browseName: `${variableName}.VState1`,
 			dataType: DataType.String,
 			value: {
@@ -129,7 +129,7 @@ export class BinMonMockup {
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VFlutEn`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VFlutEn`,
 			browseName: `${variableName}.VFlutEn`,
 			dataType: DataType.Boolean,
 			value: {
@@ -141,7 +141,7 @@ export class BinMonMockup {
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VFlutTi`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VFlutTi`,
 			browseName: `${variableName}.VFlutTi`,
 			dataType: DataType.Double,
 			value: {
@@ -157,7 +157,7 @@ export class BinMonMockup {
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VFlutCnt`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VFlutCnt`,
 			browseName: `${variableName}.VFlutCnt`,
 			dataType: DataType.Int32,
 			value: {
@@ -173,7 +173,7 @@ export class BinMonMockup {
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VFlutAct`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VFlutAct`,
 			browseName: `${variableName}.VFlutAct`,
 			dataType: DataType.Boolean,
 			value: {

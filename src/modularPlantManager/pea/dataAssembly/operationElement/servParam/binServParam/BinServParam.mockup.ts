@@ -103,7 +103,7 @@ export class BinServParamMockup extends ServParamMockup{
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VExt`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VExt`,
 			browseName: `${variableName}.VExt`,
 			dataType: DataType.Boolean,
 			value: {
@@ -118,7 +118,7 @@ export class BinServParamMockup extends ServParamMockup{
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VOp`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VOp`,
 			browseName: `${variableName}.VOp`,
 			dataType: DataType.Boolean,
 			value: {
@@ -133,7 +133,7 @@ export class BinServParamMockup extends ServParamMockup{
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VInt`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VInt`,
 			browseName: `${variableName}.VInt`,
 			dataType: DataType.Boolean,
 			value: {
@@ -144,7 +144,7 @@ export class BinServParamMockup extends ServParamMockup{
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VReq`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VReq`,
 			browseName: `${variableName}.VReq`,
 			dataType: DataType.Boolean,
 			value: {
@@ -155,7 +155,7 @@ export class BinServParamMockup extends ServParamMockup{
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VOut`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VOut`,
 			browseName: `${variableName}.VOut`,
 			dataType: DataType.Boolean,
 			value: {
@@ -166,7 +166,7 @@ export class BinServParamMockup extends ServParamMockup{
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VFbk`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VFbk`,
 			browseName: `${variableName}.VFbk`,
 			dataType: DataType.Boolean,
 			value: {
@@ -178,7 +178,7 @@ export class BinServParamMockup extends ServParamMockup{
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VState0`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VState0`,
 			browseName: `${variableName}.VState0`,
 			dataType: DataType.String,
 			value: {
@@ -189,7 +189,7 @@ export class BinServParamMockup extends ServParamMockup{
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VState1`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VState1`,
 			browseName: `${variableName}.VState1`,
 			dataType: DataType.String,
 			value: {

@@ -73,7 +73,7 @@ export class BinProcessValueInMockup{
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VExt`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VExt`,
 			browseName: `${variableName}.VExt`,
 			dataType: DataType.Boolean,
 			value: {
@@ -88,7 +88,7 @@ export class BinProcessValueInMockup{
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VState0`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VState0`,
 			browseName: `${variableName}.VState0`,
 			dataType: DataType.String,
 			value: {
@@ -103,7 +103,7 @@ export class BinProcessValueInMockup{
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VState1`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VState1`,
 			browseName: `${variableName}.VState1`,
 			dataType: DataType.String,
 			value: {

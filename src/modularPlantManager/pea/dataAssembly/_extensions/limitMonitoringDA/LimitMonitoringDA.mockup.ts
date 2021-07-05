@@ -156,7 +156,7 @@ export class LimitMonitoringDAMockup <T extends DataType.Double | DataType.Int32
 
     namespace.addVariable({
       componentOf: rootNode,
-      nodeId: `ns=${namespace};s=${variableName}.VAHEn`,
+      nodeId: `ns=${namespace.index};s=${variableName}.VAHEn`,
       browseName: `${variableName}.VAHEn`,
       dataType: DataType.Boolean,
       value: {
@@ -167,7 +167,7 @@ export class LimitMonitoringDAMockup <T extends DataType.Double | DataType.Int32
     });
     namespace.addVariable({
       componentOf: rootNode,
-      nodeId: `ns=${namespace};s=${variableName}.VAHLim`,
+      nodeId: `ns=${namespace.index};s=${variableName}.VAHLim`,
       browseName: `${variableName}.VAHLim`,
       dataType: limDataType,
       value: {
@@ -176,8 +176,8 @@ export class LimitMonitoringDAMockup <T extends DataType.Double | DataType.Int32
         },
 
         set: (variant: Variant) => {
-          switch (typeof this.varAHLim) {
-            case DataType.Double.toString():
+          switch (limDataType) {
+            case DataType.Double:
               this.varAHLim = parseFloat(variant.value);
               return StatusCodes.Good;
             default:
@@ -189,7 +189,7 @@ export class LimitMonitoringDAMockup <T extends DataType.Double | DataType.Int32
     });
     namespace.addVariable({
       componentOf: rootNode,
-      nodeId: `ns=${namespace};s=${variableName}.VAHAct`,
+      nodeId: `ns=${namespace.index};s=${variableName}.VAHAct`,
       browseName: `${variableName}.VAHAct`,
       dataType: DataType.Boolean,
       value: {
@@ -200,7 +200,7 @@ export class LimitMonitoringDAMockup <T extends DataType.Double | DataType.Int32
     });
     namespace.addVariable({
       componentOf: rootNode,
-      nodeId: `ns=${namespace};s=${variableName}.VWHEn`,
+      nodeId: `ns=${namespace.index};s=${variableName}.VWHEn`,
       browseName: `${variableName}.VWHEn`,
       dataType: DataType.Boolean,
       value: {
@@ -211,7 +211,7 @@ export class LimitMonitoringDAMockup <T extends DataType.Double | DataType.Int32
     });
     namespace.addVariable({
       componentOf: rootNode,
-      nodeId: `ns=${namespace};s=${variableName}.VWHLim`,
+      nodeId: `ns=${namespace.index};s=${variableName}.VWHLim`,
       browseName: `${variableName}.VWHLim`,
       dataType: limDataType,
       value: {
@@ -233,7 +233,7 @@ export class LimitMonitoringDAMockup <T extends DataType.Double | DataType.Int32
     });
     namespace.addVariable({
       componentOf: rootNode,
-      nodeId: `ns=${namespace};s=${variableName}.VWHAct`,
+      nodeId: `ns=${namespace.index};s=${variableName}.VWHAct`,
       browseName: `${variableName}.VWHAct`,
       dataType: DataType.Boolean,
       value: {
@@ -244,7 +244,7 @@ export class LimitMonitoringDAMockup <T extends DataType.Double | DataType.Int32
     });
     namespace.addVariable({
       componentOf: rootNode,
-      nodeId: `ns=${namespace};s=${variableName}.VTHEn`,
+      nodeId: `ns=${namespace.index};s=${variableName}.VTHEn`,
       browseName: `${variableName}.VTHEn`,
       dataType: DataType.Boolean,
       value: {
@@ -255,7 +255,7 @@ export class LimitMonitoringDAMockup <T extends DataType.Double | DataType.Int32
     });
     namespace.addVariable({
       componentOf: rootNode,
-      nodeId: `ns=${namespace};s=${variableName}.VTHLim`,
+      nodeId: `ns=${namespace.index};s=${variableName}.VTHLim`,
       browseName: `${variableName}.VTHLim`,
       dataType: limDataType,
       value: {
@@ -277,7 +277,7 @@ export class LimitMonitoringDAMockup <T extends DataType.Double | DataType.Int32
     });
     namespace.addVariable({
       componentOf: rootNode,
-      nodeId: `ns=${namespace};s=${variableName}.VTHAct`,
+      nodeId: `ns=${namespace.index};s=${variableName}.VTHAct`,
       browseName: `${variableName}.VTHAct`,
       dataType: DataType.Boolean,
       value: {
@@ -288,7 +288,7 @@ export class LimitMonitoringDAMockup <T extends DataType.Double | DataType.Int32
     });
     namespace.addVariable({
       componentOf: rootNode,
-      nodeId: `ns=${namespace};s=${variableName}.VTLEn`,
+      nodeId: `ns=${namespace.index};s=${variableName}.VTLEn`,
       browseName: `${variableName}.VTLEn`,
       dataType: DataType.Boolean,
       value: {
@@ -299,7 +299,7 @@ export class LimitMonitoringDAMockup <T extends DataType.Double | DataType.Int32
     });
     namespace.addVariable({
       componentOf: rootNode,
-      nodeId: `ns=${namespace};s=${variableName}.VTLLim`,
+      nodeId: `ns=${namespace.index};s=${variableName}.VTLLim`,
       browseName: `${variableName}.VTLLim`,
       dataType: limDataType,
       value: {
@@ -321,7 +321,7 @@ export class LimitMonitoringDAMockup <T extends DataType.Double | DataType.Int32
     });
     namespace.addVariable({
       componentOf: rootNode,
-      nodeId: `ns=${namespace};s=${variableName}.VTLAct`,
+      nodeId: `ns=${namespace.index};s=${variableName}.VTLAct`,
       browseName: `${variableName}.VTLAct`,
       dataType: DataType.Boolean,
       value: {
@@ -332,7 +332,7 @@ export class LimitMonitoringDAMockup <T extends DataType.Double | DataType.Int32
     });
     namespace.addVariable({
       componentOf: rootNode,
-      nodeId: `ns=${namespace};s=${variableName}.VWLEn`,
+      nodeId: `ns=${namespace.index};s=${variableName}.VWLEn`,
       browseName: `${variableName}.VWLEn`,
       dataType: DataType.Boolean,
       value: {
@@ -343,7 +343,7 @@ export class LimitMonitoringDAMockup <T extends DataType.Double | DataType.Int32
     });
     namespace.addVariable({
       componentOf: rootNode,
-      nodeId: `ns=${namespace};s=${variableName}.VWLLim`,
+      nodeId: `ns=${namespace.index};s=${variableName}.VWLLim`,
       browseName: `${variableName}.VWLLim`,
       dataType: limDataType,
       value: {
@@ -365,7 +365,7 @@ export class LimitMonitoringDAMockup <T extends DataType.Double | DataType.Int32
     });
     namespace.addVariable({
       componentOf: rootNode,
-      nodeId: `ns=${namespace};s=${variableName}.VWLAct`,
+      nodeId: `ns=${namespace.index};s=${variableName}.VWLAct`,
       browseName: `${variableName}.VWLAct`,
       dataType: DataType.Boolean,
       value: {
@@ -376,7 +376,7 @@ export class LimitMonitoringDAMockup <T extends DataType.Double | DataType.Int32
     });
     namespace.addVariable({
       componentOf: rootNode,
-      nodeId: `ns=${namespace};s=${variableName}.VALEn`,
+      nodeId: `ns=${namespace.index};s=${variableName}.VALEn`,
       browseName: `${variableName}.VALEn`,
       dataType: DataType.Boolean,
       value: {
@@ -387,7 +387,7 @@ export class LimitMonitoringDAMockup <T extends DataType.Double | DataType.Int32
     });
     namespace.addVariable({
       componentOf: rootNode,
-      nodeId: `ns=${namespace};s=${variableName}.VALLim`,
+      nodeId: `ns=${namespace.index};s=${variableName}.VALLim`,
       browseName: `${variableName}.VALLim`,
       dataType: limDataType,
       value: {
@@ -409,7 +409,7 @@ export class LimitMonitoringDAMockup <T extends DataType.Double | DataType.Int32
     });
     namespace.addVariable({
       componentOf: rootNode,
-      nodeId: `ns=${namespace};s=${variableName}.VALAct`,
+      nodeId: `ns=${namespace.index};s=${variableName}.VALAct`,
       browseName: `${variableName}.VALAct`,
       dataType: DataType.Boolean,
       value: {
