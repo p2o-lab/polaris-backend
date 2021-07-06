@@ -25,7 +25,7 @@
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../../_extensions/wqcDA/WQCDA.mockup';
-import {getInputElementMockupReferenceJSON} from '../../InputElement.mockup';
+import {getInputElementMockupReferenceJSON, InputElementMockup} from '../../InputElement.mockup';
 
 export function getBinProcessValueInMockupReferenceJSON(
 	namespace: number,
@@ -52,24 +52,14 @@ export function getBinProcessValueInMockupReferenceJSON(
 	);
 }
 
-export class BinProcessValueInMockup{
+export class BinProcessValueInMockup extends InputElementMockup{
 
-	public readonly name: string;
-	public wqc: WQCDAMockup;
 	public vExt = false;
 	public vState0 = 'state0_active';
 	public vState1 = 'state1_active';
-	protected mockupNode: UAObject;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
-
-		this.name = variableName;
-
-		this.mockupNode = namespace.addObject({
-			organizedBy: rootNode,
-			browseName: variableName
-		});
-		this.wqc = new WQCDAMockup(namespace, this.mockupNode, this.name);
+		super(namespace, rootNode, variableName);
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,

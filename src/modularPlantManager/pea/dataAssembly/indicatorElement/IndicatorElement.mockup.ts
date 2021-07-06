@@ -27,9 +27,7 @@ import {Namespace, UAObject} from 'node-opcua';
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../_extensions/wqcDA/WQCDA.mockup';
 import {catPEAMockup} from '../../../../logging';
 
-export function getIndicatorElementMockupReferenceJSON(
-	namespace: number,
-	objectBrowseName: string) {
+export function getIndicatorElementMockupReferenceJSON(namespace: number, objectBrowseName: string) {
 	return (
 		{
 			...getWQCDAMockupReferenceJSON(namespace, objectBrowseName)

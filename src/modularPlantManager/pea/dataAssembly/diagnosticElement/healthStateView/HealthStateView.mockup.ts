@@ -26,34 +26,17 @@
 import {Namespace, UAObject} from 'node-opcua';
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../_extensions/wqcDA/WQCDA.mockup';
 import {catPEAMockup} from '../../../../../logging';
+import {DiagnosticElementMockup} from '../DiagnosticElement.mockup';
 
-export function getHealthStateViewMockupReferenceJSON(
-	namespace: number,
-	objectBrowseName: string) {
-	return (
-		{	
-			...getWQCDAMockupReferenceJSON(namespace,objectBrowseName),
-		}
-	);
+export function getHealthStateViewMockupReferenceJSON(namespace: number, objectBrowseName: string) {
+	return (getWQCDAMockupReferenceJSON(namespace,objectBrowseName));
 }
 
-export abstract class HealthStateViewMockup {
-
-	public readonly name: string;
-	public readonly wqc: WQCDAMockup;
-	protected mockupNode: UAObject;
+export class HealthStateViewMockup extends DiagnosticElementMockup{
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
-		catPEAMockup.debug(`Add variable ${variableName}`);
+		super(namespace, rootNode, variableName);
 
-		this.name = variableName;
-
-		this.mockupNode = namespace.addObject({
-			organizedBy: rootNode,
-			browseName: variableName
-		});
-
-		this.wqc = new WQCDAMockup(namespace, this.mockupNode, this.name);
 	}
 
 	public getHealthStateViewInstanceMockupJSON() {

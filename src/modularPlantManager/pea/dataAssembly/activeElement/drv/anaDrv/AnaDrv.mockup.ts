@@ -34,7 +34,7 @@ import {
 	SourceModeDAMockup
 } from '../../../_extensions/sourceModeDA/SourceModeDA.mockup';
 import {getActiveElementMockupReferenceJSON} from '../../ActiveElement.mockup';
-import {getDrvMockupReferenceJSON} from '../Drv.mockup';
+import {DrvMockup, getDrvMockupReferenceJSON} from '../Drv.mockup';
 
 
 export function getAnaDrvMockupReferenceJSON(
@@ -42,7 +42,6 @@ export function getAnaDrvMockupReferenceJSON(
 	objectBrowseName: string) {
 
 	return ({
-			...getOpModeDAMockupReferenceJSON(namespace,objectBrowseName),
 			...getSourceModeDAMockupReferenceJSON(namespace,objectBrowseName),
 			...getDrvMockupReferenceJSON(namespace,objectBrowseName),
 			RpmSclMax: {
@@ -104,34 +103,9 @@ export function getAnaDrvMockupReferenceJSON(
 	);
 }
 
-export class AnaDrvMockup {
+export class AnaDrvMockup extends DrvMockup{
 
-	public readonly name: string;
-	public wqc: WQCDAMockup;
-	public osLevel: OSLevelDAMockup;
-	public operationMode: OpModeDAMockup;
-	public interlock: InterlockDAMockup;
-	public reset: ResetDAMockup;
 	public sourceMode: SourceModeDAMockup;
-
-	public safePos = false;
-	public safePosAct = false;
-
-	public fwdEn= false;
-	public revEn= false;
-	public stopOp= false;
-	public fwdOp= false;
-	public revOp= false;
-	public stopAut= false;
-	public fwdAut= false;
-	public revAut= false;
-	public fwdCtrl= false;
-	public revCtrl= false;
-	public revFbkCalc= false;
-	public revFbk= false;
-	public fwdFbkCalc= false;
-	public fwdFbk= false;
-	public trip= false;
 
 	public rpmSclMin= 0;
 	public rpmSclMax= 0;
@@ -145,215 +119,10 @@ export class AnaDrvMockup {
 	public rpmFbkCalc= false;
 	public rpmFbk= false;
 
-	protected mockupNode: UAObject;
-
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
+		super(namespace, rootNode, variableName);
 
-		this.name = variableName;
-
-		this.mockupNode = namespace.addObject({
-			organizedBy: rootNode,
-			browseName: variableName
-		});
-
-		this.osLevel = new OSLevelDAMockup(namespace, this.mockupNode, this.name);
-		this.wqc = new WQCDAMockup(namespace, this.mockupNode, this.name);
-		this.operationMode = new OpModeDAMockup(namespace,this.mockupNode,this.name);
-		this.interlock= new InterlockDAMockup(namespace,this.mockupNode,this.name);
-		this.reset= new ResetDAMockup(namespace,this.mockupNode,this.name);
 		this.sourceMode= new SourceModeDAMockup(namespace,this.mockupNode,this.name);
-
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace.index};s=${variableName}.SafePos`,
-			browseName: `${variableName}.SafePos`,
-			dataType: DataType.Boolean,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.Boolean, value: this.safePos});
-				},
-			},
-		});
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace.index};s=${variableName}.SafePosAct`,
-			browseName: `${variableName}.SafePosAct`,
-			dataType: DataType.Boolean,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.Boolean, value: this.safePosAct});
-				},
-			},
-		});
-
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace.index};s=${variableName}.FwdEn`,
-			browseName: `${variableName}.FwdEn`,
-			dataType: DataType.Boolean,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.Boolean, value: this.fwdEn});
-				},
-			},
-		});
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace.index};s=${variableName}.RevEn`,
-			browseName: `${variableName}.RevEn`,
-			dataType: DataType.Boolean,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.Boolean, value: this.revEn});
-				},
-			},
-		});
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace.index};s=${variableName}.StopOp`,
-			browseName: `${variableName}.StopOp`,
-			dataType: DataType.Boolean,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.Boolean, value: this.stopOp});
-				},
-				set: (variant: Variant): StatusCodes => {
-					this.stopOp = variant.value;
-					return StatusCodes.Good;
-				},
-			},
-		});
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace.index};s=${variableName}.FwdOp`,
-			browseName: `${variableName}.FwdOp`,
-			dataType: DataType.Boolean,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.Boolean, value: this.fwdOp});
-				},
-				set: (variant: Variant): StatusCodes => {
-					this.fwdOp = variant.value;
-					return StatusCodes.Good;
-				},
-			},
-		});
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace.index};s=${variableName}.RevOp`,
-			browseName: `${variableName}.RevOp`,
-			dataType: DataType.Boolean,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.Boolean, value: this.revOp});
-				},
-				set: (variant: Variant): StatusCodes => {
-					this.revOp = variant.value;
-					return StatusCodes.Good;
-				},
-			},
-		});
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace.index};s=${variableName}.StopAut`,
-			browseName: `${variableName}.StopAut`,
-			dataType: DataType.Boolean,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.Boolean, value: this.stopAut});
-				},
-			},
-		});
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace.index};s=${variableName}.FwdAut`,
-			browseName: `${variableName}.FwdAut`,
-			dataType: DataType.Boolean,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.Boolean, value: this.fwdAut});
-				},
-			},
-		});
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace.index};s=${variableName}.RevAut`,
-			browseName: `${variableName}.RevAut`,
-			dataType: DataType.Boolean,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.Boolean, value: this.revAut});
-				},
-			},
-		});
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace.index};s=${variableName}.FwdCtrl`,
-			browseName: `${variableName}.FwdCtrl`,
-			dataType: DataType.Boolean,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.Boolean, value: this.fwdCtrl});
-				},
-			},
-		});
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace.index};s=${variableName}.RevCtrl`,
-			browseName: `${variableName}.RevCtrl`,
-			dataType: DataType.Boolean,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.Boolean, value: this.revCtrl});
-				},
-			},
-		});
-		
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace.index};s=${variableName}.RevFbkCalc`,
-			browseName: `${variableName}.RevFbkCalc`,
-			dataType: DataType.Boolean,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.Boolean, value: this.revFbkCalc});
-				},
-			},
-		});
-
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace.index};s=${variableName}.RevFbk`,
-			browseName: `${variableName}.RevFbk`,
-			dataType: DataType.Boolean,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.Boolean, value: this.revFbk});
-				},
-			},
-		});
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace.index};s=${variableName}.FwdFbkCalc`,
-			browseName: `${variableName}.FwdFbkCalc`,
-			dataType: DataType.Boolean,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.Boolean, value: this.fwdFbkCalc});
-				},
-			},
-		});
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace.index};s=${variableName}.FwdFbk`,
-			browseName: `${variableName}.FwdFbk`,
-			dataType: DataType.Boolean,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.Boolean, value: this.fwdFbk});
-				},
-			},
-		});
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,

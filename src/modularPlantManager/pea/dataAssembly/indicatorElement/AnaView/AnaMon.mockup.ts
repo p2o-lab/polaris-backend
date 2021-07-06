@@ -35,6 +35,7 @@ import {
 	getLimitMonitoringDAMockupReferenceJSON,
 	LimitMonitoringDAMockup
 } from '../../_extensions/limitMonitoringDA/LimitMonitoringDA.mockup';
+import {IndicatorElementMockup} from '../IndicatorElement.mockup';
 
 export function getAnaMonMockupReferenceJSON(
 	namespace: number,
@@ -55,26 +56,18 @@ export function getAnaMonMockupReferenceJSON(
 	);
 }
 
-export class AnaMonMockup {
+export class AnaMonMockup extends IndicatorElementMockup{
 
-	public readonly name: string;
 	protected v = 0;
-	public wqc: WQCDAMockup;
 	public scaleSettings: ScaleSettingDAMockup<DataType.Double>;
 	public unit: UnitDAMockup;
 	public osLevel: OSLevelDAMockup;
 	public limitMonitoring: LimitMonitoringDAMockup<any>;
-	protected mockupNode: UAObject;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
 
-		this.name = variableName;
+		super(namespace, rootNode, variableName);
 
-		this.mockupNode = namespace.addObject({
-			organizedBy: rootNode,
-			browseName: variableName
-		});
-		this.wqc = new WQCDAMockup(namespace, this.mockupNode, this.name);
 		this.scaleSettings = new ScaleSettingDAMockup<DataType.Double>(namespace, this.mockupNode, this.name, DataType.Double);
 		this.unit = new UnitDAMockup(namespace, this.mockupNode, this.name);
 		this.osLevel = new OSLevelDAMockup(namespace, this.mockupNode, this.name);

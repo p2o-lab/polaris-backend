@@ -26,14 +26,11 @@
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../_extensions/wqcDA/WQCDA.mockup';
 import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../../_extensions/osLevelDA/OSLevelDA.mockup';
-import {getBinViewMockupReferenceJSON} from './BinView.mockup';
+import {BinViewMockup, getBinViewMockupReferenceJSON} from './BinView.mockup';
 
-export function getBinMonMockupReferenceJSON(
-	namespace: number,
-	objectBrowseName: string) {
+export function getBinMonMockupReferenceJSON(namespace: number, objectBrowseName: string) {
 	return (
 		{
-			...getWQCDAMockupReferenceJSON(namespace, objectBrowseName),
 			...getOSLevelDAMockupReferenceJSON(namespace, objectBrowseName),
 			...getBinViewMockupReferenceJSON(namespace,objectBrowseName),
 			VFlutEn: {
@@ -60,72 +57,18 @@ export function getBinMonMockupReferenceJSON(
 	);
 }
 
-export class BinMonMockup {
+export class BinMonMockup extends BinViewMockup{
 
-	public readonly name: string;
-	protected v = false;
-	public vState0 = 'state0_active';
-	public vState1 = 'state1_active';
 	public vFlutEn = false;
 	public vFlutTi = 0;
 	public vFlutCnt = 0;
 	public vFlutAct = false;
-	public wqc: WQCDAMockup;
 	public osLevel: OSLevelDAMockup;
-	protected mockupNode: UAObject;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
+		super(namespace, rootNode, variableName);
 
-		this.name = variableName;
-
-		this.mockupNode = namespace.addObject({
-			organizedBy: rootNode,
-			browseName: variableName
-		});
-		this.wqc = new WQCDAMockup(namespace, this.mockupNode, this.name);
 		this.osLevel = new OSLevelDAMockup(namespace, this.mockupNode, this.name);
-
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace.index};s=${variableName}.V`,
-			browseName: `${variableName}.V`,
-			dataType: DataType.Boolean,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.Boolean, value: this.v});
-				},
-			},
-		});
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace.index};s=${variableName}.VState0`,
-			browseName: `${variableName}.VState0`,
-			dataType: DataType.String,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.String, value: this.vState0});
-				},
-				set: (variant: Variant): StatusCodes => {
-					this.vState0 = variant.value;
-					return StatusCodes.Good;
-				},
-			},
-		});
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace.index};s=${variableName}.VState1`,
-			browseName: `${variableName}.VState1`,
-			dataType: DataType.String,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.String, value: this.vState1});
-				},
-				set: (variant: Variant): StatusCodes => {
-					this.vState1 = variant.value;
-					return StatusCodes.Good;
-				},
-			},
-		});
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,

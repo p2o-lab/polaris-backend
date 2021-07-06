@@ -26,10 +26,9 @@
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../_extensions/wqcDA/WQCDA.mockup';
 import {catPEAMockup} from '../../../../../logging';
+import {DiagnosticElementMockup} from '../DiagnosticElement.mockup';
 
-export function getLockView4MockupReferenceJSON(
-	namespace: number,
-	objectBrowseName: string) {
+export function getLockView4MockupReferenceJSON(namespace: number, objectBrowseName: string) {
 	return (
 		{	
 			...getWQCDAMockupReferenceJSON(namespace,objectBrowseName),
@@ -152,10 +151,7 @@ export function getLockView4MockupReferenceJSON(
 	);
 }
 
-export abstract class LockView4Mockup {
-
-	public readonly name: string;
-	public readonly wqc: WQCDAMockup;
+export class LockView4Mockup extends DiagnosticElementMockup{
 
 	public logic = false; // False = AND; TRUE = OR;
 	public out = false;
@@ -185,19 +181,9 @@ export abstract class LockView4Mockup {
 	public in4Inv = false;
 	public in4Txt = 'testText';
 	
-	protected mockupNode: UAObject;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
-		catPEAMockup.debug(`Add variable ${variableName}`);
-
-		this.name = variableName;
-
-		this.mockupNode = namespace.addObject({
-			organizedBy: rootNode,
-			browseName: variableName
-		});
-
-		this.wqc = new WQCDAMockup(namespace, this.mockupNode, this.name);
+		super(namespace, rootNode, variableName);
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,

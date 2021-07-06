@@ -27,7 +27,7 @@ import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../../_extensions/wqcDA/WQCDA.mockup';
 import {getScaleSettingDAMockupReferenceJSON, ScaleSettingDAMockup} from '../../../_extensions/scaleSettingsDA/ScaleSettingDA.mockup';
 import {getUnitDAMockupReferenceJSON, UnitDAMockup} from '../../../_extensions/unitDA/UnitDA.mockup';
-import {getInputElementMockupReferenceJSON} from '../../InputElement.mockup';
+import {getInputElementMockupReferenceJSON, InputElementMockup} from '../../InputElement.mockup';
 
 export function getAnaProcessValueInMockupReferenceJSON(
 	namespace: number,
@@ -46,24 +46,14 @@ export function getAnaProcessValueInMockupReferenceJSON(
 	);
 }
 
-export class AnaProcessValueInMockup{
-
-	public readonly name: string;
-	public wqc: WQCDAMockup;
+export class AnaProcessValueInMockup extends InputElementMockup{
 	public scaleSettings: ScaleSettingDAMockup<DataType.Double>;
 	public unit: UnitDAMockup;
 	public vExt = 0;
-	protected mockupNode: UAObject;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
+		super(namespace, rootNode, variableName);
 
-		this.name = variableName;
-
-		this.mockupNode = namespace.addObject({
-			organizedBy: rootNode,
-			browseName: variableName
-		});
-		this.wqc = new WQCDAMockup(namespace, this.mockupNode, this.name);
 		this.scaleSettings = new ScaleSettingDAMockup<DataType.Double>(namespace, this.mockupNode, this.name, DataType.Double);
 		this.unit = new UnitDAMockup(namespace, this.mockupNode, this.name);
 

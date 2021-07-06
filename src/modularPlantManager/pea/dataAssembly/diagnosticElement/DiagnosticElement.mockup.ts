@@ -27,17 +27,11 @@ import {Namespace, UAObject} from 'node-opcua';
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../_extensions/wqcDA/WQCDA.mockup';
 import {catPEAMockup} from '../../../../logging';
 
-export function getDiagnosticElementMockupReferenceJSON(
-	namespace: number,
-	objectBrowseName: string) {
-	return (
-		{	
-			...getWQCDAMockupReferenceJSON(namespace,objectBrowseName),
-		}
-	);
+export function getDiagnosticElementMockupReferenceJSON(namespace: number, objectBrowseName: string) {
+	return (getWQCDAMockupReferenceJSON(namespace,objectBrowseName));
 }
 
-export abstract class DiagnosticElementMockup {
+export class DiagnosticElementMockup {
 
 	public readonly name: string;
 	public readonly wqc: WQCDAMockup;

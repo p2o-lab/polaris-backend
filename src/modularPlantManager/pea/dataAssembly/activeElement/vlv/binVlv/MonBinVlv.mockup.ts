@@ -33,13 +33,9 @@ import {
 	FeedbackMonitoringDAMockup,
 	getFeedbackMonitoringDAMockupReferenceJSON
 } from '../../../_extensions/feedbackMonitoringDA/FeedbackMonitoringDA.mockup';
-import {getBinVlvMockupReferenceJSON} from './BinVlv.mockup';
+import {BinVlvMockup, getBinVlvMockupReferenceJSON} from './BinVlv.mockup';
 
-
-export function getMonBinVlvMockupReferenceJSON(
-	namespace: number,
-	objectBrowseName: string) {
-
+export function getMonBinVlvMockupReferenceJSON(namespace: number, objectBrowseName: string) {
 	return ({
 			...getBinVlvMockupReferenceJSON(namespace,objectBrowseName),
 			...getFeedbackMonitoringDAMockupReferenceJSON(namespace,objectBrowseName),
@@ -47,177 +43,15 @@ export function getMonBinVlvMockupReferenceJSON(
 	);
 }
 
-export class MonBinVlvMockup {
+export class MonBinVlvMockup extends BinVlvMockup{
 
-	public readonly name: string;
-	public wqc: WQCDAMockup;
-	public osLevel: OSLevelDAMockup;
-	public operationMode: OpModeDAMockup;
-	public interlock: InterlockDAMockup;
-	public reset: ResetDAMockup;
 	public feedbackMonitoring: FeedbackMonitoringDAMockup;
-
-	public safePos = false;
-	public safePosEn = false;
-	public openOp = false;
-	public closeOp = false;
-	public openAut = false;
-	public closeAut = false;
-	public openFbkCalc = false;
-	public openFbk = false;
-	public closeFbkCalc = false;
-	public closeFbk = false;
-
-	public ctrl = false;
-
-	protected mockupNode: UAObject;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
 
-		this.name = variableName;
+		super(namespace, rootNode, variableName);
+		this.feedbackMonitoring= new FeedbackMonitoringDAMockup(namespace, rootNode, this.name);
 
-		this.mockupNode = namespace.addObject({
-			organizedBy: rootNode,
-			browseName: variableName
-		});
-
-		this.osLevel = new OSLevelDAMockup(namespace, this.mockupNode, this.name);
-		this.wqc = new WQCDAMockup(namespace, this.mockupNode, this.name);
-		this.operationMode = new OpModeDAMockup(namespace,this.mockupNode,this.name);
-		this.interlock= new InterlockDAMockup(namespace,this.mockupNode,this.name);
-		this.reset= new ResetDAMockup(namespace,this.mockupNode,this.name);
-		this.feedbackMonitoring= new FeedbackMonitoringDAMockup(namespace,this.mockupNode,this.name);
-
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace.index};s=${variableName}.SafePos`,
-			browseName: `${variableName}.SafePos`,
-			dataType: DataType.Boolean,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.Boolean, value: this.safePos});
-				},
-			},
-		});
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace.index};s=${variableName}.SafePosEn`,
-			browseName: `${variableName}.SafePosEn`,
-			dataType: DataType.Boolean,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.Boolean, value: this.safePosEn});
-				},
-			},
-		});
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace.index};s=${variableName}.OpenOp`,
-			browseName: `${variableName}.OpenOp`,
-			dataType: DataType.Boolean,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.Boolean, value: this.openOp});
-				},
-				set: (variant: Variant): StatusCodes => {
-					this.openOp = variant.value;
-					return StatusCodes.Good;
-				},
-			},
-		});
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace.index};s=${variableName}.CloseOp`,
-			browseName: `${variableName}.CloseOp`,
-			dataType: DataType.Boolean,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.Boolean, value: this.closeOp});
-				},
-				set: (variant: Variant): StatusCodes => {
-					this.closeOp = variant.value;
-					return StatusCodes.Good;
-				},
-			},
-		});
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace.index};s=${variableName}.OpenAut`,
-			browseName: `${variableName}.OpenAut`,
-			dataType: DataType.Boolean,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.Boolean, value: this.openAut});
-				},
-			},
-		});
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace.index};s=${variableName}.CloseAut`,
-			browseName: `${variableName}.CloseAut`,
-			dataType: DataType.Boolean,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.Boolean, value: this.closeAut});
-				},
-			},
-		});
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace.index};s=${variableName}.OpenFbkCalc`,
-			browseName: `${variableName}.OpenFbkCalc`,
-			dataType: DataType.Boolean,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.Boolean, value: this.openFbkCalc});
-				},
-			},
-		});
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace.index};s=${variableName}.OpenFbk`,
-			browseName: `${variableName}.OpenFbk`,
-			dataType: DataType.Boolean,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.Boolean, value: this.openFbk});
-				},
-			},
-		});
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace.index};s=${variableName}.CloseFbkCalc`,
-			browseName: `${variableName}.CloseFbkCalc`,
-			dataType: DataType.Boolean,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.Boolean, value: this.closeFbkCalc});
-				},
-			},
-		});
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace.index};s=${variableName}.CloseFbk`,
-			browseName: `${variableName}.CloseFbk`,
-			dataType: DataType.Boolean,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.Boolean, value: this.closeFbk});
-				},
-			},
-		});
-
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace.index};s=${variableName}.Ctrl`,
-			browseName: `${variableName}.Ctrl`,
-			dataType: DataType.Boolean,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.Boolean, value: this.ctrl});
-				},
-			},
-		});
 	}
 
 	public getMonBinVlvMockupJSON() {

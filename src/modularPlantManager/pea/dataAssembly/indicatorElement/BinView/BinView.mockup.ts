@@ -25,13 +25,15 @@
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../_extensions/wqcDA/WQCDA.mockup';
+import {IndicatorElement} from '../IndicatorElement';
+import {getIndicatorElementMockupReferenceJSON, IndicatorElementMockup} from '../IndicatorElement.mockup';
 
 export function getBinViewMockupReferenceJSON(
 	namespace: number,
 	objectBrowseName: string) {
 	return (
 		{
-			...getWQCDAMockupReferenceJSON(namespace, objectBrowseName),
+			...getIndicatorElementMockupReferenceJSON(namespace, objectBrowseName),
 			V: {
 				namespaceIndex: `${namespace}`,
 				nodeId: `${objectBrowseName}.V`,
@@ -51,24 +53,15 @@ export function getBinViewMockupReferenceJSON(
 	);
 }
 
-export class BinViewMockup {
+export class BinViewMockup extends IndicatorElementMockup{
 
-	public readonly name: string;
 	protected v = false;
 	public vState0 = 'state0_active';
 	public vState1 = 'state1_active';
-	public wqc: WQCDAMockup;
-	protected mockupNode: UAObject;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
 
-		this.name = variableName;
-
-		this.mockupNode = namespace.addObject({
-			organizedBy: rootNode,
-			browseName: variableName
-		});
-		this.wqc = new WQCDAMockup(namespace, this.mockupNode, this.name);
+		super(namespace, rootNode, variableName);
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
