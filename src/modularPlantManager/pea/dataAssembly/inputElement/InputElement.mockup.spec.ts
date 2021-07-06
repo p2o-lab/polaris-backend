@@ -14,15 +14,12 @@ describe('InputElementMockup', () => {
             mockupServer = new MockupServer();
             await mockupServer.initialize();
         });
-        afterEach(async () => {
-            await mockupServer.shutdown();
-        });
+
         it('should create InputElementMockup', async () => {
             const mockup= new InputElementMockup(mockupServer.namespace as Namespace,
                 mockupServer.rootComponent as UAObject, 'Variable');
             expect(mockup).to.not.be.undefined;
-            //TODO: test more
-
+            expect(mockup.wqc).to.not.be.undefined;
         });
         it('getInputElementMockupReferenceJSON()',  () => {
             const mockup = new InputElementMockup(mockupServer.namespace as Namespace,
