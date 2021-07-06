@@ -71,7 +71,7 @@ export class MockupServer {
 		if (await this.portInUse()) {
 			throw new Error('Port is in use');
 		}
-		await new Promise((resolve) => this.server.initialize(resolve));
+		await this.server.initialize();
 		this.createAddressSpace();
 		this.initialized = true;
 	}
@@ -128,5 +128,3 @@ async function start(): Promise<void> {
 	const mockupServer = new MockupServer();
 	await mockupServer.start();
 }
-
-start().then();
