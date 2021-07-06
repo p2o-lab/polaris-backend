@@ -16,7 +16,7 @@ describe('StringViewMockup', () => {
             await mockupServer.initialize();
         });
         afterEach(async () => {
-            await mockupServer.shutdown();
+
         });
         it('should create StringViewMockup', async () => {
             const mockup= new StringViewMockup(mockupServer.namespace as Namespace,

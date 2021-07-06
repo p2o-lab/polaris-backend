@@ -15,9 +15,7 @@ describe('AnaMonMockup', () => {
             mockupServer = new MockupServer();
             await mockupServer.initialize();
         });
-        afterEach(async () => {
-            await mockupServer.shutdown();
-        });
+
         it('should create AnaMonMockup', async () => {
             const mockup= new AnaMonMockup(mockupServer.namespace as Namespace,
                 mockupServer.rootComponent as UAObject, 'Variable');

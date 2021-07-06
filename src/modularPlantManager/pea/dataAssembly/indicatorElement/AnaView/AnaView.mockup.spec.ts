@@ -16,7 +16,7 @@ describe('AnaViewMockup', () => {
             await mockupServer.initialize();
         });
         afterEach(async () => {
-            await mockupServer.shutdown();
+
         });
         it('should create AnaViewMockup', async () => {
             const mockup= new AnaViewMockup(mockupServer.namespace as Namespace,
