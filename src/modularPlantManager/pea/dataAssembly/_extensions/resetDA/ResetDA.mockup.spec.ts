@@ -55,8 +55,8 @@ describe('ResetDAMockup', () => {
         });
 
         it('set and get ResetOp', async () => {
-            await connection.writeOpcUaNode('ns=1;s=Variable.ResetOp', namespaceUrl, true, 'Boolean');
-            await connection.readOpcUaNode('ns=1;s=Variable.ResetOp', namespaceUrl)
+            await connection.writeOpcUaNode('Variable.ResetOp', namespaceUrl, true, 'Boolean');
+            await connection.readOpcUaNode('Variable.ResetOp', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(true));
         }).timeout(2000);
 

@@ -61,33 +61,33 @@ describe('LimitMonitoringDAMockup', () => {
         });
 
         it('set and get VAHLim', async () => {
-            await connection.writeOpcUaNode('ns=1;s=Variable.VAHLim', namespaceUrl, 1, 'Double');
-            await connection.readOpcUaNode('ns=1;s=Variable.VAHLim', namespaceUrl)
+            await connection.writeOpcUaNode('Variable.VAHLim', namespaceUrl, 1, 'Double');
+            await connection.readOpcUaNode('Variable.VAHLim', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(1));
         }).timeout(2000);
         it('set and get VWHLim', async () => {
-            await connection.writeOpcUaNode('ns=1;s=Variable.VWHLim', namespaceUrl, 1, 'Double');
-            await connection.readOpcUaNode('ns=1;s=Variable.VWHLim', namespaceUrl)
+            await connection.writeOpcUaNode('Variable.VWHLim', namespaceUrl, 1, 'Double');
+            await connection.readOpcUaNode('Variable.VWHLim', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(1));
         }).timeout(2000);
         it('set and get VTHLim', async () => {
-            await connection.writeOpcUaNode('ns=1;s=Variable.VTHLim', namespaceUrl, 1, 'Double');
-            await connection.readOpcUaNode('ns=1;s=Variable.VTHLim', namespaceUrl)
+            await connection.writeOpcUaNode('Variable.VTHLim', namespaceUrl, 1, 'Double');
+            await connection.readOpcUaNode('Variable.VTHLim', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(1));
         }).timeout(2000);
         it('set and get VTLLim', async () => {
-            await connection.writeOpcUaNode('ns=1;s=Variable.VTLLim', namespaceUrl, 1, 'Double');
-            await connection.readOpcUaNode('ns=1;s=Variable.VTLLim', namespaceUrl)
+            await connection.writeOpcUaNode('Variable.VTLLim', namespaceUrl, 1, 'Double');
+            await connection.readOpcUaNode('Variable.VTLLim', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(1));
         }).timeout(2000);
         it('set and get VALLim', async () => {
-            await connection.writeOpcUaNode('ns=1;s=Variable.VALLim', namespaceUrl, 1, 'Double');
-            await connection.readOpcUaNode('ns=1;s=Variable.VALLim', namespaceUrl)
+            await connection.writeOpcUaNode('Variable.VALLim', namespaceUrl, 1, 'Double');
+            await connection.readOpcUaNode('Variable.VALLim', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(1));
         }).timeout(2000);
         it('set and get VWLLim', async () => {
-            await connection.writeOpcUaNode('ns=1;s=Variable.VWLLim', namespaceUrl, 1, 'Double');
-            await connection.readOpcUaNode('ns=1;s=Variable.VWLLim', namespaceUrl)
+            await connection.writeOpcUaNode('Variable.VWLLim', namespaceUrl, 1, 'Double');
+            await connection.readOpcUaNode('Variable.VWLLim', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(1));
         }).timeout(2000);
         //TODO: get the rest of values
@@ -114,33 +114,33 @@ describe('LimitMonitoringDAMockup', () => {
         });
 
         it('set and get VAHLim', async () => {
-            await connection.writeOpcUaNode('ns=1;s=Variable.VAHLim', namespaceUrl, 1, 'Int32');
-            await connection.readOpcUaNode('ns=1;s=Variable.VAHLim', namespaceUrl)
+            await connection.writeOpcUaNode('Variable.VAHLim', namespaceUrl, 1, 'Int32');
+            await connection.readOpcUaNode('Variable.VAHLim', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(1));
         }).timeout(2000);
         it('set and get VWHLim', async () => {
-            await connection.writeOpcUaNode('ns=1;s=Variable.VWHLim', namespaceUrl, 1, 'Int32');
-            await connection.readOpcUaNode('ns=1;s=Variable.VWHLim', namespaceUrl)
+            await connection.writeOpcUaNode('Variable.VWHLim', namespaceUrl, 1, 'Int32');
+            await connection.readOpcUaNode('Variable.VWHLim', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(1));
         }).timeout(2000);
         it('set and get VTHLim', async () => {
-            await connection.writeOpcUaNode('ns=1;s=Variable.VTHLim', namespaceUrl, 1, 'Int32');
-            await connection.readOpcUaNode('ns=1;s=Variable.VTHLim', namespaceUrl)
+            await connection.writeOpcUaNode('Variable.VTHLim', namespaceUrl, 1, 'Int32');
+            await connection.readOpcUaNode('Variable.VTHLim', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(1));
         }).timeout(2000);
         it('set and get VTLLim', async () => {
-            await connection.writeOpcUaNode('ns=1;s=Variable.VTLLim', namespaceUrl, 1, 'Int32');
-            await connection.readOpcUaNode('ns=1;s=Variable.VTLLim', namespaceUrl)
+            await connection.writeOpcUaNode('Variable.VTLLim', namespaceUrl, 1, 'Int32');
+            await connection.readOpcUaNode('Variable.VTLLim', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(1));
         }).timeout(2000);
         it('set and get VALLim', async () => {
-            await connection.writeOpcUaNode('ns=1;s=Variable.VALLim', namespaceUrl, 1, 'Int32');
-            await connection.readOpcUaNode('ns=1;s=Variable.VALLim', namespaceUrl)
+            await connection.writeOpcUaNode('Variable.VALLim', namespaceUrl, 1, 'Int32');
+            await connection.readOpcUaNode('Variable.VALLim', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(1));
         }).timeout(2000);
         it('set and get VWLLim', async () => {
-            await connection.writeOpcUaNode('ns=1;s=Variable.VWLLim', namespaceUrl, 1, 'Int32');
-            await connection.readOpcUaNode('ns=1;s=Variable.VWLLim', namespaceUrl)
+            await connection.writeOpcUaNode('Variable.VWLLim', namespaceUrl, 1, 'Int32');
+            await connection.readOpcUaNode('Variable.VWLLim', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(1));
         }).timeout(2000);
         //TODO: get the rest of values

@@ -61,32 +61,32 @@ describe('FeedbackMonitoringDAMockup', () => {
         });
 
         it('set and get MonEn', async () => {
-            await connection.writeOpcUaNode('ns=1;s=Variable.MonEn', namespaceUrl, true, 'Boolean');
-            await connection.readOpcUaNode('ns=1;s=Variable.MonEn', namespaceUrl)
+            await connection.writeOpcUaNode('Variable.MonEn', namespaceUrl, true, 'Boolean');
+            await connection.readOpcUaNode('Variable.MonEn', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(true));
         }).timeout(5000);
 
         it('get MonSafePos', async () => {
-            await connection.readOpcUaNode('ns=1;s=Variable.MonSafePos', namespaceUrl)
+            await connection.readOpcUaNode('Variable.MonSafePos', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(false));
         }).timeout(5000);
 
         it('get MonStatErr', async () => {
-            await connection.readOpcUaNode('ns=1;s=Variable.MonStatErr', namespaceUrl)
+            await connection.readOpcUaNode('Variable.MonStatErr', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(false));
         }).timeout(5000);
 
         it('get MonDynErr', async () => {
-            await connection.readOpcUaNode('ns=1;s=Variable.MonDynErr', namespaceUrl)
+            await connection.readOpcUaNode('Variable.MonDynErr', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(false));
         }).timeout(5000);
 
         it('get MonStatTi', async () => {
-            await connection.readOpcUaNode('ns=1;s=Variable.MonStatTi', namespaceUrl)
+            await connection.readOpcUaNode('Variable.MonStatTi', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(0));
         }).timeout(5000);
         it('get MonDynTi', async () => {
-            await connection.readOpcUaNode('ns=1;s=Variable.MonDynTi', namespaceUrl)
+            await connection.readOpcUaNode('Variable.MonDynTi', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(0));
         }).timeout(5000);
 

@@ -55,21 +55,19 @@ describe('BinMonMockup', () => {
         });
 
         it('set VFlutTi', async () => {
-            await connection.writeOpcUaNode(
-                'ns=1;s=Variable.VFlutTi',
+            await connection.writeOpcUaNode('Variable.VFlutTi',
                 namespaceUrl,
                 1.1, 'Double');
-            await connection.readOpcUaNode('ns=1;s=Variable.VFlutTi',
+            await connection.readOpcUaNode('Variable.VFlutTi',
                 namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(1.1));
         }).timeout(5000);
 
         it('set VFlutCnt', async () => {
-            await connection.writeOpcUaNode(
-                'ns=1;s=Variable.VFlutCnt',
+            await connection.writeOpcUaNode('Variable.VFlutCnt',
                 namespaceUrl,
                 1.1, 'Int32');
-            await connection.readOpcUaNode('ns=1;s=Variable.VFlutCnt',
+            await connection.readOpcUaNode('Variable.VFlutCnt',
                 namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(1));
         }).timeout(5000);

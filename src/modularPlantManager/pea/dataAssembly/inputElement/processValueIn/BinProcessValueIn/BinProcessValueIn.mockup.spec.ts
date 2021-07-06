@@ -58,20 +58,20 @@ describe('BinProcessValueInMockup', () => {
         });
 
         it('set and get VExt', async () => {
-            await connection.writeOpcUaNode('ns=1;s=Variable.VExt', namespaceUrl, true, 'Boolean');
-            await connection.readOpcUaNode('ns=1;s=Variable.VExt', namespaceUrl)
+            await connection.writeOpcUaNode('Variable.VExt', namespaceUrl, true, 'Boolean');
+            await connection.readOpcUaNode('Variable.VExt', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(true));
         }).timeout(3000);
 
         it('set and get VState0', async () => {
-            await connection.writeOpcUaNode('ns=1;s=Variable.VState0', namespaceUrl, 'state0_inactive', 'String');
-            await connection.readOpcUaNode('ns=1;s=Variable.VState0', namespaceUrl)
+            await connection.writeOpcUaNode('Variable.VState0', namespaceUrl, 'state0_inactive', 'String');
+            await connection.readOpcUaNode('Variable.VState0', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal('state0_inactive'));
         }).timeout(3000);
 
         it('set and get VState1', async () => {
-            await connection.writeOpcUaNode('ns=1;s=Variable.VState1', namespaceUrl, 'state1_inactive', 'String');
-            await connection.readOpcUaNode('ns=1;s=Variable.VState1', namespaceUrl)
+            await connection.writeOpcUaNode('Variable.VState1', namespaceUrl, 'state1_inactive', 'String');
+            await connection.readOpcUaNode('Variable.VState1', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal('state1_inactive'));
         }).timeout(3000);
 

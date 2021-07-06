@@ -55,8 +55,8 @@ describe('AnaVlvMockup', () => {
         });
 
         it('set and get PosMan', async () => {
-            await connection.writeOpcUaNode('ns=1;s=Variable.PosMan', namespaceUrl, 1.1, 'Double');
-            await connection.readOpcUaNode('ns=1;s=Variable.PosMan', namespaceUrl)
+            await connection.writeOpcUaNode('Variable.PosMan', namespaceUrl, 1.1, 'Double');
+            await connection.readOpcUaNode('Variable.PosMan', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(1.1));
         }).timeout(3000);
 

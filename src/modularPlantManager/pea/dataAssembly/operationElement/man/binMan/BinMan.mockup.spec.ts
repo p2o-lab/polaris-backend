@@ -86,8 +86,8 @@ describe('BinManMockup', () => {
         });
 
         it('set and get VMan', async () => {
-            await connection.writeOpcUaNode('ns=1;s=Variable.VMan', namespaceUrl, true, 'Boolean');
-            await connection.readOpcUaNode('ns=1;s=Variable.VMan', namespaceUrl)
+            await connection.writeOpcUaNode('Variable.VMan', namespaceUrl, true, 'Boolean');
+            await connection.readOpcUaNode('Variable.VMan', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(true));
         }).timeout(3000);
 

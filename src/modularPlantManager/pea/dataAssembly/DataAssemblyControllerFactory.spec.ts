@@ -124,7 +124,7 @@ describe('DataAssemblyFactory', () => {
 			expect(da1 instanceof ServiceControl).to.equal(true);
 			expect(da1.communication.CommandExt).to.not.equal(undefined);
 			expect(da1.communication.WQC).to.not.equal(undefined);
-			expect(da1.communication.TagName).to.equal(undefined);
+			expect(da1.tagName).to.equal(undefined);
 		});
 
 		it('should create BinView', async () => {

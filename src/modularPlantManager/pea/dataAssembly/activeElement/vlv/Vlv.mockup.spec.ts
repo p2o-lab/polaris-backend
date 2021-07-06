@@ -58,14 +58,14 @@ describe('VlvMockup', () => {
         });
 
         it('set and get OpenOp', async () => {
-            await connection.writeOpcUaNode('ns=1;s=Variable.OpenOp', namespaceUrl, true, 'Boolean');
-            await connection.readOpcUaNode('ns=1;s=Variable.OpenOp', namespaceUrl)
+            await connection.writeOpcUaNode('Variable.OpenOp', namespaceUrl, true, 'Boolean');
+            await connection.readOpcUaNode('Variable.OpenOp', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(true));
         }).timeout(3000);
 
         it('set and get CloseOp', async () => {
-            await connection.writeOpcUaNode('ns=1;s=Variable.CloseOp', namespaceUrl, true, 'Boolean');
-            await connection.readOpcUaNode('ns=1;s=Variable.CloseOp', namespaceUrl)
+            await connection.writeOpcUaNode('Variable.CloseOp', namespaceUrl, true, 'Boolean');
+            await connection.readOpcUaNode('Variable.CloseOp', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(true));
         }).timeout(3000);
 

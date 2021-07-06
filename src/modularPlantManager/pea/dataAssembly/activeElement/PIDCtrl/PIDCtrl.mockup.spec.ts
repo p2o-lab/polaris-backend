@@ -55,14 +55,14 @@ describe('PIDCtrlMockup', () => {
         });
 
         it('set and get SPMan', async () => {
-            await connection.writeOpcUaNode('ns=1;s=Variable.SPMan', namespaceUrl, 1.1, 'Double');
-            await connection.readOpcUaNode('ns=1;s=Variable.SPMan', namespaceUrl)
+            await connection.writeOpcUaNode('Variable.SPMan', namespaceUrl, 1.1, 'Double');
+            await connection.readOpcUaNode('Variable.SPMan', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(1.1));
         }).timeout(3000);
 
         it('set and get SPMan', async () => {
-            await connection.writeOpcUaNode('ns=1;s=Variable.MVMan', namespaceUrl, 1.1, 'Double');
-            await connection.readOpcUaNode('ns=1;s=Variable.MVMan', namespaceUrl)
+            await connection.writeOpcUaNode('Variable.MVMan', namespaceUrl, 1.1, 'Double');
+            await connection.readOpcUaNode('Variable.MVMan', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(1.1));
         }).timeout(3000);
 

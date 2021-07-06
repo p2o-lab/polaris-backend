@@ -97,14 +97,14 @@ describe('BinServParamMockup', () => {
         });
 
         it('set and get VExt', async () => {
-            await connection.writeOpcUaNode('ns=1;s=Variable.VExt', namespaceUrl, true, 'Boolean');
-            await connection.readOpcUaNode('ns=1;s=Variable.VExt', namespaceUrl)
+            await connection.writeOpcUaNode('Variable.VExt', namespaceUrl, true, 'Boolean');
+            await connection.readOpcUaNode('Variable.VExt', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(true));
         }).timeout(3000);
 
         it('set and get VOp', async () => {
-            await connection.writeOpcUaNode('ns=1;s=Variable.VOp', namespaceUrl, true, 'Boolean');
-            await connection.readOpcUaNode('ns=1;s=Variable.VOp', namespaceUrl)
+            await connection.writeOpcUaNode('Variable.VOp', namespaceUrl, true, 'Boolean');
+            await connection.readOpcUaNode('Variable.VOp', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(true));
         }).timeout(3000);
 

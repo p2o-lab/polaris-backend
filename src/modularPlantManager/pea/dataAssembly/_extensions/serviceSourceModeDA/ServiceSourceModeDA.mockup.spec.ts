@@ -61,8 +61,8 @@ describe('ServiceSourceModeDAMockup', () => {
         });
 
         it('set and get SrcExtOp', async () => {
-            await connection.writeOpcUaNode('ns=1;s=Variable.SrcExtOp', namespaceUrl, true, 'Boolean');
-            await connection.readOpcUaNode('ns=1;s=Variable.SrcExtOp', namespaceUrl)
+            await connection.writeOpcUaNode('Variable.SrcExtOp', namespaceUrl, true, 'Boolean');
+            await connection.readOpcUaNode('Variable.SrcExtOp', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(false));
             expect(mockup.srcIntAct).to.false;
             expect(mockup.srcExtAct).to.true;
@@ -70,8 +70,8 @@ describe('ServiceSourceModeDAMockup', () => {
         }).timeout(3000);
 
         it('set and get SrcIntOp', async () => {
-            await connection.writeOpcUaNode('ns=1;s=Variable.SrcIntOp', namespaceUrl, true, 'Boolean');
-            await connection.readOpcUaNode('ns=1;s=Variable.SrcIntOp', namespaceUrl)
+            await connection.writeOpcUaNode('Variable.SrcIntOp', namespaceUrl, true, 'Boolean');
+            await connection.readOpcUaNode('Variable.SrcIntOp', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(false));
             expect(mockup.srcIntAct).to.true;
             expect(mockup.srcExtAct).to.false;
@@ -79,8 +79,8 @@ describe('ServiceSourceModeDAMockup', () => {
         }).timeout(3000);
 
         it('set and get SrcExtOp, write false', async () => {
-            await connection.writeOpcUaNode('ns=1;s=Variable.SrcExtOp', namespaceUrl, false, 'Boolean');
-            await connection.readOpcUaNode('ns=1;s=Variable.SrcExtOp', namespaceUrl)
+            await connection.writeOpcUaNode('Variable.SrcExtOp', namespaceUrl, false, 'Boolean');
+            await connection.readOpcUaNode('Variable.SrcExtOp', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(false));
             expect(mockup.srcIntAct).to.false;
             expect(mockup.srcExtAct).to.false;
@@ -88,8 +88,8 @@ describe('ServiceSourceModeDAMockup', () => {
         }).timeout(3000);
 
         it('set and get SrcIntOp, write false', async () => {
-            await connection.writeOpcUaNode('ns=1;s=Variable.SrcIntOp', namespaceUrl, false, 'Boolean');
-            await connection.readOpcUaNode('ns=1;s=Variable.SrcIntOp', namespaceUrl)
+            await connection.writeOpcUaNode('Variable.SrcIntOp', namespaceUrl, false, 'Boolean');
+            await connection.readOpcUaNode('Variable.SrcIntOp', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(false));
             expect(mockup.srcIntAct).to.false;
             expect(mockup.srcExtAct).to.false;
@@ -120,8 +120,8 @@ describe('ServiceSourceModeDAMockup', () => {
         });
 
         it('set and get SrcExtOp', async () => {
-            await connection.writeOpcUaNode('ns=1;s=Variable.SrcExtOp', namespaceUrl, true, 'Boolean');
-            await connection.readOpcUaNode('ns=1;s=Variable.SrcExtOp', namespaceUrl)
+            await connection.writeOpcUaNode('Variable.SrcExtOp', namespaceUrl, true, 'Boolean');
+            await connection.readOpcUaNode('Variable.SrcExtOp', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(false));
             expect(mockup.srcIntAct).to.false;
             expect(mockup.srcExtAct).to.false;
@@ -129,8 +129,8 @@ describe('ServiceSourceModeDAMockup', () => {
         }).timeout(3000);
 
         it('set and get SrcIntOp', async () => {
-            await connection.writeOpcUaNode('ns=1;s=Variable.SrcIntOp', namespaceUrl, true, 'Boolean');
-            await connection.readOpcUaNode('ns=1;s=Variable.SrcIntOp', namespaceUrl)
+            await connection.writeOpcUaNode('Variable.SrcIntOp', namespaceUrl, true, 'Boolean');
+            await connection.readOpcUaNode('Variable.SrcIntOp', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(false));
             expect(mockup.srcIntAct).to.false;
             expect(mockup.srcExtAct).to.false;

@@ -56,14 +56,14 @@ describe('MonAnaDrvMockup', () => {
         });
 
         it('set and get RpmAHLim, Double', async () => {
-            await connection.writeOpcUaNode('ns=1;s=Variable.RpmAHLim', namespaceUrl, 1.1, 'Double');
-            await connection.readOpcUaNode('ns=1;s=Variable.RpmAHLim', namespaceUrl)
+            await connection.writeOpcUaNode('Variable.RpmAHLim', namespaceUrl, 1.1, 'Double');
+            await connection.readOpcUaNode('Variable.RpmAHLim', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(1.1));
         }).timeout(3000);
 
         it('set and get RpmALLim, Double', async () => {
-            await connection.writeOpcUaNode('ns=1;s=Variable.RpmALLim', namespaceUrl, 1.1, 'Double');
-            await connection.readOpcUaNode('ns=1;s=Variable.RpmALLim', namespaceUrl)
+            await connection.writeOpcUaNode('Variable.RpmALLim', namespaceUrl, 1.1, 'Double');
+            await connection.readOpcUaNode('Variable.RpmALLim', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(1.1));
         }).timeout(3000);
 

@@ -92,8 +92,8 @@ describe('DIntManMockup', () => {
         });
         
         it('set and get VMan', async () => {
-            await connection.writeOpcUaNode('ns=1;s=Variable.VMan', namespaceUrl, 1, 'Int32');
-            await connection.readOpcUaNode('ns=1;s=Variable.VMan', namespaceUrl)
+            await connection.writeOpcUaNode('Variable.VMan', namespaceUrl, 1, 'Int32');
+            await connection.readOpcUaNode('Variable.VMan', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(1));
         }).timeout(3000);
 

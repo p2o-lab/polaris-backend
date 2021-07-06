@@ -48,8 +48,8 @@ describe('BinView', () => {
 			};
 			const da1: BinView = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as BinView;
 			expect(da1 instanceof BinView).to.equal(true);
-			expect(da1.communication.TagName).to.not.equal(undefined);
-			expect(da1.communication.TagDescription).to.not.equal(undefined);
+			expect(da1.tagName).to.not.equal(undefined);
+			expect(da1.tagDescription).to.not.equal(undefined);
 			expect(da1.communication.WQC).to.not.equal(undefined);
 			expect(da1.communication.V).to.not.equal(undefined);
 			expect(da1.communication.VState0).to.not.equal(undefined);

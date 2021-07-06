@@ -101,22 +101,18 @@ describe('AnaServParamMockup', () => {
         });
 
         it('set VExt',async()=>{
-            await connection.writeOpcUaNode(
-                'ns=1;s=Variable.VExt',
-                namespaceUrl,
-                1,'Double');
-           await connection.readOpcUaNode('ns=1;s=Variable.VExt',
-               'urn:Liens-MacBook-Pro.local:NodeOPCUA-Server')
+            await connection.writeOpcUaNode('Variable.VExt', namespaceUrl, 1,'Double');
+           await connection.readOpcUaNode('Variable.VExt',
+               namespaceUrl)
                .then(datavalue=>expect(datavalue?.value.value).to.equal(1));
         }).timeout(10000);
 
         it('set VOp',async()=>{
-            await connection.writeOpcUaNode(
-                'ns=1;s=Variable.VOp',
+            await connection.writeOpcUaNode('Variable.VOp',
                 namespaceUrl,
                 1,'Double');
-            await connection.readOpcUaNode('ns=1;s=Variable.VOp',
-                'urn:Liens-MacBook-Pro.local:NodeOPCUA-Server')
+            await connection.readOpcUaNode('Variable.VOp',
+                namespaceUrl)
                 .then(datavalue=>expect(datavalue?.value.value).to.equal(1));
         }).timeout(10000);
     });

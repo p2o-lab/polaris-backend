@@ -56,8 +56,8 @@ describe('AnaDrvMockup', () => {
         });
 
         it('set and get RpmMan', async () => {
-            await connection.writeOpcUaNode('ns=1;s=Variable.RpmMan', namespaceUrl, 1.1, 'Double');
-            await connection.readOpcUaNode('ns=1;s=Variable.RpmMan', namespaceUrl)
+            await connection.writeOpcUaNode('Variable.RpmMan', namespaceUrl, 1.1, 'Double');
+            await connection.readOpcUaNode('Variable.RpmMan', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(1.1));
         }).timeout(3000);
 

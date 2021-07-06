@@ -58,19 +58,19 @@ describe('AnaProcessValueInMockup', () => {
         });
 
         it('set and get VExt, >VSclMax', async () => {
-            await connection.writeOpcUaNode('ns=1;s=Variable.VExt', namespaceUrl, 1.1, 'Double');
-            await connection.readOpcUaNode('ns=1;s=Variable.VExt', namespaceUrl)
+            await connection.writeOpcUaNode('Variable.VExt', namespaceUrl, 1.1, 'Double');
+            await connection.readOpcUaNode('Variable.VExt', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(0));
         }).timeout(3000);
 
         it('set and get VExt, <VSclMin', async () => {
-            await connection.writeOpcUaNode('ns=1;s=Variable.VExt', namespaceUrl, -1.1, 'Double');
-            await connection.readOpcUaNode('ns=1;s=Variable.VExt', namespaceUrl)
+            await connection.writeOpcUaNode('Variable.VExt', namespaceUrl, -1.1, 'Double');
+            await connection.readOpcUaNode('Variable.VExt', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(0));
         }).timeout(3000);
         it('set and get VExt', async () => {
-            await connection.writeOpcUaNode('ns=1;s=Variable.VExt', namespaceUrl, 0, 'Double');
-            await connection.readOpcUaNode('ns=1;s=Variable.VExt', namespaceUrl)
+            await connection.writeOpcUaNode('Variable.VExt', namespaceUrl, 0, 'Double');
+            await connection.readOpcUaNode('Variable.VExt', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(0));
         }).timeout(3000);
         //TODO get the rest

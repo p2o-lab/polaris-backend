@@ -80,46 +80,46 @@ describe('OpModeDAMockup', () => {
 
         it('set and get StateOffOp', async () => {
             mockup.opMode = OperationMode.Operator;
-            await connection.writeOpcUaNode('ns=1;s=Variable.StateOffOp', namespaceUrl, true, 'Boolean');
-            await connection.readOpcUaNode('ns=1;s=Variable.StateOffOp', namespaceUrl)
+            await connection.writeOpcUaNode('Variable.StateOffOp', namespaceUrl, true, 'Boolean');
+            await connection.readOpcUaNode('Variable.StateOffOp', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(false));
             expect(mockup.opMode).to.equal(OperationMode.Offline);
         }).timeout(2000);
 
         it('set and get StateOpOp', async () => {
-            await connection.writeOpcUaNode('ns=1;s=Variable.StateOpOp', namespaceUrl, true, 'Boolean');
-            await connection.readOpcUaNode('ns=1;s=Variable.StateOpOp', namespaceUrl)
+            await connection.writeOpcUaNode('Variable.StateOpOp', namespaceUrl, true, 'Boolean');
+            await connection.readOpcUaNode('Variable.StateOpOp', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(false));
             expect(mockup.opMode).to.equal(OperationMode.Operator);
         }).timeout(2000);
 
         it('set and get StateAutOp', async () => {
             mockup.opMode = OperationMode.Operator;
-            await connection.writeOpcUaNode('ns=1;s=Variable.StateAutOp', namespaceUrl, true, 'Boolean');
-            await connection.readOpcUaNode('ns=1;s=Variable.StateAutOp', namespaceUrl)
+            await connection.writeOpcUaNode('Variable.StateAutOp', namespaceUrl, true, 'Boolean');
+            await connection.readOpcUaNode('Variable.StateAutOp', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(false));
             expect(mockup.opMode).to.equal(OperationMode.Automatic);
         }).timeout(2000);
 
         it('set and get StateOffOp, write false', async () => {
             mockup.opMode = OperationMode.Operator;
-            await connection.writeOpcUaNode('ns=1;s=Variable.StateOffOp', namespaceUrl, false, 'Boolean');
-            await connection.readOpcUaNode('ns=1;s=Variable.StateOffOp', namespaceUrl)
+            await connection.writeOpcUaNode('Variable.StateOffOp', namespaceUrl, false, 'Boolean');
+            await connection.readOpcUaNode('Variable.StateOffOp', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(false));
             expect(mockup.opMode).to.equal(OperationMode.Operator);
         }).timeout(2000);
 
         it('set and get StateOpOp, write false', async () => {
-            await connection.writeOpcUaNode('ns=1;s=Variable.StateOpOp', namespaceUrl, false, 'Boolean');
-            await connection.readOpcUaNode('ns=1;s=Variable.StateOpOp', namespaceUrl)
+            await connection.writeOpcUaNode('Variable.StateOpOp', namespaceUrl, false, 'Boolean');
+            await connection.readOpcUaNode('Variable.StateOpOp', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(false));
             expect(mockup.opMode).to.equal(OperationMode.Offline);
         }).timeout(2000);
 
         it('set and get StateAutOp, write false', async () => {
             mockup.opMode = OperationMode.Operator;
-            await connection.writeOpcUaNode('ns=1;s=Variable.StateAutOp', namespaceUrl, false, 'Boolean');
-            await connection.readOpcUaNode('ns=1;s=Variable.StateAutOp', namespaceUrl)
+            await connection.writeOpcUaNode('Variable.StateAutOp', namespaceUrl, false, 'Boolean');
+            await connection.readOpcUaNode('Variable.StateAutOp', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(false));
             expect(mockup.opMode).to.equal(OperationMode.Operator);
         }).timeout(2000);
@@ -149,23 +149,23 @@ describe('OpModeDAMockup', () => {
 
         it('set and get StateOffOp', async () => {
             mockup.opMode = OperationMode.Operator;
-            await connection.writeOpcUaNode('ns=1;s=Variable.StateOffOp', namespaceUrl, true, 'Boolean');
-            await connection.readOpcUaNode('ns=1;s=Variable.StateOffOp', namespaceUrl)
+            await connection.writeOpcUaNode('Variable.StateOffOp', namespaceUrl, true, 'Boolean');
+            await connection.readOpcUaNode('Variable.StateOffOp', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(false));
             expect(mockup.opMode).to.equal(OperationMode.Operator);
         }).timeout(2000);
 
         it('set and get StateOpOp', async () => {
-            await connection.writeOpcUaNode('ns=1;s=Variable.StateOpOp', namespaceUrl, true, 'Boolean');
-            await connection.readOpcUaNode('ns=1;s=Variable.StateOpOp', namespaceUrl)
+            await connection.writeOpcUaNode('Variable.StateOpOp', namespaceUrl, true, 'Boolean');
+            await connection.readOpcUaNode('Variable.StateOpOp', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(false));
             expect(mockup.opMode).to.equal(OperationMode.Offline);
         }).timeout(2000);
 
         it('set and get StateAutOp', async () => {
             mockup.opMode = OperationMode.Operator;
-            await connection.writeOpcUaNode('ns=1;s=Variable.StateAutOp', namespaceUrl, true, 'Boolean');
-            await connection.readOpcUaNode('ns=1;s=Variable.StateAutOp', namespaceUrl)
+            await connection.writeOpcUaNode('Variable.StateAutOp', namespaceUrl, true, 'Boolean');
+            await connection.readOpcUaNode('Variable.StateAutOp', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(false));
             expect(mockup.opMode).to.equal(OperationMode.Operator);
         }).timeout(2000);

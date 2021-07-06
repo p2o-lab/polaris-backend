@@ -2,11 +2,6 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {Namespace, UAObject} from 'node-opcua';
 import {MockupServer} from '../../../_utils';
-import {
-    AnaServParamMockup,
-    getAnaServParamMockupReferenceJSON
-} from '../operationElement/servParam/anaServParam/AnaServParam.mockup';
-import {ActiveElement} from './ActiveElement';
 import {ActiveElementMockup} from './ActiveElement.mockup';
 
 chai.use(chaiAsPromised);

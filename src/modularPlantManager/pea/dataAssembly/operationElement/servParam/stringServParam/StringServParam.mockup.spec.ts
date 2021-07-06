@@ -94,14 +94,14 @@ describe('StringServParamMockup', () => {
         });
 
         it('set and get VExt', async () => {
-            await connection.writeOpcUaNode('ns=1;s=Variable.VExt', namespaceUrl, 'test', 'String');
-            await connection.readOpcUaNode('ns=1;s=Variable.VExt', namespaceUrl)
+            await connection.writeOpcUaNode('Variable.VExt', namespaceUrl, 'test', 'String');
+            await connection.readOpcUaNode('Variable.VExt', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal('test'));
         }).timeout(3000);
 
         it('set and get VOp', async () => {
-            await connection.writeOpcUaNode('ns=1;s=Variable.VOp', namespaceUrl, 'test', 'String');
-            await connection.readOpcUaNode('ns=1;s=Variable.VOp', namespaceUrl)
+            await connection.writeOpcUaNode('Variable.VOp', namespaceUrl, 'test', 'String');
+            await connection.readOpcUaNode('Variable.VOp', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal('test'));
         }).timeout(3000);
 

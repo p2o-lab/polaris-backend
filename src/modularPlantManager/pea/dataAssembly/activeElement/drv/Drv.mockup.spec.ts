@@ -56,21 +56,21 @@ describe('DrvMockup', () => {
         });
 
         it('set and get StopOp', async () => {
-            await connection.writeOpcUaNode('ns=1;s=Variable.StopOp', namespaceUrl, true, 'Boolean');
-            await connection.readOpcUaNode('ns=1;s=Variable.StopOp', namespaceUrl)
+            await connection.writeOpcUaNode('Variable.StopOp', namespaceUrl, true, 'Boolean');
+            await connection.readOpcUaNode('Variable.StopOp', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(true));
         }).timeout(3000);
 
         it('set and get FwdOp', async () => {
-            await connection.writeOpcUaNode('ns=1;s=Variable.FwdOp', namespaceUrl, true, 'Boolean');
-            await connection.readOpcUaNode('ns=1;s=Variable.FwdOp', namespaceUrl)
+            await connection.writeOpcUaNode('Variable.FwdOp', namespaceUrl, true, 'Boolean');
+            await connection.readOpcUaNode('Variable.FwdOp', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(true));
 
         }).timeout(3000);
 
         it('set and get RevOp', async () => {
-            await connection.writeOpcUaNode('ns=1;s=Variable.RevOp', namespaceUrl, true, 'Boolean');
-            await connection.readOpcUaNode('ns=1;s=Variable.RevOp', namespaceUrl)
+            await connection.writeOpcUaNode('Variable.RevOp', namespaceUrl, true, 'Boolean');
+            await connection.readOpcUaNode('Variable.RevOp', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(true));
         }).timeout(3000);
 
