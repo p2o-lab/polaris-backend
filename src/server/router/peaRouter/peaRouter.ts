@@ -39,11 +39,11 @@ export const peaRouter: Router = Router();
  * @apiGroup PEAController
  * @apiParam {PEAOptions} pea    PiMAdIdentifier
  */
-peaRouter.post('/loadPEA', (req, res) => {
+peaRouter.post('/loadPEA', async (req, res) => {
 	catServer.info('Load PEAController via PEAController-Options');
 	const manager: ModularPlantManager = req.app.get('manager');
 	try {
-		manager.loadPEAController(req.body.id);
+		await manager.loadPEAController(req.body.id);
 		res.status(200).send('"Success!"');
 	} catch (err) {
 		res.status(500).send(err.toString());
