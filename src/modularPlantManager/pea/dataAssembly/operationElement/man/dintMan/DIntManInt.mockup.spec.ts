@@ -15,7 +15,7 @@ describe('DIntManIntMockup', () => {
             await mockupServer.initialize();
         });
         afterEach(async () => {
-            await mockupServer.shutdown();
+
         });
         it('should create DIntManIntMockup', async () => {
             const mockup= new DIntManIntMockup(mockupServer.namespace as Namespace,

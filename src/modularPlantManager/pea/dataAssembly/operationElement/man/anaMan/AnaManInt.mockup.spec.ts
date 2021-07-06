@@ -15,7 +15,7 @@ describe('AnaManIntMockup', () => {
             await mockupServer.initialize();
         });
         afterEach(async () => {
-            await mockupServer.shutdown();
+
         });
         it('should create AnaManIntMockup', async () => {
             const mockup= new AnaManIntMockup(mockupServer.namespace as Namespace,

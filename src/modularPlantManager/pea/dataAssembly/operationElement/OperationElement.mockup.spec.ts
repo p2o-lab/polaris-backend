@@ -11,13 +11,12 @@ const expect = chai.expect;
 describe('OperationElementMockup', () => {
     describe('', () => {
         let mockupServer: any;
-        beforeEach(async()=>{
+        beforeEach(async function (){
+            this.timeout(5000);
             mockupServer = new MockupServer();
             await mockupServer.initialize();
         });
-        afterEach(async () => {
-            await mockupServer.shutdown();
-        });
+
         it('should create OperationElementMockup', async () => {
             const mockup= new OperationElementMockup(mockupServer.namespace as Namespace,
                 mockupServer.rootComponent as UAObject, 'Variable');

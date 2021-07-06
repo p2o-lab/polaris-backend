@@ -15,7 +15,7 @@ describe('ServParamMockup', () => {
             await mockupServer.initialize();
         });
         afterEach(async () => {
-            await mockupServer.shutdown();
+
         });
         it('should create ServParamMockup',  () => {
             const mockup= new ServParamMockup(mockupServer.namespace as Namespace,

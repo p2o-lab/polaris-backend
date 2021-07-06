@@ -3,7 +3,8 @@ import * as chaiAsPromised from 'chai-as-promised';
 import {Namespace, UAObject} from 'node-opcua';
 import {MockupServer} from '../../../../../_utils';
 import {DIntManMockup} from './DIntMan.mockup';
-import {AnaManMockup} from '../anaMan/AnaMan.mockup';
+import {OpcUaConnection} from '../../../../connection';
+import {namespaceUrl} from '../../../../../../../tests/namespaceUrl';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -26,7 +27,7 @@ describe('DIntManMockup', () => {
             await mockupServer.initialize();
         });
         afterEach(async () => {
-            await mockupServer.shutdown();
+
         });
         it('should create DIntManMockup', async () => {
             const mockup= new DIntManMockup(mockupServer.namespace as Namespace,
@@ -68,5 +69,34 @@ describe('DIntManMockup', () => {
                 mockupServer.rootComponent as UAObject, 'Variable') as FakeClass;
             expect((() => mockup.stopCurrentTimeUpdate())).to.throw();
         });
+    });
+    describe('dynamic', () => {
+        // we need to check if the nodes was addes succesfully and are writeable and readable
+        let mockupServer: MockupServer;
+        let mockup: DIntManMockup;
+        let connection: OpcUaConnection;
+        beforeEach(async function () {
+            this.timeout(5000);
+            mockupServer = new MockupServer();
+            await mockupServer.initialize();
+            mockup = new DIntManMockup(mockupServer.namespace as Namespace,
+                mockupServer.rootComponent as UAObject, 'Variable');
+            await mockupServer.start();
+            connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334');
+            await connection.connect();
+        });
+
+        afterEach(async () => {
+            await connection.disconnect();
+            await mockupServer.shutdown();
+        });
+        
+        it('set and get VMan', async () => {
+            await connection.writeOpcUaNode('ns=1;s=Variable.VMan', namespaceUrl, 1, 'Int32');
+            await connection.readOpcUaNode('ns=1;s=Variable.VMan', namespaceUrl)
+                .then(datavalue => expect(datavalue?.value.value).to.equal(1));
+        }).timeout(3000);
+
+        //TODO get the rest
     });
 });

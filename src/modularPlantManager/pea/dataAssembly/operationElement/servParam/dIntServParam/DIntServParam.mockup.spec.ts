@@ -3,6 +3,8 @@ import * as chaiAsPromised from 'chai-as-promised';
 import {Namespace, UAObject} from 'node-opcua';
 import {DIntServParamMockup} from './DIntServParam.mockup';
 import {MockupServer} from '../../../../../_utils';
+import {OpcUaConnection} from '../../../../connection';
+import {namespaceUrl} from '../../../../../../../tests/namespaceUrl';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -24,7 +26,7 @@ describe('DIntServParamMockup', () => {
             await mockupServer.initialize();
         });
         afterEach(async () => {
-            await mockupServer.shutdown();
+
         });
         it('should create DIntServParamMockup',  () => {
             const mockup= new DIntServParamMockup(mockupServer.namespace as Namespace,
@@ -67,5 +69,80 @@ describe('DIntServParamMockup', () => {
                 mockupServer.rootComponent as UAObject, 'Variable') as FakeClass;
             expect((() => mockup.stopCurrentTimeUpdate())).to.throw();
         });
+    });
+
+    describe('dynamic', () => {
+        // we need to check if the nodes was addes succesfully and are writeable and readable
+        let mockupServer: MockupServer;
+        let mockup: DIntServParamMockup;
+        let connection: OpcUaConnection;
+        beforeEach(async function () {
+            this.timeout(5000);
+            mockupServer = new MockupServer();
+            await mockupServer.initialize();
+            mockup = new DIntServParamMockup(mockupServer.namespace as Namespace,
+                mockupServer.rootComponent as UAObject, 'Variable');
+            await mockupServer.start();
+            connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334');
+            await connection.connect();
+        });
+
+        afterEach(async () => {
+            await connection.disconnect();
+            await mockupServer.shutdown();
+        });
+
+        it('set and get VExt', async () => {
+            await connection.writeOpcUaNode('ns=1;s=Variable.VExt', namespaceUrl, 1, 'Int32');
+            await connection.readOpcUaNode('ns=1;s=Variable.VExt', namespaceUrl)
+                .then(datavalue => expect(datavalue?.value.value).to.equal(1));
+        }).timeout(3000);
+
+        it('set and get VOp', async () => {
+            await connection.writeOpcUaNode('ns=1;s=Variable.VOp', namespaceUrl, 1, 'Int32');
+            await connection.readOpcUaNode('ns=1;s=Variable.VOp', namespaceUrl)
+                .then(datavalue => expect(datavalue?.value.value).to.equal(1));
+        }).timeout(3000);
+
+        //TODO get the rest
+    });
+    describe('dynamic (with MockupServer)', () => {
+        let mockupServer: MockupServer;
+        let mockup: DIntServParamMockup;
+        let connection: OpcUaConnection;
+        beforeEach(async function(){
+            this.timeout(10000);
+            mockupServer = new MockupServer();
+            await mockupServer.initialize();
+            mockup = new DIntServParamMockup(mockupServer.namespace as Namespace,
+                mockupServer.rootComponent as UAObject, 'Variable');
+            await mockupServer.start();
+            connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334');
+            await connection.connect();
+        });
+        afterEach(async () => {
+            await connection.disconnect();
+            await mockupServer.shutdown();
+        });
+
+        it('set VExt',async()=>{
+            await connection.writeOpcUaNode(
+                'ns=1;s=Variable.VExt',
+                'urn:Liens-MacBook-Pro.local:NodeOPCUA-Server',
+                1,'Double');
+            await connection.readOpcUaNode('ns=1;s=Variable.VExt',
+                'urn:Liens-MacBook-Pro.local:NodeOPCUA-Server')
+                .then(datavalue=>expect(datavalue?.value.value).to.equal(1));
+        }).timeout(10000);
+
+        it('set VOp',async()=>{
+            await connection.writeOpcUaNode(
+                'ns=1;s=Variable.VOp',
+                'urn:Liens-MacBook-Pro.local:NodeOPCUA-Server',
+                1,'Double');
+            await connection.readOpcUaNode('ns=1;s=Variable.VOp',
+                'urn:Liens-MacBook-Pro.local:NodeOPCUA-Server')
+                .then(datavalue=>expect(datavalue?.value.value).to.equal(1));
+        }).timeout(10000);
     });
 });

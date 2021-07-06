@@ -4,6 +4,9 @@ import {BinServParamMockup, getBinServParamMockupReferenceJSON} from './BinServP
 import {MockupServer} from '../../../../../_utils';
 import {Namespace, UAObject} from 'node-opcua';
 import {AnaServParamMockup} from '../anaServParam/AnaServParam.mockup';
+import {BinViewMockup} from '../../../indicatorElement/BinView/BinView.mockup';
+import {OpcUaConnection} from '../../../../connection';
+import {namespaceUrl} from '../../../../../../../tests/namespaceUrl';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -25,10 +28,6 @@ describe('BinServParamMockup', () => {
             mockupServer = new MockupServer();
             await mockupServer.initialize();
         });
-        afterEach(async () => {
-            await mockupServer.shutdown();
-        });
-
         it('should create BinServParamMockup', () => {
             const mockup = new BinServParamMockup(mockupServer.namespace as Namespace,
                 mockupServer.rootComponent as UAObject, 'Variable');
@@ -75,5 +74,40 @@ describe('BinServParamMockup', () => {
                 mockupServer.rootComponent as UAObject, 'Variable') as FakeClass;
             expect((() => mockup.stopCurrentTimeUpdate())).to.throw();
         });
+    });
+    describe('dynamic', () => {
+        // we need to check if the nodes was addes succesfully and are writeable and readable
+        let mockupServer: MockupServer;
+        let mockup: BinServParamMockup;
+        let connection: OpcUaConnection;
+        beforeEach(async function () {
+            this.timeout(5000);
+            mockupServer = new MockupServer();
+            await mockupServer.initialize();
+            mockup = new BinServParamMockup(mockupServer.namespace as Namespace,
+                mockupServer.rootComponent as UAObject, 'Variable');
+            await mockupServer.start();
+            connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334');
+            await connection.connect();
+        });
+
+        afterEach(async () => {
+            await connection.disconnect();
+            await mockupServer.shutdown();
+        });
+
+        it('set and get VExt', async () => {
+            await connection.writeOpcUaNode('ns=1;s=Variable.VExt', namespaceUrl, true, 'Boolean');
+            await connection.readOpcUaNode('ns=1;s=Variable.VExt', namespaceUrl)
+                .then(datavalue => expect(datavalue?.value.value).to.equal(true));
+        }).timeout(3000);
+
+        it('set and get VOp', async () => {
+            await connection.writeOpcUaNode('ns=1;s=Variable.VOp', namespaceUrl, true, 'Boolean');
+            await connection.readOpcUaNode('ns=1;s=Variable.VOp', namespaceUrl)
+                .then(datavalue => expect(datavalue?.value.value).to.equal(true));
+        }).timeout(3000);
+
+        //TODO get the rest
     });
 });
