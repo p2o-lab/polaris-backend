@@ -4,6 +4,9 @@ import {Namespace, UAObject} from 'node-opcua';
 
 import {DrvMockup} from './Drv.mockup';
 import {MockupServer} from '../../../../_utils';
+import {BinDrvMockup} from './binDrv/BinDrv.mockup';
+import {OpcUaConnection} from '../../../connection';
+import {namespaceUrl} from '../../../../../../tests/namespaceUrl';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -16,9 +19,7 @@ describe('DrvMockup', () => {
             mockupServer = new MockupServer();
             await mockupServer.initialize();
         });
-        afterEach(async () => {
-            await mockupServer.shutdown();
-        });
+
         it('should create DrvMockup', async () => {
             const mockup= new DrvMockup(mockupServer.namespace as Namespace,
                 mockupServer.rootComponent as UAObject, 'Variable');
@@ -33,5 +34,46 @@ describe('DrvMockup', () => {
             expect(Object.keys(json).length).to.equal(37);
             //TODO test more
         });
+    });
+    describe('dynamic', () => {
+        // we need to check if the nodes was addes succesfully and are writeable and readable
+        let mockupServer: MockupServer;
+        let mockup: BinDrvMockup;
+        let connection: OpcUaConnection;
+        beforeEach(async function () {
+            this.timeout(5000);
+            mockupServer = new MockupServer();
+            await mockupServer.initialize();
+            mockup = new BinDrvMockup(mockupServer.namespace as Namespace,
+                mockupServer.rootComponent as UAObject, 'Variable');
+            await mockupServer.start();
+            connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334');
+            await connection.connect();
+        });
+        afterEach(async () => {
+            await connection.disconnect();
+            await mockupServer.shutdown();
+        });
+
+        it('set and get StopOp', async () => {
+            await connection.writeOpcUaNode('ns=1;s=Variable.StopOp', namespaceUrl, true, 'Boolean');
+            await connection.readOpcUaNode('ns=1;s=Variable.StopOp', namespaceUrl)
+                .then(datavalue => expect(datavalue?.value.value).to.equal(true));
+        }).timeout(3000);
+
+        it('set and get FwdOp', async () => {
+            await connection.writeOpcUaNode('ns=1;s=Variable.FwdOp', namespaceUrl, true, 'Boolean');
+            await connection.readOpcUaNode('ns=1;s=Variable.FwdOp', namespaceUrl)
+                .then(datavalue => expect(datavalue?.value.value).to.equal(true));
+
+        }).timeout(3000);
+
+        it('set and get RevOp', async () => {
+            await connection.writeOpcUaNode('ns=1;s=Variable.RevOp', namespaceUrl, true, 'Boolean');
+            await connection.readOpcUaNode('ns=1;s=Variable.RevOp', namespaceUrl)
+                .then(datavalue => expect(datavalue?.value.value).to.equal(true));
+        }).timeout(3000);
+
+        //TODO get the rest
     });
 });

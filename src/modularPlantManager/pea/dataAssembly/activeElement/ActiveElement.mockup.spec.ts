@@ -20,9 +20,7 @@ describe('ActiveElementMockup', () => {
             mockupServer = new MockupServer();
             await mockupServer.initialize();
         });
-        afterEach(async () => {
-            await mockupServer.shutdown();
-        });
+ 
         it('should create ActiveElementMockup', async () => {
             const mockup= new ActiveElementMockup(mockupServer.namespace as Namespace,
                 mockupServer.rootComponent as UAObject, 'Variable');

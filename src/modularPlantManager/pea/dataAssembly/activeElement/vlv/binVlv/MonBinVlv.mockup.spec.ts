@@ -9,21 +9,20 @@ chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('MonBinVlvMockup', () => {
-    describe('', () => {
+    describe('static', () => {
         let mockupServer: any;
         beforeEach(async()=>{
             mockupServer = new MockupServer();
             await mockupServer.initialize();
         });
-        afterEach(async () => {
-            await mockupServer.shutdown();
-        });
+
         it('should create MonBinVlvMockup', async () => {
             const mockup= new MonBinVlvMockup(mockupServer.namespace as Namespace,
                 mockupServer.rootComponent as UAObject, 'Variable');
             expect(mockup).to.not.be.undefined;
-
+            expect(mockup.feedbackMonitoring).to.not.be.undefined;
         });
+
         it('getMonBinVlvMockupReferenceJSON()',  () => {
             const mockup = new MonBinVlvMockup(mockupServer.namespace as Namespace,
                 mockupServer.rootComponent as UAObject, 'Variable');
