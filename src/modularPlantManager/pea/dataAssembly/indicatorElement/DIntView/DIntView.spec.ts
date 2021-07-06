@@ -51,8 +51,8 @@ describe('DIntView', () => {
 			expect(da1.communication.WQC).to.not.equal(undefined);
 			expect(da1.communication.VSclMax).to.not.equal(undefined);
 			expect(da1.communication.VSclMin).to.not.equal(undefined);
-			expect(da1.communication.TagName).to.not.equal(undefined);
-			expect(da1.communication.TagDescription).to.not.equal(undefined);
+			expect(da1.tagName).to.not.equal(undefined);
+			expect(da1.tagDescription).to.not.equal(undefined);
 			expect(da1.communication.VUnit).to.not.equal(undefined);
 		});
 

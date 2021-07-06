@@ -56,11 +56,11 @@ describe('ModularPlantManager', () => {
 			});
 		});
 
-		it('getPEAController() (& loadPEAControlle())', (done) => {
-			/*const peaId = modularPlantManager.loadPEAController(pimadId)[0].id;
+		it('getPEAController() & loadPEAController())', async() => {
+			const peas = await modularPlantManager.loadPEAController(pimadId);
+			const peaId = peas[0].id;
 			expect(modularPlantManager.peas.length).equal(1);
 			expect(() => modularPlantManager.getPEAController(peaId)).not.to.throw();
-			done();*/
 		});
 
 
@@ -78,9 +78,10 @@ describe('ModularPlantManager', () => {
 			});
 		});
 
-		it('updateServerSettings()', () => {
+		it('updateServerSettings()', async() => {
 			// instantiate PEAController first
-			/*const peaId = modularPlantManager.loadPEAController(pimadId)[0].id;
+			const peas = await modularPlantManager.loadPEAController(pimadId);
+			const peaId = peas[0].id;
 			const options: ServerSettingsOptions = {
 				id: peaId,
 				username: 'Bob',
@@ -103,7 +104,7 @@ describe('ModularPlantManager', () => {
 			expect(() => modularPlantManager.loadPEAController({someattribute: 'abc'} as any)).to.throw();
 		});*/
 
-		it('should load PEAs', (done) => {
+		it('should load PEAs', () => {
 			const modularPlantManager = new ModularPlantManager();
 			// add PEAModel to PiMAd first
 			modularPlantManager.addPEAToPimadPool({source:'tests/testpea.zip'}, async response => {
@@ -121,7 +122,7 @@ describe('ModularPlantManager', () => {
 			//const peasJson = JSON.parse(fs.readFileSync('assets/peas/pea_cif.json').toString());
 			//modularPlantManager.loadPEAController(peasJson);
 			//expect(() => modularPlantManager.loadPEAController(peasJson)).to.throw('already in registered PEAs');
-		}).timeout(2000);
+		}).timeout(10000);
 
 		/*it('should loadPEAControllerPEAController with single PEAController', () => {
 			const peasJson = JSON.parse(fs.readFileSync('assets/peas/pea_cif.json').toString());

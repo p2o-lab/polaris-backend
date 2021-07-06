@@ -35,7 +35,7 @@
     "lint": "eslint -f pretty --ext .ts --ignore-pattern \"**/*.spec.ts\" --ignore-pattern \"**/*.mockup.ts\" src",
     "prebuild": "npm run clrBuild && npm run lint",
     "start": "ts-node ./src/index.ts",
-    "test": "nyc mocha --require ts-node/register --recursive \"./src/**/*.spec.ts\"",
+    "test": "nyc mocha --exit --require ts-node/register --recursive \"./src/**/*.spec.ts\"",
     "typedoc": "npm run clrTypeDoc && typedoc --mode file --module commonjs --out typedoc/ --target ES2017 --excludePrivate --readme none src/"
   },
   "bin": {

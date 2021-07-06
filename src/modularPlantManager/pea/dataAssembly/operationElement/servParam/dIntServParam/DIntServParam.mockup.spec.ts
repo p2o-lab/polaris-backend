@@ -128,7 +128,7 @@ describe('DIntServParamMockup', () => {
         it('set VExt',async()=>{
             await connection.writeOpcUaNode('Variable.VExt',
                 namespaceUrl,
-                1,'Double');
+                1,'Int32');
             await connection.readOpcUaNode('Variable.VExt',
                 namespaceUrl)
                 .then(datavalue=>expect(datavalue?.value.value).to.equal(1));
@@ -137,7 +137,7 @@ describe('DIntServParamMockup', () => {
         it('set VOp',async()=>{
             await connection.writeOpcUaNode('Variable.VOp',
                 namespaceUrl,
-                1,'Double');
+                1,'Int32');
             await connection.readOpcUaNode('Variable.VOp',
                 namespaceUrl)
                 .then(datavalue=>expect(datavalue?.value.value).to.equal(1));

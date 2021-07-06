@@ -3,9 +3,6 @@ import * as chaiAsPromised from 'chai-as-promised';
 import {AnaServParamMockup, getAnaServParamMockupReferenceJSON} from './AnaServParam.mockup';
 import {MockupServer} from '../../../../../_utils';
 import {Namespace, UAObject} from 'node-opcua';
-import {AnaView} from '../../../indicatorElement';
-import * as peaOptions from '../../../../../../../tests/peaOptions.json';
-import {PEAController} from '../../../../PEAController';
 import {OpcUaConnection} from '../../../../connection';
 import {namespaceUrl} from '../../../../../../../tests/namespaceUrl';
 
