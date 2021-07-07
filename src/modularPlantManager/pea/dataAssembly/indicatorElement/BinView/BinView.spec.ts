@@ -29,23 +29,28 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import * as baseDataAssemblyOptions from '../../../../../../tests/binview.json';
-import {AnaView} from '../AnaView/AnaView';
 import {DataAssemblyControllerFactory} from '../../DataAssemblyControllerFactory';
+import {MockupServer} from '../../../../_utils';
+import {AnaViewMockup} from '../AnaView/AnaView.mockup';
+import {Namespace, UAObject} from 'node-opcua';
+import {namespaceUrl} from '../../../../../../tests/namespaceUrl';
+import {AnaView} from '../AnaView/AnaView';
+import {BinViewMockup} from './BinView.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('BinView', () => {
-
+	const dataAssemblyOptions: DataAssemblyOptions = {
+		name: 'Variable',
+		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/BinView',
+		dataItems: baseDataAssemblyOptions
+	};
 	describe('static', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
 		it('should create BinView', async () => {
 
-			const dataAssemblyOptions: DataAssemblyOptions = {
-				name: 'Variable',
-				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/BinView',
-				dataItems: baseDataAssemblyOptions
-			};
+
 			const da1: BinView = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as BinView;
 			expect(da1 instanceof BinView).to.equal(true);
 			expect(da1.tagName).to.equal('Variable');
@@ -57,6 +62,46 @@ describe('BinView', () => {
 		});
 
 	});
+	describe('dynamic', () => {
+		let mockupServer: MockupServer;
+		let connection: OpcUaConnection;
 
+		beforeEach(async function () {
+			this.timeout(4000);
+			mockupServer = new MockupServer();
+			await mockupServer.initialize();
+			const mockup = new BinViewMockup(
+				mockupServer.namespace as Namespace,
+				mockupServer.rootComponent as UAObject,
+				'Variable');
+			await mockupServer.start();
+			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334','','');
+			await connection.connect();
+		});
 
+		afterEach(async function () {
+			this.timeout(4000);
+			await connection.disconnect();
+			await mockupServer.shutdown();
+		});
+
+		it('should subscribe successfully', async () => {
+			// set namespaceUrl
+			for (const key in dataAssemblyOptions.dataItems as any) {
+				//skip static values
+				if((typeof(dataAssemblyOptions.dataItems as any)[key] != 'string')){
+					(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
+				}
+			}
+			const da1: BinView = new BinView(dataAssemblyOptions, connection);
+			const pv = da1.subscribe();
+			await connection.startListening();
+			await pv;
+			expect(da1.communication.WQC.value).equal(0);
+			expect(da1.communication.V.value).equal(false);
+			expect(da1.communication.VState0.value).equal('state0_active');
+			expect(da1.communication.VState1.value).equal('state1_active');
+
+		}).timeout(4000);
+	});
 });

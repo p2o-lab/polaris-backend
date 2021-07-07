@@ -31,6 +31,10 @@ import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import * as baseDataAssemblyOptions from '../../../../../../tests/anamon.json';
 import {DataAssemblyControllerFactory} from '../../DataAssemblyControllerFactory';
+import {MockupServer} from '../../../../_utils';
+import {Namespace, UAObject} from 'node-opcua';
+import {AnaMonMockup} from './AnaMon.mockup';
+import {namespaceUrl} from '../../../../../../tests/namespaceUrl';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -44,12 +48,6 @@ describe('AnaMon', () => {
 	describe('static', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
 		it('should create AnaMon', async () => {
-
-			const dataAssemblyOptions: DataAssemblyOptions = {
-				name: 'Variable',
-				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/AnaMon',
-				dataItems: baseDataAssemblyOptions
-			};
 			const da1: AnaMon= DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as AnaMon;
 			expect(da1 instanceof AnaMon).to.equal(true);
 			expect(da1.tagName).to.equal('Variable');
@@ -85,5 +83,74 @@ describe('AnaMon', () => {
 			expect(da1.communication.VALLim).to.not.equal(undefined);
 			expect(da1.communication.VALAct).to.not.equal(undefined);
 		});
+	});
+	describe('dynamic', () => {
+		let mockupServer: MockupServer;
+		let connection: OpcUaConnection;
+
+		beforeEach(async function () {
+			this.timeout(4000);
+			mockupServer = new MockupServer();
+			await mockupServer.initialize();
+			const mockup = new AnaMonMockup(
+				mockupServer.namespace as Namespace,
+				mockupServer.rootComponent as UAObject,
+				'Variable');
+			await mockupServer.start();
+			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334','','');
+			await connection.connect();
+		});
+
+		afterEach(async function () {
+			this.timeout(4000);
+			await connection.disconnect();
+			await mockupServer.shutdown();
+		});
+
+		it('should subscribe successfully', async () => {
+			// set namespaceUrl
+			for (const key in dataAssemblyOptions.dataItems as any) {
+				//skip static values
+				if((typeof(dataAssemblyOptions.dataItems as any)[key] != 'string')){
+					(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
+				}
+			}
+
+			const da1 = new AnaMon(dataAssemblyOptions, connection);
+			const pv =  da1.subscribe();
+			await connection.startListening();
+			await pv;
+			expect(da1.communication.V.value).equal(0);
+			expect(da1.communication.WQC.value).equal(0);
+			expect(da1.communication.VUnit.value).equal(0);
+			expect(da1.communication.VSclMin.value).equal(0);
+			expect(da1.communication.VSclMax.value).equal(0);
+
+			expect(da1.communication.OSLevel.value).to.equal(0);
+			expect(da1.communication.VAHEn.value).to.equal(false);
+			expect(da1.communication.VAHLim.value).to.equal(0);
+			expect(da1.communication.VAHAct.value).to.equal(false);
+
+			expect(da1.communication.VWHEn.value).to.equal(false);
+			expect(da1.communication.VWHLim.value).to.equal(0);
+			expect(da1.communication.VWHAct.value).to.equal(false);
+
+			expect(da1.communication.VTHEn.value).to.equal(false);
+			expect(da1.communication.VTHLim.value).to.equal(0);
+			expect(da1.communication.VTHAct.value).to.equal(false);
+
+			expect(da1.communication.VTLEn.value).to.equal(false);
+			expect(da1.communication.VTLLim.value).to.equal(0);
+			expect(da1.communication.VTLAct.value).to.equal(false);
+
+			expect(da1.communication.VWLEn.value).to.equal(false);
+			expect(da1.communication.VWLLim.value).to.equal(0);
+			expect(da1.communication.VWLAct.value).to.equal(false);
+
+			expect(da1.communication.VALEn.value).to.equal(false);
+			expect(da1.communication.VALLim.value).to.equal(0);
+			expect(da1.communication.VALAct.value).to.equal(false);
+
+		}).timeout(4000);
 	});
 });

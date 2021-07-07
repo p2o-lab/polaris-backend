@@ -31,21 +31,26 @@ import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import * as baseDataAssemblyOptions from '../../../../../../tests/binmon.json';
 import {DataAssemblyControllerFactory} from '../../DataAssemblyControllerFactory';
+import {MockupServer} from '../../../../_utils';
+import {BinViewMockup} from './BinView.mockup';
+import {Namespace, UAObject} from 'node-opcua';
+import {namespaceUrl} from '../../../../../../tests/namespaceUrl';
+import {BinView} from './BinView';
+import {BinMonMockup} from './BinMon.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('BinMon', () => {
+	const dataAssemblyOptions: DataAssemblyOptions = {
+		name: 'Variable',
+		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/BinMon',
+		dataItems: baseDataAssemblyOptions
+	};
 
 	describe('static', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
 		it('should create BinMon', async () => {
-
-			const dataAssemblyOptions: DataAssemblyOptions = {
-				name: 'Variable',
-				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/BinMon',
-				dataItems: baseDataAssemblyOptions
-			};
 			const da1: BinMon = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as BinMon;
 			expect(da1 instanceof BinMon).to.equal(true);
 
@@ -62,5 +67,53 @@ describe('BinMon', () => {
 			expect(da1.communication.VFlutCnt).to.not.equal(undefined);
 			expect(da1.communication.VFlutAct).to.not.equal(undefined);
 		});
+	});
+	describe('dynamic', () => {
+		let mockupServer: MockupServer;
+		let connection: OpcUaConnection;
+
+		beforeEach(async function () {
+			this.timeout(4000);
+			mockupServer = new MockupServer();
+			await mockupServer.initialize();
+			const mockup = new BinMonMockup(
+				mockupServer.namespace as Namespace,
+				mockupServer.rootComponent as UAObject,
+				'Variable');
+			await mockupServer.start();
+			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334','','');
+			await connection.connect();
+		});
+
+		afterEach(async function () {
+			this.timeout(4000);
+			await connection.disconnect();
+			await mockupServer.shutdown();
+		});
+
+		it('should subscribe successfully', async () => {
+			// set namespaceUrl
+			for (const key in dataAssemblyOptions.dataItems as any) {
+				//skip static values
+				if((typeof(dataAssemblyOptions.dataItems as any)[key] != 'string')){
+					(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
+				}
+			}
+			const da1: BinMon = new BinMon(dataAssemblyOptions, connection);
+			const pv = da1.subscribe();
+			await connection.startListening();
+			await pv;
+			expect(da1.communication.WQC.value).equal(0);
+			expect(da1.communication.V.value).equal(false);
+			expect(da1.communication.VState0.value).equal('state0_active');
+			expect(da1.communication.VState1.value).equal('state1_active');
+
+			//TODO wtf, does not work
+			expect(da1.communication.VFlutEn.value).equal(false);
+			expect(da1.communication.VFlutAct.value).equal(false);
+			expect(da1.communication.VFlutTi.value).equal(0);
+			expect(da1.communication.VFlutCnt.value).equal(0);
+
+		}).timeout(4000);
 	});
 });

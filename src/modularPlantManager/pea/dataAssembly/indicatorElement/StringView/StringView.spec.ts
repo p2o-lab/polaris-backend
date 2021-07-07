@@ -30,24 +30,71 @@ import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import * as baseDataAssemblyOptions from '../../../../../../tests/stringview.json';
 import {DataAssemblyControllerFactory} from '../../DataAssemblyControllerFactory';
+import {MockupServer} from '../../../../_utils';
+import {DIntViewMockup} from '../DIntView/DIntView.mockup';
+import {Namespace, UAObject} from 'node-opcua';
+import {namespaceUrl} from '../../../../../../tests/namespaceUrl';
+import {DIntView} from '../DIntView/DIntView';
+import {StringViewMockup} from './StringView.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('StringView', () => {
+	const dataAssemblyOptions: DataAssemblyOptions = {
+		name: 'Variable',
+		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/StringView',
+		dataItems: baseDataAssemblyOptions
+	};
+
 	describe('static', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
 		it('should create StringView', async () => {
-			const dataAssemblyOptions: DataAssemblyOptions = {
-				name: 'Variable',
-				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/StringView',
-				dataItems: baseDataAssemblyOptions
-			};
+
 			const da1: StringView = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as StringView;
 			expect(da1.tagName).to.equal('Variable');
 			expect(da1.tagDescription).to.equal('Test');
 			expect(da1.communication.WQC).to.not.equal(undefined);
 			expect(da1.communication.Text).to.not.equal(undefined);
 		});
+	});
+	describe('dynamic', () => {
+		let mockupServer: MockupServer;
+		let connection: OpcUaConnection;
+
+		beforeEach(async function () {
+			this.timeout(4000);
+			mockupServer = new MockupServer();
+			await mockupServer.initialize();
+			const mockup = new StringViewMockup(
+				mockupServer.namespace as Namespace,
+				mockupServer.rootComponent as UAObject,
+				'Variable');
+			await mockupServer.start();
+			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334','','');
+			await connection.connect();
+		});
+
+		afterEach(async function () {
+			this.timeout(4000);
+			await connection.disconnect();
+			await mockupServer.shutdown();
+		});
+
+		it('should subscribe successfully', async () => {
+			// set namespaceUrl
+			for (const key in dataAssemblyOptions.dataItems as any) {
+				//skip static values
+				if((typeof(dataAssemblyOptions.dataItems as any)[key] != 'string')){
+					(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
+				}
+			}
+			const da1: StringView = new StringView(dataAssemblyOptions, connection);
+			const pv = da1.subscribe();
+			await connection.startListening();
+			await pv;
+			expect(da1.communication.WQC.value).equal(0);
+			expect(da1.communication.Text.value).equal('dummyText');
+		}).timeout(4000);
 	});
 });
