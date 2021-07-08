@@ -51,7 +51,7 @@ export type AnaDrvRuntime = DrvRuntime & SourceModeRuntime & {
 export class AnaDrv extends Drv {
 
 	public readonly communication!: AnaDrvRuntime;
-	sourceMode: SourceModeController;
+	readonly sourceMode: SourceModeController;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
@@ -59,21 +59,21 @@ export class AnaDrv extends Drv {
 		this.sourceMode = new SourceModeController(this);
 		this.sourceMode.initialize();
 
-		this.communication.RpmSclMax = this.createDataItem('RpmFbk', 'read', 'number');
-		this.communication.RpmSclMin = this.createDataItem('RpmFbk', 'read', 'number');
+		this.communication.RpmSclMax = this.createDataItem('RpmSclMax', 'read', 'number');
+		this.communication.RpmSclMin = this.createDataItem('RpmSclMin', 'read', 'number');
 
-		this.communication.RpmUnit = this.createDataItem('RpmFbk', 'read', 'number');
+		this.communication.RpmUnit = this.createDataItem('RpmUnit', 'read', 'number');
 
-		this.communication.RpmMin = this.createDataItem('RpmFbk', 'read', 'number');
-		this.communication.RpmMax = this.createDataItem('RpmFbk', 'read', 'number');
+		this.communication.RpmMin = this.createDataItem('RpmMin', 'read', 'number');
+		this.communication.RpmMax = this.createDataItem('RpmMax', 'read', 'number');
 
-		this.communication.RpmInt = this.createDataItem('RpmFbk', 'read', 'number');
-		this.communication.RpmMan = this.createDataItem('RpmFbk', 'write', 'number');
+		this.communication.RpmInt = this.createDataItem('RpmInt', 'read', 'number');
+		this.communication.RpmMan = this.createDataItem('RpmMan', 'write', 'number');
 
-		this.communication.Rpm = this.createDataItem('RpmFbk', 'read', 'number');
+		this.communication.Rpm = this.createDataItem('Rpm', 'read', 'number');
 		this.communication.RpmFbk = this.createDataItem('RpmFbk', 'read', 'number');
-		this.communication.RpmFbkCalc = this.createDataItem('RpmFbk', 'read', 'boolean');
-		this.communication.RpmRbk = this.createDataItem('RpmFbk', 'read', 'number');
+		this.communication.RpmFbkCalc = this.createDataItem('RpmFbkCalc', 'read', 'boolean');
+		this.communication.RpmRbk = this.createDataItem('RpmRbk', 'read', 'number');
 
 		this.defaultReadDataItem = this.communication.RpmFbk;
 		this.defaultReadDataItemType = 'number';
