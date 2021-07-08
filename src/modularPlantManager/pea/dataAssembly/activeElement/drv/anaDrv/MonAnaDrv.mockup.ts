@@ -120,6 +120,17 @@ export class MonAnaDrvMockup extends AnaDrvMockup {
 
 		namespace.addVariable({
 			componentOf: rootNode,
+			nodeId: `ns=${namespace.index};s=${variableName}.RpmErr`,
+			browseName: `${variableName}.RpmErr`,
+			dataType: DataType.Double,
+			value: {
+				get: (): Variant => {
+					return new Variant({dataType: DataType.Double, value: this.rpmErr});
+				},
+			},
+		});
+		namespace.addVariable({
+			componentOf: rootNode,
 			nodeId: `ns=${namespace.index};s=${variableName}.RpmAHEn`,
 			browseName: `${variableName}.RpmAHEn`,
 			dataType: DataType.Boolean,
@@ -156,7 +167,7 @@ export class MonAnaDrvMockup extends AnaDrvMockup {
 				},
 			},
 		});
-	/*	namespace.addVariable({
+		namespace.addVariable({
 			componentOf: rootNode,
 			nodeId: `ns=${namespace.index};s=${variableName}.RpmAHAct`,
 			browseName: `${variableName}.RpmAHAct`,
@@ -167,6 +178,7 @@ export class MonAnaDrvMockup extends AnaDrvMockup {
 				},
 			},
 		});
+		/*
 		namespace.addVariable({
 			componentOf: rootNode,
 			nodeId: `ns=${namespace.index};s=${variableName}.RpmWHEn`,

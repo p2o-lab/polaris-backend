@@ -143,6 +143,7 @@ export class DrvMockup {
 	public safePos = false;
 	public safePosAct = false;
 
+
 	public fwdEn= false;
 	public revEn= false;
 	public stopOp= false;
@@ -364,6 +365,17 @@ export class DrvMockup {
 			value: {
 				get: (): Variant => {
 					return new Variant({dataType: DataType.Boolean, value: this.fwdFbk});
+				},
+			},
+		});
+		namespace.addVariable({
+			componentOf: this.mockupNode,
+			nodeId: `ns=${namespace.index};s=${variableName}.Trip`,
+			browseName: `${variableName}.Trip`,
+			dataType: DataType.Boolean,
+			value: {
+				get: (): Variant => {
+					return new Variant({dataType: DataType.Boolean, value: this.trip});
 				},
 			},
 		});

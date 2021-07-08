@@ -36,7 +36,11 @@ chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('AnaMon', () => {
-
+	const dataAssemblyOptions: DataAssemblyOptions = {
+		name: 'Variable',
+		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/AnaMon',
+		dataItems: baseDataAssemblyOptions
+	};
 	describe('static', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
 		it('should create AnaMon', async () => {

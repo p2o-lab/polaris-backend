@@ -148,8 +148,8 @@ export class SourceModeDAMockup {
 
       namespace.addVariable({
         componentOf: rootNode,
-        nodeId: `ns=${namespace.index};s=${variableName}.SrcExtOp`,
-        browseName: `${variableName}.SrcExtOp`,
+        nodeId: `ns=${namespace.index};s=${variableName}.SrcManOp`,
+        browseName: `${variableName}.SrcManOp`,
         dataType: DataType.Boolean,
         value: {
           get: (): Variant => {
