@@ -23,12 +23,17 @@
  * SOFTWARE.
  */
 import {OpcUaConnection} from '../../connection';
-import {InputElement} from './InputElement';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from '../../../../../tests/binmanint.json';
+import * as baseDataAssemblyOptions from '../../../../../tests/binprocessvaluein.json';
+import {MockupServer} from '../../../_utils';
+import {Namespace, UAObject} from 'node-opcua';
+import {namespaceUrl} from '../../../../../tests/namespaceUrl';
+import {InputElementMockup} from './InputElement.mockup';
+import {InputElement} from './InputElement';
+import {DataAssemblyControllerFactory} from '../DataAssemblyControllerFactory';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -40,13 +45,60 @@ describe('InputElement', () => {
 		it('should create InputElement', async () => {
 			const dataAssemblyOptions: DataAssemblyOptions = {
 				name: 'Variable',
-				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/InputElement/BinProcessValuesIn',
+				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/InputElement/BinProcessValueIn',
 				dataItems: baseDataAssemblyOptions
 			};
-			const da1 = new InputElement(dataAssemblyOptions, emptyOPCUAConnection);
+			//TODO: problem with circular dependencies, new InputElement() does not work
+			const da1 = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as InputElement;
+			//const da1 = new InputElement(dataAssemblyOptions, emptyOPCUAConnection);
+
 			expect(da1).to.be.not.undefined;
 			expect(da1.communication).to.be.not.undefined;
 			expect(da1.wqc).to.be.not.undefined;
 		});
+	});
+	describe('dynamic', () => {
+		let mockupServer: MockupServer;
+		let connection: OpcUaConnection;
+		const dataAssemblyOptions: DataAssemblyOptions = {
+			name: 'Variable',
+			metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/BinMon',
+			dataItems: baseDataAssemblyOptions
+		};
+		beforeEach(async function () {
+			this.timeout(4000);
+			mockupServer = new MockupServer();
+			await mockupServer.initialize();
+			const mockup = new InputElementMockup(
+				mockupServer.namespace as Namespace,
+				mockupServer.rootComponent as UAObject,
+				'Variable');
+			await mockupServer.start();
+			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334','','');
+			await connection.connect();
+		});
+
+		afterEach(async function () {
+			this.timeout(4000);
+			await connection.disconnect();
+			await mockupServer.shutdown();
+		});
+
+		it('should subscribe successfully', async () => {
+			// set namespaceUrl
+			for (const key in dataAssemblyOptions.dataItems as any) {
+				//skip static values
+				if((typeof(dataAssemblyOptions.dataItems as any)[key] != 'string')){
+					(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
+				}
+			}
+			const da1 = DataAssemblyControllerFactory.create(dataAssemblyOptions, connection) as InputElement;
+			//const da1 = new InputElement(dataAssemblyOptions, emptyOPCUAConnection);
+			const pv = await da1.subscribe();
+			await connection.startListening();
+			await pv;
+			expect(da1.communication.WQC.value).equal(0);
+			//TODO test not working properly
+		}).timeout(100000);
 	});
 });

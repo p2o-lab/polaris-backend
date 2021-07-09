@@ -45,12 +45,8 @@ export class AnaProcessValueIn extends InputElement {
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
 		this.communication.VExt = this.createDataItem('VExt', 'read', 'number');
-
 		this.unitSettings = new UnitSettings(this);
-		
-
 		this.scaleSettings = new ScaleSettings(this);
-		;
 
 		this.defaultReadDataItem = this.communication.VExt;
 		this.defaultReadDataItemType = 'number';

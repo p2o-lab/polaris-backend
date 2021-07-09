@@ -26,9 +26,8 @@
 
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {OpcUaConnection, OpcUaDataItem} from '../../../../connection';
-import {
-	InputElement, InputElementRuntime
-} from '../../InputElement';
+import {InputElement, InputElementRuntime} from '../../InputElement';
+
 
 export type BinProcessValueInRuntime = InputElementRuntime & {
 	VExt: OpcUaDataItem<boolean>;

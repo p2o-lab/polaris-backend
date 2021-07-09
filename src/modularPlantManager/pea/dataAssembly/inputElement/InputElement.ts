@@ -29,17 +29,18 @@ import {
 	ParameterInterface,
 	ParameterOptions
 } from '@p2olab/polaris-interface';
-import {Parameter} from '../../../recipe';
 import {DataItem, OpcUaConnection} from '../../connection';
 import {PEAController} from '../../PEAController';
 import {WQCRuntime} from '../_extensions';
 import {BaseDataAssemblyRuntime, DataAssemblyController} from '../DataAssemblyController';
 import {catDataAssembly} from '../../../../logging';
 import {WQC} from '../_extensions/wqcDA/WQC';
+import {Parameter} from '../../../recipe';
 
-export type InputElementRuntime = WQCRuntime;
+export type InputElementRuntime = WQCRuntime & BaseDataAssemblyRuntime ;
 
 export class InputElement extends DataAssemblyController {
+	public readonly communication!: InputElementRuntime;
 	public parameterRequest: Parameter | undefined;
 	public requestedValue = '';
 
@@ -50,15 +51,15 @@ export class InputElement extends DataAssemblyController {
 
 		this.wqc = new WQC(this);
 	}
-/*
-	/!**
+	/**
 	 * Set parameter on PEAController
 	 * @param paramValue
 	 * @param {string} variable
-	 *!/
-	public async setParameter(paramValue: string | number, variable?: string): Promise<void> {
+	 */
+	public async setParameter(paramValue: string | number | boolean, variable?: string): Promise<void> {
 		const dataItem: DataItem<any> | undefined = (variable) ?
-			this.communication[variable as keyof InputElementOptions] : this.defaultWriteDataItem;
+			//this.communication[variable as keyof InputElementOptions] : this.defaultWriteDataItem;
+			(this.communication as any)[variable] : this.defaultWriteDataItem;
 		catDataAssembly.debug(`Set Parameter: ${this.name} (${variable}) -> ${JSON.stringify(paramValue)}`);
 		await dataItem?.write(paramValue);
 	}
@@ -88,7 +89,7 @@ export class InputElement extends DataAssemblyController {
 					.on('changed', (data) => this.setParameter(data));
 			}
 		}
-	}*/
+	}
 
 	public toJson(): ParameterInterface {
 		return {

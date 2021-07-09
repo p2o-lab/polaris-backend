@@ -24,31 +24,106 @@
  */
 
 import {OpcUaConnection} from '../../../../connection';
-import {BinProcessValueIn} from './BinProcessValueIn';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {PEAMockup} from '../../../../PEA.mockup';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import * as baseDataAssemblyOptions from '../../../../../../../tests/binprocessvaluein.json';
+import {MockupServer} from '../../../../../_utils';
+import {BinProcessValueInMockup} from '../BinProcessValueIn/BinProcessValueIn.mockup';
+import {Namespace, UAObject} from 'node-opcua';
+import {namespaceUrl} from '../../../../../../../tests/namespaceUrl';
+import {DataAssemblyControllerFactory} from '../../../DataAssemblyControllerFactory';
+import {BinProcessValueIn} from './BinProcessValueIn';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('BinProcessValueIn', () => {
+	const dataAssemblyOptions: DataAssemblyOptions = {
+		name: 'Variable',
+		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/InputElement/BinProcessValueIn',
+		dataItems: baseDataAssemblyOptions
+	};
 
 	describe('', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
 		it('should create BinProcessValueIn', () => {
-			const dataAssemblyOptions: DataAssemblyOptions = {
-				name: 'Variable',
-				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/InputElement/BinProcessValuesIn',
-				dataItems: baseDataAssemblyOptions
-			};
-			const da1 = new BinProcessValueIn(dataAssemblyOptions, emptyOPCUAConnection);
+
+			const da1 = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as BinProcessValueIn;
+
 			expect(da1).to.be.not.undefined;
 			expect(da1.communication.VExt).to.be.not.undefined;
 			expect(da1.communication.VState0).to.be.not.undefined;
 			expect(da1.communication.VState1).to.be.not.undefined;
 		});
+	});
+	describe('dynamic', () => {
+		let mockupServer: MockupServer;
+		let connection: OpcUaConnection;
+		let mockup: BinProcessValueInMockup;
+
+		beforeEach(async function () {
+			this.timeout(4000);
+			mockupServer = new MockupServer();
+			await mockupServer.initialize();
+			mockup = new BinProcessValueInMockup(
+				mockupServer.namespace as Namespace,
+				mockupServer.rootComponent as UAObject,
+				'Variable');
+			await mockupServer.start();
+			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334','','');
+			await connection.connect();
+			// set namespaceUrl
+			for (const key in dataAssemblyOptions.dataItems as any) {
+				//skip static values
+				if((typeof(dataAssemblyOptions.dataItems as any)[key] != 'string')){
+					(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
+				}
+			}
+		});
+
+		afterEach(async function () {
+			this.timeout(4000);
+			await connection.disconnect();
+			await mockupServer.shutdown();
+		});
+
+		it('should subscribe successfully', async () => {
+			const da1 = new BinProcessValueIn(dataAssemblyOptions, connection);
+			const pv =  da1.subscribe();
+			await connection.startListening();
+			await pv;
+
+			expect(da1.communication.VExt.value).equal(false);
+			expect(da1.communication.VState0.value).equal('state0_active');
+			expect(da1.communication.VState1.value).equal('state1_active');
+		}).timeout(4000);
+
+		it('setparameter', async () => {
+			const da1 = new BinProcessValueIn(dataAssemblyOptions, connection);
+			const pv =  da1.subscribe();
+			await connection.startListening();
+			await pv;
+
+			await da1.setParameter(true,'VExt');
+			await da1.setParameter('test','VState0');
+			await da1.setParameter('test','VState1');
+
+			expect(mockup.vExt).equal(true);
+			//TODO: problem: we have to wait for the variable to change (EventEmitter), maybe this is not optimal
+			await new Promise(f => setTimeout(f, 1000));
+			expect(da1.communication.VExt.value).equal(true);
+			expect(da1.communication.VState0.value).equal('test');
+			expect(da1.communication.VState1.value).equal('test');
+		}).timeout(4000);
+
+		it('setValue', async () => {
+			// TODO
+		}).timeout(4000);
+
+		it('tojson', async () => {
+			// TODO
+		}).timeout(4000);
 	});
 });
