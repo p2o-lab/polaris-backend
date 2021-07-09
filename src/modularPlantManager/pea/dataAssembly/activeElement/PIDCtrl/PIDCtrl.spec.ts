@@ -31,22 +31,30 @@ import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import * as baseDataAssemblyOptions from '../../../../../../tests/pidctrl.json';
 import {Vlv} from '../vlv';
+import {MockupServer} from '../../../../_utils';
+import {AnaProcessValueInMockup} from '../../inputElement/processValueIn/AnaProcessValueIn/AnaProcessValueIn.mockup';
+import {Namespace, UAObject} from 'node-opcua';
+import {namespaceUrl} from '../../../../../../tests/namespaceUrl';
+import {DataAssemblyControllerFactory} from '../../DataAssemblyControllerFactory';
+import {AnaProcessValueIn} from '../../inputElement';
+import {PIDCtrlMockup} from './PIDCtrl.mockup';
+import {AnaServParam, BinManInt} from '../../operationElement';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('PIDCtrl', () => {
 	const parseJson = require('json-parse-better-errors');
-
+	const dataAssemblyOptions: DataAssemblyOptions = {
+		name: 'Variable',
+		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperationElement/PIDCtrl',
+		dataItems: baseDataAssemblyOptions
+	};
 	describe('static', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
 		it('should create PIDCtrl', async () => {
 			const emptyOPCUAConnection = new OpcUaConnection('', '');
-			const dataAssemblyOptions: DataAssemblyOptions = {
-				name: 'Variable',
-				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperationElement/MonBinVlv',
-				dataItems: baseDataAssemblyOptions
-			};
+
 			const da1 = new PIDCtrl(dataAssemblyOptions, emptyOPCUAConnection);
 
 			expect(da1.wqc).to.be.not.undefined;
@@ -86,5 +94,97 @@ describe('PIDCtrl', () => {
 
 			expect(Object.keys(da1.communication).length).to.equal(43);
 		});
+	});
+	describe('dynamic', () => {
+		let mockupServer: MockupServer;
+		let connection: OpcUaConnection;
+		let mockup: PIDCtrlMockup;
+
+		beforeEach(async function () {
+			this.timeout(4000);
+			mockupServer = new MockupServer();
+			await mockupServer.initialize();
+			mockup = new PIDCtrlMockup(
+				mockupServer.namespace as Namespace,
+				mockupServer.rootComponent as UAObject,
+				'Variable');
+			await mockupServer.start();
+			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334','','');
+			await connection.connect();
+		});
+
+		afterEach(async function () {
+			this.timeout(4000);
+			await connection.disconnect();
+			await mockupServer.shutdown();
+		});
+
+		it('should subscribe successfully', async () => {
+			// set namespaceUrl
+			for (const key in dataAssemblyOptions.dataItems as any) {
+				//skip static values
+				if((typeof(dataAssemblyOptions.dataItems as any)[key] != 'string')){
+					(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
+				}
+			}
+			const da1 = new PIDCtrl(dataAssemblyOptions, connection);
+			const pv =  da1.subscribe();
+			await connection.startListening();
+			await pv;
+
+			expect(da1.communication.OSLevel.value).equal(0);
+			expect(da1.communication.WQC.value).equal(0);
+
+			expect(da1.communication.SrcChannel.value).equal(false);
+			expect(da1.communication.SrcManAut.value).equal(false);
+			expect(da1.communication.SrcIntAut.value).equal(false);
+			expect(da1.communication.SrcIntOp.value).equal(false);
+			expect(da1.communication.SrcManOp.value).equal(false);
+			expect(da1.communication.SrcIntAct.value).equal(false);
+			expect(da1.communication.SrcManAct.value).equal(true);
+
+			expect(da1.communication.StateChannel.value).equal(false);
+			expect(da1.communication.StateOffAut.value).equal(false);
+			expect(da1.communication.StateOpAut.value).equal(false);
+			expect(da1.communication.StateAutAut.value).equal(false);
+			expect(da1.communication.StateOffOp.value).equal(false);
+			expect(da1.communication.StateOpOp.value).equal(false);
+			expect(da1.communication.StateAutOp.value).equal(false);
+			expect(da1.communication.StateOpAct.value).equal(false);
+			expect(da1.communication.StateAutAct.value).equal(false);
+			expect(da1.communication.StateOffAct.value).equal(true);
+
+			expect(da1.communication.PV.value).equal(0);
+			expect(da1.communication.PVSclMax.value).equal(0);
+			expect(da1.communication.PVSclMin.value).equal(0);
+			expect(da1.communication.PVUnit.value).equal(0);
+
+			expect(da1.communication.SP.value).equal(0);
+			expect(da1.communication.SPSclMax.value).equal(0);
+			expect(da1.communication.SPSclMin.value).equal(0);
+			expect(da1.communication.SPUnit.value).equal(0);
+
+			expect(da1.communication.SPMan.value).equal(0);
+			expect(da1.communication.SPManMin.value).equal(0);
+			expect(da1.communication.SPManMax.value).equal(0);
+
+			expect(da1.communication.SPInt.value).equal(0);
+			expect(da1.communication.SPIntMin.value).equal(0);
+			expect(da1.communication.SPIntMax.value).equal(0);
+
+			expect(da1.communication.MV.value).equal(0);
+			expect(da1.communication.MVMan.value).equal(0);
+			expect(da1.communication.MVMin.value).equal(0);
+			expect(da1.communication.MVMax.value).equal(0);
+			expect(da1.communication.MVSclMax.value).equal(0);
+			expect(da1.communication.MVSclMin.value).equal(0);
+			expect(da1.communication.MVUnit.value).equal(0);
+
+			expect(da1.communication.P.value).equal(0);
+			expect(da1.communication.Ti.value).equal(0);
+			expect(da1.communication.Td.value).equal(0);
+
+		}).timeout(5000);
+
 	});
 });

@@ -30,51 +30,138 @@ import {
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {PEAMockup} from '../../../PEA.mockup';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from '../../../../../../tests/monanadrv.json';
+import * as baseDataAssemblyOptions from '../../../../../../tests/bindrv.json';
+import {MockupServer} from '../../../../_utils';
+import {Namespace, UAObject} from 'node-opcua';
+import {namespaceUrl} from '../../../../../../tests/namespaceUrl';
+import {DataAssemblyControllerFactory} from '../../DataAssemblyControllerFactory';
+import {DrvMockup} from './Drv.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
+const dataAssemblyOptions: DataAssemblyOptions = {
+	name: 'Variable',
+	metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/ActiveElement/BinDrv',
+	dataItems: baseDataAssemblyOptions
+};
 
 describe('Drv', () => {
 	describe('', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
-		it('should create Drv',  () => {
-			const emptyOPCUAConnection = new OpcUaConnection('', '');
-			const dataAssemblyOptions: DataAssemblyOptions = {
-				name: 'Variable',
-				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/ActiveElement/AnaDrv',
-				dataItems: baseDataAssemblyOptions
-			};
+		it('should create Drv/BinDrv',  () => {
 			const da1 = new Drv(dataAssemblyOptions, emptyOPCUAConnection);
 
 			expect(da1.reset).to.be.not.undefined;
-			expect(da1.interlock).to.not.be.undefined;
+			expect(da1.interlock).to.be.not.undefined;
 			expect(da1.opMode).to.be.not.undefined;
 
-			expect(da1.communication.SafePos).to.not.be.undefined;
-			expect(da1.communication.SafePosAct).to.not.be.undefined;
+			expect(da1.communication.SafePos).to.be.not.undefined;
+			expect(da1.communication.SafePosAct).to.be.not.undefined;
 
-			expect(da1.communication.FwdAut).to.not.be.undefined;
-			expect(da1.communication.FwdCtrl).to.not.be.undefined;
-			expect(da1.communication.FwdEn).to.not.be.undefined;
-			expect(da1.communication.FwdFbk).to.not.be.undefined;
-			expect(da1.communication.FwdFbkCalc).to.not.be.undefined;
-			expect(da1.communication.FwdOp).to.not.be.undefined;
+			expect(da1.communication.FwdAut).to.be.not.undefined;
+			expect(da1.communication.FwdCtrl).to.be.not.undefined;
+			expect(da1.communication.FwdEn).to.be.not.undefined;
+			expect(da1.communication.FwdFbk).to.be.not.undefined;
+			expect(da1.communication.FwdFbkCalc).to.be.not.undefined;
+			expect(da1.communication.FwdOp).to.be.not.undefined;
 
-			expect(da1.communication.RevAut).to.not.be.undefined;
-			expect(da1.communication.RevCtrl).to.not.be.undefined;
-			expect(da1.communication.RevEn).to.not.be.undefined;
-			expect(da1.communication.RevFbk).to.not.be.undefined;
-			expect(da1.communication.RevFbkCalc).to.not.be.undefined;
-			expect(da1.communication.RevOp).to.not.be.undefined;
+			expect(da1.communication.RevAut).to.be.not.undefined;
+			expect(da1.communication.RevCtrl).to.be.not.undefined;
+			expect(da1.communication.RevEn).to.be.not.undefined;
+			expect(da1.communication.RevFbk).to.be.not.undefined;
+			expect(da1.communication.RevFbkCalc).to.be.not.undefined;
+			expect(da1.communication.RevOp).to.be.not.undefined;
 
-			expect(da1.communication.StopAut).to.not.be.undefined;
-			expect(da1.communication.StopOp).to.not.be.undefined;
-			expect(da1.communication.Trip).to.not.be.undefined;
+			expect(da1.communication.StopAut).to.be.not.undefined;
+			expect(da1.communication.StopOp).to.be.not.undefined;
+			expect(da1.communication.Trip).to.be.not.undefined;
 
 			expect(Object.keys(da1.communication).length).to.equal(37);
 		});
+	});
+	describe('dynamic', () => {
+		let mockupServer: MockupServer;
+		let connection: OpcUaConnection;
+		let mockup: DrvMockup;
+		let da1: Drv;
+
+		beforeEach(async function () {
+			this.timeout(10000);
+			mockupServer = new MockupServer();
+			await mockupServer.initialize();
+			mockup = new DrvMockup(
+				mockupServer.namespace as Namespace,
+				mockupServer.rootComponent as UAObject,
+				'Variable');
+			await mockupServer.start();
+			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334','','');
+			await connection.connect();
+			// set namespaceUrl
+			for (const key in dataAssemblyOptions.dataItems as any) {
+				//skip static values
+				if((typeof(dataAssemblyOptions.dataItems as any)[key] != 'string')){
+					(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
+				}
+			}
+			da1 = new Drv(dataAssemblyOptions, connection) ;
+			const pv = da1.subscribe();
+			await connection.startListening();
+			await pv;
+		});
+
+		afterEach(async function () {
+			this.timeout(4000);
+			await connection.disconnect();
+			await mockupServer.shutdown();
+		});
+
+		it('should subscribe successfully', async () => {
+			expect((da1).communication.OSLevel.value).equal(0);
+			expect((da1).communication.WQC.value).equal(0);
+
+			expect((da1).communication.StateChannel.value).equal(false);
+			expect((da1).communication.StateOffAut.value).equal(false);
+			expect((da1).communication.StateOpAut.value).equal(false);
+			expect((da1).communication.StateAutAut.value).equal(false);
+			expect((da1).communication.StateOffOp.value).equal(false);
+			expect((da1).communication.StateOpOp.value).equal(false);
+			expect((da1).communication.StateAutOp.value).equal(false);
+			expect((da1).communication.StateOpAct.value).equal(false);
+			expect((da1).communication.StateAutAct.value).equal(false);
+			expect((da1).communication.StateOffAct.value).equal(true);
+
+			expect(da1.communication.ResetOp.value).equal(false);
+			expect(da1.communication.ResetAut.value).equal(false);
+
+			expect(da1.communication.PermEn.value).equal(false);
+			expect(da1.communication.Permit.value).equal(false);
+			expect(da1.communication.IntlEn.value).equal(false);
+			expect(da1.communication.Interlock.value).equal(false);
+			expect(da1.communication.ProtEn.value).equal(false);
+			expect(da1.communication.Protect.value).equal(false);
+			
+			expect(da1.communication.SafePos.value).equal(false);
+			expect(da1.communication.SafePosAct.value).equal(false);
+
+			expect(da1.communication.FwdAut.value).equal(false);
+			expect(da1.communication.FwdCtrl.value).equal(false);
+			expect(da1.communication.FwdEn.value).equal(false);
+			expect(da1.communication.FwdFbk.value).equal(false);
+			expect(da1.communication.FwdFbkCalc.value).equal(false);
+			expect(da1.communication.FwdOp.value).equal(false);
+
+			expect(da1.communication.RevAut.value).equal(false);
+			expect(da1.communication.RevCtrl.value).equal(false);
+			expect(da1.communication.RevEn.value).equal(false);
+			expect(da1.communication.RevFbk.value).equal(false);
+			expect(da1.communication.RevFbkCalc.value).equal(false);
+			expect(da1.communication.RevOp.value).equal(false);
+
+			expect(da1.communication.StopAut.value).equal(false);
+			expect(da1.communication.StopOp.value).equal(false);
+			expect(da1.communication.Trip.value).equal(false);
+		}).timeout(4000);
+
 	});
 });

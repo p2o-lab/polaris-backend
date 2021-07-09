@@ -82,7 +82,7 @@
     "dataType": "xs:IDREF"
   },
   "IntlEn": {
-    "nodeId": "Variable.IntIEn",
+    "nodeId": "Variable.IntlEn",
     "namespaceIndex": "localhost",
     "dataType": "xs:IDREF"
   },

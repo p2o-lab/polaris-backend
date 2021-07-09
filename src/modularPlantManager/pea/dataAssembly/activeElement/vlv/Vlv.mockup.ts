@@ -112,6 +112,8 @@ export class VlvMockup {
 
 	public safePos = false;
 	public safePosEn = false;
+	public safePosAct = false;
+
 	public openOp = false;
 	public closeOp = false;
 	public openAut = false;
@@ -157,6 +159,17 @@ export class VlvMockup {
 			value: {
 				get: (): Variant => {
 					return new Variant({dataType: DataType.Boolean, value: this.safePosEn});
+				},
+			},
+		});
+		namespace.addVariable({
+			componentOf: this.mockupNode,
+			nodeId: `ns=${namespace.index};s=${variableName}.SafePosAct`,
+			browseName: `${variableName}.SafePosAct`,
+			dataType: DataType.Boolean,
+			value: {
+				get: (): Variant => {
+					return new Variant({dataType: DataType.Boolean, value: this.safePosAct});
 				},
 			},
 		});

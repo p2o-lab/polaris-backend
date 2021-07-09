@@ -122,12 +122,12 @@
     "dataType": "xs:IDREF"
   },
   "SPSclMax": {
-    "nodeId": "Variable.SPVSclMax",
+    "nodeId": "Variable.SPSclMax",
     "namespaceIndex": "localhost",
     "dataType": "xs:IDREF"
   },
   "SPSclMin": {
-    "nodeId": "Variable.SPVSclMin",
+    "nodeId": "Variable.SPSclMin",
     "namespaceIndex": "localhost",
     "dataType": "xs:IDREF"
   },
@@ -177,12 +177,12 @@
     "dataType": "xs:IDREF"
   },
   "MVMin": {
-    "nodeId": "Variable.MVIntMin",
+    "nodeId": "Variable.MVMin",
     "namespaceIndex": "localhost",
     "dataType": "xs:IDREF"
   },
   "MVMax": {
-    "nodeId": "Variable.MVIntMax",
+    "nodeId": "Variable.MVMax",
     "namespaceIndex": "localhost",
     "dataType": "xs:IDREF"
   },

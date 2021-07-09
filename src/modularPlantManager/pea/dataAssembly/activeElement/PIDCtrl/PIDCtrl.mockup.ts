@@ -295,6 +295,7 @@ export class PIDCtrlMockup {
 				},
 			},
 		});
+
 		namespace.addVariable({
 			componentOf: this.mockupNode,
 			nodeId: `ns=${namespace.index};s=${variableName}.SPSclMax`,
@@ -306,6 +307,7 @@ export class PIDCtrlMockup {
 				},
 			},
 		});
+
 		namespace.addVariable({
 			componentOf: this.mockupNode,
 			nodeId: `ns=${namespace.index};s=${variableName}.SPUnit`,

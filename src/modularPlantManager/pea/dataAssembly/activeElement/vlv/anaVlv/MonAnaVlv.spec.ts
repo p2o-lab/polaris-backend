@@ -24,26 +24,30 @@
  */
 
 import {OpcUaConnection} from '../../../../connection';
-import {MonAnaVlv} from './MonAnaVlv';
-
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import * as baseDataAssemblyOptions from '../../../../../../../tests/monanavlv.json';
+import {MockupServer} from '../../../../../_utils';
+import {Namespace, UAObject} from 'node-opcua';
+import {namespaceUrl} from '../../../../../../../tests/namespaceUrl';
+import {MonAnaVlvMockup} from './MonAnaVlv.mockup';
+import {MonAnaVlv} from './MonAnaVlv';
 
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
+const dataAssemblyOptions: DataAssemblyOptions = {
+	name: 'Variable',
+	metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperationElement/MonAnaMonAnaVlv',
+	dataItems: baseDataAssemblyOptions
+};
 
 describe('MonAnaVlv', () => {
-	describe('', () => {
+	describe('static', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
-		it('should create MonAnaVlv', () => {
-			const dataAssemblyOptions: DataAssemblyOptions = {
-				name: 'Variable',
-				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperationElement/MonAnaVlv',
-				dataItems: baseDataAssemblyOptions
-			};
+		it('should create MonAnaMonAnaVlv', () => {
+
 			const da1 = new MonAnaVlv(dataAssemblyOptions, emptyOPCUAConnection);
 			expect(da1).to.not.be.undefined;
 			expect(da1.feedBackMonitoring).to.not.be.undefined;
@@ -52,5 +56,107 @@ describe('MonAnaVlv', () => {
 			expect(da1.communication.MonPosTi).to.not.be.undefined;
 			expect(da1.communication.MonPosErr).to.not.be.undefined;
 		});
+	});
+
+	describe('dynamic', () => {
+		let mockupServer: MockupServer;
+		let connection: OpcUaConnection;
+		let mockup: MonAnaVlvMockup;
+
+		beforeEach(async function () {
+			this.timeout(4000);
+			mockupServer = new MockupServer();
+			await mockupServer.initialize();
+			mockup = new MonAnaVlvMockup(
+				mockupServer.namespace as Namespace,
+				mockupServer.rootComponent as UAObject,
+				'Variable');
+			await mockupServer.start();
+			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334', '', '');
+			await connection.connect();
+		});
+
+		afterEach(async function () {
+			this.timeout(4000);
+			await connection.disconnect();
+			await mockupServer.shutdown();
+		});
+
+		it('should subscribe successfully', async () => {
+			// set namespaceUrl
+			for (const key in dataAssemblyOptions.dataItems as any) {
+				//skip static values
+				if ((typeof (dataAssemblyOptions.dataItems as any)[key] != 'string')) {
+					(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
+				}
+			}
+			const da1 = new MonAnaVlv(dataAssemblyOptions, connection);
+			const pv = da1.subscribe();
+			await connection.startListening();
+			await pv;
+
+			expect(da1.communication.OSLevel.value).equal(0);
+			expect(da1.communication.WQC.value).equal(0);
+
+			expect(da1.communication.PermEn.value).equal(false);
+			expect(da1.communication.Permit.value).equal(false);
+			expect(da1.communication.IntlEn.value).equal(false);
+			expect(da1.communication.Interlock.value).equal(false);
+			expect(da1.communication.ProtEn.value).equal(false);
+			expect(da1.communication.Protect.value).equal(false);
+
+			expect(da1.communication.ResetAut.value).equal(false);
+			expect(da1.communication.ResetOp.value).equal(false);
+
+			expect(da1.communication.StateChannel.value).equal(false);
+			expect(da1.communication.StateOffAut.value).equal(false);
+			expect(da1.communication.StateOpAut.value).equal(false);
+			expect(da1.communication.StateAutAut.value).equal(false);
+			expect(da1.communication.StateOffOp.value).equal(false);
+			expect(da1.communication.StateOpOp.value).equal(false);
+			expect(da1.communication.StateAutOp.value).equal(false);
+			expect(da1.communication.StateOpAct.value).equal(false);
+			expect(da1.communication.StateAutAct.value).equal(false);
+			expect(da1.communication.StateOffAct.value).equal(true);
+
+			expect(da1.communication.SafePos.value).equal(false);
+			expect(da1.communication.SafePosEn.value).equal(false);
+			expect(da1.communication.SafePosAct.value).equal(false);
+			expect(da1.communication.OpenAut.value).equal(false);
+			expect(da1.communication.OpenFbk.value).equal(false);
+			expect(da1.communication.OpenFbkCalc.value).equal(false);
+			expect(da1.communication.OpenOp.value).equal(false);
+			expect(da1.communication.CloseAut.value).equal(false);
+			expect(da1.communication.CloseFbk.value).equal(false);
+			expect(da1.communication.CloseFbkCalc.value).equal(false);
+			expect(da1.communication.CloseOp.value).equal(false);
+
+			expect(da1.communication.Pos.value).equal(0);
+			expect(da1.communication.PosFbk.value).equal(0);
+			expect(da1.communication.PosFbkCalc.value).equal(false);
+			expect(da1.communication.PosRbk.value).equal(0);
+			expect(da1.communication.PosInt.value).equal(0);
+			expect(da1.communication.PosMan.value).equal(0);
+			expect(da1.communication.PosUnit.value).equal(0);
+			expect(da1.communication.PosSclMax.value).equal(0);
+			expect(da1.communication.PosSclMin.value).equal(0);
+			expect(da1.communication.PosMin.value).equal(0);
+			expect(da1.communication.PosMax.value).equal(0);
+			expect(da1.communication.OpenAct.value).equal(false);
+			expect(da1.communication.CloseAct.value).equal(false);
+
+			expect(da1.communication.MonEn.value).equal(false);
+			expect(da1.communication.MonSafePos.value).equal(false);
+			expect(da1.communication.MonStatErr.value).equal(false);
+			expect(da1.communication.MonDynErr.value).equal(false);
+			expect(da1.communication.MonStatTi.value).equal(0);
+			expect(da1.communication.MonDynTi.value).equal(0);
+
+			expect(da1.communication.PosReachedFbk.value).equal(false);
+			expect(da1.communication.PosTolerance.value).equal(0);
+			expect(da1.communication.MonPosTi.value).equal(0);
+			expect(da1.communication.MonPosErr.value).equal(false);
+
+		}).timeout(5000);
 	});
 });
