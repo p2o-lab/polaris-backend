@@ -24,32 +24,64 @@
  */
 
 import {OpcUaConnection} from '../../connection';
-import {
-	OperationElement
-} from './OperationElement';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import * as baseDataAssemblyOptions from '../../../../../tests/binmanint.json';
 import {DataAssemblyControllerFactory} from '../DataAssemblyControllerFactory';
+import {MockupServer} from '../../../_utils';
+import {OperationElementMockup} from './OperationElement.mockup';
+import {Namespace, UAObject} from 'node-opcua';
+import {OperationElement} from './OperationElement';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('OperationElement', () => {
-	describe('should create OperationElement', () => {
+	const dataAssemblyOptions: DataAssemblyOptions = {
+		name: 'Variable',
+		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperationElement/BinMan',
+		dataItems: baseDataAssemblyOptions
+	};
+
+	describe('static', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
 		it('should create OperationElement', () => {
-			const dataAssemblyOptions: DataAssemblyOptions = {
-				name: 'Variable',
-				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperationElement/BinMan',
-				dataItems: baseDataAssemblyOptions
-			};
-			const da1: OperationElement = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as OperationElement;
+			const da1: OperationElement = new OperationElement(dataAssemblyOptions, emptyOPCUAConnection);
 			expect(da1).to.be.not.undefined;
 			expect(da1.osLevel).to.be.not.undefined;
 			expect(da1.communication).to.be.not.undefined;
+		});
+	});
+
+	describe('dynamic', () => {
+		let mockupServer: MockupServer;
+		let connection: OpcUaConnection;
+
+		beforeEach(async function () {
+			this.timeout(4000);
+			mockupServer = new MockupServer();
+			await mockupServer.initialize();
+			const mockup = new OperationElementMockup(
+				mockupServer.namespace as Namespace,
+				mockupServer.rootComponent as UAObject,
+				'Variable');
+			mockupServer.start();
+			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://127.0.0.1:4334/PEATestServer');
+			await connection.connect();
+		});
+
+		afterEach(async function () {
+			this.timeout(4000);
+			await connection.disconnect();
+			await mockupServer.shutdown();
+		});
+
+		const emptyOPCUAConnection = new OpcUaConnection('', '');
+		it('should create OperationElement', () => {
+			const da1: OperationElement = new OperationElement(dataAssemblyOptions, emptyOPCUAConnection);
+
 		});
 	});
 

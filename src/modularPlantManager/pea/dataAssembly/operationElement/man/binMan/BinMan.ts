@@ -31,7 +31,7 @@ import {OperationElement, OperationElementRuntime} from '../../OperationElement'
 export type BinManRuntime = OperationElementRuntime & {
 	VMan: OpcUaDataItem<boolean>;
 	VRbk: OpcUaDataItem<boolean>;
-	VFbk: OpcUaDataItem<boolean>
+	VFbk: OpcUaDataItem<boolean>;
 	VOut: OpcUaDataItem<boolean>;
 	VState0: OpcUaDataItem<string>;
 	VState1: OpcUaDataItem<string>;

@@ -25,27 +25,29 @@
 
 import {OpcUaConnection} from '../../../../connection';
 import {DIntMan} from './DIntMan';
-
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import * as baseDataAssemblyOptions from '../../../../../../../tests/dintmanint.json';
-import {BinMan} from '../binMan/BinMan';
 import {DataAssemblyControllerFactory} from '../../../DataAssemblyControllerFactory';
+import {MockupServer} from '../../../../../_utils';
+import {DIntManMockup} from '../DIntMan/DIntMan.mockup';
+import {Namespace, UAObject} from 'node-opcua';
+import {namespaceUrl} from '../../../../../../../tests/namespaceUrl';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('DIntMan', () => {
+	const dataAssemblyOptions: DataAssemblyOptions = {
+		name: 'Variable',
+		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperationElement/DIntMan',
+		dataItems: baseDataAssemblyOptions
+	};
 
 	describe('', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
 		it('should create DIntMan',  () => {
-			const dataAssemblyOptions: DataAssemblyOptions = {
-				name: 'Variable',
-				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperationElement/DIntMan',
-				dataItems: baseDataAssemblyOptions
-			};
 			const da1: DIntMan = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as DIntMan;
 			expect(da1.communication.VOut).to.not.equal(undefined);
 			expect(da1.scaleSettings).to.not.be.undefined;
@@ -62,7 +64,56 @@ describe('DIntMan', () => {
 			expect(da1.defaultWriteDataItem).equal(da1.communication.VMan);
 			expect(da1.defaultWriteDataItemType).to.equal('number');
 		});
-
 	});
+	describe('dynamic', () => {
+		let mockupServer: MockupServer;
+		let connection: OpcUaConnection;
 
+		beforeEach(async function () {
+			this.timeout(4000);
+			mockupServer = new MockupServer();
+			await mockupServer.initialize();
+			const mockup = new DIntManMockup(
+				mockupServer.namespace as Namespace,
+				mockupServer.rootComponent as UAObject,
+				'Variable');
+			await mockupServer.start();
+			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334','','');
+			await connection.connect();
+		});
+
+		afterEach(async function () {
+			this.timeout(4000);
+			await connection.disconnect();
+			await mockupServer.shutdown();
+		});
+
+		it('should subscribe successfully', async () => {
+			// set namespaceUrl
+			for (const key in dataAssemblyOptions.dataItems as any) {
+				//skip static values
+				if((typeof(dataAssemblyOptions.dataItems as any)[key] != 'string')){
+					(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
+				}
+			}
+			const da1 = DataAssemblyControllerFactory.create(dataAssemblyOptions, connection) as DIntMan;
+			const pv =  da1.subscribe();
+			await connection.startListening();
+			await pv;
+
+			expect(da1.communication.OSLevel.value).to.equal(0);
+
+			expect(da1.communication.VOut.value).to.equal(0);
+			expect(da1.communication.VMan.value).to.equal(0);
+			expect(da1.communication.VRbk.value).to.equal(0);
+			expect(da1.communication.VFbk.value).to.equal(0);
+
+			expect(da1.communication.VUnit.value).equal(0);
+			expect(da1.communication.VSclMin.value).equal(0);
+			expect(da1.communication.VSclMax.value).equal(0);
+
+			expect(da1.communication.VMin.value).equal(0);
+			expect(da1.communication.VMax.value).equal(0);
+		}).timeout(4000);
+	});
 });

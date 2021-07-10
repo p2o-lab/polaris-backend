@@ -132,7 +132,7 @@
       "dataType": "xs:IDREF"
     },
     "VState0": {
-      "nodeId": "Variable.VState",
+      "nodeId": "Variable.VState0",
       "namespaceIndex": "localhost",
       "dataType": "xs:IDREF"
     },
