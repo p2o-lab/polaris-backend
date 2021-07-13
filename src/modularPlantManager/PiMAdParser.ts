@@ -104,13 +104,13 @@ export class PiMAdParser {
             procedure.attributes.forEach((attribute: { name: any; value: string}) =>{
                 switch(attribute.name){
                     case ('IsSelfCompleting'):
-                        isSelfCompleting = JSON.parse(attribute.value);
+                        isSelfCompleting = JSON.parse(attribute.value.toLocaleLowerCase());
                         break;
                     case ('IsDefault'):
-                        isDefault = JSON.parse(attribute.value);
+                        isDefault = JSON.parse(attribute.value.toLocaleLowerCase());
                         break;
                     case ('ProcedureID'):
-                        procedureID = JSON.parse(attribute.value);
+                        procedureID = JSON.parse(attribute.value.toLocaleLowerCase());
                         break;
                 }
             });
