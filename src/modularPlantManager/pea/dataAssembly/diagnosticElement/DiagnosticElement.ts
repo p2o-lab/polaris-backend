@@ -36,15 +36,10 @@ export type DiagnosticElementRuntime = BaseDataAssemblyRuntime & WQCRuntime & OS
 
 export class DiagnosticElement extends DataAssemblyController {
 	public readonly communication!: DiagnosticElementRuntime;
-	osLevel: OSLevel;
 	wqc: WQC;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
-
-		this.osLevel = new OSLevel(this);
-		this.osLevel.initialize();
-
 		this.wqc = new WQC(this);
 		this.wqc.initialize();
 	}
