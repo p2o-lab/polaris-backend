@@ -31,23 +31,25 @@ import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import * as baseDataAssemblyOptions from '../../../../../../tests/monbinvlv.json';
 import {DataAssemblyController} from '../../DataAssemblyController';
 import {MonBinVlv} from '../../activeElement';
-import {FeedbackMonitoring} from '../feedbackMonitoringDA/FeedbackMonitoring';
 import {Interlock} from './Interlock';
+import {MockupServer} from '../../../../_utils';
+import {Namespace, UAObject} from 'node-opcua';
+import {namespaceUrl} from '../../../../../../tests/namespaceUrl';
+import {InterlockDAMockup} from './InterlockDA.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('Interlock', () => {
-	const parseJson = require('json-parse-better-errors');
+	const dataAssemblyOptions: DataAssemblyOptions = {
+		name: 'Variable',
+		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/ActiveElement/MonBinVlv',
+		dataItems: baseDataAssemblyOptions
+	};
 
-	describe('', () => {
+	describe('static', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
 		it('should create Interlock', () => {
-			const dataAssemblyOptions: DataAssemblyOptions = {
-				name: 'Variable',
-				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperationElement/MonBinVlv',
-				dataItems: baseDataAssemblyOptions
-			};
 			const da1 = new DataAssemblyController(dataAssemblyOptions, emptyOPCUAConnection) as MonBinVlv;
 			const interlock = new Interlock(da1); //this will set communication variables
 			expect(interlock).to.not.to.undefined;
@@ -59,5 +61,50 @@ describe('Interlock', () => {
 			expect(da1.communication.Protect).to.not.to.undefined;
 		});
 	});
+	describe('dynamic', () => {
+		let mockupServer: MockupServer;
+		let connection: OpcUaConnection;
+		let mockup: InterlockDAMockup;
 
+		beforeEach(async function () {
+			this.timeout(4000);
+			mockupServer = new MockupServer();
+			await mockupServer.initialize();
+			mockup = new InterlockDAMockup(
+				mockupServer.namespace as Namespace,
+				mockupServer.rootComponent as UAObject,
+				'Variable');
+			await mockupServer.start();
+			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334', '', '');
+			await connection.connect();
+		});
+
+		afterEach(async function () {
+			this.timeout(4000);
+			await connection.disconnect();
+			await mockupServer.shutdown();
+		});
+
+		it('should subscribe successfully', async () => {
+			// set namespaceUrl
+			for (const key in dataAssemblyOptions.dataItems as any) {
+				//skip static values
+				if ((typeof (dataAssemblyOptions.dataItems as any)[key] != 'string')) {
+					(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
+				}
+			}
+			const da1 = new DataAssemblyController(dataAssemblyOptions, connection) as any;
+			new Interlock(da1);
+			const pv = da1.subscribe();
+			await connection.startListening();
+			await pv;
+
+			expect(da1.communication.PermEn.value).equal(false);
+			expect(da1.communication.Permit.value).equal(false);
+			expect(da1.communication.IntlEn.value).equal(false);
+			expect(da1.communication.Interlock.value).equal(false);
+			expect(da1.communication.ProtEn.value).equal(false);
+			expect(da1.communication.Protect.value).equal(false);
+		}).timeout(5000);
+	});
 });

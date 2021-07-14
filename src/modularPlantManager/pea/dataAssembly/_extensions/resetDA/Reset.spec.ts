@@ -32,27 +32,72 @@ import * as baseDataAssemblyOptions from '../../../../../../tests/monbinvlv.json
 import {DataAssemblyController} from '../../DataAssemblyController';
 import {MonBinVlv} from '../../activeElement';
 import {Reset} from './Reset';
+import {MockupServer} from '../../../../_utils';
+import {OSLevelDAMockup} from '../osLevelDA/OSLevelDA.mockup';
+import {Namespace, UAObject} from 'node-opcua';
+import {namespaceUrl} from '../../../../../../tests/namespaceUrl';
+import {OSLevel} from '../osLevelDA/OSLevel';
+import {ResetDAMockup} from './ResetDA.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('Reset', () => {
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
-	const parseJson = require('json-parse-better-errors');
-
-	describe('', () => {
+	const dataAssemblyOptions: DataAssemblyOptions = {
+		name: 'Variable',
+		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperationElement/MonBinVlv',
+		dataItems: baseDataAssemblyOptions
+	};
+	describe('static', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
 		it('should create Reset',  () => {
-			const dataAssemblyOptions: DataAssemblyOptions = {
-				name: 'Variable',
-				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperationElement/MonBinVlv',
-				dataItems: baseDataAssemblyOptions
-			};
 			const da1 = new DataAssemblyController(dataAssemblyOptions, emptyOPCUAConnection) as MonBinVlv;
 			const reset = new Reset(da1); //this will set communication variables
 			expect(reset).to.not.to.undefined;
 			expect(da1.communication.ResetAut).to.not.to.undefined;
 			expect(da1.communication.ResetOp).to.not.to.undefined;
 		});
+	});
+	describe('dynamic', () => {
+		let mockupServer: MockupServer;
+		let connection: OpcUaConnection;
+		let mockup: ResetDAMockup;
+
+		beforeEach(async function () {
+			this.timeout(4000);
+			mockupServer = new MockupServer();
+			await mockupServer.initialize();
+			mockup = new ResetDAMockup(
+				mockupServer.namespace as Namespace,
+				mockupServer.rootComponent as UAObject,
+				'Variable');
+			await mockupServer.start();
+			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334', '', '');
+			await connection.connect();
+		});
+
+		afterEach(async function () {
+			this.timeout(4000);
+			await connection.disconnect();
+			await mockupServer.shutdown();
+		});
+
+		it('should subscribe successfully', async () => {
+			// set namespaceUrl
+			for (const key in dataAssemblyOptions.dataItems as any) {
+				//skip static values
+				if ((typeof (dataAssemblyOptions.dataItems as any)[key] != 'string')) {
+					(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
+				}
+			}
+			const da1 = new DataAssemblyController(dataAssemblyOptions, connection) as any;
+			new Reset(da1);
+			const pv = da1.subscribe();
+			await connection.startListening();
+			await pv;
+			expect(da1.communication.ResetAut.value).to.be.false;
+			expect(da1.communication.ResetOp.value).to.be.false;
+
+		}).timeout(5000);
 	});
 });

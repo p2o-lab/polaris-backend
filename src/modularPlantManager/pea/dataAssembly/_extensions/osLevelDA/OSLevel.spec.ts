@@ -27,12 +27,14 @@ import {OpcUaConnection} from '../../../connection';
 import * as baseDataAssemblyOptions from '../../../../../../tests/binmon.json';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {PEAMockup} from '../../../PEA.mockup';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import * as baseDataAssemblyOptionsStatic from '../../../../../../tests/binmon_static.json';
-import {BinMon} from '../../indicatorElement';
 import {OSLevel} from './OSLevel';
 import {DataAssemblyController} from '../../DataAssemblyController';
+import {MockupServer} from '../../../../_utils';
+import {Namespace, UAObject} from 'node-opcua';
+import {namespaceUrl} from '../../../../../../tests/namespaceUrl';
+import {OSLevelDAMockup} from './OSLevelDA.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -49,43 +51,83 @@ describe('OSLevel', () => {
 		dataItems: baseDataAssemblyOptions
 	};
 
-	describe('static OSLevel', () => {
+	describe('static', () => {
 		let oslevelObject: any;
 		let da: any;
-		beforeEach(()=>{
-			const emptyOPCUAConnection = new OpcUaConnection('', '');
-			da = new DataAssemblyController(dataAssemblyOptionsStatic, emptyOPCUAConnection);
-			oslevelObject = new OSLevel(da);
-		});
+		describe('static OSLevel',()=>{
+			beforeEach(()=>{
+				const emptyOPCUAConnection = new OpcUaConnection('', '');
+				da = new DataAssemblyController(dataAssemblyOptionsStatic, emptyOPCUAConnection) as any;
+				oslevelObject = new OSLevel(da);
+			});
+			it('should create OSLevel', async () => {
+				expect(oslevelObject.OSLevel).to.equal(0);
+				expect(da.communication.OSLevel).to.be.undefined;
+			});
 
-		it('should create OSLevel', async () => {
-			expect(oslevelObject.OSLevel).to.equal(0);
-			expect((da as BinMon).communication.OSLevel).to.be.undefined;
+			it('getter', async () => {
+				expect(oslevelObject.OSLevel).to.equal(0);
+			});
+			//TODO: toJson();
 		});
+		describe('dynamic OSLevel', () => {
+			let oslevelObject: any;
+			let da: any;
+			beforeEach(()=>{
+				const emptyOPCUAConnection = new OpcUaConnection('', '');
+				da = new DataAssemblyController(dataAssemblyOptions, emptyOPCUAConnection);
+				oslevelObject = new OSLevel(da);
+			});
 
-		it('getter', async () => {
-			expect(oslevelObject.OSLevel).to.equal(0);
+			it('should create OSLevel', async () => {
+				expect(oslevelObject.OSLevel).to.be.undefined;
+				expect(da.communication.OSLevel).to.not.be.undefined;
+			});
+
+			it('getter', async () => {
+				expect(oslevelObject.OSLevel).to.be.undefined;
+			});
+			//TODO: toJson();
 		});
-		//TODO: toJson();
 	});
-	describe('dynamic OSLevel', () => {
-		let oslevelObject: any;
-		let da: any;
-		beforeEach(()=>{
-			const emptyOPCUAConnection = new OpcUaConnection('', '');
-			da = new DataAssemblyController(dataAssemblyOptions, emptyOPCUAConnection);
-			oslevelObject = new OSLevel(da);
+	describe('dynamic', () => {
+		let mockupServer: MockupServer;
+		let connection: OpcUaConnection;
+		let mockup: OSLevelDAMockup;
+
+		beforeEach(async function () {
+			this.timeout(4000);
+			mockupServer = new MockupServer();
+			await mockupServer.initialize();
+			mockup = new OSLevelDAMockup(
+				mockupServer.namespace as Namespace,
+				mockupServer.rootComponent as UAObject,
+				'Variable');
+			await mockupServer.start();
+			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334', '', '');
+			await connection.connect();
 		});
 
-		it('should create OSLevel', async () => {
-			expect(oslevelObject.OSLevel).to.be.undefined;
-			expect((da as BinMon).communication.OSLevel).to.not.be.undefined;
+		afterEach(async function () {
+			this.timeout(4000);
+			await connection.disconnect();
+			await mockupServer.shutdown();
 		});
 
-		it('getter', async () => {
-			expect(oslevelObject.OSLevel).to.be.undefined;
-		});
-		//TODO: toJson();
+		it('should subscribe successfully', async () => {
+			// set namespaceUrl
+			for (const key in dataAssemblyOptions.dataItems as any) {
+				//skip static values
+				if ((typeof (dataAssemblyOptions.dataItems as any)[key] != 'string')) {
+					(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
+				}
+			}
+			const da1 = new DataAssemblyController(dataAssemblyOptions, connection) as any;
+			new OSLevel(da1);
+			const pv = da1.subscribe();
+			await connection.startListening();
+			await pv;
+			expect(da1.communication.OSLevel.value).to.equal(0);
+		}).timeout(5000);
 	});
-
 });

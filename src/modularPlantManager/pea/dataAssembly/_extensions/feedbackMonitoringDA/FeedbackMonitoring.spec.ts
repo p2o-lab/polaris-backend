@@ -31,22 +31,25 @@ import {DataAssemblyController} from '../../DataAssemblyController';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import * as baseDataAssemblyOptions from '../../../../../../tests/monbinvlv.json';
 import {FeedbackMonitoring} from './FeedbackMonitoring';
-import {MonBinVlv} from '../../activeElement';
+import {MockupServer} from '../../../../_utils';
+import {Namespace, UAObject} from 'node-opcua';
+import {namespaceUrl} from '../../../../../../tests/namespaceUrl';
+import {FeedbackMonitoringDAMockup} from './FeedbackMonitoringDA.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('FeedbackMonitoring', () => {
+	const dataAssemblyOptions: DataAssemblyOptions = {
+		name: 'Variable',
+		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/ActiveElement/MonBinVlv',
+		dataItems: baseDataAssemblyOptions
+	};
 
-	describe('', () => {
+	describe('static', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
 		it('should create FeedbackMonitoring', () => {
-			const dataAssemblyOptions: DataAssemblyOptions = {
-				name: 'Variable',
-				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperationElement/MonBinVlv',
-				dataItems: baseDataAssemblyOptions
-			};
-			const da1 = new DataAssemblyController(dataAssemblyOptions, emptyOPCUAConnection) as MonBinVlv;
+			const da1 = new DataAssemblyController(dataAssemblyOptions, emptyOPCUAConnection) as any;
 			const feedbackMonitoring = new FeedbackMonitoring(da1);
 			expect(feedbackMonitoring).to.not.to.undefined;
 			expect(da1.communication.MonEn).to.not.to.undefined;
@@ -56,5 +59,52 @@ describe('FeedbackMonitoring', () => {
 			expect(da1.communication.MonStatTi).to.not.to.undefined;
 			expect(da1.communication.MonDynTi).to.not.to.undefined;
 		});
+	});
+	describe('dynamic', () => {
+		let mockupServer: MockupServer;
+		let connection: OpcUaConnection;
+		let mockup: FeedbackMonitoringDAMockup;
+
+		beforeEach(async function () {
+			this.timeout(4000);
+			mockupServer = new MockupServer();
+			await mockupServer.initialize();
+			mockup = new FeedbackMonitoringDAMockup(
+				mockupServer.namespace as Namespace,
+				mockupServer.rootComponent as UAObject,
+				'Variable');
+			await mockupServer.start();
+			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334', '', '');
+			await connection.connect();
+		});
+
+		afterEach(async function () {
+			this.timeout(4000);
+			await connection.disconnect();
+			await mockupServer.shutdown();
+		});
+
+		it('should subscribe successfully', async () => {
+			// set namespaceUrl
+			for (const key in dataAssemblyOptions.dataItems as any) {
+				//skip static values
+				if ((typeof (dataAssemblyOptions.dataItems as any)[key] != 'string')) {
+					(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
+				}
+			}
+			const da1 = new DataAssemblyController(dataAssemblyOptions, connection) as any;
+			// instantiating FeedbackMonitoring, which will manipulate dataAssemblyController
+			new FeedbackMonitoring(da1);
+			const pv = da1.subscribe();
+			await connection.startListening();
+			await pv;
+
+			expect(da1.communication.MonEn.value).equal(false);
+			expect(da1.communication.MonSafePos.value).equal(false);
+			expect(da1.communication.MonStatErr.value).equal(false);
+			expect(da1.communication.MonDynErr.value).equal(false);
+			expect(da1.communication.MonStatTi.value).equal(0);
+			expect(da1.communication.MonDynTi.value).equal(0);
+		}).timeout(5000);
 	});
 });

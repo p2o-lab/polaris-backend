@@ -33,26 +33,70 @@ import {DataAssemblyController} from '../../DataAssemblyController';
 import {ScaleSettings} from '../scaleSettingsDA/ScaleSettings';
 import {DIntMan} from '../../operationElement';
 import {UnitSettings} from './UnitSettings';
+import {MockupServer} from '../../../../_utils';
+import {OSLevelDAMockup} from '../osLevelDA/OSLevelDA.mockup';
+import {Namespace, UAObject} from 'node-opcua';
+import {namespaceUrl} from '../../../../../../tests/namespaceUrl';
+import {OSLevel} from '../osLevelDA/OSLevel';
+import {UnitDAMockup} from './UnitDA.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('UnitSettings', () => {
-
-	describe('', () => {
+	const dataAssemblyOptions: DataAssemblyOptions = {
+		name: 'Variable',
+		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperatorElement/DIntMan',
+		dataItems: baseDataAssemblyOptions
+	};
+	// set namespaceUrl
+	for (const key in dataAssemblyOptions.dataItems as any) {
+		//skip static values
+		if ((typeof (dataAssemblyOptions.dataItems as any)[key] != 'string')) {
+			(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
+		}
+	}
+	describe('static', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
 		it('should create UnitSettings',  () => {
-			const dataAssemblyOptions: DataAssemblyOptions = {
-				name: 'Variable',
-				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperatorElement/DIntMan',
-				dataItems: baseDataAssemblyOptions
-			};
 			const da = new DataAssemblyController(dataAssemblyOptions, emptyOPCUAConnection);
 			const unitSettings = new UnitSettings(da);
 			expect(unitSettings).to.not.be.undefined;
 			expect((da as DIntMan).communication.VUnit).to.not.be.undefined;
 			expect(unitSettings.getUnit()).to.be.empty;
 		});
+	});
+	describe('dynamic', () => {
+		let mockupServer: MockupServer;
+		let connection: OpcUaConnection;
+		let mockup: UnitDAMockup;
 
+		beforeEach(async function () {
+			this.timeout(4000);
+			mockupServer = new MockupServer();
+			await mockupServer.initialize();
+			mockup = new UnitDAMockup(
+				mockupServer.namespace as Namespace,
+				mockupServer.rootComponent as UAObject,
+				'Variable');
+			await mockupServer.start();
+			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334', '', '');
+			await connection.connect();
+		});
+
+		afterEach(async function () {
+			this.timeout(4000);
+			await connection.disconnect();
+			await mockupServer.shutdown();
+		});
+
+		it('should subscribe successfully', async () => {
+			const da1 = new DataAssemblyController(dataAssemblyOptions, connection) as any;
+			new UnitSettings(da1);
+			const pv = da1.subscribe();
+			await connection.startListening();
+			await pv;
+			expect(da1.communication.VUnit.value).to.equal(0);
+		}).timeout(5000);
 	});
 });

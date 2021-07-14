@@ -30,30 +30,72 @@ import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import * as baseDataAssemblyOptions from '../../../../../../tests/dintmanint.json';
 import {DataAssemblyController} from '../../DataAssemblyController';
-import {UnitSettings} from '../unitDA/UnitSettings';
 import {DIntMan} from '../../operationElement';
 import {ValueLimitation} from './ValueLimitation';
+import {MockupServer} from '../../../../_utils';
+import {DataType, Namespace, UAObject} from 'node-opcua';
+import {namespaceUrl} from '../../../../../../tests/namespaceUrl';
+import {ValueLimitationDAMockup} from './ValueLimitationDA.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('ValueLimitation', () => {
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
-	const parseJson = require('json-parse-better-errors');
+	const dataAssemblyOptions: DataAssemblyOptions = {
+		name: 'Variable',
+		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperatorElement/DIntMan',
+		dataItems: baseDataAssemblyOptions
+	};
+	// set namespaceUrl
+	for (const key in dataAssemblyOptions.dataItems as any) {
+		//skip static values
+		if ((typeof (dataAssemblyOptions.dataItems as any)[key] != 'string')) {
+			(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
+		}
+	}
 
-	describe('', () => {
+	describe('static', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
 		it('should create ValueLimitationDA',  () => {
-			const dataAssemblyOptions: DataAssemblyOptions = {
-				name: 'Variable',
-				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperatorElement/DIntMan',
-				dataItems: baseDataAssemblyOptions
-			};
 			const da = new DataAssemblyController(dataAssemblyOptions, emptyOPCUAConnection);
 			const valueLimitation = new ValueLimitation(da);
 			expect(valueLimitation).to.not.be.undefined;
 			expect((da as DIntMan).communication.VMin).to.not.be.undefined;
 			expect((da as DIntMan).communication.VMax).to.not.be.undefined;
 		});
+	});
+	describe('dynamic', () => {
+		let mockupServer: MockupServer;
+		let connection: OpcUaConnection;
+		let mockup: ValueLimitationDAMockup<any>;
+
+		beforeEach(async function () {
+			this.timeout(4000);
+			mockupServer = new MockupServer();
+			await mockupServer.initialize();
+			mockup = new ValueLimitationDAMockup(
+				mockupServer.namespace as Namespace,
+				mockupServer.rootComponent as UAObject,
+				'Variable', DataType.Double);
+			await mockupServer.start();
+			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334', '', '');
+			await connection.connect();
+		});
+
+		afterEach(async function () {
+			this.timeout(4000);
+			await connection.disconnect();
+			await mockupServer.shutdown();
+		});
+
+		it('should subscribe successfully', async () => {
+			const da1 = new DataAssemblyController(dataAssemblyOptions, connection) as any;
+			new ValueLimitation(da1);
+			const pv = da1.subscribe();
+			await connection.startListening();
+			await pv;
+			expect(da1.communication.VMax.value).to.equal(0);
+			expect(da1.communication.VMin.value).to.equal(0);
+		}).timeout(5000);
 	});
 });

@@ -33,6 +33,12 @@ import {BinMon, IndicatorElement} from '../../indicatorElement';
 import {DataAssemblyController} from '../../DataAssemblyController';
 import {WQC} from './WQC';
 import * as baseDataAssemblyOptions from '../../../../../../tests/binmon.json';
+import {MockupServer} from '../../../../_utils';
+import {UnitDAMockup} from '../unitDA/UnitDA.mockup';
+import {Namespace, UAObject} from 'node-opcua';
+import {UnitSettings} from '../unitDA/UnitSettings';
+import {WQCDAMockup} from './WQCDA.mockup';
+import {namespaceUrl} from '../../../../../../tests/namespaceUrl';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -48,6 +54,13 @@ describe('WQCDA', () => {
 		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/BinMon',
 		dataItems: baseDataAssemblyOptions
 	};
+	// set namespaceUrl
+	for (const key in dataAssemblyOptions.dataItems as any) {
+		//skip static values
+		if ((typeof (dataAssemblyOptions.dataItems as any)[key] != 'string')) {
+			(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
+		}
+	}
 
 	describe('static WQC', () => {
 		let wqcObject: any;
@@ -87,5 +100,37 @@ describe('WQCDA', () => {
 		});
 		//TODO: toJson();
 	});
+	describe('dynamic', () => {
+		let mockupServer: MockupServer;
+		let connection: OpcUaConnection;
+		let mockup: WQCDAMockup;
 
+		beforeEach(async function () {
+			this.timeout(4000);
+			mockupServer = new MockupServer();
+			await mockupServer.initialize();
+			mockup = new WQCDAMockup(
+				mockupServer.namespace as Namespace,
+				mockupServer.rootComponent as UAObject,
+				'Variable');
+			await mockupServer.start();
+			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334', '', '');
+			await connection.connect();
+		});
+
+		afterEach(async function () {
+			this.timeout(4000);
+			await connection.disconnect();
+			await mockupServer.shutdown();
+		});
+
+		it('should subscribe successfully', async () => {
+			const da1 = new DataAssemblyController(dataAssemblyOptions, connection) as any;
+			new WQC(da1);
+			const pv = da1.subscribe();
+			await connection.startListening();
+			await pv;
+			expect(da1.communication.WQC.value).to.equal(0);
+		}).timeout(5000);
+	});
 });

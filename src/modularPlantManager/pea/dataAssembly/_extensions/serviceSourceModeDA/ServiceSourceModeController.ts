@@ -28,6 +28,8 @@ import {OpcUaDataItem} from '../../../connection';
 import {BaseDataAssemblyRuntime, DataAssemblyController} from '../../DataAssemblyController';
 import {Constructor} from '../_helper';
 import {catDataAssembly} from '../../../../../logging';
+import {AnaServParamMockup} from '../../operationElement/servParam/anaServParam/AnaServParam.mockup';
+import {AnaServParam} from '../../operationElement';
 
 export interface ServiceSourceModeRuntime extends BaseDataAssemblyRuntime {
 	SrcChannel: OpcUaDataItem<boolean>;
@@ -94,7 +96,7 @@ export class ServiceSourceModeController{
 						resolve();
 					}
 				});
-			}
+			} //TODO: add timeout?
 		});
 	}
 

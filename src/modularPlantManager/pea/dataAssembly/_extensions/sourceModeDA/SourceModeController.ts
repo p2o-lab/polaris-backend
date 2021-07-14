@@ -96,9 +96,9 @@ export class SourceModeController {
 	/**
 	 * Set data assembly to external source mode
 	 */
-	public async setToExternalSourceMode(): Promise<void> {
+	public async setToManualSourceMode(): Promise<void> {
 		if (!this.isExtSource()) {
-			catDataAssembly.trace(`[${this.dAController.name}] Finally to Ext`);
+			catDataAssembly.trace(`[${this.dAController.name}] Finally to Man`);
 			await this.writeSourceMode(SourceMode.Manual);
 			await this.waitForSourceModeToPassSpecificTest(SourceMode.Manual);
 		}

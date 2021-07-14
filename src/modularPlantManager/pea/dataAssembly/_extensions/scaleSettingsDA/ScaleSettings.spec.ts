@@ -31,25 +31,71 @@ import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import * as baseDataAssemblyOptions from '../../../../../../tests/dintmanint.json';
 import {DataAssemblyController} from '../../DataAssemblyController';
 import {ScaleSettings} from './ScaleSettings';
-import {DIntMan} from '../../operationElement';
+import {MockupServer} from '../../../../_utils';
+import {DataType, Namespace, UAObject} from 'node-opcua';
+import {namespaceUrl} from '../../../../../../tests/namespaceUrl';
+import {ScaleSettingDAMockup} from './ScaleSettingDA.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('ScaleSettings', () => {
-	describe('', () => {
+	const dataAssemblyOptions: DataAssemblyOptions = {
+		name: 'Variable',
+		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperatorElement/DIntMan',
+		dataItems: baseDataAssemblyOptions
+	};
+
+	describe('static', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
 		it('should create ScaleSettings', async () => {
-			const dataAssemblyOptions: DataAssemblyOptions = {
-				name: 'Variable',
-				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperatorElement/DIntMan',
-				dataItems: baseDataAssemblyOptions
-			};
-			const da = new DataAssemblyController(dataAssemblyOptions, emptyOPCUAConnection);
+			const da = new DataAssemblyController(dataAssemblyOptions, emptyOPCUAConnection) as any;
 			const scaleSettings = new ScaleSettings(da);
 			expect(scaleSettings).to.not.be.undefined;
-			expect((da as DIntMan).communication.VSclMax).to.not.be.undefined;
-			expect((da as DIntMan).communication.VSclMin).to.not.be.undefined;
+			expect(da.communication.VSclMax).to.not.be.undefined;
+			expect(da.communication.VSclMin).to.not.be.undefined;
 		});
+	});
+	describe('dynamic', () => {
+		let mockupServer: MockupServer;
+		let connection: OpcUaConnection;
+		let mockup: ScaleSettingDAMockup<any>;
+
+		beforeEach(async function () {
+			this.timeout(4000);
+			mockupServer = new MockupServer();
+			await mockupServer.initialize();
+			mockup = new ScaleSettingDAMockup(
+				mockupServer.namespace as Namespace,
+				mockupServer.rootComponent as UAObject,
+				'Variable', DataType.Double);
+			//TODO do for Int32?
+			await mockupServer.start();
+			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334', '', '');
+			await connection.connect();
+		});
+
+		afterEach(async function () {
+			this.timeout(4000);
+			await connection.disconnect();
+			await mockupServer.shutdown();
+		});
+
+		it('should subscribe successfully', async () => {
+			// set namespaceUrl
+			for (const key in dataAssemblyOptions.dataItems as any) {
+				//skip static values
+				if ((typeof (dataAssemblyOptions.dataItems as any)[key] != 'string')) {
+					(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
+				}
+			}
+			const da1 = new DataAssemblyController(dataAssemblyOptions, connection) as any;
+			new ScaleSettings(da1);
+			const pv = da1.subscribe();
+			await connection.startListening();
+			await pv;
+			expect(da1.communication.VSclMin.value).equal(0);
+			expect(da1.communication.VSclMax.value).equal(0);
+		}).timeout(5000);
 	});
 });

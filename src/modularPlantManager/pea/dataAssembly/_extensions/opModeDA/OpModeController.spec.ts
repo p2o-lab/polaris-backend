@@ -24,41 +24,250 @@
  */
 
 import {OpcUaConnection} from '../../../connection';
-
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {AnaServParam} from '../../operationElement';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {DataAssemblyOptions, OperationMode} from '@p2olab/polaris-interface';
 import * as baseDataAssemblyOptions from '../../../../../../tests/anaserveparam.json';
 import {DataAssemblyController} from '../../DataAssemblyController';
-import {ServiceSourceModeController} from '../serviceSourceModeDA/ServiceSourceModeController';
+import {MockupServer} from '../../../../_utils';
+import {Namespace, UAObject} from 'node-opcua';
+import {namespaceUrl} from '../../../../../../tests/namespaceUrl';
+import {OpModeDAMockup} from './OpModeDA.mockup';
 import {OpModeController} from './OpModeController';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('OpMode', () => {
-	describe('', () => {
+	const dataAssemblyOptions: DataAssemblyOptions = {
+		name: 'Variable',
+		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperatorElement/AnaServParam',
+		dataItems: baseDataAssemblyOptions
+	};
+	// set namespaceUrl
+	for (const key in dataAssemblyOptions.dataItems as any) {
+		//skip static values
+		if ((typeof (dataAssemblyOptions.dataItems as any)[key] != 'string')) {
+			(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
+		}
+	}
+	describe('static', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
-		it('should create OpMode', () => {
-			const dataAssemblyOptions: DataAssemblyOptions = {
-				name: 'Variable',
-				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperatorElement/DIntMan',
-				dataItems: baseDataAssemblyOptions
-			};
-			const da = new DataAssemblyController(dataAssemblyOptions, emptyOPCUAConnection);
+		it('should create OpModeController', () => {
+			const da = new DataAssemblyController(dataAssemblyOptions, emptyOPCUAConnection) as any;
 			const opMode = new OpModeController(da);
+
 			expect(opMode).to.not.be.undefined;
-			expect((da as AnaServParam).communication.StateChannel).to.not.be.undefined;
-			expect((da as AnaServParam).communication.StateOffAut).to.not.be.undefined;
-			expect((da as AnaServParam).communication.StateOpAut).to.not.be.undefined;
-			expect((da as AnaServParam).communication.StateAutAut).to.not.be.undefined;
-			expect((da as AnaServParam).communication.StateOffOp).to.not.be.undefined;
-			expect((da as AnaServParam).communication.StateOpOp).to.not.be.undefined;
-			expect((da as AnaServParam).communication.StateAutOp).to.not.be.undefined;
-			expect((da as AnaServParam).communication.StateOpAct).to.not.be.undefined;
-			expect((da as AnaServParam).communication.StateAutAct).to.not.be.undefined;
-			expect((da as AnaServParam).communication.StateOffAct).to.not.be.undefined;
+			expect((da).communication.StateChannel).to.not.be.undefined;
+			expect((da).communication.StateOffAut).to.not.be.undefined;
+			expect((da).communication.StateOpAut).to.not.be.undefined;
+			expect((da).communication.StateAutAut).to.not.be.undefined;
+			expect((da).communication.StateOffOp).to.not.be.undefined;
+			expect((da).communication.StateOpOp).to.not.be.undefined;
+			expect((da).communication.StateAutOp).to.not.be.undefined;
+			expect((da).communication.StateOpAct).to.not.be.undefined;
+			expect((da).communication.StateAutAct).to.not.be.undefined;
+			expect((da).communication.StateOffAct).to.not.be.undefined;
 		});
 	});
+	describe('dynamic', () => {
+		let mockupServer: MockupServer;
+		let connection: OpcUaConnection;
+		let mockup: OpModeDAMockup;
+
+		beforeEach(async function () {
+			this.timeout(4000);
+			mockupServer = new MockupServer();
+			await mockupServer.initialize();
+			mockup = new OpModeDAMockup(
+				mockupServer.namespace as Namespace,
+				mockupServer.rootComponent as UAObject,
+				'Variable');
+			await mockupServer.start();
+			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334', '', '');
+			await connection.connect();
+		});
+
+		afterEach(async function () {
+			this.timeout(4000);
+			await connection.disconnect();
+			await mockupServer.shutdown();
+		});
+
+		it('should subscribe successfully', async () => {
+			const da1 = new DataAssemblyController(dataAssemblyOptions, connection) as any;
+			new OpModeController(da1);
+			const pv = da1.subscribe();
+			await connection.startListening();
+			await pv;
+
+			expect((da1).communication.StateChannel.value).equal(false);
+			expect((da1).communication.StateOffAut.value).equal(false);
+			expect((da1).communication.StateOpAut.value).equal(false);
+			expect((da1).communication.StateAutAut.value).equal(false);
+			expect((da1).communication.StateOffOp.value).equal(false);
+			expect((da1).communication.StateOpOp.value).equal(false);
+			expect((da1).communication.StateAutOp.value).equal(false);
+			expect((da1).communication.StateOpAct.value).equal(false);
+			expect((da1).communication.StateAutAct.value).equal(false);
+			expect((da1).communication.StateOffAct.value).equal(true);
+		}).timeout(5000);
+	});
+
+	describe('dynamic functions, Offline', async () => {
+		let mockupServer: MockupServer;
+		let connection: OpcUaConnection;
+		let mockup: OpModeDAMockup;
+		let opMode: OpModeController;
+		let da1: any;
+
+		beforeEach(async function () {
+			mockupServer = new MockupServer();
+			await mockupServer.initialize();
+			mockup = new OpModeDAMockup(
+				mockupServer.namespace as Namespace,
+				mockupServer.rootComponent as UAObject,
+				'Variable');
+			await mockupServer.start();
+			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334', '', '');
+			da1 = new DataAssemblyController(dataAssemblyOptions, connection) as any;
+			opMode = new OpModeController(da1);
+			await connection.connect();
+			const pv = da1.subscribe();
+			await connection.startListening();
+			await pv;
+		});
+
+		afterEach(async function () {
+			this.timeout(4000);
+			await connection.disconnect();
+			await mockupServer.shutdown();
+		});
+
+		it('getOperationMode, should be Offline', () => {
+			expect(opMode.getOperationMode()).to.equal(OperationMode.Offline);
+		});
+		it('isOpMode', () => {
+			expect(opMode.isOpMode(OperationMode.Offline)).to.be.true;
+			expect(opMode.isOpMode(OperationMode.Operator)).to.be.false;
+			expect(opMode.isOpMode(OperationMode.Automatic)).to.be.false;
+		});
+		it('isOffState', () => {
+			expect(opMode.isOffState()).to.be.true;
+		});
+
+		it('setToAutomaticOperationMode(), should set to Automatic', async () => {
+			await opMode.setToAutomaticOperationMode();
+			expect(da1.communication.StateAutAct.value).to.be.true;
+			expect(mockup.opMode = OperationMode.Automatic);
+		});
+
+		it('setToOperatorOperationMode(), should set to Operator', async () => {
+			await opMode.setToOperatorOperationMode();
+			expect(da1.communication.StateOpAct.value).to.be.true;
+			expect(mockup.opMode = OperationMode.Operator);
+		});
+	});
+
+	describe('dynamic functions, Operator', async () => {
+		let mockupServer: MockupServer;
+		let connection: OpcUaConnection;
+		let mockup: OpModeDAMockup;
+		let opMode: OpModeController;
+		let da1: any;
+
+		beforeEach(async function () {
+			mockupServer = new MockupServer();
+			await mockupServer.initialize();
+			mockup = new OpModeDAMockup(
+				mockupServer.namespace as Namespace,
+				mockupServer.rootComponent as UAObject,
+				'Variable', OperationMode.Operator);
+			await mockupServer.start();
+			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334', '', '');
+			da1 = new DataAssemblyController(dataAssemblyOptions, connection) as any;
+			opMode = new OpModeController(da1);
+			await connection.connect();
+			const pv = da1.subscribe();
+			await connection.startListening();
+			await pv;
+		});
+
+		afterEach(async function () {
+			this.timeout(4000);
+			await connection.disconnect();
+			await mockupServer.shutdown();
+		});
+
+		it('getOperationMode, should be Operator', () => {
+			expect(opMode.getOperationMode()).to.equal(OperationMode.Operator);
+		});
+		it('isOpMode', () => {
+			expect(opMode.isOpMode(OperationMode.Offline)).to.be.false;
+			expect(opMode.isOpMode(OperationMode.Operator)).to.be.true;
+			expect(opMode.isOpMode(OperationMode.Automatic)).to.be.false;
+		});
+		it('setToAutomaticOperationMode(), should set to Automatic', async () => {
+			await opMode.setToAutomaticOperationMode();
+			expect(da1.communication.StateAutAct.value).to.be.true;
+			expect(mockup.opMode = OperationMode.Automatic);
+		});
+
+		it('setToOperatorOperationMode(), nothing should happen', async () => {
+			await opMode.setToOperatorOperationMode();
+			expect(da1.communication.StateOpAct.value).to.be.true;
+			expect(mockup.opMode = OperationMode.Operator);
+		});
+	});
+	describe('dynamic functions, Automatic', async () => {
+		let mockupServer: MockupServer;
+		let connection: OpcUaConnection;
+		let mockup: OpModeDAMockup;
+		let opMode: OpModeController;
+		let da1: any;
+
+		beforeEach(async function () {
+			mockupServer = new MockupServer();
+			await mockupServer.initialize();
+			mockup = new OpModeDAMockup(
+				mockupServer.namespace as Namespace,
+				mockupServer.rootComponent as UAObject,
+				'Variable', OperationMode.Automatic);
+			await mockupServer.start();
+			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334', '', '');
+			da1 = new DataAssemblyController(dataAssemblyOptions, connection) as any;
+			opMode = new OpModeController(da1);
+			await connection.connect();
+			const pv = da1.subscribe();
+			await connection.startListening();
+			await pv;
+		});
+
+		afterEach(async function () {
+			this.timeout(4000);
+			await connection.disconnect();
+			await mockupServer.shutdown();
+		});
+
+		it('getOperationMode, should be Automatic', () => {
+			expect(opMode.getOperationMode()).to.equal(OperationMode.Automatic);
+		});
+		it('isOpMode', () => {
+			expect(opMode.isOpMode(OperationMode.Offline)).to.be.false;
+			expect(opMode.isOpMode(OperationMode.Operator)).to.be.false;
+			expect(opMode.isOpMode(OperationMode.Automatic)).to.be.true;
+		});
+		it('isOffState', () => {
+			expect(opMode.isOffState()).to.be.false;
+		});
+
+		it('setToAutomaticOperationMode(), nothing should happen', async () => {
+			await opMode.setToAutomaticOperationMode();
+			expect(da1.communication.StateAutAct.value).to.be.true;
+			expect(mockup.opMode = OperationMode.Automatic);
+		});
+
+	});
+	//TODO test more
 });
+

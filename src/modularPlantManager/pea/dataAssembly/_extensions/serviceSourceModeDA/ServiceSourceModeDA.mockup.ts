@@ -79,12 +79,12 @@ export class ServiceSourceModeDAMockup {
 	public srcExtOp = false;
 	public readonly  mockupNode: UAObject;
 
-	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
+	constructor(namespace: Namespace, rootNode: UAObject, variableName: string, srcExtAct?: boolean, srcIntAct?: boolean) {
+		//for testing
+		if(srcExtAct) this.srcExtAct = srcExtAct;
+		if(srcIntAct) this.srcIntAct = srcIntAct;
 
-		this.mockupNode = namespace.addObject({
-			organizedBy: rootNode,
-			browseName: variableName,
-		});
+		this.mockupNode = rootNode;
 
 		namespace.addVariable({
 			componentOf: rootNode,
@@ -206,4 +206,6 @@ export class ServiceSourceModeDAMockup {
 			this.mockupNode.namespaceIndex,
 			this.mockupNode.browseName.name as string);
 	}
+
+
 }
