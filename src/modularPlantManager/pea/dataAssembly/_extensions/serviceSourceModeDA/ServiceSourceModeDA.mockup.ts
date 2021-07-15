@@ -23,9 +23,8 @@
  * SOFTWARE.
  */
 
-import {OperationMode, ServiceSourceMode} from '@p2olab/polaris-interface';
+import {ServiceSourceMode} from '@p2olab/polaris-interface';
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {getUnitDAMockupReferenceJSON} from '../unitDA/UnitDA.mockup';
 
 export function getServiceSourceModeDAMockupReferenceJSON(
 	namespace: number,
@@ -73,12 +72,9 @@ export function getServiceSourceModeDAMockupReferenceJSON(
 
 export class ServiceSourceModeDAMockup {
 	public srcMode: ServiceSourceMode = ServiceSourceMode.Extern;
-
 	public srcChannel = false;
-	public srcIntAct = false;
 	public srcIntAut = false;
 	public srcIntOp = false;
-	public srcExtAct = false;
 	public srcExtAut = false;
 	public srcExtOp = false;
 	public readonly  mockupNode: UAObject;
@@ -138,8 +134,6 @@ export class ServiceSourceModeDAMockup {
 					if (this.srcIntOp) {
 						if (this.srcChannel) {
 							this.srcMode = ServiceSourceMode.Intern;
-							this.srcIntAct = true;
-							this.srcExtAct = false;
 						} //TODO else?
 					} //TODO else?
 					this.srcIntOp = false;
@@ -163,8 +157,6 @@ export class ServiceSourceModeDAMockup {
 					if (this.srcExtOp) {
 						if (this.srcChannel) {
 							this.srcMode = ServiceSourceMode.Extern;
-							this.srcIntAct = false;
-							this.srcExtAct = true;
 						}
 					}
 					this.srcExtOp = false;
@@ -199,6 +191,15 @@ export class ServiceSourceModeDAMockup {
 		});
 
 	}
+	public get srcExtAct(): boolean {
+		return this.srcMode === ServiceSourceMode.Extern;
+	}
+
+	public get srcIntAct(): boolean {
+		return this.srcMode === ServiceSourceMode.Intern;
+	}
+
+
 
 	public getServiceSourceModeDAInstanceMockupJSON() {
 		return getServiceSourceModeDAMockupReferenceJSON(

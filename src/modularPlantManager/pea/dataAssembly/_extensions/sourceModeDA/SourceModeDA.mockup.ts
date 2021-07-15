@@ -24,7 +24,7 @@
  */
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {SourceMode} from '@p2olab/polaris-interface';
+import {ServiceSourceMode, SourceMode} from '@p2olab/polaris-interface';
 
 export function getSourceModeDAMockupReferenceJSON(
     namespace: number,
@@ -76,8 +76,6 @@ export class SourceModeDAMockup {
   protected srcIntAut = false;
   protected srcIntOp = false;
   protected srcManOp = false;
-  protected srcIntAct = false;
-  protected srcManAct = true;
   protected mockupNode: UAObject;
 
 
@@ -135,8 +133,6 @@ export class SourceModeDAMockup {
             if (this.srcIntOp) {
               if (this.srcChannel) {
                 this.srcMode = SourceMode.Intern;
-                this.srcIntAct = true;
-                this.srcManAct = false;
               }
             }
             this.srcIntOp = false;
@@ -160,8 +156,6 @@ export class SourceModeDAMockup {
             if (this.srcManOp) {
               if (this.srcChannel) {
                 this.srcMode = SourceMode.Manual;
-                this.srcIntAct = false;
-                this.srcManAct = true;
               }//TODO else?
             }//TODO else?
             this.srcManOp = false;
@@ -195,6 +189,15 @@ export class SourceModeDAMockup {
         },
       });
     }
+
+  public get srcManAct(): boolean {
+    return this.srcMode === SourceMode.Manual;
+  }
+
+  public get srcIntAct(): boolean {
+    return this.srcMode === SourceMode.Intern;
+  }
+
 
   public getSourceModeDAInstanceMockupJSON() {
     return getSourceModeDAMockupReferenceJSON(

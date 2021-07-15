@@ -17,12 +17,6 @@ class SourceModeDAMockupTestClass extends SourceModeDAMockup{
     public getSrcMode(){
         return this.srcMode;
     }
-    public getSrcIntAct(){
-        return this.srcIntAct;
-    }
-    public getSrcManAct(){
-        return this.srcManAct;
-    }
     public setSrcChannelToTrue(){
         this.srcChannel = true;
     }
@@ -77,12 +71,12 @@ describe('SourceModeDAMockup', () => {
             await mockupServer.shutdown();
         });
 
-        it('set and get SrcExtOp', async () => {
-            await connection.writeOpcUaNode('Variable.SrcExtOp', namespaceUrl, true, 'Boolean');
-            await connection.readOpcUaNode('Variable.SrcExtOp', namespaceUrl)
+        it('set and get SrcManOp', async () => {
+            await connection.writeOpcUaNode('Variable.SrcManOp', namespaceUrl, true, 'Boolean');
+            await connection.readOpcUaNode('Variable.SrcManOp', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(false));
-            expect(mockup.getSrcIntAct()).to.false;
-            expect(mockup.getSrcManAct()).to.true;
+            expect(mockup.srcIntAct).to.false;
+            expect(mockup.srcManAct).to.true;
             expect(mockup.getSrcMode()).to.equal(SourceMode.Manual);
         }).timeout(3000);
 
@@ -90,17 +84,17 @@ describe('SourceModeDAMockup', () => {
             await connection.writeOpcUaNode('Variable.SrcIntOp', namespaceUrl, true, 'Boolean');
             await connection.readOpcUaNode('Variable.SrcIntOp', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(false));
-            expect(mockup.getSrcIntAct()).to.true;
-            expect(mockup.getSrcManAct()).to.false;
+            expect(mockup.srcIntAct).to.true;
+            expect(mockup.srcManAct).to.false;
             expect(mockup.getSrcMode()).to.equal(SourceMode.Intern);
         }).timeout(3000);
 
-        it('set and get SrcExtOp, write false', async () => {
-            await connection.writeOpcUaNode('Variable.SrcExtOp', namespaceUrl, false, 'Boolean');
-            await connection.readOpcUaNode('Variable.SrcExtOp', namespaceUrl)
+        it('set and get SrcManOp, write false', async () => {
+            await connection.writeOpcUaNode('Variable.SrcManOp', namespaceUrl, false, 'Boolean');
+            await connection.readOpcUaNode('Variable.SrcManOp', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(false));
-            expect(mockup.getSrcIntAct()).to.false;
-            expect(mockup.getSrcManAct()).to.true;
+            expect(mockup.srcIntAct).to.true;
+            expect(mockup.srcManAct).to.false;
             expect(mockup.getSrcMode()).to.equal(SourceMode.Intern);
         }).timeout(3000);
 
@@ -108,8 +102,8 @@ describe('SourceModeDAMockup', () => {
             await connection.writeOpcUaNode('Variable.SrcIntOp', namespaceUrl, false, 'Boolean');
             await connection.readOpcUaNode('Variable.SrcIntOp', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(false));
-            expect(mockup.getSrcIntAct()).to.false;
-            expect(mockup.getSrcManAct()).to.true;
+            expect(mockup.srcIntAct).to.true;
+            expect(mockup.srcManAct).to.false;
             expect(mockup.getSrcMode()).to.equal(ServiceSourceMode.Intern);
         }).timeout(3000);
 
@@ -136,12 +130,12 @@ describe('SourceModeDAMockup', () => {
             await mockupServer.shutdown();
         });
 
-        it('set and get SrcExtOp, write false', async () => {
-            await connection.writeOpcUaNode('Variable.SrcExtOp', namespaceUrl, true, 'Boolean');
-            await connection.readOpcUaNode('Variable.SrcExtOp', namespaceUrl)
+        it('set and get SrcManOp, write false', async () => {
+            await connection.writeOpcUaNode('Variable.SrcManOp', namespaceUrl, true, 'Boolean');
+            await connection.readOpcUaNode('Variable.SrcManOp', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(false));
-            expect(mockup.getSrcIntAct()).to.false;
-            expect(mockup.getSrcManAct()).to.true;
+            expect(mockup.srcIntAct).to.true;
+            expect(mockup.srcManAct).to.false;
             expect(mockup.getSrcMode()).to.equal(SourceMode.Intern);
         }).timeout(3000);
 
@@ -149,8 +143,8 @@ describe('SourceModeDAMockup', () => {
             await connection.writeOpcUaNode('Variable.SrcIntOp', namespaceUrl, true, 'Boolean');
             await connection.readOpcUaNode('Variable.SrcIntOp', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(false));
-            expect(mockup.getSrcIntAct()).to.false;
-            expect(mockup.getSrcManAct()).to.true;
+            expect(mockup.srcIntAct).to.true;
+            expect(mockup.srcManAct).to.false;
             expect(mockup.getSrcMode()).to.equal(ServiceSourceMode.Intern);
         }).timeout(3000);
     });
