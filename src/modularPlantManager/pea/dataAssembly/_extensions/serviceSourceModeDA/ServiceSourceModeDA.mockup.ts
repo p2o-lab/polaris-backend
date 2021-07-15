@@ -79,11 +79,7 @@ export class ServiceSourceModeDAMockup {
 	public srcExtOp = false;
 	public readonly  mockupNode: UAObject;
 
-	constructor(namespace: Namespace, rootNode: UAObject, variableName: string, srcExtAct?: boolean, srcIntAct?: boolean) {
-		//for testing
-		if(srcExtAct) this.srcExtAct = srcExtAct;
-		if(srcIntAct) this.srcIntAct = srcIntAct;
-
+	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
 		this.mockupNode = rootNode;
 
 		namespace.addVariable({

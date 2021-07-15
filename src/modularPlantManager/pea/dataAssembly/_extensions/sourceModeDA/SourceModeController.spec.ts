@@ -106,7 +106,7 @@ describe('SourceModeController', () => {
 			expect(da1.communication.SrcIntAut.value).equal(false);
 			expect(da1.communication.SrcIntOp.value).equal(false);
 			expect(da1.communication.SrcManOp.value).equal(false);
-			expect(da1.communication.SrcIntAct.value).equal(false);
+			expect(da1.communication.SrcIntAct.value).equal(true);
 			expect(da1.communication.SrcManAct.value).equal(false);
 		}).timeout(5000);
 	});
@@ -127,8 +127,9 @@ describe('SourceModeController', () => {
 			mockup = new SourceModeDAMockup(
 				mockupServer.namespace as Namespace,
 				mockupNode,
-				'Variable',true,false);
+				'Variable');
 			mockup.srcChannel = true;
+			mockup.srcMode = SourceMode.Manual;
 			await mockupServer.start();
 
 			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334', '', '');
@@ -196,7 +197,7 @@ describe('SourceModeController', () => {
 			mockup = new SourceModeDAMockup(
 				mockupServer.namespace as Namespace,
 				mockupNode,
-				'Variable', false,true);
+				'Variable');
 			mockup.srcChannel = true;
 			await mockupServer.start();
 

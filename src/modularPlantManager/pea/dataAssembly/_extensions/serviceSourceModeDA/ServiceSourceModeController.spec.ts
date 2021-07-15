@@ -104,12 +104,11 @@ describe('ServiceSourceMode', () => {
 			expect(da1.communication.SrcIntOp.value).equal(false);
 			expect(da1.communication.SrcExtOp.value).equal(false);
 			expect(da1.communication.SrcIntAct.value).equal(false);
-			expect(da1.communication.SrcExtAct.value).equal(false);
+			expect(da1.communication.SrcExtAct.value).equal(true);
 		}).timeout(5000);
 	});
 
 	describe('dynamic functions, Extern on', async () => {
-		//TODO both false srcextact and srcintact
 		let mockupServer: MockupServer;
 		let connection: OpcUaConnection;
 		let mockup: ServiceSourceModeDAMockup;
@@ -122,7 +121,7 @@ describe('ServiceSourceMode', () => {
 			mockup = new ServiceSourceModeDAMockup(
 				mockupServer.namespace as Namespace,
 				mockupServer.rootComponent as UAObject,
-				'Variable',true);
+				'Variable');
 			await mockupServer.start();
 			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334', '', '');
 			da1 = new DataAssemblyController(dataAssemblyOptions, connection) as any;
@@ -171,7 +170,7 @@ describe('ServiceSourceMode', () => {
 				mockupNode,
 				'Variable');
 			mockup.srcChannel = true;
-			mockup.srcIntAct = true;
+			mockup.srcMode= ServiceSourceMode.Intern;
 			await mockupServer.start();
 
 			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334', '', '');

@@ -140,8 +140,8 @@ describe('PIDCtrl', () => {
 			expect(da1.communication.SrcIntAut.value).equal(false);
 			expect(da1.communication.SrcIntOp.value).equal(false);
 			expect(da1.communication.SrcManOp.value).equal(false);
-			expect(da1.communication.SrcIntAct.value).equal(false);
-			expect(da1.communication.SrcManAct.value).equal(true);
+			expect(da1.communication.SrcIntAct.value).equal(true);
+			expect(da1.communication.SrcManAct.value).equal(false);
 
 			expect(da1.communication.StateChannel.value).equal(false);
 			expect(da1.communication.StateOffAut.value).equal(false);
