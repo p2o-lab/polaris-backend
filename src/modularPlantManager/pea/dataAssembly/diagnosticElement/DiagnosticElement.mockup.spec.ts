@@ -21,9 +21,8 @@ describe('DiagnosticElementMockup', () => {
                 mockupServer.rootComponent as UAObject, 'Variable');
             expect(mockup).to.not.be.undefined;
             expect(mockup.wqc).to.not.be.undefined;
-
-
         });
+
         it('getDiagnosticElementMockupReferenceJSON()',  () => {
             const mockup = new DiagnosticElementMockup(mockupServer.namespace as Namespace,
                 mockupServer.rootComponent as UAObject, 'Variable');

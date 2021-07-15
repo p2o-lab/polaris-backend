@@ -17,9 +17,6 @@ describe('AnaProcessValueInMockup', () => {
             mockupServer = new MockupServer();
             await mockupServer.initialize();
         });
-        afterEach(async () => {
-
-        });
         it('should create AnaProcessValueInMockup', async () => {
             const mockup= new AnaProcessValueInMockup(mockupServer.namespace as Namespace,
                 mockupServer.rootComponent as UAObject, 'Variable');

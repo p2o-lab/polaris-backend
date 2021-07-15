@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 P2O-Lab <p2o-lab@mailbox.tu-dresden.de>,
+ * Copyright (c) 2020 P2O-Lab <p2o-lab@mailbox.tu-dresden.de>,
  * Chair for Process Control Systems, Technische Universität Dresden
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,28 +23,24 @@
  * SOFTWARE.
  */
 
-import {Namespace, UAObject} from 'node-opcua';
-import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../_extensions/wqcDA/WQCDA.mockup';
-import {catPEAMockup} from '../../../../logging';
-import {DataAssemblyControllerMockup} from '../DataAssemblyController.mockup';
+import { Namespace, StatusCodes, UAObject} from 'node-opcua';
 
-export function getDiagnosticElementMockupReferenceJSON(namespace: number, objectBrowseName: string) {
-	return (getWQCDAMockupReferenceJSON(namespace,objectBrowseName));
-}
 
-export class DiagnosticElementMockup extends DataAssemblyControllerMockup {
+export class DataAssemblyControllerMockup {
+    public readonly name: string;
 
-	public readonly wqc: WQCDAMockup;
+    protected tagName = '';
+    protected tagDescription = '';
+    protected mockupNode: UAObject;
 
-	constructor(namespace: Namespace, rootNode: UAObject, variableName: string){
-		super(namespace, rootNode, variableName);
-		this.wqc = new WQCDAMockup(namespace, this.mockupNode, this.name);
+    constructor(namespace: Namespace, rootNode: UAObject, variableName: string, tagName?: string, tagDescription?: string) {
+        this.tagName = tagName || 'No TagName available!';
+        this.tagDescription = tagDescription || 'No TagDescription available!';
+        this.name = variableName;
 
-	}
-
-	public getDiagnosticElementInstanceMockupJSON() {
-		return getDiagnosticElementMockupReferenceJSON(
-			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name as string);
-	}
+        this.mockupNode = namespace.addObject({
+            organizedBy: rootNode,
+            browseName: variableName,
+        });
+    }
 }

@@ -25,6 +25,7 @@
 
 import {Namespace, UAObject} from 'node-opcua';
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../_extensions/wqcDA/WQCDA.mockup';
+import {DataAssemblyControllerMockup} from '../DataAssemblyController.mockup';
 
 export function getInputElementMockupReferenceJSON(
 	namespace: number,
@@ -36,21 +37,14 @@ export function getInputElementMockupReferenceJSON(
 	);
 }
 
-export class InputElementMockup {
+export class InputElementMockup extends DataAssemblyControllerMockup{
 
-	public readonly name: string;
-	public wqc: WQCDAMockup;
-	protected mockupNode: UAObject;
+	public readonly wqc: WQCDAMockup;
 
-	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
-
-		this.name = variableName;
-
-		this.mockupNode = namespace.addObject({
-			organizedBy: rootNode,
-			browseName: variableName
-		});
+	constructor(namespace: Namespace, rootNode: UAObject, variableName: string){
+		super(namespace, rootNode, variableName);
 		this.wqc = new WQCDAMockup(namespace, this.mockupNode, this.name);
+
 	}
 
 	public getInputElementInstanceMockupJSON() {

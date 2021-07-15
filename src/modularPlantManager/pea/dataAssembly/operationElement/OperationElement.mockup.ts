@@ -24,8 +24,8 @@
  */
 
 import {Namespace, UAObject} from 'node-opcua';
-import {getFeedbackMonitoringDAMockupReferenceJSON} from '../_extensions/feedbackMonitoringDA/FeedbackMonitoringDA.mockup';
 import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../_extensions/osLevelDA/OSLevelDA.mockup';
+import {DataAssemblyControllerMockup} from '../DataAssemblyController.mockup';
 
 export function getOperationElementMockupReferenceJSON(
 	namespace: number,
@@ -37,23 +37,14 @@ export function getOperationElementMockupReferenceJSON(
 	);
 }
 
-export class OperationElementMockup {
-
-	public readonly name: string;
-	public readonly osLevel: OSLevelDAMockup;
-	protected mockupNode: UAObject;
-
-	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
-
-		this.name = variableName;
-
-		this.mockupNode = namespace.addObject({
-			organizedBy: rootNode,
-			browseName: variableName
-		});
-
+export class OperationElementMockup extends DataAssemblyControllerMockup {
+	protected osLevel: OSLevelDAMockup;
+	constructor(namespace: Namespace, rootNode: UAObject, variableName: string){
+		super(namespace, rootNode, variableName);
 		this.osLevel = new OSLevelDAMockup(namespace, this.mockupNode, this.name);
+
 	}
+
 
 	public getOperationElementInstanceMockupJSON() {
 		return getOperationElementMockupReferenceJSON(
