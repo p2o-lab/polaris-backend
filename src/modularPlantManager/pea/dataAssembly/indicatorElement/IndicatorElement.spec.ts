@@ -27,7 +27,7 @@ import {OpcUaConnection} from '../../connection';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from '../../../../../tests/indicatorelement.json';
+import * as baseDataAssemblyOptions from '../../../../../tests/anaview.json';
 import * as baseDataAssemblyOptionsStatic from '../../../../../tests/binmon_static.json';
 
 import {IndicatorElement} from './IndicatorElement';
@@ -35,6 +35,8 @@ import {MockupServer} from '../../../_utils';
 import {Namespace, UAObject} from 'node-opcua';
 import {namespaceUrl} from '../../../../../tests/namespaceUrl';
 import {IndicatorElementMockup} from './IndicatorElement.mockup';
+import {AnaViewMockup} from './AnaView/AnaView.mockup';
+import {AnaView} from './AnaView/AnaView';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -73,6 +75,13 @@ describe('IndicatorElement', () => {
 			metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/BinMon',
 			dataItems: baseDataAssemblyOptions
 		};
+		// set namespaceUrl
+		for (const key in dataAssemblyOptions.dataItems as any) {
+			//skip static values
+			if((typeof(dataAssemblyOptions.dataItems as any)[key] != 'string')){
+				(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
+			}
+		}
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
@@ -81,6 +90,7 @@ describe('IndicatorElement', () => {
 				mockupServer.namespace as Namespace,
 				mockupServer.rootComponent as UAObject,
 				'Variable');
+
 			await mockupServer.start();
 			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334','','');
 			await connection.connect();
@@ -93,19 +103,11 @@ describe('IndicatorElement', () => {
 		});
 
 		it('should subscribe successfully', async () => {
-			// set namespaceUrl
-			for (const key in dataAssemblyOptions.dataItems as any) {
-				//skip static values
-				if((typeof(dataAssemblyOptions.dataItems as any)[key] != 'string')){
-					(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
-				}
-			}
-			const da1: IndicatorElement = new IndicatorElement(dataAssemblyOptions, connection);
-			const pv = await da1.subscribe();
+			const da1 = new IndicatorElement(dataAssemblyOptions, connection);
+			const pv = da1.subscribe();
 			await connection.startListening();
 			await pv;
 			expect(da1.communication.WQC.value).equal(0);
-			//TODO test not working properly
-		}).timeout(100000);
+		}).timeout(4000);
 	});
 });

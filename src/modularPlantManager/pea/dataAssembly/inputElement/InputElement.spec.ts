@@ -34,12 +34,13 @@ import {namespaceUrl} from '../../../../../tests/namespaceUrl';
 import {InputElementMockup} from './InputElement.mockup';
 import {InputElement} from './InputElement';
 import {DataAssemblyControllerFactory} from '../DataAssemblyControllerFactory';
+import {OSLevel, WQC} from '../_extensions';
+import {ActiveElementMockup} from '../activeElement/ActiveElement.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('InputElement', () => {
-
 	describe('static', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
 		it('should create InputElement', async () => {
@@ -57,22 +58,31 @@ describe('InputElement', () => {
 			expect(da1.wqc).to.be.not.undefined;
 		});
 	});
+
 	describe('dynamic', () => {
-		let mockupServer: MockupServer;
-		let connection: OpcUaConnection;
 		const dataAssemblyOptions: DataAssemblyOptions = {
 			name: 'Variable',
-			metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/BinMon',
+			metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/InputElement/',
 			dataItems: baseDataAssemblyOptions
 		};
+		let mockupServer: MockupServer;
+		let connection: OpcUaConnection;
+		// set namespaceUrl
+		for (const key in dataAssemblyOptions.dataItems as any) {
+			//skip static values
+			if((typeof(dataAssemblyOptions.dataItems as any)[key] != 'string')){
+				(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
+			}
+		}
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			const mockup = new InputElementMockup(
+			const mockup = new ActiveElementMockup(
 				mockupServer.namespace as Namespace,
 				mockupServer.rootComponent as UAObject,
 				'Variable');
+
 			await mockupServer.start();
 			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334','','');
 			await connection.connect();
@@ -85,20 +95,14 @@ describe('InputElement', () => {
 		});
 
 		it('should subscribe successfully', async () => {
-			// set namespaceUrl
-			for (const key in dataAssemblyOptions.dataItems as any) {
-				//skip static values
-				if((typeof(dataAssemblyOptions.dataItems as any)[key] != 'string')){
-					(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
-				}
-			}
+			//TODO: problem with circular dependencies, new InputElement() does not work
+			//const da1 = new InputElement(dataAssemblyOptions, connection);
 			const da1 = DataAssemblyControllerFactory.create(dataAssemblyOptions, connection) as InputElement;
-			//const da1 = new InputElement(dataAssemblyOptions, emptyOPCUAConnection);
-			const pv = await da1.subscribe();
+			new WQC(da1);
+			const pv = da1.subscribe();
 			await connection.startListening();
 			await pv;
 			expect(da1.communication.WQC.value).equal(0);
-			//TODO test not working properly
-		}).timeout(100000);
+		}).timeout(4000);
 	});
 });
