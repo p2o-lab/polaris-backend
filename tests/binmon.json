@@ -27,12 +27,12 @@
       "dataType": "xs:IDREF"
     },
     "VFlutEn": {
-      "nodeId": "Variable.VState0",
+      "nodeId": "Variable.VFlutEn",
       "namespaceIndex": "localhost",
       "dataType": "xs:IDREF"
     },
     "VFlutTi": {
-      "nodeId": "Variable.VState1",
+      "nodeId": "Variable.VFlutTi",
       "namespaceIndex": "localhost",
       "dataType": "xs:IDREF"
     },

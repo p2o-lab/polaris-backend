@@ -108,12 +108,10 @@ describe('BinMon', () => {
 			expect(da1.communication.VState0.value).equal('state0_active');
 			expect(da1.communication.VState1.value).equal('state1_active');
 
-			//TODO wtf, does not work
 			expect(da1.communication.VFlutEn.value).equal(false);
 			expect(da1.communication.VFlutAct.value).equal(false);
 			expect(da1.communication.VFlutTi.value).equal(0);
 			expect(da1.communication.VFlutCnt.value).equal(0);
-
 		}).timeout(4000);
 	});
 });
