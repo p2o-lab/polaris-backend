@@ -28,19 +28,99 @@ import {LockView4} from './LockView4';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {PEAMockup} from '../../../PEA.mockup';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import * as baseDataAssemblyOptions from '../../../../../../tests/lockview.json';
+import {namespaceUrl} from '../../../../../../tests/namespaceUrl';
+import {MockupServer} from '../../../../_utils';
+import {Namespace, UAObject} from 'node-opcua';
+import {LockView4Mockup} from './LockView4.mockup';
+
+
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('LockView4', () => {
-	const parseJson = require('json-parse-better-errors');
+	const dataAssemblyOptions: DataAssemblyOptions = {
+		name: 'Variable',
+		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/DiagnosticElement/LockView4/',
+		dataItems: baseDataAssemblyOptions
+	};
 
 	describe('static', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
-		it('should create LockView4', async () => { /* TODO: Add Test */
+
+		it('should create LockView4', async () => {
+			const da1 = new LockView4(dataAssemblyOptions, emptyOPCUAConnection);
+			expect(da1).to.be.not.undefined;
+			expect(da1.communication).to.be.not.undefined;
+			expect(da1.wqc).to.be.not.undefined;
 		});
 
 	});
+	describe('dynamic', () => {
+		let mockupServer: MockupServer;
+		let connection: OpcUaConnection;
+		// set namespaceUrl
+		for (const key in dataAssemblyOptions.dataItems as any) {
+			//skip static values
+			if((typeof(dataAssemblyOptions.dataItems as any)[key] != 'string')){
+				(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
+			}
+		}
+		beforeEach(async function () {
+			this.timeout(4000);
+			mockupServer = new MockupServer();
+			await mockupServer.initialize();
+			const mockup = new LockView4Mockup(
+				mockupServer.namespace as Namespace,
+				mockupServer.rootComponent as UAObject,
+				'Variable');
 
+			await mockupServer.start();
+			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334','','');
+			await connection.connect();
+		});
+
+		afterEach(async function () {
+			this.timeout(4000);
+			await connection.disconnect();
+			await mockupServer.shutdown();
+		});
+
+		it('should subscribe successfully', async () => {
+			const da1 = new LockView4(dataAssemblyOptions, connection);
+			const pv = da1.subscribe();
+			await connection.startListening();
+			await pv;
+			expect(da1.communication.WQC.value).equal(0);
+			expect(da1.communication.Logic.value).equal(false);
+			expect(da1.communication.Out.value).equal(false);
+			expect(da1.communication.OutQC.value).equal(0);
+
+			expect(da1.communication.In1En.value).equal(false);
+			expect(da1.communication.In1.value).equal(false);
+			expect(da1.communication.In1QC.value).equal(0);
+			expect(da1.communication.In1Inv.value).equal(false);
+			expect(da1.communication.In1Txt.value).equal('testText');
+
+			expect(da1.communication.In2En.value).equal(false);
+			expect(da1.communication.In2.value).equal(false);
+			expect(da1.communication.In2QC.value).equal(0);
+			expect(da1.communication.In2Inv.value).equal(false);
+			expect(da1.communication.In2Txt.value).equal('testText');
+
+			expect(da1.communication.In3En.value).equal(false);
+			expect(da1.communication.In3.value).equal(false);
+			expect(da1.communication.In3QC.value).equal(0);
+			expect(da1.communication.In3Inv.value).equal(false);
+			expect(da1.communication.In3Txt.value).equal('testText');
+
+			expect(da1.communication.In4En.value).equal(false);
+			expect(da1.communication.In4.value).equal(false);
+			expect(da1.communication.In4QC.value).equal(0);
+			expect(da1.communication.In4Inv.value).equal(false);
+			expect(da1.communication.In4Txt.value).equal('testText');
+		}).timeout(4000);
+	});
 });
