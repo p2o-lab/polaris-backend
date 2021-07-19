@@ -58,5 +58,5 @@ export abstract class DataItem<T> extends (EventEmitter as new() => DataItemEmit
 
 	public abstract async subscribe(samplingInterval: number): Promise<any>;
 
-	public abstract write(value: string | number): Promise<void>;
+	public abstract write(value: string | number | boolean): Promise<void>;
 }
