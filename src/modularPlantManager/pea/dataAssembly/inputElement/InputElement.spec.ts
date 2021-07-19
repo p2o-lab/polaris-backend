@@ -78,7 +78,7 @@ describe('InputElement', () => {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			const mockup = new ActiveElementMockup(
+			const mockup = new InputElementMockup(
 				mockupServer.namespace as Namespace,
 				mockupServer.rootComponent as UAObject,
 				'Variable');
@@ -104,5 +104,6 @@ describe('InputElement', () => {
 			await pv;
 			expect(da1.communication.WQC.value).equal(0);
 		}).timeout(4000);
+		//TODO toJSON
 	});
 });

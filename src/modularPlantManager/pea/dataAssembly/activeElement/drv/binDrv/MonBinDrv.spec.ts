@@ -32,11 +32,10 @@ import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 // MonBinDrv overlaps with MonAnaDrv
 import * as baseDataAssemblyOptions from '../../../../../../../tests/monanadrv.json';
 import {MockupServer} from '../../../../../_utils';
-import {DrvMockup} from '../Drv.mockup';
-import {Drv} from '../Drv';
 import {Namespace, UAObject} from 'node-opcua';
 import {namespaceUrl} from '../../../../../../../tests/namespaceUrl';
 import {DataAssemblyControllerFactory} from '../../../DataAssemblyControllerFactory';
+import {MonBinDrvMockup} from './MonBinDrv.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -58,14 +57,14 @@ describe('MonBinDrv', () => {
 	describe('dynamic', () => {
 		let mockupServer: MockupServer;
 		let connection: OpcUaConnection;
-		let mockup: DrvMockup;
-		let da1: Drv;
+		let mockup: MonBinDrvMockup;
+		let da1: MonBinDrv;
 
 		beforeEach(async function () {
-			this.timeout(10000);
+			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			mockup = new DrvMockup(
+			mockup = new MonBinDrvMockup(
 				mockupServer.namespace as Namespace,
 				mockupServer.rootComponent as UAObject,
 				'Variable');
@@ -79,7 +78,7 @@ describe('MonBinDrv', () => {
 					(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
 				}
 			}
-			da1 = DataAssemblyControllerFactory.create(dataAssemblyOptions, connection) as Drv;
+			da1 = DataAssemblyControllerFactory.create(dataAssemblyOptions, connection) as MonBinDrv;
 			const pv = da1.subscribe();
 			await connection.startListening();
 			await pv;

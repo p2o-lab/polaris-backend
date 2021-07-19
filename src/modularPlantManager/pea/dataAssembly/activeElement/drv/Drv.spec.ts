@@ -31,11 +31,10 @@ import {
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from '../../../../../../tests/bindrv.json';
+import * as baseDataAssemblyOptions from '../../../../../../tests/monanadrv.json';
 import {MockupServer} from '../../../../_utils';
 import {Namespace, UAObject} from 'node-opcua';
 import {namespaceUrl} from '../../../../../../tests/namespaceUrl';
-import {DataAssemblyControllerFactory} from '../../DataAssemblyControllerFactory';
 import {DrvMockup} from './Drv.mockup';
 
 chai.use(chaiAsPromised);

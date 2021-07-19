@@ -34,6 +34,8 @@ import {MockupServer} from '../../../_utils';
 import {OperationElementMockup} from './OperationElement.mockup';
 import {Namespace, UAObject} from 'node-opcua';
 import {OperationElement} from './OperationElement';
+import {namespaceUrl} from "../../../../../tests/namespaceUrl";
+
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -41,13 +43,14 @@ const expect = chai.expect;
 describe('OperationElement', () => {
 	const dataAssemblyOptions: DataAssemblyOptions = {
 		name: 'Variable',
-		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperationElement/BinMan',
+		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperationElement',
 		dataItems: baseDataAssemblyOptions
 	};
 
 	describe('static', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
 		it('should create OperationElement', () => {
+			//TODO: fix this, error because of circular dependencies
 			const da1: OperationElement = new OperationElement(dataAssemblyOptions, emptyOPCUAConnection);
 			expect(da1).to.be.not.undefined;
 			expect(da1.osLevel).to.be.not.undefined;
@@ -58,7 +61,13 @@ describe('OperationElement', () => {
 	describe('dynamic', () => {
 		let mockupServer: MockupServer;
 		let connection: OpcUaConnection;
-
+		// set namespaceUrl
+		for (const key in dataAssemblyOptions.dataItems as any) {
+			//skip static values
+			if((typeof(dataAssemblyOptions.dataItems as any)[key] != 'string')){
+				(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
+			}
+		}
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
@@ -67,8 +76,9 @@ describe('OperationElement', () => {
 				mockupServer.namespace as Namespace,
 				mockupServer.rootComponent as UAObject,
 				'Variable');
-			mockupServer.start();
-			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://127.0.0.1:4334/PEATestServer');
+
+			await mockupServer.start();
+			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334','','');
 			await connection.connect();
 		});
 
@@ -78,11 +88,15 @@ describe('OperationElement', () => {
 			await mockupServer.shutdown();
 		});
 
-		const emptyOPCUAConnection = new OpcUaConnection('', '');
-		it('should create OperationElement', () => {
-			const da1: OperationElement = new OperationElement(dataAssemblyOptions, emptyOPCUAConnection);
-
-		});
+		it('should subscribe successfully', async () => {
+			//TODO: fix this, error because of circular dependencies
+			const da1 = new OperationElement(dataAssemblyOptions, connection);
+			const pv = da1.subscribe();
+			await connection.startListening();
+			await pv;
+			expect(da1.communication.OSLevel.value).equal(0);
+		}).timeout(4000);
+		//TODO test rest of the funcitons
 	});
 
 });

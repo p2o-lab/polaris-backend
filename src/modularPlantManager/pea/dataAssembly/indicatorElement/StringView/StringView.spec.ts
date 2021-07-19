@@ -63,6 +63,13 @@ describe('StringView', () => {
 		let connection: OpcUaConnection;
 
 		beforeEach(async function () {
+			// set namespaceUrl
+			for (const key in dataAssemblyOptions.dataItems as any) {
+				//skip static values
+				if((typeof(dataAssemblyOptions.dataItems as any)[key] != 'string')){
+					(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
+				}
+			}
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
@@ -82,19 +89,19 @@ describe('StringView', () => {
 		});
 
 		it('should subscribe successfully', async () => {
-			// set namespaceUrl
-			for (const key in dataAssemblyOptions.dataItems as any) {
-				//skip static values
-				if((typeof(dataAssemblyOptions.dataItems as any)[key] != 'string')){
-					(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
-				}
-			}
 			const da1: StringView = new StringView(dataAssemblyOptions, connection);
 			const pv = da1.subscribe();
 			await connection.startListening();
 			await pv;
 			expect(da1.communication.WQC.value).equal(0);
 			expect(da1.communication.Text.value).equal('dummyText');
+		}).timeout(4000);
+		it('get Text', async () => {
+			const da1: StringView = new StringView(dataAssemblyOptions, connection);
+			const pv = da1.subscribe();
+			await connection.startListening();
+			await pv;
+			expect(da1.Text).to.equal('dummyText');
 		}).timeout(4000);
 	});
 });
