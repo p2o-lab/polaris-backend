@@ -23,21 +23,18 @@
  * SOFTWARE.
  */
 
-import {AggregatedServiceOptions, ServerSettingsOptions, ServiceCommand} from '@p2olab/polaris-interface';
+import {
+	AggregatedServiceOptions,
+	DataAssemblyOptions,
+	ServerSettingsOptions,
+	ServiceCommand
+} from '@p2olab/polaris-interface';
 import {LoadOptions, ModularPlantManager} from './ModularPlantManager';
-import {PEAController, Service} from './pea';
-import {ServiceState} from './pea/dataAssembly';
-
 import * as fs from 'fs';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import 'mocha';
-import {MockupServer} from './_utils';
-import * as AdmZip from 'adm-zip';
-import {PEAModel} from '@p2olab/pimad-core/dist/ModuleAutomation';
-import {logger} from '@p2olab/pimad-core';
-import {timeout} from 'promise-timeout';
-import * as peaModel from '../../tests/peaModel.json';
+
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
@@ -92,8 +89,8 @@ describe('ModularPlantManager', () => {
 			const peaController = peaControllers[0];
 			const peaId = peaController.id;
 			expect(modularPlantManager.peas.length).equal(1);
-			//expect(() => modularPlantManager.getPEAController(peaId)).not.to.throw();
-		});
+		}).timeout(2000);
+
 		it('loadPEAController() to fail', async () => {
 			return expect(modularPlantManager.loadPEAController('')).to.be.rejected;
 		});
@@ -271,7 +268,7 @@ describe('ModularPlantManager', () => {
 	});
 
 	describe('test with Mockup Server', function () {
-		this.timeout(5000);
+		/*this.timeout(5000);
 		let mockupServer: MockupServer;
 
 		before(async () => {
@@ -353,7 +350,7 @@ describe('ModularPlantManager', () => {
 			const asJson: AggregatedServiceOptions = parseJson(
 				fs.readFileSync('assets/polService/aggregatedService_peatestserver.json', 'utf8'), null, 60);
 			modularPlantManager.instantiatePOLService(asJson);
-		});
+		});*/
 
 	});
 

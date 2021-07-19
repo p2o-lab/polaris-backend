@@ -166,8 +166,8 @@ describe('Condition', () => {
 		});
 
 	});
-
-	describe('with MockupServer containing a PEAController', () => {
+//TODO test with MockupServer
+/*	describe('with MockupServer containing a PEAController', () => {
 		let mockupServer: MockupServer;
 		let pea: PEAController;
 		let var0: PEATestNumericVariable;
@@ -186,7 +186,7 @@ describe('Condition', () => {
 		});
 
 		afterEach(async () => {
-			await pea.disconnectAndUnsubscribe();
+			if(pea) await pea.disconnect();
 			await mockupServer.shutdown();
 		});
 
@@ -391,6 +391,6 @@ describe('Condition', () => {
 
 		});
 
-	});
+	});*/
 
 });
