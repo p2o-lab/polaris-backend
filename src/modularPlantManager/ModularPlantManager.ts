@@ -190,11 +190,12 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 	 */
 	public updateServerSettings(options: ServerSettingsOptions){
 		const pea = this.getPEAController(options.id);
-		pea.setConnection(options);
+		pea.updateConnection(options);
 	}
 
 	/**
 	 * Load PEAControllers by given pimadIdentifier
+	 * //TODO needs refactoring -> input should be Object with pimadIdentifier and protected information
 	 * @param {string} pimadIdentifier
 	 * @param {boolean} protectedPEAs  should PEAs be protected from being deleted
 	 */

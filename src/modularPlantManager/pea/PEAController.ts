@@ -189,10 +189,9 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 
 	/**
 	 * recreate OPCUAConnection and dAControllers with new settings.
-	 * TODO: need better function name
 	 * @param options {ServerSettingsOptions}
 	 */
-	public setConnection(options: ServerSettingsOptions){
+	public updateConnection(options: ServerSettingsOptions){
 		this.connection = new OpcUaConnection(this.id, options.serverUrl, options.username, options.password)
 			.on('connected', () => this.emit('connected'))
 			.on('disconnected', () => this.emit('disconnected'));
