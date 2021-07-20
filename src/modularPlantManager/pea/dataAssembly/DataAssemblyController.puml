@@ -1,0 +1,36 @@
+@startuml
+'https://plantuml.com/class-diagram
+!include ServiceControl/ServiceControl.puml
+!include ./activeElement/ActiveElement.puml
+!include ./DiagnosticElement/diagnosticElement.puml
+!include ./IndicatorElement/indicatorElement.puml
+!include ./InputElement/inputElement.puml
+!include ./OperationElement/operationElement.puml
+
+abstract class DataAssemblyController{
+    + //readonly// name: string
+    + //readonly// metaModelRef: string
+    + //readonly// communication!: string
+    + //readonly// connection: OpcUaConnection
+
+    + subscriptionActive: boolean
+    + parsingErrors: string[] = []
+    + options: DataAssemblyOptions
+    + defaultReadDataItem: DataItem<any> | undefined
+    + defaultReadDataItemType: any;
+	+ defaultWriteDataItem: DataItem<any> | undefined;
+	+ defaultWriteDataItemType: any;
+
+	+ //readonly// tagName: string;
+	+ //readonly// tagDescription: string;
+}
+
+DataAssemblyController <|-- ActiveElement
+DataAssemblyController <|-- BasicDefinition
+DataAssemblyController <|-- DiagnosticElement
+DataAssemblyController <|-- IndicatorElement
+DataAssemblyController <|-- InputElement
+DataAssemblyController <|-- OperationElement
+DataAssemblyController <|-- ServiceControl
+
+@enduml
