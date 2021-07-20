@@ -5,5 +5,5 @@
 AnaMan *- AnaManSpec
 AnaManSpec ..> AnaManMockup : <<use>>
 AnaMan *- AnaManMockup
-
+AnaMan <|-- AnaManInt
 @enduml
