@@ -146,6 +146,7 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 	private readonly hmiUrl: string;
 	private readonly logger: Category;
 
+	// may be only temporarily
 	// contains all DAControllers after subscription
 	private dAControllers: DataAssemblyController[];
 	// contains all variables (used in function json())
@@ -218,15 +219,19 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 		return this.services.map((service) => service.json());
 	}
 
-	public async connect(): Promise<void> {
+	/**
+	 * This function connects the PEAController to the OPCUAServer and subscribes to all Variables and Services
+	 */
+	public async connectAndSubscribe(): Promise<void> {
 		await this.connection.connect();
 		const pv = this.subscribeToAllVariables();
 		const pa = this.subscribeToAllServices();
 		await this.connection.startListening();
 
+		// only temporarily code
 		//after subscribing-> assign DAControllers to instance variable, which will be processed to this.processValues later
 		await pv.then(value => {this.dAControllers = value;});
-		//create process values for frontend (testpea)
+		//create process values for frontend (testpea), may be only temporarily
 		this.createProcessValues();
 
 		await Promise.all([pv,pa]);
@@ -236,7 +241,7 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 	/**
 	 * Close session and disconnect from PEAController
 	 */
-	public async disconnect(): Promise<void> {
+	public async disconnectAndUnsubscribe(): Promise<void> {
 		this.logger.info(`[${this.id}] Disconnect PEA`);
 		await this.unsubscribeFromAllVariables();
 		await this.unsubscribeFromAllServices();
@@ -422,6 +427,7 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 
 	/**
 	 * this function will extract the variables/DataItems out of this.dAControllers and push it to this.processValues
+	 * function is only temporarily for testing
 	 * @private
 	 */
 	private createProcessValues(){

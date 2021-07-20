@@ -57,7 +57,7 @@ describe('Player', () => {
 			const peaJson = JSON.parse(fs.readFileSync('assets/peas/pea_testserver_1.0.0.json').toString())
 				.peas[0];
 			const pea = new PEAController(peaJson);
-			await pea.connect();
+			await pea.connectAndSubscribe();
 			// now test recipe
 			const recipeJson = JSON.parse(
 				fs.readFileSync('assets/recipes/test/recipe_testserver_1.0.0.json').toString()
@@ -69,7 +69,7 @@ describe('Player', () => {
 			player.start();
 			await new Promise((resolve) => player.once('completed', resolve));
 
-			await pea.disconnect();
+			await pea.disconnectAndUnsubscribe();
 		}).timeout(10000);
 
 		it('should run a test recipe two times', async () => {
@@ -79,7 +79,7 @@ describe('Player', () => {
 			const pea = new PEAController(peaJson);
 			const service = pea.services[0];
 
-			await pea.connect();
+			await pea.connectAndSubscribe();
 
 			// now test recipe
 			const recipeJson = JSON.parse(
@@ -115,7 +115,7 @@ describe('Player', () => {
 			expect(player.status).to.equal(RecipeState.completed);
 			player.reset();
 
-			await pea.disconnect();
+			await pea.disconnectAndUnsubscribe();
 		}).timeout(10000);
 
 		it('should run a playlist while modifying it', async () => {
@@ -125,7 +125,7 @@ describe('Player', () => {
 			const pea = new PEAController(peaJson);
 			const service = pea.services[0];
 
-			await pea.connect();
+			await pea.connectAndSubscribe();
 
 			// now test recipe
 			const recipeJson = JSON.parse(
@@ -159,7 +159,7 @@ describe('Player', () => {
 			expect(player.status).to.equal(RecipeState.completed);
 			player.reset();
 
-			await pea.disconnect();
+			await pea.disconnectAndUnsubscribe();
 		}).timeout(10000);
 
 		it('should run the test recipe two times with several player interactions (pause, resume, stop)', async () => {
@@ -169,7 +169,7 @@ describe('Player', () => {
 			const pea = new PEAController(peaJson);
 			const service = pea.services[0];
 
-			await pea.connect();
+			await pea.connectAndSubscribe();
 
 			// now test recipe
 			const recipeJson = JSON.parse(
@@ -217,7 +217,7 @@ describe('Player', () => {
 			expect(player.status).to.equal(RecipeState.stopped);
 			player.reset();
 
-			await pea.disconnect();
+			await pea.disconnectAndUnsubscribe();
 		}).timeout(10000);
 
 	});

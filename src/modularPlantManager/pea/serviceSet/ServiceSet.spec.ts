@@ -133,11 +133,11 @@ describe('ServiceSet', () => {
 					.peas[0];
 			pea = new PEAController(peaJson);
 			service = pea.services[0];
-			await pea.connect();
+			await pea.connectAndSubscribe();
 		});
 
 		afterEach(async () => {
-			await pea.disconnect();
+			await pea.disconnectAndUnsubscribe();
 			peaServer.stopSimulation();
 		});
 

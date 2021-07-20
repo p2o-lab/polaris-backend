@@ -154,6 +154,7 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 
 	/**
 	 * Delete PEAController from Pimad-Pool by given Pimad-Identifier
+	 * //TODO: use more convenient Promise
 	 * @param peaId	Pimad-Identifier
 	 * @param callback Response from PiMad...
 	 */
@@ -165,6 +166,7 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 
 	/**
 	 * Get All PEAs from PiMAd-Pool
+	 * //TODO: use more convenient Promise
 	 * @param callback - contains a list of PEAs
 	 */
 	public getAllPEAsFromPimadPool(callback: (response: PiMAdResponse) => void){
@@ -175,6 +177,7 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 
 	/**
 	 * add PEAController to PiMaD-Pool by given filepath
+	 *  //TODO: use more convenient Promise
 	 * @param filePath - filepath of the uploaded file in /uploads
 	 * @param callback - contains Success or Failure Message
 	 */
@@ -243,7 +246,7 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 		if (pea.protected) throw new Error(`PEA ${peaID} is protected and can't be deleted`);
 
 		catManager.debug(`Disconnecting pea ${peaID} ...`);
-		await pea.disconnect()
+		await pea.disconnectAndUnsubscribe()
 			.catch((err) => catManager.warn('Something wrong while disconnecting from PEAController: ' + err.toString()));
 
 		catManager.debug(`Deleting pea ${peaID} ...`);

@@ -198,7 +198,7 @@ peaRouter.post('/:peaId/connect', asyncHandler(async (req: Request, res: Respons
 	const manager: ModularPlantManager = req.app.get('manager');
 	try{
 		const pea = manager.getPEAController(req.params.peaId);
-		await pea.connect();
+		await pea.connectAndSubscribe();
 		res.status(200).send({peaId: pea.id, status: 'Successfully connected'});
 	} catch (e) {
 		res.status(500).send(e.toString());
@@ -216,7 +216,7 @@ peaRouter.post('/:peaId/disconnect', asyncHandler(async (req: Request, res: Resp
 	const manager: ModularPlantManager = req.app.get('manager');
 	try{
 		const pea = manager.getPEAController(req.params.peaId);
-		await pea.disconnect();
+		await pea.disconnectAndUnsubscribe();
 		res.status(200).send({peaId: pea.id, status: 'Successfully disconnected'});
 	}catch (e) {
 		res.status(500).send(e.toString());

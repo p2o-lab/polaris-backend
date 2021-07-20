@@ -169,7 +169,7 @@ describe('ServiceControl', () => {
 				fs.readFileSync('assets/ModularAutomation/pea_testserver_1.0.0.json').toString())
 				.peas[0];
 			const pea = new PEAController(daPEA);
-			await pea.connect();
+			await pea.connectAndSubscribe();
 			peaServer.startSimulation();
 
 			const da = pea.services[0].procedures[0].parameters[0] as ServParam;
