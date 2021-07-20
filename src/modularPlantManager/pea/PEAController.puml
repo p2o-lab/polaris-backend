@@ -2,9 +2,40 @@
 'https://plantuml.com/class-diagram
 
 class PEAController{
-    id
-    endpoint
-    client: OPCUAClient
+    + //readonly// options: PEAOptions
+    + //readonly// id: string
+    + //readonly// pimadIdentifier: string
+    + //readonly// name: string;
+    + //readonly// services: Service[]
+
+    + variables: DataAssemblyController[]
+    + protected: boolean
+    + connection: OpcUaConnection
+
+    - //readonly// description: string
+    - //readonly// hmiUrl: string
+    - //readonly// logger: Category
+
+    + updateConnection(options: ServerSettingsOptions): void
+    + getService(serviceName: string): Service
+    + getServiceStates(): ServiceInterface[]
+    + //async// connectAndSubscribe(): Promise<void>
+    + //async// disconnectAndSubscribe(): Promise<void>
+    + json(): PEAInterface
+    + isConnected(): boolean
+    + listenToDataAssembly(dataAssemblyName: string, variableName: string): DataItemEmitter
+    + abort(): Promise<void[]>
+    + pause(): Promise<void[]>
+    + resume(): Promise<void[]>
+    + stop(): Promise<void[]>
+    + reset(): Promise<void[]>
+
+    - subscribeToAllVariables(): Promise<DataAssemblyController[]>
+    - unsubscribeFromAllVariables(): void
+    - subscribeToAllServices(): Promise<???>
+    - unsubscribeFromAllServices(): void
+
+
 }
 
 PEAController *-- "0..*" DataAssemblyController
