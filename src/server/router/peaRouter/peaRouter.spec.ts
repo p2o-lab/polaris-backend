@@ -24,90 +24,141 @@
  */
 
 import {BackendNotification} from '@p2olab/polaris-interface';
-import {ModularPlantManager} from '../../../modularPlantManager';
+import {ModularPlantManager, PEAController} from '../../../modularPlantManager';
 import {Server} from '../../server';
 
 import {Application} from 'express';
 import * as fs from 'fs';
 import * as WebSocket from 'ws';
 import {MockupServer} from '../../../modularPlantManager/_utils';
+import path = require('path');
 
 describe('PEARoutes', () => {
 	const request = require('supertest');
 	let app: Application;
 	let appServer: Server;
-
-	before(() => {
-		appServer = new Server(new ModularPlantManager());
+	let manager : ModularPlantManager
+	const peaOptionsDummy = {
+			name:'test',
+			id: 'test',
+			pimadIdentifier: 'test',
+			username: 'admin',
+			password: '1234',
+			opcuaServerUrl:'localhost',
+			services:[],
+			dataAssemblies:[]
+		}
+	beforeEach(() => {
+		manager = new ModularPlantManager();
+		appServer = new Server(manager);
 		appServer.startHttpServer(3000);
 		appServer.initSocketServer();
 		app = appServer.app;
 	});
 
-	after(async () => {
+	afterEach(async () => {
 		await appServer.stop();
 	});
 
-	context('#peaRoutes', () => {
-		it('should provide peas', async () => {
+	context('/api/pea', () => {
+		it('should provide empty peas array', async () => {
 			await request(app).get('/api/pea')
 				.expect('Content-Type', /json/)
 				.expect(200)
 				.expect([]);
 		});
+		it('should provide not empty peas array', async () => {
+			let peaController = new PEAController(peaOptionsDummy);
+			manager.peas.push(peaController);
+			await request(app).get('/api/pea')
+				.expect('Content-Type', /json/)
+				.expect(200)
+				.expect([{
+					name: 'test', id: 'test', pimadIdentifier: 'test', description: '', endpoint: 'localhost',
+					hmiUrl: '', connected: false, services: [], processValues: [], protected: false
+				}]);
+		});
+	});
 
+	context('/api/pea/{peaId}', () => {
+		it('should get pea', async () => {
+			let peaController = new PEAController(peaOptionsDummy);
+			manager.peas.push(peaController);
+			await request(app).get('/api/pea/test')
+				.expect(200)
+				.expect({
+					name: 'test', id: 'test', pimadIdentifier: 'test', description: '', endpoint: 'localhost',
+					hmiUrl: '', connected: false, services: [], processValues: [], protected: false
+				});
+		});
 		it('should throw 404 when get not existing pea', async () => {
 			await request(app).get('/api/pea/abc1234')
 				.expect(404)
-				.expect('Error: PEAController with id abc1234 not found');
+				.expect('Error: PEA with id abc1234 not found');
 		});
+	});
 
-		it('should provide download for not existing peas', async () => {
+	context('/api/pea/{peaId}', () => {
+		it('should provide download for existing pea', async () => {
+			let peaController = new PEAController(peaOptionsDummy);
+			manager.peas.push(peaController);
+			await request(app).get('/api/pea/test/download')
+				.expect(200)
+				.expect(peaController.options);
+		});
+		it('should provide download for not existing pea', async () => {
 			await request(app).get('/api/pea/abc1234/download')
 				.expect(500);
 		});
+	})
 
-		context('loading PEAController by Options', () => {
-			it('should fail while loading pea with empty content', async () => {
-				await request(app).put('/api/pea/addByOptions')
-					.send({})
-					.expect('Content-Type', /json/)
-					.expect(500);
-			});
-
-			it('should fail while loading pea without content', async () => {
-				await request(app).put('/api/pea/addByOptions')
-					.send(null)
-					.expect('Content-Type', /json/)
-					.expect(500);
-			});
+	context('/addByPiMAd', () => {
+		it('should work with test file', async () => {
+			await request(app).post('/api/pea/addByPiMAd')
+				.attach('uploadedFile', path.resolve('tests/testpea.zip'))
+				.expect(200);
 		});
-
-		context('loading PEAController via PiMAd', () => {
-			it('should work with dummy implementation', async () => {
-				await request(app).put('/api/pea/addByPiMAd')
-					.send({})
-					.expect(200)
-					.expect('Content-Type', /json/)
-					.expect(/PiMAd-Hello-World/);
-			});
+		it('should fail, wrong file type', async () => {
+			await request(app).post('/api/pea/addByPiMAd')
+				.attach('uploadedFile', path.resolve('tests/anamon.json'))
+				.expect(500)
+				.expect(/Error: Unknown source type <uploads\\anamon.json>/);
 		});
+		it('should fail, file does not exist', async () => {
+			//TODO
+		});
+	});
 
-		it('should fail while connecting a not existing pea', async () => {
-			await request(app).post('/api/pea/test/connect')
+	context('/PiMAdPEAs', () => {
+		it('should work, empty pool', async () => {
+			await request(app).get('/api/pea/PiMAdPEAs')
+				.expect(200)
+				.expect([]);
+		});
+		it('should work with not empty pool', async () => {
+			await manager.addPEAToPimadPool({source: 'tests/testpea.zip'})
+			await request(app).get('/api/pea/PiMAdPEAs')
+				.expect(200)
+		});
+	})
+
+	context('/api/pea/loadPEA', () => {
+		it('should fail while loading pea without content', async () => {
+			await request(app).post('/api/pea/loadPEA')
 				.send(null)
 				.expect(500)
-				.expect('Content-Type', /json/)
-				.expect(/Error: PEAController with id test not found/);
+				.expect('Error: No valid PiMAd Identifier');
 		});
+		it('should load PEAController', async () => {
+			const peaModel = await manager.addPEAToPimadPool({source: 'tests/testpea.zip'})
+			const pimadIdentifier = peaModel.pimadIdentifier;
+			await request(app).post('/api/pea/loadPEA')
+				.send({id: pimadIdentifier})
+				.expect(200)
+		});
+	});
 
-		it('should fail while disconnecting from a not existing pea', async () => {
-			await request(app).post('/api/pea/test/disconnect')
-				.send(null)
-				.expect(500)
-				.expect('Content-Type', /json/)
-				.expect(/Error: PEAController with id test not found/);
-		});
+
 		/*
 		describe('with Mockup', () => {
 			let mockupServer: MockupServer;
@@ -165,6 +216,4 @@ describe('PEARoutes', () => {
 			});
 		});
 		*/
-	});
-
 });
