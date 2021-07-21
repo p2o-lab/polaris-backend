@@ -195,6 +195,16 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 	}
 
 	/**
+	 * get server settings of PEAController
+	 * @param {string} peaId
+	 */
+	public getServerSettings(peaId: string): object{
+		const peaControllerCon = this.getPEAController(peaId).connection;
+		const body= {serverUrl: peaControllerCon.endpoint, username: peaControllerCon.username, password: peaControllerCon.password};
+		return body;
+	}
+
+	/**
 	 * update server settings of PEAController
 	 * @param {ServerSettingsOptions} options
 	 */
