@@ -30,13 +30,24 @@ import {
 	ServiceCommand
 } from '@p2olab/polaris-interface';
 import {LoadOptions, ModularPlantManager} from './ModularPlantManager';
+import {PEAController, Service} from './pea';
+import {ServiceState} from './pea/dataAssembly';
+
 import * as fs from 'fs';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import 'mocha';
 
+import {MockupServer} from './_utils';
+import * as AdmZip from 'adm-zip';
+import {PEAModel} from '@p2olab/pimad-core/dist/ModuleAutomation';
+import {logger} from '@p2olab/pimad-core';
+import {timeout} from 'promise-timeout';
+
+//TODO WIP
 chai.use(chaiAsPromised);
 const expect = chai.expect;
+const assert = chai.assert;
 
 describe('ModularPlantManager', () => {
 	const parseJson = require('json-parse-better-errors');
@@ -82,7 +93,6 @@ describe('ModularPlantManager', () => {
 		it('getAllPEAsFromPimadPool()', () => {
 			return expect(modularPlantManager.getAllPEAsFromPimadPool()).to.not.be.rejected;
 		});
-
 
 		it('loadPEAController()', async () => {
 			const peaControllers = await modularPlantManager.loadPEAController(pimadId);
@@ -139,22 +149,6 @@ describe('ModularPlantManager', () => {
 			peaId = peaController.id;
 			return expect(modularPlantManager.removePEAController('')).to.rejected;
 		});
-		it('updateServerSettings()', async () => {
-			// instantiate PEAController first
-			const peaControllers = await modularPlantManager.loadPEAController(pimadId);
-			const peaController = peaControllers[0];
-			const peaId = peaController.id;
-			const options: ServerSettingsOptions = {
-				id: peaId,
-				username: 'Bob',
-				password: '1234',
-				serverUrl: 'url',
-			};
-			modularPlantManager.updateServerSettings(options);
-			expect(peaController.connection.endpoint).equals('url');
-			expect(peaController.connection.username).equals('Bob');
-			expect(peaController.connection.password).equals('1234');
-		});
 
 		it('getAllPEAControllers()',  () => {
 			expect(modularPlantManager.getAllPEAControllers()).to.not.empty;
@@ -175,9 +169,64 @@ describe('ModularPlantManager', () => {
 			//await modularPlantManager.getPEAController(peaId).connect();
 		});
 	});
+	context('ServerSettings', () => {
+		const modularPlantManager = new ModularPlantManager();
+		let peaController: PEAController;
 
+		before(() => {
+			peaController = new PEAController({
+				name:'test',
+				id: 'test',
+				pimadIdentifier: 'test',
+				username: 'admin',
+				password: '1234',
+				opcuaServerUrl:'localhost',
+				services:[],
+				dataAssemblies:[]
+			});
+			modularPlantManager.peas.push(peaController);
+		});
+		it('getServerSettings(), should work', () => {
+			const settings = modularPlantManager.getServerSettings(peaController.id);
+			assert.deepEqual(settings,{ serverUrl: 'localhost', username: 'admin', password: '1234' } );
+		});
+		it('getServerSettings(), should fail, wrong id', () => {
+			expect(() => modularPlantManager.getServerSettings('wrongId')).to.throw('PEA with id wrongId not found');
+		});
 
-	context('loading', () => {
+		it('updateServerSettings(), should work', () => {
+			const options: ServerSettingsOptions = {
+				id: peaController.id,
+				username: 'Bob',
+				password: '1234',
+				serverUrl: 'url',
+			};
+			modularPlantManager.updateServerSettings(options);
+			expect(peaController.connection.endpoint).equals('url');
+			expect(peaController.connection.username).equals('Bob');
+			expect(peaController.connection.password).equals('1234');
+
+			peaController.variables.forEach((dac) => {
+				expect(dac.connection.endpoint).equals('url');
+				expect(dac.connection.username).equals('Bob');
+				expect(dac.connection.password).equals('1234');
+			});
+			peaController.services.forEach((service) => {
+				expect(service.connection.endpoint).equals('url');
+				expect(service.connection.username).equals('Bob');
+				expect(service.connection.password).equals('1234');
+			});
+		});
+		it('updateServerSettings(), should fail. wrong Id', () => {
+			const options: ServerSettingsOptions = {
+				id: 'wrongId',
+				username: 'Bob',
+				password: '1234',
+				serverUrl: 'url',
+			};
+			expect(() => modularPlantManager.updateServerSettings(options)).to.throw('PEA with id wrongId not found');
+		});
+	});
 
 	/*	it('should reject loading PEAs with empty options', () => {
 			const modularPlantManager = new ModularPlantManager();
@@ -225,7 +274,7 @@ describe('ModularPlantManager', () => {
 				true);
 			await expect(modularPlantManager.removePEAController(modularPlantManager.peas[0].id)).to.be.rejectedWith(/is protected/);
 		});
-	});
+
 
 	it('should load and remove recipe', () => {
 		const peasRecipe =
