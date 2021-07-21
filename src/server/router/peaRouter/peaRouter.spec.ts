@@ -23,9 +23,12 @@
  * SOFTWARE.
  */
 
+import {BackendNotification, ServerSettingsOptions} from '@p2olab/polaris-interface';
+import {ModularPlantManager, PEAController} from '../../../modularPlantManager';
 import {BackendNotification, DataAssemblyOptions, PEAOptions} from '@p2olab/polaris-interface';
 import {ModularPlantManager, PEAController} from '../../../modularPlantManager';
 import {Server} from '../../server';
+
 import {Application} from 'express';
 import * as fs from 'fs';
 import * as WebSocket from 'ws';
@@ -184,6 +187,51 @@ describe('PEARoutes', () => {
 				.expect(500)
 				.expect('Error: No valid PiMAd Identifier');
 		});
+
+		context('Server Settings', () => {
+			let peaController: PEAController;
+			before(() => {
+				peaController = new PEAController({
+					name:'test',
+					id: 'test',
+					pimadIdentifier: 'test',
+					username: 'admin',
+					password: '1234',
+					opcuaServerUrl:'localhost',
+					services:[],
+					dataAssemblies:[]
+				})
+				manager.peas.push(peaController);
+			});
+			it('should get server settings', async () => {
+				await request(app).get('/api/pea/test/getServerSettings')
+					.expect(200)
+					.expect({ serverUrl: 'localhost', username: 'admin', password: '1234' });
+			});
+			it('getServerSetting should fail , wrong peaId', async () => {
+				await request(app).get('/api/pea/wrongId/getServerSettings')
+					.expect(500)
+					.expect(/Error: PEA with id wrongId not found/)
+			});
+
+			it('should update server settings', async () => {
+				const options: ServerSettingsOptions = {username: 'peter', password: '5678', serverUrl: 'localhost:4334', id: 'test' }
+				await request(app).post('/api/pea/updateServerSettings')
+					.send(options)
+					.expect(200)
+					.expect(/Success!/);
+			});
+			it('updateServerSettings should fail, wrong peaId', async () => {
+				const options: ServerSettingsOptions = {username: 'peter', password: '5678', serverUrl: 'localhost:4334', id: 'wrongId' }
+				await request(app).post('/api/pea/updateServerSettings')
+					.send(options)
+					.expect(500)
+					.expect(/Error: PEA with id wrongId not found/)
+			});
+		})
+		/*
+		describe('with Mockup', () => {
+			let mockupServer: MockupServer;
 		it('should load PEAController', async () => {
 			const peaModel = await manager.addPEAToPimadPool({source: 'tests/testpea.zip'});
 			const pimadIdentifier = peaModel.pimadIdentifier;
