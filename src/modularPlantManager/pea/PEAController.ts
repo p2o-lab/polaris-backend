@@ -136,7 +136,7 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 	public readonly pimadIdentifier: string;
 	public readonly name: string;
 
-	public readonly services: Service[] = [];
+	public services: Service[] = [];
 	public variables: DataAssemblyController[] = [];
 	// PEAController is protected and can't be deleted by the user
 	public protected = false;
@@ -201,6 +201,8 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 			.map((variableOptions: DataAssemblyOptions) =>
 				DataAssemblyControllerFactory.create(variableOptions, this.connection)
 			);
+		this.services = this.options.services.map((serviceOpts: ServiceOptions) => new Service(serviceOpts, this.connection, this.id));
+
 	}
 
 	public getService(serviceName: string): Service {
