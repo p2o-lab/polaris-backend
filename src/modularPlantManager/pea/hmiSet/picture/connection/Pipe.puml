@@ -1,0 +1,10 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class Pipe{
+Directed
+Nozzle1: Nozzle
+Nozzle2: Nozzle
+}
+
+@enduml

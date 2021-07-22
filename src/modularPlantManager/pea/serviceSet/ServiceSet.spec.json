@@ -1,0 +1,562 @@
+{
+  "services": [
+    {
+      "name": "Fill",
+      "communication": {
+        "TagName": {
+          "value": "Fill"
+        },
+        "TagDescription": {
+          "value": "Sample service with different parameters"
+        },
+        "OSLevel": {
+          "namespace_index": "P2OGalaxy",
+          "node_id": "P2OPlanet.App_Dosing.Services.Fill.OSLevel",
+          "data_type": "Byte"
+        },
+        "WQC": {
+          "namespace_index": "P2OGalaxy",
+          "node_id": "P2OPlanet.App_Dosing.Services.Fill.WQC",
+          "data_type": "Byte"
+        },
+        "OpMode": {
+          "namespace_index": "P2OGalaxy",
+          "node_id": "P2OPlanet.App_Dosing.Services.Fill.OpMode.binary",
+          "data_type": "UInt32"
+        },
+        "CommandMan": {
+          "namespace_index": "P2OGalaxy",
+          "node_id": "P2OPlanet.App_Dosing.Services.Fill.ControlOp",
+          "data_type": "UInt32"
+        },
+        "StrategyMan": {
+          "namespace_index": "P2OGalaxy",
+          "node_id": "P2OPlanet.App_Dosing.Services.Fill.StrategyOp",
+          "data_type": "UInt32"
+        },
+        "ControlInt": {
+          "namespace_index": "P2OGalaxy",
+          "node_id": "P2OPlanet.App_Dosing.Services.Fill.ControlInt",
+          "data_type": "UInt32"
+        },
+        "StrategyInt": {
+          "namespace_index": "P2OGalaxy",
+          "node_id": "P2OPlanet.App_Dosing.Services.Fill.StrategyInt",
+          "data_type": "UInt32"
+        },
+        "CommandExt": {
+          "namespace_index": "P2OGalaxy",
+          "node_id": "P2OPlanet.App_Dosing.Services.Fill.ControlExt",
+          "data_type": "UInt32"
+        },
+        "StrategyExt": {
+          "namespace_index": "P2OGalaxy",
+          "node_id": "P2OPlanet.App_Dosing.Services.Fill.StrategyExt",
+          "data_type": "UInt32"
+        },
+        "State": {
+          "namespace_index": "P2OGalaxy",
+          "node_id": "P2OPlanet.App_Dosing.Services.Fill.State.binary",
+          "data_type": "UInt32"
+        },
+        "CommandEnable": {
+          "namespace_index": "P2OGalaxy",
+          "node_id": "P2OPlanet.App_Dosing.Services.Fill.ControlEnable.binary",
+          "data_type": "UInt32"
+        },
+        "CurrentProcedure": {
+          "namespace_index": "P2OGalaxy",
+          "node_id": "P2OPlanet.App_Dosing.Services.Fill.CurrentProcedure",
+          "data_type": "UInt32"
+        }
+      },
+      "procedures": [
+        {
+          "id": "1",
+          "name": "Fill_conti",
+          "default": true,
+          "sc": false,
+          "parameters": []
+        },
+        {
+          "id": "2",
+          "name": "Fill_batch",
+          "default": false,
+          "sc": true,
+          "parameters": [
+            {
+              "name": "SetVolume",
+              "interface_class": "ExtAnaOp",
+              "communication": {
+                "WQC": {
+                  "namespace_index": "P2OGalaxy",
+                  "node_id": "P2OPlanet.App_Dosing.Services.Fill.SetVolume.WQC",
+                  "data_type": "Byte"
+                },
+                "OSLevel": {
+                  "namespace_index": "P2OGalaxy",
+                  "node_id": "P2OPlanet.App_Dosing.Services.Fill.SetVolume.OSLevel",
+                  "data_type": "Byte"
+                },
+                "VOut": {
+                  "namespace_index": "P2OGalaxy",
+                  "node_id": "P2OPlanet.App_Dosing.Services.Fill.SetVolume.VOut",
+                  "data_type": "Float"
+                },
+                "VSclMin": {
+                  "namespace_index": "P2OGalaxy",
+                  "node_id": "P2OPlanet.App_Dosing.Services.Fill.SetVolume.VSclMin",
+                  "data_type": "Float"
+                },
+                "VSclMax": {
+                  "namespace_index": "P2OGalaxy",
+                  "node_id": "P2OPlanet.App_Dosing.Services.Fill.SetVolume.VSclMax",
+                  "data_type": "Float"
+                },
+                "VUnit": {
+                  "namespace_index": "P2OGalaxy",
+                  "node_id": "P2OPlanet.App_Dosing.Services.Fill.SetVolume.VUnit",
+                  "data_type": "Int16"
+                },
+                "VMin": {
+                  "namespace_index": "P2OGalaxy",
+                  "node_id": "P2OPlanet.App_Dosing.Services.Fill.SetVolume.VMin",
+                  "data_type": "Float"
+                },
+                "VMax": {
+                  "namespace_index": "P2OGalaxy",
+                  "node_id": "P2OPlanet.App_Dosing.Services.Fill.SetVolume.VMax",
+                  "data_type": "Float"
+                },
+                "VExt": {
+                  "namespace_index": "P2OGalaxy",
+                  "node_id": "P2OPlanet.App_Dosing.Services.Fill.SetVolume.VExt",
+                  "data_type": "Float"
+                },
+                "VRbk": {
+                  "namespace_index": "P2OGalaxy",
+                  "node_id": "P2OPlanet.App_Dosing.Services.Fill.SetVolume.VRbk",
+                  "data_type": "Float"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "parameters": []
+    },
+    {
+      "name": "DoseAmount",
+      "communication": {
+        "TagName": {
+          "value": "DoseAmount"
+        },
+        "TagDescription": {
+          "value": "Sample service with different parameters"
+        },
+        "OSLevel": {
+          "namespace_index": "P2OGalaxy",
+          "node_id": "P2OPlanet.App_Dosing.Services.DoseAmount.OSLevel",
+          "data_type": "Byte"
+        },
+        "WQC": {
+          "namespace_index": "P2OGalaxy",
+          "node_id": "P2OPlanet.App_Dosing.Services.DoseAmount.WQC",
+          "data_type": "Byte"
+        },
+        "OpMode": {
+          "namespace_index": "P2OGalaxy",
+          "node_id": "P2OPlanet.App_Dosing.Services.DoseAmount.OpMode.binary",
+          "data_type": "UInt32"
+        },
+        "CommandMan": {
+          "namespace_index": "P2OGalaxy",
+          "node_id": "P2OPlanet.App_Dosing.Services.DoseAmount.ControlOp",
+          "data_type": "UInt32"
+        },
+        "StrategyMan": {
+          "namespace_index": "P2OGalaxy",
+          "node_id": "P2OPlanet.App_Dosing.Services.DoseAmount.StrategyOp",
+          "data_type": "UInt32"
+        },
+        "ControlInt": {
+          "namespace_index": "P2OGalaxy",
+          "node_id": "P2OPlanet.App_Dosing.Services.DoseAmount.ControlInt",
+          "data_type": "UInt32"
+        },
+        "StrategyInt": {
+          "namespace_index": "P2OGalaxy",
+          "node_id": "P2OPlanet.App_Dosing.Services.DoseAmount.StrategyInt",
+          "data_type": "UInt32"
+        },
+        "CommandExt": {
+          "namespace_index": "P2OGalaxy",
+          "node_id": "P2OPlanet.App_Dosing.Services.DoseAmount.ControlExt",
+          "data_type": "UInt32"
+        },
+        "StrategyExt": {
+          "namespace_index": "P2OGalaxy",
+          "node_id": "P2OPlanet.App_Dosing.Services.DoseAmount.StrategyExt",
+          "data_type": "UInt32"
+        },
+        "State": {
+          "namespace_index": "P2OGalaxy",
+          "node_id": "P2OPlanet.App_Dosing.Services.DoseAmount.State.binary",
+          "data_type": "UInt32"
+        },
+        "CommandEnable": {
+          "namespace_index": "P2OGalaxy",
+          "node_id": "P2OPlanet.App_Dosing.Services.DoseAmount.ControlEnable.binary",
+          "data_type": "UInt32"
+        },
+        "CurrentProcedure": {
+          "namespace_index": "P2OGalaxy",
+          "node_id": "P2OPlanet.App_Dosing.Services.DoseAmount.CurrentProcedure",
+          "data_type": "UInt32"
+        }
+      },
+      "procedures": [
+        {
+          "id": "1",
+          "name": "Dose_batch",
+          "default": true,
+          "sc": true,
+          "parameters": [
+            {
+              "name": "SetVolume",
+              "interface_class": "ExtAnaOp",
+              "communication": {
+                "WQC": {
+                  "namespace_index": "P2OGalaxy",
+                  "node_id": "P2OPlanet.App_Dosing.Services.DoseAmount.SetVolume.WQC",
+                  "data_type": "Byte"
+                },
+                "OSLevel": {
+                  "namespace_index": "P2OGalaxy",
+                  "node_id": "P2OPlanet.App_Dosing.Services.DoseAmount.SetVolume.OSLevel",
+                  "data_type": "Byte"
+                },
+                "VOut": {
+                  "namespace_index": "P2OGalaxy",
+                  "node_id": "P2OPlanet.App_Dosing.Services.DoseAmount.SetVolume.VOut",
+                  "data_type": "Float"
+                },
+                "VSclMin": {
+                  "namespace_index": "P2OGalaxy",
+                  "node_id": "P2OPlanet.App_Dosing.Services.DoseAmount.SetVolume.VSclMin",
+                  "data_type": "Float"
+                },
+                "VSclMax": {
+                  "namespace_index": "P2OGalaxy",
+                  "node_id": "P2OPlanet.App_Dosing.Services.DoseAmount.SetVolume.VSclMax",
+                  "data_type": "Float"
+                },
+                "VUnit": {
+                  "namespace_index": "P2OGalaxy",
+                  "node_id": "P2OPlanet.App_Dosing.Services.DoseAmount.SetVolume.VUnit",
+                  "data_type": "Int16"
+                },
+                "VMin": {
+                  "namespace_index": "P2OGalaxy",
+                  "node_id": "P2OPlanet.App_Dosing.Services.DoseAmount.SetVolume.VMin",
+                  "data_type": "Float"
+                },
+                "VMax": {
+                  "namespace_index": "P2OGalaxy",
+                  "node_id": "P2OPlanet.App_Dosing.Services.DoseAmount.SetVolume.VMax",
+                  "data_type": "Float"
+                },
+                "VExt": {
+                  "namespace_index": "P2OGalaxy",
+                  "node_id": "P2OPlanet.App_Dosing.Services.DoseAmount.SetVolume.VExt",
+                  "data_type": "Float"
+                },
+                "VRbk": {
+                  "namespace_index": "P2OGalaxy",
+                  "node_id": "P2OPlanet.App_Dosing.Services.DoseAmount.SetVolume.VRbk",
+                  "data_type": "Float"
+                }
+              }
+            },
+            {
+              "name": "SetDuration",
+              "interface_class": "ExtAnaOp",
+              "communication": {
+                "WQC": {
+                  "namespace_index": "P2OGalaxy",
+                  "node_id": "P2OPlanet.App_Dosing.Services.DoseAmount.SetDuration.WQC",
+                  "data_type": "Byte"
+                },
+                "OSLevel": {
+                  "namespace_index": "P2OGalaxy",
+                  "node_id": "P2OPlanet.App_Dosing.Services.DoseAmount.SetDuration.OSLevel",
+                  "data_type": "Byte"
+                },
+                "VOut": {
+                  "namespace_index": "P2OGalaxy",
+                  "node_id": "P2OPlanet.App_Dosing.Services.DoseAmount.SetDuration.VOut",
+                  "data_type": "Float"
+                },
+                "VSclMin": {
+                  "namespace_index": "P2OGalaxy",
+                  "node_id": "P2OPlanet.App_Dosing.Services.DoseAmount.SetDuration.VSclMin",
+                  "data_type": "Float"
+                },
+                "VSclMax": {
+                  "namespace_index": "P2OGalaxy",
+                  "node_id": "P2OPlanet.App_Dosing.Services.DoseAmount.SetDuration.VSclMax",
+                  "data_type": "Float"
+                },
+                "VUnit": {
+                  "namespace_index": "P2OGalaxy",
+                  "node_id": "P2OPlanet.App_Dosing.Services.DoseAmount.SetDuration.VUnit",
+                  "data_type": "Int16"
+                },
+                "VMin": {
+                  "namespace_index": "P2OGalaxy",
+                  "node_id": "P2OPlanet.App_Dosing.Services.DoseAmount.SetDuration.VMin",
+                  "data_type": "Float"
+                },
+                "VMax": {
+                  "namespace_index": "P2OGalaxy",
+                  "node_id": "P2OPlanet.App_Dosing.Services.DoseAmount.SetDuration.VMax",
+                  "data_type": "Float"
+                },
+                "VExt": {
+                  "namespace_index": "P2OGalaxy",
+                  "node_id": "P2OPlanet.App_Dosing.Services.DoseAmount.SetDuration.VExt",
+                  "data_type": "Float"
+                },
+                "VRbk": {
+                  "namespace_index": "P2OGalaxy",
+                  "node_id": "P2OPlanet.App_Dosing.Services.DoseAmount.SetDuration.VRbk",
+                  "data_type": "Float"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "parameters": []
+    },
+    {
+      "name": "DoseConti",
+      "communication": {
+        "TagName": {
+          "value": "DoseConti"
+        },
+        "TagDescription": {
+          "value": "Sample service with different parameters"
+        },
+        "OSLevel": {
+          "namespace_index": "P2OGalaxy",
+          "node_id": "P2OPlanet.App_Dosing.Services.DoseConti.OSLevel",
+          "data_type": "Byte"
+        },
+        "WQC": {
+          "namespace_index": "P2OGalaxy",
+          "node_id": "P2OPlanet.App_Dosing.Services.DoseConti.WQC",
+          "data_type": "Byte"
+        },
+        "OpMode": {
+          "namespace_index": "P2OGalaxy",
+          "node_id": "P2OPlanet.App_Dosing.Services.DoseConti.OpMode.binary",
+          "data_type": "UInt32"
+        },
+        "CommandMan": {
+          "namespace_index": "P2OGalaxy",
+          "node_id": "P2OPlanet.App_Dosing.Services.DoseConti.ControlOp",
+          "data_type": "UInt32"
+        },
+        "StrategyMan": {
+          "namespace_index": "P2OGalaxy",
+          "node_id": "P2OPlanet.App_Dosing.Services.DoseConti.StrategyOp",
+          "data_type": "UInt32"
+        },
+        "ControlInt": {
+          "namespace_index": "P2OGalaxy",
+          "node_id": "P2OPlanet.App_Dosing.Services.DoseConti.ControlInt",
+          "data_type": "UInt32"
+        },
+        "StrategyInt": {
+          "namespace_index": "P2OGalaxy",
+          "node_id": "P2OPlanet.App_Dosing.Services.DoseConti.StrategyInt",
+          "data_type": "UInt32"
+        },
+        "CommandExt": {
+          "namespace_index": "P2OGalaxy",
+          "node_id": "P2OPlanet.App_Dosing.Services.DoseConti.ControlExt",
+          "data_type": "UInt32"
+        },
+        "StrategyExt": {
+          "namespace_index": "P2OGalaxy",
+          "node_id": "P2OPlanet.App_Dosing.Services.DoseConti.StrategyExt",
+          "data_type": "UInt32"
+        },
+        "State": {
+          "namespace_index": "P2OGalaxy",
+          "node_id": "P2OPlanet.App_Dosing.Services.DoseConti.State.binary",
+          "data_type": "UInt32"
+        },
+        "CommandEnable": {
+          "namespace_index": "P2OGalaxy",
+          "node_id": "P2OPlanet.App_Dosing.Services.DoseConti.ControlEnable.binary",
+          "data_type": "UInt32"
+        },
+        "CurrentProcedure": {
+          "namespace_index": "P2OGalaxy",
+          "node_id": "P2OPlanet.App_Dosing.Services.DoseConti.CurrentProcedure",
+          "data_type": "UInt32"
+        }
+      },
+      "procedures": [
+        {
+          "id": "1",
+          "name": "Dose_conti",
+          "default": true,
+          "sc": false,
+          "parameters": [
+            {
+              "name": "SetVolumeFlow",
+              "interface_class": "ExtAnaOp",
+              "communication": {
+                "WQC": {
+                  "namespace_index": "P2OGalaxy",
+                  "node_id": "P2OPlanet.App_Dosing.Services.DoseConti.SetVolumeFlow.WQC",
+                  "data_type": "Byte"
+                },
+                "OSLevel": {
+                  "namespace_index": "P2OGalaxy",
+                  "node_id": "P2OPlanet.App_Dosing.Services.DoseConti.SetVolumeFlow.OSLevel",
+                  "data_type": "Byte"
+                },
+                "VOut": {
+                  "namespace_index": "P2OGalaxy",
+                  "node_id": "P2OPlanet.App_Dosing.Services.DoseConti.SetVolumeFlow.VOut",
+                  "data_type": "Float"
+                },
+                "VSclMin": {
+                  "namespace_index": "P2OGalaxy",
+                  "node_id": "P2OPlanet.App_Dosing.Services.DoseConti.SetVolumeFlow.VSclMin",
+                  "data_type": "Float"
+                },
+                "VSclMax": {
+                  "namespace_index": "P2OGalaxy",
+                  "node_id": "P2OPlanet.App_Dosing.Services.DoseConti.SetVolumeFlow.VSclMax",
+                  "data_type": "Float"
+                },
+                "VUnit": {
+                  "namespace_index": "P2OGalaxy",
+                  "node_id": "P2OPlanet.App_Dosing.Services.DoseConti.SetVolumeFlow.VUnit",
+                  "data_type": "Int16"
+                },
+                "VMin": {
+                  "namespace_index": "P2OGalaxy",
+                  "node_id": "P2OPlanet.App_Dosing.Services.DoseConti.SetVolumeFlow.VMin",
+                  "data_type": "Float"
+                },
+                "VMax": {
+                  "namespace_index": "P2OGalaxy",
+                  "node_id": "P2OPlanet.App_Dosing.Services.DoseConti.SetVolumeFlow.VMax",
+                  "data_type": "Float"
+                },
+                "VExt": {
+                  "namespace_index": "P2OGalaxy",
+                  "node_id": "P2OPlanet.App_Dosing.Services.DoseConti.SetVolumeFlow.VExt",
+                  "data_type": "Float"
+                },
+                "VRbk": {
+                  "namespace_index": "P2OGalaxy",
+                  "node_id": "P2OPlanet.App_Dosing.Services.DoseConti.SetVolumeFlow.VRbk",
+                  "data_type": "Float"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "parameters": []
+    },
+    {
+      "name": "Empty",
+      "communication": {
+        "TagName": {
+          "value": "Empty"
+        },
+        "TagDescription": {
+          "value": "Sample service with different parameters"
+        },
+        "OSLevel": {
+          "namespace_index": "P2OGalaxy",
+          "node_id": "P2OPlanet.App_Dosing.Services.Empty.OSLevel",
+          "data_type": "Byte"
+        },
+        "WQC": {
+          "namespace_index": "P2OGalaxy",
+          "node_id": "P2OPlanet.App_Dosing.Services.Empty.WQC",
+          "data_type": "Byte"
+        },
+        "OpMode": {
+          "namespace_index": "P2OGalaxy",
+          "node_id": "P2OPlanet.App_Dosing.Services.Empty.OpMode.binary",
+          "data_type": "UInt32"
+        },
+        "CommandMan": {
+          "namespace_index": "P2OGalaxy",
+          "node_id": "P2OPlanet.App_Dosing.Services.Empty.ControlOp",
+          "data_type": "UInt32"
+        },
+        "StrategyMan": {
+          "namespace_index": "P2OGalaxy",
+          "node_id": "P2OPlanet.App_Dosing.Services.Empty.StrategyOp",
+          "data_type": "UInt32"
+        },
+        "ControlInt": {
+          "namespace_index": "P2OGalaxy",
+          "node_id": "P2OPlanet.App_Dosing.Services.Empty.ControlInt",
+          "data_type": "UInt32"
+        },
+        "StrategyInt": {
+          "namespace_index": "P2OGalaxy",
+          "node_id": "P2OPlanet.App_Dosing.Services.Empty.StrategyInt",
+          "data_type": "UInt32"
+        },
+        "CommandExt": {
+          "namespace_index": "P2OGalaxy",
+          "node_id": "P2OPlanet.App_Dosing.Services.Empty.ControlExt",
+          "data_type": "UInt32"
+        },
+        "StrategyExt": {
+          "namespace_index": "P2OGalaxy",
+          "node_id": "P2OPlanet.App_Dosing.Services.Empty.StrategyExt",
+          "data_type": "UInt32"
+        },
+        "State": {
+          "namespace_index": "P2OGalaxy",
+          "node_id": "P2OPlanet.App_Dosing.Services.Empty.State.binary",
+          "data_type": "UInt32"
+        },
+        "CommandEnable": {
+          "namespace_index": "P2OGalaxy",
+          "node_id": "P2OPlanet.App_Dosing.Services.Empty.ControlEnable.binary",
+          "data_type": "UInt32"
+        },
+        "CurrentProcedure": {
+          "namespace_index": "P2OGalaxy",
+          "node_id": "P2OPlanet.App_Dosing.Services.Empty.CurrentProcedure",
+          "data_type": "UInt32"
+        }
+      },
+      "procedures": [
+        {
+          "id": "1",
+          "name": "Empty_batch",
+          "default": true,
+          "sc": true,
+          "parameters": []
+        }
+      ],
+      "parameters": []
+    }
+  ]
+}

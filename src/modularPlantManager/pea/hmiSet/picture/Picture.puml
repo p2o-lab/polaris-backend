@@ -1,0 +1,19 @@
+@startuml
+'https://plantuml.com/class-diagram
+!include SemanticGroup.puml
+!include TopologyObject.puml
+!include VisualObject.puml
+!include connection/Connection.puml
+
+class Picture{
+Width: DataItem<ReadAccess, IntDataType>
+Height: DataItem<ReadAccess, IntDataType>
+HierarchyLevel: DataItem<ReadAccess, StringDataType>
+}
+
+Picture *-down- TopologyObject
+Picture *-down- SemanticGroup
+Picture *-right- VisualObject
+Picture *-down- Connection
+
+@enduml

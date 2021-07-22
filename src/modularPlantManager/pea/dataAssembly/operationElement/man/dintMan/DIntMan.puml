@@ -1,0 +1,11 @@
+@startuml
+'https://plantuml.com/class-diagram
+!include DIntManInt.puml
+
+DIntMan *- DIntManSpec
+DIntManSpec ..> DIntManMockup : <<use>>
+DIntMan *- DIntManMockup
+
+DIntMan <|-- DIntManInt
+
+@enduml

@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0",
+  "name": "DoseFill small",
+  "type": "aggregatedService",
+  "description": "Combined Services from pea test server",
+  "necessaryServices": [
+    {
+      "pea": "PEA1",
+      "service": "Service1"
+    },
+    {
+      "pea": "PEA2",
+      "service": "Service1"
+    }
+  ],
+  "stateMachine": {},
+  "commandEnable": {
+    "start": "PEA1.Service1.commandEnable.start && PEA2.Service1.commandEnable.start",
+    "pause": "PEA1.Service1.commandEnable.pause && PEA2.Service1.commandEnable.pause",
+    "resume": "PEA1.Service1.commandEnable.resume && PEA2.Service1.commandEnable.resume",
+    "complete": "PEA1.Service1.commandEnable.complete && PEA2.Service1.commandEnable.complete"
+  }
+}

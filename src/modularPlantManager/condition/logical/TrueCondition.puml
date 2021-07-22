@@ -1,0 +1,9 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class TrueCondition
+
+TrueCondition *- TrueConditionSpec
+TrueConditionSpec *- TrueConditionJson
+
+@enduml

@@ -1,0 +1,18 @@
+@startuml
+
+skinparam monochrome false
+
+participant ModularPlantManager
+participant PiMadParser
+
+ModularPlantManager -> PiMadParser: PiMAdParser.createPEAOptions(...)
+
+PiMadParser ->ModularPlantManager: getPEAfromPimadPool()
+ModularPlantManager->PiMadParser: PEAModel
+PiMadParser->PiMadParser: createOptionsArrays using PEAModel
+PiMadParser->ModularPlantManager: generateUniqueIdentifier()
+ModularPlantManager->PiMadParser: uuidv4
+PiMadParser->PiMadParser: create PEAOptions
+PiMadParser ->ModularPlantManager: PEAOptions
+
+@enduml

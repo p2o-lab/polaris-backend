@@ -1,0 +1,47 @@
+@startuml
+skinparam monochrome true
+
+package PEA {
+    [OPC UA Server]
+}
+
+node "Process Orchestation Layer (POL)" {
+    package "polaris-backend" as backend {
+        [NodeJs]
+    }
+
+    package "polaris-frontend" as frontend {
+        [Angular] <-> [NodeJs] : HTTP, Websocket
+    }
+
+    package "PiMAd-types" {
+        () interface as if2
+    }
+
+    package "polaris-interface" {
+        () interface as if1
+    }
+    
+    package "PiMAd" {
+        [TypeScript NodeJs]
+    }
+
+    package "testPEA" {
+        [TS NodeJs] <-> [NodeJs] : HTTP, Websocket
+    }
+}
+
+
+if1 .. [NodeJs] : import
+if1 .. [Angular] : import
+
+if2 .. [NodeJs] : import
+if2 .. [TypeScript NodeJs] : import
+if2 .. [TS NodeJs] : import
+
+[OPC UA Server] <--> [NodeJs] : OPC UA
+
+[OPC UA Server] .> [TypeScript NodeJs]: MTP
+[TypeScript NodeJs] .> [NodeJs] : TS-Object
+
+@enduml

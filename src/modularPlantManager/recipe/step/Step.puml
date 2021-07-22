@@ -1,0 +1,12 @@
+@startuml
+'https://plantuml.com/class-diagram
+!include transition/Transition.puml
+!include operation/Operation.puml
+
+class Step
+
+Step "1" o-- "*" Transition
+Step <-- Transition: nextStep
+Step "1" o-- "*" Operation
+
+@enduml

@@ -1,0 +1,14 @@
+@startuml
+'https://plantuml.com/class-diagram
+!include ServiceInteraction.puml
+!include ServicePosition.puml
+!include EnumDefinition.puml
+!include Text.puml
+
+class TextSet
+
+TextSet *-- "0..*" ServiceInteraction
+TextSet *-- "0..*" ServicePosition
+TextSet *-- "0..*" EnumDefinition
+
+@enduml

@@ -1,0 +1,9 @@
+@startuml
+'https://plantuml.com/class-diagram
+!include Nozzle.puml
+
+interface MassFlowConnector
+
+MassFlowConnector "1" <-- "2" Nozzle
+
+@enduml

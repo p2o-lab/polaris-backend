@@ -1,0 +1,45 @@
+@startuml
+
+skinparam monochrome false
+
+participant POL
+participant ConfigurationParam
+participant Service
+
+rnote over ConfigurationParam
+ VMin = 0.0
+ VMax = 20.0
+ VOut = 0.0
+ VReq = 0.0
+ ParamOpMode: Operator
+endrnote
+rnote over Service
+  OpMode: Offline
+endrnote
+
+POL -> ConfigurationParam : VOp:=10.0
+
+rnote over ConfigurationParam
+ VOut = 0.0
+ VReq = 10.0
+endrnote
+
+POL <- ConfigurationParam : VReq:=10.0
+
+hnote over POL #00FF00: VReq==VOp?
+
+POL -> Service : Service.OpMode=Operator
+activate Service
+rnote over Service
+  OpMode: Operator
+  StateCur: Idle
+endrnote
+
+ConfigurationParam <- Service
+
+rnote over ConfigurationParam
+ VOut = 10.0 (Frozen)
+ VReq = 10.0;
+endrnote
+
+@enduml

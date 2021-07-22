@@ -1,0 +1,12 @@
+@startuml
+'https://plantuml.com/class-diagram
+!include Parameter.puml
+
+
+class Operation
+
+Operation --> Parameter
+Operation --> POLService
+Operation --> Service
+
+@enduml

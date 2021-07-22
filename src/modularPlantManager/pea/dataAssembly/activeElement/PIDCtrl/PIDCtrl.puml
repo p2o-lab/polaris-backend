@@ -1,0 +1,10 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class PIDCtrl
+
+PIDCtrl *- PIDCtrlSpec
+PIDCtrlSpec ..> PIDCtrlMockup : <<use>>
+PIDCtrl *- PIDCtrlMockup
+
+@enduml

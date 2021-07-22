@@ -1,0 +1,10 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class MonAnaDrv
+
+MonAnaDrv *- MonAnaDrvSpec
+MonAnaDrvSpec ..> MonAnaDrvMockup : <<use>>
+MonAnaDrv *- MonAnaDrvMockup
+
+@enduml

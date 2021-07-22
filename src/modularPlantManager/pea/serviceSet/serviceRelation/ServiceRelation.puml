@@ -1,0 +1,21 @@
+@startuml
+'https://plantuml.com/class-diagram
+!include ./Instances/ServiceDisable.puml
+!include ./Instances/ServiceEnable.puml
+!include ./Instances/ServiceForce.puml
+!include ./Instances/ServiceSynchronisation.puml
+
+abstract class ServiceRelation{
+SourceServiceID
+SourceProcedureID
+SourceValue
+TargetProcedureID
+TargetValue
+}
+
+ServiceRelation <|-- ServiceDisable
+ServiceRelation <|-- ServiceEnable
+ServiceRelation <|-- ServiceForce
+ServiceRelation <|-- ServiceSynchronisation
+
+@enduml

@@ -1,0 +1,10 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class AnaProcessValueIn
+
+AnaProcessValueIn *- AnaProcessValueInSpec
+AnaProcessValueInSpec ..> AnaProcessValueInMockup : <<use>>
+AnaProcessValueIn *- AnaProcessValueInMockup
+
+@enduml

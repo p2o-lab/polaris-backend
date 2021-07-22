@@ -1,0 +1,8 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+AnaMon *- AnaMonSpec
+AnaMonSpec ..> AnaMonMockup : <<use>>
+AnaMon *- AnaMonMockup
+
+@enduml

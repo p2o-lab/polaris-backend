@@ -1,0 +1,13 @@
+@startuml
+'https://plantuml.com/class-diagram
+!include MonAnaVlv.puml
+
+class AnaVlv
+
+AnaVlv *- AnaVlvSpec
+AnaVlvSpec ..> AnaVlvMockup : <<use>>
+AnaVlv *- AnaVlvMockup
+
+AnaVlv <|-- MonAnaVlv
+
+@enduml

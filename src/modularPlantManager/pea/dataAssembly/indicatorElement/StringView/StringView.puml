@@ -1,0 +1,8 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+StringView *- StringViewSpec
+StringViewSpec ..> StringViewMockup : <<use>>
+StringView *- StringViewMockup
+
+@enduml

@@ -1,0 +1,30 @@
+{
+  "cache": false,
+  "check-coverage": false,
+  "extension": [
+    ".ts"
+  ],
+  "include": [
+    "**/*.js",
+    "**/*.ts"
+  ],
+  "exclude": [
+    "coverage/**",
+    "docs/**",
+    "node_modules/**",
+    "dist/**",
+    ".eslintrc.js",
+    "**/*.d.ts",
+    "**/*.spec.ts",
+    "**/index.ts",
+    "**/index.js"
+  ],
+  "sourceMap": true,
+  "reporter": [
+    "html",
+    "text",
+    "text-summary"
+  ],
+  "all": true,
+  "instrument": true
+}

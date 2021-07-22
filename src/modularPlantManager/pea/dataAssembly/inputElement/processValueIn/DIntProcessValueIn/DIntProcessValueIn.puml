@@ -1,0 +1,9 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class DIntProcessValueIn
+
+DIntProcessValueIn *- DIntProcessValueInSpec
+DIntProcessValueInSpec ..> DIntProcessValueInMockup : <<use>>
+DIntProcessValueIn *- DIntProcessValueInMockup
+@enduml

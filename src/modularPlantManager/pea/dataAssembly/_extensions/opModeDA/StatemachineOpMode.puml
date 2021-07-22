@@ -1,0 +1,23 @@
+@startuml
+
+[*] --> Offline
+
+Offline : StateOffAct = 1
+Offline : StateOpAct = 0
+Offline : StateAutAct = 0
+
+Operator : StateOffAct = 0
+Operator : StateOpAct = 1
+Operator : StateAutAct = 0
+
+Automatic : StateOffAct = 0
+Automatic : StateOpAct = 0
+Automatic : StateAutAct = 1
+
+Offline -> Operator : StateOpAut(if StateChannel) \n StateOpAut(if  not StateChannel)
+Operator -> Offline : StateOffAut(if StateChannel) \n StateOffOp(if not StateChannel)
+
+Operator -> Automatic : StateAutAut(if StateChannel) \n StateAutOp(if not StateChannel)
+Automatic -> Operator : StateOpAut(if StateChannel) \n StateOpAut(if  not StateChannel)
+
+@enduml

@@ -6,11 +6,11 @@
     "withCompare": false
   },
   "order": [
-    "GetModules",
-    "PostModule",
-    "DeleteModule",
+    "GetPEAs",
+    "PostPEA",
+    "DeletePEA",
     "AbortAllServices",
-    "GetModule",
+    "GetPEA",
     "CallService"
   ]
 }

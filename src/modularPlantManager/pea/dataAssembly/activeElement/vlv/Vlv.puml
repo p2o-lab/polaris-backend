@@ -1,0 +1,15 @@
+@startuml
+'https://plantuml.com/class-diagram
+!include anaVlv/AnaVlv.puml
+!include binVlv/BinVlv.puml
+
+abstract class Vlv
+
+Vlv *- VlvSpec
+VlvSpec ..> VlvMockup : <<use>>
+Vlv *- VlvMockup
+
+Vlv <|-- AnaVlv
+Vlv <|-- BinVlv
+
+@enduml

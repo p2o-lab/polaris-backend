@@ -1,0 +1,9 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class ServiceStateCondition
+
+ServiceStateCondition *- ServiceStateConditionSpec
+ServiceStateConditionSpec *- ServiceStateConditionJson
+
+@enduml

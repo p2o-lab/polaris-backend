@@ -1,0 +1,28 @@
+{
+  "initialTransition": "t1",
+  "states": [
+    {
+      "id": "Init",
+      "operations": [],
+      "nextTransitions": [
+        "t2"
+      ]
+    }
+  ],
+  "transitions": [
+    {
+      "id": "t1",
+      "condition": "undefined",
+      "nextStates": [
+        "Init"
+      ]
+    },
+    {
+      "id": "t2",
+      "condition": "undefined",
+      "nextStates": [
+        "finished"
+      ]
+    }
+  ]
+}

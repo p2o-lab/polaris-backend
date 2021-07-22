@@ -1,17 +1,19 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "outDir": "./build/",
     "module": "commonjs",
-    "lib": [
-      "es2017", "dom"
-    ],
-    "target": "es2017",
-    "declaration": true,
-    "strict": false,
-    "sourceMap": true,
+    "moduleResolution": "node",
     "resolveJsonModule": true,
+    "lib": [
+      "ES2017", "DOM"
+    ],
+    "target": "ES2017",
+    "declaration": true,
+    "sourceMap": true,
+    "strict": true,
     "plugins": [
       {
         "name": "tslint-language-service"
@@ -19,9 +21,10 @@
     ]
   },
   "include": [
-    "./src/**/*"
+    "src"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "test"
   ]
 }

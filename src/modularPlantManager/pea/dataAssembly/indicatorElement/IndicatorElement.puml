@@ -1,0 +1,19 @@
+@startuml
+'https://plantuml.com/class-diagram
+!include AnaView/AnaView.puml
+!include BinView/BinView.puml
+!include DIntView/DIntView.puml
+!include StringView/StringView.puml
+
+abstract class IndicatorElement
+
+IndicatorElement *- IndicatorElementSpec
+IndicatorElementSpec ..> IndicatorElementMockup : <<use>>
+IndicatorElement *- IndicatorElementMockup
+
+IndicatorElement <|-- AnaView
+IndicatorElement <|-- BinView
+IndicatorElement <|-- DIntView
+IndicatorElement <|-- StringView
+
+@enduml

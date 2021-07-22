@@ -1,0 +1,8 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+DIntServParam *- DIntServParamSpec
+DIntServParamSpec ..> DIntServParamMockup : <<use>>
+DIntServParam *- DIntServParamMockup
+
+@enduml

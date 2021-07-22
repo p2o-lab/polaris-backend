@@ -1,0 +1,8 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+AnaServParam *- AnaServParamSpec
+AnaServParamSpec ..> AnaServParamMockup : <<use>>
+AnaServParam *- AnaServParamMockup
+
+@enduml

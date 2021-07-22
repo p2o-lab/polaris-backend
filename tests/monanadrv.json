@@ -1,0 +1,347 @@
+{
+  "TagName": "Variable",
+  "TagDescription": "Test",
+  "OSLevel": {
+    "nodeId": "Variable.OSLevel",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "WQC": {
+    "nodeId": "Variable.WQC",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "StateChannel": {
+    "nodeId": "Variable.StateChannel",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "StateOffAut": {
+    "nodeId": "Variable.StateOffAut",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "StateOpAut": {
+    "nodeId": "Variable.StateOpAut",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "StateAutAut": {
+    "nodeId": "Variable.StateAutAut",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "StateOffOp": {
+    "nodeId": "Variable.StateOffOp",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "StateOpOp": {
+    "nodeId": "Variable.StateOpOp",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "StateAutOp": {
+    "nodeId": "Variable.StateAutOp",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "StateOpAct": {
+    "nodeId": "Variable.StateOpAct",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "StateAutAct": {
+    "nodeId": "Variable.StateAutAct",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "StateOffAct": {
+    "nodeId": "Variable.StateOffAct",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "ResetOp": {
+    "nodeId": "Variable.ResetOp",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "ResetAut": {
+    "nodeId": "Variable.ResetAut",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "PermEn": {
+    "nodeId": "Variable.PermEn",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "Permit": {
+    "nodeId": "Variable.Permit",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "IntlEn": {
+    "nodeId": "Variable.IntlEn",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "Interlock": {
+    "nodeId": "Variable.Interlock",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "ProtEn": {
+    "nodeId": "Variable.ProtEn",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "Protect": {
+    "nodeId": "Variable.Protect",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "SrcChannel": {
+    "nodeId": "Variable.SrcChannel",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "SrcManAut": {
+    "nodeId": "Variable.SrcManAut",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "SrcIntAut": {
+    "nodeId": "Variable.SrcIntAut",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "SrcIntOp": {
+    "nodeId": "Variable.SrcIntOp",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "SrcManOp": {
+    "nodeId": "Variable.SrcManOp",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "SrcIntAct": {
+    "nodeId": "Variable.SrcIntAct",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "SrcManAct": {
+    "nodeId": "Variable.SrcManAct",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "SafePos": {
+    "nodeId": "Variable.SafePos",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "SafePosAct": {
+    "nodeId": "Variable.SafePosAct",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "FwdAut": {
+    "nodeId": "Variable.FwdAut",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "FwdCtrl": {
+    "nodeId": "Variable.FwdCtrl",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "FwdEn": {
+    "nodeId": "Variable.FwdEn",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "FwdFbk": {
+    "nodeId": "Variable.FwdFbk",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "FwdFbkCalc": {
+    "nodeId": "Variable.FwdFbkCalc",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "FwdOp": {
+    "nodeId": "Variable.FwdOp",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "RevAut": {
+    "nodeId": "Variable.RevAut",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "RevCtrl": {
+    "nodeId": "Variable.RevCtrl",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "RevEn": {
+    "nodeId": "Variable.RevEn",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "RevFbk": {
+    "nodeId": "Variable.RevFbk",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "RevFbkCalc": {
+    "nodeId": "Variable.RevFbkCalc",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "RevOp": {
+    "nodeId": "Variable.RevOp",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "StopAut": {
+    "nodeId": "Variable.StopAut",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "StopOp": {
+    "nodeId": "Variable.StopOp",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "Trip": {
+    "nodeId": "Variable.Trip",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "RpmSclMin": {
+    "nodeId": "Variable.RpmSclMin",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "RpmSclMax": {
+    "nodeId": "Variable.RpmSclMax",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "RpmUnit": {
+    "nodeId": "Variable.RpmUnit",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "RpmMin": {
+    "nodeId": "Variable.RpmMin",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "RpmMax": {
+    "nodeId": "Variable.RpmMax",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "RpmInt": {
+    "nodeId": "Variable.RpmInt",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "RpmMan": {
+    "nodeId": "Variable.RpmMan",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "Rpm": {
+    "nodeId": "Variable.Rpm",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "RpmFbk": {
+    "nodeId": "Variable.RpmFbk",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "RpmFbkCalc": {
+    "nodeId": "Variable.RpmFbkCalc",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "RpmRbk": {
+    "nodeId": "Variable.RpmRbk",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "MonEn": {
+    "nodeId": "Variable.MonEn",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "MonSafePos": {
+    "nodeId": "Variable.MonSafePos",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "MonStatErr": {
+    "nodeId": "Variable.MonStatErr",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "MonDynErr": {
+    "nodeId": "Variable.MonDynErr",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "MonStatTi": {
+    "nodeId": "Variable.MonStatTi",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "MonDynTi": {
+    "nodeId": "Variable.MonDynTi",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "RpmErr": {
+    "nodeId": "Variable.RpmErr",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "RpmAHEn": {
+    "nodeId": "Variable.RpmAHEn",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "RpmAHLim": {
+    "nodeId": "Variable.RpmAHLim",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "RpmAHAct": {
+    "nodeId": "Variable.RpmAHAct",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "RpmALEn": {
+    "nodeId": "Variable.RpmALEn",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "RpmALLim": {
+    "nodeId": "Variable.RpmALLim",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  },
+  "RpmALAct": {
+    "nodeId": "Variable.RpmALAct",
+    "namespaceIndex": "localhost",
+    "dataType": "xs:IDREF"
+  }
+}
+
+
+

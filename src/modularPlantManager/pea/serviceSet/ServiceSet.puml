@@ -1,0 +1,11 @@
+@startuml
+'https://plantuml.com/class-diagram
+!include service/Service.puml
+!include serviceRelation/ServiceRelation.puml
+
+class ServiceSet
+
+ServiceSet *-down- "0..*" Service: has
+ServiceSet *-right- "0..*" ServiceRelation
+
+@enduml

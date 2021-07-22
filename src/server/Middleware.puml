@@ -1,0 +1,7 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class Middleware{
++ {static} init()
+}
+@enduml

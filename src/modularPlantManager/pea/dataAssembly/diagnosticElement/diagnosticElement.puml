@@ -1,0 +1,16 @@
+@startuml
+'https://plantuml.com/class-diagram
+!include healthStateView/HealthStateView.puml
+!include ./lockView/LockView4.puml
+
+abstract class DiagnosticElement
+
+DiagnosticElement *- DiagnosticElementSpec
+DiagnosticElementSpec ..> DiagnosticElementMockup : <<use>>
+DiagnosticElement *- DiagnosticElementMockup
+
+DiagnosticElement <|-- LockView4
+DiagnosticElement <|-- HealthStateView
+
+
+@enduml

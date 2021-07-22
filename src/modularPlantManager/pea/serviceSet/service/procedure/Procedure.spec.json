@@ -1,0 +1,11 @@
+{
+  "procedure": [
+    {
+      "id": "Sample ID",
+      "name": "Sample Name",
+      "isDefault": true,
+      "isSelfCompleting": false,
+      "parameters": []
+    }
+  ]
+}

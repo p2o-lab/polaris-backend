@@ -1,0 +1,10 @@
+@startuml
+'https://plantuml.com/class-diagram
+!include LockView16.puml
+
+LockView8 *- LockView8Spec
+LockView8Spec ..> LockView8Mockup : <<use>>
+LockView8 *- LockView8Mockup
+
+LockView8 <|-- LockView16
+@enduml

@@ -1,0 +1,43 @@
+@startuml
+
+skinparam monochrome true
+
+participant Polaris_Frontend
+participant Polaris_Backend
+participant PEA
+
+activate PEA
+
+
+Polaris_Frontend -> Polaris_Backend: Load PEA
+activate Polaris_Backend
+Polaris_Frontend <-- Polaris_Backend: loaded PEA
+deactivate Polaris_Backend
+
+Polaris_Frontend -> Polaris_Backend: Connect PEA
+activate Polaris_Backend
+Polaris_Backend -> PEA: connect()
+Polaris_Backend <-- PEA
+Polaris_Frontend <-- Polaris_Backend
+Polaris_Backend -> PEA: subscribe to all important variables
+...
+
+loop
+Polaris_Backend <- PEA: updates
+Polaris_Frontend <- Polaris_Backend: Notification via websocket
+end
+Polaris_Frontend -> Polaris_Backend: Get specific information
+Polaris_Frontend <-- Polaris_Backend: Direct response without communication to PEA
+
+...
+
+Polaris_Frontend -> Polaris_Backend: Disconnect PEA
+Polaris_Backend -> PEA: disconnect()
+Polaris_Backend <-- PEA
+Polaris_Frontend <-- Polaris_Backend
+deactivate Polaris_Backend
+
+
+deactivate PEA
+
+@enduml

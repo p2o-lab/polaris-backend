@@ -1,0 +1,9 @@
+@startuml
+'https://plantuml.com/class-diagram
+!include ./OpcUaDataItem.puml
+
+abstract class DataItem
+
+DataItem <-- OpcUaDataItem
+
+@enduml

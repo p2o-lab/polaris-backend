@@ -1,0 +1,8 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+StringServParam *- StringServParamSpec
+StringServParamSpec ..> StringServParamMockup : <<use>>
+StringServParam *- StringServParamMockup
+
+@enduml

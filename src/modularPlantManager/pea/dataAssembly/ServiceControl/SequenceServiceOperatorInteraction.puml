@@ -1,0 +1,50 @@
+@startuml
+
+skinparam monochrome false
+
+participant Service
+participant POL
+actor Operator
+
+group initial condition
+
+rnote over POL
+ MTP imported
+ >possible questions
+ >valid answers
+endrnote
+
+rnote over Service
+ InteractQuestionID = 0
+ InteractAnswerID = 0
+endrnote
+
+end
+
+loop
+    Service <-- POL : await InteractQuestionID change'
+    rnote over Service
+     InteractQuestionID > 0
+    endrnote
+    Service --> POL : receive InteractQuestionID'
+end
+rnote over POL
+ Get Question String
+ Get pot. answers
+endrnote
+
+POL --> Operator : Question & potential Answers
+rnote over Operator
+ Pick Answer
+endrnote
+POL <-- Operator : AnswerID
+
+Service <-- POL : write InteractAnswerID
+
+rnote over Service #F00
+ Reset
+ InteractQuestionID = 0
+ InteractAnswerID = 0
+endrnote
+
+@enduml

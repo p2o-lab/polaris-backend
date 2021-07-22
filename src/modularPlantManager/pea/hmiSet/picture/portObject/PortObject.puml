@@ -1,0 +1,16 @@
+@startuml
+'https://plantuml.com/class-diagram
+!include LogicalPort.puml
+!include MeasurementPoint.puml
+!include Nozzle.puml
+
+class PortObject{
+X
+Y
+}
+
+PortObject <|-- LogicalPort
+PortObject <|-- MeasurementPoint
+PortObject <|-- Nozzle
+
+@enduml

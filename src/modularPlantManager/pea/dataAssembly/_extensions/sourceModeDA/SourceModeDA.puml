@@ -1,0 +1,9 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+abstract class SourceModeDA
+
+SourceModeDA *- SourceModeDASpec
+SourceModeDASpec ..> SourceModeDAMockup : <<use>>
+SourceModeDA *- SourceModeDAMockup
+@enduml

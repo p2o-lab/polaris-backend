@@ -1,0 +1,8 @@
+@startuml
+'https://plantuml.com/class-diagram
+!include Service.puml
+
+abstract class BaseService
+
+BaseService <|-- Service
+@enduml

@@ -1,0 +1,7 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class Transition
+
+Transition --> Condition
+@enduml

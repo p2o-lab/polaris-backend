@@ -1,0 +1,1031 @@
+{
+  "id": "Temper",
+  "opcua_server_url": "opc.tcp://10.6.51.24:4840",
+  "services": [
+    {
+      "name": "Circulation",
+      "communication": {
+        "TagName": {
+          "value": "Circulation"
+        },
+        "TagDescription": {
+          "value": "Sample service with different parameters"
+        },
+        "OSLevel": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:services:circulation:control:OSLevel",
+          "data_type": "Byte"
+        },
+        "WQC": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:services:circulation:control:WQC",
+          "data_type": "Byte"
+        },
+        "OpMode": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:services:circulation:control:OpMode",
+          "data_type": "UInt32"
+        },
+        "CommandMan": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:services:circulation:control:ControlOp",
+          "data_type": "UInt32"
+        },
+        "StrategyMan": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:services:circulation:control:StrategyOp",
+          "data_type": "UInt32"
+        },
+        "ControlInt": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:services:circulation:control:ControlInt",
+          "data_type": "UInt32"
+        },
+        "StrategyInt": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:services:circulation:control:StrategyInt",
+          "data_type": "UInt32"
+        },
+        "CommandExt": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:services:circulation:control:ControlExt",
+          "data_type": "UInt32"
+        },
+        "StrategyExt": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:services:circulation:control:StrategyExt",
+          "data_type": "UInt32"
+        },
+        "State": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:services:circulation:control:State",
+          "data_type": "UInt32"
+        },
+        "CommandEnable": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:services:circulation:control:ControlEnable",
+          "data_type": "UInt32"
+        },
+        "CurrentStrategy": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:services:circulation:control:CurrentStrategy",
+          "data_type": "UInt32"
+        }
+      },
+      "procedures": [
+        {
+          "id": "1",
+          "name": "ContinuousCirculation",
+          "default": true,
+          "sc": false,
+          "parameters": []
+        }
+      ],
+      "parameters": []
+    },
+    {
+      "name": "Tempering",
+      "communication": {
+        "TagName": {
+          "value": "Tempering"
+        },
+        "TagDescription": {
+          "value": "Sample service with different parameters"
+        },
+        "OSLevel": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:services:tempering:control:OSLevel",
+          "data_type": "Byte"
+        },
+        "WQC": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:services:tempering:control:WQC",
+          "data_type": "Byte"
+        },
+        "OpMode": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:services:tempering:control:OpMode",
+          "data_type": "UInt32"
+        },
+        "CommandMan": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:services:tempering:control:ControlOp",
+          "data_type": "UInt32"
+        },
+        "StrategyMan": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:services:tempering:control:StrategyOp",
+          "data_type": "UInt32"
+        },
+        "ControlInt": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:services:tempering:control:ControlInt",
+          "data_type": "UInt32"
+        },
+        "StrategyInt": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:services:tempering:control:StrategyInt",
+          "data_type": "UInt32"
+        },
+        "CommandExt": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:services:tempering:control:ControlExt",
+          "data_type": "UInt32"
+        },
+        "StrategyExt": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:services:tempering:control:StrategyExt",
+          "data_type": "UInt32"
+        },
+        "State": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:services:tempering:control:State",
+          "data_type": "UInt32"
+        },
+        "CommandEnable": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:services:tempering:control:ControlEnable",
+          "data_type": "UInt32"
+        },
+        "CurrentStrategy": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:services:tempering:control:CurrentStrategy",
+          "data_type": "UInt32"
+        }
+      },
+      "procedures": [
+        {
+          "id": "2",
+          "name": "SetpointRampTempering",
+          "default": false,
+          "sc": false,
+          "parameters": [
+            {
+              "name": "RampEndtemperature",
+              "interface_class": "ExtAnaOp",
+              "communication": {
+                "WQC": {
+                  "value": "16#FF"
+                },
+                "OSLevel": {
+                  "value": "0"
+                },
+                "VOut": {
+                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+                  "node_id": "mtp:services:tempering:procedure:vRampEndtemp\n",
+                  "data_type": "Float"
+                },
+                "VSclMin": {
+                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+                  "node_id": "mtp:services:tempering:config:vDeviceMin",
+                  "data_type": "Float"
+                },
+                "VSclMax": {
+                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+                  "node_id": "mtp:services:tempering:config:vDeviceMax",
+                  "data_type": "Float"
+                },
+                "VUnit": {
+                  "value": "1001"
+                },
+                "VMin": {
+                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+                  "node_id": "mtp:services:tempering:config:vMinSP",
+                  "data_type": "Float"
+                },
+                "VMax": {
+                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+                  "node_id": "mtp:services:tempering:config:vMaxSP",
+                  "data_type": "Float"
+                },
+                "VExt": {
+                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+                  "node_id": "mtp:services:tempering:procedure:vRampEndtemp\n",
+                  "data_type": "Float"
+                },
+                "VRbk": {
+                  "value": "0"
+                }
+              }
+            },
+            {
+              "name": "RampDuration",
+              "interface_class": "ExtAnaOp",
+              "communication": {
+                "WQC": {
+                  "value": "16#FF"
+                },
+                "OSLevel": {
+                  "value": "0"
+                },
+                "VOut": {
+                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+                  "node_id": "mtp:services:tempering:procedure:vRampDuration",
+                  "data_type": "Float"
+                },
+                "VSclMin": {
+                  "value": "0"
+                },
+                "VSclMax": {
+                  "value": "180000"
+                },
+                "VUnit": {
+                  "value": "1054"
+                },
+                "VMin": {
+                  "value": "0"
+                },
+                "VMax": {
+                  "value": "180000"
+                },
+                "VExt": {
+                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+                  "node_id": "mtp:services:tempering:procedure:vRampDuration",
+                  "data_type": "Float"
+                },
+                "VRbk": {
+                  "value": "1"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "1",
+          "name": "ContinuousTempering",
+          "default": true,
+          "sc": false,
+          "parameters": [
+            {
+              "name": "Setpoint",
+              "interface_class": "ExtAnaOp",
+              "communication": {
+                "WQC": {
+                  "value": "16#FF"
+                },
+                "OSLevel": {
+                  "value": "0"
+                },
+                "VOut": {
+                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+                  "node_id": "mtp:services:tempering:procedure:vSP",
+                  "data_type": "Float"
+                },
+                "VSclMin": {
+                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+                  "node_id": "mtp:services:tempering:config:vDeviceMin",
+                  "data_type": "Float"
+                },
+                "VSclMax": {
+                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+                  "node_id": "mtp:services:tempering:config:vDeviceMax",
+                  "data_type": "Float"
+                },
+                "VUnit": {
+                  "value": "1001"
+                },
+                "VMin": {
+                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+                  "node_id": "mtp:services:tempering:config:vMinSP",
+                  "data_type": "Float"
+                },
+                "VMax": {
+                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+                  "node_id": "mtp:services:tempering:config:vMaxSP",
+                  "data_type": "Float"
+                },
+                "VExt": {
+                  "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+                  "node_id": "mtp:services:tempering:procedure:vSP",
+                  "data_type": "Float"
+                },
+                "VRbk": {
+                  "value": "0"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        {
+          "name": "InternalTempSource",
+          "interface_class": "ExtDigOp",
+          "communication": {
+            "WQC": {
+              "value": "16#FF"
+            },
+            "OSLevel": {
+              "value": "0"
+            },
+            "VOut": {
+              "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+              "node_id": "mtp:services:tempering:config:vCITM",
+              "data_type": "Int32"
+            },
+            "VSclMin": {
+              "value": "0"
+            },
+            "VSclMax": {
+              "value": "3"
+            },
+            "VUnit": {
+              "value": null
+            },
+            "VMin": {
+              "value": "0"
+            },
+            "VMax": {
+              "value": "3"
+            },
+            "VExt": {
+              "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+              "node_id": "mtp:services:tempering:config:vCITM",
+              "data_type": "Int32"
+            },
+            "VRbk": {
+              "value": "0"
+            }
+          }
+        },
+        {
+          "name": "TemperatureControlModeParam",
+          "interface_class": "ExtDigOp",
+          "communication": {
+            "WQC": {
+              "value": "16#FF"
+            },
+            "OSLevel": {
+              "value": "0"
+            },
+            "VOut": {
+              "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+              "node_id": "mtp:services:tempering:config:vTmpMode",
+              "data_type": "Int32"
+            },
+            "VSclMin": {
+              "value": "0"
+            },
+            "VSclMax": {
+              "value": "1"
+            },
+            "VUnit": {
+              "value": null
+            },
+            "VMin": {
+              "value": "0"
+            },
+            "VMax": {
+              "value": "1"
+            },
+            "VExt": {
+              "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+              "node_id": "mtp:services:tempering:config:vTmpMode",
+              "data_type": "Int32"
+            },
+            "VRbk": {
+              "value": "0"
+            }
+          }
+        },
+        {
+          "name": "ProcessTempSource",
+          "interface_class": "ExtDigOp",
+          "communication": {
+            "WQC": {
+              "value": "16#FF"
+            },
+            "OSLevel": {
+              "value": "0"
+            },
+            "VOut": {
+              "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+              "node_id": "mtp:services:tempering:config:vCETM",
+              "data_type": "Int32"
+            },
+            "VSclMin": {
+              "value": "0"
+            },
+            "VSclMax": {
+              "value": "3"
+            },
+            "VUnit": {
+              "value": null
+            },
+            "VMin": {
+              "value": "0"
+            },
+            "VMax": {
+              "value": "3"
+            },
+            "VExt": {
+              "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+              "node_id": "mtp:services:tempering:config:vCETM",
+              "data_type": "Int32"
+            },
+            "VRbk": {
+              "value": "0"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "process_values": [
+    {
+      "name": "Pump",
+      "communication": {
+        "WQC": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:Pump:WQC",
+          "data_type": "Byte"
+        },
+        "OSLevel": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:Pump:OSLevel",
+          "data_type": "Byte"
+        },
+        "OpMode": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:Pump:OpMode",
+          "data_type": "UInt32"
+        },
+        "FwdEn": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:Pump:FwdEn",
+          "data_type": "Boolean"
+        },
+        "RevEn": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:Pump:revEn",
+          "data_type": "Boolean"
+        },
+        "StopOp": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:Pump:StopOp",
+          "data_type": "Boolean"
+        },
+        "FwdOp": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:Pump:FwdOp",
+          "data_type": "Boolean"
+        },
+        "RevOp": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:Pump:RevOp",
+          "data_type": "Boolean"
+        },
+        "StopLi": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:Pump:StopLi",
+          "data_type": "Boolean"
+        },
+        "FwdLi": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:Pump:FwdLi",
+          "data_type": "Boolean"
+        },
+        "RevLi": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:Pump:RevLi",
+          "data_type": "Boolean"
+        },
+        "FwdCtrl": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:Pump:FwdCtrl",
+          "data_type": "Boolean"
+        },
+        "RevCtrl": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:Pump:RevCtrl",
+          "data_type": "Boolean"
+        },
+        "FwdFbkEn": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:Pump:FwdFbkEn",
+          "data_type": "Boolean"
+        },
+        "FwdFbk": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:Pump:FwdFbk",
+          "data_type": "Boolean"
+        },
+        "RevFbkEn": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:Pump:RevFbkEn",
+          "data_type": "Boolean"
+        },
+        "RevFbk": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:Pump:RevFbk",
+          "data_type": "Boolean"
+        },
+        "Trip": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:Pump:Trip",
+          "data_type": "Boolean"
+        }
+      }
+    },
+    {
+      "name": "TI",
+      "communication": {
+        "WQC": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:TI:WQC",
+          "data_type": "Byte"
+        },
+        "OSLevel": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:TI:OSLevel",
+          "data_type": "Byte"
+        },
+        "V": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:TI:V",
+          "data_type": "Float"
+        },
+        "VSclMin": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:TI:VSclMin",
+          "data_type": "Float"
+        },
+        "VSclMax": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:TI:VSclMax",
+          "data_type": "Float"
+        },
+        "VUnit": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:TI:Vunit",
+          "data_type": "Int16"
+        },
+        "VAHEn": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:TI:VAHEn",
+          "data_type": "Boolean"
+        },
+        "VAHLim": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:TI:VAHLim",
+          "data_type": "Float"
+        },
+        "VAHAct": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:TI:VAHAct",
+          "data_type": "Boolean"
+        },
+        "VWHEn": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:TI:VWHEn",
+          "data_type": "Boolean"
+        },
+        "VWHLim": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:TI:VWHLim",
+          "data_type": "Float"
+        },
+        "VWHAct": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:TI:VWHAct",
+          "data_type": "Boolean"
+        },
+        "VTHEn": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:TI:VTHEn",
+          "data_type": "Boolean"
+        },
+        "VTHLim": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:TI:VTHLim",
+          "data_type": "Float"
+        },
+        "VTHAct": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:TI:VTHAct",
+          "data_type": "Boolean"
+        },
+        "VTLEn": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:TI:VTLEn",
+          "data_type": "Boolean"
+        },
+        "VTLLim": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:TI:VTLLim",
+          "data_type": "Float"
+        },
+        "VTLAct": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:TI:VTLAct",
+          "data_type": "Boolean"
+        },
+        "VWLEn": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:TI:VWLEn",
+          "data_type": "Boolean"
+        },
+        "VWLLim": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:TI:VWLLim",
+          "data_type": "Float"
+        },
+        "VWLAct": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:TI:VWLAct",
+          "data_type": "Boolean"
+        },
+        "VALEn": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:TI:VALEn",
+          "data_type": "Boolean"
+        },
+        "VALLim": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:TI:VALLim",
+          "data_type": "Float"
+        },
+        "VALAct": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:TI:VALAct",
+          "data_type": "Boolean"
+        }
+      }
+    },
+    {
+      "name": "TE",
+      "communication": {
+        "WQC": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:TE:WQC",
+          "data_type": "Byte"
+        },
+        "OSLevel": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:TE:OSLevel",
+          "data_type": "Byte"
+        },
+        "V": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:TE:V",
+          "data_type": "Float"
+        },
+        "VSclMin": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:TE:VSclMin",
+          "data_type": "Float"
+        },
+        "VSclMax": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:TE:VSclMax",
+          "data_type": "Float"
+        },
+        "VUnit": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:TE:Vunit",
+          "data_type": "Int16"
+        },
+        "VAHEn": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:TE:VAHEn",
+          "data_type": "Boolean"
+        },
+        "VAHLim": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:TE:VAHLim",
+          "data_type": "Float"
+        },
+        "VAHAct": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:TE:VAHAct",
+          "data_type": "Boolean"
+        },
+        "VWHEn": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:TE:VWHEn",
+          "data_type": "Boolean"
+        },
+        "VWHLim": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:TE:VWHLim",
+          "data_type": "Float"
+        },
+        "VWHAct": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:TE:VWHAct",
+          "data_type": "Boolean"
+        },
+        "VTHEn": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:TE:VTHEn",
+          "data_type": "Boolean"
+        },
+        "VTHLim": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:TE:VTHLim",
+          "data_type": "Float"
+        },
+        "VTHAct": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:TE:VTHAct",
+          "data_type": "Boolean"
+        },
+        "VTLEn": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:TE:VTLEn",
+          "data_type": "Boolean"
+        },
+        "VTLLim": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:TE:VTLLim",
+          "data_type": "Float"
+        },
+        "VTLAct": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:TE:VTLAct",
+          "data_type": "Boolean"
+        },
+        "VWLEn": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:TE:VWLEn",
+          "data_type": "Boolean"
+        },
+        "VWLLim": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:TE:VWLLim",
+          "data_type": "Float"
+        },
+        "VWLAct": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:TE:VWLAct",
+          "data_type": "Boolean"
+        },
+        "VALEn": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:TE:VALEn",
+          "data_type": "Boolean"
+        },
+        "VALLim": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:TE:VALLim",
+          "data_type": "Float"
+        },
+        "VALAct": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:hmi:TE:VALAct",
+          "data_type": "Boolean"
+        }
+      }
+    },
+    {
+      "name": "Tempering.RampDuration",
+      "communication": {
+        "WQC": {
+          "value": "16#FF"
+        },
+        "OSLevel": {
+          "value": "0"
+        },
+        "VOut": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:services:tempering:procedure:vRampDuration",
+          "data_type": "Float"
+        },
+        "VSclMin": {
+          "value": "0"
+        },
+        "VSclMax": {
+          "value": "180000"
+        },
+        "VUnit": {
+          "value": "1054"
+        },
+        "VMin": {
+          "value": "0"
+        },
+        "VMax": {
+          "value": "180000"
+        },
+        "VExt": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:services:tempering:procedure:vRampDuration",
+          "data_type": "Float"
+        },
+        "VRbk": {
+          "value": "1"
+        }
+      }
+    },
+    {
+      "name": "Tempering.InternalTempSource",
+      "communication": {
+        "WQC": {
+          "value": "16#FF"
+        },
+        "OSLevel": {
+          "value": "0"
+        },
+        "VOut": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:services:tempering:config:vCITM",
+          "data_type": "Int32"
+        },
+        "VSclMin": {
+          "value": "0"
+        },
+        "VSclMax": {
+          "value": "3"
+        },
+        "VUnit": {
+          "value": null
+        },
+        "VMin": {
+          "value": "0"
+        },
+        "VMax": {
+          "value": "3"
+        },
+        "VExt": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:services:tempering:config:vCITM",
+          "data_type": "Int32"
+        },
+        "VRbk": {
+          "value": "0"
+        }
+      }
+    },
+    {
+      "name": "Tempering.Setpoint",
+      "communication": {
+        "WQC": {
+          "value": "16#FF"
+        },
+        "OSLevel": {
+          "value": "0"
+        },
+        "VOut": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:services:tempering:procedure:vSP",
+          "data_type": "Float"
+        },
+        "VSclMin": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:services:tempering:config:vDeviceMin",
+          "data_type": "Float"
+        },
+        "VSclMax": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:services:tempering:config:vDeviceMax",
+          "data_type": "Float"
+        },
+        "VUnit": {
+          "value": "1001"
+        },
+        "VMin": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:services:tempering:config:vMinSP",
+          "data_type": "Float"
+        },
+        "VMax": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:services:tempering:config:vMaxSP",
+          "data_type": "Float"
+        },
+        "VExt": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:services:tempering:procedure:vSP",
+          "data_type": "Float"
+        },
+        "VRbk": {
+          "value": "0"
+        }
+      }
+    },
+    {
+      "name": "Tempering.TemperatureControlModeParam",
+      "communication": {
+        "WQC": {
+          "value": "16#FF"
+        },
+        "OSLevel": {
+          "value": "0"
+        },
+        "VOut": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:services:tempering:config:vTmpMode",
+          "data_type": "Int32"
+        },
+        "VSclMin": {
+          "value": "0"
+        },
+        "VSclMax": {
+          "value": "1"
+        },
+        "VUnit": {
+          "value": null
+        },
+        "VMin": {
+          "value": "0"
+        },
+        "VMax": {
+          "value": "1"
+        },
+        "VExt": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:services:tempering:config:vTmpMode",
+          "data_type": "Int32"
+        },
+        "VRbk": {
+          "value": "0"
+        }
+      }
+    },
+    {
+      "name": "Tempering.ProcessTempSource",
+      "communication": {
+        "WQC": {
+          "value": "16#FF"
+        },
+        "OSLevel": {
+          "value": "0"
+        },
+        "VOut": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:services:tempering:config:vCETM",
+          "data_type": "Int32"
+        },
+        "VSclMin": {
+          "value": "0"
+        },
+        "VSclMax": {
+          "value": "3"
+        },
+        "VUnit": {
+          "value": null
+        },
+        "VMin": {
+          "value": "0"
+        },
+        "VMax": {
+          "value": "3"
+        },
+        "VExt": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:services:tempering:config:vCETM",
+          "data_type": "Int32"
+        },
+        "VRbk": {
+          "value": "0"
+        }
+      }
+    },
+    {
+      "name": "Tempering.RampEndtemperature",
+      "communication": {
+        "WQC": {
+          "value": "16#FF"
+        },
+        "OSLevel": {
+          "value": "0"
+        },
+        "VOut": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:services:tempering:procedure:vRampEndtemp\n",
+          "data_type": "Float"
+        },
+        "VSclMin": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:services:tempering:config:vDeviceMin",
+          "data_type": "Float"
+        },
+        "VSclMax": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:services:tempering:config:vDeviceMax",
+          "data_type": "Float"
+        },
+        "VUnit": {
+          "value": "1001"
+        },
+        "VMin": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:services:tempering:config:vMinSP",
+          "data_type": "Float"
+        },
+        "VMax": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:services:tempering:config:vMaxSP",
+          "data_type": "Float"
+        },
+        "VExt": {
+          "namespace_index": "urn:ModuleTypePackage:DeviceId=1",
+          "node_id": "mtp:services:tempering:procedure:vRampEndtemp\n",
+          "data_type": "Float"
+        },
+        "VRbk": {
+          "value": "0"
+        }
+      }
+    }
+  ]
+}

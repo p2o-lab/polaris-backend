@@ -1,0 +1,40 @@
+@startuml
+
+skinparam monochrome false
+
+participant PEA1_Service_ProcessValueOut
+participant POL
+participant PEA2_Service_ProcessValueIn
+
+rnote over PEA1_Service_ProcessValueOut
+ VSclMin = 0.0
+ VSclMax = 20.0
+ V = 10.0
+ VUnit = 1001
+ WQC: Good
+endrnote
+
+rnote over PEA2_Service_ProcessValueIn
+ VSclMin = fixed Value
+ VSclMax = fixed Value
+ V = last Value
+ VUnit = fixed Value
+ WQC: lastValue
+endrnote
+
+PEA1_Service_ProcessValueOut -> POL : Transfer by Read
+
+rnote over POL
+ Adaption
+ UnitConversion?
+ Calculations
+ Checks
+endrnote
+
+POL -> PEA2_Service_ProcessValueIn : Transfer by Write
+
+rnote over PEA2_Service_ProcessValueIn
+Reaction to new Value
+endrnote
+
+@enduml

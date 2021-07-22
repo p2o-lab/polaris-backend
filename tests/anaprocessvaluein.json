@@ -1,0 +1,31 @@
+{
+    "TagName": "Variable",
+    "TagDescription": "Test",
+    "WQC": {
+      "nodeId": "Variable.WQC",
+      "namespaceIndex": "localhost",
+      "dataType": "xs:IDREF"
+    },
+    "VExt": {
+      "nodeId": "Variable.VExt",
+      "namespaceIndex": "localhost",
+      "dataType": "xs:IDREF"
+    },
+    "VUnit": {
+      "nodeId": "Variable.VUnit",
+      "namespaceIndex": "localhost",
+      "dataType": "xs:IDREF"
+    },
+    "VSclMax": {
+      "nodeId": "Variable.VSclMax",
+      "namespaceIndex": "localhost",
+      "dataType": "xs:IDREF"
+     },
+    "VSclMin": {
+      "nodeId": "Variable.VSclMin",
+      "namespaceIndex": "localhost",
+      "dataType": "xs:IDREF"
+    }
+}
+
+

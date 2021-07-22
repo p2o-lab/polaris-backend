@@ -1,0 +1,9 @@
+@startuml
+'https://plantuml.com/class-diagram
+!include PositionText.puml
+
+class ServicePosition
+
+ServicePosition *-down- "1..*" PositionText
+
+@enduml

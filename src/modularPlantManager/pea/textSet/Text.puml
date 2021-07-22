@@ -1,0 +1,18 @@
+@startuml
+'https://plantuml.com/class-diagram
+!include Answer.puml
+!include PositionText.puml
+!include Question.puml
+!include EnumItem.puml
+
+
+class Text{
+Text
+}
+
+Text <|-up- Answer
+Text <|-up- PositionText
+Text <|-up- Question
+Text <|-up- EnumItem
+
+@enduml

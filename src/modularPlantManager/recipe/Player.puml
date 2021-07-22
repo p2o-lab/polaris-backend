@@ -1,0 +1,9 @@
+@startuml
+'https://plantuml.com/class-diagram
+!include Recipe.puml
+
+class Player
+
+Player o-- Recipe: playlist
+
+@enduml
