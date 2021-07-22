@@ -3,25 +3,25 @@
 skinparam monochrome false
 
 participant POL
-participant DataAssembly
+participant DataAssemblyController
 
-rnote over DataAssembly
+rnote over DataAssemblyController
  State = false
 endrnote
 
 
-POL --> DataAssembly : Set := true
-POL <-- DataAssembly : Set := false
-rnote over DataAssembly
+POL --> DataAssemblyController : Set := true
+POL <-- DataAssemblyController : Set := false
+rnote over DataAssemblyController
  State = true
 endrnote
-POL <-- DataAssembly : State == true
+POL <-- DataAssemblyController : State == true
 ...
-POL --> DataAssembly : Reset := true
-POL <-- DataAssembly : Reset := false
-rnote over DataAssembly
+POL --> DataAssemblyController : Reset := true
+POL <-- DataAssemblyController : Reset := false
+rnote over DataAssemblyController
  State = false
 endrnote
-POL <-- DataAssembly : State == false
+POL <-- DataAssemblyController : State == false
 
 @enduml

@@ -182,11 +182,11 @@ describe('Condition', () => {
 				.peas[0];
 
 			pea = new PEAController(peaJson);
-			await pea.connect();
+			await pea.connectAndSubscribe();
 		});
 
 		afterEach(async () => {
-			await pea.disconnect();
+			await pea.disconnectAndUnsubscribe();
 			await mockupServer.shutdown();
 		});
 

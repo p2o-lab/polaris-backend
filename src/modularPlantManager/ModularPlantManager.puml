@@ -7,7 +7,49 @@
 !include ./pea/PEAController.puml
 !include ./PiMAdParser.puml
 
-class ModularPlantManager
+class ModularPlantManager{
+    + //readonly// recipes: Recipe[]
+    + //readonly// peas: PEAController[]
+    + //readonly// polServices: POLService[]
+    + //readonly// player: Player
+
+    + variableArchive: VariableChange[]
+    + serviceArchive: ServiceLogEntry[]
+
+    - _autoResetTimeout: number = 500
+
+    + pimadPool: PEAPool
+
+    + generateUniqueIndentifier(): string
+
+	+ getAllPEAControllers(): PEAInterface[]
+    + getPEAController(peaId: string): PEAController
+    + //async// removePEAController(peaID: string): Promise<void>
+    + //async// loadPEAController(pimadIdentifier: string, protectedPEAs: boolean): Promise<PEAController[]>{
+
+	+ getAllPEAsFromPimadPool(callback: (response: PiMAdResponse) => void)
+    + getPEAFromPimadPool(pimadIdentifier: string): Promise<PEAModel>
+    + deletePEAFromPimadPool(pimadIdentifier: string, callback: (response: PiMAdResponse) => void)
+    + addPEAToPimadPool(filePath: { source: string}, callback: (response: PiMAdResponse) => void)
+
+    + getPOLServices(): POLServiceInterface[]
+    + instantiatePOLService(options: POLServiceOptions): void
+    + removePOLService(polServiceID: string): void
+
+    + loadRecipe(options: RecipeOptions, protectedRecipe = false): Recipe
+    + updateServerSettings(options: ServerSettingsOptions): void
+
+    + abortAllServices(): Promise<Promise<void[]>[][]>
+    + stopAllServices(): Promise<Promise<void[]>[][]>
+    + resetAllServices(): Promise<Promise<void[]>[][]>
+
+    + removeRecipe(recipeID: string): void
+    + getService(peaName: string, serviceName: string): Service
+    + performAutoReset(service: Service): void
+
+    - setEventListeners(newPEAs: PEAController[]): PEAController[]
+
+}
 
 ModularPlantManager "1" o-- "*" RecipeRun
 ModularPlantManager "1" o-- "1" Player

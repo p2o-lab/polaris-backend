@@ -231,7 +231,7 @@ describe('ModularPlantManager', () => {
 			const service1 = pea.services[0];
 			const service2 = pea.services[1];
 
-			await pea.connect();
+			await pea.connectAndSubscribe();
 			await service2.executeCommand(ServiceCommand.start);
 			await service2.waitForStateChangeWithTimeout('EXECUTE');
 
@@ -266,7 +266,7 @@ describe('ModularPlantManager', () => {
 			const pea = modularPlantManager.peas[0];
 			const service = pea.services[1];
 
-			await pea.connect();
+			await pea.connectAndSubscribe();
 			await service.executeCommand(ServiceCommand.start);
 			await service.waitForStateChangeWithTimeout('EXECUTE');
 

@@ -62,7 +62,7 @@ describe('PEA', () => {
 			const peaJson =
 				JSON.parse(fs.readFileSync('src/modularPlantManager/pea/_assets/JSON/pea_testserver_1.0.0_2.json', 'utf8')).peas[0];
 			const pea = new PEAController(peaJson);
-			await pea.connect();
+			await pea.connectAndSubscribe();
 
 			await Promise.all([
 				new Promise((resolve) => pea.on('parameterChanged', resolve)),
@@ -86,7 +86,7 @@ describe('PEA', () => {
 			expect(errorMsg.communication.WQC.listenerCount('changed')).to.equal(2);
 			expect(errorMsg.communication.Text?.listenerCount('changed')).to.equal(2);
 
-			await pea.disconnect();
+			await pea.disconnectAndUnsubscribe();
 		});
 
 		it('should work after reconnect', async () => {
@@ -94,17 +94,17 @@ describe('PEA', () => {
 				JSON.parse(fs.readFileSync('assets/peas/pea_testserver_1.0.0.json', 'utf8')).peas[0];
 			const pea = new PEAController(peaJson);
 
-			await pea.connect();
+			await pea.connectAndSubscribe();
 			await Promise.all([
 				new Promise((resolve) => pea.on('parameterChanged', resolve)),
 				new Promise((resolve) => pea.on('variableChanged', resolve)),
 				new Promise((resolve) => pea.on('stateChanged', resolve))
 			]);
 			expect(pea.connection.monitoredItemSize()).to.be.greaterThan(80);
-			await pea.disconnect();
+			await pea.disconnectAndUnsubscribe();
 			expect(pea.connection.monitoredItemSize()).to.equal(0);
 
-			await pea.connect();
+			await pea.connectAndSubscribe();
 			await Promise.all([
 				new Promise((resolve) => pea.on('parameterChanged', resolve)),
 				new Promise((resolve) => pea.on('variableChanged', resolve)),
