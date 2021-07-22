@@ -47,10 +47,7 @@ export class DIntProcessValueIn extends InputElement {
 		this.communication.VExt = this.createDataItem('VExt', 'read');
 
 		this.unitSettings = new UnitSettings(this);
-		this.unitSettings.initialize();
-
 		this.scaleSettings = new ScaleSettings(this);
-		this.scaleSettings.initialize();
 
 		this.defaultReadDataItem = this.communication.VExt;
 		this.defaultReadDataItemType = 'number';

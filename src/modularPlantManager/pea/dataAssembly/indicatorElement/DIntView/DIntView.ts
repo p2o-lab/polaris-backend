@@ -42,10 +42,8 @@ export class DIntView extends IndicatorElement {
 		this.communication.V = this.createDataItem('V', 'read');
 
 		this.unitSettings = new UnitSettings(this);
-		this.unitSettings.initialize();
 
 		this.scaleSettings = new ScaleSettings(this);
-		this.scaleSettings.initialize();
 
 		this.defaultReadDataItem = this.communication.V;
 		this.defaultReadDataItemType = 'number';

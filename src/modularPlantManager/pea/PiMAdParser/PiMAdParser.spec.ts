@@ -23,23 +23,39 @@
  * SOFTWARE.
  */
 
-import {OpcUaConnection} from '../../../connection';
-
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
+import * as fs from 'fs';
+import {PiMAdParser} from './PiMAdParser';
+import {ModularPlantManager} from '../../ModularPlantManager';
+import exp = require('constants');
+
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-describe('Reset', () => {
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
-	const parseJson = require('json-parse-better-errors');
+describe('PiMAdParser', () => {
+    let pimadId='';
+    let modularPlantManager: ModularPlantManager;
+    before(async ()=>{
+            modularPlantManager = new ModularPlantManager();
+            const peaModel = await modularPlantManager.addPEAToPimadPool({source: 'tests/testpea.zip'});
+            pimadId = peaModel.pimadIdentifier;
 
-	describe('static', () => {
-		const emptyOPCUAConnection = new OpcUaConnection('', '');
-		it('should create Reset', async () => { /* TODO: Add Test */
-		});
+    });
+    //TODO: maybe test more
+    it('createPEAOptions', async()=>{
+        const peaOptions = await PiMAdParser.createPEAOptions(pimadId, modularPlantManager);
+        let k: keyof typeof peaOptions;  // Type is "one" | "two" | "three"
+        expect(peaOptions).to.not.empty;
+        for (k in peaOptions) {
+            //TODO: check hmiUrl
+            if(k == 'username'|| k == 'password' || k == 'hmiUrl' ){
+                continue;
+            }else {
+                expect(peaOptions[k]).to.not.empty;
+            }
+        }
 
-	});
-
+    });
 });

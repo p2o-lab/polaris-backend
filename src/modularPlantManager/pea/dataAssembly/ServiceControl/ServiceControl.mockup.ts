@@ -130,6 +130,8 @@ export class ServiceControlMockup extends DataAssemblyControllerMockup{
     protected procedureCur = 0;
     protected procedureReq = 0;
     protected posTextID = 0;
+    protected interactAnswerID = 0;
+    protected interactQuestionID = 0;
 
       constructor(namespace: Namespace, rootNode: UAObject, variableName: string){
           super(namespace, rootNode, variableName);
@@ -311,12 +313,32 @@ export class ServiceControlMockup extends DataAssemblyControllerMockup{
                   },
               },
           });
+          namespace.addVariable({
+              componentOf: this.mockupNode,
+              nodeId: `ns=${namespace.index};s=${variableName}.InteractQuestionID`,
+              browseName: `${variableName}.InteractQuestionID`,
+              dataType: 'UInt32',
+              value: {
+                  get: (): Variant => {
+                      return new Variant({dataType: DataType.UInt32, value: this.interactQuestionID});
+                  },
+              },
+          });
+          namespace.addVariable({
+              componentOf: this.mockupNode,
+              nodeId: `ns=${namespace.index};s=${variableName}.InteractAnswerID`,
+              browseName: `${variableName}.InteractAnswerID`,
+              dataType: 'UInt32',
+              value: {
+                  get: (): Variant => {
+                      return new Variant({dataType: DataType.UInt32, value: this.interactAnswerID});
+                  },
+              },
+          });
       }
-
     public getServiceControlInstanceMockupJSON(){
         return getServiceControlMockupReferenceJSON(
             this.mockupNode.namespaceIndex,
             this.mockupNode.browseName.name as string);
     }
-
 }

@@ -96,12 +96,11 @@ export class OpModeDAMockup {
 	public stateAutOp = false;
 	protected mockupNode: UAObject;
 
-	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
+	constructor(namespace: Namespace, rootNode: UAObject, variableName: string, operationMode?: OperationMode) {
+		//for testing
+		if(operationMode) this.opMode = operationMode;
 
-		this.mockupNode = namespace.addObject({
-			organizedBy: rootNode,
-			browseName: variableName,
-		});
+		this.mockupNode = rootNode;
 
 		namespace.addVariable({
 			componentOf: rootNode,

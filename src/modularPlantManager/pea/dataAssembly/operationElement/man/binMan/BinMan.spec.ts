@@ -25,20 +25,89 @@
 
 import {OpcUaConnection} from '../../../../connection';
 import {BinMan} from './BinMan';
-
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import * as baseDataAssemblyOptions from '../../../../../../../tests/binmanint.json';
+import {DataAssemblyControllerFactory} from '../../../DataAssemblyControllerFactory';
+import {MockupServer} from '../../../../../_utils';
+import {BinManMockup} from '../BinMan/BinMan.mockup';
+import {Namespace, UAObject} from 'node-opcua';
+import {namespaceUrl} from '../../../../../../../tests/namespaceUrl';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('BinMan', () => {
+	const dataAssemblyOptions: DataAssemblyOptions = {
+		name: 'Variable',
+		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperationElement/BinMan',
+		dataItems: baseDataAssemblyOptions
+	};
 
 	describe('static', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
-		it('should create BinMan', async () => { /* TODO: Add Test */
+		it('should create BinMan', () => {
+			//TODO new BinMan()
+			const da1: BinMan = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as BinMan;
+			expect(da1.communication.VOut).to.not.equal(undefined);
+			expect(da1.communication.VState0).to.not.equal(undefined);
+			expect(da1.communication.VState1).to.not.equal(undefined);
+			expect(da1.communication.VMan).to.not.equal(undefined);
+			expect(da1.communication.VRbk).to.not.equal(undefined);
+			expect(da1.communication.VFbk).to.not.equal(undefined);
+			expect(da1.defaultReadDataItem).equal(da1.communication.VOut);
+			expect(da1.defaultReadDataItemType).to.equal('boolean');
+			expect(da1.defaultWriteDataItem).equal(da1.communication.VMan);
+			expect(da1.defaultWriteDataItemType).to.equal('boolean');
+		});
+	});
+	describe('dynamic', () => {
+		let mockupServer: MockupServer;
+		let connection: OpcUaConnection;
+
+		beforeEach(async function () {
+			this.timeout(4000);
+			mockupServer = new MockupServer();
+			await mockupServer.initialize();
+			const mockup = new BinManMockup(
+				mockupServer.namespace as Namespace,
+				mockupServer.rootComponent as UAObject,
+				'Variable');
+			await mockupServer.start();
+			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334','','');
+			await connection.connect();
 		});
 
-	});
+		afterEach(async function () {
+			this.timeout(4000);
+			await connection.disconnect();
+			await mockupServer.shutdown();
+		});
 
+		it('should subscribe successfully', async () => {
+			// set namespaceUrl
+			for (const key in dataAssemblyOptions.dataItems as any) {
+				//skip static values
+				if((typeof(dataAssemblyOptions.dataItems as any)[key] != 'string')){
+					(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
+				}
+			}
+			//TODO new BinMan()
+
+			const da1 = DataAssemblyControllerFactory.create(dataAssemblyOptions, connection) as BinMan;
+			const pv =  da1.subscribe();
+			await connection.startListening();
+			await pv;
+
+			expect(da1.communication.OSLevel.value).to.equal(0);
+
+			expect(da1.communication.VOut.value).to.equal(false);
+			expect(da1.communication.VMan.value).to.equal(false);
+			expect(da1.communication.VRbk.value).to.equal(false);
+			expect(da1.communication.VFbk.value).to.equal(false);
+			expect(da1.communication.VState0.value).to.equal('off');
+			expect(da1.communication.VState1.value).to.equal('on');
+		}).timeout(4000);
+	});
 });

@@ -74,13 +74,10 @@ export class FeedbackMonitoringDAMockup {
 
   constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
 
-    this.mockupNode = namespace.addObject({
-      organizedBy: rootNode,
-      browseName: variableName,
-    });
+    this.mockupNode = rootNode;
 
     namespace.addVariable({
-      componentOf: rootNode,
+      componentOf: this.mockupNode,
       nodeId: `ns=${namespace.index};s=${variableName}.MonEn`,
       browseName: `${variableName}.MonEn`,
       dataType: DataType.Boolean,
@@ -95,7 +92,7 @@ export class FeedbackMonitoringDAMockup {
       },
     });
     namespace.addVariable({
-      componentOf: rootNode,
+      componentOf: this.mockupNode,
       nodeId: `ns=${namespace.index};s=${variableName}.MonSafePos`,
       browseName: `${variableName}.MonSafePos`,
       dataType: DataType.Boolean,
@@ -106,7 +103,7 @@ export class FeedbackMonitoringDAMockup {
       },
     });
     namespace.addVariable({
-      componentOf: rootNode,
+      componentOf: this.mockupNode,
       nodeId: `ns=${namespace.index};s=${variableName}.MonStatErr`,
       browseName: `${variableName}.MonStatErr`,
       dataType: DataType.Boolean,
@@ -117,7 +114,7 @@ export class FeedbackMonitoringDAMockup {
       },
     });
     namespace.addVariable({
-      componentOf: rootNode,
+      componentOf: this.mockupNode,
       nodeId: `ns=${namespace.index};s=${variableName}.MonDynErr`,
       browseName: `${variableName}.MonDynErr`,
       dataType: DataType.Boolean,
@@ -128,7 +125,7 @@ export class FeedbackMonitoringDAMockup {
       },
     });
     namespace.addVariable({
-      componentOf: rootNode,
+      componentOf: this.mockupNode,
       nodeId: `ns=${namespace.index};s=${variableName}.MonStatTi`,
       browseName: `${variableName}.MonStatTi`,
       dataType: DataType.Double,
@@ -139,7 +136,7 @@ export class FeedbackMonitoringDAMockup {
       },
     });
     namespace.addVariable({
-      componentOf: rootNode,
+      componentOf: this.mockupNode,
       nodeId: `ns=${namespace.index};s=${variableName}.MonDynTi`,
       browseName: `${variableName}.MonDynTi`,
       dataType: DataType.Double,

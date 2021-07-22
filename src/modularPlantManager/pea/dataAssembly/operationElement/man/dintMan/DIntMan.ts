@@ -28,7 +28,7 @@ import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {OpcUaConnection, OpcUaDataItem} from '../../../../connection';
 import {
 	ScaleSettingsRuntime,
-	UnitDataAssemblyRuntime,
+	UnitDataAssemblyRuntime, UnitSettings,
 	ValueLimitationRuntime
 } from '../../../_extensions';
 import {OperationElement, OperationElementRuntime} from '../../OperationElement';
@@ -41,6 +41,7 @@ export type DIntManRuntime =
 	& {
 	VOut: OpcUaDataItem<number>;
 	VRbk: OpcUaDataItem<number>;
+	VFbk: OpcUaDataItem<number>;
 	VMan: OpcUaDataItem<number>;
 };
 
@@ -48,18 +49,19 @@ export class DIntMan extends OperationElement {
 	public readonly communication!: DIntManRuntime;
 	public readonly valueLimitation: ValueLimitation;
 	public readonly scaleSettings: ScaleSettings;
+	public readonly unitSettings: UnitSettings;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
 		this.communication.VOut = this.createDataItem('VOut', 'read');
 		this.communication.VRbk = this.createDataItem('VRbk', 'read');
+		this.communication.VFbk = this.createDataItem('VFbk', 'read');
 		this.communication.VMan = this.createDataItem('VMan', 'write');
 
-		this.valueLimitation = new ValueLimitation(this);
-		this.valueLimitation.initialize();
 
+		this.valueLimitation = new ValueLimitation(this);
 		this.scaleSettings = new ScaleSettings(this);
-		this.scaleSettings.initialize();
+		this.unitSettings = new UnitSettings(this);
 
 		this.defaultReadDataItem = this.communication.VOut;
 		this.defaultReadDataItemType = 'number';

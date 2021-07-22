@@ -53,6 +53,7 @@ export class LimitMonitoring {
 
 	constructor(dAController: any) {
 		this.dAController = dAController;
+		this.initialize();
 	}
 
 	initialize(){

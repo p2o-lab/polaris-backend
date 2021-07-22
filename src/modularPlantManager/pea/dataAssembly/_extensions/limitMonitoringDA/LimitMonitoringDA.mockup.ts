@@ -148,11 +148,7 @@ export class LimitMonitoringDAMockup <T extends DataType.Double | DataType.Int32
                         rootNode: UAObject,
                         variableName: string,
                         limDataType: T) {
-
-    this.mockupNode = namespace.addObject({
-      organizedBy: rootNode,
-      browseName: variableName,
-    });
+    this.mockupNode = rootNode;
 
     namespace.addVariable({
       componentOf: rootNode,

@@ -75,10 +75,7 @@ export class InterlockDAMockup {
 
   constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
 
-    this.mockupNode = namespace.addObject({
-      organizedBy: rootNode,
-      browseName: variableName,
-    });
+    this.mockupNode = rootNode;
 
     namespace.addVariable({
       componentOf: rootNode,

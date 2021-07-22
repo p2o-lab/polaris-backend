@@ -37,6 +37,7 @@ export class WQC {
 
 	constructor(dAController: any) {
 		this.dAController = dAController;
+		this.initialize();
 	}
 
 	initialize(){
@@ -50,7 +51,7 @@ export class WQC {
 	}
 
 	get WQC(): number | undefined {
-		if(this.wqc) return this.wqc;
+		if(this.wqc != undefined) return this.wqc;
 		else return this.dAController.communication.WQC.value;
 	}
 }

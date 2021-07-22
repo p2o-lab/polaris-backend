@@ -45,14 +45,15 @@ export function getScaleSettingDAMockupReferenceJSON<T extends 'Float' | 'Int32'
 }
 
 export class ScaleSettingDAMockup<T extends DataType.Double | DataType.Int32> {
-  public readonly vSclMin = 0;
-  public readonly vSclMax = 0;
+  public vSclMin = 0;
+  public vSclMax = 0;
   private readonly type: DataType;
   protected mockupNode: UAObject;
 
   constructor(namespace: Namespace, rootNode: UAObject, variableName: string,  type: T) {
     this.type = type;
     this.mockupNode = rootNode;
+
     namespace.addVariable({
       componentOf: this.mockupNode,
       nodeId: `ns=${namespace.index};s=${variableName}.VSclMin`,

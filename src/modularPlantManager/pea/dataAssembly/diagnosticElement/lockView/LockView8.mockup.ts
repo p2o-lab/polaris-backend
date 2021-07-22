@@ -260,25 +260,25 @@ export class LockView8Mockup extends LockView4Mockup{
 	public in5 = false;
 	public in5QC = 0;
 	public in5Inv = false;
-	public in5Txt = 'textText';
+	public in5Txt = 'testText';
 
 	public in6En = false;
 	public in6 = false;
 	public in6QC = 0;
 	public in6Inv = false;
-	public in6Txt = 'textText';
+	public in6Txt = 'testText';
 
 	public in7En = false;
 	public in7 = false;
 	public in7QC = 0;
 	public in7Inv = false;
-	public in7Txt = 'textText';
+	public in7Txt = 'testText';
 
 	public in8En = false;
 	public in8 = false;
 	public in8QC = 0;
 	public in8Inv = false;
-	public in8Txt = 'textText';
+	public in8Txt = 'testText';
 	
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {

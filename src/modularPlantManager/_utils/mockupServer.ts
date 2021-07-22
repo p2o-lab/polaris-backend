@@ -78,6 +78,7 @@ export class MockupServer {
 
 
 	public async start(): Promise<void> {
+		if(!this.initialized) await this.initialize();
 		await new Promise((resolve) => this.server.start(resolve));
 		catMockupServer.info('server started on port ' + this.port);
 	}

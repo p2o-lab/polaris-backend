@@ -31,6 +31,7 @@ import {OperationElement, OperationElementRuntime} from '../../OperationElement'
 export type BinManRuntime = OperationElementRuntime & {
 	VMan: OpcUaDataItem<boolean>;
 	VRbk: OpcUaDataItem<boolean>;
+	VFbk: OpcUaDataItem<boolean>;
 	VOut: OpcUaDataItem<boolean>;
 	VState0: OpcUaDataItem<string>;
 	VState1: OpcUaDataItem<string>;
@@ -44,6 +45,8 @@ export class BinMan extends OperationElement {
 		super(options, connection);
 		this.communication.VMan = this.createDataItem('VMan', 'write', 'boolean');
 		this.communication.VRbk = this.createDataItem('VRbk', 'read', 'boolean');
+		this.communication.VFbk = this.createDataItem('VFbk', 'read', 'boolean');
+
 		this.communication.VOut = this.createDataItem('VOut', 'read', 'boolean');
 		this.communication.VState0 = this.createDataItem('VState0', 'read', 'string');
 		this.communication.VState1 = this.createDataItem('VState1', 'read', 'string');

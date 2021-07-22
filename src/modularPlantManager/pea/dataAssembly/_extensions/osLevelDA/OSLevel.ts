@@ -37,6 +37,7 @@ export class OSLevel {
 
 	constructor(dAController: any) {
 		this.dAController = dAController;
+		this.initialize();
 	}
 
 	public initialize(){
@@ -50,7 +51,7 @@ export class OSLevel {
 	}
 
 	get OSLevel(): number | undefined {
-		if(this.osLevel) return this.osLevel; //static
+		if(this.osLevel!=undefined) return this.osLevel; //static
 		else return this.dAController.communication.OSLevel.value; //dynamic
 	}
 }

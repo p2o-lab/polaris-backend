@@ -26,9 +26,8 @@
 
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {OpcUaConnection, OpcUaDataItem} from '../../../../connection';
-import {
-	InputElement, InputElementRuntime
-} from '../../InputElement';
+import {InputElement, InputElementRuntime} from '../../InputElement';
+
 
 export type BinProcessValueInRuntime = InputElementRuntime & {
 	VExt: OpcUaDataItem<boolean>;
@@ -42,6 +41,8 @@ export class BinProcessValueIn extends InputElement {
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
 		this.communication.VExt = this.createDataItem('VExt', 'read');
+		this.communication.VState0 = this.createDataItem('VState0','read'); //TODO: Check read, write?
+		this.communication.VState1 = this.createDataItem('VState1','read'); //TODO: Check read, write?
 
 		this.defaultReadDataItem = this.communication.VExt;
 		this.defaultReadDataItemType = 'boolean';

@@ -28,6 +28,8 @@ import {OpcUaDataItem} from '../../../connection';
 import {BaseDataAssemblyRuntime, DataAssemblyController} from '../../DataAssemblyController';
 import {Constructor} from '../_helper';
 import {catDataAssembly} from '../../../../../logging';
+import {AnaServParamMockup} from '../../operationElement/servParam/anaServParam/AnaServParam.mockup';
+import {AnaServParam} from '../../operationElement';
 
 export interface ServiceSourceModeRuntime extends BaseDataAssemblyRuntime {
 	SrcChannel: OpcUaDataItem<boolean>;
@@ -39,17 +41,16 @@ export interface ServiceSourceModeRuntime extends BaseDataAssemblyRuntime {
 	SrcExtOp: OpcUaDataItem<boolean>;
 }
 
-
+// TODO: Maybe rename this class
 export class ServiceSourceModeController{
-
-
 	private dAController: any;
 
 	constructor(dAController: any) {
 		this.dAController = dAController;
+		this.initialize();
 	}
 
-	initialize(){
+	private initialize(){
 		this.dAController.communication.SrcChannel = this.dAController.createDataItem('SrcChannel', 'read', 'boolean');
 
 		this.dAController.communication.SrcExtAut = this.dAController.createDataItem('SrcExtAut', 'read', 'boolean');
@@ -95,7 +96,7 @@ export class ServiceSourceModeController{
 						resolve();
 					}
 				});
-			}
+			} //TODO: add timeout?
 		});
 	}
 

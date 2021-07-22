@@ -36,5 +36,6 @@ export class BinDrv extends Drv {
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
+
 	}
 }

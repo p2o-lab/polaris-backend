@@ -26,9 +26,9 @@
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {OpcUaConnection, OpcUaDataItem} from '../../../../connection';
 import {ServParam, ServParamRuntime} from '../ServParam';
-import {ScaleSettingsRuntime} from '../../../_extensions/scaleSettingsDA/ScaleSettings';
-import {UnitDataAssemblyRuntime} from '../../../_extensions/unitDA/UnitSettings';
-import {ValueLimitationRuntime} from '../../../_extensions/valueLimitationDA/ValueLimitation';
+import {ScaleSettings, ScaleSettingsRuntime} from '../../../_extensions/scaleSettingsDA/ScaleSettings';
+import {UnitDataAssemblyRuntime, UnitSettings} from '../../../_extensions/unitDA/UnitSettings';
+import {ValueLimitation, ValueLimitationRuntime} from '../../../_extensions/valueLimitationDA/ValueLimitation';
 
 export type AnaServParamRuntime = ServParamRuntime & ScaleSettingsRuntime & UnitDataAssemblyRuntime & ValueLimitationRuntime & {
 	VExt: OpcUaDataItem<number>;
@@ -41,9 +41,16 @@ export type AnaServParamRuntime = ServParamRuntime & ScaleSettingsRuntime & Unit
 
 export class AnaServParam extends ServParam {
 	public readonly communication!: AnaServParamRuntime;
+	public readonly scaleSettings: ScaleSettings;
+	public readonly unitSettings: UnitSettings;
+	public readonly valueLimitation: ValueLimitation;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
+
+		this.scaleSettings = new ScaleSettings(this);
+		this.unitSettings = new UnitSettings(this);
+		this.valueLimitation = new ValueLimitation(this);
 
 		this.communication.VExt = this.createDataItem('VExt', 'write', 'number');
 		this.communication.VOp = this.createDataItem('VOp', 'write', 'number');

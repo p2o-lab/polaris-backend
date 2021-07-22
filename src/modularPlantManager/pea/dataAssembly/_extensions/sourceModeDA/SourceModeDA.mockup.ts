@@ -70,20 +70,17 @@ export function getSourceModeDAMockupReferenceJSON(
 }
 
 export class SourceModeDAMockup {
-  protected srcMode: SourceMode = SourceMode.Intern;
-  protected srcChannel = false;
+  srcMode: SourceMode = SourceMode.Intern;
+  public srcChannel = false;
   protected srcManAut = false;
   protected srcIntAut = false;
   protected srcIntOp = false;
   protected srcManOp = false;
   protected mockupNode: UAObject;
 
-
   constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
-    this.mockupNode = namespace.addObject({
-      organizedBy: rootNode,
-      browseName: variableName,
-    });
+
+    this.mockupNode = rootNode;
 
       namespace.addVariable({
         componentOf: rootNode,

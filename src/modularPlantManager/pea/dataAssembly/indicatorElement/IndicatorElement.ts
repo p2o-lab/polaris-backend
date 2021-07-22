@@ -35,13 +35,13 @@ export type IndicatorElementRuntime = BaseDataAssemblyRuntime & WQCRuntime
 
 export class IndicatorElement extends DataAssemblyController {
 	public readonly communication!: IndicatorElementRuntime;
-	wqc: WQC;
+	public readonly wqc: WQC;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
 
 		this.wqc = new WQC(this);
-		this.wqc.initialize();
+
 	}
 
 	public toJson(): ParameterInterface {

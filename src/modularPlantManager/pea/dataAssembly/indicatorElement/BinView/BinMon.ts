@@ -45,7 +45,7 @@ export class BinMon extends BinView {
 		super(options, connection);
 
 		this.osLevel = new OSLevel(this);
-		this.osLevel.initialize();
+		
 
 		this.communication.VFlutTi = this.createDataItem('VFlutTi', 'read', 'number');
 		this.communication.VFlutEn = this.createDataItem('VFlutEn', 'write', 'boolean');

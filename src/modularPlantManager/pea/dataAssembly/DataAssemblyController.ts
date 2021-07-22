@@ -54,22 +54,23 @@ export class DataAssemblyController extends EventEmitter {
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super();
 		this.options = options;
-		this.name = options.name;
-		this.metaModelRef = options.metaModelRef;
-		this.subscriptionActive = false;
-
+		if (!options.dataItems || Object.keys(options.dataItems).length == 0) {
+			throw new Error('Creating DataAssemblyController Error: No Communication variables found in DataAssemblyOptions');
+		}
 		this.connection = connection;
 		if (!this.connection) {
 			throw new Error('Creating DataAssemblyController Error: No OpcUaConnection provided');
 		}
+		this.name = options.name;
+		this.metaModelRef = options.metaModelRef;
+		this.subscriptionActive = false;
 
-		if (!options.dataItems) {
-			throw new Error('Creating DataAssemblyController Error: No Communication variables found in DataAssemblyOptions');
-		}
 		// initialize communication
 		this.communication = {};
 		this.tagName = options.dataItems.TagName;
 		this.tagDescription = options.dataItems.TagDescription;
+
+
 	}
 
 	/**

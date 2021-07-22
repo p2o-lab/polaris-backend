@@ -31,12 +31,22 @@ import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import * as baseDataAssemblyOptions from '../../../../../../tests/dintview.json';
 import {DataAssemblyControllerFactory} from '../../DataAssemblyControllerFactory';
+import {MockupServer} from '../../../../_utils';
+import {BinViewMockup} from '../BinView/BinView.mockup';
+import {Namespace, UAObject} from 'node-opcua';
+import {namespaceUrl} from '../../../../../../tests/namespaceUrl';
+import {BinView} from '../BinView/BinView';
+import {DIntViewMockup} from './DIntView.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('DIntView', () => {
-
+	const dataAssemblyOptions: DataAssemblyOptions = {
+		name: 'Variable',
+		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/DIntView',
+		dataItems: baseDataAssemblyOptions
+	};
 	describe('static', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
 		it('should create DIntView', async () => {
@@ -47,15 +57,57 @@ describe('DIntView', () => {
 			};
 			const da1: DIntView = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as DIntView;
 			expect(da1 instanceof DIntView).to.equal(true);
+			expect(da1.tagName).to.equal('Variable');
+			expect(da1.tagDescription).to.equal('Test');
 			expect(da1.communication.V).to.not.equal(undefined);
 			expect(da1.communication.WQC).to.not.equal(undefined);
 			expect(da1.communication.VSclMax).to.not.equal(undefined);
 			expect(da1.communication.VSclMin).to.not.equal(undefined);
-			expect(da1.tagName).to.not.equal(undefined);
-			expect(da1.tagDescription).to.not.equal(undefined);
 			expect(da1.communication.VUnit).to.not.equal(undefined);
 		});
 
 	});
+	describe('dynamic', () => {
+		let mockupServer: MockupServer;
+		let connection: OpcUaConnection;
 
+		beforeEach(async function () {
+			this.timeout(4000);
+			mockupServer = new MockupServer();
+			await mockupServer.initialize();
+			const mockup = new DIntViewMockup(
+				mockupServer.namespace as Namespace,
+				mockupServer.rootComponent as UAObject,
+				'Variable');
+			await mockupServer.start();
+			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334','','');
+			await connection.connect();
+		});
+
+		afterEach(async function () {
+			this.timeout(4000);
+			await connection.disconnect();
+			await mockupServer.shutdown();
+		});
+
+		it('should subscribe successfully', async () => {
+			// set namespaceUrl
+			for (const key in dataAssemblyOptions.dataItems as any) {
+				//skip static values
+				if((typeof(dataAssemblyOptions.dataItems as any)[key] != 'string')){
+					(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
+				}
+			}
+			const da1: DIntView = new DIntView(dataAssemblyOptions, connection);
+			const pv = da1.subscribe();
+			await connection.startListening();
+			await pv;
+			expect(da1.communication.WQC.value).equal(0);
+			expect(da1.communication.V.value).equal(0);
+			expect(da1.communication.VUnit.value).equal(0);
+			expect(da1.communication.VSclMax.value).equal(0);
+			expect(da1.communication.VSclMin.value).equal(0);
+
+		}).timeout(4000);
+	});
 });

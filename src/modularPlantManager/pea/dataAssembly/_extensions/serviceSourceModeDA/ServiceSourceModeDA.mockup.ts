@@ -80,11 +80,7 @@ export class ServiceSourceModeDAMockup {
 	public readonly  mockupNode: UAObject;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
-
-		this.mockupNode = namespace.addObject({
-			organizedBy: rootNode,
-			browseName: variableName,
-		});
+		this.mockupNode = rootNode;
 
 		namespace.addVariable({
 			componentOf: rootNode,
@@ -206,4 +202,6 @@ export class ServiceSourceModeDAMockup {
 			this.mockupNode.namespaceIndex,
 			this.mockupNode.browseName.name as string);
 	}
+
+
 }

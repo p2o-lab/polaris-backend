@@ -24,24 +24,174 @@
  */
 
 import {OpcUaConnection} from '../../../connection';
-import {LockView16} from './LockView16';
-
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {PEAMockup} from '../../../PEA.mockup';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import * as baseDataAssemblyOptions from '../../../../../../tests/lockview.json';
+import {namespaceUrl} from '../../../../../../tests/namespaceUrl';
+import {MockupServer} from '../../../../_utils';
+import {Namespace, UAObject} from 'node-opcua';
+import {LockView16} from "./LockView16";
+import {LockView16Mockup} from "./LockView16.mockup";
+
+
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('LockView16', () => {
-	const parseJson = require('json-parse-better-errors');
+	const dataAssemblyOptions: DataAssemblyOptions = {
+		name: 'Variable',
+		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/DiagnosticElement/LockView16',
+		dataItems: baseDataAssemblyOptions
+	};
 
 	describe('static', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
 
-		it('should create LockView16', async () => { /* TODO: Add Test */
+		it('should create LockView16', async () => {
+			const da1 = new LockView16(dataAssemblyOptions, emptyOPCUAConnection);
+			expect(da1).to.be.not.undefined;
+			expect(da1.communication).to.be.not.undefined;
+			expect(da1.wqc).to.be.not.undefined;
 		});
 
 	});
+	describe('dynamic', () => {
+		let mockupServer: MockupServer;
+		let connection: OpcUaConnection;
+		// set namespaceUrl
+		for (const key in dataAssemblyOptions.dataItems as any) {
+			//skip static values
+			if((typeof(dataAssemblyOptions.dataItems as any)[key] != 'string')){
+				(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
+			}
+		}
+		beforeEach(async function () {
+			this.timeout(8000);
+			mockupServer = new MockupServer();
+			await mockupServer.initialize();
+			const mockup = new LockView16Mockup(
+				mockupServer.namespace as Namespace,
+				mockupServer.rootComponent as UAObject,
+				'Variable');
 
+			await mockupServer.start();
+			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334','','');
+			await connection.connect();
+		});
+
+		afterEach(async function () {
+			this.timeout(8000);
+			await connection.disconnect();
+			await mockupServer.shutdown();
+		});
+
+		it('should subscribe successfully', async () => {
+			const da1 = new LockView16(dataAssemblyOptions, connection);
+			const pv = da1.subscribe();
+			await connection.startListening();
+			await pv;
+			expect(da1.communication.WQC.value).equal(0);
+			expect(da1.communication.Logic.value).equal(false);
+			expect(da1.communication.Out.value).equal(false);
+			expect(da1.communication.OutQC.value).equal(0);
+
+			expect(da1.communication.In1En.value).equal(false);
+			expect(da1.communication.In1.value).equal(false);
+			expect(da1.communication.In1QC.value).equal(0);
+			expect(da1.communication.In1Inv.value).equal(false);
+			expect(da1.communication.In1Txt.value).equal('testText');
+
+			expect(da1.communication.In2En.value).equal(false);
+			expect(da1.communication.In2.value).equal(false);
+			expect(da1.communication.In2QC.value).equal(0);
+			expect(da1.communication.In2Inv.value).equal(false);
+			expect(da1.communication.In2Txt.value).equal('testText');
+
+			expect(da1.communication.In3En.value).equal(false);
+			expect(da1.communication.In3.value).equal(false);
+			expect(da1.communication.In3QC.value).equal(0);
+			expect(da1.communication.In3Inv.value).equal(false);
+			expect(da1.communication.In3Txt.value).equal('testText');
+
+			expect(da1.communication.In4En.value).equal(false);
+			expect(da1.communication.In4.value).equal(false);
+			expect(da1.communication.In4QC.value).equal(0);
+			expect(da1.communication.In4Inv.value).equal(false);
+			expect(da1.communication.In4Txt.value).equal('testText');
+
+			expect(da1.communication.In5En.value).equal(false);
+			expect(da1.communication.In5.value).equal(false);
+			expect(da1.communication.In5QC.value).equal(0);
+			expect(da1.communication.In5Inv.value).equal(false);
+			expect(da1.communication.In5Txt.value).equal('testText');
+
+			expect(da1.communication.In6En.value).equal(false);
+			expect(da1.communication.In6.value).equal(false);
+			expect(da1.communication.In6QC.value).equal(0);
+			expect(da1.communication.In6Inv.value).equal(false);
+			expect(da1.communication.In6Txt.value).equal('testText');
+
+			expect(da1.communication.In7En.value).equal(false);
+			expect(da1.communication.In7.value).equal(false);
+			expect(da1.communication.In7QC.value).equal(0);
+			expect(da1.communication.In7Inv.value).equal(false);
+			expect(da1.communication.In7Txt.value).equal('testText');
+
+			expect(da1.communication.In8En.value).equal(false);
+			expect(da1.communication.In8.value).equal(false);
+			expect(da1.communication.In8QC.value).equal(0);
+			expect(da1.communication.In8Inv.value).equal(false);
+			expect(da1.communication.In8Txt.value).equal('testText');
+
+			expect(da1.communication.In9En.value).equal(false);
+			expect(da1.communication.In9.value).equal(false);
+			expect(da1.communication.In9QC.value).equal(0);
+			expect(da1.communication.In9Inv.value).equal(false);
+			expect(da1.communication.In9Txt.value).equal('testText');
+
+			expect(da1.communication.In10En.value).equal(false);
+			expect(da1.communication.In10.value).equal(false);
+			expect(da1.communication.In10QC.value).equal(0);
+			expect(da1.communication.In10Inv.value).equal(false);
+			expect(da1.communication.In10Txt.value).equal('testText');
+
+			expect(da1.communication.In11En.value).equal(false);
+			expect(da1.communication.In11.value).equal(false);
+			expect(da1.communication.In11QC.value).equal(0);
+			expect(da1.communication.In11Inv.value).equal(false);
+			expect(da1.communication.In11Txt.value).equal('testText');
+
+			expect(da1.communication.In12En.value).equal(false);
+			expect(da1.communication.In12.value).equal(false);
+			expect(da1.communication.In12QC.value).equal(0);
+			expect(da1.communication.In12Inv.value).equal(false);
+			expect(da1.communication.In12Txt.value).equal('testText');
+
+			expect(da1.communication.In13En.value).equal(false);
+			expect(da1.communication.In13.value).equal(false);
+			expect(da1.communication.In13QC.value).equal(0);
+			expect(da1.communication.In13Inv.value).equal(false);
+			expect(da1.communication.In13Txt.value).equal('testText');
+
+			expect(da1.communication.In14En.value).equal(false);
+			expect(da1.communication.In14.value).equal(false);
+			expect(da1.communication.In14QC.value).equal(0);
+			expect(da1.communication.In14Inv.value).equal(false);
+			expect(da1.communication.In14Txt.value).equal('testText');
+
+			expect(da1.communication.In15En.value).equal(false);
+			expect(da1.communication.In15.value).equal(false);
+			expect(da1.communication.In15QC.value).equal(0);
+			expect(da1.communication.In15Inv.value).equal(false);
+			expect(da1.communication.In15Txt.value).equal('testText');
+
+			expect(da1.communication.In16En.value).equal(false);
+			expect(da1.communication.In16.value).equal(false);
+			expect(da1.communication.In16QC.value).equal(0);
+			expect(da1.communication.In16Inv.value).equal(false);
+			expect(da1.communication.In16Txt.value).equal('testText');
+		}).timeout(8000);
+	});
 });

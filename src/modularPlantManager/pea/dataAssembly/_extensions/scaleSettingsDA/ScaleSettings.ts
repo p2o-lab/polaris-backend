@@ -39,6 +39,7 @@ export class ScaleSettings {
 
 		constructor(dAController: any) {
 			this.dAController = dAController;
+			this.initialize();
 		}
 
 		initialize(){

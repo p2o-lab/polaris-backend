@@ -25,8 +25,7 @@
 
 import {OperationMode} from '@p2olab/polaris-interface';
 import {OpcUaDataItem} from '../../../connection';
-import {BaseDataAssemblyRuntime, DataAssemblyController} from '../../DataAssemblyController';
-import {Constructor} from '../_helper';
+import {BaseDataAssemblyRuntime} from '../../DataAssemblyController';
 import {catDataAssembly} from '../../../../../logging';
 
 export type OpModeRuntime = BaseDataAssemblyRuntime & {
@@ -48,22 +47,23 @@ export class OpModeController {
 
 	constructor(dAController: any) {
 		this.dAController = dAController;
+		this.initialize();
 	}
 
-	initializeOpMode(dAController: any){
-		this.dAController.communication.StateChannel = dAController.createDataItem('StateChannel', 'read', 'boolean');
+	private initialize(){
+		this.dAController.communication.StateChannel = this.dAController.createDataItem('StateChannel', 'read', 'boolean');
 
-		this.dAController.communication.StateOffAut = dAController.createDataItem('StateOffAut', 'read', 'boolean');
-		this.dAController.communication.StateOpAut = dAController.createDataItem('StateOpAut', 'read', 'boolean');
-		this.dAController.communication.StateAutAut = dAController.createDataItem('StateAutAut', 'read', 'boolean');
+		this.dAController.communication.StateOffAut = this.dAController.createDataItem('StateOffAut', 'read', 'boolean');
+		this.dAController.communication.StateOpAut = this.dAController.createDataItem('StateOpAut', 'read', 'boolean');
+		this.dAController.communication.StateAutAut = this.dAController.createDataItem('StateAutAut', 'read', 'boolean');
 
-		this.dAController.communication.StateOffOp = dAController.createDataItem('StateOffOp', 'write', 'boolean');
-		this.dAController.communication.StateOpOp = dAController.createDataItem('StateOpOp', 'write', 'boolean');
-		this.dAController.communication.StateAutOp = dAController.createDataItem('StateAutOp', 'write', 'boolean');
+		this.dAController.communication.StateOffOp = this.dAController.createDataItem('StateOffOp', 'write', 'boolean');
+		this.dAController.communication.StateOpOp = this.dAController.createDataItem('StateOpOp', 'write', 'boolean');
+		this.dAController.communication.StateAutOp = this.dAController.createDataItem('StateAutOp', 'write', 'boolean');
 
-		this.dAController.communication.StateOffAct = dAController.createDataItem('StateOffAct', 'read', 'boolean');
-		this.dAController.communication.StateOpAct = dAController.createDataItem('StateOpAct', 'read', 'boolean');
-		this.dAController.communication.StateAutAct = dAController.createDataItem('StateAutAct', 'read', 'boolean');
+		this.dAController.communication.StateOffAct = this.dAController.createDataItem('StateOffAct', 'read', 'boolean');
+		this.dAController.communication.StateOpAct = this.dAController.createDataItem('StateOpAct', 'read', 'boolean');
+		this.dAController.communication.StateAutAct = this.dAController.createDataItem('StateAutAct', 'read', 'boolean');
 	}
 
 	public getOperationMode(): OperationMode {

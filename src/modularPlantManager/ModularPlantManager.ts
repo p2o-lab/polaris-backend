@@ -49,7 +49,7 @@ import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import PiMAdResponse = Backbone.PiMAdResponse;
 import { v4 as uuidv4 } from 'uuid';
-import {PiMAdParser} from './PiMAdParser';
+import {PiMAdParser} from './pea/PiMAdParser/PiMAdParser';
 import {ProcedureOptions} from '@p2olab/polaris-interface/dist/service/options';
 
 
@@ -142,12 +142,12 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 	 * @param callback Response from PiMad...
 	 */
 	public getPEAFromPimadPool(pimadIdentifier: string): Promise<PEAModel>{
-		return new Promise<PEAModel>(resolve => {
+		return new Promise<PEAModel>((resolve,reject) => {
 			this.pimadPool.getPEA(pimadIdentifier, (response: PiMAdResponse) => {
 				if(response.getMessage()=='Success!') {
 					const peaModel = response.getContent() as PEAModel;
 					resolve(peaModel);
-				} else throw new Error('PiMAdPEA not found!');
+				} else reject(new Error(response.getMessage()));
 			});
 		});
 	}
@@ -158,20 +158,25 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 	 * @param peaId	Pimad-Identifier
 	 * @param callback Response from PiMad...
 	 */
-	public deletePEAFromPimadPool(peaId: string, callback: (response: PiMAdResponse) => void) {
-		this.pimadPool.deletePEA(peaId,(response: PiMAdResponse) => {
-				callback(response);
+	public deletePEAFromPimadPool(peaId: string): Promise<void> {
+		return new Promise((resolve,reject)=> {
+			this.pimadPool.deletePEA(peaId,(response: PiMAdResponse) => {
+				if(response.getMessage()=='Success!') resolve();
+				else reject(new Error(response.getMessage()));
+			});
 		});
 	}
 
 	/**
 	 * Get All PEAs from PiMAd-Pool
-	 * //TODO: use more convenient Promise
-	 * @param callback - contains a list of PEAs
+	 * @return {Promise<PEAModel[]>}
 	 */
-	public getAllPEAsFromPimadPool(callback: (response: PiMAdResponse) => void){
-		this.pimadPool.getAllPEAs((response: PiMAdResponse) => {
-			callback(response);
+	public getAllPEAsFromPimadPool(): Promise<PEAModel[]>{
+		return new Promise((resolve, reject)=>{
+			this.pimadPool.getAllPEAs((response: PiMAdResponse) => {
+				if(response.getMessage()=='Success!') resolve(response.getContent() as PEAModel[]);
+				else reject(new Error((response.getMessage())));
+			});
 		});
 	}
 
@@ -179,12 +184,14 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 	 * add PEAController to PiMaD-Pool by given filepath
 	 *  //TODO: use more convenient Promise
 	 * @param filePath - filepath of the uploaded file in /uploads
-	 * @param callback - contains Success or Failure Message
 	 */
-	public addPEAToPimadPool(filePath: { source: string}, callback: (response: PiMAdResponse) => void) {
-		this.pimadPool.addPEA(filePath, (response: PiMAdResponse) => {
-				callback(response);
+	public addPEAToPimadPool(filePath: { source: string}): Promise<PEAModel>{
+		return new Promise<PEAModel>((resolve, reject)=>{
+			this.pimadPool.addPEA(filePath, (response: PiMAdResponse) => {
+				if(response.getMessage() == 'Success!') resolve(response.getContent() as PEAModel);
+				else reject(new Error(response.getMessage()));
 			});
+		});
 	}
 
 	/**

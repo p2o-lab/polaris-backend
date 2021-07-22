@@ -44,20 +44,16 @@ export type ServParamRuntime = OperationElementRuntime & OpModeRuntime & Service
 export class ServParam extends OperationElement {
 	//TODO: check accessablity? (private, readonly, public?)
 	public readonly communication!: ServParamRuntime;
-	serviceSourceMode: ServiceSourceModeController;
-	opMode: OpModeController;
+	public readonly serviceSourceMode: ServiceSourceModeController;
+	public readonly serviceOpMode: OpModeController;
 	public readonly wqc: WQC;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
 		this.wqc = new WQC(this);
-		this.wqc.initialize();
 
 		this.serviceSourceMode = new ServiceSourceModeController(this);
-		this.serviceSourceMode.initialize();
-
-		this.opMode = new OpModeController(this);
-		this.opMode.initializeOpMode(this);
+		this.serviceOpMode = new OpModeController(this);
 
 		this.communication.Sync = this.createDataItem('Sync', 'read', 'boolean');
 	}

@@ -24,9 +24,19 @@
  */
 
 import {OpcUaConnection} from '../../connection';
-
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import * as baseDataAssemblyOptions from '../../../../../tests/anaview.json';
+import * as baseDataAssemblyOptionsStatic from '../../../../../tests/binmon_static.json';
+
+import {IndicatorElement} from './IndicatorElement';
+import {MockupServer} from '../../../_utils';
+import {Namespace, UAObject} from 'node-opcua';
+import {namespaceUrl} from '../../../../../tests/namespaceUrl';
+import {IndicatorElementMockup} from './IndicatorElement.mockup';
+import {AnaViewMockup} from './AnaView/AnaView.mockup';
+import {AnaView} from './AnaView/AnaView';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -35,9 +45,69 @@ describe('IndicatorElement', () => {
 
 	describe('static', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
-		it('should create IndicatorElement', async () => { /* TODO: Add Test */
+		it('should create IndicatorElement, static WQC', () => {
+			const dataAssemblyOptions: DataAssemblyOptions = {
+				name: 'Variable',
+				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/BinMon',
+				dataItems: baseDataAssemblyOptionsStatic
+			};
+			const da1 = new IndicatorElement(dataAssemblyOptions, emptyOPCUAConnection) ;
+			expect(da1.communication.WQC).to.equal(undefined);
+			expect(da1.wqc.WQC).to.equal(0);
 		});
-
+		it('should create IndicatorElement, dynamic WQC', () => {
+			const dataAssemblyOptions: DataAssemblyOptions = {
+				name: 'Variable',
+				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/BinMon',
+				dataItems: baseDataAssemblyOptions
+			};
+			const da1 = new IndicatorElement(dataAssemblyOptions, emptyOPCUAConnection) ;
+			expect(da1.communication.WQC).to.not.be.undefined;
+			expect(da1.wqc.WQC).to.be.undefined;
+		});
 	});
 
+	describe('dynamic', () => {
+		let mockupServer: MockupServer;
+		let connection: OpcUaConnection;
+		const dataAssemblyOptions: DataAssemblyOptions = {
+			name: 'Variable',
+			metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/BinMon',
+			dataItems: baseDataAssemblyOptions
+		};
+		// set namespaceUrl
+		for (const key in dataAssemblyOptions.dataItems as any) {
+			//skip static values
+			if((typeof(dataAssemblyOptions.dataItems as any)[key] != 'string')){
+				(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
+			}
+		}
+		beforeEach(async function () {
+			this.timeout(4000);
+			mockupServer = new MockupServer();
+			await mockupServer.initialize();
+			const mockup = new IndicatorElementMockup(
+				mockupServer.namespace as Namespace,
+				mockupServer.rootComponent as UAObject,
+				'Variable');
+
+			await mockupServer.start();
+			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334','','');
+			await connection.connect();
+		});
+
+		afterEach(async function () {
+			this.timeout(4000);
+			await connection.disconnect();
+			await mockupServer.shutdown();
+		});
+
+		it('should subscribe successfully', async () => {
+			const da1 = new IndicatorElement(dataAssemblyOptions, connection);
+			const pv = da1.subscribe();
+			await connection.startListening();
+			await pv;
+			expect(da1.communication.WQC.value).equal(0);
+		}).timeout(4000);
+	});
 });

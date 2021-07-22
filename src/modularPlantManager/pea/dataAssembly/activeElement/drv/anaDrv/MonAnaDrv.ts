@@ -26,7 +26,7 @@
 
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {OpcUaConnection, OpcUaDataItem} from '../../../../connection';
-import {FeedbackMonitoringRuntime} from '../../../_extensions';
+import {FeedbackMonitoring, FeedbackMonitoringRuntime} from '../../../_extensions';
 import {AnaDrv, AnaDrvRuntime} from './AnaDrv';
 
 export type MonAnaDrvRuntime = AnaDrvRuntime & FeedbackMonitoringRuntime & {
@@ -42,14 +42,19 @@ export type MonAnaDrvRuntime = AnaDrvRuntime & FeedbackMonitoringRuntime & {
 
 export class MonAnaDrv extends AnaDrv {
 	public readonly communication!: MonAnaDrvRuntime;
+	public readonly feedbackMonitoring: FeedbackMonitoring;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
+
+		this.feedbackMonitoring = new FeedbackMonitoring(this);
+
 		this.communication.RpmErr = this.createDataItem('RpmErr', 'read') as OpcUaDataItem<number>;
 
 		this.communication.RpmAHEn = this.createDataItem('RpmAHEn', 'read',);
 		this.communication.RpmAHLim = this.createDataItem('RpmAHLim', 'write');
 		this.communication.RpmAHAct = this.createDataItem('RpmAHAct', 'read');
+
 		this.communication.RpmALEn = this.createDataItem('RpmALEn', 'read');
 		this.communication.RpmALLim = this.createDataItem('RpmALLim', 'write');
 		this.communication.RpmALAct = this.createDataItem('RpmALAct', 'read');
