@@ -41,6 +41,7 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
 import {PEAMockup} from '../../PEA.mockup';
+import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -63,16 +64,16 @@ describe('ServiceControl', () => {
 			expect(da1 instanceof ServiceControl).to.equal(true);
 			expect(da1.communication.CommandExt).to.not.equal(undefined);
 			expect(da1.communication.WQC).to.not.equal(undefined);
-			expect(da1.communication.TagName).to.equal(undefined);
+			expect(da1.tagName).to.equal(undefined);
 		});
 
 		it('should have correct check for ServiceControl', async () => {
 			const daOptions: ServiceControlOptions = parseJson(fs.readFileSync(
 				'assets/ModularAutomation/PEA_Reference/MTPContent/Json/DataAssemblyController/ServiceControl.json',
 				'utf8'), null, 60);
-			daOptions.TagName.value = 'a';
-			daOptions.TagDescription.value = 'b';
-			daOptions.OSLevel.value = 0;
+			daOptions.TagName = 'a';
+			daOptions.TagDescription = 'b';
+			(daOptions.OSLevel as OpcUaNodeOptions).value = 0;
 			daOptions.WQC.value = 0;
 			daOptions.CommandOp.value = 0;
 			daOptions.CommandExt.value = 0;

@@ -26,30 +26,14 @@
 // eslint-disable-next-line no-undef
 import Timeout = NodeJS.Timeout;
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {getOpModeDAMockupReferenceJSON, OpModeDAMockup} from '../../../_extensions/opModeDA/OpModeDA.mockup';
-import {
-	getServiceSourceModeDAMockupReferenceJSON,
-	ServiceSourceModeDAMockup
-} from '../../../_extensions/serviceSourceModeDA/ServiceSourceModeDA.mockup';
-import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../../_extensions/wqcDA/WQCDA.mockup';
-import {DataAssemblyMockup, getDataAssemblyMockupReferenceJSON} from '../../../DataAssembly.mockup';
-import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../../../_extensions/osLevelDA/OSLevelDA.mockup';
+import {getServParamMockupReferenceJSON, ServParamMockup} from '../ServParam.mockup';
 
 export function getStringServParamMockupReferenceJSON(
-	namespace = 1,
-	objectBrowseName = 'P2OGalaxy') {
+	namespace: number,
+	objectBrowseName: string) {
 
 	return ({
-			...getDataAssemblyMockupReferenceJSON(namespace,objectBrowseName),
-			...getOSLevelDAMockupReferenceJSON(namespace,objectBrowseName),
-			...getOpModeDAMockupReferenceJSON(namespace,objectBrowseName),
-			...getServiceSourceModeDAMockupReferenceJSON(namespace,objectBrowseName),
-			...getWQCDAMockupReferenceJSON(namespace,objectBrowseName),
-			Sync: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.Sync`,
-				dataType: 'Boolean'
-			},
+			...getServParamMockupReferenceJSON(namespace, objectBrowseName),
 			VExt: {
 				namespaceIndex: `${namespace}`,
 				nodeId: `${objectBrowseName}.VExt`,
@@ -84,41 +68,23 @@ export function getStringServParamMockupReferenceJSON(
 	);
 }
 
-export class StringServParamMockup {
-
-	public readonly name: string;
+export class StringServParamMockup extends ServParamMockup{
+	
 	protected vExt = '';
 	protected vOp = '';
 	protected vInt = '';
 	protected vReq = '';
 	protected vOut = '';
 	protected vFbk = '';
-	public readonly dataAssembly: DataAssemblyMockup;
-	public readonly osLevel: OSLevelDAMockup;
-	public readonly opMode: OpModeDAMockup;
-	public readonly serviceSourceMode: ServiceSourceModeDAMockup;
-	public readonly wqc: WQCDAMockup;
+	
 	protected interval: Timeout | undefined;
-	protected mockupNode: UAObject;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
-
-		this.name = variableName;
-
-		this.mockupNode = namespace.addObject({
-			organizedBy: rootNode,
-			browseName: variableName
-		});
-
-		this.dataAssembly = new DataAssemblyMockup(namespace, this.mockupNode, this.name);
-		this.osLevel = new OSLevelDAMockup(namespace, this.mockupNode, this.name);
-		this.opMode = new OpModeDAMockup(namespace, this.mockupNode, this.name);
-		this.serviceSourceMode = new ServiceSourceModeDAMockup(namespace, this.mockupNode, this.name);
-		this.wqc = new WQCDAMockup(namespace, this.mockupNode, this.name);
+		super(namespace,rootNode,variableName);
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VExt`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VExt`,
 			browseName: `${variableName}.VExt`,
 			dataType: DataType.String,
 			value: {
@@ -133,7 +99,7 @@ export class StringServParamMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VOp`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VOp`,
 			browseName: `${variableName}.VOp`,
 			dataType: DataType.String,
 			value: {
@@ -148,7 +114,7 @@ export class StringServParamMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VInt`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VInt`,
 			browseName: `${variableName}.VInt`,
 			dataType: DataType.String,
 			value: {
@@ -159,7 +125,7 @@ export class StringServParamMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VReq`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VReq`,
 			browseName: `${variableName}.VReq`,
 			dataType: DataType.String,
 			value: {
@@ -170,7 +136,7 @@ export class StringServParamMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VOut`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VOut`,
 			browseName: `${variableName}.VOut`,
 			dataType: DataType.String,
 			value: {
@@ -181,7 +147,7 @@ export class StringServParamMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VFbk`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VFbk`,
 			browseName: `${variableName}.VFbk`,
 			dataType: DataType.String,
 			value: {
@@ -196,7 +162,7 @@ export class StringServParamMockup {
 	public getStringServParamMockupJSON() {
 		return getStringServParamMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name || 'UnqualifiedName');
+			this.mockupNode.browseName.name as string);
 	}
 
 	public startCurrentTimeUpdate(): void {
@@ -208,6 +174,8 @@ export class StringServParamMockup {
 	public stopCurrentTimeUpdate(): void {
 		if (this.interval) {
 			global.clearInterval(this.interval);
+		}else {
+			throw new Error('No interval defined.');
 		}
 	}
 }

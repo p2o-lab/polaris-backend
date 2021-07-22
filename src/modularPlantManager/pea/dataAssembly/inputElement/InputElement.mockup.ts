@@ -25,39 +25,31 @@
 
 import {Namespace, UAObject} from 'node-opcua';
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../_extensions/wqcDA/WQCDA.mockup';
-import {getDataAssemblyMockupReferenceJSON} from '../DataAssembly.mockup';
+import {DataAssemblyControllerMockup} from '../DataAssemblyController.mockup';
 
 export function getInputElementMockupReferenceJSON(
-	namespace = 1,
-	objectBrowseName = 'P2OGalaxy') {
+	namespace: number,
+	objectBrowseName: string) {
 	return (
 		{
-			...getDataAssemblyMockupReferenceJSON(namespace, objectBrowseName),
 			...getWQCDAMockupReferenceJSON(namespace, objectBrowseName)
 		}
 	);
 }
 
-export class InputElementMockup {
+export class InputElementMockup extends DataAssemblyControllerMockup{
 
-	public readonly name: string;
-	public wqc: WQCDAMockup;
-	protected mockupNode: UAObject;
+	public readonly wqc: WQCDAMockup;
 
-	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
-
-		this.name = variableName;
-
-		this.mockupNode = namespace.addObject({
-			organizedBy: rootNode,
-			browseName: variableName
-		});
+	constructor(namespace: Namespace, rootNode: UAObject, variableName: string){
+		super(namespace, rootNode, variableName);
 		this.wqc = new WQCDAMockup(namespace, this.mockupNode, this.name);
+
 	}
 
 	public getInputElementInstanceMockupJSON() {
 		return getInputElementMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name || 'UnqualifiedName');
+			this.mockupNode.browseName.name as string);
 	}
 }

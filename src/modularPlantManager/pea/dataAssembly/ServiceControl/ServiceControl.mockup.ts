@@ -24,7 +24,6 @@
  */
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {BaseDataAssemblyOptions} from '@p2olab/polaris-interface';
 import {getOpModeDAMockupReferenceJSON, OpModeDAMockup} from '../_extensions/opModeDA/OpModeDA.mockup';
 import {
     getServiceSourceModeDAMockupReferenceJSON,
@@ -32,15 +31,15 @@ import {
 } from '../_extensions/serviceSourceModeDA/ServiceSourceModeDA.mockup';
 import {ServiceMtpCommand} from '../../serviceSet/service/enum';
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../_extensions/wqcDA/WQCDA.mockup';
-import {getDataAssemblyMockupReferenceJSON} from '../DataAssembly.mockup';
 import {getOSLevelDAMockupReferenceJSON} from '../_extensions/osLevelDA/OSLevelDA.mockup';
+import {DataAssemblyControllerMockup} from '../DataAssemblyController.mockup';
 
 export function getServiceControlMockupReferenceJSON(
-    namespace = 1,
-    objectBrowseName = `${namespace}`) {
+    namespace: number,
+    objectBrowseName: string) {
   return (
       {
-          ...getDataAssemblyMockupReferenceJSON(namespace,objectBrowseName),
+          
           ...getWQCDAMockupReferenceJSON(namespace,objectBrowseName),
           ...getOSLevelDAMockupReferenceJSON(namespace,objectBrowseName),
           ...getServiceSourceModeDAMockupReferenceJSON(namespace,objectBrowseName),
@@ -113,13 +112,9 @@ export function getServiceControlMockupReferenceJSON(
       });
 }
 
-export abstract class ServiceControlMockup {
-    protected tagName = '';
-    protected tagDescription = '';
-    protected dataAssemblyNode: UAObject;
-
-    protected serviceSourceMode: ServiceSourceModeDAMockup;
-    protected operationMode: OpModeDAMockup;
+export class ServiceControlMockup extends DataAssemblyControllerMockup{
+    public serviceSourceMode: ServiceSourceModeDAMockup;
+    public operationMode: OpModeDAMockup;
     protected wqc: WQCDAMockup;
 
     protected commandOp = 0;
@@ -131,203 +126,197 @@ export abstract class ServiceControlMockup {
     protected procedureExt = 0;
 
     protected stateCur = 0;
-    protected commandEn = 0;
+    commandEn = 0;
     protected procedureCur = 0;
     protected procedureReq = 0;
     protected posTextID = 0;
 
-  protected constructor(namespace: Namespace, rootNode: UAObject, variableName: string, tagName?: string, tagDescription?: string) {
-    this.tagName = tagName || 'No TagName available!';
-    this.tagDescription = tagDescription || 'No TagDescription available!';
-    this.dataAssemblyNode = namespace.addObject({
-      organizedBy: rootNode,
-      browseName: variableName,
-    });
+      constructor(namespace: Namespace, rootNode: UAObject, variableName: string){
+          super(namespace, rootNode, variableName);
+          this.operationMode = new OpModeDAMockup(namespace, this.mockupNode, variableName);
+          this.serviceSourceMode = new ServiceSourceModeDAMockup(namespace, this.mockupNode, variableName);
+          this.wqc = new WQCDAMockup(namespace, this.mockupNode, variableName);
 
-      this.operationMode = new OpModeDAMockup(namespace, this.dataAssemblyNode, variableName);
-      this.serviceSourceMode = new ServiceSourceModeDAMockup(namespace, this.dataAssemblyNode, variableName);
-      this.wqc = new WQCDAMockup(namespace, this.dataAssemblyNode, variableName);
-
-      namespace.addVariable({
-          componentOf: this.dataAssemblyNode,
-          nodeId: `ns=${namespace};s=${variableName}.CommandOp`,
-          browseName: `${variableName}.CommandOp`,
-          dataType: 'UInt32',
-          value: {
-              get: (): Variant => {
-                  return new Variant({dataType: DataType.UInt32, value: this.commandOp});
-              },
-              set: (variant: Variant) => {
-                  const reqCommandOp = parseInt(variant.value, 10);
-                  if(!Object.values(ServiceMtpCommand).includes(reqCommandOp)) {
+          namespace.addVariable({
+              componentOf: this.mockupNode,
+              nodeId: `ns=${namespace.index};s=${variableName}.CommandOp`,
+              browseName: `${variableName}.CommandOp`,
+              dataType: 'UInt32',
+              value: {
+                  get: (): Variant => {
+                      return new Variant({dataType: DataType.UInt32, value: this.commandOp});
+                  },
+                  set: (variant: Variant) => {
+                      const reqCommandOp = parseInt(variant.value, 10);
+                      if(!Object.values(ServiceMtpCommand).includes(reqCommandOp)) {
+                          return StatusCodes.BadInvalidArgument;
+                      }
+                      if(this.operationMode.stateOpAct){
+                          if(this.commandEn===reqCommandOp){
+                              this.commandOp = reqCommandOp;
+                              return StatusCodes.Good;
+                          }
+                      }
+                      this.commandOp = ServiceMtpCommand.UNDEFINED;
                       return StatusCodes.BadInvalidArgument;
-                  }
-                  if(this.operationMode.stateOpAct){
-                      if((reqCommandOp & this.commandEn)===reqCommandOp){
-                          this.commandOp = reqCommandOp;
+                  },
+              },
+          });
+          namespace.addVariable({
+              componentOf: this.mockupNode,
+              nodeId: `ns=${namespace.index};s=${variableName}.CommandInt`,
+              browseName: `${variableName}.CommandInt`,
+              dataType: 'UInt32',
+              value: {
+                  get: (): Variant => {
+                      return new Variant({dataType: DataType.UInt32, value: this.commandInt});
+                  },
+              },
+          });
+          namespace.addVariable({
+              componentOf: this.mockupNode,
+              nodeId: `ns=${namespace.index};s=${variableName}.CommandExt`,
+              browseName: `${variableName}.CommandExt`,
+              dataType: 'UInt32',
+              value: {
+                  get: (): Variant => {
+                      return new Variant({dataType: DataType.UInt32, value: this.commandExt});
+                  },
+                  set: (variant: Variant) => {
+                      const reqCommandExt = parseInt(variant.value, 10);
+                      if(!Object.values(ServiceMtpCommand).includes(reqCommandExt)) {
+                          return StatusCodes.BadInvalidArgument;
+                      }
+                      if(this.operationMode.stateAutAct && this.serviceSourceMode.srcExtAct){
+                          if(this.commandEn===reqCommandExt){
+                              this.commandExt = reqCommandExt;
+                              return StatusCodes.Good;
+                          }
+                      }
+                      this.commandExt = ServiceMtpCommand.UNDEFINED;
+                      return StatusCodes.BadInvalidArgument;
+                  },
+              },
+          });
+
+          namespace.addVariable({
+              componentOf: this.mockupNode,
+              nodeId: `ns=${namespace.index};s=${variableName}.ProcedureOp`,
+              browseName: `${variableName}.ProcedureOp`,
+              dataType: 'UInt32',
+              value: {
+                  get: (): Variant => {
+                      return new Variant({dataType: DataType.UInt32, value: this.procedureOp});
+                  },
+                  set: (variant: Variant) => {
+                      const reqProcedureOp = parseInt(variant.value, 10);
+                      if(this.operationMode.stateOpAct){
+                          // TODO: check if procedure is valid
+                          this.procedureOp = reqProcedureOp;
                           return StatusCodes.Good;
                       }
-                  }
-                  this.commandOp = ServiceMtpCommand.UNDEFINED;
-                  return StatusCodes.BadInvalidArgument;
-              },
-          },
-      });
-      namespace.addVariable({
-          componentOf: this.dataAssemblyNode,
-          nodeId: `ns=${namespace};s=${variableName}.CommandInt`,
-          browseName: `${variableName}.CommandInt`,
-          dataType: 'UInt32',
-          value: {
-              get: (): Variant => {
-                  return new Variant({dataType: DataType.UInt32, value: this.commandInt});
-              },
-          },
-      });
-      namespace.addVariable({
-          componentOf: this.dataAssemblyNode,
-          nodeId: `ns=${namespace};s=${variableName}.CommandExt`,
-          browseName: `${variableName}.CommandExt`,
-          dataType: 'UInt32',
-          value: {
-              get: (): Variant => {
-                  return new Variant({dataType: DataType.UInt32, value: this.commandExt});
-              },
-              set: (variant: Variant) => {
-                  const reqCommandExt = parseInt(variant.value, 10);
-                  if(!Object.values(ServiceMtpCommand).includes(reqCommandExt)) {
                       return StatusCodes.BadInvalidArgument;
-                  }
-                  if(this.operationMode.stateAutAct && this.serviceSourceMode.srcExtAct){
-                      if((reqCommandExt & this.commandEn)===reqCommandExt){
-                          this.commandExt = reqCommandExt;
+                  },
+              },
+          });
+          namespace.addVariable({
+              componentOf: this.mockupNode,
+              nodeId: `ns=${namespace.index};s=${variableName}.ProcedureInt`,
+              browseName: `${variableName}.ProcedureInt`,
+              dataType: 'UInt32',
+              value: {
+                  get: (): Variant => {
+                      return new Variant({dataType: DataType.UInt32, value: this.procedureInt});
+                  },
+              },
+          });
+
+          namespace.addVariable({
+              componentOf: this.mockupNode,
+              nodeId: `ns=${namespace.index};s=${variableName}.ProcedureExt`,
+              browseName: `${variableName}.ProcedureExt`,
+              dataType: 'UInt32',
+              value: {
+                  get: (): Variant => {
+                      return new Variant({dataType: DataType.UInt32, value: this.procedureExt});
+                  },
+                  set: (variant: Variant) => {
+                      const reqProcedureExt = parseInt(variant.value, 10);
+                      if(this.operationMode.stateAutAct && this.serviceSourceMode.srcExtAct){
+                          // TODO: check if procedure is valid
+                          this.procedureExt = reqProcedureExt;
                           return StatusCodes.Good;
                       }
-                  }
-                  this.commandExt = ServiceMtpCommand.UNDEFINED;
-                  return StatusCodes.BadInvalidArgument;
+                      return StatusCodes.BadInvalidArgument;
+                  },
               },
-          },
-      });
+          });
 
-      namespace.addVariable({
-          componentOf: this.dataAssemblyNode,
-          nodeId: `ns=${namespace};s=${variableName}.ProcedureOp`,
-          browseName: `${variableName}.ProcedureOp`,
-          dataType: 'UInt32',
-          value: {
-              get: (): Variant => {
-                  return new Variant({dataType: DataType.UInt32, value: this.procedureOp});
+          namespace.addVariable({
+              componentOf: this.mockupNode,
+              nodeId: `ns=${namespace.index};s=${variableName}.StateCur`,
+              browseName: `${variableName}.StateCur`,
+              dataType: 'UInt32',
+              value: {
+                  get: (): Variant => {
+                      return new Variant({dataType: DataType.UInt32, value: this.stateCur});
+                  },
               },
-              set: (variant: Variant) => {
-                  const reqProcedureOp = parseInt(variant.value, 10);
-                  if(this.operationMode.stateOpAct){
-                      // TODO: check if procedure is valid
-                      this.procedureOp = reqProcedureOp;
-                      return StatusCodes.Good;
-                  }
-                  return StatusCodes.BadInvalidArgument;
-              },
-          },
-      });
-      namespace.addVariable({
-          componentOf: this.dataAssemblyNode,
-          nodeId: `ns=${namespace};s=${variableName}.ProcedureInt`,
-          browseName: `${variableName}.ProcedureInt`,
-          dataType: 'UInt32',
-          value: {
-              get: (): Variant => {
-                  return new Variant({dataType: DataType.UInt32, value: this.procedureInt});
-              },
-          },
-      });
+          });
 
-      namespace.addVariable({
-          componentOf: this.dataAssemblyNode,
-          nodeId: `ns=${namespace};s=${variableName}.ProcedureExt`,
-          browseName: `${variableName}.ProcedureExt`,
-          dataType: 'UInt32',
-          value: {
-              get: (): Variant => {
-                  return new Variant({dataType: DataType.UInt32, value: this.procedureExt});
+          namespace.addVariable({
+              componentOf: this.mockupNode,
+              nodeId: `ns=${namespace.index};s=${variableName}.CommandEn`,
+              browseName: `${variableName}.CommandEn`,
+              dataType: 'UInt32',
+              value: {
+                  get: (): Variant => {
+                      return new Variant({dataType: DataType.UInt32, value: this.commandEn});
+                  },
               },
-              set: (variant: Variant) => {
-                  const reqProcedureExt = parseInt(variant.value, 10);
-                  if(this.operationMode.stateAutAct && this.serviceSourceMode.srcExtAct){
-                      // TODO: check if procedure is valid
-                      this.procedureExt = reqProcedureExt;
-                      return StatusCodes.Good;
-                  }
-                  return false;
+          });
+
+          namespace.addVariable({
+              componentOf: this.mockupNode,
+              nodeId: `ns=${namespace.index};s=${variableName}.ProcedureCur`,
+              browseName: `${variableName}.ProcedureCur`,
+              dataType: 'UInt32',
+              value: {
+                  get: (): Variant => {
+                      return new Variant({dataType: DataType.UInt32, value: this.procedureCur});
+                  },
               },
-          },
-      });
+          });
 
-      namespace.addVariable({
-          componentOf: this.dataAssemblyNode,
-          nodeId: `ns=${namespace};s=${variableName}.StateCur`,
-          browseName: `${variableName}.StateCur`,
-          dataType: 'UInt32',
-          value: {
-              get: (): Variant => {
-                  return new Variant({dataType: DataType.UInt32, value: this.stateCur});
+          namespace.addVariable({
+              componentOf: this.mockupNode,
+              nodeId: `ns=${namespace.index};s=${variableName}.ProcedureReq`,
+              browseName: `${variableName}.ProcedureReq`,
+              dataType: 'UInt32',
+              value: {
+                  get: (): Variant => {
+                      return new Variant({dataType: DataType.UInt32, value: this.procedureReq});
+                  },
               },
-          },
-      });
+          });
 
-      namespace.addVariable({
-          componentOf: this.dataAssemblyNode,
-          nodeId: `ns=${namespace};s=${variableName}.CommandEn`,
-          browseName: `${variableName}.CommandEn`,
-          dataType: 'UInt32',
-          value: {
-              get: (): Variant => {
-                  return new Variant({dataType: DataType.UInt32, value: this.commandEn});
+          namespace.addVariable({
+              componentOf: this.mockupNode,
+              nodeId: `ns=${namespace.index};s=${variableName}.PosTextID`,
+              browseName: `${variableName}.PosTextID`,
+              dataType: 'UInt32',
+              value: {
+                  get: (): Variant => {
+                      return new Variant({dataType: DataType.UInt32, value: this.posTextID});
+                  },
               },
-          },
-      });
+          });
+      }
 
-      namespace.addVariable({
-          componentOf: this.dataAssemblyNode,
-          nodeId: `ns=${namespace};s=${variableName}.ProcedureCur`,
-          browseName: `${variableName}.ProcedureCur`,
-          dataType: 'UInt32',
-          value: {
-              get: (): Variant => {
-                  return new Variant({dataType: DataType.UInt32, value: this.procedureCur});
-              },
-          },
-      });
+    public getServiceControlInstanceMockupJSON(){
+        return getServiceControlMockupReferenceJSON(
+            this.mockupNode.namespaceIndex,
+            this.mockupNode.browseName.name as string);
+    }
 
-      namespace.addVariable({
-          componentOf: this.dataAssemblyNode,
-          nodeId: `ns=${namespace};s=${variableName}.ProcedureReq`,
-          browseName: `${variableName}.ProcedureReq`,
-          dataType: 'UInt32',
-          value: {
-              get: (): Variant => {
-                  return new Variant({dataType: DataType.UInt32, value: this.procedureReq});
-              },
-          },
-      });
-
-      namespace.addVariable({
-          componentOf: this.dataAssemblyNode,
-          nodeId: `ns=${namespace};s=${variableName}.PosTextID`,
-          browseName: `${variableName}.PosTextID`,
-          dataType: 'UInt32',
-          value: {
-              get: (): Variant => {
-                  return new Variant({dataType: DataType.UInt32, value: this.posTextID});
-              },
-          },
-      });
-
-  }
-
-  public getServiceControlInstanceMockupJSON(): BaseDataAssemblyOptions{
-    return getServiceControlMockupReferenceJSON(
-        this.dataAssemblyNode.namespaceIndex,
-        this.dataAssemblyNode.browseName.name || 'UnqualifiedName');
-  }
 }

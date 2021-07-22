@@ -32,7 +32,6 @@ import {
 	ServiceSourceModeDAMockup
 } from '../../../_extensions/serviceSourceModeDA/ServiceSourceModeDA.mockup';
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../../_extensions/wqcDA/WQCDA.mockup';
-import {DataAssemblyMockup, getDataAssemblyMockupReferenceJSON} from '../../../DataAssembly.mockup';
 import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../../../_extensions/osLevelDA/OSLevelDA.mockup';
 import {getUnitDAMockupReferenceJSON, UnitDAMockup} from '../../../_extensions/unitDA/UnitDA.mockup';
 import {
@@ -43,25 +42,19 @@ import {
 	getValueLimitationDAMockupReferenceJSON,
 	ValueLimitationDAMockup
 } from '../../../_extensions/valueLimitationDA/ValueLimitationDA.mockup';
+import {ServParam} from '../ServParam';
+import {getServParamMockupReferenceJSON, ServParamMockup} from '../ServParam.mockup';
+import {AnaManMockup} from '../../man/anaMan/AnaMan.mockup';
 
 export function getAnaServParamMockupReferenceJSON(
-	namespace = 1,
-	objectBrowseName = 'P2OGalaxy') {
+	namespace: number,
+	objectBrowseName: string) {
 
 	return ({
-			...getDataAssemblyMockupReferenceJSON(namespace,objectBrowseName),
-			...getOSLevelDAMockupReferenceJSON(namespace,objectBrowseName),
-			...getOpModeDAMockupReferenceJSON(namespace,objectBrowseName),
-			...getServiceSourceModeDAMockupReferenceJSON(namespace,objectBrowseName),
-			...getWQCDAMockupReferenceJSON(namespace,objectBrowseName),
+			...getServParamMockupReferenceJSON(namespace, objectBrowseName),
 			...getUnitDAMockupReferenceJSON(namespace,objectBrowseName),
 			...getScaleSettingDAMockupReferenceJSON(namespace,objectBrowseName,'Float'),
 			...getValueLimitationDAMockupReferenceJSON(namespace,objectBrowseName, 'Float'),
-			Sync: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.Sync`,
-				dataType: 'Boolean'
-			},
 			VExt: {
 				namespaceIndex: `${namespace}`,
 				nodeId: `${objectBrowseName}.VExt`,
@@ -96,46 +89,30 @@ export function getAnaServParamMockupReferenceJSON(
 	);
 }
 
-export class AnaServParamMockup {
+export class AnaServParamMockup extends ServParamMockup{
 
-	public readonly name: string;
 	protected vExt = 0;
 	protected vOp = 0;
 	protected vInt = 0;
 	protected vReq = 0;
 	protected vOut = 0
 	protected vFbk = 0;
-	public readonly dataAssembly: DataAssemblyMockup;
-	public readonly osLevel: OSLevelDAMockup;
-	public readonly opMode: OpModeDAMockup;
-	public readonly serviceSourceMode: ServiceSourceModeDAMockup;
-	public readonly wqc: WQCDAMockup;
+	
 	public readonly unit: UnitDAMockup;
 	public readonly scaleSettings: ScaleSettingDAMockup<DataType.Double>;
 	public readonly valueLimitation: ValueLimitationDAMockup<DataType.Double>;
 	protected interval: Timeout | undefined;
-	protected mockupNode: UAObject;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
+		super(namespace, rootNode, variableName);
 
-		this.name = variableName;
-
-		this.mockupNode = namespace.addObject({
-			organizedBy: rootNode,
-			browseName: variableName
-		});
-		this.dataAssembly = new DataAssemblyMockup(namespace, this.mockupNode, this.name);
-		this.osLevel = new OSLevelDAMockup(namespace, this.mockupNode, this.name);
-		this.opMode = new OpModeDAMockup(namespace, this.mockupNode, this.name);
-		this.serviceSourceMode = new ServiceSourceModeDAMockup(namespace, this.mockupNode, this.name);
-		this.wqc = new WQCDAMockup(namespace, this.mockupNode, this.name);
 		this.unit = new UnitDAMockup(namespace, this.mockupNode, this.name);
 		this.scaleSettings = new ScaleSettingDAMockup(namespace, this.mockupNode, this.name, DataType.Double);
 		this.valueLimitation = new ValueLimitationDAMockup(namespace, this.mockupNode, this.name,DataType.Double);
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VExt`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VExt`,
 			browseName: `${variableName}.VExt`,
 			dataType: DataType.Double,
 			value: {
@@ -150,7 +127,7 @@ export class AnaServParamMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VOp`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VOp`,
 			browseName: `${variableName}.VOp`,
 			dataType: DataType.Double,
 			value: {
@@ -165,7 +142,7 @@ export class AnaServParamMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VInt`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VInt`,
 			browseName: `${variableName}.VInt`,
 			dataType: DataType.Double,
 			value: {
@@ -176,7 +153,7 @@ export class AnaServParamMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VReq`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VReq`,
 			browseName: `${variableName}.VReq`,
 			dataType: DataType.Double,
 			value: {
@@ -187,7 +164,7 @@ export class AnaServParamMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VOut`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VOut`,
 			browseName: `${variableName}.VOut`,
 			dataType: DataType.Double,
 			value: {
@@ -198,7 +175,7 @@ export class AnaServParamMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VFbk`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VFbk`,
 			browseName: `${variableName}.VFbk`,
 			dataType: DataType.Double,
 			value: {
@@ -212,9 +189,10 @@ export class AnaServParamMockup {
 	public getAnaServParamMockupJSON() {
 		return getAnaServParamMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name || 'UnqualifiedName');
+			this.mockupNode.browseName.name as string);
 	}
 
+	//TODO: for both functions below, we have many duplications-> maybe refactor
 	public startCurrentTimeUpdate(): void {
 		this.interval = global.setInterval(() => {
 			this.vOut = Math.random();
@@ -224,6 +202,8 @@ export class AnaServParamMockup {
 	public stopCurrentTimeUpdate(): void {
 		if (this.interval) {
 			global.clearInterval(this.interval);
+		}else {
+			throw new Error('No interval defined.');
 		}
 	}
 }

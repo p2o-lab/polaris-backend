@@ -24,15 +24,13 @@
  */
 
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
-import {getDataAssemblyMockupReferenceJSON} from '../../DataAssembly.mockup';
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../_extensions/wqcDA/WQCDA.mockup';
 
 export function getStringViewMockupReferenceJSON(
-	namespace = 1,
-	objectBrowseName = 'P2OGalaxy') {
+	namespace: number,
+	objectBrowseName: string) {
 	return (
 		{
-			...getDataAssemblyMockupReferenceJSON(namespace, objectBrowseName),
 			...getWQCDAMockupReferenceJSON(namespace, objectBrowseName),
 			Text: {
 				namespaceIndex: `${namespace}`,
@@ -43,7 +41,7 @@ export function getStringViewMockupReferenceJSON(
 	);
 }
 
-export abstract class StringViewMockup {
+export class StringViewMockup {
 
 	public readonly name: string;
 	protected text = 'dummyText';
@@ -76,6 +74,6 @@ export abstract class StringViewMockup {
 	public getStringViewInstanceMockupJSON() {
 		return getStringViewMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name || 'UnqualifiedName');
+			this.mockupNode.browseName.name as string);
 	}
 }

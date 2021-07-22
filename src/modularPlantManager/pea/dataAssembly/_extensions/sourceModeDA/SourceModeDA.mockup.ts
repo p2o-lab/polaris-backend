@@ -24,11 +24,11 @@
  */
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {SourceMode} from '@p2olab/polaris-interface';
+import {ServiceSourceMode, SourceMode} from '@p2olab/polaris-interface';
 
 export function getSourceModeDAMockupReferenceJSON(
-    namespace = 1,
-    objectBrowseName = 'P2OGalaxy') {
+    namespace: number,
+    objectBrowseName: string) {
 
   return ({
     SrcChannel: {
@@ -76,8 +76,6 @@ export class SourceModeDAMockup {
   protected srcIntAut = false;
   protected srcIntOp = false;
   protected srcManOp = false;
-  protected srcIntAct = false;
-  protected srcManAct = true;
   protected mockupNode: UAObject;
 
 
@@ -89,7 +87,7 @@ export class SourceModeDAMockup {
 
       namespace.addVariable({
         componentOf: rootNode,
-        nodeId: `ns=${namespace};s=${variableName}.SrcChannel`,
+        nodeId: `ns=${namespace.index};s=${variableName}.SrcChannel`,
         browseName: `${variableName}.SrcChannel`,
         dataType: DataType.Boolean,
         value: {
@@ -101,7 +99,7 @@ export class SourceModeDAMockup {
 
       namespace.addVariable({
         componentOf: rootNode,
-        nodeId: `ns=${namespace};s=${variableName}.SrcManAut`,
+        nodeId: `ns=${namespace.index};s=${variableName}.SrcManAut`,
         browseName: `${variableName}.SrcManAut`,
         dataType: DataType.Boolean,
         value: {
@@ -112,7 +110,7 @@ export class SourceModeDAMockup {
       });
       namespace.addVariable({
         componentOf: rootNode,
-        nodeId: `ns=${namespace};s=${variableName}.SrcIntAut`,
+        nodeId: `ns=${namespace.index};s=${variableName}.SrcIntAut`,
         browseName: `${variableName}.SrcIntAut`,
         dataType: DataType.Boolean,
         value: {
@@ -123,7 +121,7 @@ export class SourceModeDAMockup {
       });
       namespace.addVariable({
         componentOf: rootNode,
-        nodeId: `ns=${namespace};s=${variableName}.SrcIntOp`,
+        nodeId: `ns=${namespace.index};s=${variableName}.SrcIntOp`,
         browseName: `${variableName}.SrcIntOp`,
         dataType: DataType.Boolean,
         value: {
@@ -135,8 +133,6 @@ export class SourceModeDAMockup {
             if (this.srcIntOp) {
               if (this.srcChannel) {
                 this.srcMode = SourceMode.Intern;
-                this.srcIntAct = true;
-                this.srcManAct = false;
               }
             }
             this.srcIntOp = false;
@@ -148,8 +144,8 @@ export class SourceModeDAMockup {
 
       namespace.addVariable({
         componentOf: rootNode,
-        nodeId: `ns=${namespace};s=${variableName}.SrcExtOp`,
-        browseName: `${variableName}.SrcExtOp`,
+        nodeId: `ns=${namespace.index};s=${variableName}.SrcManOp`,
+        browseName: `${variableName}.SrcManOp`,
         dataType: DataType.Boolean,
         value: {
           get: (): Variant => {
@@ -160,10 +156,8 @@ export class SourceModeDAMockup {
             if (this.srcManOp) {
               if (this.srcChannel) {
                 this.srcMode = SourceMode.Manual;
-                this.srcIntAct = false;
-                this.srcManAct = true;
-              }
-            }
+              }//TODO else?
+            }//TODO else?
             this.srcManOp = false;
             return StatusCodes.Good;
           },
@@ -172,7 +166,7 @@ export class SourceModeDAMockup {
 
       namespace.addVariable({
         componentOf: rootNode,
-        nodeId: `ns=${namespace};s=${variableName}.SrcIntAct`,
+        nodeId: `ns=${namespace.index};s=${variableName}.SrcIntAct`,
         browseName: `${variableName}.SrcIntAct`,
         dataType: DataType.Boolean,
         value: {
@@ -184,7 +178,7 @@ export class SourceModeDAMockup {
       });
       namespace.addVariable({
         componentOf: rootNode,
-        nodeId: `ns=${namespace};s=${variableName}.SrcManAct`,
+        nodeId: `ns=${namespace.index};s=${variableName}.SrcManAct`,
         browseName: `${variableName}.SrcManAct`,
         dataType: DataType.Boolean,
         value: {
@@ -196,9 +190,18 @@ export class SourceModeDAMockup {
       });
     }
 
+  public get srcManAct(): boolean {
+    return this.srcMode === SourceMode.Manual;
+  }
+
+  public get srcIntAct(): boolean {
+    return this.srcMode === SourceMode.Intern;
+  }
+
+
   public getSourceModeDAInstanceMockupJSON() {
     return getSourceModeDAMockupReferenceJSON(
         this.mockupNode.namespaceIndex,
-        this.mockupNode.browseName.name || 'UnqualifiedName');
+        this.mockupNode.browseName.name as string);
   }
 }

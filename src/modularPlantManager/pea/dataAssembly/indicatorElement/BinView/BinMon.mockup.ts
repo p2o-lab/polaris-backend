@@ -24,33 +24,15 @@
  */
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {getDataAssemblyMockupReferenceJSON} from '../../DataAssembly.mockup';
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../_extensions/wqcDA/WQCDA.mockup';
 import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../../_extensions/osLevelDA/OSLevelDA.mockup';
+import {BinViewMockup, getBinViewMockupReferenceJSON} from './BinView.mockup';
 
-export function getDIntMonMockupReferenceJSON(
-	namespace = 1,
-	objectBrowseName = 'P2OGalaxy') {
+export function getBinMonMockupReferenceJSON(namespace: number, objectBrowseName: string) {
 	return (
 		{
-			...getDataAssemblyMockupReferenceJSON(namespace, objectBrowseName),
-			...getWQCDAMockupReferenceJSON(namespace, objectBrowseName),
 			...getOSLevelDAMockupReferenceJSON(namespace, objectBrowseName),
-			V: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.V`,
-				dataType: 'Boolean'
-			},
-			VState0: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VState0`,
-				dataType: 'String'
-			},
-			VState1: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VState1`,
-				dataType: 'String'
-			},
+			...getBinViewMockupReferenceJSON(namespace,objectBrowseName),
 			VFlutEn: {
 				namespaceIndex: `${namespace}`,
 				nodeId: `${objectBrowseName}.VFlutEn`,
@@ -75,76 +57,22 @@ export function getDIntMonMockupReferenceJSON(
 	);
 }
 
-export abstract class DIntMonMockup {
+export class BinMonMockup extends BinViewMockup{
 
-	public readonly name: string;
-	protected v = false;
-	public vState0 = 'state0_active';
-	public vState1 = 'state1_active';
 	public vFlutEn = false;
 	public vFlutTi = 0;
 	public vFlutCnt = 0;
 	public vFlutAct = false;
-	public wqc: WQCDAMockup;
 	public osLevel: OSLevelDAMockup;
-	protected mockupNode: UAObject;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
+		super(namespace, rootNode, variableName);
 
-		this.name = variableName;
-
-		this.mockupNode = namespace.addObject({
-			organizedBy: rootNode,
-			browseName: variableName
-		});
-		this.wqc = new WQCDAMockup(namespace, this.mockupNode, this.name);
 		this.osLevel = new OSLevelDAMockup(namespace, this.mockupNode, this.name);
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.V`,
-			browseName: `${variableName}.V`,
-			dataType: DataType.Boolean,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.Boolean, value: this.v});
-				},
-			},
-		});
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VState0`,
-			browseName: `${variableName}.VState0`,
-			dataType: DataType.String,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.String, value: this.vState0});
-				},
-				set: (variant: Variant): StatusCodes => {
-					this.vState0 = variant.value;
-					return StatusCodes.Good;
-				},
-			},
-		});
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VState1`,
-			browseName: `${variableName}.VState1`,
-			dataType: DataType.String,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.String, value: this.vState1});
-				},
-				set: (variant: Variant): StatusCodes => {
-					this.vState1 = variant.value;
-					return StatusCodes.Good;
-				},
-			},
-		});
-
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VFlutEn`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VFlutEn`,
 			browseName: `${variableName}.VFlutEn`,
 			dataType: DataType.Boolean,
 			value: {
@@ -156,7 +84,7 @@ export abstract class DIntMonMockup {
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VFlutTi`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VFlutTi`,
 			browseName: `${variableName}.VFlutTi`,
 			dataType: DataType.Double,
 			value: {
@@ -172,7 +100,7 @@ export abstract class DIntMonMockup {
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VFlutCnt`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VFlutCnt`,
 			browseName: `${variableName}.VFlutCnt`,
 			dataType: DataType.Int32,
 			value: {
@@ -188,7 +116,7 @@ export abstract class DIntMonMockup {
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VFlutAct`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VFlutAct`,
 			browseName: `${variableName}.VFlutAct`,
 			dataType: DataType.Boolean,
 			value: {
@@ -199,9 +127,9 @@ export abstract class DIntMonMockup {
 		});
 	}
 
-	public getDIntMonInstanceMockupJSON() {
-		return getDIntMonMockupReferenceJSON(
+	public getBinMonInstanceMockupJSON() {
+		return getBinMonMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name || 'UnqualifiedName');
+			this.mockupNode.browseName.name as string);
 	}
 }

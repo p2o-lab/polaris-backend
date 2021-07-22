@@ -23,13 +23,12 @@
  * SOFTWARE.
  */
 
-import {OperationMode, ServiceSourceMode} from '@p2olab/polaris-interface';
+import {ServiceSourceMode} from '@p2olab/polaris-interface';
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {getUnitDAMockupReferenceJSON} from '../unitDA/UnitDA.mockup';
 
 export function getServiceSourceModeDAMockupReferenceJSON(
-	namespace = 1,
-	objectBrowseName = 'P2OGalaxy') {
+	namespace: number,
+	objectBrowseName: string) {
 
 	return ({
 			SrcChannel: {
@@ -73,12 +72,9 @@ export function getServiceSourceModeDAMockupReferenceJSON(
 
 export class ServiceSourceModeDAMockup {
 	public srcMode: ServiceSourceMode = ServiceSourceMode.Extern;
-
 	public srcChannel = false;
-	public srcIntAct = false;
 	public srcIntAut = false;
 	public srcIntOp = false;
-	public srcExtAct = false;
 	public srcExtAut = false;
 	public srcExtOp = false;
 	public readonly  mockupNode: UAObject;
@@ -92,7 +88,7 @@ export class ServiceSourceModeDAMockup {
 
 		namespace.addVariable({
 			componentOf: rootNode,
-			nodeId: `ns=${namespace};s=${variableName}.SrcChannel`,
+			nodeId: `ns=${namespace.index};s=${variableName}.SrcChannel`,
 			browseName: `${variableName}.SrcChannel`,
 			dataType: DataType.Boolean,
 			value: {
@@ -104,7 +100,7 @@ export class ServiceSourceModeDAMockup {
 
 		namespace.addVariable({
 			componentOf: rootNode,
-			nodeId: `ns=${namespace};s=${variableName}.SrcExtAut`,
+			nodeId: `ns=${namespace.index};s=${variableName}.SrcExtAut`,
 			browseName: `${variableName}.SrcExtAut`,
 			dataType: DataType.Boolean,
 			value: {
@@ -115,7 +111,7 @@ export class ServiceSourceModeDAMockup {
 		});
 		namespace.addVariable({
 			componentOf: rootNode,
-			nodeId: `ns=${namespace};s=${variableName}.SrcIntAut`,
+			nodeId: `ns=${namespace.index};s=${variableName}.SrcIntAut`,
 			browseName: `${variableName}.SrcIntAut`,
 			dataType: DataType.Boolean,
 			value: {
@@ -126,7 +122,7 @@ export class ServiceSourceModeDAMockup {
 		});
 		namespace.addVariable({
 			componentOf: rootNode,
-			nodeId: `ns=${namespace};s=${variableName}.SrcIntOp`,
+			nodeId: `ns=${namespace.index};s=${variableName}.SrcIntOp`,
 			browseName: `${variableName}.SrcIntOp`,
 			dataType: DataType.Boolean,
 			value: {
@@ -138,10 +134,8 @@ export class ServiceSourceModeDAMockup {
 					if (this.srcIntOp) {
 						if (this.srcChannel) {
 							this.srcMode = ServiceSourceMode.Intern;
-							this.srcIntAct = true;
-							this.srcExtAct = false;
-						}
-					}
+						} //TODO else?
+					} //TODO else?
 					this.srcIntOp = false;
 					return StatusCodes.Good;
 				},
@@ -151,7 +145,7 @@ export class ServiceSourceModeDAMockup {
 
 		namespace.addVariable({
 			componentOf: rootNode,
-			nodeId: `ns=${namespace};s=${variableName}.SrcExtOp`,
+			nodeId: `ns=${namespace.index};s=${variableName}.SrcExtOp`,
 			browseName: `${variableName}.SrcExtOp`,
 			dataType: DataType.Boolean,
 			value: {
@@ -163,8 +157,6 @@ export class ServiceSourceModeDAMockup {
 					if (this.srcExtOp) {
 						if (this.srcChannel) {
 							this.srcMode = ServiceSourceMode.Extern;
-							this.srcIntAct = false;
-							this.srcExtAct = true;
 						}
 					}
 					this.srcExtOp = false;
@@ -175,7 +167,7 @@ export class ServiceSourceModeDAMockup {
 
 		namespace.addVariable({
 			componentOf: rootNode,
-			nodeId: `ns=${namespace};s=${variableName}.SrcIntAct`,
+			nodeId: `ns=${namespace.index};s=${variableName}.SrcIntAct`,
 			browseName: `${variableName}.SrcIntAct`,
 			dataType: DataType.Boolean,
 			value: {
@@ -187,7 +179,7 @@ export class ServiceSourceModeDAMockup {
 		});
 		namespace.addVariable({
 			componentOf: rootNode,
-			nodeId: `ns=${namespace};s=${variableName}.SrcExtAct`,
+			nodeId: `ns=${namespace.index};s=${variableName}.SrcExtAct`,
 			browseName: `${variableName}.SrcExtAct`,
 			dataType: DataType.Boolean,
 			value: {
@@ -199,10 +191,19 @@ export class ServiceSourceModeDAMockup {
 		});
 
 	}
+	public get srcExtAct(): boolean {
+		return this.srcMode === ServiceSourceMode.Extern;
+	}
+
+	public get srcIntAct(): boolean {
+		return this.srcMode === ServiceSourceMode.Intern;
+	}
+
+
 
 	public getServiceSourceModeDAInstanceMockupJSON() {
 		return getServiceSourceModeDAMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name || 'UnqualifiedName');
+			this.mockupNode.browseName.name as string);
 	}
 }

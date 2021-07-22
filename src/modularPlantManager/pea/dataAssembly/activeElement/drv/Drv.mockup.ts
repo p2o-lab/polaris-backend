@@ -26,20 +26,19 @@
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../_extensions/wqcDA/WQCDA.mockup';
 import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../../_extensions/osLevelDA/OSLevelDA.mockup';
-import {getDataAssemblyMockupReferenceJSON} from '../../DataAssembly.mockup';
 import {getOpModeDAMockupReferenceJSON, OpModeDAMockup} from '../../_extensions/opModeDA/OpModeDA.mockup';
 import {getInterlockDAMockupReferenceJSON, InterlockDAMockup} from '../../_extensions/interlockDA/InterlockDA.mockup';
 import {getResetDAMockupReferenceJSON, ResetDAMockup} from '../../_extensions/resetDA/ResetDA.mockup';
+import {getActiveElementMockupReferenceJSON} from '../ActiveElement.mockup';
 
 
 export function getDrvMockupReferenceJSON(
-	namespace = 1,
-	objectBrowseName = 'P2OGalaxy') {
+	namespace: number,
+	objectBrowseName: string) {
 
 	return ({
-			...getDataAssemblyMockupReferenceJSON(namespace,objectBrowseName),
-			...getWQCDAMockupReferenceJSON(namespace,objectBrowseName),
-			...getOSLevelDAMockupReferenceJSON(namespace,objectBrowseName),
+			
+			...getActiveElementMockupReferenceJSON(namespace,objectBrowseName),
 			...getOpModeDAMockupReferenceJSON(namespace,objectBrowseName),
 			...getInterlockDAMockupReferenceJSON(namespace,objectBrowseName),
 			...getResetDAMockupReferenceJSON(namespace,objectBrowseName),
@@ -144,6 +143,7 @@ export class DrvMockup {
 	public safePos = false;
 	public safePosAct = false;
 
+
 	public fwdEn= false;
 	public revEn= false;
 	public stopOp= false;
@@ -179,7 +179,7 @@ export class DrvMockup {
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.SafePos`,
+			nodeId: `ns=${namespace.index};s=${variableName}.SafePos`,
 			browseName: `${variableName}.SafePos`,
 			dataType: DataType.Boolean,
 			value: {
@@ -190,7 +190,7 @@ export class DrvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.SafePosAct`,
+			nodeId: `ns=${namespace.index};s=${variableName}.SafePosAct`,
 			browseName: `${variableName}.SafePosAct`,
 			dataType: DataType.Boolean,
 			value: {
@@ -202,7 +202,7 @@ export class DrvMockup {
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.FwdEn`,
+			nodeId: `ns=${namespace.index};s=${variableName}.FwdEn`,
 			browseName: `${variableName}.FwdEn`,
 			dataType: DataType.Boolean,
 			value: {
@@ -213,7 +213,7 @@ export class DrvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.RevEn`,
+			nodeId: `ns=${namespace.index};s=${variableName}.RevEn`,
 			browseName: `${variableName}.RevEn`,
 			dataType: DataType.Boolean,
 			value: {
@@ -224,7 +224,7 @@ export class DrvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.StopOp`,
+			nodeId: `ns=${namespace.index};s=${variableName}.StopOp`,
 			browseName: `${variableName}.StopOp`,
 			dataType: DataType.Boolean,
 			value: {
@@ -239,7 +239,7 @@ export class DrvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.FwdOp`,
+			nodeId: `ns=${namespace.index};s=${variableName}.FwdOp`,
 			browseName: `${variableName}.FwdOp`,
 			dataType: DataType.Boolean,
 			value: {
@@ -254,7 +254,7 @@ export class DrvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.RevOp`,
+			nodeId: `ns=${namespace.index};s=${variableName}.RevOp`,
 			browseName: `${variableName}.RevOp`,
 			dataType: DataType.Boolean,
 			value: {
@@ -269,7 +269,7 @@ export class DrvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.StopAut`,
+			nodeId: `ns=${namespace.index};s=${variableName}.StopAut`,
 			browseName: `${variableName}.StopAut`,
 			dataType: DataType.Boolean,
 			value: {
@@ -280,7 +280,7 @@ export class DrvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.FwdAut`,
+			nodeId: `ns=${namespace.index};s=${variableName}.FwdAut`,
 			browseName: `${variableName}.FwdAut`,
 			dataType: DataType.Boolean,
 			value: {
@@ -291,7 +291,7 @@ export class DrvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.RevAut`,
+			nodeId: `ns=${namespace.index};s=${variableName}.RevAut`,
 			browseName: `${variableName}.RevAut`,
 			dataType: DataType.Boolean,
 			value: {
@@ -302,7 +302,7 @@ export class DrvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.FwdCtrl`,
+			nodeId: `ns=${namespace.index};s=${variableName}.FwdCtrl`,
 			browseName: `${variableName}.FwdCtrl`,
 			dataType: DataType.Boolean,
 			value: {
@@ -313,7 +313,7 @@ export class DrvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.RevCtrl`,
+			nodeId: `ns=${namespace.index};s=${variableName}.RevCtrl`,
 			browseName: `${variableName}.RevCtrl`,
 			dataType: DataType.Boolean,
 			value: {
@@ -325,7 +325,7 @@ export class DrvMockup {
 		
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.RevFbkCalc`,
+			nodeId: `ns=${namespace.index};s=${variableName}.RevFbkCalc`,
 			browseName: `${variableName}.RevFbkCalc`,
 			dataType: DataType.Boolean,
 			value: {
@@ -337,7 +337,7 @@ export class DrvMockup {
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.RevFbk`,
+			nodeId: `ns=${namespace.index};s=${variableName}.RevFbk`,
 			browseName: `${variableName}.RevFbk`,
 			dataType: DataType.Boolean,
 			value: {
@@ -348,7 +348,7 @@ export class DrvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.FwdFbkCalc`,
+			nodeId: `ns=${namespace.index};s=${variableName}.FwdFbkCalc`,
 			browseName: `${variableName}.FwdFbkCalc`,
 			dataType: DataType.Boolean,
 			value: {
@@ -359,12 +359,23 @@ export class DrvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.FwdFbk`,
+			nodeId: `ns=${namespace.index};s=${variableName}.FwdFbk`,
 			browseName: `${variableName}.FwdFbk`,
 			dataType: DataType.Boolean,
 			value: {
 				get: (): Variant => {
 					return new Variant({dataType: DataType.Boolean, value: this.fwdFbk});
+				},
+			},
+		});
+		namespace.addVariable({
+			componentOf: this.mockupNode,
+			nodeId: `ns=${namespace.index};s=${variableName}.Trip`,
+			browseName: `${variableName}.Trip`,
+			dataType: DataType.Boolean,
+			value: {
+				get: (): Variant => {
+					return new Variant({dataType: DataType.Boolean, value: this.trip});
 				},
 			},
 		});
@@ -374,6 +385,6 @@ export class DrvMockup {
 	public getDrvMockupJSON() {
 		return getDrvMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name || 'UnqualifiedName');
+			this.mockupNode.browseName.name as string);
 	}
 }

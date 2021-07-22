@@ -26,8 +26,8 @@
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
 
 export function getOSLevelDAMockupReferenceJSON(
-    namespace = 1,
-    objectBrowseName = 'P2OGalaxy') {
+    namespace: number,
+    objectBrowseName: string) {
 
   return ({
     OSLevel:   {
@@ -40,18 +40,19 @@ export function getOSLevelDAMockupReferenceJSON(
 
 export class OSLevelDAMockup {
   protected osLevel = 0;
-  protected mockupNode: UAObject;
+ protected mockupNode: UAObject;
 
   constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
 
-    this.mockupNode = namespace.addObject({
+    /*this.mockupNode = namespace.addObject({
       organizedBy: rootNode,
       browseName: variableName,
-    });
+    });*/
+    this.mockupNode = rootNode;
 
       namespace.addVariable({
         componentOf: rootNode,
-        nodeId: `ns=${namespace};s=${variableName}.OSLevel`,
+        nodeId: `ns=${namespace.index};s=${variableName}.OSLevel`,
         browseName: `${variableName}.OSLevel`,
         dataType: DataType.Byte,
         value: {
@@ -65,6 +66,6 @@ export class OSLevelDAMockup {
   public getOSLevelDAInstanceMockupJSON() {
     return getOSLevelDAMockupReferenceJSON(
         this.mockupNode.namespaceIndex,
-        this.mockupNode.browseName.name || 'UnqualifiedName');
+        this.mockupNode.browseName.name as string);
   }
 }

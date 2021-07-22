@@ -45,8 +45,8 @@ describe('StringView', () => {
 			};
 			const da1: StringView = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as StringView;
 			expect(da1 instanceof StringView).to.equal(true);
-			expect(da1.communication.TagName).to.not.equal(undefined);
-			expect(da1.communication.TagDescription).to.not.equal(undefined);
+			expect(da1.tagName).to.not.equal(undefined);
+			expect(da1.tagDescription).to.not.equal(undefined);
 			expect(da1.communication.WQC).to.not.equal(undefined);
 			expect(da1.communication.Text).to.not.equal(undefined);
 		});

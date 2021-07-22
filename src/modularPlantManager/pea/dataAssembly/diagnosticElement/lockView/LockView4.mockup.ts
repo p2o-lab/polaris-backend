@@ -24,15 +24,13 @@
  */
 
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
-import {getDataAssemblyMockupReferenceJSON} from '../../DataAssembly.mockup';
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../_extensions/wqcDA/WQCDA.mockup';
 import {catPEAMockup} from '../../../../../logging';
+import {DiagnosticElementMockup} from '../DiagnosticElement.mockup';
 
-export function getLockView4MockupReferenceJSON(
-	namespace = 1,
-	objectBrowseName = 'P2OGalaxy') {
+export function getLockView4MockupReferenceJSON(namespace: number, objectBrowseName: string) {
 	return (
-		{	...getDataAssemblyMockupReferenceJSON(namespace,objectBrowseName),
+		{	
 			...getWQCDAMockupReferenceJSON(namespace,objectBrowseName),
 			Logic: {
 				namespaceIndex: `${namespace}`,
@@ -153,10 +151,7 @@ export function getLockView4MockupReferenceJSON(
 	);
 }
 
-export abstract class LockView4Mockup {
-
-	public readonly name: string;
-	public readonly wqc: WQCDAMockup;
+export class LockView4Mockup extends DiagnosticElementMockup{
 
 	public logic = false; // False = AND; TRUE = OR;
 	public out = false;
@@ -186,23 +181,13 @@ export abstract class LockView4Mockup {
 	public in4Inv = false;
 	public in4Txt = 'testText';
 	
-	protected mockupNode: UAObject;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
-		catPEAMockup.debug(`Add variable ${variableName}`);
-
-		this.name = variableName;
-
-		this.mockupNode = namespace.addObject({
-			organizedBy: rootNode,
-			browseName: variableName
-		});
-
-		this.wqc = new WQCDAMockup(namespace, this.mockupNode, this.name);
+		super(namespace, rootNode, variableName);
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.Logic`,
+			nodeId: `ns=${namespace.index};s=${variableName}.Logic`,
 			browseName: `${variableName}.Logic`,
 			dataType: DataType.Boolean,
 			value: {
@@ -213,7 +198,7 @@ export abstract class LockView4Mockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.Out`,
+			nodeId: `ns=${namespace.index};s=${variableName}.Out`,
 			browseName: `${variableName}.Out`,
 			dataType: DataType.Boolean,
 			value: {
@@ -224,7 +209,7 @@ export abstract class LockView4Mockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.OutQC`,
+			nodeId: `ns=${namespace.index};s=${variableName}.OutQC`,
 			browseName: `${variableName}.OutQC`,
 			dataType: DataType.Byte,
 			value: {
@@ -236,7 +221,7 @@ export abstract class LockView4Mockup {
 // INPUT 1
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.In1En`,
+			nodeId: `ns=${namespace.index};s=${variableName}.In1En`,
 			browseName: `${variableName}.In1En`,
 			dataType: DataType.Boolean,
 			value: {
@@ -247,7 +232,7 @@ export abstract class LockView4Mockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.In1`,
+			nodeId: `ns=${namespace.index};s=${variableName}.In1`,
 			browseName: `${variableName}.In1`,
 			dataType: DataType.Boolean,
 			value: {
@@ -258,7 +243,7 @@ export abstract class LockView4Mockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.In1QC`,
+			nodeId: `ns=${namespace.index};s=${variableName}.In1QC`,
 			browseName: `${variableName}.In1QC`,
 			dataType: DataType.Byte,
 			value: {
@@ -269,7 +254,7 @@ export abstract class LockView4Mockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.In1Inv`,
+			nodeId: `ns=${namespace.index};s=${variableName}.In1Inv`,
 			browseName: `${variableName}.In1Inv`,
 			dataType: DataType.Boolean,
 			value: {
@@ -280,7 +265,7 @@ export abstract class LockView4Mockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.In1Txt`,
+			nodeId: `ns=${namespace.index};s=${variableName}.In1Txt`,
 			browseName: `${variableName}.In1Txt`,
 			dataType: DataType.String,
 			value: {
@@ -292,7 +277,7 @@ export abstract class LockView4Mockup {
 // INPUT 2
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.In2En`,
+			nodeId: `ns=${namespace.index};s=${variableName}.In2En`,
 			browseName: `${variableName}.In2En`,
 			dataType: DataType.Boolean,
 			value: {
@@ -303,7 +288,7 @@ export abstract class LockView4Mockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.In2`,
+			nodeId: `ns=${namespace.index};s=${variableName}.In2`,
 			browseName: `${variableName}.In2`,
 			dataType: DataType.Boolean,
 			value: {
@@ -314,7 +299,7 @@ export abstract class LockView4Mockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.In2QC`,
+			nodeId: `ns=${namespace.index};s=${variableName}.In2QC`,
 			browseName: `${variableName}.In2QC`,
 			dataType: DataType.Byte,
 			value: {
@@ -325,7 +310,7 @@ export abstract class LockView4Mockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.In2Inv`,
+			nodeId: `ns=${namespace.index};s=${variableName}.In2Inv`,
 			browseName: `${variableName}.In2Inv`,
 			dataType: DataType.Boolean,
 			value: {
@@ -336,7 +321,7 @@ export abstract class LockView4Mockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.In2Txt`,
+			nodeId: `ns=${namespace.index};s=${variableName}.In2Txt`,
 			browseName: `${variableName}.In2Txt`,
 			dataType: DataType.String,
 			value: {
@@ -348,7 +333,7 @@ export abstract class LockView4Mockup {
 // INPUT 3
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.In3En`,
+			nodeId: `ns=${namespace.index};s=${variableName}.In3En`,
 			browseName: `${variableName}.In3En`,
 			dataType: DataType.Boolean,
 			value: {
@@ -359,7 +344,7 @@ export abstract class LockView4Mockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.In3`,
+			nodeId: `ns=${namespace.index};s=${variableName}.In3`,
 			browseName: `${variableName}.In3`,
 			dataType: DataType.Boolean,
 			value: {
@@ -370,7 +355,7 @@ export abstract class LockView4Mockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.In3QC`,
+			nodeId: `ns=${namespace.index};s=${variableName}.In3QC`,
 			browseName: `${variableName}.In3QC`,
 			dataType: DataType.Byte,
 			value: {
@@ -381,7 +366,7 @@ export abstract class LockView4Mockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.In3Inv`,
+			nodeId: `ns=${namespace.index};s=${variableName}.In3Inv`,
 			browseName: `${variableName}.In3Inv`,
 			dataType: DataType.Boolean,
 			value: {
@@ -392,7 +377,7 @@ export abstract class LockView4Mockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.In3Txt`,
+			nodeId: `ns=${namespace.index};s=${variableName}.In3Txt`,
 			browseName: `${variableName}.In3Txt`,
 			dataType: DataType.String,
 			value: {
@@ -404,7 +389,7 @@ export abstract class LockView4Mockup {
 // INPUT 4
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.In4En`,
+			nodeId: `ns=${namespace.index};s=${variableName}.In4En`,
 			browseName: `${variableName}.In4En`,
 			dataType: DataType.Boolean,
 			value: {
@@ -415,7 +400,7 @@ export abstract class LockView4Mockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.In4`,
+			nodeId: `ns=${namespace.index};s=${variableName}.In4`,
 			browseName: `${variableName}.In4`,
 			dataType: DataType.Boolean,
 			value: {
@@ -426,7 +411,7 @@ export abstract class LockView4Mockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.In4QC`,
+			nodeId: `ns=${namespace.index};s=${variableName}.In4QC`,
 			browseName: `${variableName}.In4QC`,
 			dataType: DataType.Byte,
 			value: {
@@ -437,7 +422,7 @@ export abstract class LockView4Mockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.In4Inv`,
+			nodeId: `ns=${namespace.index};s=${variableName}.In4Inv`,
 			browseName: `${variableName}.In4Inv`,
 			dataType: DataType.Boolean,
 			value: {
@@ -448,7 +433,7 @@ export abstract class LockView4Mockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.In4Txt`,
+			nodeId: `ns=${namespace.index};s=${variableName}.In4Txt`,
 			browseName: `${variableName}.In4Txt`,
 			dataType: DataType.String,
 			value: {
@@ -462,6 +447,6 @@ export abstract class LockView4Mockup {
 	public getLockView4InstanceMockupJSON() {
 		return getLockView4MockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name || 'UnqualifiedName');
+			this.mockupNode.browseName.name as string);
 	}
 }

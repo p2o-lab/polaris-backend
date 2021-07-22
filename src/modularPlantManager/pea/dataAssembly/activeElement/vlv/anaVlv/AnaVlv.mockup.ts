@@ -26,80 +26,24 @@
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../../_extensions/wqcDA/WQCDA.mockup';
 import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../../../_extensions/osLevelDA/OSLevelDA.mockup';
-import {getDataAssemblyMockupReferenceJSON} from '../../../DataAssembly.mockup';
-import {getSourceModeDAMockupReferenceJSON} from '../../../_extensions/sourceModeDA/SourceModeDA.mockup';
+import {
+	getSourceModeDAMockupReferenceJSON,
+	SourceModeDAMockup
+} from '../../../_extensions/sourceModeDA/SourceModeDA.mockup';
 import {getOpModeDAMockupReferenceJSON, OpModeDAMockup} from '../../../_extensions/opModeDA/OpModeDA.mockup';
 import {getInterlockDAMockupReferenceJSON, InterlockDAMockup} from '../../../_extensions/interlockDA/InterlockDA.mockup';
 import {getResetDAMockupReferenceJSON, ResetDAMockup} from '../../../_extensions/resetDA/ResetDA.mockup';
+import {getActiveElementMockupReferenceJSON} from '../../ActiveElement.mockup';
+import {getVlvMockupReferenceJSON, VlvMockup} from '../Vlv.mockup';
 
 
 export function getAnaVlvMockupReferenceJSON(
-	namespace = 1,
-	objectBrowseName = 'P2OGalaxy') {
+	namespace: number,
+	objectBrowseName: string) {
 
 	return ({
-			...getDataAssemblyMockupReferenceJSON(namespace,objectBrowseName),
-			...getWQCDAMockupReferenceJSON(namespace,objectBrowseName),
-			...getOSLevelDAMockupReferenceJSON(namespace,objectBrowseName),
+			...getVlvMockupReferenceJSON(namespace, objectBrowseName),
 			...getSourceModeDAMockupReferenceJSON(namespace,objectBrowseName),
-			...getOpModeDAMockupReferenceJSON(namespace,objectBrowseName),
-			...getInterlockDAMockupReferenceJSON(namespace,objectBrowseName),
-			...getResetDAMockupReferenceJSON(namespace,objectBrowseName),
-			SafePos: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.SafePos`,
-				dataType: 'Boolean'
-			},
-			SafePosEn: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.SafePosEn`,
-				dataType: 'Boolean'
-			},
-			SafePosAct: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.SafePosAct`,
-				dataType: 'Boolean'
-			},
-			OpenAut: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.OpenAut`,
-				dataType: 'Boolean'
-			},
-			OpenFbk: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.OpenFbk`,
-				dataType: 'Boolean'
-			},
-			OpenFbkCalc: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.OpenFbkCalc`,
-				dataType: 'Boolean'
-			},
-			OpenOp: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.OpenOp`,
-				dataType: 'Boolean'
-			},
-			CloseAut: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.CloseAut`,
-				dataType: 'Boolean'
-			},
-			CloseFbk: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.CloseFbk`,
-				dataType: 'Boolean'
-			},
-			CloseFbkCalc: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.CloseFbkCalc`,
-				dataType: 'Boolean'
-			},
-			CloseOp: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.CloseOp`,
-				dataType: 'Boolean'
-			},
 			Pos: {
 				namespaceIndex: `${namespace}`,
 				nodeId: `${objectBrowseName}.Pos`,
@@ -169,25 +113,9 @@ export function getAnaVlvMockupReferenceJSON(
 	);
 }
 
-export class AnaVlvMockup {
+export class AnaVlvMockup extends VlvMockup{
 
-	public readonly name: string;
-	public wqc: WQCDAMockup;
-	public osLevel: OSLevelDAMockup;
-	public operationMode: OpModeDAMockup;
-	public interlock: InterlockDAMockup;
-	public reset: ResetDAMockup;
-
-	public safePos = false;
-	public safePosEn = false;
-	public openOp = false;
-	public closeOp = false;
-	public openAut = false;
-	public closeAut = false;
-	public openFbkCalc = false;
-	public openFbk = false;
-	public closeFbkCalc = false;
-	public closeFbk = false;
+	public sourceModeMockup: SourceModeDAMockup;
 
 	public posSclMin = 0;
 	public posSclMax = 0;
@@ -203,144 +131,15 @@ export class AnaVlvMockup {
 	public openAct = false;
 	public closeAct = false;
 
-	protected mockupNode: UAObject;
-
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
 
-		this.name = variableName;
+		super(namespace, rootNode, variableName);
 
-		this.mockupNode = namespace.addObject({
-			organizedBy: rootNode,
-			browseName: variableName
-		});
-
-		this.osLevel = new OSLevelDAMockup(namespace, this.mockupNode, this.name);
-		this.wqc = new WQCDAMockup(namespace, this.mockupNode, this.name);
-		this.operationMode = new OpModeDAMockup(namespace,this.mockupNode,this.name);
-		this.interlock= new InterlockDAMockup(namespace,this.mockupNode,this.name);
-		this.reset= new ResetDAMockup(namespace,this.mockupNode,this.name);
+		this.sourceModeMockup = new SourceModeDAMockup(namespace, rootNode, variableName);
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.SafePos`,
-			browseName: `${variableName}.SafePos`,
-			dataType: DataType.Boolean,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.Boolean, value: this.safePos});
-				},
-			},
-		});
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.SafePosEn`,
-			browseName: `${variableName}.SafePosEn`,
-			dataType: DataType.Boolean,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.Boolean, value: this.safePosEn});
-				},
-			},
-		});
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.OpenOp`,
-			browseName: `${variableName}.OpenOp`,
-			dataType: DataType.Boolean,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.Boolean, value: this.openOp});
-				},
-				set: (variant: Variant): StatusCodes => {
-					this.openOp = variant.value;
-					return StatusCodes.Good;
-				},
-			},
-		});
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.CloseOp`,
-			browseName: `${variableName}.CloseOp`,
-			dataType: DataType.Boolean,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.Boolean, value: this.closeOp});
-				},
-				set: (variant: Variant): StatusCodes => {
-					this.closeOp = variant.value;
-					return StatusCodes.Good;
-				},
-			},
-		});
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.OpenAut`,
-			browseName: `${variableName}.OpenAut`,
-			dataType: DataType.Boolean,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.Boolean, value: this.openAut});
-				},
-			},
-		});
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.CloseAut`,
-			browseName: `${variableName}.CloseAut`,
-			dataType: DataType.Boolean,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.Boolean, value: this.closeAut});
-				},
-			},
-		});
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.OpenFbkCalc`,
-			browseName: `${variableName}.OpenFbkCalc`,
-			dataType: DataType.Boolean,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.Boolean, value: this.openFbkCalc});
-				},
-			},
-		});
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.OpenFbk`,
-			browseName: `${variableName}.OpenFbk`,
-			dataType: DataType.Boolean,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.Boolean, value: this.openFbk});
-				},
-			},
-		});
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.CloseFbkCalc`,
-			browseName: `${variableName}.CloseFbkCalc`,
-			dataType: DataType.Boolean,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.Boolean, value: this.closeFbkCalc});
-				},
-			},
-		});
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.CloseFbk`,
-			browseName: `${variableName}.CloseFbk`,
-			dataType: DataType.Boolean,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.Boolean, value: this.closeFbk});
-				},
-			},
-		});
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.OpenAct`,
+			nodeId: `ns=${namespace.index};s=${variableName}.OpenAct`,
 			browseName: `${variableName}.OpenAct`,
 			dataType: DataType.Boolean,
 			value: {
@@ -351,7 +150,7 @@ export class AnaVlvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.CloseAct`,
+			nodeId: `ns=${namespace.index};s=${variableName}.CloseAct`,
 			browseName: `${variableName}.CloseAct`,
 			dataType: DataType.Boolean,
 			value: {
@@ -362,7 +161,7 @@ export class AnaVlvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.PosSclMin`,
+			nodeId: `ns=${namespace.index};s=${variableName}.PosSclMin`,
 			browseName: `${variableName}.PosSclMin`,
 			dataType: DataType.Double,
 			value: {
@@ -374,7 +173,7 @@ export class AnaVlvMockup {
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.PosSclMax`,
+			nodeId: `ns=${namespace.index};s=${variableName}.PosSclMax`,
 			browseName: `${variableName}.PosSclMax`,
 			dataType: DataType.Double,
 			value: {
@@ -386,7 +185,7 @@ export class AnaVlvMockup {
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.PosUnit`,
+			nodeId: `ns=${namespace.index};s=${variableName}.PosUnit`,
 			browseName: `${variableName}.PosUnit`,
 			dataType: DataType.UInt32,
 			value: {
@@ -398,7 +197,7 @@ export class AnaVlvMockup {
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.PosMin`,
+			nodeId: `ns=${namespace.index};s=${variableName}.PosMin`,
 			browseName: `${variableName}.PosMin`,
 			dataType: DataType.Double,
 			value: {
@@ -410,7 +209,7 @@ export class AnaVlvMockup {
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.PosMax`,
+			nodeId: `ns=${namespace.index};s=${variableName}.PosMax`,
 			browseName: `${variableName}.PosMax`,
 			dataType: DataType.Double,
 			value: {
@@ -422,7 +221,7 @@ export class AnaVlvMockup {
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.PosInt`,
+			nodeId: `ns=${namespace.index};s=${variableName}.PosInt`,
 			browseName: `${variableName}.PosInt`,
 			dataType: DataType.Double,
 			value: {
@@ -434,7 +233,7 @@ export class AnaVlvMockup {
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.PosMan`,
+			nodeId: `ns=${namespace.index};s=${variableName}.PosMan`,
 			browseName: `${variableName}.PosMan`,
 			dataType: DataType.Double,
 			value: {
@@ -449,7 +248,7 @@ export class AnaVlvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.PosRbk`,
+			nodeId: `ns=${namespace.index};s=${variableName}.PosRbk`,
 			browseName: `${variableName}.PosRbk`,
 			dataType: DataType.Double,
 			value: {
@@ -460,7 +259,7 @@ export class AnaVlvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.Pos`,
+			nodeId: `ns=${namespace.index};s=${variableName}.Pos`,
 			browseName: `${variableName}.Pos`,
 			dataType: DataType.Double,
 			value: {
@@ -471,7 +270,7 @@ export class AnaVlvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.PosFbkCalc`,
+			nodeId: `ns=${namespace.index};s=${variableName}.PosFbkCalc`,
 			browseName: `${variableName}.PosFbkCalc`,
 			dataType: DataType.Boolean,
 			value: {
@@ -482,7 +281,7 @@ export class AnaVlvMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.PosFbk`,
+			nodeId: `ns=${namespace.index};s=${variableName}.PosFbk`,
 			browseName: `${variableName}.PosFbk`,
 			dataType: DataType.Double,
 			value: {
@@ -496,6 +295,6 @@ export class AnaVlvMockup {
 	public getAnaVlvMockupJSON() {
 		return getAnaVlvMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name || 'UnqualifiedName');
+			this.mockupNode.browseName.name as string);
 	}
 }

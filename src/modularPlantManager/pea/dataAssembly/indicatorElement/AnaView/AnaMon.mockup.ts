@@ -24,7 +24,6 @@
  */
 
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
-import {getDataAssemblyMockupReferenceJSON} from '../../DataAssembly.mockup';
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../_extensions/wqcDA/WQCDA.mockup';
 import {
 	getScaleSettingDAMockupReferenceJSON,
@@ -36,13 +35,13 @@ import {
 	getLimitMonitoringDAMockupReferenceJSON,
 	LimitMonitoringDAMockup
 } from '../../_extensions/limitMonitoringDA/LimitMonitoringDA.mockup';
+import {IndicatorElementMockup} from '../IndicatorElement.mockup';
 
 export function getAnaMonMockupReferenceJSON(
-	namespace = 1,
-	objectBrowseName = 'P2OGalaxy') {
+	namespace: number,
+	objectBrowseName: string) {
 	return (
 		{
-			...getDataAssemblyMockupReferenceJSON(namespace, objectBrowseName),
 			...getWQCDAMockupReferenceJSON(namespace, objectBrowseName),
 			...getScaleSettingDAMockupReferenceJSON(namespace, objectBrowseName, 'Float'),
 			...getUnitDAMockupReferenceJSON(namespace, objectBrowseName),
@@ -57,26 +56,18 @@ export function getAnaMonMockupReferenceJSON(
 	);
 }
 
-export abstract class AnaMonMockup {
+export class AnaMonMockup extends IndicatorElementMockup{
 
-	public readonly name: string;
 	protected v = 0;
-	public wqc: WQCDAMockup;
 	public scaleSettings: ScaleSettingDAMockup<DataType.Double>;
 	public unit: UnitDAMockup;
 	public osLevel: OSLevelDAMockup;
-	public limitMonitoring: LimitMonitoringDAMockup;
-	protected mockupNode: UAObject;
+	public limitMonitoring: LimitMonitoringDAMockup<any>;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
 
-		this.name = variableName;
+		super(namespace, rootNode, variableName);
 
-		this.mockupNode = namespace.addObject({
-			organizedBy: rootNode,
-			browseName: variableName
-		});
-		this.wqc = new WQCDAMockup(namespace, this.mockupNode, this.name);
 		this.scaleSettings = new ScaleSettingDAMockup<DataType.Double>(namespace, this.mockupNode, this.name, DataType.Double);
 		this.unit = new UnitDAMockup(namespace, this.mockupNode, this.name);
 		this.osLevel = new OSLevelDAMockup(namespace, this.mockupNode, this.name);
@@ -84,7 +75,7 @@ export abstract class AnaMonMockup {
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.V`,
+			nodeId: `ns=${namespace.index};s=${variableName}.V`,
 			browseName: `${variableName}.V`,
 			dataType: DataType.Double,
 			value: {
@@ -98,6 +89,6 @@ export abstract class AnaMonMockup {
 	public getAnaMonInstanceMockupJSON() {
 		return getAnaMonMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name || 'UnqualifiedName');
+			this.mockupNode.browseName.name as string);
 	}
 }

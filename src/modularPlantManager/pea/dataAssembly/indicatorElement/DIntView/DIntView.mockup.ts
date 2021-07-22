@@ -24,7 +24,6 @@
  */
 
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
-import {getDataAssemblyMockupReferenceJSON} from '../../DataAssembly.mockup';
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../_extensions/wqcDA/WQCDA.mockup';
 import {
 	getScaleSettingDAMockupReferenceJSON,
@@ -33,11 +32,10 @@ import {
 import {getUnitDAMockupReferenceJSON, UnitDAMockup} from '../../_extensions/unitDA/UnitDA.mockup';
 
 export function getDIntViewMockupReferenceJSON(
-	namespace = 1,
-	objectBrowseName = 'P2OGalaxy') {
+	namespace: number,
+	objectBrowseName: string) {
 	return (
 		{
-			...getDataAssemblyMockupReferenceJSON(namespace, objectBrowseName),
 			...getWQCDAMockupReferenceJSON(namespace, objectBrowseName),
 			...getScaleSettingDAMockupReferenceJSON(namespace, objectBrowseName, 'Int32'),
 			...getUnitDAMockupReferenceJSON(namespace, objectBrowseName),
@@ -50,7 +48,7 @@ export function getDIntViewMockupReferenceJSON(
 	);
 }
 
-export abstract class DIntViewMockup {
+export class DIntViewMockup {
 
 	public readonly name: string;
 	protected v = 0;
@@ -73,7 +71,7 @@ export abstract class DIntViewMockup {
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.V`,
+			nodeId: `ns=${namespace.index};s=${variableName}.V`,
 			browseName: `${variableName}.V`,
 			dataType: DataType.Int32,
 			value: {
@@ -87,6 +85,6 @@ export abstract class DIntViewMockup {
 	public getDIntViewInstanceMockupJSON() {
 		return getDIntViewMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name || 'UnqualifiedName');
+			this.mockupNode.browseName.name as string);
 	}
 }

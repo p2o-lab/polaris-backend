@@ -26,8 +26,8 @@
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 
 export function getResetDAMockupReferenceJSON(
-    namespace = 1,
-    objectBrowseName = 'P2OGalaxy') {
+    namespace: number,
+    objectBrowseName: string) {
 
   return ({
     ResetOp: {
@@ -44,8 +44,8 @@ export function getResetDAMockupReferenceJSON(
 }
 
 export class ResetDAMockup {
-  protected resetOp = 0;
-  protected resetAut = 0;
+  protected resetOp = false;
+  protected resetAut = false;
   protected mockupNode: UAObject;
 
   constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
@@ -57,7 +57,7 @@ export class ResetDAMockup {
 
     namespace.addVariable({
       componentOf: this.mockupNode,
-      nodeId: `ns=${namespace};s=${variableName}.ResetOp`,
+      nodeId: `ns=${namespace.index};s=${variableName}.ResetOp`,
       browseName: `${variableName}.ResetOp`,
       dataType: DataType.Boolean,
       value: {
@@ -73,7 +73,7 @@ export class ResetDAMockup {
 
     namespace.addVariable({
       componentOf: this.mockupNode,
-      nodeId: `ns=${namespace};s=${variableName}.ResetAut`,
+      nodeId: `ns=${namespace.index};s=${variableName}.ResetAut`,
       browseName: `${variableName}.ResetAut`,
       dataType: DataType.Boolean,
       value: {
@@ -87,6 +87,6 @@ export class ResetDAMockup {
   public getResetDAInstanceMockupJSON() {
     return getResetDAMockupReferenceJSON(
         this.mockupNode.namespaceIndex,
-        this.mockupNode.browseName.name || 'UnqualifiedName');
+        this.mockupNode.browseName.name as string);
   }
 }

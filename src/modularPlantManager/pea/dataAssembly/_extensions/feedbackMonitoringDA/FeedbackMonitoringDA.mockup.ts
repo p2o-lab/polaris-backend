@@ -26,8 +26,8 @@
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 
 export function getFeedbackMonitoringDAMockupReferenceJSON(
-    namespace = 1,
-    objectBrowseName = 'P2OGalaxy') {
+    namespace: number,
+    objectBrowseName: string) {
   return ({
         MonEn: {
           namespaceIndex: `${namespace}`,
@@ -81,7 +81,7 @@ export class FeedbackMonitoringDAMockup {
 
     namespace.addVariable({
       componentOf: rootNode,
-      nodeId: `ns=${namespace};s=${variableName}.MonEn`,
+      nodeId: `ns=${namespace.index};s=${variableName}.MonEn`,
       browseName: `${variableName}.MonEn`,
       dataType: DataType.Boolean,
       value: {
@@ -96,7 +96,7 @@ export class FeedbackMonitoringDAMockup {
     });
     namespace.addVariable({
       componentOf: rootNode,
-      nodeId: `ns=${namespace};s=${variableName}.MonSafePos`,
+      nodeId: `ns=${namespace.index};s=${variableName}.MonSafePos`,
       browseName: `${variableName}.MonSafePos`,
       dataType: DataType.Boolean,
       value: {
@@ -107,7 +107,7 @@ export class FeedbackMonitoringDAMockup {
     });
     namespace.addVariable({
       componentOf: rootNode,
-      nodeId: `ns=${namespace};s=${variableName}.MonStatErr`,
+      nodeId: `ns=${namespace.index};s=${variableName}.MonStatErr`,
       browseName: `${variableName}.MonStatErr`,
       dataType: DataType.Boolean,
       value: {
@@ -118,7 +118,7 @@ export class FeedbackMonitoringDAMockup {
     });
     namespace.addVariable({
       componentOf: rootNode,
-      nodeId: `ns=${namespace};s=${variableName}.MonDynErr`,
+      nodeId: `ns=${namespace.index};s=${variableName}.MonDynErr`,
       browseName: `${variableName}.MonDynErr`,
       dataType: DataType.Boolean,
       value: {
@@ -129,7 +129,7 @@ export class FeedbackMonitoringDAMockup {
     });
     namespace.addVariable({
       componentOf: rootNode,
-      nodeId: `ns=${namespace};s=${variableName}.MonStatTi`,
+      nodeId: `ns=${namespace.index};s=${variableName}.MonStatTi`,
       browseName: `${variableName}.MonStatTi`,
       dataType: DataType.Double,
       value: {
@@ -140,7 +140,7 @@ export class FeedbackMonitoringDAMockup {
     });
     namespace.addVariable({
       componentOf: rootNode,
-      nodeId: `ns=${namespace};s=${variableName}.MonDynTi`,
+      nodeId: `ns=${namespace.index};s=${variableName}.MonDynTi`,
       browseName: `${variableName}.MonDynTi`,
       dataType: DataType.Double,
       value: {
@@ -154,6 +154,6 @@ export class FeedbackMonitoringDAMockup {
   public getFeedbackMonitoringDAInstanceMockupJSON() {
     return getFeedbackMonitoringDAMockupReferenceJSON(
         this.mockupNode.namespaceIndex,
-        this.mockupNode.browseName.name || 'UnqualifiedName');
+        this.mockupNode.browseName.name as string);
   }
 }

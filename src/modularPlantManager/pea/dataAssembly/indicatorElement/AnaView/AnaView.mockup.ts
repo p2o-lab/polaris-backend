@@ -23,8 +23,7 @@
  * SOFTWARE.
  */
 
-import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
-import {getDataAssemblyMockupReferenceJSON} from '../../DataAssembly.mockup';
+import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../_extensions/wqcDA/WQCDA.mockup';
 import {
 	getScaleSettingDAMockupReferenceJSON,
@@ -33,11 +32,10 @@ import {
 import {getUnitDAMockupReferenceJSON, UnitDAMockup} from '../../_extensions/unitDA/UnitDA.mockup';
 
 export function getAnaViewMockupReferenceJSON(
-	namespace = 1,
-	objectBrowseName = 'P2OGalaxy') {
+	namespace: number,
+	objectBrowseName: string) {
 	return (
 		{
-			...getDataAssemblyMockupReferenceJSON(namespace, objectBrowseName),
 			...getWQCDAMockupReferenceJSON(namespace, objectBrowseName),
 			...getScaleSettingDAMockupReferenceJSON(namespace, objectBrowseName, 'Float'),
 			...getUnitDAMockupReferenceJSON(namespace, objectBrowseName),
@@ -50,7 +48,7 @@ export function getAnaViewMockupReferenceJSON(
 	);
 }
 
-export abstract class AnaViewMockup {
+export class AnaViewMockup {
 
 	public readonly name: string;
 	protected v = 0;
@@ -62,7 +60,6 @@ export abstract class AnaViewMockup {
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
 
 		this.name = variableName;
-
 		this.mockupNode = namespace.addObject({
 			organizedBy: rootNode,
 			browseName: variableName
@@ -70,10 +67,9 @@ export abstract class AnaViewMockup {
 		this.wqc = new WQCDAMockup(namespace, this.mockupNode, this.name);
 		this.scaleSettings = new ScaleSettingDAMockup<DataType.Double>(namespace, this.mockupNode, this.name, DataType.Double);
 		this.unit = new UnitDAMockup(namespace, this.mockupNode, this.name);
-
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.V`,
+			nodeId: `ns=${namespace.index};s=${variableName}.V`,
 			browseName: `${variableName}.V`,
 			dataType: DataType.Double,
 			value: {
@@ -87,6 +83,6 @@ export abstract class AnaViewMockup {
 	public getAnaViewInstanceMockupJSON() {
 		return getAnaViewMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name || 'UnqualifiedName');
+			this.mockupNode.browseName.name as string);
 	}
 }

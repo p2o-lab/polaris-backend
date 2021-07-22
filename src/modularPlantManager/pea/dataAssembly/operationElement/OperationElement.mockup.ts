@@ -24,41 +24,31 @@
  */
 
 import {Namespace, UAObject} from 'node-opcua';
-import {getFeedbackMonitoringDAMockupReferenceJSON} from '../_extensions/feedbackMonitoringDA/FeedbackMonitoringDA.mockup';
 import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../_extensions/osLevelDA/OSLevelDA.mockup';
-import {getDataAssemblyMockupReferenceJSON} from '../DataAssembly.mockup';
+import {DataAssemblyControllerMockup} from '../DataAssemblyController.mockup';
 
 export function getOperationElementMockupReferenceJSON(
-	namespace = 1,
-	objectBrowseName = 'P2OGalaxy') {
+	namespace: number,
+	objectBrowseName: string) {
 	return (
-		{	...getDataAssemblyMockupReferenceJSON(namespace,objectBrowseName),
+		{	
 			...getOSLevelDAMockupReferenceJSON(namespace,objectBrowseName),
 		}
 	);
 }
 
-export class OperationElementMockup {
-
-	public readonly name: string;
-	public readonly osLevel: OSLevelDAMockup;
-	protected mockupNode: UAObject;
-
-	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
-
-		this.name = variableName;
-
-		this.mockupNode = namespace.addObject({
-			organizedBy: rootNode,
-			browseName: variableName
-		});
-
+export class OperationElementMockup extends DataAssemblyControllerMockup {
+	protected osLevel: OSLevelDAMockup;
+	constructor(namespace: Namespace, rootNode: UAObject, variableName: string){
+		super(namespace, rootNode, variableName);
 		this.osLevel = new OSLevelDAMockup(namespace, this.mockupNode, this.name);
+
 	}
 
+
 	public getOperationElementInstanceMockupJSON() {
-		return getFeedbackMonitoringDAMockupReferenceJSON(
+		return getOperationElementMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name || 'UnqualifiedName');
+			this.mockupNode.browseName.name as string);
 	}
 }

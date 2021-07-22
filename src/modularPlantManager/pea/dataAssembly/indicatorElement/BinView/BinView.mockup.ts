@@ -24,16 +24,16 @@
  */
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {getDataAssemblyMockupReferenceJSON} from '../../DataAssembly.mockup';
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../_extensions/wqcDA/WQCDA.mockup';
+import {IndicatorElement} from '../IndicatorElement';
+import {getIndicatorElementMockupReferenceJSON, IndicatorElementMockup} from '../IndicatorElement.mockup';
 
-export function getDIntViewMockupReferenceJSON(
-	namespace = 1,
-	objectBrowseName = 'P2OGalaxy') {
+export function getBinViewMockupReferenceJSON(
+	namespace: number,
+	objectBrowseName: string) {
 	return (
 		{
-			...getDataAssemblyMockupReferenceJSON(namespace, objectBrowseName),
-			...getWQCDAMockupReferenceJSON(namespace, objectBrowseName),
+			...getIndicatorElementMockupReferenceJSON(namespace, objectBrowseName),
 			V: {
 				namespaceIndex: `${namespace}`,
 				nodeId: `${objectBrowseName}.V`,
@@ -53,28 +53,19 @@ export function getDIntViewMockupReferenceJSON(
 	);
 }
 
-export abstract class DIntViewMockup {
+export class BinViewMockup extends IndicatorElementMockup{
 
-	public readonly name: string;
-	protected v = 0;
+	protected v = false;
 	public vState0 = 'state0_active';
 	public vState1 = 'state1_active';
-	public wqc: WQCDAMockup;
-	protected mockupNode: UAObject;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
 
-		this.name = variableName;
-
-		this.mockupNode = namespace.addObject({
-			organizedBy: rootNode,
-			browseName: variableName
-		});
-		this.wqc = new WQCDAMockup(namespace, this.mockupNode, this.name);
+		super(namespace, rootNode, variableName);
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.V`,
+			nodeId: `ns=${namespace.index};s=${variableName}.V`,
 			browseName: `${variableName}.V`,
 			dataType: DataType.Boolean,
 			value: {
@@ -85,7 +76,7 @@ export abstract class DIntViewMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VState0`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VState0`,
 			browseName: `${variableName}.VState0`,
 			dataType: DataType.String,
 			value: {
@@ -100,7 +91,7 @@ export abstract class DIntViewMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VState1`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VState1`,
 			browseName: `${variableName}.VState1`,
 			dataType: DataType.String,
 			value: {
@@ -115,9 +106,9 @@ export abstract class DIntViewMockup {
 		});
 	}
 
-	public getDIntViewInstanceMockupJSON() {
-		return getDIntViewMockupReferenceJSON(
+	public getBinViewInstanceMockupJSON() {
+		return getBinViewMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name || 'UnqualifiedName');
+			this.mockupNode.browseName.name as string);
 	}
 }

@@ -26,8 +26,8 @@
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
 
 export function getWQCDAMockupReferenceJSON(
-    namespace = 1,
-    objectBrowseName = 'P2OGalaxy') {
+    namespace: number,
+    objectBrowseName: string) {
 
   return ({
     WQC:   {
@@ -43,15 +43,10 @@ export class WQCDAMockup {
   protected mockupNode: UAObject;
 
   constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
-
-    this.mockupNode = namespace.addObject({
-      organizedBy: rootNode,
-      browseName: variableName,
-    });
-
+    this.mockupNode = rootNode;
       namespace.addVariable({
         componentOf: rootNode,
-        nodeId: `ns=${namespace};s=${variableName}.WQC`,
+        nodeId: `ns=${namespace.index};s=${variableName}.WQC`,
         browseName: `${variableName}.WQC`,
         dataType: DataType.Byte,
         value: {
@@ -65,6 +60,6 @@ export class WQCDAMockup {
   public getWQCDAInstanceMockupJSON() {
     return getWQCDAMockupReferenceJSON(
         this.mockupNode.namespaceIndex,
-        this.mockupNode.browseName.name || 'UnqualifiedName');
+        this.mockupNode.browseName.name as string);
   }
 }

@@ -24,7 +24,6 @@
  */
 
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
-import {getDataAssemblyMockupReferenceJSON} from '../../DataAssembly.mockup';
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../_extensions/wqcDA/WQCDA.mockup';
 import {
 	getScaleSettingDAMockupReferenceJSON,
@@ -38,11 +37,10 @@ import {
 } from '../../_extensions/limitMonitoringDA/LimitMonitoringDA.mockup';
 
 export function getDIntMonMockupReferenceJSON(
-	namespace = 1,
-	objectBrowseName = 'P2OGalaxy') {
+	namespace: number,
+	objectBrowseName: string) {
 	return (
 		{
-			...getDataAssemblyMockupReferenceJSON(namespace, objectBrowseName),
 			...getWQCDAMockupReferenceJSON(namespace, objectBrowseName),
 			...getScaleSettingDAMockupReferenceJSON(namespace, objectBrowseName, 'Int32'),
 			...getUnitDAMockupReferenceJSON(namespace, objectBrowseName),
@@ -57,7 +55,7 @@ export function getDIntMonMockupReferenceJSON(
 	);
 }
 
-export abstract class DIntMonMockup {
+export class DIntMonMockup {
 
 	public readonly name: string;
 	protected v = 0;
@@ -65,7 +63,7 @@ export abstract class DIntMonMockup {
 	public scaleSettings: ScaleSettingDAMockup<DataType.Int32>;
 	public unit: UnitDAMockup;
 	public osLevel: OSLevelDAMockup;
-	public limitMonitoring: LimitMonitoringDAMockup;
+	public limitMonitoring: LimitMonitoringDAMockup<any>;
 	protected mockupNode: UAObject;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
@@ -84,7 +82,7 @@ export abstract class DIntMonMockup {
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.V`,
+			nodeId: `ns=${namespace.index};s=${variableName}.V`,
 			browseName: `${variableName}.V`,
 			dataType: DataType.Int32,
 			value: {
@@ -98,6 +96,6 @@ export abstract class DIntMonMockup {
 	public getDIntMonInstanceMockupJSON() {
 		return getDIntMonMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name || 'UnqualifiedName');
+			this.mockupNode.browseName.name as string);
 	}
 }

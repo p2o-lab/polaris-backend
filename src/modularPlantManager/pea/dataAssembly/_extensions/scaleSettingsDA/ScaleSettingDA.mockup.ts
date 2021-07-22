@@ -26,8 +26,8 @@
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
 
 export function getScaleSettingDAMockupReferenceJSON<T extends 'Float' | 'Int32' >(
-    namespace = 1,
-    objectBrowseName = 'P2OGalaxy',
+    namespace: number,
+    objectBrowseName: string,
     type: T) {
 
   return ({
@@ -52,15 +52,10 @@ export class ScaleSettingDAMockup<T extends DataType.Double | DataType.Int32> {
 
   constructor(namespace: Namespace, rootNode: UAObject, variableName: string,  type: T) {
     this.type = type;
-
-    this.mockupNode = namespace.addObject({
-      organizedBy: rootNode,
-      browseName: variableName,
-    });
-
+    this.mockupNode = rootNode;
     namespace.addVariable({
       componentOf: this.mockupNode,
-      nodeId: `ns=${namespace};s=${variableName}.VSclMin`,
+      nodeId: `ns=${namespace.index};s=${variableName}.VSclMin`,
       browseName: `${variableName}.VSclMin`,
       dataType: this.type,
       value: {
@@ -72,7 +67,7 @@ export class ScaleSettingDAMockup<T extends DataType.Double | DataType.Int32> {
 
     namespace.addVariable({
       componentOf: this.mockupNode,
-      nodeId: `ns=${namespace};s=${variableName}.VSclMax`,
+      nodeId: `ns=${namespace.index};s=${variableName}.VSclMax`,
       browseName: `${variableName}.VSclMax`,
       dataType: this.type,
       value: {
@@ -86,7 +81,7 @@ export class ScaleSettingDAMockup<T extends DataType.Double | DataType.Int32> {
   public getScaleSettingDAInstanceMockupJSON() {
     return getScaleSettingDAMockupReferenceJSON(
         this.mockupNode.namespaceIndex,
-        this.mockupNode.browseName.name || 'UnqualifiedName',
+        this.mockupNode.browseName.name as string,
         (this.type === DataType.Double)? 'Float' : 'Int32'
         );
   }

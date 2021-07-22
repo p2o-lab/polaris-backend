@@ -24,42 +24,27 @@
  */
 
 import {Namespace, UAObject} from 'node-opcua';
-import {getDataAssemblyMockupReferenceJSON} from '../DataAssembly.mockup';
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../_extensions/wqcDA/WQCDA.mockup';
 import {catPEAMockup} from '../../../../logging';
+import {DataAssemblyControllerMockup} from '../DataAssemblyController.mockup';
 
-export function getDiagnosticElementMockupReferenceJSON(
-	namespace = 1,
-	objectBrowseName = 'P2OGalaxy') {
-	return (
-		{	...getDataAssemblyMockupReferenceJSON(namespace,objectBrowseName),
-			...getWQCDAMockupReferenceJSON(namespace,objectBrowseName),
-		}
-	);
+export function getDiagnosticElementMockupReferenceJSON(namespace: number, objectBrowseName: string) {
+	return (getWQCDAMockupReferenceJSON(namespace,objectBrowseName));
 }
 
-export abstract class DiagnosticElementMockup {
+export class DiagnosticElementMockup extends DataAssemblyControllerMockup {
 
-	public readonly name: string;
 	public readonly wqc: WQCDAMockup;
-	protected mockupNode: UAObject;
 
-	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
-		catPEAMockup.debug(`Add variable ${variableName}`);
-
-		this.name = variableName;
-
-		this.mockupNode = namespace.addObject({
-			organizedBy: rootNode,
-			browseName: variableName
-		});
-
+	constructor(namespace: Namespace, rootNode: UAObject, variableName: string){
+		super(namespace, rootNode, variableName);
 		this.wqc = new WQCDAMockup(namespace, this.mockupNode, this.name);
+
 	}
 
 	public getDiagnosticElementInstanceMockupJSON() {
 		return getDiagnosticElementMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name || 'UnqualifiedName');
+			this.mockupNode.browseName.name as string);
 	}
 }

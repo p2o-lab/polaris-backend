@@ -1,16 +1,6 @@
 {
-    "TagName": {
-      "nodeId": "",
-      "namespaceIndex": "",
-      "dataType": "xs:string",
-      "value": "Variable"
-    },
-    "TagDescription": {
-      "nodeId": "",
-      "namespaceIndex": "",
-      "dataType": "xs:string",
-      "value": "Test"
-    },
+    "TagName": "Variable",
+    "TagDescription": "Test",
     "WQC": {
       "nodeId": "Variable.WQC",
       "namespaceIndex": "localhost",

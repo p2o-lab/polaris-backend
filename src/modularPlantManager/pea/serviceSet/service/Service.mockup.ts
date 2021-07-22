@@ -32,8 +32,8 @@ import {OpModeDAMockup} from '../../dataAssembly/_extensions/opModeDA/OpModeDA.m
 import {PEATestNumericVariable} from '../../../_utils';
 
 export function getServiceMockupReferenceJSON(
-	namespace = 1,
-	objectBrowseName = 'P2OGalaxy') {
+	namespace: number,
+	objectBrowseName: string) {
 
 	return ({
 			StateChannel: {

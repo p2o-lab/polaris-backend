@@ -26,53 +26,21 @@
 // eslint-disable-next-line no-undef
 import Timeout = NodeJS.Timeout;
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {DataAssemblyMockup, getDataAssemblyMockupReferenceJSON} from '../../../DataAssembly.mockup';
-import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../../../_extensions/osLevelDA/OSLevelDA.mockup';
-import {getUnitDAMockupReferenceJSON, UnitDAMockup} from '../../../_extensions/unitDA/UnitDA.mockup';
-import {
-	getScaleSettingDAMockupReferenceJSON,
-	ScaleSettingDAMockup
-} from '../../../_extensions/scaleSettingsDA/ScaleSettingDA.mockup';
-import {
-	getValueLimitationDAMockupReferenceJSON,
-	ValueLimitationDAMockup
-} from '../../../_extensions/valueLimitationDA/ValueLimitationDA.mockup';
 import {
 	getSourceModeDAMockupReferenceJSON,
 	SourceModeDAMockup
 } from '../../../_extensions/sourceModeDA/SourceModeDA.mockup';
+import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../../_extensions/wqcDA/WQCDA.mockup';
+import {AnaManMockup, getAnaManMockupReferenceJSON} from './AnaMan.mockup';
 
 export function getAnaManIntMockupReferenceJSON(
-	namespace = 1,
-	objectBrowseName = 'P2OGalaxy') {
+	namespace: number,
+	objectBrowseName: string) {
 
 	return ({
-			...getDataAssemblyMockupReferenceJSON(namespace,objectBrowseName),
-			...getOSLevelDAMockupReferenceJSON(namespace,objectBrowseName),
-			...getScaleSettingDAMockupReferenceJSON(namespace,objectBrowseName,'Float'),
-			...getValueLimitationDAMockupReferenceJSON(namespace,objectBrowseName, 'Float'),
-			...getUnitDAMockupReferenceJSON(namespace,objectBrowseName),
+			...getAnaManMockupReferenceJSON(namespace,objectBrowseName),
+			...getWQCDAMockupReferenceJSON(namespace,objectBrowseName),
 			...getSourceModeDAMockupReferenceJSON(namespace,objectBrowseName),
-			VOut: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VOut`,
-				dataType: 'Float'
-			},
-			VMan: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VMan`,
-				dataType: 'Float'
-			},
-			VRbk: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VRbk`,
-				dataType: 'Float'
-			},
-			VFbk: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VFbk`,
-				dataType: 'Float'
-			},
 			VInt: {
 				namespaceIndex: `${namespace}`,
 				nodeId: `${objectBrowseName}.VInt`,
@@ -82,89 +50,21 @@ export function getAnaManIntMockupReferenceJSON(
 	);
 }
 
-export class AnaManMockup {
+export class AnaManIntMockup extends AnaManMockup{
 
-	public readonly name: string;
-	protected vRbk = 0;
-	protected vMan = 0;
-	protected vOut = 0
-	protected vFbk = 0;
 	protected vInt = 0;
-	public readonly dataAssembly: DataAssemblyMockup;
-	public readonly osLevel: OSLevelDAMockup;
-	public readonly scaleSettings: ScaleSettingDAMockup<DataType.Double>;
-	public readonly valueLimitation: ValueLimitationDAMockup<DataType.Double>;
-	public readonly unit: UnitDAMockup;
+	public readonly wqc: WQCDAMockup;
 	public readonly sourceMode: SourceModeDAMockup;
-	protected interval: Timeout | undefined;
-	protected mockupNode: UAObject;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
+		super(namespace, rootNode, variableName);
 
-		this.name = variableName;
-
-		this.mockupNode = namespace.addObject({
-			organizedBy: rootNode,
-			browseName: variableName
-		});
-		this.dataAssembly = new DataAssemblyMockup(namespace, this.mockupNode, this.name);
-		this.osLevel = new OSLevelDAMockup(namespace, this.mockupNode, this.name);
-		this.scaleSettings = new ScaleSettingDAMockup(namespace, this.mockupNode, this.name, DataType.Double);
-		this.valueLimitation = new ValueLimitationDAMockup(namespace, this.mockupNode, this.name,DataType.Double);
-		this.unit = new UnitDAMockup(namespace, this.mockupNode, this.name);
+		this.wqc = new WQCDAMockup(namespace, this.mockupNode, this.name);
 		this.sourceMode = new SourceModeDAMockup(namespace, this.mockupNode, this.name);
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VMan`,
-			browseName: `${variableName}.VMan`,
-			dataType: DataType.Double,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.Double, value: this.vMan});
-				},
-				set: (variant: Variant): StatusCodes => {
-					this.vMan = variant.value;
-					return StatusCodes.Good;
-				},
-			},
-		});
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VOut`,
-			browseName: `${variableName}.VOut`,
-			dataType: DataType.Double,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.Double, value: this.vOut});
-				},
-			},
-		});
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VFbk`,
-			browseName: `${variableName}.VFbk`,
-			dataType: DataType.Double,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.Double, value: this.vFbk});
-				},
-			},
-		});
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VRbk`,
-			browseName: `${variableName}.VRbk`,
-			dataType: DataType.Double,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.Double, value: this.vRbk});
-				},
-			},
-		});
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VInt`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VInt`,
 			browseName: `${variableName}.VInt`,
 			dataType: DataType.Double,
 			value: {
@@ -175,21 +75,10 @@ export class AnaManMockup {
 		});
 	}
 
-	public getAnaManIntParamMockupJSON() {
+	public getAnaManIntMockupJSON() {
 		return getAnaManIntMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name || 'UnqualifiedName');
+			this.mockupNode.browseName.name as string);
 	}
 
-	public startCurrentTimeUpdate(): void {
-		this.interval = global.setInterval(() => {
-			this.vOut = Math.random();
-		}, 1000);
-	}
-
-	public stopCurrentTimeUpdate(): void {
-		if (this.interval) {
-			global.clearInterval(this.interval);
-		}
-	}
 }

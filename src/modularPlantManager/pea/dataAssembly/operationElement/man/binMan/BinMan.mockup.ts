@@ -26,7 +26,7 @@
 // eslint-disable-next-line no-undef
 import Timeout = NodeJS.Timeout;
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {DataAssemblyMockup, getDataAssemblyMockupReferenceJSON} from '../../../DataAssembly.mockup';
+
 import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../../../_extensions/osLevelDA/OSLevelDA.mockup';
 import {getUnitDAMockupReferenceJSON, UnitDAMockup} from '../../../_extensions/unitDA/UnitDA.mockup';
 import {
@@ -43,15 +43,24 @@ import {
 } from '../../../_extensions/sourceModeDA/SourceModeDA.mockup';
 
 export function getBinManMockupReferenceJSON(
-	namespace = 1,
-	objectBrowseName = 'P2OGalaxy') {
+	namespace: number,
+	objectBrowseName: string) {
 
 	return ({
-			...getDataAssemblyMockupReferenceJSON(namespace,objectBrowseName),
 			...getOSLevelDAMockupReferenceJSON(namespace,objectBrowseName),
 			VOut: {
 				namespaceIndex: `${namespace}`,
 				nodeId: `${objectBrowseName}.VOut`,
+				dataType: 'Boolean'
+			},
+			VState0: {
+				namespaceIndex: `${namespace}`,
+				nodeId: `${objectBrowseName}.VState0`,
+				dataType: 'Boolean'
+			},
+			VState1: {
+				namespaceIndex: `${namespace}`,
+				nodeId: `${objectBrowseName}.VState1`,
 				dataType: 'Boolean'
 			},
 			VMan: {
@@ -78,11 +87,11 @@ export class BinManMockup {
 	public readonly name: string;
 	protected vState0= 'off';
 	protected vState1= 'on';
-	protected vRbk = 0;
-	protected vMan = 0;
-	protected vOut = 0
-	protected vFbk = 0;
-	public readonly dataAssembly: DataAssemblyMockup;
+	protected vRbk = false;
+	protected vMan = false;
+	protected vOut = false;
+	protected vFbk = false;
+	
 	public readonly osLevel: OSLevelDAMockup;
 	protected interval: Timeout | undefined;
 	protected mockupNode: UAObject;
@@ -95,7 +104,7 @@ export class BinManMockup {
 			organizedBy: rootNode,
 			browseName: variableName
 		});
-		this.dataAssembly = new DataAssemblyMockup(namespace, this.mockupNode, this.name);
+		
 		this.osLevel = new OSLevelDAMockup(namespace, this.mockupNode, this.name);
 
 		namespace.addVariable({
@@ -124,7 +133,7 @@ export class BinManMockup {
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VMan`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VMan`,
 			browseName: `${variableName}.VMan`,
 			dataType: DataType.Boolean,
 			value: {
@@ -139,7 +148,7 @@ export class BinManMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VOut`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VOut`,
 			browseName: `${variableName}.VOut`,
 			dataType: DataType.Boolean,
 			value: {
@@ -150,7 +159,7 @@ export class BinManMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VFbk`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VFbk`,
 			browseName: `${variableName}.VFbk`,
 			dataType: DataType.Boolean,
 			value: {
@@ -161,7 +170,7 @@ export class BinManMockup {
 		});
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace};s=${variableName}.VRbk`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VRbk`,
 			browseName: `${variableName}.VRbk`,
 			dataType: DataType.Boolean,
 			value: {
@@ -172,21 +181,23 @@ export class BinManMockup {
 		});
 	}
 
-	public getBinManParamMockupJSON() {
+	public getBinManMockupJSON() {
 		return getBinManMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name || 'UnqualifiedName');
+			this.mockupNode.browseName.name as string);
 	}
 
 	public startCurrentTimeUpdate(): void {
 		this.interval = global.setInterval(() => {
-			this.vOut = Math.random();
+			this.vOut =!this.vOut;
 		}, 1000);
 	}
 
 	public stopCurrentTimeUpdate(): void {
 		if (this.interval) {
 			global.clearInterval(this.interval);
+		} else {
+			throw new Error('No interval defined.');
 		}
 	}
 }

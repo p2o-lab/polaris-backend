@@ -36,7 +36,11 @@ chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('AnaMon', () => {
-
+	const dataAssemblyOptions: DataAssemblyOptions = {
+		name: 'Variable',
+		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/AnaMon',
+		dataItems: baseDataAssemblyOptions
+	};
 	describe('static', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
 		it('should create AnaMon', async () => {
@@ -52,8 +56,8 @@ describe('AnaMon', () => {
 			expect(da1.communication.WQC).to.not.equal(undefined);
 			expect(da1.communication.VSclMax).to.not.equal(undefined);
 			expect(da1.communication.VSclMin).to.not.equal(undefined);
-			expect(da1.communication.TagName).to.not.equal(undefined);
-			expect(da1.communication.TagDescription).to.not.equal(undefined);
+			expect(da1.tagName).to.not.equal(undefined);
+			expect(da1.tagDescription).to.not.equal(undefined);
 			expect(da1.communication.VUnit).to.not.equal(undefined);
 
 			expect(da1.communication.OSLevel).to.not.equal(undefined);

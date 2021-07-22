@@ -85,9 +85,9 @@ describe('POLService', () => {
 			]);
 		});
 
-		it('should instantiate aggregated service', () => {
+		it('should instantiate aggregated service', async () => {
 			const manager = new ModularPlantManager();
-			const peaSet = manager.loadPEAController(
+			const peaSet = await manager.loadPEAController(
 				JSON.parse(fs.readFileSync('assets/peas/achema_demonstrator/peas_achema.json').toString()),
 				true);
 			expect(peaSet).to.have.lengthOf(3);

@@ -26,8 +26,8 @@
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
 
 export function getInterlockDAMockupReferenceJSON(
-    namespace = 1,
-    objectBrowseName = 'P2OGalaxy') {
+    namespace: number,
+    objectBrowseName: string) {
 
   return ({
         PermEn: {
@@ -82,7 +82,7 @@ export class InterlockDAMockup {
 
     namespace.addVariable({
       componentOf: rootNode,
-      nodeId: `ns=${namespace};s=${variableName}.PermEn`,
+      nodeId: `ns=${namespace.index};s=${variableName}.PermEn`,
       browseName: `${variableName}.PermEn`,
       dataType: DataType.Boolean,
       value: {
@@ -93,7 +93,7 @@ export class InterlockDAMockup {
     });
     namespace.addVariable({
       componentOf: rootNode,
-      nodeId: `ns=${namespace};s=${variableName}.Permit`,
+      nodeId: `ns=${namespace.index};s=${variableName}.Permit`,
       browseName: `${variableName}.Permit`,
       dataType: DataType.Boolean,
       value: {
@@ -104,7 +104,7 @@ export class InterlockDAMockup {
     });
     namespace.addVariable({
       componentOf: rootNode,
-      nodeId: `ns=${namespace};s=${variableName}.IntlEn`,
+      nodeId: `ns=${namespace.index};s=${variableName}.IntlEn`,
       browseName: `${variableName}.IntlEn`,
       dataType: DataType.Boolean,
       value: {
@@ -115,7 +115,7 @@ export class InterlockDAMockup {
     });
     namespace.addVariable({
       componentOf: rootNode,
-      nodeId: `ns=${namespace};s=${variableName}.Interlock`,
+      nodeId: `ns=${namespace.index};s=${variableName}.Interlock`,
       browseName: `${variableName}.Interlock`,
       dataType: DataType.Boolean,
       value: {
@@ -126,7 +126,7 @@ export class InterlockDAMockup {
     });
     namespace.addVariable({
       componentOf: rootNode,
-      nodeId: `ns=${namespace};s=${variableName}.ProtEn`,
+      nodeId: `ns=${namespace.index};s=${variableName}.ProtEn`,
       browseName: `${variableName}.ProtEn`,
       dataType: DataType.Boolean,
       value: {
@@ -137,7 +137,7 @@ export class InterlockDAMockup {
     });
     namespace.addVariable({
       componentOf: rootNode,
-      nodeId: `ns=${namespace};s=${variableName}.Protect`,
+      nodeId: `ns=${namespace.index};s=${variableName}.Protect`,
       browseName: `${variableName}.Protect`,
       dataType: DataType.Boolean,
       value: {
@@ -151,6 +151,6 @@ export class InterlockDAMockup {
   public getInterlockDAInstanceMockupJSON() {
     return getInterlockDAMockupReferenceJSON(
         this.mockupNode.namespaceIndex,
-        this.mockupNode.browseName.name || 'UnqualifiedName');
+        this.mockupNode.browseName.name as string);
   }
 }
