@@ -23,21 +23,17 @@
  * SOFTWARE.
  */
 
-import {BackendNotification, ServerSettingsOptions} from '@p2olab/polaris-interface';
-import {ModularPlantManager, PEAController} from '../../../modularPlantManager';
-import {BackendNotification, DataAssemblyOptions, PEAOptions} from '@p2olab/polaris-interface';
+import {BackendNotification, PEAOptions, ServerSettingsOptions} from '@p2olab/polaris-interface';
 import {ModularPlantManager, PEAController} from '../../../modularPlantManager';
 import {Server} from '../../server';
 
 import {Application} from 'express';
-import * as fs from 'fs';
 import * as WebSocket from 'ws';
 import {MockupServer} from '../../../modularPlantManager/_utils';
 import path = require('path');
 import {AnaViewMockup} from '../../../modularPlantManager/pea/dataAssembly/indicatorElement/AnaView/AnaView.mockup';
 import {Namespace, UAObject} from 'node-opcua';
 import {namespaceUrl} from '../../../../tests/namespaceUrl';
-import * as baseDataAssemblyOptions from '../../../../tests/anaview.json';
 import * as peaOptions from '../../../../tests/peaOptions.json';
 import {ServiceControlMockup} from '../../../modularPlantManager/pea/dataAssembly/ServiceControl/ServiceControl.mockup';
 import {expect} from 'chai';
@@ -92,10 +88,6 @@ describe('PEARoutes', () => {
 		});
 		it('should fail to get peas, wrong id', async () => {
 			//TODO how to make it fail
-
-		/*		await request(app).get('/api/pea/')
-				.expect(500)
-				.expect('Error: PEA with id abc1234 not found');*/
 		});
 	});
 
@@ -187,57 +179,44 @@ describe('PEARoutes', () => {
 				.expect(500)
 				.expect('Error: No valid PiMAd Identifier');
 		});
-
-		context('Server Settings', () => {
-			let peaController: PEAController;
-			before(() => {
-				peaController = new PEAController({
-					name:'test',
-					id: 'test',
-					pimadIdentifier: 'test',
-					username: 'admin',
-					password: '1234',
-					opcuaServerUrl:'localhost',
-					services:[],
-					dataAssemblies:[]
-				})
-				manager.peas.push(peaController);
-			});
-			it('should get server settings', async () => {
-				await request(app).get('/api/pea/test/getServerSettings')
-					.expect(200)
-					.expect({ serverUrl: 'localhost', username: 'admin', password: '1234' });
-			});
-			it('getServerSetting should fail , wrong peaId', async () => {
-				await request(app).get('/api/pea/wrongId/getServerSettings')
-					.expect(500)
-					.expect(/Error: PEA with id wrongId not found/)
-			});
-
-			it('should update server settings', async () => {
-				const options: ServerSettingsOptions = {username: 'peter', password: '5678', serverUrl: 'localhost:4334', id: 'test' }
-				await request(app).post('/api/pea/updateServerSettings')
-					.send(options)
-					.expect(200)
-					.expect(/Success!/);
-			});
-			it('updateServerSettings should fail, wrong peaId', async () => {
-				const options: ServerSettingsOptions = {username: 'peter', password: '5678', serverUrl: 'localhost:4334', id: 'wrongId' }
-				await request(app).post('/api/pea/updateServerSettings')
-					.send(options)
-					.expect(500)
-					.expect(/Error: PEA with id wrongId not found/)
-			});
-		})
-		/*
-		describe('with Mockup', () => {
-			let mockupServer: MockupServer;
 		it('should load PEAController', async () => {
 			const peaModel = await manager.addPEAToPimadPool({source: 'tests/testpea.zip'});
 			const pimadIdentifier = peaModel.pimadIdentifier;
 			await request(app).post('/api/pea/loadPEA')
 				.send({id: pimadIdentifier})
 				.expect(200);
+		});
+	});
+
+	context('Server Settings', () => {
+		it('should get server settings', async () => {
+			const peaController: PEAController = new PEAController(peaOptionsDummy);
+			manager.peas.push(peaController);
+			await request(app).get('/api/pea/test/getServerSettings')
+				.expect(200)
+				.expect({ serverUrl: 'localhost', username: 'admin', password: '1234' });
+		});
+		it('getServerSetting should fail , wrong peaId', async () => {
+			await request(app).get('/api/pea/wrongId/getServerSettings')
+				.expect(500)
+				.expect(/Error: PEA with id wrongId not found/);
+		});
+
+		it('should update server settings', async () => {
+			const peaController: PEAController = new PEAController(peaOptionsDummy);
+			manager.peas.push(peaController);
+			const options: ServerSettingsOptions = {username: 'peter', password: '5678', serverUrl: 'localhost:4334', id: 'test' };
+			await request(app).post('/api/pea/updateServerSettings')
+				.send(options)
+				.expect(200)
+				.expect(/Successfully updated the server settings!/);
+		});
+		it('updateServerSettings should fail, wrong peaId', async () => {
+			const options: ServerSettingsOptions = {username: 'peter', password: '5678', serverUrl: 'localhost:4334', id: 'wrongId' };
+			await request(app).post('/api/pea/updateServerSettings')
+				.send(options)
+				.expect(500)
+				.expect(/Error: PEA with id wrongId not found/);
 		});
 	});
 
