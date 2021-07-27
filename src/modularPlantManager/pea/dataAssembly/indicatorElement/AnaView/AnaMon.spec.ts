@@ -48,8 +48,7 @@ describe('AnaMon', () => {
 	describe('static', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
 		it('should create AnaMon', async () => {
-			const da1: AnaMon= DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as AnaMon;
-			expect(da1 instanceof AnaMon).to.equal(true);
+			const da1: AnaMon= new AnaMon(dataAssemblyOptions, emptyOPCUAConnection);
 			expect(da1.tagName).to.equal('Variable');
 			expect(da1.tagDescription).to.equal('Test');
 			expect(da1.communication.V).to.not.equal(undefined);

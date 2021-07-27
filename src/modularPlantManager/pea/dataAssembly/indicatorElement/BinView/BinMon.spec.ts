@@ -51,8 +51,7 @@ describe('BinMon', () => {
 	describe('static', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
 		it('should create BinMon', async () => {
-			const da1: BinMon = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as BinMon;
-			expect(da1 instanceof BinMon).to.equal(true);
+			const da1: BinMon = new BinMon(dataAssemblyOptions, emptyOPCUAConnection);
 
 			expect(da1.tagName).to.equal('Variable');
 			expect(da1.tagDescription).to.equal('Test');

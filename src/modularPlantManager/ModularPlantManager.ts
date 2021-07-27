@@ -329,11 +329,8 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 	 * @param {string} serviceName
 	 * @returns {Service}
 	 */
-	public getService(peaName: string, serviceName: string): Service {
-		const pea: PEAController | undefined = this.peas.find((p) => p.id === peaName);
-		if (!pea) {
-			throw new Error(`PEA with ID ${peaName} not registered`);
-		}
+	public getService(peaId: string, serviceName: string): Service {
+		const pea: PEAController = this.getPEAController(peaId);
 		return pea.getService(serviceName);
 	}
 

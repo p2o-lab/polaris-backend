@@ -33,23 +33,6 @@ import * as path from 'path';
 
 export const peaRouter: Router = Router();
 
-/**
- * @api {post} /addByOptions    Load/Instantiate PEAController via PEAController-options directly
- * @apiName PostPEA
- * @apiGroup PEAController
- * @apiParam {PEAOptions} pea    PiMAdIdentifier
- */
-peaRouter.post('/loadPEA', async (req, res) => {
-	catServer.info('Load PEAController via PEAController-Options');
-	const manager: ModularPlantManager = req.app.get('manager');
-	try {
-		await manager.loadPEAController(req.body.id);
-		res.status(200).send('"Success!"');
-	} catch (err) {
-		res.status(500).send(err.toString());
-	}
-});
-
 // TODO: Place this code somewhere else?
 // set up Multer for parsing uploaded file
 const fs = require('fs');
@@ -72,6 +55,23 @@ const storage = multer.diskStorage({
 });
 const upload = multer({storage: storage});
 
+
+/**
+ * @api {post} /addByOptions    Load/Instantiate PEAController via PEAController-options directly
+ * @apiName PostPEA
+ * @apiGroup PEAController
+ * @apiParam {PEAOptions} pea    PiMAdIdentifier
+ */
+peaRouter.post('/loadPEA', async (req, res) => {
+	catServer.info('Load PEAController via PEAController-Options');
+	const manager: ModularPlantManager = req.app.get('manager');
+	try {
+		await manager.loadPEAController(req.body.id);
+		res.status(200).send('"Success!"');
+	} catch (err) {
+		res.status(500).send(err.toString());
+	}
+});
 
 /**
  * @api {post} /addByPiMAd Add PEAController via PiMAd. (Receiving FormData from Frontend and parse with Multer lib)
@@ -196,6 +196,7 @@ peaRouter.post('/:peaId/connect', asyncHandler(async (req: Request, res: Respons
 		await pea.connectAndSubscribe();
 		res.status(200).send({peaId: pea.id, status: 'Successfully connected'});
 	} catch (e) {
+		console.log(e);
 		res.status(500).send(e.toString());
 	}
 
@@ -230,9 +231,9 @@ peaRouter.delete('/:peaId', asyncHandler(async (req: Request, res: Response) => 
 	const manager: ModularPlantManager = req.app.get('manager');
 	try {
 		await manager.removePEAController(req.params.peaId);
-		res.status(200).send('"Success!"');
+		res.status(200).send({peaId: req.params.peaId, status: 'Successfully deleted'});
 	} catch (err) {
-		res.status(404).send(err.toString());
+		res.status(500).send(err.toString());
 	}
 }));
 
@@ -247,7 +248,7 @@ peaRouter.delete('/PiMAd/:peaId', asyncHandler(async (req: Request, res: Respons
 	const manager: ModularPlantManager = req.app.get('manager');
 	try{
 		await manager.deletePEAFromPimadPool(req.params.peaId);
-		res.status(200).send('"Success!"');
+		res.status(200).send('"Successfully deleted PiMAd-PEA!"');
 	} catch(e){
 		res.status(500).send('"'+e.toString()+'"');
 	}
@@ -327,8 +328,13 @@ peaRouter.post('/:peaId/service/:serviceName/:command', asyncHandler(async (req:
  */
 peaRouter.get('/:peaId/service/:serviceName', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
-	const service = manager.getService(req.params.peaId, req.params.serviceName);
-	res.json(service.json());
+	try{
+		const service = manager.getService(req.params.peaId, req.params.serviceName);
+		res.json(service.json());
+	}
+	catch(err){
+		res.status(500).send(err.toString());
+	}
 }));
 
 /**
