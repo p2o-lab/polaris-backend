@@ -55,7 +55,7 @@ describe('DIntView', () => {
 				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/DIntView',
 				dataItems: baseDataAssemblyOptions
 			};
-			const da1: DIntView = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as DIntView;
+			const da1: DIntView = new DIntView(dataAssemblyOptions, emptyOPCUAConnection);
 			expect(da1 instanceof DIntView).to.equal(true);
 			expect(da1.tagName).to.equal('Variable');
 			expect(da1.tagDescription).to.equal('Test');

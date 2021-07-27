@@ -49,10 +49,7 @@ describe('BinView', () => {
 	describe('static', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
 		it('should create BinView', async () => {
-
-
-			const da1: BinView = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as BinView;
-			expect(da1 instanceof BinView).to.equal(true);
+			const da1: BinView = new BinView(dataAssemblyOptions, emptyOPCUAConnection);
 			expect(da1.tagName).to.equal('Variable');
 			expect(da1.tagDescription).to.equal('Test');
 			expect(da1.communication.WQC).to.not.equal(undefined);

@@ -49,7 +49,7 @@ describe('DIntMon', () => {
 	describe('static', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
 		it('should create DIntMon', async () => {
-			const da1: DIntMon= DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as DIntMon;
+			const da1: DIntMon= new DIntMon(dataAssemblyOptions, emptyOPCUAConnection);
 			expect(da1 instanceof DIntMon).to.equal(true);
 
 			expect(da1.tagName).to.equal('Variable');
@@ -119,7 +119,7 @@ describe('DIntMon', () => {
 				}
 			}
 
-			const da1 = new AnaMon(dataAssemblyOptions, connection);
+			const da1 = new DIntMon(dataAssemblyOptions, connection);
 			const pv =  da1.subscribe();
 			await connection.startListening();
 			await pv;

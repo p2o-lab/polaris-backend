@@ -51,7 +51,7 @@ describe('StringView', () => {
 		const emptyOPCUAConnection = new OpcUaConnection('', '');
 		it('should create StringView', async () => {
 
-			const da1: StringView = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as StringView;
+			const da1: StringView = new StringView(dataAssemblyOptions, emptyOPCUAConnection);
 			expect(da1.tagName).to.equal('Variable');
 			expect(da1.tagDescription).to.equal('Test');
 			expect(da1.communication.WQC).to.not.equal(undefined);
