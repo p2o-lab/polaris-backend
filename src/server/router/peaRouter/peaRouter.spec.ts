@@ -67,7 +67,6 @@ describe('PEARoutes', () => {
 
 	afterEach(async () => {
 		await appServer.stop();
-		if(mockupServer) await mockupServer.shutdown();
 	});
 
 	context('/api/pea', () => {
