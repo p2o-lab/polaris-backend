@@ -71,7 +71,7 @@ export function getServiceSourceModeDAMockupReferenceJSON(
 }
 
 export class ServiceSourceModeDAMockup {
-	public srcMode: ServiceSourceMode = ServiceSourceMode.Extern;
+	public srcMode: ServiceSourceMode = ServiceSourceMode.Intern;
 	public srcChannel = false;
 	public srcIntAut = false;
 	public srcIntOp = false;
@@ -128,7 +128,7 @@ export class ServiceSourceModeDAMockup {
 				set: (variant: Variant) => {
 					this.srcIntOp = variant.value;
 					if (this.srcIntOp) {
-						if (this.srcChannel) {
+						if (!this.srcChannel) {
 							this.srcMode = ServiceSourceMode.Intern;
 						} //TODO else?
 					} //TODO else?
@@ -151,7 +151,7 @@ export class ServiceSourceModeDAMockup {
 				set: (variant: Variant) => {
 					this.srcExtOp = variant.value;
 					if (this.srcExtOp) {
-						if (this.srcChannel) {
+						if (!this.srcChannel) {
 							this.srcMode = ServiceSourceMode.Extern;
 						}
 					}
