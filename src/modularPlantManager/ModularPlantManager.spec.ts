@@ -25,7 +25,7 @@
 
 import {
 	AggregatedServiceOptions,
-	DataAssemblyOptions,
+	DataAssemblyOptions, PEAOptions,
 	ServerSettingsOptions,
 	ServiceCommand
 } from '@p2olab/polaris-interface';
@@ -37,6 +37,8 @@ import * as fs from 'fs';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import 'mocha';
+import {PEAController} from './pea';
+import * as peaOptions from '../../tests/peaOptions.json';
 
 import {MockupServer} from './_utils';
 import * as AdmZip from 'adm-zip';
@@ -50,7 +52,6 @@ const expect = chai.expect;
 const assert = chai.assert;
 
 describe('ModularPlantManager', () => {
-	const parseJson = require('json-parse-better-errors');
 
 	it('getAllPEAControllers()',  async() => {
 		const modularPlantManager = new ModularPlantManager();
@@ -72,6 +73,10 @@ describe('ModularPlantManager', () => {
 		const modularPlantManager = new ModularPlantManager();
 		return expect(modularPlantManager.getAllPEAsFromPimadPool()).to.be.empty;
 	});
+	it('getAllPEAsFromPimadPool(), fails',  async() => {
+			//TODO when will this occure?
+		}
+	);
 
 	describe('functions, which need PiMAdPEA', () => {
 		let modularPlantManager = new ModularPlantManager();
@@ -116,13 +121,21 @@ describe('ModularPlantManager', () => {
 	describe('functions, which need PEAController instance', () => {
 		let peaId='';
 		let modularPlantManager: ModularPlantManager;
-		let pimadId = '';
-		before(async()=>{
+		let peaController: PEAController;
+		const peaOptionsDummy = {
+			name:'test',
+			id: 'test',
+			pimadIdentifier: 'test',
+			username: 'admin',
+			password: '1234',
+			opcuaServerUrl:'localhost',
+			services:[],
+			dataAssemblies:[]
+		};
+		beforeEach(async()=>{
+			peaController = new PEAController(peaOptionsDummy);
 			modularPlantManager = new ModularPlantManager();
-			const peaModel = await modularPlantManager.addPEAToPimadPool({source: 'tests/testpea.zip'});
-			pimadId = peaModel.pimadIdentifier;
-			const peaControllers = await modularPlantManager.loadPEAController(pimadId);
-			const peaController = peaControllers[0];
+			modularPlantManager.peas.push(peaController);
 			peaId = peaController.id;
 		});
 
@@ -135,19 +148,35 @@ describe('ModularPlantManager', () => {
 		});
 
 		it('removePEAController()',  () => {
-			return expect(modularPlantManager.removePEAController(peaId)).to.not.rejected;
+			expect(modularPlantManager.peas.length = 1);
+			expect(modularPlantManager.removePEAController(peaId)).to.not.throw;
+			expect(modularPlantManager.peas.length = 0);
 		});
 
 		it('removePEAController() to fail, wrong peaId', () => {
 			return expect(modularPlantManager.removePEAController('')).to.rejected;
 		});
 		it('removePEAController() to fail, protected', async() => {
-			const peaModel = await modularPlantManager.addPEAToPimadPool({source: 'tests/testpea.zip'});
-			pimadId = peaModel.pimadIdentifier;
-			const peaControllers = await modularPlantManager.loadPEAController(pimadId, true);
+			const peaController = new PEAController(peaOptionsDummy, true);
+			modularPlantManager.peas.length = 0;
+			modularPlantManager.peas.push(peaController);
+			return expect(modularPlantManager.removePEAController(peaId)).to.rejectedWith('PEA test is protected and can\'t be deleted');
+		});
+		it('updateServerSettings()', async () => {
+			// instantiate PEAController first
+			const peaControllers = await modularPlantManager.loadPEAController(pimadId);
 			const peaController = peaControllers[0];
-			peaId = peaController.id;
-			return expect(modularPlantManager.removePEAController('')).to.rejected;
+			const peaId = peaController.id;
+			const options: ServerSettingsOptions = {
+				id: peaId,
+				username: 'Bob',
+				password: '1234',
+				serverUrl: 'url',
+			};
+			modularPlantManager.updateServerSettings(options);
+			expect(peaController.connection.endpoint).equals('url');
+			expect(peaController.connection.username).equals('Bob');
+			expect(peaController.connection.password).equals('1234');
 		});
 
 		it('getAllPEAControllers()',  () => {
@@ -155,8 +184,9 @@ describe('ModularPlantManager', () => {
 		});
 
 		it('getService()',  async() => {
-			expect(()=>modularPlantManager.getService(peaId, 'Integral1')).to.not.throw();
-			expect(()=>modularPlantManager.getService(peaId, 'Integral2')).to.not.throw();
+			const peaController = new PEAController(peaOptions as unknown as PEAOptions);
+			modularPlantManager.peas.length = 0;
+			modularPlantManager.peas.push(peaController);
 			expect(()=>modularPlantManager.getService(peaId, 'Trigonometry')).to.not.throw();
 		});
 		it('getService() to fail, wrong peaId',  () => {
@@ -275,7 +305,6 @@ describe('ModularPlantManager', () => {
 			await expect(modularPlantManager.removePEAController(modularPlantManager.peas[0].id)).to.be.rejectedWith(/is protected/);
 		});
 
-
 	it('should load and remove recipe', () => {
 		const peasRecipe =
 			JSON.parse(fs.readFileSync('assets/recipes/test/recipe_time_local.json').toString());
@@ -290,7 +319,7 @@ describe('ModularPlantManager', () => {
 		modularPlantManager.removeRecipe(modularPlantManager.recipes[0].id);
 		expect(modularPlantManager.recipes).to.have.lengthOf(1);
 
-		expect(() => modularPlantManager.removeRecipe(modularPlantManager.recipes[0].id)).to.throw('protected');
+		expect(() => modularPlantManager.removeRecipe(modularPlantManager.recipes[0].id)).to.throw('protected');*/
 	});
 
 	it('should load and provide pol services', () => {
@@ -314,93 +343,6 @@ describe('ModularPlantManager', () => {
 		await modularPlantManager.polServices[0].setParameters([{name: 'duration', value: 100}]);
 		await modularPlantManager.polServices[0].start();
 		await modularPlantManager.polServices[0].waitForStateChangeWithTimeout('COMPLETED');
-	});
-
-	describe('test with Mockup Server', function () {
-		/*this.timeout(5000);
-		let mockupServer: MockupServer;
-
-		before(async () => {
-			mockupServer = new MockupServer();
-			await mockupServer.start();
-		});
-
-		after(async () => {
-			await mockupServer.shutdown();
-		});
-
-		it('should load from options, stop, abort and reset manager and remove PEAController', async () => {
-			const peaJson = parseJson(
-				fs.readFileSync('assets/peas/pea_testserver_1.0.0.json', 'utf8'), null, 60);
-
-			const modularPlantManager = new ModularPlantManager();
-			modularPlantManager.loadPEAController(peaJson);
-			expect(modularPlantManager.peas).to.have.lengthOf(1);
-
-			const pea = modularPlantManager.peas[0];
-			const service1 = pea.services[0];
-			const service2 = pea.services[1];
-
-			await pea.connectAndSubscribe();
-			await service2.executeCommand(ServiceCommand.start);
-			await service2.waitForStateChangeWithTimeout('EXECUTE');
-
-			await modularPlantManager.stopAllServices();
-			await service2.waitForStateChangeWithTimeout('STOPPED');
-			expect(service2.state).to.equal(ServiceState.STOPPED);
-
-			await modularPlantManager.abortAllServices();
-			await Promise.all([
-				service1.waitForStateChangeWithTimeout('ABORTED'),
-				service2.waitForStateChangeWithTimeout('ABORTED')]
-			);
-			expect(service1.state).to.equal(ServiceState.ABORTED);
-			expect(service2.state).to.equal(ServiceState.ABORTED);
-
-			await modularPlantManager.resetAllServices();
-			await service2.waitForStateChangeWithTimeout('IDLE');
-			expect(service2.state).to.equal(ServiceState.IDLE);
-
-			//await modularPlantManager.removePEA(pea.id);
-			expect(modularPlantManager.peas).to.have.lengthOf(0);
-		}).timeout(5000);
-
-		it('should AutoReset service', async () => {
-			const peaJson = parseJson(
-				fs.readFileSync('assets/peas/pea_testserver_1.0.0.json', 'utf8'), null, 60);
-
-			const modularPlantManager = new ModularPlantManager();
-			modularPlantManager.autoreset = true;
-			modularPlantManager.loadPEAController(peaJson);
-
-			const pea = modularPlantManager.peas[0];
-			const service = pea.services[1];
-
-			await pea.connectAndSubscribe();
-			await service.executeCommand(ServiceCommand.start);
-			await service.waitForStateChangeWithTimeout('EXECUTE');
-
-			await service.executeCommand(ServiceCommand.complete);
-			await service.waitForStateChangeWithTimeout('COMPLETED');
-			await service.waitForStateChangeWithTimeout('IDLE');
-		});
-
-		it('should load two PEAs and an aggregated service', async () => {
-			const modularPlantManager = new ModularPlantManager();
-
-			const peaJson: LoadOptions = parseJson(
-				fs.readFileSync('assets/peas/pea_testserver_1.0.0.json', 'utf8'), null, 60);
-
-			//peaJson.peas[0].id = 'PEA1';
-		//	modularPlantManager.loadPEAController(peaJson);
-			//peaJson.peas[0].id = 'PEA2';
-		//	modularPlantManager.loadPEAController(peaJson);
-
-			const asJson: AggregatedServiceOptions = parseJson(
-				fs.readFileSync('assets/polService/aggregatedService_peatestserver.json', 'utf8'), null, 60);
-			modularPlantManager.instantiatePOLService(asJson);
-		});*/
-
 	});
 
 });
