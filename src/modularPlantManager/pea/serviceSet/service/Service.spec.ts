@@ -24,7 +24,7 @@
  */
 
 import {
-	OperationMode,
+	OperationMode, PEAOptions,
 	ServiceCommand,
 	ServiceControlOptions,
 	ServiceOptions, ServiceSourceMode,
@@ -38,79 +38,74 @@ import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
 import {ServiceState} from './enum';
 import {PEAMockup} from '../../PEA.mockup';
+import * as peaOptions from '../../../../../tests/peaOptions.json';
+import {MockupServer} from '../../../_utils';
+import {AnaViewMockup} from '../../dataAssembly/indicatorElement/AnaView/AnaView.mockup';
+import {Namespace, UAObject} from 'node-opcua';
+import {ServiceControlMockup} from '../../dataAssembly/ServiceControl/ServiceControl.mockup';
+import {namespaceUrl} from '../../../../../tests/namespaceUrl';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('Service', () => {
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const parseJson = require('json-parse-better-errors');
 	const opcUAConnection = new OpcUaConnection('', '');
 
-	// eslint-disable-next-line no-undef
 	context('constructor', () => {
 		it('should fail with missing options', () => {
-			expect(() => new Service({} as ServiceOptions, opcUAConnection, '')).to.throw();
+			expect(() => new Service({} as ServiceOptions, opcUAConnection, '')).to.throw('No service options provided.');
 		});
 
 		it('should fail with missing name', () => {
 			expect(() => new Service(
 				{name: '', parameters: [], communication: {} as ServiceControlOptions, procedures: []},
 				opcUAConnection, '')
-			).to.throw('No service name');
+			).to.throw('No service name provided');
 		});
 
 		it('should fail with missing PEAController', () => {
 			expect(() => new Service(
 				{name: 'test', parameters: [], communication: {} as ServiceControlOptions, procedures: []},
 				opcUAConnection, '')
-			).to.throw('creteDataItem Failed');
+			).to.throw('Creating DataAssemblyController Error: No Communication variables found in DataAssemblyOptions');
 		});
 
 	});
 
 	it('should reject command if not connected', async () => {
-		const peaJson =
-			parseJson(fs.readFileSync('assets/peas/pea_testserver_1.0.0.json', 'utf8'), null, 60)
-				.peas[0];
-		const pea = new PEAController(peaJson);
+		const pea = new PEAController(peaOptions as unknown as PEAOptions);
 		const service = pea.services[0];
-		await expect(service.executeCommand(ServiceCommand.start)).to.be.rejectedWith('PEAController is not connected');
+		await expect(service.executeCommand(ServiceCommand.start)).to.be.rejectedWith('Can not write node since OPC UA connection to PEA test is not established');
 	});
 
 	it('should create service from PEATestServer json', () => {
-		const json =
-			parseJson(fs.readFileSync('src/modularPlantManager/pea/_assets/JSON/pea_testserver_1.0.0_2.json', 'utf8'), null, 60)
-				.peas[0].services[0];
-		const service = new Service(json, opcUAConnection, 'root');
-		expect(service.name).to.equal('Service1');
+		const serviceOptions = peaOptions.services[0];
+		const service = new Service(serviceOptions as unknown as ServiceOptions, opcUAConnection, 'root');
+		expect(service.name).to.equal('Trigonometry');
 	});
 
 	// eslint-disable-next-line no-undef
 	context('with PEATestServer', () => {
 		let pea: PEAController;
 		let service: Service;
-
 		// eslint-disable-next-line no-undef
 		before(() => {
-			const peaJson =
-				parseJson(fs.readFileSync('assets/peas/pea_testserver_1.0.0.json', 'utf8'), null, 60)
-					.peas[0];
-			pea = new PEAController(peaJson);
+			pea = new PEAController(peaOptions as unknown as PEAOptions);
 			service = pea.services[0];
 		});
 
 		it('should get default procedure', () => {
 			const procedure = service.getDefaultProcedure();
-			expect(procedure?.name).to.equal('Procedure 1');
+			expect(procedure?.name).to.equal('Trigonometry_default');
 		});
 
 		it('should find procedure', () => {
-			const procedure = service.getProcedureByNameOrDefault('Procedure 1');
-			expect(procedure?.name).to.equal('Procedure 1');
+			const procedure = service.getProcedureByNameOrDefault('Trigonometry_default');
+			expect(procedure?.name).to.equal('Trigonometry_default');
 		});
 
-		it('should find procedure 2', () => {
+		it('should not find non existent procedure', () => {
 			const procedure = service.getProcedureByNameOrDefault('ProcedureNotThere');
 			expect(procedure).to.equal(undefined);
 		});
@@ -127,24 +122,44 @@ describe('Service', () => {
 		//let testService: TestServerService;
 		let pea: PEAController;
 
+		//set namespaceUrl in peaOptions
+		for (const key in peaOptions.dataAssemblies[0].dataItems as any) {
+			//skip static values
+			if((typeof(peaOptions.dataAssemblies[0].dataItems as any)[key] != 'string')){
+				(peaOptions.dataAssemblies[0].dataItems as any)[key].namespaceIndex = namespaceUrl;
+			}
+		}
+		for (const key in peaOptions.services[0].communication as any) {
+			//skip static values
+			if((typeof(peaOptions.services[0].communication as any)[key] != 'string')){
+				(peaOptions.services[0].communication as any)[key].namespaceIndex = namespaceUrl;
+			}
+		}
+
 		beforeEach(async function () {
-			this.timeout(5000);
-			peaServer = new PEAMockup();
+			this.timeout(3000);
+	/*		peaServer = new PEAMockup();
 			//await peaServer.start();
 			peaServer.startSimulation();
-			//testService = peaServer.services[0];
+			//testService = peaServer.services[0];*/
 
-			const peaJson =
-				parseJson(fs.readFileSync('assets/peas/pea_testserver_1.0.0.json', 'utf8'), null, 60)
-					.peas[0];
-			pea = new PEAController(peaJson);
+			//set up mockup
+			const mockupServer = new MockupServer();
+			await mockupServer.initialize();
+			const mockup = new AnaViewMockup(mockupServer.namespace as Namespace,
+				mockupServer.rootComponent as UAObject, 'Variable');
+			const mockupService = new ServiceControlMockup(mockupServer.namespace as Namespace,
+				mockupServer.rootComponent as UAObject, 'Trigonometry');
+			await mockupServer.start();
+
+			pea = new PEAController(peaOptions as unknown as PEAOptions);
 			service = pea.services[0];
 			await pea.connectAndSubscribe();
 		});
 
 		afterEach(async () => {
-			await pea.disconnectAndUnsubscribe();
-			peaServer.stopSimulation();
+			//await pea.disconnectAndUnsubscribe();
+			//peaServer.stopSimulation();
 		});
 
 		it('should get default procedure for default procedure', () => {
@@ -163,7 +178,7 @@ describe('Service', () => {
 		});
 
 		it('should reject command if not command enabled', async () => {
-			expect(service.name).to.equal('Service1');
+			expect(service.name).to.equal('Trigonometry');
 			expect(ServiceState[service.state]).to.equal('IDLE');
 			expect(service.commandEnable).to.deep.equal({
 				abort: true,
@@ -177,36 +192,8 @@ describe('Service', () => {
 				hold: false,
 				unhold: false
 			});
-
-			await service.executeCommand(ServiceCommand.start);
-			await service.waitForStateChangeWithTimeout('STARTING');
-			expect(service.commandEnable).to.deep.equal({
-				abort: true,
-				complete: false,
-				pause: false,
-				reset: false,
-				restart: false,
-				resume: false,
-				start: false,
-				stop: true,
-				hold: false,
-				unhold: false
-			});
-
-			await expect(service.executeCommand(ServiceCommand.resume)).to.be.rejectedWith('ControlOp');
-			expect(service.commandEnable).to.deep.equal({
-				abort: true,
-				complete: false,
-				pause: false,
-				reset: false,
-				restart: false,
-				resume: false,
-				start: false,
-				stop: true,
-				hold: false,
-				unhold: false
-			});
-		});
+			await expect(service.executeCommand(ServiceCommand.resume)).to.be.rejectedWith('One or more arguments are invalid.');
+		}).timeout(3000);
 
 		it('waitForOpModeSpecificTest', async () => {
 			//testService.opMode.opMode = OperationMode.Offline;
@@ -224,6 +211,7 @@ describe('Service', () => {
 
 		it('full service state cycle', async () => {
 			let result = service.json();
+			console.log(JSON.stringify(result))
 			expect(result).to.have.property('status', 'IDLE');
 			expect(result).to.have.property('controlEnable')
 				.to.deep.equal({
@@ -239,17 +227,16 @@ describe('Service', () => {
 				unhold: false
 			});
 
-			expect(result).to.have.property('currentProcedure', 'Procedure 1');
-			expect(result).to.have.property('name', 'Service1');
+			//expect(result).to.have.property('currentProcedure', 'Procedure 1');
+			expect(result).to.have.property('name', 'Trigonometry');
 			expect(result).to.have.property('operationMode').to.equal('offline');
-			expect(result).to.have.property('sourceMode').to.equal('manual');
+			expect(result).to.have.property('serviceSourceMode').to.equal('intern');
 
 			await service.setOperationMode();
 
 			result = service.json();
 			expect(result).to.have.property('status', 'IDLE');
-			expect(result).to.have.property('controlEnable')
-				.to.deep.equal({
+			expect(result).to.have.property('controlEnable').to.deep.equal({
 				abort: true,
 				complete: false,
 				pause: false,
@@ -262,76 +249,36 @@ describe('Service', () => {
 				unhold: false
 			});
 
-			expect(result).to.have.property('currentProcedure', 'Procedure 1');
-			expect(result).to.have.property('name', 'Service1');
 			expect(result).to.have.property('operationMode').to.equal('automatic');
-			expect(result).to.have.property('sourceMode').to.equal('manual');
+			expect(result).to.have.property('serviceSourceMode').to.equal('extern');
 
-			expect(result.procedures[0].processValuesIn).to.have.length(1);
+	/*		expect(result.procedures[0].processValuesIn).to.have.length(1);
 			expect(result.procedures[0].processValuesIn[0].value).to.equal(1);
 			expect(result.procedures[0].processValuesOut).to.have.length(3);
-			expect(result.procedures[0].reportParameters).to.have.length(3);
+			expect(result.procedures[0].reportParameters).to.have.length(3);*/
 
 			let stateChangeCount = 0;
 			service.eventEmitter.on('state', () => {
 				stateChangeCount++;
 			});
 
-			service.executeCommand(ServiceCommand.start);
-			await service.waitForStateChangeWithTimeout('STARTING');
-			await service.waitForStateChangeWithTimeout('EXECUTE');
+			await service.executeCommandAndWaitForStateChange(ServiceCommand.start);
+			await service.executeCommandAndWaitForStateChange(ServiceCommand.restart);
+			await service.executeCommandAndWaitForStateChange(ServiceCommand.stop);
+			await service.executeCommandAndWaitForStateChange(ServiceCommand.reset);
+			await service.executeCommandAndWaitForStateChange(ServiceCommand.start);
+			await service.executeCommandAndWaitForStateChange(ServiceCommand.pause);
+			await service.executeCommandAndWaitForStateChange(ServiceCommand.resume);
 
-			service.executeCommand(ServiceCommand.restart);
-			await service.waitForStateChangeWithTimeout('STARTING');
-			await service.waitForStateChangeWithTimeout('EXECUTE');
-
-			service.executeCommand(ServiceCommand.stop);
-			await service.waitForStateChangeWithTimeout('STOPPING');
-			await service.waitForStateChangeWithTimeout('STOPPED');
-
-			service.executeCommand(ServiceCommand.reset);
-			await service.waitForStateChangeWithTimeout('IDLE');
-
-			service.executeCommand(ServiceCommand.start);
-			await service.waitForStateChangeWithTimeout('STARTING');
-			await service.waitForStateChangeWithTimeout('EXECUTE');
-
-			service.executeCommand(ServiceCommand.pause);
-			await service.waitForStateChangeWithTimeout('PAUSING');
-			await service.waitForStateChangeWithTimeout('PAUSED');
-
-			service.executeCommand(ServiceCommand.resume);
-			await service.waitForStateChangeWithTimeout('RESUMING');
-			await service.waitForStateChangeWithTimeout('EXECUTE');
-
-			service.executeCommand(ServiceCommand.hold);
-			await service.waitForStateChangeWithTimeout('HOLDING');
-			await service.waitForStateChangeWithTimeout('HELD');
-
-			service.executeCommand(ServiceCommand.unhold);
-			await service.waitForStateChangeWithTimeout('UNHOLDING');
-			await service.waitForStateChangeWithTimeout('EXECUTE');
-
-			service.executeCommand(ServiceCommand.complete);
-			await service.waitForStateChangeWithTimeout('COMPLETING');
-			await service.waitForStateChangeWithTimeout('COMPLETED');
-
-			service.executeCommand(ServiceCommand.abort);
-			await service.waitForStateChangeWithTimeout('ABORTING');
-			await service.waitForStateChangeWithTimeout('ABORTED');
-
-			service.executeCommand(ServiceCommand.reset);
-			await service.waitForStateChangeWithTimeout('IDLE');
-
-			service.executeCommand(ServiceCommand.start);
-			await service.waitForStateChangeWithTimeout('STARTING');
-			await service.waitForStateChangeWithTimeout('EXECUTE');
-
-			service.executeCommand(ServiceCommand.complete);
-			await service.waitForStateChangeWithTimeout('COMPLETING');
-			await service.waitForStateChangeWithTimeout('COMPLETED');
-
-			expect(stateChangeCount).to.equal(22);
-		}).timeout(6000).slow(4000);
+			//TODO hold, unhold?
+		//	await service.executeCommandAndWaitForStateChange(ServiceCommand.hold);
+		//	await service.executeCommandAndWaitForStateChange(ServiceCommand.unhold);
+			await service.executeCommandAndWaitForStateChange(ServiceCommand.complete);
+			await service.executeCommandAndWaitForStateChange(ServiceCommand.abort);
+			await service.executeCommandAndWaitForStateChange(ServiceCommand.reset);
+			await service.executeCommandAndWaitForStateChange(ServiceCommand.start);
+			await service.executeCommandAndWaitForStateChange(ServiceCommand.complete);
+			expect(stateChangeCount).to.equal(11);
+		}).timeout(6000);
 	});
 });
