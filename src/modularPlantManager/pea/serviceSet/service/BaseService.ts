@@ -156,6 +156,8 @@ export abstract class BaseService {
 			result = this.resume();
 		} else if (command === ServiceCommand.restart) {
 			result = this.restart();
+		} else if (command === ServiceCommand.hold) {
+			result = this.hold();
 		} else {
 			throw new Error(`Command ${command} can not be interpreted`);
 		}
