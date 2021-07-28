@@ -67,6 +67,7 @@
     "underscore": "^1.10.2",
     "uuid": "^8.1.0",
     "ws": "^7.5.0",
+    "xstate": "^4.23.1",
     "yn": "^3.1.1"
   },
   "devDependencies": {

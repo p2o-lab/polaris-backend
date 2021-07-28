@@ -1,0 +1,385 @@
+import {
+  ActionFunctionMap, ConditionPredicate, interpret, Interpreter, Machine, MachineConfig,
+  MachineOptions, StateMachine, StateSchema,
+} from 'xstate';
+import {
+  ControlEnable,
+  ServiceMtpCommand, ServiceMtpCommandString,
+  ServiceState, ServiceStateString,
+} from './mtp-enums';
+
+export type UserContext = any;
+
+export interface InternalMtpCommand {
+  type: keyof typeof ServiceMtpCommand | 'SC' | 'HOLD';
+}
+
+export interface ServiceStateSchema {
+  states: {
+    [key in keyof typeof ServiceState]: StateSchema<any>;
+  };
+}
+export interface StaticGuard extends Record<string, ConditionPredicate<UserContext, InternalMtpCommand>> {
+  startingEnabledStatic: () => boolean;
+}
+export interface StaticActions extends ActionFunctionMap<UserContext, InternalMtpCommand> {
+  onStartingStatic: () => void;
+  onResettingStatic: () => void;
+}
+
+export interface StaticServiceConfiguration extends Partial<MachineOptions<UserContext, InternalMtpCommand>> {
+  guards: StaticGuard;
+  actions: StaticActions;
+}
+
+export interface UserDefinedGuard extends Record<string, ConditionPredicate<UserContext, InternalMtpCommand>> {
+  startingEnabled: () => boolean;
+  restartingEnabled: () => boolean;
+  executeEnabled: () => boolean;
+  completingEnabled: () => boolean;
+  pausingEnabled: () => boolean;
+  holdingEnabled: () => boolean;
+  unholdingEnabled: () => boolean;
+}
+
+export interface UserDefinedActions extends ActionFunctionMap<UserContext, InternalMtpCommand> {
+  onIdle: () => void;
+  onStarting: () => void;
+  onExecute: () => void;
+  onCompleting: () => void;
+  onCompleted: () => void;
+  onResetting: () => void;
+  onPausing: () => void;
+  onPaused: () => void;
+  onResuming: () => void;
+  onStopping: () => void;
+  onStopped: () => void;
+  onAborting: () => void;
+  onAborted: () => void;
+}
+
+export interface UserDefinedServiceConfiguration extends Partial<MachineOptions<UserContext, InternalMtpCommand>> {
+  guards: UserDefinedGuard;
+  actions: UserDefinedActions;
+}
+
+export class MtpStateMachine {
+
+  public stateMachineService: Interpreter<UserContext, ServiceStateSchema, InternalMtpCommand> | undefined ;
+  public stateMachine: StateMachine<UserContext, ServiceStateSchema, InternalMtpCommand>;
+  public readonly name: string;
+  private varProcedureCur = 0;
+  private varProcedureReq = 1;
+
+  constructor(name: string, userDefinedGuards: UserDefinedGuard, userDefinedActions: UserDefinedActions) {
+    this.name = name;
+    this.stateMachine = Machine<UserContext, ServiceStateSchema, InternalMtpCommand>(
+        MtpStateMachine.level4Config, this.defaultOptions);
+
+    this.reconfigure(userDefinedGuards, userDefinedActions);
+  }
+
+  public static readonly level1Config: MachineConfig<UserContext, any, InternalMtpCommand> = {
+    id: 'level1',
+    initial: ServiceStateString.STARTING,
+    states: {
+      STARTING: {
+        entry: ['onStartingStatic','onStarting'],
+        on: {
+          SC: {
+            target: 'EXECUTE',
+          },
+        },
+      },
+      EXECUTE: {
+        entry: 'onExecute',
+        on: {
+          SC: {
+            target: 'COMPLETING',
+          },
+          RESTART: {
+            target: 'STARTING',
+            cond: 'restartingEnabled',
+          },
+          COMPLETE: {
+            target: 'COMPLETING',
+            cond: 'completingEnabled',
+          },
+          PAUSE: {
+            target: 'PAUSING',
+            cond: 'pausingEnabled',
+          }
+        },
+      },
+      COMPLETING: {
+        entry: 'onCompleting',
+        on: {
+          SC: {
+            target: 'final',
+          },
+        },
+      },
+      final: {
+        type: 'final',
+      },
+      PAUSING: {
+        entry: 'onPausing',
+        on: {
+          SC: {
+            target: 'PAUSED',
+          },
+        },
+      },
+      PAUSED: {
+        entry: 'onPaused',
+        on: {
+          RESUME: {
+            target: 'RESUMING',
+            cond: 'executeEnabled',
+          },
+        },
+      },
+      RESUMING: {
+        entry: 'onResuming',
+        on: {
+          SC: {
+            target: 'EXECUTE',
+          },
+        },
+      },
+      UNHOLDING: {
+        entry: 'onUnholding',
+        on: {
+          SC: {
+            target: 'EXECUTE',
+          },
+        },
+      },
+    },
+  };
+
+  public static readonly level2Config: MachineConfig<UserContext, any, InternalMtpCommand> = {
+    initial: 'IDLE',
+    states: {
+      IDLE: {
+        entry: 'onIdle',
+        on: {
+          START: {
+            target: 'level1.STARTING',
+            // TODO: implement a single conditionCheckMethod calling two functions, with option to just overwrite user-defined functions
+            cond: 'startingEnabled',
+          },
+        },
+      },
+      level1: {
+        ...MtpStateMachine.level1Config,
+        onDone: {
+          target: 'COMPLETED',
+        },
+        on: {
+          HOLD: {
+            target: 'HOLDING',
+            cond: 'holdingEnabled',
+          },
+        },
+      },
+      HOLDING: {
+        entry: 'onHolding',
+        on: {
+          SC: {
+            target: 'HELD',
+          },
+        },
+      },
+      HELD: {
+        entry: 'onHeld',
+        on: {
+          UNHOLD: {
+            target: 'level1.UNHOLDING',
+            cond: 'unholdingEnabled',
+          },
+        },
+      },
+      COMPLETED: {
+        entry: 'onCompleted',
+        on: {
+          RESET: {
+            target: 'RESETTING',
+          },
+        },
+      },
+      RESETTING: {
+        entry: ['onResettingStatic','onResetting'],
+        on: {
+          SC: {
+            target: 'IDLE',
+          },
+        },
+      },
+    },
+  };
+
+  public static readonly level3Config: MachineConfig<UserContext, any, InternalMtpCommand> = {
+  id: 'level3',
+  initial: 'level2',
+  states: {
+    level2: {
+      ...MtpStateMachine.level2Config,
+      on: {
+        STOP: {
+          target: 'STOPPING',
+        },
+      },
+    },
+    STOPPING: {
+      entry: 'onStopping',
+      on: {
+        SC: {
+          target: 'STOPPED',
+        },
+      },
+    },
+    STOPPED: {
+      entry: 'onStopped',
+      on: {
+        RESET: {
+          target: 'level2.RESETTING',
+        },
+      },
+    },
+  },
+};
+
+  public static readonly level4Config: MachineConfig<UserContext, any, InternalMtpCommand> = {
+  id: 'level4',
+  context: {},
+  initial: 'level3',
+  states: {
+    level3: {
+      ...MtpStateMachine.level3Config,
+      on: {
+        ABORT: {
+          target: 'ABORTING',
+        },
+      },
+    },
+    ABORTING: {
+      entry: 'onAborting',
+      on: {
+        SC: {
+          target: 'ABORTED',
+        },
+      },
+    },
+    ABORTED: {
+      entry: 'onAborted',
+      on: {
+        RESET: {
+          target: 'level3.level2.RESETTING',
+        },
+      },
+    },
+  },
+};
+
+  public readonly defaultOptions: UserDefinedServiceConfiguration = {
+    guards: {
+      startingEnabled: () => true,
+      restartingEnabled: () => true,
+      executeEnabled: () => true,
+      completingEnabled: () => true,
+      pausingEnabled: () => true,
+      holdingEnabled: () => false,
+      unholdingEnabled: () => true,
+    },
+    actions: {
+      onIdle: () => { return; },
+      onStarting: () => this.goToNextState(),
+      onExecute: () => { return; },
+      onCompleting: () => this.goToNextState(),
+      onCompleted: () => { return; },
+      onResetting: () => this.goToNextState(),
+      onPausing: () => this.goToNextState(),
+      onPaused: () => { return; },
+      onResuming: () => this.goToNextState(),
+      onStopping: () => this.goToNextState(),
+      onStopped: () => { return; },
+      onAborting: () => this.goToNextState(),
+      onAborted: () => { return; },
+    },
+  };
+
+  private staticOptions: StaticServiceConfiguration = {
+    guards: { startingEnabledStatic: () => true},
+    actions: {
+      onStartingStatic: () => {this.updateProcedureCur();},
+      onResettingStatic: () => {return;}
+    }
+  }
+
+  public reconfigure(updatedGuards: Partial<UserDefinedGuard>, updatedActions: Partial<UserDefinedActions>) {
+    const guards: UserDefinedGuard =
+      { ...this.staticOptions.guards,...this.defaultOptions.guards, ...updatedGuards} as UserDefinedGuard;
+    const actions: UserDefinedActions =
+      { ...this.staticOptions.actions,...this.defaultOptions.actions, ...updatedActions} as UserDefinedActions;
+    this.stateMachine = this.stateMachine.withConfig({guards, actions});
+  }
+
+  public setProcedureReq(procedureReq: number){
+    this.varProcedureReq = procedureReq;
+  }
+
+  private updateProcedureCur(){
+    this.varProcedureCur = this.getProcedureReq();
+  }
+  private resetProcedureCur(){
+    this.varProcedureCur = 0;
+  }
+
+  public getProcedureReq() {return this.varProcedureReq;}
+  public getProcedureCur() {return this.varProcedureCur;}
+
+
+  /* Start ServiceStateMachine
+  */
+  public start() {
+    this.stateMachineService = interpret(this.stateMachine);
+    this.stateMachineService.onTransition(() => console.log(`FSM (${this.name}): ${this.getState()}`))
+      .start();
+  }
+
+  public getCommandEnabled(): ControlEnable {
+    const enabled: ControlEnable = new Map();
+    if (this.stateMachineService && this.stateMachineService.initialized) {
+      for (const e in ServiceMtpCommandString) {
+        enabled.set(
+          e as ServiceMtpCommandString,
+          this.stateMachineService.nextState(e as ServiceMtpCommandString).changed as boolean);
+      }
+    }
+    return enabled;
+  }
+
+  public triggerEvent(event: ServiceMtpCommand): boolean {
+    // @ts-ignore
+    const oldState = this.stateMachineService.state.value;
+    // @ts-ignore
+    const newState = this.stateMachineService.send({type: ServiceMtpCommand[event] as ServiceMtpCommandString});
+    return oldState !== newState.value;
+  }
+
+  public goToNextState() {
+    // @ts-ignore
+    this.stateMachineService.send('SC');
+  }
+
+  public getState(): ServiceStateString {
+    if (this.stateMachineService && this.stateMachineService.initialized) {
+      const lastStateString = this.stateMachineService.state.toStrings().pop();
+      if (lastStateString) {
+        return lastStateString.split('.').pop() as ServiceStateString;
+      }
+    }
+    return ServiceStateString.UNDEFINED;
+  }
+}
