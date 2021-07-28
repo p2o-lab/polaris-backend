@@ -318,20 +318,19 @@ describe('PEARoutes', () => {
 
 		context('/:peaId/service/:serviceName/:command', ()=> {
 			it('should send command', async () => {
-				//TODO ... need to implement state change in mockup
-				/*
 				//connect first
 				const peaController = new PEAController(peaOptions as unknown as PEAOptions, false);
 				manager.peas.push(peaController);
 				await request(app).post('/api/pea/test/connect').send().expect(200)
 					.expect({peaId: 'test', status: 'Successfully connected'});
-
-				await request(app).post('/api/pea/test/service/Trigonometry/start').send().expect(200)*/
+				await request(app).post('/api/pea/test/service/Trigonometry/start').send().expect(200);
 			});
+
 			it('should fail to send command, wrong peaId', async () => {
 				await request(app).post('/api/pea/abc1234/service/Trigonometry/start').send().expect(500)
 					.expect('Error: PEA with id abc1234 not found');
 			});
+
 			it('should fail to send command, service not found', async () => {
 				const peaController = new PEAController(peaOptionsDummy, false);
 				manager.peas.push(peaController);
