@@ -180,12 +180,12 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 				);
 		}
 
-		this.on('variableChanged', (entry: VariableChange)=> {
+/*		this.on('variableChanged', (entry: VariableChange)=> {
 			// clear list first
 			this.processValues.length= 0;
 			// update this.processValues
 			if(entry.pea == this.id) this.createProcessValues();
-		});
+		});*/
 	}
 
 	/**
@@ -230,11 +230,11 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 		const pa = this.subscribeToAllServices();
 		await this.connection.startListening();
 
-		// only temporarily code
+/*		// only temporarily code
 		//after subscribing-> assign DAControllers to instance variable, which will be processed to this.processValues later
 		await pv.then(value => {this.dAControllers = value;});
 		//create process values for frontend (testpea), may be only temporarily
-		this.createProcessValues();
+		this.createProcessValues();*/
 
 		await Promise.all([pv,pa]);
 		this.logger.info(`[${this.id}] Successfully subscribed to ${this.connection.monitoredItemSize()} assemblies`);
@@ -296,47 +296,54 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 	 */
 	public abort(): Promise<void[]> {
 		this.logger.info(`[${this.id}] Abort all services`);
-		const tasks = this.services.map((service) => service.executeCommand(ServiceCommand.abort));
+		const tasks = this.services.map((service) => service.executeCommandAndWaitForStateChange(ServiceCommand.abort));
 		return Promise.all(tasks);
 	}
 
 	/**
 	 * Pause all services in PEAController which are currently running
 	 */
-	public pause(): Promise<void[]> {
+	public async pause(): Promise<void[]> {
 		this.logger.info(`[${this.id}] Pause all running services`);
-		const tasks = this.services.map((service) => {
+		const tasks = this.services.map(async (service) => {
 			if (service.isCommandExecutable(ServiceCommand.pause)) {
-				return service.executeCommand(ServiceCommand.pause);
+				return await service.executeCommandAndWaitForStateChange(ServiceCommand.pause);
+			} else {
+				//TODO is this legit? should we throw an error here?
+				throw new Error('Command is not executable');
 			}
 		});
-		return Promise.all(tasks);
+		return await Promise.all(tasks);
 	}
 
 	/**
 	 * Resume all services in PEAController which are currently paused
 	 */
-	public resume(): Promise<void[]> {
+	public async resume(): Promise<void[]> {
 		this.logger.info(`[${this.id}] Resume all paused services`);
-		const tasks = this.services.map((service) => {
+		const tasks = this.services.map(async (service) => {
 			if (service.isCommandExecutable(ServiceCommand.resume)) {
-				return service.executeCommand(ServiceCommand.resume);
+				return await service.executeCommandAndWaitForStateChange(ServiceCommand.resume);
+			} else {
+				throw new Error('Command is not executable');
 			}
 		});
-		return Promise.all(tasks);
+		return await Promise.all(tasks);
 	}
 
 	/**
 	 * Stop all non-idle services in PEAController
 	 */
-	public stop(): Promise<void[]> {
+	public async stop(): Promise<void[]> {
 		this.logger.info(`[${this.id}] Stop all non-idle services`);
-		const tasks = this.services.map((service) => {
+		const tasks = this.services.map(async (service) => {
 			if (service.isCommandExecutable(ServiceCommand.stop)) {
-				return service.executeCommand(ServiceCommand.stop);
+				return await service.executeCommandAndWaitForStateChange(ServiceCommand.stop);
+			} else {
+				throw new Error('Command is not executable');
 			}
 		});
-		return Promise.all(tasks);
+		return await Promise.all(tasks);
 	}
 
 	/**
@@ -344,7 +351,7 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 	 */
 	public reset(): Promise<void[]> {
 		this.logger.info(`[${this.id}] Reset all services`);
-		const tasks = this.services.map((service) => service.executeCommand(ServiceCommand.reset));
+		const tasks = this.services.map((service) => service.executeCommandAndWaitForStateChange(ServiceCommand.reset));
 		return Promise.all(tasks);
 	}
 
@@ -427,11 +434,11 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 		this.services.forEach((service) => service.unsubscribe());
 	}
 
-	/**
+/*	/!**
 	 * this function will extract the variables/DataItems out of this.dAControllers and push it to this.processValues
 	 * function is only temporarily for testing
 	 * @private
-	 */
+	 *!/
 	private createProcessValues(){
 		this.dAControllers.forEach((dAController) => {
 			const dataAssembly: ProcessValuesInterface = {name: '', dataItems: []};
@@ -443,5 +450,5 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 			}
 			this.processValues.push(dataAssembly);
 		});
-	}
+	}*/
 }
