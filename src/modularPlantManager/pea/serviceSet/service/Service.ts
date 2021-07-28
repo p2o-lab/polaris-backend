@@ -81,7 +81,10 @@ export class Service extends BaseService {
 		super();
 		this._parentId = parentId;
 		this._name = serviceOptions.name;
-		if (!serviceOptions.name) {
+		if (!serviceOptions || Object.keys(serviceOptions).length == 0) {
+			throw new Error('No service options provided.');
+		}
+		else if (!serviceOptions.name) {
 			throw new Error('No service name provided');
 		}
 		this.connection = connection;
@@ -248,12 +251,22 @@ export class Service extends BaseService {
 				expectedState='ABORTED';
 				break;
 			case('complete'):
-				//TODO: it this legit?
-				expectedState='IDLE';
+				expectedState='COMPLETED';
 				break;
-			case('restart'):
+			case('pause'):
+				expectedState='PAUSED';
+				break;
+			case('resume'):
 				expectedState='EXECUTE';
 				break;
+			case('hold'):
+				expectedState='HOLD';
+				break;
+			case('restart'):
+				// TODO is this okay?
+				// on 'restart' the program can't detect a change, because in the end the state stays at 'EXECUTE'
+				if (ServiceState[this.state] === 'EXECUTE') return;
+
 		}
 		await this.waitForStateChangeWithTimeout(expectedState);
 	}
