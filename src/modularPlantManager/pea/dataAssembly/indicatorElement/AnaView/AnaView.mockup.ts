@@ -57,7 +57,7 @@ export class AnaViewMockup {
 	public unit: UnitDAMockup;
 	protected mockupNode: UAObject;
 
-	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
+	constructor(namespace: Namespace, rootNode: UAObject, variableName: string, removeVariable?: boolean) {
 
 		this.name = variableName;
 		this.mockupNode = namespace.addObject({
@@ -67,17 +67,19 @@ export class AnaViewMockup {
 		this.wqc = new WQCDAMockup(namespace, this.mockupNode, this.name);
 		this.scaleSettings = new ScaleSettingDAMockup<DataType.Double>(namespace, this.mockupNode, this.name, DataType.Double);
 		this.unit = new UnitDAMockup(namespace, this.mockupNode, this.name);
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace.index};s=${variableName}.V`,
-			browseName: `${variableName}.V`,
-			dataType: DataType.Double,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.Double, value: this.v});
+		if(removeVariable == undefined || removeVariable){
+			namespace.addVariable({
+				componentOf: this.mockupNode,
+				nodeId: `ns=${namespace.index};s=${variableName}.V`,
+				browseName: `${variableName}.V`,
+				dataType: DataType.Double,
+				value: {
+					get: (): Variant => {
+						return new Variant({dataType: DataType.Double, value: this.v});
+					},
 				},
-			},
-		});
+			});
+		}
 	}
 
 	public getAnaViewInstanceMockupJSON() {
