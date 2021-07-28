@@ -23,28 +23,142 @@
  * SOFTWARE.
  */
 
-import {StringView} from './dataAssembly';
 import {PEAController} from './PEAController';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import * as fs from 'fs';
-import {PEAMockup} from './PEA.mockup';
 import {MockupServer} from '../_utils';
+import * as peaOptions from '../../../tests/peaOptions.json';
+import {namespaceUrl} from '../../../tests/namespaceUrl';
+import {PEAOptions, ServiceCommand} from '@p2olab/polaris-interface';
+import {AnaViewMockup} from './dataAssembly/indicatorElement/AnaView/AnaView.mockup';
+import {Namespace, UAObject} from 'node-opcua';
+import {ServiceControlMockup} from './dataAssembly/ServiceControl/ServiceControl.mockup';
+import {ServiceState} from './serviceSet/service/enum';
+import {Service} from './serviceSet';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-describe('PEA', () => {
-
-	it('should load the cif PEAController json', () => {
-		const f = fs.readFileSync('assets/peas/pea_cif.json');
-		const pea = new PEAController(JSON.parse(f.toString()).peas[0]);
-		expect(pea).to.have.property('id', 'CIF');
-		expect(pea.services).to.have.length(6);
+describe('PEAController', () => {
+	it('should instantiate PEA', () => {
+		const peaController = new PEAController(peaOptions as unknown as PEAOptions);
+		expect(peaController).to.have.property('id', 'test');
+		expect(peaController.services).to.have.length(1);
 	});
 
-	context('with PEAController server', () => {
+	describe('with MockupServer', () => {
+		let mockupServer: MockupServer;
+		let peaController: PEAController;
+		let service: Service;
+		//set namespaceUrl in peaOptions
+		for (const key in peaOptions.dataAssemblies[0].dataItems as any) {
+			//skip static values
+			if((typeof(peaOptions.dataAssemblies[0].dataItems as any)[key] != 'string')){
+				(peaOptions.dataAssemblies[0].dataItems as any)[key].namespaceIndex = namespaceUrl;
+			}
+		}
+		for (const key in peaOptions.services[0].communication as any) {
+			//skip static values
+			if((typeof(peaOptions.services[0].communication as any)[key] != 'string')){
+				(peaOptions.services[0].communication as any)[key].namespaceIndex = namespaceUrl;
+			}
+		}
+		beforeEach(async () => {
+			mockupServer = new MockupServer();
+			peaController = new PEAController(peaOptions as unknown as PEAOptions);
+			service = peaController.services[0];
+			await mockupServer.initialize();
+			const mockup = new AnaViewMockup(mockupServer.namespace as Namespace,
+				mockupServer.rootComponent as UAObject, 'Variable');
+			const mockupService = new ServiceControlMockup(mockupServer.namespace as Namespace,
+				mockupServer.rootComponent as UAObject, 'Trigonometry');
+			await mockupServer.start();
+		});
+		afterEach(async () => {
+			await peaController.disconnectAndUnsubscribe();
+			await mockupServer.shutdown();
+		});
+		context('connect, subscribe',()=>{
+			it('should fail to subscribe, missing variable on mockupServer',  async() => {
+				await mockupServer.shutdown();
+				mockupServer = new MockupServer();
+				peaController = new PEAController(peaOptions as unknown as PEAOptions);
+				await mockupServer.initialize();
+				const mockup = new AnaViewMockup(mockupServer.namespace as Namespace,
+					mockupServer.rootComponent as UAObject, 'Variable', false);
+				const mockupService = new ServiceControlMockup(mockupServer.namespace as Namespace,
+					mockupServer.rootComponent as UAObject, 'Trigonometry');
+				await mockupServer.start();
+				return expect(peaController.connectAndSubscribe()).to.be.rejectedWith('Timeout: Could not subscribe to Variable.V');
+			}).timeout(3000);
+
+			it('should connect and subscribe',  async() => {
+				return expect(peaController.connectAndSubscribe()).to.not.be.rejected;
+			});
+
+
+			it('should fail to connect / subscribe',  async() => {
+				//TODO more cases
+			});
+
+			it('should disconnect and unsubscribe',  async() => {
+				await peaController.connectAndSubscribe();
+				await peaController.disconnectAndUnsubscribe();
+			});
+
+			it('should fail to disconnect and unsubscribe',  async() => {
+				//TODO
+			});
+		});
+
+		context('control Services',async ()=> {
+			//TODO: test with multiple services
+			it('should stop()',  async() => {
+				await peaController.connectAndSubscribe();
+				await service.executeCommandAndWaitForStateChange(ServiceCommand.start);
+				await peaController.stop();
+				expect(service.state).to.equal(ServiceState.STOPPED);
+			});
+			it('should fail to stop(), command not executable',  async() => {
+				await peaController.connectAndSubscribe();
+				await peaController.abort();
+				return expect(peaController.stop()).to.be.rejectedWith('Command is not executable');
+			});
+			it('should abort()',  async() => {
+				await peaController.connectAndSubscribe();
+				await service.executeCommandAndWaitForStateChange(ServiceCommand.start);
+				await peaController.abort();
+				expect(service.state).to.equal(ServiceState.ABORTED);
+			});
+			it('should pause()',  async() => {
+				await peaController.connectAndSubscribe();
+				await service.executeCommandAndWaitForStateChange(ServiceCommand.start);
+				await peaController.pause();
+				expect(service.state).to.equal(ServiceState.PAUSED);
+			});
+			it('should fail to pause(), command not executable',  async() => {
+				await peaController.connectAndSubscribe();
+				return expect(peaController.pause()).to.be.rejectedWith('Command is not executable');
+			});
+			it('should resume()',  async() => {
+				await peaController.connectAndSubscribe();
+				await service.executeCommandAndWaitForStateChange(ServiceCommand.start);
+				await service.executeCommandAndWaitForStateChange(ServiceCommand.pause);
+				await peaController.resume();
+				expect(service.state).to.equal(ServiceState.EXECUTE);
+			});
+			it('should fail to resume(), command not executable',  async() => {
+				await peaController.connectAndSubscribe();
+				return expect(peaController.resume()).to.be.rejectedWith('Command is not executable');
+			});
+
+		});
+
+
+	});
+
+	/*context('with PEAController server', () => {
 		let peaMockup: PEAMockup;
 		let mockupServer: MockupServer;
 
@@ -113,6 +227,6 @@ describe('PEA', () => {
 			expect(pea.connection.monitoredItemSize()).to.be.greaterThan(80);
 		});
 
-	});
+	});*/
 
 });
