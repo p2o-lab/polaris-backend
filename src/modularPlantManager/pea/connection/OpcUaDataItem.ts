@@ -39,7 +39,7 @@ export class OpcUaDataItem<T> extends DataItem<T> {
 	public nodeId = '';
 	private connection!: OpcUaConnection;
 
-	public static fromOptions<type extends number | string | boolean>(
+	public static createFromOptions<type extends number | string | boolean>(
 		options: OpcUaNodeOptions, connection: OpcUaConnection, // attention! before-> type: ... = 'number'
 		access: 'read' | 'write', type: 'number' | 'string' | 'boolean' = 'string'): OpcUaDataItem<type> {
 		const item = new OpcUaDataItem<type>();
