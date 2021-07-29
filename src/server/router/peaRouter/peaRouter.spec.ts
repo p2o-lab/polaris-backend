@@ -243,6 +243,9 @@ describe('PEARoutes', () => {
 				mockupServer.rootComponent as UAObject, 'Trigonometry');
 			await mockupServer.start();
 		});
+		after(async () => {
+			mockupServer.shutdown();
+		});
 
 		context('connect', ()=>{
 			it('should connect and disconnect, AnaView & Service', async() => {
@@ -261,7 +264,7 @@ describe('PEARoutes', () => {
                             resolve();
                         }
                     }));*/
-			});
+			}).timeout(4000);
 			it('should fail to connect, wrong peaId', async() => {
 				await request(app).post('/api/pea/abc1234/connect').send().expect(500)
 					.expect('Error: PEA with id abc1234 not found');

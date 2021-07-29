@@ -24,7 +24,6 @@
  */
 
 import {PEAController} from './PEAController';
-
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../_utils';
@@ -147,7 +146,7 @@ describe('PEAController', () => {
 				await service.executeCommandAndWaitForStateChange(ServiceCommand.pause);
 				await peaController.resume();
 				expect(service.state).to.equal(ServiceState.EXECUTE);
-			});
+			}).timeout(10000);
 			it('should fail to resume(), command not executable',  async() => {
 				await peaController.connectAndSubscribe();
 				return expect(peaController.resume()).to.be.rejectedWith('Command is not executable');
