@@ -29,12 +29,11 @@ import {
     getServiceSourceModeDAMockupReferenceJSON,
     ServiceSourceModeDAMockup
 } from '../_extensions/serviceSourceModeDA/ServiceSourceModeDA.mockup';
-import {ServiceMtpCommand} from '../../serviceSet/service/enum';
+import {ServiceMtpCommand, ServiceState, ServiceStateString} from '../../serviceSet/service/enum';
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../_extensions/wqcDA/WQCDA.mockup';
 import {getOSLevelDAMockupReferenceJSON} from '../_extensions/osLevelDA/OSLevelDA.mockup';
 import {DataAssemblyControllerMockup} from '../DataAssemblyController.mockup';
 import {MtpStateMachine, UserDefinedActions, UserDefinedGuard} from '../../StateMachine/MtpStateMachine';
-import {ServiceState, ServiceStateString} from '../../StateMachine/mtp-enums';
 
 export function getServiceControlMockupReferenceJSON(
     namespace: number,

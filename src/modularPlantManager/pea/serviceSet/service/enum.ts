@@ -87,3 +87,37 @@ export enum ServiceMtpCommand {
 	RESTART = 1 << 9,
 	COMPLETE = 1 << 10
 }
+export enum ServiceStateString {
+	UNDEFINED   =  'UNDEFINED',
+	STOPPED     =  'STOPPED',
+	STARTING    =  'STARTING',
+	IDLE        =  'IDLE',
+	PAUSED      =  'PAUSED',
+	EXECUTE     =  'EXECUTE',
+	STOPPING    =  'STOPPING',
+	ABORTING    =  'ABORTING',
+	ABORTED     =  'ABORTED',
+	HOLDING     =  'HOLDING',
+	HELD        =  'HELD',
+	UNHOLDING   =  'UNHOLDING',
+	PAUSING     =  'PAUSING',
+	RESUMING    =  'RESUMING',
+	RESETTING   =  'RESETTING',
+	COMPLETING  =  'COMPLETING',
+	COMPLETED   =  'COMPLETED',
+}
+export enum ServiceMtpCommandString {
+	UNDEFINED = 'UNDEFINED',
+	RESET     = 'RESET',
+	START     = 'START',
+	STOP      = 'STOP',
+	UNHOLD    = 'UNHOLD',
+	HOLD      = 'HOLD',
+	PAUSE     = 'PAUSE',
+	RESUME    = 'RESUME',
+	ABORT     = 'ABORT',
+	RESTART   = 'RESTART',
+	COMPLETE  = 'COMPLETE'
+}
+
+export type ControlEnable = Map<keyof typeof ServiceMtpCommand, boolean>;

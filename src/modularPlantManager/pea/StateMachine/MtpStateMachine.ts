@@ -4,9 +4,12 @@ import {
 } from 'xstate';
 import {
   ControlEnable,
-  ServiceMtpCommand, ServiceMtpCommandString,
-  ServiceState, ServiceStateString,
-} from './mtp-enums';
+  ServiceMtpCommand,
+  ServiceMtpCommandString,
+  ServiceState,
+  ServiceStateString
+} from '../serviceSet/service/enum';
+
 
 export type UserContext = any;
 
@@ -361,16 +364,16 @@ export class MtpStateMachine {
   }
 
   public triggerEvent(event: ServiceMtpCommand): boolean {
-    // @ts-ignore
-    const oldState = this.stateMachineService.state.value;
-    // @ts-ignore
-    const newState = this.stateMachineService.send({type: ServiceMtpCommand[event] as ServiceMtpCommandString});
-    return oldState !== newState.value;
+    if(this.stateMachineService) {
+      const oldState = this.stateMachineService.state.value;
+      const newState = this.stateMachineService.send({type: ServiceMtpCommand[event] as ServiceMtpCommandString});
+      return oldState !== newState.value;
+    }
+    else throw Error('StateMachine not initialized.');
   }
 
   public goToNextState() {
-    // @ts-ignore
-    this.stateMachineService.send('SC');
+    if(this.stateMachineService) this.stateMachineService.send('SC');
   }
 
   public getState(): ServiceStateString {
