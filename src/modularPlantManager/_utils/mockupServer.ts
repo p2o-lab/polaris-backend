@@ -26,7 +26,7 @@
 
 import {OPCUAServer} from 'node-opcua-server';
 import * as net from 'net';
-import {AddressSpace, DataType, Namespace, UAObject, Variant} from 'node-opcua';
+import {AddressSpace, DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 import {catMockupServer} from '../../logging';
 
 function validUserFunc(username: string, password: string): boolean {
@@ -42,11 +42,13 @@ export class MockupServer {
 	namespace: Namespace | undefined = undefined;
 	rootComponent: UAObject | undefined = undefined;
 	private readonly port: number;
+	private testNumber: number;
 
 	constructor(port = 4334) {
 		this.port = port;
 		this.server = new OPCUAServer({port: this.port, userManager: {isValidUser: validUserFunc}});
 		this.externalTrigger = false;
+		this.testNumber = 0;
 	}
 
 	public async portInUse(): Promise<boolean> {
@@ -119,6 +121,21 @@ export class MockupServer {
 				get: (): Variant => {
 					return new Variant({dataType: DataType.Boolean, value: this.externalTrigger});
 				}
+			}
+		});
+		namespace.addVariable({
+			componentOf: myMockup,
+			browseName: 'TestNumber',
+			nodeId: 'ns=1;s=testNumber',
+			dataType: 'Float',
+			value: {
+				get: (): Variant => {
+					return new Variant({dataType: DataType.Float, value: this.testNumber});
+				},
+				set: (variant: Variant): StatusCodes => {
+					this.testNumber = variant.value;
+					return StatusCodes.Good;
+				},
 			}
 		});
 
