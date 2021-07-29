@@ -27,7 +27,6 @@ import {OpcUaConnection} from './OpcUaConnection';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {PEAMockup} from '../PEA.mockup';
 import {MockupServer} from '../../_utils';
 import {namespaceUrl} from '../../../../tests/namespaceUrl';
 
@@ -78,7 +77,7 @@ describe('OpcUaConnection', () => {
 		});
 
 		after(async () => {
-			await mockupServer.shutdown();
+			if(mockupServer) await mockupServer.shutdown();
 		});
 
 		it('should connect to a opc ua test server, read an opc item and disconnect', async () => {
@@ -88,13 +87,10 @@ describe('OpcUaConnection', () => {
 			await connection.connect();
 			expect(connection.isConnected()).to.equal(true);
 
-			const result = await connection.readOpcUaNode('ns=1;s=trigger', namespaceUrl);
-		//	expect(result?.statusCode.value).to.equal(0);
-		//	expect(result?.statusCode.description).to.equal('No Error');
-		//	expect(result?.value.value).to.equal(20);
-
+			await connection.readOpcUaNode('trigger', namespaceUrl)
+				.then(datavalue => expect(datavalue?.value.value).to.equal(false));
 			await connection.disconnect();
-		}).timeout(4000);
+		});
 
 		it('should connect to a opc ua test server, subscribes to one opc item and disconnect', async () => {
 			const connection = new OpcUaConnection('testserver', 'opc.tcp://localhost:4334');
@@ -103,11 +99,9 @@ describe('OpcUaConnection', () => {
 			await connection.connect();
 			expect(connection.isConnected()).to.equal(true);
 
-			const eventName = connection.addOpcUaNode('Service1.CurrentTime.Text', namespaceUrl);
-			expect(eventName).to.equal('ns=1;s=Service1.CurrentTime.Text');
-
+			const eventName = connection.addOpcUaNode('trigger', namespaceUrl);
 			const eventEmitter = await connection.startListening();
-			await new Promise((resolve) => eventEmitter.on(eventName, resolve));
+			await new Promise(resolve => eventEmitter.on(eventName, resolve));
 
 			await connection.disconnect();
 		});
@@ -119,46 +113,40 @@ describe('OpcUaConnection', () => {
 			await connection.connect();
 			expect(connection.isConnected()).to.equal(true);
 
-			const eventName1 = connection.addOpcUaNode(
-				'Service1.CurrentTime.Text', namespaceUrl);
+			const eventName1 = connection.addOpcUaNode('trigger', namespaceUrl);
 			await connection.startListening();
-
 			expect(connection.monitoredItemSize()).to.equal(1);
-
-			await new Promise((resolve) => connection.eventEmitter.on(eventName1, resolve));
+			await new Promise(resolve => connection.eventEmitter.on(eventName1, resolve));
 
 			await connection.disconnect();
 			expect(connection.monitoredItemSize()).to.equal(0);
 			await connection.connect();
 
-			const eventName2 = connection.addOpcUaNode(
-				'Service1.CurrentTime.Text', namespaceUrl);
+			const eventName2 = connection.addOpcUaNode('trigger', namespaceUrl);
 			expect(eventName1).to.equal(eventName2);
 			await connection.startListening();
-			await new Promise((resolve, reject) => {
-				connection.eventEmitter.on(eventName1, resolve);
-			});
+			await new Promise(resolve => connection.eventEmitter.on(eventName1, resolve));
 			expect(connection.monitoredItemSize()).to.equal(1);
-		});
+		}).timeout(4000);
 
-		it('should connect to a opc ua test server, listen to some opc items and disconnect', async () => {
+		it('should not add same nodeId, invalid namespace should throw, should listen to multiple items', async () => {
 			const connection = new OpcUaConnection('testserver', 'opc.tcp://localhost:4334');
 			expect(connection.isConnected()).to.equal(false);
 
 			await connection.connect();
 			expect(connection.isConnected()).to.equal(true);
 
-			connection.addOpcUaNode('Service1.Offset.VExt', namespaceUrl);
+			connection.addOpcUaNode('trigger', namespaceUrl);
 			expect(connection.monitoredItemSize()).equals(1);
 
-			connection.addOpcUaNode('Service1.Offset.VExt', namespaceUrl);
+			connection.addOpcUaNode('trigger', namespaceUrl);
 			expect(connection.monitoredItemSize()).equals(1);
 
-			connection.addOpcUaNode('notexistant', namespaceUrl);
+			connection.addOpcUaNode('nonexistant', namespaceUrl);
 
 			expect(connection.monitoredItemSize()).equals(2);
 
-			expect(() => connection.addOpcUaNode('notexistant', 'urn:nan'))
+			expect(() => connection.addOpcUaNode('nonexistant', 'urn:nan'))
 				.to.throw('Could not resolve namespace');
 			expect(connection.monitoredItemSize()).equals(2);
 
@@ -166,7 +154,7 @@ describe('OpcUaConnection', () => {
 			expect(connection.monitoredItemSize()).equals(3);
 			await connection.startListening();
 			await connection.disconnect();
-		}).timeout(50000);
+		}).timeout(5000);
 
 		it('should connect with username and password', async () => {
 			const connection = new OpcUaConnection('testserver', 'opc.tcp://localhost:4334', 'admin', '1234');
@@ -177,8 +165,8 @@ describe('OpcUaConnection', () => {
 		it('should fail connecting with wrong username and password', async () => {
 			const connection = new OpcUaConnection('testserver', 'opc.tcp://localhost:4334', 'admin', 'empty');
 			await expect(connection.connect()).to.be.rejectedWith('BadUserAccessDenied');
+			await connection.disconnect();
 		});
-
 	});
 
 });
