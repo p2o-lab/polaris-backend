@@ -28,95 +28,85 @@ import {OpcUaConnection} from './index';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {OpcUaDataItem} from './OpcUaDataItem';
-import {PEAMockup} from '../PEA.mockup';
 import {MockupServer} from '../../_utils';
+import {namespaceUrl} from '../../../../tests/namespaceUrl';
+import {AnaViewMockup} from '../dataAssembly/indicatorElement/AnaView/AnaView.mockup';
+import {Namespace, UAObject} from 'node-opcua';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('DataItem', () => {
-
 	describe('static', () => {
-
 		const connection = new OpcUaConnection('PEATestServer', 'opc.tcp://127.0.0.1:4334/PEATestServer');
 
 		it('should work with float', () => {
-			const di = OpcUaDataItem.fromOptions(
+			const di = OpcUaDataItem.createFromOptions(
 				{value: 1.2, dataType: 'Float', nodeId: 'test', namespaceIndex: 'test2'},
 				connection, 'read', 'number');
 			expect(di.value).to.equal(1.2);
 		});
 
 		it('should work with float conversion', () => {
-			const di = OpcUaDataItem.fromOptions(
+			const di = OpcUaDataItem.createFromOptions(
 				{value: '1.2', dataType: 'Float', nodeId: 'test', namespaceIndex: 'test2'},
 				connection, 'read', 'number');
 			expect(di.value).to.equal(1.2);
 		});
 
 		it('should work with value = 0', () => {
-			const di = OpcUaDataItem.fromOptions(
+			const di = OpcUaDataItem.createFromOptions(
 				{value: 0.0, dataType: 'Float', nodeId: 'test', namespaceIndex: 'test2'},
 				connection, 'read', 'number');
 			expect(di.value).to.equal(0);
 		});
 
 		it('should work with negative value', () => {
-			const di = OpcUaDataItem.fromOptions(
+			const di = OpcUaDataItem.createFromOptions(
 				{value: -2, dataType: 'Float', nodeId: 'test', namespaceIndex: 'test2'},
 				connection, 'read', 'number');
 			expect(di.value).to.equal(-2.0);
 		});
 
 		it('should work with undefined value', () => {
-			const di = OpcUaDataItem.fromOptions(
+			const di = OpcUaDataItem.createFromOptions(
 				{value: undefined, dataType: 'Float', nodeId: 'test', namespaceIndex: 'test2'},
 				connection, 'read', 'number');
-			expect(di.value).to.equal(null);
+			expect(di.value).to.equal(undefined);
 			expect(di.access).to.equal('read');
 		});
 
-		it('should work with undefined value', () => {
-			const di = OpcUaDataItem.fromOptions(
-				{
-					value: undefined,
-					dataType: 'Float',
-					nodeId: 'test',
-					namespaceIndex: 'test2'
-				}, connection, 'write', 'number');
-			expect(di.value).to.equal(undefined);
-			expect(di.access).to.equal('write');
-		});
-
 		it('should work with string conversion', () => {
-			const di = OpcUaDataItem.fromOptions(
+			const di = OpcUaDataItem.createFromOptions(
 				{value: 1.2, dataType: 'Float', nodeId: 'test', namespaceIndex: 'test2'},
 				connection, 'read', 'string');
 			expect(di.value).to.equal('1.2');
 		});
 
-		it('should reject working when not connected', async () => {
-			const di = OpcUaDataItem.fromOptions(
+		it('should reject, when not connected', async () => {
+			const di = OpcUaDataItem.createFromOptions(
 				{
 					namespaceIndex: 'urn:NodeOPCUA-Server-default',
 					nodeId: 'Service1.Factor.VExt',
 					dataType: 'Double'
 				}, connection, 'write', 'number');
-			await expect(di.read()).to.be.rejectedWith('namespace');
+			await expect(di.read()).to.be.rejectedWith('Could not read Service1.Factor.VExt');
 		});
 	});
 
 	describe('with testserver', () => {
-
+		// DO NOT FORGET TO ADJUST NAMESPACEURL IN namespaceUrl.ts
 		let mockupServer: MockupServer;
 		let connection: OpcUaConnection;
 
 		before(async function () {
 			this.timeout(5000);
 			mockupServer = new MockupServer();
+			await mockupServer.initialize();
+			const mockup = new AnaViewMockup(mockupServer.namespace as Namespace,
+				mockupServer.rootComponent as UAObject, 'Variable');
 			await mockupServer.start();
-
-			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://127.0.0.1:4334/PEATestServer');
+			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334','','');
 			await connection.connect();
 		});
 
@@ -126,87 +116,83 @@ describe('DataItem', () => {
 		});
 
 		it('should subscribe', async () => {
-			const di = OpcUaDataItem.fromOptions(
+			const di = OpcUaDataItem.createFromOptions(
 				{
-					namespaceIndex: 'urn:NodeOPCUA-Server-default',
-					nodeId: 'Service1.CurrentTime.Text',
-					dataType: 'String'
-				}, connection, 'write', 'string');
-
-			await di.subscribe();
-
+					nodeId: 'trigger',
+					namespaceIndex: namespaceUrl,
+					dataType: 'xs:IDREF'
+				}, connection, 'read');
+			di.subscribe(); //Don't use 'await', because without startListening, this won't resolve //TODO: maybe refactor
 			await connection.startListening();
-
 			await new Promise((resolve) => di.on('changed', resolve));
-			expect(di.value).to.equal('initial value');
+			expect(di.value).to.equal(false);
 		});
 
 		it('should subscribe, disconnect and resubscribe', async () => {
-			const di = OpcUaDataItem.fromOptions(
+			const di = OpcUaDataItem.createFromOptions(
 				{
-					namespaceIndex: 'urn:NodeOPCUA-Server-default',
-					nodeId: 'Service1.CurrentTime.Text',
-					dataType: 'String'
-				}, connection, 'write', 'string');
+					nodeId: 'trigger',
+					namespaceIndex: namespaceUrl,
+					dataType: 'xs:IDREF'
+				}, connection, 'write');
 
-			await di.subscribe();
+			di.subscribe();
 			await connection.startListening();
 			await new Promise((resolve) => di.on('changed', resolve));
 
 			await connection.disconnect();
 			await connection.connect();
 
-			await di.subscribe();
+			di.subscribe();
 			await connection.startListening();
 			await new Promise((resolve) => di.on('changed', resolve));
 		});
 
 		it('should write', async () => {
-			const di = OpcUaDataItem.fromOptions(
+			const di = OpcUaDataItem.createFromOptions(
 				{
-					namespaceIndex: 'urn:NodeOPCUA-Server-default',
-					nodeId: 'Service1.Factor.VExt',
-					dataType: 'Double'
-				}, connection, 'write', 'number');
+					namespaceIndex: namespaceUrl,
+					nodeId: 'testNumber',
+					dataType: 'Float'
+				}, connection, 'write');
 			await di.write(22.0);
-
 			const value = await di.read();
 			expect(value).to.be.equal(22.0);
 		});
 
 		it('should fail while writing with wrong datatype', async () => {
-			const di = OpcUaDataItem.fromOptions(
+			const di = OpcUaDataItem.createFromOptions(
 				{
-					namespaceIndex: 'urn:NodeOPCUA-Server-default',
-					nodeId: 'Service1.Factor.VExt',
+					namespaceIndex: namespaceUrl,
+					nodeId: 'testNumber',
 					dataType: 'Float'
-				}, connection, 'write', 'number');
-
-			await expect(di.write(22)).to.be.rejectedWith('value supplied for ' +
+				}, connection, 'write');
+			await expect(di.write(true)).to.be.rejectedWith('value supplied for ' +
 				'the attribute is not of the same type');
+			//TODO: this should throw error, but it does not
 		});
 
 		it('should fail while writing with wrong datatype 2', async () => {
-			const di = OpcUaDataItem.fromOptions(
+			const di = OpcUaDataItem.createFromOptions(
 				{
-					namespaceIndex: 'urn:NodeOPCUA-Server-default',
-					nodeId: 'Service1.Factor.VExt',
+					namespaceIndex: namespaceUrl,
+					nodeId: 'testNumber',
 					dataType: 'abc'
-				}, connection, 'write', 'number');
+				}, connection, 'write');
 
 			await expect(di.write(22)).to.be.rejectedWith('datatype abc must be registered');
 		});
 
 		it('should fail while writing with wrong datatype 3', async () => {
-			const di = OpcUaDataItem.fromOptions(
+			const di = OpcUaDataItem.createFromOptions(
 				{
-					namespaceIndex: 'urn:NodeOPCUA-Server-default',
-					nodeId: 'Service1.Factor.VExt',
-					dataType: 'Byte'
-				}, connection, 'write', 'number');
+					namespaceIndex: namespaceUrl,
+					nodeId: 'testNumber',
+					dataType: 'Boolean'
+				}, connection, 'write');
 
-			await expect(di.write(22)).to.be.rejectedWith('value supplied for the ' +
-				'attribute is not of the same type');
+			await expect(di.write(22)).to.be.rejectedWith(
+				'Invalid variant arrayType: Scalar  dataType: Boolean value:22 (javascript type = number )');
 		});
 	});
 });
