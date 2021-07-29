@@ -61,7 +61,6 @@ describe('SourceModeDAMockup', () => {
             await mockupServer.initialize();
             mockup = new SourceModeDAMockupTestClass(mockupServer.namespace as Namespace,
                 mockupServer.rootComponent as UAObject, 'Variable');
-            mockup.setSrcChannelToTrue();
             await mockupServer.start();
             connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334');
             await connection.connect();
@@ -110,7 +109,7 @@ describe('SourceModeDAMockup', () => {
         //TODO get the rest
 
     });
-    describe('dynamic, srcChannel is false', () => {
+    describe('dynamic, srcChannel is true', () => {
         // we need to check if the nodes was added successfully and are writeable and readable
         let mockupServer: MockupServer;
         let mockup: SourceModeDAMockupTestClass;
@@ -121,6 +120,7 @@ describe('SourceModeDAMockup', () => {
             await mockupServer.initialize();
             mockup = new SourceModeDAMockupTestClass(mockupServer.namespace as Namespace,
                 mockupServer.rootComponent as UAObject, 'Variable');
+            mockup.setSrcChannelToTrue();
             await mockupServer.start();
             connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334');
             await connection.connect();
@@ -130,7 +130,7 @@ describe('SourceModeDAMockup', () => {
             await mockupServer.shutdown();
         });
 
-        it('set and get SrcManOp, write false', async () => {
+        it('set and get SrcManOp, nothing should change', async () => {
             await connection.writeOpcUaNode('Variable.SrcManOp', namespaceUrl, true, 'Boolean');
             await connection.readOpcUaNode('Variable.SrcManOp', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(false));
@@ -139,7 +139,7 @@ describe('SourceModeDAMockup', () => {
             expect(mockup.getSrcMode()).to.equal(SourceMode.Intern);
         }).timeout(3000);
 
-        it('set and get SrcIntOp, write false', async () => {
+        it('set and get SrcIntOp, nothing should change', async () => {
             await connection.writeOpcUaNode('Variable.SrcIntOp', namespaceUrl, true, 'Boolean');
             await connection.readOpcUaNode('Variable.SrcIntOp', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(false));

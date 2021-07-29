@@ -111,7 +111,7 @@ describe('SourceModeController', () => {
 		}).timeout(5000);
 	});
 
-	describe('dynamic functions, manual, srcChannel = true', async () => {
+	describe('dynamic functions, manual', async () => {
 		let mockupServer: MockupServer;
 		let connection: OpcUaConnection;
 		let mockup: SourceModeDAMockup;
@@ -128,7 +128,6 @@ describe('SourceModeController', () => {
 				mockupServer.namespace as Namespace,
 				mockupNode,
 				'Variable');
-			mockup.srcChannel = true;
 			mockup.srcMode = SourceMode.Manual;
 			await mockupServer.start();
 
@@ -172,7 +171,7 @@ describe('SourceModeController', () => {
 		it('waitForSourceModeToPassSpecificTest, promise should resolve after a while', async () => {
 			await da1.communication.SrcIntOp.write(true);
 			await sourceMode.waitForSourceModeToPassSpecificTest(SourceMode.Intern);
-		});
+		}).timeout(4000);
 
 		it('waitForSourceModeToPassSpecificTest, timeout', async () => {
 			//TODO need to be implemented
@@ -181,7 +180,7 @@ describe('SourceModeController', () => {
 	});
 	//TODO test more
 
-	describe('dynamic functions, Intern on, srcChannel = true', async () => {
+	describe('dynamic functions, Intern on', async () => {
 		let mockupServer: MockupServer;
 		let connection: OpcUaConnection;
 		let mockup: SourceModeDAMockup;
@@ -198,7 +197,6 @@ describe('SourceModeController', () => {
 				mockupServer.namespace as Namespace,
 				mockupNode,
 				'Variable');
-			mockup.srcChannel = true;
 			await mockupServer.start();
 
 			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334', '', '');
@@ -239,7 +237,7 @@ describe('SourceModeController', () => {
 		it('waitForSourceModeToPassSpecificTest, promise should resolve after a while', async () => {
 			await da1.communication.SrcManOp.write(true);
 			await sourceMode.waitForSourceModeToPassSpecificTest(SourceMode.Manual);
-		});
+		}).timeout(4000);
 
 		it('waitForSourceModeToPassSpecificTest, timeout', async () => {
 			//TODO need to be implemented
@@ -250,7 +248,7 @@ describe('SourceModeController', () => {
 			await sourceMode.setToManualSourceMode();
 			expect(da1.communication.SrcManAct.value).to.be.true;
 			expect(da1.communication.SrcIntAct.value).to.be.false;
-		});
+		}).timeout(4000);
 	});
 	//TODO test more
 

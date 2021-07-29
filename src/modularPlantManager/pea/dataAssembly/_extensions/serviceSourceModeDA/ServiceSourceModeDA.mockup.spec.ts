@@ -1,6 +1,6 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {DataType, Namespace, UAObject} from 'node-opcua';
+import {Namespace, UAObject} from 'node-opcua';
 import {MockupServer} from '../../../../_utils';
 import {ServiceSourceModeDAMockup} from './ServiceSourceModeDA.mockup';
 import {OpcUaConnection} from '../../../connection';
@@ -50,7 +50,6 @@ describe('ServiceSourceModeDAMockup', () => {
             await mockupServer.initialize();
             mockup = new ServiceSourceModeDAMockup(mockupServer.namespace as Namespace,
                 mockupServer.rootComponent as UAObject, 'Variable');
-            mockup.srcChannel = true;
             await mockupServer.start();
             connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334');
             await connection.connect();
@@ -70,6 +69,7 @@ describe('ServiceSourceModeDAMockup', () => {
         }).timeout(3000);
 
         it('set and get SrcIntOp', async () => {
+            mockup.srcMode= ServiceSourceMode.Extern;
             await connection.writeOpcUaNode('Variable.SrcIntOp', namespaceUrl, true, 'Boolean');
             await connection.readOpcUaNode('Variable.SrcIntOp', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(false));
@@ -82,33 +82,32 @@ describe('ServiceSourceModeDAMockup', () => {
             await connection.writeOpcUaNode('Variable.SrcExtOp', namespaceUrl, false, 'Boolean');
             await connection.readOpcUaNode('Variable.SrcExtOp', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(false));
-            expect(mockup.srcIntAct).to.false;
-            expect(mockup.srcExtAct).to.true;
-            expect(mockup.srcMode).to.equal(ServiceSourceMode.Extern);
+            expect(mockup.srcIntAct).to.true;
+            expect(mockup.srcExtAct).to.false;
         }).timeout(3000);
 
         it('set and get SrcIntOp, write false, nothing should change', async () => {
             await connection.writeOpcUaNode('Variable.SrcIntOp', namespaceUrl, false, 'Boolean');
             await connection.readOpcUaNode('Variable.SrcIntOp', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(false));
-            expect(mockup.srcIntAct).to.false;
-            expect(mockup.srcExtAct).to.true;
-            expect(mockup.srcMode).to.equal(ServiceSourceMode.Extern);
+            expect(mockup.srcIntAct).to.true;
+            expect(mockup.srcExtAct).to.false;
         }).timeout(3000);
 
         //TODO get the rest
 
     });
-    describe('dynamic, srcChannel is false, nothing should happen', () => {
+    describe('dynamic, srcChannel is true , nothing should happen', () => {
         let mockupServer: MockupServer;
         let mockup: ServiceSourceModeDAMockup;
         let connection: OpcUaConnection;
         beforeEach(async function () {
-            this.timeout(10000);
+            this.timeout(5000);
             mockupServer = new MockupServer();
             await mockupServer.initialize();
             mockup = new ServiceSourceModeDAMockup(mockupServer.namespace as Namespace,
                 mockupServer.rootComponent as UAObject, 'Variable');
+            mockup.srcChannel= true;
             await mockupServer.start();
             connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334');
             await connection.connect();
@@ -118,22 +117,20 @@ describe('ServiceSourceModeDAMockup', () => {
             await mockupServer.shutdown();
         });
 
-        it('set and get SrcExtOp', async () => {
+        it('set and get SrcExtOp, nothing should change', async () => {
             await connection.writeOpcUaNode('Variable.SrcExtOp', namespaceUrl, true, 'Boolean');
             await connection.readOpcUaNode('Variable.SrcExtOp', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(false));
-            expect(mockup.srcIntAct).to.false;
-            expect(mockup.srcExtAct).to.true;
-            expect(mockup.srcMode).to.equal(ServiceSourceMode.Extern);
+            expect(mockup.srcIntAct).to.true;
+            expect(mockup.srcExtAct).to.false;
         }).timeout(3000);
 
-        it('set and get SrcIntOp', async () => {
+        it('set and get SrcIntOp, nothing should change', async () => {
             await connection.writeOpcUaNode('Variable.SrcIntOp', namespaceUrl, true, 'Boolean');
             await connection.readOpcUaNode('Variable.SrcIntOp', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(false));
-            expect(mockup.srcIntAct).to.false;
-            expect(mockup.srcExtAct).to.true;
-            expect(mockup.srcMode).to.equal(ServiceSourceMode.Extern);
+            expect(mockup.srcIntAct).to.true;
+            expect(mockup.srcExtAct).to.false;
         }).timeout(3000);
     });
 });
