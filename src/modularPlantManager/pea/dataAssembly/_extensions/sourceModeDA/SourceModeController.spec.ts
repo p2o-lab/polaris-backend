@@ -28,7 +28,7 @@ import {OpcUaConnection} from '../../../connection';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyController} from '../../DataAssemblyController';
-import {DataAssemblyOptions, SourceMode} from '@p2olab/polaris-interface';
+import {DataAssemblyOptions, ServiceSourceMode, SourceMode} from '@p2olab/polaris-interface';
 import * as baseDataAssemblyOptions from '../../../../../../tests/binmanint.json';
 import {BinManInt} from '../../operationElement';
 import {MockupServer} from '../../../../_utils';
@@ -174,11 +174,10 @@ describe('SourceModeController', () => {
 		}).timeout(4000);
 
 		it('waitForSourceModeToPassSpecificTest, timeout', async () => {
-			//TODO need to be implemented
-			//	await sourceMode.waitForSourceModeToPassSpecificTest(SourceMode.Manual);
-		});
+			return expect(sourceMode.waitForSourceModeToPassSpecificTest(SourceMode.Intern)).to.be
+				.rejectedWith('Timeout: SourceMode did not change');
+		}).timeout(4000);
 	});
-	//TODO test more
 
 	describe('dynamic functions, Intern on', async () => {
 		let mockupServer: MockupServer;
@@ -240,9 +239,9 @@ describe('SourceModeController', () => {
 		}).timeout(4000);
 
 		it('waitForSourceModeToPassSpecificTest, timeout', async () => {
-			//TODO need to be implemented
-			//	await sourceMode.waitForSourceModeToPassSpecificTest(SourceMode.Manual);
-		});
+			return expect(sourceMode.waitForSourceModeToPassSpecificTest(SourceMode.Manual)).to.be
+				.rejectedWith('Timeout: SourceMode did not change');
+		}).timeout(5000);
 
 		it('setToManualSourceMode()', async () => {
 			await sourceMode.setToManualSourceMode();
@@ -250,6 +249,5 @@ describe('SourceModeController', () => {
 			expect(da1.communication.SrcIntAct.value).to.be.false;
 		}).timeout(4000);
 	});
-	//TODO test more
 
 });

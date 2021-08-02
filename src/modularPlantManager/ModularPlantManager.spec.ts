@@ -24,59 +24,44 @@
  */
 
 import {
-	AggregatedServiceOptions,
-	DataAssemblyOptions, PEAOptions,
+	PEAOptions,
 	ServerSettingsOptions,
-	ServiceCommand
 } from '@p2olab/polaris-interface';
-import {LoadOptions, ModularPlantManager} from './ModularPlantManager';
+import {ModularPlantManager} from './ModularPlantManager';
 import {PEAController, Service} from './pea';
-import {ServiceState} from './pea/dataAssembly';
 
 import * as fs from 'fs';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import 'mocha';
-import {PEAController} from './pea';
 import * as peaOptions from '../../tests/peaOptions.json';
 
-import {MockupServer} from './_utils';
-import * as AdmZip from 'adm-zip';
-import {PEAModel} from '@p2olab/pimad-core/dist/ModuleAutomation';
-import {logger} from '@p2olab/pimad-core';
-import {timeout} from 'promise-timeout';
-
-//TODO WIP
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 const assert = chai.assert;
 
 describe('ModularPlantManager', () => {
 
-	it('getAllPEAControllers()',  async() => {
+	it('getAllPEAControllers(), empty', async () => {
 		const modularPlantManager = new ModularPlantManager();
 		expect(modularPlantManager.getAllPEAControllers()).empty;
 	});
 
-	it('addPEAToPimadPool()',  async() => {
+	it('addPEAToPimadPool()', async () => {
 		const modularPlantManager = new ModularPlantManager();
 		const peaModel = await modularPlantManager.addPEAToPimadPool({source: 'tests/testpea.zip'});
 		expect(peaModel).to.not.be.undefined;
 
 	});
-	it('addPEAToPimadPool() fails',  () => {
+	it('addPEAToPimadPool() fails', () => {
 		const modularPlantManager = new ModularPlantManager();
 		return expect(modularPlantManager.addPEAToPimadPool({source: 'tests/stringview.json'})).to.be.rejected;
 	});
 
-	it('getAllPEAsFromPimadPool(), empty',  async() => {
+	it('getAllPEAsFromPimadPool(), empty', async () => {
 		const modularPlantManager = new ModularPlantManager();
 		return expect(modularPlantManager.getAllPEAsFromPimadPool()).to.be.empty;
 	});
-	it('getAllPEAsFromPimadPool(), fails',  async() => {
-			//TODO when will this occure?
-		}
-	);
 
 	describe('functions, which need PiMAdPEA', () => {
 		let modularPlantManager = new ModularPlantManager();
@@ -100,14 +85,12 @@ describe('ModularPlantManager', () => {
 		});
 
 		it('loadPEAController()', async () => {
-			const peaControllers = await modularPlantManager.loadPEAController(pimadId);
-			const peaController = peaControllers[0];
-			const peaId = peaController.id;
+			await modularPlantManager.loadPEAController(pimadId);
 			expect(modularPlantManager.peas.length).equal(1);
 		}).timeout(2000);
 
-		it('loadPEAController() to fail', async () => {
-			return expect(modularPlantManager.loadPEAController('')).to.be.rejected;
+		it('loadPEAController() to fail, wrong pimadIdentifier', async () => {
+			return expect(modularPlantManager.loadPEAController('')).to.be.rejectedWith('No valid PiMAd Identifier');
 		});
 
 		it('deletePEAFromPimadPool()', () => {
@@ -164,11 +147,9 @@ describe('ModularPlantManager', () => {
 		});
 		it('updateServerSettings()', async () => {
 			// instantiate PEAController first
-			const peaControllers = await modularPlantManager.loadPEAController(pimadId);
-			const peaController = peaControllers[0];
-			const peaId = peaController.id;
+			modularPlantManager.peas.push(peaController);
 			const options: ServerSettingsOptions = {
-				id: peaId,
+				id: 'test',
 				username: 'Bob',
 				password: '1234',
 				serverUrl: 'url',
@@ -195,9 +176,7 @@ describe('ModularPlantManager', () => {
 		it('getService() to fail, wrong serviceName',  () => {
 			expect(()=>modularPlantManager.getService(peaId, '')).to.throw();
 		});
-		it('connect()',  async() => {
-			//await modularPlantManager.getPEAController(peaId).connect();
-		});
+
 	});
 	context('ServerSettings', () => {
 		const modularPlantManager = new ModularPlantManager();
@@ -258,52 +237,31 @@ describe('ModularPlantManager', () => {
 		});
 	});
 
-	/*	it('should reject loading PEAs with empty options', () => {
-			const modularPlantManager = new ModularPlantManager();
-			expect(() => modularPlantManager.loadPEAController({})).to.throw();
-			expect(() => modularPlantManager.loadPEAController({someattribute: 'abc'} as any)).to.throw();
-		});*/
+	//TODO: test following
+/*	it('should load with subMP options', () => {
+		const peasJson = JSON.parse(fs.readFileSync('assets/peas/pea_cif.json').toString());
+		const modularPlantManager = new ModularPlantManager();
+		modularPlantManager.loadPEAController({subMP: [peasJson]});
+		expect(() => modularPlantManager.loadPEAController({subMP: [peasJson]})).to.throw('already in registered PEAs');
+	});
 
-		/*it('should loadPEAControllerPEAController with single PEAController', () => {
-			const peasJson = JSON.parse(fs.readFileSync('assets/peas/pea_cif.json').toString());
-			const peaJson = peasJson.peas[0];
-			const modularPlantManager = new ModularPlantManager();
-			modularPlantManager.loadPEAController({pea: peaJson});
-			expect(() => modularPlantManager.loadPEAController({pea: peaJson})).to.throw('already in registered PEAs');
-		});
+	it('should load the Achema PEAs', async () => {
+        const modularPlantManager = new ModularPlantManager();
+        const peas = modularPlantManager.loadPEAController(
+            JSON.parse(fs.readFileSync('assets/peas/achema_demonstrator/peas_achema.json').toString()),
+            true);
+        expect(peas).to.have.lengthOf(3);
 
-		it('should load with subMP options', () => {
-			const peasJson = JSON.parse(fs.readFileSync('assets/peas/pea_cif.json').toString());
-			const modularPlantManager = new ModularPlantManager();
-			modularPlantManager.loadPEAController({subMP: [peasJson]});
-			expect(() => modularPlantManager.loadPEAController({subMP: [peasJson]})).to.throw('already in registered PEAs');
-		});
-*/
-		/*it('should load the Achema PEAs', async () => {
-			const modularPlantManager = new ModularPlantManager();
-			const peas = modularPlantManager.loadPEAController(
-				JSON.parse(fs.readFileSync('assets/peas/achema_demonstrator/peas_achema.json').toString()),
-				true);
-			expect(peas).to.have.lengthOf(3);
+        expect(modularPlantManager.loadPEAController).to.have.lengthOf(3);
 
-			expect(modularPlantManager.loadPEAController).to.have.lengthOf(3);
+        const service = modularPlantManager.getService('Dose', 'Fill');
+        expect(service).to.be.instanceOf(Service);
+        expect(service.name).to.equal('Fill');
+        expect(() => modularPlantManager.getService('Dose', 'NoService')).to.throw();
+        expect(() => modularPlantManager.getService('NoPEA', 'NoService')).to.throw();
 
-			const service = modularPlantManager.getService('Dose', 'Fill');
-			expect(service).to.be.instanceOf(Service);
-			expect(service.name).to.equal('Fill');
-			expect(() => modularPlantManager.getService('Dose', 'NoService')).to.throw();
-			expect(() => modularPlantManager.getService('NoPEA', 'NoService')).to.throw();
-
-			await expect(modularPlantManager.removePEAController('something')).to.be.rejectedWith('PEAController with id something not found');
-		});*/
-
-		it('should prevent removing a protected PEAController', async () => {
-			const modularPlantManager = new ModularPlantManager();
-			modularPlantManager.loadPEAController(
-				JSON.parse(fs.readFileSync('assets/peas/pea_cif.json').toString()),
-				true);
-			await expect(modularPlantManager.removePEAController(modularPlantManager.peas[0].id)).to.be.rejectedWith(/is protected/);
-		});
+        await expect(modularPlantManager.removePEAController('something')).to.be.rejectedWith('PEAController with id something not found');
+    });*/
 
 	it('should load and remove recipe', () => {
 		const peasRecipe =
@@ -319,7 +277,7 @@ describe('ModularPlantManager', () => {
 		modularPlantManager.removeRecipe(modularPlantManager.recipes[0].id);
 		expect(modularPlantManager.recipes).to.have.lengthOf(1);
 
-		expect(() => modularPlantManager.removeRecipe(modularPlantManager.recipes[0].id)).to.throw('protected');*/
+		expect(() => modularPlantManager.removeRecipe(modularPlantManager.recipes[0].id)).to.throw('protected');
 	});
 
 	it('should load and provide pol services', () => {

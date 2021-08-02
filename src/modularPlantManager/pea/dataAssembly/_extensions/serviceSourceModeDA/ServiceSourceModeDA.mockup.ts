@@ -130,8 +130,8 @@ export class ServiceSourceModeDAMockup {
 					if (this.srcIntOp) {
 						if (!this.srcChannel) {
 							this.srcMode = ServiceSourceMode.Intern;
-						} //TODO else?
-					} //TODO else?
+						}
+					}
 					this.srcIntOp = false;
 					return StatusCodes.Good;
 				},

@@ -309,7 +309,6 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 			if (service.isCommandExecutable(ServiceCommand.pause)) {
 				return await service.executeCommandAndWaitForStateChange(ServiceCommand.pause);
 			} else {
-				//TODO is this legit? should we throw an error here?
 				throw new Error('Command is not executable');
 			}
 		});

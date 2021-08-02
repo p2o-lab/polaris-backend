@@ -215,9 +215,11 @@ describe('ServiceSourceMode', () => {
 		}).timeout(4000);
 
 		it('waitForServiceSourceModeToPassSpecificTest, timeout', async () => {
-			//TODO need to be implemented
-			//	await ssMode.waitForServiceSourceModeToPassSpecificTest(ServiceSourceMode.Extern);
-		});
+			expect(da1.communication.SrcExtAct.value).to.be.false;
+			expect(da1.communication.SrcIntAct.value).to.be.true;
+			return expect(ssMode.waitForServiceSourceModeToPassSpecificTest(ServiceSourceMode.Extern)).to.be
+				.rejectedWith('Timeout: ServiceSourceMode did not change');
+		}).timeout(4000);
 
 		it('setToExternalServiceSourceMode()', async () => {
 			await ssMode.setToExternalServiceSourceMode();
@@ -227,7 +229,6 @@ describe('ServiceSourceMode', () => {
 			expect(da1.communication.SrcIntAct.value).to.be.false;
 		}).timeout(4000);
 	});
-	//TODO test more
 
 });
 

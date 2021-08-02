@@ -80,9 +80,10 @@ export class OpcUaDataItem<T> extends DataItem<T> {
 				this.timestamp = dataValue.serverTimestamp;
 				this.emit('changed', {value: this.value, timestamp: this.timestamp, nodeId: this.nodeId});
 			});
+		//set timeout
 		await new Promise((resolve, reject) => {
-			//TODO are 2 seconds okay?
-			setTimeout(()=> reject(new Error(`Timeout: Could not subscribe to ${this.nodeId}`)),2000);
+			//TODO are 3 seconds okay?
+			setTimeout(()=> reject(new Error(`Timeout: Could not subscribe to ${this.nodeId}`)),3000);
 			this.on('changed', resolve);
 		});
 		this.logger.info(`subscribed to Data Item ${this.nodeId}`);

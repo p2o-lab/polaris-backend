@@ -79,26 +79,38 @@ describe('PEAController', () => {
 			await mockupServer.shutdown();
 		});
 		context('connect, subscribe',()=>{
+			it('should connect and subscribe',  async() => {
+				return expect(peaController.connectAndSubscribe()).to.not.be.rejected;
+			});
 			it('should fail to subscribe, missing variable on mockupServer',  async() => {
 				await mockupServer.shutdown();
 				mockupServer = new MockupServer();
 				peaController = new PEAController(peaOptions as unknown as PEAOptions);
 				await mockupServer.initialize();
-				const mockup = new AnaViewMockup(mockupServer.namespace as Namespace,
+				new AnaViewMockup(mockupServer.namespace as Namespace,
 					mockupServer.rootComponent as UAObject, 'Variable', false);
-				const mockupService = new ServiceControlMockup(mockupServer.namespace as Namespace,
+				new ServiceControlMockup(mockupServer.namespace as Namespace,
 					mockupServer.rootComponent as UAObject, 'Trigonometry');
 				await mockupServer.start();
 				return expect(peaController.connectAndSubscribe()).to.be.rejectedWith('Timeout: Could not subscribe to Variable.V');
-			}).timeout(3000);
+			}).timeout(5000);
 
-			it('should connect and subscribe',  async() => {
-				return expect(peaController.connectAndSubscribe()).to.not.be.rejected;
+
+			it('should fail to connect, invalid endpoint URL',  async() => {
+				let faultyPEAOptions = { ...peaOptions };
+				faultyPEAOptions.opcuaServerUrl = 'wrongUrl';
+				const peaController = new PEAController(faultyPEAOptions as unknown as PEAOptions);
+				return expect(peaController.connectAndSubscribe()).to.be.rejectedWith('Invalid endpoint url wrongUrl');
 			});
 
-
-			it('should fail to connect / subscribe',  async() => {
-				//TODO more cases
+			it('should fail to connect, server down',  async() => {
+				await mockupServer.shutdown();
+				let faultyPEAOptions = { ...peaOptions };
+				const peaController = new PEAController(faultyPEAOptions as unknown as PEAOptions);
+				return expect(peaController.connectAndSubscribe()).to.be.rejectedWith(
+					'The connection cannot be established with server opc.tcp://localhost:4334 .\n' +
+					'Please check that the server is up and running or your network configuration.\n' +
+					'Err = (connect ECONNREFUSED 127.0.0.1:4334)');
 			});
 
 			it('should disconnect and unsubscribe',  async() => {
@@ -106,30 +118,31 @@ describe('PEAController', () => {
 				await peaController.disconnectAndUnsubscribe();
 			});
 
-			it('should fail to disconnect and unsubscribe',  async() => {
-				//TODO
-			});
+/*			it('should fail to disconnect and unsubscribe',  async() => {
+				//TODO when could this occure?
+			});*/
 		});
 
 		context('control Services',async ()=> {
-			//TODO: test with multiple services
 			it('should stop()',  async() => {
 				await peaController.connectAndSubscribe();
 				await service.executeCommandAndWaitForStateChange(ServiceCommand.start);
 				await peaController.stop();
 				expect(service.state).to.equal(ServiceState.STOPPED);
 			});
-			it('should fail to stop(), command not executable',  async() => {
+			it('should fail to stop(), command not executable',async() => {
 				await peaController.connectAndSubscribe();
 				await peaController.abort();
 				return expect(peaController.stop()).to.be.rejectedWith('Command is not executable');
 			});
+
 			it('should abort()',  async() => {
 				await peaController.connectAndSubscribe();
 				await service.executeCommandAndWaitForStateChange(ServiceCommand.start);
 				await peaController.abort();
 				expect(service.state).to.equal(ServiceState.ABORTED);
 			});
+
 			it('should pause()',  async() => {
 				await peaController.connectAndSubscribe();
 				await service.executeCommandAndWaitForStateChange(ServiceCommand.start);
@@ -140,7 +153,8 @@ describe('PEAController', () => {
 				await peaController.connectAndSubscribe();
 				return expect(peaController.pause()).to.be.rejectedWith('Command is not executable');
 			});
-			it('should resume()',  async() => {
+
+			it('should resume()', async() => {
 				await peaController.connectAndSubscribe();
 				await service.executeCommandAndWaitForStateChange(ServiceCommand.start);
 				await service.executeCommandAndWaitForStateChange(ServiceCommand.pause);
@@ -151,81 +165,6 @@ describe('PEAController', () => {
 				await peaController.connectAndSubscribe();
 				return expect(peaController.resume()).to.be.rejectedWith('Command is not executable');
 			});
-
 		});
-
-
 	});
-
-	/*context('with PEAController server', () => {
-		let peaMockup: PEAMockup;
-		let mockupServer: MockupServer;
-
-		before(async function() {
-			this.timeout(4000);
-			mockupServer = new MockupServer();
-			await mockupServer.start();
-		});
-
-		after(async () => {
-			await mockupServer.shutdown();
-		});
-
-		it('should connect to PEAController, provide correct json output and disconnect', async () => {
-			const peaJson =
-				JSON.parse(fs.readFileSync('src/modularPlantManager/pea/_assets/JSON/pea_testserver_1.0.0_2.json', 'utf8')).peas[0];
-			const pea = new PEAController(peaJson);
-			await pea.connectAndSubscribe();
-
-			await Promise.all([
-				new Promise((resolve) => pea.on('parameterChanged', resolve)),
-				new Promise((resolve) => pea.on('variableChanged', resolve)),
-				new Promise((resolve) => pea.on('stateChanged', resolve))
-			]);
-
-			const json = pea.json();
-			expect(json).to.have.property('id', 'PEATestServer');
-			expect(json).to.have.property('endpoint', 'opc.tcp://127.0.0.1:4334/PEATestServer');
-			expect(json).to.have.property('protected', false);
-			expect(json).to.have.property('services')
-				.to.have.lengthOf(2);
-
-			expect(pea.services[0].eventEmitter.listenerCount('state')).to.equal(1);
-			expect(pea.services[0].serviceControl.listenerCount('State')).to.equal(1);
-			expect(pea.variables[0].listenerCount('V')).to.equal(1);
-			expect(pea.services[0].eventEmitter.listenerCount('parameterChanged')).to.equal(1);
-
-			const errorMsg = pea.services[0].procedures[0].processValuesOut[0] as StringView;
-			expect(errorMsg.communication.WQC.listenerCount('changed')).to.equal(2);
-			expect(errorMsg.communication.Text?.listenerCount('changed')).to.equal(2);
-
-			await pea.disconnectAndUnsubscribe();
-		});
-
-		it('should work after reconnect', async () => {
-			const peaJson =
-				JSON.parse(fs.readFileSync('assets/peas/pea_testserver_1.0.0.json', 'utf8')).peas[0];
-			const pea = new PEAController(peaJson);
-
-			await pea.connectAndSubscribe();
-			await Promise.all([
-				new Promise((resolve) => pea.on('parameterChanged', resolve)),
-				new Promise((resolve) => pea.on('variableChanged', resolve)),
-				new Promise((resolve) => pea.on('stateChanged', resolve))
-			]);
-			expect(pea.connection.monitoredItemSize()).to.be.greaterThan(80);
-			await pea.disconnectAndUnsubscribe();
-			expect(pea.connection.monitoredItemSize()).to.equal(0);
-
-			await pea.connectAndSubscribe();
-			await Promise.all([
-				new Promise((resolve) => pea.on('parameterChanged', resolve)),
-				new Promise((resolve) => pea.on('variableChanged', resolve)),
-				new Promise((resolve) => pea.on('stateChanged', resolve))
-			]);
-			expect(pea.connection.monitoredItemSize()).to.be.greaterThan(80);
-		});
-
-	});*/
-
 });

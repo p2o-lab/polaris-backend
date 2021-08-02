@@ -9,18 +9,7 @@ import {ServiceSourceMode, SourceMode} from '@p2olab/polaris-interface';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
-// this test class is needed to test the protected variable
-class SourceModeDAMockupTestClass extends SourceModeDAMockup{
-    constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
-        super(namespace, rootNode, variableName);
-    }
-    public getSrcMode(){
-        return this.srcMode;
-    }
-    public setSrcChannelToTrue(){
-        this.srcChannel = true;
-    }
-}
+
 
 describe('SourceModeDAMockup', () => {
     describe('', () => {
@@ -53,13 +42,13 @@ describe('SourceModeDAMockup', () => {
     describe('dynamic', () => {
         // we need to check if the nodes was added successfully and are writeable and readable
         let mockupServer: MockupServer;
-        let mockup: SourceModeDAMockupTestClass;
+        let mockup: SourceModeDAMockup;
         let connection: OpcUaConnection;
         beforeEach(async function () {
             this.timeout(10000);
             mockupServer = new MockupServer();
             await mockupServer.initialize();
-            mockup = new SourceModeDAMockupTestClass(mockupServer.namespace as Namespace,
+            mockup = new SourceModeDAMockup(mockupServer.namespace as Namespace,
                 mockupServer.rootComponent as UAObject, 'Variable');
             await mockupServer.start();
             connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334');
@@ -76,7 +65,7 @@ describe('SourceModeDAMockup', () => {
                 .then(datavalue => expect(datavalue?.value.value).to.equal(false));
             expect(mockup.srcIntAct).to.false;
             expect(mockup.srcManAct).to.true;
-            expect(mockup.getSrcMode()).to.equal(SourceMode.Manual);
+            expect(mockup.srcMode).to.equal(SourceMode.Manual);
         }).timeout(3000);
 
         it('set and get SrcIntOp', async () => {
@@ -85,7 +74,7 @@ describe('SourceModeDAMockup', () => {
                 .then(datavalue => expect(datavalue?.value.value).to.equal(false));
             expect(mockup.srcIntAct).to.true;
             expect(mockup.srcManAct).to.false;
-            expect(mockup.getSrcMode()).to.equal(SourceMode.Intern);
+            expect(mockup.srcMode).to.equal(SourceMode.Intern);
         }).timeout(3000);
 
         it('set and get SrcManOp, write false', async () => {
@@ -94,7 +83,7 @@ describe('SourceModeDAMockup', () => {
                 .then(datavalue => expect(datavalue?.value.value).to.equal(false));
             expect(mockup.srcIntAct).to.true;
             expect(mockup.srcManAct).to.false;
-            expect(mockup.getSrcMode()).to.equal(SourceMode.Intern);
+            expect(mockup.srcMode).to.equal(SourceMode.Intern);
         }).timeout(3000);
 
         it('set and get SrcIntOp, write false', async () => {
@@ -103,7 +92,7 @@ describe('SourceModeDAMockup', () => {
                 .then(datavalue => expect(datavalue?.value.value).to.equal(false));
             expect(mockup.srcIntAct).to.true;
             expect(mockup.srcManAct).to.false;
-            expect(mockup.getSrcMode()).to.equal(ServiceSourceMode.Intern);
+            expect(mockup.srcMode).to.equal(ServiceSourceMode.Intern);
         }).timeout(3000);
 
         //TODO get the rest
@@ -112,15 +101,15 @@ describe('SourceModeDAMockup', () => {
     describe('dynamic, srcChannel is true', () => {
         // we need to check if the nodes was added successfully and are writeable and readable
         let mockupServer: MockupServer;
-        let mockup: SourceModeDAMockupTestClass;
+        let mockup: SourceModeDAMockup;
         let connection: OpcUaConnection;
         beforeEach(async function () {
             this.timeout(10000);
             mockupServer = new MockupServer();
             await mockupServer.initialize();
-            mockup = new SourceModeDAMockupTestClass(mockupServer.namespace as Namespace,
+            mockup = new SourceModeDAMockup(mockupServer.namespace as Namespace,
                 mockupServer.rootComponent as UAObject, 'Variable');
-            mockup.setSrcChannelToTrue();
+            mockup.srcChannel = true;
             await mockupServer.start();
             connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334');
             await connection.connect();
@@ -136,7 +125,7 @@ describe('SourceModeDAMockup', () => {
                 .then(datavalue => expect(datavalue?.value.value).to.equal(false));
             expect(mockup.srcIntAct).to.true;
             expect(mockup.srcManAct).to.false;
-            expect(mockup.getSrcMode()).to.equal(SourceMode.Intern);
+            expect(mockup.srcMode).to.equal(SourceMode.Intern);
         }).timeout(3000);
 
         it('set and get SrcIntOp, nothing should change', async () => {
@@ -145,7 +134,7 @@ describe('SourceModeDAMockup', () => {
                 .then(datavalue => expect(datavalue?.value.value).to.equal(false));
             expect(mockup.srcIntAct).to.true;
             expect(mockup.srcManAct).to.false;
-            expect(mockup.getSrcMode()).to.equal(ServiceSourceMode.Intern);
+            expect(mockup.srcMode).to.equal(ServiceSourceMode.Intern);
         }).timeout(3000);
     });
 });

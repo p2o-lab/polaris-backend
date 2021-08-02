@@ -78,6 +78,7 @@ describe('OpcUaConnection', () => {
 
 		after(async () => {
 			if(mockupServer) await mockupServer.shutdown();
+
 		});
 
 		it('should connect to a opc ua test server, read an opc item and disconnect', async () => {

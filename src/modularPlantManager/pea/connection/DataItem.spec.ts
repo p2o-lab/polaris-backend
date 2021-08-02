@@ -146,7 +146,7 @@ describe('DataItem', () => {
 			di.subscribe();
 			await connection.startListening();
 			await new Promise((resolve) => di.on('changed', resolve));
-		});
+		}).timeout(5000);
 
 		it('should write', async () => {
 			const di = OpcUaDataItem.createFromOptions(
@@ -167,9 +167,11 @@ describe('DataItem', () => {
 					nodeId: 'testNumber',
 					dataType: 'Float'
 				}, connection, 'write');
-			await expect(di.write(true)).to.be.rejectedWith('value supplied for ' +
+			await expect(di.write('test')).to.be.rejectedWith('value supplied for ' +
 				'the attribute is not of the same type');
-			//TODO: this should throw error, but it does not
+			const value = await di.read();
+			expect(value).to.be.equal(22.0);
+			//TODO: this should throw error, but it does not, needs to be implemented
 		});
 
 		it('should fail while writing with wrong datatype 2', async () => {

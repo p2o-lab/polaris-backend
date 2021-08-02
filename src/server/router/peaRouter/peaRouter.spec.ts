@@ -86,9 +86,6 @@ describe('PEARoutes', () => {
 					hmiUrl: '', connected: false, services: [], processValues: [], protected: false
 				}]);
 		});
-		it('should fail to get peas, wrong id', async () => {
-			//TODO how to make it fail
-		});
 	});
 
 	context('/api/pea/{peaId}', () => {

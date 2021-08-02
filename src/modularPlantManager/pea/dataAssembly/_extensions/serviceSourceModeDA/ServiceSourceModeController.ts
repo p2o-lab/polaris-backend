@@ -83,10 +83,13 @@ export class ServiceSourceModeController{
 
 	public async waitForServiceSourceModeToPassSpecificTest(expectedServiceSourceMode: ServiceSourceMode): Promise<unknown> {
 		await this.dAController.subscribe();
-		return new Promise((resolve) => {
+		return new Promise((resolve, reject) => {
 			if (this.isServiceSourceMode(expectedServiceSourceMode)) {
 				resolve();
 			} else {
+				setTimeout(() => {
+					reject('Timeout: ServiceSourceMode did not change');
+				}, 3000)
 				// eslint-disable-next-line @typescript-eslint/no-this-alias
 				const da = this;
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -96,7 +99,7 @@ export class ServiceSourceModeController{
 						resolve();
 					}
 				});
-			} //TODO: add timeout?
+			}
 		});
 	}
 

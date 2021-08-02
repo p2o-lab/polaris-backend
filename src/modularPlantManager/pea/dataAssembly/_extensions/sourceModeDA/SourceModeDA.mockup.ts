@@ -152,8 +152,8 @@ export class SourceModeDAMockup {
             if (this.srcManOp) {
               if (!this.srcChannel) {
                 this.srcMode = SourceMode.Manual;
-              }//TODO else?
-            }//TODO else?
+              }
+            }
             this.srcManOp = false;
             return StatusCodes.Good;
           },

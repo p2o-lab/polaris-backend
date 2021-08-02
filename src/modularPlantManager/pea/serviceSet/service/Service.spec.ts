@@ -47,7 +47,6 @@ chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('Service', () => {
-	const parseJson = require('json-parse-better-errors');
 	const opcUAConnection = new OpcUaConnection('', '');
 
 	context('constructor', () => {
@@ -137,7 +136,7 @@ describe('Service', () => {
 		}
 
 		beforeEach(async function () {
-			this.timeout(3000);
+			this.timeout(5000);
 			//set up mockup
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
@@ -265,9 +264,6 @@ describe('Service', () => {
 			await service.executeCommandAndWaitForStateChange(ServiceCommand.pause);
 			await service.executeCommandAndWaitForStateChange(ServiceCommand.resume);
 
-			//TODO hold, unhold?
-		//	await service.executeCommandAndWaitForStateChange(ServiceCommand.hold);
-		//	await service.executeCommandAndWaitForStateChange(ServiceCommand.unhold);
 			await service.executeCommandAndWaitForStateChange(ServiceCommand.complete);
 			await service.executeCommandAndWaitForStateChange(ServiceCommand.abort);
 			await service.executeCommandAndWaitForStateChange(ServiceCommand.reset);
@@ -275,5 +271,9 @@ describe('Service', () => {
 			await service.executeCommandAndWaitForStateChange(ServiceCommand.complete);
 			expect(stateChangeCount).to.equal(11);
 		}).timeout(10000);
+
+		//TODO hold, unhold
+
+
 	});
 });

@@ -126,7 +126,6 @@ export class ServiceControlMockup extends DataAssemblyControllerMockup{
     protected procedureInt = 0;
     protected procedureExt = 0;
 
-    protected stateCur = 16;
     commandEn = 268;
     protected procedureCur = 0;
     protected procedureReq = 0;
@@ -148,6 +147,7 @@ export class ServiceControlMockup extends DataAssemblyControllerMockup{
 
           this.stateMachine = new MtpStateMachine(variableName, {} as UserDefinedGuard, {} as UserDefinedActions);
           this.stateMachine.start();
+
           namespace.addVariable({
               componentOf: this.mockupNode,
               nodeId: `ns=${namespace.index};s=${variableName}.CommandOp`,

@@ -347,7 +347,7 @@ export class MtpStateMachine {
   */
   public start() {
     this.stateMachineService = interpret(this.stateMachine);
-    this.stateMachineService.onTransition(() => console.log(`FSM (${this.name}): ${this.getState()}`))
+    this.stateMachineService.onTransition(() => console.log(`[STATEMACHINE] FSM (${this.name}): ${this.getState()}`))
       .start();
   }
 
