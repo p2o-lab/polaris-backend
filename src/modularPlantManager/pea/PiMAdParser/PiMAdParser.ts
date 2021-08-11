@@ -40,6 +40,7 @@ export class PiMAdParser {
             opcuaServerUrl: endpoint,
             dataAssemblies: pimadParserObject.dataAssemblyOptionsArray
         };
+        console.log(JSON.stringify(peaOptions));
         return peaOptions;
     }
 
@@ -79,11 +80,13 @@ export class PiMAdParser {
         serviceModels.forEach(serviceModel=> {
             const procedureOptionsArray = this.createProcedureOptionsArray(serviceModel.procedures);
             const serviceDataAssemblyOptions = PiMAdParser.createDataAssemblyOptions(serviceModel.dataAssembly as DataAssemblyModel);
+            const parameters = PiMAdParser.createDataAssemblyOptionsArray(serviceModel.parameters);
 
             const serviceOptions: ServiceOptions = {
                 name: serviceModel.name,
                 communication: serviceDataAssemblyOptions.dataItems as unknown as ServiceControlOptions,
-                procedures: procedureOptionsArray
+                procedures: procedureOptionsArray,
+                parameters: parameters,
             };
 
             servicesOptionsArray.push(serviceOptions);
@@ -115,14 +118,26 @@ export class PiMAdParser {
                 }
             });
 
-            const procedureDataAssemblyOptionsArray = [PiMAdParser.createDataAssemblyOptions(procedure.dataAssembly as DataAssemblyModel)];
+            //healthstateview
+            const procedureDataAssemblyOptions = [PiMAdParser.createDataAssemblyOptions(procedure.dataAssembly as DataAssemblyModel)];
+
+            const procedureParameters = PiMAdParser.createDataAssemblyOptionsArray(procedure.parameters);
+            const reportValues = PiMAdParser.createDataAssemblyOptionsArray(procedure.reportValues);
+            const processValuesIn = PiMAdParser.createDataAssemblyOptionsArray(procedure.processValuesIn);
+            const processValuesOut = PiMAdParser.createDataAssemblyOptionsArray(procedure.processValuesOut);
+
             const procedureOptions: ProcedureOptions = {
                 id: procedureID,
                 name: procedureName,
                 isDefault : isDefault as boolean,
                 isSelfCompleting: isSelfCompleting as boolean,
-                parameters: procedureDataAssemblyOptionsArray,
+                dataAssembly: procedureDataAssemblyOptions,
+                parameters: procedureParameters,
+                reportParameters: reportValues,
+                processValuesIn: processValuesIn,
+                processValuesOut: processValuesOut
             };
+
             procedureOptionsArray.push(procedureOptions);
         });
         return procedureOptionsArray;
@@ -158,8 +173,8 @@ export class PiMAdParser {
                 const cIData = dataItem.cIData;
                 if(cIData){ //dynamic
                     nodeId= cIData.nodeId.identifier;
-                    namespaceIndex = cIData.nodeId.namespaceIndex;
-                    //namespaceIndex='urn:DESKTOP-6QLO5BB:NodeOPCUA-Server';
+                   // namespaceIndex = cIData.nodeId.namespaceIndex;
+                    namespaceIndex='urn:DESKTOP-DLSN8FE:NodeOPCUA-Server';
                     const opcUaNodeOptions: OpcUaNodeOptions = {
                         nodeId: nodeId,
                         namespaceIndex: namespaceIndex,
