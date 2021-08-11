@@ -69,7 +69,7 @@ describe('ModularPlantManager', () => {
 
 		beforeEach(async () => {
 			modularPlantManager = new ModularPlantManager();
-			const peaModel = await modularPlantManager.addPEAToPimadPool({source: 'tests/testpea.zip'});
+			const peaModel = await modularPlantManager.addPEAToPimadPool({source: 'tests/testpea_new.zip'});
 			pimadId = peaModel.pimadIdentifier;
 		});
 
@@ -87,7 +87,7 @@ describe('ModularPlantManager', () => {
 		it('loadPEAController()', async () => {
 			await modularPlantManager.loadPEAController(pimadId);
 			expect(modularPlantManager.peas.length).equal(1);
-		}).timeout(2000);
+		});
 
 		it('loadPEAController() to fail, wrong pimadIdentifier', async () => {
 			return expect(modularPlantManager.loadPEAController('')).to.be.rejectedWith('No valid PiMAd Identifier');
