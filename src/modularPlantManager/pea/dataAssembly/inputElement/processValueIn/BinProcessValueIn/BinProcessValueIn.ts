@@ -46,6 +46,9 @@ export class BinProcessValueIn extends InputElement {
 
 		this.defaultReadDataItem = this.communication.VExt;
 		this.defaultReadDataItemType = 'boolean';
+
+		this.defaultWriteDataItemType = 'boolean';
+		this.defaultWriteDataItem = this.communication.VExt;
 	}
 
 }

@@ -51,5 +51,8 @@ export class StringServParam extends ServParam {
 
 		this.defaultReadDataItem = this.communication.VOut;
 		this.defaultReadDataItemType = 'string';
+
+		this.defaultWriteDataItemType = 'string';
+		this.defaultWriteDataItem = this.communication.VExt; //TODO correct?
 	}
 }
