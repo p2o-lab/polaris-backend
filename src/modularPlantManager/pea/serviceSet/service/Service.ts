@@ -337,8 +337,7 @@ export class Service extends BaseService {
 	public async setParameters(parameterOptions: ParameterOptions[], peaSet: PEAController[] = []): Promise<void> {
 		parameterOptions.map((p) => {
 			const dataAssembly = this.findInputParameter(p.name);
-			//TODO: whats this below
-			//dataAssembly?.setValue(p, peaSet);
+			dataAssembly?.setValue(p, peaSet);
 		});
 	}
 
