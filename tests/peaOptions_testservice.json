@@ -197,6 +197,11 @@
               "dataItems":{
                 "TagName":"AnaProcParam_TestService_factor",
                 "TagDescription":"Factor for scaling",
+                "WQC":{
+                  "nodeId":"TestService.AnaProcParam_TestService_factor.WQC",
+                  "namespaceIndex":"urn:DESKTOP-DLSN8FE:NodeOPCUA-Server",
+                  "dataType":"xs:IDREF"
+                },
                 "OSLevel":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.OSLevel",
                   "namespaceIndex":"urn:DESKTOP-DLSN8FE:NodeOPCUA-Server",
