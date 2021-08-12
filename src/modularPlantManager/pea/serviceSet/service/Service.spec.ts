@@ -281,16 +281,29 @@ describe('Service', () => {
 	});
 	context('parameter dynamic', () => {
 		it('set Parameter', async () => {
+			//set namespaceUrl TODO: need to outsource and rework this
+			for (const key in peaOptionsServices.services[0].communication as any) {
+				//skip static values
+				if((typeof(peaOptionsServices.services[0].communication as any)[key] != 'string')){
+					(peaOptionsServices.services[0].communication as any)[key].namespaceIndex = namespaceUrl;
+				}
+			}
+			for (const key in peaOptionsServices.services[0].procedures[0].parameters[0].dataItems as any) {
+				//skip static values
+				if((typeof(peaOptionsServices.services[0].procedures[0].parameters[0].dataItems as any)[key] != 'string')){
+					(peaOptionsServices.services[0].procedures[0].parameters[0].dataItems as any)[key].namespaceIndex = namespaceUrl;
+				}
+			}
 			const mockupServer = new MockupServer();
 			await mockupServer.initialize();
 			const mockupParam = new AnaServParamMockup(mockupServer.namespace as Namespace,
 				mockupServer.rootComponent as UAObject, 'TestService.AnaProcParam_TestService_factor');
-			const mockupReportValue = new AnaViewMockup(mockupServer.namespace as Namespace,
+/*			const mockupReportValue = new AnaViewMockup(mockupServer.namespace as Namespace,
 				mockupServer.rootComponent as UAObject, 'TestService.AnaReportValue_TestService_rvTime');
 			const mockupProcessValueIn = new AnaProcessValueInMockup(mockupServer.namespace as Namespace,
 				mockupServer.rootComponent as UAObject, 'TestService.AnaProcessValueIn_TestService_pv');
 			const mockupProcessValueOut = new AnaProcessValueInMockup(mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject, 'TestService.AnaProcessValueOut_TestService_pvOutIntegral');
+				mockupServer.rootComponent as UAObject, 'TestService.AnaProcessValueOut_TestService_pvOutIntegral');*/
 			const mockupService = new ServiceControlMockup(mockupServer.namespace as Namespace,
 				mockupServer.rootComponent as UAObject, 'TestService');
 
