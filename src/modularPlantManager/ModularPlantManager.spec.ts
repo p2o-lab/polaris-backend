@@ -69,7 +69,7 @@ describe('ModularPlantManager', () => {
 
 		beforeEach(async () => {
 			modularPlantManager = new ModularPlantManager();
-			const peaModel = await modularPlantManager.addPEAToPimadPool({source: 'tests/testpea_new.zip'});
+			const peaModel = await modularPlantManager.addPEAToPimadPool({source: 'tests/testpea.zip'});
 			pimadId = peaModel.pimadIdentifier;
 		});
 

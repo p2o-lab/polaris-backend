@@ -7,6 +7,7 @@ import {
 } from '@p2olab/polaris-interface';
 import {ProcedureOptions} from '@p2olab/polaris-interface/dist/service/options';
 import {ModularPlantManager} from '../../ModularPlantManager';
+import {namespaceUrl} from '../../../../tests/namespaceUrl';
 
 export interface PiMAdParserInterface{
      dataAssemblyOptionsArray: DataAssemblyOptions[];
@@ -40,7 +41,6 @@ export class PiMAdParser {
             opcuaServerUrl: endpoint,
             dataAssemblies: pimadParserObject.dataAssemblyOptionsArray
         };
-        console.log(JSON.stringify(peaOptions));
         return peaOptions;
     }
 
@@ -173,8 +173,8 @@ export class PiMAdParser {
                 const cIData = dataItem.cIData;
                 if(cIData){ //dynamic
                     nodeId= cIData.nodeId.identifier;
-                   // namespaceIndex = cIData.nodeId.namespaceIndex;
-                    namespaceIndex='urn:DESKTOP-DLSN8FE:NodeOPCUA-Server';
+                    namespaceIndex = cIData.nodeId.namespaceIndex;
+                   // namespaceIndex = namespaceUrl; // for testing
                     const opcUaNodeOptions: OpcUaNodeOptions = {
                         nodeId: nodeId,
                         namespaceIndex: namespaceIndex,

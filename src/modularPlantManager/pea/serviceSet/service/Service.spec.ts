@@ -88,11 +88,10 @@ describe('Service', () => {
 		expect(service.name).to.equal('Trigonometry');
 	});
 
-	// eslint-disable-next-line no-undef
-	context('with PEATestServer', () => {
+	context('get procedure', () => {
 		let pea: PEAController;
 		let service: Service;
-		// eslint-disable-next-line no-undef
+
 		before(() => {
 			pea = new PEAController(peaOptions as unknown as PEAOptions);
 			service = pea.services[0];
@@ -118,7 +117,6 @@ describe('Service', () => {
 		});
 	});
 
-	// eslint-disable-next-line no-undef
 	context('dynamic test', () => {
 		let peaServer: PEAMockup;
 		let service: Service;
@@ -281,45 +279,48 @@ describe('Service', () => {
 
 
 	});
-	it('set Parameter', async () => {
-		const mockupServer = new MockupServer();
-		await mockupServer.initialize();
-		const mockupParam = new AnaServParamMockup(mockupServer.namespace as Namespace,
-			mockupServer.rootComponent as UAObject, 'TestService.AnaProcParam_TestService_factor');
-		const mockupReportValue = new AnaViewMockup(mockupServer.namespace as Namespace,
-			mockupServer.rootComponent as UAObject, 'TestService.AnaReportValue_TestService_rvTime');
-		const mockupProcessValueIn = new AnaProcessValueInMockup(mockupServer.namespace as Namespace,
-			mockupServer.rootComponent as UAObject, 'TestService.AnaProcessValueIn_TestService_pv');
-		const mockupProcessValueOut =  new AnaProcessValueInMockup(mockupServer.namespace as Namespace,
-			mockupServer.rootComponent as UAObject, 'TestService.AnaProcessValueOut_TestService_pvOutIntegral');
-		const mockupService = new ServiceControlMockup(mockupServer.namespace as Namespace,
-			mockupServer.rootComponent as UAObject, 'TestService');
+	context('parameter dynamic', () => {
+		it('set Parameter', async () => {
+			const mockupServer = new MockupServer();
+			await mockupServer.initialize();
+			const mockupParam = new AnaServParamMockup(mockupServer.namespace as Namespace,
+				mockupServer.rootComponent as UAObject, 'TestService.AnaProcParam_TestService_factor');
+			const mockupReportValue = new AnaViewMockup(mockupServer.namespace as Namespace,
+				mockupServer.rootComponent as UAObject, 'TestService.AnaReportValue_TestService_rvTime');
+			const mockupProcessValueIn = new AnaProcessValueInMockup(mockupServer.namespace as Namespace,
+				mockupServer.rootComponent as UAObject, 'TestService.AnaProcessValueIn_TestService_pv');
+			const mockupProcessValueOut = new AnaProcessValueInMockup(mockupServer.namespace as Namespace,
+				mockupServer.rootComponent as UAObject, 'TestService.AnaProcessValueOut_TestService_pvOutIntegral');
+			const mockupService = new ServiceControlMockup(mockupServer.namespace as Namespace,
+				mockupServer.rootComponent as UAObject, 'TestService');
 
-		await mockupServer.start();
-		const pea = new PEAController(peaOptionsServices as unknown as PEAOptions);
-		await pea.connectAndSubscribe();
-		const service = pea.getService('TestService');
-		const procedure = service.getProcedureByNameOrDefault('TestService_default');
-		if (procedure) {
-			await service.setProcedure(procedure);
-		}
-		let curProcedure = await service.getCurrentProcedure();
-		expect(curProcedure).to.be.undefined; // current procedure will be set on service start
+			await mockupServer.start();
+			const pea = new PEAController(peaOptionsServices as unknown as PEAOptions);
+			await pea.connectAndSubscribe();
+			const service = pea.getService('TestService');
+			const procedure = service.getProcedureByNameOrDefault('TestService_default');
+			if (procedure) {
+				await service.setProcedure(procedure);
+			}
+			let curProcedure = await service.getCurrentProcedure();
+			expect(curProcedure).to.be.undefined; // current procedure will be set on service start
 
-		await service.start();
+			await service.start();
 
-		await new Promise(f => setTimeout(f, 500)); // wait for change
+			await new Promise(f => setTimeout(f, 500)); // wait for change
 
-		curProcedure = await service.getCurrentProcedure();
-		expect(curProcedure).to.not.be.undefined;
-		const paramOptions: ParameterOptions = {value: 5, name: 'AnaProcParam_TestService_factor'};
-		expect((procedure?.parameters[0] as AnaServParam).communication.VExt.value).to.equal(0);
+			curProcedure = await service.getCurrentProcedure();
+			expect(curProcedure).to.not.be.undefined;
+			const paramOptions: ParameterOptions = {value: 5, name: 'AnaProcParam_TestService_factor'};
+			expect((procedure?.parameters[0] as AnaServParam).communication.VExt.value).to.equal(0);
 
-		await service.setParameters([paramOptions], [pea]);
+			await service.setParameters([paramOptions], [pea]);
 
-		await new Promise(f => setTimeout(f, 500)); // wait for change
+			await new Promise(f => setTimeout(f, 500)); // wait for change
 
-		expect((procedure?.parameters[0] as AnaServParam).communication.VExt.value).to.equal(5);
-		mockupServer.shutdown();
-	}).timeout(10000);
+			expect((procedure?.parameters[0] as AnaServParam).communication.VExt.value).to.equal(5);
+			await pea.disconnectAndUnsubscribe();
+			await mockupServer.shutdown();
+		}).timeout(10000);
+	});
 });
