@@ -275,17 +275,23 @@ peaRouter.delete('/PiMAd/:peaId', asyncHandler(async (req: Request, res: Respons
 peaRouter.post('/:peaId/service/:serviceName', asyncHandler(async (req: Request, res: Response) => {
 	catServer.info(`Set Procedure: ${req.body.procedure}; Parameters: ${JSON.stringify(req.body.parameters)}`);
 	const manager: ModularPlantManager = req.app.get('manager');
-	const service = manager.getService(req.params.peaId, req.params.serviceName);
-	if (req.body.procedure) {
-		const procedure = service.getProcedureByNameOrDefault(req.body.procedure);
-		if (procedure) {
-			await service.setProcedure(procedure);
+	try{
+		const service = manager.getService(req.params.peaId, req.params.serviceName);
+		if (req.body.procedure) {
+			const procedure = service.getProcedureByNameOrDefault(req.body.procedure);
+			if (procedure) {
+				await service.setProcedure(procedure);
+			}
 		}
+		if (req.body.parameters) {
+			await service.setParameters(req.body.parameters, manager.peas);
+		}
+		res.json(service.json());
+	}catch(e){
+		console.log(e);
+		res.status(500).send('"'+e.toString()+'"');
 	}
-	if (req.body.parameters) {
-		await service.setParameters(req.body.parameters, manager.peas);
-	}
-	res.json(service.json());
+
 }));
 
 /**
