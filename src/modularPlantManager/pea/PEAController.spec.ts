@@ -28,7 +28,7 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../_utils';
 import * as peaOptions from '../../../tests/peaOptions.json';
-import {namespaceUrl} from '../../../tests/namespaceUrl';
+import {namespaceUrl, setNamespaceUrl} from '../../../tests/namespaceUrl';
 import {PEAOptions, ServiceCommand} from '@p2olab/polaris-interface';
 import {AnaViewMockup} from './dataAssembly/indicatorElement/AnaView/AnaView.mockup';
 import {Namespace, UAObject} from 'node-opcua';
@@ -51,18 +51,8 @@ describe('PEAController', () => {
 		let peaController: PEAController;
 		let service: Service;
 		//set namespaceUrl in peaOptions
-		for (const key in peaOptions.dataAssemblies[0].dataItems as any) {
-			//skip static values
-			if((typeof(peaOptions.dataAssemblies[0].dataItems as any)[key] != 'string')){
-				(peaOptions.dataAssemblies[0].dataItems as any)[key].namespaceIndex = namespaceUrl;
-			}
-		}
-		for (const key in peaOptions.services[0].communication as any) {
-			//skip static values
-			if((typeof(peaOptions.services[0].communication as any)[key] != 'string')){
-				(peaOptions.services[0].communication as any)[key].namespaceIndex = namespaceUrl;
-			}
-		}
+		setNamespaceUrl(peaOptions as any);
+
 		beforeEach(async () => {
 			mockupServer = new MockupServer();
 			peaController = new PEAController(peaOptions as unknown as PEAOptions);
@@ -97,7 +87,7 @@ describe('PEAController', () => {
 
 
 			it('should fail to connect, invalid endpoint URL',  async() => {
-				let faultyPEAOptions = { ...peaOptions };
+				const faultyPEAOptions = { ...peaOptions };
 				faultyPEAOptions.opcuaServerUrl = 'wrongUrl';
 				const peaController = new PEAController(faultyPEAOptions as unknown as PEAOptions);
 				return expect(peaController.connectAndSubscribe()).to.be.rejectedWith('Invalid endpoint url wrongUrl');
@@ -105,7 +95,7 @@ describe('PEAController', () => {
 
 			it('should fail to connect, server down',  async() => {
 				await mockupServer.shutdown();
-				let faultyPEAOptions = { ...peaOptions };
+				const faultyPEAOptions = { ...peaOptions };
 				const peaController = new PEAController(faultyPEAOptions as unknown as PEAOptions);
 				return expect(peaController.connectAndSubscribe()).to.be.rejectedWith(
 					'The connection cannot be established with server opc.tcp://localhost:4334 .\n' +

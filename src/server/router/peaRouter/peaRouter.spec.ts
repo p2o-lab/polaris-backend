@@ -33,7 +33,7 @@ import {MockupServer} from '../../../modularPlantManager/_utils';
 import path = require('path');
 import {AnaViewMockup} from '../../../modularPlantManager/pea/dataAssembly/indicatorElement/AnaView/AnaView.mockup';
 import {Namespace, UAObject} from 'node-opcua';
-import {namespaceUrl} from '../../../../tests/namespaceUrl';
+import {namespaceUrl, setNamespaceUrl} from '../../../../tests/namespaceUrl';
 import * as peaOptions from '../../../../tests/peaOptions.json';
 import {ServiceControlMockup} from '../../../modularPlantManager/pea/dataAssembly/ServiceControl/ServiceControl.mockup';
 import {expect} from 'chai';
@@ -223,18 +223,7 @@ describe('PEARoutes', () => {
 
 	describe('with Mockup', () => {
 		//set namespaceUrl in peaOptions
-		for (const key in peaOptions.dataAssemblies[0].dataItems as any) {
-			//skip static values
-			if((typeof(peaOptions.dataAssemblies[0].dataItems as any)[key] != 'string')){
-				(peaOptions.dataAssemblies[0].dataItems as any)[key].namespaceIndex = namespaceUrl;
-			}
-		}
-		for (const key in peaOptions.services[0].communication as any) {
-			//skip static values
-			if((typeof(peaOptions.services[0].communication as any)[key] != 'string')){
-				(peaOptions.services[0].communication as any)[key].namespaceIndex = namespaceUrl;
-			}
-		}
+		setNamespaceUrl(peaOptions as any);
 		before(async () => {
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
@@ -343,19 +332,9 @@ describe('PEARoutes', () => {
 	});
 
 	context('/:peaId/service/:serviceName', ()=> {
-		//set namespaceUrl //TODO outsource and improve this
-		for (const key in peaOptionsServices.services[0].communication as any) {
-			//skip static values
-			if((typeof(peaOptionsServices.services[0].communication as any)[key] != 'string')){
-				(peaOptionsServices.services[0].communication as any)[key].namespaceIndex = namespaceUrl;
-			}
-		}
-		for (const key in peaOptionsServices.services[0].procedures[0].parameters[0].dataItems as any) {
-			//skip static values
-			if((typeof(peaOptionsServices.services[0].procedures[0].parameters[0].dataItems as any)[key] != 'string')){
-				(peaOptionsServices.services[0].procedures[0].parameters[0].dataItems as any)[key].namespaceIndex = namespaceUrl;
-			}
-		}
+		//set namespaceUrl
+		setNamespaceUrl(peaOptionsServices as any);
+
 		it('should fail, wrong peaId', async () => {
 			await request(app).post('/api/pea/abc1234/service/Trigonometry').send().expect(500)
 				.expect(/Error: PEA with id abc1234 not found/);

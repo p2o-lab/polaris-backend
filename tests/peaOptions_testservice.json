@@ -10,162 +10,162 @@
         "TagDescription":"Service for math operation Integral",
         "StateChannel":{
           "nodeId":"TestService.StateChannel",
-          "namespaceIndex":"someUrl",
+          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
           "dataType":"xs:IDREF"
         },
         "StateOffAut":{
           "nodeId":"TestService.StateOffAut",
-          "namespaceIndex":"someUrl",
+          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
           "dataType":"xs:IDREF"
         },
         "StateOpAut":{
           "nodeId":"TestService.StateOpAut",
-          "namespaceIndex":"someUrl",
+          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
           "dataType":"xs:IDREF"
         },
         "StateAutAut":{
           "nodeId":"TestService.StateAutAut",
-          "namespaceIndex":"someUrl",
+          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
           "dataType":"xs:IDREF"
         },
         "StateOffOp":{
           "nodeId":"TestService.StateOffOp",
-          "namespaceIndex":"someUrl",
+          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
           "dataType":"xs:IDREF"
         },
         "StateOpOp":{
           "nodeId":"TestService.StateOpOp",
-          "namespaceIndex":"someUrl",
+          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
           "dataType":"xs:IDREF"
         },
         "StateAutOp":{
           "nodeId":"TestService.StateAutOp",
-          "namespaceIndex":"someUrl",
+          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
           "dataType":"xs:IDREF"
         },
         "StateOpAct":{
           "nodeId":"TestService.StateOpAct",
-          "namespaceIndex":"someUrl",
+          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
           "dataType":"xs:IDREF"
         },
         "StateAutAct":{
           "nodeId":"TestService.StateAutAct",
-          "namespaceIndex":"someUrl",
+          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
           "dataType":"xs:IDREF"
         },
         "StateOffAct":{
           "nodeId":"TestService.StateOffAct",
-          "namespaceIndex":"someUrl",
+          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
           "dataType":"xs:IDREF"
         },
         "SrcChannel":{
           "nodeId":"TestService.SrcChannel",
-          "namespaceIndex":"someUrl",
+          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
           "dataType":"xs:IDREF"
         },
         "SrcExtAut":{
           "nodeId":"TestService.SrcExtAut",
-          "namespaceIndex":"someUrl",
+          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
           "dataType":"xs:IDREF"
         },
         "SrcIntAut":{
           "nodeId":"TestService.SrcIntAut",
-          "namespaceIndex":"someUrl",
+          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
           "dataType":"xs:IDREF"
         },
         "SrcIntOp":{
           "nodeId":"TestService.SrcIntOp",
-          "namespaceIndex":"someUrl",
+          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
           "dataType":"xs:IDREF"
         },
         "SrcExtOp":{
           "nodeId":"TestService.SrcExtOp",
-          "namespaceIndex":"someUrl",
+          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
           "dataType":"xs:IDREF"
         },
         "SrcExtAct":{
           "nodeId":"TestService.SrcExtAct",
-          "namespaceIndex":"someUrl",
+          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
           "dataType":"xs:IDREF"
         },
         "SrcIntAct":{
           "nodeId":"TestService.SrcIntAct",
-          "namespaceIndex":"someUrl",
+          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
           "dataType":"xs:IDREF"
         },
         "OSLevel":{
           "nodeId":"TestService.OSLevel",
-          "namespaceIndex":"someUrl",
+          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
           "dataType":"xs:IDREF"
         },
         "WQC":{
           "nodeId":"TestService.WQC",
-          "namespaceIndex":"someUrl",
+          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
           "dataType":"xs:IDREF"
         },
         "CommandOp":{
           "nodeId":"TestService.CommandOp",
-          "namespaceIndex":"someUrl",
+          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
           "dataType":"xs:IDREF"
         },
         "CommandInt":{
           "nodeId":"TestService.CommandInt",
-          "namespaceIndex":"someUrl",
+          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
           "dataType":"xs:IDREF"
         },
         "CommandExt":{
           "nodeId":"TestService.CommandExt",
-          "namespaceIndex":"someUrl",
+          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
           "dataType":"xs:IDREF"
         },
         "ProcedureOp":{
           "nodeId":"TestService.ProcedureOp",
-          "namespaceIndex":"someUrl",
+          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
           "dataType":"xs:IDREF"
         },
         "ProcedureInt":{
           "nodeId":"TestService.ProcedureInt",
-          "namespaceIndex":"someUrl",
+          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
           "dataType":"xs:IDREF"
         },
         "ProcedureExt":{
           "nodeId":"TestService.ProcedureExt",
-          "namespaceIndex":"someUrl",
+          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
           "dataType":"xs:IDREF"
         },
         "CommandEn":{
           "nodeId":"TestService.CommandEn",
-          "namespaceIndex":"someUrl",
+          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
           "dataType":"xs:IDREF"
         },
         "StateCur":{
           "nodeId":"TestService.StateCur",
-          "namespaceIndex":"someUrl",
+          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
           "dataType":"xs:IDREF"
         },
         "ProcedureCur":{
           "nodeId":"TestService.ProcedureCur",
-          "namespaceIndex":"someUrl",
+          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
           "dataType":"xs:IDREF"
         },
         "ProcedureReq":{
           "nodeId":"TestService.ProcedureReq",
-          "namespaceIndex":"someUrl",
+          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
           "dataType":"xs:IDREF"
         },
         "InteractQuestionID":{
           "nodeId":"TestService.InteractQuestionID",
-          "namespaceIndex":"someUrl",
+          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
           "dataType":"xs:IDREF"
         },
         "InteractAnswerID":{
           "nodeId":"TestService.InteractAnswerID",
-          "namespaceIndex":"someUrl",
+          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
           "dataType":"xs:IDREF"
         },
         "PosTextID":{
           "nodeId":"TestService.PosTextID",
-          "namespaceIndex":"someUrl",
+          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
           "dataType":"xs:IDREF"
         }
       },
@@ -184,7 +184,7 @@
                 "TagDescription":"Default Procedure of TestService",
                 "WQC":{
                   "nodeId":"TestService.TestService_default.WQC",
-                  "namespaceIndex":"someUrl",
+                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
                   "dataType":"xs:IDREF"
                 }
               }
@@ -199,157 +199,157 @@
                 "TagDescription":"Factor for scaling",
                 "WQC":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.WQC",
-                  "namespaceIndex":"someUrl",
+                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
                   "dataType":"xs:IDREF"
                 },
                 "OSLevel":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.OSLevel",
-                  "namespaceIndex":"someUrl",
+                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
                   "dataType":"xs:IDREF"
                 },
                 "StateChannel":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.StateChannel",
-                  "namespaceIndex":"someUrl",
+                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
                   "dataType":"xs:IDREF"
                 },
                 "StateOffAut":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.StateOffAut",
-                  "namespaceIndex":"someUrl",
+                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
                   "dataType":"xs:IDREF"
                 },
                 "StateOpAut":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.StateOpAut",
-                  "namespaceIndex":"someUrl",
+                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
                   "dataType":"xs:IDREF"
                 },
                 "StateAutAut":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.StateAutAut",
-                  "namespaceIndex":"someUrl",
+                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
                   "dataType":"xs:IDREF"
                 },
                 "StateOffOp":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.StateOffOp",
-                  "namespaceIndex":"someUrl",
+                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
                   "dataType":"xs:IDREF"
                 },
                 "StateOpOp":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.StateOpOp",
-                  "namespaceIndex":"someUrl",
+                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
                   "dataType":"xs:IDREF"
                 },
                 "StateAutOp":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.StateAutOp",
-                  "namespaceIndex":"someUrl",
+                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
                   "dataType":"xs:IDREF"
                 },
                 "StateOpAct":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.StateOpAct",
-                  "namespaceIndex":"someUrl",
+                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
                   "dataType":"xs:IDREF"
                 },
                 "StateAutAct":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.StateAutAct",
-                  "namespaceIndex":"someUrl",
+                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
                   "dataType":"xs:IDREF"
                 },
                 "StateOffAct":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.StateOffAct",
-                  "namespaceIndex":"someUrl",
+                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
                   "dataType":"xs:IDREF"
                 },
                 "SrcChannel":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.SrcChannel",
-                  "namespaceIndex":"someUrl",
+                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
                   "dataType":"xs:IDREF"
                 },
                 "SrcExtAut":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.SrcExtAut",
-                  "namespaceIndex":"someUrl",
+                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
                   "dataType":"xs:IDREF"
                 },
                 "SrcIntAut":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.SrcIntAut",
-                  "namespaceIndex":"someUrl",
+                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
                   "dataType":"xs:IDREF"
                 },
                 "SrcIntOp":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.SrcIntOp",
-                  "namespaceIndex":"someUrl",
+                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
                   "dataType":"xs:IDREF"
                 },
                 "SrcExtOp":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.SrcExtOp",
-                  "namespaceIndex":"someUrl",
+                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
                   "dataType":"xs:IDREF"
                 },
                 "SrcExtAct":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.SrcExtAct",
-                  "namespaceIndex":"someUrl",
+                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
                   "dataType":"xs:IDREF"
                 },
                 "SrcIntAct":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.SrcIntAct",
-                  "namespaceIndex":"someUrl",
+                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
                   "dataType":"xs:IDREF"
                 },
                 "VExt":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.VExt",
-                  "namespaceIndex":"someUrl",
+                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
                   "dataType":"xs:IDREF"
                 },
                 "VOp":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.VOp",
-                  "namespaceIndex":"someUrl",
+                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
                   "dataType":"xs:IDREF"
                 },
                 "VInt":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.VInt",
-                  "namespaceIndex":"someUrl",
+                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
                   "dataType":"xs:IDREF"
                 },
                 "VReq":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.VReq",
-                  "namespaceIndex":"someUrl",
+                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
                   "dataType":"xs:IDREF"
                 },
                 "VFbk":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.VFbk",
-                  "namespaceIndex":"someUrl",
+                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
                   "dataType":"xs:IDREF"
                 },
                 "VOut":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.VOut",
-                  "namespaceIndex":"someUrl",
+                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
                   "dataType":"xs:IDREF"
                 },
                 "VSclMin":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.VSclMin",
-                  "namespaceIndex":"someUrl",
+                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
                   "dataType":"xs:IDREF"
                 },
                 "VSclMax":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.VSclMax",
-                  "namespaceIndex":"someUrl",
+                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
                   "dataType":"xs:IDREF"
                 },
                 "VMin":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.VMin",
-                  "namespaceIndex":"someUrl",
+                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
                   "dataType":"xs:IDREF"
                 },
                 "VMax":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.VMax",
-                  "namespaceIndex":"someUrl",
+                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
                   "dataType":"xs:IDREF"
                 },
                 "VUnit":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.VUnit",
-                  "namespaceIndex":"someUrl",
+                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
                   "dataType":"xs:IDREF"
                 },
                 "Sync":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.Sync",
-                  "namespaceIndex":"someUrl",
+                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
                   "dataType":"xs:IDREF"
                 }
               }
@@ -364,12 +364,12 @@
                 "TagDescription":"Final integration time",
                 "WQC":{
                   "nodeId":"TestService.AnaReportValue_TestService_rvTime.WQC",
-                  "namespaceIndex":"someUrl",
+                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
                   "dataType":"xs:IDREF"
                 },
                 "Text":{
                   "nodeId":"TestService.AnaReportValue_TestService_rvTime.Text",
-                  "namespaceIndex":"someUrl",
+                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
                   "dataType":"xs:IDREF"
                 }
               }
@@ -382,27 +382,27 @@
                 "TagDescription":"Final scaled value out",
                 "WQC":{
                   "nodeId":"TestService.AnaReportValue_TestService_rvOutScaled.WQC",
-                  "namespaceIndex":"someUrl",
+                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
                   "dataType":"xs:IDREF"
                 },
                 "V":{
                   "nodeId":"TestService.AnaReportValue_TestService_rvOutScaled.V",
-                  "namespaceIndex":"someUrl",
+                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
                   "dataType":"xs:IDREF"
                 },
                 "VSclMin":{
                   "nodeId":"TestService.AnaReportValue_TestService_rvOutScaled.VSclMin",
-                  "namespaceIndex":"someUrl",
+                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
                   "dataType":"xs:IDREF"
                 },
                 "VSclMax":{
                   "nodeId":"TestService.AnaReportValue_TestService_rvOutScaled.VSclMax",
-                  "namespaceIndex":"someUrl",
+                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
                   "dataType":"xs:IDREF"
                 },
                 "VUnit":{
                   "nodeId":"TestService.AnaReportValue_TestService_rvOutScaled.VUnit",
-                  "namespaceIndex":"someUrl",
+                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
                   "dataType":"xs:IDREF"
                 }
               }
@@ -417,27 +417,27 @@
                 "TagDescription":"Analog Process Value Input",
                 "WQC":{
                   "nodeId":"TestService.AnaProcessValueIn_TestService_pv.WQC",
-                  "namespaceIndex":"someUrl",
+                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
                   "dataType":"xs:IDREF"
                 },
                 "VExt":{
                   "nodeId":"TestService.AnaProcessValueIn_TestService_pv.VExt",
-                  "namespaceIndex":"someUrl",
+                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
                   "dataType":"xs:IDREF"
                 },
                 "VSclMin":{
                   "nodeId":"TestService.AnaProcessValueIn_TestService_pv.VSclMin",
-                  "namespaceIndex":"someUrl",
+                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
                   "dataType":"xs:IDREF"
                 },
                 "VSclMax":{
                   "nodeId":"TestService.AnaProcessValueIn_TestService_pv.VSclMax",
-                  "namespaceIndex":"someUrl",
+                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
                   "dataType":"xs:IDREF"
                 },
                 "VUnit":{
                   "nodeId":"TestService.AnaProcessValueIn_TestService_pv.VUnit",
-                  "namespaceIndex":"someUrl",
+                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
                   "dataType":"xs:IDREF"
                 }
               }
@@ -452,32 +452,197 @@
                 "TagDescription":"Integral of pv",
                 "WQC":{
                   "nodeId":"TestService.AnaProcessValueOut_TestService_pvOutIntegral.WQC",
-                  "namespaceIndex":"someUrl",
+                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
                   "dataType":"xs:IDREF"
                 },
                 "V":{
                   "nodeId":"TestService.AnaProcessValueOut_TestService_pvOutIntegral.V",
-                  "namespaceIndex":"someUrl",
+                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
                   "dataType":"xs:IDREF"
                 },
                 "VSclMin":{
                   "nodeId":"TestService.AnaProcessValueOut_TestService_pvOutIntegral.VSclMin",
-                  "namespaceIndex":"someUrl",
+                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
                   "dataType":"xs:IDREF"
                 },
                 "VSclMax":{
                   "nodeId":"TestService.AnaProcessValueOut_TestService_pvOutIntegral.VSclMax",
-                  "namespaceIndex":"someUrl",
+                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
                   "dataType":"xs:IDREF"
                 },
                 "VUnit":{
                   "nodeId":"TestService.AnaProcessValueOut_TestService_pvOutIntegral.VUnit",
-                  "namespaceIndex":"someUrl",
+                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
                   "dataType":"xs:IDREF"
                 }
               }
             }
           ]
+        }
+      ],
+      "parameters":[
+        {
+          "name":"AnaConfParam_TestService_updateRate",
+          "metaModelRef":"MTPDataObjectSUCLib/DataAssembly/OperationElement/AnaServParam",
+          "dataItems":{
+            "TagName":"AnaConfParam_TestService_updateRate",
+            "TagDescription":"UpdateRate during execute",
+            "OSLevel":{
+              "nodeId":"TestService.AnaConfParam_TestService_updateRate.OSLevel",
+              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "dataType":"xs:IDREF"
+            },
+            "WQC":{
+              "nodeId":"TestService.AnaConfParam_TestService_updateRate.WQC",
+              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "dataType":"xs:IDREF"
+            },
+            "StateChannel":{
+              "nodeId":"TestService.AnaConfParam_TestService_updateRate.StateChannel",
+              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "dataType":"xs:IDREF"
+            },
+            "StateOffAut":{
+              "nodeId":"TestService.AnaConfParam_TestService_updateRate.StateOffAut",
+              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "dataType":"xs:IDREF"
+            },
+            "StateOpAut":{
+              "nodeId":"TestService.AnaConfParam_TestService_updateRate.StateOpAut",
+              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "dataType":"xs:IDREF"
+            },
+            "StateAutAut":{
+              "nodeId":"TestService.AnaConfParam_TestService_updateRate.StateAutAut",
+              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "dataType":"xs:IDREF"
+            },
+            "StateOffOp":{
+              "nodeId":"TestService.AnaConfParam_TestService_updateRate.StateOffOp",
+              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "dataType":"xs:IDREF"
+            },
+            "StateOpOp":{
+              "nodeId":"TestService.AnaConfParam_TestService_updateRate.StateOpOp",
+              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "dataType":"xs:IDREF"
+            },
+            "StateAutOp":{
+              "nodeId":"TestService.AnaConfParam_TestService_updateRate.StateAutOp",
+              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "dataType":"xs:IDREF"
+            },
+            "StateOpAct":{
+              "nodeId":"TestService.AnaConfParam_TestService_updateRate.StateOpAct",
+              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "dataType":"xs:IDREF"
+            },
+            "StateAutAct":{
+              "nodeId":"TestService.AnaConfParam_TestService_updateRate.StateAutAct",
+              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "dataType":"xs:IDREF"
+            },
+            "StateOffAct":{
+              "nodeId":"TestService.AnaConfParam_TestService_updateRate.StateOffAct",
+              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "dataType":"xs:IDREF"
+            },
+            "SrcChannel":{
+              "nodeId":"TestService.AnaConfParam_TestService_updateRate.SrcChannel",
+              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "dataType":"xs:IDREF"
+            },
+            "SrcExtAut":{
+              "nodeId":"TestService.AnaConfParam_TestService_updateRate.SrcExtAut",
+              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "dataType":"xs:IDREF"
+            },
+            "SrcIntAut":{
+              "nodeId":"TestService.AnaConfParam_TestService_updateRate.SrcIntAut",
+              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "dataType":"xs:IDREF"
+            },
+            "SrcIntOp":{
+              "nodeId":"TestService.AnaConfParam_TestService_updateRate.SrcIntOp",
+              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "dataType":"xs:IDREF"
+            },
+            "SrcExtOp":{
+              "nodeId":"TestService.AnaConfParam_TestService_updateRate.SrcExtOp",
+              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "dataType":"xs:IDREF"
+            },
+            "SrcExtAct":{
+              "nodeId":"TestService.AnaConfParam_TestService_updateRate.SrcExtAct",
+              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "dataType":"xs:IDREF"
+            },
+            "SrcIntAct":{
+              "nodeId":"TestService.AnaConfParam_TestService_updateRate.SrcIntAct",
+              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "dataType":"xs:IDREF"
+            },
+            "VExt":{
+              "nodeId":"TestService.AnaConfParam_TestService_updateRate.VExt",
+              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "dataType":"xs:IDREF"
+            },
+            "VOp":{
+              "nodeId":"TestService.AnaConfParam_TestService_updateRate.VOp",
+              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "dataType":"xs:IDREF"
+            },
+            "VInt":{
+              "nodeId":"TestService.AnaConfParam_TestService_updateRate.VInt",
+              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "dataType":"xs:IDREF"
+            },
+            "VReq":{
+              "nodeId":"TestService.AnaConfParam_TestService_updateRate.VReq",
+              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "dataType":"xs:IDREF"
+            },
+            "VFbk":{
+              "nodeId":"TestService.AnaConfParam_TestService_updateRate.VFbk",
+              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "dataType":"xs:IDREF"
+            },
+            "VOut":{
+              "nodeId":"TestService.AnaConfParam_TestService_updateRate.VOut",
+              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "dataType":"xs:IDREF"
+            },
+            "VSclMin":{
+              "nodeId":"TestService.AnaConfParam_TestService_updateRate.VSclMin",
+              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "dataType":"xs:IDREF"
+            },
+            "VSclMax":{
+              "nodeId":"TestService.AnaConfParam_TestService_updateRate.VSclMax",
+              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "dataType":"xs:IDREF"
+            },
+            "VMin":{
+              "nodeId":"TestService.AnaConfParam_TestService_updateRate.VMin",
+              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "dataType":"xs:IDREF"
+            },
+            "VMax":{
+              "nodeId":"TestService.AnaConfParam_TestService_updateRate.VMax",
+              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "dataType":"xs:IDREF"
+            },
+            "VUnit":{
+              "nodeId":"TestService.AnaConfParam_TestService_updateRate.VUnit",
+              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "dataType":"xs:IDREF"
+            },
+            "Sync":{
+              "nodeId":"TestService.AnaConfParam_TestService_updateRate.Sync",
+              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "dataType":"xs:IDREF"
+            }
+          }
         }
       ]
     }

@@ -83,6 +83,7 @@ export class OpcUaDataItem<T> extends DataItem<T> {
 		//set timeout
 		await new Promise((resolve, reject) => {
 			//TODO are 3 seconds okay?
+			//TODO subscription timeout does not work on parameters, fix that
 			setTimeout(()=> reject(new Error(`Timeout: Could not subscribe to ${this.nodeId}`)),3000);
 			this.on('changed', resolve);
 		});
