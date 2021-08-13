@@ -32,7 +32,7 @@ export function getLockView16MockupReferenceJSON(
 	namespace: number,
 	objectBrowseName: string) {
 	return (
-		{	
+		{
 			...getWQCDAMockupReferenceJSON(namespace,objectBrowseName),
 			...getLockView8MockupReferenceJSON(namespace, objectBrowseName),
 			In9En: {
