@@ -39,7 +39,7 @@ export class OpcUaDataItem<T> extends DataItem<T> {
 	public nodeId = '';
 	private connection!: OpcUaConnection;
 
-	public static fromOptions<type extends number | string | boolean>(
+	public static createFromOptions<type extends number | string | boolean>(
 		options: OpcUaNodeOptions, connection: OpcUaConnection, // attention! before-> type: ... = 'number'
 		access: 'read' | 'write', type: 'number' | 'string' | 'boolean' = 'string'): OpcUaDataItem<type> {
 		const item = new OpcUaDataItem<type>();
@@ -80,7 +80,12 @@ export class OpcUaDataItem<T> extends DataItem<T> {
 				this.timestamp = dataValue.serverTimestamp;
 				this.emit('changed', {value: this.value, timestamp: this.timestamp, nodeId: this.nodeId});
 			});
-		await new Promise((resolve) => this.on('changed', resolve));
+		//set timeout
+		await new Promise((resolve, reject) => {
+			//TODO are 3 seconds okay?
+			setTimeout(()=> reject(new Error(`Timeout: Could not subscribe to ${this.nodeId}`)),3000);
+			this.on('changed', resolve);
+		});
 		this.logger.info(`subscribed to Data Item ${this.nodeId}`);
 		return this;
 	}

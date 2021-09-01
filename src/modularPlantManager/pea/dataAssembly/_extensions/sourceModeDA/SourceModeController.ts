@@ -76,10 +76,13 @@ export class SourceModeController {
 
 	public async waitForSourceModeToPassSpecificTest(expectedSourceMode: SourceMode): Promise<void> {
 		await this.dAController.subscribe();
-		return new Promise((resolve) => {
+		return new Promise((resolve, reject) => {
 			if (this.isSourceMode(expectedSourceMode)) {
 				resolve();
 			} else {
+				setTimeout(() => {
+					reject('Timeout: SourceMode did not change');
+				}, 3000);
 				// eslint-disable-next-line @typescript-eslint/no-this-alias
 				const da = this;
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -103,8 +103,8 @@ describe('ServiceSourceMode', () => {
 			expect(da1.communication.SrcIntAut.value).equal(false);
 			expect(da1.communication.SrcIntOp.value).equal(false);
 			expect(da1.communication.SrcExtOp.value).equal(false);
-			expect(da1.communication.SrcIntAct.value).equal(false);
-			expect(da1.communication.SrcExtAct.value).equal(true);
+			expect(da1.communication.SrcIntAct.value).equal(true);
+			expect(da1.communication.SrcExtAct.value).equal(false);
 		}).timeout(5000);
 	});
 
@@ -138,12 +138,12 @@ describe('ServiceSourceMode', () => {
 			await mockupServer.shutdown();
 		});
 
-		it('getServiceSourceMode, should be extern', () => {
-			expect(ssMode.getServiceSourceMode()).to.equal(ServiceSourceMode.Extern);
+		it('getServiceSourceMode, should be intern', () => {
+			expect(ssMode.getServiceSourceMode()).to.equal(ServiceSourceMode.Intern);
 		});
 		it('isServiceSourceMode', () => {
-			expect(ssMode.isServiceSourceMode(ServiceSourceMode.Intern)).to.be.false;
-			expect(ssMode.isServiceSourceMode(ServiceSourceMode.Extern)).to.be.true;
+			expect(ssMode.isServiceSourceMode(ServiceSourceMode.Intern)).to.be.true;
+			expect(ssMode.isServiceSourceMode(ServiceSourceMode.Extern)).to.be.false;
 		});
 		it('setToExternalServiceSourceMode(), nothing should happen', async () => {
 			await ssMode.setToExternalServiceSourceMode();
@@ -152,7 +152,7 @@ describe('ServiceSourceMode', () => {
 		}).timeout(4000);
 	});
 
-	describe('dynamic functions, Intern on, srcChannel = true', async () => {
+	describe('dynamic functions, Intern on', async () => {
 		let mockupServer: MockupServer;
 		let connection: OpcUaConnection;
 		let mockup: ServiceSourceModeDAMockup;
@@ -169,7 +169,6 @@ describe('ServiceSourceMode', () => {
 				mockupServer.namespace as Namespace,
 				mockupNode,
 				'Variable');
-			mockup.srcChannel = true;
 			mockup.srcMode= ServiceSourceMode.Intern;
 			await mockupServer.start();
 
@@ -213,12 +212,14 @@ describe('ServiceSourceMode', () => {
 		it('waitForServiceSourceModeToPassSpecificTest, promise should resolve after a while', async () => {
 			await da1.communication.SrcExtOp.write(true);
 			await ssMode.waitForServiceSourceModeToPassSpecificTest(ServiceSourceMode.Extern);
-		});
+		}).timeout(4000);
 
 		it('waitForServiceSourceModeToPassSpecificTest, timeout', async () => {
-			//TODO need to be implemented
-			//	await ssMode.waitForServiceSourceModeToPassSpecificTest(ServiceSourceMode.Extern);
-		});
+			expect(da1.communication.SrcExtAct.value).to.be.false;
+			expect(da1.communication.SrcIntAct.value).to.be.true;
+			return expect(ssMode.waitForServiceSourceModeToPassSpecificTest(ServiceSourceMode.Extern)).to.be
+				.rejectedWith('Timeout: ServiceSourceMode did not change');
+		}).timeout(4000);
 
 		it('setToExternalServiceSourceMode()', async () => {
 			await ssMode.setToExternalServiceSourceMode();
@@ -226,9 +227,8 @@ describe('ServiceSourceMode', () => {
 			expect(mockup.srcIntAct).to.be.false;
 			expect(da1.communication.SrcExtAct.value).to.be.true;
 			expect(da1.communication.SrcIntAct.value).to.be.false;
-		});
+		}).timeout(4000);
 	});
-	//TODO test more
 
 });
 

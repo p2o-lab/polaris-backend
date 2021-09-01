@@ -95,55 +95,7 @@ describe('DataAssembly', () => {
             it('should ', async () => {
 
             });
-            //TODO DataAssemblyControllers tagname and tagdescription are static, so dynamic test not needed?
 
-
-/*            it('should set continuous value', async () => {
-                const daPEA = JSON.parse(fs.readFileSync('assets/ModularAutomation/pea_testserver_1.0.0.json').toString())
-                    .peas[0];
-                const pea = new PEAController(daPEA);
-                await pea.connect();
-
-                const da = pea.services[0].procedures[0].parameters[0] as ServParam;
-                const inputDa = pea.variables[0];
-                expect(da.name).to.equal('Factor');
-                expect(da.defaultReadDataItem?.value).to.equal(2);
-                expect(inputDa.name).to.equal('Variable001');
-
-                await new Promise((resolve) => inputDa.once('changed', resolve));
-
-                const inputValue = inputDa.getDefaultReadValue();
-                await da.setValue({value: '2 * ModuleTestServer.Variable001', name: da.name, continuous: true}, [pea]);
-                await new Promise((resolve) => da.once('VRbk', resolve));
-                expect(da.getDefaultReadValue()).to.be.closeTo(2 * inputValue, 0.05 * inputValue);
-
-                await da.setValue({value: '11', name: da.name}, []);
-                await new Promise((resolve) => da.on('VRbk', resolve));
-                expect(da.getDefaultReadValue()).to.equal(11);
-            });
-
-            it('should create ServiceControl', async () => {
-                const daJson = JSON.parse(fs.readFileSync('assets/ModularAutomation/pea_testserver_1.0.0.json').toString())
-                    .peas[0].services[0];
-                const da: ServiceControl = DataAssemblyControllerFactory.create(
-                    {...daJson, metaModelRef: 'ServiceControl'} as any, connection) as ServiceControl;
-                const p = da.subscribe();
-                connection.startListening();
-                await p;
-                expect(da.name).to.equal('Service1');
-                expect(da instanceof ServiceControl).to.equal(true);
-
-                expect(da.opMode.getOperationMode()).to.equal(OpModeController.Offline);
-
-                await da.opMode.setToOperatorOperationMode();
-                expect(da.opMode.getOperationMode()).to.equal(OpModeController.Operator);
-
-                await da.opMode.writeOpMode(OpModeController.Offline);
-                await da.opMode.waitForOpModeToPassSpecificTest(OpModeController.Offline);
-
-                await da.opMode.setToAutomaticOperationMode();
-                expect(da.opMode.getOperationMode()).to.equal(OpModeController.Automatic);
-            });*/
         });
 
     });

@@ -29,10 +29,11 @@ import {
     getServiceSourceModeDAMockupReferenceJSON,
     ServiceSourceModeDAMockup
 } from '../_extensions/serviceSourceModeDA/ServiceSourceModeDA.mockup';
-import {ServiceMtpCommand} from '../../serviceSet/service/enum';
+import {ServiceMtpCommand, ServiceState, ServiceStateString} from '../../serviceSet/service/enum';
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../_extensions/wqcDA/WQCDA.mockup';
 import {getOSLevelDAMockupReferenceJSON} from '../_extensions/osLevelDA/OSLevelDA.mockup';
 import {DataAssemblyControllerMockup} from '../DataAssemblyController.mockup';
+import {MtpStateMachine, UserDefinedActions, UserDefinedGuard} from '../../StateMachine/MtpStateMachine';
 
 export function getServiceControlMockupReferenceJSON(
     namespace: number,
@@ -125,19 +126,27 @@ export class ServiceControlMockup extends DataAssemblyControllerMockup{
     protected procedureInt = 0;
     protected procedureExt = 0;
 
-    protected stateCur = 0;
-    commandEn = 0;
+    commandEn = 268;
     protected procedureCur = 0;
     protected procedureReq = 0;
     protected posTextID = 0;
     protected interactAnswerID = 0;
     protected interactQuestionID = 0;
 
-      constructor(namespace: Namespace, rootNode: UAObject, variableName: string){
+    protected stateMachine: MtpStateMachine;
+
+    public get state(): ServiceStateString {
+        return this.stateMachine.getState();
+    }
+
+    constructor(namespace: Namespace, rootNode: UAObject, variableName: string){
           super(namespace, rootNode, variableName);
           this.operationMode = new OpModeDAMockup(namespace, this.mockupNode, variableName);
           this.serviceSourceMode = new ServiceSourceModeDAMockup(namespace, this.mockupNode, variableName);
           this.wqc = new WQCDAMockup(namespace, this.mockupNode, variableName);
+
+          this.stateMachine = new MtpStateMachine(variableName, {} as UserDefinedGuard, {} as UserDefinedActions);
+          this.stateMachine.start();
 
           namespace.addVariable({
               componentOf: this.mockupNode,
@@ -190,8 +199,13 @@ export class ServiceControlMockup extends DataAssemblyControllerMockup{
                           return StatusCodes.BadInvalidArgument;
                       }
                       if(this.operationMode.stateAutAct && this.serviceSourceMode.srcExtAct){
-                          if(this.commandEn===reqCommandExt){
+     /*                     if(this.commandEn===reqCommandExt){
                               this.commandExt = reqCommandExt;
+                              return StatusCodes.Good;
+                          }*/
+                          this.logger.info(`Set service CommandExt (${this.name}): ${ServiceMtpCommand[reqCommandExt]} (${reqCommandExt})`);
+                          const result = this.stateMachine.triggerEvent(reqCommandExt);
+                          if (result) {
                               return StatusCodes.Good;
                           }
                       }
@@ -261,7 +275,8 @@ export class ServiceControlMockup extends DataAssemblyControllerMockup{
               dataType: 'UInt32',
               value: {
                   get: (): Variant => {
-                      return new Variant({dataType: DataType.UInt32, value: this.stateCur});
+                      const stateCur: ServiceState = ServiceState[this.state];
+                      return new Variant({dataType: DataType.UInt32, value: stateCur});
                   },
               },
           });
@@ -273,7 +288,13 @@ export class ServiceControlMockup extends DataAssemblyControllerMockup{
               dataType: 'UInt32',
               value: {
                   get: (): Variant => {
-                      return new Variant({dataType: DataType.UInt32, value: this.commandEn});
+                      let enabled = 0;
+                      for (const [key, value] of this.stateMachine.getCommandEnabled()) {
+                          if (value) {
+                              enabled += ServiceMtpCommand[key];
+                          }
+                      }
+                      return new Variant({dataType: DataType.UInt32, value: enabled});
                   },
               },
           });

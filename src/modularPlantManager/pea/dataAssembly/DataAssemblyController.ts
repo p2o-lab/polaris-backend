@@ -130,7 +130,7 @@ export class DataAssemblyController extends EventEmitter {
 		for (const communicationKey of Object.keys(this.communication)) {
 			try {
 				this.communication[communicationKey as keyof BaseDataAssemblyRuntime] =
-					OpcUaDataItem.fromOptions(this.getDataAssemblyProperty(
+					OpcUaDataItem.createFromOptions(this.getDataAssemblyProperty(
 						this.options.dataItems, communicationKey as keyof BaseDataAssemblyRuntime),
 						this.connection, 'write'); // TODO: do generic AccessTyping
 			} catch (e) {
@@ -153,7 +153,7 @@ export class DataAssemblyController extends EventEmitter {
 		const names = typeof name === 'string' ? [name] : name;
 		for (const [key, value] of names.entries()) {
 			if (this.options.dataItems[value as keyof BaseDataAssemblyRuntime]) {
-				return OpcUaDataItem.fromOptions(this.getDataAssemblyProperty(
+				return OpcUaDataItem.createFromOptions(this.getDataAssemblyProperty(
 					this.options.dataItems, value as keyof BaseDataAssemblyRuntime),
 					this.connection, access);
 			}

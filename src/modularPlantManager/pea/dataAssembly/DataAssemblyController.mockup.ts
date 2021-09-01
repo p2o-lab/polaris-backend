@@ -24,6 +24,7 @@
  */
 
 import { Namespace, StatusCodes, UAObject} from 'node-opcua';
+import {catMockupServer} from '../../../logging';
 
 
 export class DataAssemblyControllerMockup {
@@ -32,8 +33,10 @@ export class DataAssemblyControllerMockup {
     protected tagName = '';
     protected tagDescription = '';
     protected mockupNode: UAObject;
+    protected logger = catMockupServer;
 
     constructor(namespace: Namespace, rootNode: UAObject, variableName: string, tagName?: string, tagDescription?: string) {
+
         this.tagName = tagName || 'No TagName available!';
         this.tagDescription = tagDescription || 'No TagDescription available!';
         this.name = variableName;

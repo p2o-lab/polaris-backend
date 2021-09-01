@@ -186,7 +186,6 @@ export class OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionEm
 		if (!this.isConnected()) {
 			throw new Error(`Can not write node since OPC UA connection to PEA ${this.id} is not established`);
 		} else {
-
 			const variant = Variant.coerce({
 				value: value,
 				dataType: dataType,

@@ -6,7 +6,7 @@ import {ServiceControlMockup} from './ServiceControl.mockup';
 import {OpcUaConnection} from '../../connection';
 import {namespaceUrl} from '../../../../../tests/namespaceUrl';
 import {OperationMode, ServiceSourceMode} from '@p2olab/polaris-interface';
-
+import {ServiceMtpCommand} from '../../serviceSet/service/enum';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -81,13 +81,14 @@ describe('ServiceControlMockup', () => {
         });
 
         // CommandExt
-        it('set CommandExt, should work', async () => {
+        it('set CommandExt, should change state', async () => {
             // set up mockup
             mockup.operationMode.opMode = OperationMode.Automatic;
-            mockup.commandEn = 1;
-            await connection.writeOpcUaNode('Variable.CommandExt', namespaceUrl, 1, 'UInt32');
-            await connection.readOpcUaNode('Variable.CommandExt', namespaceUrl)
-                .then(datavalue => expect(datavalue?.value.value).to.equal(1));
+            mockup.serviceSourceMode.srcMode = ServiceSourceMode.Extern;
+            await connection.writeOpcUaNode('Variable.CommandExt', namespaceUrl, 4, 'UInt32');
+            await connection.readOpcUaNode('Variable.StateCur', namespaceUrl)
+                .then(datavalue => expect(datavalue?.value.value).to.equal(64));
+
         });
         it('set CommandExt, value not valid, should fail', async () => {
             return expect(connection.writeOpcUaNode('Variable.CommandExt', namespaceUrl, 100, 'UInt32'))
@@ -120,6 +121,7 @@ describe('ServiceControlMockup', () => {
         it('set and get ProcedureExt, should work', async () => {
             // set up mockup
             mockup.operationMode.opMode = OperationMode.Automatic;
+            mockup.serviceSourceMode.srcMode = ServiceSourceMode.Extern;
             await connection.writeOpcUaNode('Variable.ProcedureExt', namespaceUrl, 1, 'UInt32');
             await connection.readOpcUaNode('Variable.ProcedureExt', namespaceUrl)
                 .then(datavalue => expect(datavalue?.value.value).to.equal(1));
@@ -128,7 +130,6 @@ describe('ServiceControlMockup', () => {
             return expect(connection.writeOpcUaNode('Variable.ProcedureExt', namespaceUrl, 1, 'UInt32'))
                 .rejectedWith('One or more arguments are invalid.');
         });
-
 
         //TODO get the rest
     });

@@ -115,8 +115,8 @@ describe('BinServParam', () => {
 			expect(da1.communication.SrcIntAut.value).equal(false);
 			expect(da1.communication.SrcIntOp.value).equal(false);
 			expect(da1.communication.SrcExtOp.value).equal(false);
-			expect(da1.communication.SrcIntAct.value).equal(false);
-			expect(da1.communication.SrcExtAct.value).equal(true);
+			expect(da1.communication.SrcIntAct.value).equal(true);
+			expect(da1.communication.SrcExtAct.value).equal(false);
 
 			expect(da1.communication.Sync.value).equal(false);
 

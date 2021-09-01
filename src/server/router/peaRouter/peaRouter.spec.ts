@@ -86,9 +86,6 @@ describe('PEARoutes', () => {
 					hmiUrl: '', connected: false, services: [], processValues: [], protected: false
 				}]);
 		});
-		it('should fail to get peas, wrong id', async () => {
-			//TODO how to make it fail
-		});
 	});
 
 	context('/api/pea/{peaId}', () => {
@@ -243,6 +240,9 @@ describe('PEARoutes', () => {
 				mockupServer.rootComponent as UAObject, 'Trigonometry');
 			await mockupServer.start();
 		});
+		after(async () => {
+			mockupServer.shutdown();
+		});
 
 		context('connect', ()=>{
 			it('should connect and disconnect, AnaView & Service', async() => {
@@ -261,7 +261,7 @@ describe('PEARoutes', () => {
                             resolve();
                         }
                     }));*/
-			});
+			}).timeout(4000);
 			it('should fail to connect, wrong peaId', async() => {
 				await request(app).post('/api/pea/abc1234/connect').send().expect(500)
 					.expect('Error: PEA with id abc1234 not found');
@@ -318,20 +318,19 @@ describe('PEARoutes', () => {
 
 		context('/:peaId/service/:serviceName/:command', ()=> {
 			it('should send command', async () => {
-				//TODO ... need to implement state change in mockup
-				/*
 				//connect first
 				const peaController = new PEAController(peaOptions as unknown as PEAOptions, false);
 				manager.peas.push(peaController);
 				await request(app).post('/api/pea/test/connect').send().expect(200)
 					.expect({peaId: 'test', status: 'Successfully connected'});
-
-				await request(app).post('/api/pea/test/service/Trigonometry/start').send().expect(200)*/
+				await request(app).post('/api/pea/test/service/Trigonometry/start').send().expect(200);
 			});
+
 			it('should fail to send command, wrong peaId', async () => {
 				await request(app).post('/api/pea/abc1234/service/Trigonometry/start').send().expect(500)
 					.expect('Error: PEA with id abc1234 not found');
 			});
+
 			it('should fail to send command, service not found', async () => {
 				const peaController = new PEAController(peaOptionsDummy, false);
 				manager.peas.push(peaController);

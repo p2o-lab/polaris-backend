@@ -77,7 +77,6 @@ export class SourceModeDAMockup {
   protected srcIntOp = false;
   protected srcManOp = false;
   protected mockupNode: UAObject;
-
   constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
 
     this.mockupNode = rootNode;
@@ -128,7 +127,7 @@ export class SourceModeDAMockup {
           set: (variant: Variant) => {
             this.srcIntOp = variant.value;
             if (this.srcIntOp) {
-              if (this.srcChannel) {
+              if (!this.srcChannel) {
                 this.srcMode = SourceMode.Intern;
               }
             }
@@ -151,10 +150,10 @@ export class SourceModeDAMockup {
           set: (variant: Variant) => {
             this.srcManOp = variant.value;
             if (this.srcManOp) {
-              if (this.srcChannel) {
+              if (!this.srcChannel) {
                 this.srcMode = SourceMode.Manual;
-              }//TODO else?
-            }//TODO else?
+              }
+            }
             this.srcManOp = false;
             return StatusCodes.Good;
           },
