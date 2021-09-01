@@ -122,18 +122,18 @@ export class ServiceControlMockup extends DataAssemblyControllerMockup{
     protected commandInt = 0;
     protected commandExt = 0;
 
-    protected procedureOp = 0;
-    protected procedureInt = 0;
+
     protected procedureExt = 0;
 
     commandEn = 268;
-    protected procedureCur = 0;
-    protected procedureReq = 0;
+
     protected posTextID = 0;
     protected interactAnswerID = 0;
     protected interactQuestionID = 0;
 
     protected stateMachine: MtpStateMachine;
+    private procedureOp = 0;
+    private procedureInt = 0;
 
     public get state(): ServiceStateString {
         return this.stateMachine.getState();
@@ -260,7 +260,10 @@ export class ServiceControlMockup extends DataAssemblyControllerMockup{
                       const reqProcedureExt = parseInt(variant.value, 10);
                       if(this.operationMode.stateAutAct && this.serviceSourceMode.srcExtAct){
                           // TODO: check if procedure is valid
-                          this.procedureExt = reqProcedureExt;
+                          this.stateMachine.setProcedureReq(reqProcedureExt);
+                          this.logger.info(
+                              `Set ProcedureReq by ProcedureExt (${this.name}): ProcedureReq: ${this.stateMachine.getProcedureReq()}`);
+
                           return StatusCodes.Good;
                       }
                       return StatusCodes.BadInvalidArgument;
@@ -356,7 +359,36 @@ export class ServiceControlMockup extends DataAssemblyControllerMockup{
                   },
               },
           });
-      }
+    }
+/*
+    public set procedureInt(procedureInt: number) {
+        const procedure = Math.trunc(procedureInt);
+        if(this.operationMode.stateAutAct && this.serviceSourceMode.isIntSource) {
+            this.stateMachine.setProcedureReq(procedure);
+            this.logger.info(
+                `Set ProcedureReq by ProcedureInt (${this.name}): ProcedureReq: ${this.stateMachine.getProcedureReq()}`);
+        }
+    }
+
+    public set procedureOp(procedureOp: number) {
+        const procedure = Math.trunc(procedureOp);
+        if(this.operationMode.stateOpAct && this.osLevel === 0){
+            // TODO: check if procedure is valid
+            this.stateMachine.setProcedureReq(procedure);
+            this.logger.info(
+                `Set ProcedureReq by ProcedureOp (${this.name}): ProcedureReq: ${this.stateMachine.getProcedureReq()}`);
+        }
+    }
+*/
+
+    public get procedureCur(): number {
+        return this.stateMachine.getProcedureCur();
+    }
+
+    public get procedureReq(): number {
+        return this.stateMachine.getProcedureReq();
+    }
+
     public getServiceControlInstanceMockupJSON(){
         return getServiceControlMockupReferenceJSON(
             this.mockupNode.namespaceIndex,

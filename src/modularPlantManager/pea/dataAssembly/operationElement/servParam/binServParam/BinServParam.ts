@@ -57,5 +57,8 @@ export class BinServParam extends ServParam {
 
 		this.defaultReadDataItem = this.communication.VOut;
 		this.defaultReadDataItemType = 'boolean';
+
+		this.defaultWriteDataItemType = 'boolean';
+		this.defaultWriteDataItem = this.communication.VExt; //TODO correct?
 	}
 }

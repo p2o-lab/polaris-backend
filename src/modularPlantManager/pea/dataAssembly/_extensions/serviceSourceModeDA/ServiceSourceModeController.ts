@@ -89,7 +89,7 @@ export class ServiceSourceModeController{
 			} else {
 				setTimeout(() => {
 					reject('Timeout: ServiceSourceMode did not change');
-				}, 3000)
+				}, 3000);
 				// eslint-disable-next-line @typescript-eslint/no-this-alias
 				const da = this;
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any

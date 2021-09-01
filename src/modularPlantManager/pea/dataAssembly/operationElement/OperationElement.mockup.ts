@@ -31,7 +31,7 @@ export function getOperationElementMockupReferenceJSON(
 	namespace: number,
 	objectBrowseName: string) {
 	return (
-		{	
+		{
 			...getOSLevelDAMockupReferenceJSON(namespace,objectBrowseName),
 		}
 	);

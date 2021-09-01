@@ -331,14 +331,19 @@ export class Service extends BaseService {
 		} else {
 			procedure = this.procedures.find((proc) => proc.name === procedureName);
 		}
+		if(!procedure){
+			throw new Error('Could not find Procedure by Name or Default.');
+		}
 		return procedure;
 	}
 
 	public async setParameters(parameterOptions: ParameterOptions[], peaSet: PEAController[] = []): Promise<void> {
 		parameterOptions.map((p) => {
 			const dataAssembly = this.findInputParameter(p.name);
-			//TODO: whats this below
-			//dataAssembly?.setValue(p, peaSet);
+			if(!dataAssembly){
+				throw new Error('Parameter not found.');
+			}
+			dataAssembly?.setValue(p, peaSet);
 		});
 	}
 

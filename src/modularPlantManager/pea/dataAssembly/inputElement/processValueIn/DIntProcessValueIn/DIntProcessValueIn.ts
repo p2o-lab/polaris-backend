@@ -51,5 +51,7 @@ export class DIntProcessValueIn extends InputElement {
 
 		this.defaultReadDataItem = this.communication.VExt;
 		this.defaultReadDataItemType = 'number';
+		this.defaultWriteDataItemType = 'number';
+		this.defaultWriteDataItem = this.communication.VExt;
 	}
 }

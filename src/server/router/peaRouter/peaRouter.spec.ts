@@ -33,10 +33,13 @@ import {MockupServer} from '../../../modularPlantManager/_utils';
 import path = require('path');
 import {AnaViewMockup} from '../../../modularPlantManager/pea/dataAssembly/indicatorElement/AnaView/AnaView.mockup';
 import {Namespace, UAObject} from 'node-opcua';
-import {namespaceUrl} from '../../../../tests/namespaceUrl';
+import {namespaceUrl, setNamespaceUrl} from '../../../../tests/namespaceUrl';
 import * as peaOptions from '../../../../tests/peaOptions.json';
 import {ServiceControlMockup} from '../../../modularPlantManager/pea/dataAssembly/ServiceControl/ServiceControl.mockup';
 import {expect} from 'chai';
+import {AnaServParamMockup} from '../../../modularPlantManager/pea/dataAssembly/operationElement/servParam/anaServParam/AnaServParam.mockup';
+import {AnaProcessValueInMockup} from '../../../modularPlantManager/pea/dataAssembly/inputElement/processValueIn/AnaProcessValueIn/AnaProcessValueIn.mockup';
+import * as peaOptionsServices from '../../../../tests/peaOptions_testservice.json';
 
 
 describe('PEARoutes', () => {
@@ -66,6 +69,7 @@ describe('PEARoutes', () => {
 
 	afterEach(async () => {
 		await appServer.stop();
+		//if (mockupServer) await mockupServer.shutdown();
 	});
 
 	context('/api/pea', () => {
@@ -219,18 +223,7 @@ describe('PEARoutes', () => {
 
 	describe('with Mockup', () => {
 		//set namespaceUrl in peaOptions
-		for (const key in peaOptions.dataAssemblies[0].dataItems as any) {
-			//skip static values
-			if((typeof(peaOptions.dataAssemblies[0].dataItems as any)[key] != 'string')){
-				(peaOptions.dataAssemblies[0].dataItems as any)[key].namespaceIndex = namespaceUrl;
-			}
-		}
-		for (const key in peaOptions.services[0].communication as any) {
-			//skip static values
-			if((typeof(peaOptions.services[0].communication as any)[key] != 'string')){
-				(peaOptions.services[0].communication as any)[key].namespaceIndex = namespaceUrl;
-			}
-		}
+		setNamespaceUrl(peaOptions as any);
 		before(async () => {
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
@@ -241,7 +234,7 @@ describe('PEARoutes', () => {
 			await mockupServer.start();
 		});
 		after(async () => {
-			mockupServer.shutdown();
+			await mockupServer.shutdown();
 		});
 
 		context('connect', ()=>{
@@ -276,9 +269,6 @@ describe('PEARoutes', () => {
 			it('delete', async() => {
 			const peaController = new PEAController(peaOptions as unknown as PEAOptions, false);
 			manager.peas.push(peaController);
-			await request(app).post('/api/pea/test/connect').send().expect(200)
-				.expect({peaId:'test',status:'Successfully connected'});
-
 			await request(app).delete('/api/pea/test')
 				.expect(200)
 				.expect({peaId:'test',status:'Successfully deleted'});
@@ -296,8 +286,6 @@ describe('PEARoutes', () => {
 				//connect first
 				const peaController = new PEAController(peaOptions as unknown as PEAOptions, false);
 				manager.peas.push(peaController);
-				await request(app).post('/api/pea/test/connect').send().expect(200)
-					.expect({peaId: 'test', status: 'Successfully connected'});
 				await request(app).get('/api/pea/test/service/Trigonometry').send().expect(200);
 			});
 			it('should fail to get service, wrong pea id', async() => {
@@ -324,6 +312,9 @@ describe('PEARoutes', () => {
 				await request(app).post('/api/pea/test/connect').send().expect(200)
 					.expect({peaId: 'test', status: 'Successfully connected'});
 				await request(app).post('/api/pea/test/service/Trigonometry/start').send().expect(200);
+
+				await request(app).post('/api/pea/test/disconnect').send().expect(200)
+					.expect({peaId:'test',status:'Successfully disconnected'});
 			});
 
 			it('should fail to send command, wrong peaId', async () => {
@@ -338,6 +329,49 @@ describe('PEARoutes', () => {
 					.expect('Error: [test] Could not find service with name Trigonometry');
 			});
 		});
+	});
 
+	context('/:peaId/service/:serviceName', ()=> {
+		//set namespaceUrl
+		setNamespaceUrl(peaOptionsServices as any);
+
+		it('should fail, wrong peaId', async () => {
+			await request(app).post('/api/pea/abc1234/service/Trigonometry').send().expect(500)
+				.expect(/Error: PEA with id abc1234 not found/);
+		});
+
+		it('should fail , service not found', async () => {
+			const peaController = new PEAController(peaOptionsDummy, false);
+			manager.peas.push(peaController);
+			await request(app).post('/api/pea/test/service/Trigonometry').send().expect(500)
+				.expect('"Error: [test] Could not find service with name Trigonometry"');
+		});
+		it('should fail, could not find procedure', async () => {
+			const peaController = new PEAController(peaOptions as unknown as PEAOptions, false);
+			manager.peas.push(peaController);
+			await request(app).post('/api/pea/test/service/Trigonometry').send().expect(500)
+				.send({procedure:'test'})
+				.expect('"Error: Could not find Procedure by Name or Default."');
+		});
+		it('should set parameter', async () => {
+			const mockupServer = new MockupServer();
+			await mockupServer.initialize();
+			const mockupParam = new AnaServParamMockup(mockupServer.namespace as Namespace,
+				mockupServer.rootComponent as UAObject, 'TestService.AnaProcParam_TestService_factor');
+			const mockupService = new ServiceControlMockup(mockupServer.namespace as Namespace,
+				mockupServer.rootComponent as UAObject, 'TestService');
+			await mockupServer.start();
+			const pea = new PEAController(peaOptionsServices as unknown as PEAOptions);
+			manager.peas.push(pea);
+			await pea.connectAndSubscribe();
+
+			await request(app).post('/api/pea/test/service/TestService/start').send().expect(200);
+
+			const response = await request(app).post('/api/pea/test/service/TestService').send().expect(200)
+				.send({procedure:'TestService_default', parameters: [{name: 'AnaProcParam_TestService_factor', value: 5}]});
+
+			await pea.disconnectAndUnsubscribe();
+			await mockupServer.shutdown();
+		}).timeout(10000);
 	});
 });

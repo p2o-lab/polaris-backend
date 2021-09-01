@@ -67,5 +67,8 @@ export class AnaServParam extends ServParam {
 
 		this.defaultReadDataItem = this.communication.VOut;
 		this.defaultReadDataItemType = 'number';
+
+		this.defaultWriteDataItemType = 'number';
+		this.defaultWriteDataItem = this.communication.VExt; //TODO correct?
 	}
 }

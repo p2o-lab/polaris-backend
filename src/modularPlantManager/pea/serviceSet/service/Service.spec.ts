@@ -24,7 +24,7 @@
  */
 
 import {
-	OperationMode, PEAOptions,
+	OperationMode, ParameterOptions, PEAOptions,
 	ServiceCommand,
 	ServiceControlOptions,
 	ServiceOptions, ServiceSourceMode,
@@ -37,11 +37,17 @@ import * as chaiAsPromised from 'chai-as-promised';
 import {ServiceState} from './enum';
 import {PEAMockup} from '../../PEA.mockup';
 import * as peaOptions from '../../../../../tests/peaOptions.json';
+import * as peaOptionsServices from '../../../../../tests/peaOptions_testservice.json';
+
 import {MockupServer} from '../../../_utils';
 import {AnaViewMockup} from '../../dataAssembly/indicatorElement/AnaView/AnaView.mockup';
 import {Namespace, UAObject} from 'node-opcua';
 import {ServiceControlMockup} from '../../dataAssembly/ServiceControl/ServiceControl.mockup';
-import {namespaceUrl} from '../../../../../tests/namespaceUrl';
+import {namespaceUrl, setNamespaceUrl} from '../../../../../tests/namespaceUrl';
+import {AnaServParamMockup} from '../../dataAssembly/operationElement/servParam/anaServParam/AnaServParam.mockup';
+import {AnaProcessValueIn, AnaServParam} from '../../dataAssembly';
+import {ModularPlantManager} from '../../../ModularPlantManager';
+import {AnaProcessValueInMockup} from '../../dataAssembly/inputElement/processValueIn/AnaProcessValueIn/AnaProcessValueIn.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -82,11 +88,10 @@ describe('Service', () => {
 		expect(service.name).to.equal('Trigonometry');
 	});
 
-	// eslint-disable-next-line no-undef
-	context('with PEATestServer', () => {
+	context('get procedure', () => {
 		let pea: PEAController;
 		let service: Service;
-		// eslint-disable-next-line no-undef
+
 		before(() => {
 			pea = new PEAController(peaOptions as unknown as PEAOptions);
 			service = pea.services[0];
@@ -112,7 +117,6 @@ describe('Service', () => {
 		});
 	});
 
-	// eslint-disable-next-line no-undef
 	context('dynamic test', () => {
 		let peaServer: PEAMockup;
 		let service: Service;
@@ -120,20 +124,7 @@ describe('Service', () => {
 		let pea: PEAController;
 		let mockupServer: MockupServer;
 
-
-		//set namespaceUrl in peaOptions
-		for (const key in peaOptions.dataAssemblies[0].dataItems as any) {
-			//skip static values
-			if((typeof(peaOptions.dataAssemblies[0].dataItems as any)[key] != 'string')){
-				(peaOptions.dataAssemblies[0].dataItems as any)[key].namespaceIndex = namespaceUrl;
-			}
-		}
-		for (const key in peaOptions.services[0].communication as any) {
-			//skip static values
-			if((typeof(peaOptions.services[0].communication as any)[key] != 'string')){
-				(peaOptions.services[0].communication as any)[key].namespaceIndex = namespaceUrl;
-			}
-		}
+		setNamespaceUrl(peaOptions as any);
 
 		beforeEach(async function () {
 			this.timeout(5000);
@@ -275,5 +266,54 @@ describe('Service', () => {
 		//TODO hold, unhold
 
 
+	});
+	context('parameter dynamic', () => {
+		it('set Parameter', async () => {
+			setNamespaceUrl(peaOptionsServices as any);
+			const mockupServer = new MockupServer();
+			await mockupServer.initialize();
+
+			const mockupConfParam = new AnaServParamMockup(mockupServer.namespace as Namespace,
+				mockupServer.rootComponent as UAObject, 'TestService.AnaConfParam_TestService_updateRate');
+			const mockupParam = new AnaServParamMockup(mockupServer.namespace as Namespace,
+				mockupServer.rootComponent as UAObject, 'TestService.AnaProcParam_TestService_factor');
+			const mockupReportValue = new AnaViewMockup(mockupServer.namespace as Namespace,
+				mockupServer.rootComponent as UAObject, 'TestService.AnaReportValue_TestService_rvTime');
+			const mockupProcessValueIn = new AnaProcessValueInMockup(mockupServer.namespace as Namespace,
+				mockupServer.rootComponent as UAObject, 'TestService.AnaProcessValueIn_TestService_pv');
+			const mockupProcessValueOut = new AnaProcessValueInMockup(mockupServer.namespace as Namespace,
+				mockupServer.rootComponent as UAObject, 'TestService.AnaProcessValueOut_TestService_pvOutIntegral');
+			const mockupService = new ServiceControlMockup(mockupServer.namespace as Namespace,
+				mockupServer.rootComponent as UAObject, 'TestService');
+
+			await mockupServer.start();
+			const pea = new PEAController(peaOptionsServices as unknown as PEAOptions);
+			await pea.connectAndSubscribe();
+
+			const service = pea.getService('TestService');
+			const procedure = service.getProcedureByNameOrDefault('TestService_default');
+			if (procedure) {
+				await service.setProcedure(procedure);
+			}
+			let curProcedure = await service.getCurrentProcedure();
+			expect(curProcedure).to.be.undefined; // current procedure will be set on service start
+
+			await service.start();
+
+			await new Promise(f => setTimeout(f, 500)); // wait for change
+
+			curProcedure = await service.getCurrentProcedure();
+			expect(curProcedure).to.not.be.undefined;
+			const paramOptions: ParameterOptions = {value: 5, name: 'AnaProcParam_TestService_factor'};
+			expect((procedure?.parameters[0] as AnaServParam).communication.VExt.value).to.equal(0);
+
+			await service.setParameters([paramOptions], [pea]);
+
+			await new Promise(f => setTimeout(f, 500)); // wait for change
+
+			expect((procedure?.parameters[0] as AnaServParam).communication.VExt.value).to.equal(5);
+			await pea.disconnectAndUnsubscribe();
+			await mockupServer.shutdown();
+		}).timeout(10000);
 	});
 });
