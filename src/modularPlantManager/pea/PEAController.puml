@@ -1,13 +1,18 @@
 @startuml
 'https://plantuml.com/class-diagram
+!include ./dataAssembly/DataAssemblyController.puml
+!include ./serviceSet/service/service.puml
+!include ./connection/OpcUaConnection.puml
+
+
 
 class PEAController{
     + //readonly// options: PEAOptions
     + //readonly// id: string
     + //readonly// pimadIdentifier: string
     + //readonly// name: string;
-    + //readonly// services: Service[]
 
+    +  services: Service[]
     + variables: DataAssemblyController[]
     + protected: boolean
     + connection: OpcUaConnection
@@ -39,8 +44,10 @@ class PEAController{
 }
 
 PEAController *-- "0..*" DataAssemblyController
-PEAController *-- "0..*" ServiceSet
-PEAController *-- "0..*" TextSet
-PEAController *-- "0..*" HMISet
+PEAController *-- "0..*" Service
+PEAController *-- "1" OpcUaConnection
+
+PEAEmitter <|-- PEAController
+
 
 @enduml
