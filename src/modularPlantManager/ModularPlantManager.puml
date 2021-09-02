@@ -5,7 +5,7 @@
 !include ./polService/POLService.puml
 !include ./recipe/Player.puml
 !include ./pea/PEAController.puml
-!include ./PiMAdParser.puml
+!include ./pea/PiMAdParser/PiMAdParser.puml
 
 class ModularPlantManager{
     + //readonly// recipes: Recipe[]
