@@ -2,7 +2,34 @@
 'https://plantuml.com/class-diagram
 !include Service.puml
 
-abstract class BaseService
+abstract class BaseService{
+    + readonly eventEmitter: BaseServiceEmitter
+    + _name!: string
+    + _lastStatusChange: Date = new Date()
+    + _selfCompleting = false
+
+    + get qualifiedName(): string
+    + abstract get state(): ServiceState
+    + abstract get commandEnable(): CommandEnableInterface
+    + get name(): string
+    + get lastStatusChange(): Date
+    + set selfCompleting(value: boolean)
+    + abstract setParameters(parameters: Array<Parameter | ParameterOptions>, peaSet?: PEAController[]): Promise<void>
+    + isCommandExecutable(command: ServiceCommand): boolean
+    + async executeCommand(command: ServiceCommand): Promise<void>
+    + waitForStateChange(expectedState: string): Promise<void>
+    + async waitForStateChangeWithTimeout(expectedState: string, ms = 1000): Promise<void>
+    + abstract async start(): Promise<void>
+    + abstract async stop(): Promise<void>
+    + abstract async reset(): Promise<void>
+    + abstract async complete(): Promise<void>
+    + abstract async abort(): Promise<void>
+    + abstract async hold(): Promise<void>
+    + abstract async unhold(): Promise<void>
+    + abstract async pause(): Promise<void>
+    + abstract async resume(): Promise<void>
+    + abstract async restart(): Promise<void>
+}
 
 BaseService <|-- Service
 @enduml
