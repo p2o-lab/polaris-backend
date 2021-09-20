@@ -56,7 +56,7 @@ export class LimitMonitoring {
 		this.initialize();
 	}
 
-	initialize(){
+	private initialize(): void{
 		this.dAController.communication.VAHEn = this.dAController.createDataItem('VAHEn', 'read');
 		this.dAController.communication.VAHLim = this.dAController.createDataItem('VAHLim', 'write');
 		this.dAController.communication.VAHAct = this.dAController.createDataItem('VAHAct', 'read');

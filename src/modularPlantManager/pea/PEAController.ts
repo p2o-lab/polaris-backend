@@ -37,7 +37,7 @@ import {
 	DataAssemblyControllerFactory,
 	ServiceState
 } from './dataAssembly';
-import {Procedure, Service} from './serviceSet';
+import {Procedure, Service, ServiceEvents} from './serviceSet';
 
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
@@ -356,8 +356,7 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 		this.variables.forEach((variable: DataAssemblyController) => variable.unsubscribe());
 	}
 
-	// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-	private subscribeToAllServices() {
+	private subscribeToAllServices(): Promise<StrictEventEmitter<EventEmitter, ServiceEvents, ServiceEvents, "addEventListener" | "removeEventListener", "on" | "addListener" | "removeListener" | "once" | "emit">[]>{
 		return Promise.all(this.services.map((service) => {
 			service.eventEmitter
 				.on('commandExecuted', (data) => {

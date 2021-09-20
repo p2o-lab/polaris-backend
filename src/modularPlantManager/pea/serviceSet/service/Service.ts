@@ -51,7 +51,7 @@ import {catService} from '../../../../logging';
 /**
  * Events emitted by [[Service]]
  */
-interface ServiceEvents extends BaseServiceEvents {
+export interface ServiceEvents extends BaseServiceEvents {
 	opMode: {
 		operationMode: OperationMode;
 		sourceMode: ServiceSourceMode;
