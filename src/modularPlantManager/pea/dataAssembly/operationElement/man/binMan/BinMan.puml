@@ -2,9 +2,14 @@
 'https://plantuml.com/class-diagram
 !include BinManInt.puml
 
+class BinMan{
+    + readonly communication!: BinManRuntime
+}
+
 BinMan *- BinManSpec
 BinManSpec ..> BinManMockup : <<use>>
 BinMan *- BinManMockup
+BinMan *- BinManRuntime
 
 BinMan <|-- BinManInt
 @enduml

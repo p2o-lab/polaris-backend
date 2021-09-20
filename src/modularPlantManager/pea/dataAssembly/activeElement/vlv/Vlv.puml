@@ -3,11 +3,20 @@
 !include anaVlv/AnaVlv.puml
 !include binVlv/BinVlv.puml
 
-abstract class Vlv
+class Vlv{
+    + readonly communication!: VlvRuntime
+    + readonly reset: Reset
+    + readonly interlock: Interlock
+    + readonly opMode: OpModeController
+}
 
 Vlv *- VlvSpec
 VlvSpec ..> VlvMockup : <<use>>
 Vlv *- VlvMockup
+Vlv *- VlvRuntime
+Vlv *- Reset
+Vlv *- Interlock
+Vlv *- OpModeController
 
 Vlv <|-- AnaVlv
 Vlv <|-- BinVlv

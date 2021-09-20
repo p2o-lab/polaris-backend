@@ -37,7 +37,7 @@ class PEAController{
 
     - subscribeToAllVariables(): Promise<DataAssemblyController[]>
     - unsubscribeFromAllVariables(): void
-    - subscribeToAllServices(): Promise<???>
+    - subscribeToAllServices(): Promise<StrictEventEmitter<EventEmitter, ServiceEvents, ServiceEvents, "addEventListener" | "removeEventListener", "on" | "addListener" | "removeListener" | "once" | "emit">[]>
     - unsubscribeFromAllServices(): void
 
 

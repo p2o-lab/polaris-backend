@@ -4,8 +4,15 @@
 !include man/anaMan/AnaMan.puml
 !include man/binMan/BinMan.puml
 !include man/dintMan/DIntMan.puml
+!include ../../../recipe/step/operation/Parameter.puml
 
-abstract class OperationElement
+class OperationElement{
+
+    + readonly communication!: InputElementRuntime
+    + parameterRequest: Parameter | undefined
+    + requestedValue = ''
+
+}
 
 OperationElement *- OperationElementSpec
 OperationElementSpec ..> OperationElementMockup : <<use>>

@@ -2,8 +2,25 @@
 'https://plantuml.com/class-diagram
 !include AnaManInt.puml
 
+!include ../../../_extensions/scaleSettingsDA/ScaleSettings.puml
+!include ../../../_extensions/unitDA/UnitSettings.puml
+!include ../../../_extensions/valueLimitationDA/ValueLimitation.puml
+
+class AnaMan{
+    + readonly communication!: AnaManRuntime
+    + readonly scaleSettings: ScaleSettings
+    + readonly unitSettings: UnitSettings
+    + readonly valueLimitation: ValueLimitation
+}
+
 AnaMan *- AnaManSpec
 AnaManSpec ..> AnaManMockup : <<use>>
 AnaMan *- AnaManMockup
 AnaMan <|-- AnaManInt
+
+AnaMan *- AnaManRuntime
+AnaMan *- ScaleSettings
+AnaMan *- UnitSettings
+AnaMan *- ValueLimitation
+
 @enduml

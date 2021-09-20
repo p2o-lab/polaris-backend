@@ -4,8 +4,11 @@
 !include ./vlv/Vlv.puml
 !include ./drv/Drv.puml
 
-abstract class ActiveElement
-
+class ActiveElement{
+    + readonly communication!: IndicatorElementRuntime
+    + readonly osLevel: OSLevel;
+    + readonly wqc: WQC
+}
 ActiveElement <|-- PIDCtrl
 ActiveElement <|-- Vlv
 ActiveElement <|-- Drv

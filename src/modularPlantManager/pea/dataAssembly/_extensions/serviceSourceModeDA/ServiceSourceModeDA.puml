@@ -1,9 +1,0 @@
-@startuml
-'https://plantuml.com/class-diagram
-
-abstract class ServiceSourceModeDA
-
-ServiceSourceModeDA *- ServiceSourceModeDASpec
-ServiceSourceModeDASpec ..> ServiceSourceModeDAMockup : <<use>>
-ServiceSourceModeDA *- ServiceSourceModeDAMockup
-@enduml

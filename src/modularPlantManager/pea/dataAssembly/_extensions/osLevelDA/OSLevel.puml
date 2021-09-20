@@ -1,0 +1,14 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class OSLevel{
+    - dAController: any
+    + osLevel: number | undefined
+    - initialize(): void
+    + OSLevel(): number | undefined
+}
+
+OSLevel *- OSLevelDASpec
+OSLevelDASpec ..> OSLevelDAMockup : <<use>>
+OSLevel *- OSLevelDAMockup
+@enduml

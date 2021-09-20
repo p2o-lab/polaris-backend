@@ -1,6 +1,18 @@
 @startuml
 'https://plantuml.com/class-diagram
+!include ../_extensions/wqcDA/WQC.puml
+!include ../_extensions/opModeDA/OpModeController.puml
+!include ../_extensions/serviceSourceModeDA/ServiceSourceModeController.puml
+class ServiceControl{
+    + readonly communication!: ServiceControlRuntime
+    + readonly wqc: WQC
+    + readonly opMode: OpModeController
+    + readonly serviceSourceMode: ServiceSourceModeController
+}
 
-abstract class ServiceControl
+ServiceControl *- ServiceControlRuntime
+ServiceControl *- WQC
+ServiceControl *- OpModeController
+ServiceControl *- ServiceSourceModeController
 
 @enduml

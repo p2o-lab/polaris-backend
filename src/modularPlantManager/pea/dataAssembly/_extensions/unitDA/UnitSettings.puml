@@ -1,0 +1,13 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class UnitSettings{
+    - dAController: any
+    - initialize(): void
+    + Unit(): string
+}
+
+UnitSettings *- UnitDASpec
+UnitDASpec ..> UnitDAMockup : <<use>>
+UnitSettings *- UnitDAMockup
+@enduml

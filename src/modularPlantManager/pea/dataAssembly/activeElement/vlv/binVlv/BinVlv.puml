@@ -2,11 +2,14 @@
 'https://plantuml.com/class-diagram
 !include MonBinVlv.puml
 
-class BinVlv
+class BinVlv{
+	+ readonly communication!: BinVlvRuntime;
+}
 
 BinVlv *- BinVlvSpec
 BinVlvSpec ..> BinVlvMockup : <<use>>
 BinVlv *- BinVlvMockup
+BinVlv *- BinVlvRuntime
 
 BinVlv <|-- MonBinVlv
 

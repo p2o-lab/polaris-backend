@@ -1,10 +1,14 @@
 @startuml
 'https://plantuml.com/class-diagram
 
-class MonBinVlv
+class MonBinVlv{
+  + readonly communication!: MonBinVlvRuntime
+  + readonly feedbackMonitoring: FeedbackMonitoring
+}
 
 MonBinVlv *- MonBinVlvSpec
 MonBinVlvSpec ..> MonBinVlvMockup : <<use>>
 MonBinVlv *- MonBinVlvMockup
+MonBinVlv *- MonBinVlvRuntime
 
 @enduml

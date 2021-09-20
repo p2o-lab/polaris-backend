@@ -3,11 +3,17 @@
 !include healthStateView/HealthStateView.puml
 !include ./lockView/LockView4.puml
 
-abstract class DiagnosticElement
+class DiagnosticElement{
+    + readonly communication!: DiagnosticElementRuntime
+    + readonly wqc: WQC
+}
+
 
 DiagnosticElement *- DiagnosticElementSpec
 DiagnosticElementSpec ..> DiagnosticElementMockup : <<use>>
 DiagnosticElement *- DiagnosticElementMockup
+DiagnosticElement *- DiagnosticElementRuntime
+DiagnosticElement *- WQC
 
 DiagnosticElement <|-- LockView4
 DiagnosticElement <|-- HealthStateView

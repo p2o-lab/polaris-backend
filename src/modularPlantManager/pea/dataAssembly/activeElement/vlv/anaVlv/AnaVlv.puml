@@ -2,11 +2,16 @@
 'https://plantuml.com/class-diagram
 !include MonAnaVlv.puml
 
-class AnaVlv
+class AnaVlv{
+	+ readonly communication!: AnaVlvRuntime
+	+ sourceMode: SourceModeController
+}
 
 AnaVlv *- AnaVlvSpec
 AnaVlvSpec ..> AnaVlvMockup : <<use>>
 AnaVlv *- AnaVlvMockup
+AnaVlv *- AnaVlvRuntime
+AnaVlv *- SourceModeController
 
 AnaVlv <|-- MonAnaVlv
 

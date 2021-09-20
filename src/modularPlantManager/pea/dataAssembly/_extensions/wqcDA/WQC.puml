@@ -1,9 +1,9 @@
 @startuml
 'https://plantuml.com/class-diagram
 
-abstract class WQCDA
+class WQC
 
-WQCDA *- WQCDASpec
+WQC *- WQCDASpec
 WQCDASpec ..> WQCDAMockup : <<use>>
-WQCDA *- WQCDAMockup
+WQC *- WQCDAMockup
 @enduml
