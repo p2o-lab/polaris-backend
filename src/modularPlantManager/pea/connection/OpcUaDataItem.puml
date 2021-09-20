@@ -6,10 +6,10 @@ class OpcUaDataItem{
 	+ nodeId = ''
 	- connection!: OpcUaConnection
 
-	+ static createFromOptions<type extends number | string | boolean>(options: OpcUaNodeOptions, connection: OpcUaConnection, access: 'read' | 'write', type: 'number' | 'string' | 'boolean' = 'string'): OpcUaDataItem<type>
-	+ async subscribe(): Promise<OpcUaDataItem<T>>
-	+ async write(value: number | string | boolean): Promise<void>
-	+ async read(): Promise<T | undefined>
+    + static createFromOptions<type extends number | string | boolean>(options: OpcUaNodeOptions, connection: OpcUaConnection, access: 'read' | 'write', type: 'number' | 'string' | 'boolean' = 'string'): OpcUaDataItem<type>
+    + async subscribe(): Promise<OpcUaDataItem<T>>
+    + async write(value: number | string | boolean): Promise<void>
+    + async read(): Promise<T | undefined>
 }
 
 DataItem<|-- OpcUaDataItem

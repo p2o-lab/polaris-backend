@@ -27,17 +27,16 @@ class DataAssemblyController{
     + defaultWriteDataItem: DataItem<any> | undefined;
     + defaultWriteDataItemType: any;
 
-
-
-    + async subscribe(): Promise<DataAssemblyController>
-    + unsubscribe(): void
-    + createDataItem(name: string | string[], access: 'read' | 'write', type?: 'number' | 'string' | 'boolean', silent = false): OpcUaDataItem<any>
-    + getDefaultReadValue(): any | undefined
-    + getLastDefaultReadValueUpdate(): Date | undefined
-    + getDefaultWriteValue(): any | undefined
-    + getLastDefaultWriteValueUpdate(): Date | undefined
-    + logParsingErrors(): void
-    + toJson(): ParameterInterface
+    + DataAssemblyController(options: DataAssemblyOptions, connection: OpcUaConnection)
+	+ async subscribe(): Promise<DataAssemblyController>
+	+ unsubscribe(): void
+	+ createDataItem(name: string | string[], access: 'read' | 'write', type?: 'number' | 'string' | 'boolean', silent = false): OpcUaDataItem<any>
+	+ getDefaultReadValue(): any | undefined
+	+ getLastDefaultReadValueUpdate(): Date | undefined
+	+ getDefaultWriteValue(): any | undefined
+	+ getLastDefaultWriteValueUpdate(): Date | undefined
+	+ logParsingErrors(): void
+	+ toJson(): ParameterInterface
 }
 
 DataAssemblyController <|-- ActiveElement

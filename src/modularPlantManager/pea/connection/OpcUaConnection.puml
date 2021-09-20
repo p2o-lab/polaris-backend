@@ -4,16 +4,17 @@
 class OpcUaConnection{
 	+ //readonly// endpoint: string
 	+ //readonly// id: string
-	+ //readonly// eventEmitter: EventEmitter;
-	+ //readonly// username: string | undefined;
-    + //readonly// password: string | undefined;
-	- session: ClientSession | undefined;
-	- client: OPCUAClient | undefined;
-	- subscription: ClientSubscription | undefined;
-	- namespaceArray!: string[];
-	- //readonly// items: Map<string, string>;
-	- //readonly// logger: Category;
+	+ //readonly// eventEmitter: EventEmitter
+	+ //readonly// username: string | undefined
+    + //readonly// password: string | undefined
+	- session: ClientSession | undefined
+	- client: OPCUAClient | undefined
+	- subscription: ClientSubscription | undefined
+	- namespaceArray!: string[]
+	- //readonly// items: Map<string, string>
+	- //readonly// logger: Category
 
+	+ OpcUaConnection(targetId: string, endpoint: string, username?: string, password?: string) {
 	+ //async// connect(): Promise<void>
     + //async// disconnect(): Promise<void>
     + isConnected(): boolean

@@ -2,15 +2,15 @@
 'https://plantuml.com/class-diagram
 
 abstract class DataItem{
-	+ dataType!: string
-	+ value: T | undefined = undefined
-	+ timestamp!: Date
-	+ access: 'read' | 'write' = 'read'
+    + dataType!: string
+    + value: T | undefined = undefined
+    + timestamp!: Date
+    + access: 'read' | 'write' = 'read'
 
 	# logger: Category = catDataItem
 
-	+ abstract async subscribe(samplingInterval: number): Promise<any>
-	+ abstract write(value: string | number | boolean): Promise<void>
+    + abstract async subscribe(samplingInterval: number): Promise<any>
+    + abstract write(value: string | number | boolean): Promise<void>
 }
 DataItemEmitter <|-- DataItem
 

@@ -21,6 +21,7 @@ class PEAController{
     - //readonly// hmiUrl: string
     - //readonly// logger: Category
 
+    + PEAController(options: PEAOptions, protectedPEA = false)
     + updateConnection(options: ServerSettingsOptions): void
     + getService(serviceName: string): Service
     + getServiceStates(): ServiceInterface[]
