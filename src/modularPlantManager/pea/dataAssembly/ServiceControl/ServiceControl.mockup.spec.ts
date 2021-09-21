@@ -119,6 +119,7 @@ describe('ServiceControlMockup', () => {
 
         //ProcedureExt
         it('set and get ProcedureExt, should work', async () => {
+            //TODO test needs to be adjusted
             // set up mockup
             mockup.operationMode.opMode = OperationMode.Automatic;
             mockup.serviceSourceMode.srcMode = ServiceSourceMode.Extern;

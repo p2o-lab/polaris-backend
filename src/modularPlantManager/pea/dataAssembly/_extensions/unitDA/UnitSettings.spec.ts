@@ -63,7 +63,7 @@ describe('UnitSettings', () => {
 			const unitSettings = new UnitSettings(da);
 			expect(unitSettings).to.not.be.undefined;
 			expect((da as DIntMan).communication.VUnit).to.not.be.undefined;
-			expect(unitSettings.getUnit()).to.be.empty;
+			expect(unitSettings.Unit).to.be.empty;
 		});
 	});
 	describe('dynamic', () => {
