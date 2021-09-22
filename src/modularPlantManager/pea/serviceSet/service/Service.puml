@@ -3,8 +3,44 @@
 !include procedure/Procedure.puml
 
 class Service{
-    name: string
-    parameters: ServiceParameter[]
+    + readonly eventEmitter!: ServiceEmitter;
+    + readonly procedures: Procedure[] = [];
+    + readonly parameters: ServParam[] = [];
+    + readonly connection: OpcUaConnection;
+    + serviceControl: ServiceControl;
+    - readonly logger: Category;
+    - serviceParametersEventEmitters: EventEmitter[];
+    - readonly _parentId: string;
+
+    + Service(serviceOptions: ServiceOptions, connection: OpcUaConnection, parentId: string)
+    + get qualifiedName(): string
+    + get commandEnable(): CommandEnableInterface
+    + get state(): ServiceState
+    + get lastStatusChange(): Date
+    + get currentProcedure(): number | undefined
+    + getDefaultProcedure(): Procedure | undefined
+    + getCurrentProcedure(): Procedure |undefined
+    + async subscribeToService(): Promise<ServiceEmitter>
+    + unsubscribe()
+    + json(): ServiceInterface
+    + async executeCommandAndWaitForStateChange(command: ServiceCommand): Promise<void>
+    + abstract async start(): Promise<void>
+    + abstract async stop(): Promise<void>
+    + abstract async reset(): Promise<void>
+    + abstract async complete(): Promise<void>
+    + abstract async abort(): Promise<void>
+    + abstract async hold(): Promise<void>
+    + abstract async unhold(): Promise<void>
+    + abstract async pause(): Promise<void>
+    + abstract async resume(): Promise<void>
+    + abstract async restart(): Promise<void>
+    + async setProcedure(procedure: Procedure): Promise<void>
+    + getProcedureByNameOrDefault(procedureName: string): Procedure | undefined
+    + async setParameters(parameterOptions: ParameterOptions[], peaSet: PEAController[] = []): Promise<void>
+    + async setOperationMode(): Promise<void>
+    + findInputParameter(parameterName: string): InputElement | ServParam | undefined
+    - clearListeners(): void
+    - async sendCommand(command: ServiceMtpCommand): Promise<void>
 }
 
 Service *-down- "1..*" Procedure: has

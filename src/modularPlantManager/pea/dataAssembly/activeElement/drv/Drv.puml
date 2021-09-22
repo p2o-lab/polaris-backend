@@ -3,6 +3,13 @@
 !include anaDrv/AnaDrv.puml
 !include binDrv/BinDrv.puml
 
+class Drv{
+    + readonly communication!: DrvRuntime
+    + readonly reset: Reset
+    + readonly interlock: Interlock
+    + readonly opMode: OpModeController
+}
+
 Drv *- DrvSpec
 DrvSpec ..> DrvMockup : <<use>>
 Drv *- DrvMockup

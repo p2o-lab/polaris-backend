@@ -34,7 +34,7 @@ export type ActiveElementRuntime = BaseDataAssemblyRuntime & WQCRuntime & OSLeve
 
 export class ActiveElement extends DataAssemblyController {
 
-	public readonly communication: ActiveElementRuntime = {} as ActiveElementRuntime;
+	public readonly communication!: ActiveElementRuntime;
 	public readonly osLevel: OSLevel;
 	public readonly wqc: WQC;
 

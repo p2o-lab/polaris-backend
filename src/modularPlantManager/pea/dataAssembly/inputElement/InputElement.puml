@@ -3,12 +3,21 @@
 !include processValueIn/AnaProcessValueIn/AnaProcessValueIn.puml
 !include processValueIn/BinProcessValueIn/BinProcessValueIn.puml
 !include processValueIn/DIntProcessValueIn/DIntProcessValueIn.puml
-
-abstract class InputElement
+!include ../../../recipe/step/operation/Parameter.puml
+class InputElement{
+    + readonly communication!: InputElementRuntime
+    + parameterRequest: Parameter | undefined
+    + requestedValue = ''
+}
 
 InputElement *- InputElementSpec
 InputElementSpec ..> InputElementMockup : <<use>>
 InputElement *- InputElementMockup
+
+InputElement *- Parameter
+InputElement *- InputElementRuntime
+
+
 
 InputElement <|-- AnaProcessValueIn
 InputElement <|-- BinProcessValueIn

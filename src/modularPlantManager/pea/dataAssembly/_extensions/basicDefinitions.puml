@@ -1,17 +1,17 @@
 @startuml
 'https://plantuml.com/class-diagram
-!include feedbackMonitoringDA/FeedbackMonitoringDA.puml
-!include interlockDA/InterlockDA.puml
-!include limitMonitoringDA/LimitMonitoringDA.puml
-!include opModeDA/OpModeDA.puml
-!include osLevelDA/OSLevelDA.puml
-!include resetDA/ResetDA.puml
-!include scaleSettingsDA/ScaleSettingDA.puml
-!include serviceSourceModeDA/ServiceSourceModeDA.puml
-!include sourceModeDA/SourceModeDA.puml
-!include unitDA/UnitDA.puml
-!include valueLimitationDA/ValueLimitationDA.puml
-!include wqcDA/WQCDA.puml
+!include feedbackMonitoringDA/FeedbackMonitoring.puml
+!include interlockDA/Interlock.puml
+!include limitMonitoringDA/LimitMonitoring.puml
+!include opModeDA/OpModeController.puml
+!include osLevelDA/OSLevel.puml
+!include resetDA/Reset.puml
+!include scaleSettingsDA/ScaleSettings.puml
+!include serviceSourceModeDA/ServiceSourceModeController.puml
+!include sourceModeDA/SourceModeController.puml
+!include unitDA/UnitSettings.puml
+!include valueLimitationDA/ValueLimitation.puml
+!include wqcDA/WQC.puml
 
 abstract class DataAssemblyController
 

@@ -1,9 +1,0 @@
-@startuml
-'https://plantuml.com/class-diagram
-
-abstract class LimitMonitoringDA
-
-LimitMonitoringDA *- LimitMonitoringDASpec
-LimitMonitoringDASpec ..> LimitMonitoringDAMockup : <<use>>
-LimitMonitoringDA *- LimitMonitoringDAMockup
-@enduml

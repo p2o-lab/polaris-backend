@@ -2,11 +2,14 @@
 'https://plantuml.com/class-diagram
 !include MonBinDrv.puml
 
-class BinDrv
+class BinDrv{
+	+ readonly communication!: BinDrvRuntime
+}
 
 BinDrv *- BinDrvSpec
 BinDrvSpec ..> BinDrvMockup : <<use>>
 BinDrv *- BinDrvMockup
+BinDrv *- BinDrvRuntime
 
 BinDrv <|-- MonBinDrv
 

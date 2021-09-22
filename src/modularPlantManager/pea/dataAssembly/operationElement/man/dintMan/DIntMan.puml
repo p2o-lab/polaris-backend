@@ -1,11 +1,27 @@
 @startuml
 'https://plantuml.com/class-diagram
 !include DIntManInt.puml
+!include ../../../_extensions/scaleSettingsDA/ScaleSettings.puml
+!include ../../../_extensions/unitDA/UnitSettings.puml
+!include ../../../_extensions/valueLimitationDA/ValueLimitation.puml
+
+class DIntMan{
+    + readonly communication!: DIntManRuntime
+    + readonly scaleSettings: ScaleSettings
+    + readonly unitSettings: UnitSettings
+    + readonly valueLimitation: ValueLimitation
+}
 
 DIntMan *- DIntManSpec
 DIntManSpec ..> DIntManMockup : <<use>>
 DIntMan *- DIntManMockup
 
+DIntMan *- DIntManRuntime
+DIntMan *- ScaleSettings
+DIntMan *- UnitSettings
+DIntMan *- ValueLimitation
+
 DIntMan <|-- DIntManInt
+
 
 @enduml

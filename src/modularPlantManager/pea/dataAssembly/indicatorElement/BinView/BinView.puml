@@ -1,11 +1,15 @@
 @startuml
 'https://plantuml.com/class-diagram
 !include BinMon.puml
+class BinView{
+    + readonly communication!: BinViewRuntime
+
+}
 
 BinView *- BinViewSpec
 BinViewSpec ..> BinViewMockup : <<use>>
 BinView *- BinViewMockup
-
+BinView *- "1" BinViewRuntime
 BinView <|-- BinMon
 
 @enduml

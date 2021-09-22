@@ -1,0 +1,9 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class SourceModeController
+
+SourceModeController *- SourceModeDASpec
+SourceModeDASpec ..> SourceModeDAMockup : <<use>>
+SourceModeController *- SourceModeDAMockup
+@enduml

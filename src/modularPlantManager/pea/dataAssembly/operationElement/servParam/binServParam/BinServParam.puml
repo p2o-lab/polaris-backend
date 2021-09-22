@@ -1,8 +1,12 @@
 @startuml
 'https://plantuml.com/class-diagram
+class BinServParam{
+  + readonly communication!: BinServParamRuntime
 
+}
 BinServParam *- BinServParamSpec
 BinServParamSpec ..> BinServParamMockup : <<use>>
 BinServParam *- BinServParamMockup
+BinServParam *- BinServParamRuntime
 
 @enduml

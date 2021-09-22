@@ -40,7 +40,7 @@ export class OSLevel {
 		this.initialize();
 	}
 
-	public initialize(){
+	private initialize(): void{
 		//handle static and dynamic variables
 		if(typeof this.dAController.options.dataItems.OSLevel == 'string'){
 			this.osLevel = Number(this.dAController.options.dataItems.OSLevel);

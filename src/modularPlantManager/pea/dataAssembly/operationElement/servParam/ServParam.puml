@@ -5,11 +5,26 @@
 !include dIntServParam/DIntServParam.puml
 !include stringServParam/StringServParam.puml
 
-abstract class ServParam
+!include ../../_extensions/serviceSourceModeDA/ServiceSourceModeController.puml
+!include ../../_extensions/opModeDA/opModeController.puml
+!include ../../_extensions/wqcDA/WQC.puml
+
+class ServParam{
+    + readonly communication!: ServParamRuntime
+    + readonly serviceSourceMode: ServiceSourceModeController
+    + readonly serviceOpMode: OpModeController
+    + readonly wqc: WQC
+}
 
 ServParam *- ServParamSpec
 ServParamSpec ..> ServParamMockup : <<use>>
 ServParam *- ServParamMockup
+
+ServParam *- ServParamRuntime
+ServParam *- ServiceSourceModeController
+ServParam *- OpModeController
+ServParam *- WQC
+
 
 ServParam <|-- AnaServParam
 ServParam <|-- BinServParam

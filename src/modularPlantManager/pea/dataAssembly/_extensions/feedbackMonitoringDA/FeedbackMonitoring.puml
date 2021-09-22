@@ -1,0 +1,14 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+
+class FeedbackMonitoring{
+    - dAController: any
+    - initialize(): void
+}
+
+FeedbackMonitoring *- FeedbackMonitoringDASpec
+FeedbackMonitoringDASpec ..> FeedbackMonitoringDAMockup : <<use>>
+FeedbackMonitoring *- FeedbackMonitoringDAMockup
+
+@enduml

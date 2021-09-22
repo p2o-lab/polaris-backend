@@ -42,11 +42,11 @@ export class UnitSettings {
 		this.initialize();
 	}
 
-	initialize(){
+	private initialize(): void{
 		this.dAController.communication.VUnit = this.dAController.createDataItem('VUnit', 'read');
 	}
 
-	public getUnit(): string {
+	get Unit(): string {
 		const unit = UNIT.find((item) => item.value === this.dAController.communication.VUnit?.value);
 		return unit ? unit.unit : '';
 	}

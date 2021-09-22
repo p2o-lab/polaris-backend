@@ -5,7 +5,7 @@
 !include ./polService/POLService.puml
 !include ./recipe/Player.puml
 !include ./pea/PEAController.puml
-!include ./PiMAdParser.puml
+!include ./pea/PiMAdParser/PiMAdParser.puml
 
 class ModularPlantManager{
     + //readonly// recipes: Recipe[]
@@ -22,12 +22,12 @@ class ModularPlantManager{
 
     + generateUniqueIndentifier(): string
 
-	+ getAllPEAControllers(): PEAInterface[]
+    + getAllPEAControllers(): PEAInterface[]
     + getPEAController(peaId: string): PEAController
     + //async// removePEAController(peaID: string): Promise<void>
-    + //async// loadPEAController(pimadIdentifier: string, protectedPEAs: boolean): Promise<PEAController[]>{
+    + //async// loadPEAController(pimadIdentifier: string, protectedPEAs: boolean): Promise<PEAController[]>
 
-	+ getAllPEAsFromPimadPool(callback: (response: PiMAdResponse) => void)
+    + getAllPEAsFromPimadPool(callback: (response: PiMAdResponse) => void)
     + getPEAFromPimadPool(pimadIdentifier: string): Promise<PEAModel>
     + deletePEAFromPimadPool(pimadIdentifier: string, callback: (response: PiMAdResponse) => void)
     + addPEAToPimadPool(filePath: { source: string}, callback: (response: PiMAdResponse) => void)

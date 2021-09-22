@@ -1,13 +1,18 @@
 @startuml
 'https://plantuml.com/class-diagram
+!include ./dataAssembly/DataAssemblyController.puml
+!include ./serviceSet/service/service.puml
+!include ./connection/OpcUaConnection.puml
+
+
 
 class PEAController{
     + //readonly// options: PEAOptions
     + //readonly// id: string
     + //readonly// pimadIdentifier: string
     + //readonly// name: string;
-    + //readonly// services: Service[]
 
+    +  services: Service[]
     + variables: DataAssemblyController[]
     + protected: boolean
     + connection: OpcUaConnection
@@ -16,6 +21,7 @@ class PEAController{
     - //readonly// hmiUrl: string
     - //readonly// logger: Category
 
+    + PEAController(options: PEAOptions, protectedPEA = false)
     + updateConnection(options: ServerSettingsOptions): void
     + getService(serviceName: string): Service
     + getServiceStates(): ServiceInterface[]
@@ -32,15 +38,17 @@ class PEAController{
 
     - subscribeToAllVariables(): Promise<DataAssemblyController[]>
     - unsubscribeFromAllVariables(): void
-    - subscribeToAllServices(): Promise<???>
+    - subscribeToAllServices(): Promise<StrictEventEmitter<EventEmitter, ServiceEvents, ServiceEvents, "addEventListener" | "removeEventListener", "on" | "addListener" | "removeListener" | "once" | "emit">[]>
     - unsubscribeFromAllServices(): void
 
 
 }
 
 PEAController *-- "0..*" DataAssemblyController
-PEAController *-- "0..*" ServiceSet
-PEAController *-- "0..*" TextSet
-PEAController *-- "0..*" HMISet
+PEAController *-- "0..*" Service
+PEAController *-- "1" OpcUaConnection
+
+PEAEmitter <|-- PEAController
+
 
 @enduml

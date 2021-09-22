@@ -34,8 +34,8 @@ import {ScaleSettings} from '../../_extensions/scaleSettingsDA/ScaleSettings';
 
 export class DIntView extends IndicatorElement {
 	public readonly communication!: AnaViewRuntime;
-	public readonly scaleSettings: ScaleSettings;
-	public readonly unitSettings: UnitSettings;
+	private readonly scaleSettings: ScaleSettings;
+	private readonly unitSettings: UnitSettings;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);

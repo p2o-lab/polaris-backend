@@ -1,9 +1,12 @@
 @startuml
 'https://plantuml.com/class-diagram
 
-class BinProcessValueIn
+class BinProcessValueIn{
+	+ readonly communication!: BinProcessValueInRuntime
+}
 
 BinProcessValueIn *- BinProcessValueInSpec
 BinProcessValueInSpec ..> BinProcessValueInMockup : <<use>>
 BinProcessValueIn *- BinProcessValueInMockup
+BinProcessValueIn *- BinProcessValueInRuntime
 @enduml

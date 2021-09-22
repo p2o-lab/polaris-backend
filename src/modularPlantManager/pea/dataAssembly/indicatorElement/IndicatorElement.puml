@@ -5,11 +5,19 @@
 !include DIntView/DIntView.puml
 !include StringView/StringView.puml
 
-abstract class IndicatorElement
+class IndicatorElement{
+    + readonly communication!: IndicatorElementRuntime
+    + readonly wqc: WQC
+
+    + toJson(): ParameterInterface
+}
 
 IndicatorElement *- IndicatorElementSpec
 IndicatorElementSpec ..> IndicatorElementMockup : <<use>>
 IndicatorElement *- IndicatorElementMockup
+
+IndicatorElement *- "1" IndicatorElementRuntime
+
 
 IndicatorElement <|-- AnaView
 IndicatorElement <|-- BinView

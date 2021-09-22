@@ -1,6 +1,9 @@
 @startuml
 'https://plantuml.com/class-diagram
-
+class LockView16{
+	+ readonly communication!: LockView16Runtime;
+}
+LockView16 *- LockView16Runtime
 LockView16 *- LockView16Spec
 LockView16Spec ..> LockView16Mockup : <<use>>
 LockView16 *- LockView16Mockup

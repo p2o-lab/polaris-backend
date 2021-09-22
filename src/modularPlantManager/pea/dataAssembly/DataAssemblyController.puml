@@ -6,23 +6,37 @@
 !include ./IndicatorElement/indicatorElement.puml
 !include ./InputElement/inputElement.puml
 !include ./OperationElement/operationElement.puml
+!include ../connection/OpcUaConnection.puml
+!include ../connection/DataItem.puml
 
-abstract class DataAssemblyController{
+
+
+class DataAssemblyController{
     + //readonly// name: string
     + //readonly// metaModelRef: string
     + //readonly// communication!: string
     + //readonly// connection: OpcUaConnection
+    + //readonly// tagName: string;
+    + //readonly// tagDescription: string;
 
     + subscriptionActive: boolean
     + parsingErrors: string[] = []
     + options: DataAssemblyOptions
     + defaultReadDataItem: DataItem<any> | undefined
     + defaultReadDataItemType: any;
-	+ defaultWriteDataItem: DataItem<any> | undefined;
-	+ defaultWriteDataItemType: any;
+    + defaultWriteDataItem: DataItem<any> | undefined;
+    + defaultWriteDataItemType: any;
 
-	+ //readonly// tagName: string;
-	+ //readonly// tagDescription: string;
+    + DataAssemblyController(options: DataAssemblyOptions, connection: OpcUaConnection)
+	+ async subscribe(): Promise<DataAssemblyController>
+	+ unsubscribe(): void
+	+ createDataItem(name: string | string[], access: 'read' | 'write', type?: 'number' | 'string' | 'boolean', silent = false): OpcUaDataItem<any>
+	+ getDefaultReadValue(): any | undefined
+	+ getLastDefaultReadValueUpdate(): Date | undefined
+	+ getDefaultWriteValue(): any | undefined
+	+ getLastDefaultWriteValueUpdate(): Date | undefined
+	+ logParsingErrors(): void
+	+ toJson(): ParameterInterface
 }
 
 DataAssemblyController <|-- ActiveElement
@@ -32,5 +46,9 @@ DataAssemblyController <|-- IndicatorElement
 DataAssemblyController <|-- InputElement
 DataAssemblyController <|-- OperationElement
 DataAssemblyController <|-- ServiceControl
+DataAssemblyController *-- "1" OpcUaConnection
+DataAssemblyController *-- "0..2" DataItem
+
+
 
 @enduml

@@ -1,0 +1,35 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class OpcUaConnection{
+	+ //readonly// endpoint: string
+	+ //readonly// id: string
+	+ //readonly// eventEmitter: EventEmitter
+	+ //readonly// username: string | undefined
+    + //readonly// password: string | undefined
+	- session: ClientSession | undefined
+	- client: OPCUAClient | undefined
+	- subscription: ClientSubscription | undefined
+	- namespaceArray!: string[]
+	- //readonly// items: Map<string, string>
+	- //readonly// logger: Category
+
+	+ OpcUaConnection(targetId: string, endpoint: string, username?: string, password?: string) {
+	+ //async// connect(): Promise<void>
+    + //async// disconnect(): Promise<void>
+    + isConnected(): boolean
+    + //async// readOpcUaNode(nodeId: string, namespaceUrl: string): Promise<DataValue | undefined>
+    + addOpcUaNode(nodeId: string, namespaceUrl: string): string
+    + //async// startListening(samplingInterval=100): Promise<EventEmitter>
+    + //async// writeOpcUaNode(nodeId: string, namespaceUrl: string, value: number | string | boolean, dataType: string): Promise<void>
+    + monitoredItemSize(): number
+    - resolveNodeId(nodeId: string, namespaceUrl: string): NodeId
+    - //async// readNameSpaceArray(): Promise<any>
+    - //async// createAndConnectClient(): Promise<OPCUAClient>
+    - //async// createSession()
+    - //async// createSubscription()
+}
+OpcUaConnectionEmitter <|-- OpcUaConnection
+
+@enduml
+

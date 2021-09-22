@@ -41,7 +41,7 @@ export class ValueLimitation{
 		this.initialize();
 	}
 
-	initialize(){
+	private initialize(): void{
 		this.dAController.communication.VMax = this.dAController.createDataItem('VMax', 'read');
 		this.dAController.communication.VMin = this.dAController.createDataItem('VMin', 'read');
 	}

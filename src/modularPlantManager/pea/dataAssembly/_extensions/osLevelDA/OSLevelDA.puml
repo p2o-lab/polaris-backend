@@ -1,9 +1,0 @@
-@startuml
-'https://plantuml.com/class-diagram
-
-abstract class OSLevelDA
-
-OSLevelDA *- OSLevelDASpec
-OSLevelDASpec ..> OSLevelDAMockup : <<use>>
-OSLevelDA *- OSLevelDAMockup
-@enduml
