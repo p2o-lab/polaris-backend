@@ -31,7 +31,6 @@ import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import * as baseDataAssemblyOptions from './HealthStateView.spec.json';
 import {MockupServer} from '../../../../_utils';
-import {Namespace, UAObject} from 'node-opcua';
 import {HealthStateViewMockup} from './HealthStateView.mockup';
 
 

@@ -129,7 +129,7 @@ export class MockupServer {
 
 		const namespace: Namespace = addressSpace.getOwnNamespace();
 
-		this.namespace = addressSpace.registerNamespace('urn:P2OLab:NodeOPCUA-Server');;
+		this.namespace = addressSpace.registerNamespace('urn:P2OLab:NodeOPCUA-Server');
 		// declare a new object
 		const myMockup = namespace.addObject({
 			organizedBy: addressSpace.rootFolder.objects,

@@ -25,10 +25,14 @@
  */
 
 import {AnaView, AnaViewRuntime} from './AnaView';
-import {OpcUaConnection, OpcUaDataItem} from '../../../connection';
+import {OpcUaConnection} from '../../../connection';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {LimitMonitoring, LimitMonitoringRuntime} from '../../_extensions/limitMonitoringDA/LimitMonitoring';
-import {OSLevel, OSLevelRuntime} from '../../_extensions/osLevelDA/OSLevel';
+import {
+    LimitMonitoring,
+    LimitMonitoringRuntime,
+    OSLevel,
+    OSLevelRuntime
+} from '../../_extensions';
 
 export type AnaMonRuntime = AnaViewRuntime & LimitMonitoringRuntime & OSLevelRuntime
 

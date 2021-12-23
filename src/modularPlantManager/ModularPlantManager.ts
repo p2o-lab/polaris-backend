@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import {BackendNotification, PEAInterface, PEAModel, PEAOptions, POLServiceInterface, POLServiceOptions, RecipeOptions, ServerSettingsOptions, ServiceCommand, VariableChange,} from '@p2olab/polaris-interface';
+import {BackendNotification, PEAInterface, PEAModel, PEAOptions, POLServiceInterface, POLServiceOptions, RecipeOptions, ServiceCommand, VariableChange,} from '@p2olab/polaris-interface';
 import {Backbone, PEAPool, PEAPoolVendor,} from '@p2olab/pimad-core';
 import {catManager, ServiceLogEntry} from '../logging';
 import {ParameterChange, PEAController, Service} from './pea';

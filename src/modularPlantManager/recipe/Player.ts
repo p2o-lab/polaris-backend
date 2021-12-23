@@ -174,7 +174,7 @@ export class Player extends (EventEmitter as new() => PlayerEmitter) {
 	 *
 	 * @returns Player
 	 */
-	public async start() {
+	public async start(): Promise<void> {
 		catPlayer.info(`Start player: ${this._playlist.map((item) => item.name)} ` +
 			`(current state: ${RecipeState[this.status]})`);
 		if (this._playlist.length <= 0) {
@@ -207,7 +207,7 @@ export class Player extends (EventEmitter as new() => PlayerEmitter) {
 		}
 	}
 
-	public reset() {
+	public reset(): void {
 		if (this.status === RecipeState.completed || this.status === RecipeState.stopped) {
 			this._currentItem = -1;
 			this._status = RecipeState.idle;
@@ -218,7 +218,7 @@ export class Player extends (EventEmitter as new() => PlayerEmitter) {
 	 * Pause all peas used in current recipe
 	 * TODO: pause only those which should be currently in running due to the recipe
 	 */
-	public pause() {
+	public pause(): void {
 		if (this.status === RecipeState.running) {
 			this._status = RecipeState.paused;
 			this.getCurrentRecipe().pause();
@@ -228,9 +228,9 @@ export class Player extends (EventEmitter as new() => PlayerEmitter) {
 	/**
 	 * Stop the current recipe of player
 	 */
-	public async stop() {
-		catPlayer.info('Stop player');
+	public async stop(): Promise<void> {
 		if (this.status === RecipeState.running) {
+			catPlayer.info('Stopping player');
 			this._status = RecipeState.stopped;
 			await this.currentRecipeRun!.stop();
 			this.currentRecipeRun = undefined;
@@ -241,17 +241,17 @@ export class Player extends (EventEmitter as new() => PlayerEmitter) {
 	 * Force transition of current recipe
 	 *
 	 */
-	public forceTransition(stepName: string, nextStepName: string) {
+	public forceTransition(stepName: string, nextStepName: string): void {
 		const recipe = this.getCurrentRecipe();
-		if (recipe.currentStep!.name !== stepName) {
-			throw new Error(`Ẁrong step. Expected: ${recipe.currentStep!.name} - Actual: ${stepName}`);
+		if (recipe.currentStep?.name !== stepName) {
+			throw new Error(`Wrong step. Expected: ${recipe.currentStep?.name} - Actual: ${stepName}`);
 		}
 		const step = recipe.currentStep;
-		const transition = step!.transitions.find((tr) => tr.nextStepName === nextStepName);
+		const transition = step?.transitions.find((tr) => tr.nextStepName === nextStepName);
 		if (!transition) {
 			throw new Error('Does not contain nextStep');
 		}
-		step!.enterTransition(transition);
+		step?.enterTransition(transition);
 	}
 
 	/** Run current recipe in playlist and resolve when this recipe is completed

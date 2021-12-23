@@ -25,12 +25,12 @@
 
 import {DataAssemblyOptions, ParameterInterface, ParameterOptions} from '@p2olab/polaris-interface';
 import {Parameter} from '../../../recipe';
-import {DataItem, OpcUaConnection, OpcUaDataItem} from '../../connection';
+import {DataItem, OpcUaConnection} from '../../connection';
 import {OSLevelRuntime} from '../_extensions';
 import {BaseDataAssemblyRuntime, DataAssemblyController} from '../DataAssemblyController';
 import {PEAController} from '../../PEAController';
 import {catDataAssembly} from '../../../../logging';
-import {OSLevel} from '../_extensions/osLevelDA/OSLevel';
+import {OSLevel} from '../_extensions';
 
 export type OperationElementRuntime = BaseDataAssemblyRuntime & OSLevelRuntime
 

@@ -23,11 +23,8 @@
  * SOFTWARE.
  */
 
-import {ParameterInterface} from '@p2olab/polaris-interface';
 import {OpcUaDataItem} from '../../../connection';
-import {Constructor} from '../_helper';
-import {BaseDataAssemblyRuntime, DataAssemblyController} from '../../DataAssemblyController';
-import {AnaView} from '../../indicatorElement';
+import {BaseDataAssemblyRuntime} from '../../DataAssemblyController';
 
 export interface ScaleSettingsRuntime extends BaseDataAssemblyRuntime {
 	VSclMin: OpcUaDataItem<number>;
@@ -42,7 +39,7 @@ export class ScaleSettings {
 			this.initialize();
 		}
 
-		private initialize(){
+		private initialize(): void{
 			this.dAController.communication.VSclMax = this.dAController.createDataItem('VSclMax', 'read');
 			this.dAController.communication.VSclMin = this.dAController.createDataItem('VSclMin', 'read');
 		}

@@ -94,9 +94,9 @@ export class PiMAdParser {
     }
 
     /**
-     * @param dataAssemblyModels {DataAssemblyModel[]}
      * @return {DataAssemblyOptions[]}
      * @private
+     * @param procedureModels
      */
     private static createProcedureOptionsArray(procedureModels: ProcedureModel[]): ProcedureOptions[] {
         const procedureOptionsArray: ProcedureOptions[] = [];

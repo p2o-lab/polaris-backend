@@ -24,12 +24,12 @@
  * SOFTWARE.
  */
 
-import {DataAssemblyOptions, ParameterInterface} from '@p2olab/polaris-interface';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {OpcUaConnection, OpcUaDataItem} from '../../../connection';
 import {ScaleSettingsRuntime, UnitDataAssemblyRuntime} from '../../_extensions';
 import {IndicatorElement, IndicatorElementRuntime} from '../IndicatorElement';
-import {ScaleSettings} from '../../_extensions/scaleSettingsDA/ScaleSettings';
-import {UnitSettings} from '../../_extensions/unitDA/UnitSettings';
+import {ScaleSettings, UnitSettings} from '../../_extensions';
+
 export type AnaViewRuntime = IndicatorElementRuntime & UnitDataAssemblyRuntime & ScaleSettingsRuntime & {
 	V: OpcUaDataItem<number>;
 };

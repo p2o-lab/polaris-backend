@@ -24,12 +24,12 @@
  */
 
 import {DataAssemblyOptions, ParameterInterface} from '@p2olab/polaris-interface';
-import {OpcUaConnection, OpcUaDataItem} from '../../connection';
+import {OpcUaConnection} from '../../connection';
 import {WQCRuntime} from '../_extensions';
 import {
 	BaseDataAssemblyRuntime, DataAssemblyController
 } from '../DataAssemblyController';
-import {WQC} from '../_extensions/wqcDA/WQC';
+import {WQC} from '../_extensions';
 
 export type IndicatorElementRuntime = BaseDataAssemblyRuntime & WQCRuntime
 

@@ -24,8 +24,7 @@
  */
 
 import {OpcUaDataItem} from '../../../connection';
-import {Constructor} from '../_helper';
-import {BaseDataAssemblyRuntime, DataAssemblyController} from '../../DataAssemblyController';
+import {BaseDataAssemblyRuntime} from '../../DataAssemblyController';
 
 export interface OSLevelRuntime extends BaseDataAssemblyRuntime {
 	OSLevel: OpcUaDataItem<number>;

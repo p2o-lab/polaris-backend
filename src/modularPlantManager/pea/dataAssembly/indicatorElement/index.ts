@@ -1,5 +1,4 @@
 export * from './IndicatorElement';
-
 export * from './AnaView/AnaMon';
 export * from './AnaView/AnaView';
 export * from './BinView/BinMon';

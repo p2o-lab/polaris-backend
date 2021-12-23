@@ -287,40 +287,40 @@ export class MtpStateMachine {
 
   public readonly defaultOptions: UserDefinedServiceConfiguration = {
     guards: {
-      startingEnabled: () => true,
-      restartingEnabled: () => true,
-      executeEnabled: () => true,
-      completingEnabled: () => true,
-      pausingEnabled: () => true,
-      holdingEnabled: () => false,
-      unholdingEnabled: () => true,
+      startingEnabled: (): boolean => true,
+      restartingEnabled: (): boolean => true,
+      executeEnabled: (): boolean => true,
+      completingEnabled: (): boolean => true,
+      pausingEnabled: (): boolean => true,
+      holdingEnabled: (): boolean => false,
+      unholdingEnabled: (): boolean => true,
     },
     actions: {
-      onIdle: () => { return; },
-      onStarting: () => this.goToNextState(),
-      onExecute: () => { return; },
-      onCompleting: () => this.goToNextState(),
-      onCompleted: () => { return; },
-      onResetting: () => this.goToNextState(),
-      onPausing: () => this.goToNextState(),
-      onPaused: () => { return; },
-      onResuming: () => this.goToNextState(),
-      onStopping: () => this.goToNextState(),
-      onStopped: () => { return; },
-      onAborting: () => this.goToNextState(),
-      onAborted: () => { return; },
+      onIdle: (): void => { return; },
+      onStarting: (): void  => this.goToNextState(),
+      onExecute: (): void  => { return; },
+      onCompleting: (): void  => this.goToNextState(),
+      onCompleted: (): void  => { return; },
+      onResetting: (): void  => this.goToNextState(),
+      onPausing: (): void  => this.goToNextState(),
+      onPaused: (): void  => { return; },
+      onResuming: (): void  => this.goToNextState(),
+      onStopping: (): void  => this.goToNextState(),
+      onStopped: (): void  => { return; },
+      onAborting: (): void  => this.goToNextState(),
+      onAborted: (): void  => { return; },
     },
   };
 
   private staticOptions: StaticServiceConfiguration = {
-    guards: { startingEnabledStatic: () => true},
+    guards: { startingEnabledStatic: (): boolean => true},
     actions: {
-      onStartingStatic: () => {this.updateProcedureCur();},
-      onResettingStatic: () => {return;}
+      onStartingStatic: (): void  => {this.updateProcedureCur();},
+      onResettingStatic: (): void  => {return;}
     }
   }
 
-  public reconfigure(updatedGuards: Partial<UserDefinedGuard>, updatedActions: Partial<UserDefinedActions>) {
+  public reconfigure(updatedGuards: Partial<UserDefinedGuard>, updatedActions: Partial<UserDefinedActions>): void {
     const guards: UserDefinedGuard =
       { ...this.staticOptions.guards,...this.defaultOptions.guards, ...updatedGuards} as UserDefinedGuard;
     const actions: UserDefinedActions =
@@ -328,24 +328,24 @@ export class MtpStateMachine {
     this.stateMachine = this.stateMachine.withConfig({guards, actions});
   }
 
-  public setProcedureReq(procedureReq: number){
+  public setProcedureReq(procedureReq: number): void{
     this.varProcedureReq = procedureReq;
   }
 
-  private updateProcedureCur(){
+  private updateProcedureCur(): void{
     this.varProcedureCur = this.getProcedureReq();
   }
-  private resetProcedureCur(){
+  private resetProcedureCur(): void{
     this.varProcedureCur = 0;
   }
 
-  public getProcedureReq() {return this.varProcedureReq;}
-  public getProcedureCur() {return this.varProcedureCur;}
+  public getProcedureReq(): number {return this.varProcedureReq;}
+  public getProcedureCur(): number {return this.varProcedureCur;}
 
 
   /* Start ServiceStateMachine
   */
-  public start() {
+  public start(): void {
     this.stateMachineService = interpret(this.stateMachine);
     this.stateMachineService.onTransition(() => console.log(`[STATEMACHINE] FSM (${this.name}): ${this.getState()}`))
       .start();
@@ -372,7 +372,7 @@ export class MtpStateMachine {
     else throw Error('StateMachine not initialized.');
   }
 
-  public goToNextState() {
+  public goToNextState(): void {
     if(this.stateMachineService) this.stateMachineService.send('SC');
   }
 

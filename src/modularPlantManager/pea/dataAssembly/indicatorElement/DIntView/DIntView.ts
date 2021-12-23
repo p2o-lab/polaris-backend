@@ -24,12 +24,11 @@
  * SOFTWARE.
  */
 
-import {DataAssemblyOptions, ParameterInterface} from '@p2olab/polaris-interface';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {OpcUaConnection} from '../../../connection';
 import {AnaViewRuntime} from '../AnaView/AnaView';
 import {IndicatorElement} from '../IndicatorElement';
-import {UnitSettings} from '../../_extensions/unitDA/UnitSettings';
-import {ScaleSettings} from '../../_extensions/scaleSettingsDA/ScaleSettings';
+import {ScaleSettings, UnitSettings} from '../../_extensions';
 
 
 export class DIntView extends IndicatorElement {

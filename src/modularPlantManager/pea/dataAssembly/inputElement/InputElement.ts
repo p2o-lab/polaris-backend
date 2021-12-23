@@ -25,16 +25,14 @@
 
 import {
 	DataAssemblyOptions,
-	InputElementOptions,
 	ParameterInterface,
 	ParameterOptions
 } from '@p2olab/polaris-interface';
 import {DataItem, OpcUaConnection} from '../../connection';
 import {PEAController} from '../../PEAController';
-import {WQCRuntime} from '../_extensions';
+import {WQC, WQCRuntime} from '../_extensions';
 import {BaseDataAssemblyRuntime, DataAssemblyController} from '../DataAssemblyController';
 import {catDataAssembly} from '../../../../logging';
-import {WQC} from '../_extensions/wqcDA/WQC';
 import {Parameter} from '../../../recipe';
 
 export type InputElementRuntime = WQCRuntime & BaseDataAssemblyRuntime ;

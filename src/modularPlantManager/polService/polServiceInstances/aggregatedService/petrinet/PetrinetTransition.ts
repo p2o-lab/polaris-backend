@@ -53,10 +53,4 @@ export class PetrinetTransition {
 		}
 	}
 
-	public json() {
-		return {
-			nextStates: this.options.nextStates,
-			condition: this.condition!.json()
-		};
-	}
 }

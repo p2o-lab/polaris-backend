@@ -24,8 +24,7 @@
  */
 
 import {OpcUaDataItem} from '../../../connection';
-import {BaseDataAssemblyRuntime, DataAssemblyController} from '../../DataAssemblyController';
-import {Constructor} from '../_helper';
+import {BaseDataAssemblyRuntime} from '../../DataAssemblyController';
 
 export type InterlockRuntime = BaseDataAssemblyRuntime & {
 	PermEn: OpcUaDataItem<boolean>;

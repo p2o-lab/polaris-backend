@@ -24,8 +24,7 @@
  */
 
 import {OpcUaDataItem} from '../../../connection';
-import {BaseDataAssemblyRuntime, Constructor} from '../../index';
-import {DataAssemblyController} from '../../DataAssemblyController';
+import {BaseDataAssemblyRuntime} from '../../index';
 
 export interface WQCRuntime extends BaseDataAssemblyRuntime {
 	WQC: OpcUaDataItem<number>;
