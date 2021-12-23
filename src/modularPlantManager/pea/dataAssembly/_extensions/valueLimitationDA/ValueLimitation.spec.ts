@@ -34,7 +34,6 @@ import {DIntMan} from '../../operationElement';
 import {ValueLimitation} from './ValueLimitation';
 import {MockupServer} from '../../../../_utils';
 import {DataType, Namespace, UAObject} from 'node-opcua';
-import {namespaceUrl} from '../../../../../../tests/namespaceUrl';
 import {ValueLimitationDAMockup} from './ValueLimitationDA.mockup';
 
 chai.use(chaiAsPromised);
@@ -46,16 +45,9 @@ describe('ValueLimitation', () => {
 		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperatorElement/DIntMan',
 		dataItems: baseDataAssemblyOptions
 	};
-	// set namespaceUrl
-	for (const key in dataAssemblyOptions.dataItems as any) {
-		//skip static values
-		if ((typeof (dataAssemblyOptions.dataItems as any)[key] != 'string')) {
-			(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
-		}
-	}
 
 	describe('static', () => {
-		const emptyOPCUAConnection = new OpcUaConnection('', '');
+		const emptyOPCUAConnection = new OpcUaConnection();
 		it('should create ValueLimitationDA',  () => {
 			const da = new DataAssemblyController(dataAssemblyOptions, emptyOPCUAConnection);
 			const valueLimitation = new ValueLimitation(da);
@@ -74,11 +66,12 @@ describe('ValueLimitation', () => {
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
 			mockup = new ValueLimitationDAMockup(
-				mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject,
+				mockupServer.nameSpace,
+				mockupServer.rootObject,
 				'Variable', DataType.Double);
 			await mockupServer.start();
-			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334', '', '');
+			connection = new OpcUaConnection();
+			connection.initialize({endpoint: mockupServer.endpoint});
 			await connection.connect();
 		});
 
@@ -89,10 +82,11 @@ describe('ValueLimitation', () => {
 		});
 
 		it('should subscribe successfully', async () => {
+
 			const da1 = new DataAssemblyController(dataAssemblyOptions, connection) as any;
 			new ValueLimitation(da1);
 			const pv = da1.subscribe();
-			await connection.startListening();
+			await connection.startMonitoring();
 			await pv;
 			expect(da1.communication.VMax.value).to.equal(0);
 			expect(da1.communication.VMin.value).to.equal(0);

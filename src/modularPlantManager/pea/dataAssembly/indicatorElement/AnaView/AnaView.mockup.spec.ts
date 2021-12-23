@@ -19,15 +19,15 @@ describe('AnaViewMockup', () => {
 
         });
         it('should create AnaViewMockup', async () => {
-            const mockup= new AnaViewMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            const mockup= new AnaViewMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             expect(mockup).to.not.be.undefined;
             //TODO: test more
 
         });
         it('getAnaViewMockupReferenceJSON()',  () => {
-            const mockup = new AnaViewMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            const mockup = new AnaViewMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             const json = mockup.getAnaViewInstanceMockupJSON();
             expect(json).not.to.be.undefined;
             //TODO: test more

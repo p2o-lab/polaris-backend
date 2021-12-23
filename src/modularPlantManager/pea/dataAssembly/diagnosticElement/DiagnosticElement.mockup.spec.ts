@@ -17,15 +17,15 @@ describe('DiagnosticElementMockup', () => {
         });
 
         it('should create DiagnosticElementMockup', async () => {
-            const mockup= new DiagnosticElementMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            const mockup= new DiagnosticElementMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             expect(mockup).to.not.be.undefined;
             expect(mockup.wqc).to.not.be.undefined;
         });
 
         it('getDiagnosticElementMockupReferenceJSON()',  () => {
-            const mockup = new DiagnosticElementMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            const mockup = new DiagnosticElementMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             const json = mockup.getDiagnosticElementInstanceMockupJSON();
             expect(Object.keys(json).length).to .equal(1);
         });

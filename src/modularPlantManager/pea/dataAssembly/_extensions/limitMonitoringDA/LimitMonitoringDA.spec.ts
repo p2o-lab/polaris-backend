@@ -33,8 +33,7 @@ import {LimitMonitoring} from './LimitMonitoring';
 import {DataAssemblyController} from '../../DataAssemblyController';
 import {AnaMon} from '../../indicatorElement';
 import {MockupServer} from '../../../../_utils';
-import {DataType, Namespace, UAObject} from 'node-opcua';
-import {namespaceUrl} from '../../../../../../tests/namespaceUrl';
+import {DataType, Namespace} from 'node-opcua';
 import {LimitMonitoringDAMockup} from './LimitMonitoringDA.mockup';
 
 chai.use(chaiAsPromised);
@@ -48,7 +47,7 @@ describe('LimitMonitoring', () => {
 	};
 
 	describe('', () => {
-		const emptyOPCUAConnection = new OpcUaConnection('', '');
+		const emptyOPCUAConnection = new OpcUaConnection();
 		it('should create LimitMonitoring', async () => {
 
 			const da1 = new AnaMon(dataAssemblyOptions, emptyOPCUAConnection);
@@ -92,12 +91,13 @@ describe('LimitMonitoring', () => {
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
 			mockup = new LimitMonitoringDAMockup(
-				mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject,
+				mockupServer.nameSpace,
+				mockupServer.rootObject,
 				'Variable', DataType.Double);
 			//TODO: do for Int32
 			await mockupServer.start();
-			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334', '', '');
+			connection = new OpcUaConnection();
+			connection.initialize({endpoint: mockupServer.endpoint});
 			await connection.connect();
 		});
 
@@ -108,17 +108,11 @@ describe('LimitMonitoring', () => {
 		});
 
 		it('should subscribe successfully', async () => {
-			// set namespaceUrl
-			for (const key in dataAssemblyOptions.dataItems as any) {
-				//skip static values
-				if ((typeof (dataAssemblyOptions.dataItems as any)[key] != 'string')) {
-					(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
-				}
-			}
+
 			const da1 = new DataAssemblyController(dataAssemblyOptions, connection) as any;
 			new LimitMonitoring(da1);
 			const pv = da1.subscribe();
-			await connection.startListening();
+			await connection.startMonitoring();
 			await pv;
 			
 			expect(da1.communication.VAHEn.value).to.equal(false);

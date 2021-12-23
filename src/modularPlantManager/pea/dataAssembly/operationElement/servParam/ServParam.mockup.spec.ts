@@ -14,19 +14,17 @@ describe('ServParamMockup', () => {
             mockupServer = new MockupServer();
             await mockupServer.initialize();
         });
-        afterEach(async () => {
 
-        });
         it('should create ServParamMockup',  () => {
-            const mockup= new ServParamMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            const mockup= new ServParamMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             expect(mockup).to.not.be.undefined;
             //TODO: test more
 
         });
         it('getServParamMockupReferenceJSON(namespace, objectBrowseName)',  () => {
-            const mockup = new ServParamMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            const mockup = new ServParamMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             const json = mockup.getServParamMockupJSON();
             expect(json).not.to.be.undefined;
             expect(Object.keys(json).length).to .equal(20);

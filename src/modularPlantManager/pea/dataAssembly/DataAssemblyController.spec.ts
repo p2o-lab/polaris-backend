@@ -45,7 +45,7 @@ const expect = chai.expect;
 
 describe('DataAssembly', () => {
     describe('static', () => {
-        const emptyOPCUAConnection = new OpcUaConnection('', '');
+        const emptyOPCUAConnection = new OpcUaConnection();
         it('should create DataAssemblyController', () => {
             expect(() => {
                 const da1 = new DataAssemblyController({
@@ -82,7 +82,8 @@ describe('DataAssembly', () => {
                 this.timeout(4000);
                 mockupServer = new MockupServer();
                 await mockupServer.start();
-                connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334','','');
+                connection = new OpcUaConnection();
+                connection.initialize({endpoint: mockupServer.endpoint});
                 await connection.connect();
             });
 

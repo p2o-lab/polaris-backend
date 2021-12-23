@@ -18,15 +18,15 @@ describe('DIntManIntMockup', () => {
 
         });
         it('should create DIntManIntMockup', async () => {
-            const mockup= new DIntManIntMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            const mockup= new DIntManIntMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             expect(mockup).to.not.be.undefined;
             //TODO: test more
 
         });
         it('getDIntManIntMockupReferenceJSON()',  () => {
-            const mockup = new DIntManIntMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            const mockup = new DIntManIntMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             const json = mockup.getDIntManIntMockupJSON();
             expect(json).not.to.be.undefined;
             expect(Object.keys(json).length).to.equal(19);

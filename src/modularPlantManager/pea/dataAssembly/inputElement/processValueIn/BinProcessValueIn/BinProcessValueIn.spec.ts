@@ -32,7 +32,7 @@ import * as baseDataAssemblyOptions from '../../../../../../../tests/binprocessv
 import {MockupServer} from '../../../../../_utils';
 import {BinProcessValueInMockup} from '../BinProcessValueIn/BinProcessValueIn.mockup';
 import {Namespace, UAObject} from 'node-opcua';
-import {namespaceUrl} from '../../../../../../../tests/namespaceUrl';
+
 import {DataAssemblyControllerFactory} from '../../../DataAssemblyControllerFactory';
 import {BinProcessValueIn} from './BinProcessValueIn';
 
@@ -47,7 +47,7 @@ describe('BinProcessValueIn', () => {
 	};
 
 	describe('', () => {
-		const emptyOPCUAConnection = new OpcUaConnection('', '');
+		const emptyOPCUAConnection = new OpcUaConnection();
 		it('should create BinProcessValueIn', () => {
 
 			const da1 = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as BinProcessValueIn;
@@ -68,19 +68,13 @@ describe('BinProcessValueIn', () => {
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
 			mockup = new BinProcessValueInMockup(
-				mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject,
+				mockupServer.nameSpace,
+				mockupServer.rootObject,
 				'Variable');
 			await mockupServer.start();
-			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334','','');
+			connection = new OpcUaConnection();
+			connection.initialize({endpoint: mockupServer.endpoint});
 			await connection.connect();
-			// set namespaceUrl
-			for (const key in dataAssemblyOptions.dataItems as any) {
-				//skip static values
-				if((typeof(dataAssemblyOptions.dataItems as any)[key] != 'string')){
-					(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
-				}
-			}
 		});
 
 		afterEach(async function () {
@@ -92,7 +86,7 @@ describe('BinProcessValueIn', () => {
 		it('should subscribe successfully', async () => {
 			const da1 = new BinProcessValueIn(dataAssemblyOptions, connection);
 			const pv =  da1.subscribe();
-			await connection.startListening();
+			await connection.startMonitoring();
 			await pv;
 
 			expect(da1.communication.VExt.value).equal(false);
@@ -103,7 +97,7 @@ describe('BinProcessValueIn', () => {
 		it('setparameter', async () => {
 			const da1 = new BinProcessValueIn(dataAssemblyOptions, connection);
 			const pv =  da1.subscribe();
-			await connection.startListening();
+			await connection.startMonitoring();
 			await pv;
 
 			await da1.setParameter(true,'VExt');

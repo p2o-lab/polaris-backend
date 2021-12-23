@@ -1,12 +1,9 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {Namespace, UAObject} from 'node-opcua';
 
 import {VlvMockup} from './Vlv.mockup';
 import {MockupServer} from '../../../../_utils';
-import {BinDrvMockup} from '../drv/binDrv/BinDrv.mockup';
 import {OpcUaConnection} from '../../../connection';
-import {namespaceUrl} from '../../../../../../tests/namespaceUrl';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -23,14 +20,14 @@ describe('VlvMockup', () => {
 
         });
         it('should create VlvMockup', async () => {
-            const mockup= new VlvMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            const mockup= new VlvMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             expect(mockup).to.not.be.undefined;
 
         });
         it('getVlvMockupReferenceJSON()',  () => {
-            const mockup = new VlvMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            const mockup = new VlvMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             const json = mockup.getVlvMockupJSON();
             expect(json).to.not.be.undefined;
             expect(Object.keys(json).length).to.equal(31);
@@ -38,7 +35,7 @@ describe('VlvMockup', () => {
         });
     });
     describe('dynamic', () => {
-        // we need to check if the nodes was addes succesfully and are writeable and readable
+        // we need to check if the nodes was added successfully and are writeable and readable
         let mockupServer: MockupServer;
         let mockup: VlvMockup;
         let connection: OpcUaConnection;
@@ -46,10 +43,11 @@ describe('VlvMockup', () => {
             this.timeout(5000);
             mockupServer = new MockupServer();
             await mockupServer.initialize();
-            mockup = new VlvMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            mockup = new VlvMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             await mockupServer.start();
-            connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334');
+            connection = new OpcUaConnection();
+            connection.initialize({endpoint: mockupServer.endpoint});
             await connection.connect();
         });
         afterEach(async () => {
@@ -58,15 +56,15 @@ describe('VlvMockup', () => {
         });
 
         it('set and get OpenOp', async () => {
-            await connection.writeOpcUaNode('Variable.OpenOp', namespaceUrl, true, 'Boolean');
-            await connection.readOpcUaNode('Variable.OpenOp', namespaceUrl)
-                .then(datavalue => expect(datavalue?.value.value).to.equal(true));
+            await connection.writeNode('Variable.OpenOp', mockupServer.nameSpaceUri, true, 'Boolean');
+            await connection.readNode('Variable.OpenOp', mockupServer.nameSpaceUri)
+                .then((dataValue) => expect((dataValue)?.value.value).to.equal(true));
         }).timeout(3000);
 
         it('set and get CloseOp', async () => {
-            await connection.writeOpcUaNode('Variable.CloseOp', namespaceUrl, true, 'Boolean');
-            await connection.readOpcUaNode('Variable.CloseOp', namespaceUrl)
-                .then(datavalue => expect(datavalue?.value.value).to.equal(true));
+            await connection.writeNode('Variable.CloseOp', mockupServer.nameSpaceUri, true, 'Boolean');
+            await connection.readNode('Variable.CloseOp', mockupServer.nameSpaceUri)
+                .then((dataValue) => expect((dataValue)?.value.value).to.equal(true));
         }).timeout(3000);
 
         //TODO get the rest

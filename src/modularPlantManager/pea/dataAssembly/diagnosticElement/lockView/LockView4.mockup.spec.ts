@@ -17,16 +17,16 @@ describe('LockView4Mockup', () => {
         });
 
         it('should create LockView4Mockup', async () => {
-            const mockup= new LockView4Mockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            const mockup= new LockView4Mockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             expect(mockup).to.not.be.undefined;
             expect(mockup.wqc).to.not.be.undefined;
 
 
         });
         it('getLockView4MockupReferenceJSON()',  () => {
-            const mockup = new LockView4Mockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            const mockup = new LockView4Mockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             const json = mockup.getLockView4InstanceMockupJSON();
             expect(Object.keys(json).length).to .equal(24);
         });

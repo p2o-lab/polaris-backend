@@ -30,12 +30,8 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import * as baseDataAssemblyOptions from '../../../../../../tests/dintview.json';
-import {DataAssemblyControllerFactory} from '../../DataAssemblyControllerFactory';
 import {MockupServer} from '../../../../_utils';
-import {BinViewMockup} from '../BinView/BinView.mockup';
-import {Namespace, UAObject} from 'node-opcua';
-import {namespaceUrl} from '../../../../../../tests/namespaceUrl';
-import {BinView} from '../BinView/BinView';
+import {Namespace} from 'node-opcua';
 import {DIntViewMockup} from './DIntView.mockup';
 
 chai.use(chaiAsPromised);
@@ -48,7 +44,7 @@ describe('DIntView', () => {
 		dataItems: baseDataAssemblyOptions
 	};
 	describe('static', () => {
-		const emptyOPCUAConnection = new OpcUaConnection('', '');
+		const emptyOPCUAConnection = new OpcUaConnection();
 		it('should create DIntView', async () => {
 			const dataAssemblyOptions: DataAssemblyOptions = {
 				name: 'Variable',
@@ -76,11 +72,12 @@ describe('DIntView', () => {
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
 			const mockup = new DIntViewMockup(
-				mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject,
+				mockupServer.nameSpace,
+				mockupServer.rootObject,
 				'Variable');
 			await mockupServer.start();
-			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334','','');
+			connection = new OpcUaConnection();
+			connection.initialize({endpoint: mockupServer.endpoint});
 			await connection.connect();
 		});
 
@@ -91,16 +88,10 @@ describe('DIntView', () => {
 		});
 
 		it('should subscribe successfully', async () => {
-			// set namespaceUrl
-			for (const key in dataAssemblyOptions.dataItems as any) {
-				//skip static values
-				if((typeof(dataAssemblyOptions.dataItems as any)[key] != 'string')){
-					(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
-				}
-			}
+
 			const da1: DIntView = new DIntView(dataAssemblyOptions, connection);
 			const pv = da1.subscribe();
-			await connection.startListening();
+			await connection.startMonitoring();
 			await pv;
 			expect(da1.communication.WQC.value).equal(0);
 			expect(da1.communication.V.value).equal(0);

@@ -3,22 +3,22 @@
     "TagDescription": "Test",
     "WQC": {
       "nodeId": "Variable.WQC",
-      "namespaceIndex": "localhost",
+      "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
       "dataType": "xs:IDREF"
     },
     "VExt": {
       "nodeId": "Variable.VExt",
-      "namespaceIndex": "localhost",
+      "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
       "dataType": "xs:IDREF"
     },
     "VState0": {
       "nodeId": "Variable.VState0",
-      "namespaceIndex": "localhost",
+      "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
       "dataType": "xs:IDREF"
     },
     "VState1": {
       "nodeId": "Variable.VState1",
-      "namespaceIndex": "localhost",
+      "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
       "dataType": "xs:IDREF"
   }
 }

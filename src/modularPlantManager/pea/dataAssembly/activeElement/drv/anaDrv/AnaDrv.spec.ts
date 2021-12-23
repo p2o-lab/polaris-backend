@@ -37,7 +37,7 @@ const expect = chai.expect;
 describe('AnaDrv', () => {
 
 	describe('', () => {
-		const emptyOPCUAConnection = new OpcUaConnection('', '');
+		const emptyOPCUAConnection = new OpcUaConnection();
 		it('should create AnaDrv',  () => {
 			const dataAssemblyOptions: DataAssemblyOptions = {
 				name: 'Variable',

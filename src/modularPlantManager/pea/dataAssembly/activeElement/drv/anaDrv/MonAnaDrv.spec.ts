@@ -34,7 +34,7 @@ import {MockupServer} from '../../../../../_utils';
 import {DrvMockup} from '../Drv.mockup';
 import {Drv} from '../Drv';
 import {Namespace, UAObject} from 'node-opcua';
-import {namespaceUrl} from '../../../../../../../tests/namespaceUrl';
+
 import {MonAnaDrvMockup} from './MonAnaDrv.mockup';
 
 chai.use(chaiAsPromised);
@@ -47,7 +47,7 @@ describe('MonAnaDrv', () => {
 		dataItems: baseDataAssemblyOptions
 	};
 	describe('', () => {
-		const emptyOPCUAConnection = new OpcUaConnection('', '');
+		const emptyOPCUAConnection = new OpcUaConnection();
 		it('should create MonAnaDrv',  () => {
 			const da1 = new MonAnaDrv(dataAssemblyOptions, emptyOPCUAConnection);
 			expect(da1.feedbackMonitoring).to.not.be.undefined;
@@ -75,22 +75,16 @@ describe('MonAnaDrv', () => {
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
 			mockup = new MonAnaDrvMockup(
-				mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject,
+				mockupServer.nameSpace,
+				mockupServer.rootObject,
 				'Variable');
 			await mockupServer.start();
-			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334','','');
+			connection = new OpcUaConnection();
+			connection.initialize({endpoint: mockupServer.endpoint});
 			await connection.connect();
-			// set namespaceUrl
-			for (const key in dataAssemblyOptions.dataItems as any) {
-				//skip static values
-				if((typeof(dataAssemblyOptions.dataItems as any)[key] != 'string')){
-					(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
-				}
-			}
 			da1 = new MonAnaDrv(dataAssemblyOptions, connection);
 			const pv = da1.subscribe();
-			await connection.startListening();
+			await connection.startMonitoring();
 			await pv;
 		});
 

@@ -31,8 +31,6 @@ import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import * as baseDataAssemblyOptions from '../../../../../../tests/monbinvlv.json';
 import {MockupServer} from '../../../../_utils';
-import {Namespace, UAObject} from 'node-opcua';
-import {namespaceUrl} from '../../../../../../tests/namespaceUrl';
 import {VlvMockup} from './Vlv.mockup';
 
 chai.use(chaiAsPromised);
@@ -45,7 +43,7 @@ describe('Vlv', () => {
 		dataItems: baseDataAssemblyOptions
 	};
 	describe('', () => {
-		const emptyOPCUAConnection = new OpcUaConnection('', '');
+		const emptyOPCUAConnection = new OpcUaConnection();
 		it('should create Vlv',  () => {
 
 			const da1 = new Vlv(dataAssemblyOptions, emptyOPCUAConnection);
@@ -80,11 +78,12 @@ describe('Vlv', () => {
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
 			mockup = new VlvMockup(
-				mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject,
+				mockupServer.nameSpace,
+				mockupServer.rootObject,
 				'Variable');
 			await mockupServer.start();
-			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334', '', '');
+			connection = new OpcUaConnection();
+			connection.initialize({endpoint: mockupServer.endpoint});
 			await connection.connect();
 		});
 
@@ -95,16 +94,10 @@ describe('Vlv', () => {
 		});
 
 		it('should subscribe successfully', async () => {
-			// set namespaceUrl
-			for (const key in dataAssemblyOptions.dataItems as any) {
-				//skip static values
-				if ((typeof (dataAssemblyOptions.dataItems as any)[key] != 'string')) {
-					(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
-				}
-			}
+
 			const da1 = new Vlv(dataAssemblyOptions, connection);
 			const pv = da1.subscribe();
-			await connection.startListening();
+			await connection.startMonitoring();
 			await pv;
 
 			expect(da1.communication.OSLevel.value).equal(0);

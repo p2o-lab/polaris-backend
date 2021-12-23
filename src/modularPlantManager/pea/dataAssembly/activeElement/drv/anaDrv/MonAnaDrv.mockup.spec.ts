@@ -6,7 +6,7 @@ import {MonAnaDrvMockup} from './MonAnaDrv.mockup';
 import {MockupServer} from '../../../../../_utils';
 import {AnaDrvMockup} from './AnaDrv.mockup';
 import {OpcUaConnection} from '../../../../connection';
-import {namespaceUrl} from '../../../../../../../tests/namespaceUrl';
+
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -21,14 +21,14 @@ describe('MonAnaDrvMockup', () => {
         });
 
         it('should create MonAnaDrvMockup', async () => {
-            const mockup= new MonAnaDrvMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            const mockup= new MonAnaDrvMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             expect(mockup).to.not.be.undefined;
 
         });
         it('getMonAnaDrvMockupReferenceJSON()',  () => {
-            const mockup = new MonAnaDrvMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            const mockup = new MonAnaDrvMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             const json = mockup.getMonAnaDrvMockupJSON();
             expect(json).to.not.be.undefined;
             expect(Object.keys(json).length).to.equal(68);
@@ -36,7 +36,7 @@ describe('MonAnaDrvMockup', () => {
         });
     });
     describe('dynamic', () => {
-        // we need to check if the nodes was addes succesfully and are writeable and readable
+        // we need to check if the nodes was added successfully and are writeable and readable
         let mockupServer: MockupServer;
         let mockup: MonAnaDrvMockup;
         let connection: OpcUaConnection;
@@ -44,10 +44,11 @@ describe('MonAnaDrvMockup', () => {
             this.timeout(5000);
             mockupServer = new MockupServer();
             await mockupServer.initialize();
-            mockup = new MonAnaDrvMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            mockup = new MonAnaDrvMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             await mockupServer.start();
-            connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334');
+            connection = new OpcUaConnection();
+            connection.initialize({endpoint: mockupServer.endpoint});
             await connection.connect();
         });
         afterEach(async () => {
@@ -56,15 +57,15 @@ describe('MonAnaDrvMockup', () => {
         });
 
         it('set and get RpmAHLim, Double', async () => {
-            await connection.writeOpcUaNode('Variable.RpmAHLim', namespaceUrl, 1.1, 'Double');
-            await connection.readOpcUaNode('Variable.RpmAHLim', namespaceUrl)
-                .then(datavalue => expect(datavalue?.value.value).to.equal(1.1));
+            await connection.writeNode('Variable.RpmAHLim', mockupServer.nameSpaceUri, 1.1, 'Double');
+            await connection.readNode('Variable.RpmAHLim', mockupServer.nameSpaceUri)
+                .then((dataValue) => expect((dataValue)?.value.value).to.equal(1.1));
         }).timeout(3000);
 
         it('set and get RpmALLim, Double', async () => {
-            await connection.writeOpcUaNode('Variable.RpmALLim', namespaceUrl, 1.1, 'Double');
-            await connection.readOpcUaNode('Variable.RpmALLim', namespaceUrl)
-                .then(datavalue => expect(datavalue?.value.value).to.equal(1.1));
+            await connection.writeNode('Variable.RpmALLim', mockupServer.nameSpaceUri, 1.1, 'Double');
+            await connection.readNode('Variable.RpmALLim', mockupServer.nameSpaceUri)
+                .then((dataValue) => expect((dataValue)?.value.value).to.equal(1.1));
         }).timeout(3000);
 
         //TODO get the rest

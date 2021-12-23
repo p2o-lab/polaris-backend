@@ -33,8 +33,6 @@ import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import * as baseDataAssemblyOptions from '../../../../../../tests/monanadrv.json';
 import {MockupServer} from '../../../../_utils';
-import {Namespace, UAObject} from 'node-opcua';
-import {namespaceUrl} from '../../../../../../tests/namespaceUrl';
 import {DrvMockup} from './Drv.mockup';
 
 chai.use(chaiAsPromised);
@@ -47,7 +45,7 @@ const dataAssemblyOptions: DataAssemblyOptions = {
 
 describe('Drv', () => {
 	describe('', () => {
-		const emptyOPCUAConnection = new OpcUaConnection('', '');
+		const emptyOPCUAConnection = new OpcUaConnection();
 		it('should create Drv/BinDrv',  () => {
 			const da1 = new Drv(dataAssemblyOptions, emptyOPCUAConnection);
 
@@ -90,22 +88,17 @@ describe('Drv', () => {
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
 			mockup = new DrvMockup(
-				mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject,
+				mockupServer.nameSpace,
+				mockupServer.rootObject,
 				'Variable');
 			await mockupServer.start();
-			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334','','');
+			connection = new OpcUaConnection();
+			connection.initialize({endpoint: mockupServer.endpoint});
 			await connection.connect();
-			// set namespaceUrl
-			for (const key in dataAssemblyOptions.dataItems as any) {
-				//skip static values
-				if((typeof(dataAssemblyOptions.dataItems as any)[key] != 'string')){
-					(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
-				}
-			}
+
 			da1 = new Drv(dataAssemblyOptions, connection) ;
 			const pv = da1.subscribe();
-			await connection.startListening();
+			await connection.startMonitoring();
 			await pv;
 		});
 

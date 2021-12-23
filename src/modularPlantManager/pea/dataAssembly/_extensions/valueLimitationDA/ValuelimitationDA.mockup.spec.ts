@@ -17,22 +17,22 @@ describe('ValueLimitationDAMockup', () => {
         });
 
         it('should create ValueLimitationDAMockup', async () => {
-            const mockup= new ValueLimitationDAMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable', DataType.Double);
+            const mockup= new ValueLimitationDAMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable', DataType.Double);
             expect(mockup).to.not.be.undefined;
         });
 
         it('getValueLimitationMockupReferenceJSON(), Double',  () => {
-            const mockup = new ValueLimitationDAMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable', DataType.Double);
+            const mockup = new ValueLimitationDAMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable', DataType.Double);
             const json = mockup.getValueLimitationDAInstanceMockupJSON();
             expect(Object.keys(json).length).to.equal(2);
             expect(json.VMin).to.not.be.undefined;
             expect(json.VMax).to.not.be.undefined;
         });
         it('getValueLimitationMockupReferenceJSON(), Int32',  () => {
-            const mockup = new ValueLimitationDAMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable', DataType.Int32);
+            const mockup = new ValueLimitationDAMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable', DataType.Int32);
             const json = mockup.getValueLimitationDAInstanceMockupJSON();
             expect(Object.keys(json).length).to.equal(2);
             expect(json.VMin).to.not.be.undefined;

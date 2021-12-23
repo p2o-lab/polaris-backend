@@ -1,10 +1,8 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {Namespace, UAObject} from 'node-opcua';
 import {MockupServer} from '../../../../_utils';
 import {BinMonMockup} from './BinMon.mockup';
 import {OpcUaConnection} from '../../../connection';
-import {namespaceUrl} from '../../../../../../tests/namespaceUrl';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -19,16 +17,16 @@ describe('BinMonMockup', () => {
         });
 
         it('should create BinMonMockup',  () => {
-            const mockup= new BinMonMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            const mockup= new BinMonMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             expect(mockup).to.not.be.undefined;
             expect(mockup.wqc).to.not.be.undefined;
             //TODO: test more?
         });
 
         it('getBinMonMockupReferenceJSON()',  () => {
-            const mockup = new BinMonMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            const mockup = new BinMonMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             const json = mockup.getBinMonInstanceMockupJSON();
             expect(json).not.to.be.undefined;
             expect(Object.keys(json).length).to.equal(9);
@@ -43,10 +41,11 @@ describe('BinMonMockup', () => {
             this.timeout(5000);
             mockupServer = new MockupServer();
             await mockupServer.initialize();
-            mockup = new BinMonMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            mockup = new BinMonMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             await mockupServer.start();
-            connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334');
+            connection = new OpcUaConnection();
+            connection.initialize({endpoint: mockupServer.endpoint});
             await connection.connect();
         });
         afterEach(async () => {
@@ -55,21 +54,21 @@ describe('BinMonMockup', () => {
         });
 
         it('set VFlutTi', async () => {
-            await connection.writeOpcUaNode('Variable.VFlutTi',
-                namespaceUrl,
+            await connection.writeNode('Variable.VFlutTi',
+                mockupServer.nameSpaceUri,
                 1.1, 'Double');
-            await connection.readOpcUaNode('Variable.VFlutTi',
-                namespaceUrl)
-                .then(datavalue => expect(datavalue?.value.value).to.equal(1.1));
+            await connection.readNode('Variable.VFlutTi',
+                mockupServer.nameSpaceUri)
+                .then((dataValue) => expect((dataValue)?.value.value).to.equal(1.1));
         }).timeout(5000);
 
         it('set VFlutCnt', async () => {
-            await connection.writeOpcUaNode('Variable.VFlutCnt',
-                namespaceUrl,
+            await connection.writeNode('Variable.VFlutCnt',
+                mockupServer.nameSpaceUri,
                 1.1, 'Int32');
-            await connection.readOpcUaNode('Variable.VFlutCnt',
-                namespaceUrl)
-                .then(datavalue => expect(datavalue?.value.value).to.equal(1));
+            await connection.readNode('Variable.VFlutCnt',
+                mockupServer.nameSpaceUri)
+                .then((dataValue) => expect((dataValue)?.value.value).to.equal(1));
         }).timeout(5000);
 
     });

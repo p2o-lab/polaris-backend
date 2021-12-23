@@ -10,162 +10,162 @@
         "TagDescription":"Service for math operation Integral",
         "StateChannel":{
           "nodeId":"TestService.StateChannel",
-          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+          "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
           "dataType":"xs:IDREF"
         },
         "StateOffAut":{
           "nodeId":"TestService.StateOffAut",
-          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+          "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
           "dataType":"xs:IDREF"
         },
         "StateOpAut":{
           "nodeId":"TestService.StateOpAut",
-          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+          "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
           "dataType":"xs:IDREF"
         },
         "StateAutAut":{
           "nodeId":"TestService.StateAutAut",
-          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+          "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
           "dataType":"xs:IDREF"
         },
         "StateOffOp":{
           "nodeId":"TestService.StateOffOp",
-          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+          "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
           "dataType":"xs:IDREF"
         },
         "StateOpOp":{
           "nodeId":"TestService.StateOpOp",
-          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+          "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
           "dataType":"xs:IDREF"
         },
         "StateAutOp":{
           "nodeId":"TestService.StateAutOp",
-          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+          "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
           "dataType":"xs:IDREF"
         },
         "StateOpAct":{
           "nodeId":"TestService.StateOpAct",
-          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+          "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
           "dataType":"xs:IDREF"
         },
         "StateAutAct":{
           "nodeId":"TestService.StateAutAct",
-          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+          "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
           "dataType":"xs:IDREF"
         },
         "StateOffAct":{
           "nodeId":"TestService.StateOffAct",
-          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+          "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
           "dataType":"xs:IDREF"
         },
         "SrcChannel":{
           "nodeId":"TestService.SrcChannel",
-          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+          "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
           "dataType":"xs:IDREF"
         },
         "SrcExtAut":{
           "nodeId":"TestService.SrcExtAut",
-          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+          "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
           "dataType":"xs:IDREF"
         },
         "SrcIntAut":{
           "nodeId":"TestService.SrcIntAut",
-          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+          "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
           "dataType":"xs:IDREF"
         },
         "SrcIntOp":{
           "nodeId":"TestService.SrcIntOp",
-          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+          "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
           "dataType":"xs:IDREF"
         },
         "SrcExtOp":{
           "nodeId":"TestService.SrcExtOp",
-          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+          "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
           "dataType":"xs:IDREF"
         },
         "SrcExtAct":{
           "nodeId":"TestService.SrcExtAct",
-          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+          "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
           "dataType":"xs:IDREF"
         },
         "SrcIntAct":{
           "nodeId":"TestService.SrcIntAct",
-          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+          "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
           "dataType":"xs:IDREF"
         },
         "OSLevel":{
           "nodeId":"TestService.OSLevel",
-          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+          "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
           "dataType":"xs:IDREF"
         },
         "WQC":{
           "nodeId":"TestService.WQC",
-          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+          "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
           "dataType":"xs:IDREF"
         },
         "CommandOp":{
           "nodeId":"TestService.CommandOp",
-          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+          "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
           "dataType":"xs:IDREF"
         },
         "CommandInt":{
           "nodeId":"TestService.CommandInt",
-          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+          "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
           "dataType":"xs:IDREF"
         },
         "CommandExt":{
           "nodeId":"TestService.CommandExt",
-          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+          "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
           "dataType":"xs:IDREF"
         },
         "ProcedureOp":{
           "nodeId":"TestService.ProcedureOp",
-          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+          "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
           "dataType":"xs:IDREF"
         },
         "ProcedureInt":{
           "nodeId":"TestService.ProcedureInt",
-          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+          "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
           "dataType":"xs:IDREF"
         },
         "ProcedureExt":{
           "nodeId":"TestService.ProcedureExt",
-          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+          "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
           "dataType":"xs:IDREF"
         },
         "CommandEn":{
           "nodeId":"TestService.CommandEn",
-          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+          "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
           "dataType":"xs:IDREF"
         },
         "StateCur":{
           "nodeId":"TestService.StateCur",
-          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+          "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
           "dataType":"xs:IDREF"
         },
         "ProcedureCur":{
           "nodeId":"TestService.ProcedureCur",
-          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+          "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
           "dataType":"xs:IDREF"
         },
         "ProcedureReq":{
           "nodeId":"TestService.ProcedureReq",
-          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+          "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
           "dataType":"xs:IDREF"
         },
         "InteractQuestionID":{
           "nodeId":"TestService.InteractQuestionID",
-          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+          "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
           "dataType":"xs:IDREF"
         },
         "InteractAnswerID":{
           "nodeId":"TestService.InteractAnswerID",
-          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+          "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
           "dataType":"xs:IDREF"
         },
         "PosTextID":{
           "nodeId":"TestService.PosTextID",
-          "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+          "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
           "dataType":"xs:IDREF"
         }
       },
@@ -184,7 +184,7 @@
                 "TagDescription":"Default Procedure of TestService",
                 "WQC":{
                   "nodeId":"TestService.TestService_default.WQC",
-                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+                  "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
                   "dataType":"xs:IDREF"
                 }
               }
@@ -199,157 +199,157 @@
                 "TagDescription":"Factor for scaling",
                 "WQC":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.WQC",
-                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+                  "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
                   "dataType":"xs:IDREF"
                 },
                 "OSLevel":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.OSLevel",
-                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+                  "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
                   "dataType":"xs:IDREF"
                 },
                 "StateChannel":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.StateChannel",
-                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+                  "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
                   "dataType":"xs:IDREF"
                 },
                 "StateOffAut":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.StateOffAut",
-                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+                  "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
                   "dataType":"xs:IDREF"
                 },
                 "StateOpAut":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.StateOpAut",
-                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+                  "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
                   "dataType":"xs:IDREF"
                 },
                 "StateAutAut":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.StateAutAut",
-                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+                  "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
                   "dataType":"xs:IDREF"
                 },
                 "StateOffOp":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.StateOffOp",
-                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+                  "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
                   "dataType":"xs:IDREF"
                 },
                 "StateOpOp":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.StateOpOp",
-                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+                  "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
                   "dataType":"xs:IDREF"
                 },
                 "StateAutOp":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.StateAutOp",
-                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+                  "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
                   "dataType":"xs:IDREF"
                 },
                 "StateOpAct":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.StateOpAct",
-                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+                  "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
                   "dataType":"xs:IDREF"
                 },
                 "StateAutAct":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.StateAutAct",
-                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+                  "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
                   "dataType":"xs:IDREF"
                 },
                 "StateOffAct":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.StateOffAct",
-                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+                  "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
                   "dataType":"xs:IDREF"
                 },
                 "SrcChannel":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.SrcChannel",
-                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+                  "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
                   "dataType":"xs:IDREF"
                 },
                 "SrcExtAut":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.SrcExtAut",
-                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+                  "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
                   "dataType":"xs:IDREF"
                 },
                 "SrcIntAut":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.SrcIntAut",
-                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+                  "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
                   "dataType":"xs:IDREF"
                 },
                 "SrcIntOp":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.SrcIntOp",
-                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+                  "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
                   "dataType":"xs:IDREF"
                 },
                 "SrcExtOp":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.SrcExtOp",
-                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+                  "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
                   "dataType":"xs:IDREF"
                 },
                 "SrcExtAct":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.SrcExtAct",
-                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+                  "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
                   "dataType":"xs:IDREF"
                 },
                 "SrcIntAct":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.SrcIntAct",
-                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+                  "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
                   "dataType":"xs:IDREF"
                 },
                 "VExt":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.VExt",
-                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+                  "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
                   "dataType":"xs:IDREF"
                 },
                 "VOp":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.VOp",
-                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+                  "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
                   "dataType":"xs:IDREF"
                 },
                 "VInt":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.VInt",
-                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+                  "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
                   "dataType":"xs:IDREF"
                 },
                 "VReq":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.VReq",
-                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+                  "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
                   "dataType":"xs:IDREF"
                 },
                 "VFbk":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.VFbk",
-                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+                  "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
                   "dataType":"xs:IDREF"
                 },
                 "VOut":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.VOut",
-                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+                  "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
                   "dataType":"xs:IDREF"
                 },
                 "VSclMin":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.VSclMin",
-                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+                  "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
                   "dataType":"xs:IDREF"
                 },
                 "VSclMax":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.VSclMax",
-                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+                  "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
                   "dataType":"xs:IDREF"
                 },
                 "VMin":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.VMin",
-                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+                  "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
                   "dataType":"xs:IDREF"
                 },
                 "VMax":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.VMax",
-                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+                  "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
                   "dataType":"xs:IDREF"
                 },
                 "VUnit":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.VUnit",
-                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+                  "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
                   "dataType":"xs:IDREF"
                 },
                 "Sync":{
                   "nodeId":"TestService.AnaProcParam_TestService_factor.Sync",
-                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+                  "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
                   "dataType":"xs:IDREF"
                 }
               }
@@ -364,12 +364,12 @@
                 "TagDescription":"Final integration time",
                 "WQC":{
                   "nodeId":"TestService.AnaReportValue_TestService_rvTime.WQC",
-                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+                  "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
                   "dataType":"xs:IDREF"
                 },
                 "Text":{
                   "nodeId":"TestService.AnaReportValue_TestService_rvTime.Text",
-                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+                  "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
                   "dataType":"xs:IDREF"
                 }
               }
@@ -382,27 +382,27 @@
                 "TagDescription":"Final scaled value out",
                 "WQC":{
                   "nodeId":"TestService.AnaReportValue_TestService_rvOutScaled.WQC",
-                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+                  "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
                   "dataType":"xs:IDREF"
                 },
                 "V":{
                   "nodeId":"TestService.AnaReportValue_TestService_rvOutScaled.V",
-                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+                  "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
                   "dataType":"xs:IDREF"
                 },
                 "VSclMin":{
                   "nodeId":"TestService.AnaReportValue_TestService_rvOutScaled.VSclMin",
-                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+                  "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
                   "dataType":"xs:IDREF"
                 },
                 "VSclMax":{
                   "nodeId":"TestService.AnaReportValue_TestService_rvOutScaled.VSclMax",
-                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+                  "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
                   "dataType":"xs:IDREF"
                 },
                 "VUnit":{
                   "nodeId":"TestService.AnaReportValue_TestService_rvOutScaled.VUnit",
-                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+                  "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
                   "dataType":"xs:IDREF"
                 }
               }
@@ -417,27 +417,27 @@
                 "TagDescription":"Analog Process Value Input",
                 "WQC":{
                   "nodeId":"TestService.AnaProcessValueIn_TestService_pv.WQC",
-                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+                  "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
                   "dataType":"xs:IDREF"
                 },
                 "VExt":{
                   "nodeId":"TestService.AnaProcessValueIn_TestService_pv.VExt",
-                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+                  "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
                   "dataType":"xs:IDREF"
                 },
                 "VSclMin":{
                   "nodeId":"TestService.AnaProcessValueIn_TestService_pv.VSclMin",
-                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+                  "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
                   "dataType":"xs:IDREF"
                 },
                 "VSclMax":{
                   "nodeId":"TestService.AnaProcessValueIn_TestService_pv.VSclMax",
-                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+                  "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
                   "dataType":"xs:IDREF"
                 },
                 "VUnit":{
                   "nodeId":"TestService.AnaProcessValueIn_TestService_pv.VUnit",
-                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+                  "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
                   "dataType":"xs:IDREF"
                 }
               }
@@ -452,27 +452,27 @@
                 "TagDescription":"Integral of pv",
                 "WQC":{
                   "nodeId":"TestService.AnaProcessValueOut_TestService_pvOutIntegral.WQC",
-                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+                  "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
                   "dataType":"xs:IDREF"
                 },
                 "V":{
                   "nodeId":"TestService.AnaProcessValueOut_TestService_pvOutIntegral.V",
-                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+                  "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
                   "dataType":"xs:IDREF"
                 },
                 "VSclMin":{
                   "nodeId":"TestService.AnaProcessValueOut_TestService_pvOutIntegral.VSclMin",
-                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+                  "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
                   "dataType":"xs:IDREF"
                 },
                 "VSclMax":{
                   "nodeId":"TestService.AnaProcessValueOut_TestService_pvOutIntegral.VSclMax",
-                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+                  "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
                   "dataType":"xs:IDREF"
                 },
                 "VUnit":{
                   "nodeId":"TestService.AnaProcessValueOut_TestService_pvOutIntegral.VUnit",
-                  "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+                  "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
                   "dataType":"xs:IDREF"
                 }
               }
@@ -489,157 +489,157 @@
             "TagDescription":"UpdateRate during execute",
             "OSLevel":{
               "nodeId":"TestService.AnaConfParam_TestService_updateRate.OSLevel",
-              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
               "dataType":"xs:IDREF"
             },
             "WQC":{
               "nodeId":"TestService.AnaConfParam_TestService_updateRate.WQC",
-              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
               "dataType":"xs:IDREF"
             },
             "StateChannel":{
               "nodeId":"TestService.AnaConfParam_TestService_updateRate.StateChannel",
-              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
               "dataType":"xs:IDREF"
             },
             "StateOffAut":{
               "nodeId":"TestService.AnaConfParam_TestService_updateRate.StateOffAut",
-              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
               "dataType":"xs:IDREF"
             },
             "StateOpAut":{
               "nodeId":"TestService.AnaConfParam_TestService_updateRate.StateOpAut",
-              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
               "dataType":"xs:IDREF"
             },
             "StateAutAut":{
               "nodeId":"TestService.AnaConfParam_TestService_updateRate.StateAutAut",
-              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
               "dataType":"xs:IDREF"
             },
             "StateOffOp":{
               "nodeId":"TestService.AnaConfParam_TestService_updateRate.StateOffOp",
-              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
               "dataType":"xs:IDREF"
             },
             "StateOpOp":{
               "nodeId":"TestService.AnaConfParam_TestService_updateRate.StateOpOp",
-              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
               "dataType":"xs:IDREF"
             },
             "StateAutOp":{
               "nodeId":"TestService.AnaConfParam_TestService_updateRate.StateAutOp",
-              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
               "dataType":"xs:IDREF"
             },
             "StateOpAct":{
               "nodeId":"TestService.AnaConfParam_TestService_updateRate.StateOpAct",
-              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
               "dataType":"xs:IDREF"
             },
             "StateAutAct":{
               "nodeId":"TestService.AnaConfParam_TestService_updateRate.StateAutAct",
-              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
               "dataType":"xs:IDREF"
             },
             "StateOffAct":{
               "nodeId":"TestService.AnaConfParam_TestService_updateRate.StateOffAct",
-              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
               "dataType":"xs:IDREF"
             },
             "SrcChannel":{
               "nodeId":"TestService.AnaConfParam_TestService_updateRate.SrcChannel",
-              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
               "dataType":"xs:IDREF"
             },
             "SrcExtAut":{
               "nodeId":"TestService.AnaConfParam_TestService_updateRate.SrcExtAut",
-              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
               "dataType":"xs:IDREF"
             },
             "SrcIntAut":{
               "nodeId":"TestService.AnaConfParam_TestService_updateRate.SrcIntAut",
-              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
               "dataType":"xs:IDREF"
             },
             "SrcIntOp":{
               "nodeId":"TestService.AnaConfParam_TestService_updateRate.SrcIntOp",
-              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
               "dataType":"xs:IDREF"
             },
             "SrcExtOp":{
               "nodeId":"TestService.AnaConfParam_TestService_updateRate.SrcExtOp",
-              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
               "dataType":"xs:IDREF"
             },
             "SrcExtAct":{
               "nodeId":"TestService.AnaConfParam_TestService_updateRate.SrcExtAct",
-              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
               "dataType":"xs:IDREF"
             },
             "SrcIntAct":{
               "nodeId":"TestService.AnaConfParam_TestService_updateRate.SrcIntAct",
-              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
               "dataType":"xs:IDREF"
             },
             "VExt":{
               "nodeId":"TestService.AnaConfParam_TestService_updateRate.VExt",
-              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
               "dataType":"xs:IDREF"
             },
             "VOp":{
               "nodeId":"TestService.AnaConfParam_TestService_updateRate.VOp",
-              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
               "dataType":"xs:IDREF"
             },
             "VInt":{
               "nodeId":"TestService.AnaConfParam_TestService_updateRate.VInt",
-              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
               "dataType":"xs:IDREF"
             },
             "VReq":{
               "nodeId":"TestService.AnaConfParam_TestService_updateRate.VReq",
-              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
               "dataType":"xs:IDREF"
             },
             "VFbk":{
               "nodeId":"TestService.AnaConfParam_TestService_updateRate.VFbk",
-              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
               "dataType":"xs:IDREF"
             },
             "VOut":{
               "nodeId":"TestService.AnaConfParam_TestService_updateRate.VOut",
-              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
               "dataType":"xs:IDREF"
             },
             "VSclMin":{
               "nodeId":"TestService.AnaConfParam_TestService_updateRate.VSclMin",
-              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
               "dataType":"xs:IDREF"
             },
             "VSclMax":{
               "nodeId":"TestService.AnaConfParam_TestService_updateRate.VSclMax",
-              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
               "dataType":"xs:IDREF"
             },
             "VMin":{
               "nodeId":"TestService.AnaConfParam_TestService_updateRate.VMin",
-              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
               "dataType":"xs:IDREF"
             },
             "VMax":{
               "nodeId":"TestService.AnaConfParam_TestService_updateRate.VMax",
-              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
               "dataType":"xs:IDREF"
             },
             "VUnit":{
               "nodeId":"TestService.AnaConfParam_TestService_updateRate.VUnit",
-              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
               "dataType":"xs:IDREF"
             },
             "Sync":{
               "nodeId":"TestService.AnaConfParam_TestService_updateRate.Sync",
-              "namespaceIndex":"urn:localhost:NodeOPCUA-Client",
+              "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
               "dataType":"xs:IDREF"
             }
           }

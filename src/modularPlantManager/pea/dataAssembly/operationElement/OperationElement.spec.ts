@@ -29,12 +29,10 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import * as baseDataAssemblyOptions from '../../../../../tests/binmanint.json';
-import {DataAssemblyControllerFactory} from '../DataAssemblyControllerFactory';
 import {MockupServer} from '../../../_utils';
 import {OperationElementMockup} from './OperationElement.mockup';
-import {Namespace, UAObject} from 'node-opcua';
+import {Namespace} from 'node-opcua';
 import {OperationElement} from './OperationElement';
-import {namespaceUrl} from "../../../../../tests/namespaceUrl";
 
 
 chai.use(chaiAsPromised);
@@ -48,7 +46,7 @@ describe('OperationElement', () => {
 	};
 
 	describe('static', () => {
-		const emptyOPCUAConnection = new OpcUaConnection('', '');
+		const emptyOPCUAConnection = new OpcUaConnection();
 		it('should create OperationElement', () => {
 			//TODO: fix this, error because of circular dependencies
 			const da1: OperationElement = new OperationElement(dataAssemblyOptions, emptyOPCUAConnection);
@@ -61,24 +59,19 @@ describe('OperationElement', () => {
 	describe('dynamic', () => {
 		let mockupServer: MockupServer;
 		let connection: OpcUaConnection;
-		// set namespaceUrl
-		for (const key in dataAssemblyOptions.dataItems as any) {
-			//skip static values
-			if((typeof(dataAssemblyOptions.dataItems as any)[key] != 'string')){
-				(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
-			}
-		}
+
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
 			const mockup = new OperationElementMockup(
-				mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject,
+				mockupServer.nameSpace,
+				mockupServer.rootObject,
 				'Variable');
 
 			await mockupServer.start();
-			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334','','');
+			connection = new OpcUaConnection();
+			connection.initialize({endpoint: mockupServer.endpoint});
 			await connection.connect();
 		});
 
@@ -89,10 +82,11 @@ describe('OperationElement', () => {
 		});
 
 		it('should subscribe successfully', async () => {
+
 			//TODO: fix this, error because of circular dependencies
 			const da1 = new OperationElement(dataAssemblyOptions, connection);
 			const pv = da1.subscribe();
-			await connection.startListening();
+			await connection.startMonitoring();
 			await pv;
 			expect(da1.communication.OSLevel.value).equal(0);
 		}).timeout(4000);

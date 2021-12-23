@@ -31,9 +31,6 @@ import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import * as baseDataAssemblyOptions from '../../../../../../../tests/anaprocessvaluein.json';
 import {MockupServer} from '../../../../../_utils';
-import {AnaManMockup} from '../../../operationElement/man/anaMan/AnaMan.mockup';
-import {Namespace, UAObject} from 'node-opcua';
-import {namespaceUrl} from '../../../../../../../tests/namespaceUrl';
 import {AnaProcessValueInMockup} from './AnaProcessValueIn.mockup';
 import {DataAssemblyControllerFactory} from '../../../DataAssemblyControllerFactory';
 
@@ -48,7 +45,7 @@ describe('AnaProcessValueIn', () => {
 	};
 
 	describe('static', () => {
-		const emptyOPCUAConnection = new OpcUaConnection('', '');
+		const emptyOPCUAConnection = new OpcUaConnection();
 		it('should create AnaProcessValueIn', async () => {
 			const da1 = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as AnaProcessValueIn;
 			expect(da1).to.be.not.undefined;
@@ -69,12 +66,13 @@ describe('AnaProcessValueIn', () => {
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
 			mockup = new AnaProcessValueInMockup(
-				mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject,
+				mockupServer.nameSpace,
+				mockupServer.rootObject,
 				'Variable');
 			mockup.scaleSettings.vSclMax= 1;
 			await mockupServer.start();
-			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334','','');
+			connection = new OpcUaConnection();
+			connection.initialize({endpoint: mockupServer.endpoint});
 			await connection.connect();
 		});
 
@@ -85,36 +83,24 @@ describe('AnaProcessValueIn', () => {
 		});
 
 		it('should subscribe successfully', async () => {
-			// set namespaceUrl
-			for (const key in dataAssemblyOptions.dataItems as any) {
-				//skip static values
-				if((typeof(dataAssemblyOptions.dataItems as any)[key] != 'string')){
-					(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
-				}
-			}
-				const da1 = DataAssemblyControllerFactory.create(dataAssemblyOptions, connection) as AnaProcessValueIn;
-                const pv =  da1.subscribe();
-                await connection.startListening();
-                await pv;
 
-                expect(da1.communication.VExt.value).equal(0);
-                expect(da1.communication.VUnit.value).equal(0);
-                expect(da1.communication.VSclMin.value).equal(0);
-                expect(da1.communication.VSclMax.value).equal(1);
+			const da1 = DataAssemblyControllerFactory.create(dataAssemblyOptions, connection) as AnaProcessValueIn;
+			const pv =  da1.subscribe();
+			await connection.startMonitoring();
+			await pv;
+
+			expect(da1.communication.VExt.value).equal(0);
+			expect(da1.communication.VUnit.value).equal(0);
+			expect(da1.communication.VSclMin.value).equal(0);
+			expect(da1.communication.VSclMax.value).equal(1);
 
 		}).timeout(4000);
 
 		it('setparameter', async () => {
-			// set namespaceUrl
-			for (const key in dataAssemblyOptions.dataItems as any) {
-				//skip static values
-				if((typeof(dataAssemblyOptions.dataItems as any)[key] != 'string')){
-					(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
-				}
-			}
+
 			const da1 = DataAssemblyControllerFactory.create(dataAssemblyOptions, connection) as AnaProcessValueIn;
 			const pv =  da1.subscribe();
-			await connection.startListening();
+			await connection.startMonitoring();
 			await pv;
 
 			await da1.setParameter(1,'VExt');
@@ -123,14 +109,6 @@ describe('AnaProcessValueIn', () => {
 			await new Promise(f => setTimeout(f, 1000));
 			expect(da1.communication.VExt.value).equal(1);
 
-		}).timeout(4000);
-
-		it('setValue', async () => {
-			// TODO
-		}).timeout(4000);
-
-		it('tojson', async () => {
-			// TODO
 		}).timeout(4000);
 	});
 });

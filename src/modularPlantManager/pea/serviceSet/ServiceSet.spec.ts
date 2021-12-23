@@ -43,7 +43,7 @@ const expect = chai.expect;
 
 describe('ServiceSet', () => {
 	const parseJson = require('json-parse-better-errors');
-	const opcUAConnection = new OpcUaConnection('', '');
+	const opcUAConnection = new OpcUaConnection();
 
 	context('constructor', () => {
 		it('should fail with missing options', () => {

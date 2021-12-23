@@ -17,15 +17,15 @@ describe('MonBinVlvMockup', () => {
         });
 
         it('should create MonBinVlvMockup', async () => {
-            const mockup= new MonBinVlvMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            const mockup= new MonBinVlvMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             expect(mockup).to.not.be.undefined;
             expect(mockup.feedbackMonitoring).to.not.be.undefined;
         });
 
         it('getMonBinVlvMockupReferenceJSON()',  () => {
-            const mockup = new MonBinVlvMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            const mockup = new MonBinVlvMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             const json = mockup.getMonBinVlvMockupJSON();
             expect(json).to.not.be.undefined;
             expect(Object.keys(json).length).to.equal(38);

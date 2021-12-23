@@ -17,14 +17,14 @@ describe('HealthStateViewMockup', () => {
         });
 
         it('should create HealthStateViewMockup', async () => {
-            const mockup= new HealthStateViewMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            const mockup= new HealthStateViewMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             expect(mockup).to.not.be.undefined;
 
         });
         it('getHealthStateViewMockupReferenceJSON()',  () => {
-            const mockup = new HealthStateViewMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            const mockup = new HealthStateViewMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             const json = mockup.getHealthStateViewInstanceMockupJSON();
             expect(Object.keys(json).length).to .equal(1);
         });

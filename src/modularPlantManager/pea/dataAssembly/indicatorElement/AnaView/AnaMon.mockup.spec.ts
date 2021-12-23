@@ -17,15 +17,15 @@ describe('AnaMonMockup', () => {
         });
 
         it('should create AnaMonMockup', async () => {
-            const mockup= new AnaMonMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            const mockup= new AnaMonMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             expect(mockup).to.not.be.undefined;
             //TODO: test more
 
         });
         it('getAnaMonMockupReferenceJSON()',  () => {
-            const mockup = new AnaMonMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            const mockup = new AnaMonMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             const json = mockup.getAnaMonInstanceMockupJSON();
             expect(json).not.to.be.undefined;
             //TODO: test more

@@ -3,12 +3,12 @@
     "TagDescription": "Test",
     "WQC": {
       "nodeId": "Variable.WQC",
-      "namespaceIndex": "localhost",
+      "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
       "dataType": "xs:IDREF"
     },
     "Text": {
       "nodeId": "Variable.Text",
-      "namespaceIndex": "localhost",
+      "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
       "dataType": "xs:IDREF"
     }
 }

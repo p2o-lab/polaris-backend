@@ -32,7 +32,7 @@ import * as baseDataAssemblyOptions from '../../../../../../../tests/anaprocessv
 import {MockupServer} from '../../../../../_utils';
 import {DIntProcessValueInMockup} from '../DIntProcessValueIn/DIntProcessValueIn.mockup';
 import {Namespace, UAObject} from 'node-opcua';
-import {namespaceUrl} from '../../../../../../../tests/namespaceUrl';
+
 import {DIntProcessValueIn} from './DIntProcessValueIn';
 import {DataAssemblyControllerFactory} from '../../../DataAssemblyControllerFactory';
 
@@ -47,7 +47,7 @@ describe('DIntProcessValueIn', () => {
 	};
 	
 	describe('static', () => {
-		const emptyOPCUAConnection = new OpcUaConnection('', '');
+		const emptyOPCUAConnection = new OpcUaConnection();
 		it('should create DIntProcessValueIn', async () => {
 			const da1 = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as DIntProcessValueIn;
 			expect(da1).to.be.not.undefined;
@@ -68,23 +68,18 @@ describe('DIntProcessValueIn', () => {
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
 			mockup = new DIntProcessValueInMockup(
-				mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject,
+				mockupServer.nameSpace,
+				mockupServer.rootObject,
 				'Variable');
 			mockup.scaleSettings.vSclMax= 1;
 			await mockupServer.start();
-			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334','','');
+			connection = new OpcUaConnection();
+			connection.initialize({endpoint: mockupServer.endpoint});
 			await connection.connect();
-			// set namespaceUrl
-			for (const key in dataAssemblyOptions.dataItems as any) {
-				//skip static values
-				if((typeof(dataAssemblyOptions.dataItems as any)[key] != 'string')){
-					(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
-				}
-			}
+
 			da1 = DataAssemblyControllerFactory.create(dataAssemblyOptions, connection) as DIntProcessValueIn;
 			const pv = da1.subscribe();
-			await connection.startListening();
+			await connection.startMonitoring();
 			await pv;
 		});
 
@@ -110,12 +105,5 @@ describe('DIntProcessValueIn', () => {
 
 		}).timeout(4000);
 
-		it('setValue', async () => {
-			// TODO
-		}).timeout(4000);
-
-		it('tojson', async () => {
-			// TODO
-		}).timeout(4000);
 	});
 });

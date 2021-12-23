@@ -4,7 +4,7 @@ import {Namespace, UAObject} from 'node-opcua';
 import {DIntServParamMockup} from './DIntServParam.mockup';
 import {MockupServer} from '../../../../../_utils';
 import {OpcUaConnection} from '../../../../connection';
-import {namespaceUrl} from '../../../../../../../tests/namespaceUrl';
+
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -25,19 +25,17 @@ describe('DIntServParamMockup', () => {
             mockupServer = new MockupServer();
             await mockupServer.initialize();
         });
-        afterEach(async () => {
 
-        });
         it('should create DIntServParamMockup',  () => {
-            const mockup= new DIntServParamMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            const mockup= new DIntServParamMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             expect(mockup).to.not.be.undefined;
             //TODO: test more
 
         });
         it('getDIntServParamMockupReferenceJSON()',  () => {
-            const mockup = new DIntServParamMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            const mockup = new DIntServParamMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             const json = mockup.getDIntServParamMockupJSON();
             expect(json).not.to.be.undefined;
             expect(Object.keys(json).length).to .equal(31);
@@ -45,8 +43,8 @@ describe('DIntServParamMockup', () => {
         });
         //TODO test more
         it('startCurrentTimeUpdate()',  async() => {
-            const mockup: FakeClass = new FakeClass(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable') as FakeClass;
+            const mockup: FakeClass = new FakeClass(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable') as FakeClass;
             mockup.startCurrentTimeUpdate();
             expect(mockup.getVOut()).to.equal(0);
             await new Promise(f => setTimeout(f, 1000));
@@ -54,8 +52,8 @@ describe('DIntServParamMockup', () => {
         });
 
         it('stopCurrentTimeUpdate()',  async() => {
-            const mockup: FakeClass = new FakeClass(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable') as FakeClass;
+            const mockup: FakeClass = new FakeClass(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable') as FakeClass;
             mockup.startCurrentTimeUpdate();
             mockup.stopCurrentTimeUpdate();
             expect(mockup.getVOut()).to.equal(0);
@@ -65,14 +63,14 @@ describe('DIntServParamMockup', () => {
         });
 
         it('stopCurrentTimeUpdate(), interval undefined',  () => {
-            const mockup: FakeClass = new FakeClass(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable') as FakeClass;
+            const mockup: FakeClass = new FakeClass(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable') as FakeClass;
             expect((() => mockup.stopCurrentTimeUpdate())).to.throw();
         });
     });
 
     describe('dynamic', () => {
-        // we need to check if the nodes was addes succesfully and are writeable and readable
+        // we need to check if the nodes was added successfully and are writeable and readable
         let mockupServer: MockupServer;
         let mockup: DIntServParamMockup;
         let connection: OpcUaConnection;
@@ -80,10 +78,11 @@ describe('DIntServParamMockup', () => {
             this.timeout(5000);
             mockupServer = new MockupServer();
             await mockupServer.initialize();
-            mockup = new DIntServParamMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            mockup = new DIntServParamMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             await mockupServer.start();
-            connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334');
+            connection = new OpcUaConnection();
+            connection.initialize({endpoint: mockupServer.endpoint});
             await connection.connect();
         });
 
@@ -93,15 +92,15 @@ describe('DIntServParamMockup', () => {
         });
 
         it('set and get VExt', async () => {
-            await connection.writeOpcUaNode('Variable.VExt', namespaceUrl, 1, 'Int32');
-            await connection.readOpcUaNode('Variable.VExt', namespaceUrl)
-                .then(datavalue => expect(datavalue?.value.value).to.equal(1));
+            await connection.writeNode('Variable.VExt', mockupServer.nameSpaceUri, 1, 'Int32');
+            await connection.readNode('Variable.VExt', mockupServer.nameSpaceUri)
+                .then((dataValue) => expect((dataValue)?.value.value).to.equal(1));
         }).timeout(3000);
 
         it('set and get VOp', async () => {
-            await connection.writeOpcUaNode('Variable.VOp', namespaceUrl, 1, 'Int32');
-            await connection.readOpcUaNode('Variable.VOp', namespaceUrl)
-                .then(datavalue => expect(datavalue?.value.value).to.equal(1));
+            await connection.writeNode('Variable.VOp', mockupServer.nameSpaceUri, 1, 'Int32');
+            await connection.readNode('Variable.VOp', mockupServer.nameSpaceUri)
+                .then((dataValue) => expect((dataValue)?.value.value).to.equal(1));
         }).timeout(3000);
 
         //TODO get the rest
@@ -114,10 +113,11 @@ describe('DIntServParamMockup', () => {
             this.timeout(10000);
             mockupServer = new MockupServer();
             await mockupServer.initialize();
-            mockup = new DIntServParamMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            mockup = new DIntServParamMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             await mockupServer.start();
-            connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334');
+            connection = new OpcUaConnection();
+            connection.initialize({endpoint: mockupServer.endpoint});
             await connection.connect();
         });
         afterEach(async () => {
@@ -126,21 +126,21 @@ describe('DIntServParamMockup', () => {
         });
 
         it('set VExt',async()=>{
-            await connection.writeOpcUaNode('Variable.VExt',
-                namespaceUrl,
+            await connection.writeNode('Variable.VExt',
+                mockupServer.nameSpaceUri,
                 1,'Int32');
-            await connection.readOpcUaNode('Variable.VExt',
-                namespaceUrl)
-                .then(datavalue=>expect(datavalue?.value.value).to.equal(1));
+            await connection.readNode('Variable.VExt',
+                mockupServer.nameSpaceUri)
+                .then((dataValue)=>expect((dataValue)?.value.value).to.equal(1));
         }).timeout(10000);
 
         it('set VOp',async()=>{
-            await connection.writeOpcUaNode('Variable.VOp',
-                namespaceUrl,
+            await connection.writeNode('Variable.VOp',
+                mockupServer.nameSpaceUri,
                 1,'Int32');
-            await connection.readOpcUaNode('Variable.VOp',
-                namespaceUrl)
-                .then(datavalue=>expect(datavalue?.value.value).to.equal(1));
+            await connection.readNode('Variable.VOp',
+                mockupServer.nameSpaceUri)
+                .then((dataValue)=>expect((dataValue)?.value.value).to.equal(1));
         }).timeout(10000);
     });
 });

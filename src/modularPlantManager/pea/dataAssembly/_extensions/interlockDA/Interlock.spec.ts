@@ -34,7 +34,6 @@ import {MonBinVlv} from '../../activeElement';
 import {Interlock} from './Interlock';
 import {MockupServer} from '../../../../_utils';
 import {Namespace, UAObject} from 'node-opcua';
-import {namespaceUrl} from '../../../../../../tests/namespaceUrl';
 import {InterlockDAMockup} from './InterlockDA.mockup';
 
 chai.use(chaiAsPromised);
@@ -48,7 +47,7 @@ describe('Interlock', () => {
 	};
 
 	describe('static', () => {
-		const emptyOPCUAConnection = new OpcUaConnection('', '');
+		const emptyOPCUAConnection = new OpcUaConnection();
 		it('should create Interlock', () => {
 			const da1 = new DataAssemblyController(dataAssemblyOptions, emptyOPCUAConnection) as MonBinVlv;
 			const interlock = new Interlock(da1); //this will set communication variables
@@ -71,11 +70,12 @@ describe('Interlock', () => {
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
 			mockup = new InterlockDAMockup(
-				mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject,
+				mockupServer.nameSpace,
+				mockupServer.rootObject,
 				'Variable');
 			await mockupServer.start();
-			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334', '', '');
+			connection = new OpcUaConnection();
+			connection.initialize({endpoint: mockupServer.endpoint});
 			await connection.connect();
 		});
 
@@ -86,17 +86,11 @@ describe('Interlock', () => {
 		});
 
 		it('should subscribe successfully', async () => {
-			// set namespaceUrl
-			for (const key in dataAssemblyOptions.dataItems as any) {
-				//skip static values
-				if ((typeof (dataAssemblyOptions.dataItems as any)[key] != 'string')) {
-					(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
-				}
-			}
+
 			const da1 = new DataAssemblyController(dataAssemblyOptions, connection) as any;
 			new Interlock(da1);
 			const pv = da1.subscribe();
-			await connection.startListening();
+			await connection.startMonitoring();
 			await pv;
 
 			expect(da1.communication.PermEn.value).equal(false);

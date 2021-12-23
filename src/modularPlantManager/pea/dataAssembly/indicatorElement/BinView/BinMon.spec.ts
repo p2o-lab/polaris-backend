@@ -30,12 +30,7 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import * as baseDataAssemblyOptions from '../../../../../../tests/binmon.json';
-import {DataAssemblyControllerFactory} from '../../DataAssemblyControllerFactory';
 import {MockupServer} from '../../../../_utils';
-import {BinViewMockup} from './BinView.mockup';
-import {Namespace, UAObject} from 'node-opcua';
-import {namespaceUrl} from '../../../../../../tests/namespaceUrl';
-import {BinView} from './BinView';
 import {BinMonMockup} from './BinMon.mockup';
 
 chai.use(chaiAsPromised);
@@ -49,7 +44,7 @@ describe('BinMon', () => {
 	};
 
 	describe('static', () => {
-		const emptyOPCUAConnection = new OpcUaConnection('', '');
+		const emptyOPCUAConnection = new OpcUaConnection();
 		it('should create BinMon', async () => {
 			const da1: BinMon = new BinMon(dataAssemblyOptions, emptyOPCUAConnection);
 
@@ -76,11 +71,12 @@ describe('BinMon', () => {
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
 			const mockup = new BinMonMockup(
-				mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject,
+				mockupServer.nameSpace,
+				mockupServer.rootObject,
 				'Variable');
 			await mockupServer.start();
-			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334','','');
+			connection = new OpcUaConnection();
+			connection.initialize({endpoint: mockupServer.endpoint});
 			await connection.connect();
 		});
 
@@ -91,16 +87,10 @@ describe('BinMon', () => {
 		});
 
 		it('should subscribe successfully', async () => {
-			// set namespaceUrl
-			for (const key in dataAssemblyOptions.dataItems as any) {
-				//skip static values
-				if((typeof(dataAssemblyOptions.dataItems as any)[key] != 'string')){
-					(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
-				}
-			}
+
 			const da1: BinMon = new BinMon(dataAssemblyOptions, connection);
 			const pv = da1.subscribe();
-			await connection.startListening();
+			await connection.startMonitoring();
 			await pv;
 			expect(da1.communication.WQC.value).equal(0);
 			expect(da1.communication.V.value).equal(false);

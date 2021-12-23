@@ -30,8 +30,6 @@ import {DataAssemblyOptions, OperationMode} from '@p2olab/polaris-interface';
 import * as baseDataAssemblyOptions from '../../../../../../tests/anaserveparam.json';
 import {DataAssemblyController} from '../../DataAssemblyController';
 import {MockupServer} from '../../../../_utils';
-import {Namespace, UAObject} from 'node-opcua';
-import {namespaceUrl} from '../../../../../../tests/namespaceUrl';
 import {OpModeDAMockup} from './OpModeDA.mockup';
 import {OpModeController} from './OpModeController';
 
@@ -44,16 +42,11 @@ describe('OpMode', () => {
 		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperatorElement/AnaServParam',
 		dataItems: baseDataAssemblyOptions
 	};
-	// set namespaceUrl
-	for (const key in dataAssemblyOptions.dataItems as any) {
-		//skip static values
-		if ((typeof (dataAssemblyOptions.dataItems as any)[key] != 'string')) {
-			(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
-		}
-	}
+
 	describe('static', () => {
-		const emptyOPCUAConnection = new OpcUaConnection('', '');
+		const emptyOPCUAConnection = new OpcUaConnection();
 		it('should create OpModeController', () => {
+
 			const da = new DataAssemblyController(dataAssemblyOptions, emptyOPCUAConnection) as any;
 			const opMode = new OpModeController(da);
 
@@ -80,11 +73,12 @@ describe('OpMode', () => {
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
 			mockup = new OpModeDAMockup(
-				mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject,
+				mockupServer.nameSpace,
+				mockupServer.rootObject,
 				'Variable');
 			await mockupServer.start();
-			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334', '', '');
+			connection = new OpcUaConnection();
+			connection.initialize({endpoint: mockupServer.endpoint});
 			await connection.connect();
 		});
 
@@ -95,10 +89,11 @@ describe('OpMode', () => {
 		});
 
 		it('should subscribe successfully', async () => {
+
 			const da1 = new DataAssemblyController(dataAssemblyOptions, connection) as any;
 			new OpModeController(da1);
 			const pv = da1.subscribe();
-			await connection.startListening();
+			await connection.startMonitoring();
 			await pv;
 
 			expect((da1).communication.StateChannel.value).equal(false);
@@ -125,16 +120,18 @@ describe('OpMode', () => {
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
 			mockup = new OpModeDAMockup(
-				mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject,
+				mockupServer.nameSpace,
+				mockupServer.rootObject,
 				'Variable');
 			await mockupServer.start();
-			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334', '', '');
+			connection = new OpcUaConnection();
+			connection.initialize({endpoint: mockupServer.endpoint});
+
 			da1 = new DataAssemblyController(dataAssemblyOptions, connection) as any;
 			opMode = new OpModeController(da1);
 			await connection.connect();
 			const pv = da1.subscribe();
-			await connection.startListening();
+			await connection.startMonitoring();
 			await pv;
 		});
 
@@ -180,16 +177,18 @@ describe('OpMode', () => {
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
 			mockup = new OpModeDAMockup(
-				mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject,
+				mockupServer.nameSpace,
+				mockupServer.rootObject,
 				'Variable', OperationMode.Operator);
 			await mockupServer.start();
-			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334', '', '');
+			connection = new OpcUaConnection();
+			connection.initialize({endpoint: mockupServer.endpoint});
+
 			da1 = new DataAssemblyController(dataAssemblyOptions, connection) as any;
 			opMode = new OpModeController(da1);
 			await connection.connect();
 			const pv = da1.subscribe();
-			await connection.startListening();
+			await connection.startMonitoring();
 			await pv;
 		});
 
@@ -230,16 +229,17 @@ describe('OpMode', () => {
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
 			mockup = new OpModeDAMockup(
-				mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject,
+				mockupServer.nameSpace,
+				mockupServer.rootObject,
 				'Variable', OperationMode.Automatic);
 			await mockupServer.start();
-			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334', '', '');
+			connection = new OpcUaConnection();
+			connection.initialize({endpoint: mockupServer.endpoint});
 			da1 = new DataAssemblyController(dataAssemblyOptions, connection) as any;
 			opMode = new OpModeController(da1);
 			await connection.connect();
 			const pv = da1.subscribe();
-			await connection.startListening();
+			await connection.startMonitoring();
 			await pv;
 		});
 

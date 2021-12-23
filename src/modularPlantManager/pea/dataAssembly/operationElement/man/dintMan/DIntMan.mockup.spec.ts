@@ -4,7 +4,7 @@ import {Namespace, UAObject} from 'node-opcua';
 import {MockupServer} from '../../../../../_utils';
 import {DIntManMockup} from './DIntMan.mockup';
 import {OpcUaConnection} from '../../../../connection';
-import {namespaceUrl} from '../../../../../../../tests/namespaceUrl';
+
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -26,27 +26,25 @@ describe('DIntManMockup', () => {
             mockupServer = new MockupServer();
             await mockupServer.initialize();
         });
-        afterEach(async () => {
 
-        });
         it('should create DIntManMockup', async () => {
-            const mockup= new DIntManMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            const mockup= new DIntManMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             expect(mockup).to.not.be.undefined;
             //TODO: test more
 
         });
         it('getDIntManMockupReferenceJSON(namespace, objectBrowseName)',  () => {
-            const mockup = new DIntManMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            const mockup = new DIntManMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             const json = mockup.getDIntManMockupJSON();
             expect(json).not.to.be.undefined;
             expect(Object.keys(json).length).to.equal(10);
             //TODO: test more
         });
         it('startCurrentTimeUpdate()',  async() => {
-            const mockup: FakeClass = new FakeClass(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable') as FakeClass;
+            const mockup: FakeClass = new FakeClass(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable') as FakeClass;
             mockup.startCurrentTimeUpdate();
             expect(mockup.getVOut()).to.equal(0);
             await new Promise(f => setTimeout(f, 1000));
@@ -54,8 +52,8 @@ describe('DIntManMockup', () => {
         });
 
         it('stopCurrentTimeUpdate()',  async() => {
-            const mockup: FakeClass = new FakeClass(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable') as FakeClass;
+            const mockup: FakeClass = new FakeClass(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable') as FakeClass;
             mockup.startCurrentTimeUpdate();
             mockup.stopCurrentTimeUpdate();
             expect(mockup.getVOut()).to.equal(0);
@@ -65,13 +63,13 @@ describe('DIntManMockup', () => {
         });
 
         it('stopCurrentTimeUpdate(), interval undefined',  () => {
-            const mockup: FakeClass = new FakeClass(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable') as FakeClass;
+            const mockup: FakeClass = new FakeClass(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable') as FakeClass;
             expect((() => mockup.stopCurrentTimeUpdate())).to.throw();
         });
     });
     describe('dynamic', () => {
-        // we need to check if the nodes was addes succesfully and are writeable and readable
+        // we need to check if the nodes was added successfully and are writeable and readable
         let mockupServer: MockupServer;
         let mockup: DIntManMockup;
         let connection: OpcUaConnection;
@@ -79,10 +77,11 @@ describe('DIntManMockup', () => {
             this.timeout(5000);
             mockupServer = new MockupServer();
             await mockupServer.initialize();
-            mockup = new DIntManMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            mockup = new DIntManMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             await mockupServer.start();
-            connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334');
+            connection = new OpcUaConnection();
+            connection.initialize({endpoint: mockupServer.endpoint});
             await connection.connect();
         });
 
@@ -92,9 +91,9 @@ describe('DIntManMockup', () => {
         });
         
         it('set and get VMan', async () => {
-            await connection.writeOpcUaNode('Variable.VMan', namespaceUrl, 1, 'Int32');
-            await connection.readOpcUaNode('Variable.VMan', namespaceUrl)
-                .then(datavalue => expect(datavalue?.value.value).to.equal(1));
+            await connection.writeNode('Variable.VMan', mockupServer.nameSpaceUri, 1, 'Int32');
+            await connection.readNode('Variable.VMan', mockupServer.nameSpaceUri)
+                .then((dataValue) => expect((dataValue)?.value.value).to.equal(1));
         }).timeout(3000);
 
         //TODO get the rest

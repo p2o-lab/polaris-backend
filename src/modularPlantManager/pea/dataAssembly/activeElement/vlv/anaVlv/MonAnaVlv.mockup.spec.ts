@@ -17,18 +17,16 @@ describe('MonAnaVlvMockup', () => {
             mockupServer = new MockupServer();
             await mockupServer.initialize();
         });
-        afterEach(async () => {
 
-        });
         it('should create MonAnaVlvMockup', async () => {
-            const mockup= new MonAnaVlvMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            const mockup= new MonAnaVlvMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             expect(mockup).to.not.be.undefined;
 
         });
         it('getMonAnaVlvMockupReferenceJSON()',  () => {
-            const mockup = new MonAnaVlvMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            const mockup = new MonAnaVlvMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             const json = mockup.getMonAnaVlvMockupJSON();
             expect(json).to.not.be.undefined;
             expect(Object.keys(json).length).to.equal(61);
@@ -37,7 +35,7 @@ describe('MonAnaVlvMockup', () => {
     });
 
     describe('dynamic', () => {
-        // we need to check if the nodes was addes succesfully and are writeable and readable
+        // we need to check if the nodes was added successfully and are writeable and readable
         let mockupServer: MockupServer;
         let mockup: MonAnaVlvMockup;
         let connection: OpcUaConnection;
@@ -45,10 +43,11 @@ describe('MonAnaVlvMockup', () => {
             this.timeout(5000);
             mockupServer = new MockupServer();
             await mockupServer.initialize();
-            mockup = new MonAnaVlvMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            mockup = new MonAnaVlvMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             await mockupServer.start();
-            connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334');
+            connection = new OpcUaConnection();
+            connection.initialize({endpoint: mockupServer.endpoint});
             await connection.connect();
         });
         afterEach(async () => {

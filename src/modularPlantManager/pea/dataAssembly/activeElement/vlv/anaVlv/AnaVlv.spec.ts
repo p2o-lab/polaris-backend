@@ -31,7 +31,7 @@ import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import * as baseDataAssemblyOptions from '../../../../../../../tests/monanavlv.json';
 import {MockupServer} from '../../../../../_utils';
 import {Namespace, UAObject} from 'node-opcua';
-import {namespaceUrl} from '../../../../../../../tests/namespaceUrl';
+
 import {AnaVlvMockup} from './AnaVlv.mockup';
 
 chai.use(chaiAsPromised);
@@ -45,7 +45,7 @@ describe('AnaVlv', () => {
 	};
 	
 	describe('static', () => {
-		const emptyOPCUAConnection = new OpcUaConnection('', '');
+		const emptyOPCUAConnection = new OpcUaConnection();
 		it('should create AnaVlv',  () => {
 			const da1 = new AnaVlv(dataAssemblyOptions, emptyOPCUAConnection);
 			expect(da1).to.not.be.undefined;
@@ -83,11 +83,12 @@ describe('AnaVlv', () => {
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
 			mockup = new AnaVlvMockup(
-				mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject,
+				mockupServer.nameSpace,
+				mockupServer.rootObject,
 				'Variable');
 			await mockupServer.start();
-			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334', '', '');
+			connection = new OpcUaConnection();
+			connection.initialize({endpoint: mockupServer.endpoint});
 			await connection.connect();
 		});
 
@@ -98,16 +99,10 @@ describe('AnaVlv', () => {
 		});
 
 		it('should subscribe successfully', async () => {
-			// set namespaceUrl
-			for (const key in dataAssemblyOptions.dataItems as any) {
-				//skip static values
-				if ((typeof (dataAssemblyOptions.dataItems as any)[key] != 'string')) {
-					(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
-				}
-			}
+
 			const da1 = new AnaVlv(dataAssemblyOptions, connection);
 			const pv = da1.subscribe();
-			await connection.startListening();
+			await connection.startMonitoring();
 			await pv;
 
 			expect(da1.communication.OSLevel.value).equal(0);

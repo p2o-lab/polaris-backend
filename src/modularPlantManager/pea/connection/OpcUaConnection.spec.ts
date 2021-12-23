@@ -28,28 +28,31 @@ import {OpcUaConnection} from './OpcUaConnection';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../_utils';
-import {namespaceUrl} from '../../../../tests/namespaceUrl';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
+
 describe('OpcUaConnection', () => {
 
 	it('should reject connecting to a server with too high port', async () => {
-		const connection = new OpcUaConnection('test', 'opc.tcp://127.0.0.1:44447777');
+		const connection = new OpcUaConnection();
+		connection.initialize({endpoint: 'opc.tcp://127.0.0.1:44447777'});
 		expect(connection.isConnected()).to.equal(false);
 		await expect(connection.connect()).to.be.rejected;
 	});
 
 	it('should reject connecting to a server with not existing endpoint', async () => {
-		const connection = new OpcUaConnection('test', '');
+		const connection = new OpcUaConnection();
+		connection.initialize({endpoint: ''});
 		expect(connection.isConnected()).to.equal(false);
 		await expect(connection.connect()).to.be.rejected;
 		expect(connection.isConnected()).to.equal(false);
 	}).timeout(5000);
 
 	it('should connect to a opc ua test server and recognize a shutdown of this server', async () => {
-/*		const connection = new OpcUaConnection('testserver', 'opc.tcp://localhost:4334');
+/*		const connection = new OpcUaConnection();
+        connection.initialize({endpoint: mockupServer.endpoint});
 		const mockupServer = new MockupServer();
 		await mockupServer.start();
 
@@ -64,110 +67,132 @@ describe('OpcUaConnection', () => {
 			});
 			mockupServer.shutdown();
 		});*/
-		// TODO this is currently throwing an error
 	}).timeout(3000);
 
 
 	describe('with test server', () => {
 		let mockupServer: MockupServer;
+		let mockupServerNamespace = '';
 
 		before(async () => {
 			mockupServer = new MockupServer();
 			await mockupServer.start();
+			mockupServerNamespace = mockupServer.nameSpaceUri;
 		});
 
 		after(async () => {
-			if(mockupServer) await mockupServer.shutdown();
-
+			if(mockupServer) {
+				await mockupServer.shutdown();
+			}
 		});
 
-		it('should connect to a opc ua test server, read an opc item and disconnect', async () => {
-			const connection = new OpcUaConnection('testserver', 'opc.tcp://localhost:4334');
-			expect(connection.isConnected()).to.equal(false);
 
+		it('should add and remove Nodes to connection for monitoring', async () => {
+			const connection = new OpcUaConnection();
+			connection.initialize({endpoint: mockupServer.endpoint});
 			await connection.connect();
-			expect(connection.isConnected()).to.equal(true);
-
-			await connection.readOpcUaNode('trigger', namespaceUrl)
-				.then(datavalue => expect(datavalue?.value.value).to.equal(false));
+			connection.addNodeToMonitoring('trigger', mockupServerNamespace);
+			expect(connection.monitoredNodesCount()).to.equal(1);
+			connection.addNodeToMonitoring('trigger1', mockupServerNamespace);
+			expect(connection.monitoredNodesCount()).to.equal(2);
+			connection.clearMonitoredNodes();
+			expect(connection.monitoredNodesCount()).to.equal(0);
 			await connection.disconnect();
 		});
 
-		it('should connect to a opc ua test server, subscribes to one opc item and disconnect', async () => {
-			const connection = new OpcUaConnection('testserver', 'opc.tcp://localhost:4334');
+
+		it('should connect to MockupServer, read an opc item and disconnect', async () => {
+
+			const connection = new OpcUaConnection();
+			connection.initialize({endpoint: mockupServer.endpoint});
 			expect(connection.isConnected()).to.equal(false);
 
 			await connection.connect();
 			expect(connection.isConnected()).to.equal(true);
 
-			const eventName = connection.addOpcUaNode('trigger', namespaceUrl);
-			const eventEmitter = await connection.startListening();
+			await connection.readNode('trigger', mockupServerNamespace).then((result) => expect(result?.value.value).to.equal(false));
+			await connection.disconnect();
+		});
+
+		it('should connect to a opc ua test server, subscribe to one opc ua item and disconnect', async () => {
+			const connection = new OpcUaConnection();
+			connection.initialize({endpoint: mockupServer.endpoint});
+			expect(connection.isConnected()).to.equal(false);
+
+			await connection.connect();
+
+			const eventName = connection.addNodeToMonitoring('trigger', mockupServerNamespace);
+			await connection.createSubscription();
+			const eventEmitter = await connection.startMonitoring();
 			await new Promise(resolve => eventEmitter.on(eventName, resolve));
 
 			await connection.disconnect();
 		});
 
 		it('should work after reconnection', async () => {
-			const connection = new OpcUaConnection('testserver', 'opc.tcp://localhost:4334');
-			expect(connection.isConnected()).to.equal(false);
-
+			const connection = new OpcUaConnection();
+			connection.initialize({endpoint: mockupServer.endpoint});
 			await connection.connect();
-			expect(connection.isConnected()).to.equal(true);
 
-			const eventName1 = connection.addOpcUaNode('trigger', namespaceUrl);
-			await connection.startListening();
-			expect(connection.monitoredItemSize()).to.equal(1);
+			const eventName1 = connection.addNodeToMonitoring('trigger', mockupServerNamespace);
+			expect(connection.monitoredNodesCount()).to.equal(1);
+			await connection.createSubscription();
+			await connection.startMonitoring();
 			await new Promise(resolve => connection.eventEmitter.on(eventName1, resolve));
-
 			await connection.disconnect();
-			expect(connection.monitoredItemSize()).to.equal(0);
+
+			expect(connection.monitoredNodesCount()).to.equal(1);
 			await connection.connect();
 
-			const eventName2 = connection.addOpcUaNode('trigger', namespaceUrl);
+			const eventName2 = connection.addNodeToMonitoring('trigger', mockupServerNamespace);
 			expect(eventName1).to.equal(eventName2);
-			await connection.startListening();
-			await new Promise(resolve => connection.eventEmitter.on(eventName1, resolve));
-			expect(connection.monitoredItemSize()).to.equal(1);
+			await connection.createSubscription();
+			await connection.startMonitoring();
+			await new Promise((resolve) => connection.eventEmitter.on(eventName1, resolve));
+			expect(connection.monitoredNodesCount()).to.equal(1);
 		}).timeout(4000);
 
 		it('should not add same nodeId, invalid namespace should throw, should listen to multiple items', async () => {
-			const connection = new OpcUaConnection('testserver', 'opc.tcp://localhost:4334');
+			const connection = new OpcUaConnection();
+			connection.initialize({endpoint: mockupServer.endpoint});
 			expect(connection.isConnected()).to.equal(false);
 
 			await connection.connect();
 			expect(connection.isConnected()).to.equal(true);
 
-			connection.addOpcUaNode('trigger', namespaceUrl);
-			expect(connection.monitoredItemSize()).equals(1);
+			connection.addNodeToMonitoring('trigger', mockupServerNamespace);
+			expect(connection.monitoredNodesCount()).equals(1);
 
-			connection.addOpcUaNode('trigger', namespaceUrl);
-			expect(connection.monitoredItemSize()).equals(1);
+			connection.addNodeToMonitoring('trigger', mockupServerNamespace);
+			expect(connection.monitoredNodesCount()).equals(1);
 
-			connection.addOpcUaNode('nonexistant', namespaceUrl);
+			connection.addNodeToMonitoring('nonexistant', mockupServerNamespace);
 
-			expect(connection.monitoredItemSize()).equals(2);
+			expect(connection.monitoredNodesCount()).equals(2);
 
-			expect(() => connection.addOpcUaNode('nonexistant', 'urn:nan'))
-				.to.throw('Could not resolve namespace');
-			expect(connection.monitoredItemSize()).equals(2);
+			const invalidUrn = 'urn:nan';
+			expect(() => connection.addNodeToMonitoring('nonexistant', invalidUrn))
+				.to.throw(`Namespace ${invalidUrn} is unknown!`);
+			expect(connection.monitoredNodesCount()).equals(2);
 
-			connection.addOpcUaNode('Service1.OpMode', namespaceUrl);
-			expect(connection.monitoredItemSize()).equals(3);
-			await connection.startListening();
+			connection.addNodeToMonitoring('Service1.OpMode', mockupServerNamespace);
+			expect(connection.monitoredNodesCount()).equals(3);
+			await connection.createSubscription();
+			await connection.startMonitoring();
 			await connection.disconnect();
 		}).timeout(5000);
 
 		it('should connect with username and password', async () => {
-			const connection = new OpcUaConnection('testserver', 'opc.tcp://localhost:4334', 'admin', '1234');
+			const connection = new OpcUaConnection();
+			connection.initialize({endpoint: mockupServer.endpoint});
 			await connection.connect();
 			await connection.disconnect();
 		});
 
-		it('should fail connecting with wrong username and password', async () => {
-			const connection = new OpcUaConnection('testserver', 'opc.tcp://localhost:4334', 'admin', 'empty');
-			await expect(connection.connect()).to.be.rejectedWith('BadUserAccessDenied');
-			await connection.disconnect();
+		it('updateServerSettings(), should work', () => {
+			// TODO
 		});
+
 	});
 
 });

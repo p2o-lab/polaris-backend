@@ -30,9 +30,8 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import * as baseDataAssemblyOptions from '../../../../../../tests/lockview.json';
-import {namespaceUrl} from '../../../../../../tests/namespaceUrl';
 import {MockupServer} from '../../../../_utils';
-import {Namespace, UAObject} from 'node-opcua';
+import {Namespace} from 'node-opcua';
 import {LockView4Mockup} from './LockView4.mockup';
 
 
@@ -48,7 +47,7 @@ describe('LockView4', () => {
 	};
 
 	describe('static', () => {
-		const emptyOPCUAConnection = new OpcUaConnection('', '');
+		const emptyOPCUAConnection = new OpcUaConnection();
 
 		it('should create LockView4', async () => {
 			const da1 = new LockView4(dataAssemblyOptions, emptyOPCUAConnection);
@@ -61,24 +60,19 @@ describe('LockView4', () => {
 	describe('dynamic', () => {
 		let mockupServer: MockupServer;
 		let connection: OpcUaConnection;
-		// set namespaceUrl
-		for (const key in dataAssemblyOptions.dataItems as any) {
-			//skip static values
-			if((typeof(dataAssemblyOptions.dataItems as any)[key] != 'string')){
-				(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
-			}
-		}
+
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
 			const mockup = new LockView4Mockup(
-				mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject,
+				mockupServer.nameSpace,
+				mockupServer.rootObject,
 				'Variable');
 
 			await mockupServer.start();
-			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334','','');
+			connection = new OpcUaConnection();
+			connection.initialize({endpoint: mockupServer.endpoint});;
 			await connection.connect();
 		});
 
@@ -89,9 +83,10 @@ describe('LockView4', () => {
 		});
 
 		it('should subscribe successfully', async () => {
+
 			const da1 = new LockView4(dataAssemblyOptions, connection);
 			const pv = da1.subscribe();
-			await connection.startListening();
+			await connection.startMonitoring();
 			await pv;
 			expect(da1.communication.WQC.value).equal(0);
 			expect(da1.communication.Logic.value).equal(false);

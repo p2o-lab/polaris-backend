@@ -29,20 +29,17 @@ import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import * as baseDataAssemblyOptions from '../../../../../tests/binprocessvaluein.json';
 import {MockupServer} from '../../../_utils';
-import {Namespace, UAObject} from 'node-opcua';
-import {namespaceUrl} from '../../../../../tests/namespaceUrl';
 import {InputElementMockup} from './InputElement.mockup';
 import {InputElement} from './InputElement';
 import {DataAssemblyControllerFactory} from '../DataAssemblyControllerFactory';
-import {OSLevel, WQC} from '../_extensions';
-import {ActiveElementMockup} from '../activeElement/ActiveElement.mockup';
+import {WQC} from '../_extensions';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('InputElement', () => {
 	describe('static', () => {
-		const emptyOPCUAConnection = new OpcUaConnection('', '');
+		const emptyOPCUAConnection = new OpcUaConnection();
 		it('should create InputElement', async () => {
 			const dataAssemblyOptions: DataAssemblyOptions = {
 				name: 'Variable',
@@ -67,24 +64,19 @@ describe('InputElement', () => {
 		};
 		let mockupServer: MockupServer;
 		let connection: OpcUaConnection;
-		// set namespaceUrl
-		for (const key in dataAssemblyOptions.dataItems as any) {
-			//skip static values
-			if((typeof(dataAssemblyOptions.dataItems as any)[key] != 'string')){
-				(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
-			}
-		}
+
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
 			const mockup = new InputElementMockup(
-				mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject,
+				mockupServer.nameSpace,
+				mockupServer.rootObject,
 				'Variable');
 
 			await mockupServer.start();
-			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334','','');
+			connection = new OpcUaConnection();
+			connection.initialize({endpoint: mockupServer.endpoint});
 			await connection.connect();
 		});
 
@@ -95,12 +87,13 @@ describe('InputElement', () => {
 		});
 
 		it('should subscribe successfully', async () => {
+
 			//TODO: problem with circular dependencies, new InputElement() does not work
 			//const da1 = new InputElement(dataAssemblyOptions, connection);
 			const da1 = DataAssemblyControllerFactory.create(dataAssemblyOptions, connection) as InputElement;
 			new WQC(da1);
 			const pv = da1.subscribe();
-			await connection.startListening();
+			await connection.startMonitoring();
 			await pv;
 			expect(da1.communication.WQC.value).equal(0);
 		}).timeout(4000);

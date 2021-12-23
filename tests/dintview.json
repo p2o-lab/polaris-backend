@@ -3,27 +3,27 @@
     "TagDescription": "Test",
     "WQC": {
       "nodeId": "Variable.WQC",
-      "namespaceIndex": "localhost",
+      "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
       "dataType": "xs:IDREF"
     },
     "V": {
       "nodeId": "Variable.V",
-      "namespaceIndex": "localhost",
+      "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
       "dataType": "xs:IDREF"
     },
     "VSclMin": {
       "nodeId": "Variable.VSclMin",
-      "namespaceIndex": "localhost",
+      "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
       "dataType": "xs:IDREF"
     },
     "VSclMax": {
       "nodeId": "Variable.VSclMax",
-      "namespaceIndex": "localhost",
+      "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
       "dataType": "xs:IDREF"
     },
     "VUnit": {
       "nodeId": "Variable.VUnit",
-      "namespaceIndex": "localhost",
+      "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
       "dataType": "xs:IDREF"
     }
 }

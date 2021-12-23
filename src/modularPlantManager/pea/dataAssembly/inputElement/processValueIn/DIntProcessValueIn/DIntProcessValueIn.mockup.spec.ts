@@ -5,7 +5,7 @@ import {DIntProcessValueInMockup} from './DIntProcessValueIn.mockup';
 import {MockupServer} from '../../../../../_utils';
 import {AnaProcessValueInMockup} from '../AnaProcessValueIn/AnaProcessValueIn.mockup';
 import {OpcUaConnection} from '../../../../connection';
-import {namespaceUrl} from '../../../../../../../tests/namespaceUrl';
+
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -17,19 +17,17 @@ describe('DIntProcessValueInMockup', () => {
             mockupServer = new MockupServer();
             await mockupServer.initialize();
         });
-        afterEach(async () => {
 
-        });
         it('should create DIntProcessValueInMockup', () => {
-            const mockup= new DIntProcessValueInMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            const mockup= new DIntProcessValueInMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             expect(mockup).to.not.be.undefined;
             //TODO: test more
 
         });
         it('getDIntProcessValueInMockupReferenceJSON()',  () => {
-            const mockup = new DIntProcessValueInMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            const mockup = new DIntProcessValueInMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             const json = mockup.getDIntProcessValueInInstanceMockupJSON();
             expect(json).not.to.be.undefined;
             expect(Object.keys(json).length).to.equal(5);
@@ -37,7 +35,7 @@ describe('DIntProcessValueInMockup', () => {
         });
     });
     describe('dynamic', () => {
-        // we need to check if the nodes was addes succesfully and are writeable and readable
+        // we need to check if the nodes was added successfully and are writeable and readable
         let mockupServer: MockupServer;
         let mockup: DIntProcessValueInMockup;
         let connection: OpcUaConnection;
@@ -45,10 +43,11 @@ describe('DIntProcessValueInMockup', () => {
             this.timeout(5000);
             mockupServer = new MockupServer();
             await mockupServer.initialize();
-            mockup = new DIntProcessValueInMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            mockup = new DIntProcessValueInMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             await mockupServer.start();
-            connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334');
+            connection = new OpcUaConnection();
+            connection.initialize({endpoint: mockupServer.endpoint});
             await connection.connect();
         });
 
@@ -58,21 +57,21 @@ describe('DIntProcessValueInMockup', () => {
         });
 
         it('set and get VExt, >VSclMax', async () => {
-            await connection.writeOpcUaNode('Variable.VExt', namespaceUrl, 1, 'Int32');
-            await connection.readOpcUaNode('Variable.VExt', namespaceUrl)
-                .then(datavalue => expect(datavalue?.value.value).to.equal(0));
+            await connection.writeNode('Variable.VExt', mockupServer.nameSpaceUri, 1, 'Int32');
+            await connection.readNode('Variable.VExt', mockupServer.nameSpaceUri)
+                .then((dataValue) => expect((dataValue)?.value.value).to.equal(0));
         }).timeout(3000);
 
         it('set and get VExt, <VSclMin', async () => {
-            await connection.writeOpcUaNode('Variable.VExt', namespaceUrl, -1, 'Int32');
-            await connection.readOpcUaNode('Variable.VExt', namespaceUrl)
-                .then(datavalue => expect(datavalue?.value.value).to.equal(0));
+            await connection.writeNode('Variable.VExt', mockupServer.nameSpaceUri, -1, 'Int32');
+            await connection.readNode('Variable.VExt', mockupServer.nameSpaceUri)
+                .then((dataValue) => expect((dataValue)?.value.value).to.equal(0));
         }).timeout(3000);
 
         it('set and get VExt', async () => {
-            await connection.writeOpcUaNode('Variable.VExt', namespaceUrl, 0, 'Int32');
-            await connection.readOpcUaNode('Variable.VExt', namespaceUrl)
-                .then(datavalue => expect(datavalue?.value.value).to.equal(0));
+            await connection.writeNode('Variable.VExt', mockupServer.nameSpaceUri, 0, 'Int32');
+            await connection.readNode('Variable.VExt', mockupServer.nameSpaceUri)
+                .then((dataValue) => expect((dataValue)?.value.value).to.equal(0));
         }).timeout(3000);
 
         //TODO get the rest

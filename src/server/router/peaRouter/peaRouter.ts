@@ -144,15 +144,16 @@ peaRouter.get('/:peaId', (req: Request, res: Response) => {
 });
 
 /**
- * @api {get} /:peaId/getServerSettings
- * @apiName GetSettings
+ * @api {get} /:peaId/getConnectionSettings
+ * @apiName GetConnectionSettings
  * @apiGroup PEAController
  * @apiParam {string} peaId
  */
-peaRouter.get('/:peaId/getServerSettings', (req: Request, res: Response) => {
+peaRouter.get('/:peaId/getConnectionSettings', (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
 	try{
-		const body = manager.getServerSettings(req.params.peaId);
+		const peaController = manager.getPEAController(req.params.peaId);
+		const body = peaController.getCurrentConnectionSettings();
 		res.status(200).send(body);
 	}catch (e) {
 		console.log(e);
@@ -162,16 +163,17 @@ peaRouter.get('/:peaId/getServerSettings', (req: Request, res: Response) => {
 });
 
 /**
- * @api {post} /updateServerSettings
- * @apiName PostServerSettings
+ * @api {post} /:peaId/updateConnectionSettings
+ * @apiName PostConnectionSettings
  * @apiGroup PEAController
- * @apiParam {ServerSettingsOptions} options
+ * @apiParam {ConnectionSettingsOptions} options
  */
-peaRouter.post('/updateServerSettings', asyncHandler(async (req: Request, res: Response) => {
+peaRouter.post('/:peaId/updateConnectionSettings', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
 	try{
-		manager.updateServerSettings(req.body);
-		res.status(200).send('"'+'Successfully updated the server settings!'+'"');
+		const peaController = manager.getPEAController(req.params.peaId);
+		peaController.updateConnection(req.body);
+		res.status(200).send('"'+'Successfully updated the connection settings!'+'"');
 	} catch(e){
 		console.log(e);
 		res.status(500).send(e.toString());

@@ -3,9 +3,7 @@ import {PEAOptions} from '@p2olab/polaris-interface';
 /**
  * Set NamespaceUrl for testing purpose
  */
-
-// set your namespaceUrl here
-export const namespaceUrl = 'urn:DESKTOP-DLSN8FE:NodeOPCUA-Server';
+const namespaceUrl = 'urn:' + require('os').hostname() + ':NodeOPCUA-Server';
 
 export function iterateDataItemsAndSetNameSpaceUrl(array: any){
     array.forEach((object: any) =>{

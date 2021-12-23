@@ -19,15 +19,15 @@ describe('DIntViewMockup', () => {
 
         });
         it('should create DIntViewMockup', async () => {
-            const mockup= new DIntViewMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            const mockup= new DIntViewMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             expect(mockup).to.not.be.undefined;
             //TODO: test more
 
         });
         it('getDIntViewMockupReferenceJSON()',  () => {
-            const mockup = new DIntViewMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            const mockup = new DIntViewMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             const json = mockup.getDIntViewInstanceMockupJSON();
             expect(json).not.to.be.undefined;
             expect(Object.keys(json).length).to.equal(5);

@@ -40,7 +40,7 @@ export class OpcUaDataItem<T> extends DataItem<T> {
 	private connection!: OpcUaConnection;
 
 	public static createFromOptions<type extends number | string | boolean>(
-		options: OpcUaNodeOptions, connection: OpcUaConnection, // attention! before-> type: ... = 'number'
+		options: OpcUaNodeOptions, connection: OpcUaConnection,
 		access: 'read' | 'write', type: 'number' | 'string' | 'boolean' = 'string'): OpcUaDataItem<type> {
 		const item = new OpcUaDataItem<type>();
 
@@ -70,37 +70,36 @@ export class OpcUaDataItem<T> extends DataItem<T> {
 	}
 
 	public async subscribe(): Promise<OpcUaDataItem<T>> {
-		const eventName = this.connection.addOpcUaNode(this.nodeId, this.namespaceIndex);
-		this.connection.eventEmitter.on(eventName,
+		const dataItemKey = this.connection.addNodeToMonitoring(this.nodeId, this.namespaceIndex);
+		this.connection.eventEmitter.on(dataItemKey,
 			(dataValue) => {
-				this.logger.info(`[${this.connection.id}] Variable Changed (${this.nodeId}) ` +
+				this.logger.info(`[${this.nodeId}] Variable Changed (${dataItemKey}) ` +
 					`= ${dataValue.value.value.toString()}`);
 				this.value = dataValue.value.value;
 				this.dataType = DataType[dataValue.value.dataType];
 				this.timestamp = dataValue.serverTimestamp;
 				this.emit('changed', {value: this.value, timestamp: this.timestamp, nodeId: this.nodeId});
 			});
-		//set timeout
-		await new Promise((resolve, reject) => {
-			//TODO are 3 seconds okay?
-			//TODO subscription timeout does not work on parameters, fix that
-			setTimeout(()=> reject(new Error(`Timeout: Could not subscribe to ${this.nodeId}`)),3000);
-			this.on('changed', resolve);
-		});
+
+		// //set timeout
+		// await new Promise((resolve, reject) => {
+		// 	setTimeout(()=> reject(new Error(`Timeout: Could not subscribe to ${this.nodeId}`)),3000);
+		// 	this.on('changed', resolve);
+		// });
 		this.logger.info(`subscribed to Data Item ${this.nodeId}`);
 		return this;
 	}
 
 	public async write(value: number | string | boolean): Promise<void> {
 		this.logger.info(`write: ${value} to ${this.nodeId}`);
-		return this.connection.writeOpcUaNode(this.nodeId, this.namespaceIndex, value, this.dataType);
+		return this.connection.writeNode(this.nodeId, this.namespaceIndex, value, this.dataType);
 	}
 
 	/**
 	 * Reads the OpcUA DataItem of the DataItem and use the results for initializing the DataItem
 	 */
 	public async read(): Promise<T | undefined> {
-		const result = await this.connection.readOpcUaNode(this.nodeId, this.namespaceIndex);
+		const result = await this.connection.readNode(this.nodeId, this.namespaceIndex);
 		if (!result) {
 			throw new Error(`Could not read ${this.nodeId.toString()}`);
 		}
@@ -109,8 +108,7 @@ export class OpcUaDataItem<T> extends DataItem<T> {
 			throw new Error(`Could not read ${this.nodeId.toString()}: ${result.statusCode.description}`);
 		}
 		this.value = result.value.value;
-		// readVariableValue does not provide serverTimestamp in node-opcua library
-		this.timestamp = new Date();
+		this.timestamp = result.serverTimestamp || new Date();
 		this.dataType = DataType[result.value.dataType];
 		this.logger.debug(`[${this.connection.id}] initialized Variable: ${this.nodeId.toString()} - ${this.value}`);
 		return this.value;

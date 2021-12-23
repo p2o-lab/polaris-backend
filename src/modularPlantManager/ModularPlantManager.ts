@@ -23,34 +23,18 @@
  * SOFTWARE.
  */
 
-import {
-	BackendNotification,
-	PEAInterface,
-	POLServiceInterface,
-	POLServiceOptions,
-	PEAOptions,
-	RecipeOptions,
-	ServiceCommand,
-	VariableChange,
-	ServerSettingsOptions,
-	PEAModel,
-} from '@p2olab/polaris-interface';
-import {
-	Backbone,
-	PEAPool,
-	PEAPoolVendor,
-} from '@p2olab/pimad-core';
-import {catManager, catOpcUA, ServiceLogEntry} from '../logging';
+import {BackendNotification, PEAInterface, PEAModel, PEAOptions, POLServiceInterface, POLServiceOptions, RecipeOptions, ServerSettingsOptions, ServiceCommand, VariableChange,} from '@p2olab/polaris-interface';
+import {Backbone, PEAPool, PEAPoolVendor,} from '@p2olab/pimad-core';
+import {catManager, ServiceLogEntry} from '../logging';
 import {ParameterChange, PEAController, Service} from './pea';
 import {ServiceState} from './pea/dataAssembly';
 import {POLService, POLServiceFactory} from './polService';
 import {Player, Recipe} from './recipe';
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
-import PiMAdResponse = Backbone.PiMAdResponse;
-import { v4 as uuidv4 } from 'uuid';
+import {v4 as uuidv4} from 'uuid';
 import {PiMAdParser} from './pea/PiMAdParser/PiMAdParser';
-import {ProcedureOptions} from '@p2olab/polaris-interface/dist/service/options';
+import PiMAdResponse = Backbone.PiMAdResponse;
 
 
 interface ModularPlantManagerEvents {
@@ -195,25 +179,6 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 	}
 
 	/**
-	 * get server settings of PEAController
-	 * @param {string} peaId
-	 */
-	public getServerSettings(peaId: string): object{
-		const peaControllerCon = this.getPEAController(peaId).connection;
-		const body= {serverUrl: peaControllerCon.endpoint, username: peaControllerCon.username, password: peaControllerCon.password};
-		return body;
-	}
-
-	/**
-	 * update server settings of PEAController
-	 * @param {ServerSettingsOptions} options
-	 */
-	public updateServerSettings(options: ServerSettingsOptions){
-		const pea = this.getPEAController(options.id);
-		pea.updateConnection(options);
-	}
-
-	/**
 	 * Load PEAControllers by given pimadIdentifier
 	 * //TODO needs refactoring -> input should be Object with pimadIdentifier and protected information
 	 * @param {string} pimadIdentifier
@@ -229,27 +194,6 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 			return newPEAs;
 		}
 		else throw new Error('No valid PiMAd Identifier');
-
-		/*if (options.subMP) {
-			options.subMP.forEach((subMPOptions) => {
-				subMPOptions.peas.forEach((peaOptions: PEAOptions) => {
-					if (this.peas.find((p) => p.id === peaOptions.pea.getPiMAdIdentifier())) {
-						catManager.warn(`PEAController ${peaOptions.pea.getPiMAdIdentifier()} already in registered PEAs`);
-						throw new Error(`PEAController ${peaOptions.pea.getPiMAdIdentifier()} already in registered PEAs`);
-					} else {
-						newPEAs.push(new PEAController(peaOptions, protectedPEAs));
-					}
-				});
-			});
-		} else if (options.peas) {
-			options.peas.forEach((peaOptions: PEAOptions) => {
-				if (this.peas.find((p) => p.id === peaOptions.pea.getPiMAdIdentifier())) {
-					catManager.warn(`PEAController ${peaOptions.pea.getPiMAdIdentifier()} already in registered PEAs`);
-					throw new Error(`PEAController ${peaOptions.pea.getPiMAdIdentifier()} already in registered PEAs`);
-				} else {
-					newPEAs.push(new PEAController(peaOptions, protectedPEAs));
-				}
-			});*/
 	}
 
 	/**
@@ -260,7 +204,7 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 		catManager.info(`Remove PEA ${peaID}`);
 		const pea = this.getPEAController(peaID);
 
-		if (pea.protected) throw new Error(`PEA ${peaID} is protected and can't be deleted`);
+		if (pea.protected) throw new Error(`PEA ${peaID} is protected and thus can not be removed`);
 
 		catManager.debug(`Disconnecting pea ${peaID} ...`);
 		await pea.disconnectAndUnsubscribe()
@@ -272,7 +216,7 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 	}
 
 	/**
-	 * get all PEAControllers as json
+	 * get all PEAController as json
 	 * @returns {PEAInterface[]}
 	 */
 	public getAllPEAControllers(): PEAInterface[] {

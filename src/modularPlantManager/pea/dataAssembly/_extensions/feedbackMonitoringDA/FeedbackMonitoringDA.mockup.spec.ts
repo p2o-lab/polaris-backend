@@ -1,11 +1,9 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {DataType, Namespace, UAObject} from 'node-opcua';
+import {Namespace} from 'node-opcua';
 import {MockupServer} from '../../../../_utils';
 import {FeedbackMonitoringDAMockup} from './FeedbackMonitoringDA.mockup';
-import {BinMonMockup} from '../../indicatorElement/BinView/BinMon.mockup';
 import {OpcUaConnection} from '../../../connection';
-import {namespaceUrl} from '../../../../../../tests/namespaceUrl';
 
 
 chai.use(chaiAsPromised);
@@ -20,14 +18,14 @@ describe('FeedbackMonitoringDAMockup', () => {
         });
 
         it('should create FeedbackMonitoringDAMockup', async () => {
-            const mockup= new FeedbackMonitoringDAMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            const mockup= new FeedbackMonitoringDAMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             expect(mockup).to.not.be.undefined;
         });
 
         it('getFeedbackMonitoringMockupReferenceJSON()',  () => {
-            const mockup = new FeedbackMonitoringDAMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            const mockup = new FeedbackMonitoringDAMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             const json = mockup.getFeedbackMonitoringDAInstanceMockupJSON();
 
             expect(Object.keys(json).length).to.equal(6);
@@ -41,7 +39,7 @@ describe('FeedbackMonitoringDAMockup', () => {
     });
 
     describe('dynamic', () => {
-        // we need to check if the nodes was addes succesfully and are writeable and readable
+        // we need to check if the nodes was added successfully and are writeable and readable
         let mockupServer: MockupServer;
         let mockup: FeedbackMonitoringDAMockup;
         let connection: OpcUaConnection;
@@ -49,10 +47,11 @@ describe('FeedbackMonitoringDAMockup', () => {
             this.timeout(5000);
             mockupServer = new MockupServer();
             await mockupServer.initialize();
-            mockup = new FeedbackMonitoringDAMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            mockup = new FeedbackMonitoringDAMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             await mockupServer.start();
-            connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334');
+            connection = new OpcUaConnection();
+            connection.initialize({endpoint: mockupServer.endpoint});
             await connection.connect();
         });
         afterEach(async () => {
@@ -61,33 +60,33 @@ describe('FeedbackMonitoringDAMockup', () => {
         });
 
         it('set and get MonEn', async () => {
-            await connection.writeOpcUaNode('Variable.MonEn', namespaceUrl, true, 'Boolean');
-            await connection.readOpcUaNode('Variable.MonEn', namespaceUrl)
-                .then(datavalue => expect(datavalue?.value.value).to.equal(true));
+            await connection.writeNode('Variable.MonEn', mockupServer.nameSpaceUri, true, 'Boolean');
+            await connection.readNode('Variable.MonEn', mockupServer.nameSpaceUri)
+                .then((dataValue) => expect((dataValue)?.value.value).to.equal(true));
         }).timeout(5000);
 
         it('get MonSafePos', async () => {
-            await connection.readOpcUaNode('Variable.MonSafePos', namespaceUrl)
-                .then(datavalue => expect(datavalue?.value.value).to.equal(false));
+            await connection.readNode('Variable.MonSafePos', mockupServer.nameSpaceUri)
+                .then((dataValue) => expect((dataValue)?.value.value).to.equal(false));
         }).timeout(5000);
 
         it('get MonStatErr', async () => {
-            await connection.readOpcUaNode('Variable.MonStatErr', namespaceUrl)
-                .then(datavalue => expect(datavalue?.value.value).to.equal(false));
+            await connection.readNode('Variable.MonStatErr', mockupServer.nameSpaceUri)
+                .then((dataValue) => expect((dataValue)?.value.value).to.equal(false));
         }).timeout(5000);
 
         it('get MonDynErr', async () => {
-            await connection.readOpcUaNode('Variable.MonDynErr', namespaceUrl)
-                .then(datavalue => expect(datavalue?.value.value).to.equal(false));
+            await connection.readNode('Variable.MonDynErr', mockupServer.nameSpaceUri)
+                .then((dataValue) => expect((dataValue)?.value.value).to.equal(false));
         }).timeout(5000);
 
         it('get MonStatTi', async () => {
-            await connection.readOpcUaNode('Variable.MonStatTi', namespaceUrl)
-                .then(datavalue => expect(datavalue?.value.value).to.equal(0));
+            await connection.readNode('Variable.MonStatTi', mockupServer.nameSpaceUri)
+                .then((dataValue) => expect((dataValue)?.value.value).to.equal(0));
         }).timeout(5000);
         it('get MonDynTi', async () => {
-            await connection.readOpcUaNode('Variable.MonDynTi', namespaceUrl)
-                .then(datavalue => expect(datavalue?.value.value).to.equal(0));
+            await connection.readNode('Variable.MonDynTi', mockupServer.nameSpaceUri)
+                .then((dataValue) => expect((dataValue)?.value.value).to.equal(0));
         }).timeout(5000);
 
     });

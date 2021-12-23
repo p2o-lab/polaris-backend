@@ -35,7 +35,6 @@ import {MockupServer} from '../../../../_utils';
 import {SourceModeDAMockup} from './SourceModeDA.mockup';
 import {Namespace, UAObject} from 'node-opcua';
 import {SourceModeController} from './SourceModeController';
-import {namespaceUrl} from '../../../../../../tests/namespaceUrl';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -46,14 +45,9 @@ describe('SourceModeController', () => {
 		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/BinManInt',
 		dataItems: baseDataAssemblyOptions
 	};
-	for (const key in dataAssemblyOptions.dataItems as any) {
-		//skip static values
-		if ((typeof (dataAssemblyOptions.dataItems as any)[key] != 'string')) {
-			(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
-		}
-	}
+
 	describe('static', () => {
-		const emptyOPCUAConnection = new OpcUaConnection('', '');
+		const emptyOPCUAConnection = new OpcUaConnection();
 		it('should create SourceModeController', async () => {
 			const da = new DataAssemblyController(dataAssemblyOptions, emptyOPCUAConnection);
 
@@ -76,16 +70,17 @@ describe('SourceModeController', () => {
 		beforeEach(async function () {
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			const mockupNode = (mockupServer.namespace as Namespace).addObject({
-				organizedBy: mockupServer.rootComponent as UAObject,
+			const mockupNode = (mockupServer.nameSpace).addObject({
+				organizedBy: mockupServer.rootObject,
 				browseName: 'Variable',
 			});
 			mockup = new SourceModeDAMockup(
-				mockupServer.namespace as Namespace,
+				mockupServer.nameSpace,
 				mockupNode,
 				'Variable');
 			await mockupServer.start();
-			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334', '', '');
+			connection = new OpcUaConnection();
+			connection.initialize({endpoint: mockupServer.endpoint});
 		});
 
 		afterEach(async function () {
@@ -95,11 +90,12 @@ describe('SourceModeController', () => {
 		});
 
 		it('should subscribe successfully', async () => {
+
 			const da1 = new DataAssemblyController(dataAssemblyOptions, connection) as any;
 			const sourceMode = new SourceModeController(da1);
 			await connection.connect();
 			const pv = da1.subscribe();
-			await connection.startListening();
+			await connection.startMonitoring();
 			await pv;
 			expect(da1.communication.SrcChannel.value).equal(false);
 			expect(da1.communication.SrcManAut.value).equal(false);
@@ -120,23 +116,24 @@ describe('SourceModeController', () => {
 		beforeEach(async function () {
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			const mockupNode = (mockupServer.namespace as Namespace).addObject({
-				organizedBy: mockupServer.rootComponent as UAObject,
+			const mockupNode = (mockupServer.nameSpace).addObject({
+				organizedBy: mockupServer.rootObject,
 				browseName: 'Variable',
 			});
 			mockup = new SourceModeDAMockup(
-				mockupServer.namespace as Namespace,
+				mockupServer.nameSpace,
 				mockupNode,
 				'Variable');
 			mockup.srcMode = SourceMode.Manual;
 			await mockupServer.start();
 
-			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334', '', '');
+			connection = new OpcUaConnection();
+			connection.initialize({endpoint: mockupServer.endpoint});
 			da1 = new DataAssemblyController(dataAssemblyOptions, connection);
 			sourceMode = new SourceModeController(da1);
 			await connection.connect();
 			const pv = da1.subscribe();
-			await connection.startListening();
+			await connection.startMonitoring();
 			await pv;
 		});
 		afterEach(async function () {
@@ -188,22 +185,23 @@ describe('SourceModeController', () => {
 		beforeEach(async function () {
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			const mockupNode = (mockupServer.namespace as Namespace).addObject({
-				organizedBy: mockupServer.rootComponent as UAObject,
+			const mockupNode = (mockupServer.nameSpace).addObject({
+				organizedBy: mockupServer.rootObject,
 				browseName: 'Variable',
 			});
 			mockup = new SourceModeDAMockup(
-				mockupServer.namespace as Namespace,
+				mockupServer.nameSpace,
 				mockupNode,
 				'Variable');
 			await mockupServer.start();
 
-			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334', '', '');
+			connection = new OpcUaConnection();
+			connection.initialize({endpoint: mockupServer.endpoint});
 			da1 = new DataAssemblyController(dataAssemblyOptions, connection);
 			sourceMode = new SourceModeController(da1);
 			await connection.connect();
 			const pv = da1.subscribe();
-			await connection.startListening();
+			await connection.startMonitoring();
 			await pv;
 		});
 		afterEach(async function () {

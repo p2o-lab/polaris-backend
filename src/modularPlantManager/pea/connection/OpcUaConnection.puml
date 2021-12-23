@@ -18,12 +18,12 @@ class OpcUaConnection{
 	+ //async// connect(): Promise<void>
     + //async// disconnect(): Promise<void>
     + isConnected(): boolean
-    + //async// readOpcUaNode(nodeId: string, namespaceUrl: string): Promise<DataValue | undefined>
-    + addOpcUaNode(nodeId: string, namespaceUrl: string): string
+    + //async// readNode(nodeId: string, namespaceUri: string): Promise<DataValue | undefined>
+    + addOpcUaNode(nodeId: string, namespaceUri: string): string
     + //async// startListening(samplingInterval=100): Promise<EventEmitter>
-    + //async// writeOpcUaNode(nodeId: string, namespaceUrl: string, value: number | string | boolean, dataType: string): Promise<void>
+    + //async// writeNode(nodeId: string, namespaceUri: string, value: number | string | boolean, dataType: string): Promise<void>
     + monitoredItemSize(): number
-    - resolveNodeId(nodeId: string, namespaceUrl: string): NodeId
+    - resolveNodeId(nodeId: string, namespaceUri: string): NodeId
     - //async// readNameSpaceArray(): Promise<any>
     - //async// createAndConnectClient(): Promise<OPCUAClient>
     - //async// createSession()

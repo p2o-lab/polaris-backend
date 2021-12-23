@@ -19,15 +19,15 @@ describe('StringViewMockup', () => {
 
         });
         it('should create StringViewMockup', async () => {
-            const mockup= new StringViewMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            const mockup= new StringViewMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             expect(mockup).to.not.be.undefined;
             //TODO: test more
 
         });
         it('getStringViewMockupReferenceJSON()',  () => {
-            const mockup = new StringViewMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            const mockup = new StringViewMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             const json = mockup.getStringViewInstanceMockupJSON();
             expect(json).not.to.be.undefined;
             expect(Object.keys(json).length).to.equal(2);

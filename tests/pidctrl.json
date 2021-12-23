@@ -3,217 +3,217 @@
   "TagDescription": "Test",
   "WQC": {
     "nodeId": "Variable.WQC",
-    "namespaceIndex": "localhost",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
     "dataType": "xs:IDREF"
   },
   "OSLevel": {
     "nodeId": "Variable.OSLevel",
-    "namespaceIndex": "localhost",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
     "dataType": "xs:IDREF"
   },
   "StateChannel": {
     "nodeId": "Variable.StateChannel",
-    "namespaceIndex": "localhost",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
     "dataType": "xs:IDREF"
   },
   "StateOffAut": {
     "nodeId": "Variable.StateOffAut",
-    "namespaceIndex": "localhost",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
     "dataType": "xs:IDREF"
   },
   "StateOpAut": {
     "nodeId": "Variable.StateOpAut",
-    "namespaceIndex": "localhost",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
     "dataType": "xs:IDREF"
   },
   "StateAutAut": {
     "nodeId": "Variable.StateAutAut",
-    "namespaceIndex": "localhost",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
     "dataType": "xs:IDREF"
   },
   "StateOffOp": {
     "nodeId": "Variable.StateOffOp",
-    "namespaceIndex": "localhost",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
     "dataType": "xs:IDREF"
   },
   "StateOpOp": {
     "nodeId": "Variable.StateOpOp",
-    "namespaceIndex": "localhost",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
     "dataType": "xs:IDREF"
   },
   "StateAutOp": {
     "nodeId": "Variable.StateAutOp",
-    "namespaceIndex": "localhost",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
     "dataType": "xs:IDREF"
   },
   "StateOpAct": {
     "nodeId": "Variable.StateOpAct",
-    "namespaceIndex": "localhost",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
     "dataType": "xs:IDREF"
   },
   "StateAutAct": {
     "nodeId": "Variable.StateAutAct",
-    "namespaceIndex": "localhost",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
     "dataType": "xs:IDREF"
   },
   "StateOffAct": {
     "nodeId": "Variable.StateOffAct",
-    "namespaceIndex": "localhost",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
     "dataType": "xs:IDREF"
   },
   "SrcChannel": {
     "nodeId": "Variable.SrcChannel",
-    "namespaceIndex": "localhost",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
     "dataType": "xs:IDREF"
   },
   "SrcManAut": {
     "nodeId": "Variable.SrcManAut",
-    "namespaceIndex": "localhost",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
     "dataType": "xs:IDREF"
   },
   "SrcIntAut": {
     "nodeId": "Variable.SrcIntAut",
-    "namespaceIndex": "localhost",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
     "dataType": "xs:IDREF"
   },
   "SrcIntOp": {
     "nodeId": "Variable.SrcIntOp",
-    "namespaceIndex": "localhost",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
     "dataType": "xs:IDREF"
   },
   "SrcManOp": {
     "nodeId": "Variable.SrcManOp",
-    "namespaceIndex": "localhost",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
     "dataType": "xs:IDREF"
   },
   "SrcIntAct": {
     "nodeId": "Variable.SrcIntAct",
-    "namespaceIndex": "localhost",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
     "dataType": "xs:IDREF"
   },
   "SrcManAct": {
     "nodeId": "Variable.SrcManAct",
-    "namespaceIndex": "localhost",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
     "dataType": "xs:IDREF"
   },
   "PV": {
     "nodeId": "Variable.PV",
-    "namespaceIndex": "localhost",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
     "dataType": "xs:IDREF"
   },
   "PVSclMin": {
     "nodeId": "Variable.PVSclMin",
-    "namespaceIndex": "localhost",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
     "dataType": "xs:IDREF"
   },
   "PVSclMax": {
     "nodeId": "Variable.PVSclMax",
-    "namespaceIndex": "localhost",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
     "dataType": "xs:IDREF"
   },
   "PVUnit": {
     "nodeId": "Variable.PVUnit",
-    "namespaceIndex": "localhost",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
     "dataType": "xs:IDREF"
   },
   "SP": {
     "nodeId": "Variable.SP",
-    "namespaceIndex": "localhost",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
     "dataType": "xs:IDREF"
   },
   "SPSclMax": {
     "nodeId": "Variable.SPSclMax",
-    "namespaceIndex": "localhost",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
     "dataType": "xs:IDREF"
   },
   "SPSclMin": {
     "nodeId": "Variable.SPSclMin",
-    "namespaceIndex": "localhost",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
     "dataType": "xs:IDREF"
   },
   "SPUnit": {
     "nodeId": "Variable.SPUnit",
-    "namespaceIndex": "localhost",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
     "dataType": "xs:IDREF"
   },
   "SPMan": {
     "nodeId": "Variable.SPMan",
-    "namespaceIndex": "localhost",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
     "dataType": "xs:IDREF"
   },
   "SPManMin": {
     "nodeId": "Variable.SPManMin",
-    "namespaceIndex": "localhost",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
     "dataType": "xs:IDREF"
   },
   "SPManMax": {
     "nodeId": "Variable.SPManMax",
-    "namespaceIndex": "localhost",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
     "dataType": "xs:IDREF"
   },
   "SPInt": {
     "nodeId": "Variable.SPInt",
-    "namespaceIndex": "localhost",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
     "dataType": "xs:IDREF"
   },
   "SPIntMin": {
     "nodeId": "Variable.SPIntMin",
-    "namespaceIndex": "localhost",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
     "dataType": "xs:IDREF"
   },
   "SPIntMax": {
     "nodeId": "Variable.SPIntMax",
-    "namespaceIndex": "localhost",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
     "dataType": "xs:IDREF"
   },
   "MV": {
     "nodeId": "Variable.MV",
-    "namespaceIndex": "localhost",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
     "dataType": "xs:IDREF"
   },
   "MVMan": {
     "nodeId": "Variable.MVMan",
-    "namespaceIndex": "localhost",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
     "dataType": "xs:IDREF"
   },
   "MVMin": {
     "nodeId": "Variable.MVMin",
-    "namespaceIndex": "localhost",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
     "dataType": "xs:IDREF"
   },
   "MVMax": {
     "nodeId": "Variable.MVMax",
-    "namespaceIndex": "localhost",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
     "dataType": "xs:IDREF"
   },
   "MVSclMax": {
     "nodeId": "Variable.MVSclMax",
-    "namespaceIndex": "localhost",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
     "dataType": "xs:IDREF"
   },
   "MVSclMin": {
     "nodeId": "Variable.MVSclMin",
-    "namespaceIndex": "localhost",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
     "dataType": "xs:IDREF"
   },
   "MVUnit": {
     "nodeId": "Variable.MVUnit",
-    "namespaceIndex": "localhost",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
     "dataType": "xs:IDREF"
   },
   "P": {
     "nodeId": "Variable.P",
-    "namespaceIndex": "localhost",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
     "dataType": "xs:IDREF"
   },
   "Ti": {
     "nodeId": "Variable.Ti",
-    "namespaceIndex": "localhost",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
     "dataType": "xs:IDREF"
   },
   "Td": {
     "nodeId": "Variable.Td",
-    "namespaceIndex": "localhost",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
     "dataType": "xs:IDREF"
   }
 }

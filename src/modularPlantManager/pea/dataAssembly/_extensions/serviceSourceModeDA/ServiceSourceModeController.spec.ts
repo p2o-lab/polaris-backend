@@ -31,8 +31,6 @@ import * as baseDataAssemblyOptions from '../../../../../../tests/anaserveparam.
 import {DataAssemblyController} from '../../DataAssemblyController';
 import {ServiceSourceModeController} from './ServiceSourceModeController';
 import {MockupServer} from '../../../../_utils';
-import {Namespace, UAObject} from 'node-opcua';
-import {namespaceUrl} from '../../../../../../tests/namespaceUrl';
 import {ServiceSourceModeDAMockup} from './ServiceSourceModeDA.mockup';
 
 chai.use(chaiAsPromised);
@@ -44,14 +42,9 @@ describe('ServiceSourceMode', () => {
 		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperatorElement/AnaServParam',
 		dataItems: baseDataAssemblyOptions
 	};
-	for (const key in dataAssemblyOptions.dataItems as any) {
-		//skip static values
-		if ((typeof (dataAssemblyOptions.dataItems as any)[key] != 'string')) {
-			(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
-		}
-	}
+
 	describe('static', () => {
-		const emptyOPCUAConnection = new OpcUaConnection('', '');
+		const emptyOPCUAConnection = new OpcUaConnection();
 		it('should create ServiceSourceMode', () => {
 			const da = new DataAssemblyController(dataAssemblyOptions, emptyOPCUAConnection) as any;
 			const serviceSourceMode = new ServiceSourceModeController(da);
@@ -76,11 +69,12 @@ describe('ServiceSourceMode', () => {
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
 			mockup = new ServiceSourceModeDAMockup(
-				mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject,
+				mockupServer.nameSpace,
+				mockupServer.rootObject,
 				'Variable');
 			await mockupServer.start();
-			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334', '', '');
+			connection = new OpcUaConnection();
+			connection.initialize({endpoint: mockupServer.endpoint});
 			await connection.connect();
 		});
 
@@ -91,11 +85,11 @@ describe('ServiceSourceMode', () => {
 		});
 
 		it('should subscribe successfully', async () => {
-			// set namespaceUrl
+
 			const da1 = new DataAssemblyController(dataAssemblyOptions, connection) as any;
 			new ServiceSourceModeController(da1);
 			const pv = da1.subscribe();
-			await connection.startListening();
+			await connection.startMonitoring();
 			await pv;
 
 			expect(da1.communication.SrcChannel.value).equal(false);
@@ -119,16 +113,17 @@ describe('ServiceSourceMode', () => {
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
 			mockup = new ServiceSourceModeDAMockup(
-				mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject,
+				mockupServer.nameSpace,
+				mockupServer.rootObject,
 				'Variable');
 			await mockupServer.start();
-			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334', '', '');
+			connection = new OpcUaConnection();
+			connection.initialize({endpoint: mockupServer.endpoint});
 			da1 = new DataAssemblyController(dataAssemblyOptions, connection) as any;
 			ssMode = new ServiceSourceModeController(da1);
 			await connection.connect();
 			const pv = da1.subscribe();
-			await connection.startListening();
+			await connection.startMonitoring();
 			await pv;
 		});
 
@@ -161,23 +156,24 @@ describe('ServiceSourceMode', () => {
 		beforeEach(async function () {
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			const mockupNode = (mockupServer.namespace as Namespace).addObject({
-				organizedBy: mockupServer.rootComponent as UAObject,
+			const mockupNode = (mockupServer.nameSpace).addObject({
+				organizedBy: mockupServer.rootObject,
 				browseName: 'Variable',
 			});
 			mockup = new ServiceSourceModeDAMockup(
-				mockupServer.namespace as Namespace,
+				mockupServer.nameSpace,
 				mockupNode,
 				'Variable');
 			mockup.srcMode= ServiceSourceMode.Intern;
 			await mockupServer.start();
 
-			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334', '', '');
+			connection = new OpcUaConnection();
+			connection.initialize({endpoint: mockupServer.endpoint});
 			da1 = new DataAssemblyController(dataAssemblyOptions, connection);
 			ssMode = new ServiceSourceModeController(da1);
 			await connection.connect();
 			const pv = da1.subscribe();
-			await connection.startListening();
+			await connection.startMonitoring();
 			await pv;
 		});
 		afterEach(async function () {

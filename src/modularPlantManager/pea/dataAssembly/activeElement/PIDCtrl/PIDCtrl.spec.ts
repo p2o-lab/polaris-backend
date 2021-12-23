@@ -30,30 +30,23 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import * as baseDataAssemblyOptions from '../../../../../../tests/pidctrl.json';
-import {Vlv} from '../vlv';
 import {MockupServer} from '../../../../_utils';
-import {AnaProcessValueInMockup} from '../../inputElement/processValueIn/AnaProcessValueIn/AnaProcessValueIn.mockup';
-import {Namespace, UAObject} from 'node-opcua';
-import {namespaceUrl} from '../../../../../../tests/namespaceUrl';
-import {DataAssemblyControllerFactory} from '../../DataAssemblyControllerFactory';
-import {AnaProcessValueIn} from '../../inputElement';
+import {Namespace} from 'node-opcua';
 import {PIDCtrlMockup} from './PIDCtrl.mockup';
-import {AnaServParam, BinManInt} from '../../operationElement';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('PIDCtrl', () => {
-	const parseJson = require('json-parse-better-errors');
 	const dataAssemblyOptions: DataAssemblyOptions = {
 		name: 'Variable',
 		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperationElement/PIDCtrl',
 		dataItems: baseDataAssemblyOptions
 	};
 	describe('static', () => {
-		const emptyOPCUAConnection = new OpcUaConnection('', '');
+
 		it('should create PIDCtrl', async () => {
-			const emptyOPCUAConnection = new OpcUaConnection('', '');
+			const emptyOPCUAConnection = new OpcUaConnection();
 
 			const da1 = new PIDCtrl(dataAssemblyOptions, emptyOPCUAConnection);
 
@@ -105,11 +98,12 @@ describe('PIDCtrl', () => {
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
 			mockup = new PIDCtrlMockup(
-				mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject,
+				mockupServer.nameSpace,
+				mockupServer.rootObject,
 				'Variable');
 			await mockupServer.start();
-			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334','','');
+			connection = new OpcUaConnection();
+			connection.initialize({endpoint: mockupServer.endpoint});
 			await connection.connect();
 		});
 
@@ -120,16 +114,10 @@ describe('PIDCtrl', () => {
 		});
 
 		it('should subscribe successfully', async () => {
-			// set namespaceUrl
-			for (const key in dataAssemblyOptions.dataItems as any) {
-				//skip static values
-				if((typeof(dataAssemblyOptions.dataItems as any)[key] != 'string')){
-					(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
-				}
-			}
+
 			const da1 = new PIDCtrl(dataAssemblyOptions, connection);
 			const pv =  da1.subscribe();
-			await connection.startListening();
+			await connection.startMonitoring();
 			await pv;
 
 			expect(da1.communication.OSLevel.value).equal(0);

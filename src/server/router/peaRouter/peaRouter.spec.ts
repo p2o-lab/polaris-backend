@@ -28,17 +28,14 @@ import {ModularPlantManager, PEAController} from '../../../modularPlantManager';
 import {Server} from '../../server';
 
 import {Application} from 'express';
-import * as WebSocket from 'ws';
 import {MockupServer} from '../../../modularPlantManager/_utils';
 import path = require('path');
 import {AnaViewMockup} from '../../../modularPlantManager/pea/dataAssembly/indicatorElement/AnaView/AnaView.mockup';
-import {Namespace, UAObject} from 'node-opcua';
-import {namespaceUrl, setNamespaceUrl} from '../../../../tests/namespaceUrl';
+import {setNamespaceUrl} from '../../../../tests/namespaceUrl';
 import * as peaOptions from '../../../../tests/peaOptions.json';
 import {ServiceControlMockup} from '../../../modularPlantManager/pea/dataAssembly/ServiceControl/ServiceControl.mockup';
 import {expect} from 'chai';
 import {AnaServParamMockup} from '../../../modularPlantManager/pea/dataAssembly/operationElement/servParam/anaServParam/AnaServParam.mockup';
-import {AnaProcessValueInMockup} from '../../../modularPlantManager/pea/dataAssembly/inputElement/processValueIn/AnaProcessValueIn/AnaProcessValueIn.mockup';
 import * as peaOptionsServices from '../../../../tests/peaOptions_testservice.json';
 
 
@@ -222,15 +219,15 @@ describe('PEARoutes', () => {
 	});
 
 	describe('with Mockup', () => {
-		//set namespaceUrl in peaOptions
+		//set namespaceUri in peaOptions
 		setNamespaceUrl(peaOptions as any);
 		before(async () => {
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			const mockup = new AnaViewMockup(mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject, 'Variable');
-			const mockupService = new ServiceControlMockup(mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject, 'Trigonometry');
+			const mockup = new AnaViewMockup(mockupServer.nameSpace,
+				mockupServer.rootObject, 'Variable');
+			const mockupService = new ServiceControlMockup(mockupServer.nameSpace,
+				mockupServer.rootObject, 'Trigonometry');
 			await mockupServer.start();
 		});
 		after(async () => {
@@ -332,7 +329,7 @@ describe('PEARoutes', () => {
 	});
 
 	context('/:peaId/service/:serviceName', ()=> {
-		//set namespaceUrl
+		//set namespaceUri
 		setNamespaceUrl(peaOptionsServices as any);
 
 		it('should fail, wrong peaId', async () => {
@@ -356,10 +353,10 @@ describe('PEARoutes', () => {
 		it('should set parameter', async () => {
 			const mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			const mockupParam = new AnaServParamMockup(mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject, 'TestService.AnaProcParam_TestService_factor');
-			const mockupService = new ServiceControlMockup(mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject, 'TestService');
+			const mockupParam = new AnaServParamMockup(mockupServer.nameSpace,
+				mockupServer.rootObject, 'TestService.AnaProcParam_TestService_factor');
+			const mockupService = new ServiceControlMockup(mockupServer.nameSpace,
+				mockupServer.rootObject, 'TestService');
 			await mockupServer.start();
 			const pea = new PEAController(peaOptionsServices as unknown as PEAOptions);
 			manager.peas.push(pea);

@@ -19,14 +19,14 @@ describe('UnitDAMockup', () => {
 
         });
         it('should create UnitDAMockup', async () => {
-            const mockup= new UnitDAMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            const mockup= new UnitDAMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             expect(mockup).to.not.be.undefined;
         });
 
         it('getUnitMockupReferenceJSON()',  () => {
-            const mockup = new UnitDAMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            const mockup = new UnitDAMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             const json = mockup.getUnitDAInstanceMockupJSON();
             expect(Object.keys(json).length).to.equal(1);
             expect(json.VUnit).to.not.be.undefined;

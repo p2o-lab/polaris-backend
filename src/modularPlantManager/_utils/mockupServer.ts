@@ -29,26 +29,25 @@ import * as net from 'net';
 import {AddressSpace, DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 import {catMockupServer} from '../../logging';
 
-function validUserFunc(username: string, password: string): boolean {
+function validateUser(username: string, password: string): boolean {
 	catMockupServer.info(`Try to login with ${username}:${password}`);
 	return username === 'admin' && password === '1234';
 }
 
 export class MockupServer {
 
-	public externalTrigger: boolean;
+	public externalTrigger = false;
+
 	private server: OPCUAServer;
 	private initialized = false;
-	namespace: Namespace | undefined = undefined;
-	rootComponent: UAObject | undefined = undefined;
+	private namespace: Namespace | undefined = undefined;
+	private rootComponent: UAObject | undefined = undefined;
 	private readonly port: number;
-	private testNumber: number;
+	private testNumber = 0;
 
 	constructor(port = 4334) {
 		this.port = port;
-		this.server = new OPCUAServer({port: this.port, userManager: {isValidUser: validUserFunc}});
-		this.externalTrigger = false;
-		this.testNumber = 0;
+		this.server = new OPCUAServer({port: this.port, userManager: {isValidUser: validateUser}});
 	}
 
 	public async portInUse(): Promise<boolean> {
@@ -91,6 +90,35 @@ export class MockupServer {
 		catMockupServer.info('Shutdown finished');
 	}
 
+	get endpoint(): string{
+		return 'opc.tcp://' + require('os').hostname() + ':' + this.endpointPort;
+	}
+
+	get endpointUrl(): string{
+		return 'opc.tcp://' + require('os').hostname() + ':NodeOPCUA-Server';
+	}
+
+	get endpointPort(): number{
+		return this.port;
+	}
+
+	get nameSpaceUri(): string {
+		return this.namespace? this.namespace.namespaceUri : '';
+	}
+
+	get nameSpace(): Namespace {
+		if (!this.namespace) {
+			throw new Error('Namespace is undefined!');
+		}
+		return this.namespace;
+	}
+
+	get rootObject(): UAObject {
+		if (!this.rootComponent) {
+			throw new Error('Root object is undefined!');
+		}
+		return this.rootComponent;
+	}
 
 	private createAddressSpace(): void {
 
@@ -100,11 +128,8 @@ export class MockupServer {
 		}
 
 		const namespace: Namespace = addressSpace.getOwnNamespace();
-		if (!namespace){
-			throw new Error('Namespace is undefined.');
-		}
 
-		this.namespace = namespace;
+		this.namespace = addressSpace.registerNamespace('urn:P2OLab:NodeOPCUA-Server');;
 		// declare a new object
 		const myMockup = namespace.addObject({
 			organizedBy: addressSpace.rootFolder.objects,
@@ -140,9 +165,4 @@ export class MockupServer {
 		});
 
 	}
-}
-
-async function start(): Promise<void> {
-	const mockupServer = new MockupServer();
-	await mockupServer.start();
 }

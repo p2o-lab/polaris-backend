@@ -31,9 +31,8 @@ import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import * as baseDataAssemblyOptions from '../../../../../../../tests/binmanint.json';
 import {DataAssemblyControllerFactory} from '../../../DataAssemblyControllerFactory';
 import {MockupServer} from '../../../../../_utils';
-import {BinManMockup} from '../BinMan/BinMan.mockup';
-import {Namespace, UAObject} from 'node-opcua';
-import {namespaceUrl} from '../../../../../../../tests/namespaceUrl';
+import {BinManMockup} from './BinMan.mockup';
+
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -46,7 +45,7 @@ describe('BinMan', () => {
 	};
 
 	describe('static', () => {
-		const emptyOPCUAConnection = new OpcUaConnection('', '');
+		const emptyOPCUAConnection = new OpcUaConnection();
 		it('should create BinMan', () => {
 			//TODO new BinMan()
 			const da1: BinMan = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as BinMan;
@@ -71,11 +70,12 @@ describe('BinMan', () => {
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
 			const mockup = new BinManMockup(
-				mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject,
+				mockupServer.nameSpace,
+				mockupServer.rootObject,
 				'Variable');
 			await mockupServer.start();
-			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334','','');
+			connection = new OpcUaConnection();
+			connection.initialize({endpoint: mockupServer.endpoint});
 			await connection.connect();
 		});
 
@@ -86,18 +86,12 @@ describe('BinMan', () => {
 		});
 
 		it('should subscribe successfully', async () => {
-			// set namespaceUrl
-			for (const key in dataAssemblyOptions.dataItems as any) {
-				//skip static values
-				if((typeof(dataAssemblyOptions.dataItems as any)[key] != 'string')){
-					(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
-				}
-			}
+
 			//TODO new BinMan()
 
 			const da1 = DataAssemblyControllerFactory.create(dataAssemblyOptions, connection) as BinMan;
 			const pv =  da1.subscribe();
-			await connection.startListening();
+			await connection.startMonitoring();
 			await pv;
 
 			expect(da1.communication.OSLevel.value).to.equal(0);

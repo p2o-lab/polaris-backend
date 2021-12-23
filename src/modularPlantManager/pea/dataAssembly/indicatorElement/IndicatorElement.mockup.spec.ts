@@ -17,15 +17,15 @@ describe('IndicatorElementMockup', () => {
         });
 
         it('should create IndicatorElementMockup', async () => {
-            const mockup= new IndicatorElementMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            const mockup= new IndicatorElementMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             expect(mockup).to.not.be.undefined;
             expect(mockup.wqc).to.not.be.undefined;
         });
 
         it('getIndicatorElementMockupReferenceJSON()',  () => {
-            const mockup = new IndicatorElementMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            const mockup = new IndicatorElementMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             const json = mockup.getIndicatorElementInstanceMockupJSON();
             expect(json).not.to.be.undefined;
             expect(Object.keys(json).length).to.equal(1);

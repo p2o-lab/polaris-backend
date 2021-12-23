@@ -17,14 +17,14 @@ describe('ActiveElementMockup', () => {
         });
  
         it('should create ActiveElementMockup', async () => {
-            const mockup= new ActiveElementMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            const mockup= new ActiveElementMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             expect(mockup).to.not.be.undefined;
 
         });
         it('getActiveElementMockupReferenceJSON()',  () => {
-            const mockup = new ActiveElementMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            const mockup = new ActiveElementMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             const json = mockup.getActiveElementMockupJSON();
             expect(Object.keys(json).length).to .equal(2);
         });

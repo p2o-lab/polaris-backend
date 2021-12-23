@@ -19,15 +19,15 @@ describe('WQCDAMockup', () => {
 
         });
         it('should create WQCDAMockup', async () => {
-            const mockup= new WQCDAMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            const mockup= new WQCDAMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
 
             expect(mockup).to.not.be.undefined;
 
         });
         it('getAnaServParamMockupReferenceJSON()',  () => {
-            const mockup = new WQCDAMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            const mockup = new WQCDAMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             const json = mockup.getWQCDAInstanceMockupJSON();
             expect(Object.keys(json).length).to.equal(1);
             expect(json.WQC).to.not.be.undefined;

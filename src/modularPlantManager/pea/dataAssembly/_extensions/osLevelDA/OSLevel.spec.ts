@@ -33,7 +33,6 @@ import {OSLevel} from './OSLevel';
 import {DataAssemblyController} from '../../DataAssemblyController';
 import {MockupServer} from '../../../../_utils';
 import {Namespace, UAObject} from 'node-opcua';
-import {namespaceUrl} from '../../../../../../tests/namespaceUrl';
 import {OSLevelDAMockup} from './OSLevelDA.mockup';
 
 chai.use(chaiAsPromised);
@@ -56,7 +55,7 @@ describe('OSLevel', () => {
 		let da: any;
 		describe('static OSLevel',()=>{
 			beforeEach(()=>{
-				const emptyOPCUAConnection = new OpcUaConnection('', '');
+				const emptyOPCUAConnection = new OpcUaConnection();
 				da = new DataAssemblyController(dataAssemblyOptionsStatic, emptyOPCUAConnection) as any;
 				oslevelObject = new OSLevel(da);
 			});
@@ -74,7 +73,7 @@ describe('OSLevel', () => {
 			let oslevelObject: any;
 			let da: any;
 			beforeEach(()=>{
-				const emptyOPCUAConnection = new OpcUaConnection('', '');
+				const emptyOPCUAConnection = new OpcUaConnection();
 				da = new DataAssemblyController(dataAssemblyOptions, emptyOPCUAConnection);
 				oslevelObject = new OSLevel(da);
 			});
@@ -100,11 +99,12 @@ describe('OSLevel', () => {
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
 			mockup = new OSLevelDAMockup(
-				mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject,
+				mockupServer.nameSpace,
+				mockupServer.rootObject,
 				'Variable');
 			await mockupServer.start();
-			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334', '', '');
+			connection = new OpcUaConnection();
+			connection.initialize({endpoint: mockupServer.endpoint});
 			await connection.connect();
 		});
 
@@ -115,17 +115,11 @@ describe('OSLevel', () => {
 		});
 
 		it('should subscribe successfully', async () => {
-			// set namespaceUrl
-			for (const key in dataAssemblyOptions.dataItems as any) {
-				//skip static values
-				if ((typeof (dataAssemblyOptions.dataItems as any)[key] != 'string')) {
-					(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
-				}
-			}
+
 			const da1 = new DataAssemblyController(dataAssemblyOptions, connection) as any;
 			new OSLevel(da1);
 			const pv = da1.subscribe();
-			await connection.startListening();
+			await connection.startMonitoring();
 			await pv;
 			expect(da1.communication.OSLevel.value).to.equal(0);
 		}).timeout(5000);

@@ -33,7 +33,7 @@ import {DataAssemblyControllerFactory} from '../../../DataAssemblyControllerFact
 import {MockupServer} from '../../../../../_utils';
 import {DIntManIntMockup} from '../DIntMan/DIntManInt.mockup';
 import {Namespace, UAObject} from 'node-opcua';
-import {namespaceUrl} from '../../../../../../../tests/namespaceUrl';
+
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -46,7 +46,7 @@ describe('DIntManInt', () => {
 	};
 
 	describe('static', () => {
-		const emptyOPCUAConnection = new OpcUaConnection('', '');
+		const emptyOPCUAConnection = new OpcUaConnection();
 		it('should create DIntManInt',  () => {
 			const da1 = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as DIntManInt;
 			expect(da1.sourceMode).to.be.not.undefined;
@@ -64,11 +64,12 @@ describe('DIntManInt', () => {
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
 			const mockup = new DIntManIntMockup(
-				mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject,
+				mockupServer.nameSpace,
+				mockupServer.rootObject,
 				'Variable');
 			await mockupServer.start();
-			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334','','');
+			connection = new OpcUaConnection();
+			connection.initialize({endpoint: mockupServer.endpoint});
 			await connection.connect();
 		});
 
@@ -79,16 +80,10 @@ describe('DIntManInt', () => {
 		});
 
 		it('should subscribe successfully', async () => {
-			// set namespaceUrl
-			for (const key in dataAssemblyOptions.dataItems as any) {
-				//skip static values
-				if((typeof(dataAssemblyOptions.dataItems as any)[key] != 'string')){
-					(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
-				}
-			}
+
 			const da1 = DataAssemblyControllerFactory.create(dataAssemblyOptions, connection) as DIntManInt;
 			const pv =  da1.subscribe();
-			await connection.startListening();
+			await connection.startMonitoring();
 			await pv;
 
 			expect(da1.communication.OSLevel.value).to.equal(0);

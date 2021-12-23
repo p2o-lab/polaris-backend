@@ -28,10 +28,8 @@ import {HealthStateView} from './HealthStateView';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {DiagnosticElement} from '../DiagnosticElement';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from '../../../../../../tests/binprocessvaluein.json';
-import {namespaceUrl} from '../../../../../../tests/namespaceUrl';
+import * as baseDataAssemblyOptions from './HealthStateView.spec.json';
 import {MockupServer} from '../../../../_utils';
 import {Namespace, UAObject} from 'node-opcua';
 import {HealthStateViewMockup} from './HealthStateView.mockup';
@@ -48,7 +46,7 @@ describe('HealthStateView', () => {
 	};
 
 	describe('static', () => {
-		const emptyOPCUAConnection = new OpcUaConnection('', '');
+		const emptyOPCUAConnection = new OpcUaConnection();
 
 		it('should create HealthStateView', async () => {
 			const da1 = new HealthStateView(dataAssemblyOptions, emptyOPCUAConnection);
@@ -61,24 +59,19 @@ describe('HealthStateView', () => {
 	describe('dynamic', () => {
 		let mockupServer: MockupServer;
 		let connection: OpcUaConnection;
-		// set namespaceUrl
-		for (const key in dataAssemblyOptions.dataItems as any) {
-			//skip static values
-			if((typeof(dataAssemblyOptions.dataItems as any)[key] != 'string')){
-				(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
-			}
-		}
+
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
 			const mockup = new HealthStateViewMockup(
-				mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject,
+				mockupServer.nameSpace,
+				mockupServer.rootObject,
 				'Variable');
 
 			await mockupServer.start();
-			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334','','');
+			connection = new OpcUaConnection();
+			connection.initialize({endpoint: mockupServer.endpoint});
 			await connection.connect();
 		});
 
@@ -89,10 +82,11 @@ describe('HealthStateView', () => {
 		});
 
 		it('should subscribe successfully', async () => {
+
 			const da1 = new HealthStateView(dataAssemblyOptions, connection);
-			const pv = da1.subscribe();
-			await connection.startListening();
-			await pv;
+			await da1.subscribe();
+			await connection.startMonitoring();
+			await new Promise((resolve)=> da1.on('changed', resolve));
 			expect(da1.communication.WQC.value).equal(0);
 		}).timeout(4000);
 	});

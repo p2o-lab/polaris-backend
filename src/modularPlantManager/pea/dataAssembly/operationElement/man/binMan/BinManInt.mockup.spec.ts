@@ -19,15 +19,15 @@ describe('BinManIntMockup', () => {
         });
 
         it('should create BinManIntMockup', async () => {
-            const mockup= new BinManIntMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            const mockup= new BinManIntMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             expect(mockup).to.not.be.undefined;
             //TODO: test more
         });
 
         it('getBinManIntMockupReferenceJSON()',  () => {
-            const mockup = new BinManIntMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            const mockup = new BinManIntMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             const json = mockup.getBinManIntMockupJSON();
             expect(json).not.to.be.undefined;
             expect(Object.keys(json).length).to.equal(16);

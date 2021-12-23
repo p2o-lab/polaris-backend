@@ -29,7 +29,6 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {OpcUaDataItem} from './OpcUaDataItem';
 import {MockupServer} from '../../_utils';
-import {namespaceUrl} from '../../../../tests/namespaceUrl';
 import {AnaViewMockup} from '../dataAssembly/indicatorElement/AnaView/AnaView.mockup';
 import {Namespace, UAObject} from 'node-opcua';
 
@@ -38,8 +37,8 @@ const expect = chai.expect;
 
 describe('DataItem', () => {
 	describe('static', () => {
-		const connection = new OpcUaConnection('PEATestServer', 'opc.tcp://127.0.0.1:4334/PEATestServer');
-
+		const connection = new OpcUaConnection();
+		connection.initialize({endpoint: 'opc.tcp://localhost:4334/PEATestServer'});
 		it('should work with float', () => {
 			const di = OpcUaDataItem.createFromOptions(
 				{value: 1.2, dataType: 'Float', nodeId: 'test', namespaceIndex: 'test2'},
@@ -94,8 +93,7 @@ describe('DataItem', () => {
 		});
 	});
 
-	describe('with testserver', () => {
-		// DO NOT FORGET TO ADJUST NAMESPACEURL IN namespaceUrl.ts
+	describe('with mockup server', () => {
 		let mockupServer: MockupServer;
 		let connection: OpcUaConnection;
 
@@ -103,10 +101,9 @@ describe('DataItem', () => {
 			this.timeout(5000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			const mockup = new AnaViewMockup(mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject, 'Variable');
 			await mockupServer.start();
-			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334','','');
+			connection = new OpcUaConnection();
+			connection.initialize({endpoint: mockupServer.endpoint});
 			await connection.connect();
 		});
 
@@ -119,11 +116,11 @@ describe('DataItem', () => {
 			const di = OpcUaDataItem.createFromOptions(
 				{
 					nodeId: 'trigger',
-					namespaceIndex: namespaceUrl,
+					namespaceIndex: mockupServer.nameSpaceUri,
 					dataType: 'xs:IDREF'
 				}, connection, 'read');
 			di.subscribe(); //Don't use 'await', because without startListening, this won't resolve //TODO: maybe refactor
-			await connection.startListening();
+			await connection.startMonitoring();
 			await new Promise((resolve) => di.on('changed', resolve));
 			expect(di.value).to.equal(false);
 		});
@@ -132,26 +129,26 @@ describe('DataItem', () => {
 			const di = OpcUaDataItem.createFromOptions(
 				{
 					nodeId: 'trigger',
-					namespaceIndex: namespaceUrl,
+					namespaceIndex: mockupServer.nameSpaceUri,
 					dataType: 'xs:IDREF'
 				}, connection, 'write');
 
 			di.subscribe();
-			await connection.startListening();
+			await connection.startMonitoring();
 			await new Promise((resolve) => di.on('changed', resolve));
 
 			await connection.disconnect();
 			await connection.connect();
 
 			di.subscribe();
-			await connection.startListening();
+			await connection.startMonitoring();
 			await new Promise((resolve) => di.on('changed', resolve));
 		}).timeout(5000);
 
 		it('should write', async () => {
 			const di = OpcUaDataItem.createFromOptions(
 				{
-					namespaceIndex: namespaceUrl,
+					namespaceIndex: mockupServer.nameSpaceUri,
 					nodeId: 'testNumber',
 					dataType: 'Float'
 				}, connection, 'write');
@@ -163,7 +160,7 @@ describe('DataItem', () => {
 		it('should fail while writing with wrong datatype', async () => {
 			const di = OpcUaDataItem.createFromOptions(
 				{
-					namespaceIndex: namespaceUrl,
+					namespaceIndex: mockupServer.nameSpaceUri,
 					nodeId: 'testNumber',
 					dataType: 'Float'
 				}, connection, 'write');
@@ -177,7 +174,7 @@ describe('DataItem', () => {
 		it('should fail while writing with wrong datatype 2', async () => {
 			const di = OpcUaDataItem.createFromOptions(
 				{
-					namespaceIndex: namespaceUrl,
+					namespaceIndex: mockupServer.nameSpaceUri,
 					nodeId: 'testNumber',
 					dataType: 'abc'
 				}, connection, 'write');
@@ -188,7 +185,7 @@ describe('DataItem', () => {
 		it('should fail while writing with wrong datatype 3', async () => {
 			const di = OpcUaDataItem.createFromOptions(
 				{
-					namespaceIndex: namespaceUrl,
+					namespaceIndex: mockupServer.nameSpaceUri,
 					nodeId: 'testNumber',
 					dataType: 'Boolean'
 				}, connection, 'write');

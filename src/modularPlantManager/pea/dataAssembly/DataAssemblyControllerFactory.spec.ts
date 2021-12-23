@@ -54,7 +54,7 @@ describe('DataAssemblyFactory', () => {
 			metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/',
 			dataItems: baseDataAssemblyOptions
 		};
-		const emptyOPCUAConnection = new OpcUaConnection('', '');
+		const emptyOPCUAConnection = new OpcUaConnection();
 		it('should use default DataAssemblyController when provided type not found', () => {
 			const da1 = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection);
 
@@ -102,8 +102,8 @@ describe('DataAssemblyFactory', () => {
 		beforeEach(async () => {
 			mockupServer = new MockupServer();
 			await mockupServer.start();
-
-			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://127.0.0.1:4334/PEATestServer');
+			connection = new OpcUaConnection();
+            connection.initialize({endpoint: 'opc.tcp://localhost:4334/PEATestServer'});
 			await connection.connect();
 		});
 

@@ -33,10 +33,6 @@ import {DataAssemblyController} from '../../DataAssemblyController';
 import {MonBinVlv} from '../../activeElement';
 import {Reset} from './Reset';
 import {MockupServer} from '../../../../_utils';
-import {OSLevelDAMockup} from '../osLevelDA/OSLevelDA.mockup';
-import {Namespace, UAObject} from 'node-opcua';
-import {namespaceUrl} from '../../../../../../tests/namespaceUrl';
-import {OSLevel} from '../osLevelDA/OSLevel';
 import {ResetDAMockup} from './ResetDA.mockup';
 
 chai.use(chaiAsPromised);
@@ -49,7 +45,7 @@ describe('Reset', () => {
 		dataItems: baseDataAssemblyOptions
 	};
 	describe('static', () => {
-		const emptyOPCUAConnection = new OpcUaConnection('', '');
+		const emptyOPCUAConnection = new OpcUaConnection();
 		it('should create Reset',  () => {
 			const da1 = new DataAssemblyController(dataAssemblyOptions, emptyOPCUAConnection) as MonBinVlv;
 			const reset = new Reset(da1); //this will set communication variables
@@ -68,11 +64,12 @@ describe('Reset', () => {
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
 			mockup = new ResetDAMockup(
-				mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject,
+				mockupServer.nameSpace,
+				mockupServer.rootObject,
 				'Variable');
 			await mockupServer.start();
-			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334', '', '');
+			connection = new OpcUaConnection();
+			connection.initialize({endpoint: mockupServer.endpoint});
 			await connection.connect();
 		});
 
@@ -83,17 +80,11 @@ describe('Reset', () => {
 		});
 
 		it('should subscribe successfully', async () => {
-			// set namespaceUrl
-			for (const key in dataAssemblyOptions.dataItems as any) {
-				//skip static values
-				if ((typeof (dataAssemblyOptions.dataItems as any)[key] != 'string')) {
-					(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
-				}
-			}
+
 			const da1 = new DataAssemblyController(dataAssemblyOptions, connection) as any;
 			new Reset(da1);
 			const pv = da1.subscribe();
-			await connection.startListening();
+			await connection.startMonitoring();
 			await pv;
 			expect(da1.communication.ResetAut.value).to.be.false;
 			expect(da1.communication.ResetOp.value).to.be.false;

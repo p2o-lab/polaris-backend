@@ -4,7 +4,7 @@ import {AnaServParamMockup, getAnaServParamMockupReferenceJSON} from './AnaServP
 import {MockupServer} from '../../../../../_utils';
 import {Namespace, UAObject} from 'node-opcua';
 import {OpcUaConnection} from '../../../../connection';
-import {namespaceUrl} from '../../../../../../../tests/namespaceUrl';
+
 
 
 chai.use(chaiAsPromised);
@@ -31,15 +31,15 @@ describe('AnaServParamMockup', () => {
         });
 
         it('should create AnaServParamMockup', () => {
-            const mockup = new AnaServParamMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            const mockup = new AnaServParamMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             expect(mockup).to.not.be.undefined;
             //TODO test more?
 
         });
         it('getAnaServParamMockupReferenceJSON()',  () => {
-            const mockup = new AnaServParamMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            const mockup = new AnaServParamMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
 
             const json = mockup.getAnaServParamMockupJSON();
             expect(Object.keys(json).length).to .equal(31);
@@ -52,8 +52,8 @@ describe('AnaServParamMockup', () => {
         });
         //TODO test more
         it('startCurrentTimeUpdate()',  async() => {
-            const mockup: AnaServParamMockupTestClass = new AnaServParamMockupTestClass(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable') as AnaServParamMockupTestClass;
+            const mockup: AnaServParamMockupTestClass = new AnaServParamMockupTestClass(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable') as AnaServParamMockupTestClass;
             mockup.startCurrentTimeUpdate();
             expect(mockup.getVOut()).to.equal(0);
             await new Promise(f => setTimeout(f, 1000));
@@ -61,8 +61,8 @@ describe('AnaServParamMockup', () => {
         });
 
         it('stopCurrentTimeUpdate()',  async() => {
-            const mockup: AnaServParamMockupTestClass = new AnaServParamMockupTestClass(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable') as AnaServParamMockupTestClass;
+            const mockup: AnaServParamMockupTestClass = new AnaServParamMockupTestClass(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable') as AnaServParamMockupTestClass;
             mockup.startCurrentTimeUpdate();
             mockup.stopCurrentTimeUpdate();
             expect(mockup.getVOut()).to.equal(0);
@@ -72,8 +72,8 @@ describe('AnaServParamMockup', () => {
         });
 
         it('stopCurrentTimeUpdate(), interval undefined',  () => {
-            const mockup: AnaServParamMockupTestClass = new AnaServParamMockupTestClass(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable') as AnaServParamMockupTestClass;
+            const mockup: AnaServParamMockupTestClass = new AnaServParamMockupTestClass(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable') as AnaServParamMockupTestClass;
             expect((() => mockup.stopCurrentTimeUpdate())).to.throw();
         });
     });
@@ -86,10 +86,11 @@ describe('AnaServParamMockup', () => {
             this.timeout(10000);
             mockupServer = new MockupServer();
             await mockupServer.initialize();
-            mockup = new AnaServParamMockupTestClass(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            mockup = new AnaServParamMockupTestClass(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             await mockupServer.start();
-            connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334');
+            connection = new OpcUaConnection();
+            connection.initialize({endpoint: mockupServer.endpoint});
             await connection.connect();
         });
         afterEach(async () => {
@@ -98,19 +99,16 @@ describe('AnaServParamMockup', () => {
         });
 
         it('set VExt',async()=>{
-            await connection.writeOpcUaNode('Variable.VExt', namespaceUrl, 1,'Double');
-           await connection.readOpcUaNode('Variable.VExt',
-               namespaceUrl)
-               .then(datavalue=>expect(datavalue?.value.value).to.equal(1));
+           await connection.writeNode('Variable.VExt', mockupServer.nameSpaceUri, 1,'Double');
+           await connection.readNode('Variable.VExt', mockupServer.nameSpaceUri)
+               .then((dataValue)=>expect((dataValue)?.value.value).to.equal(1));
         }).timeout(10000);
 
         it('set VOp',async()=>{
-            await connection.writeOpcUaNode('Variable.VOp',
-                namespaceUrl,
-                1,'Double');
-            await connection.readOpcUaNode('Variable.VOp',
-                namespaceUrl)
-                .then(datavalue=>expect(datavalue?.value.value).to.equal(1));
+            await connection.writeNode('Variable.VOp', mockupServer.nameSpaceUri, 1, 'Double');
+            await connection.readNode('Variable.VOp',
+                mockupServer.nameSpaceUri)
+                .then((dataValue)=>expect((dataValue)?.value.value).to.equal(1));
         }).timeout(10000);
     });
 });

@@ -16,13 +16,13 @@ describe('InterlockDAMockup', () => {
             await mockupServer.initialize();
         });
         it('should create InterlockDAMockup', async () => {
-            const mockup= new InterlockDAMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            const mockup= new InterlockDAMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             expect(mockup).to.not.be.undefined;
         });
         it('getAnaServParamMockupReferenceJSON()',  () => {
-            const mockup = new InterlockDAMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            const mockup = new InterlockDAMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             const json = mockup.getInterlockDAInstanceMockupJSON();
             expect(Object.keys(json).length).to.equal(6);
             expect(json.PermEn).to.not.be.undefined;

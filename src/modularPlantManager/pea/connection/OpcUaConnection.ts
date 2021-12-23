@@ -30,8 +30,12 @@ import {
 	ClientSession,
 	ClientSubscription,
 	coerceNodeId,
-	DataValue, MonitoringMode, NodeId,
+	DataValue,
+	MessageSecurityMode,
+	MonitoringMode,
+	NodeId,
 	OPCUAClient,
+	SecurityPolicy,
 	TimestampsToReturn,
 	UserIdentityInfo,
 	UserIdentityInfoUserName,
@@ -44,6 +48,43 @@ import {ClientMonitoredItemGroup} from 'node-opcua-client/source/client_monitore
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Category} from 'typescript-logging';
 import {catOpcUA} from '../../../logging';
+import {v4 as uuidv4} from 'uuid';
+
+export interface OpcUaConnectionSettings{
+	endpoint: string;
+	securitySettings?: OpcUaSecuritySettings;
+	authenticationSettings?: OpcUaAuthenticationSettings;
+}
+
+export interface OpcUaSecuritySettings{
+	securityMode: OpcUaSecurityModes;
+	securityPolicy: OpcUaSecurityPolicies;
+}
+
+export enum OpcUaSecurityModes {
+	'None',
+	'Sign',
+	'SignAndEncrypt'
+}
+
+export enum OpcUaSecurityPolicies {
+	'None',
+	'Aes128_Sha256_RsaOaep',
+	'Basic128',
+	'Basic128Rsa15',
+	'Basic192',
+	'Basic192Rsa15',
+	'Basic256',
+	'Basic256Rsa15',
+	'Basic256Sha256',
+	'PubSub_Aes128_CTR',
+	'PubSub_Aes256_CTR',
+}
+
+export interface OpcUaAuthenticationSettings{
+	userCredentials?: { userName: string; password: string};
+	certificate?: never;
+}
 
 /**
  * Events emitted by {@link OpcUaConnection}
@@ -65,107 +106,237 @@ type OpcUaConnectionEmitter = StrictEventEmitter<EventEmitter, OpcUaConnectionEv
 
 export class OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionEmitter) {
 
-	public readonly endpoint: string;
-	public readonly id: string;
-	public readonly eventEmitter: EventEmitter;
+	public readonly id: string = uuidv4();
+	public readonly eventEmitter: EventEmitter = new EventEmitter();
+	private readonly logger: Category = catOpcUA;
+
+	private initialized = false;
+
+	private endpoint!: string;
+	private userIdentitySetting!: UserIdentityInfo;
+	private securityMode: MessageSecurityMode = MessageSecurityMode.None;
+	private securityPolicy: SecurityPolicy = SecurityPolicy.None;
+
+	private namespaceArray: string[] = [];
 	private session: ClientSession | undefined;
 	private client: OPCUAClient | undefined;
 	private subscription: ClientSubscription | undefined;
-	private readonly items: Map<string, string>;
-	private namespaceArray!: string[];
-	private readonly logger: Category;
-	readonly username: string | undefined;
-	readonly password: string | undefined;
 
-	constructor(targetId: string, endpoint: string, username?: string, password?: string) {
+	private readonly nodes: Map<string, string> = new Map<string, string>();
+
+	constructor() {
 		super();
-		this.id = targetId;
-		this.endpoint = endpoint;
-		this.logger = catOpcUA;
-		this.username = username;
-		this.password = password;
-		this.eventEmitter = new EventEmitter();
-		this.items = new Map<string, string>();
+
+	}
+
+	public initialize(connectionSettings: OpcUaConnectionSettings): void {
+		if (!this.initialized){
+			this.endpoint = connectionSettings.endpoint;
+			this.setAuthenticationSettings(connectionSettings.authenticationSettings || {});
+
+			const securitySettings = connectionSettings.securitySettings;
+			if (securitySettings) {
+				this.setSecuritySettings(securitySettings);
+			}
+			this.initialized = true;
+		}
+		this.logger.debug('Already initialized.');
+	}
+
+	public update(connectionSettings: OpcUaConnectionSettings): void {
+		if (!this.initialized) {
+			this.logger.warn('Connection is not initialized.');
+			throw new Error('Connection is not initialized.');
+		}
+		this.endpoint = connectionSettings.endpoint;
+		this.setAuthenticationSettings(connectionSettings.authenticationSettings || {});
+
+		const securitySettings = connectionSettings.securitySettings;
+		if (securitySettings) {
+			this.setSecuritySettings(securitySettings);
+		} else {
+			this.setSecuritySettings({securityMode: OpcUaSecurityModes.None, securityPolicy: OpcUaSecurityPolicies.None});
+		}
+	}
+
+	public async reconnect(newConnectionSettings?: OpcUaConnectionSettings): Promise<void> {
+		await this.disconnect();
+		if (newConnectionSettings) {
+			this.logger.debug('Updating settings during reconnect.');
+			this.update(newConnectionSettings);
+		}
+		await this.connect();
+	}
+
+	public get endpointUrl(): string{
+		return this.endpoint;
 	}
 
 	/**
-	 * Opens connection to server and establish session
+	 * Set SecuritySettings of connection
+	 */
+	public setSecuritySettings(newSettings: OpcUaSecuritySettings): void {
+		this.securityMode = MessageSecurityMode[OpcUaSecurityModes[newSettings.securityMode] as keyof typeof MessageSecurityMode];
+		this.securityPolicy = SecurityPolicy[OpcUaSecurityModes[newSettings.securityPolicy] as keyof typeof SecurityPolicy];
+	}
+
+
+	/**
+	 * Set AuthenticationSettings of connection
+	 */
+	private setAuthenticationSettings(newSettings: OpcUaAuthenticationSettings): void {
+		this.setAuthenticationSettingAnonymous();
+		const userCredentials = newSettings.userCredentials;
+		if (userCredentials) {
+			this.setAuthenticationSettingUserName(userCredentials.userName, userCredentials.password);
+		}
+	}
+
+	/**
+	 * Set UserIdentity to Anonymous
+	 */
+	private setAuthenticationSettingAnonymous(): void {
+		this.userIdentitySetting = {type: UserTokenType.Anonymous};
+	}
+
+
+	/**
+	 * Applies the current session UserIdentity
+	 * @returns {Promise<void>}
+	 */
+	private setAuthenticationSettingUserName(username: string, password: string): void {
+		this.userIdentitySetting =
+			{
+				type: UserTokenType.UserName,
+				userName: username,
+				password: password
+			} as UserIdentityInfoUserName;
+	}
+
+
+	/**
+	 * Applies the current session UserIdentity to current session on the fly
+	 * @returns {Promise<void>}
+	 */
+	private async applySessionUserIdentity(): Promise<void> {
+		if (this.isConnected() && this.session) {
+			await this.client?.changeSessionIdentity(this.session, this.userIdentitySetting);
+		}
+		return Promise.resolve();
+	}
+
+	/**
+	 * Open connection to server and establish session
+	 * @returns {Promise<void>}
 	 */
 	public async connect(): Promise<void> {
+		if (!this.initialized) {
+			this.logger.warn('Connection is not initialized.');
+			throw new Error('Connection is not initialized.');
+		}
 		if (this.isConnected()) {
 			this.logger.debug(`[${this.id}] Already connected`);
-			return Promise.resolve();
 		} else {
-			if (this.endpoint === undefined) {
-				this.logger.warn('Error while connecting to OPC UA. Endpoint undefined.');
-				throw new Error('cannot be established');
-			}
-			this.client = await this.createAndConnectClient();
-			this.session = await this.createSession();
-			this.namespaceArray = await this.readNameSpaceArray();
-			this.subscription = await this.createSubscription();
-
+			this.createClient();
+			await this.connectClient();
+			await this.createSession();
+			await this.readNameSpaceArray();
 			this.logger.info(`[${this.id}] Successfully connected`);
 			this.emit('connected');
 		}
-	}
-
-	public async disconnect(): Promise<void> {
-		if (this.client) {
-			this.client.removeAllListeners('close')
-				.removeAllListeners('connection_lost');
-		}
-		if (this.subscription) {
-			await timeout(this.subscription.terminate(), 1000);
-			this.subscription = undefined;
-		}
-		if (this.session) {
-			await timeout(this.session.close(), 1000);
-			this.session = undefined;
-		}
-		if (this.client) {
-			await timeout(this.client.disconnect(), 1000);
-			this.client = undefined;
-		}
-		this.items.clear();
-		this.logger.info(`[${this.id}] OPC UA connection disconnected`);
+		return Promise.resolve();
 	}
 
 	/**
-	 * is pea connected to physical PEAController
+	 * Disconnect client
+	 * @returns {Promise<void>}
+	 */
+	public async disconnect(): Promise<void> {
+		await this.stopMonitoring();
+		await this.stopSubscription();
+		await this.closeSession();
+		await this.disconnectClient();
+		this.logger.info(`[${this.id}] OPC UA connection disconnected`);
+		this.emit('disconnected');
+		return Promise.resolve();
+	}
+
+	/**
+	 * Indicator if this client is currently connected to endpoint
 	 * @returns {boolean}
 	 */
 	public isConnected(): boolean {
 		return !!this.client && !!this.session;
 	}
 
-	public async readOpcUaNode(nodeId: string, namespaceUrl: string):  Promise<DataValue | undefined> {
-		return await this.session?.read({nodeId: this.resolveNodeId(nodeId, namespaceUrl)});
-
+	/**
+	 * read the value of provided NodeID information
+	 * @returns {Promise<DataValue | undefined>}
+	 */
+	public async readNode(identifier: string, namespace: string):  Promise<DataValue | undefined> {
+		return await this.session?.read({nodeId: this.resolveNodeId(identifier, namespace)});
 	}
 
-	public addOpcUaNode(nodeId: string, namespaceUrl?: string): string {
-		let nodeIdResolved;
-		if (namespaceUrl) {
-			nodeIdResolved = this.resolveNodeId(nodeId, namespaceUrl);
-		} else {
-			nodeIdResolved = nodeId;
+	/**
+	 * Write the provided value to provided NodeID information
+	 * @returns {Promise<DataValue | undefined>}
+	 */
+	public async writeNode(nodeId: string, namespaceUri: string, value: number | string | boolean, dataType: string): Promise<void> {
+		if (!this.isConnected()) {
+			throw new Error('Can not write node since OPC UA connection is not established');
 		}
+		const variant = Variant.coerce({
+			value: value,
+			dataType: dataType,
+			arrayType: VariantArrayType.Scalar
+		});
+
+		const nodeToWrite = {
+			nodeId: this.resolveNodeId(nodeId, namespaceUri).toString(),
+			attributeId: AttributeIds.Value,
+			value: {
+				value: variant
+			}
+		};
+
+		this.logger.debug(`[${this.id}] Write ${nodeId} - ${JSON.stringify(variant)}`);
+		if (!this.session) {
+			throw new Error('Session is undefined');
+		}
+		const statusCode = await this.session.write(nodeToWrite);
+
+		if (statusCode.value !== 0) {
+			this.logger.warn(`Error while writing to OpcUA ${nodeId}=${value}: ${statusCode.description}`);
+			throw new Error(statusCode.description);
+		}
+		return Promise.resolve();
+	}
+
+	/**
+	 * Add Node to the connection and subscription groups
+	 * @returns {string}
+	 */
+	public addNodeToMonitoring(identifier: string, namespace: string, ): string {
+
+		const nodeIdResolved = this.resolveNodeId(identifier, namespace);
 
 		const monitoredItemKey = nodeIdResolved.toString();
-		this.items.set(nodeId, monitoredItemKey);
+		this.nodes.set(identifier, monitoredItemKey);
+
 		return monitoredItemKey;
 	}
 
-	public async startListening(samplingInterval = 100): Promise<EventEmitter> {
-		const options = Array.from(this.items.values()).map((item) => {
+	public async startMonitoring(samplingInterval = 100): Promise<EventEmitter> {
+		const options = Array.from(this.nodes.values()).map((item) => {
 			return {
 				nodeId: item,
 				attributeId: AttributeIds.Value
 			};
 		});
-		if (!this.subscription){throw new Error('Subscription is undefined');}
-		const monitoredItemGroup: ClientMonitoredItemGroup = await this.subscription.monitorItems(
+		if (!this.subscription){
+			await this.createSubscription();
+		}
+		const monitoredItemGroup: ClientMonitoredItemGroup = await this.subscription!.monitorItems(
 			options,
 			{
 				samplingInterval,
@@ -181,81 +352,35 @@ export class OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionEm
 		return this.eventEmitter;
 	}
 
-	public async writeOpcUaNode(nodeId: string, namespaceUrl: string, value: number | string | boolean,
-								dataType: string): Promise<void> {
-		if (!this.isConnected()) {
-			throw new Error(`Can not write node since OPC UA connection to PEA ${this.id} is not established`);
-		} else {
-			const variant = Variant.coerce({
-				value: value,
-				dataType: dataType,
-				arrayType: VariantArrayType.Scalar
-			});
-
-			const nodeToWrite = {
-				nodeId: this.resolveNodeId(nodeId, namespaceUrl).toString(),
-				attributeId: AttributeIds.Value,
-				value: {
-					value: variant
-				}
-			};
-
-			this.logger.debug(`[${this.id}] Write ${nodeId} - ${JSON.stringify(variant)}`);
-			if (!this.session) {
-				throw new Error('Session is undefined');
-			}
-			const statusCode = await this.session.write(nodeToWrite);
-
-			if (statusCode.value !== 0) {
-				this.logger.warn(`Error while writing to OpcUA ${nodeId}=${value}: ${statusCode.description}`);
-				throw new Error(statusCode.description);
-			}
+	public async stopMonitoring(): Promise<void>{
+		if (this.client) {
+			this.client.removeAllListeners('close')
+				.removeAllListeners('connection_lost');
 		}
+		return Promise.resolve();
 	}
 
-	public monitoredItemSize(): number {
-		return this.items.size;
+
+	public monitoredNodesCount(): number {
+		return this.nodes.size;
 	}
 
-	/**
-	 * Resolves a node-id from node-id and namespace url using the namespace array
-	 */
-	private resolveNodeId(nodeId: string, namespaceUrl: string): NodeId {
-		if (!this.namespaceArray) {
-			throw new Error(`No namespace array read for PEA ${this.id}`);
-		} else if (!namespaceUrl) {
-			throw new Error(`namespace index is null in PEA ${this.id}`);
-		} else if (!nodeId) {
-			throw new Error('node-id is null');
-		}
-		const nsIndex = this.namespaceArray.indexOf(namespaceUrl);
-		if (nsIndex === -1) {
-			throw new Error(`Could not resolve namespace ${namespaceUrl}`);
-		}
-		const nodeIdString = `ns=${nsIndex};s=${nodeId}`;
-
-		this.logger.debug(`[${this.id}] resolveNodeId ${nodeId} -> ${nodeIdString}`);
-		return coerceNodeId(nodeIdString);
+	public clearMonitoredNodes(): void{
+		this.nodes.clear();
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	private async readNameSpaceArray(): Promise<any> {
-		const result: DataValue | undefined = await this.session?.read({nodeId: 'ns=0;i=2255'});
-		if (!result) {
-			throw new Error('Could not read Node ns=0;i=2255');
-		}
-		const namespaceArray = result.value.value;
-		this.logger.info(`[${this.id}] Got namespace array: ${JSON.stringify(namespaceArray)}`);
-		return namespaceArray;
-	}
+	private createClient(): void {
+		const connectionStrategy = {
+			initialDelay: 50,
+			maxRetry: 0
+		};
 
-	private async createAndConnectClient(): Promise<OPCUAClient> {
-		const client = OPCUAClient.create({
-				// eslint-disable-next-line @typescript-eslint/camelcase
-				endpoint_must_exist: false,
-				connectionStrategy: {
-					maxRetry: 0
-				}
+		this.client = OPCUAClient.create({
+				applicationName: 'NodeOPCUA-Client',
+				endpointMustExist: false,
+				securityMode: this.securityMode,
+				securityPolicy: this.securityPolicy,
+				connectionStrategy: connectionStrategy,
 			})
 			.on('close', async () => {
 				this.logger.info(`[${this.id}] Connection closed to OPC UA server`);
@@ -270,40 +395,50 @@ export class OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionEm
 			.on('timed_out_request', () => {
 				this.logger.warn(`[${this.id}] timed out request - retrying connection`);
 			});
-		this.logger.info(`[${this.id}] connect PEA via ${this.endpoint}`);
-
-		await timeout(client.connect(this.endpoint), 2000)
-			.catch((err) => {
-				client.disconnect();
-				throw err;
-			});
-		this.logger.info(`[${this.id}] opc ua server connected via ${this.endpoint}`);
-		return client;
 	}
 
-	private async createSession(): Promise<ClientSession> {
-		let userIdentityInfo: UserIdentityInfo = {type: UserTokenType.Anonymous};
-		if (this.username && this.password) {
-			userIdentityInfo =
-				{
-					type: UserTokenType.UserName,
-					userName: this.username,
-					password: this.password
-				} as UserIdentityInfoUserName;
-		}
+	private async updateClient(): Promise<void> {
+		await this.createClient();
+		return Promise.resolve();
+	}
+
+	private async connectClient(): Promise<void> {
 		if (!this.client) {
-			throw new Error('Client is undefined');
+			throw new Error('Client must exist');
 		}
-		const session = await this.client.createSession(userIdentityInfo);
-		this.logger.debug(`session created (#${session.sessionId})`);
-		return session;
+		this.logger.info(`[${this.id}] start connect via endpoint: ${this.endpoint}`);
+		await timeout(this.client.connect(this.endpoint!), 2000);
+		this.logger.info(`[${this.id}] connected via endpoint: ${this.endpoint}`);
 	}
 
-	private async createSubscription(): Promise<ClientSubscription> {
-		if (!this.session) {
-			throw new Error('Session is undefined');
+	private async disconnectClient(): Promise<void> {
+		if (this.client) {
+			await timeout(this.client.disconnect(), 1000);
 		}
-		const subscription = ClientSubscription.create(this.session, {
+	}
+
+	private async createSession(): Promise<void> {
+		if (!this.client) {
+			throw new Error('Client should exist');
+		}
+		this.session = await this.client.createSession(this.userIdentitySetting);
+		this.logger.debug(`session created (#${this.session.sessionId})`);
+	}
+
+
+	private async closeSession(): Promise<void> {
+		if (this.session) {
+			await timeout(this.session.close(), 1000);
+			this.session = undefined;
+		}
+	}
+
+
+	public async createSubscription(): Promise<void> {
+		if (!this.session) {
+			throw new Error('Session should exist');
+		}
+		const subscriptionItem = ClientSubscription.create(this.session, {
 			requestedPublishingInterval: 100,
 			requestedLifetimeCount: 1000,
 			requestedMaxKeepAliveCount: 12,
@@ -313,10 +448,10 @@ export class OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionEm
 		});
 
 		await new Promise((resolve) =>
-			subscription
+			subscriptionItem
 				.on('started', () => {
 					this.logger.info(`[${this.id}] subscription started - ` +
-						`subscriptionId=${subscription.subscriptionId}`);
+						`subscriptionId=${subscriptionItem.subscriptionId}`);
 					resolve();
 				})
 				.on('terminated', () => {
@@ -328,7 +463,66 @@ export class OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionEm
 				.on('item_added', (data) => this.logger.debug(`[${this.id}] item added: ${data}`))
 				.on('raw_notification', (data) => this.logger.trace(`[${this.id}] raw_notification: ${data}`))
 		);
-		return subscription;
+		this.subscription = subscriptionItem;
 	}
 
+	private async stopSubscription(): Promise<void> {
+		if (this.subscription) {
+			await timeout(this.subscription.terminate(), 1000);
+			this.subscription = undefined;
+		}
+	}
+
+	/**
+	 * Resolves a node-id from identifier and namespace using the namespace array
+	 */
+	private resolveNodeId(identifier: string, namespace: string): NodeId {
+
+		const nsIndex = this.resolveNamespaceIndex(namespace);
+		const nodeIdString = `ns=${nsIndex};s=${identifier}`;
+		this.logger.debug(`[${this.id}] resolveNodeId ${identifier} -> ${nodeIdString}`);
+		return coerceNodeId(nodeIdString);
+	}
+
+	private resolveNamespaceIndex(namespace: string): number {
+		let result = -1;
+		if (!this.namespaceArray) {
+			throw new Error('NamespaceArray is undefined!');
+		}
+		const isURL = isNaN(+namespace);
+		if (isURL) {
+			result = this.findNamespaceIndex(namespace);
+			if (result === -1) {
+				throw new Error(`Namespace ${namespace} is unknown!`);
+			}
+		} else {
+			// check if provided namespace is a known namespace index
+			const namespaceIndex = Number(namespace);
+			const namespaceIndexExists = this.checkNamespaceIndexExists(namespaceIndex);
+			if (!namespaceIndexExists) {
+				throw new Error(`Namespace ${namespace} is unknown!`);
+			}
+		}
+		return result;
+	}
+
+	private checkNamespaceIndexExists(namespaceIndex: number): boolean {
+		return !!this.namespaceArray[namespaceIndex];
+	}
+
+	private findNamespaceIndex(namespace: string): number {
+		return this.namespaceArray.indexOf(namespace);
+	}
+
+	private async readNameSpaceArray(): Promise<void> {
+		let namespaceArray: string[] = [];
+		const result: DataValue | undefined = await this.session?.read({nodeId: 'ns=0;i=2255'});
+		if (result) {
+			this.logger.info(`[${this.id}] Got namespace array: ${JSON.stringify(namespaceArray)}`);
+			namespaceArray = result.value.value;
+		} else {
+			throw new Error('Could not read NamespaceArray at Node \'ns=0;i=2255\'');
+		}
+		this.namespaceArray = namespaceArray;
+	}
 }

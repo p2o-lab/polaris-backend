@@ -41,19 +41,17 @@ import * as peaOptionsServices from '../../../../../tests/peaOptions_testservice
 
 import {MockupServer} from '../../../_utils';
 import {AnaViewMockup} from '../../dataAssembly/indicatorElement/AnaView/AnaView.mockup';
-import {Namespace, UAObject} from 'node-opcua';
 import {ServiceControlMockup} from '../../dataAssembly/ServiceControl/ServiceControl.mockup';
-import {namespaceUrl, setNamespaceUrl} from '../../../../../tests/namespaceUrl';
+import {setNamespaceUrl} from '../../../../../tests/namespaceUrl';
 import {AnaServParamMockup} from '../../dataAssembly/operationElement/servParam/anaServParam/AnaServParam.mockup';
-import {AnaProcessValueIn, AnaServParam} from '../../dataAssembly';
-import {ModularPlantManager} from '../../../ModularPlantManager';
+import {AnaServParam} from '../../dataAssembly';
 import {AnaProcessValueInMockup} from '../../dataAssembly/inputElement/processValueIn/AnaProcessValueIn/AnaProcessValueIn.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('Service', () => {
-	const opcUAConnection = new OpcUaConnection('', '');
+	const opcUAConnection = new OpcUaConnection();
 
 	context('constructor', () => {
 		it('should fail with missing options', () => {
@@ -131,10 +129,10 @@ describe('Service', () => {
 			//set up mockup
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			const mockup = new AnaViewMockup(mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject, 'Variable');
-			const mockupService = new ServiceControlMockup(mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject, 'Trigonometry');
+			const mockup = new AnaViewMockup(mockupServer.nameSpace,
+				mockupServer.rootObject, 'Variable');
+			const mockupService = new ServiceControlMockup(mockupServer.nameSpace,
+				mockupServer.rootObject, 'Trigonometry');
 			await mockupServer.start();
 
 			pea = new PEAController(peaOptions as unknown as PEAOptions);
@@ -273,18 +271,18 @@ describe('Service', () => {
 			const mockupServer = new MockupServer();
 			await mockupServer.initialize();
 
-			const mockupConfParam = new AnaServParamMockup(mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject, 'TestService.AnaConfParam_TestService_updateRate');
-			const mockupParam = new AnaServParamMockup(mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject, 'TestService.AnaProcParam_TestService_factor');
-			const mockupReportValue = new AnaViewMockup(mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject, 'TestService.AnaReportValue_TestService_rvTime');
-			const mockupProcessValueIn = new AnaProcessValueInMockup(mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject, 'TestService.AnaProcessValueIn_TestService_pv');
-			const mockupProcessValueOut = new AnaProcessValueInMockup(mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject, 'TestService.AnaProcessValueOut_TestService_pvOutIntegral');
-			const mockupService = new ServiceControlMockup(mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject, 'TestService');
+			const mockupConfParam = new AnaServParamMockup(mockupServer.nameSpace,
+				mockupServer.rootObject, 'TestService.AnaConfParam_TestService_updateRate');
+			const mockupParam = new AnaServParamMockup(mockupServer.nameSpace,
+				mockupServer.rootObject, 'TestService.AnaProcParam_TestService_factor');
+			const mockupReportValue = new AnaViewMockup(mockupServer.nameSpace,
+				mockupServer.rootObject, 'TestService.AnaReportValue_TestService_rvTime');
+			const mockupProcessValueIn = new AnaProcessValueInMockup(mockupServer.nameSpace,
+				mockupServer.rootObject, 'TestService.AnaProcessValueIn_TestService_pv');
+			const mockupProcessValueOut = new AnaProcessValueInMockup(mockupServer.nameSpace,
+				mockupServer.rootObject, 'TestService.AnaProcessValueOut_TestService_pvOutIntegral');
+			const mockupService = new ServiceControlMockup(mockupServer.nameSpace,
+				mockupServer.rootObject, 'TestService');
 
 			await mockupServer.start();
 			const pea = new PEAController(peaOptionsServices as unknown as PEAOptions);

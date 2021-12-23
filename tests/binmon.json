@@ -3,47 +3,47 @@
     "TagDescription": "Test",
     "WQC": {
       "nodeId": "Variable.WQC",
-      "namespaceIndex": "localhost",
+      "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
       "dataType": "xs:IDREF"
     },
     "V": {
       "nodeId": "Variable.V",
-      "namespaceIndex": "localhost",
+      "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
       "dataType": "xs:IDREF"
     },
     "VState0": {
       "nodeId": "Variable.VState0",
-      "namespaceIndex": "localhost",
+      "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
       "dataType": "xs:IDREF"
     },
     "VState1": {
       "nodeId": "Variable.VState1",
-      "namespaceIndex": "localhost",
+      "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
       "dataType": "xs:IDREF"
     },
     "OSLevel": {
       "nodeId": "Variable.OSLevel",
-      "namespaceIndex": "localhost",
+      "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
       "dataType": "xs:IDREF"
     },
     "VFlutEn": {
       "nodeId": "Variable.VFlutEn",
-      "namespaceIndex": "localhost",
+      "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
       "dataType": "xs:IDREF"
     },
     "VFlutTi": {
       "nodeId": "Variable.VFlutTi",
-      "namespaceIndex": "localhost",
+      "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
       "dataType": "xs:IDREF"
     },
     "VFlutCnt": {
       "nodeId": "Variable.VFlutCnt",
-      "namespaceIndex": "localhost",
+      "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
       "dataType": "xs:IDREF"
     },
     "VFlutAct": {
       "nodeId": "Variable.VFlutAct",
-      "namespaceIndex": "localhost",
+      "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
       "dataType": "xs:IDREF"
     }
 }

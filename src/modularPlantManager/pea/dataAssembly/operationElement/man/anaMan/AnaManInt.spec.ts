@@ -31,11 +31,6 @@ import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import * as baseDataAssemblyOptions from '../../../../../../../tests/dintmanint.json';
 import {DataAssemblyControllerFactory} from '../../../DataAssemblyControllerFactory';
 import {MockupServer} from '../../../../../_utils';
-import {AnaManMockup} from './AnaMan.mockup';
-import {Namespace, UAObject} from 'node-opcua';
-import {namespaceUrl} from '../../../../../../../tests/namespaceUrl';
-import {AnaMan} from './AnaMan';
-import {AnaManIntMockup} from './AnaManInt.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -48,14 +43,13 @@ describe('AnaManInt', () => {
 	};
 
 	describe( 'static',() => {
-		const emptyOPCUAConnection = new OpcUaConnection('', '');
+		const emptyOPCUAConnection = new OpcUaConnection();
 		it('should create AnaManInt',  () => {
 
 			const da1: AnaManInt = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as AnaManInt;
 			expect(da1.sourceMode).to.be.not.undefined;
 			expect(da1.communication.VInt).to.not.equal(undefined);
 			expect(da1.wqc).to.not.equal(undefined);
-			//rest is tested in AnaMan
 		});
 	});
 	describe('dynamic', () => {
@@ -66,12 +60,9 @@ describe('AnaManInt', () => {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			const mockup = new AnaManIntMockup(
-				mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject,
-				'Variable');
 			await mockupServer.start();
-			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334','','');
+			connection = new OpcUaConnection();
+			connection.initialize({endpoint: mockupServer.endpoint});
 			await connection.connect();
 		});
 
@@ -82,16 +73,10 @@ describe('AnaManInt', () => {
 		});
 
 		it('should subscribe successfully', async () => {
-			// set namespaceUrl
-			for (const key in dataAssemblyOptions.dataItems as any) {
-				//skip static values
-				if((typeof(dataAssemblyOptions.dataItems as any)[key] != 'string')){
-					(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
-				}
-			}
+
 			const da1 = DataAssemblyControllerFactory.create(dataAssemblyOptions, connection) as AnaManInt;
 			const pv =  da1.subscribe();
-			await connection.startListening();
+			await connection.startMonitoring();
 			await pv;
 
 			expect(da1.communication.OSLevel.value).to.equal(0);

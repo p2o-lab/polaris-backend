@@ -155,9 +155,10 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 		this.protected = protectedPEA;
 		this.hmiUrl = options.hmiUrl || '';
 
-		this.connection = new OpcUaConnection(this.id, options.opcuaServerUrl, options.username, options.password)
+		this.connection = new OpcUaConnection()
 			.on('connected', () => this.emit('connected'))
 			.on('disconnected', () => this.emit('disconnected'));
+		this.connection.initialize({endpoint: options.opcuaServerUrl});
 		this.logger = catPEA;
 
 		if (options.services) {
@@ -176,10 +177,11 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 	 * recreate OPCUAConnection and dAControllers with new settings.
 	 * @param options {ServerSettingsOptions}
 	 */
-	public updateConnection(options: ServerSettingsOptions){
-		this.connection = new OpcUaConnection(this.id, options.serverUrl, options.username, options.password)
+	public updateConnection(options: ServerSettingsOptions): void{
+		this.connection = new OpcUaConnection()
 			.on('connected', () => this.emit('connected'))
 			.on('disconnected', () => this.emit('disconnected'));
+		this.connection.initialize({endpoint: options.serverUrl});
 		// rebuild dAControllers with new connection
 		this.variables = this.options.dataAssemblies
 			.map((variableOptions: DataAssemblyOptions) =>
@@ -212,9 +214,9 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 		await this.connection.connect();
 		const pv = this.subscribeToAllVariables();
 		const pa = this.subscribeToAllServices();
-		await this.connection.startListening();
+		await this.connection.startMonitoring();
 		await Promise.all([pv,pa]);
-		this.logger.info(`[${this.id}] Successfully subscribed to ${this.connection.monitoredItemSize()} assemblies`);
+		this.logger.info(`[${this.id}] Successfully subscribed to ${this.connection.monitoredNodesCount()} Nodes`);
 	}
 
 	/**
@@ -240,7 +242,7 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 			id: this.id,
 			pimadIdentifier: this.pimadIdentifier,
 			description: this.description,
-			endpoint: this.connection.endpoint,
+			endpoint: this.connection.endpointUrl,
 			hmiUrl: this.hmiUrl,
 			connected: this.isConnected(),
 			services: this.getServiceStates(),
@@ -250,12 +252,20 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 	}
 
 	/**
-	 * is POL connected to PEAController
+	 * is PEAController connected to actual PEA
 	 * @returns {boolean}
 	 */
 	public isConnected(): boolean {
 		return this.connection.isConnected();
 	}
+
+	/**
+	 * get current connection settings of PEAController
+	 */
+	public getCurrentConnectionSettings(): object{
+		return {serverUrl: this.connection.endpointUrl};
+	}
+
 
 	public listenToDataAssembly(dataAssemblyName: string, variableName: string): DataItemEmitter {
 		const dataAssembly: DataAssemblyController | undefined = this.variables.find(
@@ -356,7 +366,7 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 		this.variables.forEach((variable: DataAssemblyController) => variable.unsubscribe());
 	}
 
-	private subscribeToAllServices(): Promise<StrictEventEmitter<EventEmitter, ServiceEvents, ServiceEvents, "addEventListener" | "removeEventListener", "on" | "addListener" | "removeListener" | "once" | "emit">[]>{
+	private subscribeToAllServices(): Promise<StrictEventEmitter<EventEmitter, ServiceEvents, ServiceEvents, 'addEventListener' | 'removeEventListener', 'on' | 'addListener' | 'removeListener' | 'once' | 'emit'>[]>{
 		return Promise.all(this.services.map((service) => {
 			service.eventEmitter
 				.on('commandExecuted', (data) => {

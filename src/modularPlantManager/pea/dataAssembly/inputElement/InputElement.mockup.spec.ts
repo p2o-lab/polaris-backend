@@ -16,14 +16,14 @@ describe('InputElementMockup', () => {
         });
 
         it('should create InputElementMockup', async () => {
-            const mockup= new InputElementMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            const mockup= new InputElementMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             expect(mockup).to.not.be.undefined;
             expect(mockup.wqc).to.not.be.undefined;
         });
         it('getInputElementMockupReferenceJSON()',  () => {
-            const mockup = new InputElementMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            const mockup = new InputElementMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             const json = mockup.getInputElementInstanceMockupJSON();
             expect(json).not.to.be.undefined;
             expect(Object.keys(json).length).to.equal(1);

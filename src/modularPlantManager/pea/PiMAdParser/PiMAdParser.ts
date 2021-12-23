@@ -7,7 +7,6 @@ import {
 } from '@p2olab/polaris-interface';
 import {ProcedureOptions} from '@p2olab/polaris-interface/dist/service/options';
 import {ModularPlantManager} from '../../ModularPlantManager';
-import {namespaceUrl} from '../../../../tests/namespaceUrl';
 
 export interface PiMAdParserInterface{
      dataAssemblyOptionsArray: DataAssemblyOptions[];
@@ -174,7 +173,7 @@ export class PiMAdParser {
                 if(cIData){ //dynamic
                     nodeId= cIData.nodeId.identifier;
                     namespaceIndex = cIData.nodeId.namespaceIndex;
-                   // namespaceIndex = namespaceUrl; // for testing
+                   // namespaceIndex = namespaceUri; // for testing
                     const opcUaNodeOptions: OpcUaNodeOptions = {
                         nodeId: nodeId,
                         namespaceIndex: namespaceIndex,

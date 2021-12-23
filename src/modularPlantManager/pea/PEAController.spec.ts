@@ -28,10 +28,9 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../_utils';
 import * as peaOptions from '../../../tests/peaOptions.json';
-import {namespaceUrl, setNamespaceUrl} from '../../../tests/namespaceUrl';
+import {setNamespaceUrl} from '../../../tests/namespaceUrl';
 import {PEAOptions, ServiceCommand} from '@p2olab/polaris-interface';
 import {AnaViewMockup} from './dataAssembly/indicatorElement/AnaView/AnaView.mockup';
-import {Namespace, UAObject} from 'node-opcua';
 import {ServiceControlMockup} from './dataAssembly/ServiceControl/ServiceControl.mockup';
 import {ServiceState} from './serviceSet/service/enum';
 import {Service} from './serviceSet';
@@ -50,7 +49,7 @@ describe('PEAController', () => {
 		let mockupServer: MockupServer;
 		let peaController: PEAController;
 		let service: Service;
-		//set namespaceUrl in peaOptions
+		//set namespaceUri in peaOptions
 		setNamespaceUrl(peaOptions as any);
 
 		beforeEach(async () => {
@@ -58,10 +57,10 @@ describe('PEAController', () => {
 			peaController = new PEAController(peaOptions as unknown as PEAOptions);
 			service = peaController.services[0];
 			await mockupServer.initialize();
-			const mockup = new AnaViewMockup(mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject, 'Variable');
-			const mockupService = new ServiceControlMockup(mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject, 'Trigonometry');
+			const mockup = new AnaViewMockup(mockupServer.nameSpace,
+				mockupServer.rootObject, 'Variable');
+			const mockupService = new ServiceControlMockup(mockupServer.nameSpace,
+				mockupServer.rootObject, 'Trigonometry');
 			await mockupServer.start();
 		});
 		afterEach(async () => {
@@ -77,10 +76,10 @@ describe('PEAController', () => {
 				mockupServer = new MockupServer();
 				peaController = new PEAController(peaOptions as unknown as PEAOptions);
 				await mockupServer.initialize();
-				new AnaViewMockup(mockupServer.namespace as Namespace,
-					mockupServer.rootComponent as UAObject, 'Variable', false);
-				new ServiceControlMockup(mockupServer.namespace as Namespace,
-					mockupServer.rootComponent as UAObject, 'Trigonometry');
+				new AnaViewMockup(mockupServer.nameSpace,
+					mockupServer.rootObject, 'Variable', false);
+				new ServiceControlMockup(mockupServer.nameSpace,
+					mockupServer.rootObject, 'Trigonometry');
 				await mockupServer.start();
 				return expect(peaController.connectAndSubscribe()).to.be.rejectedWith('Timeout: Could not subscribe to Variable.V');
 			}).timeout(5000);
@@ -108,9 +107,6 @@ describe('PEAController', () => {
 				await peaController.disconnectAndUnsubscribe();
 			});
 
-/*			it('should fail to disconnect and unsubscribe',  async() => {
-				//TODO when could this occure?
-			});*/
 		});
 
 		context('control Services',async ()=> {
