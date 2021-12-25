@@ -28,10 +28,9 @@ import {OpcUaConnection} from '../../connection';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from '../../../../../tests/binmanint.json';
+import * as baseDataAssemblyOptions from './OperationElement.spec.json';
 import {MockupServer} from '../../../_utils';
 import {OperationElementMockup} from './OperationElement.mockup';
-import {Namespace} from 'node-opcua';
 import {OperationElement} from './OperationElement';
 
 

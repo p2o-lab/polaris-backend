@@ -26,9 +26,14 @@
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {OpcUaConnection, OpcUaDataItem} from '../../../../connection';
 import {ServParam, ServParamRuntime} from '../ServParam';
-import {ScaleSettings, ScaleSettingsRuntime} from '../../../_extensions/scaleSettingsDA/ScaleSettings';
-import {UnitDataAssemblyRuntime, UnitSettings} from '../../../_extensions/unitDA/UnitSettings';
-import {ValueLimitation, ValueLimitationRuntime} from '../../../_extensions/valueLimitationDA/ValueLimitation';
+import {
+	ScaleSettings,
+	ScaleSettingsRuntime,
+	UnitDataAssemblyRuntime,
+	UnitSettings,
+	ValueLimitation,
+	ValueLimitationRuntime
+} from '../../../_extensions';
 
 export type AnaServParamRuntime = ServParamRuntime & ScaleSettingsRuntime & UnitDataAssemblyRuntime & ValueLimitationRuntime & {
 	VExt: OpcUaDataItem<number>;

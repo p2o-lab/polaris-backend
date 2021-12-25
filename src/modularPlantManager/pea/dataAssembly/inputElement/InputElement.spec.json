@@ -1,0 +1,11 @@
+{
+    "TagName": "Variable",
+    "TagDescription": "Test",
+    "WQC": {
+      "nodeId": "Variable.WQC",
+      "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+      "dataType": "xs:IDREF"
+    }
+}
+
+

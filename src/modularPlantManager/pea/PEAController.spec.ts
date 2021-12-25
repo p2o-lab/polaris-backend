@@ -27,7 +27,7 @@ import {PEAController} from './PEAController';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../_utils';
-import * as peaOptions from '../../../tests/peaOptions.json';
+import * as peaOptions from '../peaOptions.spec.json';
 import {setNamespaceUrl} from '../../../tests/namespaceUrl';
 import {PEAOptions, ServiceCommand} from '@p2olab/polaris-interface';
 import {AnaViewMockup} from './dataAssembly/indicatorElement/AnaView/AnaView.mockup';

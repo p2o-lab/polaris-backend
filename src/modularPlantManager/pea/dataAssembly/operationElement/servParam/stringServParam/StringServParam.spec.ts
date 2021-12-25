@@ -29,13 +29,9 @@ import {StringServParam} from './StringServParam';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../../_utils';
-import {ServParamMockup} from '../ServParam.mockup';
-import {Namespace, UAObject} from 'node-opcua';
-
-import {ServParam} from '../ServParam';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-//stringservparam overlaps with anaservparam.json
-import * as baseDataAssemblyOptions from '../../../../../../../tests/anaserveparam.json';
+
+import * as baseDataAssemblyOptions from './StringServParam.spec.json';
 import {DataAssemblyControllerFactory} from '../../../DataAssemblyControllerFactory';
 import {StringServParamMockup} from './StringServParam.mockup';
 

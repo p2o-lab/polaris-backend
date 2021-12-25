@@ -1,0 +1,131 @@
+{
+    "TagName": "Variable",
+    "TagDescription": "Test",
+    "WQC": {
+      "nodeId": "Variable.WQC",
+      "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+      "dataType": "xs:IDREF"
+    },
+    "V": {
+      "nodeId": "Variable.V",
+      "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+      "dataType": "xs:IDREF"
+    },
+    "VSclMin": {
+      "nodeId": "Variable.VSclMin",
+      "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+      "dataType": "xs:IDREF"
+    },
+    "VSclMax": {
+      "nodeId": "Variable.VSclMax",
+      "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+      "dataType": "xs:IDREF"
+    },
+    "VUnit": {
+      "nodeId": "Variable.VUnit",
+      "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+      "dataType": "xs:IDREF"
+    },
+    "OSLevel": {
+      "nodeId": "Variable.OSLevel",
+      "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+      "dataType": "xs:IDREF"
+    },
+    "VAHEn": {
+      "nodeId": "Variable.VAHEn",
+      "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+      "dataType": "xs:IDREF"
+    },
+    "VAHLim": {
+      "nodeId": "Variable.VAHLim",
+      "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+      "dataType": "xs:IDREF"
+    },
+    "VAHAct": {
+      "nodeId": "Variable.VAHAct",
+      "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+      "dataType": "xs:IDREF"
+    },
+
+    "VWHEn": {
+      "nodeId": "Variable.VWHEn",
+      "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+      "dataType": "xs:IDREF"
+    },
+    "VWHLim": {
+      "nodeId": "Variable.VWHLim",
+      "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+      "dataType": "xs:IDREF"
+    },
+    "VWHAct": {
+      "nodeId": "Variable.VWHAct",
+      "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+      "dataType": "xs:IDREF"
+    },
+
+    "VTHEn": {
+      "nodeId": "Variable.VTHEn",
+      "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+      "dataType": "xs:IDREF"
+    },
+    "VTHLim": {
+      "nodeId": "Variable.VTHLim",
+      "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+      "dataType": "xs:IDREF"
+    },
+    "VTHAct": {
+      "nodeId": "Variable.VTHAct",
+      "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+      "dataType": "xs:IDREF"
+    },
+
+    "VTLEn": {
+      "nodeId": "Variable.VTLEn",
+      "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+      "dataType": "xs:IDREF"
+    },
+    "VTLLim": {
+      "nodeId": "Variable.VTLLim",
+      "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+      "dataType": "xs:IDREF"
+    },
+    "VTLAct": {
+      "nodeId": "Variable.VTLAct",
+      "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+      "dataType": "xs:IDREF"
+    },
+
+    "VWLEn": {
+      "nodeId": "Variable.VWLEn",
+      "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+      "dataType": "xs:IDREF"
+    },
+    "VWLLim": {
+      "nodeId": "Variable.VWLLim",
+      "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+      "dataType": "xs:IDREF"
+    },
+    "VWLAct": {
+      "nodeId": "Variable.VWLAct",
+      "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+      "dataType": "xs:IDREF"
+    },
+
+    "VALEn": {
+      "nodeId": "Variable.VALEn",
+      "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+      "dataType": "xs:IDREF"
+    },
+    "VALLim": {
+      "nodeId": "Variable.VALLim",
+      "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+      "dataType": "xs:IDREF"
+    },
+    "VALAct": {
+      "nodeId": "Variable.VALAct",
+      "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+      "dataType": "xs:IDREF"
+    }
+}
+
+

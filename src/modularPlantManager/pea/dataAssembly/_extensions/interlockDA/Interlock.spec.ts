@@ -28,7 +28,7 @@ import {OpcUaConnection} from '../../../connection';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from '../../../../../../tests/monbinvlv.json';
+import * as baseDataAssemblyOptions from '../../activeElement/vlv/binVlv/monBinVlv/MonBinVlv.spec.json';
 import {DataAssemblyController} from '../../DataAssemblyController';
 import {MonBinVlv} from '../../activeElement';
 import {Interlock} from './Interlock';

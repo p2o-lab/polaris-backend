@@ -28,9 +28,8 @@ import {AnaVlv} from './AnaVlv';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from '../../../../../../../tests/monanavlv.json';
+import * as baseDataAssemblyOptions from './AnaVlv.spec.json';
 import {MockupServer} from '../../../../../_utils';
-import {Namespace, UAObject} from 'node-opcua';
 
 import {AnaVlvMockup} from './AnaVlv.mockup';
 

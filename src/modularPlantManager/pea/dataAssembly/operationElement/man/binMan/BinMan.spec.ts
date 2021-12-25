@@ -28,7 +28,7 @@ import {BinMan} from './BinMan';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from '../../../../../../../tests/binmanint.json';
+import * as baseDataAssemblyOptions from './BinMan.spec.json';
 import {DataAssemblyControllerFactory} from '../../../DataAssemblyControllerFactory';
 import {MockupServer} from '../../../../../_utils';
 import {BinManMockup} from './BinMan.mockup';

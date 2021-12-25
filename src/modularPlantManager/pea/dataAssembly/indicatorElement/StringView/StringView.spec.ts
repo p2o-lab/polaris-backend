@@ -28,9 +28,8 @@ import {StringView} from './StringView';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from '../../../../../../tests/stringview.json';
+import * as baseDataAssemblyOptions from './StringView.spec.json';
 import {MockupServer} from '../../../../_utils';
-import {Namespace} from 'node-opcua';
 import {StringViewMockup} from './StringView.mockup';
 
 chai.use(chaiAsPromised);

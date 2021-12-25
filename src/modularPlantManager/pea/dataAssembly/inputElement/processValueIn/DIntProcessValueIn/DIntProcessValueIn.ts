@@ -1,4 +1,3 @@
-/* tslint:disable:max-classes-per-file */
 /*
  * MIT License
  *
@@ -26,12 +25,10 @@
 
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {OpcUaConnection, OpcUaDataItem} from '../../../../connection';
-import {ScaleSettingsRuntime, UnitDataAssemblyRuntime} from '../../../_extensions';
+import {ScaleSettings, ScaleSettingsRuntime, UnitDataAssemblyRuntime, UnitSettings} from '../../../_extensions';
 import {
 	InputElement, InputElementRuntime,
 } from '../../InputElement';
-import {UnitSettings} from '../../../_extensions/unitDA/UnitSettings';
-import {ScaleSettings} from '../../../_extensions/scaleSettingsDA/ScaleSettings';
 
 export type DIntProcessValueInRuntime = InputElementRuntime & UnitDataAssemblyRuntime & ScaleSettingsRuntime & {
 	VExt: OpcUaDataItem<number>;

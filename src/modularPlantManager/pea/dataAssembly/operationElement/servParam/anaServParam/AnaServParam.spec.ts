@@ -28,11 +28,10 @@ import {AnaServParam} from './AnaServParam';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from '../../../../../../../tests/anaserveparam.json';
+import * as baseDataAssemblyOptions from './AnaServParam.spec.json';
 import {DataAssemblyControllerFactory} from '../../../DataAssemblyControllerFactory';
 import {MockupServer} from '../../../../../_utils';
-import {AnaServParamMockup} from '../AnaServParam/AnaServParam.mockup';
-import {Namespace, UAObject} from 'node-opcua';
+import {AnaServParamMockup} from './AnaServParam.mockup';
 
 
 chai.use(chaiAsPromised);

@@ -27,12 +27,11 @@ import {OpcUaConnection} from '../../connection';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from '../../../../../tests/anaview.json';
-import * as baseDataAssemblyOptionsStatic from '../../../../../tests/binmon_static.json';
+import * as baseDataAssemblyOptions from './IndicatorElement.spec.json';
+import * as baseDataAssemblyOptionsStatic from './IndicatorElementStatic.spec.json';
 
 import {IndicatorElement} from './IndicatorElement';
 import {MockupServer} from '../../../_utils';
-import {Namespace} from 'node-opcua';
 import {IndicatorElementMockup} from './IndicatorElement.mockup';
 
 chai.use(chaiAsPromised);

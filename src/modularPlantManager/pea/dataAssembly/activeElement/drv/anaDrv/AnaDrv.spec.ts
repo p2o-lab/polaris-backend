@@ -29,7 +29,7 @@ import {AnaDrv} from './AnaDrv';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from '../../../../../../../tests/monanadrv.json';
+import * as baseDataAssemblyOptions from './AnaDrv.spec.json';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;

@@ -36,13 +36,12 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {ServiceState} from './enum';
 import {PEAMockup} from '../../PEA.mockup';
-import * as peaOptions from '../../../../../tests/peaOptions.json';
-import * as peaOptionsServices from '../../../../../tests/peaOptions_testservice.json';
+import * as peaOptions from '../../../peaOptions.spec.json';
+import * as peaOptionsServices from '../../../peaOptions_testservice.spec.json';
 
 import {MockupServer} from '../../../_utils';
 import {AnaViewMockup} from '../../dataAssembly/indicatorElement/AnaView/AnaView.mockup';
 import {ServiceControlMockup} from '../../dataAssembly/ServiceControl/ServiceControl.mockup';
-import {setNamespaceUrl} from '../../../../../tests/namespaceUrl';
 import {AnaServParamMockup} from '../../dataAssembly/operationElement/servParam/anaServParam/AnaServParam.mockup';
 import {AnaServParam} from '../../dataAssembly';
 import {AnaProcessValueInMockup} from '../../dataAssembly/inputElement/processValueIn/AnaProcessValueIn/AnaProcessValueIn.mockup';
@@ -121,8 +120,6 @@ describe('Service', () => {
 		//let testService: TestServerService;
 		let pea: PEAController;
 		let mockupServer: MockupServer;
-
-		setNamespaceUrl(peaOptions as any);
 
 		beforeEach(async function () {
 			this.timeout(5000);
@@ -267,7 +264,6 @@ describe('Service', () => {
 	});
 	context('parameter dynamic', () => {
 		it('set Parameter', async () => {
-			setNamespaceUrl(peaOptionsServices as any);
 			const mockupServer = new MockupServer();
 			await mockupServer.initialize();
 

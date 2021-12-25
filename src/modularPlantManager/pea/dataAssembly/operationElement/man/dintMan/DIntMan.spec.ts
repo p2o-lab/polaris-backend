@@ -28,11 +28,10 @@ import {DIntMan} from './DIntMan';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from '../../../../../../../tests/dintmanint.json';
+import * as baseDataAssemblyOptions from './DIntMan.spec.json';
 import {DataAssemblyControllerFactory} from '../../../DataAssemblyControllerFactory';
 import {MockupServer} from '../../../../../_utils';
-import {DIntManMockup} from '../DIntMan/DIntMan.mockup';
-import {Namespace, UAObject} from 'node-opcua';
+import {DIntManMockup} from './DIntMan.mockup';
 
 
 chai.use(chaiAsPromised);

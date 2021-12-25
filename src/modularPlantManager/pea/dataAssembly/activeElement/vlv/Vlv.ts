@@ -1,4 +1,3 @@
-/* tslint:disable:max-classes-per-file */
 /*
  * MIT License
  *
@@ -26,10 +25,8 @@
 
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {OpcUaConnection, OpcUaDataItem} from '../../../connection';
-import {InterlockRuntime, OpModeController, OpModeRuntime, ResetRuntime} from '../../_extensions';
+import {Interlock, InterlockRuntime, OpModeController, OpModeRuntime, Reset, ResetRuntime} from '../../_extensions';
 import {ActiveElement, ActiveElementRuntime} from '../ActiveElement';
-import {Reset} from '../../_extensions/resetDA/Reset';
-import {Interlock} from '../../_extensions/interlockDA/Interlock';
 
 export type VlvRuntime = ActiveElementRuntime & OpModeRuntime & InterlockRuntime & ResetRuntime & {
 	SafePos: OpcUaDataItem<boolean>;

@@ -27,13 +27,10 @@ import {OpcUaConnection} from '../../../../connection';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-//we can use dintmanint.json, because overlap with AnaManInt
-import * as baseDataAssemblyOptions from '../../../../../../../tests/dintmanint.json';
+import * as baseDataAssemblyOptions from './AnaMan.spec.json';
 import {MockupServer} from '../../../../../_utils';
-import {Namespace, UAObject} from 'node-opcua';
 
 import {AnaMan} from './AnaMan';
-import {AnaManMockup} from './AnaMan.mockup';
 import {DataAssemblyControllerFactory} from '../../../DataAssemblyControllerFactory';
 
 chai.use(chaiAsPromised);

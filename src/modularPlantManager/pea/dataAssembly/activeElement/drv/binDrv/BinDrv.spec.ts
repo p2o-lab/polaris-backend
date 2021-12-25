@@ -22,8 +22,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-//monanadrv.json overlaps with bindrv
-import * as baseDataAssemblyOptions from '../../../../../../../tests/monanadrv.json';
+//MonAnaDrv.spec.json overlaps with bindrv
+import * as baseDataAssemblyOptions from '../anaDrv/monAnaDrv/MonAnaDrv.spec.json';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';

@@ -29,7 +29,7 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyController} from '../../DataAssemblyController';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from '../../../../../../tests/monbinvlv.json';
+import * as baseDataAssemblyOptions from '../../activeElement/vlv/binVlv/monBinVlv/MonBinVlv.spec.json';
 import {FeedbackMonitoring} from './FeedbackMonitoring';
 import {MockupServer} from '../../../../_utils';
 import {FeedbackMonitoringDAMockup} from './FeedbackMonitoringDA.mockup';

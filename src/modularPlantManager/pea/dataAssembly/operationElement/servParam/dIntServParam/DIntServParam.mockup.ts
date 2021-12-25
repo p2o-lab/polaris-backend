@@ -26,14 +26,6 @@
 // eslint-disable-next-line no-undef
 import Timeout = NodeJS.Timeout;
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {getOpModeDAMockupReferenceJSON, OpModeDAMockup} from '../../../_extensions/opModeDA/OpModeDA.mockup';
-import {
-	getServiceSourceModeDAMockupReferenceJSON,
-	ServiceSourceModeDAMockup
-} from '../../../_extensions/serviceSourceModeDA/ServiceSourceModeDA.mockup';
-import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../../_extensions/wqcDA/WQCDA.mockup';
-
-import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../../../_extensions/osLevelDA/OSLevelDA.mockup';
 import {getUnitDAMockupReferenceJSON, UnitDAMockup} from '../../../_extensions/unitDA/UnitDA.mockup';
 import {
 	getScaleSettingDAMockupReferenceJSON,
@@ -44,7 +36,7 @@ import {
 	ValueLimitationDAMockup
 } from '../../../_extensions/valueLimitationDA/ValueLimitationDA.mockup';
 import {getServParamMockupReferenceJSON, ServParamMockup} from '../ServParam.mockup';
-import {ServParam} from '../ServParam';
+
 
 export function getDIntServParamMockupReferenceJSON(
 	namespace: number,

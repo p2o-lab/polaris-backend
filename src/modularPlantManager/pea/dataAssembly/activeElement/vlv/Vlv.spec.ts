@@ -29,7 +29,7 @@ import {Vlv} from './Vlv';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from '../../../../../../tests/monbinvlv.json';
+import * as baseDataAssemblyOptions from './binVlv/monBinVlv/MonBinVlv.spec.json';
 import {MockupServer} from '../../../../_utils';
 import {VlvMockup} from './Vlv.mockup';
 

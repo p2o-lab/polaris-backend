@@ -27,7 +27,7 @@ import {OpcUaConnection} from '../../../connection';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions, ServiceSourceMode} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from '../../../../../../tests/anaserveparam.json';
+import * as baseDataAssemblyOptions from '../../operationElement/servParam/anaServParam/AnaServParam.spec.json';
 import {DataAssemblyController} from '../../DataAssemblyController';
 import {ServiceSourceModeController} from './ServiceSourceModeController';
 import {MockupServer} from '../../../../_utils';

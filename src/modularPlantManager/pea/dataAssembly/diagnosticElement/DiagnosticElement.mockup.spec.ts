@@ -1,6 +1,5 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {Namespace, UAObject} from 'node-opcua';
 import {DiagnosticElementMockup} from './DiagnosticElement.mockup';
 import {MockupServer} from '../../../_utils';
 

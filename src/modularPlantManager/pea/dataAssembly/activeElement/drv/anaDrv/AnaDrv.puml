@@ -1,6 +1,6 @@
 @startuml
 'https://plantuml.com/class-diagram
-!include MonAnaDrv.puml
+!include monAnaDrv/MonAnaDrv.puml
 
 class AnaDrv{
     + readonly communication!: AnaDrvRuntime

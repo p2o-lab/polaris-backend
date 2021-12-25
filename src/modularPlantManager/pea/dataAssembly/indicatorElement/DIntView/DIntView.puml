@@ -1,8 +1,7 @@
 @startuml
 'https://plantuml.com/class-diagram
-!include DIntMon.puml
+!include DIntMon/DIntMon.puml
 class DIntView{
-    + readonly communication!: AnaViewRuntime
     - readonly scaleSettings: ScaleSettings
     - readonly unitSettings: UnitSettings
 }

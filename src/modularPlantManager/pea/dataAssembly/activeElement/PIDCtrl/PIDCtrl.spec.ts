@@ -29,9 +29,8 @@ import {PIDCtrl} from './PIDCtrl';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from '../../../../../../tests/pidctrl.json';
+import * as baseDataAssemblyOptions from './PIDCtrl.spec.json';
 import {MockupServer} from '../../../../_utils';
-import {Namespace} from 'node-opcua';
 import {PIDCtrlMockup} from './PIDCtrl.mockup';
 
 chai.use(chaiAsPromised);

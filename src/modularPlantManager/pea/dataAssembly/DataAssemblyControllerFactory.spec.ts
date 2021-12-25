@@ -40,7 +40,7 @@ import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
 import {PEAMockup} from '../PEA.mockup';
 import {MockupServer} from '../../_utils';
-import * as baseDataAssemblyOptions from '../../../../tests/monanadrv.json';
+import * as baseDataAssemblyOptions from './activeElement/drv/anaDrv/monAnaDrv/MonAnaDrv.spec.json';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;

@@ -1,0 +1,87 @@
+{
+  "TagName": "Variable",
+  "TagDescription": "Test",
+  "OSLevel": {
+    "nodeId": "Variable.OSLevel",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  },
+  "WQC": {
+    "nodeId": "Variable.WQC",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  },
+  "VOut": {
+    "nodeId": "Variable.VOut",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  },
+  "VState0": {
+    "nodeId": "Variable.VState0",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  },
+  "VState1": {
+    "nodeId": "Variable.VState1",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  },
+  "VMan": {
+    "nodeId": "Variable.VMan",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  },
+  "VInt": {
+    "nodeId": "Variable.VInt",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  },
+  "VRbk": {
+    "nodeId": "Variable.VRbk",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  }, 
+  "VFbk": {
+    "nodeId": "Variable.VFbk",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  },
+  "SrcChannel": {
+    "nodeId": "Variable.SrcChannel",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  },
+  "SrcManAut": {
+    "nodeId": "Variable.SrcManAut",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  },
+  "SrcIntAut": {
+    "nodeId": "Variable.SrcIntAut",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  },
+  "SrcIntOp": {
+    "nodeId": "Variable.SrcIntOp",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  },
+  "SrcManOp": {
+    "nodeId": "Variable.SrcManOp",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  },
+  "SrcIntAct": {
+    "nodeId": "Variable.SrcIntAct",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  },
+  "SrcManAct": {
+    "nodeId": "Variable.SrcManAct",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  }
+}
+
+
+

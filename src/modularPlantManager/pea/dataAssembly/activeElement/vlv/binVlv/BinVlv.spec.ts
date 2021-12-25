@@ -27,12 +27,11 @@ import {OpcUaConnection} from '../../../../connection';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from '../../../../../../../tests/monbinvlv.json';
+import * as baseDataAssemblyOptions from './BinVlv.spec.json';
 import {MockupServer} from '../../../../../_utils';
-import {BinVlvMockup} from '../BinVlv/BinVlv.mockup';
-import {Namespace, UAObject} from 'node-opcua';
+import {BinVlvMockup} from './BinVlv.mockup';
 
-import {BinVlv} from '../BinVlv/BinVlv';
+import {BinVlv} from './BinVlv';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;

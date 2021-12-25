@@ -28,7 +28,7 @@ import {OpcUaConnection} from '../../../connection';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from '../../../../../../tests/dintmanint.json';
+import * as baseDataAssemblyOptions from '../../operationElement/man/dintMan/DIntMan.spec.json';
 import {DataAssemblyController} from '../../DataAssemblyController';
 import {DIntMan} from '../../operationElement';
 import {UnitSettings} from './UnitSettings';

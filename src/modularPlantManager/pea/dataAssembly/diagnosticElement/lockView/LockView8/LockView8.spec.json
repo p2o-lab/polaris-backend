@@ -1,0 +1,224 @@
+{
+  "TagName": "Variable",
+  "TagDescription": "Test",
+  "WQC": {
+    "nodeId": "Variable.WQC",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  },
+  "Logic": {
+    "nodeId": "Variable.Logic",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  },
+  "Out": {
+    "nodeId": "Variable.Out",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  },
+  "OutQC": {
+    "nodeId": "Variable.OutQC",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  },
+  "In1En": {
+    "nodeId": "Variable.In1En",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  },
+  "In1": {
+    "nodeId": "Variable.In1",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  },
+  "In1QC": {
+    "nodeId": "Variable.In1QC",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  },
+  "In1Inv": {
+    "nodeId": "Variable.In1Inv",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  },
+  "In1Txt": {
+    "nodeId": "Variable.In1Txt",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  },
+  "In2En": {
+    "nodeId": "Variable.In2En",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  },
+  "In2": {
+    "nodeId": "Variable.In2",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  },
+  "In2QC": {
+    "nodeId": "Variable.In2QC",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  },
+  "In2Inv": {
+    "nodeId": "Variable.In2Inv",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  },
+  "In2Txt": {
+    "nodeId": "Variable.In2Txt",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  },
+  "In3En": {
+    "nodeId": "Variable.In3En",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  },
+  "In3": {
+    "nodeId": "Variable.In3",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  },
+  "In3QC": {
+    "nodeId": "Variable.In3QC",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  },
+  "In3Inv": {
+    "nodeId": "Variable.In3Inv",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  },
+  "In3Txt": {
+    "nodeId": "Variable.In3Txt",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  },
+  "In4En": {
+    "nodeId": "Variable.In4En",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  },
+  "In4": {
+    "nodeId": "Variable.In4",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  },
+  "In4QC": {
+    "nodeId": "Variable.In4QC",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  },
+  "In4Inv": {
+    "nodeId": "Variable.In4Inv",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  },
+  "In4Txt": {
+    "nodeId": "Variable.In4Txt",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  },
+  "In5En": {
+    "nodeId": "Variable.In5En",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  },
+  "In5": {
+    "nodeId": "Variable.In5",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  },
+  "In5QC": {
+    "nodeId": "Variable.In5QC",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  },
+  "In5Inv": {
+    "nodeId": "Variable.In5Inv",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  },
+  "In5Txt": {
+    "nodeId": "Variable.In5Txt",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  },
+  "In6En": {
+    "nodeId": "Variable.In6En",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  },
+  "In6": {
+    "nodeId": "Variable.In6",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  },
+  "In6QC": {
+    "nodeId": "Variable.In6QC",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  },
+  "In6Inv": {
+    "nodeId": "Variable.In6Inv",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  },
+  "In6Txt": {
+    "nodeId": "Variable.In6Txt",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  },
+  "In7En": {
+    "nodeId": "Variable.In7En",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  },
+  "In7": {
+    "nodeId": "Variable.In7",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  },
+  "In7QC": {
+    "nodeId": "Variable.In7QC",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  },
+  "In7Inv": {
+    "nodeId": "Variable.In7Inv",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  },
+  "In7Txt": {
+    "nodeId": "Variable.In7Txt",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  },
+  "In8En": {
+    "nodeId": "Variable.In8En",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  },
+  "In8": {
+    "nodeId": "Variable.In8",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  },
+  "In8QC": {
+    "nodeId": "Variable.In8QC",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  },
+  "In8Inv": {
+    "nodeId": "Variable.In8Inv",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  },
+  "In8Txt": {
+    "nodeId": "Variable.In8Txt",
+    "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
+    "dataType": "xs:IDREF"
+  }
+}

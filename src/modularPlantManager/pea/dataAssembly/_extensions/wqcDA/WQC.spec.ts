@@ -32,7 +32,7 @@ import * as baseDataAssemblyOptionsStatic from '../../../../../../tests/binmon_s
 import {BinMon, IndicatorElement} from '../../indicatorElement';
 import {DataAssemblyController} from '../../DataAssemblyController';
 import {WQC} from './WQC';
-import * as baseDataAssemblyOptions from '../../../../../../tests/binmon.json';
+import * as baseDataAssemblyOptions from '../../indicatorElement/BinView/BinMon/BinMon.spec.json';
 import {MockupServer} from '../../../../_utils';
 import {WQCDAMockup} from './WQCDA.mockup';
 

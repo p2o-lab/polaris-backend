@@ -33,7 +33,7 @@ import {
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import * as baseDataAssemblyOptions from '../../../../../tests/servicecontrol.json';
+import * as baseDataAssemblyOptions from './ServiceControl.spec.json';
 import {MockupServer} from '../../../_utils';
 import {ServiceControlMockup} from './ServiceControl.mockup';
 

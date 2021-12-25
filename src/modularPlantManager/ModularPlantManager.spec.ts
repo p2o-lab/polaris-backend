@@ -34,7 +34,7 @@ import * as fs from 'fs';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import 'mocha';
-import * as peaOptions from '../../tests/peaOptions.json';
+import * as peaOptions from './peaOptions.spec.json';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -55,7 +55,7 @@ describe('ModularPlantManager', () => {
 	});
 	it('addPEAToPimadPool() fails', () => {
 		const modularPlantManager = new ModularPlantManager();
-		return expect(modularPlantManager.addPEAToPimadPool({source: 'tests/stringview.json'})).to.be.rejected;
+		return expect(modularPlantManager.addPEAToPimadPool({source: 'tests/StringView.spec.json'})).to.be.rejected;
 	});
 
 	it('getAllPEAsFromPimadPool(), empty', async () => {

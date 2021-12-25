@@ -28,11 +28,10 @@ import {OpcUaConnection} from '../../../../connection';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from '../../../../../../../tests/binserveparam.json';
+import * as baseDataAssemblyOptions from './BinServParam.spec.json';
 import {DataAssemblyControllerFactory} from '../../../DataAssemblyControllerFactory';
 import {MockupServer} from '../../../../../_utils';
 import {BinServParamMockup} from './BinServParam.mockup';
-import {Namespace, UAObject} from 'node-opcua';
 
 import {BinServParam} from './BinServParam';
 

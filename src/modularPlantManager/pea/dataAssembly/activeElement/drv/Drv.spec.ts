@@ -31,7 +31,7 @@ import {
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from '../../../../../../tests/monanadrv.json';
+import * as baseDataAssemblyOptions from './anaDrv/monAnaDrv/MonAnaDrv.spec.json';
 import {MockupServer} from '../../../../_utils';
 import {DrvMockup} from './Drv.mockup';
 

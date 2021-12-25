@@ -1,6 +1,6 @@
 @startuml
 'https://plantuml.com/class-diagram
-!include MonBinVlv.puml
+!include monBinVlv/MonBinVlv.puml
 
 class BinVlv{
 	+ readonly communication!: BinVlvRuntime;

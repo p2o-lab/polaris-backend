@@ -27,11 +27,10 @@ import {OpcUaConnection} from '../../../../connection';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-// overlap with anaprocessvaluein
-import * as baseDataAssemblyOptions from '../../../../../../../tests/anaprocessvaluein.json';
+
+import * as baseDataAssemblyOptions from './DIntProcessValueIn.spec.json';
 import {MockupServer} from '../../../../../_utils';
-import {DIntProcessValueInMockup} from '../DIntProcessValueIn/DIntProcessValueIn.mockup';
-import {Namespace, UAObject} from 'node-opcua';
+import {DIntProcessValueInMockup} from './DIntProcessValueIn.mockup';
 
 import {DIntProcessValueIn} from './DIntProcessValueIn';
 import {DataAssemblyControllerFactory} from '../../../DataAssemblyControllerFactory';

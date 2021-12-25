@@ -26,12 +26,10 @@
 import {OpcUaConnection} from '../../../../connection';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {PEAMockup} from '../../../../PEA.mockup';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from '../../../../../../../tests/binprocessvaluein.json';
+import * as baseDataAssemblyOptions from './BinProcessValueIn.spec.json';
 import {MockupServer} from '../../../../../_utils';
-import {BinProcessValueInMockup} from '../BinProcessValueIn/BinProcessValueIn.mockup';
-import {Namespace, UAObject} from 'node-opcua';
+import {BinProcessValueInMockup} from './BinProcessValueIn.mockup';
 
 import {DataAssemblyControllerFactory} from '../../../DataAssemblyControllerFactory';
 import {BinProcessValueIn} from './BinProcessValueIn';

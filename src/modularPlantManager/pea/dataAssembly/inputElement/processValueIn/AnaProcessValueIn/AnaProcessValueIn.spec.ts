@@ -29,7 +29,7 @@ import {AnaProcessValueIn} from './AnaProcessValueIn';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from '../../../../../../../tests/anaprocessvaluein.json';
+import * as baseDataAssemblyOptions from './AnaProcessValueIn.spec.json';
 import {MockupServer} from '../../../../../_utils';
 import {AnaProcessValueInMockup} from './AnaProcessValueIn.mockup';
 import {DataAssemblyControllerFactory} from '../../../DataAssemblyControllerFactory';

@@ -29,9 +29,8 @@ import {DiagnosticElement} from './DiagnosticElement';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from '../../../../../tests/binprocessvaluein.json';
+import * as baseDataAssemblyOptions from '../inputElement/processValueIn/BinProcessValueIn/BinProcessValueIn.spec.json';
 import {MockupServer} from '../../../_utils';
-import {Namespace, UAObject} from 'node-opcua';
 import {DiagnosticElementMockup} from './DiagnosticElement.mockup';
 
 

@@ -24,7 +24,7 @@
  */
 
 import {OpcUaConnection} from '../../../connection';
-import * as baseDataAssemblyOptions from '../../../../../../tests/binmon.json';
+import * as baseDataAssemblyOptions from '../../indicatorElement/BinView/BinMon/BinMon.spec.json';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';

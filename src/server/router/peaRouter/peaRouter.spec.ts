@@ -32,11 +32,11 @@ import {MockupServer} from '../../../modularPlantManager/_utils';
 import path = require('path');
 import {AnaViewMockup} from '../../../modularPlantManager/pea/dataAssembly/indicatorElement/AnaView/AnaView.mockup';
 import {setNamespaceUrl} from '../../../../tests/namespaceUrl';
-import * as peaOptions from '../../../../tests/peaOptions.json';
+import * as peaOptions from '../../../modularPlantManager/peaOptions.spec.json';
 import {ServiceControlMockup} from '../../../modularPlantManager/pea/dataAssembly/ServiceControl/ServiceControl.mockup';
 import {expect} from 'chai';
 import {AnaServParamMockup} from '../../../modularPlantManager/pea/dataAssembly/operationElement/servParam/anaServParam/AnaServParam.mockup';
-import * as peaOptionsServices from '../../../../tests/peaOptions_testservice.json';
+import * as peaOptionsServices from '../../../modularPlantManager/peaOptions_testservice.spec.json';
 
 
 describe('PEARoutes', () => {
@@ -129,7 +129,7 @@ describe('PEARoutes', () => {
 		});
 		it('should fail, wrong file type', async () => {
 			await request(app).post('/api/pea/addByPiMAd')
-				.attach('uploadedFile', path.resolve('tests/anamon.json'))
+				.attach('uploadedFile', path.resolve('tests/AnaMon.spec.json'))
 				.expect(500)
 				.expect(/Error: Unknown source type <uploads\\anamon.json>/);
 		});

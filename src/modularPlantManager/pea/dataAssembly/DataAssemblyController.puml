@@ -2,7 +2,7 @@
 'https://plantuml.com/class-diagram
 !include ServiceControl/ServiceControl.puml
 !include ./activeElement/ActiveElement.puml
-!include ./DiagnosticElement/diagnosticElement.puml
+!include ./DiagnosticElement/DiagnosticElement.puml
 !include ./IndicatorElement/indicatorElement.puml
 !include ./InputElement/inputElement.puml
 !include ./OperationElement/operationElement.puml

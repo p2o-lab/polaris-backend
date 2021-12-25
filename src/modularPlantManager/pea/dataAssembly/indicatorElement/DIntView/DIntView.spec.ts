@@ -29,9 +29,8 @@ import {DIntView} from './DIntView';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from '../../../../../../tests/dintview.json';
+import * as baseDataAssemblyOptions from './DIntView.spec.json';
 import {MockupServer} from '../../../../_utils';
-import {Namespace} from 'node-opcua';
 import {DIntViewMockup} from './DIntView.mockup';
 
 chai.use(chaiAsPromised);
