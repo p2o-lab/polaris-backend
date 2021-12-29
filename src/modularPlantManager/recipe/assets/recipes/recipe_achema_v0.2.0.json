@@ -3,7 +3,7 @@
   "name": "Rezept ACHEMA",
   "description": "Verbessertes Rezept zur ACHEMA 2018",
   "author": "Markus Graube",
-  "initial_step": "Startup.Init",
+  "initialStep": "Startup.Init",
   "steps": [
     {
       "name": "Startup.Init",
@@ -49,7 +49,7 @@
             "service": "Tempering",
             "state": "execute"
           },
-          "next_step": "Running.Vorlegen"
+          "nextStep": "Running.Vorlegen"
         }
       ]
     },
@@ -102,7 +102,7 @@
       ],
       "transitions": [
         {
-          "next_step": "Running.Reagieren",
+          "nextStep": "Running.Reagieren",
           "condition": {
             "type": "and",
             "conditions": [
@@ -177,7 +177,7 @@
       ],
       "transitions": [
         {
-          "next_step": "Running.Ruhen",
+          "nextStep": "Running.Ruhen",
           "condition": {
             "type": "and",
             "conditions": [
@@ -210,7 +210,7 @@
       ],
       "transitions": [
         {
-          "next_step": "Running.Ruhen.Stop",
+          "nextStep": "Running.Ruhen.Stop",
           "condition": {
             "type": "time",
             "duration": 20
@@ -229,7 +229,7 @@
       ],
       "transitions": [
         {
-          "next_step": "Running.Abkühlen",
+          "nextStep": "Running.Abkühlen",
           "condition": {
             "type": "state",
             "pea": "React",
@@ -260,7 +260,7 @@
       ],
       "transitions": [
         {
-          "next_step": "Running.Abkühlen.Stop",
+          "nextStep": "Running.Abkühlen.Stop",
           "condition": {
             "type": "variable",
             "pea": "Temper",
@@ -287,7 +287,7 @@
       ],
       "transitions": [
         {
-          "next_step": "Shutdown.Entleeren",
+          "nextStep": "Shutdown.Entleeren",
           "condition": {
             "type": "state",
             "pea": "React",
@@ -309,7 +309,7 @@
       ],
       "transitions": [
         {
-          "next_step": "completed",
+          "nextStep": "completed",
           "condition": {
             "type": "state",
             "pea": "React",

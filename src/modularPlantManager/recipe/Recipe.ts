@@ -115,7 +115,7 @@ export class Recipe extends (EventEmitter as new() => RecipeEmitter) {
 			this.initialStep = this.steps.find((step) => step.name === options.initialStep);
 		}
 		if (!this.initialStep) {
-			throw new Error(`"initial_step" property '${options.initialStep}' is not found in provided steps`);
+			throw new Error(`"initialStep" property '${options.initialStep}' is not found in provided steps`);
 		}
 
 		this.options = options;

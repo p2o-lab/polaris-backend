@@ -139,7 +139,7 @@ describe('ModularPlantManager', () => {
 			const peaController = new PEAController(peaOptionsDummy, true);
 			modularPlantManager.peas.length = 0;
 			modularPlantManager.peas.push(peaController);
-			return expect(modularPlantManager.removePEAController(peaId)).to.rejectedWith(`PEA ${peaOptionsDummy.name} is protected and thus can not be deleted`);
+			return expect(modularPlantManager.removePEAController(peaId)).to.rejectedWith(`PEA ${peaOptionsDummy.name} is protected and thus can not be removed`);
 		});
 
 
@@ -184,7 +184,7 @@ describe('ModularPlantManager', () => {
 
 	it('should load and remove recipe', () => {
 		const peasRecipe =
-			JSON.parse(fs.readFileSync('assets/recipes/test/recipe_time_local.json').toString());
+			JSON.parse(fs.readFileSync('src/modularPlantManager/recipe/assets/recipes/recipe_time_local.spec.json').toString());
 		const modularPlantManager = new ModularPlantManager();
 		modularPlantManager.loadRecipe(peasRecipe);
 		modularPlantManager.loadRecipe(peasRecipe, true);

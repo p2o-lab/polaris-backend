@@ -2,14 +2,14 @@
   "version": "1.0.0",
   "name": "Test recipe for testserver pea",
   "author": "Markus Graube",
-  "initial_step": "S0.CheckInitialConditions",
+  "initialStep": "S0.CheckInitialConditions",
   "steps": [
     {
       "name": "S0.CheckInitialConditions",
       "operations": [],
       "transitions": [
         {
-          "next_step": "S1",
+          "nextStep": "S1",
           "condition": {
             "type": "state",
             "pea": "ModuleTestServer",
@@ -31,7 +31,7 @@
       ],
       "transitions": [
         {
-          "next_step": "S2",
+          "nextStep": "S2",
           "condition": {
             "type": "and",
             "conditions": [
@@ -61,7 +61,7 @@
       ],
       "transitions": [
         {
-          "next_step": "S3",
+          "nextStep": "S3",
           "condition": {
             "type": "state",
             "pea": "ModuleTestServer",
@@ -82,7 +82,7 @@
       ],
       "transitions": [
         {
-          "next_step": "finished",
+          "nextStep": "finished",
           "condition": {
             "type": "state",
             "pea": "ModuleTestServer",

@@ -201,7 +201,7 @@ describe('Recipe', () => {
 					expect(json).to.have.property('peas')
 						.to.deep.equal(['Temper', 'React', 'Dose']);
 					expect(json).to.have.property('options')
-						.to.have.property('initial_step', 'Startup.Init');
+						.to.have.property('initialStep', 'Startup.Init');
 					expect(json).to.have.property('status', 'idle');
 
 					const step = recipe.steps[0];

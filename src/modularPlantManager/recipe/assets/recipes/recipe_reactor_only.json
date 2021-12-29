@@ -2,7 +2,7 @@
   "version": "1.0.0",
   "name": "Simples Testrezept nur für Reaktor von Merck",
   "author": "Markus Graube",
-  "initial_step": "S1",
+  "initialStep": "S1",
   "steps": [
     {
       "name": "S1",
@@ -34,7 +34,7 @@
       ],
       "transitions": [
         {
-          "next_step": "S2",
+          "nextStep": "S2",
           "condition": {
             "type": "time",
             "duration": "10"
@@ -59,7 +59,7 @@
       ],
       "transitions": [
         {
-          "next_step": "S3",
+          "nextStep": "S3",
           "condition": {
             "type": "state",
             "pea": "React",
@@ -86,7 +86,7 @@
       ],
       "transitions": [
         {
-          "next_step": "finished",
+          "nextStep": "finished",
           "condition": {
             "type": "state",
             "pea": "React",

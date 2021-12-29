@@ -2,14 +2,14 @@
   "version": "1.0.0",
   "name": "Wait 0.5s",
   "author": "Markus Graube",
-  "initial_step": "Wait",
+  "initialStep": "Wait",
   "steps": [
     {
       "name": "Wait",
       "operations": [],
       "transitions": [
         {
-          "next_step": "finished",
+          "nextStep": "finished",
           "condition": {
             "type": "time",
             "duration": 0.5
