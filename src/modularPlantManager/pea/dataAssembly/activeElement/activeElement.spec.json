@@ -26,31 +26,6 @@
       "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
       "dataType": "xs:IDREF"
     },
-    "Permit": {
-      "nodeId": "Variable.Permit",
-      "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-      "dataType": "xs:IDREF"
-    },
-    "IntlEn": {
-      "nodeId": "Variable.IntlEn",
-      "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-      "dataType": "xs:IDREF"
-    },
-    "Interlock": {
-      "nodeId": "Variable.Interlock",
-      "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-      "dataType": "xs:IDREF"
-    },
-    "ProtEn": {
-      "nodeId": "Variable.ProtEn",
-      "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-      "dataType": "xs:IDREF"
-    },
-    "Protect": {
-      "nodeId": "Variable.Protect",
-      "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-      "dataType": "xs:IDREF"
-    },
     "StateChannel": {
       "nodeId": "Variable.StateChannel",
       "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",

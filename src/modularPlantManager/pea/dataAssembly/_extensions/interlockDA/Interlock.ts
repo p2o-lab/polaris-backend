@@ -43,7 +43,7 @@ export class Interlock{
 		this.initialize();
 	}
 
-	private initialize(){
+	private initialize(): void {
 		this.dAController.communication.PermEn = this.dAController.createDataItem('PermEn', 'read');
 		this.dAController.communication.Permit = this.dAController.createDataItem('Permit', 'read');
 		this.dAController.communication.IntlEn = this.dAController.createDataItem('IntlEn', 'read');

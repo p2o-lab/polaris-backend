@@ -31,8 +31,6 @@ import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import * as baseDataAssemblyOptions from './MonAnaDrv.spec.json';
 import {MockupServer} from '../../../../../../_utils';
-import {DrvMockup} from '../../Drv.mockup';
-import {Drv} from '../../Drv';
 
 import {MonAnaDrvMockup} from './MonAnaDrv.mockup';
 
@@ -66,25 +64,16 @@ describe('MonAnaDrv', () => {
 	describe('dynamic', () => {
 		let mockupServer: MockupServer;
 		let connection: OpcUaConnection;
-		let mockup: DrvMockup;
-		let da1: Drv;
 
 		beforeEach(async function () {
 			this.timeout(10000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			mockup = new MonAnaDrvMockup(
-				mockupServer.nameSpace,
-				mockupServer.rootObject,
-				'Variable');
+			new MonAnaDrvMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});
 			await connection.connect();
-			da1 = new MonAnaDrv(dataAssemblyOptions, connection);
-			const pv = da1.subscribe();
-			await connection.startMonitoring();
-			await pv;
 		});
 
 		afterEach(async function () {
@@ -94,6 +83,10 @@ describe('MonAnaDrv', () => {
 		});
 
 		it('should subscribe successfully', async () => {
+			const da1 = new MonAnaDrv(dataAssemblyOptions, connection);
+			const pv = da1.subscribe();
+			await connection.startMonitoring();
+			await pv;
 			expect((da1).communication.OSLevel.value).equal(0);
 			expect((da1).communication.WQC.value).equal(0);
 

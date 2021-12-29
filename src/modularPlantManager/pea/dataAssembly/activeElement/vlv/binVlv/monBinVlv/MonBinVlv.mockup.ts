@@ -23,19 +23,14 @@
  * SOFTWARE.
  */
 
-import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../../../_extensions/wqcDA/WQCDA.mockup';
-import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../../../../_extensions/osLevelDA/OSLevelDA.mockup';
-import {getOpModeDAMockupReferenceJSON, OpModeDAMockup} from '../../../../_extensions/opModeDA/OpModeDA.mockup';
-import {getInterlockDAMockupReferenceJSON, InterlockDAMockup} from '../../../../_extensions/interlockDA/InterlockDA.mockup';
-import {getResetDAMockupReferenceJSON, ResetDAMockup} from '../../../../_extensions/resetDA/ResetDA.mockup';
+import {Namespace, UAObject} from 'node-opcua';
 import {
 	FeedbackMonitoringDAMockup,
 	getFeedbackMonitoringDAMockupReferenceJSON
 } from '../../../../_extensions/feedbackMonitoringDA/FeedbackMonitoringDA.mockup';
 import {BinVlvMockup, getBinVlvMockupReferenceJSON} from '../BinVlv.mockup';
 
-export function getMonBinVlvMockupReferenceJSON(namespace: number, objectBrowseName: string) {
+export function getMonBinVlvMockupReferenceJSON(namespace: number, objectBrowseName: string): object {
 	return ({
 			...getBinVlvMockupReferenceJSON(namespace,objectBrowseName),
 			...getFeedbackMonitoringDAMockupReferenceJSON(namespace,objectBrowseName),
@@ -54,7 +49,7 @@ export class MonBinVlvMockup extends BinVlvMockup{
 
 	}
 
-	public getMonBinVlvMockupJSON() {
+	public getMonBinVlvMockupJSON(): object {
 		return getMonBinVlvMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
 			this.mockupNode.browseName.name as string);

@@ -24,8 +24,7 @@
  */
 
 import {OpcUaDataItem} from '../../../connection';
-import {Constructor} from '../_helper';
-import {BaseDataAssemblyRuntime, DataAssemblyController} from '../../DataAssemblyController';
+import {BaseDataAssemblyRuntime} from '../../DataAssemblyController';
 
 export interface ResetRuntime extends BaseDataAssemblyRuntime {
 	ResetOp: OpcUaDataItem<boolean>;
@@ -40,7 +39,7 @@ export class Reset {
 		this.initialize();
 	}
 
-	private initialize(){
+	private initialize(): void {
 		this.dAController.communication.ResetOp= this.dAController.createDataItem('ResetOp', 'write');
 		this.dAController.communication.ResetAut = this.dAController.createDataItem('ResetAut', 'write');
 	}

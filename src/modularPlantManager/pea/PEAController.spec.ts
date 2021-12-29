@@ -28,7 +28,6 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../_utils';
 import * as peaOptions from '../peaOptions.spec.json';
-import {setNamespaceUrl} from '../../../tests/namespaceUrl';
 import {PEAOptions, ServiceCommand} from '@p2olab/polaris-interface';
 import {AnaViewMockup} from './dataAssembly/indicatorElement/AnaView/AnaView.mockup';
 import {ServiceControlMockup} from './dataAssembly/ServiceControl/ServiceControl.mockup';
@@ -49,18 +48,14 @@ describe('PEAController', () => {
 		let mockupServer: MockupServer;
 		let peaController: PEAController;
 		let service: Service;
-		//set namespaceUri in peaOptions
-		setNamespaceUrl(peaOptions as any);
 
 		beforeEach(async () => {
 			mockupServer = new MockupServer();
 			peaController = new PEAController(peaOptions as unknown as PEAOptions);
 			service = peaController.services[0];
 			await mockupServer.initialize();
-			const mockup = new AnaViewMockup(mockupServer.nameSpace,
-				mockupServer.rootObject, 'Variable');
-			const mockupService = new ServiceControlMockup(mockupServer.nameSpace,
-				mockupServer.rootObject, 'Trigonometry');
+			new AnaViewMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
+			new ServiceControlMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Trigonometry');
 			await mockupServer.start();
 		});
 		afterEach(async () => {

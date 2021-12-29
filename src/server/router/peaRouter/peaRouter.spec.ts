@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import {BackendNotification, PEAOptions, ServerSettingsOptions} from '@p2olab/polaris-interface';
+import {PEAOptions, ServerSettingsOptions} from '@p2olab/polaris-interface';
 import {ModularPlantManager, PEAController} from '../../../modularPlantManager';
 import {Server} from '../../server';
 
@@ -31,7 +31,6 @@ import {Application} from 'express';
 import {MockupServer} from '../../../modularPlantManager/_utils';
 import path = require('path');
 import {AnaViewMockup} from '../../../modularPlantManager/pea/dataAssembly/indicatorElement/AnaView/AnaView.mockup';
-import {setNamespaceUrl} from '../../../../tests/namespaceUrl';
 import * as peaOptions from '../../../modularPlantManager/peaOptions.spec.json';
 import {ServiceControlMockup} from '../../../modularPlantManager/pea/dataAssembly/ServiceControl/ServiceControl.mockup';
 import {expect} from 'chai';
@@ -150,7 +149,6 @@ describe('PEARoutes', () => {
 				.expect(200);
 		});
 		it('should fail', async () => {
-			const pimadpool =(manager.pimadPool as any) = null;
 			await request(app).get('/api/pea/PiMAdPEAs').expect(500);
 		});
 	});
@@ -219,17 +217,15 @@ describe('PEARoutes', () => {
 	});
 
 	describe('with Mockup', () => {
-		//set namespaceUri in peaOptions
-		setNamespaceUrl(peaOptions as any);
+
 		before(async () => {
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			const mockup = new AnaViewMockup(mockupServer.nameSpace,
-				mockupServer.rootObject, 'Variable');
-			const mockupService = new ServiceControlMockup(mockupServer.nameSpace,
-				mockupServer.rootObject, 'Trigonometry');
+			new AnaViewMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
+			new ServiceControlMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Trigonometry');
 			await mockupServer.start();
 		});
+
 		after(async () => {
 			await mockupServer.shutdown();
 		});
@@ -329,8 +325,6 @@ describe('PEARoutes', () => {
 	});
 
 	context('/:peaId/service/:serviceName', ()=> {
-		//set namespaceUri
-		setNamespaceUrl(peaOptionsServices as any);
 
 		it('should fail, wrong peaId', async () => {
 			await request(app).post('/api/pea/abc1234/service/Trigonometry').send().expect(500)
@@ -353,10 +347,8 @@ describe('PEARoutes', () => {
 		it('should set parameter', async () => {
 			const mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			const mockupParam = new AnaServParamMockup(mockupServer.nameSpace,
-				mockupServer.rootObject, 'TestService.AnaProcParam_TestService_factor');
-			const mockupService = new ServiceControlMockup(mockupServer.nameSpace,
-				mockupServer.rootObject, 'TestService');
+			new AnaServParamMockup(mockupServer.nameSpace, mockupServer.rootObject, 'TestService.AnaProcParam_TestService_factor');
+			new ServiceControlMockup(mockupServer.nameSpace, mockupServer.rootObject, 'TestService');
 			await mockupServer.start();
 			const pea = new PEAController(peaOptionsServices as unknown as PEAOptions);
 			manager.peas.push(pea);
@@ -364,7 +356,7 @@ describe('PEARoutes', () => {
 
 			await request(app).post('/api/pea/test/service/TestService/start').send().expect(200);
 
-			const response = await request(app).post('/api/pea/test/service/TestService').send().expect(200)
+			await request(app).post('/api/pea/test/service/TestService').send().expect(200)
 				.send({procedure:'TestService_default', parameters: [{name: 'AnaProcParam_TestService_factor', value: 5}]});
 
 			await pea.disconnectAndUnsubscribe();

@@ -23,6 +23,7 @@
  * SOFTWARE.
  */
 
+/* eslint-disable */
 import {PEAController} from '../PEA';
 import {OpcUaDataItem} from '../pea/connection';
 import {ScopeItem} from './ScopeItem';
@@ -32,10 +33,8 @@ import {Expression} from 'expr-eval';
 import * as fs from 'fs';
 import {PEATestNumericVariable, waitForParameterChange, waitForVariableChange} from '../_utils';
 import { MockupServer} from '../_utils';
+/* eslint-enable */
 
-/**
- * Tests for [[ScopeItem]]
- */
 /*
 describe('ScopeItem', () => {
 

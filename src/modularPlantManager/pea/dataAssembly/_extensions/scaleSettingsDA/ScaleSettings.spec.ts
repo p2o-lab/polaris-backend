@@ -32,7 +32,7 @@ import * as baseDataAssemblyOptions from '../../operationElement/man/dintMan/DIn
 import {DataAssemblyController} from '../../DataAssemblyController';
 import {ScaleSettings} from './ScaleSettings';
 import {MockupServer} from '../../../../_utils';
-import {DataType, Namespace, UAObject} from 'node-opcua';
+import {DataType} from 'node-opcua';
 import {ScaleSettingDAMockup} from './ScaleSettingDA.mockup';
 
 chai.use(chaiAsPromised);
@@ -56,19 +56,15 @@ describe('ScaleSettings', () => {
 		});
 	});
 	describe('dynamic', () => {
+
 		let mockupServer: MockupServer;
 		let connection: OpcUaConnection;
-		let mockup: ScaleSettingDAMockup<any>;
 
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			mockup = new ScaleSettingDAMockup(
-				mockupServer.nameSpace,
-				mockupServer.rootObject,
-				'Variable', DataType.Double);
-			//TODO do for Int32?
+			new ScaleSettingDAMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable', DataType.Double);
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});

@@ -23,20 +23,14 @@
  * SOFTWARE.
  */
 
-import {PEAOptions} from '@p2olab/polaris-interface';
-import {PEAController} from '../../../pea';
-import {ServiceState} from '../../../pea/dataAssembly';
 import {Timer} from '../Timer';
 import {
 	AggregatedService,
-	AggregatedServiceOptions,
 	CommandEnableOptions,
 	StateMachineOptions
 } from './AggregatedService';
 
 import {expect} from 'chai';
-import * as fs from 'fs';
-import {MockupServer} from '../../../_utils';
 
 describe('AggregatedService', () => {
 

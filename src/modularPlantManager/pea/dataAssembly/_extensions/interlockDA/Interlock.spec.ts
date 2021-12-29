@@ -33,7 +33,6 @@ import {DataAssemblyController} from '../../DataAssemblyController';
 import {MonBinVlv} from '../../activeElement';
 import {Interlock} from './Interlock';
 import {MockupServer} from '../../../../_utils';
-import {Namespace, UAObject} from 'node-opcua';
 import {InterlockDAMockup} from './InterlockDA.mockup';
 
 chai.use(chaiAsPromised);
@@ -63,13 +62,12 @@ describe('Interlock', () => {
 	describe('dynamic', () => {
 		let mockupServer: MockupServer;
 		let connection: OpcUaConnection;
-		let mockup: InterlockDAMockup;
 
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			mockup = new InterlockDAMockup(
+			new InterlockDAMockup(
 				mockupServer.nameSpace,
 				mockupServer.rootObject,
 				'Variable');

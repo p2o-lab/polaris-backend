@@ -23,10 +23,7 @@
  * SOFTWARE.
  */
 
-import {
-	PEAOptions,
-	ServerSettingsOptions,
-} from '@p2olab/polaris-interface';
+import {PEAOptions} from '@p2olab/polaris-interface';
 import {ModularPlantManager} from './ModularPlantManager';
 import {PEAController} from './pea';
 
@@ -38,7 +35,6 @@ import * as peaOptions from './peaOptions.spec.json';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
-const assert = chai.assert;
 
 describe('ModularPlantManager', () => {
 

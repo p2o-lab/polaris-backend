@@ -24,11 +24,10 @@
  */
 
 import {Namespace, UAObject} from 'node-opcua';
-import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../_extensions/wqcDA/WQCDA.mockup';
-import {catPEAMockup} from '../../../../../logging';
+import {getWQCDAMockupReferenceJSON} from '../../_extensions/wqcDA/WQCDA.mockup';
 import {DiagnosticElementMockup} from '../DiagnosticElement.mockup';
 
-export function getHealthStateViewMockupReferenceJSON(namespace: number, objectBrowseName: string) {
+export function getHealthStateViewMockupReferenceJSON(namespace: number, objectBrowseName: string): object {
 	return (getWQCDAMockupReferenceJSON(namespace,objectBrowseName));
 }
 
@@ -39,7 +38,7 @@ export class HealthStateViewMockup extends DiagnosticElementMockup{
 
 	}
 
-	public getHealthStateViewInstanceMockupJSON() {
+	public getHealthStateViewInstanceMockupJSON(): object {
 		return getHealthStateViewMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
 			this.mockupNode.browseName.name as string);

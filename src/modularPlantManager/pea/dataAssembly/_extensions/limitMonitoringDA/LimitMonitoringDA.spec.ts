@@ -33,7 +33,7 @@ import {LimitMonitoring} from './LimitMonitoring';
 import {DataAssemblyController} from '../../DataAssemblyController';
 import {AnaMon} from '../../indicatorElement';
 import {MockupServer} from '../../../../_utils';
-import {DataType, Namespace} from 'node-opcua';
+import {DataType} from 'node-opcua';
 import {LimitMonitoringDAMockup} from './LimitMonitoringDA.mockup';
 
 chai.use(chaiAsPromised);
@@ -84,17 +84,12 @@ describe('LimitMonitoring', () => {
 	describe('dynamic', () => {
 		let mockupServer: MockupServer;
 		let connection: OpcUaConnection;
-		let mockup: LimitMonitoringDAMockup<any>;
 
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			mockup = new LimitMonitoringDAMockup(
-				mockupServer.nameSpace,
-				mockupServer.rootObject,
-				'Variable', DataType.Double);
-			//TODO: do for Int32
+			new LimitMonitoringDAMockup( mockupServer.nameSpace, mockupServer.rootObject, 'Variable', DataType.Double);
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});

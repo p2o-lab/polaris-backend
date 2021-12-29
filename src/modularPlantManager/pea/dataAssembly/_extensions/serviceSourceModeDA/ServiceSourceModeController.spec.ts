@@ -44,7 +44,9 @@ describe('ServiceSourceMode', () => {
 	};
 
 	describe('static', () => {
+
 		const emptyOPCUAConnection = new OpcUaConnection();
+
 		it('should create ServiceSourceMode', () => {
 			const da = new DataAssemblyController(dataAssemblyOptions, emptyOPCUAConnection) as any;
 			const serviceSourceMode = new ServiceSourceModeController(da);
@@ -60,18 +62,15 @@ describe('ServiceSourceMode', () => {
 	});
 
 	describe('dynamic', () => {
+
 		let mockupServer: MockupServer;
 		let connection: OpcUaConnection;
-		let mockup: ServiceSourceModeDAMockup;
 
 		beforeEach(async function () {
 			this.timeout(5000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			mockup = new ServiceSourceModeDAMockup(
-				mockupServer.nameSpace,
-				mockupServer.rootObject,
-				'Variable');
+			new ServiceSourceModeDAMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});

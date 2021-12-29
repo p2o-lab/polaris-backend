@@ -28,12 +28,11 @@ import {OpcUaConnection} from '../../../connection';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyController} from '../../DataAssemblyController';
-import {DataAssemblyOptions, ServiceSourceMode, SourceMode} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from '../../../../../../tests/binmanint.json';
+import {DataAssemblyOptions, SourceMode} from '@p2olab/polaris-interface';
+import * as baseDataAssemblyOptions from './SourceModeController.spec.json';
 import {BinManInt} from '../../operationElement';
 import {MockupServer} from '../../../../_utils';
 import {SourceModeDAMockup} from './SourceModeDA.mockup';
-import {Namespace, UAObject} from 'node-opcua';
 import {SourceModeController} from './SourceModeController';
 
 chai.use(chaiAsPromised);
@@ -48,10 +47,11 @@ describe('SourceModeController', () => {
 
 	describe('static', () => {
 		const emptyOPCUAConnection = new OpcUaConnection();
+
 		it('should create SourceModeController', async () => {
 			const da = new DataAssemblyController(dataAssemblyOptions, emptyOPCUAConnection);
 
-			const sourceModeController = new SourceModeController(da);
+			new SourceModeController(da);
 			expect((da as BinManInt).communication.SrcChannel).to.be.not.undefined;
 			expect((da as BinManInt).communication.SrcManAut).to.be.not.undefined;
 			expect((da as BinManInt).communication.SrcIntAut).to.be.not.undefined;
@@ -65,7 +65,6 @@ describe('SourceModeController', () => {
 	describe('dynamic', () => {
 		let mockupServer: MockupServer;
 		let connection: OpcUaConnection;
-		let mockup: SourceModeDAMockup;
 
 		beforeEach(async function () {
 			mockupServer = new MockupServer();
@@ -74,10 +73,7 @@ describe('SourceModeController', () => {
 				organizedBy: mockupServer.rootObject,
 				browseName: 'Variable',
 			});
-			mockup = new SourceModeDAMockup(
-				mockupServer.nameSpace,
-				mockupNode,
-				'Variable');
+			new SourceModeDAMockup(mockupServer.nameSpace, mockupNode,'Variable');
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});
@@ -92,7 +88,8 @@ describe('SourceModeController', () => {
 		it('should subscribe successfully', async () => {
 
 			const da1 = new DataAssemblyController(dataAssemblyOptions, connection) as any;
-			const sourceMode = new SourceModeController(da1);
+			new SourceModeController(da1);
+
 			await connection.connect();
 			const pv = da1.subscribe();
 			await connection.startMonitoring();
@@ -113,6 +110,7 @@ describe('SourceModeController', () => {
 		let mockup: SourceModeDAMockup;
 		let sourceMode: SourceModeController;
 		let da1: any;
+
 		beforeEach(async function () {
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
@@ -179,9 +177,9 @@ describe('SourceModeController', () => {
 	describe('dynamic functions, Intern on', async () => {
 		let mockupServer: MockupServer;
 		let connection: OpcUaConnection;
-		let mockup: SourceModeDAMockup;
 		let sourceMode: SourceModeController;
 		let da1: any;
+
 		beforeEach(async function () {
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
@@ -189,10 +187,7 @@ describe('SourceModeController', () => {
 				organizedBy: mockupServer.rootObject,
 				browseName: 'Variable',
 			});
-			mockup = new SourceModeDAMockup(
-				mockupServer.nameSpace,
-				mockupNode,
-				'Variable');
+			new SourceModeDAMockup(mockupServer.nameSpace, mockupNode, 'Variable');
 			await mockupServer.start();
 
 			connection = new OpcUaConnection();
@@ -204,6 +199,7 @@ describe('SourceModeController', () => {
 			await connection.startMonitoring();
 			await pv;
 		});
+
 		afterEach(async function () {
 			this.timeout(4000);
 			await connection.disconnect();

@@ -24,11 +24,10 @@
  */
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../../_extensions/wqcDA/WQCDA.mockup';
 import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../../../_extensions/osLevelDA/OSLevelDA.mockup';
 import {BinViewMockup, getBinViewMockupReferenceJSON} from '../BinView.mockup';
 
-export function getBinMonMockupReferenceJSON(namespace: number, objectBrowseName: string) {
+export function getBinMonMockupReferenceJSON(namespace: number, objectBrowseName: string): object {
 	return (
 		{
 			...getOSLevelDAMockupReferenceJSON(namespace, objectBrowseName),
@@ -127,7 +126,7 @@ export class BinMonMockup extends BinViewMockup{
 		});
 	}
 
-	public getBinMonInstanceMockupJSON() {
+	public getBinMonInstanceMockupJSON(): object {
 		return getBinMonMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
 			this.mockupNode.browseName.name as string);

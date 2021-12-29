@@ -77,7 +77,6 @@ export class DataAssemblyController extends EventEmitter {
 	 * subscribe to all changes in any of the variables of a DataAssemblyController
 	 *
 	 * The appropriate variables are detected via the type of the DataAssemblyController
-	 * @param samplingInterval
 	 */
 	public async subscribe(): Promise<DataAssemblyController> {
 		if (!this.subscriptionActive) {

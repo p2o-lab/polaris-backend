@@ -35,7 +35,6 @@ import {PEAController, Service} from '../../index';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {ServiceState} from './enum';
-import {PEAMockup} from '../../PEA.mockup';
 import * as peaOptions from '../../../peaOptions.spec.json';
 import * as peaOptionsServices from '../../../peaOptions_testservice.spec.json';
 
@@ -115,9 +114,8 @@ describe('Service', () => {
 	});
 
 	context('dynamic test', () => {
-		let peaServer: PEAMockup;
+
 		let service: Service;
-		//let testService: TestServerService;
 		let pea: PEAController;
 		let mockupServer: MockupServer;
 
@@ -126,10 +124,8 @@ describe('Service', () => {
 			//set up mockup
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			const mockup = new AnaViewMockup(mockupServer.nameSpace,
-				mockupServer.rootObject, 'Variable');
-			const mockupService = new ServiceControlMockup(mockupServer.nameSpace,
-				mockupServer.rootObject, 'Trigonometry');
+			new AnaViewMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
+			new ServiceControlMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Trigonometry');
 			await mockupServer.start();
 
 			pea = new PEAController(peaOptions as unknown as PEAOptions);
@@ -267,18 +263,12 @@ describe('Service', () => {
 			const mockupServer = new MockupServer();
 			await mockupServer.initialize();
 
-			const mockupConfParam = new AnaServParamMockup(mockupServer.nameSpace,
-				mockupServer.rootObject, 'TestService.AnaConfParam_TestService_updateRate');
-			const mockupParam = new AnaServParamMockup(mockupServer.nameSpace,
-				mockupServer.rootObject, 'TestService.AnaProcParam_TestService_factor');
-			const mockupReportValue = new AnaViewMockup(mockupServer.nameSpace,
-				mockupServer.rootObject, 'TestService.AnaReportValue_TestService_rvTime');
-			const mockupProcessValueIn = new AnaProcessValueInMockup(mockupServer.nameSpace,
-				mockupServer.rootObject, 'TestService.AnaProcessValueIn_TestService_pv');
-			const mockupProcessValueOut = new AnaProcessValueInMockup(mockupServer.nameSpace,
-				mockupServer.rootObject, 'TestService.AnaProcessValueOut_TestService_pvOutIntegral');
-			const mockupService = new ServiceControlMockup(mockupServer.nameSpace,
-				mockupServer.rootObject, 'TestService');
+			new AnaServParamMockup(mockupServer.nameSpace, mockupServer.rootObject, 'TestService.AnaConfParam_TestService_updateRate');
+			new AnaServParamMockup(mockupServer.nameSpace, mockupServer.rootObject, 'TestService.AnaProcParam_TestService_factor');
+			new AnaViewMockup(mockupServer.nameSpace, mockupServer.rootObject, 'TestService.AnaReportValue_TestService_rvTime');
+			new AnaProcessValueInMockup(mockupServer.nameSpace, mockupServer.rootObject, 'TestService.AnaProcessValueIn_TestService_pv');
+			new AnaProcessValueInMockup(mockupServer.nameSpace, mockupServer.rootObject, 'TestService.AnaProcessValueOut_TestService_pvOutIntegral');
+			new ServiceControlMockup(mockupServer.nameSpace, mockupServer.rootObject, 'TestService');
 
 			await mockupServer.start();
 			const pea = new PEAController(peaOptionsServices as unknown as PEAOptions);
@@ -290,7 +280,7 @@ describe('Service', () => {
 				await service.setProcedure(procedure);
 			}
 			let curProcedure = await service.getCurrentProcedure();
-			expect(curProcedure).to.be.undefined; // current procedure will be set on service start
+			expect(curProcedure).to.be.undefined;
 
 			await service.start();
 

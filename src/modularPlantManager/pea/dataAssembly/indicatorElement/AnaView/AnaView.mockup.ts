@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
+import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../_extensions/wqcDA/WQCDA.mockup';
 import {
 	getScaleSettingDAMockupReferenceJSON,
@@ -33,7 +33,7 @@ import {getUnitDAMockupReferenceJSON, UnitDAMockup} from '../../_extensions/unit
 
 export function getAnaViewMockupReferenceJSON(
 	namespace: number,
-	objectBrowseName: string) {
+	objectBrowseName: string): object {
 	return (
 		{
 			...getWQCDAMockupReferenceJSON(namespace, objectBrowseName),
@@ -82,7 +82,7 @@ export class AnaViewMockup {
 		}
 	}
 
-	public getAnaViewInstanceMockupJSON() {
+	public getAnaViewInstanceMockupJSON(): object {
 		return getAnaViewMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
 			this.mockupNode.browseName.name as string);

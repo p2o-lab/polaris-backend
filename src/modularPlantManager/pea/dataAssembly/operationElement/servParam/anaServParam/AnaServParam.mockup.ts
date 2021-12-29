@@ -26,13 +26,6 @@
 // eslint-disable-next-line no-undef
 import Timeout = NodeJS.Timeout;
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {getOpModeDAMockupReferenceJSON, OpModeDAMockup} from '../../../_extensions/opModeDA/OpModeDA.mockup';
-import {
-	getServiceSourceModeDAMockupReferenceJSON,
-	ServiceSourceModeDAMockup
-} from '../../../_extensions/serviceSourceModeDA/ServiceSourceModeDA.mockup';
-import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../../_extensions/wqcDA/WQCDA.mockup';
-import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../../../_extensions/osLevelDA/OSLevelDA.mockup';
 import {getUnitDAMockupReferenceJSON, UnitDAMockup} from '../../../_extensions/unitDA/UnitDA.mockup';
 import {
 	getScaleSettingDAMockupReferenceJSON,
@@ -42,13 +35,11 @@ import {
 	getValueLimitationDAMockupReferenceJSON,
 	ValueLimitationDAMockup
 } from '../../../_extensions/valueLimitationDA/ValueLimitationDA.mockup';
-import {ServParam} from '../ServParam';
 import {getServParamMockupReferenceJSON, ServParamMockup} from '../ServParam.mockup';
-import {AnaManMockup} from '../../man/anaMan/AnaMan.mockup';
 
 export function getAnaServParamMockupReferenceJSON(
 	namespace: number,
-	objectBrowseName: string) {
+	objectBrowseName: string): object {
 
 	return ({
 			...getServParamMockupReferenceJSON(namespace, objectBrowseName),
@@ -186,13 +177,12 @@ export class AnaServParamMockup extends ServParamMockup{
 		});
 	}
 
-	public getAnaServParamMockupJSON() {
+	public getAnaServParamMockupJSON(): object {
 		return getAnaServParamMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
 			this.mockupNode.browseName.name as string);
 	}
 
-	//TODO: for both functions below, we have many duplications-> maybe refactor
 	public startCurrentTimeUpdate(): void {
 		this.interval = global.setInterval(() => {
 			this.vOut = Math.random();

@@ -24,26 +24,16 @@
  */
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../../../_extensions/wqcDA/WQCDA.mockup';
-import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../../../../_extensions/osLevelDA/OSLevelDA.mockup';
-import {getOpModeDAMockupReferenceJSON, OpModeDAMockup} from '../../../../_extensions/opModeDA/OpModeDA.mockup';
-import {getInterlockDAMockupReferenceJSON, InterlockDAMockup} from '../../../../_extensions/interlockDA/InterlockDA.mockup';
-import {getResetDAMockupReferenceJSON, ResetDAMockup} from '../../../../_extensions/resetDA/ResetDA.mockup';
-import {
-	getSourceModeDAMockupReferenceJSON,
-	SourceModeDAMockup
-} from '../../../../_extensions/sourceModeDA/SourceModeDA.mockup';
 import {
 	FeedbackMonitoringDAMockup,
 	getFeedbackMonitoringDAMockupReferenceJSON
 } from '../../../../_extensions/feedbackMonitoringDA/FeedbackMonitoringDA.mockup';
 import {AnaDrvMockup, getAnaDrvMockupReferenceJSON} from '../AnaDrv.mockup';
-import {MonAnaDrv} from './MonAnaDrv';
 
 
 export function getMonAnaDrvMockupReferenceJSON(
 	namespace: number,
-	objectBrowseName: string) {
+	objectBrowseName: string): object {
 
 	return ({
 			...getAnaDrvMockupReferenceJSON(namespace, objectBrowseName),
@@ -90,27 +80,26 @@ export function getMonAnaDrvMockupReferenceJSON(
 export class MonAnaDrvMockup extends AnaDrvMockup {
 
 	public feedbackMonitoring: FeedbackMonitoringDAMockup;
-
-	// TODO some values are not listed in VDI paper 3, check that
-	public rpmErr = 0.0;
+	
+	public rpmErr = 0;
 	public rpmAHEn = false;
-	public rpmAHLim: string | number | DataType | undefined = 0;
+	public rpmAHLim = 0;
 	public rpmAHAct = false;
 	public rpmWHEn = false;
-	public rpmWHLim: string | number | DataType | undefined = undefined;
+	public rpmWHLim = 0;
 	public rpmWHAct = false;
 	public rpmTHEn = false;
-	public rpmTHLim: string | number | DataType | undefined = undefined;
+	public rpmTHLim = 0;
 	public rpmTHAct = false;
 
 	public rpmTLEn = false;
-	public rpmTLLim: string | number | DataType | undefined = undefined;
+	public rpmTLLim = 0;
 	public rpmTLAct = false;
 	public rpmWLEn = false;
-	public rpmWLLim: string | number | DataType | undefined = undefined;
+	public rpmWLLim = 0;
 	public rpmWLAct = false;
 	public rpmALEn = false;
-	public rpmALLim: string | number | DataType | undefined = 0;
+	public rpmALLim = 0;
 	public rpmALAct = false;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
@@ -150,20 +139,9 @@ export class MonAnaDrvMockup extends AnaDrvMockup {
 					return new Variant({dataType: DataType.Double, value: this.rpmAHLim});
 				},
 
-				set: (variant: Variant) => {
+				set: (variant: Variant): StatusCodes => {
 					this.rpmAHLim = parseFloat(variant.value);
 					return StatusCodes.Good;
-/*					switch (typeof this.rpmAHLim) {
-						//TODO why undefined
-						case 'undefined':
-							return StatusCodes.BadTypeDefinitionInvalid;
-						case DataType.Double.toString():
-							this.rpmAHLim = parseFloat(variant.value);
-							return StatusCodes.Good;
-						default: //TODO why int
-							this.rpmAHLim = parseInt(variant.value,10);
-							return StatusCodes.Good;
-					}*/
 				},
 			},
 		});
@@ -178,7 +156,7 @@ export class MonAnaDrvMockup extends AnaDrvMockup {
 				},
 			},
 		});
-		/*
+		
 		namespace.addVariable({
 			componentOf: rootNode,
 			nodeId: `ns=${namespace.index};s=${variableName}.RpmWHEn`,
@@ -199,21 +177,13 @@ export class MonAnaDrvMockup extends AnaDrvMockup {
 				get: (): Variant => {
 					return new Variant({dataType: DataType.Double, value: this.rpmWHLim});
 				},
-
-				set: (variant: Variant) => {
-					switch (typeof this.rpmWHLim) {
-						case 'undefined':
-							return StatusCodes.BadTypeDefinitionInvalid;
-						case DataType.Double.toString():
-							this.rpmWHLim = parseFloat(variant.value);
-							return StatusCodes.Good;
-						default:
-							this.rpmWHLim = parseInt(variant.value,10);
-							return StatusCodes.Good;
-					}
-				},
+				set: (variant: Variant): StatusCodes => {
+					this.rpmWHLim = parseFloat(variant.value);
+					return StatusCodes.Good;
+				}
 			},
 		});
+		
 		namespace.addVariable({
 			componentOf: rootNode,
 			nodeId: `ns=${namespace.index};s=${variableName}.RpmWHAct`,
@@ -246,21 +216,13 @@ export class MonAnaDrvMockup extends AnaDrvMockup {
 					return new Variant({dataType: DataType.Double, value: this.rpmTHLim});
 				},
 
-				set: (variant: Variant) => {
-					switch (typeof this.rpmTHLim) {
-						case 'undefined':
-							return StatusCodes.BadTypeDefinitionInvalid;
-						case DataType.Double.toString():
-							this.rpmTHLim = parseFloat(variant.value);
-							return StatusCodes.Good;
-						default:
-							this.rpmTHLim = parseInt(variant.value,10);
-							return StatusCodes.Good;
-					}
+				set: (variant: Variant): StatusCodes => {
+					this.rpmTHLim = parseFloat(variant.value);
+					return StatusCodes.Good;
 				},
 			},
-		});*/
-/*		namespace.addVariable({
+		});
+		namespace.addVariable({
 			componentOf: rootNode,
 			nodeId: `ns=${namespace.index};s=${variableName}.RpmTHAct`,
 			browseName: `${variableName}.RpmTHAct`,
@@ -292,17 +254,9 @@ export class MonAnaDrvMockup extends AnaDrvMockup {
 					return new Variant({dataType: DataType.Double, value: this.rpmTLLim});
 				},
 
-				set: (variant: Variant) => {
-					switch (typeof this.rpmTLLim) {
-						case 'undefined':
-							return StatusCodes.BadTypeDefinitionInvalid;
-						case DataType.Double.toString():
-							this.rpmTLLim = parseFloat(variant.value);
-							return StatusCodes.Good;
-						default:
-							this.rpmTLLim = parseInt(variant.value,10);
-							return StatusCodes.Good;
-					}
+				set: (variant: Variant): StatusCodes => {
+					this.rpmTLLim = parseFloat(variant.value);
+					return StatusCodes.Good;
 				},
 			},
 		});
@@ -339,16 +293,8 @@ export class MonAnaDrvMockup extends AnaDrvMockup {
 				},
 
 				set: (variant: Variant): StatusCodes => {
-					switch (typeof this.rpmWLLim) {
-						case 'undefined':
-							return StatusCodes.BadTypeDefinitionInvalid;
-						case DataType.Double.toString():
-							this.rpmWLLim = parseFloat(variant.value);
-							return StatusCodes.Good;
-						default:
-							this.rpmWLLim = parseInt(variant.value,10);
-							return StatusCodes.Good;
-					}
+					this.rpmWLLim = parseFloat(variant.value);
+					return StatusCodes.Good;
 				},
 			},
 		});
@@ -362,7 +308,7 @@ export class MonAnaDrvMockup extends AnaDrvMockup {
 					return new Variant({dataType: DataType.Boolean, value: this.rpmWLAct});
 				},
 			},
-		});*/
+		});
 		namespace.addVariable({
 			componentOf: rootNode,
 			nodeId: `ns=${namespace.index};s=${variableName}.RpmALEn`,
@@ -387,16 +333,6 @@ export class MonAnaDrvMockup extends AnaDrvMockup {
 				set: (variant: Variant): StatusCodes => {
 					this.rpmALLim = parseFloat(variant.value);
 					return StatusCodes.Good;
-/*					switch (typeof this.rpmALLim) {
-						case 'undefined':
-							return StatusCodes.BadTypeDefinitionInvalid;
-						case DataType.Double.toString():
-							this.rpmALLim = parseFloat(variant.value);
-							return StatusCodes.Good;
-						default:
-							this.rpmALLim = parseInt(variant.value,10);
-							return StatusCodes.Good;
-					}*/
 				},
 			},
 		});
@@ -414,7 +350,7 @@ export class MonAnaDrvMockup extends AnaDrvMockup {
 
 	}
 
-	public getMonAnaDrvMockupJSON() {
+	public getMonAnaDrvMockupJSON(): object {
 		return getMonAnaDrvMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
 			this.mockupNode.browseName.name as string);

@@ -23,9 +23,8 @@
  * SOFTWARE.
  */
 
-// eslint-disable-next-line no-undef
-import Timeout = NodeJS.Timeout;
-import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
+
+import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
 import {
 	getSourceModeDAMockupReferenceJSON,
 	SourceModeDAMockup
@@ -35,7 +34,7 @@ import {AnaManMockup, getAnaManMockupReferenceJSON} from './AnaMan.mockup';
 
 export function getAnaManIntMockupReferenceJSON(
 	namespace: number,
-	objectBrowseName: string) {
+	objectBrowseName: string): object {
 
 	return ({
 			...getAnaManMockupReferenceJSON(namespace,objectBrowseName),
@@ -75,7 +74,7 @@ export class AnaManIntMockup extends AnaManMockup{
 		});
 	}
 
-	public getAnaManIntMockupJSON() {
+	public getAnaManIntMockupJSON(): object {
 		return getAnaManIntMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
 			this.mockupNode.browseName.name as string);

@@ -23,12 +23,7 @@
  * SOFTWARE.
  */
 
-import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../../_extensions/wqcDA/WQCDA.mockup';
-import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../../../_extensions/osLevelDA/OSLevelDA.mockup';
-import {getOpModeDAMockupReferenceJSON, OpModeDAMockup} from '../../../_extensions/opModeDA/OpModeDA.mockup';
-import {getInterlockDAMockupReferenceJSON, InterlockDAMockup} from '../../../_extensions/interlockDA/InterlockDA.mockup';
-import {getResetDAMockupReferenceJSON, ResetDAMockup} from '../../../_extensions/resetDA/ResetDA.mockup';
+import {Namespace, UAObject} from 'node-opcua';
 import {
 	FeedbackMonitoringDAMockup,
 	getFeedbackMonitoringDAMockupReferenceJSON
@@ -36,7 +31,7 @@ import {
 import {BinDrvMockup, getBinDrvMockupReferenceJSON} from './BinDrv.mockup';
 
 
-export function getMonBinDrvMockupReferenceJSON(namespace: number, objectBrowseName: string) {
+export function getMonBinDrvMockupReferenceJSON(namespace: number, objectBrowseName: string): object {
 	return ({
 			...getBinDrvMockupReferenceJSON(namespace, objectBrowseName),
 			...getFeedbackMonitoringDAMockupReferenceJSON(namespace,objectBrowseName),
@@ -50,10 +45,10 @@ export class MonBinDrvMockup extends BinDrvMockup{
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
 		super(namespace, rootNode, variableName);
-		this.feedbackMonitoring= new FeedbackMonitoringDAMockup(namespace,this.mockupNode,this.name);
+		this.feedbackMonitoring= new FeedbackMonitoringDAMockup(namespace, this.mockupNode, this.name);
 	}
 
-	public getMonBinDrvMockupJSON() {
+	public getMonBinDrvMockupJSON(): object {
 		return getMonBinDrvMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
 			this.mockupNode.browseName.name as string);

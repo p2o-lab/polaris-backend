@@ -28,7 +28,7 @@ import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../_extensions/wqcDA/
 
 export function getStringViewMockupReferenceJSON(
 	namespace: number,
-	objectBrowseName: string) {
+	objectBrowseName: string): object {
 	return (
 		{
 			...getWQCDAMockupReferenceJSON(namespace, objectBrowseName),
@@ -71,7 +71,7 @@ export class StringViewMockup {
 		});
 	}
 
-	public getStringViewInstanceMockupJSON() {
+	public getStringViewInstanceMockupJSON(): object {
 		return getStringViewMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
 			this.mockupNode.browseName.name as string);

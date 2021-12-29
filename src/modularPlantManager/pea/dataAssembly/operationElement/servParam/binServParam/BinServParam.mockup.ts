@@ -26,20 +26,11 @@
 // eslint-disable-next-line no-undef
 import Timeout = NodeJS.Timeout;
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {getOpModeDAMockupReferenceJSON, OpModeDAMockup} from '../../../_extensions/opModeDA/OpModeDA.mockup';
-import {
-	getServiceSourceModeDAMockupReferenceJSON,
-	ServiceSourceModeDAMockup
-} from '../../../_extensions/serviceSourceModeDA/ServiceSourceModeDA.mockup';
-import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../../_extensions/wqcDA/WQCDA.mockup';
-
-import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../../../_extensions/osLevelDA/OSLevelDA.mockup';
 import {getServParamMockupReferenceJSON, ServParamMockup} from '../ServParam.mockup';
-import {BinServParam} from './BinServParam';
 
 export function getBinServParamMockupReferenceJSON(
 	namespace: number,
-	objectBrowseName: string) {
+	objectBrowseName: string): object {
 
 	return ({
 			...getServParamMockupReferenceJSON(namespace,objectBrowseName),
@@ -201,7 +192,7 @@ export class BinServParamMockup extends ServParamMockup{
 
 	}
 
-	public getBinServParamMockupJSON() {
+	public getBinServParamMockupJSON(): object {
 		return getBinServParamMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
 			this.mockupNode.browseName.name as string);

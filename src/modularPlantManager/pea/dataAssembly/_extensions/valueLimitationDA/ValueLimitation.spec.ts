@@ -33,7 +33,7 @@ import {DataAssemblyController} from '../../DataAssemblyController';
 import {DIntMan} from '../../operationElement';
 import {ValueLimitation} from './ValueLimitation';
 import {MockupServer} from '../../../../_utils';
-import {DataType, Namespace, UAObject} from 'node-opcua';
+import {DataType} from 'node-opcua';
 import {ValueLimitationDAMockup} from './ValueLimitationDA.mockup';
 
 chai.use(chaiAsPromised);
@@ -59,16 +59,12 @@ describe('ValueLimitation', () => {
 	describe('dynamic', () => {
 		let mockupServer: MockupServer;
 		let connection: OpcUaConnection;
-		let mockup: ValueLimitationDAMockup<any>;
 
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			mockup = new ValueLimitationDAMockup(
-				mockupServer.nameSpace,
-				mockupServer.rootObject,
-				'Variable', DataType.Double);
+			new ValueLimitationDAMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable', DataType.Double);
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});

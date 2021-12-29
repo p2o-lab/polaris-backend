@@ -60,16 +60,12 @@ describe('MonAnaVlv', () => {
 	describe('dynamic', () => {
 		let mockupServer: MockupServer;
 		let connection: OpcUaConnection;
-		let mockup: MonAnaVlvMockup;
 
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			mockup = new MonAnaVlvMockup(
-				mockupServer.nameSpace,
-				mockupServer.rootObject,
-				'Variable');
+			new MonAnaVlvMockup( mockupServer.nameSpace, mockupServer.rootObject,'Variable');
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});

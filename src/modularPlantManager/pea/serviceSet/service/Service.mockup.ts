@@ -33,7 +33,7 @@ import {PEATestNumericVariable} from '../../../_utils';
 
 export function getServiceMockupReferenceJSON(
 	namespace: number,
-	objectBrowseName: string) {
+	objectBrowseName: string): object {
 
 	return ({
 			StateChannel: {

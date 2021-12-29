@@ -45,7 +45,9 @@ describe('FeedbackMonitoring', () => {
 	};
 
 	describe('static', () => {
+
 		const emptyOPCUAConnection = new OpcUaConnection();
+
 		it('should create FeedbackMonitoring', () => {
 			const da1 = new DataAssemblyController(dataAssemblyOptions, emptyOPCUAConnection) as any;
 			const feedbackMonitoring = new FeedbackMonitoring(da1);
@@ -61,16 +63,12 @@ describe('FeedbackMonitoring', () => {
 	describe('dynamic', () => {
 		let mockupServer: MockupServer;
 		let connection: OpcUaConnection;
-		let mockup: FeedbackMonitoringDAMockup;
 
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			mockup = new FeedbackMonitoringDAMockup(
-				mockupServer.nameSpace,
-				mockupServer.rootObject,
-				'Variable');
+			new FeedbackMonitoringDAMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});
@@ -86,7 +84,7 @@ describe('FeedbackMonitoring', () => {
 		it('should subscribe successfully', async () => {
 
 			const da1 = new DataAssemblyController(dataAssemblyOptions, connection) as any;
-			// instantiating FeedbackMonitoring, which will manipulate dataAssemblyController
+
 			new FeedbackMonitoring(da1);
 			const pv = da1.subscribe();
 			await connection.startMonitoring();

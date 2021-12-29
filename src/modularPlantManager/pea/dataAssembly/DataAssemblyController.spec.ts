@@ -23,21 +23,11 @@
  * SOFTWARE.
  */
 
-import {
-	BaseDataAssemblyOptions, BinMonOptions, BinViewOptions, DataAssemblyOptions, DIntMonOptions, MonAnaDrvOptions,
-	OpcUaNodeOptions,
-	OperationMode, ServiceControlOptions
-} from '@p2olab/polaris-interface';
 import {OpcUaConnection} from '../connection';
-import {PEAController} from '../PEAController';
-import {
-	BinMon, BinView, DataAssemblyController, DataAssemblyControllerFactory,
-	DIntMon, MonAnaDrv, ServiceControl, ServParam
-} from './index';
+import {DataAssemblyController} from './DataAssemblyController';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import * as fs from 'fs';
 import {MockupServer} from '../../_utils';
 
 chai.use(chaiAsPromised);
@@ -91,10 +81,6 @@ describe('DataAssembly', () => {
                 this.timeout(4000);
                 await connection.disconnect();
                 await mockupServer.shutdown();
-            });
-
-            it('should ', async () => {
-
             });
 
         });

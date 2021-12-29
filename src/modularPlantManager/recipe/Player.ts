@@ -232,7 +232,7 @@ export class Player extends (EventEmitter as new() => PlayerEmitter) {
 		if (this.status === RecipeState.running) {
 			catPlayer.info('Stopping player');
 			this._status = RecipeState.stopped;
-			await this.currentRecipeRun!.stop();
+			await this.currentRecipeRun?.stop();
 			this.currentRecipeRun = undefined;
 		}
 	}

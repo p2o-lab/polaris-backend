@@ -66,16 +66,12 @@ describe('OpMode', () => {
 	describe('dynamic', () => {
 		let mockupServer: MockupServer;
 		let connection: OpcUaConnection;
-		let mockup: OpModeDAMockup;
 
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			mockup = new OpModeDAMockup(
-				mockupServer.nameSpace,
-				mockupServer.rootObject,
-				'Variable');
+			new OpModeDAMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});
@@ -268,6 +264,4 @@ describe('OpMode', () => {
 		});
 
 	});
-	//TODO test more
 });
-

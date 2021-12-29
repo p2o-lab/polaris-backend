@@ -24,22 +24,16 @@
  */
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../../_extensions/wqcDA/WQCDA.mockup';
-import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../../../_extensions/osLevelDA/OSLevelDA.mockup';
-import {getOpModeDAMockupReferenceJSON, OpModeDAMockup} from '../../../_extensions/opModeDA/OpModeDA.mockup';
-import {getInterlockDAMockupReferenceJSON, InterlockDAMockup} from '../../../_extensions/interlockDA/InterlockDA.mockup';
-import {getResetDAMockupReferenceJSON, ResetDAMockup} from '../../../_extensions/resetDA/ResetDA.mockup';
 import {
 	getSourceModeDAMockupReferenceJSON,
 	SourceModeDAMockup
 } from '../../../_extensions/sourceModeDA/SourceModeDA.mockup';
-import {getActiveElementMockupReferenceJSON} from '../../ActiveElement.mockup';
 import {DrvMockup, getDrvMockupReferenceJSON} from '../Drv.mockup';
 
 
 export function getAnaDrvMockupReferenceJSON(
 	namespace: number,
-	objectBrowseName: string) {
+	objectBrowseName: string): object {
 
 	return ({
 			...getSourceModeDAMockupReferenceJSON(namespace,objectBrowseName),
@@ -260,7 +254,7 @@ export class AnaDrvMockup extends DrvMockup{
 
 	}
 
-	public getAnaDrvMockupJSON() {
+	public getAnaDrvMockupJSON(): object {
 		return getAnaDrvMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
 			this.mockupNode.browseName.name as string);

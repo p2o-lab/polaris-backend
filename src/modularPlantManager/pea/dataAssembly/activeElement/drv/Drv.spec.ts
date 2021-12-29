@@ -80,17 +80,13 @@ describe('Drv', () => {
 	describe('dynamic', () => {
 		let mockupServer: MockupServer;
 		let connection: OpcUaConnection;
-		let mockup: DrvMockup;
 		let da1: Drv;
 
 		beforeEach(async function () {
 			this.timeout(10000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			mockup = new DrvMockup(
-				mockupServer.nameSpace,
-				mockupServer.rootObject,
-				'Variable');
+			new DrvMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});

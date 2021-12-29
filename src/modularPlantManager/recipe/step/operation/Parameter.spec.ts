@@ -23,12 +23,14 @@
  * SOFTWARE.
  */
 
+/* eslint-disable */
 import {PEAController, Service} from '../../../pea';
 import {Parameter} from '../../index';
 
 import {expect} from 'chai';
 import * as fs from 'fs';
 import {MockupServer} from '../../../_utils';
+/* eslint-enable */
 
 describe('Parameter', () => {
 	/*

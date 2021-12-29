@@ -30,7 +30,7 @@ import {DataAssemblyControllerMockup} from '../DataAssemblyController.mockup';
 
 export function getActiveElementMockupReferenceJSON(
 	namespace: number,
-	objectBrowseName: string) {
+	objectBrowseName: string): object {
 
 	return ({
 			...getWQCDAMockupReferenceJSON(namespace,objectBrowseName),
@@ -51,7 +51,7 @@ export class ActiveElementMockup extends DataAssemblyControllerMockup{
 	}
 
 
-	public getActiveElementMockupJSON() {
+	public getActiveElementMockupJSON(): object {
 		return getActiveElementMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
 			this.mockupNode.browseName.name as string);

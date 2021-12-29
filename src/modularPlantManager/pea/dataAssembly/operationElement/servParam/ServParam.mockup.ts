@@ -35,7 +35,7 @@ import {getOperationElementMockupReferenceJSON, OperationElementMockup} from '..
 
 export function getServParamMockupReferenceJSON(
 	namespace: number,
-	objectBrowseName: string) {
+	objectBrowseName: string): object {
 
 	return ({
 			...getOperationElementMockupReferenceJSON(namespace, objectBrowseName),
@@ -78,7 +78,7 @@ export class ServParamMockup extends OperationElementMockup{
 		});
 	}
 
-	public getServParamMockupJSON() {
+	public getServParamMockupJSON(): object {
 		return getServParamMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
 			this.mockupNode.browseName.name as string);

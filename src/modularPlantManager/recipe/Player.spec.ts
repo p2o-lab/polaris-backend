@@ -31,8 +31,6 @@ import {Player, Recipe} from './index';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
-import {timeout} from 'promise-timeout';
-import {PEAMockup} from '../pea/PEA.mockup';
 import {MockupServer} from '../_utils';
 
 chai.use(chaiAsPromised);

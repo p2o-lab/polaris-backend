@@ -29,11 +29,8 @@ import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import * as baseDataAssemblyOptions from './LockView16.spec.json';
 import {MockupServer} from '../../../../../_utils';
-import {Namespace, UAObject} from 'node-opcua';
 import {LockView16} from './LockView16';
 import {LockView16Mockup} from './LockView16.mockup';
-
-
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -64,11 +61,7 @@ describe('LockView16', () => {
 			this.timeout(8000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			const mockup = new LockView16Mockup(
-				mockupServer.nameSpace,
-				mockupServer.rootObject,
-				'Variable');
-
+			new LockView16Mockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});

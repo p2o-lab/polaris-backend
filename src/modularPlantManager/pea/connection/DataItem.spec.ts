@@ -29,8 +29,6 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {OpcUaDataItem} from './OpcUaDataItem';
 import {MockupServer} from '../../_utils';
-import {AnaViewMockup} from '../dataAssembly/indicatorElement/AnaView/AnaView.mockup';
-import {Namespace, UAObject} from 'node-opcua';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;

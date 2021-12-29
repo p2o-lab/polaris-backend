@@ -24,14 +24,13 @@
  */
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../../_extensions/wqcDA/WQCDA.mockup';
 import {getScaleSettingDAMockupReferenceJSON, ScaleSettingDAMockup} from '../../../_extensions/scaleSettingsDA/ScaleSettingDA.mockup';
 import {getUnitDAMockupReferenceJSON, UnitDAMockup} from '../../../_extensions/unitDA/UnitDA.mockup';
 import {getInputElementMockupReferenceJSON, InputElementMockup} from '../../InputElement.mockup';
 
 export function getDIntProcessValueInMockupReferenceJSON(
 	namespace: number,
-	objectBrowseName: string) {
+	objectBrowseName: string): object {
 	return (
 		{
 			...getInputElementMockupReferenceJSON(namespace, objectBrowseName),
@@ -66,7 +65,7 @@ export class DIntProcessValueInMockup extends InputElementMockup{
 				get: (): Variant => {
 					return new Variant({dataType: DataType.Int32, value: this.vExt});
 				},
-				set: (variant: Variant) => {
+				set: (variant: Variant): StatusCodes => {
 					let newValue = parseInt(variant.value,10);
 					if (newValue < this.scaleSettings.vSclMin) {
 						newValue = this.scaleSettings.vSclMin;
@@ -81,7 +80,7 @@ export class DIntProcessValueInMockup extends InputElementMockup{
 
 	}
 
-	public getDIntProcessValueInInstanceMockupJSON() {
+	public getDIntProcessValueInInstanceMockupJSON(): object {
 		return getDIntProcessValueInMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
 			this.mockupNode.browseName.name as string);

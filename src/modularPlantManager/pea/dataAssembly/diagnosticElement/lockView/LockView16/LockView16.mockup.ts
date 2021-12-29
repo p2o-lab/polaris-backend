@@ -24,13 +24,12 @@
  */
 
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
-import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../../_extensions/wqcDA/WQCDA.mockup';
-import {catPEAMockup} from '../../../../../../logging';
+import {getWQCDAMockupReferenceJSON} from '../../../_extensions/wqcDA/WQCDA.mockup';
 import {getLockView8MockupReferenceJSON, LockView8Mockup} from '../LockView8/LockView8.mockup';
 
 export function getLockView16MockupReferenceJSON(
 	namespace: number,
-	objectBrowseName: string) {
+	objectBrowseName: string): object {
 	return (
 		{
 			...getWQCDAMockupReferenceJSON(namespace,objectBrowseName),
@@ -743,7 +742,7 @@ export class LockView16Mockup extends LockView8Mockup{
 		});
 	}
 
-	public getLockView16InstanceMockupJSON() {
+	public getLockView16InstanceMockupJSON(): object {
 		return getLockView16MockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
 			this.mockupNode.browseName.name as string);

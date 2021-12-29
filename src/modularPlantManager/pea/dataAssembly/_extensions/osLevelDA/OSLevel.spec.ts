@@ -28,11 +28,10 @@ import * as baseDataAssemblyOptions from '../../indicatorElement/BinView/BinMon/
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptionsStatic from '../../../../../../tests/binmon_static.json';
+import * as baseDataAssemblyOptionsStatic from './OSLevel.spec.json';
 import {OSLevel} from './OSLevel';
 import {DataAssemblyController} from '../../DataAssemblyController';
 import {MockupServer} from '../../../../_utils';
-import {Namespace, UAObject} from 'node-opcua';
 import {OSLevelDAMockup} from './OSLevelDA.mockup';
 
 chai.use(chaiAsPromised);
@@ -51,21 +50,23 @@ describe('OSLevel', () => {
 	};
 
 	describe('static', () => {
-		let oslevelObject: any;
+
+		let osLevelObject: OSLevel;
 		let da: any;
+
 		describe('static OSLevel',()=>{
 			beforeEach(()=>{
 				const emptyOPCUAConnection = new OpcUaConnection();
 				da = new DataAssemblyController(dataAssemblyOptionsStatic, emptyOPCUAConnection) as any;
-				oslevelObject = new OSLevel(da);
+				osLevelObject = new OSLevel(da);
 			});
 			it('should create OSLevel', async () => {
-				expect(oslevelObject.OSLevel).to.equal(0);
+				expect(osLevelObject.OSLevel).to.equal(0);
 				expect(da.communication.OSLevel).to.be.undefined;
 			});
 
 			it('getter', async () => {
-				expect(oslevelObject.OSLevel).to.equal(0);
+				expect(osLevelObject.OSLevel).to.equal(0);
 			});
 			//TODO: toJson();
 		});
@@ -90,18 +91,15 @@ describe('OSLevel', () => {
 		});
 	});
 	describe('dynamic', () => {
+
 		let mockupServer: MockupServer;
 		let connection: OpcUaConnection;
-		let mockup: OSLevelDAMockup;
 
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			mockup = new OSLevelDAMockup(
-				mockupServer.nameSpace,
-				mockupServer.rootObject,
-				'Variable');
+			new OSLevelDAMockup( mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});

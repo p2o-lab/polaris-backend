@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import {ModularPlantManager, ServiceState} from '../../../modularPlantManager';
+import {ModularPlantManager} from '../../../modularPlantManager';
 import {Request, Response, Router} from 'express';
 import * as asyncHandler from 'express-async-handler';
 import {constants} from 'http2';
@@ -37,11 +37,12 @@ export const peaRouter: Router = Router();
 // set up Multer for parsing uploaded file
 const fs = require('fs');
 const multer = require('multer');
-// create uploads directory
+
+// delete uploads folder if exists
 if (fs.existsSync('uploads/')) {
-	// delete uploads folder, because it could contain files, which haven't been deleted successfully due to crash
 	fs.rmdirSync('uploads/', {recursive: true});
-}// create new uploads folder
+}
+// create new uploads folder
 fs.mkdirSync('uploads/');
 
 // set up filename and destination
@@ -49,8 +50,8 @@ const storage = multer.diskStorage({
 	destination: function (req: any, file: any, cb: any) {
 		cb(null, path.join('uploads/'));
 	},
-	filename: (req: any, file: { fieldname: string; originalname: any }, cb: (arg0: null, arg1: string) => void) => {
-		cb(null, file.originalname);
+	filename: (req: any, file: { filename: string; originalName: any }, cb: (arg0: null, arg1: string) => void) => {
+		cb(null, file.originalName);
 	}
 });
 const upload = multer({storage: storage});
@@ -80,7 +81,7 @@ peaRouter.post('/loadPEA', async (req, res) => {
  * @apiGroup PEAController
  * @apiParam {PEAOptions} pea PEAController to be added.
  */
-peaRouter.post('/addByPiMAd', upload.single('uploadedFile'),async (req, res) => {
+peaRouter.post('/addByPiMAd', upload.single('uploadedFile'), async (req, res) => {
 	// parse filepath of uploaded file
 	const filePath: string = (req as MulterRequest).file.path;
 	//create object to pass to PiMAd
@@ -326,7 +327,7 @@ peaRouter.post('/:peaId/service/:serviceName/:command', asyncHandler(async (req:
 			pea: req.params.peaId,
 			service: service.name,
 			command: req.params.command,
-			status: 'Command succesfully send'
+			status: 'Command successfully send'
 		});
 	} catch (e) {
 		console.log(e);

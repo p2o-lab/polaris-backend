@@ -28,7 +28,7 @@ import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 
 export function getServiceSourceModeDAMockupReferenceJSON(
 	namespace: number,
-	objectBrowseName: string) {
+	objectBrowseName: string): object {
 
 	return ({
 			SrcChannel: {
@@ -125,7 +125,7 @@ export class ServiceSourceModeDAMockup {
 				get: (): Variant => {
 					return new Variant({dataType: DataType.Boolean, value: this.srcIntOp});
 				},
-				set: (variant: Variant) => {
+				set: (variant: Variant): StatusCodes => {
 					this.srcIntOp = variant.value;
 					if (this.srcIntOp) {
 						if (!this.srcChannel) {
@@ -148,7 +148,7 @@ export class ServiceSourceModeDAMockup {
 				get: (): Variant => {
 					return new Variant({dataType: DataType.Boolean, value: this.srcExtOp});
 				},
-				set: (variant: Variant) => {
+				set: (variant: Variant): StatusCodes => {
 					this.srcExtOp = variant.value;
 					if (this.srcExtOp) {
 						if (!this.srcChannel) {
@@ -197,7 +197,7 @@ export class ServiceSourceModeDAMockup {
 
 
 
-	public getServiceSourceModeDAInstanceMockupJSON() {
+	public getServiceSourceModeDAInstanceMockupJSON(): object {
 		return getServiceSourceModeDAMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
 			this.mockupNode.browseName.name as string);

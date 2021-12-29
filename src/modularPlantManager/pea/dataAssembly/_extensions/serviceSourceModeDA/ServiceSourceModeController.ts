@@ -38,7 +38,6 @@ export interface ServiceSourceModeRuntime extends BaseDataAssemblyRuntime {
 	SrcExtOp: OpcUaDataItem<boolean>;
 }
 
-// TODO: Maybe rename this class
 export class ServiceSourceModeController{
 	private dAController: any;
 
@@ -47,7 +46,7 @@ export class ServiceSourceModeController{
 		this.initialize();
 	}
 
-	private initialize(){
+	private initialize(): void {
 		this.dAController.communication.SrcChannel = this.dAController.createDataItem('SrcChannel', 'read', 'boolean');
 
 		this.dAController.communication.SrcExtAut = this.dAController.createDataItem('SrcExtAut', 'read', 'boolean');

@@ -50,7 +50,7 @@ export class OpModeController {
 		this.initialize();
 	}
 
-	private initialize(){
+	private initialize(): void {
 		this.dAController.communication.StateChannel = this.dAController.createDataItem('StateChannel', 'read', 'boolean');
 
 		this.dAController.communication.StateOffAut = this.dAController.createDataItem('StateOffAut', 'read', 'boolean');

@@ -23,10 +23,8 @@
  * SOFTWARE.
  */
 
-import {ParameterInterface} from '@p2olab/polaris-interface';
 import {OpcUaDataItem} from '../../../connection';
-import {Constructor} from '../_helper';
-import {BaseDataAssemblyRuntime, DataAssemblyController} from '../../DataAssemblyController';
+import {BaseDataAssemblyRuntime} from '../../DataAssemblyController';
 import {UNIT} from './Unit';
 
 export interface UnitDataAssemblyRuntime extends BaseDataAssemblyRuntime {
@@ -50,15 +48,4 @@ export class UnitSettings {
 		const unit = UNIT.find((item) => item.value === this.dAController.communication.VUnit?.value);
 		return unit ? unit.unit : '';
 	}
-
-	// TODO: adjust function
-/*	public unitToJson(): ParameterInterface {
-		return {
-			...super.toJson(),
-			max: this.communication.VSclMax?.value,
-			min: this.communication.VSclMin?.value
-		};
-	}*/
 }
-
-

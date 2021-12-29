@@ -28,24 +28,10 @@ import Timeout = NodeJS.Timeout;
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 
 import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../../../_extensions/osLevelDA/OSLevelDA.mockup';
-import {getUnitDAMockupReferenceJSON, UnitDAMockup} from '../../../_extensions/unitDA/UnitDA.mockup';
-import {
-	getScaleSettingDAMockupReferenceJSON,
-	ScaleSettingDAMockup
-} from '../../../_extensions/scaleSettingsDA/ScaleSettingDA.mockup';
-import {
-	getValueLimitationDAMockupReferenceJSON,
-	ValueLimitationDAMockup
-} from '../../../_extensions/valueLimitationDA/ValueLimitationDA.mockup';
-import {
-	getSourceModeDAMockupReferenceJSON,
-	SourceModeDAMockup
-} from '../../../_extensions/sourceModeDA/SourceModeDA.mockup';
 
 export function getBinManMockupReferenceJSON(
 	namespace: number,
-	objectBrowseName: string) {
-
+	objectBrowseName: string): object {
 	return ({
 			...getOSLevelDAMockupReferenceJSON(namespace,objectBrowseName),
 			VOut: {
@@ -181,7 +167,7 @@ export class BinManMockup {
 		});
 	}
 
-	public getBinManMockupJSON() {
+	public getBinManMockupJSON(): object {
 		return getBinManMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
 			this.mockupNode.browseName.name as string);

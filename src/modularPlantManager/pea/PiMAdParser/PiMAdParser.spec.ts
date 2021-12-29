@@ -25,10 +25,8 @@
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import * as fs from 'fs';
 import {PiMAdParser} from './PiMAdParser';
 import {ModularPlantManager} from '../../ModularPlantManager';
-import exp = require('constants');
 
 
 chai.use(chaiAsPromised);

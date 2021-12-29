@@ -29,7 +29,7 @@ import {
 import {OpcUaConnection} from '../../connection';
 import {
 	ServiceControl
-} from '../index';
+} from './ServiceControl';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
@@ -81,10 +81,7 @@ describe('ServiceControl', () => {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			const mockup = new ServiceControlMockup(
-				mockupServer.nameSpace,
-				mockupServer.rootObject,
-				'Variable');
+			new ServiceControlMockup(mockupServer.nameSpace, mockupServer.rootObject,'Variable');
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});

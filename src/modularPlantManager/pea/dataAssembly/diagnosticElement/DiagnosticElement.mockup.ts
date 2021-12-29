@@ -25,10 +25,9 @@
 
 import {Namespace, UAObject} from 'node-opcua';
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../_extensions/wqcDA/WQCDA.mockup';
-import {catPEAMockup} from '../../../../logging';
 import {DataAssemblyControllerMockup} from '../DataAssemblyController.mockup';
 
-export function getDiagnosticElementMockupReferenceJSON(namespace: number, objectBrowseName: string) {
+export function getDiagnosticElementMockupReferenceJSON(namespace: number, objectBrowseName: string): object {
 	return (getWQCDAMockupReferenceJSON(namespace,objectBrowseName));
 }
 
@@ -42,7 +41,7 @@ export class DiagnosticElementMockup extends DataAssemblyControllerMockup {
 
 	}
 
-	public getDiagnosticElementInstanceMockupJSON() {
+	public getDiagnosticElementInstanceMockupJSON(): object {
 		return getDiagnosticElementMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
 			this.mockupNode.browseName.name as string);

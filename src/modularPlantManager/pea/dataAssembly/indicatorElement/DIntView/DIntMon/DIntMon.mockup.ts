@@ -38,7 +38,7 @@ import {
 
 export function getDIntMonMockupReferenceJSON(
 	namespace: number,
-	objectBrowseName: string) {
+	objectBrowseName: string): object {
 	return (
 		{
 			...getWQCDAMockupReferenceJSON(namespace, objectBrowseName),
@@ -63,7 +63,7 @@ export class DIntMonMockup {
 	public scaleSettings: ScaleSettingDAMockup<DataType.Int32>;
 	public unit: UnitDAMockup;
 	public osLevel: OSLevelDAMockup;
-	public limitMonitoring: LimitMonitoringDAMockup<any>;
+	public limitMonitoring: LimitMonitoringDAMockup<DataType.Double | DataType.Int32>;
 	protected mockupNode: UAObject;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
@@ -93,7 +93,7 @@ export class DIntMonMockup {
 		});
 	}
 
-	public getDIntMonInstanceMockupJSON() {
+	public getDIntMonInstanceMockupJSON(): object {
 		return getDIntMonMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
 			this.mockupNode.browseName.name as string);

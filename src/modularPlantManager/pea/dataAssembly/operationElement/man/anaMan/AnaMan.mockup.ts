@@ -40,7 +40,7 @@ import {
 
 export function getAnaManMockupReferenceJSON(
 	namespace: number,
-	objectBrowseName: string) {
+	objectBrowseName: string): object {
 
 	return ({
 			...getOSLevelDAMockupReferenceJSON(namespace,objectBrowseName),
@@ -150,7 +150,7 @@ export class AnaManMockup {
 		});
 	}
 
-	public getAnaManMockupJSON() {
+	public getAnaManMockupJSON(): object {
 		return getAnaManMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
 			this.mockupNode.browseName.name as string);

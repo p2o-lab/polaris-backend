@@ -33,7 +33,6 @@ import {DataAssemblyController} from '../../DataAssemblyController';
 import {DIntMan} from '../../operationElement';
 import {UnitSettings} from './UnitSettings';
 import {MockupServer} from '../../../../_utils';
-import {Namespace} from 'node-opcua';
 import {UnitDAMockup} from './UnitDA.mockup';
 
 chai.use(chaiAsPromised);
@@ -59,16 +58,12 @@ describe('UnitSettings', () => {
 	describe('dynamic', () => {
 		let mockupServer: MockupServer;
 		let connection: OpcUaConnection;
-		let mockup: UnitDAMockup;
 
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			mockup = new UnitDAMockup(
-				mockupServer.nameSpace,
-				mockupServer.rootObject,
-				'Variable');
+			new UnitDAMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});

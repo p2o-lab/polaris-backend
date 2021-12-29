@@ -43,7 +43,7 @@ export class FeedbackMonitoring {
 		this.initialize();
 	}
 
-	private initialize() {
+	private initialize(): void {
 		this.dAController.communication.MonEn = this.dAController.createDataItem('MonEn', 'write');
 		this.dAController.communication.MonSafePos = this.dAController.createDataItem('MonSafePos', 'read');
 		this.dAController.communication.MonStatErr = this.dAController.createDataItem('MonStatErr', 'read');

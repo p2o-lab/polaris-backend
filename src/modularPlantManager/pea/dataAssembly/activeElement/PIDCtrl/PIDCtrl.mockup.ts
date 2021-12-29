@@ -25,15 +25,15 @@
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 import {getOpModeDAMockupReferenceJSON, OpModeDAMockup} from '../../_extensions/opModeDA/OpModeDA.mockup';
-import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../_extensions/wqcDA/WQCDA.mockup';
-import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../../_extensions/osLevelDA/OSLevelDA.mockup';
+import {WQCDAMockup} from '../../_extensions/wqcDA/WQCDA.mockup';
+import {OSLevelDAMockup} from '../../_extensions/osLevelDA/OSLevelDA.mockup';
 import {getSourceModeDAMockupReferenceJSON, SourceModeDAMockup} from '../../_extensions/sourceModeDA/SourceModeDA.mockup';
 import {getActiveElementMockupReferenceJSON} from '../ActiveElement.mockup';
 
 
 export function getPIDCtrlMockupReferenceJSON(
 	namespace: number,
-	objectBrowseName: string) {
+	objectBrowseName: string): object {
 
 	return ({
 			...getActiveElementMockupReferenceJSON(namespace,objectBrowseName),
@@ -383,7 +383,7 @@ export class PIDCtrlMockup {
 				get: (): Variant => {
 					return new Variant({dataType: DataType.Double, value: this.mvMan});
 				},
-				set: (variant: Variant) => {
+				set: (variant: Variant): StatusCodes => {
 					this.mvMan = parseFloat(variant.value);
 					return StatusCodes.Good;
 				},
@@ -490,7 +490,7 @@ export class PIDCtrlMockup {
 		});
 	}
 
-	public getPIDCtrlMockupJSON() {
+	public getPIDCtrlMockupJSON(): object {
 		return getPIDCtrlMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
 			this.mockupNode.browseName.name as string);

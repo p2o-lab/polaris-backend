@@ -33,7 +33,7 @@ import {getUnitDAMockupReferenceJSON, UnitDAMockup} from '../../_extensions/unit
 
 export function getDIntViewMockupReferenceJSON(
 	namespace: number,
-	objectBrowseName: string) {
+	objectBrowseName: string): object {
 	return (
 		{
 			...getWQCDAMockupReferenceJSON(namespace, objectBrowseName),
@@ -82,7 +82,7 @@ export class DIntViewMockup {
 		});
 	}
 
-	public getDIntViewInstanceMockupJSON() {
+	public getDIntViewInstanceMockupJSON(): object {
 		return getDIntViewMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
 			this.mockupNode.browseName.name as string);

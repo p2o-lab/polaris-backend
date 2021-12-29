@@ -23,15 +23,12 @@
  * SOFTWARE.
  */
 
-import {ConditionOptions, ConditionType} from '@p2olab/polaris-interface';
+import {ConditionType} from '@p2olab/polaris-interface';
 import {PEAController} from '../pea';
-import {MockupServer, PEATestNumericVariable, waitForVariableChange} from '../_utils';
-import {ServiceState} from '../pea/dataAssembly';
 import {
-	Condition,
 	ConditionFactory,
 	ExpressionCondition, NotCondition,
-	TimeCondition, TrueCondition
+	TimeCondition
 } from './index';
 
 import * as chai from 'chai';

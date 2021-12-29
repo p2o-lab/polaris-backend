@@ -132,7 +132,7 @@ polServiceRouter.post('/:polServiceId/:command', asyncHandler(async (req: Reques
 		res.json({
 			polService: polService.name,
 			command: req.params.command,
-			status: 'Command succesfully sent'
+			status: 'Command successfully sent'
 		});
 	}
 }));

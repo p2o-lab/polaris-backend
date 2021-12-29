@@ -28,7 +28,7 @@ import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 
 export function getOpModeDAMockupReferenceJSON(
 	namespace: number,
-	objectBrowseName: string) {
+	objectBrowseName: string): object {
 
 	return ({
 			StateChannel: {
@@ -157,7 +157,7 @@ export class OpModeDAMockup {
 				get: (): Variant => {
 					return new Variant({dataType: DataType.Boolean, value: this.stateOffOp});
 				},
-				set: (variant: any) => {
+				set: (variant: Variant): StatusCodes => {
 					this.stateOffOp = variant.value;
 					if (this.stateOffOp) {
 						if (this.stateOpAct && !this.stateChannel) {
@@ -178,7 +178,7 @@ export class OpModeDAMockup {
 				get: (): Variant => {
 					return new Variant({dataType: DataType.Boolean, value: this.stateOpOp});
 				},
-				set: (variant: any) => {
+				set: (variant: Variant): StatusCodes => {
 					this.stateOpOp = variant.value;
 					if (this.stateOpOp) {
 						if (!this.stateChannel) {
@@ -199,7 +199,7 @@ export class OpModeDAMockup {
 				get: (): Variant => {
 					return new Variant({dataType: DataType.Boolean, value: this.stateAutOp});
 				},
-				set: (variant: any) => {
+				set: (variant: Variant): StatusCodes => {
 					this.stateAutOp = variant.value;
 					if (this.stateAutOp) {
 						if (this.stateOpAct && !this.stateChannel) {
@@ -259,7 +259,7 @@ export class OpModeDAMockup {
 		return this.opMode === OperationMode.Offline;
 	}
 
-	public getOpModeDAInstanceMockupJSON() {
+	public getOpModeDAInstanceMockupJSON(): object {
 		return getOpModeDAMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
 			this.mockupNode.browseName.name as string);

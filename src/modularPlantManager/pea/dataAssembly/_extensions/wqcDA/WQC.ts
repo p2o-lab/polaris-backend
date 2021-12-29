@@ -39,7 +39,7 @@ export class WQC {
 		this.initialize();
 	}
 
-	initialize(){
+	initialize(): void {
 		//handle static and dynamic variables
 		if(typeof this.dAController.options.dataItems.WQC == 'string'){
 			this.wqc = Number(this.dAController.options.dataItems.WQC);

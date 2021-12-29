@@ -23,18 +23,13 @@
  * SOFTWARE.
  */
 
-import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../../_extensions/wqcDA/WQCDA.mockup';
-import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../../../_extensions/osLevelDA/OSLevelDA.mockup';
-import {getOpModeDAMockupReferenceJSON, OpModeDAMockup} from '../../../_extensions/opModeDA/OpModeDA.mockup';
-import {getInterlockDAMockupReferenceJSON, InterlockDAMockup} from '../../../_extensions/interlockDA/InterlockDA.mockup';
-import {getResetDAMockupReferenceJSON, ResetDAMockup} from '../../../_extensions/resetDA/ResetDA.mockup';
+import {Namespace, UAObject} from 'node-opcua';
 import {DrvMockup, getDrvMockupReferenceJSON} from '../Drv.mockup';
 
 
 export function getBinDrvMockupReferenceJSON(
 	namespace: number,
-	objectBrowseName: string) {
+	objectBrowseName: string): object {
 
 	return ({
 			...getDrvMockupReferenceJSON(namespace, objectBrowseName)
@@ -48,7 +43,7 @@ export class BinDrvMockup extends DrvMockup {
 		super(namespace, rootNode, variableName);
 	}
 
-	public getBinDrvMockupJSON() {
+	public getBinDrvMockupJSON(): object {
 		return getBinDrvMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
 			this.mockupNode.browseName.name as string);

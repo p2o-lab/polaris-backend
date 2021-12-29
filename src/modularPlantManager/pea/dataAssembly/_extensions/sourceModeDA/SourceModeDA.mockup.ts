@@ -1,6 +1,31 @@
 /*
  * MIT License
  *
+ * Copyright (c) 2021 P2O-Lab <p2o-lab@mailbox.tu-dresden.de>,
+ * Chair for Process Control Systems, Technische Universität Dresden
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+ 
+/*
+ * MIT License
+ *
  * Copyright (c) 2020 P2O-Lab <p2o-lab@mailbox.tu-dresden.de>,
  * Chair for Process Control Systems, Technische Universität Dresden
  *
@@ -24,11 +49,11 @@
  */
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {ServiceSourceMode, SourceMode} from '@p2olab/polaris-interface';
+import {SourceMode} from '@p2olab/polaris-interface';
 
 export function getSourceModeDAMockupReferenceJSON(
     namespace: number,
-    objectBrowseName: string) {
+    objectBrowseName: string): object {
 
   return ({
     SrcChannel: {
@@ -124,7 +149,7 @@ export class SourceModeDAMockup {
           get: (): Variant => {
             return new Variant({dataType: DataType.Boolean, value: this.srcIntOp});
           },
-          set: (variant: Variant) => {
+          set: (variant: Variant): StatusCodes => {
             this.srcIntOp = variant.value;
             if (this.srcIntOp) {
               if (!this.srcChannel) {
@@ -147,7 +172,7 @@ export class SourceModeDAMockup {
           get: (): Variant => {
             return new Variant({dataType: DataType.Boolean, value: this.srcManOp});
           },
-          set: (variant: Variant) => {
+          set: (variant: Variant): StatusCodes => {
             this.srcManOp = variant.value;
             if (this.srcManOp) {
               if (!this.srcChannel) {
@@ -195,7 +220,7 @@ export class SourceModeDAMockup {
   }
 
 
-  public getSourceModeDAInstanceMockupJSON() {
+  public getSourceModeDAInstanceMockupJSON(): object {
     return getSourceModeDAMockupReferenceJSON(
         this.mockupNode.namespaceIndex,
         this.mockupNode.browseName.name as string);

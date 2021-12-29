@@ -40,7 +40,7 @@ import {getServParamMockupReferenceJSON, ServParamMockup} from '../ServParam.moc
 
 export function getDIntServParamMockupReferenceJSON(
 	namespace: number,
-	objectBrowseName: string) {
+	objectBrowseName: string): object {
 
 	return ({
 			...getServParamMockupReferenceJSON(namespace,objectBrowseName),
@@ -183,7 +183,7 @@ export class DIntServParamMockup extends ServParamMockup {
 		});
 	}
 
-	public getDIntServParamMockupJSON() {
+	public getDIntServParamMockupJSON(): object {
 		return getDIntServParamMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
 			this.mockupNode.browseName.name as string);

@@ -24,30 +24,20 @@
  */
 
 import {
-	BaseDataAssemblyOptions, DataAssemblyOptions,
-	OpcUaNodeOptions
+	BaseDataAssemblyOptions, DataAssemblyOptions
 } from '@p2olab/polaris-interface';
 import {OpcUaConnection} from '../connection';
-import {PEAController} from '../PEAController';
-import {
-	AnaMan,
-	BinMon, BinView, DataAssemblyController, DataAssemblyControllerFactory,
-	DIntMan, DIntMon, MonAnaDrv, ServiceControl, ServParam
-} from './index';
+import {DataAssemblyController, DataAssemblyControllerFactory} from './index';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import * as fs from 'fs';
-import {PEAMockup} from '../PEA.mockup';
-import {MockupServer} from '../../_utils';
 import * as baseDataAssemblyOptions from './activeElement/drv/anaDrv/monAnaDrv/MonAnaDrv.spec.json';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('DataAssemblyFactory', () => {
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
-	const parseJson = require('json-parse-better-errors');
+
 	describe('static', () => {
 		const dataAssemblyOptions: DataAssemblyOptions = {
 			name: 'Variable',

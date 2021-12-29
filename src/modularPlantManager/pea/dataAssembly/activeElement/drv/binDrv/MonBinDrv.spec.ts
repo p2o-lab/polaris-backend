@@ -29,11 +29,8 @@ import {MonBinDrv} from './MonBinDrv';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-// MonBinDrv overlaps with MonAnaDrv
 import * as baseDataAssemblyOptions from '../anaDrv/monAnaDrv/MonAnaDrv.spec.json';
 import {MockupServer} from '../../../../../_utils';
-import {Namespace, UAObject} from 'node-opcua';
-
 import {DataAssemblyControllerFactory} from '../../../DataAssemblyControllerFactory';
 import {MonBinDrvMockup} from './MonBinDrv.mockup';
 
@@ -57,17 +54,13 @@ describe('MonBinDrv', () => {
 	describe('dynamic', () => {
 		let mockupServer: MockupServer;
 		let connection: OpcUaConnection;
-		let mockup: MonBinDrvMockup;
 		let da1: MonBinDrv;
 
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			mockup = new MonBinDrvMockup(
-				mockupServer.nameSpace,
-				mockupServer.rootObject,
-				'Variable');
+			new MonBinDrvMockup( mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});

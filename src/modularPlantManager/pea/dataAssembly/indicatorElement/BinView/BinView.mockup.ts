@@ -24,13 +24,11 @@
  */
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../_extensions/wqcDA/WQCDA.mockup';
-import {IndicatorElement} from '../IndicatorElement';
 import {getIndicatorElementMockupReferenceJSON, IndicatorElementMockup} from '../IndicatorElement.mockup';
 
 export function getBinViewMockupReferenceJSON(
 	namespace: number,
-	objectBrowseName: string) {
+	objectBrowseName: string): object {
 	return (
 		{
 			...getIndicatorElementMockupReferenceJSON(namespace, objectBrowseName),
@@ -106,7 +104,7 @@ export class BinViewMockup extends IndicatorElementMockup{
 		});
 	}
 
-	public getBinViewInstanceMockupJSON() {
+	public getBinViewInstanceMockupJSON(): object {
 		return getBinViewMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
 			this.mockupNode.browseName.name as string);

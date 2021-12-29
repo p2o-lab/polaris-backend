@@ -23,20 +23,8 @@
  * SOFTWARE.
  */
 
-// eslint-disable-next-line no-undef
-import Timeout = NodeJS.Timeout;
-import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
+import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
 
-import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../../../_extensions/osLevelDA/OSLevelDA.mockup';
-import {getUnitDAMockupReferenceJSON, UnitDAMockup} from '../../../_extensions/unitDA/UnitDA.mockup';
-import {
-	getScaleSettingDAMockupReferenceJSON,
-	ScaleSettingDAMockup
-} from '../../../_extensions/scaleSettingsDA/ScaleSettingDA.mockup';
-import {
-	getValueLimitationDAMockupReferenceJSON,
-	ValueLimitationDAMockup
-} from '../../../_extensions/valueLimitationDA/ValueLimitationDA.mockup';
 import {
 	getSourceModeDAMockupReferenceJSON,
 	SourceModeDAMockup
@@ -46,8 +34,7 @@ import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../../_extensions/wqc
 
 export function getBinManIntMockupReferenceJSON(
 	namespace: number,
-	objectBrowseName: string) {
-
+	objectBrowseName: string): object {
 	return ({
 			...getBinManMockupReferenceJSON(namespace, objectBrowseName),
 			...getWQCDAMockupReferenceJSON(namespace, objectBrowseName),
@@ -85,7 +72,7 @@ export class BinManIntMockup extends BinManMockup {
 		});
 	}
 
-	public getBinManIntMockupJSON() {
+	public getBinManIntMockupJSON(): object {
 		return getBinManIntMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
 			this.mockupNode.browseName.name as string);

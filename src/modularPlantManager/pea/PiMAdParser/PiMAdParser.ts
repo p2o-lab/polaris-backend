@@ -1,10 +1,29 @@
-import {
-    DataAssemblyModel,
-    DataAssemblyOptions,
-    DataItemModel,
-    OpcUaNodeOptions,
-    PEAModel, PEAOptions, ProcedureModel, ServiceControlOptions, ServiceModel, ServiceOptions
-} from '@p2olab/polaris-interface';
+/*
+ * MIT License
+ *
+ * Copyright (c) 2021 P2O-Lab <p2o-lab@mailbox.tu-dresden.de>,
+ * Chair for Process Control Systems, Technische Universität Dresden
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+ 
+import {DataAssemblyModel, DataAssemblyOptions, DataItemModel, PEAModel, PEAOptions, ProcedureModel, ServiceControlOptions, ServiceModel, ServiceOptions} from '@p2olab/polaris-interface';
 import {ProcedureOptions} from '@p2olab/polaris-interface/dist/service/options';
 import {ModularPlantManager} from '../../ModularPlantManager';
 
@@ -28,8 +47,8 @@ export class PiMAdParser {
         const peaModel: PEAModel = await manager.getPEAFromPimadPool(pimadIdentifier);
         const pimadParserObject = PiMAdParser.createOptionsArrays(peaModel);
         const endpoint = peaModel.endpoint[0].value;
-        // create PEAOptions
-        const peaOptions: PEAOptions = {
+
+        return {
             name: peaModel.name,
             id: manager.generateUniqueIdentifier(),
             pimadIdentifier: pimadIdentifier,
@@ -40,11 +59,10 @@ export class PiMAdParser {
             opcuaServerUrl: endpoint,
             dataAssemblies: pimadParserObject.dataAssemblyOptionsArray
         };
-        return peaOptions;
     }
 
     /**
-     * create DataAssemblyOptionsArray and ServiceOptionsArray, which are neccessary for PEAOptions
+     * create DataAssemblyOptionsArray and ServiceOptionsArray, which are necessary for PEAOptions
      * @param peaModel{PEAModel}
      * @private
      * @return {PiMAdParserInterface}
@@ -70,9 +88,9 @@ export class PiMAdParser {
     }
 
     /**
-     * @param dataAssemblyModels {ServiceModelModel[]}
      * @return {ServiceOptions[]}
      * @private
+     * @param serviceModels
      */
     private static createServiceOptionsArray(serviceModels: ServiceModel[]): ServiceOptions[]{
         const servicesOptionsArray: ServiceOptions[] = [];
@@ -102,8 +120,11 @@ export class PiMAdParser {
         const procedureOptionsArray: ProcedureOptions[] = [];
         procedureModels.forEach(procedure =>{
             const procedureName = procedure.name;
-            let isDefault: any, isSelfCompleting: any, procedureID='';
-            procedure.attributes.forEach((attribute: { name: any; value: string}) =>{
+            let isDefault = false;
+            let isSelfCompleting = false;
+            let procedureID = '';
+            
+            procedure.attributes.forEach((attribute: { name: string; value: string}) =>{
                 switch(attribute.name){
                     case ('IsSelfCompleting'):
                         isSelfCompleting = JSON.parse(attribute.value.toLocaleLowerCase());
@@ -128,8 +149,8 @@ export class PiMAdParser {
             const procedureOptions: ProcedureOptions = {
                 id: procedureID,
                 name: procedureName,
-                isDefault : isDefault as boolean,
-                isSelfCompleting: isSelfCompleting as boolean,
+                isDefault : isDefault,
+                isSelfCompleting: isSelfCompleting,
                 dataAssembly: procedureDataAssemblyOptions,
                 parameters: procedureParameters,
                 reportParameters: reportValues,
@@ -152,7 +173,7 @@ export class PiMAdParser {
         // Initializing baseDataAssemblyOptions, which will be filled during an iteration below
             const baseDataAssemblyOptions:
                 {
-                    [k: string]: any;
+                    [k: string]: unknown;
                     TagName: string;
                     TagDescription: string;
                 } =
@@ -174,25 +195,22 @@ export class PiMAdParser {
                     nodeId= cIData.nodeId.identifier;
                     namespaceIndex = cIData.nodeId.namespaceIndex;
                    // namespaceIndex = namespaceUri; // for testing
-                    const opcUaNodeOptions: OpcUaNodeOptions = {
+                    baseDataAssemblyOptions[dataItem.name as string] = {
                         nodeId: nodeId,
                         namespaceIndex: namespaceIndex,
                         dataType: dataType,
                     };
-                    baseDataAssemblyOptions[dataItem.name as string] = opcUaNodeOptions;
                 } else { // static
                     value = dataItem.value;
                     baseDataAssemblyOptions[dataItem.name as string] = value;
                 }
             });
-
-            // create dataAssemblyOptions with information collected above
-             const dataAssemblyOptions = {
-                name: dataAssemblyName,
-                metaModelRef: dataAssemblyInterfaceClass,
-                dataItems: baseDataAssemblyOptions
-            };
-        return dataAssemblyOptions;
+            
+        return {
+            name: dataAssemblyName,
+            metaModelRef: dataAssemblyInterfaceClass,
+            dataItems: baseDataAssemblyOptions
+        };
     }
 
 }

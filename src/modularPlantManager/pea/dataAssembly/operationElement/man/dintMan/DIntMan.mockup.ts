@@ -40,7 +40,7 @@ import {
 
 export function getDIntManMockupReferenceJSON(
 	namespace: number,
-	objectBrowseName: string) {
+	objectBrowseName: string): object {
 
 	return ({
 			...getOSLevelDAMockupReferenceJSON(namespace,objectBrowseName),
@@ -150,7 +150,7 @@ export class DIntManMockup {
 		});
 	}
 
-	public getDIntManMockupJSON() {
+	public getDIntManMockupJSON(): object {
 		return getDIntManMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
 			this.mockupNode.browseName.name as string);

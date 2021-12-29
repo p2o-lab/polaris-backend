@@ -22,19 +22,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-//MonAnaDrv.spec.json overlaps with bindrv
+
 import * as baseDataAssemblyOptions from '../anaDrv/monAnaDrv/MonAnaDrv.spec.json';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-
-import {Namespace, UAObject} from 'node-opcua';
 import {OpcUaConnection} from '../../../../connection';
 import {BinDrv} from './BinDrv';
 import {MockupServer} from '../../../../../_utils';
 import {BinDrvMockup} from './BinDrv.mockup';
-
-
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -45,7 +41,7 @@ const dataAssemblyOptions: DataAssemblyOptions = {
 };
 
 describe('BinDrv', () => {
-	//TODO maybe doesnt need to be tested that much, because already tested in Drv class more or less
+
 	describe('static', () => {
 		const emptyOPCUAConnection = new OpcUaConnection();
 		it('should create BinDrv',  () => {
@@ -82,17 +78,13 @@ describe('BinDrv', () => {
 	describe('dynamic', () => {
 		let mockupServer: MockupServer;
 		let connection: OpcUaConnection;
-		let mockup: BinDrvMockup;
 		let da1: BinDrv;
 
 		beforeEach(async function () {
 			this.timeout(10000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			mockup = new BinDrvMockup(
-				mockupServer.nameSpace,
-				mockupServer.rootObject,
-				'Variable');
+			new BinDrvMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});

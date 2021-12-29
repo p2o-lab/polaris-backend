@@ -28,8 +28,8 @@ import {OpcUaConnection} from '../../../connection';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptionsStatic from '../../../../../../tests/binmon_static.json';
-import {BinMon, IndicatorElement} from '../../indicatorElement';
+import * as baseDataAssemblyOptionsStatic from './WQC.spec.json';
+import {BinMon} from '../../indicatorElement';
 import {DataAssemblyController} from '../../DataAssemblyController';
 import {WQC} from './WQC';
 import * as baseDataAssemblyOptions from '../../indicatorElement/BinView/BinMon/BinMon.spec.json';
@@ -52,8 +52,10 @@ describe('WQCDA', () => {
 	};
 
 	describe('static WQC', () => {
-		let wqcObject: any;
-		let da: any;
+
+		let wqcObject: WQC;
+		let da: DataAssemblyController;
+
 		beforeEach(()=>{
 			const emptyOPCUAConnection = new OpcUaConnection();
 
@@ -69,11 +71,12 @@ describe('WQCDA', () => {
 		it('getter', async () => {
 			expect(wqcObject.WQC).to.equal(0);
 		});
-		//TODO: toJson();
 	});
 	describe('dynamic WQC', () => {
-		let wqcObject: any;
-		let da: any;
+
+		let wqcObject: WQC;
+		let da: DataAssemblyController;
+
 		beforeEach(()=>{
 			const emptyOPCUAConnection = new OpcUaConnection();
 			da = new DataAssemblyController(dataAssemblyOptions, emptyOPCUAConnection);
@@ -88,21 +91,17 @@ describe('WQCDA', () => {
 		it('getter', async () => {
 			expect(wqcObject.WQC).to.be.undefined;
 		});
-		//TODO: toJson();
 	});
 	describe('dynamic', () => {
+
 		let mockupServer: MockupServer;
 		let connection: OpcUaConnection;
-		let mockup: WQCDAMockup;
 
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			mockup = new WQCDAMockup(
-				mockupServer.nameSpace,
-				mockupServer.rootObject,
-				'Variable');
+			new WQCDAMockup( mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});

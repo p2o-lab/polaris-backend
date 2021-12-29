@@ -24,7 +24,7 @@
  */
 
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
-import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../../_extensions/wqcDA/WQCDA.mockup';
+import {getWQCDAMockupReferenceJSON} from '../../../_extensions/wqcDA/WQCDA.mockup';
 import {
 	getScaleSettingDAMockupReferenceJSON,
 	ScaleSettingDAMockup
@@ -39,7 +39,7 @@ import {IndicatorElementMockup} from '../../IndicatorElement.mockup';
 
 export function getAnaMonMockupReferenceJSON(
 	namespace: number,
-	objectBrowseName: string) {
+	objectBrowseName: string): object {
 	return (
 		{
 			...getWQCDAMockupReferenceJSON(namespace, objectBrowseName),
@@ -62,7 +62,7 @@ export class AnaMonMockup extends IndicatorElementMockup{
 	public scaleSettings: ScaleSettingDAMockup<DataType.Double>;
 	public unit: UnitDAMockup;
 	public osLevel: OSLevelDAMockup;
-	public limitMonitoring: LimitMonitoringDAMockup<any>;
+	public limitMonitoring: LimitMonitoringDAMockup<DataType.Double | DataType.Int32>;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
 
@@ -86,7 +86,7 @@ export class AnaMonMockup extends IndicatorElementMockup{
 		});
 	}
 
-	public getAnaMonInstanceMockupJSON() {
+	public getAnaMonInstanceMockupJSON(): object {
 		return getAnaMonMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
 			this.mockupNode.browseName.name as string);

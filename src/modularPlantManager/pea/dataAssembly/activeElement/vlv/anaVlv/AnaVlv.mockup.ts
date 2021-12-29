@@ -24,22 +24,16 @@
  */
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../../_extensions/wqcDA/WQCDA.mockup';
-import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../../../_extensions/osLevelDA/OSLevelDA.mockup';
 import {
 	getSourceModeDAMockupReferenceJSON,
 	SourceModeDAMockup
 } from '../../../_extensions/sourceModeDA/SourceModeDA.mockup';
-import {getOpModeDAMockupReferenceJSON, OpModeDAMockup} from '../../../_extensions/opModeDA/OpModeDA.mockup';
-import {getInterlockDAMockupReferenceJSON, InterlockDAMockup} from '../../../_extensions/interlockDA/InterlockDA.mockup';
-import {getResetDAMockupReferenceJSON, ResetDAMockup} from '../../../_extensions/resetDA/ResetDA.mockup';
-import {getActiveElementMockupReferenceJSON} from '../../ActiveElement.mockup';
 import {getVlvMockupReferenceJSON, VlvMockup} from '../Vlv.mockup';
 
 
 export function getAnaVlvMockupReferenceJSON(
 	namespace: number,
-	objectBrowseName: string) {
+	objectBrowseName: string): object {
 
 	return ({
 			...getVlvMockupReferenceJSON(namespace, objectBrowseName),
@@ -240,7 +234,7 @@ export class AnaVlvMockup extends VlvMockup{
 				get: (): Variant => {
 					return new Variant({dataType: DataType.Double, value: this.posMan});
 				},
-				set: (variant: Variant) => {
+				set: (variant: Variant): StatusCodes => {
 					this.posMan = parseFloat(variant.value);
 					return StatusCodes.Good;
 				},
@@ -292,7 +286,7 @@ export class AnaVlvMockup extends VlvMockup{
 		});
 	}
 
-	public getAnaVlvMockupJSON() {
+	public getAnaVlvMockupJSON(): object {
 		return getAnaVlvMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
 			this.mockupNode.browseName.name as string);

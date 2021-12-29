@@ -30,7 +30,6 @@ import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import * as baseDataAssemblyOptions from './AnaView.spec.json';
 import {MockupServer} from '../../../../_utils';
-import {Namespace, UAObject} from 'node-opcua';
 import {AnaView} from './AnaView';
 import {AnaViewMockup} from './AnaView.mockup';
 
@@ -65,7 +64,7 @@ describe('AnaView', () => {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			const mockup = new AnaViewMockup(mockupServer.nameSpace, mockupServer.rootObject,'Variable');
+			new AnaViewMockup(mockupServer.nameSpace, mockupServer.rootObject,'Variable');
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});

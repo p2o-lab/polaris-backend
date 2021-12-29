@@ -61,10 +61,7 @@ describe('LockView8', () => {
 			this.timeout(8000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			const mockup = new LockView8Mockup(
-				mockupServer.nameSpace,
-				mockupServer.rootObject,
-				'Variable');
+			new LockView8Mockup( mockupServer.nameSpace, mockupServer.rootObject,'Variable');
 
 			await mockupServer.start();
 			connection = new OpcUaConnection();

@@ -29,7 +29,7 @@ import {DataAssemblyControllerMockup} from '../DataAssemblyController.mockup';
 
 export function getOperationElementMockupReferenceJSON(
 	namespace: number,
-	objectBrowseName: string) {
+	objectBrowseName: string): object {
 	return (
 		{
 			...getOSLevelDAMockupReferenceJSON(namespace,objectBrowseName),
@@ -46,7 +46,7 @@ export class OperationElementMockup extends DataAssemblyControllerMockup {
 	}
 
 
-	public getOperationElementInstanceMockupJSON() {
+	public getOperationElementInstanceMockupJSON(): object {
 		return getOperationElementMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
 			this.mockupNode.browseName.name as string);
