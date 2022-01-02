@@ -24,7 +24,7 @@
  */
 
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaConnection, OpcUaDataItem} from '../../../../connection';
+import {OpcUaConnection, DataItem} from '../../../../connection';
 import {ServParam, ServParamRuntime} from '../ServParam';
 import {
 	ScaleSettings,
@@ -36,12 +36,12 @@ import {
 } from '../../../_extensions';
 
 export type DIntServParamRuntime = ServParamRuntime & ScaleSettingsRuntime & UnitDataAssemblyRuntime & ValueLimitationRuntime &{
-	VExt: OpcUaDataItem<number>;
-	VOp: OpcUaDataItem<number>;
-	VInt: OpcUaDataItem<number>;
-	VReq: OpcUaDataItem<number>;
-	VOut: OpcUaDataItem<number>;
-	VFbk: OpcUaDataItem<number>;
+	VExt: DataItem<number>;
+	VOp: DataItem<number>;
+	VInt: DataItem<number>;
+	VReq: DataItem<number>;
+	VOut: DataItem<number>;
+	VFbk: DataItem<number>;
 };
 
 export class DIntServParam extends ServParam {
@@ -56,23 +56,24 @@ export class DIntServParam extends ServParam {
 		this.scaleSettings = new ScaleSettings(this);
 		this.unitSettings = new UnitSettings(this);
 		this.valueLimitation = new ValueLimitation(this);
-		this.communication.VExt = this.createDataItem('VExt', 'write', 'number');
-		this.communication.VOp = this.createDataItem('VOp', 'write', 'number');
-		this.communication.VInt = this.createDataItem('VInt', 'read', 'number');
-		this.communication.VReq = this.createDataItem('VReq', 'read', 'number');
-		this.communication.VOut = this.createDataItem('VOut', 'read', 'number');
-		this.communication.VFbk = this.createDataItem('VFbk', 'read', 'number');
 
-		this.communication.VSclMin = this.createDataItem('VSclMin', 'read', 'number');
-		this.communication.VSclMax = this.createDataItem('VSclMax', 'read', 'number');
-		this.communication.VUnit = this.createDataItem('VUnit', 'read', 'number');
-		this.communication.VMin = this.createDataItem('VMin', 'read', 'number');
-		this.communication.VMax = this.createDataItem('VMax', 'read', 'number');
+		this.communication.VExt = this.createDataItem('VExt', 'number', 'write');
+		this.communication.VOp = this.createDataItem('VOp', 'number', 'write');
+		this.communication.VInt = this.createDataItem('VInt', 'number');
+		this.communication.VReq = this.createDataItem('VReq','number');
+		this.communication.VOut = this.createDataItem('VOut', 'number');
+		this.communication.VFbk = this.createDataItem('VFbk', 'number');
+
+		this.communication.VSclMin = this.createDataItem('VSclMin', 'number');
+		this.communication.VSclMax = this.createDataItem('VSclMax', 'number');
+		this.communication.VUnit = this.createDataItem('VUnit', 'number');
+		this.communication.VMin = this.createDataItem('VMin', 'number');
+		this.communication.VMax = this.createDataItem('VMax', 'number');
 
 		this.defaultReadDataItem = this.communication.VOut;
 		this.defaultReadDataItemType = 'number';
 
+		this.defaultWriteDataItem = this.communication.VExt;
 		this.defaultWriteDataItemType = 'number';
-		this.defaultWriteDataItem = this.communication.VExt; //TODO correct?
 	}
 }

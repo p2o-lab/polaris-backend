@@ -24,14 +24,14 @@
  */
 
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaConnection, OpcUaDataItem} from '../../../../connection';
+import {OpcUaConnection, DataItem} from '../../../../connection';
 import {ScaleSettings, ScaleSettingsRuntime, UnitDataAssemblyRuntime, UnitSettings} from '../../../_extensions';
 import {
 	InputElement, InputElementRuntime,
 } from '../../InputElement';
 
 export type DIntProcessValueInRuntime = InputElementRuntime & UnitDataAssemblyRuntime & ScaleSettingsRuntime & {
-	VExt: OpcUaDataItem<number>;
+	VExt: DataItem<number>;
 };
 
 export class DIntProcessValueIn extends InputElement {
@@ -41,14 +41,16 @@ export class DIntProcessValueIn extends InputElement {
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
-		this.communication.VExt = this.createDataItem('VExt', 'read');
 
 		this.unitSettings = new UnitSettings(this);
 		this.scaleSettings = new ScaleSettings(this);
 
+		this.communication.VExt = this.createDataItem('VExt', 'number');
+
 		this.defaultReadDataItem = this.communication.VExt;
 		this.defaultReadDataItemType = 'number';
-		this.defaultWriteDataItemType = 'number';
+
 		this.defaultWriteDataItem = this.communication.VExt;
+		this.defaultWriteDataItemType = 'number';
 	}
 }

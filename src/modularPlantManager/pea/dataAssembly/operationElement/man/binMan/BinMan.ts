@@ -24,16 +24,16 @@
  */
 
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaConnection, OpcUaDataItem} from '../../../../connection';
+import {OpcUaConnection, DataItem} from '../../../../connection';
 import {OperationElement, OperationElementRuntime} from '../../OperationElement';
 
 export type BinManRuntime = OperationElementRuntime & {
-	VMan: OpcUaDataItem<boolean>;
-	VRbk: OpcUaDataItem<boolean>;
-	VFbk: OpcUaDataItem<boolean>;
-	VOut: OpcUaDataItem<boolean>;
-	VState0: OpcUaDataItem<string>;
-	VState1: OpcUaDataItem<string>;
+	VMan: DataItem<boolean>;
+	VRbk: DataItem<boolean>;
+	VFbk: DataItem<boolean>;
+	VOut: DataItem<boolean>;
+	VState0: DataItem<string>;
+	VState1: DataItem<string>;
 };
 
 export class BinMan extends OperationElement {
@@ -42,13 +42,13 @@ export class BinMan extends OperationElement {
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
-		this.communication.VMan = this.createDataItem('VMan', 'write', 'boolean');
-		this.communication.VRbk = this.createDataItem('VRbk', 'read', 'boolean');
-		this.communication.VFbk = this.createDataItem('VFbk', 'read', 'boolean');
+		this.communication.VMan = this.createDataItem('VMan', 'boolean', 'write');
+		this.communication.VRbk = this.createDataItem('VRbk', 'boolean');
+		this.communication.VFbk = this.createDataItem('VFbk', 'boolean');
 
-		this.communication.VOut = this.createDataItem('VOut', 'read', 'boolean');
-		this.communication.VState0 = this.createDataItem('VState0', 'read', 'string');
-		this.communication.VState1 = this.createDataItem('VState1', 'read', 'string');
+		this.communication.VOut = this.createDataItem('VOut', 'boolean');
+		this.communication.VState0 = this.createDataItem('VState0', 'string');
+		this.communication.VState1 = this.createDataItem('VState1', 'string');
 
 		this.defaultReadDataItem = this.communication.VOut;
 		this.defaultReadDataItemType = 'boolean';

@@ -24,24 +24,22 @@
  */
 
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaConnection, OpcUaDataItem} from '../../../../connection';
+import {OpcUaConnection, DataItem} from '../../../../connection';
 import {
-	ScaleSettingsRuntime,
-	UnitDataAssemblyRuntime, ValueLimitation,
-	ValueLimitationRuntime
+	ScaleSettings, ScaleSettingsRuntime,
+	UnitDataAssemblyRuntime, UnitSettings,
+	ValueLimitation, ValueLimitationRuntime
 } from '../../../_extensions';
-import {ScaleSettings} from '../../../_extensions/scaleSettingsDA/ScaleSettings';
-import {UnitSettings} from '../../../_extensions/unitDA/UnitSettings';
 import {OperationElement, OperationElementRuntime} from '../../OperationElement';
 
 export type AnaManRuntime =
 	OperationElementRuntime & UnitDataAssemblyRuntime
 	& ValueLimitationRuntime & ScaleSettingsRuntime
 	& {
-	VOut: OpcUaDataItem<number>;
-	VRbk: OpcUaDataItem<number>;
-	VFbk: OpcUaDataItem<number>;
-	VMan: OpcUaDataItem<number>;
+	VOut: DataItem<number>;
+	VRbk: DataItem<number>;
+	VFbk: DataItem<number>;
+	VMan: DataItem<number>;
 };
 
 export class AnaMan extends OperationElement {
@@ -53,10 +51,10 @@ export class AnaMan extends OperationElement {
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
-		this.communication.VOut = this.createDataItem('VOut', 'read');
-		this.communication.VRbk = this.createDataItem('VRbk', 'read');
-		this.communication.VFbk = this.createDataItem('VFbk','read');
-		this.communication.VMan = this.createDataItem('VMan', 'write');
+		this.communication.VOut = this.createDataItem('VOut', 'number');
+		this.communication.VRbk = this.createDataItem('VRbk', 'number');
+		this.communication.VFbk = this.createDataItem('VFbk','number');
+		this.communication.VMan = this.createDataItem('VMan', 'number','write');
 
 		this.unitSettings = new UnitSettings(this);
 		this.scaleSettings = new ScaleSettings(this);

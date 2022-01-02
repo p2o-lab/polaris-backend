@@ -57,11 +57,11 @@ export interface OpcUaConnectionSettings{
 }
 
 export interface OpcUaSecuritySettings{
-	securityMode: OpcUaSecurityModes;
+	securityMode: OpcUaMessageSecurityModes;
 	securityPolicy: OpcUaSecurityPolicies;
 }
 
-export enum OpcUaSecurityModes {
+export enum OpcUaMessageSecurityModes {
 	'None',
 	'Sign',
 	'SignAndEncrypt'
@@ -84,6 +84,13 @@ export enum OpcUaSecurityPolicies {
 export interface OpcUaAuthenticationSettings{
 	userCredentials?: { userName: string; password: string};
 	certificate?: never;
+}
+
+export interface OpcUaConnectionSettingsInfo{
+	endpointUrl: string;
+	securityPolicy: string;
+	securityMode: string;
+	userIdentityInfo: string;
 }
 
 /**
@@ -114,8 +121,8 @@ export class OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionEm
 
 	private endpoint!: string;
 	private userIdentitySetting!: UserIdentityInfo;
-	private securityMode: MessageSecurityMode = MessageSecurityMode.None;
-	private securityPolicy: SecurityPolicy = SecurityPolicy.None;
+	private securityMode: OpcUaMessageSecurityModes = OpcUaMessageSecurityModes.None;
+	private securityPolicy: OpcUaSecurityPolicies = OpcUaSecurityPolicies.None;
 
 	private namespaceArray: string[] = [];
 	private session: ClientSession | undefined;
@@ -126,7 +133,6 @@ export class OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionEm
 
 	constructor() {
 		super();
-
 	}
 
 	public initialize(connectionSettings: OpcUaConnectionSettings): void {
@@ -148,6 +154,10 @@ export class OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionEm
 			this.logger.warn('Connection is not initialized.');
 			throw new Error('Connection is not initialized.');
 		}
+		if (!this.isConnected()) {
+			this.logger.warn('Connection is active.');
+			throw new Error('Connection is active.');
+		}
 		this.endpoint = connectionSettings.endpoint;
 		this.setAuthenticationSettings(connectionSettings.authenticationSettings || {});
 
@@ -155,7 +165,7 @@ export class OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionEm
 		if (securitySettings) {
 			this.setSecuritySettings(securitySettings);
 		} else {
-			this.setSecuritySettings({securityMode: OpcUaSecurityModes.None, securityPolicy: OpcUaSecurityPolicies.None});
+			this.setSecuritySettings({securityMode: OpcUaMessageSecurityModes.None, securityPolicy: OpcUaSecurityPolicies.None});
 		}
 	}
 
@@ -172,12 +182,21 @@ export class OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionEm
 		return this.endpoint;
 	}
 
+	public get settingsInfo(): OpcUaConnectionSettingsInfo {
+		return {
+			endpointUrl: this.endpointUrl,
+			securityPolicy: OpcUaSecurityPolicies[this.securityPolicy],
+			securityMode: OpcUaMessageSecurityModes[this.securityMode],
+			userIdentityInfo: (this.userIdentitySetting.type === UserTokenType.Anonymous)? 'Anonymous': 'User',
+		};
+	}
+
 	/**
 	 * Set SecuritySettings of connection
 	 */
 	public setSecuritySettings(newSettings: OpcUaSecuritySettings): void {
-		this.securityMode = MessageSecurityMode[OpcUaSecurityModes[newSettings.securityMode] as keyof typeof MessageSecurityMode];
-		this.securityPolicy = SecurityPolicy[OpcUaSecurityModes[newSettings.securityPolicy] as keyof typeof SecurityPolicy];
+		this.securityMode = newSettings.securityMode;
+		this.securityPolicy = newSettings.securityPolicy;
 	}
 
 
@@ -274,7 +293,8 @@ export class OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionEm
 	 * @returns {Promise<DataValue | undefined>}
 	 */
 	public async readNode(identifier: string, namespace: string):  Promise<DataValue | undefined> {
-		return await this.session?.read({nodeId: this.resolveNodeId(identifier, namespace)});
+		const resolvedID = this.resolveNodeId(identifier, namespace);
+		return await this.session?.read({nodeId: resolvedID });
 	}
 
 	/**
@@ -316,14 +336,23 @@ export class OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionEm
 	 * Add Node to the connection and subscription groups
 	 * @returns {string}
 	 */
-	public addNodeToMonitoring(identifier: string, namespace: string, ): string {
+	public addNodeToMonitoring(identifier: string, namespace: string): string {
 
 		const nodeIdResolved = this.resolveNodeId(identifier, namespace);
 
 		const monitoredItemKey = nodeIdResolved.toString();
+		// TODO: in case of same identifier in different namespaces identifier as Map key might be a problem
 		this.nodes.set(identifier, monitoredItemKey);
 
 		return monitoredItemKey;
+	}
+
+	/**
+	 * Add Node to the connection and subscription groups
+	 * @returns {string}
+	 */
+	public removeNodeFromMonitoring(identifier: string): void {
+		this.nodes.delete(identifier);
 	}
 
 	public async startMonitoring(samplingInterval = 100): Promise<EventEmitter> {
@@ -342,13 +371,15 @@ export class OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionEm
 				samplingInterval,
 				discardOldest: true,
 				queueSize: 10
-			}, TimestampsToReturn.Both)
-		;
+			}, TimestampsToReturn.Both);
+
 		monitoredItemGroup.on('changed', (monitoredItem: ClientMonitoredItemBase, dataValue: DataValue) => {
 				this.logger.trace(`[${this.id}] ${monitoredItem.itemToMonitor.nodeId.toString()} changed to ${dataValue}`);
 				this.eventEmitter.emit(monitoredItem.itemToMonitor.nodeId.toString(), dataValue);
 			});
+
 		await monitoredItemGroup.setMonitoringMode(MonitoringMode.Reporting);
+		
 		return this.eventEmitter;
 	}
 
@@ -357,7 +388,6 @@ export class OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionEm
 			this.client.removeAllListeners('close')
 				.removeAllListeners('connection_lost');
 		}
-		return Promise.resolve();
 	}
 
 
@@ -369,6 +399,14 @@ export class OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionEm
 		this.nodes.clear();
 	}
 
+	private getNodeOpcUaMessageSecurityMode(): MessageSecurityMode{
+		return MessageSecurityMode[OpcUaMessageSecurityModes[this.securityMode] as keyof typeof MessageSecurityMode];
+	}
+
+	private getNodeOpcUaSecurityPolicy(): SecurityPolicy{
+		return SecurityPolicy[OpcUaMessageSecurityModes[this.securityPolicy] as keyof typeof SecurityPolicy];
+	}
+
 	private createClient(): void {
 		const connectionStrategy = {
 			initialDelay: 50,
@@ -378,8 +416,8 @@ export class OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionEm
 		this.client = OPCUAClient.create({
 				applicationName: 'NodeOPCUA-Client',
 				endpointMustExist: false,
-				securityMode: this.securityMode,
-				securityPolicy: this.securityPolicy,
+				securityMode: this.getNodeOpcUaMessageSecurityMode(),
+				securityPolicy: this.getNodeOpcUaSecurityPolicy(),
 				connectionStrategy: connectionStrategy,
 			})
 			.on('close', async () => {

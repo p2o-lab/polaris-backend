@@ -23,52 +23,30 @@
  * SOFTWARE.
  */
 
-import {OpcUaNodeOptions} from '@p2olab/polaris-interface';
 import {OpcUaConnection} from './OpcUaConnection';
 
 import {DataType} from 'node-opcua-client';
-import {DataItem} from './DataItem';
-import {catDataItem} from '../../../logging';
+import {DynamicDataItem} from './DataItem';
+import {DynamicDataItemOptions} from './DataItemFactory';
 
-export class OpcUaDataItem<T> extends DataItem<T> {
+export class OpcUaDataItem<T extends string | number | boolean> extends DynamicDataItem<T> {
 
-	// this variable contains the *namespace url* of the node
 	public namespaceIndex = '';
-	// node id of the node as string (e.g. 's=myNode2' or 'i=12')
 	public nodeId = '';
 	private connection!: OpcUaConnection;
 
-	public static createFromOptions<type extends number | string | boolean>(
-		options: OpcUaNodeOptions, connection: OpcUaConnection,
-		access: 'read' | 'write', type: 'number' | 'string' | 'boolean' = 'string'): OpcUaDataItem<type> {
-		const item = new OpcUaDataItem<type>();
 
-		if (options) {
-			if (options.value !== undefined) {
-				if (type === 'number' && (typeof options.value === 'string')) {
-					item.value = parseFloat(options.value) as type;
-				} else if (type === 'string') {
-					item.value = options.value.toString() as type;
-				} else if (type === 'boolean') {
-					item.value = !!options.value as type;
-				} else {
-					item.value = options.value as type;
-				}
-			}
-			item.dataType = options.dataType;
+	constructor(options: DynamicDataItemOptions, opcUaConnection: OpcUaConnection) {
+		super(options);
 
-			item.namespaceIndex = options.namespaceIndex;
-			item.nodeId = options.nodeId;
-			if ((!item.nodeId || !item.namespaceIndex) && !item.value) {
-				catDataItem.warn(`At least node id or value have to be specified during parsing of DataItem: ${JSON.stringify(options)}`);
-			}
-		}
-		item.access = access;
-		item.connection = connection;
-		return item;
+		this.namespaceIndex = options.dynamicDataItemOptions.namespaceIndex;
+		this.nodeId = options.dynamicDataItemOptions.nodeId;
+
+		this.connection = opcUaConnection;
 	}
 
-	public async subscribe(): Promise<OpcUaDataItem<T>> {
+
+	public async subscribe(): Promise<void> {
 		const dataItemKey = this.connection.addNodeToMonitoring(this.nodeId, this.namespaceIndex);
 		this.connection.eventEmitter.on(dataItemKey,
 			(dataValue) => {
@@ -77,27 +55,30 @@ export class OpcUaDataItem<T> extends DataItem<T> {
 				this.value = dataValue.value.value;
 				this.dataType = DataType[dataValue.value.dataType];
 				this.timestamp = dataValue.serverTimestamp;
-				this.emit('changed', {value: this.value, timestamp: this.timestamp, nodeId: this.nodeId});
+				this.emit('changed', {value: this.value, timestamp: this.timestamp || new Date()});
 			});
 
-		// //set timeout
-		// await new Promise((resolve, reject) => {
-		// 	setTimeout(()=> reject(new Error(`Timeout: Could not subscribe to ${this.nodeId}`)),3000);
-		// 	this.on('changed', resolve);
-		// });
-		this.logger.info(`subscribed to Data Item ${this.nodeId}`);
-		return this;
+		this.logger.info(`subscribed to DataItem ${this.nodeId}`);
 	}
 
-	public async write(value: number | string | boolean): Promise<void> {
+	public async unsubscribe(): Promise<void> {
+		this.removeAllListeners();
+		this.connection.removeNodeFromMonitoring(this.nodeId);
+		this.logger.info(`unsubscribed from DataItem ${this.nodeId}`);
+	}
+
+	public async write<T extends number | string | boolean>(value: T): Promise<void> {
+		if (!this.writable) {
+			throw new Error('DataItem not writable.');
+		}
 		this.logger.info(`write: ${value} to ${this.nodeId}`);
 		return this.connection.writeNode(this.nodeId, this.namespaceIndex, value, this.dataType);
 	}
 
 	/**
-	 * Reads the OpcUA DataItem of the DataItem and use the results for initializing the DataItem
+	 * Reads the OpcUA DataItem of the DataItem
 	 */
-	public async read(): Promise<T | undefined> {
+	public async read(): Promise<T> {
 		const result = await this.connection.readNode(this.nodeId, this.namespaceIndex);
 		if (!result) {
 			throw new Error(`Could not read ${this.nodeId.toString()}`);
@@ -108,7 +89,7 @@ export class OpcUaDataItem<T> extends DataItem<T> {
 		}
 		this.value = result.value.value;
 		this.timestamp = result.serverTimestamp || new Date();
-		this.dataType = DataType[result.value.dataType];
+		//this.dataType = DataType[result.value.dataType];
 		this.logger.debug(`[${this.connection.id}] initialized Variable: ${this.nodeId.toString()} - ${this.value}`);
 		return this.value;
 	}

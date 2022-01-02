@@ -28,22 +28,27 @@ import {OpcUaConnection} from '../../../connection';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptionsStatic from './WQC.spec.json';
 import {BinMon} from '../../indicatorElement';
 import {DataAssemblyController} from '../../DataAssemblyController';
 import {WQC} from './WQC';
-import * as baseDataAssemblyOptions from '../../indicatorElement/BinView/BinMon/BinMon.spec.json';
+import * as baseDataAssemblyOptions from './WQC.spec.json';
 import {MockupServer} from '../../../../_utils';
 import {WQCDAMockup} from './WQCDA.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
+const staticWQC = {
+	TagName: 'Variable',
+	TagDescription: 'Test',
+	WQC: { value: '255'}
+};
+
 describe('WQCDA', () => {
 	const dataAssemblyOptionsStatic: DataAssemblyOptions = {
 		name: 'Variable',
 		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/BinMon',
-		dataItems: baseDataAssemblyOptionsStatic
+		dataItems: staticWQC
 	};
 	const dataAssemblyOptions: DataAssemblyOptions = {
 		name: 'Variable',
@@ -60,16 +65,16 @@ describe('WQCDA', () => {
 			const emptyOPCUAConnection = new OpcUaConnection();
 
 			da = new DataAssemblyController(dataAssemblyOptionsStatic, emptyOPCUAConnection);
-			wqcObject = new WQC(da);
 		});
 
 		it('should create WQC', async () => {
-			expect(wqcObject.wqc).to.equal(0);
-			expect((da as BinMon).communication.WQC).to.be.undefined;
+			wqcObject = new WQC(da);
+			expect((da as BinMon).communication.WQC).to.be.exist;
 		});
 
 		it('getter', async () => {
-			expect(wqcObject.WQC).to.equal(0);
+			wqcObject = new WQC(da);
+			expect(wqcObject.WQC).to.equal(255);
 		});
 	});
 	describe('dynamic WQC', () => {
@@ -80,16 +85,16 @@ describe('WQCDA', () => {
 		beforeEach(()=>{
 			const emptyOPCUAConnection = new OpcUaConnection();
 			da = new DataAssemblyController(dataAssemblyOptions, emptyOPCUAConnection);
-			wqcObject = new WQC(da);
 		});
 
-		it('should create OSLevel', async () => {
-			expect(wqcObject.wqc).to.be.undefined;
-			expect((da as BinMon).communication.WQC).to.not.be.undefined;
+		it('should create WQC', async () => {
+			wqcObject = new WQC(da);
+			expect((da as BinMon).communication.WQC).to.exist;
 		});
 
 		it('getter', async () => {
-			expect(wqcObject.WQC).to.be.undefined;
+			wqcObject = new WQC(da);
+			expect(wqcObject.WQC).to.equal(255);
 		});
 	});
 	describe('dynamic', () => {
@@ -116,11 +121,10 @@ describe('WQCDA', () => {
 
 		it('should subscribe successfully', async () => {
 			const da1 = new DataAssemblyController(dataAssemblyOptions, connection) as any;
-			new WQC(da1);
-			const pv = da1.subscribe();
+			const wqcObject = new WQC(da1);
+			da1.subscribe();
 			await connection.startMonitoring();
-			await pv;
-			expect(da1.communication.WQC.value).to.equal(0);
+			expect(wqcObject.WQC).to.equal(255);
 		}).timeout(5000);
 	});
 });

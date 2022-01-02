@@ -37,11 +37,11 @@ export class DIntView extends IndicatorElement {
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
-		this.communication.V = this.createDataItem('V', 'read');
 
 		this.unitSettings = new UnitSettings(this);
-
 		this.scaleSettings = new ScaleSettings(this);
+
+		this.communication.V = this.createDataItem('V', 'number');
 
 		this.defaultReadDataItem = this.communication.V;
 		this.defaultReadDataItemType = 'number';

@@ -24,14 +24,15 @@
  */
 
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {SourceModeRuntime, WQCRuntime} from '../../../_extensions';
+import {
+	SourceModeController, SourceModeRuntime,
+	WQC, WQCRuntime
+} from '../../../_extensions';
 import {DIntMan, DIntManRuntime} from './DIntMan';
-import {OpcUaConnection, OpcUaDataItem} from '../../../../connection';
-import {SourceModeController} from '../../../_extensions/sourceModeDA/SourceModeController';
-import {WQC} from '../../../_extensions/wqcDA/WQC';
+import {OpcUaConnection, DataItem} from '../../../../connection';
 
 export type DIntManIntRuntime = DIntManRuntime & SourceModeRuntime & WQCRuntime & {
-	VInt: OpcUaDataItem<number>;
+	VInt: DataItem<number>;
 };
 
 export class DIntManInt extends DIntMan {
@@ -44,9 +45,8 @@ export class DIntManInt extends DIntMan {
 		super(options, connection);
 
 		this.sourceMode = new SourceModeController(this);
-
 		this.wqc = new WQC(this);
 
-		this.communication.VInt = this.createDataItem('VInt', 'read');
+		this.communication.VInt = this.createDataItem('VInt', 'number');
 	}
 }

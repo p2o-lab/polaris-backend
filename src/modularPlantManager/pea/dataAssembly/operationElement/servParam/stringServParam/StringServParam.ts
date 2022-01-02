@@ -24,16 +24,16 @@
  */
 
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaConnection, OpcUaDataItem} from '../../../../connection';
+import {OpcUaConnection, DataItem} from '../../../../connection';
 import {ServParam, ServParamRuntime} from '../ServParam';
 
 export type StringServParamRuntime = ServParamRuntime & {
-	VExt: OpcUaDataItem<string>;
-	VOp: OpcUaDataItem<string>;
-	VInt: OpcUaDataItem<string>;
-	VReq: OpcUaDataItem<string>;
-	VOut: OpcUaDataItem<string>;
-	VFbk: OpcUaDataItem<string>;
+	VExt: DataItem<string>;
+	VOp: DataItem<string>;
+	VInt: DataItem<string>;
+	VReq: DataItem<string>;
+	VOut: DataItem<string>;
+	VFbk: DataItem<string>;
 };
 
 export class StringServParam extends ServParam {
@@ -42,17 +42,18 @@ export class StringServParam extends ServParam {
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
 
-		this.communication.VExt = this.createDataItem('VExt', 'write', 'string');
-		this.communication.VOp = this.createDataItem('VOp', 'write', 'string');
-		this.communication.VInt = this.createDataItem('VInt', 'read', 'string');
-		this.communication.VReq = this.createDataItem('VReq', 'read', 'string');
-		this.communication.VOut = this.createDataItem('VOut', 'read', 'string');
-		this.communication.VFbk = this.createDataItem('VFbk', 'read', 'string');
+		this.communication.VExt = this.createDataItem('VExt', 'string', 'write');
+		this.communication.VOp = this.createDataItem('VOp', 'string', 'write');
+		this.communication.VInt = this.createDataItem('VInt', 'string');
+		this.communication.VReq = this.createDataItem('VReq', 'string');
+		this.communication.VOut = this.createDataItem('VOut', 'string');
+		this.communication.VFbk = this.createDataItem('VFbk', 'string');
 
 		this.defaultReadDataItem = this.communication.VOut;
 		this.defaultReadDataItemType = 'string';
 
+
+		this.defaultWriteDataItem = this.communication.VExt;
 		this.defaultWriteDataItemType = 'string';
-		this.defaultWriteDataItem = this.communication.VExt; //TODO correct?
 	}
 }

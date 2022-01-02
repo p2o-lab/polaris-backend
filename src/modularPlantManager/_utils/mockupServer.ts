@@ -26,7 +26,7 @@
 
 import {OPCUAServer} from 'node-opcua-server';
 import * as net from 'net';
-import {AddressSpace, DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
+import {AccessLevelFlag, AddressSpace, DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 import {catMockupServer} from '../../logging';
 
 function validateUser(username: string, password: string): boolean {
@@ -127,32 +127,32 @@ export class MockupServer {
 			throw new Error('AddressSpace is undefined.');
 		}
 
-		const namespace: Namespace = addressSpace.getOwnNamespace();
-
 		this.namespace = addressSpace.registerNamespace('urn:P2OLab:NodeOPCUA-Server');
 		// declare a new object
-		const myMockup = namespace.addObject({
+		const myMockup = this.namespace.addObject({
 			organizedBy: addressSpace.rootFolder.objects,
 			browseName: 'MockupServer'
 		});
 		this.rootComponent = myMockup;
 
-		namespace.addVariable({
+		this.namespace.addVariable({
 			componentOf: myMockup,
 			browseName: 'ExternalTrigger',
-			nodeId: 'ns=1;s=trigger',
+			nodeId: 'ns=2;s=trigger',
 			dataType: 'Boolean',
+			accessLevel: AccessLevelFlag.CurrentRead,
 			value: {
 				get: (): Variant => {
 					return new Variant({dataType: DataType.Boolean, value: this.externalTrigger});
 				}
 			}
 		});
-		namespace.addVariable({
+		this.namespace.addVariable({
 			componentOf: myMockup,
 			browseName: 'TestNumber',
-			nodeId: 'ns=1;s=testNumber',
+			nodeId: 'ns=2;s=testNumber',
 			dataType: 'Float',
+			accessLevel: AccessLevelFlag.CurrentRead + AccessLevelFlag.CurrentWrite,
 			value: {
 				get: (): Variant => {
 					return new Variant({dataType: DataType.Float, value: this.testNumber});

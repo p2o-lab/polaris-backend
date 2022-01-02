@@ -24,19 +24,19 @@
  */
 
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaConnection, OpcUaDataItem} from '../../../../../connection';
+import {OpcUaConnection, DataItem} from '../../../../../connection';
 import {FeedbackMonitoring, FeedbackMonitoringRuntime} from '../../../../_extensions';
 import {AnaDrv, AnaDrvRuntime} from '../AnaDrv';
 
 export type MonAnaDrvRuntime = AnaDrvRuntime & FeedbackMonitoringRuntime & {
-	RpmErr: OpcUaDataItem<number>;
+	RpmErr: DataItem<number>;
 
-	RpmAHEn: OpcUaDataItem<boolean>;
-	RpmAHLim: OpcUaDataItem<number>;
-	RpmAHAct: OpcUaDataItem<boolean>;
-	RpmALEn: OpcUaDataItem<boolean>;
-	RpmALLim: OpcUaDataItem<number>;
-	RpmALAct: OpcUaDataItem<boolean>;
+	RpmAHEn: DataItem<boolean>;
+	RpmAHLim: DataItem<number>;
+	RpmAHAct: DataItem<boolean>;
+	RpmALEn: DataItem<boolean>;
+	RpmALLim: DataItem<number>;
+	RpmALAct: DataItem<boolean>;
 };
 
 export class MonAnaDrv extends AnaDrv {
@@ -48,14 +48,14 @@ export class MonAnaDrv extends AnaDrv {
 
 		this.feedbackMonitoring = new FeedbackMonitoring(this);
 
-		this.communication.RpmErr = this.createDataItem('RpmErr', 'read') as OpcUaDataItem<number>;
+		this.communication.RpmErr = this.createDataItem('RpmErr', 'number');
 
-		this.communication.RpmAHEn = this.createDataItem('RpmAHEn', 'read',);
-		this.communication.RpmAHLim = this.createDataItem('RpmAHLim', 'write');
-		this.communication.RpmAHAct = this.createDataItem('RpmAHAct', 'read');
+		this.communication.RpmAHEn = this.createDataItem('RpmAHEn', 'boolean');
+		this.communication.RpmAHLim = this.createDataItem('RpmAHLim', 'number', 'write');
+		this.communication.RpmAHAct = this.createDataItem('RpmAHAct', 'boolean');
 
-		this.communication.RpmALEn = this.createDataItem('RpmALEn', 'read');
-		this.communication.RpmALLim = this.createDataItem('RpmALLim', 'write');
-		this.communication.RpmALAct = this.createDataItem('RpmALAct', 'read');
+		this.communication.RpmALEn = this.createDataItem('RpmALEn', 'boolean');
+		this.communication.RpmALLim = this.createDataItem('RpmALLim', 'number', 'write');
+		this.communication.RpmALAct = this.createDataItem('RpmALAct', 'boolean');
 	}
 }

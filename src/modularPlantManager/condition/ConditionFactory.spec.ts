@@ -38,7 +38,7 @@ const expect = chai.expect;
  * Test for [[Condition]]
  */
 describe('ConditionFactory', () => {
-	describe('without test server', () => { // TODO: Add Test
+	describe('without test server', () => {
 
 		it('should provide TrueCondition if type is undefined', () => {
 			expect(ConditionFactory.create({} as ConditionOptions, [])).to.instanceOf(TrueCondition);

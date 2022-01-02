@@ -26,12 +26,12 @@
 import {
 	CommandEnableInterface, DataAssemblyOptions,
 	OperationMode,
-	ParameterInterface, PEAInterface, PEAOptions, ServerSettingsOptions,
+	ParameterInterface, PEAInterface, PEAOptions,
 	ServiceCommand,
 	ServiceInterface, ServiceOptions, ServiceSourceMode,
 	VariableChange
 } from '@p2olab/polaris-interface';
-import {DataItemEmitter, OpcUaConnection, OpcUaDataItem} from './connection';
+import {DataItem, DataItemEmitter, OpcUaConnection, OpcUaConnectionSettings, OpcUaDataItem} from './connection';
 import {
 	DataAssemblyController,
 	DataAssemblyControllerFactory,
@@ -175,13 +175,13 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 
 	/**
 	 * recreate OPCUAConnection and dAControllers with new settings.
-	 * @param options {ServerSettingsOptions}
+	 * @param options {OpcUaConnectionSettings}
 	 */
-	public updateConnection(options: ServerSettingsOptions): void{
+	public updateConnection(options: OpcUaConnectionSettings): void{
 		this.connection = new OpcUaConnection()
 			.on('connected', () => this.emit('connected'))
 			.on('disconnected', () => this.emit('disconnected'));
-		this.connection.initialize({endpoint: options.serverUrl});
+		this.connection.initialize(options);
 		// rebuild dAControllers with new connection
 		this.variables = this.options.dataAssemblies
 			.map((variableOptions: DataAssemblyOptions) =>
@@ -262,8 +262,8 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 	/**
 	 * get current connection settings of PEAController
 	 */
-	public getCurrentConnectionSettings(): object{
-		return {serverUrl: this.connection.endpointUrl};
+	public getCurrentConnectionSettings(): object {
+		return this.connection.settingsInfo;
 	}
 
 
@@ -349,7 +349,7 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 					this.logger.info(`[${this.id}] variable changed: ${JSON.stringify(variable.toJson())}`);
 					const entry: VariableChange = {
 						timestampPOL: new Date(),
-						timestampPEA: data.timestamp,
+						timestampPEA: data.timestamp!,
 						pea: this.id,
 						variable: variable.name,
 						value: data.value,

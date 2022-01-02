@@ -23,28 +23,28 @@
  * SOFTWARE.
  */
 
-import {OpcUaDataItem} from '../../../connection';
+import {DataItem} from '../../../connection';
 import {BaseDataAssemblyRuntime} from '../../DataAssemblyController';
 
 export type LimitMonitoringRuntime = BaseDataAssemblyRuntime & {
-	VAHEn: OpcUaDataItem<boolean>;
-	VAHLim: OpcUaDataItem<number>;
-	VAHAct: OpcUaDataItem<boolean>;
-	VWHEn: OpcUaDataItem<boolean>;
-	VWHLim: OpcUaDataItem<number>;
-	VWHAct: OpcUaDataItem<boolean>;
-	VTHEn: OpcUaDataItem<boolean>;
-	VTHLim: OpcUaDataItem<number>;
-	VTHAct: OpcUaDataItem<boolean>;
-	VALEn: OpcUaDataItem<boolean>;
-	VALLim: OpcUaDataItem<number>;
-	VALAct: OpcUaDataItem<boolean>;
-	VWLEn: OpcUaDataItem<boolean>;
-	VWLLim: OpcUaDataItem<number>;
-	VWLAct: OpcUaDataItem<boolean>;
-	VTLEn: OpcUaDataItem<boolean>;
-	VTLLim: OpcUaDataItem<number>;
-	VTLAct: OpcUaDataItem<boolean>;
+	VAHEn: DataItem<boolean>;
+	VAHLim: DataItem<number>;
+	VAHAct: DataItem<boolean>;
+	VWHEn: DataItem<boolean>;
+	VWHLim: DataItem<number>;
+	VWHAct: DataItem<boolean>;
+	VTHEn: DataItem<boolean>;
+	VTHLim: DataItem<number>;
+	VTHAct: DataItem<boolean>;
+	VALEn: DataItem<boolean>;
+	VALLim: DataItem<number>;
+	VALAct: DataItem<boolean>;
+	VWLEn: DataItem<boolean>;
+	VWLLim: DataItem<number>;
+	VWLAct: DataItem<boolean>;
+	VTLEn: DataItem<boolean>;
+	VTLLim: DataItem<number>;
+	VTLAct: DataItem<boolean>;
 };
 
 export class LimitMonitoring {
@@ -56,24 +56,24 @@ export class LimitMonitoring {
 	}
 
 	private initialize(): void{
-		this.dAController.communication.VAHEn = this.dAController.createDataItem('VAHEn', 'read');
-		this.dAController.communication.VAHLim = this.dAController.createDataItem('VAHLim', 'write');
-		this.dAController.communication.VAHAct = this.dAController.createDataItem('VAHAct', 'read');
-		this.dAController.communication.VWHEn = this.dAController.createDataItem('VWHEn', 'read');
-		this.dAController.communication.VWHLim = this.dAController.createDataItem('VWHLim', 'write');
-		this.dAController.communication.VWHAct = this.dAController.createDataItem('VWHAct', 'read');
-		this.dAController.communication.VTHEn = this.dAController.createDataItem('VTHEn', 'read');
-		this.dAController.communication.VTHLim = this.dAController.createDataItem('VTHLim', 'write');
-		this.dAController.communication.VTHAct = this.dAController.createDataItem('VTHAct', 'read');
-		this.dAController.communication.VALEn = this.dAController.createDataItem('VALEn', 'read');
-		this.dAController.communication.VALLim = this.dAController.createDataItem('VALLim', 'write');
-		this.dAController.communication.VALAct = this.dAController.createDataItem('VALAct', 'read');
-		this.dAController.communication.VWLEn = this.dAController.createDataItem('VWLEn', 'read');
-		this.dAController.communication.VWLLim = this.dAController.createDataItem('VWLLim', 'write');
-		this.dAController.communication.VWLAct = this.dAController.createDataItem('VWLAct', 'read');
-		this.dAController.communication.VTLEn = this.dAController.createDataItem('VTLEn', 'read');
-		this.dAController.communication.VTLLim = this.dAController.createDataItem('VTLLim', 'write');
-		this.dAController.communication.VTLAct = this.dAController.createDataItem('VTLAct', 'read');
+		this.dAController.communication.VAHEn = this.dAController.createDataItem('VAHEn', 'boolean');
+		this.dAController.communication.VAHLim = this.dAController.createDataItem('VAHLim', 'number', 'write');
+		this.dAController.communication.VAHAct = this.dAController.createDataItem('VAHAct', 'boolean');
+		this.dAController.communication.VWHEn = this.dAController.createDataItem('VWHEn', 'boolean');
+		this.dAController.communication.VWHLim = this.dAController.createDataItem('VWHLim', 'number', 'write');
+		this.dAController.communication.VWHAct = this.dAController.createDataItem('VWHAct', 'boolean');
+		this.dAController.communication.VTHEn = this.dAController.createDataItem('VTHEn', 'boolean');
+		this.dAController.communication.VTHLim = this.dAController.createDataItem('VTHLim', 'number', 'write');
+		this.dAController.communication.VTHAct = this.dAController.createDataItem('VTHAct', 'boolean');
+		this.dAController.communication.VALEn = this.dAController.createDataItem('VALEn', 'boolean');
+		this.dAController.communication.VALLim = this.dAController.createDataItem('VALLim', 'number', 'write');
+		this.dAController.communication.VALAct = this.dAController.createDataItem('VALAct', 'boolean');
+		this.dAController.communication.VWLEn = this.dAController.createDataItem('VWLEn', 'boolean');
+		this.dAController.communication.VWLLim = this.dAController.createDataItem('VWLLim', 'number', 'write');
+		this.dAController.communication.VWLAct = this.dAController.createDataItem('VWLAct', 'boolean');
+		this.dAController.communication.VTLEn = this.dAController.createDataItem('VTLEn', 'boolean');
+		this.dAController.communication.VTLLim = this.dAController.createDataItem('VTLLim', 'number', 'write');
+		this.dAController.communication.VTLAct = this.dAController.createDataItem('VTLAct', 'boolean');
 	}
 
 }

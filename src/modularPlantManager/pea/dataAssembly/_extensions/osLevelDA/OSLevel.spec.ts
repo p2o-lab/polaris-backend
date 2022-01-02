@@ -68,7 +68,6 @@ describe('OSLevel', () => {
 			it('getter', async () => {
 				expect(osLevelObject.OSLevel).to.equal(0);
 			});
-			//TODO: toJson();
 		});
 		describe('dynamic OSLevel', () => {
 			let oslevelObject: any;
@@ -87,7 +86,6 @@ describe('OSLevel', () => {
 			it('getter', async () => {
 				expect(oslevelObject.OSLevel).to.be.undefined;
 			});
-			//TODO: toJson();
 		});
 	});
 	describe('dynamic', () => {

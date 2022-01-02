@@ -30,7 +30,7 @@ import {
 	ServiceInterface,
 	ServiceOptions, ServiceSourceMode
 } from '@p2olab/polaris-interface';
-import {OpcUaConnection} from '../../connection';
+import {DynamicDataItem, OpcUaConnection} from '../../connection';
 import {
 	controlEnableToJson, DataAssemblyControllerFactory,
 	InputElement, ServiceControl,
@@ -120,8 +120,7 @@ export class Service extends BaseService {
 	}
 
 	public get lastStatusChange(): Date {
-		if(this.serviceControl.communication.StateCur.timestamp) return this.serviceControl.communication.StateCur.timestamp;
-		else return new Date();
+		return (this.serviceControl.communication.StateCur as DynamicDataItem<number>)?.timestamp || new Date();
 	}
 
 	public get currentProcedure(): number | undefined {
@@ -321,7 +320,7 @@ export class Service extends BaseService {
 
 		// first set opMode and then set procedure
 		await this.setOperationMode();
-		await this.serviceControl.communication.ProcedureExt.write(procedure.id);
+		await (this.serviceControl.communication.ProcedureExt as DynamicDataItem<number>).write(procedure.id);
 	}
 
 	public getProcedureByNameOrDefault(procedureName: string): Procedure | undefined {
@@ -376,7 +375,7 @@ export class Service extends BaseService {
 		this.logger.debug(`[${this.qualifiedName}] Send command ${ServiceMtpCommand[command]}`);
 		await this.setOperationMode();
 
-		await this.serviceControl.communication.CommandExt.write(command);
+		await (this.serviceControl.communication.CommandExt as DynamicDataItem<number>).write(command);
 		this.logger.trace(`[${this.qualifiedName}] Command ${ServiceMtpCommand[command]} written`);
 	}
 

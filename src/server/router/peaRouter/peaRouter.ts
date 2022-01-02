@@ -50,8 +50,8 @@ const storage = multer.diskStorage({
 	destination: function (req: any, file: any, cb: any) {
 		cb(null, path.join('uploads/'));
 	},
-	filename: (req: any, file: { filename: string; originalName: any }, cb: (arg0: null, arg1: string) => void) => {
-		cb(null, file.originalName);
+	filename: (req: any, file: { filename: string; originalname: any }, cb: (arg0: null, arg1: string) => void) => {
+		cb(null, file.originalname);
 	}
 });
 const upload = multer({storage: storage});
@@ -157,7 +157,6 @@ peaRouter.get('/:peaId/getConnectionSettings', (req: Request, res: Response) => 
 		const body = peaController.getCurrentConnectionSettings();
 		res.status(200).send(body);
 	}catch (e) {
-		console.log(e);
 		res.status(500).send(e.toString());
 	}
 
@@ -176,7 +175,6 @@ peaRouter.post('/:peaId/updateConnectionSettings', asyncHandler(async (req: Requ
 		peaController.updateConnection(req.body);
 		res.status(200).send('"'+'Successfully updated the connection settings!'+'"');
 	} catch(e){
-		console.log(e);
 		res.status(500).send(e.toString());
 	}
 }));
@@ -230,7 +228,7 @@ peaRouter.post('/:peaId/disconnect', asyncHandler(async (req: Request, res: Resp
 }));
 
 /**
- * @api {delete} /:peaId    Delete PEAController  by ID
+ * @api {delete} /:peaId    Delete PEAController by ID
  * @apiName DeletePEA
  * @apiGroup PEAController
  * @apiParam {string} peaId    ID of PEAController to be deleted
@@ -248,7 +246,7 @@ peaRouter.delete('/:peaId', asyncHandler(async (req: Request, res: Response) => 
 }));
 
 /**
- * @api {delete} /:peaId    Delete PiMAdPEA  by identifier
+ * @api {delete} /:peaId    Delete PiMAdPEA by identifier
  * @apiName DeletePiMAdPEA
  * @apiGroup PiMAdPEA
  * @apiParam {string} pimadIdentifier

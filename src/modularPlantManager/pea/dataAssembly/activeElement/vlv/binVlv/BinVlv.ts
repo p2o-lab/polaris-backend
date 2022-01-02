@@ -24,11 +24,11 @@
 */
 
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaConnection, OpcUaDataItem} from '../../../../connection';
+import {OpcUaConnection, DataItem} from '../../../../connection';
 import {Vlv, VlvRuntime} from '../Vlv';
 
 export type BinVlvRuntime = VlvRuntime & {
-	Ctrl: OpcUaDataItem<boolean>;
+	Ctrl: DataItem<boolean>;
 };
 
 export class BinVlv extends Vlv {
@@ -37,6 +37,6 @@ export class BinVlv extends Vlv {
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
 
-		this.communication.Ctrl = this.createDataItem('Ctrl', 'read', 'boolean');
+		this.communication.Ctrl = this.createDataItem('Ctrl', 'boolean');
 	}
 }

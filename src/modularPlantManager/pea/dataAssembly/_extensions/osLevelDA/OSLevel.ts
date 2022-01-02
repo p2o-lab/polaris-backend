@@ -23,11 +23,11 @@
  * SOFTWARE.
  */
 
-import {OpcUaDataItem} from '../../../connection';
+import {DataItem} from '../../../connection';
 import {BaseDataAssemblyRuntime} from '../../DataAssemblyController';
 
 export interface OSLevelRuntime extends BaseDataAssemblyRuntime {
-	OSLevel: OpcUaDataItem<number>;
+	OSLevel: DataItem<number>;
 }
 
 export class OSLevel {
@@ -36,21 +36,10 @@ export class OSLevel {
 
 	constructor(dAController: any) {
 		this.dAController = dAController;
-		this.initialize();
-	}
-
-	private initialize(): void{
-		//handle static and dynamic variables
-		if(typeof this.dAController.options.dataItems.OSLevel == 'string'){
-			this.osLevel = Number(this.dAController.options.dataItems.OSLevel);
-		}
-		else{
-			this.dAController.communication.OSLevel = this.dAController.createDataItem('OSLevel', 'write');
-		}
+		this.dAController.communication.OSLevel = this.dAController.createDataItem('OSLevel', 'number', 'write');
 	}
 
 	get OSLevel(): number | undefined {
-		if(this.osLevel!=undefined) return this.osLevel; //static
-		else return this.dAController.communication.OSLevel.value; //dynamic
+		return this.dAController.communication.OSLevel.value;
 	}
 }

@@ -5,7 +5,7 @@
     "WQC": {
       "nodeId": "Variable.WQC",
       "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-      "dataType": "xs:IDREF"
+      "dataType": "Byte"
     },
     "OSLevel": {
       "nodeId": "Variable.OSLevel",

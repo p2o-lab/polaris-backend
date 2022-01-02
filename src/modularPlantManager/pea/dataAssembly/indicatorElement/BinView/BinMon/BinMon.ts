@@ -24,15 +24,15 @@
  */
 
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaConnection, OpcUaDataItem} from '../../../../connection';
+import {OpcUaConnection, DataItem} from '../../../../connection';
 import {BinView, BinViewRuntime} from '../BinView';
-import {OSLevel, OSLevelRuntime} from '../../../_extensions/osLevelDA/OSLevel';
+import {OSLevel, OSLevelRuntime} from '../../../_extensions';
 
 export type BinMonRuntime = BinViewRuntime & OSLevelRuntime & {
-	VFlutTi: OpcUaDataItem<number>;
-	VFlutEn: OpcUaDataItem<boolean>;
-	VFlutCnt: OpcUaDataItem<number>;
-	VFlutAct: OpcUaDataItem<boolean>;
+	VFlutTi: DataItem<number>;
+	VFlutEn: DataItem<boolean>;
+	VFlutCnt: DataItem<number>;
+	VFlutAct: DataItem<boolean>;
 };
 
 export class BinMon extends BinView {
@@ -46,9 +46,9 @@ export class BinMon extends BinView {
 		this.osLevel = new OSLevel(this);
 		
 
-		this.communication.VFlutTi = this.createDataItem('VFlutTi', 'read', 'number');
-		this.communication.VFlutEn = this.createDataItem('VFlutEn', 'write', 'boolean');
-		this.communication.VFlutCnt = this.createDataItem('VFlutCnt', 'read', 'number');
-		this.communication.VFlutAct = this.createDataItem('VFlutAct', 'read', 'boolean');
+		this.communication.VFlutTi = this.createDataItem('VFlutTi', 'number');
+		this.communication.VFlutEn = this.createDataItem('VFlutEn', 'boolean', 'write');
+		this.communication.VFlutCnt = this.createDataItem('VFlutCnt', 'number');
+		this.communication.VFlutAct = this.createDataItem('VFlutAct', 'boolean');
 	}
 }

@@ -23,12 +23,12 @@
  * SOFTWARE.
  */
 
-import {OpcUaDataItem} from '../../../connection';
+import {DataItem} from '../../../connection';
 import {BaseDataAssemblyRuntime} from '../../DataAssemblyController';
 import {UNIT} from './Unit';
 
 export interface UnitDataAssemblyRuntime extends BaseDataAssemblyRuntime {
-	VUnit: OpcUaDataItem<number>;
+	VUnit: DataItem<number>;
 }
 
 export class UnitSettings {
@@ -37,15 +37,11 @@ export class UnitSettings {
 
 	constructor(dAController: any) {
 		this.dAController = dAController;
-		this.initialize();
-	}
-
-	private initialize(): void{
-		this.dAController.communication.VUnit = this.dAController.createDataItem('VUnit', 'read');
+		this.dAController.communication.VUnit = this.dAController.createDataItem('VUnit', 'number');
 	}
 
 	get Unit(): string {
-		const unit = UNIT.find((item) => item.value === this.dAController.communication.VUnit?.value);
+		const unit = UNIT.find((item) => item.value === this.dAController.communication.VUnit.value);
 		return unit ? unit.unit : '';
 	}
 }

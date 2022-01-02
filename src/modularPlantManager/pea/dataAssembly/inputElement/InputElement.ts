@@ -28,7 +28,7 @@ import {
 	ParameterInterface,
 	ParameterOptions
 } from '@p2olab/polaris-interface';
-import {DataItem, OpcUaConnection} from '../../connection';
+import {BaseStaticDataItem, DataItem, DynamicDataItem, OpcUaConnection} from '../../connection';
 import {PEAController} from '../../PEAController';
 import {WQC, WQCRuntime} from '../_extensions';
 import {BaseDataAssemblyRuntime, DataAssemblyController} from '../DataAssemblyController';
@@ -56,10 +56,10 @@ export class InputElement extends DataAssemblyController {
 	 */
 	public async setParameter(paramValue: string | number | boolean, variable?: string): Promise<void> {
 		const dataItem: DataItem<any> | undefined = (variable) ?
-			//this.communication[variable as keyof InputElementOptions] : this.defaultWriteDataItem;
+			//this.communication[variable as keyof InputElementRuntime] : this.defaultWriteDataItem;
 			(this.communication as any)[variable] : this.defaultWriteDataItem;
 		catDataAssembly.debug(`Set Parameter: ${this.name} (${variable}) -> ${JSON.stringify(paramValue)}`);
-		await dataItem?.write(paramValue);
+		await (dataItem as DynamicDataItem<any>)?.write(paramValue);
 	}
 
 	public async setValue(p: ParameterOptions, peas: PEAController[]): Promise<void> {

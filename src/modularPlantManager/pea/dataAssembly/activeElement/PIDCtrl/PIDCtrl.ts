@@ -24,40 +24,41 @@
  */
 
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaConnection, OpcUaDataItem} from '../../../connection';
-import {OpModeRuntime, SourceModeRuntime} from '../../_extensions';
+import {OpcUaConnection, DataItem} from '../../../connection';
+import {
+	OpModeController, OpModeRuntime,
+	SourceModeController, SourceModeRuntime
+} from '../../_extensions';
 import {ActiveElement, ActiveElementRuntime} from '../ActiveElement';
-import {SourceModeController} from '../../_extensions/sourceModeDA/SourceModeController';
-import {OpModeController} from '../../_extensions/opModeDA/OpModeController';
 
 export type PIDCtrlRuntime = ActiveElementRuntime & OpModeRuntime & SourceModeRuntime & {
-	PV: OpcUaDataItem<number>;
-	PVSclMin: OpcUaDataItem<number>;
-	PVSclMax: OpcUaDataItem<number>;
-	PVUnit: OpcUaDataItem<number>;
+	PV: DataItem<number>;
+	PVSclMin: DataItem<number>;
+	PVSclMax: DataItem<number>;
+	PVUnit: DataItem<number>;
 
-	SPMan: OpcUaDataItem<number>;
-	SPInt: OpcUaDataItem<number>;
-	SPSclMin: OpcUaDataItem<number>;
-	SPSclMax: OpcUaDataItem<number>;
-	SPUnit: OpcUaDataItem<number>;
-	SPIntMin: OpcUaDataItem<number>;
-	SPIntMax: OpcUaDataItem<number>;
-	SPManMin: OpcUaDataItem<number>;
-	SPManMax: OpcUaDataItem<number>;
-	SP: OpcUaDataItem<number>;
+	SPMan: DataItem<number>;
+	SPInt: DataItem<number>;
+	SPSclMin: DataItem<number>;
+	SPSclMax: DataItem<number>;
+	SPUnit: DataItem<number>;
+	SPIntMin: DataItem<number>;
+	SPIntMax: DataItem<number>;
+	SPManMin: DataItem<number>;
+	SPManMax: DataItem<number>;
+	SP: DataItem<number>;
 
-	MVMan: OpcUaDataItem<number>;
-	MV: OpcUaDataItem<number>;
-	MVSclMin: OpcUaDataItem<number>;
-	MVSclMax: OpcUaDataItem<number>;
-	MVUnit: OpcUaDataItem<number>;
-	MVMin: OpcUaDataItem<number>;
-	MVMax: OpcUaDataItem<number>;
+	MVMan: DataItem<number>;
+	MV: DataItem<number>;
+	MVSclMin: DataItem<number>;
+	MVSclMax: DataItem<number>;
+	MVUnit: DataItem<number>;
+	MVMin: DataItem<number>;
+	MVMax: DataItem<number>;
 
-	P: OpcUaDataItem<number>;
-	Ti: OpcUaDataItem<number>;
-	Td: OpcUaDataItem<number>;
+	P: DataItem<number>;
+	Ti: DataItem<number>;
+	Td: DataItem<number>;
 };
 
 export class PIDCtrl extends ActiveElement {
@@ -71,36 +72,37 @@ export class PIDCtrl extends ActiveElement {
 		this.sourceMode = new SourceModeController(this);
 		this.opMode = new OpModeController(this);
 
-		this.communication.PV = this.createDataItem('PV', 'read', 'number');
-		this.communication.PVSclMin = this.createDataItem('PVSclMin', 'read', 'number');
-		this.communication.PVSclMax = this.createDataItem('PVSclMax', 'read', 'number');
-		this.communication.PVUnit = this.createDataItem('PVUnit', 'read', 'number');
+		this.communication.PV = this.createDataItem('PV', 'number');
+		this.communication.PVSclMin = this.createDataItem('PVSclMin', 'number');
+		this.communication.PVSclMax = this.createDataItem('PVSclMax', 'number');
+		this.communication.PVUnit = this.createDataItem('PVUnit', 'number');
 
-		this.communication.SPMan = this.createDataItem('SPMan', 'write', 'number');
-		this.communication.SPInt = this.createDataItem('SPInt', 'read', 'number');
-		this.communication.SPSclMin = this.createDataItem('SPSclMin', 'read', 'number');
-		this.communication.SPSclMax = this.createDataItem('SPSclMax', 'read', 'number');
-		this.communication.SPUnit = this.createDataItem('SPUnit', 'read', 'number');
-		this.communication.SPIntMin = this.createDataItem('SPIntMin', 'read', 'number');
-		this.communication.SPIntMax = this.createDataItem('SPIntMax', 'read', 'number');
-		this.communication.SPManMin = this.createDataItem('SPManMin', 'read', 'number');
-		this.communication.SPManMax = this.createDataItem('SPManMax', 'read', 'number');
-		this.communication.SP = this.createDataItem('SP', 'read', 'number');
+		this.communication.SPMan = this.createDataItem('SPMan', 'number', 'write');
+		this.communication.SPInt = this.createDataItem('SPInt', 'number');
+		this.communication.SPSclMin = this.createDataItem('SPSclMin', 'number');
+		this.communication.SPSclMax = this.createDataItem('SPSclMax', 'number');
+		this.communication.SPUnit = this.createDataItem('SPUnit', 'number');
+		this.communication.SPIntMin = this.createDataItem('SPIntMin', 'number');
+		this.communication.SPIntMax = this.createDataItem('SPIntMax', 'number');
+		this.communication.SPManMin = this.createDataItem('SPManMin', 'number');
+		this.communication.SPManMax = this.createDataItem('SPManMax', 'number');
+		this.communication.SP = this.createDataItem('SP', 'number');
 
-		this.communication.MVMan = this.createDataItem('MVMan', 'write', 'number');
-		this.communication.MV = this.createDataItem('MV', 'read', 'number');
-		this.communication.MVSclMin = this.createDataItem('MVSclMin', 'read', 'number');
-		this.communication.MVSclMax = this.createDataItem('MVSclMax', 'read', 'number');
-		this.communication.MVUnit = this.createDataItem('MVUnit', 'read', 'number');
-		this.communication.MVMin = this.createDataItem('MVMin', 'read', 'number');
-		this.communication.MVMax = this.createDataItem('MVMax', 'read', 'number');
+		this.communication.MVMan = this.createDataItem('MVMan', 'number', 'write');
+		this.communication.MV = this.createDataItem('MV', 'number');
+		this.communication.MVSclMin = this.createDataItem('MVSclMin', 'number');
+		this.communication.MVSclMax = this.createDataItem('MVSclMax', 'number');
+		this.communication.MVUnit = this.createDataItem('MVUnit', 'number');
+		this.communication.MVMin = this.createDataItem('MVMin', 'number');
+		this.communication.MVMax = this.createDataItem('MVMax', 'number');
 
-		this.communication.P = this.createDataItem('P', 'read', 'number');
-		this.communication.Ti = this.createDataItem('Ti', 'read', 'number');
-		this.communication.Td = this.createDataItem('Td', 'read', 'number');
+		this.communication.P = this.createDataItem('P', 'number');
+		this.communication.Ti = this.createDataItem('Ti', 'number');
+		this.communication.Td = this.createDataItem('Td', 'number');
 
 		this.defaultReadDataItem = this.communication.PV;
 		this.defaultReadDataItemType = 'number';
+
 		this.defaultWriteDataItem = this.communication.SPMan;
 		this.defaultWriteDataItemType = 'number';
 	}

@@ -38,8 +38,8 @@ import {
 import {catDataAssembly} from '../../../logging';
 
 export class DataAssemblyControllerFactory {
-	public static create(variableOptions: DataAssemblyOptions, connection: OpcUaConnection): DataAssemblyController {
-		catDataAssembly.debug(`Create DataAssembly ${variableOptions.name} (${variableOptions.metaModelRef})`);
+	public static create(dataAssemblyOptions: DataAssemblyOptions, connection: OpcUaConnection): DataAssemblyController {
+		catDataAssembly.debug(`Create DataAssembly ${dataAssemblyOptions.name} (${dataAssemblyOptions.metaModelRef})`);
 		const types = {
 			'DataAssembly': DataAssemblyController,
 
@@ -93,18 +93,18 @@ export class DataAssemblyControllerFactory {
 			'DIntServParam': DIntServParam,
 			'StringServParam': StringServParam
 		};
-		let type = types[variableOptions.metaModelRef.split('/').pop() as keyof typeof types];
+		let type = types[dataAssemblyOptions.metaModelRef.split('/').pop() as keyof typeof types];
 		if (!type) {
-			if (!variableOptions.metaModelRef) {
-				catDataAssembly.debug(`No Interface Class specified for DataAssembly ${variableOptions.name}. ` +
+			if (!dataAssemblyOptions.metaModelRef) {
+				catDataAssembly.debug(`No Interface Class specified for DataAssembly ${dataAssemblyOptions.name}. ` +
 					'Fallback to standard DataAssemblyController.');
 			} else {
-				catDataAssembly.warn(`No DataAssembly implemented for ${variableOptions.metaModelRef} ` +
-					`of ${variableOptions.name}. Fallback to standard DataAssembly.`);
+				catDataAssembly.warn(`No DataAssembly implemented for ${dataAssemblyOptions.metaModelRef} ` +
+					`of ${dataAssemblyOptions.name}. Fallback to standard DataAssembly.`);
 			}
 			type = DataAssemblyController;
 		}
 
-		return new type(variableOptions, connection);
+		return new type(dataAssemblyOptions, connection);
 	}
 }

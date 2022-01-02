@@ -123,7 +123,6 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 	/**
 	 * Get PEAController from Pimad-Pool by given Pimad-Identifier
 	 * @param pimadIdentifier	Pimad-Identifier
-	 * @param callback Response from PiMad...
 	 */
 	public getPEAFromPimadPool(pimadIdentifier: string): Promise<PEAModel>{
 		return new Promise<PEAModel>((resolve,reject) => {
@@ -140,7 +139,6 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 	 * Delete PEAController from Pimad-Pool by given Pimad-Identifier
 	 * //TODO: use more convenient Promise
 	 * @param peaId	Pimad-Identifier
-	 * @param callback Response from PiMad...
 	 */
 	public deletePEAFromPimadPool(peaId: string): Promise<void> {
 		return new Promise((resolve,reject)=> {
@@ -279,7 +277,7 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 
 	/**
 	 * find [Service] of a [PEAController] registered in manager
-	 * @param {string} peaName
+	 * @param peaId
 	 * @param {string} serviceName
 	 * @returns {Service}
 	 */

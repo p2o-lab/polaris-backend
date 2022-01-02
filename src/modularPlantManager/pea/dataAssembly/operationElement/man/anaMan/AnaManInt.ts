@@ -24,14 +24,14 @@
  */
 
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaConnection, OpcUaDataItem} from '../../../../connection';
-import {SourceModeRuntime, WQCRuntime} from '../../../_extensions';
-import {SourceModeController} from '../../../_extensions/sourceModeDA/SourceModeController';
-import {WQC} from '../../../_extensions/wqcDA/WQC';
+import {OpcUaConnection, DataItem} from '../../../../connection';
+import {SourceModeController, SourceModeRuntime,
+	WQC, WQCRuntime
+} from '../../../_extensions';
 import {AnaMan, AnaManRuntime} from './AnaMan';
 
 export type AnaManIntRuntime = AnaManRuntime & SourceModeRuntime & WQCRuntime & {
-	VInt: OpcUaDataItem<number>;
+	VInt: DataItem<number>;
 };
 
 export class AnaManInt extends AnaMan {
@@ -47,6 +47,6 @@ export class AnaManInt extends AnaMan {
 
 		this.sourceMode = new SourceModeController(this);
 
-		this.communication.VInt = this.createDataItem('VInt', 'read');
+		this.communication.VInt = this.createDataItem('VInt', 'number');
 	}
 }

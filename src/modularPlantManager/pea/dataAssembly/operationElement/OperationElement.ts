@@ -25,7 +25,7 @@
 
 import {DataAssemblyOptions, ParameterInterface, ParameterOptions} from '@p2olab/polaris-interface';
 import {Parameter} from '../../../recipe';
-import {DataItem, OpcUaConnection} from '../../connection';
+import {DataItem, DynamicDataItem, OpcUaConnection} from '../../connection';
 import {OSLevelRuntime} from '../_extensions';
 import {BaseDataAssemblyRuntime, DataAssemblyController} from '../DataAssemblyController';
 import {PEAController} from '../../PEAController';
@@ -56,7 +56,7 @@ export class OperationElement extends DataAssemblyController {
 		const dataItem: DataItem<number | string> | undefined = (variable) ?
 			this.communication[variable as keyof OperationElementRuntime] : this.defaultWriteDataItem;
 		catDataAssembly.debug(`Set Parameter: ${this.name} (${variable}) -> ${JSON.stringify(paramValue)}`);
-		await dataItem?.write(paramValue);
+		await (dataItem as DynamicDataItem<any>)?.write(paramValue);
 	}
 
 	public async setValue(p: ParameterOptions, peas: PEAController[]): Promise<void> {

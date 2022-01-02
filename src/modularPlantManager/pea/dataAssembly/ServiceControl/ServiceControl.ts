@@ -23,34 +23,33 @@
  * SOFTWARE.
  */
 
-import {OpcUaConnection, OpcUaDataItem} from '../../connection';
+import {OpcUaConnection, DataItem} from '../../connection';
 import {
 	BaseDataAssemblyRuntime, DataAssemblyController, OpModeRuntime, WQCRuntime
 } from '../index';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {WQC} from '../_extensions/wqcDA/WQC';
-import {OpModeController} from '../_extensions/opModeDA/OpModeController';
+import {OpModeController, WQC} from '../_extensions';
 import {
 	ServiceSourceModeController,
 	ServiceSourceModeRuntime
 } from '../_extensions/serviceSourceModeDA/ServiceSourceModeController';
 
 export type ServiceControlRuntime = BaseDataAssemblyRuntime & OpModeRuntime & ServiceSourceModeRuntime & WQCRuntime & {
-	CommandOp: OpcUaDataItem<number>;
-	CommandInt: OpcUaDataItem<number>;
-	CommandExt: OpcUaDataItem<number>;
-	CommandEn: OpcUaDataItem<number>;
-	StateCur: OpcUaDataItem<number>;
+	CommandOp: DataItem<number>;
+	CommandInt: DataItem<number>;
+	CommandExt: DataItem<number>;
+	CommandEn: DataItem<number>;
+	StateCur: DataItem<number>;
 
-	ProcedureOp: OpcUaDataItem<number>;
-	ProcedureExt: OpcUaDataItem<number>;
-	ProcedureInt: OpcUaDataItem<number>;
-	ProcedureCur: OpcUaDataItem<number>;
-	ProcedureReq: OpcUaDataItem<number>;
+	ProcedureOp: DataItem<number>;
+	ProcedureExt: DataItem<number>;
+	ProcedureInt: DataItem<number>;
+	ProcedureCur: DataItem<number>;
+	ProcedureReq: DataItem<number>;
 
-	InteractQuestionID: OpcUaDataItem<number>;
-	InteractAnswerID: OpcUaDataItem<number>;
-	PosTextID: OpcUaDataItem<number>;
+	InteractQuestionID: DataItem<number>;
+	InteractAnswerID: DataItem<number>;
+	PosTextID: DataItem<number>;
 };
 
 export class ServiceControl extends DataAssemblyController {
@@ -63,29 +62,28 @@ export class ServiceControl extends DataAssemblyController {
 		super(options, connection);
 
 		this.wqc = new WQC(this);
-
 		this.opMode = new OpModeController(this);
-
 		this.serviceSourceMode = new ServiceSourceModeController(this);
 
-		this.communication.CommandOp = this.createDataItem('CommandOp', 'write');
-		this.communication.CommandInt = this.createDataItem('CommandInt', 'write');
-		this.communication.CommandExt = this.createDataItem('CommandExt', 'write');
-		this.communication.CommandEn = this.createDataItem('CommandEn', 'read');
-		this.communication.StateCur = this.createDataItem('StateCur', 'read');
+		this.communication.CommandOp = this.createDataItem('CommandOp', 'number', 'write');
+		this.communication.CommandInt = this.createDataItem('CommandInt', 'number', 'write');
+		this.communication.CommandExt = this.createDataItem('CommandExt', 'number', 'write');
+		this.communication.CommandEn = this.createDataItem('CommandEn','number');
+		this.communication.StateCur = this.createDataItem('StateCur','number');
 
-		this.communication.ProcedureOp = this.createDataItem('ProcedureOp', 'write');
-		this.communication.ProcedureExt = this.createDataItem('ProcedureExt', 'write');
-		this.communication.ProcedureInt = this.createDataItem('ProcedureInt', 'read');
-		this.communication.ProcedureCur = this.createDataItem('ProcedureCur', 'read');
-		this.communication.ProcedureReq = this.createDataItem('ProcedureReq', 'read');
+		this.communication.ProcedureOp = this.createDataItem('ProcedureOp', 'number', 'write');
+		this.communication.ProcedureExt = this.createDataItem('ProcedureExt', 'number', 'write');
+		this.communication.ProcedureInt = this.createDataItem('ProcedureInt','number');
+		this.communication.ProcedureCur = this.createDataItem('ProcedureCur','number');
+		this.communication.ProcedureReq = this.createDataItem('ProcedureReq','number');
 
-		this.communication.InteractQuestionID = this.createDataItem('InteractQuestionID', 'read');
-		this.communication.InteractAnswerID = this.createDataItem('InteractAnswerID', 'write');
-		this.communication.PosTextID = this.createDataItem('PosTextID', 'read');
+		this.communication.InteractQuestionID = this.createDataItem('InteractQuestionID','number');
+		this.communication.InteractAnswerID = this.createDataItem('InteractAnswerID', 'number', 'write');
+		this.communication.PosTextID = this.createDataItem('PosTextID','number');
 
 		this.defaultReadDataItem = this.communication.StateCur;
 		this.defaultReadDataItemType = 'number';
+
 		this.defaultWriteDataItem = this.communication.CommandExt;
 		this.defaultWriteDataItemType = 'number';
 	}

@@ -23,34 +23,22 @@
  * SOFTWARE.
  */
 
-import {OpcUaDataItem} from '../../../connection';
+import {DataItem} from '../../../connection';
 import {BaseDataAssemblyRuntime} from '../../index';
 
 export interface WQCRuntime extends BaseDataAssemblyRuntime {
-	WQC: OpcUaDataItem<number>;
+	WQC: DataItem<number>;
 }
 
 export class WQC {
 	private dAController: any;
-	wqc: number | undefined;
 
 	constructor(dAController: any) {
 		this.dAController = dAController;
-		this.initialize();
-	}
-
-	initialize(): void {
-		//handle static and dynamic variables
-		if(typeof this.dAController.options.dataItems.WQC == 'string'){
-			this.wqc = Number(this.dAController.options.dataItems.WQC);
-		}
-		else{
-			this.dAController.communication.WQC = this.dAController.createDataItem('WQC', 'write');
-		}
+		this.dAController.communication.WQC = this.dAController.createDataItem('WQC', 'number');
 	}
 
 	get WQC(): number | undefined {
-		if(this.wqc != undefined) return this.wqc;
-		else return this.dAController.communication.WQC.value;
+		return this.dAController.communication.WQC.value;
 	}
 }

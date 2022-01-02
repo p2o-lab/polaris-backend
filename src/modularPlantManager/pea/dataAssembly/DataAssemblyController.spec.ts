@@ -43,8 +43,8 @@ describe('DataAssembly', () => {
                     dataItems: {TagName: 'test', TagDescription: 'test',},
                     metaModelRef: 'analogitem'
                 }, emptyOPCUAConnection);
-                expect(da1.tagName).to.equal('test');
-                expect(da1.tagDescription).to.equal('test');
+                expect(da1.communication.TagName.value).to.equal('test');
+                expect(da1.communication.TagDescription.value).to.equal('test');
             }).to.not.throw();
         });
 
@@ -57,32 +57,10 @@ describe('DataAssembly', () => {
             ).to.throw('Creating DataAssemblyController Error: No OpcUaConnection provided');
         });
 
-        it('should fail with undefined dataitems', () => {
+        it('should fail with undefined DataItems', () => {
             expect(() => new DataAssemblyController(
                 {dataItems:undefined as any, name:'test', metaModelRef:'Test'}, emptyOPCUAConnection)
             ).to.throw('Creating DataAssemblyController Error: No Communication variables found in DataAssemblyOptions');
-        });
-
-        describe('dynamic with PEATestServer', () => {
-
-            let mockupServer: MockupServer;
-            let connection: OpcUaConnection;
-
-            beforeEach(async function () {
-                this.timeout(4000);
-                mockupServer = new MockupServer();
-                await mockupServer.start();
-                connection = new OpcUaConnection();
-                connection.initialize({endpoint: mockupServer.endpoint});
-                await connection.connect();
-            });
-
-            afterEach(async function () {
-                this.timeout(4000);
-                await connection.disconnect();
-                await mockupServer.shutdown();
-            });
-
         });
 
     });

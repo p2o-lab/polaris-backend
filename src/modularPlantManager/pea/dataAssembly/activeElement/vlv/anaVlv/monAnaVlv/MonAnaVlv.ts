@@ -24,16 +24,16 @@
 */
 
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaConnection, OpcUaDataItem} from '../../../../../connection';
+import {OpcUaConnection, DataItem} from '../../../../../connection';
 import {FeedbackMonitoringRuntime} from '../../../../_extensions';
 import {AnaVlv, AnaVlvRuntime} from '../AnaVlv';
-import {FeedbackMonitoring} from '../../../../_extensions/feedbackMonitoringDA/FeedbackMonitoring';
+import {FeedbackMonitoring} from '../../../../_extensions';
 
 export type MonAnaVlvRuntime = AnaVlvRuntime & FeedbackMonitoringRuntime & {
-	PosReachedFbk: OpcUaDataItem<boolean>;
-	PosTolerance: OpcUaDataItem<number>;
-	MonPosTi: OpcUaDataItem<number>;
-	MonPosErr: OpcUaDataItem<boolean>;
+	PosReachedFbk: DataItem<boolean>;
+	PosTolerance: DataItem<number>;
+	MonPosTi: DataItem<number>;
+	MonPosErr: DataItem<boolean>;
 };
 
 export class MonAnaVlv extends AnaVlv {
@@ -45,9 +45,9 @@ export class MonAnaVlv extends AnaVlv {
 
 		this.feedBackMonitoring = new FeedbackMonitoring(this);
 
-		this.communication.PosReachedFbk = this.createDataItem('PosReachedFbk', 'read', 'boolean');
-		this.communication.PosTolerance = this.createDataItem('PosTolerance', 'read', 'number');
-		this.communication.MonPosTi = this.createDataItem('MonPosTi', 'read', 'number');
-		this.communication.MonPosErr = this.createDataItem('MonPosErr', 'read', 'boolean');
+		this.communication.PosReachedFbk = this.createDataItem('PosReachedFbk', 'boolean');
+		this.communication.PosTolerance = this.createDataItem('PosTolerance', 'number');
+		this.communication.MonPosTi = this.createDataItem('MonPosTi', 'number');
+		this.communication.MonPosErr = this.createDataItem('MonPosErr', 'boolean');
 	}
 }

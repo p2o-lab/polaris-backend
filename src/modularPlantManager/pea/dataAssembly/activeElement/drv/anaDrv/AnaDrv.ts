@@ -24,27 +24,26 @@
  */
 
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaConnection, OpcUaDataItem} from '../../../../connection';
+import {OpcUaConnection, DataItem} from '../../../../connection';
 import {Drv, DrvRuntime} from '../Drv';
-import {SourceModeRuntime} from '../../../_extensions';
-import {SourceModeController} from '../../../_extensions/sourceModeDA/SourceModeController';
+import {SourceModeController, SourceModeRuntime} from '../../../_extensions';
 
 export type AnaDrvRuntime = DrvRuntime & SourceModeRuntime & {
-	RpmSclMax: OpcUaDataItem<number>;
-	RpmSclMin: OpcUaDataItem<number>;
+	RpmSclMax: DataItem<number>;
+	RpmSclMin: DataItem<number>;
 
-	RpmUnit: OpcUaDataItem<number>;
+	RpmUnit: DataItem<number>;
 
-	RpmMin: OpcUaDataItem<number>;
-	RpmMax: OpcUaDataItem<number>;
+	RpmMin: DataItem<number>;
+	RpmMax: DataItem<number>;
 
-	RpmInt: OpcUaDataItem<number>;
-	RpmMan: OpcUaDataItem<number>;
+	RpmInt: DataItem<number>;
+	RpmMan: DataItem<number>;
 
-	Rpm: OpcUaDataItem<number>;
-	RpmFbk: OpcUaDataItem<number>;
-	RpmFbkCalc: OpcUaDataItem<boolean>;
-	RpmRbk: OpcUaDataItem<number>;
+	Rpm: DataItem<number>;
+	RpmFbk: DataItem<number>;
+	RpmFbkCalc: DataItem<boolean>;
+	RpmRbk: DataItem<number>;
 };
 
 export class AnaDrv extends Drv {
@@ -57,21 +56,21 @@ export class AnaDrv extends Drv {
 
 		this.sourceMode = new SourceModeController(this);
 
-		this.communication.RpmSclMax = this.createDataItem('RpmSclMax', 'read', 'number');
-		this.communication.RpmSclMin = this.createDataItem('RpmSclMin', 'read', 'number');
+		this.communication.RpmSclMax = this.createDataItem('RpmSclMax', 'number');
+		this.communication.RpmSclMin = this.createDataItem('RpmSclMin', 'number');
 
-		this.communication.RpmUnit = this.createDataItem('RpmUnit', 'read', 'number');
+		this.communication.RpmUnit = this.createDataItem('RpmUnit', 'number');
 
-		this.communication.RpmMin = this.createDataItem('RpmMin', 'read', 'number');
-		this.communication.RpmMax = this.createDataItem('RpmMax', 'read', 'number');
+		this.communication.RpmMin = this.createDataItem('RpmMin',  'number');
+		this.communication.RpmMax = this.createDataItem('RpmMax', 'number');
 
-		this.communication.RpmInt = this.createDataItem('RpmInt', 'read', 'number');
-		this.communication.RpmMan = this.createDataItem('RpmMan', 'write', 'number');
+		this.communication.RpmInt = this.createDataItem('RpmInt', 'number');
+		this.communication.RpmMan = this.createDataItem('RpmMan', 'number');
 
-		this.communication.Rpm = this.createDataItem('Rpm', 'read', 'number');
-		this.communication.RpmFbk = this.createDataItem('RpmFbk', 'read', 'number');
-		this.communication.RpmFbkCalc = this.createDataItem('RpmFbkCalc', 'read', 'boolean');
-		this.communication.RpmRbk = this.createDataItem('RpmRbk', 'read', 'number');
+		this.communication.Rpm = this.createDataItem('Rpm', 'number');
+		this.communication.RpmFbk = this.createDataItem('RpmFbk', 'number');
+		this.communication.RpmFbkCalc = this.createDataItem('RpmFbkCalc', 'boolean');
+		this.communication.RpmRbk = this.createDataItem('RpmRbk', 'number');
 
 		this.defaultReadDataItem = this.communication.RpmFbk;
 		this.defaultReadDataItemType = 'number';

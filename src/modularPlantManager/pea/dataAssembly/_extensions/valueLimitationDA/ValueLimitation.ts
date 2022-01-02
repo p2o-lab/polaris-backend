@@ -23,12 +23,12 @@
  * SOFTWARE.
  */
 
-import {OpcUaDataItem} from '../../../connection';
+import {DataItem} from '../../../connection';
 import {BaseDataAssemblyRuntime} from '../../DataAssemblyController';
 
 export type ValueLimitationRuntime = BaseDataAssemblyRuntime & {
-	VMin: OpcUaDataItem<number>;
-	VMax: OpcUaDataItem<number>;
+	VMin: DataItem<number>;
+	VMax: DataItem<number>;
 };
 
 export class ValueLimitation{
@@ -40,7 +40,7 @@ export class ValueLimitation{
 	}
 
 	private initialize(): void{
-		this.dAController.communication.VMax = this.dAController.createDataItem('VMax', 'read');
-		this.dAController.communication.VMin = this.dAController.createDataItem('VMin', 'read');
+		this.dAController.communication.VMax = this.dAController.createDataItem('VMax', 'number');
+		this.dAController.communication.VMin = this.dAController.createDataItem('VMin', 'number');
 	}
 }

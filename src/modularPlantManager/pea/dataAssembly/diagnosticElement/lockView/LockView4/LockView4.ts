@@ -25,36 +25,36 @@
 
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {DiagnosticElement, DiagnosticElementRuntime} from '../../DiagnosticElement';
-import {OpcUaConnection, OpcUaDataItem} from '../../../../connection';
+import {OpcUaConnection, DataItem} from '../../../../connection';
 
 export type LockView4Runtime = DiagnosticElementRuntime & {
-	Logic: OpcUaDataItem<boolean>; // False = AND; TRUE = OR;
-	Out: OpcUaDataItem<boolean>;
-	OutQC: OpcUaDataItem<number>;
+	Logic: DataItem<boolean>; // False = AND; TRUE = OR;
+	Out: DataItem<boolean>;
+	OutQC: DataItem<number>;
 
-	In1En: OpcUaDataItem<boolean>;
-	In1: OpcUaDataItem<boolean>;
-	In1QC: OpcUaDataItem<number>;
-	In1Inv: OpcUaDataItem<boolean>;
-	In1Txt: OpcUaDataItem<string>;
+	In1En: DataItem<boolean>;
+	In1: DataItem<boolean>;
+	In1QC: DataItem<number>;
+	In1Inv: DataItem<boolean>;
+	In1Txt: DataItem<string>;
 
-	In2En: OpcUaDataItem<boolean>;
-	In2: OpcUaDataItem<boolean>;
-	In2QC: OpcUaDataItem<number>;
-	In2Inv: OpcUaDataItem<boolean>;
-	In2Txt: OpcUaDataItem<string>;
+	In2En: DataItem<boolean>;
+	In2: DataItem<boolean>;
+	In2QC: DataItem<number>;
+	In2Inv: DataItem<boolean>;
+	In2Txt: DataItem<string>;
 
-	In3En: OpcUaDataItem<boolean>;
-	In3: OpcUaDataItem<boolean>;
-	In3QC: OpcUaDataItem<number>;
-	In3Inv: OpcUaDataItem<boolean>;
-	In3Txt: OpcUaDataItem<string>;
+	In3En: DataItem<boolean>;
+	In3: DataItem<boolean>;
+	In3QC: DataItem<number>;
+	In3Inv: DataItem<boolean>;
+	In3Txt: DataItem<string>;
 
-	In4En: OpcUaDataItem<boolean>;
-	In4: OpcUaDataItem<boolean>;
-	In4QC: OpcUaDataItem<number>;
-	In4Inv: OpcUaDataItem<boolean>;
-	In4Txt: OpcUaDataItem<string>;
+	In4En: DataItem<boolean>;
+	In4: DataItem<boolean>;
+	In4QC: DataItem<number>;
+	In4Inv: DataItem<boolean>;
+	In4Txt: DataItem<string>;
 };
 
 export class LockView4 extends DiagnosticElement {
@@ -63,33 +63,33 @@ export class LockView4 extends DiagnosticElement {
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
 
-		this.communication.Logic = this.createDataItem('Logic', 'read', 'boolean');
-		this.communication.Out = this.createDataItem('Out', 'read', 'boolean');
-		this.communication.OutQC = this.createDataItem('OutQC', 'read', 'number');
+		this.communication.Logic = this.createDataItem('Logic', 'boolean');
+		this.communication.Out = this.createDataItem('Out', 'boolean');
+		this.communication.OutQC = this.createDataItem('OutQC', 'number');
 
-		this.communication.In1En = this.createDataItem('In1En', 'read', 'boolean');
-		this.communication.In1 = this.createDataItem('In1', 'read', 'boolean');
-		this.communication.In1QC = this.createDataItem('In1QC', 'read', 'number');
-		this.communication.In1Inv = this.createDataItem('In1Inv', 'read', 'boolean');
-		this.communication.In1Txt = this.createDataItem('In1Txt', 'read', 'string');
+		this.communication.In1En = this.createDataItem('In1En', 'boolean');
+		this.communication.In1 = this.createDataItem('In1', 'boolean');
+		this.communication.In1QC = this.createDataItem('In1QC', 'number');
+		this.communication.In1Inv = this.createDataItem('In1Inv', 'boolean');
+		this.communication.In1Txt = this.createDataItem('In1Txt', 'string');
 
-		this.communication.In2En = this.createDataItem('In2En', 'read', 'boolean');
-		this.communication.In2 = this.createDataItem('In2', 'read', 'boolean');
-		this.communication.In2QC = this.createDataItem('In2QC', 'read', 'number');
-		this.communication.In2Inv = this.createDataItem('In2Inv', 'read', 'boolean');
-		this.communication.In2Txt = this.createDataItem('In2Txt', 'read', 'string');
+		this.communication.In2En = this.createDataItem('In2En', 'boolean');
+		this.communication.In2 = this.createDataItem('In2', 'boolean');
+		this.communication.In2QC = this.createDataItem('In2QC', 'number');
+		this.communication.In2Inv = this.createDataItem('In2Inv', 'boolean');
+		this.communication.In2Txt = this.createDataItem('In2Txt', 'string');
 
-		this.communication.In3En = this.createDataItem('In3En', 'read', 'boolean');
-		this.communication.In3 = this.createDataItem('In3', 'read', 'boolean');
-		this.communication.In3QC = this.createDataItem('In3QC', 'read', 'number');
-		this.communication.In3Inv = this.createDataItem('In3Inv', 'read', 'boolean');
-		this.communication.In3Txt = this.createDataItem('In3Txt', 'read', 'string');
+		this.communication.In3En = this.createDataItem('In3En', 'boolean');
+		this.communication.In3 = this.createDataItem('In3', 'boolean');
+		this.communication.In3QC = this.createDataItem('In3QC', 'number');
+		this.communication.In3Inv = this.createDataItem('In3Inv', 'boolean');
+		this.communication.In3Txt = this.createDataItem('In3Txt', 'string');
 
-		this.communication.In4En = this.createDataItem('In4En', 'read', 'boolean');
-		this.communication.In4 = this.createDataItem('In4', 'read', 'boolean');
-		this.communication.In4QC = this.createDataItem('In4QC', 'read', 'number');
-		this.communication.In4Inv = this.createDataItem('In4Inv', 'read', 'boolean');
-		this.communication.In4Txt = this.createDataItem('In4Txt', 'read', 'string');
+		this.communication.In4En = this.createDataItem('In4En', 'boolean');
+		this.communication.In4 = this.createDataItem('In4', 'boolean');
+		this.communication.In4QC = this.createDataItem('In4QC', 'number');
+		this.communication.In4Inv = this.createDataItem('In4Inv', 'boolean');
+		this.communication.In4Txt = this.createDataItem('In4Txt', 'string');
 
 		this.defaultReadDataItem = this.communication.Out;
 		this.defaultReadDataItemType = 'boolean';

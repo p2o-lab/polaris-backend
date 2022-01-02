@@ -23,8 +23,8 @@
  * SOFTWARE.
  */
 
-import {PEAOptions, ServerSettingsOptions} from '@p2olab/polaris-interface';
-import {ModularPlantManager, PEAController} from '../../../modularPlantManager';
+import {PEAOptions} from '@p2olab/polaris-interface';
+import {ModularPlantManager, OpcUaConnectionSettings, PEAController} from '../../../modularPlantManager';
 import {Server} from '../../server';
 
 import {Application} from 'express';
@@ -128,28 +128,24 @@ describe('PEARoutes', () => {
 		});
 		it('should fail, wrong file type', async () => {
 			await request(app).post('/api/pea/addByPiMAd')
-				.attach('uploadedFile', path.resolve('tests/AnaMon.spec.json'))
+				.attach('uploadedFile', path.resolve('tests/testpea.json'))
 				.expect(500)
-				.expect(/Error: Unknown source type <uploads\\anamon.json>/);
-		});
-		it('should fail, file does not exist', async () => {
-			//TODO
+				.expect(/Error: Unknown source type <uploads\\testpea.json>/);
 		});
 	});
 
 	context('/PiMAdPEAs', () => {
+
 		it('should work, empty pool', async () => {
 			await request(app).get('/api/pea/PiMAdPEAs')
 				.expect(200)
 				.expect([]);
 		});
+
 		it('should work with not empty pool', async () => {
 			await manager.addPEAToPimadPool({source: 'tests/testpea.zip'});
 			await request(app).get('/api/pea/PiMAdPEAs')
 				.expect(200);
-		});
-		it('should fail', async () => {
-			await request(app).get('/api/pea/PiMAdPEAs').expect(500);
 		});
 	});
 
@@ -184,35 +180,45 @@ describe('PEARoutes', () => {
 		});
 	});
 
-	context('Server Settings', () => {
-		it('should get server settings', async () => {
+	context('Connection Settings', () => {
+		it('should get connection settings', async () => {
 			const peaController: PEAController = new PEAController(peaOptionsDummy);
 			manager.peas.push(peaController);
-			await request(app).get('/api/pea/test/getServerSettings')
+			await request(app).get(`/api/pea/${peaController.id}/getConnectionSettings`)
 				.expect(200)
-				.expect({ serverUrl: 'localhost', username: 'admin', password: '1234' });
-		});
-		it('getServerSetting should fail , wrong peaId', async () => {
-			await request(app).get('/api/pea/wrongId/getServerSettings')
-				.expect(500)
-				.expect(/Error: PEA with id wrongId not found/);
+				.expect({endpointUrl: 'localhost', securityPolicy: 'None', securityMode: 'None', userIdentityInfo: 'Anonymous'});
 		});
 
-		it('should update server settings', async () => {
+		it('getConnectionSettings should fail with invalid peaId', async () => {
+			await request(app).get('/api/pea/xyz/getConnectionSettings')
+				.expect(500)
+				.expect(/Error: PEA with id xyz not found/);
+		});
+
+		it('should update connection settings', async () => {
 			const peaController: PEAController = new PEAController(peaOptionsDummy);
 			manager.peas.push(peaController);
-			const options: ServerSettingsOptions = {username: 'peter', password: '5678', serverUrl: 'localhost:4334', id: 'test' };
-			await request(app).post('/api/pea/updateServerSettings')
+			await request(app).get(`/api/pea/${peaController.id}/getConnectionSettings`)
+				.expect(200)
+				.expect({endpointUrl: 'localhost', securityPolicy: 'None', securityMode: 'None', userIdentityInfo: 'Anonymous'});
+
+			const options: OpcUaConnectionSettings = {endpoint: 'localhost:4334'};
+			await request(app).post(`/api/pea/${peaController.id}/updateConnectionSettings`)
 				.send(options)
 				.expect(200)
-				.expect(/Successfully updated the server settings!/);
+				.expect(/Successfully updated the connection settings!/);
+
+			await request(app).get(`/api/pea/${peaController.id}/getConnectionSettings`)
+				.expect(200)
+				.expect({endpointUrl: 'localhost:4334', securityPolicy: 'None', securityMode: 'None', userIdentityInfo: 'Anonymous'});
 		});
-		it('updateServerSettings should fail, wrong peaId', async () => {
-			const options: ServerSettingsOptions = {username: 'peter', password: '5678', serverUrl: 'localhost:4334', id: 'wrongId' };
-			await request(app).post('/api/pea/updateServerSettings')
+
+		it('updateServerSettings should fail with invalid peaId', async () => {
+			const options: OpcUaConnectionSettings = {endpoint: 'localhost:4334'};
+			await request(app).post('/api/pea/xyz/updateConnectionSettings')
 				.send(options)
 				.expect(500)
-				.expect(/Error: PEA with id wrongId not found/);
+				.expect(/Error: PEA with id xyz not found/);
 		});
 	});
 
@@ -238,20 +244,13 @@ describe('PEARoutes', () => {
 					.expect({peaId:'test',status:'Successfully connected'});
 				await request(app).post('/api/pea/test/disconnect').send().expect(200)
 					.expect({peaId:'test',status:'Successfully disconnected'});
-				/*	// wait until first update of state via websocket
-                    const ws = new WebSocket('ws:/localhost:3000');
-                    await new Promise((resolve) => ws.on('message', function incoming(msg) {
-                        const data: BackendNotification = JSON.parse(msg.toString());
-                        if (data.message === 'service' && data.service.status) {
-                            ws.removeListener('message', incoming);
-                            resolve();
-                        }
-                    }));*/
 			}).timeout(4000);
+
 			it('should fail to connect, wrong peaId', async() => {
 				await request(app).post('/api/pea/abc1234/connect').send().expect(500)
 					.expect('Error: PEA with id abc1234 not found');
 			});
+
 			it('should fail to disconnect, wrong peaId', async() => {
 				await request(app).post('/api/pea/abc1234/disconnect').send().expect(500)
 					.expect('Error: PEA with id abc1234 not found');
@@ -262,11 +261,12 @@ describe('PEARoutes', () => {
 			it('delete', async() => {
 			const peaController = new PEAController(peaOptions as unknown as PEAOptions, false);
 			manager.peas.push(peaController);
-			await request(app).delete('/api/pea/test')
+			await request(app).delete(`/api/pea/${peaController.id}`)
 				.expect(200)
 				.expect({peaId:'test',status:'Successfully deleted'});
 			expect(manager.peas.length).to.equal(0);
 			});
+
 			it('delete to fail, wrong id', async() => {
 				await request(app).delete('/api/pea/abc1234')
 					.expect(500)

@@ -23,12 +23,12 @@
  * SOFTWARE.
  */
 
-import {OpcUaDataItem} from '../../../connection';
+import {DataItem} from '../../../connection';
 import {BaseDataAssemblyRuntime} from '../../DataAssemblyController';
 
 export interface ScaleSettingsRuntime extends BaseDataAssemblyRuntime {
-	VSclMin: OpcUaDataItem<number>;
-	VSclMax: OpcUaDataItem<number>;
+	VSclMin: DataItem<number>;
+	VSclMax: DataItem<number>;
 }
 
 export class ScaleSettings {
@@ -40,16 +40,7 @@ export class ScaleSettings {
 		}
 
 		private initialize(): void{
-			this.dAController.communication.VSclMax = this.dAController.createDataItem('VSclMax', 'read');
-			this.dAController.communication.VSclMin = this.dAController.createDataItem('VSclMin', 'read');
+			this.dAController.communication.VSclMax = this.dAController.createDataItem('VSclMax', 'number');
+			this.dAController.communication.VSclMin = this.dAController.createDataItem('VSclMin', 'number');
 		}
-
-	//TODO: adjust function
-/*	public scaleSettingsToJson(): ParameterInterface {
-		return {
-			...super.toJson(),
-			unit: this.getUnit()
-		};
-	}*/
-
 }
