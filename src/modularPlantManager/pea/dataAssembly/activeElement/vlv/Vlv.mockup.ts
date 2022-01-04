@@ -28,7 +28,7 @@ import {WQCDAMockup} from '../../_extensions/wqcDA/WQCDA.mockup';
 import {OSLevelMockup} from '../../_extensions/osLevel/OSLevel.mockup';
 import {getOpModeMockupReferenceJSON, OpModeMockup} from '../../_extensions/opMode/OpMode.mockup';
 import {getInterlockMockupReferenceJSON, InterlockMockup} from '../../_extensions/interlock/Interlock.mockup';
-import {getResetDAMockupReferenceJSON, ResetDAMockup} from '../../_extensions/resetDA/ResetDA.mockup';
+import {getResetMockupReferenceJSON, ResetMockup} from '../../_extensions/reset/Reset.mockup';
 import {getActiveElementMockupReferenceJSON} from '../ActiveElement.mockup';
 
 
@@ -40,7 +40,7 @@ export function getVlvMockupReferenceJSON(
 			...getActiveElementMockupReferenceJSON(namespace, objectBrowseName),
 			...getOpModeMockupReferenceJSON(namespace,objectBrowseName),
 			...getInterlockMockupReferenceJSON(namespace,objectBrowseName),
-			...getResetDAMockupReferenceJSON(namespace,objectBrowseName),
+			...getResetMockupReferenceJSON(namespace,objectBrowseName),
 			SafePos: {
 				namespaceIndex: `${namespace}`,
 				nodeId: `${objectBrowseName}.SafePos`,
@@ -107,7 +107,7 @@ export class VlvMockup {
 	public osLevel: OSLevelMockup;
 	public operationMode: OpModeMockup;
 	public interlock: InterlockMockup;
-	public reset: ResetDAMockup;
+	public reset: ResetMockup;
 
 	public safePos = false;
 	public safePosEn = false;
@@ -137,7 +137,7 @@ export class VlvMockup {
 		this.wqc = new WQCDAMockup(namespace, this.mockupNode, this.name);
 		this.operationMode = new OpModeMockup(namespace,this.mockupNode,this.name);
 		this.interlock= new InterlockMockup(namespace,this.mockupNode,this.name);
-		this.reset= new ResetDAMockup(namespace,this.mockupNode,this.name);
+		this.reset= new ResetMockup(namespace,this.mockupNode,this.name);
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,

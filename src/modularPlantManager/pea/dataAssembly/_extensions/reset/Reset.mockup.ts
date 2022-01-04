@@ -25,7 +25,7 @@
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 
-export function getResetDAMockupReferenceJSON(
+export function getResetMockupReferenceJSON(
     namespace: number,
     objectBrowseName: string): object {
 
@@ -43,7 +43,7 @@ export function getResetDAMockupReferenceJSON(
   });
 }
 
-export class ResetDAMockup {
+export class ResetMockup {
   protected resetOp = false;
   protected resetAut = false;
   protected mockupNode: UAObject;
@@ -84,8 +84,8 @@ export class ResetDAMockup {
     });
     }
 
-  public getResetDAInstanceMockupJSON(): object {
-    return getResetDAMockupReferenceJSON(
+  public getResetInstanceMockupJSON(): object {
+    return getResetMockupReferenceJSON(
         this.mockupNode.namespaceIndex,
         this.mockupNode.browseName.name as string);
   }

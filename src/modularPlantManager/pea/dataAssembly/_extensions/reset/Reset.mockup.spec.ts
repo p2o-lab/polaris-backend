@@ -26,14 +26,14 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../_utils';
-import {ResetDAMockup} from './ResetDA.mockup';
+import {ResetMockup} from './Reset.mockup';
 import {OpcUaConnection} from '../../../connection';
 
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-describe('ResetDAMockup', () => {
+describe('ResetMockup', () => {
     describe('static', () => {
         let mockupServer: MockupServer;
         beforeEach(async()=>{
@@ -41,16 +41,16 @@ describe('ResetDAMockup', () => {
             await mockupServer.initialize();
         });
 
-        it('should create ResetDAMockup', async () => {
-            const mockup= new ResetDAMockup(mockupServer.nameSpace,
+        it('should create ResetMockup', async () => {
+            const mockup= new ResetMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
             expect(mockup).to.not.be.undefined;
 
         });
-        it('getResetDAMockupReferenceJSON()',  () => {
-            const mockup = new ResetDAMockup(mockupServer.nameSpace,
+        it('getResetMockupReferenceJSON()',  () => {
+            const mockup = new ResetMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const json = mockup.getResetDAInstanceMockupJSON() as any;
+            const json = mockup.getResetInstanceMockupJSON() as any;
             expect(Object.keys(json).length).to.equal(2);
             expect(json.ResetOp).to.not.be.undefined;
             expect(json.ResetAut).to.not.be.undefined;
@@ -65,7 +65,7 @@ describe('ResetDAMockup', () => {
             this.timeout(10000);
             mockupServer = new MockupServer();
             await mockupServer.initialize();
-            new ResetDAMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
+            new ResetMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
             await mockupServer.start();
             connection = new OpcUaConnection();
             connection.initialize({endpoint: mockupServer.endpoint});

@@ -33,7 +33,7 @@ import {DataAssemblyController} from '../../DataAssemblyController';
 import {MonBinVlv} from '../../activeElement';
 import {Reset} from './Reset';
 import {MockupServer} from '../../../../_utils';
-import {ResetDAMockup} from './ResetDA.mockup';
+import {ResetMockup} from './Reset.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -62,7 +62,7 @@ describe('Reset', () => {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			new ResetDAMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
+			new ResetMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});

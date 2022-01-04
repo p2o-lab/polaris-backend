@@ -37,6 +37,6 @@ class Reset{
 }
 
 ResetRuntime <-- Reset
-ResetDASpec --> Reset : <<uses>>
-ResetDASpec --> ResetDAMockup : <<uses>>
+ResetSpec --> Reset : <<uses>>
+ResetSpec --> ResetMockup : <<uses>>
 @enduml

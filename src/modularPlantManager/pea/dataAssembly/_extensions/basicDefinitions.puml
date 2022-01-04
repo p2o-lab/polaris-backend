@@ -45,7 +45,7 @@ DataAssemblyController "0..1" o-- Interlock
 DataAssemblyController "0..1" o-- LimitMonitoring
 DataAssemblyController "0..1" o-- OpMode
 DataAssemblyController "0..1" o-- OSLevel
-DataAssemblyController "0..1" o-- ResetDA
+DataAssemblyController "0..1" o-- Reset
 DataAssemblyController "0..1" o-- ScaleSettingDA
 DataAssemblyController "0..1" o-- ServiceSourceModeDA
 DataAssemblyController "0..1" o-- SourceModeDA
