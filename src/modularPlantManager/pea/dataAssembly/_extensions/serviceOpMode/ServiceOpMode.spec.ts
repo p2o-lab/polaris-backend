@@ -30,8 +30,8 @@ import {DataAssemblyOptions, OperationMode} from '@p2olab/polaris-interface';
 import * as baseDataAssemblyOptions from '../../operationElement/servParam/anaServParam/AnaServParam.spec.json';
 import {DataAssemblyController} from '../../DataAssemblyController';
 import {MockupServer} from '../../../../_utils';
-import {ServiceOpModeController} from './ServiceOpModeController';
-import {ServiceOpModeDAMockup} from './ServiceOpModeDA.mockup';
+import {ServiceOpMode} from './ServiceOpMode';
+import {ServiceOpModeMockup} from './ServiceOpMode.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -45,10 +45,10 @@ describe('ServiceOpMode', () => {
 
 	describe('static', () => {
 		const emptyOPCUAConnection = new OpcUaConnection();
-		it('should create ServiceOpModeController', () => {
+		it('should create ServiceOpMode', () => {
 
 			const da = new DataAssemblyController(dataAssemblyOptions, emptyOPCUAConnection) as any;
-			const opMode = new ServiceOpModeController(da);
+			const opMode = new ServiceOpMode(da);
 
 			expect(opMode).to.not.be.undefined;
 			expect((da).communication.StateChannel).to.not.be.undefined;
@@ -71,7 +71,7 @@ describe('ServiceOpMode', () => {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			new ServiceOpModeDAMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
+			new ServiceOpModeMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});
@@ -87,7 +87,7 @@ describe('ServiceOpMode', () => {
 		it('should subscribe successfully', async () => {
 
 			const dataAssemblyController = new DataAssemblyController(dataAssemblyOptions, connection) as any;
-			new ServiceOpModeController(dataAssemblyController);
+			new ServiceOpMode(dataAssemblyController);
 			await dataAssemblyController.subscribe();
 			await connection.startMonitoring();
 			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
@@ -108,20 +108,20 @@ describe('ServiceOpMode', () => {
 	describe('dynamic functions, Offline', async () => {
 		let mockupServer: MockupServer;
 		let connection: OpcUaConnection;
-		let mockup: ServiceOpModeDAMockup;
-		let opMode: ServiceOpModeController;
+		let mockup: ServiceOpModeMockup;
+		let opMode: ServiceOpMode;
 		let dataAssemblyController: any;
 
 		beforeEach(async function () {
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			mockup = new ServiceOpModeDAMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
+			mockup = new ServiceOpModeMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});
 
 			dataAssemblyController = new DataAssemblyController(dataAssemblyOptions, connection) as any;
-			opMode = new ServiceOpModeController(dataAssemblyController);
+			opMode = new ServiceOpMode(dataAssemblyController);
 			await connection.connect();
 			await dataAssemblyController.subscribe();
 			await connection.startMonitoring();
@@ -162,21 +162,21 @@ describe('ServiceOpMode', () => {
 	describe('dynamic functions, Operator', async () => {
 		let mockupServer: MockupServer;
 		let connection: OpcUaConnection;
-		let mockup: ServiceOpModeDAMockup;
-		let opMode: ServiceOpModeController;
+		let mockup: ServiceOpModeMockup;
+		let opMode: ServiceOpMode;
 		let dataAssemblyController: any;
 
 		beforeEach(async function () {
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
 			// initialize with operator
-			mockup = new ServiceOpModeDAMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable', OperationMode.Operator);
+			mockup = new ServiceOpModeMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable', OperationMode.Operator);
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});
 
 			dataAssemblyController = new DataAssemblyController(dataAssemblyOptions, connection) as any;
-			opMode = new ServiceOpModeController(dataAssemblyController);
+			opMode = new ServiceOpMode(dataAssemblyController);
 			await connection.connect();
 			await dataAssemblyController.subscribe();
 			await connection.startMonitoring();
@@ -213,20 +213,20 @@ describe('ServiceOpMode', () => {
 	describe('dynamic functions, Automatic', async () => {
 		let mockupServer: MockupServer;
 		let connection: OpcUaConnection;
-		let mockup: ServiceOpModeDAMockup;
-		let opMode: ServiceOpModeController;
+		let mockup: ServiceOpModeMockup;
+		let opMode: ServiceOpMode;
 		let dataAssemblyController: any;
 
 		beforeEach(async function () {
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
 			// initialize with Automatic
-			mockup = new ServiceOpModeDAMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable', OperationMode.Automatic);
+			mockup = new ServiceOpModeMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable', OperationMode.Automatic);
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});
 			dataAssemblyController = new DataAssemblyController(dataAssemblyOptions, connection) as any;
-			opMode = new ServiceOpModeController(dataAssemblyController);
+			opMode = new ServiceOpMode(dataAssemblyController);
 			await connection.connect();
 			await dataAssemblyController.subscribe();
 			await connection.startMonitoring();

@@ -39,7 +39,7 @@ interface ServiceOpModeRuntime{
 	+ StateOffAct: DataItem<boolean>
 }
 
-class ServiceOpModeController{
+class ServiceOpMode{
     - dAController: any
     - initialize(): void
     - writeOpMode(opMode: OperationMode): Promise<void>
@@ -54,8 +54,8 @@ class ServiceOpModeController{
     + isAutomaticState(): boolean
 }
 
-ServiceOpModeRuntime <-- ServiceOpModeController
-ServiceOpModeSpec --> ServiceOpModeController : <<uses>>
+ServiceOpModeRuntime <-- ServiceOpMode
+ServiceOpModeSpec --> ServiceOpMode : <<uses>>
 ServiceOpModeSpec --> ServiceOpModeMockup : <<uses>>
 
 @enduml

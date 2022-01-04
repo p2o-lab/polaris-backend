@@ -41,7 +41,7 @@ export type ServiceOpModeRuntime = BaseDataAssemblyRuntime & {
 	StateOffAct: DataItem<boolean>;
 };
 
-export class ServiceOpModeController {
+export class ServiceOpMode {
 
 	private dAController: any;
 

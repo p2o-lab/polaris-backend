@@ -27,14 +27,14 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../_utils';
 import {OpcUaConnection} from '../../../connection';
-import {ServiceOpModeDAMockup} from './ServiceOpModeDA.mockup';
+import {ServiceOpModeMockup} from './ServiceOpMode.mockup';
 import {OperationMode} from '@p2olab/polaris-interface';
 
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-describe('ServiceOpModeDAMockup', () => {
+describe('ServiceOpModeMockup', () => {
     describe('', () => {
         let mockupServer: MockupServer;
         beforeEach(async()=>{
@@ -42,15 +42,15 @@ describe('ServiceOpModeDAMockup', () => {
             await mockupServer.initialize();
         });
 
-        it('should create ServiceOpModeDAMockup', async () => {
-            const mockup= new ServiceOpModeDAMockup(mockupServer.nameSpace,
+        it('should create ServiceOpModeMockup', async () => {
+            const mockup= new ServiceOpModeMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
             expect(mockup).to.not.be.undefined;
         });
 
-        it('ServiceOpModeDAMockupReferenceJSON()',  () => {
-            const mockup = new ServiceOpModeDAMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
-            const json = mockup.getServiceOpModeDAInstanceMockupJSON() as any;
+        it('ServiceOpModeMockupReferenceJSON()',  () => {
+            const mockup = new ServiceOpModeMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
+            const json = mockup.getServiceOpModeInstanceMockupJSON() as any;
             expect(Object.keys(json).length).to.equal(10);
             expect(json.StateChannel).to.not.be.undefined;
             expect(json.StateOffAut).to.not.be.undefined;
@@ -65,15 +65,15 @@ describe('ServiceOpModeDAMockup', () => {
         });
 
         it('get stateOpAct', async () => {
-            const mockup= new ServiceOpModeDAMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
+            const mockup= new ServiceOpModeMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
             expect(mockup.stateOpAct).to.be.false;
         });
         it('get stateAutAct', async () => {
-            const mockup= new ServiceOpModeDAMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
+            const mockup= new ServiceOpModeMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
             expect(mockup.stateAutAct).to.be.false;
         });
         it('get stateOffAct', async () => {
-            const mockup= new ServiceOpModeDAMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
+            const mockup= new ServiceOpModeMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
             expect(mockup.stateOffAct).to.be.true;
         });
 
@@ -81,14 +81,14 @@ describe('ServiceOpModeDAMockup', () => {
     describe('dynamic', () => {
 
         let mockupServer: MockupServer;
-        let mockup: ServiceOpModeDAMockup;
+        let mockup: ServiceOpModeMockup;
         let connection: OpcUaConnection;
 
         beforeEach(async function () {
             this.timeout(10000);
             mockupServer = new MockupServer();
             await mockupServer.initialize();
-            mockup = new ServiceOpModeDAMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
+            mockup = new ServiceOpModeMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
             await mockupServer.start();
             connection = new OpcUaConnection();
             connection.initialize({endpoint: mockupServer.endpoint});
