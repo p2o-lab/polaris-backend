@@ -48,7 +48,7 @@ import {ClientMonitoredItemGroup} from 'node-opcua-client/source/client_monitore
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Category} from 'typescript-logging';
 import {catOpcUA} from '../../../logging';
-import {v4 as uuidv4} from 'uuid';
+import {IDProvider} from '../../_utils/idProvider/IDProvider';
 
 export interface OpcUaConnectionSettings{
 	endpoint: string;
@@ -113,7 +113,7 @@ type OpcUaConnectionEmitter = StrictEventEmitter<EventEmitter, OpcUaConnectionEv
 
 export class OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionEmitter) {
 
-	public readonly id: string = uuidv4();
+	public readonly id: string = IDProvider.generateIdentifier();
 	public readonly eventEmitter: EventEmitter = new EventEmitter();
 	private readonly logger: Category = catOpcUA;
 

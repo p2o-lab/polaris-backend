@@ -31,7 +31,7 @@ import {Application} from 'express';
 import {MockupServer} from '../../../modularPlantManager/_utils';
 import {AnaViewMockup} from '../../../modularPlantManager/pea/dataAssembly/indicatorElement/AnaView/AnaView.mockup';
 import * as peaOptions from '../../../modularPlantManager/peaOptions.spec.json';
-import {ServiceControlMockup} from '../../../modularPlantManager/pea/dataAssembly/ServiceControl/ServiceControl.mockup';
+import {ServiceControlMockup} from '../../../modularPlantManager/pea/dataAssembly/serviceControl/ServiceControl.mockup';
 import {expect} from 'chai';
 import {AnaServParamMockup} from '../../../modularPlantManager/pea/dataAssembly/operationElement/servParam/anaServParam/AnaServParam.mockup';
 import * as peaOptionsServices from '../../../modularPlantManager/peaOptions_testservice.spec.json';

@@ -22,31 +22,42 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
- 
-@startuml
 
-skinparam monochrome false
+import * as chai from 'chai';
+import * as chaiAsPromised from 'chai-as-promised';
+import {IDProvider} from './IDProvider';
 
-participant POL
-participant DataAssemblyController
+chai.use(chaiAsPromised);
+const expect = chai.expect;
 
-rnote over DataAssemblyController
- State = false
-endrnote
+describe('IDProvider', () => {
 
+	describe('get identifier', () => {
 
-POL --> DataAssemblyController : Set := true
-POL <-- DataAssemblyController : Set := false
-rnote over DataAssemblyController
- State = true
-endrnote
-POL <-- DataAssemblyController : State == true
-...
-POL --> DataAssemblyController : Reset := true
-POL <-- DataAssemblyController : Reset := false
-rnote over DataAssemblyController
- State = false
-endrnote
-POL <-- DataAssemblyController : State == false
+		it('should create Identifier', () => {
+			expect(IDProvider.generateIdentifier()).to.not.throw;
+		});
 
-@enduml
+		it('should return identifier as string', () => {
+			const result = IDProvider.generateIdentifier();
+			expect(result).to.be.not.undefined;
+			expect(typeof result).to.equal('string');
+		});
+	});
+
+	describe('validate identifier', () => {
+
+		it('should work with valid uuid', async () => {
+			expect(IDProvider.validIdentifier('6ec0bd7f-11c0-43da-975e-2a8ad9ebae0b')).to.equal(true);
+		});
+
+		it('should fail with invalid uuid', async () => {
+			expect(IDProvider.validIdentifier('invalid154+#0')).to.equal(false);
+		});
+
+		it('should fail with empty uuid', async () => {
+			expect(IDProvider.validIdentifier('')).to.equal(false);
+		});
+
+	});
+});

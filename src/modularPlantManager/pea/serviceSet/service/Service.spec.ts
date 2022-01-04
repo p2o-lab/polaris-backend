@@ -40,7 +40,7 @@ import * as peaOptionsServices from '../../../peaOptions_testservice.spec.json';
 
 import {MockupServer} from '../../../_utils';
 import {AnaViewMockup} from '../../dataAssembly/indicatorElement/AnaView/AnaView.mockup';
-import {ServiceControlMockup} from '../../dataAssembly/ServiceControl/ServiceControl.mockup';
+import {ServiceControlMockup} from '../../dataAssembly/serviceControl/ServiceControl.mockup';
 import {AnaServParamMockup} from '../../dataAssembly/operationElement/servParam/anaServParam/AnaServParam.mockup';
 import {AnaServParam} from '../../dataAssembly';
 import {AnaProcessValueInMockup} from '../../dataAssembly/inputElement/processValueIn/AnaProcessValueIn/AnaProcessValueIn.mockup';

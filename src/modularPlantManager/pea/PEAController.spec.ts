@@ -30,7 +30,7 @@ import {MockupServer} from '../_utils';
 import * as peaOptions from '../peaOptions.spec.json';
 import {PEAOptions, ServiceCommand} from '@p2olab/polaris-interface';
 import {AnaViewMockup} from './dataAssembly/indicatorElement/AnaView/AnaView.mockup';
-import {ServiceControlMockup} from './dataAssembly/ServiceControl/ServiceControl.mockup';
+import {ServiceControlMockup} from './dataAssembly/serviceControl/ServiceControl.mockup';
 import {ServiceState} from './serviceSet/service/enum';
 import {Service} from './serviceSet';
 

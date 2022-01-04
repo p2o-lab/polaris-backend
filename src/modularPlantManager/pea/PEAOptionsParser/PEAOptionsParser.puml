@@ -23,14 +23,22 @@
  * SOFTWARE.
  */
  
-export * from './baseFunction/_helper';
-export * from './activeElement';
-export * from './baseFunction';
-export * from './diagnosticElement';
-export * from './indicatorElement';
-export * from './inputElement';
-export * from './operationElement';
-export * from './DataAssemblyController';
-export * from './DataAssemblyControllerFactory';
-export * from '../serviceSet/service/enum';
-export * from './serviceControl/ServiceControl';
+@startuml
+'https://plantuml.com/class-diagram
+!include ../../ModularPlantManager.puml
+class PEAOptionsParser{
++ {static} createPEAOptions(pimadIdentifier: string, manager: ModularPlantManager): Promise<PEAOptions>
+- {static} createOptionsArrays(peaModel: PEAModel): PEAOptionsParserInterface
+- {static} createDataAssemblyOptionsArray(dataAssemblyModels: DataAssemblyModel[]): DataAssemblyOptions[]
+- {static} createServiceOptionsArray(serviceModels: ServiceModel[]): ServiceOptions[]
+- {static} createProcedureOptionsArray(procedureModels: ProcedureModel[]): ProcedureOptions[]
+- {static} createDataAssemblyOptions(dataAssemblyModel: DataAssemblyModel): DataAssemblyOptions
+}
+interface PEAModel
+interface PEAOptions
+
+ModularPlantManager  <..> PEAOptionsParser: <<use>>
+
+PEAOptionsParser ..>PEAModel : <<use>>
+PEAOptionsParser ..>PEAOptions : <<creates>>
+@enduml

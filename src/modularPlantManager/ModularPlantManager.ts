@@ -32,8 +32,7 @@ import {POLService, POLServiceFactory} from './polService';
 import {Player, Recipe} from './recipe';
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
-import {v4 as uuidv4} from 'uuid';
-import {PiMAdParser} from './pea/PiMAdParser/PiMAdParser';
+import {PEAOptionsParser} from './pea/PEAOptionsParser/PEAOptionsParser';
 import PiMAdResponse = Backbone.PiMAdResponse;
 
 
@@ -103,11 +102,6 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 		this._autoreset = value;
 	}
 
-	generateUniqueIdentifier(): string {
-		// the extinction of all life on earth will occur long before you have a collision (with uuid) (stackoverflow.com)
-		const identifier = uuidv4();
-		return identifier;
-	}
 
 	/**
 	 * get PEAController by given identifier
@@ -185,7 +179,7 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 	public async loadPEAController(pimadIdentifier: string, protectedPEAs = false): Promise<PEAController[]>{
 		const newPEAs: PEAController[] = [];
 		if (pimadIdentifier) {
-			const peaOptions: PEAOptions = await PiMAdParser.createPEAOptions(pimadIdentifier, this);
+			const peaOptions: PEAOptions = await PEAOptionsParser.createPEAOptions(pimadIdentifier, this);
 			newPEAs.push(new PEAController(peaOptions, protectedPEAs));
 			this.peas.push(...newPEAs);
 			this.setEventListeners(newPEAs);

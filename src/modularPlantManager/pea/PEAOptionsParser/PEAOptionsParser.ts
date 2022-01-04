@@ -26,8 +26,9 @@
 import {DataAssemblyModel, DataAssemblyOptions, DataItemModel, PEAModel, PEAOptions, ProcedureModel, ServiceControlOptions, ServiceModel, ServiceOptions} from '@p2olab/polaris-interface';
 import {ProcedureOptions} from '@p2olab/polaris-interface/dist/service/options';
 import {ModularPlantManager} from '../../ModularPlantManager';
+import {IDProvider} from '../../_utils/idProvider/IDProvider';
 
-export interface PiMAdParserInterface{
+export interface PEAOptionsParserInterface{
      dataAssemblyOptionsArray: DataAssemblyOptions[];
      serviceOptionsArray: ServiceOptions[];
 }
@@ -35,29 +36,29 @@ export interface PiMAdParserInterface{
 /**
  * This class helps parsing the PEAModel coming from PiMAd for creating PEAOptions
  */
-export class PiMAdParser {
+export class PEAOptionsParser {
 
     /**
      * parent function, which will be called in ModularPlantManager
-     * @param pimadIdentifier {string} uuid4
+     * @param pimadIdentifier {string}
      * @param manager {ModularPlantManager}
      * @return {Promise<PEAOptions>}
      */
     public static async createPEAOptions(pimadIdentifier: string, manager: ModularPlantManager): Promise<PEAOptions>{
         const peaModel: PEAModel = await manager.getPEAFromPimadPool(pimadIdentifier);
-        const pimadParserObject = PiMAdParser.createOptionsArrays(peaModel);
+        const parsedOptions = PEAOptionsParser.createOptionsArrays(peaModel);
         const endpoint = peaModel.endpoint[0].value;
 
         return {
             name: peaModel.name,
-            id: manager.generateUniqueIdentifier(),
+            id: IDProvider.generateIdentifier(),
             pimadIdentifier: pimadIdentifier,
-            services: pimadParserObject.serviceOptionsArray,
+            services: parsedOptions.serviceOptionsArray,
             username: '',
             password: '',
             hmiUrl: '',
             opcuaServerUrl: endpoint,
-            dataAssemblies: pimadParserObject.dataAssemblyOptionsArray
+            dataAssemblies: parsedOptions.dataAssemblyOptionsArray
         };
     }
 
@@ -65,9 +66,9 @@ export class PiMAdParser {
      * create DataAssemblyOptionsArray and ServiceOptionsArray, which are necessary for PEAOptions
      * @param peaModel{PEAModel}
      * @private
-     * @return {PiMAdParserInterface}
+     * @return {PEAOptionsParserInterface}
      */
-    private static createOptionsArrays(peaModel: PEAModel): PiMAdParserInterface {
+    private static createOptionsArrays(peaModel: PEAModel): PEAOptionsParserInterface {
         const dataAssemblyOptionsArray = this.createDataAssemblyOptionsArray(peaModel.dataAssemblies);
         const servicesOptionsArray = this.createServiceOptionsArray(peaModel.services);
         return {dataAssemblyOptionsArray: dataAssemblyOptionsArray, serviceOptionsArray: servicesOptionsArray};
@@ -81,7 +82,7 @@ export class PiMAdParser {
     private static createDataAssemblyOptionsArray(dataAssemblyModels: DataAssemblyModel[]): DataAssemblyOptions[]{
         const dataAssemblyOptionsArray: DataAssemblyOptions[]=[];
         dataAssemblyModels.forEach(dataAssemblyModel => {
-            const dataAssemblyOptions = PiMAdParser.createDataAssemblyOptions(dataAssemblyModel);
+            const dataAssemblyOptions = PEAOptionsParser.createDataAssemblyOptions(dataAssemblyModel);
             dataAssemblyOptionsArray.push(dataAssemblyOptions);
         });
         return(dataAssemblyOptionsArray);
@@ -96,8 +97,8 @@ export class PiMAdParser {
         const servicesOptionsArray: ServiceOptions[] = [];
         serviceModels.forEach(serviceModel=> {
             const procedureOptionsArray = this.createProcedureOptionsArray(serviceModel.procedures);
-            const serviceDataAssemblyOptions = PiMAdParser.createDataAssemblyOptions(serviceModel.dataAssembly as DataAssemblyModel);
-            const parameters = PiMAdParser.createDataAssemblyOptionsArray(serviceModel.parameters);
+            const serviceDataAssemblyOptions = PEAOptionsParser.createDataAssemblyOptions(serviceModel.dataAssembly as DataAssemblyModel);
+            const parameters = PEAOptionsParser.createDataAssemblyOptionsArray(serviceModel.parameters);
 
             const serviceOptions: ServiceOptions = {
                 name: serviceModel.name,
@@ -139,12 +140,12 @@ export class PiMAdParser {
             });
 
             //healthstateview
-            const procedureDataAssemblyOptions = [PiMAdParser.createDataAssemblyOptions(procedure.dataAssembly as DataAssemblyModel)];
+            const procedureDataAssemblyOptions = [PEAOptionsParser.createDataAssemblyOptions(procedure.dataAssembly as DataAssemblyModel)];
 
-            const procedureParameters = PiMAdParser.createDataAssemblyOptionsArray(procedure.parameters);
-            const reportValues = PiMAdParser.createDataAssemblyOptionsArray(procedure.reportValues);
-            const processValuesIn = PiMAdParser.createDataAssemblyOptionsArray(procedure.processValuesIn);
-            const processValuesOut = PiMAdParser.createDataAssemblyOptionsArray(procedure.processValuesOut);
+            const procedureParameters = PEAOptionsParser.createDataAssemblyOptionsArray(procedure.parameters);
+            const reportValues = PEAOptionsParser.createDataAssemblyOptionsArray(procedure.reportValues);
+            const processValuesIn = PEAOptionsParser.createDataAssemblyOptionsArray(procedure.processValuesIn);
+            const processValuesOut = PEAOptionsParser.createDataAssemblyOptionsArray(procedure.processValuesOut);
 
             const procedureOptions: ProcedureOptions = {
                 id: procedureID,

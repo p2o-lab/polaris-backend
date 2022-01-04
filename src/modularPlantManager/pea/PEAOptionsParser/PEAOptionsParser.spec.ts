@@ -25,14 +25,14 @@
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {PiMAdParser} from './PiMAdParser';
+import {PEAOptionsParser} from './PEAOptionsParser';
 import {ModularPlantManager} from '../../ModularPlantManager';
 
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-describe('PiMAdParser', () => {
+describe('PEAOptionsParser', () => {
     let pimadId='';
     let modularPlantManager: ModularPlantManager;
     before(async ()=>{
@@ -43,7 +43,7 @@ describe('PiMAdParser', () => {
     });
     //TODO: maybe test more
     it('createPEAOptions', async()=>{
-        const peaOptions = await PiMAdParser.createPEAOptions(pimadId, modularPlantManager);
+        const peaOptions = await PEAOptionsParser.createPEAOptions(pimadId, modularPlantManager);
         let k: keyof typeof peaOptions;  // Type is "one" | "two" | "three"
         expect(peaOptions).to.not.empty;
         for (k in peaOptions) {

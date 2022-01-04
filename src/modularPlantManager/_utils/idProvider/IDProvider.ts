@@ -22,22 +22,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
- 
-@startuml
 
-skinparam monochrome false
+import {v4 as uuidv4, validate} from 'uuid';
 
-participant ModularPlantManager
-participant PiMadParser
+export class IDProvider {
 
-ModularPlantManager -> PiMadParser: PiMAdParser.createPEAOptions(...)
+	public static generateIdentifier(): string {
+		// the extinction of all life on earth will occur long before you have a collision (with uuid) ;)
+		// (stackoverflow.com)
+		return uuidv4();
+	}
 
-PiMadParser ->ModularPlantManager: getPEAfromPimadPool()
-ModularPlantManager->PiMadParser: PEAModel
-PiMadParser->PiMadParser: createOptionsArrays using PEAModel
-PiMadParser->ModularPlantManager: generateUniqueIdentifier()
-ModularPlantManager->PiMadParser: uuidv4
-PiMadParser->PiMadParser: create PEAOptions
-PiMadParser ->ModularPlantManager: PEAOptions
-
-@enduml
+	public static validIdentifier(identifier: string): boolean {
+		return validate(identifier);
+	}
+}

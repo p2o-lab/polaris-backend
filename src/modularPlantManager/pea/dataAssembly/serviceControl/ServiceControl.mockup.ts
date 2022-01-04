@@ -33,7 +33,7 @@ import {ServiceMtpCommand, ServiceState, ServiceStateString} from '../../service
 import {getWQCMockupReferenceJSON, WQCMockup} from '../baseFunction/wqc/WQC.mockup';
 import {getOSLevelMockupReferenceJSON} from '../baseFunction/osLevel/OSLevel.mockup';
 import {DataAssemblyControllerMockup} from '../DataAssemblyController.mockup';
-import {MtpStateMachine, UserDefinedActions, UserDefinedGuard} from '../../StateMachine/MtpStateMachine';
+import {MtpStateMachine, UserDefinedActions, UserDefinedGuard} from '../../stateMachine/MtpStateMachine';
 
 export function getServiceControlMockupReferenceJSON(
     namespace: number,

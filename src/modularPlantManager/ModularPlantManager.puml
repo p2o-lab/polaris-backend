@@ -30,7 +30,7 @@
 !include ./polService/POLService.puml
 !include ./recipe/Player.puml
 !include ./pea/PEAController.puml
-!include ./pea/PiMAdParser/PiMAdParser.puml
+!include ./pea/PEAOptionsParser/PEAOptionsParser.puml
 
 class ModularPlantManager{
     + //readonly// recipes: Recipe[]

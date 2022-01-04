@@ -23,14 +23,21 @@
  * SOFTWARE.
  */
  
-export * from './baseFunction/_helper';
-export * from './activeElement';
-export * from './baseFunction';
-export * from './diagnosticElement';
-export * from './indicatorElement';
-export * from './inputElement';
-export * from './operationElement';
-export * from './DataAssemblyController';
-export * from './DataAssemblyControllerFactory';
-export * from '../serviceSet/service/enum';
-export * from './serviceControl/ServiceControl';
+@startuml
+
+skinparam monochrome false
+
+participant ModularPlantManager
+participant PiMadParser
+
+ModularPlantManager -> PiMadParser: PEAOptionsParser.createPEAOptions(...)
+
+PiMadParser ->ModularPlantManager: getPEAfromPimadPool()
+ModularPlantManager->PiMadParser: PEAModel
+PiMadParser->PiMadParser: createOptionsArrays using PEAModel
+PiMadParser->ModularPlantManager: generateUniqueIdentifier()
+ModularPlantManager->PiMadParser: uuidv4
+PiMadParser->PiMadParser: create PEAOptions
+PiMadParser ->ModularPlantManager: PEAOptions
+
+@enduml
