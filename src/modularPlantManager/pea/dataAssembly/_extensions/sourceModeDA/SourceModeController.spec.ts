@@ -87,20 +87,21 @@ describe('SourceModeController', () => {
 
 		it('should subscribe successfully', async () => {
 
-			const da1 = new DataAssemblyController(dataAssemblyOptions, connection) as any;
-			new SourceModeController(da1);
+			const dataAssemblyController = new DataAssemblyController(dataAssemblyOptions, connection) as any;
+			new SourceModeController(dataAssemblyController);
 
 			await connection.connect();
-			const pv = da1.subscribe();
+			await dataAssemblyController.subscribe();
 			await connection.startMonitoring();
-			await pv;
-			expect(da1.communication.SrcChannel.value).equal(false);
-			expect(da1.communication.SrcManAut.value).equal(false);
-			expect(da1.communication.SrcIntAut.value).equal(false);
-			expect(da1.communication.SrcIntOp.value).equal(false);
-			expect(da1.communication.SrcManOp.value).equal(false);
-			expect(da1.communication.SrcIntAct.value).equal(true);
-			expect(da1.communication.SrcManAct.value).equal(false);
+			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
+			
+			expect(dataAssemblyController.communication.SrcChannel.value).equal(false);
+			expect(dataAssemblyController.communication.SrcManAut.value).equal(false);
+			expect(dataAssemblyController.communication.SrcIntAut.value).equal(false);
+			expect(dataAssemblyController.communication.SrcIntOp.value).equal(false);
+			expect(dataAssemblyController.communication.SrcManOp.value).equal(false);
+			expect(dataAssemblyController.communication.SrcIntAct.value).equal(true);
+			expect(dataAssemblyController.communication.SrcManAct.value).equal(false);
 		}).timeout(5000);
 	});
 
@@ -109,7 +110,7 @@ describe('SourceModeController', () => {
 		let connection: OpcUaConnection;
 		let mockup: SourceModeDAMockup;
 		let sourceMode: SourceModeController;
-		let da1: any;
+		let dataAssemblyController: any;
 
 		beforeEach(async function () {
 			mockupServer = new MockupServer();
@@ -127,13 +128,14 @@ describe('SourceModeController', () => {
 
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});
-			da1 = new DataAssemblyController(dataAssemblyOptions, connection);
-			sourceMode = new SourceModeController(da1);
+			dataAssemblyController = new DataAssemblyController(dataAssemblyOptions, connection);
+			sourceMode = new SourceModeController(dataAssemblyController);
 			await connection.connect();
-			const pv = da1.subscribe();
+			await dataAssemblyController.subscribe();
 			await connection.startMonitoring();
-			await pv;
+			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
 		});
+		
 		afterEach(async function () {
 			this.timeout(4000);
 			await connection.disconnect();
@@ -149,14 +151,14 @@ describe('SourceModeController', () => {
 		});
 		it('setToManualalSourceMode(), nothing should happen', async () => {
 			await sourceMode.setToManualSourceMode();
-			expect(da1.communication.SrcManAct.value).to.be.true;
-			expect(da1.communication.SrcIntAct.value).to.be.false;
+			expect(dataAssemblyController.communication.SrcManAct.value).to.be.true;
+			expect(dataAssemblyController.communication.SrcIntAct.value).to.be.false;
 		});
 		it('writeSourceMode, should set Intern', async () => {
 			await sourceMode.writeSourceMode(SourceMode.Intern);
 			await new Promise(f => setTimeout(f, 500)); // we have to wait for emit change
-			expect(da1.communication.SrcManAct.value).to.be.false;
-			expect(da1.communication.SrcIntAct.value).to.be.true;
+			expect(dataAssemblyController.communication.SrcManAct.value).to.be.false;
+			expect(dataAssemblyController.communication.SrcIntAct.value).to.be.true;
 		}).timeout(4000);
 
 		it('waitForSourceModeToPassSpecificTest, promise should resolve instantly', async () => {
@@ -164,7 +166,7 @@ describe('SourceModeController', () => {
 		});
 
 		it('waitForSourceModeToPassSpecificTest, promise should resolve after a while', async () => {
-			await da1.communication.SrcIntOp.write(true);
+			await dataAssemblyController.communication.SrcIntOp.write(true);
 			await sourceMode.waitForSourceModeToPassSpecificTest(SourceMode.Intern);
 		}).timeout(4000);
 
@@ -178,7 +180,7 @@ describe('SourceModeController', () => {
 		let mockupServer: MockupServer;
 		let connection: OpcUaConnection;
 		let sourceMode: SourceModeController;
-		let da1: any;
+		let dataAssemblyController: any;
 
 		beforeEach(async function () {
 			mockupServer = new MockupServer();
@@ -192,12 +194,12 @@ describe('SourceModeController', () => {
 
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});
-			da1 = new DataAssemblyController(dataAssemblyOptions, connection);
-			sourceMode = new SourceModeController(da1);
+			dataAssemblyController = new DataAssemblyController(dataAssemblyOptions, connection);
+			sourceMode = new SourceModeController(dataAssemblyController);
 			await connection.connect();
-			const pv = da1.subscribe();
+			await dataAssemblyController.subscribe();
 			await connection.startMonitoring();
-			await pv;
+			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
 		});
 
 		afterEach(async function () {
@@ -218,17 +220,17 @@ describe('SourceModeController', () => {
 		it('writeSourceMode, should set Manual', async () => {
 			await sourceMode.writeSourceMode(SourceMode.Manual);
 			await new Promise(f => setTimeout(f, 500)); // we have to wait for emit change
-			expect(da1.communication.SrcManAct.value).to.be.true;
-			expect(da1.communication.SrcIntAct.value).to.be.false;
+			expect(dataAssemblyController.communication.SrcManAct.value).to.be.true;
+			expect(dataAssemblyController.communication.SrcIntAct.value).to.be.false;
 		}).timeout(4000);
 
 		it('waitForSourceModeToPassSpecificTest, promise should resolve instantly', async () => {
-			da1.communication.SrcManAct.value = true;
+			dataAssemblyController.communication.SrcManAct.value = true;
 			await sourceMode.waitForSourceModeToPassSpecificTest(SourceMode.Manual);
 		});
 
 		it('waitForSourceModeToPassSpecificTest, promise should resolve after a while', async () => {
-			await da1.communication.SrcManOp.write(true);
+			await dataAssemblyController.communication.SrcManOp.write(true);
 			await sourceMode.waitForSourceModeToPassSpecificTest(SourceMode.Manual);
 		}).timeout(4000);
 
@@ -239,8 +241,8 @@ describe('SourceModeController', () => {
 
 		it('setToManualSourceMode()', async () => {
 			await sourceMode.setToManualSourceMode();
-			expect(da1.communication.SrcManAct.value).to.be.true;
-			expect(da1.communication.SrcIntAct.value).to.be.false;
+			expect(dataAssemblyController.communication.SrcManAct.value).to.be.true;
+			expect(dataAssemblyController.communication.SrcIntAct.value).to.be.false;
 		}).timeout(4000);
 	});
 

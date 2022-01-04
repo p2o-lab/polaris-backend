@@ -34,7 +34,7 @@ chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('LimitMonitoringDAMockup', () => {
-    describe('', () => {
+    describe('static', () => {
         let mockupServer: MockupServer;
         beforeEach(async()=>{
             mockupServer = new MockupServer();
@@ -58,7 +58,6 @@ describe('LimitMonitoringDAMockup', () => {
                 mockupServer.rootObject, 'Variable', DataType.Int32);
             const json = mockup.getLimitMonitoringDAInstanceMockupJSON();
             expect(Object.keys(json).length).to.equal(18);
-            //TODO more testing?
         });
 
     });

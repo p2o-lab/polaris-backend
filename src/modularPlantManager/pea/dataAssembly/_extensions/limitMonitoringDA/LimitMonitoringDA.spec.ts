@@ -50,34 +50,34 @@ describe('LimitMonitoring', () => {
 		const emptyOPCUAConnection = new OpcUaConnection();
 		it('should create LimitMonitoring', async () => {
 
-			const da1 = new AnaMon(dataAssemblyOptions, emptyOPCUAConnection);
-			const limitMonitoring = new LimitMonitoring(da1);
+			const dataAssemblyController = new AnaMon(dataAssemblyOptions, emptyOPCUAConnection);
+			const limitMonitoring = new LimitMonitoring(dataAssemblyController);
 
 			expect(limitMonitoring).to.not.be.undefined;
 
-			expect(da1.communication.VAHEn).to.not.be.undefined;
-			expect(da1.communication.VAHLim).to.not.be.undefined;
-			expect(da1.communication.VAHAct).to.not.be.undefined;
+			expect(dataAssemblyController.communication.VAHEn).to.not.be.undefined;
+			expect(dataAssemblyController.communication.VAHLim).to.not.be.undefined;
+			expect(dataAssemblyController.communication.VAHAct).to.not.be.undefined;
 
-			expect(da1.communication.VWHEn).to.not.be.undefined;
-			expect(da1.communication.VWHLim).to.not.be.undefined;
-			expect(da1.communication.VWHAct).to.not.be.undefined;
+			expect(dataAssemblyController.communication.VWHEn).to.not.be.undefined;
+			expect(dataAssemblyController.communication.VWHLim).to.not.be.undefined;
+			expect(dataAssemblyController.communication.VWHAct).to.not.be.undefined;
 
-			expect(da1.communication.VTHEn).to.not.be.undefined;
-			expect(da1.communication.VTHLim).to.not.be.undefined;
-			expect(da1.communication.VTHAct).to.not.be.undefined;
+			expect(dataAssemblyController.communication.VTHEn).to.not.be.undefined;
+			expect(dataAssemblyController.communication.VTHLim).to.not.be.undefined;
+			expect(dataAssemblyController.communication.VTHAct).to.not.be.undefined;
 
-			expect(da1.communication.VTLEn).to.not.be.undefined;
-			expect(da1.communication.VTLLim).to.not.be.undefined;
-			expect(da1.communication.VTLAct).to.not.be.undefined;
+			expect(dataAssemblyController.communication.VTLEn).to.not.be.undefined;
+			expect(dataAssemblyController.communication.VTLLim).to.not.be.undefined;
+			expect(dataAssemblyController.communication.VTLAct).to.not.be.undefined;
 
-			expect(da1.communication.VWLEn).to.not.be.undefined;
-			expect(da1.communication.VWLLim).to.not.be.undefined;
-			expect(da1.communication.VWLAct).to.not.be.undefined;
+			expect(dataAssemblyController.communication.VWLEn).to.not.be.undefined;
+			expect(dataAssemblyController.communication.VWLLim).to.not.be.undefined;
+			expect(dataAssemblyController.communication.VWLAct).to.not.be.undefined;
 
-			expect(da1.communication.VALEn).to.not.be.undefined;
-			expect(da1.communication.VALLim).to.not.be.undefined;
-			expect(da1.communication.VALAct).to.not.be.undefined;
+			expect(dataAssemblyController.communication.VALEn).to.not.be.undefined;
+			expect(dataAssemblyController.communication.VALLim).to.not.be.undefined;
+			expect(dataAssemblyController.communication.VALAct).to.not.be.undefined;
 		});
 	});
 
@@ -104,35 +104,35 @@ describe('LimitMonitoring', () => {
 
 		it('should subscribe successfully', async () => {
 
-			const da1 = new DataAssemblyController(dataAssemblyOptions, connection) as any;
-			new LimitMonitoring(da1);
-			const pv = da1.subscribe();
+			const dataAssemblyController = new DataAssemblyController(dataAssemblyOptions, connection) as any;
+			new LimitMonitoring(dataAssemblyController);
+			await dataAssemblyController.subscribe();
 			await connection.startMonitoring();
-			await pv;
+			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
 			
-			expect(da1.communication.VAHEn.value).to.equal(false);
-			expect(da1.communication.VAHLim.value).to.equal(0);
-			expect(da1.communication.VAHAct.value).to.equal(false);
+			expect(dataAssemblyController.communication.VAHEn.value).to.equal(false);
+			expect(dataAssemblyController.communication.VAHLim.value).to.equal(0);
+			expect(dataAssemblyController.communication.VAHAct.value).to.equal(false);
 
-			expect(da1.communication.VWHEn.value).to.equal(false);
-			expect(da1.communication.VWHLim.value).to.equal(0);
-			expect(da1.communication.VWHAct.value).to.equal(false);
+			expect(dataAssemblyController.communication.VWHEn.value).to.equal(false);
+			expect(dataAssemblyController.communication.VWHLim.value).to.equal(0);
+			expect(dataAssemblyController.communication.VWHAct.value).to.equal(false);
 
-			expect(da1.communication.VTHEn.value).to.equal(false);
-			expect(da1.communication.VTHLim.value).to.equal(0);
-			expect(da1.communication.VTHAct.value).to.equal(false);
+			expect(dataAssemblyController.communication.VTHEn.value).to.equal(false);
+			expect(dataAssemblyController.communication.VTHLim.value).to.equal(0);
+			expect(dataAssemblyController.communication.VTHAct.value).to.equal(false);
 
-			expect(da1.communication.VTLEn.value).to.equal(false);
-			expect(da1.communication.VTLLim.value).to.equal(0);
-			expect(da1.communication.VTLAct.value).to.equal(false);
+			expect(dataAssemblyController.communication.VTLEn.value).to.equal(false);
+			expect(dataAssemblyController.communication.VTLLim.value).to.equal(0);
+			expect(dataAssemblyController.communication.VTLAct.value).to.equal(false);
 
-			expect(da1.communication.VWLEn.value).to.equal(false);
-			expect(da1.communication.VWLLim.value).to.equal(0);
-			expect(da1.communication.VWLAct.value).to.equal(false);
+			expect(dataAssemblyController.communication.VWLEn.value).to.equal(false);
+			expect(dataAssemblyController.communication.VWLLim.value).to.equal(0);
+			expect(dataAssemblyController.communication.VWLAct.value).to.equal(false);
 
-			expect(da1.communication.VALEn.value).to.equal(false);
-			expect(da1.communication.VALLim.value).to.equal(0);
-			expect(da1.communication.VALAct.value).to.equal(false);
+			expect(dataAssemblyController.communication.VALEn.value).to.equal(false);
+			expect(dataAssemblyController.communication.VALLim.value).to.equal(0);
+			expect(dataAssemblyController.communication.VALAct.value).to.equal(false);
 		}).timeout(5000);
 	});
 });

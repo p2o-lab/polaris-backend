@@ -55,7 +55,7 @@ class DataAssemblyController{
     + DataAssemblyController(options: DataAssemblyOptions, connection: OpcUaConnection)
 	+ async subscribe(): Promise<DataAssemblyController>
 	+ unsubscribe(): void
-	+ createDataItem(name: string | string[], access: 'read' | 'write', type?: 'number' | 'string' | 'boolean', silent = false): OpcUaDataItem<any>
+	+ createDataItem(name: string | string[], access: 'read' | 'write', type?: 'number' | 'string' | 'boolean', silent = false): DataItem<any>
 	+ getDefaultReadValue(): any | undefined
 	+ getLastDefaultReadValueUpdate(): Date | undefined
 	+ getDefaultWriteValue(): any | undefined

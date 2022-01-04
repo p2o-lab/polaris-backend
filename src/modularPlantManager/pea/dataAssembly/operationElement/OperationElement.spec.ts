@@ -48,10 +48,10 @@ describe('OperationElement', () => {
 		const emptyOPCUAConnection = new OpcUaConnection();
 		it('should create OperationElement', () => {
 			//TODO: fix this, error because of circular dependencies
-			const da1: OperationElement = new OperationElement(dataAssemblyOptions, emptyOPCUAConnection);
-			expect(da1).to.be.not.undefined;
-			expect(da1.osLevel).to.be.not.undefined;
-			expect(da1.communication).to.be.not.undefined;
+			const dataAssemblyController: OperationElement = new OperationElement(dataAssemblyOptions, emptyOPCUAConnection);
+			expect(dataAssemblyController).to.be.not.undefined;
+			expect(dataAssemblyController.osLevel).to.be.not.undefined;
+			expect(dataAssemblyController.communication).to.be.not.undefined;
 		});
 	});
 
@@ -78,14 +78,12 @@ describe('OperationElement', () => {
 
 		it('should subscribe successfully', async () => {
 
-			//TODO: fix this, error because of circular dependencies
-			const da1 = new OperationElement(dataAssemblyOptions, connection);
-			const pv = da1.subscribe();
+			const dataAssemblyController = new OperationElement(dataAssemblyOptions, connection);
+			await dataAssemblyController.subscribe();
 			await connection.startMonitoring();
-			await pv;
-			expect(da1.communication.OSLevel.value).equal(0);
+			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
+			expect(dataAssemblyController.communication.OSLevel.value).equal(0);
 		}).timeout(4000);
-		//TODO test rest of the funcitons
 	});
 
 });

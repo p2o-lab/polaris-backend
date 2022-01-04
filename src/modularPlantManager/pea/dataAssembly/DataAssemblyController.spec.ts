@@ -38,13 +38,13 @@ describe('DataAssembly', () => {
         const emptyOPCUAConnection = new OpcUaConnection();
         it('should create DataAssemblyController', () => {
             expect(() => {
-                const da1 = new DataAssemblyController({
+                const dataAssemblyController = new DataAssemblyController({
                     name: 'name',
                     dataItems: {TagName: 'test', TagDescription: 'test',},
                     metaModelRef: 'analogitem'
                 }, emptyOPCUAConnection);
-                expect(da1.communication.TagName.value).to.equal('test');
-                expect(da1.communication.TagDescription.value).to.equal('test');
+                expect(dataAssemblyController.communication.TagName.value).to.equal('test');
+                expect(dataAssemblyController.communication.TagDescription.value).to.equal('test');
             }).to.not.throw();
         });
 

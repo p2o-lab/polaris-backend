@@ -45,42 +45,42 @@ describe('DIntMon', () => {
 	describe('static', () => {
 		const emptyOPCUAConnection = new OpcUaConnection();
 		it('should create DIntMon', async () => {
-			const da1: DIntMon= new DIntMon(dataAssemblyOptions, emptyOPCUAConnection);
-			expect(da1 instanceof DIntMon).to.equal(true);
+			const dataAssemblyController: DIntMon= new DIntMon(dataAssemblyOptions, emptyOPCUAConnection);
+			expect(dataAssemblyController instanceof DIntMon).to.equal(true);
 
-			expect(da1.tagName).to.equal('Variable');
-			expect(da1.tagDescription).to.equal('Test');
+			expect(dataAssemblyController.tagName).to.equal('Variable');
+			expect(dataAssemblyController.tagDescription).to.equal('Test');
 
-			expect(da1.communication.V).to.not.equal(undefined);
-			expect(da1.communication.WQC).to.not.equal(undefined);
-			expect(da1.communication.VSclMax).to.not.equal(undefined);
-			expect(da1.communication.VSclMin).to.not.equal(undefined);
-			expect(da1.communication.VUnit).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.V).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.WQC).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.VSclMax).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.VSclMin).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.VUnit).to.not.equal(undefined);
 
-			expect(da1.communication.OSLevel).to.not.equal(undefined);
-			expect(da1.communication.VAHEn).to.not.equal(undefined);
-			expect(da1.communication.VAHLim).to.not.equal(undefined);
-			expect(da1.communication.VAHAct).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.OSLevel).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.VAHEn).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.VAHLim).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.VAHAct).to.not.equal(undefined);
 
-			expect(da1.communication.VWHEn).to.not.equal(undefined);
-			expect(da1.communication.VWHLim).to.not.equal(undefined);
-			expect(da1.communication.VWHAct).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.VWHEn).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.VWHLim).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.VWHAct).to.not.equal(undefined);
 
-			expect(da1.communication.VTHEn).to.not.equal(undefined);
-			expect(da1.communication.VTHLim).to.not.equal(undefined);
-			expect(da1.communication.VTHAct).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.VTHEn).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.VTHLim).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.VTHAct).to.not.equal(undefined);
 
-			expect(da1.communication.VTLEn).to.not.equal(undefined);
-			expect(da1.communication.VTLLim).to.not.equal(undefined);
-			expect(da1.communication.VTLAct).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.VTLEn).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.VTLLim).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.VTLAct).to.not.equal(undefined);
 
-			expect(da1.communication.VWLEn).to.not.equal(undefined);
-			expect(da1.communication.VWLLim).to.not.equal(undefined);
-			expect(da1.communication.VWLAct).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.VWLEn).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.VWLLim).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.VWLAct).to.not.equal(undefined);
 
-			expect(da1.communication.VALEn).to.not.equal(undefined);
-			expect(da1.communication.VALLim).to.not.equal(undefined);
-			expect(da1.communication.VALAct).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.VALEn).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.VALLim).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.VALAct).to.not.equal(undefined);
 		});
 	});
 	describe('dynamic', () => {
@@ -106,40 +106,41 @@ describe('DIntMon', () => {
 
 		it('should subscribe successfully', async () => {
 
-			const da1 = new DIntMon(dataAssemblyOptions, connection);
-			const pv =  da1.subscribe();
+			const dataAssemblyController = new DIntMon(dataAssemblyOptions, connection);
+			await dataAssemblyController.subscribe();
 			await connection.startMonitoring();
-			await pv;
-			expect(da1.communication.V.value).equal(0);
-			expect(da1.communication.WQC.value).equal(0);
-			expect(da1.communication.VUnit.value).equal(0);
-			expect(da1.communication.VSclMin.value).equal(0);
-			expect(da1.communication.VSclMax.value).equal(0);
+			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
 
-			expect(da1.communication.OSLevel.value).to.equal(0);
-			expect(da1.communication.VAHEn.value).to.equal(false);
-			expect(da1.communication.VAHLim.value).to.equal(0);
-			expect(da1.communication.VAHAct.value).to.equal(false);
+			expect(dataAssemblyController.communication.V.value).equal(0);
+			expect(dataAssemblyController.communication.WQC.value).equal(0);
+			expect(dataAssemblyController.communication.VUnit.value).equal(0);
+			expect(dataAssemblyController.communication.VSclMin.value).equal(0);
+			expect(dataAssemblyController.communication.VSclMax.value).equal(0);
 
-			expect(da1.communication.VWHEn.value).to.equal(false);
-			expect(da1.communication.VWHLim.value).to.equal(0);
-			expect(da1.communication.VWHAct.value).to.equal(false);
+			expect(dataAssemblyController.communication.OSLevel.value).to.equal(0);
+			expect(dataAssemblyController.communication.VAHEn.value).to.equal(false);
+			expect(dataAssemblyController.communication.VAHLim.value).to.equal(0);
+			expect(dataAssemblyController.communication.VAHAct.value).to.equal(false);
 
-			expect(da1.communication.VTHEn.value).to.equal(false);
-			expect(da1.communication.VTHLim.value).to.equal(0);
-			expect(da1.communication.VTHAct.value).to.equal(false);
+			expect(dataAssemblyController.communication.VWHEn.value).to.equal(false);
+			expect(dataAssemblyController.communication.VWHLim.value).to.equal(0);
+			expect(dataAssemblyController.communication.VWHAct.value).to.equal(false);
 
-			expect(da1.communication.VTLEn.value).to.equal(false);
-			expect(da1.communication.VTLLim.value).to.equal(0);
-			expect(da1.communication.VTLAct.value).to.equal(false);
+			expect(dataAssemblyController.communication.VTHEn.value).to.equal(false);
+			expect(dataAssemblyController.communication.VTHLim.value).to.equal(0);
+			expect(dataAssemblyController.communication.VTHAct.value).to.equal(false);
 
-			expect(da1.communication.VWLEn.value).to.equal(false);
-			expect(da1.communication.VWLLim.value).to.equal(0);
-			expect(da1.communication.VWLAct.value).to.equal(false);
+			expect(dataAssemblyController.communication.VTLEn.value).to.equal(false);
+			expect(dataAssemblyController.communication.VTLLim.value).to.equal(0);
+			expect(dataAssemblyController.communication.VTLAct.value).to.equal(false);
 
-			expect(da1.communication.VALEn.value).to.equal(false);
-			expect(da1.communication.VALLim.value).to.equal(0);
-			expect(da1.communication.VALAct.value).to.equal(false);
+			expect(dataAssemblyController.communication.VWLEn.value).to.equal(false);
+			expect(dataAssemblyController.communication.VWLLim.value).to.equal(0);
+			expect(dataAssemblyController.communication.VWLAct.value).to.equal(false);
+
+			expect(dataAssemblyController.communication.VALEn.value).to.equal(false);
+			expect(dataAssemblyController.communication.VALLim.value).to.equal(0);
+			expect(dataAssemblyController.communication.VALAct.value).to.equal(false);
 
 		}).timeout(4000);
 	});

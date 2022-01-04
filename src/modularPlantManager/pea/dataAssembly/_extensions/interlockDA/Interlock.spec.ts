@@ -48,15 +48,15 @@ describe('Interlock', () => {
 	describe('static', () => {
 		const emptyOPCUAConnection = new OpcUaConnection();
 		it('should create Interlock', () => {
-			const da1 = new DataAssemblyController(dataAssemblyOptions, emptyOPCUAConnection) as MonBinVlv;
-			const interlock = new Interlock(da1); //this will set communication variables
+			const dataAssemblyController = new DataAssemblyController(dataAssemblyOptions, emptyOPCUAConnection) as MonBinVlv;
+			const interlock = new Interlock(dataAssemblyController); //this will set communication variables
 			expect(interlock).to.not.to.undefined;
-			expect(da1.communication.PermEn).to.not.to.undefined;
-			expect(da1.communication.Permit).to.not.to.undefined;
-			expect(da1.communication.IntlEn).to.not.to.undefined;
-			expect(da1.communication.Interlock).to.not.to.undefined;
-			expect(da1.communication.ProtEn).to.not.to.undefined;
-			expect(da1.communication.Protect).to.not.to.undefined;
+			expect(dataAssemblyController.communication.PermEn).to.not.to.undefined;
+			expect(dataAssemblyController.communication.Permit).to.not.to.undefined;
+			expect(dataAssemblyController.communication.IntlEn).to.not.to.undefined;
+			expect(dataAssemblyController.communication.Interlock).to.not.to.undefined;
+			expect(dataAssemblyController.communication.ProtEn).to.not.to.undefined;
+			expect(dataAssemblyController.communication.Protect).to.not.to.undefined;
 		});
 	});
 	describe('dynamic', () => {
@@ -85,18 +85,18 @@ describe('Interlock', () => {
 
 		it('should subscribe successfully', async () => {
 
-			const da1 = new DataAssemblyController(dataAssemblyOptions, connection) as any;
-			new Interlock(da1);
-			const pv = da1.subscribe();
+			const dataAssemblyController = new DataAssemblyController(dataAssemblyOptions, connection) as any;
+			new Interlock(dataAssemblyController);
+			await dataAssemblyController.subscribe();
 			await connection.startMonitoring();
-			await pv;
+			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
 
-			expect(da1.communication.PermEn.value).equal(false);
-			expect(da1.communication.Permit.value).equal(false);
-			expect(da1.communication.IntlEn.value).equal(false);
-			expect(da1.communication.Interlock.value).equal(false);
-			expect(da1.communication.ProtEn.value).equal(false);
-			expect(da1.communication.Protect.value).equal(false);
+			expect(dataAssemblyController.communication.PermEn.value).equal(false);
+			expect(dataAssemblyController.communication.Permit.value).equal(false);
+			expect(dataAssemblyController.communication.IntlEn.value).equal(false);
+			expect(dataAssemblyController.communication.Interlock.value).equal(false);
+			expect(dataAssemblyController.communication.ProtEn.value).equal(false);
+			expect(dataAssemblyController.communication.Protect.value).equal(false);
 		}).timeout(5000);
 	});
 });

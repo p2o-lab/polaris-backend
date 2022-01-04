@@ -47,9 +47,9 @@ describe('IndicatorElement', () => {
 				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/BinMon',
 				dataItems: baseDataAssemblyOptionsStatic
 			};
-			const da1 = new IndicatorElement(dataAssemblyOptions, emptyOPCUAConnection) ;
-			expect(da1.communication.WQC).to.equal(undefined);
-			expect(da1.wqc.WQC).to.equal(0);
+			const dataAssemblyController = new IndicatorElement(dataAssemblyOptions, emptyOPCUAConnection) ;
+			expect(dataAssemblyController.communication.WQC).to.equal(undefined);
+			expect(dataAssemblyController.wqc.WQC).to.equal(0);
 		});
 		it('should create IndicatorElement, dynamic WQC', () => {
 			const dataAssemblyOptions: DataAssemblyOptions = {
@@ -57,9 +57,9 @@ describe('IndicatorElement', () => {
 				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/BinMon',
 				dataItems: baseDataAssemblyOptions
 			};
-			const da1 = new IndicatorElement(dataAssemblyOptions, emptyOPCUAConnection) ;
-			expect(da1.communication.WQC).to.not.be.undefined;
-			expect(da1.wqc.WQC).to.be.undefined;
+			const dataAssemblyController = new IndicatorElement(dataAssemblyOptions, emptyOPCUAConnection) ;
+			expect(dataAssemblyController.communication.WQC).to.not.be.undefined;
+			expect(dataAssemblyController.wqc.WQC).to.be.undefined;
 		});
 	});
 
@@ -91,11 +91,12 @@ describe('IndicatorElement', () => {
 
 		it('should subscribe successfully', async () => {
 
-			const da1 = new IndicatorElement(dataAssemblyOptions, connection);
-			const pv = da1.subscribe();
+			const dataAssemblyController = new IndicatorElement(dataAssemblyOptions, connection);
+			await dataAssemblyController.subscribe();
 			await connection.startMonitoring();
-			await pv;
-			expect(da1.communication.WQC.value).equal(0);
+			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
+
+			expect(dataAssemblyController.communication.WQC.value).equal(0);
 		}).timeout(4000);
 	});
 });

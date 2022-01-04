@@ -46,12 +46,12 @@ describe('DataAssemblyFactory', () => {
 		};
 		const emptyOPCUAConnection = new OpcUaConnection();
 		it('should use default DataAssemblyController when provided type not found', () => {
-			const da1 = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection);
+			const dataAssemblyController = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection);
 
-			expect(da1.toJson()).to.deep.equal({
+			expect(dataAssemblyController.toJson()).to.deep.equal({
 				name: 'Variable',
 			});
-			expect(da1 instanceof DataAssemblyController).to.equal(true);
+			expect(dataAssemblyController instanceof DataAssemblyController).to.equal(true);
 		});
 
 		it('should fail with xyz', () => {

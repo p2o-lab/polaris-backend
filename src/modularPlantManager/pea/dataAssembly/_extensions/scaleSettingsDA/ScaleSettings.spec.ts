@@ -79,13 +79,13 @@ describe('ScaleSettings', () => {
 
 		it('should subscribe successfully', async () => {
 
-			const da1 = new DataAssemblyController(dataAssemblyOptions, connection) as any;
-			new ScaleSettings(da1);
-			const pv = da1.subscribe();
+			const dataAssemblyController = new DataAssemblyController(dataAssemblyOptions, connection) as any;
+			new ScaleSettings(dataAssemblyController);
+			await dataAssemblyController.subscribe();
 			await connection.startMonitoring();
-			await pv;
-			expect(da1.communication.VSclMin.value).equal(0);
-			expect(da1.communication.VSclMax.value).equal(0);
+			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
+			expect(dataAssemblyController.communication.VSclMin.value).equal(0);
+			expect(dataAssemblyController.communication.VSclMax.value).equal(0);
 		}).timeout(5000);
 	});
 });

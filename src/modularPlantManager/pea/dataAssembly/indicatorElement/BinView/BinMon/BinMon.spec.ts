@@ -46,20 +46,20 @@ describe('BinMon', () => {
 	describe('static', () => {
 		const emptyOPCUAConnection = new OpcUaConnection();
 		it('should create BinMon', async () => {
-			const da1: BinMon = new BinMon(dataAssemblyOptions, emptyOPCUAConnection);
+			const dataAssemblyController: BinMon = new BinMon(dataAssemblyOptions, emptyOPCUAConnection);
 
-			expect(da1.tagName).to.equal('Variable');
-			expect(da1.tagDescription).to.equal('Test');
+			expect(dataAssemblyController.tagName).to.equal('Variable');
+			expect(dataAssemblyController.tagDescription).to.equal('Test');
 			
-			expect(da1.communication.WQC).to.not.equal(undefined);
-			expect(da1.communication.V).to.not.equal(undefined);
-			expect(da1.communication.VState0).to.not.equal(undefined);
-			expect(da1.communication.VState1).to.not.equal(undefined);
-			expect(da1.communication.OSLevel).to.not.equal(undefined);
-			expect(da1.communication.VFlutEn).to.not.equal(undefined);
-			expect(da1.communication.VFlutTi).to.not.equal(undefined);
-			expect(da1.communication.VFlutCnt).to.not.equal(undefined);
-			expect(da1.communication.VFlutAct).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.WQC).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.V).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.VState0).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.VState1).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.OSLevel).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.VFlutEn).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.VFlutTi).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.VFlutCnt).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.VFlutAct).to.not.equal(undefined);
 		});
 	});
 	describe('dynamic', () => {
@@ -85,19 +85,20 @@ describe('BinMon', () => {
 
 		it('should subscribe successfully', async () => {
 
-			const da1: BinMon = new BinMon(dataAssemblyOptions, connection);
-			const pv = da1.subscribe();
+			const dataAssemblyController: BinMon = new BinMon(dataAssemblyOptions, connection);
+			await dataAssemblyController.subscribe();
 			await connection.startMonitoring();
-			await pv;
-			expect(da1.communication.WQC.value).equal(0);
-			expect(da1.communication.V.value).equal(false);
-			expect(da1.communication.VState0.value).equal('state0_active');
-			expect(da1.communication.VState1.value).equal('state1_active');
+			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
 
-			expect(da1.communication.VFlutEn.value).equal(false);
-			expect(da1.communication.VFlutAct.value).equal(false);
-			expect(da1.communication.VFlutTi.value).equal(0);
-			expect(da1.communication.VFlutCnt.value).equal(0);
+			expect(dataAssemblyController.communication.WQC.value).equal(0);
+			expect(dataAssemblyController.communication.V.value).equal(false);
+			expect(dataAssemblyController.communication.VState0.value).equal('state0_active');
+			expect(dataAssemblyController.communication.VState1.value).equal('state1_active');
+
+			expect(dataAssemblyController.communication.VFlutEn.value).equal(false);
+			expect(dataAssemblyController.communication.VFlutAct.value).equal(false);
+			expect(dataAssemblyController.communication.VFlutTi.value).equal(0);
+			expect(dataAssemblyController.communication.VFlutCnt.value).equal(0);
 		}).timeout(4000);
 	});
 });

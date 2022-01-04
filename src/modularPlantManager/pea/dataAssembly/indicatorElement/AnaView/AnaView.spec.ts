@@ -45,14 +45,14 @@ describe('AnaView', () => {
 	describe('static', () => {
 		const emptyOPCUAConnection = new OpcUaConnection();
 		it('should create AnaView', async () => {
-			const da1: AnaView = new AnaView(dataAssemblyOptions, emptyOPCUAConnection);
-+			expect(da1.communication.V).to.not.equal(undefined);
-			expect(da1.communication.WQC).to.not.equal(undefined);
-			expect(da1.communication.VSclMax).to.not.equal(undefined);
-			expect(da1.communication.VSclMin).to.not.equal(undefined);
-			expect(da1.communication.VUnit).to.not.equal(undefined);
-			expect(da1.tagName).to.equal('Variable');
-			expect(da1.tagDescription).to.equal('Test');
+			const dataAssemblyController: AnaView = new AnaView(dataAssemblyOptions, emptyOPCUAConnection);
++			expect(dataAssemblyController.communication.V).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.WQC).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.VSclMax).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.VSclMin).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.VUnit).to.not.equal(undefined);
+			expect(dataAssemblyController.tagName).to.equal('Variable');
+			expect(dataAssemblyController.tagDescription).to.equal('Test');
 		});
 	});
 
@@ -79,15 +79,16 @@ describe('AnaView', () => {
 
 		it('should subscribe successfully', async () => {
 
-			const da1: AnaView = new AnaView(dataAssemblyOptions, connection);
-			const pv = da1.subscribe();
+			const dataAssemblyController: AnaView = new AnaView(dataAssemblyOptions, connection);
+			await dataAssemblyController.subscribe();
 			await connection.startMonitoring();
-			await pv;
-			expect(da1.communication.V.value).equal(0);
-			expect(da1.communication.WQC.value).equal(0);
-			expect(da1.communication.VUnit.value).equal(0);
-			expect(da1.communication.VSclMin.value).equal(0);
-			expect(da1.communication.VSclMax.value).equal(0);
+			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
+
+			expect(dataAssemblyController.communication.V.value).equal(0);
+			expect(dataAssemblyController.communication.WQC.value).equal(0);
+			expect(dataAssemblyController.communication.VUnit.value).equal(0);
+			expect(dataAssemblyController.communication.VSclMin.value).equal(0);
+			expect(dataAssemblyController.communication.VSclMax.value).equal(0);
 		}).timeout(4000);
 	});
 });

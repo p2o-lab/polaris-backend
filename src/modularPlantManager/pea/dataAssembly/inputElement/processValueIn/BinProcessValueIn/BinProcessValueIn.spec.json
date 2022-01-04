@@ -9,17 +9,17 @@
     "VExt": {
       "nodeId": "Variable.VExt",
       "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-      "dataType": "xs:IDREF"
+      "dataType": "Boolean"
     },
     "VState0": {
       "nodeId": "Variable.VState0",
       "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-      "dataType": "xs:IDREF"
+      "dataType": "String"
     },
     "VState1": {
       "nodeId": "Variable.VState1",
       "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-      "dataType": "xs:IDREF"
+      "dataType": "String"
   }
 }
 

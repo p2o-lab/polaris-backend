@@ -24,21 +24,21 @@
  */
 
 import {OperationMode} from '@p2olab/polaris-interface';
-import {OpcUaDataItem} from '../../../connection';
+import {DataItem} from '../../../connection';
 import {BaseDataAssemblyRuntime} from '../../DataAssemblyController';
 import {catDataAssembly} from '../../../../../logging';
 
 export type OpModeRuntime = BaseDataAssemblyRuntime & {
-	StateChannel: OpcUaDataItem<boolean>;
-	StateOffAut: OpcUaDataItem<boolean>;
-	StateOpAut: OpcUaDataItem<boolean>;
-	StateAutAut: OpcUaDataItem<boolean>;
-	StateOffOp: OpcUaDataItem<boolean>;
-	StateOpOp: OpcUaDataItem<boolean>;
-	StateAutOp: OpcUaDataItem<boolean>;
-	StateOpAct: OpcUaDataItem<boolean>;
-	StateAutAct: OpcUaDataItem<boolean>;
-	StateOffAct: OpcUaDataItem<boolean>;
+	StateChannel: DataItem<boolean>;
+	StateOffAut: DataItem<boolean>;
+	StateOpAut: DataItem<boolean>;
+	StateAutAut: DataItem<boolean>;
+	StateOffOp: DataItem<boolean>;
+	StateOpOp: DataItem<boolean>;
+	StateAutOp: DataItem<boolean>;
+	StateOpAct: DataItem<boolean>;
+	StateAutAct: DataItem<boolean>;
+	StateOffAct: DataItem<boolean>;
 };
 
 export class OpModeController {
@@ -51,25 +51,25 @@ export class OpModeController {
 	}
 
 	private initialize(): void {
-		this.dAController.communication.StateChannel = this.dAController.createDataItem('StateChannel', 'read', 'boolean');
+		this.dAController.communication.StateChannel = this.dAController.createDataItem('StateChannel', 'boolean');
 
-		this.dAController.communication.StateOffAut = this.dAController.createDataItem('StateOffAut', 'read', 'boolean');
-		this.dAController.communication.StateOpAut = this.dAController.createDataItem('StateOpAut', 'read', 'boolean');
-		this.dAController.communication.StateAutAut = this.dAController.createDataItem('StateAutAut', 'read', 'boolean');
+		this.dAController.communication.StateOffAut = this.dAController.createDataItem('StateOffAut', 'boolean');
+		this.dAController.communication.StateOpAut = this.dAController.createDataItem('StateOpAut', 'boolean');
+		this.dAController.communication.StateAutAut = this.dAController.createDataItem('StateAutAut', 'boolean');
 
-		this.dAController.communication.StateOffOp = this.dAController.createDataItem('StateOffOp', 'write', 'boolean');
-		this.dAController.communication.StateOpOp = this.dAController.createDataItem('StateOpOp', 'write', 'boolean');
-		this.dAController.communication.StateAutOp = this.dAController.createDataItem('StateAutOp', 'write', 'boolean');
+		this.dAController.communication.StateOffOp = this.dAController.createDataItem('StateOffOp', 'boolean', 'write');
+		this.dAController.communication.StateOpOp = this.dAController.createDataItem('StateOpOp', 'boolean', 'write');
+		this.dAController.communication.StateAutOp = this.dAController.createDataItem('StateAutOp', 'boolean', 'write');
 
-		this.dAController.communication.StateOffAct = this.dAController.createDataItem('StateOffAct', 'read', 'boolean');
-		this.dAController.communication.StateOpAct = this.dAController.createDataItem('StateOpAct', 'read', 'boolean');
-		this.dAController.communication.StateAutAct = this.dAController.createDataItem('StateAutAct', 'read', 'boolean');
+		this.dAController.communication.StateOffAct = this.dAController.createDataItem('StateOffAct', 'boolean');
+		this.dAController.communication.StateOpAct = this.dAController.createDataItem('StateOpAct',  'boolean');
+		this.dAController.communication.StateAutAct = this.dAController.createDataItem('StateAutAct', 'boolean');
 	}
 
 	public getOperationMode(): OperationMode {
-		if (this.isOffState()) {
+		if (this.isOfflineState()) {
 			return OperationMode.Offline;
-		} else if (this.isManualState()) {
+		} else if (this.isOperatorState()) {
 			return OperationMode.Operator;
 		} else if (this.isAutomaticState()) {
 			return OperationMode.Automatic;
@@ -82,9 +82,9 @@ export class OpModeController {
 			case OperationMode.Automatic:
 				return this.isAutomaticState();
 			case OperationMode.Operator:
-				return this.isManualState();
+				return this.isOperatorState();
 			case OperationMode.Offline:
-				return this.isOffState();
+				return this.isOfflineState();
 		}
 	}
 
@@ -108,19 +108,19 @@ export class OpModeController {
 	}
 
 	/**
-	 * Set data assembly to automatic operation mode and source to external source
+	 * Set data assembly to automatic operation mode
 	 *
 	 */
 	public async setToAutomaticOperationMode(): Promise<void> {
 		catDataAssembly.info(`[${this.dAController.name}] Current opMode = ${this.getOperationMode()}`);
-		if (this.isOffState()) {
+		if (this.isOfflineState()) {
 			catDataAssembly.trace(`[${this.dAController.name}] First go to Manual state`);
 			this.writeOpMode(OperationMode.Operator);
 			await this.waitForOpModeToPassSpecificTest(OperationMode.Operator);
 		}
 		catDataAssembly.info(`[${this.dAController.name}] Current opMode = ${this.getOperationMode()}`);
 
-		if (this.isManualState()) {
+		if (this.isOperatorState()) {
 			catDataAssembly.trace(`[${this.dAController.name}] Then to automatic`);
 			this.writeOpMode(OperationMode.Automatic);
 			await this.waitForOpModeToPassSpecificTest(OperationMode.Automatic);
@@ -128,11 +128,36 @@ export class OpModeController {
 		catDataAssembly.info(`[${this.dAController.name}] Current opMode = ${this.getOperationMode()}`);
 	}
 
+	/**
+	 * Set data assembly to operator operation mode
+	 *
+	 */
 	public async setToOperatorOperationMode(): Promise<void> {
-		if (!this.isManualState()) {
+		if (!this.isOperatorState()) {
 			this.writeOpMode(OperationMode.Operator);
 			await this.waitForOpModeToPassSpecificTest(OperationMode.Operator);
 		}
+	}
+
+	/**
+	 * Set data assembly to offline operation mode
+	 *
+	 */
+	public async setToOfflineOperationMode(): Promise<void> {
+		catDataAssembly.info(`[${this.dAController.name}] Current opMode = ${this.getOperationMode()}`);
+		if (this.isAutomaticState()) {
+			catDataAssembly.trace(`[${this.dAController.name}] First go to Manual state`);
+			this.writeOpMode(OperationMode.Operator);
+			await this.waitForOpModeToPassSpecificTest(OperationMode.Operator);
+		}
+		catDataAssembly.info(`[${this.dAController.name}] Current opMode = ${this.getOperationMode()}`);
+
+		if (this.isOperatorState()) {
+			catDataAssembly.trace(`[${this.dAController.name}] Then to offline`);
+			this.writeOpMode(OperationMode.Offline);
+			await this.waitForOpModeToPassSpecificTest(OperationMode.Offline);
+		}
+		catDataAssembly.info(`[${this.dAController.name}] Current opMode = ${this.getOperationMode()}`);
 	}
 
 	public async writeOpMode(opMode: OperationMode): Promise<void> {
@@ -144,10 +169,10 @@ export class OpModeController {
 		} else if (opMode === OperationMode.Offline) {
 			await this.dAController.communication.StateOffOp.write(true);
 		}
-		catDataAssembly.info(`[${this.dAController.name}] Setting opMode successfully`);
+		catDataAssembly.info(`[${this.dAController.name}] OpMode changed successfully`);
 	}
 
-	public isOffState(): boolean {
+	public isOfflineState(): boolean {
 		return this.dAController.communication.StateOffAct.value === true;
 	}
 
@@ -155,7 +180,7 @@ export class OpModeController {
 		return this.dAController.communication.StateAutAct.value === true;
 	}
 
-	public isManualState(): boolean {
+	public isOperatorState(): boolean {
 		return this.dAController.communication.StateOpAct.value === true;
 	}
 }

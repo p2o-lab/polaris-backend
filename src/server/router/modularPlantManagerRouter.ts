@@ -35,10 +35,12 @@ import {recipeRunRouter} from './recipeRouter/recipeRunRouter';
 import {recipeRouter} from './recipeRouter/recipeRouter';
 import {playerRouter} from './recipeRouter/playerRouter';
 import {polServiceRouter} from './polServiceRouter/polServiceRouter';
+import {pimadRouter} from './pimadRouter/pimadRouter';
 
 export const modularPlantManagerRouter: Router = Router();
 
 modularPlantManagerRouter.use('/pea', peaRouter);
+modularPlantManagerRouter.use('/pimad', pimadRouter);
 modularPlantManagerRouter.use('/polService', polServiceRouter);
 modularPlantManagerRouter.use('/recipeRun', recipeRunRouter);
 modularPlantManagerRouter.use('/recipe', recipeRouter);

@@ -9,43 +9,41 @@
     "V": {
       "nodeId": "Variable.V",
       "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-      "dataType": "xs:IDREF"
+      "dataType": "Boolean"
     },
     "VState0": {
       "nodeId": "Variable.VState0",
       "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-      "dataType": "xs:IDREF"
+      "dataType": "String"
     },
     "VState1": {
       "nodeId": "Variable.VState1",
       "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-      "dataType": "xs:IDREF"
+      "dataType": "String"
     },
     "OSLevel": {
       "nodeId": "Variable.OSLevel",
       "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-      "dataType": "xs:IDREF"
+      "dataType": "Byte"
     },
     "VFlutEn": {
       "nodeId": "Variable.VFlutEn",
       "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-      "dataType": "xs:IDREF"
+      "dataType": "Boolean"
     },
     "VFlutTi": {
       "nodeId": "Variable.VFlutTi",
       "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-      "dataType": "xs:IDREF"
+      "dataType": "Float"
     },
     "VFlutCnt": {
       "nodeId": "Variable.VFlutCnt",
       "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-      "dataType": "xs:IDREF"
+      "dataType": "Int16"
     },
     "VFlutAct": {
       "nodeId": "Variable.VFlutAct",
       "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-      "dataType": "xs:IDREF"
+      "dataType": "Boolean"
     }
 }
-
-

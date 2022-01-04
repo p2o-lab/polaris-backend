@@ -29,39 +29,14 @@ import * as asyncHandler from 'express-async-handler';
 import {constants} from 'http2';
 import {ServiceCommand} from '@p2olab/polaris-interface';
 import {catServer} from '../../../logging';
-import * as path from 'path';
 
 export const peaRouter: Router = Router();
 
-// TODO: Place this code somewhere else?
-// set up Multer for parsing uploaded file
-const fs = require('fs');
-const multer = require('multer');
-
-// delete uploads folder if exists
-if (fs.existsSync('uploads/')) {
-	fs.rmdirSync('uploads/', {recursive: true});
-}
-// create new uploads folder
-fs.mkdirSync('uploads/');
-
-// set up filename and destination
-const storage = multer.diskStorage({
-	destination: function (req: any, file: any, cb: any) {
-		cb(null, path.join('uploads/'));
-	},
-	filename: (req: any, file: { filename: string; originalname: any }, cb: (arg0: null, arg1: string) => void) => {
-		cb(null, file.originalname);
-	}
-});
-const upload = multer({storage: storage});
-
 
 /**
- * @api {post} /addByOptions    Load/Instantiate PEAController via PEAController-options directly
+ * @api {post} /loadPEA    Load/Instantiate PEAController via PEAController-options
  * @apiName PostPEA
  * @apiGroup PEAController
- * @apiParam {PEAOptions} pea    PiMAdIdentifier
  */
 peaRouter.post('/loadPEA', async (req, res) => {
 	catServer.info('Load PEAController via PEAController-Options');
@@ -76,49 +51,11 @@ peaRouter.post('/loadPEA', async (req, res) => {
 });
 
 /**
- * @api {post} /addByPiMAd Add PEAController via PiMAd. (Receiving FormData from Frontend and parse with Multer lib)
- * @apiName PostPEA
- * @apiGroup PEAController
- * @apiParam {PEAOptions} pea PEAController to be added.
- */
-peaRouter.post('/addByPiMAd', upload.single('uploadedFile'), async (req, res) => {
-	// parse filepath of uploaded file
-	const filePath: string = (req as MulterRequest).file.path;
-	//create object to pass to PiMAd
-	const object = {source:filePath};
-
-	const manager: ModularPlantManager = req.app.get('manager');
-	try{
-		await manager.addPEAToPimadPool(object);
-		res.status(200).send('"Success!"');
-	} catch(e){
-		console.log(e);
-		res.status(500).send('"'+e.toString()+'"');
-	}
-});
-
-/**
- * @api {get} Get all PEAs from PiMAd
- * @apiName GetPiMAdPEAs
- * @apiGroup PEAController
- */
-peaRouter.get('/PiMAdPEAs', asyncHandler(async (req: Request, res: Response) => {
-	const manager: ModularPlantManager = req.app.get('manager');
-	try{
-		const pimadPEAs = await manager.getAllPEAsFromPimadPool();
-		res.status(200).send(pimadPEAs);
-	} catch(e){
-		console.log(e);
-		res.status(500).send('"'+e.toString()+'"');
-	}
-}));
-
-/**
  * @api {get} Get all PEAControllers
  * @apiName GetPEAControllers
  * @apiGroup PEAController
  */
-peaRouter.get('', asyncHandler(async (req: Request, res: Response) => {
+peaRouter.get('/allPEAs', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
 	try {
 		res.json(manager.getAllPEAControllers());
@@ -159,7 +96,6 @@ peaRouter.get('/:peaId/getConnectionSettings', (req: Request, res: Response) => 
 	}catch (e) {
 		res.status(500).send(e.toString());
 	}
-
 });
 
 /**
@@ -224,7 +160,6 @@ peaRouter.post('/:peaId/disconnect', asyncHandler(async (req: Request, res: Resp
 		console.log(e);
 		res.status(500).send(e.toString());
 	}
-
 }));
 
 /**
@@ -242,24 +177,6 @@ peaRouter.delete('/:peaId', asyncHandler(async (req: Request, res: Response) => 
 	} catch (e) {
 		console.log(e);
 		res.status(500).send(e.toString());
-	}
-}));
-
-/**
- * @api {delete} /:peaId    Delete PiMAdPEA by identifier
- * @apiName DeletePiMAdPEA
- * @apiGroup PiMAdPEA
- * @apiParam {string} pimadIdentifier
- */
-
-peaRouter.delete('/PiMAd/:peaId', asyncHandler(async (req: Request, res: Response) => {
-	const manager: ModularPlantManager = req.app.get('manager');
-	try{
-		await manager.deletePEAFromPimadPool(req.params.peaId);
-		res.status(200).send('"Successfully deleted PiMAd-PEA!"');
-	} catch(e){
-		console.log(e);
-		res.status(500).send('"'+e.toString()+'"');
 	}
 }));
 
@@ -331,15 +248,13 @@ peaRouter.post('/:peaId/service/:serviceName/:command', asyncHandler(async (req:
 		console.log(e);
 		res.status(500).send(e.toString());
 	}
-
-
 }));
 
 /**
- * @api {get} /pea/:PEAId/service/:serviceName    Get service statusNode
+ * @api {get} /pea/:peaId/service/:serviceName    Get service statusNode
  * @apiName GetService
  * @apiGroup PEAController
- * @apiParam {string} peaId      PEAController id
+ * @apiParam {string} peaId   PEA ID
  * @apiParam {string} serviceName   Name of service
  */
 peaRouter.get('/:peaId/service/:serviceName', asyncHandler(async (req: Request, res: Response) => {
@@ -353,10 +268,3 @@ peaRouter.get('/:peaId/service/:serviceName', asyncHandler(async (req: Request, 
 		res.status(500).send(e.toString());
 	}
 }));
-
-/**
- *This interface is needed for Multer to work correctly.
- */
-interface MulterRequest extends Request {
-	file: any;
-}

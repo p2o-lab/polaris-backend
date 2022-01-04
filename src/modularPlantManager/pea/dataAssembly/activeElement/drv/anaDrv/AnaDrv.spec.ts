@@ -44,24 +44,24 @@ describe('AnaDrv', () => {
 				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/ActiveElement/AnaDrv',
 				dataItems: baseDataAssemblyOptions
 			};
-			const da1 = new AnaDrv(dataAssemblyOptions, emptyOPCUAConnection);
-			expect(da1.sourceMode).to.not.be.undefined;
+			const dataAssemblyController = new AnaDrv(dataAssemblyOptions, emptyOPCUAConnection);
+			expect(dataAssemblyController.sourceMode).to.not.be.undefined;
 
-			expect(da1.communication.RpmSclMax).to.not.be.undefined;
-			expect(da1.communication.RpmSclMin).to.not.be.undefined;
+			expect(dataAssemblyController.communication.RpmSclMax).to.not.be.undefined;
+			expect(dataAssemblyController.communication.RpmSclMin).to.not.be.undefined;
 
-			expect(da1.communication.RpmUnit).to.not.be.undefined;
+			expect(dataAssemblyController.communication.RpmUnit).to.not.be.undefined;
 
-			expect(da1.communication.RpmMin).to.not.be.undefined;
-			expect(da1.communication.RpmMax).to.not.be.undefined;
+			expect(dataAssemblyController.communication.RpmMin).to.not.be.undefined;
+			expect(dataAssemblyController.communication.RpmMax).to.not.be.undefined;
 
-			expect(da1.communication.RpmInt).to.not.be.undefined;
-			expect(da1.communication.RpmMan).to.not.be.undefined;
-			expect(da1.communication.Rpm).to.not.be.undefined;
+			expect(dataAssemblyController.communication.RpmInt).to.not.be.undefined;
+			expect(dataAssemblyController.communication.RpmMan).to.not.be.undefined;
+			expect(dataAssemblyController.communication.Rpm).to.not.be.undefined;
 
-			expect(da1.communication.RpmFbk).to.not.be.undefined;
-			expect(da1.communication.RpmFbkCalc).to.not.be.undefined;
-			expect(da1.communication.RpmRbk).to.not.be.undefined;
+			expect(dataAssemblyController.communication.RpmFbk).to.not.be.undefined;
+			expect(dataAssemblyController.communication.RpmFbkCalc).to.not.be.undefined;
+			expect(dataAssemblyController.communication.RpmRbk).to.not.be.undefined;
 		});
 	});
 });

@@ -47,11 +47,11 @@ describe('Reset', () => {
 	describe('static', () => {
 		const emptyOPCUAConnection = new OpcUaConnection();
 		it('should create Reset',  () => {
-			const da1 = new DataAssemblyController(dataAssemblyOptions, emptyOPCUAConnection) as MonBinVlv;
-			const reset = new Reset(da1); //this will set communication variables
+			const dataAssemblyController = new DataAssemblyController(dataAssemblyOptions, emptyOPCUAConnection) as MonBinVlv;
+			const reset = new Reset(dataAssemblyController); //this will set communication variables
 			expect(reset).to.not.to.undefined;
-			expect(da1.communication.ResetAut).to.not.to.undefined;
-			expect(da1.communication.ResetOp).to.not.to.undefined;
+			expect(dataAssemblyController.communication.ResetAut).to.not.to.undefined;
+			expect(dataAssemblyController.communication.ResetOp).to.not.to.undefined;
 		});
 	});
 	describe('dynamic', () => {
@@ -77,13 +77,13 @@ describe('Reset', () => {
 
 		it('should subscribe successfully', async () => {
 
-			const da1 = new DataAssemblyController(dataAssemblyOptions, connection) as any;
-			new Reset(da1);
-			const pv = da1.subscribe();
+			const dataAssemblyController = new DataAssemblyController(dataAssemblyOptions, connection) as any;
+			new Reset(dataAssemblyController);
+			await dataAssemblyController.subscribe();
 			await connection.startMonitoring();
-			await pv;
-			expect(da1.communication.ResetAut.value).to.be.false;
-			expect(da1.communication.ResetOp.value).to.be.false;
+			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
+			expect(dataAssemblyController.communication.ResetAut.value).to.be.false;
+			expect(dataAssemblyController.communication.ResetOp.value).to.be.false;
 
 		}).timeout(5000);
 	});

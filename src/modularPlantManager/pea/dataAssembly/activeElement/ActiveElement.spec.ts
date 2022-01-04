@@ -47,10 +47,10 @@ describe('ActiveElement', () => {
 		it('should create ActiveElement', () => {
 			const emptyOPCUAConnection = new OpcUaConnection();
 			emptyOPCUAConnection.initialize({endpoint : ''});
-			const da1 = new ActiveElement(dataAssemblyOptions, emptyOPCUAConnection);
-			expect(da1).to.be.not.undefined;
-			expect(da1.wqc).to.be.not.undefined;
-			expect(da1.osLevel).to.not.be.undefined;
+			const dataAssemblyController = new ActiveElement(dataAssemblyOptions, emptyOPCUAConnection);
+			expect(dataAssemblyController).to.be.not.undefined;
+			expect(dataAssemblyController.wqc).to.be.not.undefined;
+			expect(dataAssemblyController.osLevel).to.not.be.undefined;
 		});
 	});
 
@@ -76,12 +76,13 @@ describe('ActiveElement', () => {
 
 		it('should subscribe successfully', async () => {
 
-			const da1 = new ActiveElement(dataAssemblyOptions, connection);
-			const pv = da1.subscribe();
+			const dataAssemblyController = new ActiveElement(dataAssemblyOptions, connection);
+			await dataAssemblyController.subscribe();
 			await connection.startMonitoring();
-			await pv;
-			expect(da1.communication.WQC.value).equal(0);
-			expect(da1.communication.OSLevel.value).equal(0);
+			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
+
+			expect(dataAssemblyController.communication.WQC.value).equal(0);
+			expect(dataAssemblyController.communication.OSLevel.value).equal(0);
 		}).timeout(4000);
 	});
 });

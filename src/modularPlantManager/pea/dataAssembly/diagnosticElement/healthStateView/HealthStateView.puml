@@ -25,12 +25,16 @@
  
 @startuml
 'https://plantuml.com/class-diagram
+
+interface HealthStateViewRuntime
+
 class HealthStateView{
 	+ readonly communication!: HealthStateViewRuntime;
 
 }
-HealthStateView *- HealthStateViewSpec
-HealthStateViewSpec ..> HealthStateViewMockup : <<use>>
-HealthStateView *- HealthStateViewMockup
-HealthStateView *- HealthStateViewRuntime
+
+HealthStateViewRuntime <-- HealthStateView
+HealthStateViewSpec --> HealthStateView : <<uses>>
+HealthStateViewSpec --> HealthStateViewMockup : <<uses>>
+
 @enduml

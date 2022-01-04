@@ -48,10 +48,10 @@ describe('HealthStateView', () => {
 		const emptyOPCUAConnection = new OpcUaConnection();
 
 		it('should create HealthStateView', async () => {
-			const da1 = new HealthStateView(dataAssemblyOptions, emptyOPCUAConnection);
-			expect(da1).to.be.not.undefined;
-			expect(da1.communication).to.be.not.undefined;
-			expect(da1.wqc).to.be.not.undefined;
+			const dataAssemblyController = new HealthStateView(dataAssemblyOptions, emptyOPCUAConnection);
+			expect(dataAssemblyController).to.be.not.undefined;
+			expect(dataAssemblyController.communication).to.be.not.undefined;
+			expect(dataAssemblyController.wqc).to.be.not.undefined;
 		});
 
 	});
@@ -78,11 +78,12 @@ describe('HealthStateView', () => {
 
 		it('should subscribe successfully', async () => {
 
-			const da1 = new HealthStateView(dataAssemblyOptions, connection);
-			await da1.subscribe();
+			const dataAssemblyController = new HealthStateView(dataAssemblyOptions, connection);
+			await dataAssemblyController.subscribe();
 			await connection.startMonitoring();
-			await new Promise((resolve)=> da1.on('changed', resolve));
-			expect(da1.communication.WQC.value).equal(0);
+			await new Promise((resolve)=> dataAssemblyController.on('changed', resolve));
+
+			expect(dataAssemblyController.communication.WQC.value).equal(0);
 		}).timeout(4000);
 	});
 });

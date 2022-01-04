@@ -2,9 +2,9 @@
     "TagName": "Variable",
     "TagDescription": "Test",
     "OSLevel": {
-      "nodeId": "Variable.WQC",
+      "nodeId": "Variable.OSLevel",
       "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-      "dataType": "xs:IDREF"
+      "dataType": "Byte"
     }
 }
 

@@ -47,7 +47,7 @@ export abstract class PEATestVariable {
 
 		namespace.addVariable({
 			componentOf: this.variableNode,
-			nodeId: `ns=1;s=${variableName}.WQC`,
+			nodeId: `ns=${namespace.index};s=${variableName}.WQC`,
 			browseName: `${variableName}.WQC`,
 			dataType: DataType.UInt32,
 			value: {
@@ -59,7 +59,7 @@ export abstract class PEATestVariable {
 
 		namespace.addVariable({
 			componentOf: this.variableNode,
-			nodeId: `ns=1;s=${variableName}.OSLevel`,
+			nodeId: `ns=${namespace.index};s=${variableName}.OSLevel`,
 			browseName: `${variableName}.OSLevel`,
 			dataType: DataType.UInt32,
 			value: {

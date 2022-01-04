@@ -9,7 +9,7 @@
     "Text": {
       "nodeId": "Variable.Text",
       "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-      "dataType": "xs:IDREF"
+      "dataType": "String"
     }
 }
 

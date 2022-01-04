@@ -62,7 +62,7 @@ describe('OSLevel', () => {
 			});
 			it('should create OSLevel', async () => {
 				expect(osLevelObject.OSLevel).to.equal(0);
-				expect(da.communication.OSLevel).to.be.undefined;
+				expect(da.communication.OSLevel).to.not.be.undefined;
 			});
 
 			it('getter', async () => {
@@ -70,21 +70,22 @@ describe('OSLevel', () => {
 			});
 		});
 		describe('dynamic OSLevel', () => {
-			let oslevelObject: any;
+			let osLevelObject: OSLevel;
 			let da: any;
+
 			beforeEach(()=>{
 				const emptyOPCUAConnection = new OpcUaConnection();
 				da = new DataAssemblyController(dataAssemblyOptions, emptyOPCUAConnection);
-				oslevelObject = new OSLevel(da);
+				osLevelObject = new OSLevel(da);
 			});
 
 			it('should create OSLevel', async () => {
-				expect(oslevelObject.OSLevel).to.be.undefined;
+				expect(osLevelObject.OSLevel).to.equal(0);
 				expect(da.communication.OSLevel).to.not.be.undefined;
 			});
 
 			it('getter', async () => {
-				expect(oslevelObject.OSLevel).to.be.undefined;
+				expect(osLevelObject.OSLevel).to.equal(0);
 			});
 		});
 	});
@@ -112,12 +113,12 @@ describe('OSLevel', () => {
 
 		it('should subscribe successfully', async () => {
 
-			const da1 = new DataAssemblyController(dataAssemblyOptions, connection) as any;
-			new OSLevel(da1);
-			const pv = da1.subscribe();
+			const dataAssemblyController = new DataAssemblyController(dataAssemblyOptions, connection) as any;
+			new OSLevel(dataAssemblyController);
+			await dataAssemblyController.subscribe();
 			await connection.startMonitoring();
-			await pv;
-			expect(da1.communication.OSLevel.value).to.equal(0);
+			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
+			expect(dataAssemblyController.communication.OSLevel.value).to.equal(0);
 		}).timeout(5000);
 	});
 });

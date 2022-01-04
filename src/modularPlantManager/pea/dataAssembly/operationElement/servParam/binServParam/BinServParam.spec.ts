@@ -48,15 +48,15 @@ describe('BinServParam', () => {
 	describe('', () => {
 		const emptyOPCUAConnection = new OpcUaConnection();
 		it('should create BinServParam', async () => {
-			const da1 = new BinServParam(dataAssemblyOptions, emptyOPCUAConnection);
-			expect(da1.communication.VExt).to.not.be.undefined;
-			expect(da1.communication.VOp).to.not.be.undefined;
-			expect(da1.communication.VInt).to.not.be.undefined;
-			expect(da1.communication.VReq).to.not.be.undefined;
-			expect(da1.communication.VOut).to.not.be.undefined;
-			expect(da1.communication.VFbk).to.not.be.undefined;
-			expect(da1.communication.VState0).to.not.be.undefined;
-			expect(da1.communication.VState1).to.not.be.undefined;
+			const dataAssemblyController = new BinServParam(dataAssemblyOptions, emptyOPCUAConnection);
+			expect(dataAssemblyController.communication.VExt).to.not.be.undefined;
+			expect(dataAssemblyController.communication.VOp).to.not.be.undefined;
+			expect(dataAssemblyController.communication.VInt).to.not.be.undefined;
+			expect(dataAssemblyController.communication.VReq).to.not.be.undefined;
+			expect(dataAssemblyController.communication.VOut).to.not.be.undefined;
+			expect(dataAssemblyController.communication.VFbk).to.not.be.undefined;
+			expect(dataAssemblyController.communication.VState0).to.not.be.undefined;
+			expect(dataAssemblyController.communication.VState1).to.not.be.undefined;
 		});
 	});
 	describe('dynamic', () => {
@@ -82,44 +82,42 @@ describe('BinServParam', () => {
 
 		it('should subscribe successfully', async () => {
 
-			//TODO new BinServParam()
-			const da1 = DataAssemblyControllerFactory.create(dataAssemblyOptions, connection) as BinServParam;
-
-			const pv = da1.subscribe();
+			const dataAssemblyController = DataAssemblyControllerFactory.create(dataAssemblyOptions, connection) as BinServParam;
+			await dataAssemblyController.subscribe();
 			await connection.startMonitoring();
-			await pv;
-			expect(da1.communication.WQC.value).equal(0);
+			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
+			
+			expect(dataAssemblyController.communication.WQC.value).equal(0);
+			expect((dataAssemblyController).communication.StateChannel.value).equal(false);
+			expect((dataAssemblyController).communication.StateOffAut.value).equal(false);
+			expect((dataAssemblyController).communication.StateOpAut.value).equal(false);
+			expect((dataAssemblyController).communication.StateAutAut.value).equal(false);
+			expect((dataAssemblyController).communication.StateOffOp.value).equal(false);
+			expect((dataAssemblyController).communication.StateOpOp.value).equal(false);
+			expect((dataAssemblyController).communication.StateAutOp.value).equal(false);
+			expect((dataAssemblyController).communication.StateOpAct.value).equal(false);
+			expect((dataAssemblyController).communication.StateAutAct.value).equal(false);
+			expect((dataAssemblyController).communication.StateOffAct.value).equal(true);
 
-			expect((da1).communication.StateChannel.value).equal(false);
-			expect((da1).communication.StateOffAut.value).equal(false);
-			expect((da1).communication.StateOpAut.value).equal(false);
-			expect((da1).communication.StateAutAut.value).equal(false);
-			expect((da1).communication.StateOffOp.value).equal(false);
-			expect((da1).communication.StateOpOp.value).equal(false);
-			expect((da1).communication.StateAutOp.value).equal(false);
-			expect((da1).communication.StateOpAct.value).equal(false);
-			expect((da1).communication.StateAutAct.value).equal(false);
-			expect((da1).communication.StateOffAct.value).equal(true);
+			expect(dataAssemblyController.communication.SrcChannel.value).equal(false);
+			expect(dataAssemblyController.communication.SrcExtAut.value).equal(false);
+			expect(dataAssemblyController.communication.SrcIntAut.value).equal(false);
+			expect(dataAssemblyController.communication.SrcIntOp.value).equal(false);
+			expect(dataAssemblyController.communication.SrcExtOp.value).equal(false);
+			expect(dataAssemblyController.communication.SrcIntAct.value).equal(true);
+			expect(dataAssemblyController.communication.SrcExtAct.value).equal(false);
 
-			expect(da1.communication.SrcChannel.value).equal(false);
-			expect(da1.communication.SrcExtAut.value).equal(false);
-			expect(da1.communication.SrcIntAut.value).equal(false);
-			expect(da1.communication.SrcIntOp.value).equal(false);
-			expect(da1.communication.SrcExtOp.value).equal(false);
-			expect(da1.communication.SrcIntAct.value).equal(true);
-			expect(da1.communication.SrcExtAct.value).equal(false);
+			expect(dataAssemblyController.communication.Sync.value).equal(false);
 
-			expect(da1.communication.Sync.value).equal(false);
+			expect(dataAssemblyController.communication.VExt.value).equal(false);
+			expect(dataAssemblyController.communication.VOp.value).equal(false);
+			expect(dataAssemblyController.communication.VInt.value).equal(false);
+			expect(dataAssemblyController.communication.VReq.value).equal(false);
+			expect(dataAssemblyController.communication.VOut.value).equal(false);
+			expect(dataAssemblyController.communication.VFbk.value).equal(false);
 
-			expect(da1.communication.VExt.value).equal(false);
-			expect(da1.communication.VOp.value).equal(false);
-			expect(da1.communication.VInt.value).equal(false);
-			expect(da1.communication.VReq.value).equal(false);
-			expect(da1.communication.VOut.value).equal(false);
-			expect(da1.communication.VFbk.value).equal(false);
-
-			expect(da1.communication.VState0.value).equal('off');
-			expect(da1.communication.VState1.value).equal('on');
+			expect(dataAssemblyController.communication.VState0.value).equal('off');
+			expect(dataAssemblyController.communication.VState1.value).equal('on');
 		}).timeout(4000);
 	});
 });

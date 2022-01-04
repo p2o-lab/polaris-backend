@@ -48,17 +48,17 @@ describe('BinMan', () => {
 		const emptyOPCUAConnection = new OpcUaConnection();
 		it('should create BinMan', () => {
 			//TODO new BinMan()
-			const da1: BinMan = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as BinMan;
-			expect(da1.communication.VOut).to.not.equal(undefined);
-			expect(da1.communication.VState0).to.not.equal(undefined);
-			expect(da1.communication.VState1).to.not.equal(undefined);
-			expect(da1.communication.VMan).to.not.equal(undefined);
-			expect(da1.communication.VRbk).to.not.equal(undefined);
-			expect(da1.communication.VFbk).to.not.equal(undefined);
-			expect(da1.defaultReadDataItem).equal(da1.communication.VOut);
-			expect(da1.defaultReadDataItemType).to.equal('boolean');
-			expect(da1.defaultWriteDataItem).equal(da1.communication.VMan);
-			expect(da1.defaultWriteDataItemType).to.equal('boolean');
+			const dataAssemblyController: BinMan = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as BinMan;
+			expect(dataAssemblyController.communication.VOut).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.VState0).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.VState1).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.VMan).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.VRbk).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.VFbk).to.not.equal(undefined);
+			expect(dataAssemblyController.defaultReadDataItem).equal(dataAssemblyController.communication.VOut);
+			expect(dataAssemblyController.defaultReadDataItemType).to.equal('boolean');
+			expect(dataAssemblyController.defaultWriteDataItem).equal(dataAssemblyController.communication.VMan);
+			expect(dataAssemblyController.defaultWriteDataItemType).to.equal('boolean');
 		});
 	});
 	describe('dynamic', () => {
@@ -84,21 +84,18 @@ describe('BinMan', () => {
 
 		it('should subscribe successfully', async () => {
 
-			//TODO new BinMan()
-
-			const da1 = DataAssemblyControllerFactory.create(dataAssemblyOptions, connection) as BinMan;
-			const pv =  da1.subscribe();
+			const dataAssemblyController = DataAssemblyControllerFactory.create(dataAssemblyOptions, connection) as BinMan;
+			await dataAssemblyController.subscribe();
 			await connection.startMonitoring();
-			await pv;
+			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
 
-			expect(da1.communication.OSLevel.value).to.equal(0);
-
-			expect(da1.communication.VOut.value).to.equal(false);
-			expect(da1.communication.VMan.value).to.equal(false);
-			expect(da1.communication.VRbk.value).to.equal(false);
-			expect(da1.communication.VFbk.value).to.equal(false);
-			expect(da1.communication.VState0.value).to.equal('off');
-			expect(da1.communication.VState1.value).to.equal('on');
+			expect(dataAssemblyController.communication.OSLevel.value).to.equal(0);
+			expect(dataAssemblyController.communication.VOut.value).to.equal(false);
+			expect(dataAssemblyController.communication.VMan.value).to.equal(false);
+			expect(dataAssemblyController.communication.VRbk.value).to.equal(false);
+			expect(dataAssemblyController.communication.VFbk.value).to.equal(false);
+			expect(dataAssemblyController.communication.VState0.value).to.equal('off');
+			expect(dataAssemblyController.communication.VState1.value).to.equal('on');
 		}).timeout(4000);
 	});
 });

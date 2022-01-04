@@ -47,11 +47,11 @@ describe('DiagnosticElement', () => {
 	describe('static', () => {
 		const emptyOPCUAConnection = new OpcUaConnection();
 		it('should create DiagnosticElement', async () => {
-			const da1 = new DiagnosticElement(dataAssemblyOptions, emptyOPCUAConnection);
+			const dataAssemblyController = new DiagnosticElement(dataAssemblyOptions, emptyOPCUAConnection);
 
-			expect(da1).to.be.not.undefined;
-			expect(da1.communication).to.be.not.undefined;
-			expect(da1.wqc).to.be.not.undefined;
+			expect(dataAssemblyController).to.be.not.undefined;
+			expect(dataAssemblyController.communication).to.be.not.undefined;
+			expect(dataAssemblyController.wqc).to.be.not.undefined;
 		});
 	});
 	describe('dynamic', () => {
@@ -77,11 +77,11 @@ describe('DiagnosticElement', () => {
 
 		it('should subscribe successfully', async () => {
 
-			const da1 = new DiagnosticElement(dataAssemblyOptions, connection);
-			const pv = da1.subscribe();
+			const dataAssemblyController = new DiagnosticElement(dataAssemblyOptions, connection);
+			await dataAssemblyController.subscribe();
 			await connection.startMonitoring();
-			await pv;
-			expect(da1.communication.WQC.value).equal(0);
+			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
+			expect(dataAssemblyController.communication.WQC.value).equal(0);
 		}).timeout(4000);
 	});
 

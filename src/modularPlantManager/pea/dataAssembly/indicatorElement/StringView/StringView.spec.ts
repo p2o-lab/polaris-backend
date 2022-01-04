@@ -46,11 +46,11 @@ describe('StringView', () => {
 		const emptyOPCUAConnection = new OpcUaConnection();
 		it('should create StringView', async () => {
 
-			const da1: StringView = new StringView(dataAssemblyOptions, emptyOPCUAConnection);
-			expect(da1.tagName).to.equal('Variable');
-			expect(da1.tagDescription).to.equal('Test');
-			expect(da1.communication.WQC).to.not.equal(undefined);
-			expect(da1.communication.Text).to.not.equal(undefined);
+			const dataAssemblyController: StringView = new StringView(dataAssemblyOptions, emptyOPCUAConnection);
+			expect(dataAssemblyController.tagName).to.equal('Variable');
+			expect(dataAssemblyController.tagDescription).to.equal('Test');
+			expect(dataAssemblyController.communication.WQC).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.Text).to.not.equal(undefined);
 		});
 	});
 	describe('dynamic', () => {
@@ -76,19 +76,21 @@ describe('StringView', () => {
 		});
 
 		it('should subscribe successfully', async () => {
-			const da1: StringView = new StringView(dataAssemblyOptions, connection);
-			const pv = da1.subscribe();
+			const dataAssemblyController: StringView = new StringView(dataAssemblyOptions, connection);
+			await dataAssemblyController.subscribe();
 			await connection.startMonitoring();
-			await pv;
-			expect(da1.communication.WQC.value).equal(0);
-			expect(da1.communication.Text.value).equal('dummyText');
+			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
+
+			expect(dataAssemblyController.communication.WQC.value).equal(0);
+			expect(dataAssemblyController.communication.Text.value).equal('dummyText');
 		}).timeout(4000);
+
 		it('get Text', async () => {
-			const da1: StringView = new StringView(dataAssemblyOptions, connection);
-			const pv = da1.subscribe();
+			const dataAssemblyController: StringView = new StringView(dataAssemblyOptions, connection);
+			await dataAssemblyController.subscribe();
 			await connection.startMonitoring();
-			await pv;
-			expect(da1.Text).to.equal('dummyText');
+			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
+			expect(dataAssemblyController.Text).to.equal('dummyText');
 		}).timeout(4000);
 	});
 });

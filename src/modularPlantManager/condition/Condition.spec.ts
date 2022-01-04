@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import {ConditionType} from '@p2olab/polaris-interface';
+import {ConditionType, PEAOptions} from '@p2olab/polaris-interface';
 import {PEAController} from '../pea';
 import {
 	ConditionFactory,
@@ -33,7 +33,7 @@ import {
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import * as fs from 'fs';
+import * as peaOptions from '../peaOptions.spec.json';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -140,29 +140,26 @@ describe('Condition', () => {
 				expect(value).to.equal(true);
 			});
 
-			it('should fail when pea is not connected', async () => {
-				const peaJson = JSON.parse(fs.readFileSync('assets/peas/pea_testserver_1.0.0.json', 'utf8'))
-					.peas[0];
+			it('should work with complex expression', async () => {
 
-				const pea = new PEAController(peaJson);
+				const pea = new PEAController(peaOptions as unknown as PEAOptions);
 				const expr = ConditionFactory.create({
 					type: ConditionType.expression,
-					expression: 'sin(a)^2 + cos(PEATestServer.Variable001)^2 < 0.5',
+					expression: 'sin(a)^2 + cos(a)^2 < 0.5',
 					scope: [
 						{
 							name: 'a',
-							pea: 'PEATestServer',
-							dataAssembly: 'Variable001',
+							pea: `${pea.id}`,
+							dataAssembly: 'Variable',
 							variable: 'V'
 						}
 					]
 				}, [pea]) as ExpressionCondition;
-				expect(() => expr.getValue()).to.throw('not connected');
+				expect(expr.getValue()).to.equal(false);
 			});
-
 		});
-
 	});
+
 //TODO test with MockupServer
 /*	describe('with MockupServer containing a PEAController', () => {
 		let mockupServer: MockupServer;

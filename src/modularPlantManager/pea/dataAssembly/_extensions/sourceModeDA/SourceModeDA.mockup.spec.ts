@@ -35,7 +35,7 @@ const expect = chai.expect;
 
 
 describe('SourceModeDAMockup', () => {
-    describe('', () => {
+    describe('static', () => {
         let mockupServer: MockupServer;
         beforeEach(async()=>{
             mockupServer = new MockupServer();

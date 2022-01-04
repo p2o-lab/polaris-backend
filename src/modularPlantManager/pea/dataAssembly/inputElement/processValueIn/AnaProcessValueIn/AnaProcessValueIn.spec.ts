@@ -47,12 +47,12 @@ describe('AnaProcessValueIn', () => {
 	describe('static', () => {
 		const emptyOPCUAConnection = new OpcUaConnection();
 		it('should create AnaProcessValueIn', async () => {
-			const da1 = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as AnaProcessValueIn;
-			expect(da1).to.be.not.undefined;
-			expect(da1.communication.VExt).to.be.not.undefined;
-			expect(da1.communication.VSclMax).to.be.not.undefined;
-			expect(da1.communication.VSclMin).to.be.not.undefined;
-			expect(da1.communication.VUnit).to.be.not.undefined;
+			const dataAssemblyController = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as AnaProcessValueIn;
+			expect(dataAssemblyController).to.be.not.undefined;
+			expect(dataAssemblyController.communication.VExt).to.be.not.undefined;
+			expect(dataAssemblyController.communication.VSclMax).to.be.not.undefined;
+			expect(dataAssemblyController.communication.VSclMin).to.be.not.undefined;
+			expect(dataAssemblyController.communication.VUnit).to.be.not.undefined;
 		});
 	});
 
@@ -84,30 +84,29 @@ describe('AnaProcessValueIn', () => {
 
 		it('should subscribe successfully', async () => {
 
-			const da1 = DataAssemblyControllerFactory.create(dataAssemblyOptions, connection) as AnaProcessValueIn;
-			const pv =  da1.subscribe();
+			const dataAssemblyController = DataAssemblyControllerFactory.create(dataAssemblyOptions, connection) as AnaProcessValueIn;
+			await dataAssemblyController.subscribe();
 			await connection.startMonitoring();
-			await pv;
+			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
 
-			expect(da1.communication.VExt.value).equal(0);
-			expect(da1.communication.VUnit.value).equal(0);
-			expect(da1.communication.VSclMin.value).equal(0);
-			expect(da1.communication.VSclMax.value).equal(1);
+			expect(dataAssemblyController.communication.VExt.value).equal(0);
+			expect(dataAssemblyController.communication.VUnit.value).equal(0);
+			expect(dataAssemblyController.communication.VSclMin.value).equal(0);
+			expect(dataAssemblyController.communication.VSclMax.value).equal(1);
 
 		}).timeout(4000);
 
 		it('setparameter', async () => {
 
-			const da1 = DataAssemblyControllerFactory.create(dataAssemblyOptions, connection) as AnaProcessValueIn;
-			const pv =  da1.subscribe();
+			const dataAssemblyController = DataAssemblyControllerFactory.create(dataAssemblyOptions, connection) as AnaProcessValueIn;
+			await dataAssemblyController.subscribe();
 			await connection.startMonitoring();
-			await pv;
+			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
 
-			await da1.setParameter(1,'VExt');
+			await dataAssemblyController.setParameter(1,'VExt');
 			expect(mockup.vExt).equal(1);
-			//TODO: problem= we have to wait for the variable to change (EventEmitter), maybe this is not optimal
-			await new Promise(f => setTimeout(f, 1000));
-			expect(da1.communication.VExt.value).equal(1);
+			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
+			expect(dataAssemblyController.communication.VExt.value).equal(1);
 
 		}).timeout(4000);
 	});

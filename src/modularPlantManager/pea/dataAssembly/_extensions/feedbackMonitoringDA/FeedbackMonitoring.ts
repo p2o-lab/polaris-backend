@@ -23,16 +23,16 @@
  * SOFTWARE.
  */
 
-import {OpcUaDataItem} from '../../../connection';
+import {DataItem} from '../../../connection';
 import {BaseDataAssemblyRuntime} from '../../DataAssemblyController';
 
 export interface FeedbackMonitoringRuntime extends BaseDataAssemblyRuntime {
-	MonEn: OpcUaDataItem<boolean>;
-	MonSafePos: OpcUaDataItem<boolean>;
-	MonStatErr: OpcUaDataItem<boolean>;
-	MonDynErr: OpcUaDataItem<boolean>;
-	MonStatTi: OpcUaDataItem<number>;
-	MonDynTi: OpcUaDataItem<number>;
+	MonEn: DataItem<boolean>;
+	MonSafePos: DataItem<boolean>;
+	MonStatErr: DataItem<boolean>;
+	MonDynErr: DataItem<boolean>;
+	MonStatTi: DataItem<number>;
+	MonDynTi: DataItem<number>;
 }
 
 export class FeedbackMonitoring {
@@ -44,11 +44,11 @@ export class FeedbackMonitoring {
 	}
 
 	private initialize(): void {
-		this.dAController.communication.MonEn = this.dAController.createDataItem('MonEn', 'write');
-		this.dAController.communication.MonSafePos = this.dAController.createDataItem('MonSafePos', 'read');
-		this.dAController.communication.MonStatErr = this.dAController.createDataItem('MonStatErr', 'read');
-		this.dAController.communication.MonDynErr = this.dAController.createDataItem('MonDynErr', 'read');
-		this.dAController.communication.MonStatTi = this.dAController.createDataItem('MonStatTi', 'read');
-		this.dAController.communication.MonDynTi = this.dAController.createDataItem('MonDynTi', 'read');
+		this.dAController.communication.MonEn = this.dAController.createDataItem('MonEn', 'boolean', 'write');
+		this.dAController.communication.MonSafePos = this.dAController.createDataItem('MonSafePos', 'boolean');
+		this.dAController.communication.MonStatErr = this.dAController.createDataItem('MonStatErr', 'boolean');
+		this.dAController.communication.MonDynErr = this.dAController.createDataItem('MonDynErr', 'boolean');
+		this.dAController.communication.MonStatTi = this.dAController.createDataItem('MonStatTi', 'number');
+		this.dAController.communication.MonDynTi = this.dAController.createDataItem('MonDynTi', 'number');
 	}
 }

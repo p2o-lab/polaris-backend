@@ -41,7 +41,9 @@ const expect = chai.expect;
 const staticWQC = {
 	TagName: 'Variable',
 	TagDescription: 'Test',
-	WQC: { value: '255'}
+	WQC: {
+		value: '255'
+	}
 };
 
 describe('WQCDA', () => {
@@ -63,7 +65,6 @@ describe('WQCDA', () => {
 
 		beforeEach(()=>{
 			const emptyOPCUAConnection = new OpcUaConnection();
-
 			da = new DataAssemblyController(dataAssemblyOptionsStatic, emptyOPCUAConnection);
 		});
 
@@ -120,11 +121,12 @@ describe('WQCDA', () => {
 		});
 
 		it('should subscribe successfully', async () => {
-			const da1 = new DataAssemblyController(dataAssemblyOptions, connection) as any;
-			const wqcObject = new WQC(da1);
-			da1.subscribe();
+			const dataAssemblyController = new DataAssemblyController(dataAssemblyOptions, connection) as any;
+			const wqcObject = new WQC(dataAssemblyController);
+			await dataAssemblyController.subscribe();
 			await connection.startMonitoring();
-			expect(wqcObject.WQC).to.equal(255);
+			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
+			expect(wqcObject.WQC).to.equal(0);
 		}).timeout(5000);
 	});
 });

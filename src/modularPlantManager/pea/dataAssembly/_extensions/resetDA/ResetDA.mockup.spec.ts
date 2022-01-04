@@ -34,7 +34,7 @@ chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('ResetDAMockup', () => {
-    describe('', () => {
+    describe('static', () => {
         let mockupServer: MockupServer;
         beforeEach(async()=>{
             mockupServer = new MockupServer();

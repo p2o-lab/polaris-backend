@@ -1,7 +1,7 @@
 {
     "TagName": "Variable",
     "TagDescription": "Test",
-    "WQC": 255
+    "WQC": {
+        "value": 255
+    }
 }
-
-

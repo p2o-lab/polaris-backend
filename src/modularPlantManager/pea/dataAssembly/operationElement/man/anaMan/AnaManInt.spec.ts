@@ -46,10 +46,10 @@ describe('AnaManInt', () => {
 		const emptyOPCUAConnection = new OpcUaConnection();
 		it('should create AnaManInt',  () => {
 
-			const da1: AnaManInt = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as AnaManInt;
-			expect(da1.sourceMode).to.be.not.undefined;
-			expect(da1.communication.VInt).to.not.equal(undefined);
-			expect(da1.wqc).to.not.equal(undefined);
+			const dataAssemblyController: AnaManInt = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as AnaManInt;
+			expect(dataAssemblyController.sourceMode).to.be.not.undefined;
+			expect(dataAssemblyController.communication.VInt).to.not.equal(undefined);
+			expect(dataAssemblyController.wqc).to.not.equal(undefined);
 		});
 	});
 	describe('dynamic', () => {
@@ -74,36 +74,31 @@ describe('AnaManInt', () => {
 
 		it('should subscribe successfully', async () => {
 
-			const da1 = DataAssemblyControllerFactory.create(dataAssemblyOptions, connection) as AnaManInt;
-			const pv =  da1.subscribe();
+			const dataAssemblyController = DataAssemblyControllerFactory.create(dataAssemblyOptions, connection) as AnaManInt;
+			await dataAssemblyController.subscribe();
 			await connection.startMonitoring();
-			await pv;
+			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
 
-			expect(da1.communication.OSLevel.value).to.equal(0);
-
-			expect(da1.communication.VOut.value).to.equal(0);
-			expect(da1.communication.VMan.value).to.equal(0);
-			expect(da1.communication.VRbk.value).to.equal(0);
-			expect(da1.communication.VFbk.value).to.equal(0);
-
-			expect(da1.communication.VUnit.value).equal(0);
-			expect(da1.communication.VSclMin.value).equal(0);
-			expect(da1.communication.VSclMax.value).equal(0);
-
-			expect(da1.communication.VMin.value).equal(0);
-			expect(da1.communication.VMax.value).equal(0);
-
-			expect(da1.communication.WQC.value).to.equal(0);
-			expect(da1.communication.VInt.value).to.equal(0);
-			expect(da1.communication.VMan.value).to.equal(0);
-
-			expect(da1.communication.SrcChannel.value).equal(false);
-			expect(da1.communication.SrcManAut.value).equal(false);
-			expect(da1.communication.SrcIntAut.value).equal(false);
-			expect(da1.communication.SrcIntOp.value).equal(false);
-			expect(da1.communication.SrcManOp.value).equal(false);
-			expect(da1.communication.SrcIntAct.value).equal(true);
-			expect(da1.communication.SrcManAct.value).equal(false);
+			expect(dataAssemblyController.communication.OSLevel.value).to.equal(0);
+			expect(dataAssemblyController.communication.VOut.value).to.equal(0);
+			expect(dataAssemblyController.communication.VMan.value).to.equal(0);
+			expect(dataAssemblyController.communication.VRbk.value).to.equal(0);
+			expect(dataAssemblyController.communication.VFbk.value).to.equal(0);
+			expect(dataAssemblyController.communication.VUnit.value).equal(0);
+			expect(dataAssemblyController.communication.VSclMin.value).equal(0);
+			expect(dataAssemblyController.communication.VSclMax.value).equal(0);
+			expect(dataAssemblyController.communication.VMin.value).equal(0);
+			expect(dataAssemblyController.communication.VMax.value).equal(0);
+			expect(dataAssemblyController.communication.WQC.value).to.equal(0);
+			expect(dataAssemblyController.communication.VInt.value).to.equal(0);
+			expect(dataAssemblyController.communication.VMan.value).to.equal(0);
+			expect(dataAssemblyController.communication.SrcChannel.value).equal(false);
+			expect(dataAssemblyController.communication.SrcManAut.value).equal(false);
+			expect(dataAssemblyController.communication.SrcIntAut.value).equal(false);
+			expect(dataAssemblyController.communication.SrcIntOp.value).equal(false);
+			expect(dataAssemblyController.communication.SrcManOp.value).equal(false);
+			expect(dataAssemblyController.communication.SrcIntAct.value).equal(true);
+			expect(dataAssemblyController.communication.SrcManAct.value).equal(false);
 		}).timeout(4000);
 	});
 });

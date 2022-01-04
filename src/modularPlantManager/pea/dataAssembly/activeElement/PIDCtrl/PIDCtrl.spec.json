@@ -4,216 +4,216 @@
   "WQC": {
     "nodeId": "Variable.WQC",
     "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-    "dataType": "xs:IDREF"
+    "dataType": "Byte"
   },
   "OSLevel": {
     "nodeId": "Variable.OSLevel",
     "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-    "dataType": "xs:IDREF"
+    "dataType": "Byte"
   },
   "StateChannel": {
     "nodeId": "Variable.StateChannel",
     "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-    "dataType": "xs:IDREF"
+    "dataType": "Boolean"
   },
   "StateOffAut": {
     "nodeId": "Variable.StateOffAut",
     "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-    "dataType": "xs:IDREF"
+    "dataType": "Boolean"
   },
   "StateOpAut": {
     "nodeId": "Variable.StateOpAut",
     "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-    "dataType": "xs:IDREF"
+    "dataType": "Boolean"
   },
   "StateAutAut": {
     "nodeId": "Variable.StateAutAut",
     "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-    "dataType": "xs:IDREF"
+    "dataType": "Boolean"
   },
   "StateOffOp": {
     "nodeId": "Variable.StateOffOp",
     "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-    "dataType": "xs:IDREF"
+    "dataType": "Boolean"
   },
   "StateOpOp": {
     "nodeId": "Variable.StateOpOp",
     "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-    "dataType": "xs:IDREF"
+    "dataType": "Boolean"
   },
   "StateAutOp": {
     "nodeId": "Variable.StateAutOp",
     "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-    "dataType": "xs:IDREF"
+    "dataType": "Boolean"
   },
   "StateOpAct": {
     "nodeId": "Variable.StateOpAct",
     "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-    "dataType": "xs:IDREF"
+    "dataType": "Boolean"
   },
   "StateAutAct": {
     "nodeId": "Variable.StateAutAct",
     "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-    "dataType": "xs:IDREF"
+    "dataType": "Boolean"
   },
   "StateOffAct": {
     "nodeId": "Variable.StateOffAct",
     "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-    "dataType": "xs:IDREF"
+    "dataType": "Boolean"
   },
   "SrcChannel": {
     "nodeId": "Variable.SrcChannel",
     "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-    "dataType": "xs:IDREF"
+    "dataType": "Boolean"
   },
   "SrcManAut": {
     "nodeId": "Variable.SrcManAut",
     "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-    "dataType": "xs:IDREF"
+    "dataType": "Boolean"
   },
   "SrcIntAut": {
     "nodeId": "Variable.SrcIntAut",
     "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-    "dataType": "xs:IDREF"
+    "dataType": "Boolean"
   },
   "SrcIntOp": {
     "nodeId": "Variable.SrcIntOp",
     "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-    "dataType": "xs:IDREF"
+    "dataType": "Boolean"
   },
   "SrcManOp": {
     "nodeId": "Variable.SrcManOp",
     "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-    "dataType": "xs:IDREF"
+    "dataType": "Boolean"
   },
   "SrcIntAct": {
     "nodeId": "Variable.SrcIntAct",
     "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-    "dataType": "xs:IDREF"
+    "dataType": "Boolean"
   },
   "SrcManAct": {
     "nodeId": "Variable.SrcManAct",
     "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-    "dataType": "xs:IDREF"
+    "dataType": "Boolean"
   },
   "PV": {
     "nodeId": "Variable.PV",
     "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-    "dataType": "xs:IDREF"
+    "dataType": "Float"
   },
   "PVSclMin": {
     "nodeId": "Variable.PVSclMin",
     "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-    "dataType": "xs:IDREF"
+    "dataType": "Float"
   },
   "PVSclMax": {
     "nodeId": "Variable.PVSclMax",
     "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-    "dataType": "xs:IDREF"
+    "dataType": "Float"
   },
   "PVUnit": {
     "nodeId": "Variable.PVUnit",
     "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-    "dataType": "xs:IDREF"
+    "dataType": "Int16"
   },
   "SP": {
     "nodeId": "Variable.SP",
     "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-    "dataType": "xs:IDREF"
+    "dataType": "Float"
   },
   "SPSclMax": {
     "nodeId": "Variable.SPSclMax",
     "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-    "dataType": "xs:IDREF"
+    "dataType": "Float"
   },
   "SPSclMin": {
     "nodeId": "Variable.SPSclMin",
     "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-    "dataType": "xs:IDREF"
+    "dataType": "Float"
   },
   "SPUnit": {
     "nodeId": "Variable.SPUnit",
     "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-    "dataType": "xs:IDREF"
+    "dataType": "Int16"
   },
   "SPMan": {
     "nodeId": "Variable.SPMan",
     "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-    "dataType": "xs:IDREF"
+    "dataType": "Float"
   },
   "SPManMin": {
     "nodeId": "Variable.SPManMin",
     "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-    "dataType": "xs:IDREF"
+    "dataType": "Float"
   },
   "SPManMax": {
     "nodeId": "Variable.SPManMax",
     "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-    "dataType": "xs:IDREF"
+    "dataType": "Float"
   },
   "SPInt": {
     "nodeId": "Variable.SPInt",
     "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-    "dataType": "xs:IDREF"
+    "dataType": "Float"
   },
   "SPIntMin": {
     "nodeId": "Variable.SPIntMin",
     "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-    "dataType": "xs:IDREF"
+    "dataType": "Float"
   },
   "SPIntMax": {
     "nodeId": "Variable.SPIntMax",
     "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-    "dataType": "xs:IDREF"
+    "dataType": "Float"
   },
   "MV": {
     "nodeId": "Variable.MV",
     "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-    "dataType": "xs:IDREF"
+    "dataType": "Float"
   },
   "MVMan": {
     "nodeId": "Variable.MVMan",
     "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-    "dataType": "xs:IDREF"
+    "dataType": "Float"
   },
   "MVMin": {
     "nodeId": "Variable.MVMin",
     "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-    "dataType": "xs:IDREF"
+    "dataType": "Float"
   },
   "MVMax": {
     "nodeId": "Variable.MVMax",
     "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-    "dataType": "xs:IDREF"
+    "dataType": "Float"
   },
   "MVSclMax": {
     "nodeId": "Variable.MVSclMax",
     "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-    "dataType": "xs:IDREF"
+    "dataType": "Float"
   },
   "MVSclMin": {
     "nodeId": "Variable.MVSclMin",
     "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-    "dataType": "xs:IDREF"
+    "dataType": "Float"
   },
   "MVUnit": {
     "nodeId": "Variable.MVUnit",
     "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-    "dataType": "xs:IDREF"
+    "dataType": "Int16"
   },
   "P": {
     "nodeId": "Variable.P",
     "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-    "dataType": "xs:IDREF"
+    "dataType": "Float"
   },
   "Ti": {
     "nodeId": "Variable.Ti",
     "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-    "dataType": "xs:IDREF"
+    "dataType": "Float"
   },
   "Td": {
     "nodeId": "Variable.Td",
     "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-    "dataType": "xs:IDREF"
+    "dataType": "Float"
   }
 }

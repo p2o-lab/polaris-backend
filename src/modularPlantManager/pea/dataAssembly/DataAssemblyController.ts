@@ -127,7 +127,7 @@ export class DataAssemblyController extends EventEmitter {
 	 * Creates a data item from provided options of DataAssemblyController by
 	 * finding first name to match one of the communication options
 	 *!/
-	public populateDataItems(silent = false): OpcUaDataItem<any> {
+	public populateDataItems(silent = false): DataItem<any> {
 		for (const communicationKey of Object.keys(this.communication)) {
 			try {
 				this.communication[communicationKey as keyof BaseDataAssemblyRuntime] =

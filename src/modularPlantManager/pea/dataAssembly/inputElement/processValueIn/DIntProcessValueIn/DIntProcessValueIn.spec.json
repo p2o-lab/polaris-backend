@@ -9,22 +9,22 @@
     "VExt": {
       "nodeId": "Variable.VExt",
       "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-      "dataType": "xs:IDREF"
+      "dataType": "Int32"
     },
     "VUnit": {
       "nodeId": "Variable.VUnit",
       "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-      "dataType": "xs:IDREF"
+      "dataType": "Int16"
     },
     "VSclMax": {
       "nodeId": "Variable.VSclMax",
       "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-      "dataType": "xs:IDREF"
+      "dataType": "Int32"
      },
     "VSclMin": {
       "nodeId": "Variable.VSclMin",
       "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-      "dataType": "xs:IDREF"
+      "dataType": "Int32"
     }
 }
 

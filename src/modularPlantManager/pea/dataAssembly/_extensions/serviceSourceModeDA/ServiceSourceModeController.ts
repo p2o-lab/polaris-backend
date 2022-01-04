@@ -24,18 +24,18 @@
  */
 
 import {ServiceSourceMode} from '@p2olab/polaris-interface';
-import {OpcUaDataItem} from '../../../connection';
+import {DataItem} from '../../../connection';
 import {BaseDataAssemblyRuntime} from '../../DataAssemblyController';
 import {catDataAssembly} from '../../../../../logging';
 
 export interface ServiceSourceModeRuntime extends BaseDataAssemblyRuntime {
-	SrcChannel: OpcUaDataItem<boolean>;
-	SrcIntAct: OpcUaDataItem<boolean>;
-	SrcIntAut: OpcUaDataItem<boolean>;
-	SrcIntOp: OpcUaDataItem<boolean>;
-	SrcExtAct: OpcUaDataItem<boolean>;
-	SrcExtAut: OpcUaDataItem<boolean>;
-	SrcExtOp: OpcUaDataItem<boolean>;
+	SrcChannel: DataItem<boolean>;
+	SrcIntAct: DataItem<boolean>;
+	SrcIntAut: DataItem<boolean>;
+	SrcIntOp: DataItem<boolean>;
+	SrcExtAct: DataItem<boolean>;
+	SrcExtAut: DataItem<boolean>;
+	SrcExtOp: DataItem<boolean>;
 }
 
 export class ServiceSourceModeController{
@@ -47,16 +47,16 @@ export class ServiceSourceModeController{
 	}
 
 	private initialize(): void {
-		this.dAController.communication.SrcChannel = this.dAController.createDataItem('SrcChannel', 'read', 'boolean');
+		this.dAController.communication.SrcChannel = this.dAController.createDataItem('SrcChannel',  'boolean');
 
-		this.dAController.communication.SrcExtAut = this.dAController.createDataItem('SrcExtAut', 'read', 'boolean');
-		this.dAController.communication.SrcIntAut = this.dAController.createDataItem('SrcIntAut', 'read', 'boolean');
+		this.dAController.communication.SrcExtAut = this.dAController.createDataItem('SrcExtAut', 'boolean');
+		this.dAController.communication.SrcIntAut = this.dAController.createDataItem('SrcIntAut', 'boolean');
 
-		this.dAController.communication.SrcExtOp = this.dAController.createDataItem('SrcExtOp', 'write', 'boolean');
-		this.dAController.communication.SrcIntOp = this.dAController.createDataItem('SrcIntOp', 'write', 'boolean');
+		this.dAController.communication.SrcExtOp = this.dAController.createDataItem('SrcExtOp', 'boolean', 'write');
+		this.dAController.communication.SrcIntOp = this.dAController.createDataItem('SrcIntOp', 'boolean', 'write');
 
-		this.dAController.communication.SrcExtAct = this.dAController.createDataItem('SrcExtAct', 'read', 'boolean');
-		this.dAController.communication.SrcIntAct = this.dAController.createDataItem('SrcIntAct', 'read', 'boolean');
+		this.dAController.communication.SrcExtAct = this.dAController.createDataItem('SrcExtAct', 'boolean');
+		this.dAController.communication.SrcIntAct = this.dAController.createDataItem('SrcIntAct', 'boolean');
 	}
 
 	public getServiceSourceMode(): ServiceSourceMode {

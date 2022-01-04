@@ -35,7 +35,7 @@ chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 /**
- * Test for [[Condition]]
+ * Test for [[ConditionFactory]]
  */
 describe('ConditionFactory', () => {
 	describe('without test server', () => {

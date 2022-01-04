@@ -48,12 +48,12 @@ describe('BinProcessValueIn', () => {
 		const emptyOPCUAConnection = new OpcUaConnection();
 		it('should create BinProcessValueIn', () => {
 
-			const da1 = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as BinProcessValueIn;
+			const dataAssemblyController = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as BinProcessValueIn;
 
-			expect(da1).to.be.not.undefined;
-			expect(da1.communication.VExt).to.be.not.undefined;
-			expect(da1.communication.VState0).to.be.not.undefined;
-			expect(da1.communication.VState1).to.be.not.undefined;
+			expect(dataAssemblyController).to.be.not.undefined;
+			expect(dataAssemblyController.communication.VExt).to.be.not.undefined;
+			expect(dataAssemblyController.communication.VState0).to.be.not.undefined;
+			expect(dataAssemblyController.communication.VState1).to.be.not.undefined;
 		});
 	});
 	describe('dynamic', () => {
@@ -82,32 +82,32 @@ describe('BinProcessValueIn', () => {
 		});
 
 		it('should subscribe successfully', async () => {
-			const da1 = new BinProcessValueIn(dataAssemblyOptions, connection);
-			const pv =  da1.subscribe();
+			const dataAssemblyController = new BinProcessValueIn(dataAssemblyOptions, connection);
+			await dataAssemblyController.subscribe();
 			await connection.startMonitoring();
-			await pv;
+			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
 
-			expect(da1.communication.VExt.value).equal(false);
-			expect(da1.communication.VState0.value).equal('state0_active');
-			expect(da1.communication.VState1.value).equal('state1_active');
+			expect(dataAssemblyController.communication.VExt.value).equal(false);
+			expect(dataAssemblyController.communication.VState0.value).equal('state0_active');
+			expect(dataAssemblyController.communication.VState1.value).equal('state1_active');
 		}).timeout(4000);
 
 		it('setparameter', async () => {
-			const da1 = new BinProcessValueIn(dataAssemblyOptions, connection);
-			const pv =  da1.subscribe();
+			const dataAssemblyController = new BinProcessValueIn(dataAssemblyOptions, connection);
+			await dataAssemblyController.subscribe();
 			await connection.startMonitoring();
-			await pv;
+			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
 
-			await da1.setParameter(true,'VExt');
-			await da1.setParameter('test','VState0');
-			await da1.setParameter('test','VState1');
+			await dataAssemblyController.setParameter(true,'VExt');
+			await dataAssemblyController.setParameter('test','VState0');
+			await dataAssemblyController.setParameter('test','VState1');
 
 			expect(mockup.vExt).equal(true);
 			//TODO: problem: we have to wait for the variable to change (EventEmitter), maybe this is not optimal
 			await new Promise(f => setTimeout(f, 1000));
-			expect(da1.communication.VExt.value).equal(true);
-			expect(da1.communication.VState0.value).equal('test');
-			expect(da1.communication.VState1.value).equal('test');
+			expect(dataAssemblyController.communication.VExt.value).equal(true);
+			expect(dataAssemblyController.communication.VState0.value).equal('test');
+			expect(dataAssemblyController.communication.VState1.value).equal('test');
 		}).timeout(4000);
 
 		it('setValue', async () => {

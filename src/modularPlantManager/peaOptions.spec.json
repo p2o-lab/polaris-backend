@@ -11,162 +11,162 @@
         "WQC":{
           "nodeId":"Trigonometry.WQC",
           "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
-          "dataType":"xs:IDREF"
+          "dataType":"Byte"
         },
         "StateChannel":{
           "nodeId":"Trigonometry.StateChannel",
           "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
-          "dataType":"xs:IDREF"
+          "dataType":"Boolean"
         },
         "StateOffAut":{
           "nodeId":"Trigonometry.StateOffAut",
           "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
-          "dataType":"xs:IDREF"
+          "dataType":"Boolean"
         },
         "StateOpAut":{
           "nodeId":"Trigonometry.StateOpAut",
           "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
-          "dataType":"xs:IDREF"
+          "dataType":"Boolean"
         },
         "StateAutAut":{
           "nodeId":"Trigonometry.StateAutAut",
           "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
-          "dataType":"xs:IDREF"
+          "dataType":"Boolean"
         },
         "StateOffOp":{
           "nodeId":"Trigonometry.StateOffOp",
           "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
-          "dataType":"xs:IDREF"
+          "dataType":"Boolean"
         },
         "StateOpOp":{
           "nodeId":"Trigonometry.StateOpOp",
           "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
-          "dataType":"xs:IDREF"
+          "dataType":"Boolean"
         },
         "StateAutOp":{
           "nodeId":"Trigonometry.StateAutOp",
           "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
-          "dataType":"xs:IDREF"
+          "dataType":"Boolean"
         },
         "StateOpAct":{
           "nodeId":"Trigonometry.StateOpAct",
           "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
-          "dataType":"xs:IDREF"
+          "dataType":"Boolean"
         },
         "StateAutAct":{
           "nodeId":"Trigonometry.StateAutAct",
           "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
-          "dataType":"xs:IDREF"
+          "dataType":"Boolean"
         },
         "StateOffAct":{
           "nodeId":"Trigonometry.StateOffAct",
           "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
-          "dataType":"xs:IDREF"
+          "dataType":"Boolean"
         },
         "SrcChannel":{
           "nodeId":"Trigonometry.SrcChannel",
           "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
-          "dataType":"xs:IDREF"
+          "dataType":"Boolean"
         },
         "SrcExtAut":{
           "nodeId":"Trigonometry.SrcExtAut",
           "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
-          "dataType":"xs:IDREF"
+          "dataType":"Boolean"
         },
         "SrcIntAut":{
           "nodeId":"Trigonometry.SrcIntAut",
           "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
-          "dataType":"xs:IDREF"
+          "dataType":"Boolean"
         },
         "SrcIntOp":{
           "nodeId":"Trigonometry.SrcIntOp",
           "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
-          "dataType":"xs:IDREF"
+          "dataType":"Boolean"
         },
         "SrcExtOp":{
           "nodeId":"Trigonometry.SrcExtOp",
           "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
-          "dataType":"xs:IDREF"
+          "dataType":"Boolean"
         },
         "SrcExtAct":{
           "nodeId":"Trigonometry.SrcExtAct",
           "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
-          "dataType":"xs:IDREF"
+          "dataType":"Boolean"
         },
         "SrcIntAct":{
           "nodeId":"Trigonometry.SrcIntAct",
           "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
-          "dataType":"xs:IDREF"
+          "dataType":"Boolean"
         },
         "OSLevel":{
           "nodeId":"Trigonometry.OSLevel",
           "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
-          "dataType":"xs:IDREF"
+          "dataType":"Byte"
         },
         "CommandOp":{
           "nodeId":"Trigonometry.CommandOp",
           "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
-          "dataType":"xs:IDREF"
+          "dataType":"UInt32"
         },
         "CommandInt":{
           "nodeId":"Trigonometry.CommandInt",
           "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
-          "dataType":"xs:IDREF"
+          "dataType":"UInt32"
         },
         "CommandExt":{
           "nodeId":"Trigonometry.CommandExt",
           "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
-          "dataType":"xs:IDREF"
+          "dataType":"UInt32"
         },
         "ProcedureOp":{
           "nodeId":"Trigonometry.ProcedureOp",
           "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
-          "dataType":"xs:IDREF"
+          "dataType":"UInt32"
         },
         "ProcedureInt":{
           "nodeId":"Trigonometry.ProcedureInt",
           "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
-          "dataType":"xs:IDREF"
+          "dataType":"UInt32"
         },
         "ProcedureExt":{
           "nodeId":"Trigonometry.ProcedureExt",
           "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
-          "dataType":"xs:IDREF"
+          "dataType":"UInt32"
         },
         "CommandEn":{
           "nodeId":"Trigonometry.CommandEn",
           "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
-          "dataType":"xs:IDREF"
+          "dataType":"UInt32"
         },
         "StateCur":{
           "nodeId":"Trigonometry.StateCur",
           "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
-          "dataType":"xs:IDREF"
+          "dataType":"UInt32"
         },
         "ProcedureCur":{
           "nodeId":"Trigonometry.ProcedureCur",
           "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
-          "dataType":"xs:IDREF"
+          "dataType":"UInt32"
         },
         "ProcedureReq":{
           "nodeId":"Trigonometry.ProcedureReq",
           "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
-          "dataType":"xs:IDREF"
+          "dataType":"UInt32"
         },
         "InteractQuestionID":{
           "nodeId":"Trigonometry.InteractQuestionID",
           "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
-          "dataType":"xs:IDREF"
+          "dataType":"UInt32"
         },
         "InteractAnswerID":{
           "nodeId":"Trigonometry.InteractAnswerID",
           "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
-          "dataType":"xs:IDREF"
+          "dataType":"UInt32"
         },
         "PosTextID":{
           "nodeId":"Trigonometry.PosTextID",
           "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
-          "dataType":"xs:IDREF"
+          "dataType":"UInt32"
         }
       },
       "procedures":[
@@ -180,13 +180,19 @@
               "name":"Trigonometry_default",
               "metaModelRef":"MTPDataObjectSUCLib/DataAssembly/DiagnosticElement/HealthStateView",
               "dataItems":{
-                "TagName":"Trigonometry_default",
-                "TagDescription":"Default Procedure of Trigonometry",
-                "OSLevel":"0",
+                "TagName":{
+                  "value": "Trigonometry_default"
+                },
+                "TagDescription":{
+                  "value": "Default Procedure of Trigonometry"
+                },
+                "OSLevel":{
+                  "value": 0
+                },
                 "WQC":{
                   "nodeId":"Trigonometry.Trigonometry_default.WQC",
                   "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
-                  "dataType":"xs:IDREF"
+                  "dataType":"Byte"
                 }
               }
             }
@@ -209,27 +215,27 @@
         "WQC":{
           "nodeId":"Variable.WQC",
           "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
-          "dataType":"xs:IDREF"
+          "dataType":"Byte"
         },
         "V":{
           "nodeId":"Variable.V",
           "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
-          "dataType":"xs:IDREF"
+          "dataType":"Float"
         },
         "VSclMin":{
           "nodeId":"Variable.VSclMin",
           "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
-          "dataType":"xs:IDREF"
+          "dataType":"Float"
         },
         "VSclMax":{
           "nodeId":"Variable.VSclMax",
           "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
-          "dataType":"xs:IDREF"
+          "dataType":"Float"
         },
         "VUnit":{
           "nodeId":"Variable.VUnit",
           "namespaceIndex":"urn:P2OLab:NodeOPCUA-Server",
-          "dataType":"xs:IDREF"
+          "dataType":"Int16"
         }
       }
     }

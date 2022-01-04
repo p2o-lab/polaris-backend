@@ -50,10 +50,10 @@ export class UnitDAMockup {
         componentOf: rootNode,
         nodeId: `ns=${namespace.index};s=${variableName}.VUnit`,
         browseName: `${variableName}.VUnit`,
-        dataType: DataType.UInt32,
+        dataType: DataType.Int16,
         value: {
           get: (): Variant => {
-            return new Variant({dataType: DataType.UInt32, value: this.unit});
+            return new Variant({dataType: DataType.Int16, value: this.unit});
           },
         },
       });

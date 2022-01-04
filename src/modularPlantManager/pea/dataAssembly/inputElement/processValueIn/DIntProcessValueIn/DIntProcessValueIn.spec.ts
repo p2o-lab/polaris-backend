@@ -48,19 +48,19 @@ describe('DIntProcessValueIn', () => {
 	describe('static', () => {
 		const emptyOPCUAConnection = new OpcUaConnection();
 		it('should create DIntProcessValueIn', async () => {
-			const da1 = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as DIntProcessValueIn;
-			expect(da1).to.be.not.undefined;
-			expect(da1.communication.VExt).to.be.not.undefined;
-			expect(da1.communication.VSclMax).to.be.not.undefined;
-			expect(da1.communication.VSclMin).to.be.not.undefined;
-			expect(da1.communication.VUnit).to.be.not.undefined;
+			const dataAssemblyController = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as DIntProcessValueIn;
+			expect(dataAssemblyController).to.be.not.undefined;
+			expect(dataAssemblyController.communication.VExt).to.be.not.undefined;
+			expect(dataAssemblyController.communication.VSclMax).to.be.not.undefined;
+			expect(dataAssemblyController.communication.VSclMin).to.be.not.undefined;
+			expect(dataAssemblyController.communication.VUnit).to.be.not.undefined;
 		});
 	});
 	describe('dynamic', () => {
 		let mockupServer: MockupServer;
 		let connection: OpcUaConnection;
 		let mockup: DIntProcessValueInMockup;
-		let da1: DIntProcessValueIn;
+		let dataAssemblyController: DIntProcessValueIn;
 
 		beforeEach(async function () {
 			this.timeout(4000);
@@ -76,10 +76,10 @@ describe('DIntProcessValueIn', () => {
 			connection.initialize({endpoint: mockupServer.endpoint});
 			await connection.connect();
 
-			da1 = DataAssemblyControllerFactory.create(dataAssemblyOptions, connection) as DIntProcessValueIn;
-			const pv = da1.subscribe();
+			dataAssemblyController = DataAssemblyControllerFactory.create(dataAssemblyOptions, connection) as DIntProcessValueIn;
+			await dataAssemblyController.subscribe();
 			await connection.startMonitoring();
-			await pv;
+			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
 		});
 
 		afterEach(async function () {
@@ -89,14 +89,14 @@ describe('DIntProcessValueIn', () => {
 		});
 
 		it('should subscribe successfully', async () => {
-			expect(da1.communication.VExt.value).equal(0);
-			expect(da1.communication.VUnit.value).equal(0);
-			expect(da1.communication.VSclMin.value).equal(0);
-			expect(da1.communication.VSclMax.value).equal(1);
+			expect(dataAssemblyController.communication.VExt.value).equal(0);
+			expect(dataAssemblyController.communication.VUnit.value).equal(0);
+			expect(dataAssemblyController.communication.VSclMin.value).equal(0);
+			expect(dataAssemblyController.communication.VSclMax.value).equal(1);
 		}).timeout(4000);
 
 		it('setparameter', async () => {
-			await da1.setParameter(1,'VExt');
+			await dataAssemblyController.setParameter(1,'VExt');
 
 			expect(mockup.vExt).equal(1);
 			//TODO: problem= we have to wait for the variable to change (EventEmitter), maybe this is not optimal

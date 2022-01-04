@@ -47,12 +47,12 @@ describe('InputElement', () => {
 				dataItems: baseDataAssemblyOptions
 			};
 			//TODO: problem with circular dependencies, new InputElement() does not work
-			const da1 = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as InputElement;
-			//const da1 = new InputElement(dataAssemblyOptions, emptyOPCUAConnection);
+			const dataAssemblyController = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as InputElement;
+			//const dataAssemblyController = new InputElement(dataAssemblyOptions, emptyOPCUAConnection);
 
-			expect(da1).to.be.not.undefined;
-			expect(da1.communication).to.be.not.undefined;
-			expect(da1.wqc).to.be.not.undefined;
+			expect(dataAssemblyController).to.be.not.undefined;
+			expect(dataAssemblyController.communication).to.be.not.undefined;
+			expect(dataAssemblyController.wqc).to.be.not.undefined;
 		});
 	});
 
@@ -84,15 +84,13 @@ describe('InputElement', () => {
 
 		it('should subscribe successfully', async () => {
 
-			//TODO: problem with circular dependencies, new InputElement() does not work
-			//const da1 = new InputElement(dataAssemblyOptions, connection);
-			const da1 = DataAssemblyControllerFactory.create(dataAssemblyOptions, connection) as InputElement;
-			new WQC(da1);
-			const pv = da1.subscribe();
+			const dataAssemblyController = DataAssemblyControllerFactory.create(dataAssemblyOptions, connection) as InputElement;
+			new WQC(dataAssemblyController);
+			await dataAssemblyController.subscribe();
 			await connection.startMonitoring();
-			await pv;
-			expect(da1.communication.WQC.value).equal(0);
+			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
+
+			expect(dataAssemblyController.communication.WQC.value).equal(0);
 		}).timeout(4000);
-		//TODO toJSON
 	});
 });

@@ -47,10 +47,10 @@ describe('LockView4', () => {
 		const emptyOPCUAConnection = new OpcUaConnection();
 
 		it('should create LockView4', async () => {
-			const da1 = new LockView4(dataAssemblyOptions, emptyOPCUAConnection);
-			expect(da1).to.be.not.undefined;
-			expect(da1.communication).to.be.not.undefined;
-			expect(da1.wqc).to.be.not.undefined;
+			const dataAssemblyController = new LockView4(dataAssemblyOptions, emptyOPCUAConnection);
+			expect(dataAssemblyController).to.be.not.undefined;
+			expect(dataAssemblyController.communication).to.be.not.undefined;
+			expect(dataAssemblyController.wqc).to.be.not.undefined;
 		});
 
 	});
@@ -77,38 +77,39 @@ describe('LockView4', () => {
 
 		it('should subscribe successfully', async () => {
 
-			const da1 = new LockView4(dataAssemblyOptions, connection);
-			const pv = da1.subscribe();
+			const dataAssemblyController = new LockView4(dataAssemblyOptions, connection);
+			await dataAssemblyController.subscribe();
 			await connection.startMonitoring();
-			await pv;
-			expect(da1.communication.WQC.value).equal(0);
-			expect(da1.communication.Logic.value).equal(false);
-			expect(da1.communication.Out.value).equal(false);
-			expect(da1.communication.OutQC.value).equal(0);
+			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
 
-			expect(da1.communication.In1En.value).equal(false);
-			expect(da1.communication.In1.value).equal(false);
-			expect(da1.communication.In1QC.value).equal(0);
-			expect(da1.communication.In1Inv.value).equal(false);
-			expect(da1.communication.In1Txt.value).equal('testText');
+			expect(dataAssemblyController.communication.WQC.value).equal(0);
+			expect(dataAssemblyController.communication.Logic.value).equal(false);
+			expect(dataAssemblyController.communication.Out.value).equal(false);
+			expect(dataAssemblyController.communication.OutQC.value).equal(0);
 
-			expect(da1.communication.In2En.value).equal(false);
-			expect(da1.communication.In2.value).equal(false);
-			expect(da1.communication.In2QC.value).equal(0);
-			expect(da1.communication.In2Inv.value).equal(false);
-			expect(da1.communication.In2Txt.value).equal('testText');
+			expect(dataAssemblyController.communication.In1En.value).equal(false);
+			expect(dataAssemblyController.communication.In1.value).equal(false);
+			expect(dataAssemblyController.communication.In1QC.value).equal(0);
+			expect(dataAssemblyController.communication.In1Inv.value).equal(false);
+			expect(dataAssemblyController.communication.In1Txt.value).equal('testText');
 
-			expect(da1.communication.In3En.value).equal(false);
-			expect(da1.communication.In3.value).equal(false);
-			expect(da1.communication.In3QC.value).equal(0);
-			expect(da1.communication.In3Inv.value).equal(false);
-			expect(da1.communication.In3Txt.value).equal('testText');
+			expect(dataAssemblyController.communication.In2En.value).equal(false);
+			expect(dataAssemblyController.communication.In2.value).equal(false);
+			expect(dataAssemblyController.communication.In2QC.value).equal(0);
+			expect(dataAssemblyController.communication.In2Inv.value).equal(false);
+			expect(dataAssemblyController.communication.In2Txt.value).equal('testText');
 
-			expect(da1.communication.In4En.value).equal(false);
-			expect(da1.communication.In4.value).equal(false);
-			expect(da1.communication.In4QC.value).equal(0);
-			expect(da1.communication.In4Inv.value).equal(false);
-			expect(da1.communication.In4Txt.value).equal('testText');
+			expect(dataAssemblyController.communication.In3En.value).equal(false);
+			expect(dataAssemblyController.communication.In3.value).equal(false);
+			expect(dataAssemblyController.communication.In3QC.value).equal(0);
+			expect(dataAssemblyController.communication.In3Inv.value).equal(false);
+			expect(dataAssemblyController.communication.In3Txt.value).equal('testText');
+
+			expect(dataAssemblyController.communication.In4En.value).equal(false);
+			expect(dataAssemblyController.communication.In4.value).equal(false);
+			expect(dataAssemblyController.communication.In4QC.value).equal(0);
+			expect(dataAssemblyController.communication.In4Inv.value).equal(false);
+			expect(dataAssemblyController.communication.In4Txt.value).equal('testText');
 		}).timeout(4000);
 	});
 });

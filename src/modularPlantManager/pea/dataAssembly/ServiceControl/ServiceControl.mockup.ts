@@ -1,31 +1,6 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 P2O-Lab <p2o-lab@mailbox.tu-dresden.de>,
- * Chair for Process Control Systems, Technische Universität Dresden
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
- 
-/*
- * MIT License
- *
  * Copyright (c) 2020 P2O-Lab <p2o-lab@mailbox.tu-dresden.de>,
  * Chair for Process Control Systems, Technische Universität Dresden
  *
@@ -73,67 +48,67 @@ export function getServiceControlMockupReferenceJSON(
         CommandOp: {
           namespaceIndex: `${namespace}`,
           nodeId: `${objectBrowseName}.CommandOp`,
-          dataType: 'Int32'
+          dataType: 'UInt32'
         },
         CommandInt: {
           namespaceIndex: `${namespace}`,
           nodeId: `${objectBrowseName}.CommandInt`,
-          dataType: 'Int32'
+          dataType: 'UInt32'
         },
         CommandExt: {
           namespaceIndex: `${namespace}`,
           nodeId: `${objectBrowseName}.CommandExt`,
-          dataType: 'Int32'
+          dataType: 'UInt32'
         },
         CommandEn: {
           namespaceIndex: `${namespace}`,
           nodeId: `${objectBrowseName}.CommandEn`,
-          dataType: 'Int32'
+          dataType: 'UInt32'
         },
         StateCur: {
           namespaceIndex: `${namespace}`,
           nodeId: `${objectBrowseName}.StateCur`,
-          dataType: 'Int32'
+          dataType: 'UInt32'
         },
         ProcedureOp: {
           namespaceIndex: `${namespace}`,
           nodeId: `${objectBrowseName}.ProcedureOp`,
-          dataType: 'Int32'
+          dataType: 'UInt32'
         },
         ProcedureExt: {
           namespaceIndex: `${namespace}`,
           nodeId: `${objectBrowseName}.ProcedureExt`,
-          dataType: 'Int32'
+          dataType: 'UInt32'
         },
         ProcedureInt: {
           namespaceIndex: `${namespace}`,
           nodeId: `${objectBrowseName}.ProcedureInt`,
-          dataType: 'Int32'
+          dataType: 'UInt32'
         },
         ProcedureCur: {
           namespaceIndex: `${namespace}`,
           nodeId: `${objectBrowseName}.ProcedureCur`,
-          dataType: 'Int32'
+          dataType: 'UInt32'
         },
         ProcedureReq: {
           namespaceIndex: `${namespace}`,
           nodeId: `${objectBrowseName}.ProcedureReq`,
-          dataType: 'Int32'
+          dataType: 'UInt32'
         },
         InteractQuestionID: {
           namespaceIndex: `${namespace}`,
           nodeId: `${objectBrowseName}.InteractQuestionID`,
-          dataType: 'Int32'
+          dataType: 'UInt32'
         },
         InteractAnswerID: {
           namespaceIndex: `${namespace}`,
           nodeId: `${objectBrowseName}.InteractAnswerID`,
-          dataType: 'Int32'
+          dataType: 'UInt32'
         },
         PosTextID: {
           namespaceIndex: `${namespace}`,
           nodeId: `${objectBrowseName}.PosTextID`,
-          dataType: 'Int32'
+          dataType: 'UInt32'
         }
       });
 }
@@ -146,10 +121,7 @@ export class ServiceControlMockup extends DataAssemblyControllerMockup{
     protected commandOp = 0;
     protected commandInt = 0;
     protected commandExt = 0;
-
-
     protected procedureExt = 0;
-
     commandEn = 268;
 
     protected posTextID = 0;

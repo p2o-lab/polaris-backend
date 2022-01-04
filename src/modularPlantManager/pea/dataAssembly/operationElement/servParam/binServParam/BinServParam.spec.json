@@ -9,137 +9,137 @@
     "OSLevel": {
       "nodeId": "Variable.OSLevel",
       "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-      "dataType": "xs:IDREF"
+      "dataType": "Byte"
     },
     "SrcChannel": {
       "nodeId": "Variable.SrcChannel",
       "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-      "dataType": "xs:IDREF"
+      "dataType": "Boolean"
     },
     "SrcExtAut": {
       "nodeId": "Variable.SrcExtAut",
       "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-      "dataType": "xs:IDREF"
+      "dataType": "Boolean"
     },
     "SrcIntAut": {
       "nodeId": "Variable.SrcIntAut",
       "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-      "dataType": "xs:IDREF"
+      "dataType": "Boolean"
     },
     "SrcIntOp": {
       "nodeId": "Variable.SrcIntOp",
       "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-      "dataType": "xs:IDREF"
+      "dataType": "Boolean"
     },
     "SrcExtOp": {
       "nodeId": "Variable.SrcExtOp",
       "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-      "dataType": "xs:IDREF"
+      "dataType": "Boolean"
     },
     "SrcIntAct": {
       "nodeId": "Variable.SrcIntAct",
       "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-      "dataType": "xs:IDREF"
+      "dataType": "Boolean"
     },
     "SrcExtAct": {
       "nodeId": "Variable.SrcExtAct",
       "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-      "dataType": "xs:IDREF"
+      "dataType": "Boolean"
     },
     "StateChannel": {
       "nodeId": "Variable.StateChannel",
       "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-      "dataType": "xs:IDREF"
+      "dataType": "Boolean"
     },
     "StateOffAut": {
       "nodeId": "Variable.StateOffAut",
       "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-      "dataType": "xs:IDREF"
+      "dataType": "Boolean"
     },
     "StateOpAut": {
       "nodeId": "Variable.StateOpAut",
       "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-      "dataType": "xs:IDREF"
+      "dataType": "Boolean"
     },
     "StateAutAut": {
       "nodeId": "Variable.StateAutAut",
       "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-      "dataType": "xs:IDREF"
+      "dataType": "Boolean"
     },
     "StateOffOp": {
       "nodeId": "Variable.StateOffOp",
       "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-      "dataType": "xs:IDREF"
+      "dataType": "Boolean"
     },
     "StateOpOp": {
       "nodeId": "Variable.StateOpOp",
       "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-      "dataType": "xs:IDREF"
+      "dataType": "Boolean"
     },
     "StateAutOp": {
       "nodeId": "Variable.StateAutOp",
       "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-      "dataType": "xs:IDREF"
+      "dataType": "Boolean"
     },
     "StateOpAct": {
       "nodeId": "Variable.StateOpAct",
       "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-      "dataType": "xs:IDREF"
+      "dataType": "Boolean"
     },
     "StateAutAct": {
       "nodeId": "Variable.StateAutAct",
       "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-      "dataType": "xs:IDREF"
+      "dataType": "Boolean"
     },
     "StateOffAct": {
       "nodeId": "Variable.StateOffAct",
       "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-      "dataType": "xs:IDREF"
+      "dataType": "Boolean"
     },
     "Sync": {
       "nodeId": "Variable.Sync",
       "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-      "dataType": "xs:IDREF"
+      "dataType": "Boolean"
     },
     "VExt": {
       "nodeId": "Variable.VExt",
       "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-      "dataType": "xs:IDREF"
+      "dataType": "Boolean"
     },
     "VOp": {
       "nodeId": "Variable.VOp",
       "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-      "dataType": "xs:IDREF"
+      "dataType": "Boolean"
     },
     "VInt": {
       "nodeId": "Variable.VInt",
       "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-      "dataType": "xs:IDREF"
+      "dataType": "Boolean"
     },
     "VOut": {
       "nodeId": "Variable.VOut",
       "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-      "dataType": "xs:IDREF"
+      "dataType": "Boolean"
     },
     "VFbk": {
       "nodeId": "Variable.VFbk",
       "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-      "dataType": "xs:IDREF"
+      "dataType": "Boolean"
     },
     "VReq": {
       "nodeId": "Variable.VReq",
       "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-      "dataType": "xs:IDREF"
+      "dataType": "Boolean"
     },
     "VState0": {
       "nodeId": "Variable.VState0",
       "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-      "dataType": "xs:IDREF"
+      "dataType": "String"
     },
     "VState1": {
       "nodeId": "Variable.VState1",
       "namespaceIndex": "urn:P2OLab:NodeOPCUA-Server",
-      "dataType": "xs:IDREF"
+      "dataType": "String"
     }
 }
 

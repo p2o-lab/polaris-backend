@@ -49,15 +49,15 @@ describe('FeedbackMonitoring', () => {
 		const emptyOPCUAConnection = new OpcUaConnection();
 
 		it('should create FeedbackMonitoring', () => {
-			const da1 = new DataAssemblyController(dataAssemblyOptions, emptyOPCUAConnection) as any;
-			const feedbackMonitoring = new FeedbackMonitoring(da1);
+			const dataAssemblyController = new DataAssemblyController(dataAssemblyOptions, emptyOPCUAConnection) as any;
+			const feedbackMonitoring = new FeedbackMonitoring(dataAssemblyController);
 			expect(feedbackMonitoring).to.not.to.undefined;
-			expect(da1.communication.MonEn).to.not.to.undefined;
-			expect(da1.communication.MonSafePos).to.not.to.undefined;
-			expect(da1.communication.MonStatErr).to.not.to.undefined;
-			expect(da1.communication.MonDynErr).to.not.to.undefined;
-			expect(da1.communication.MonStatTi).to.not.to.undefined;
-			expect(da1.communication.MonDynTi).to.not.to.undefined;
+			expect(dataAssemblyController.communication.MonEn).to.not.to.undefined;
+			expect(dataAssemblyController.communication.MonSafePos).to.not.to.undefined;
+			expect(dataAssemblyController.communication.MonStatErr).to.not.to.undefined;
+			expect(dataAssemblyController.communication.MonDynErr).to.not.to.undefined;
+			expect(dataAssemblyController.communication.MonStatTi).to.not.to.undefined;
+			expect(dataAssemblyController.communication.MonDynTi).to.not.to.undefined;
 		});
 	});
 	describe('dynamic', () => {
@@ -83,19 +83,19 @@ describe('FeedbackMonitoring', () => {
 
 		it('should subscribe successfully', async () => {
 
-			const da1 = new DataAssemblyController(dataAssemblyOptions, connection) as any;
+			const dataAssemblyController = new DataAssemblyController(dataAssemblyOptions, connection) as any;
 
-			new FeedbackMonitoring(da1);
-			const pv = da1.subscribe();
+			new FeedbackMonitoring(dataAssemblyController);
+			await dataAssemblyController.subscribe();
 			await connection.startMonitoring();
-			await pv;
+			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
 
-			expect(da1.communication.MonEn.value).equal(false);
-			expect(da1.communication.MonSafePos.value).equal(false);
-			expect(da1.communication.MonStatErr.value).equal(false);
-			expect(da1.communication.MonDynErr.value).equal(false);
-			expect(da1.communication.MonStatTi.value).equal(0);
-			expect(da1.communication.MonDynTi.value).equal(0);
+			expect(dataAssemblyController.communication.MonEn.value).equal(false);
+			expect(dataAssemblyController.communication.MonSafePos.value).equal(false);
+			expect(dataAssemblyController.communication.MonStatErr.value).equal(false);
+			expect(dataAssemblyController.communication.MonDynErr.value).equal(false);
+			expect(dataAssemblyController.communication.MonStatTi.value).equal(0);
+			expect(dataAssemblyController.communication.MonDynTi.value).equal(0);
 		}).timeout(5000);
 	});
 });

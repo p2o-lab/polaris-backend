@@ -25,21 +25,22 @@
  
 @startuml
 'https://plantuml.com/class-diagram
-!include ../../_extensions/limitMonitoringDA/LimitMonitoring.puml
-!include ../../_extensions/osLevelDA/OSLevel.puml
+!include ../../../_extensions/limitMonitoringDA/LimitMonitoring.puml
+!include ../../../_extensions/osLevelDA/OSLevel.puml
+
+interface AnaMonRuntime
 
 class AnaMon{
     + communication!: AnaMonRuntime
     + limitMonitoring: LimitMonitoring
     + osLevel: OSLevel
 }
-AnaMon *- AnaMonSpec
-AnaMonSpec ..> AnaMonMockup : <<use>>
-AnaMon *-- "1" AnaMonMockup
-AnaMon *-- "1" AnaMonRuntime
+AnaMon --> AnaMonRuntime
+
+AnaMonSpec --> AnaMon : <<uses>>
+AnaMonSpec --> AnaMonMockup : <<uses>>
+AnaMon -- AnaMonMockup
 AnaMon *-- "1" LimitMonitoring
 AnaMon *-- "1" OSLevel
-
-
 
 @enduml

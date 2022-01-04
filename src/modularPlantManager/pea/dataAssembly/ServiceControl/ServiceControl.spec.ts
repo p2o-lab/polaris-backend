@@ -51,24 +51,24 @@ describe('ServiceControl', () => {
 	describe('static', () => {
 		const emptyOPCUAConnection = new OpcUaConnection();
 		it('should create ServiceControl', async () => {
-			const da1 = new ServiceControl(dataAssemblyOptions, emptyOPCUAConnection);
-			expect(da1.opMode).to.not.equal(undefined);
-			expect(da1.serviceSourceMode).to.not.equal(undefined);
+			const dataAssemblyController = new ServiceControl(dataAssemblyOptions, emptyOPCUAConnection);
+			expect(dataAssemblyController.opMode).to.not.equal(undefined);
+			expect(dataAssemblyController.serviceSourceMode).to.not.equal(undefined);
 
-			expect(da1.communication.WQC).to.not.equal(undefined);
-			expect(da1.communication.CommandOp).to.not.equal(undefined);
-			expect(da1.communication.CommandExt).to.not.equal(undefined);
-			expect(da1.communication.CommandInt).to.not.equal(undefined);
-			expect(da1.communication.CommandEn).to.not.equal(undefined);
-			expect(da1.communication.StateCur).to.not.equal(undefined);
-			expect(da1.communication.ProcedureOp).to.not.equal(undefined);
-			expect(da1.communication.ProcedureExt).to.not.equal(undefined);
-			expect(da1.communication.ProcedureInt).to.not.equal(undefined);
-			expect(da1.communication.ProcedureCur).to.not.equal(undefined);
-			expect(da1.communication.ProcedureReq).to.not.equal(undefined);
-			expect(da1.communication.InteractQuestionID).to.not.equal(undefined);
-			expect(da1.communication.InteractAnswerID).to.not.equal(undefined);
-			expect(da1.communication.PosTextID).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.WQC).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.CommandOp).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.CommandExt).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.CommandInt).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.CommandEn).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.StateCur).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.ProcedureOp).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.ProcedureExt).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.ProcedureInt).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.ProcedureCur).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.ProcedureReq).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.InteractQuestionID).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.InteractAnswerID).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.PosTextID).to.not.equal(undefined);
 		});
 	});
 
@@ -96,30 +96,30 @@ describe('ServiceControl', () => {
 
 		it('should subscribe successfully', async () => {
 
-			const da1 = new ServiceControl(dataAssemblyOptions, connection);
-			const pv = da1.subscribe();
+			const dataAssemblyController = new ServiceControl(dataAssemblyOptions, connection);
+			await dataAssemblyController.subscribe();
 			await connection.startMonitoring();
-			await pv;
+			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
 
-			expect(da1.communication.WQC.value).equal(0);
-			expect((da1).communication.StateChannel.value).equal(false);
-			expect((da1).communication.StateOffAut.value).equal(false);
-			expect((da1).communication.StateOpAut.value).equal(false);
-			expect((da1).communication.StateAutAut.value).equal(false);
-			expect((da1).communication.StateOffOp.value).equal(false);
-			expect((da1).communication.StateOpOp.value).equal(false);
-			expect((da1).communication.StateAutOp.value).equal(false);
-			expect((da1).communication.StateOpAct.value).equal(false);
-			expect((da1).communication.StateAutAct.value).equal(false);
-			expect((da1).communication.StateOffAct.value).equal(true);
+			expect(dataAssemblyController.communication.WQC.value).equal(0);
+			expect((dataAssemblyController).communication.StateChannel.value).equal(false);
+			expect((dataAssemblyController).communication.StateOffAut.value).equal(false);
+			expect((dataAssemblyController).communication.StateOpAut.value).equal(false);
+			expect((dataAssemblyController).communication.StateAutAut.value).equal(false);
+			expect((dataAssemblyController).communication.StateOffOp.value).equal(false);
+			expect((dataAssemblyController).communication.StateOpOp.value).equal(false);
+			expect((dataAssemblyController).communication.StateAutOp.value).equal(false);
+			expect((dataAssemblyController).communication.StateOpAct.value).equal(false);
+			expect((dataAssemblyController).communication.StateAutAct.value).equal(false);
+			expect((dataAssemblyController).communication.StateOffAct.value).equal(true);
 
-			expect(da1.communication.SrcChannel.value).equal(false);
-			expect(da1.communication.SrcExtAut.value).equal(false);
-			expect(da1.communication.SrcIntAut.value).equal(false);
-			expect(da1.communication.SrcIntOp.value).equal(false);
-			expect(da1.communication.SrcExtOp.value).equal(false);
-			expect(da1.communication.SrcIntAct.value).equal(true);
-			expect(da1.communication.SrcExtAct.value).equal(false);
+			expect(dataAssemblyController.communication.SrcChannel.value).equal(false);
+			expect(dataAssemblyController.communication.SrcExtAut.value).equal(false);
+			expect(dataAssemblyController.communication.SrcIntAut.value).equal(false);
+			expect(dataAssemblyController.communication.SrcIntOp.value).equal(false);
+			expect(dataAssemblyController.communication.SrcExtOp.value).equal(false);
+			expect(dataAssemblyController.communication.SrcIntAct.value).equal(true);
+			expect(dataAssemblyController.communication.SrcExtAct.value).equal(false);
 
 		}).timeout(4000);
 	});

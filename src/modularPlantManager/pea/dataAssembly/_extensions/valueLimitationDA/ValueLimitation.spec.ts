@@ -79,13 +79,13 @@ describe('ValueLimitation', () => {
 
 		it('should subscribe successfully', async () => {
 
-			const da1 = new DataAssemblyController(dataAssemblyOptions, connection) as any;
-			new ValueLimitation(da1);
-			const pv = da1.subscribe();
+			const dataAssemblyController = new DataAssemblyController(dataAssemblyOptions, connection) as any;
+			new ValueLimitation(dataAssemblyController);
+			await dataAssemblyController.subscribe();
 			await connection.startMonitoring();
-			await pv;
-			expect(da1.communication.VMax.value).to.equal(0);
-			expect(da1.communication.VMin.value).to.equal(0);
+			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
+			expect(dataAssemblyController.communication.VMax.value).to.equal(0);
+			expect(dataAssemblyController.communication.VMin.value).to.equal(0);
 		}).timeout(5000);
 	});
 });
