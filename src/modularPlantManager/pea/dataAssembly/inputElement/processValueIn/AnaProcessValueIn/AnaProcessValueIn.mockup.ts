@@ -25,7 +25,7 @@
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 import {getScaleSettingDAMockupReferenceJSON, ScaleSettingMockup} from '../../../_extensions/scaleSettings/ScaleSetting.mockup';
-import {getUnitDAMockupReferenceJSON, UnitDAMockup} from '../../../_extensions/unitDA/UnitDA.mockup';
+import {getUnitMockupReferenceJSON, UnitMockup} from '../../../_extensions/unit/Unit.mockup';
 import {getInputElementMockupReferenceJSON, InputElementMockup} from '../../InputElement.mockup';
 
 export function getAnaProcessValueInMockupReferenceJSON(
@@ -35,7 +35,7 @@ export function getAnaProcessValueInMockupReferenceJSON(
 		{
 			...getInputElementMockupReferenceJSON(namespace, objectBrowseName),
 			...getScaleSettingDAMockupReferenceJSON(namespace, objectBrowseName, 'Float'),
-			...getUnitDAMockupReferenceJSON(namespace, objectBrowseName),
+			...getUnitMockupReferenceJSON(namespace, objectBrowseName),
 			VExt: {
 				namespaceIndex: `${namespace}`,
 				nodeId: `${objectBrowseName}.VExt`,
@@ -47,14 +47,14 @@ export function getAnaProcessValueInMockupReferenceJSON(
 
 export class AnaProcessValueInMockup extends InputElementMockup{
 	public scaleSettings: ScaleSettingMockup<DataType.Double>;
-	public unit: UnitDAMockup;
+	public unit: UnitMockup;
 	public vExt = 0;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
 		super(namespace, rootNode, variableName);
 
 		this.scaleSettings = new ScaleSettingMockup<DataType.Double>(namespace, this.mockupNode, this.name, DataType.Double);
-		this.unit = new UnitDAMockup(namespace, this.mockupNode, this.name);
+		this.unit = new UnitMockup(namespace, this.mockupNode, this.name);
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,

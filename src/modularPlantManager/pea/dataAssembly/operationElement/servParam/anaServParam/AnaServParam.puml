@@ -26,14 +26,14 @@
 @startuml
 'https://plantuml.com/class-diagram
 
-!include ../../../_extensions/scaleSettingsDA/ScaleSettings.puml
-!include ../../../_extensions/unitDA/UnitSettings.puml
+!include ../../../_extensions/scaleSettings/ScaleSettings.puml
+!include ../../../_extensions/unitDA/UnitController.puml
 !include ../../../_extensions/valueLimitationDA/ValueLimitation.puml
 
 class AnaServParam{
     + readonly communication!: AnaServParamRuntime
     + readonly scaleSettings: ScaleSettings
-    + readonly unitSettings: UnitSettings
+    + readonly unitSettings: UnitController
     + readonly valueLimitation: ValueLimitation
 }
 AnaServParam *- AnaServParamSpec
@@ -42,6 +42,6 @@ AnaServParam *- AnaServParamMockup
 
 AnaServParam *- AnaServParamRuntime
 AnaServParam *- ScaleSettings
-AnaServParam *- UnitSettings
+AnaServParam *- UnitController
 AnaServParam *- ValueLimitation
 @enduml

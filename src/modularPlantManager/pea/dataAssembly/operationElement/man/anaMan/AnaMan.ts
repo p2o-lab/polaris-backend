@@ -27,7 +27,7 @@ import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {OpcUaConnection, DataItem} from '../../../../connection';
 import {
 	ScaleSettings, ScaleSettingsRuntime,
-	UnitDataAssemblyRuntime, UnitSettings,
+	UnitDataAssemblyRuntime, UnitController,
 	ValueLimitation, ValueLimitationRuntime
 } from '../../../_extensions';
 import {OperationElement, OperationElementRuntime} from '../../OperationElement';
@@ -45,7 +45,7 @@ export type AnaManRuntime =
 export class AnaMan extends OperationElement {
 	public readonly communication!: AnaManRuntime;
 	public readonly scaleSettings: ScaleSettings;
-	public readonly unitSettings: UnitSettings;
+	public readonly unitSettings: UnitController;
 	public readonly valueLimitation: ValueLimitation;
 
 
@@ -56,7 +56,7 @@ export class AnaMan extends OperationElement {
 		this.communication.VFbk = this.createDataItem('VFbk','number');
 		this.communication.VMan = this.createDataItem('VMan', 'number','write');
 
-		this.unitSettings = new UnitSettings(this);
+		this.unitSettings = new UnitController(this);
 		this.scaleSettings = new ScaleSettings(this);
 		this.valueLimitation = new ValueLimitation(this);
 

@@ -26,7 +26,7 @@
 /**
  * physical unit as they are used within the MTP
  */
-export const UNIT: Array<{ value: number; unit: string; name: string; nameEnglish: string }> = [
+export const UnitCollection: Array<{ value: number; unit: string; name: string; nameEnglish: string }> = [
     {value: 1000, unit: 'K', name: 'Kelvin', nameEnglish: 'Kelvin'},
     {value: 1001, unit: '°C', name: 'Grad Celsius', nameEnglish: 'Degrees Celsius'},
     {value: 1002, unit: '°F', name: 'Grad Fahrenheit', nameEnglish: 'Degrees Fahrenheit'},

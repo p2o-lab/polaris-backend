@@ -28,7 +28,7 @@ import Timeout = NodeJS.Timeout;
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 
 import {getOSLevelMockupReferenceJSON, OSLevelMockup} from '../../../_extensions/osLevel/OSLevel.mockup';
-import {getUnitDAMockupReferenceJSON, UnitDAMockup} from '../../../_extensions/unitDA/UnitDA.mockup';
+import {getUnitMockupReferenceJSON, UnitMockup} from '../../../_extensions/unit/Unit.mockup';
 import {
 	getScaleSettingDAMockupReferenceJSON,
 	ScaleSettingMockup
@@ -46,7 +46,7 @@ export function getDIntManMockupReferenceJSON(
 			...getOSLevelMockupReferenceJSON(namespace,objectBrowseName),
 			...getScaleSettingDAMockupReferenceJSON(namespace,objectBrowseName,'Int32'),
 			...getValueLimitationDAMockupReferenceJSON(namespace,objectBrowseName, 'Int32'),
-			...getUnitDAMockupReferenceJSON(namespace,objectBrowseName),
+			...getUnitMockupReferenceJSON(namespace,objectBrowseName),
 			VOut: {
 				namespaceIndex: `${namespace}`,
 				nodeId: `${objectBrowseName}.VOut`,
@@ -82,7 +82,7 @@ export class DIntManMockup {
 	public readonly osLevel: OSLevelMockup;
 	public readonly scaleSettings: ScaleSettingMockup<DataType.Int32>;
 	public readonly valueLimitation: ValueLimitationDAMockup<DataType.Int32>;
-	public readonly unit: UnitDAMockup;
+	public readonly unit: UnitMockup;
 	protected interval: Timeout | undefined;
 	protected mockupNode: UAObject;
 
@@ -98,7 +98,7 @@ export class DIntManMockup {
 		this.osLevel = new OSLevelMockup(namespace, this.mockupNode, this.name);
 		this.scaleSettings = new ScaleSettingMockup(namespace, this.mockupNode, this.name, DataType.Int32);
 		this.valueLimitation = new ValueLimitationDAMockup(namespace, this.mockupNode, this.name,DataType.Int32);
-		this.unit = new UnitDAMockup(namespace, this.mockupNode, this.name);
+		this.unit = new UnitMockup(namespace, this.mockupNode, this.name);
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,

@@ -24,13 +24,13 @@
  */
 
 import {DataItem} from '../../../connection';
-import {UNIT} from './Unit';
+import {UnitCollection} from './UnitCollection';
 
 export type UnitDataAssemblyRuntime = {
 	VUnit: DataItem<number>;
 }
 
-export class UnitSettings {
+export class UnitController {
 
 	private dAController: any;
 
@@ -40,7 +40,7 @@ export class UnitSettings {
 	}
 
 	get Unit(): string {
-		const unit = UNIT.find((item) => item.value === this.dAController.communication.VUnit.value);
+		const unit = UnitCollection.find((item) => item.value === this.dAController.communication.VUnit.value);
 		return unit ? unit.unit : '';
 	}
 }

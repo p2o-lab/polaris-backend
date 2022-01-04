@@ -29,7 +29,7 @@ import {
 	getScaleSettingDAMockupReferenceJSON,
 	ScaleSettingMockup
 } from '../../_extensions/scaleSettings/ScaleSetting.mockup';
-import {getUnitDAMockupReferenceJSON, UnitDAMockup} from '../../_extensions/unitDA/UnitDA.mockup';
+import {getUnitMockupReferenceJSON, UnitMockup} from '../../_extensions/unit/Unit.mockup';
 
 export function getDIntViewMockupReferenceJSON(
 	namespace: number,
@@ -38,7 +38,7 @@ export function getDIntViewMockupReferenceJSON(
 		{
 			...getWQCDAMockupReferenceJSON(namespace, objectBrowseName),
 			...getScaleSettingDAMockupReferenceJSON(namespace, objectBrowseName, 'Int32'),
-			...getUnitDAMockupReferenceJSON(namespace, objectBrowseName),
+			...getUnitMockupReferenceJSON(namespace, objectBrowseName),
 			V: {
 				namespaceIndex: `${namespace}`,
 				nodeId: `${objectBrowseName}.V`,
@@ -54,7 +54,7 @@ export class DIntViewMockup {
 	protected v = 0;
 	public wqc: WQCDAMockup;
 	public scaleSettings: ScaleSettingMockup<DataType.Int32>;
-	public unit: UnitDAMockup;
+	public unit: UnitMockup;
 	protected mockupNode: UAObject;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
@@ -67,7 +67,7 @@ export class DIntViewMockup {
 		});
 		this.wqc = new WQCDAMockup(namespace, this.mockupNode, this.name);
 		this.scaleSettings = new ScaleSettingMockup<DataType.Int32>(namespace, this.mockupNode, this.name, DataType.Int32);
-		this.unit = new UnitDAMockup(namespace, this.mockupNode, this.name);
+		this.unit = new UnitMockup(namespace, this.mockupNode, this.name);
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,

@@ -31,10 +31,10 @@
 !include opMode/OpModeController.puml
 !include OSLevel/OSLevel.puml
 !include resetDA/Reset.puml
-!include scaleSettingsDA/ScaleSettings.puml
+!include scaleSettings/ScaleSettings.puml
 !include serviceSourceMode/ServiceSourceModeController.puml
 !include sourceModeDA/SourceModeController.puml
-!include unitDA/UnitSettings.puml
+!include unitDA/UnitController.puml
 !include valueLimitationDA/ValueLimitation.puml
 !include wqcDA/WQC.puml
 
@@ -49,7 +49,7 @@ DataAssemblyController "0..1" o-- Reset
 DataAssemblyController "0..1" o-- ScaleSettingDA
 DataAssemblyController "0..1" o-- ServiceSourceMode
 DataAssemblyController "0..1" o-- SourceMode
-DataAssemblyController "0..1" o-- UnitDA
+DataAssemblyController "0..1" o-- Unit
 DataAssemblyController "0..1" o-- ValueLimitationDA
 DataAssemblyController "0..1" o-- WQCDA
 

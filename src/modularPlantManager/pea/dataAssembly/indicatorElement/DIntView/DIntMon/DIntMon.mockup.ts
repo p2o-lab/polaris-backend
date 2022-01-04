@@ -29,7 +29,7 @@ import {
 	getScaleSettingDAMockupReferenceJSON,
 	ScaleSettingMockup
 } from '../../../_extensions/scaleSettings/ScaleSetting.mockup';
-import {getUnitDAMockupReferenceJSON, UnitDAMockup} from '../../../_extensions/unitDA/UnitDA.mockup';
+import {getUnitMockupReferenceJSON, UnitMockup} from '../../../_extensions/unit/Unit.mockup';
 import {getOSLevelMockupReferenceJSON, OSLevelMockup} from '../../../_extensions/osLevel/OSLevel.mockup';
 import {
 	getLimitMonitoringMockupReferenceJSON,
@@ -43,7 +43,7 @@ export function getDIntMonMockupReferenceJSON(
 		{
 			...getWQCDAMockupReferenceJSON(namespace, objectBrowseName),
 			...getScaleSettingDAMockupReferenceJSON(namespace, objectBrowseName, 'Int32'),
-			...getUnitDAMockupReferenceJSON(namespace, objectBrowseName),
+			...getUnitMockupReferenceJSON(namespace, objectBrowseName),
 			...getOSLevelMockupReferenceJSON(namespace, objectBrowseName),
 			...getLimitMonitoringMockupReferenceJSON(namespace, objectBrowseName),
 			V: {
@@ -61,7 +61,7 @@ export class DIntMonMockup {
 	protected v = 0;
 	public wqc: WQCDAMockup;
 	public scaleSettings: ScaleSettingMockup<DataType.Int32>;
-	public unit: UnitDAMockup;
+	public unit: UnitMockup;
 	public osLevel: OSLevelMockup;
 	public limitMonitoring: LimitMonitoringMockup<DataType.Double | DataType.Int32>;
 	protected mockupNode: UAObject;
@@ -76,7 +76,7 @@ export class DIntMonMockup {
 		});
 		this.wqc = new WQCDAMockup(namespace, this.mockupNode, this.name);
 		this.scaleSettings = new ScaleSettingMockup<DataType.Int32>(namespace, this.mockupNode, this.name, DataType.Int32);
-		this.unit = new UnitDAMockup(namespace, this.mockupNode, this.name);
+		this.unit = new UnitMockup(namespace, this.mockupNode, this.name);
 		this.osLevel = new OSLevelMockup(namespace, this.mockupNode, this.name);
 		this.limitMonitoring = new LimitMonitoringMockup(namespace, this.mockupNode, this.name, DataType.Int32);
 

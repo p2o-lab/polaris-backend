@@ -30,13 +30,13 @@ interface UnitDataAssemblyRuntime{
     + VUnit: DataItem<number>
 }
 
-class UnitSettings{
+class UnitController{
     - dAController: any
     - initialize(): void
     + Unit(): string
 }
 
-UnitDataAssemblyRuntime <-- UnitSettings
-UnitDASpec --> UnitSettings : <<uses>>
-UnitDASpec --> UnitDAMockup : <<uses>>
+UnitDataAssemblyRuntime <-- UnitController
+UnitSpec --> UnitController : <<uses>>
+UnitSpec --> UnitMockup : <<uses>>
 @enduml

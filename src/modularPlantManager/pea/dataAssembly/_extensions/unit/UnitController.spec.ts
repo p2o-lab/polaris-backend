@@ -31,14 +31,14 @@ import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import * as baseDataAssemblyOptions from '../../operationElement/man/dintMan/DIntMan.spec.json';
 import {DataAssemblyController} from '../../DataAssemblyController';
 import {DIntMan} from '../../operationElement';
-import {UnitSettings} from './UnitSettings';
+import {UnitController} from './UnitController';
 import {MockupServer} from '../../../../_utils';
-import {UnitDAMockup} from './UnitDA.mockup';
+import {UnitMockup} from './Unit.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-describe('UnitSettings', () => {
+describe('UnitController', () => {
 	const dataAssemblyOptions: DataAssemblyOptions = {
 		name: 'Variable',
 		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperatorElement/DIntMan',
@@ -47,9 +47,9 @@ describe('UnitSettings', () => {
 
 	describe('static', () => {
 		const emptyOPCUAConnection = new OpcUaConnection();
-		it('should create UnitSettings',  () => {
+		it('should create UnitController',  () => {
 			const da = new DataAssemblyController(dataAssemblyOptions, emptyOPCUAConnection);
-			const unitSettings = new UnitSettings(da);
+			const unitSettings = new UnitController(da);
 			expect(unitSettings).to.not.be.undefined;
 			expect((da as DIntMan).communication.VUnit).to.not.be.undefined;
 			expect(unitSettings.Unit).to.be.empty;
@@ -63,7 +63,7 @@ describe('UnitSettings', () => {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			new UnitDAMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
+			new UnitMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});
@@ -79,7 +79,7 @@ describe('UnitSettings', () => {
 		it('should subscribe successfully', async () => {
 
 			const dataAssemblyController = new DataAssemblyController(dataAssemblyOptions, connection) as any;
-			new UnitSettings(dataAssemblyController);
+			new UnitController(dataAssemblyController);
 			await dataAssemblyController.subscribe();
 			await connection.startMonitoring();
 			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));

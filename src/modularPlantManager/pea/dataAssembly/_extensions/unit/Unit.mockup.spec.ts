@@ -26,12 +26,12 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../_utils';
-import {UnitDAMockup} from './UnitDA.mockup';
+import {UnitMockup} from './Unit.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-describe('UnitDAMockup', () => {
+describe('UnitMockup', () => {
     describe('static', () => {
 
         let mockupServer: MockupServer;
@@ -41,16 +41,16 @@ describe('UnitDAMockup', () => {
             await mockupServer.initialize();
         });
 
-        it('should create UnitDAMockup', async () => {
-            const mockup= new UnitDAMockup(mockupServer.nameSpace,
+        it('should create UnitMockup', async () => {
+            const mockup= new UnitMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
             expect(mockup).to.not.be.undefined;
         });
 
         it('getUnitMockupReferenceJSON()',  () => {
-            const mockup = new UnitDAMockup(mockupServer.nameSpace,
+            const mockup = new UnitMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const json = mockup.getUnitDAInstanceMockupJSON() as any;
+            const json = mockup.getUnitInstanceMockupJSON() as any;
             expect(Object.keys(json).length).to.equal(1);
             expect(json.VUnit).to.not.be.undefined;
         });

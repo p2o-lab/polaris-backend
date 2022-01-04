@@ -25,7 +25,7 @@
 
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {OpcUaConnection, DataItem} from '../../../../connection';
-import {ScaleSettings, ScaleSettingsRuntime, UnitDataAssemblyRuntime, UnitSettings} from '../../../_extensions';
+import {ScaleSettings, ScaleSettingsRuntime, UnitDataAssemblyRuntime, UnitController} from '../../../_extensions';
 import {
 	InputElement, InputElementRuntime,
 } from '../../InputElement';
@@ -37,12 +37,12 @@ export type DIntProcessValueInRuntime = InputElementRuntime & UnitDataAssemblyRu
 export class DIntProcessValueIn extends InputElement {
 	public readonly communication!: DIntProcessValueInRuntime;
 	private readonly scaleSettings: ScaleSettings;
-	private readonly unitSettings: UnitSettings;
+	private readonly unitSettings: UnitController;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
 
-		this.unitSettings = new UnitSettings(this);
+		this.unitSettings = new UnitController(this);
 		this.scaleSettings = new ScaleSettings(this);
 
 		this.communication.VExt = this.createDataItem('VExt', 'number');

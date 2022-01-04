@@ -30,7 +30,7 @@ import {
 	ScaleSettings,
 	ScaleSettingsRuntime,
 	UnitDataAssemblyRuntime,
-	UnitSettings,
+	UnitController,
 	ValueLimitation,
 	ValueLimitationRuntime
 } from '../../../_extensions';
@@ -47,14 +47,14 @@ export type DIntServParamRuntime = ServParamRuntime & ScaleSettingsRuntime & Uni
 export class DIntServParam extends ServParam {
 	public readonly communication!: DIntServParamRuntime;
 	public readonly scaleSettings: ScaleSettings;
-	public readonly unitSettings: UnitSettings;
+	public readonly unitSettings: UnitController;
 	public readonly valueLimitation: ValueLimitation;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
 
 		this.scaleSettings = new ScaleSettings(this);
-		this.unitSettings = new UnitSettings(this);
+		this.unitSettings = new UnitController(this);
 		this.valueLimitation = new ValueLimitation(this);
 
 		this.communication.VExt = this.createDataItem('VExt', 'number', 'write');

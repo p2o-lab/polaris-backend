@@ -25,7 +25,7 @@
 
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
 
-export function getUnitDAMockupReferenceJSON(
+export function getUnitMockupReferenceJSON(
     namespace: number,
     objectBrowseName: string): object {
 
@@ -38,7 +38,7 @@ export function getUnitDAMockupReferenceJSON(
   });
 }
 
-export class UnitDAMockup {
+export class UnitMockup {
   protected unit = 0;
   protected mockupNode: UAObject;
 
@@ -59,8 +59,8 @@ export class UnitDAMockup {
       });
     }
 
-  public getUnitDAInstanceMockupJSON(): object {
-    return getUnitDAMockupReferenceJSON(
+  public getUnitInstanceMockupJSON(): object {
+    return getUnitMockupReferenceJSON(
         this.mockupNode.namespaceIndex,
         this.mockupNode.browseName.name as string);
   }

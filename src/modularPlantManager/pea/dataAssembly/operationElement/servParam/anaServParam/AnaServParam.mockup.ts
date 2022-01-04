@@ -26,7 +26,7 @@
 // eslint-disable-next-line no-undef
 import Timeout = NodeJS.Timeout;
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {getUnitDAMockupReferenceJSON, UnitDAMockup} from '../../../_extensions/unitDA/UnitDA.mockup';
+import {getUnitMockupReferenceJSON, UnitMockup} from '../../../_extensions/unit/Unit.mockup';
 import {
 	getScaleSettingDAMockupReferenceJSON,
 	ScaleSettingMockup
@@ -43,7 +43,7 @@ export function getAnaServParamMockupReferenceJSON(
 
 	return ({
 			...getServParamMockupReferenceJSON(namespace, objectBrowseName),
-			...getUnitDAMockupReferenceJSON(namespace,objectBrowseName),
+			...getUnitMockupReferenceJSON(namespace,objectBrowseName),
 			...getScaleSettingDAMockupReferenceJSON(namespace,objectBrowseName,'Float'),
 			...getValueLimitationDAMockupReferenceJSON(namespace,objectBrowseName, 'Float'),
 			VExt: {
@@ -89,7 +89,7 @@ export class AnaServParamMockup extends ServParamMockup{
 	protected vOut = 0
 	protected vFbk = 0;
 	
-	public readonly unit: UnitDAMockup;
+	public readonly unit: UnitMockup;
 	public readonly scaleSettings: ScaleSettingMockup<DataType.Double>;
 	public readonly valueLimitation: ValueLimitationDAMockup<DataType.Double>;
 	protected interval: Timeout | undefined;
@@ -97,7 +97,7 @@ export class AnaServParamMockup extends ServParamMockup{
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
 		super(namespace, rootNode, variableName);
 
-		this.unit = new UnitDAMockup(namespace, this.mockupNode, this.name);
+		this.unit = new UnitMockup(namespace, this.mockupNode, this.name);
 		this.scaleSettings = new ScaleSettingMockup(namespace, this.mockupNode, this.name, DataType.Double);
 		this.valueLimitation = new ValueLimitationDAMockup(namespace, this.mockupNode, this.name,DataType.Double);
 

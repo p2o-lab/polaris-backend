@@ -29,7 +29,7 @@ import {
 	getScaleSettingDAMockupReferenceJSON,
 	ScaleSettingMockup
 } from '../../_extensions/scaleSettings/ScaleSetting.mockup';
-import {getUnitDAMockupReferenceJSON, UnitDAMockup} from '../../_extensions/unitDA/UnitDA.mockup';
+import {getUnitMockupReferenceJSON, UnitMockup} from '../../_extensions/unit/Unit.mockup';
 
 export function getAnaViewMockupReferenceJSON(
 	namespace: number,
@@ -38,7 +38,7 @@ export function getAnaViewMockupReferenceJSON(
 		{
 			...getWQCDAMockupReferenceJSON(namespace, objectBrowseName),
 			...getScaleSettingDAMockupReferenceJSON(namespace, objectBrowseName, 'Float'),
-			...getUnitDAMockupReferenceJSON(namespace, objectBrowseName),
+			...getUnitMockupReferenceJSON(namespace, objectBrowseName),
 			V: {
 				namespaceIndex: `${namespace}`,
 				nodeId: `${objectBrowseName}.V`,
@@ -54,7 +54,7 @@ export class AnaViewMockup {
 	protected v = 0;
 	public wqc: WQCDAMockup;
 	public scaleSettings: ScaleSettingMockup<DataType.Double>;
-	public unit: UnitDAMockup;
+	public unit: UnitMockup;
 	protected mockupNode: UAObject;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string, removeVariable?: boolean) {
@@ -66,7 +66,7 @@ export class AnaViewMockup {
 		});
 		this.wqc = new WQCDAMockup(namespace, this.mockupNode, this.name);
 		this.scaleSettings = new ScaleSettingMockup<DataType.Double>(namespace, this.mockupNode, this.name, DataType.Double);
-		this.unit = new UnitDAMockup(namespace, this.mockupNode, this.name);
+		this.unit = new UnitMockup(namespace, this.mockupNode, this.name);
 		if(removeVariable == undefined || removeVariable){
 			namespace.addVariable({
 				componentOf: this.mockupNode,

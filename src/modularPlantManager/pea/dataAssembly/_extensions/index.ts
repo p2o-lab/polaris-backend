@@ -31,6 +31,6 @@ export * from './osLevel/OSLevel';
 export * from './reset/Reset';
 export * from './scaleSettings/ScaleSettings';
 export * from './sourceMode/SourceModeController';
-export * from './unitDA/UnitSettings';
+export * from './unit/UnitController';
 export * from './valueLimitationDA/ValueLimitation';
 export * from './wqcDA/WQC';
