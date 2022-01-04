@@ -30,7 +30,7 @@ import {
 	ScaleSettings,
 	ScaleSettingsRuntime,
 	UnitDataAssemblyRuntime,
-	UnitController,
+	UnitSettings,
 	ValueLimitation,
 	ValueLimitationRuntime
 } from '../../../_extensions';
@@ -47,14 +47,14 @@ export type AnaServParamRuntime = ServParamRuntime & ScaleSettingsRuntime & Unit
 export class AnaServParam extends ServParam {
 	public readonly communication!: AnaServParamRuntime;
 	public readonly scaleSettings: ScaleSettings;
-	public readonly unitSettings: UnitController;
+	public readonly unitSettings: UnitSettings;
 	public readonly valueLimitation: ValueLimitation;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
 
 		this.scaleSettings = new ScaleSettings(this);
-		this.unitSettings = new UnitController(this);
+		this.unitSettings = new UnitSettings(this);
 		this.valueLimitation = new ValueLimitation(this);
 
 		this.communication.VExt = this.createDataItem('VExt', 'number', 'write');

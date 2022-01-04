@@ -27,18 +27,18 @@ import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {OpcUaConnection} from '../../../connection';
 import {AnaViewRuntime} from '../AnaView/AnaView';
 import {IndicatorElement} from '../IndicatorElement';
-import {ScaleSettings, UnitController} from '../../_extensions';
+import {ScaleSettings, UnitSettings} from '../../_extensions';
 
 
 export class DIntView extends IndicatorElement {
 	public readonly communication!: AnaViewRuntime;
 	private readonly scaleSettings: ScaleSettings;
-	private readonly unitSettings: UnitController;
+	private readonly unitSettings: UnitSettings;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
 
-		this.unitSettings = new UnitController(this);
+		this.unitSettings = new UnitSettings(this);
 		this.scaleSettings = new ScaleSettings(this);
 
 		this.communication.V = this.createDataItem('V', 'number');

@@ -25,7 +25,7 @@
 
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {DataItem, OpcUaConnection} from '../../../connection';
-import {ScaleSettings, ScaleSettingsRuntime, UnitDataAssemblyRuntime, UnitController} from '../../_extensions';
+import {ScaleSettings, ScaleSettingsRuntime, UnitDataAssemblyRuntime, UnitSettings} from '../../_extensions';
 import {IndicatorElement, IndicatorElementRuntime} from '../IndicatorElement';
 
 export type AnaViewRuntime = IndicatorElementRuntime & UnitDataAssemblyRuntime & ScaleSettingsRuntime & {
@@ -35,12 +35,12 @@ export type AnaViewRuntime = IndicatorElementRuntime & UnitDataAssemblyRuntime &
 export class AnaView extends IndicatorElement {
 	public readonly communication!: AnaViewRuntime;
 	private readonly scaleSettings: ScaleSettings;
-	private readonly unitSettings: UnitController;
+	private readonly unitSettings: UnitSettings;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
 
-		this.unitSettings = new UnitController(this);
+		this.unitSettings = new UnitSettings(this);
 		this.scaleSettings = new ScaleSettings(this);
 
 		this.communication.V = this.createDataItem('V', 'number');

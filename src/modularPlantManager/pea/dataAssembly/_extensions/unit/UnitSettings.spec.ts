@@ -31,14 +31,14 @@ import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import * as baseDataAssemblyOptions from '../../operationElement/man/dintMan/DIntMan.spec.json';
 import {DataAssemblyController} from '../../DataAssemblyController';
 import {DIntMan} from '../../operationElement';
-import {UnitController} from './UnitController';
+import {UnitSettings} from './UnitSettings';
 import {MockupServer} from '../../../../_utils';
 import {UnitMockup} from './Unit.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-describe('UnitController', () => {
+describe('UnitSettings', () => {
 	const dataAssemblyOptions: DataAssemblyOptions = {
 		name: 'Variable',
 		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperatorElement/DIntMan',
@@ -47,9 +47,9 @@ describe('UnitController', () => {
 
 	describe('static', () => {
 		const emptyOPCUAConnection = new OpcUaConnection();
-		it('should create UnitController',  () => {
+		it('should create UnitSettings',  () => {
 			const da = new DataAssemblyController(dataAssemblyOptions, emptyOPCUAConnection);
-			const unitSettings = new UnitController(da);
+			const unitSettings = new UnitSettings(da);
 			expect(unitSettings).to.not.be.undefined;
 			expect((da as DIntMan).communication.VUnit).to.not.be.undefined;
 			expect(unitSettings.Unit).to.be.empty;
@@ -79,7 +79,7 @@ describe('UnitController', () => {
 		it('should subscribe successfully', async () => {
 
 			const dataAssemblyController = new DataAssemblyController(dataAssemblyOptions, connection) as any;
-			new UnitController(dataAssemblyController);
+			new UnitSettings(dataAssemblyController);
 			await dataAssemblyController.subscribe();
 			await connection.startMonitoring();
 			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));

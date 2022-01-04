@@ -26,12 +26,12 @@
 @startuml
 'https://plantuml.com/class-diagram
 !include ../../../_extensions/scaleSettings/ScaleSettings.puml
-!include ../../../_extensions/unitDA/UnitController.puml
+!include ../../../_extensions/unitDA/UnitSettings.puml
 
 class AnaProcessValueIn{
     + readonly communication!: AnaProcessValueInRuntime
     - readonly scaleSettings: ScaleSettings
-    - readonly unitSettings: UnitController
+    - readonly unitSettings: UnitSettings
 }
 
 AnaProcessValueIn *- AnaProcessValueInSpec
@@ -40,7 +40,7 @@ AnaProcessValueIn *- AnaProcessValueInMockup
 
 AnaProcessValueIn *- AnaProcessValueInRuntime
 AnaProcessValueIn *- ScaleSettings
-AnaProcessValueIn *- UnitController
+AnaProcessValueIn *- UnitSettings
 
 
 @enduml

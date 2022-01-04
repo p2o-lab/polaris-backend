@@ -27,12 +27,12 @@
 'https://plantuml.com/class-diagram
 !include AnaMon/AnaMon.puml
 !include ../../_extensions/scaleSettings/ScaleSettings.puml
-!include ../../_extensions/unitDA/UnitController.puml
+!include ../../_extensions/unitDA/UnitSettings.puml
 
 class AnaView{
     + readonly communication!: AnaViewRuntime
     - readonly scaleSettings: ScaleSettings
-    - readonly unitSettings: UnitController
+    - readonly unitSettings: UnitSettings
 }
 AnaView *- AnaViewSpec
 AnaViewSpec ..> AnaViewMockup : <<use>>
@@ -41,6 +41,6 @@ AnaView *- AnaViewMockup
 AnaView <|-- AnaMon
 AnaView *-- "1" ScaleSettings
 AnaView *-- "1" AnaViewRuntime
-AnaView *-- "1" UnitController
+AnaView *-- "1" UnitSettings
 
 @enduml

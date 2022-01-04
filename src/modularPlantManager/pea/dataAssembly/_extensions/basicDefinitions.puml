@@ -34,7 +34,7 @@
 !include scaleSettings/ScaleSettings.puml
 !include serviceSourceMode/ServiceSourceModeController.puml
 !include sourceModeDA/SourceModeController.puml
-!include unitDA/UnitController.puml
+!include unitDA/UnitSettings.puml
 !include valueLimitationDA/ValueLimitation.puml
 !include wqcDA/WQC.puml
 

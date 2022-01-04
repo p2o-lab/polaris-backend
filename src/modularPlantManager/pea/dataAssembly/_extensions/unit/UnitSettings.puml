@@ -22,25 +22,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+ 
+@startuml
+'https://plantuml.com/class-diagram
 
-import {DataItem} from '../../../connection';
-import {UnitCollection} from './UnitCollection';
-
-export type UnitDataAssemblyRuntime = {
-	VUnit: DataItem<number>;
+interface UnitDataAssemblyRuntime{
+    + VUnit: DataItem<number>
 }
 
-export class UnitController {
-
-	private dAController: any;
-
-	constructor(dAController: any) {
-		this.dAController = dAController;
-		this.dAController.communication.VUnit = this.dAController.createDataItem('VUnit', 'number');
-	}
-
-	get Unit(): string {
-		const unit = UnitCollection.find((item) => item.value === this.dAController.communication.VUnit.value);
-		return unit ? unit.unit : '';
-	}
+class UnitSettings{
+    - dAController: any
+    - initialize(): void
+    + Unit(): string
 }
+
+UnitDataAssemblyRuntime <-- UnitSettings
+UnitSpec --> UnitSettings : <<uses>>
+UnitSpec --> UnitMockup : <<uses>>
+@enduml

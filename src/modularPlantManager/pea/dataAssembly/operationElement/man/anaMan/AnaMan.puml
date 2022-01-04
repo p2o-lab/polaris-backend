@@ -28,13 +28,13 @@
 !include AnaManInt.puml
 
 !include ../../../_extensions/scaleSettings/ScaleSettings.puml
-!include ../../../_extensions/unitDA/UnitController.puml
+!include ../../../_extensions/unitDA/UnitSettings.puml
 !include ../../../_extensions/valueLimitationDA/ValueLimitation.puml
 
 class AnaMan{
     + readonly communication!: AnaManRuntime
     + readonly scaleSettings: ScaleSettings
-    + readonly unitSettings: UnitController
+    + readonly unitSettings: UnitSettings
     + readonly valueLimitation: ValueLimitation
 }
 
@@ -45,7 +45,7 @@ AnaMan <|-- AnaManInt
 
 AnaMan *- AnaManRuntime
 AnaMan *- ScaleSettings
-AnaMan *- UnitController
+AnaMan *- UnitSettings
 AnaMan *- ValueLimitation
 
 @enduml

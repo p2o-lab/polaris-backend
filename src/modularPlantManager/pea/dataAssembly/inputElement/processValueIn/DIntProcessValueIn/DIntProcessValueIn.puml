@@ -26,12 +26,12 @@
 @startuml
 'https://plantuml.com/class-diagram
 !include ../../../_extensions/scaleSettings/ScaleSettings.puml
-!include ../../../_extensions/unitDA/UnitController.puml
+!include ../../../_extensions/unitDA/UnitSettings.puml
 
 class DIntProcessValueIn{
     + readonly communication!: DIntProcessValueInRuntime
     - readonly scaleSettings: ScaleSettings
-    - readonly unitSettings: UnitController
+    - readonly unitSettings: UnitSettings
 }
 DIntProcessValueIn *- DIntProcessValueInSpec
 DIntProcessValueInSpec ..> DIntProcessValueInMockup : <<use>>
@@ -39,5 +39,5 @@ DIntProcessValueIn *- DIntProcessValueInMockup
 
 DIntProcessValueIn *- DIntProcessValueInRuntime
 DIntProcessValueIn *- ScaleSettings
-DIntProcessValueIn *- UnitController
+DIntProcessValueIn *- UnitSettings
 @enduml

@@ -26,13 +26,13 @@
 @startuml
 'https://plantuml.com/class-diagram
 !include ../../../_extensions/scaleSettings/ScaleSettings.puml
-!include ../../../_extensions/unitDA/UnitController.puml
+!include ../../../_extensions/unitDA/UnitSettings.puml
 !include ../../../_extensions/valueLimitationDA/ValueLimitation.puml
 
 class DIntServParam{
     + readonly communication!: DIntServParamRuntime
     + readonly scaleSettings: ScaleSettings
-    + readonly unitSettings: UnitController
+    + readonly unitSettings: UnitSettings
     + readonly valueLimitation: ValueLimitation
 }
 DIntServParam *- DIntServParamSpec
@@ -41,6 +41,6 @@ DIntServParam *- DIntServParamMockup
 
 DIntServParam *- DIntServParamRuntime
 DIntServParam *- ScaleSettings
-DIntServParam *- UnitController
+DIntServParam *- UnitSettings
 DIntServParam *- ValueLimitation
 @enduml

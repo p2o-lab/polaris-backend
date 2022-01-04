@@ -28,7 +28,7 @@
 !include DIntMon/DIntMon.puml
 class DIntView{
     - readonly scaleSettings: ScaleSettings
-    - readonly unitSettings: UnitController
+    - readonly unitSettings: UnitSettings
 }
 DIntView *- DIntViewSpec
 DIntViewSpec ..> DIntViewMockup : <<use>>
@@ -38,6 +38,6 @@ DIntView *- DIntViewMockup
 DIntView <|-- DIntMon
 DIntView *-- "1" ScaleSettings
 DIntView *-- "1" AnaViewRuntime
-DIntView *-- "1" UnitController
+DIntView *-- "1" UnitSettings
 
 @enduml
