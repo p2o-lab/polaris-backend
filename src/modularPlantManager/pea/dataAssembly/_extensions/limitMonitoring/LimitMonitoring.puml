@@ -53,6 +53,6 @@ class LimitMonitoring{
 }
 
 LimitMonitoringRuntime <-- LimitMonitoring
-LimitMonitoringDASpec --> LimitMonitoring : <<uses>>
-LimitMonitoringDASpec --> LimitMonitoringDAMockup : <<uses>>
+LimitMonitoringSpec --> LimitMonitoring : <<uses>>
+LimitMonitoringSpec --> LimitMonitoringMockup : <<uses>>
 @enduml

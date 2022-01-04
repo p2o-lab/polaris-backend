@@ -34,7 +34,7 @@ import {DataAssemblyController} from '../../DataAssemblyController';
 import {AnaMon} from '../../indicatorElement';
 import {MockupServer} from '../../../../_utils';
 import {DataType} from 'node-opcua';
-import {LimitMonitoringDAMockup} from './LimitMonitoringDA.mockup';
+import {LimitMonitoringMockup} from './LimitMonitoring.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -89,7 +89,7 @@ describe('LimitMonitoring', () => {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			new LimitMonitoringDAMockup( mockupServer.nameSpace, mockupServer.rootObject, 'Variable', DataType.Double);
+			new LimitMonitoringMockup( mockupServer.nameSpace, mockupServer.rootObject, 'Variable', DataType.Double);
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});

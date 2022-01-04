@@ -25,7 +25,7 @@
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 
-export function getLimitMonitoringDAMockupReferenceJSON(
+export function getLimitMonitoringMockupReferenceJSON(
     namespace: number,
     objectBrowseName: string): object {
   return ({
@@ -122,7 +122,7 @@ export function getLimitMonitoringDAMockupReferenceJSON(
   });
 }
 
-export class LimitMonitoringDAMockup <T extends DataType.Double | DataType.Int32>{
+export class LimitMonitoringMockup<T extends DataType.Double | DataType.Int32>{
   protected varAHEn = false;
   protected varAHLim = 0;
   protected varAHAct = false;
@@ -416,8 +416,8 @@ export class LimitMonitoringDAMockup <T extends DataType.Double | DataType.Int32
     });
   }
 
-  public getLimitMonitoringDAInstanceMockupJSON(): object {
-    return getLimitMonitoringDAMockupReferenceJSON(
+  public getLimitMonitoringInstanceMockupJSON(): object {
+    return getLimitMonitoringMockupReferenceJSON(
         this.mockupNode.namespaceIndex,
         this.mockupNode.browseName.name as string);
   }

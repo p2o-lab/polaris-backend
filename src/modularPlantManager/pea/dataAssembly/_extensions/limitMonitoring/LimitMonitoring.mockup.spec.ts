@@ -27,13 +27,13 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataType} from 'node-opcua';
 import {MockupServer} from '../../../../_utils';
-import {LimitMonitoringDAMockup} from './LimitMonitoringDA.mockup';
+import {LimitMonitoringMockup} from './LimitMonitoring.mockup';
 import {OpcUaConnection} from '../../../connection';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-describe('LimitMonitoringDAMockup', () => {
+describe('LimitMonitoringMockup', () => {
     describe('static', () => {
         let mockupServer: MockupServer;
         beforeEach(async()=>{
@@ -41,22 +41,22 @@ describe('LimitMonitoringDAMockup', () => {
             await mockupServer.initialize();
         });
 
-        it('should create LimitMonitoringDAMockup, Int32', async () => {
-            const mockup= new LimitMonitoringDAMockup(mockupServer.nameSpace,
+        it('should create LimitMonitoringMockup, Int32', async () => {
+            const mockup= new LimitMonitoringMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable', DataType.Int32);
             expect(mockup).to.not.be.undefined;
         });
 
-        it('should create LimitMonitoringDAMockup, Double', async () => {
-            const mockup= new LimitMonitoringDAMockup(mockupServer.nameSpace,
+        it('should create LimitMonitoringMockup, Double', async () => {
+            const mockup= new LimitMonitoringMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable', DataType.Double);
             expect(mockup).to.not.be.undefined;
         });
 
         it('getAnaServParamMockupReferenceJSON()',  () => {
-            const mockup = new LimitMonitoringDAMockup(mockupServer.nameSpace,
+            const mockup = new LimitMonitoringMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable', DataType.Int32);
-            const json = mockup.getLimitMonitoringDAInstanceMockupJSON();
+            const json = mockup.getLimitMonitoringInstanceMockupJSON();
             expect(Object.keys(json).length).to.equal(18);
         });
 
@@ -70,7 +70,7 @@ describe('LimitMonitoringDAMockup', () => {
             this.timeout(5000);
             mockupServer = new MockupServer();
             await mockupServer.initialize();
-            new LimitMonitoringDAMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable', DataType.Double);
+            new LimitMonitoringMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable', DataType.Double);
             await mockupServer.start();
             connection = new OpcUaConnection();
             connection.initialize({endpoint: mockupServer.endpoint});
@@ -122,7 +122,7 @@ describe('LimitMonitoringDAMockup', () => {
             this.timeout(5000);
             mockupServer = new MockupServer();
             await mockupServer.initialize();
-            new LimitMonitoringDAMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable', DataType.Int32);
+            new LimitMonitoringMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable', DataType.Int32);
             await mockupServer.start();
             connection = new OpcUaConnection();
             connection.initialize({endpoint: mockupServer.endpoint});

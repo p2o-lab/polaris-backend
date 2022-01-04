@@ -32,9 +32,9 @@ import {
 import {getUnitDAMockupReferenceJSON, UnitDAMockup} from '../../../_extensions/unitDA/UnitDA.mockup';
 import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../../../_extensions/osLevelDA/OSLevelDA.mockup';
 import {
-	getLimitMonitoringDAMockupReferenceJSON,
-	LimitMonitoringDAMockup
-} from '../../../_extensions/limitMonitoringDA/LimitMonitoringDA.mockup';
+	getLimitMonitoringMockupReferenceJSON,
+	LimitMonitoringMockup
+} from '../../../_extensions/limitMonitoring/LimitMonitoring.mockup';
 
 export function getDIntMonMockupReferenceJSON(
 	namespace: number,
@@ -45,7 +45,7 @@ export function getDIntMonMockupReferenceJSON(
 			...getScaleSettingDAMockupReferenceJSON(namespace, objectBrowseName, 'Int32'),
 			...getUnitDAMockupReferenceJSON(namespace, objectBrowseName),
 			...getOSLevelDAMockupReferenceJSON(namespace, objectBrowseName),
-			...getLimitMonitoringDAMockupReferenceJSON(namespace, objectBrowseName),
+			...getLimitMonitoringMockupReferenceJSON(namespace, objectBrowseName),
 			V: {
 				namespaceIndex: `${namespace}`,
 				nodeId: `${objectBrowseName}.V`,
@@ -63,7 +63,7 @@ export class DIntMonMockup {
 	public scaleSettings: ScaleSettingDAMockup<DataType.Int32>;
 	public unit: UnitDAMockup;
 	public osLevel: OSLevelDAMockup;
-	public limitMonitoring: LimitMonitoringDAMockup<DataType.Double | DataType.Int32>;
+	public limitMonitoring: LimitMonitoringMockup<DataType.Double | DataType.Int32>;
 	protected mockupNode: UAObject;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
@@ -78,7 +78,7 @@ export class DIntMonMockup {
 		this.scaleSettings = new ScaleSettingDAMockup<DataType.Int32>(namespace, this.mockupNode, this.name, DataType.Int32);
 		this.unit = new UnitDAMockup(namespace, this.mockupNode, this.name);
 		this.osLevel = new OSLevelDAMockup(namespace, this.mockupNode, this.name);
-		this.limitMonitoring = new LimitMonitoringDAMockup(namespace, this.mockupNode, this.name, DataType.Int32);
+		this.limitMonitoring = new LimitMonitoringMockup(namespace, this.mockupNode, this.name, DataType.Int32);
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
