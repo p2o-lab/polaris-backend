@@ -284,7 +284,7 @@ describe('Service', () => {
 
 			await service.start();
 
-			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
+			await new Promise((resolve => service.serviceControl.on('state', resolve)));
 
 			curProcedure = await service.getCurrentProcedure();
 			expect(curProcedure).to.not.be.undefined;
@@ -293,7 +293,7 @@ describe('Service', () => {
 
 			await service.setParameters([paramOptions], [pea]);
 
-			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
+			await new Promise((resolve => service.serviceControl.on('parameterChanged', resolve)));
 
 			expect((procedure?.parameters[0] as AnaServParam).communication.VExt.value).to.equal(5);
 			await pea.disconnectAndUnsubscribe();

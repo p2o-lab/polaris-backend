@@ -145,21 +145,17 @@ describe('SourceModeController', () => {
 		it('getSourceMode, should be manual', () => {
 			expect(sourceMode.getSourceMode()).to.equal(SourceMode.Manual);
 		});
+
 		it('isSourceMode', () => {
 			expect(sourceMode.isSourceMode(SourceMode.Manual)).to.be.true;
 			expect(sourceMode.isSourceMode(SourceMode.Intern)).to.be.false;
 		});
-		it('setToManualalSourceMode(), nothing should happen', async () => {
+
+		it('setToManualSourceMode(), nothing should happen', async () => {
 			await sourceMode.setToManualSourceMode();
 			expect(dataAssemblyController.communication.SrcManAct.value).to.be.true;
 			expect(dataAssemblyController.communication.SrcIntAct.value).to.be.false;
 		});
-		it('writeSourceMode, should set Intern', async () => {
-			await sourceMode.writeSourceMode(SourceMode.Intern);
-			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
-			expect(dataAssemblyController.communication.SrcManAct.value).to.be.false;
-			expect(dataAssemblyController.communication.SrcIntAct.value).to.be.true;
-		}).timeout(4000);
 
 		it('waitForSourceModeToPassSpecificTest, promise should resolve instantly', async () => {
 			await sourceMode.waitForSourceModeToPassSpecificTest(SourceMode.Manual);
@@ -216,13 +212,6 @@ describe('SourceModeController', () => {
 			expect(sourceMode.isSourceMode(SourceMode.Intern)).to.be.true;
 			expect(sourceMode.isSourceMode(SourceMode.Manual)).to.be.false;
 		});
-
-		it('writeSourceMode, should set Manual', async () => {
-			await sourceMode.writeSourceMode(SourceMode.Manual);
-			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
-			expect(dataAssemblyController.communication.SrcManAct.value).to.be.true;
-			expect(dataAssemblyController.communication.SrcIntAct.value).to.be.false;
-		}).timeout(4000);
 
 		it('waitForSourceModeToPassSpecificTest, promise should resolve instantly', async () => {
 			dataAssemblyController.communication.SrcManAct.value = true;

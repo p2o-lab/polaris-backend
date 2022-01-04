@@ -26,7 +26,7 @@
 @startuml
 'https://plantuml.com/class-diagram
 !include FeedbackMonitoring/FeedbackMonitoring.puml
-!include interlockDA/Interlock.puml
+!include Interlock/Interlock.puml
 !include limitMonitoringDA/LimitMonitoring.puml
 !include opModeDA/OpModeController.puml
 !include osLevelDA/OSLevel.puml
@@ -41,7 +41,7 @@
 abstract class DataAssemblyController
 
 DataAssemblyController "0..1" o-- FeedbackMonitoring
-DataAssemblyController "0..1" o-- InterlockDA
+DataAssemblyController "0..1" o-- Interlock
 DataAssemblyController "0..1" o-- LimitMonitoringDA
 DataAssemblyController "0..1" o-- OpModeDA
 DataAssemblyController "0..1" o-- OSLevelDA

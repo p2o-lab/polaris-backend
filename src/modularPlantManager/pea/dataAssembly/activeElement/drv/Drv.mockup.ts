@@ -27,7 +27,7 @@ import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 import {WQCDAMockup} from '../../_extensions/wqcDA/WQCDA.mockup';
 import {OSLevelDAMockup} from '../../_extensions/osLevelDA/OSLevelDA.mockup';
 import {getOpModeDAMockupReferenceJSON, OpModeDAMockup} from '../../_extensions/opModeDA/OpModeDA.mockup';
-import {getInterlockDAMockupReferenceJSON, InterlockDAMockup} from '../../_extensions/interlockDA/InterlockDA.mockup';
+import {getInterlockMockupReferenceJSON, InterlockMockup} from '../../_extensions/interlock/Interlock.mockup';
 import {getResetDAMockupReferenceJSON, ResetDAMockup} from '../../_extensions/resetDA/ResetDA.mockup';
 import {getActiveElementMockupReferenceJSON} from '../ActiveElement.mockup';
 
@@ -40,7 +40,7 @@ export function getDrvMockupReferenceJSON(
 			
 			...getActiveElementMockupReferenceJSON(namespace,objectBrowseName),
 			...getOpModeDAMockupReferenceJSON(namespace,objectBrowseName),
-			...getInterlockDAMockupReferenceJSON(namespace,objectBrowseName),
+			...getInterlockMockupReferenceJSON(namespace,objectBrowseName),
 			...getResetDAMockupReferenceJSON(namespace,objectBrowseName),
 			SafePos: {
 				namespaceIndex: `${namespace}`,
@@ -137,7 +137,7 @@ export class DrvMockup {
 	public wqc: WQCDAMockup;
 	public osLevel: OSLevelDAMockup;
 	public operationMode: OpModeDAMockup;
-	public interlock: InterlockDAMockup;
+	public interlock: InterlockMockup;
 	public reset: ResetDAMockup;
 
 	public safePos = false;
@@ -174,7 +174,7 @@ export class DrvMockup {
 		this.osLevel = new OSLevelDAMockup(namespace, this.mockupNode, this.name);
 		this.wqc = new WQCDAMockup(namespace, this.mockupNode, this.name);
 		this.operationMode = new OpModeDAMockup(namespace,this.mockupNode,this.name);
-		this.interlock= new InterlockDAMockup(namespace,this.mockupNode,this.name);
+		this.interlock= new InterlockMockup(namespace,this.mockupNode,this.name);
 		this.reset= new ResetDAMockup(namespace,this.mockupNode,this.name);
 
 		namespace.addVariable({

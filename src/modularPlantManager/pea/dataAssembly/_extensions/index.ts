@@ -24,7 +24,7 @@
  */
  
 export * from './feedbackMonitoring/FeedbackMonitoring';
-export * from './interlockDA/Interlock';
+export * from './interlock/Interlock';
 export * from './limitMonitoringDA/LimitMonitoring';
 export * from './opModeDA/OpModeController';
 export * from './osLevelDA/OSLevel';

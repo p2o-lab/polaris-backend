@@ -49,8 +49,8 @@ describe('ServiceSourceMode', () => {
 
 		it('should create ServiceSourceMode', () => {
 			const da = new DataAssemblyController(dataAssemblyOptions, emptyOPCUAConnection) as any;
-			const serviceSourceMode = new ServiceSourceModeController(da);
-			expect(serviceSourceMode).to.not.be.undefined;
+			const serviceSourceModeController = new ServiceSourceModeController(da);
+			expect(serviceSourceModeController).to.not.be.undefined;
 			expect(da.communication.SrcChannel).to.not.be.undefined;
 			expect(da.communication.SrcExtAut).to.not.be.undefined;
 			expect(da.communication.SrcIntAut).to.not.be.undefined;
@@ -105,7 +105,7 @@ describe('ServiceSourceMode', () => {
 		let mockupServer: MockupServer;
 		let connection: OpcUaConnection;
 		let mockup: ServiceSourceModeDAMockup;
-		let ssMode: ServiceSourceModeController;
+		let serviceSourceModeController: ServiceSourceModeController;
 		let dataAssemblyController: any;
 
 		beforeEach(async function () {
@@ -119,7 +119,7 @@ describe('ServiceSourceMode', () => {
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});
 			dataAssemblyController = new DataAssemblyController(dataAssemblyOptions, connection) as any;
-			ssMode = new ServiceSourceModeController(dataAssemblyController);
+			serviceSourceModeController = new ServiceSourceModeController(dataAssemblyController);
 			await connection.connect();
 			await dataAssemblyController.subscribe();
 			await connection.startMonitoring();
@@ -133,14 +133,14 @@ describe('ServiceSourceMode', () => {
 		});
 
 		it('getServiceSourceMode, should be intern', () => {
-			expect(ssMode.getServiceSourceMode()).to.equal(ServiceSourceMode.Intern);
+			expect(serviceSourceModeController.getServiceSourceMode()).to.equal(ServiceSourceMode.Intern);
 		});
 		it('isServiceSourceMode', () => {
-			expect(ssMode.isServiceSourceMode(ServiceSourceMode.Intern)).to.be.true;
-			expect(ssMode.isServiceSourceMode(ServiceSourceMode.Extern)).to.be.false;
+			expect(serviceSourceModeController.isServiceSourceMode(ServiceSourceMode.Intern)).to.be.true;
+			expect(serviceSourceModeController.isServiceSourceMode(ServiceSourceMode.Extern)).to.be.false;
 		});
 		it('setToExternalServiceSourceMode(), nothing should happen', async () => {
-			await ssMode.setToExternalServiceSourceMode();
+			await serviceSourceModeController.setToExternalServiceSourceMode();
 			expect(mockup.srcIntAct).to.be.false;
 			expect(mockup.srcExtAct).to.be.true;
 		}).timeout(4000);
@@ -150,7 +150,7 @@ describe('ServiceSourceMode', () => {
 		let mockupServer: MockupServer;
 		let connection: OpcUaConnection;
 		let mockup: ServiceSourceModeDAMockup;
-		let ssMode: ServiceSourceModeController;
+		let serviceSourceModeController: ServiceSourceModeController;
 		let dataAssemblyController: any;
 		beforeEach(async function () {
 			mockupServer = new MockupServer();
@@ -169,7 +169,7 @@ describe('ServiceSourceMode', () => {
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});
 			dataAssemblyController = new DataAssemblyController(dataAssemblyOptions, connection);
-			ssMode = new ServiceSourceModeController(dataAssemblyController);
+			serviceSourceModeController = new ServiceSourceModeController(dataAssemblyController);
 			await connection.connect();
 			await dataAssemblyController.subscribe();
 			await connection.startMonitoring();
@@ -182,46 +182,42 @@ describe('ServiceSourceMode', () => {
 		});
 
 		it('getServiceSourceMode', async () => {
-			expect(ssMode.getServiceSourceMode()).to.equal(ServiceSourceMode.Intern);
+			expect(serviceSourceModeController.getServiceSourceMode()).to.equal(ServiceSourceMode.Intern);
 		});
 
 		it('isServiceSourceMode', async () => {
-			expect(ssMode.isServiceSourceMode(ServiceSourceMode.Intern)).to.be.true;
-			expect(ssMode.isServiceSourceMode(ServiceSourceMode.Extern)).to.be.false;
+			expect(serviceSourceModeController.isServiceSourceMode(ServiceSourceMode.Intern)).to.be.true;
+			expect(serviceSourceModeController.isServiceSourceMode(ServiceSourceMode.Extern)).to.be.false;
 		});
-
-		it('writeServiceSourceMode, should set Extern', async () => {
-			await ssMode.writeServiceSourceMode(ServiceSourceMode.Extern);
-			expect(mockup.srcExtAct).to.be.true;
-			expect(mockup.srcIntAct).to.be.false;
-			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
-			expect(dataAssemblyController.communication.SrcExtAct.value).to.be.true;
-			expect(dataAssemblyController.communication.SrcIntAct.value).to.be.false;
-		}).timeout(4000);
 
 		it('waitForServiceSourceModeToPassSpecificTest, promise should resolve instantly', async () => {
 			dataAssemblyController.communication.SrcExtAct.value = true;
-			await ssMode.waitForServiceSourceModeToPassSpecificTest(ServiceSourceMode.Extern);
+			await serviceSourceModeController.waitForServiceSourceModeToPassSpecificTest(ServiceSourceMode.Extern);
 		});
 
 		it('waitForServiceSourceModeToPassSpecificTest, promise should resolve after a while', async () => {
 			await dataAssemblyController.communication.SrcExtOp.write(true);
-			await ssMode.waitForServiceSourceModeToPassSpecificTest(ServiceSourceMode.Extern);
+			await serviceSourceModeController.waitForServiceSourceModeToPassSpecificTest(ServiceSourceMode.Extern);
 		}).timeout(4000);
 
 		it('waitForServiceSourceModeToPassSpecificTest, timeout', async () => {
 			expect(dataAssemblyController.communication.SrcExtAct.value).to.be.false;
 			expect(dataAssemblyController.communication.SrcIntAct.value).to.be.true;
-			return expect(ssMode.waitForServiceSourceModeToPassSpecificTest(ServiceSourceMode.Extern)).to.be
+			return expect(serviceSourceModeController.waitForServiceSourceModeToPassSpecificTest(ServiceSourceMode.Extern)).to.be
 				.rejectedWith('Timeout: ServiceSourceMode did not change');
 		}).timeout(4000);
 
-		it('setToExternalServiceSourceMode()', async () => {
-			await ssMode.setToExternalServiceSourceMode();
+		it('should change ServiceSourceMode to external and back to internal', async () => {
+			await serviceSourceModeController.setToExternalServiceSourceMode();
 			expect(mockup.srcExtAct).to.be.true;
 			expect(mockup.srcIntAct).to.be.false;
 			expect(dataAssemblyController.communication.SrcExtAct.value).to.be.true;
 			expect(dataAssemblyController.communication.SrcIntAct.value).to.be.false;
+			await serviceSourceModeController.setToInternalServiceSourceMode();
+			expect(mockup.srcExtAct).to.be.false;
+			expect(mockup.srcIntAct).to.be.true;
+			expect(dataAssemblyController.communication.SrcExtAct.value).to.be.false;
+			expect(dataAssemblyController.communication.SrcIntAct.value).to.be.true;
 		}).timeout(4000);
 	});
 

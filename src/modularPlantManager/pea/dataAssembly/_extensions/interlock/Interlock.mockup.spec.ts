@@ -26,12 +26,12 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../_utils';
-import {InterlockDAMockup} from './InterlockDA.mockup';
+import {InterlockMockup} from './Interlock.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-describe('InterlockDAMockup', () => {
+describe('InterlockMockup', () => {
     describe('static', () => {
         let mockupServer: MockupServer;
 
@@ -40,14 +40,14 @@ describe('InterlockDAMockup', () => {
             await mockupServer.initialize();
         });
 
-        it('should create InterlockDAMockup', async () => {
-            const mockup= new InterlockDAMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
+        it('should create InterlockMockup', async () => {
+            const mockup= new InterlockMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
             expect(mockup).to.not.be.undefined;
         });
 
         it('getAnaServParamMockupReferenceJSON()',  () => {
-            const mockup = new InterlockDAMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
-            const json = mockup.getInterlockDAInstanceMockupJSON() as any;
+            const mockup = new InterlockMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
+            const json = mockup.getInterlockInstanceMockupJSON() as any;
             expect(Object.keys(json).length).to.equal(6);
             expect(json.PermEn).to.not.be.undefined;
             expect(json.Interlock).to.not.be.undefined;

@@ -33,7 +33,7 @@ import {DataAssemblyController} from '../../DataAssemblyController';
 import {MonBinVlv} from '../../activeElement';
 import {Interlock} from './Interlock';
 import {MockupServer} from '../../../../_utils';
-import {InterlockDAMockup} from './InterlockDA.mockup';
+import {InterlockMockup} from './Interlock.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -67,7 +67,7 @@ describe('Interlock', () => {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			new InterlockDAMockup(
+			new InterlockMockup(
 				mockupServer.nameSpace,
 				mockupServer.rootObject,
 				'Variable');
