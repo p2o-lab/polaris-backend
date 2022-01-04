@@ -38,6 +38,6 @@ class ValueLimitation{
 
 ValueLimitationRuntime <-- ValueLimitation
 ValueLimitationSpec --> ValueLimitation : <<uses>>
-ValueLimitationSpec --> ValueLimitationDAMockup : <<uses>>
+ValueLimitationSpec --> ValueLimitationMockup : <<uses>>
 
 @enduml

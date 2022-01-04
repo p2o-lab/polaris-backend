@@ -32,5 +32,5 @@ export * from './reset/Reset';
 export * from './scaleSettings/ScaleSettings';
 export * from './sourceMode/SourceModeController';
 export * from './unit/UnitController';
-export * from './valueLimitationDA/ValueLimitation';
+export * from './valueLimitation/ValueLimitation';
 export * from './wqcDA/WQC';

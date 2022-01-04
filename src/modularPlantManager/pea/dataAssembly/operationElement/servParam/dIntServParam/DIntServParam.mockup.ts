@@ -32,9 +32,9 @@ import {
 	ScaleSettingMockup
 } from '../../../_extensions/scaleSettings/ScaleSetting.mockup';
 import {
-	getValueLimitationDAMockupReferenceJSON,
-	ValueLimitationDAMockup
-} from '../../../_extensions/valueLimitationDA/ValueLimitationDA.mockup';
+	getValueLimitationMockupReferenceJSON,
+	ValueLimitationMockup
+} from '../../../_extensions/valueLimitation/ValueLimitation.mockup';
 import {getServParamMockupReferenceJSON, ServParamMockup} from '../ServParam.mockup';
 
 
@@ -46,7 +46,7 @@ export function getDIntServParamMockupReferenceJSON(
 			...getServParamMockupReferenceJSON(namespace,objectBrowseName),
 			...getUnitMockupReferenceJSON(namespace,objectBrowseName),
 			...getScaleSettingDAMockupReferenceJSON(namespace,objectBrowseName,'Int32'),
-			...getValueLimitationDAMockupReferenceJSON(namespace,objectBrowseName, 'Int32'),
+			...getValueLimitationMockupReferenceJSON(namespace,objectBrowseName, 'Int32'),
 			Sync: {
 				namespaceIndex: `${namespace}`,
 				nodeId: `${objectBrowseName}.Sync`,
@@ -97,7 +97,7 @@ export class DIntServParamMockup extends ServParamMockup {
 
 	public readonly unit: UnitMockup;
 	public readonly scaleSettings: ScaleSettingMockup<DataType.Int32>;
-	public readonly valueLimitation: ValueLimitationDAMockup<DataType.Int32>;
+	public readonly valueLimitation: ValueLimitationMockup<DataType.Int32>;
 	protected interval: Timeout | undefined;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
@@ -105,7 +105,7 @@ export class DIntServParamMockup extends ServParamMockup {
 
 		this.unit = new UnitMockup(namespace, this.mockupNode, this.name);
 		this.scaleSettings = new ScaleSettingMockup(namespace, this.mockupNode, this.name, DataType.Int32);
-		this.valueLimitation = new ValueLimitationDAMockup(namespace, this.mockupNode, this.name,DataType.Int32);
+		this.valueLimitation = new ValueLimitationMockup(namespace, this.mockupNode, this.name,DataType.Int32);
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,

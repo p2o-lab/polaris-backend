@@ -34,7 +34,7 @@ import {DIntMan} from '../../operationElement';
 import {ValueLimitation} from './ValueLimitation';
 import {MockupServer} from '../../../../_utils';
 import {DataType} from 'node-opcua';
-import {ValueLimitationDAMockup} from './ValueLimitationDA.mockup';
+import {ValueLimitationMockup} from './ValueLimitation.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -48,7 +48,7 @@ describe('ValueLimitation', () => {
 
 	describe('static', () => {
 		const emptyOPCUAConnection = new OpcUaConnection();
-		it('should create ValueLimitationDA',  () => {
+		it('should create ValueLimitation',  () => {
 			const da = new DataAssemblyController(dataAssemblyOptions, emptyOPCUAConnection);
 			const valueLimitation = new ValueLimitation(da);
 			expect(valueLimitation).to.not.be.undefined;
@@ -64,7 +64,7 @@ describe('ValueLimitation', () => {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			new ValueLimitationDAMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable', DataType.Double);
+			new ValueLimitationMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable', DataType.Double);
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});

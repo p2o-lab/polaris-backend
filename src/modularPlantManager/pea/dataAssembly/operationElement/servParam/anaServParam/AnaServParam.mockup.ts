@@ -32,9 +32,9 @@ import {
 	ScaleSettingMockup
 } from '../../../_extensions/scaleSettings/ScaleSetting.mockup';
 import {
-	getValueLimitationDAMockupReferenceJSON,
-	ValueLimitationDAMockup
-} from '../../../_extensions/valueLimitationDA/ValueLimitationDA.mockup';
+	getValueLimitationMockupReferenceJSON,
+	ValueLimitationMockup
+} from '../../../_extensions/valueLimitation/ValueLimitation.mockup';
 import {getServParamMockupReferenceJSON, ServParamMockup} from '../ServParam.mockup';
 
 export function getAnaServParamMockupReferenceJSON(
@@ -45,7 +45,7 @@ export function getAnaServParamMockupReferenceJSON(
 			...getServParamMockupReferenceJSON(namespace, objectBrowseName),
 			...getUnitMockupReferenceJSON(namespace,objectBrowseName),
 			...getScaleSettingDAMockupReferenceJSON(namespace,objectBrowseName,'Float'),
-			...getValueLimitationDAMockupReferenceJSON(namespace,objectBrowseName, 'Float'),
+			...getValueLimitationMockupReferenceJSON(namespace,objectBrowseName, 'Float'),
 			VExt: {
 				namespaceIndex: `${namespace}`,
 				nodeId: `${objectBrowseName}.VExt`,
@@ -91,7 +91,7 @@ export class AnaServParamMockup extends ServParamMockup{
 	
 	public readonly unit: UnitMockup;
 	public readonly scaleSettings: ScaleSettingMockup<DataType.Double>;
-	public readonly valueLimitation: ValueLimitationDAMockup<DataType.Double>;
+	public readonly valueLimitation: ValueLimitationMockup<DataType.Double>;
 	protected interval: Timeout | undefined;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
@@ -99,7 +99,7 @@ export class AnaServParamMockup extends ServParamMockup{
 
 		this.unit = new UnitMockup(namespace, this.mockupNode, this.name);
 		this.scaleSettings = new ScaleSettingMockup(namespace, this.mockupNode, this.name, DataType.Double);
-		this.valueLimitation = new ValueLimitationDAMockup(namespace, this.mockupNode, this.name,DataType.Double);
+		this.valueLimitation = new ValueLimitationMockup(namespace, this.mockupNode, this.name,DataType.Double);
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,

@@ -25,7 +25,7 @@
 
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
 
-export function getValueLimitationDAMockupReferenceJSON<T extends 'Float' | 'Int32' >(
+export function getValueLimitationMockupReferenceJSON<T extends 'Float' | 'Int32' >(
     namespace: number,
     objectBrowseName: string,
     type: T): object {
@@ -44,7 +44,7 @@ export function getValueLimitationDAMockupReferenceJSON<T extends 'Float' | 'Int
   });
 }
 
-export class ValueLimitationDAMockup<T extends DataType.Double | DataType.Int32> {
+export class ValueLimitationMockup<T extends DataType.Double | DataType.Int32> {
   protected vMin = 0;
   protected vMax = 0;
   private readonly type: DataType;
@@ -83,8 +83,8 @@ export class ValueLimitationDAMockup<T extends DataType.Double | DataType.Int32>
     });
     }
 
-  public getValueLimitationDAInstanceMockupJSON(): object {
-    return getValueLimitationDAMockupReferenceJSON(
+  public getValueLimitationInstanceMockupJSON(): object {
+    return getValueLimitationMockupReferenceJSON(
         this.mockupNode.namespaceIndex,
         this.mockupNode.browseName.name as string,
         (this.type === DataType.Double)? 'Float' : 'Int32');

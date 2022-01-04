@@ -50,7 +50,7 @@ DataAssemblyController "0..1" o-- ScaleSettingDA
 DataAssemblyController "0..1" o-- ServiceSourceMode
 DataAssemblyController "0..1" o-- SourceMode
 DataAssemblyController "0..1" o-- Unit
-DataAssemblyController "0..1" o-- ValueLimitationDA
+DataAssemblyController "0..1" o-- ValueLimitation
 DataAssemblyController "0..1" o-- WQCDA
 
 @enduml

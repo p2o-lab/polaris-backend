@@ -27,12 +27,12 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataType} from 'node-opcua';
 import {MockupServer} from '../../../../_utils';
-import {ValueLimitationDAMockup} from './ValueLimitationDA.mockup';
+import {ValueLimitationMockup} from './ValueLimitation.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-describe('ValueLimitationDAMockup', () => {
+describe('ValueLimitationMockup', () => {
     describe('', () => {
         let mockupServer: MockupServer;
         beforeEach(async()=>{
@@ -40,24 +40,24 @@ describe('ValueLimitationDAMockup', () => {
             await mockupServer.initialize();
         });
 
-        it('should create ValueLimitationDAMockup', async () => {
-            const mockup= new ValueLimitationDAMockup(mockupServer.nameSpace,
+        it('should create ValueLimitationMockup', async () => {
+            const mockup= new ValueLimitationMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable', DataType.Double);
             expect(mockup).to.not.be.undefined;
         });
 
         it('getValueLimitationMockupReferenceJSON(), Double',  () => {
-            const mockup = new ValueLimitationDAMockup(mockupServer.nameSpace,
+            const mockup = new ValueLimitationMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable', DataType.Double);
-            const json = mockup.getValueLimitationDAInstanceMockupJSON() as {VMin: {} ; VMax: {}};
+            const json = mockup.getValueLimitationInstanceMockupJSON() as {VMin: {} ; VMax: {}};
             expect(Object.keys(json).length).to.equal(2);
             expect(json.VMin).to.not.be.undefined;
             expect(json.VMax).to.not.be.undefined;
         });
         it('getValueLimitationMockupReferenceJSON(), Int32',  () => {
-            const mockup = new ValueLimitationDAMockup(mockupServer.nameSpace,
+            const mockup = new ValueLimitationMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable', DataType.Int32);
-            const json = mockup.getValueLimitationDAInstanceMockupJSON() as {VMin: {} ; VMax: {}};
+            const json = mockup.getValueLimitationInstanceMockupJSON() as {VMin: {} ; VMax: {}};
             expect(Object.keys(json).length).to.equal(2);
             expect(json.VMin).to.not.be.undefined;
             expect(json.VMax).to.not.be.undefined;

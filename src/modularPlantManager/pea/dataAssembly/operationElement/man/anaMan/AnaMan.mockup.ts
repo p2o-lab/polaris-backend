@@ -34,9 +34,9 @@ import {
 	ScaleSettingMockup
 } from '../../../_extensions/scaleSettings/ScaleSetting.mockup';
 import {
-	getValueLimitationDAMockupReferenceJSON,
-	ValueLimitationDAMockup
-} from '../../../_extensions/valueLimitationDA/ValueLimitationDA.mockup';
+	getValueLimitationMockupReferenceJSON,
+	ValueLimitationMockup
+} from '../../../_extensions/valueLimitation/ValueLimitation.mockup';
 
 export function getAnaManMockupReferenceJSON(
 	namespace: number,
@@ -45,7 +45,7 @@ export function getAnaManMockupReferenceJSON(
 	return ({
 			...getOSLevelMockupReferenceJSON(namespace,objectBrowseName),
 			...getScaleSettingDAMockupReferenceJSON(namespace,objectBrowseName,'Float'),
-			...getValueLimitationDAMockupReferenceJSON(namespace,objectBrowseName, 'Float'),
+			...getValueLimitationMockupReferenceJSON(namespace,objectBrowseName, 'Float'),
 			...getUnitMockupReferenceJSON(namespace,objectBrowseName),
 			VOut: {
 				namespaceIndex: `${namespace}`,
@@ -82,7 +82,7 @@ export class AnaManMockup {
 	
 	public readonly osLevel: OSLevelMockup;
 	public readonly scaleSettings: ScaleSettingMockup<DataType.Double>;
-	public readonly valueLimitation: ValueLimitationDAMockup<DataType.Double>;
+	public readonly valueLimitation: ValueLimitationMockup<DataType.Double>;
 	public readonly unit: UnitMockup;
 	protected interval: Timeout | undefined;
 	protected mockupNode: UAObject;
@@ -98,7 +98,7 @@ export class AnaManMockup {
 		
 		this.osLevel = new OSLevelMockup(namespace, this.mockupNode, this.name);
 		this.scaleSettings = new ScaleSettingMockup(namespace, this.mockupNode, this.name, DataType.Double);
-		this.valueLimitation = new ValueLimitationDAMockup(namespace, this.mockupNode, this.name,DataType.Double);
+		this.valueLimitation = new ValueLimitationMockup(namespace, this.mockupNode, this.name,DataType.Double);
 		this.unit = new UnitMockup(namespace, this.mockupNode, this.name);
 		namespace.addVariable({
 			componentOf: this.mockupNode,

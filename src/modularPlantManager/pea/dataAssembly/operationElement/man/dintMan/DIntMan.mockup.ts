@@ -34,9 +34,9 @@ import {
 	ScaleSettingMockup
 } from '../../../_extensions/scaleSettings/ScaleSetting.mockup';
 import {
-	getValueLimitationDAMockupReferenceJSON,
-	ValueLimitationDAMockup
-} from '../../../_extensions/valueLimitationDA/ValueLimitationDA.mockup';
+	getValueLimitationMockupReferenceJSON,
+	ValueLimitationMockup
+} from '../../../_extensions/valueLimitation/ValueLimitation.mockup';
 
 export function getDIntManMockupReferenceJSON(
 	namespace: number,
@@ -45,7 +45,7 @@ export function getDIntManMockupReferenceJSON(
 	return ({
 			...getOSLevelMockupReferenceJSON(namespace,objectBrowseName),
 			...getScaleSettingDAMockupReferenceJSON(namespace,objectBrowseName,'Int32'),
-			...getValueLimitationDAMockupReferenceJSON(namespace,objectBrowseName, 'Int32'),
+			...getValueLimitationMockupReferenceJSON(namespace,objectBrowseName, 'Int32'),
 			...getUnitMockupReferenceJSON(namespace,objectBrowseName),
 			VOut: {
 				namespaceIndex: `${namespace}`,
@@ -81,7 +81,7 @@ export class DIntManMockup {
 	
 	public readonly osLevel: OSLevelMockup;
 	public readonly scaleSettings: ScaleSettingMockup<DataType.Int32>;
-	public readonly valueLimitation: ValueLimitationDAMockup<DataType.Int32>;
+	public readonly valueLimitation: ValueLimitationMockup<DataType.Int32>;
 	public readonly unit: UnitMockup;
 	protected interval: Timeout | undefined;
 	protected mockupNode: UAObject;
@@ -97,7 +97,7 @@ export class DIntManMockup {
 		
 		this.osLevel = new OSLevelMockup(namespace, this.mockupNode, this.name);
 		this.scaleSettings = new ScaleSettingMockup(namespace, this.mockupNode, this.name, DataType.Int32);
-		this.valueLimitation = new ValueLimitationDAMockup(namespace, this.mockupNode, this.name,DataType.Int32);
+		this.valueLimitation = new ValueLimitationMockup(namespace, this.mockupNode, this.name,DataType.Int32);
 		this.unit = new UnitMockup(namespace, this.mockupNode, this.name);
 
 		namespace.addVariable({
