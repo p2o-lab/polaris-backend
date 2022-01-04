@@ -29,8 +29,8 @@ import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 import {getUnitDAMockupReferenceJSON, UnitDAMockup} from '../../../_extensions/unitDA/UnitDA.mockup';
 import {
 	getScaleSettingDAMockupReferenceJSON,
-	ScaleSettingDAMockup
-} from '../../../_extensions/scaleSettingsDA/ScaleSettingDA.mockup';
+	ScaleSettingMockup
+} from '../../../_extensions/scaleSettings/ScaleSetting.mockup';
 import {
 	getValueLimitationDAMockupReferenceJSON,
 	ValueLimitationDAMockup
@@ -90,7 +90,7 @@ export class AnaServParamMockup extends ServParamMockup{
 	protected vFbk = 0;
 	
 	public readonly unit: UnitDAMockup;
-	public readonly scaleSettings: ScaleSettingDAMockup<DataType.Double>;
+	public readonly scaleSettings: ScaleSettingMockup<DataType.Double>;
 	public readonly valueLimitation: ValueLimitationDAMockup<DataType.Double>;
 	protected interval: Timeout | undefined;
 
@@ -98,7 +98,7 @@ export class AnaServParamMockup extends ServParamMockup{
 		super(namespace, rootNode, variableName);
 
 		this.unit = new UnitDAMockup(namespace, this.mockupNode, this.name);
-		this.scaleSettings = new ScaleSettingDAMockup(namespace, this.mockupNode, this.name, DataType.Double);
+		this.scaleSettings = new ScaleSettingMockup(namespace, this.mockupNode, this.name, DataType.Double);
 		this.valueLimitation = new ValueLimitationDAMockup(namespace, this.mockupNode, this.name,DataType.Double);
 
 		namespace.addVariable({

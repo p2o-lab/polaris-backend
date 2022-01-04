@@ -44,7 +44,7 @@ export function getScaleSettingDAMockupReferenceJSON<T extends 'Float' | 'Int32'
   });
 }
 
-export class ScaleSettingDAMockup<T extends DataType.Double | DataType.Int32> {
+export class ScaleSettingMockup<T extends DataType.Double | DataType.Int32> {
   public vSclMin = 0;
   public vSclMax = 0;
   private readonly type: DataType;

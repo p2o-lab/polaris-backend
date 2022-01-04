@@ -31,8 +31,8 @@ import {getOSLevelMockupReferenceJSON, OSLevelMockup} from '../../../_extensions
 import {getUnitDAMockupReferenceJSON, UnitDAMockup} from '../../../_extensions/unitDA/UnitDA.mockup';
 import {
 	getScaleSettingDAMockupReferenceJSON,
-	ScaleSettingDAMockup
-} from '../../../_extensions/scaleSettingsDA/ScaleSettingDA.mockup';
+	ScaleSettingMockup
+} from '../../../_extensions/scaleSettings/ScaleSetting.mockup';
 import {
 	getValueLimitationDAMockupReferenceJSON,
 	ValueLimitationDAMockup
@@ -80,7 +80,7 @@ export class DIntManMockup {
 	protected vFbk = 0;
 	
 	public readonly osLevel: OSLevelMockup;
-	public readonly scaleSettings: ScaleSettingDAMockup<DataType.Int32>;
+	public readonly scaleSettings: ScaleSettingMockup<DataType.Int32>;
 	public readonly valueLimitation: ValueLimitationDAMockup<DataType.Int32>;
 	public readonly unit: UnitDAMockup;
 	protected interval: Timeout | undefined;
@@ -96,7 +96,7 @@ export class DIntManMockup {
 		});
 		
 		this.osLevel = new OSLevelMockup(namespace, this.mockupNode, this.name);
-		this.scaleSettings = new ScaleSettingDAMockup(namespace, this.mockupNode, this.name, DataType.Int32);
+		this.scaleSettings = new ScaleSettingMockup(namespace, this.mockupNode, this.name, DataType.Int32);
 		this.valueLimitation = new ValueLimitationDAMockup(namespace, this.mockupNode, this.name,DataType.Int32);
 		this.unit = new UnitDAMockup(namespace, this.mockupNode, this.name);
 

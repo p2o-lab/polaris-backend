@@ -29,7 +29,7 @@ export * from './limitMonitoring/LimitMonitoring';
 export * from './opMode/OpMode';
 export * from './osLevel/OSLevel';
 export * from './reset/Reset';
-export * from './scaleSettingsDA/ScaleSettings';
+export * from './scaleSettings/ScaleSettings';
 export * from './sourceModeDA/SourceModeController';
 export * from './unitDA/UnitSettings';
 export * from './valueLimitationDA/ValueLimitation';

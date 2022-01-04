@@ -27,8 +27,8 @@ import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../_extensions/wqcDA/WQCDA.mockup';
 import {
 	getScaleSettingDAMockupReferenceJSON,
-	ScaleSettingDAMockup
-} from '../../_extensions/scaleSettingsDA/ScaleSettingDA.mockup';
+	ScaleSettingMockup
+} from '../../_extensions/scaleSettings/ScaleSetting.mockup';
 import {getUnitDAMockupReferenceJSON, UnitDAMockup} from '../../_extensions/unitDA/UnitDA.mockup';
 
 export function getAnaViewMockupReferenceJSON(
@@ -53,7 +53,7 @@ export class AnaViewMockup {
 	public readonly name: string;
 	protected v = 0;
 	public wqc: WQCDAMockup;
-	public scaleSettings: ScaleSettingDAMockup<DataType.Double>;
+	public scaleSettings: ScaleSettingMockup<DataType.Double>;
 	public unit: UnitDAMockup;
 	protected mockupNode: UAObject;
 
@@ -65,7 +65,7 @@ export class AnaViewMockup {
 			browseName: variableName
 		});
 		this.wqc = new WQCDAMockup(namespace, this.mockupNode, this.name);
-		this.scaleSettings = new ScaleSettingDAMockup<DataType.Double>(namespace, this.mockupNode, this.name, DataType.Double);
+		this.scaleSettings = new ScaleSettingMockup<DataType.Double>(namespace, this.mockupNode, this.name, DataType.Double);
 		this.unit = new UnitDAMockup(namespace, this.mockupNode, this.name);
 		if(removeVariable == undefined || removeVariable){
 			namespace.addVariable({

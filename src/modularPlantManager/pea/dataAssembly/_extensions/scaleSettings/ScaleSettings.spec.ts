@@ -33,7 +33,7 @@ import {DataAssemblyController} from '../../DataAssemblyController';
 import {ScaleSettings} from './ScaleSettings';
 import {MockupServer} from '../../../../_utils';
 import {DataType} from 'node-opcua';
-import {ScaleSettingDAMockup} from './ScaleSettingDA.mockup';
+import {ScaleSettingMockup} from './ScaleSetting.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -64,7 +64,7 @@ describe('ScaleSettings', () => {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			new ScaleSettingDAMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable', DataType.Double);
+			new ScaleSettingMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable', DataType.Double);
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});

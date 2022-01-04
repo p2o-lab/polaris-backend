@@ -37,7 +37,7 @@ class ScaleSettings{
 }
 
 ScaleSettingsRuntime <-- ScaleSettings
-ScaleSettingsDASpec --> ScaleSettings : <<uses>>
-ScaleSettingsDASpec --> ScaleSettingsDAMockup : <<uses>>
+ScaleSettingsSpec --> ScaleSettings : <<uses>>
+ScaleSettingsSpec --> ScaleSettingsMockup : <<uses>>
 
 @enduml

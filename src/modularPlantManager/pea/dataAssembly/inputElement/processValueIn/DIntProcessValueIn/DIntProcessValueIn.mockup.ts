@@ -24,7 +24,7 @@
  */
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {getScaleSettingDAMockupReferenceJSON, ScaleSettingDAMockup} from '../../../_extensions/scaleSettingsDA/ScaleSettingDA.mockup';
+import {getScaleSettingDAMockupReferenceJSON, ScaleSettingMockup} from '../../../_extensions/scaleSettings/ScaleSetting.mockup';
 import {getUnitDAMockupReferenceJSON, UnitDAMockup} from '../../../_extensions/unitDA/UnitDA.mockup';
 import {getInputElementMockupReferenceJSON, InputElementMockup} from '../../InputElement.mockup';
 
@@ -47,13 +47,13 @@ export function getDIntProcessValueInMockupReferenceJSON(
 
 export class DIntProcessValueInMockup extends InputElementMockup{
 
-	public scaleSettings: ScaleSettingDAMockup<DataType.Int32>;
+	public scaleSettings: ScaleSettingMockup<DataType.Int32>;
 	public unit: UnitDAMockup;
 	public vExt = 0;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
 		super(namespace, rootNode, variableName);
-		this.scaleSettings = new ScaleSettingDAMockup<DataType.Int32>(namespace, this.mockupNode, this.name, DataType.Int32);
+		this.scaleSettings = new ScaleSettingMockup<DataType.Int32>(namespace, this.mockupNode, this.name, DataType.Int32);
 		this.unit = new UnitDAMockup(namespace, this.mockupNode, this.name);
 
 		namespace.addVariable({

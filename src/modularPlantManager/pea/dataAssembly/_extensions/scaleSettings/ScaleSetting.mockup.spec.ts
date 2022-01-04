@@ -27,7 +27,7 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataType} from 'node-opcua';
 import {MockupServer} from '../../../../_utils';
-import {ScaleSettingDAMockup} from './ScaleSettingDA.mockup';
+import {ScaleSettingMockup} from './ScaleSetting.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -41,17 +41,17 @@ describe('ScaleSettingDAMockup', () => {
         });
 
         it('should create ScaleSettingDAMockup, Double', async () => {
-            const mockup= new ScaleSettingDAMockup(mockupServer.nameSpace,
+            const mockup= new ScaleSettingMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable', DataType.Double);
             expect(mockup).to.not.be.undefined;
         });
         it('should create ScaleSettingDAMockup', async () => {
-            const mockup= new ScaleSettingDAMockup(mockupServer.nameSpace,
+            const mockup= new ScaleSettingMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable', DataType.Int32);
             expect(mockup).to.not.be.undefined;
         });
         it('getScaleSettingDAMockupReferenceJSON(), Double',  () => {
-            const mockup = new ScaleSettingDAMockup(mockupServer.nameSpace,
+            const mockup = new ScaleSettingMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable', DataType.Double);
             const json = mockup.getScaleSettingDAInstanceMockupJSON() as {VSclMin: {} ; VSclMax: {}};
             expect(Object.keys(json).length).to.equal(2);
@@ -59,7 +59,7 @@ describe('ScaleSettingDAMockup', () => {
             expect(json.VSclMin).to.not.be.undefined;
         });
         it('getScaleSettingDAMockupReferenceJSON()',  () => {
-            const mockup = new ScaleSettingDAMockup(mockupServer.nameSpace,
+            const mockup = new ScaleSettingMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable', DataType.Int32);
             const json = mockup.getScaleSettingDAInstanceMockupJSON() as {VSclMin: {} ; VSclMax: {}};
             expect(Object.keys(json).length).to.equal(2);

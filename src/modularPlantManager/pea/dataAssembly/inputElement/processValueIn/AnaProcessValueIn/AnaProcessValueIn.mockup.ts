@@ -24,7 +24,7 @@
  */
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {getScaleSettingDAMockupReferenceJSON, ScaleSettingDAMockup} from '../../../_extensions/scaleSettingsDA/ScaleSettingDA.mockup';
+import {getScaleSettingDAMockupReferenceJSON, ScaleSettingMockup} from '../../../_extensions/scaleSettings/ScaleSetting.mockup';
 import {getUnitDAMockupReferenceJSON, UnitDAMockup} from '../../../_extensions/unitDA/UnitDA.mockup';
 import {getInputElementMockupReferenceJSON, InputElementMockup} from '../../InputElement.mockup';
 
@@ -46,14 +46,14 @@ export function getAnaProcessValueInMockupReferenceJSON(
 }
 
 export class AnaProcessValueInMockup extends InputElementMockup{
-	public scaleSettings: ScaleSettingDAMockup<DataType.Double>;
+	public scaleSettings: ScaleSettingMockup<DataType.Double>;
 	public unit: UnitDAMockup;
 	public vExt = 0;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
 		super(namespace, rootNode, variableName);
 
-		this.scaleSettings = new ScaleSettingDAMockup<DataType.Double>(namespace, this.mockupNode, this.name, DataType.Double);
+		this.scaleSettings = new ScaleSettingMockup<DataType.Double>(namespace, this.mockupNode, this.name, DataType.Double);
 		this.unit = new UnitDAMockup(namespace, this.mockupNode, this.name);
 
 		namespace.addVariable({

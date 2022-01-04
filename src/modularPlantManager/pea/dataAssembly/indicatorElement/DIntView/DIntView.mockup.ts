@@ -27,8 +27,8 @@ import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../_extensions/wqcDA/WQCDA.mockup';
 import {
 	getScaleSettingDAMockupReferenceJSON,
-	ScaleSettingDAMockup
-} from '../../_extensions/scaleSettingsDA/ScaleSettingDA.mockup';
+	ScaleSettingMockup
+} from '../../_extensions/scaleSettings/ScaleSetting.mockup';
 import {getUnitDAMockupReferenceJSON, UnitDAMockup} from '../../_extensions/unitDA/UnitDA.mockup';
 
 export function getDIntViewMockupReferenceJSON(
@@ -53,7 +53,7 @@ export class DIntViewMockup {
 	public readonly name: string;
 	protected v = 0;
 	public wqc: WQCDAMockup;
-	public scaleSettings: ScaleSettingDAMockup<DataType.Int32>;
+	public scaleSettings: ScaleSettingMockup<DataType.Int32>;
 	public unit: UnitDAMockup;
 	protected mockupNode: UAObject;
 
@@ -66,7 +66,7 @@ export class DIntViewMockup {
 			browseName: variableName
 		});
 		this.wqc = new WQCDAMockup(namespace, this.mockupNode, this.name);
-		this.scaleSettings = new ScaleSettingDAMockup<DataType.Int32>(namespace, this.mockupNode, this.name, DataType.Int32);
+		this.scaleSettings = new ScaleSettingMockup<DataType.Int32>(namespace, this.mockupNode, this.name, DataType.Int32);
 		this.unit = new UnitDAMockup(namespace, this.mockupNode, this.name);
 
 		namespace.addVariable({
