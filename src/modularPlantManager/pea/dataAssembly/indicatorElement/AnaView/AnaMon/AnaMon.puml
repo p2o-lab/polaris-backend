@@ -26,7 +26,7 @@
 @startuml
 'https://plantuml.com/class-diagram
 !include ../../../_extensions/LimitMonitoring/LimitMonitoring.puml
-!include ../../../_extensions/osLevelDA/OSLevel.puml
+!include ../../../_extensions/osLevel/OSLevel.puml
 
 interface AnaMonRuntime
 

@@ -32,7 +32,7 @@ import * as baseDataAssemblyOptionsStatic from './OSLevel.spec.json';
 import {OSLevel} from './OSLevel';
 import {DataAssemblyController} from '../../DataAssemblyController';
 import {MockupServer} from '../../../../_utils';
-import {OSLevelDAMockup} from './OSLevelDA.mockup';
+import {OSLevelMockup} from './OSLevel.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -98,7 +98,7 @@ describe('OSLevel', () => {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			new OSLevelDAMockup( mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
+			new OSLevelMockup( mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});

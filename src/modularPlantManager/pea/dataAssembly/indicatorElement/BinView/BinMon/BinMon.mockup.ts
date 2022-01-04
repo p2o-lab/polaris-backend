@@ -24,13 +24,13 @@
  */
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../../../_extensions/osLevelDA/OSLevelDA.mockup';
+import {getOSLevelMockupReferenceJSON, OSLevelMockup} from '../../../_extensions/osLevel/OSLevel.mockup';
 import {BinViewMockup, getBinViewMockupReferenceJSON} from '../BinView.mockup';
 
 export function getBinMonMockupReferenceJSON(namespace: number, objectBrowseName: string): object {
 	return (
 		{
-			...getOSLevelDAMockupReferenceJSON(namespace, objectBrowseName),
+			...getOSLevelMockupReferenceJSON(namespace, objectBrowseName),
 			...getBinViewMockupReferenceJSON(namespace,objectBrowseName),
 			VFlutEn: {
 				namespaceIndex: `${namespace}`,
@@ -62,12 +62,12 @@ export class BinMonMockup extends BinViewMockup{
 	public vFlutTi = 0;
 	public vFlutCnt = 0;
 	public vFlutAct = false;
-	public osLevel: OSLevelDAMockup;
+	public osLevel: OSLevelMockup;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
 		super(namespace, rootNode, variableName);
 
-		this.osLevel = new OSLevelDAMockup(namespace, this.mockupNode, this.name);
+		this.osLevel = new OSLevelMockup(namespace, this.mockupNode, this.name);
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,

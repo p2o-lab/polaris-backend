@@ -30,7 +30,7 @@ import {
 	ScaleSettingDAMockup
 } from '../../../_extensions/scaleSettingsDA/ScaleSettingDA.mockup';
 import {getUnitDAMockupReferenceJSON, UnitDAMockup} from '../../../_extensions/unitDA/UnitDA.mockup';
-import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../../../_extensions/osLevelDA/OSLevelDA.mockup';
+import {getOSLevelMockupReferenceJSON, OSLevelMockup} from '../../../_extensions/osLevel/OSLevel.mockup';
 import {
 	getLimitMonitoringMockupReferenceJSON,
 	LimitMonitoringMockup
@@ -45,7 +45,7 @@ export function getAnaMonMockupReferenceJSON(
 			...getWQCDAMockupReferenceJSON(namespace, objectBrowseName),
 			...getScaleSettingDAMockupReferenceJSON(namespace, objectBrowseName, 'Float'),
 			...getUnitDAMockupReferenceJSON(namespace, objectBrowseName),
-			...getOSLevelDAMockupReferenceJSON(namespace, objectBrowseName),
+			...getOSLevelMockupReferenceJSON(namespace, objectBrowseName),
 			...getLimitMonitoringMockupReferenceJSON(namespace, objectBrowseName),
 			V: {
 				namespaceIndex: `${namespace}`,
@@ -61,7 +61,7 @@ export class AnaMonMockup extends IndicatorElementMockup{
 	protected v = 0;
 	public scaleSettings: ScaleSettingDAMockup<DataType.Double>;
 	public unit: UnitDAMockup;
-	public osLevel: OSLevelDAMockup;
+	public osLevel: OSLevelMockup;
 	public limitMonitoring: LimitMonitoringMockup<DataType.Double | DataType.Int32>;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
@@ -70,7 +70,7 @@ export class AnaMonMockup extends IndicatorElementMockup{
 
 		this.scaleSettings = new ScaleSettingDAMockup<DataType.Double>(namespace, this.mockupNode, this.name, DataType.Double);
 		this.unit = new UnitDAMockup(namespace, this.mockupNode, this.name);
-		this.osLevel = new OSLevelDAMockup(namespace, this.mockupNode, this.name);
+		this.osLevel = new OSLevelMockup(namespace, this.mockupNode, this.name);
 		this.limitMonitoring = new LimitMonitoringMockup(namespace, this.mockupNode, this.name, DataType.Double);
 
 		namespace.addVariable({

@@ -27,7 +27,7 @@ export * from './feedbackMonitoring/FeedbackMonitoring';
 export * from './interlock/Interlock';
 export * from './limitMonitoring/LimitMonitoring';
 export * from './opMode/OpMode';
-export * from './osLevelDA/OSLevel';
+export * from './osLevel/OSLevel';
 export * from './resetDA/Reset';
 export * from './scaleSettingsDA/ScaleSettings';
 export * from './sourceModeDA/SourceModeController';

@@ -31,7 +31,7 @@ import {
 } from '../_extensions/serviceSourceModeDA/ServiceSourceModeDA.mockup';
 import {ServiceMtpCommand, ServiceState, ServiceStateString} from '../../serviceSet/service/enum';
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../_extensions/wqcDA/WQCDA.mockup';
-import {getOSLevelDAMockupReferenceJSON} from '../_extensions/osLevelDA/OSLevelDA.mockup';
+import {getOSLevelMockupReferenceJSON} from '../_extensions/osLevel/OSLevel.mockup';
 import {DataAssemblyControllerMockup} from '../DataAssemblyController.mockup';
 import {MtpStateMachine, UserDefinedActions, UserDefinedGuard} from '../../StateMachine/MtpStateMachine';
 
@@ -42,7 +42,7 @@ export function getServiceControlMockupReferenceJSON(
       {
           
           ...getWQCDAMockupReferenceJSON(namespace,objectBrowseName),
-          ...getOSLevelDAMockupReferenceJSON(namespace,objectBrowseName),
+          ...getOSLevelMockupReferenceJSON(namespace,objectBrowseName),
           ...getServiceSourceModeDAMockupReferenceJSON(namespace,objectBrowseName),
         ...getOpModeMockupReferenceJSON(namespace,objectBrowseName),
         CommandOp: {

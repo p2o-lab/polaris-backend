@@ -27,13 +27,13 @@
 import Timeout = NodeJS.Timeout;
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 
-import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../../../_extensions/osLevelDA/OSLevelDA.mockup';
+import {getOSLevelMockupReferenceJSON, OSLevelMockup} from '../../../_extensions/osLevel/OSLevel.mockup';
 
 export function getBinManMockupReferenceJSON(
 	namespace: number,
 	objectBrowseName: string): object {
 	return ({
-			...getOSLevelDAMockupReferenceJSON(namespace,objectBrowseName),
+			...getOSLevelMockupReferenceJSON(namespace,objectBrowseName),
 			VOut: {
 				namespaceIndex: `${namespace}`,
 				nodeId: `${objectBrowseName}.VOut`,
@@ -78,7 +78,7 @@ export class BinManMockup {
 	protected vOut = false;
 	protected vFbk = false;
 	
-	public readonly osLevel: OSLevelDAMockup;
+	public readonly osLevel: OSLevelMockup;
 	protected interval: Timeout | undefined;
 	protected mockupNode: UAObject;
 
@@ -91,7 +91,7 @@ export class BinManMockup {
 			browseName: variableName
 		});
 		
-		this.osLevel = new OSLevelDAMockup(namespace, this.mockupNode, this.name);
+		this.osLevel = new OSLevelMockup(namespace, this.mockupNode, this.name);
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,

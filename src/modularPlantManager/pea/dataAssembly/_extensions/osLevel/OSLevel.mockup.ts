@@ -25,7 +25,7 @@
 
 import {AccessLevelFlag, DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 
-export function getOSLevelDAMockupReferenceJSON(
+export function getOSLevelMockupReferenceJSON(
     namespace: number,
     objectBrowseName: string): object {
 
@@ -38,7 +38,7 @@ export function getOSLevelDAMockupReferenceJSON(
   });
 }
 
-export class OSLevelDAMockup {
+export class OSLevelMockup {
   protected osLevel = 0;
  protected mockupNode: UAObject;
 
@@ -73,8 +73,8 @@ export class OSLevelDAMockup {
       });
     }
 
-  public getOSLevelDAInstanceMockupJSON(): object {
-    return getOSLevelDAMockupReferenceJSON(
+  public getOSLevelInstanceMockupJSON(): object {
+    return getOSLevelMockupReferenceJSON(
         this.mockupNode.namespaceIndex,
         this.mockupNode.browseName.name as string);
   }

@@ -24,7 +24,7 @@
  */
 
 import {Namespace, UAObject} from 'node-opcua';
-import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../_extensions/osLevelDA/OSLevelDA.mockup';
+import {getOSLevelMockupReferenceJSON, OSLevelMockup} from '../_extensions/osLevel/OSLevel.mockup';
 import {DataAssemblyControllerMockup} from '../DataAssemblyController.mockup';
 
 export function getOperationElementMockupReferenceJSON(
@@ -32,16 +32,16 @@ export function getOperationElementMockupReferenceJSON(
 	objectBrowseName: string): object {
 	return (
 		{
-			...getOSLevelDAMockupReferenceJSON(namespace,objectBrowseName),
+			...getOSLevelMockupReferenceJSON(namespace,objectBrowseName),
 		}
 	);
 }
 
 export class OperationElementMockup extends DataAssemblyControllerMockup {
-	protected osLevel: OSLevelDAMockup;
+	protected osLevel: OSLevelMockup;
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string){
 		super(namespace, rootNode, variableName);
-		this.osLevel = new OSLevelDAMockup(namespace, this.mockupNode, this.name);
+		this.osLevel = new OSLevelMockup(namespace, this.mockupNode, this.name);
 
 	}
 

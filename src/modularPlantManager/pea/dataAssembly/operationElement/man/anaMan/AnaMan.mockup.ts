@@ -27,7 +27,7 @@
 import Timeout = NodeJS.Timeout;
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 
-import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../../../_extensions/osLevelDA/OSLevelDA.mockup';
+import {getOSLevelMockupReferenceJSON, OSLevelMockup} from '../../../_extensions/osLevel/OSLevel.mockup';
 import {getUnitDAMockupReferenceJSON, UnitDAMockup} from '../../../_extensions/unitDA/UnitDA.mockup';
 import {
 	getScaleSettingDAMockupReferenceJSON,
@@ -43,7 +43,7 @@ export function getAnaManMockupReferenceJSON(
 	objectBrowseName: string): object {
 
 	return ({
-			...getOSLevelDAMockupReferenceJSON(namespace,objectBrowseName),
+			...getOSLevelMockupReferenceJSON(namespace,objectBrowseName),
 			...getScaleSettingDAMockupReferenceJSON(namespace,objectBrowseName,'Float'),
 			...getValueLimitationDAMockupReferenceJSON(namespace,objectBrowseName, 'Float'),
 			...getUnitDAMockupReferenceJSON(namespace,objectBrowseName),
@@ -80,7 +80,7 @@ export class AnaManMockup {
 	protected vOut = 0
 	protected vFbk = 0;
 	
-	public readonly osLevel: OSLevelDAMockup;
+	public readonly osLevel: OSLevelMockup;
 	public readonly scaleSettings: ScaleSettingDAMockup<DataType.Double>;
 	public readonly valueLimitation: ValueLimitationDAMockup<DataType.Double>;
 	public readonly unit: UnitDAMockup;
@@ -96,7 +96,7 @@ export class AnaManMockup {
 			browseName: variableName
 		});
 		
-		this.osLevel = new OSLevelDAMockup(namespace, this.mockupNode, this.name);
+		this.osLevel = new OSLevelMockup(namespace, this.mockupNode, this.name);
 		this.scaleSettings = new ScaleSettingDAMockup(namespace, this.mockupNode, this.name, DataType.Double);
 		this.valueLimitation = new ValueLimitationDAMockup(namespace, this.mockupNode, this.name,DataType.Double);
 		this.unit = new UnitDAMockup(namespace, this.mockupNode, this.name);

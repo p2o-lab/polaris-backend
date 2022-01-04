@@ -23,20 +23,35 @@
  * SOFTWARE.
  */
  
-@startuml
-'https://plantuml.com/class-diagram
+import * as chai from 'chai';
+import * as chaiAsPromised from 'chai-as-promised';
+import {MockupServer} from '../../../../_utils';
+import {OSLevelMockup} from './OSLevel.mockup';
 
-interface OSLevel{
-    + DataItem<number>
-}
+chai.use(chaiAsPromised);
+const expect = chai.expect;
 
-class OSLevel{
-    - dAController: any
-    - initialize(): void
-    + OSLevel(): number | undefined
-}
+describe('OSLevelMockup', () => {
+    describe('', () => {
+        let mockupServer: MockupServer;
+        beforeEach(async()=>{
+            mockupServer = new MockupServer();
+            await mockupServer.initialize();
+        });
 
-OSLevelRuntime <-- OSLevel
-OSLevelDASpec --> OSLevel : <<uses>>
-OSLevelDASpec --> OSLevelDAMockup : <<uses>>
-@enduml
+        it('should create OSLevelMockup', async () => {
+            const mockup= new OSLevelMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
+            expect(mockup).to.not.be.undefined;
+
+        });
+        it('getAnaServParamMockupReferenceJSON()',  () => {
+            const mockup = new OSLevelMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
+            const json = mockup.getOSLevelInstanceMockupJSON() as any;
+            expect(Object.keys(json).length).to.equal(1);
+            expect(json.OSLevel).to.not.be.undefined;
+        });
+    });
+
+});

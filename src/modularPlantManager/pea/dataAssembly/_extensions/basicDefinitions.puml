@@ -29,7 +29,7 @@
 !include Interlock/Interlock.puml
 !include LimitMonitoring/LimitMonitoring.puml
 !include opMode/OpModeController.puml
-!include osLevelDA/OSLevel.puml
+!include OSLevel/OSLevel.puml
 !include resetDA/Reset.puml
 !include scaleSettingsDA/ScaleSettings.puml
 !include serviceSourceModeDA/ServiceSourceModeController.puml
@@ -44,7 +44,7 @@ DataAssemblyController "0..1" o-- FeedbackMonitoring
 DataAssemblyController "0..1" o-- Interlock
 DataAssemblyController "0..1" o-- LimitMonitoring
 DataAssemblyController "0..1" o-- OpMode
-DataAssemblyController "0..1" o-- OSLevelDA
+DataAssemblyController "0..1" o-- OSLevel
 DataAssemblyController "0..1" o-- ResetDA
 DataAssemblyController "0..1" o-- ScaleSettingDA
 DataAssemblyController "0..1" o-- ServiceSourceModeDA
