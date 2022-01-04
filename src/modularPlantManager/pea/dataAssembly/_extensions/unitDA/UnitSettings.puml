@@ -26,13 +26,17 @@
 @startuml
 'https://plantuml.com/class-diagram
 
+interface UnitDataAssemblyRuntime{
+    + VUnit: DataItem<number>
+}
+
 class UnitSettings{
     - dAController: any
     - initialize(): void
     + Unit(): string
 }
 
-UnitSettings *- UnitDASpec
-UnitDASpec ..> UnitDAMockup : <<use>>
-UnitSettings *- UnitDAMockup
+UnitDataAssemblyRuntime <-- UnitSettings
+UnitDASpec --> UnitSettings : <<uses>>
+UnitDASpec --> UnitDAMockup : <<uses>>
 @enduml

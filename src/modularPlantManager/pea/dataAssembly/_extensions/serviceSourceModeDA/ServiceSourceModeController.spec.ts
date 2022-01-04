@@ -194,7 +194,7 @@ describe('ServiceSourceMode', () => {
 			await ssMode.writeServiceSourceMode(ServiceSourceMode.Extern);
 			expect(mockup.srcExtAct).to.be.true;
 			expect(mockup.srcIntAct).to.be.false;
-			await new Promise(f => setTimeout(f, 500)); // we have to wait for emit change
+			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
 			expect(dataAssemblyController.communication.SrcExtAct.value).to.be.true;
 			expect(dataAssemblyController.communication.SrcIntAct.value).to.be.false;
 		}).timeout(4000);

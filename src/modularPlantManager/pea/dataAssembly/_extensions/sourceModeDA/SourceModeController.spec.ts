@@ -156,7 +156,7 @@ describe('SourceModeController', () => {
 		});
 		it('writeSourceMode, should set Intern', async () => {
 			await sourceMode.writeSourceMode(SourceMode.Intern);
-			await new Promise(f => setTimeout(f, 500)); // we have to wait for emit change
+			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
 			expect(dataAssemblyController.communication.SrcManAct.value).to.be.false;
 			expect(dataAssemblyController.communication.SrcIntAct.value).to.be.true;
 		}).timeout(4000);
@@ -219,7 +219,7 @@ describe('SourceModeController', () => {
 
 		it('writeSourceMode, should set Manual', async () => {
 			await sourceMode.writeSourceMode(SourceMode.Manual);
-			await new Promise(f => setTimeout(f, 500)); // we have to wait for emit change
+			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
 			expect(dataAssemblyController.communication.SrcManAct.value).to.be.true;
 			expect(dataAssemblyController.communication.SrcIntAct.value).to.be.false;
 		}).timeout(4000);

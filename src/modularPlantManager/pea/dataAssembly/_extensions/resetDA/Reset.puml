@@ -26,12 +26,17 @@
 @startuml
 'https://plantuml.com/class-diagram
 
+interface ResetRuntime{
+    + ResetOp: DataItem<boolean>
+	+ ResetAut: DataItem<boolean>
+}
+
 class Reset{
     - dAController: any
     - initialize(): void
 }
 
-Reset *- ResetDASpec
-ResetDASpec ..> ResetDAMockup : <<use>>
-Reset *- ResetDAMockup
+ResetRuntime <-- Reset
+ResetDASpec --> Reset : <<uses>>
+ResetDASpec --> ResetDAMockup : <<uses>>
 @enduml

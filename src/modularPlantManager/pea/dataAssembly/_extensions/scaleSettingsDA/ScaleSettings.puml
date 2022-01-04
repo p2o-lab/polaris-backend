@@ -26,14 +26,18 @@
 @startuml
 'https://plantuml.com/class-diagram
 
+interface ScaleSettingsRuntime{
+	+ VSclMin: DataItem<number>
+	+ VSclMax: DataItem<number>
+}
+
 class ScaleSettings{
     - dAController: any
     - initialize(): void
-    + scaleSettingsToJson(): ParameterInterface
 }
 
-ScaleSettings *- ScaleSettingDASpec
-ScaleSettingDASpec ..> ScaleSettingDAMockup : <<use>>
-ScaleSettings *- ScaleSettingDAMockup
+ScaleSettingsRuntime <-- ScaleSettings
+ScaleSettingsDASpec --> ScaleSettings : <<uses>>
+ScaleSettingsDASpec --> ScaleSettingsDAMockup : <<uses>>
 
 @enduml

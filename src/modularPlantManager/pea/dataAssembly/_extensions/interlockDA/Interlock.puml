@@ -26,7 +26,14 @@
 @startuml
 'https://plantuml.com/class-diagram
 
-interface InterlockRuntime
+interface InterlockRuntime{
+	+ PermEn: DataItem<boolean>
+	+ Permit: DataItem<boolean>
+	+ IntlEn: DataItem<boolean>
+	+ Interlock: DataItem<boolean>
+	+ ProtEn: DataItem<boolean>
+	+ Protect: DataItem<boolean>
+}
 
 class Interlock{
     - dAController: any

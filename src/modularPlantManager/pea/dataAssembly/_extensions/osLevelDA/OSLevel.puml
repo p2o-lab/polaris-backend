@@ -26,14 +26,17 @@
 @startuml
 'https://plantuml.com/class-diagram
 
+interface OSLevel{
+    + DataItem<number>
+}
+
 class OSLevel{
     - dAController: any
-    + osLevel: number | undefined
     - initialize(): void
     + OSLevel(): number | undefined
 }
 
-OSLevel *- OSLevelDASpec
-OSLevelDASpec ..> OSLevelDAMockup : <<use>>
-OSLevel *- OSLevelDAMockup
+OSLevelRuntime <-- OSLevel
+OSLevelDASpec --> OSLevel : <<uses>>
+OSLevelDASpec --> OSLevelDAMockup : <<uses>>
 @enduml

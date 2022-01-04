@@ -56,20 +56,18 @@ describe('DIntManMockup', () => {
             const mockup= new DIntManMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
             expect(mockup).to.not.be.undefined;
-            //TODO: test more
-
         });
+
         it('getDIntManMockupReferenceJSON(namespace, objectBrowseName)',  () => {
             const mockup = new DIntManMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
             const json = mockup.getDIntManMockupJSON();
             expect(json).not.to.be.undefined;
             expect(Object.keys(json).length).to.equal(10);
-            //TODO: test more
         });
+
         it('startCurrentTimeUpdate()',  async() => {
-            const mockup: FakeClass = new FakeClass(mockupServer.nameSpace,
-                mockupServer.rootObject, 'Variable') as FakeClass;
+            const mockup: FakeClass = new FakeClass(mockupServer.nameSpace, mockupServer.rootObject, 'Variable') as FakeClass;
             mockup.startCurrentTimeUpdate();
             expect(mockup.getVOut()).to.equal(0);
             await new Promise(f => setTimeout(f, 1000));
@@ -119,7 +117,5 @@ describe('DIntManMockup', () => {
             await connection.readNode('Variable.VMan', mockupServer.nameSpaceUri)
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(1));
         }).timeout(3000);
-
-        //TODO get the rest
     });
 });

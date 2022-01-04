@@ -25,10 +25,9 @@
 
 import {SourceMode} from '@p2olab/polaris-interface';
 import {DataItem} from '../../../connection';
-import {BaseDataAssemblyRuntime} from '../../DataAssemblyController';
 import {catDataAssembly} from '../../../../../logging';
 
-export interface SourceModeRuntime extends BaseDataAssemblyRuntime {
+export type SourceModeRuntime = {
 	SrcChannel: DataItem<boolean>;
 	SrcIntAct: DataItem<boolean>;
 	SrcIntAut: DataItem<boolean>;
@@ -57,9 +56,9 @@ export class SourceModeController {
 	}
 
 	public getSourceMode(): SourceMode {
-		if (this.isExtSource()) {
+		if (this.isManualSourceMode()) {
 			return SourceMode.Manual;
-		} else if (this.isIntSource()) {
+		} else if (this.isInternalSourceMode()) {
 			return SourceMode.Intern;
 		}
 		return SourceMode.Manual;
@@ -68,9 +67,9 @@ export class SourceModeController {
 	public isSourceMode(expectedSourceMode: SourceMode): boolean {
 		switch (expectedSourceMode) {
 			case SourceMode.Intern:
-				return this.isIntSource();
+				return this.isInternalSourceMode();
 			case SourceMode.Manual:
-				return this.isExtSource();
+				return this.isManualSourceMode();
 		}
 	}
 
@@ -97,31 +96,42 @@ export class SourceModeController {
 	}
 
 	/**
-	 * Set data assembly to external source mode
+	 * Set data assembly to manual source mode
 	 */
 	public async setToManualSourceMode(): Promise<void> {
-		if (!this.isExtSource()) {
-			catDataAssembly.trace(`[${this.dAController.name}] Finally to Man`);
+		if (this.isInternalSourceMode()) {
+			catDataAssembly.trace(`[${this.dAController.name}] Change SourceMode to Manual`);
 			await this.writeSourceMode(SourceMode.Manual);
 			await this.waitForSourceModeToPassSpecificTest(SourceMode.Manual);
 		}
 	}
 
-	public async writeSourceMode(sourceMode: SourceMode): Promise<void> {
-		catDataAssembly.debug(`[${this.dAController.name}] Write sourceMode: ${sourceMode}`);
+	/**
+	 * Set data assembly to internal source mode
+	 */
+	public async setToInternalSourceMode(): Promise<void> {
+		if (this.isInternalSourceMode()) {
+			catDataAssembly.trace(`[${this.dAController.name}] Change SourceMode to Internal`);
+			await this.writeSourceMode(SourceMode.Intern);
+			await this.waitForSourceModeToPassSpecificTest(SourceMode.Intern);
+		}
+	}
+
+	private async writeSourceMode(sourceMode: SourceMode): Promise<void> {
+		catDataAssembly.debug(`[${this.dAController.name}] Write SourceMode: ${sourceMode}`);
 		if (sourceMode === SourceMode.Manual) {
 			await this.dAController.communication.SrcManOp.write(true);
 		} else if (sourceMode === SourceMode.Intern) {
 			await this.dAController.communication.SrcIntOp.write(true);
 		}
-		catDataAssembly.debug(`[${this.dAController.name}] Setting sourceMode successfully`);
+		catDataAssembly.debug(`[${this.dAController.name}] Changed SourceMode successfully`);
 	}
 
-	public isExtSource(): boolean {
+	public isManualSourceMode(): boolean {
 		return this.dAController.communication.SrcManAct?.value === true;
 	}
 
-	public isIntSource(): boolean {
+	public isInternalSourceMode(): boolean {
 		return this.dAController.communication.SrcIntAct?.value === true;
 	}
 

@@ -26,7 +26,14 @@
 @startuml
 'https://plantuml.com/class-diagram
 
-interface FeedbackMonitoringRuntime
+interface FeedbackMonitoringRuntime{
+	+ MonEn: DataItem<boolean>
+	+ MonSafePos: DataItem<boolean>
+	+ MonStatErr: DataItem<boolean>
+	+ MonDynErr: DataItem<boolean>
+	+ MonStatTi: DataItem<number>
+	+ MonDynTi: DataItem<number>
+}
 
 class FeedbackMonitoring{
     - dAController: any

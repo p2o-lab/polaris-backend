@@ -26,23 +26,36 @@
 @startuml
 'https://plantuml.com/class-diagram
 
+interface ServiceOpModeRuntime{
+	+ StateChannel: DataItem<boolean>
+	+ StateOffAut: DataItem<boolean>
+	+ StateOpAut: DataItem<boolean>
+	+ StateAutAut: DataItem<boolean>
+	+ StateOffOp: DataItem<boolean>
+	+ StateOpOp: DataItem<boolean>
+	+ StateAutOp: DataItem<boolean>
+	+ StateOpAct: DataItem<boolean>
+	+ StateAutAct: DataItem<boolean>
+	+ StateOffAct: DataItem<boolean>
+}
+
 class ServiceOpModeController{
     - dAController: any
     - initialize(): void
+    - writeOpMode(opMode: OperationMode): Promise<void>
     + getServiceOperationMode(): OperationMode
     + isServiceOpMode(expectedOpMode: OperationMode): boolean
     + waitForServiceOpModeToPassSpecificTest(expectedOpMode: OperationMode): Promise<void>
     + setToAutomaticOperationMode(): Promise<void>
     + setToOperatorOperationMode(): Promise<void>
     + setToOfflineOperationMode(): Promise<void>
-    - writeOpMode(opMode: OperationMode): Promise<void>
     + isOfflineState(): boolean
     + isOperatorState(): boolean
     + isAutomaticState(): boolean
 }
 
-ServiceOpModeController *- ServiceOpModeDASpec
-ServiceOpModeDASpec ..> ServiceOpModeDAMockup : <<use>>
-ServiceOpModeController *- ServiceOpModeDAMockup
+ServiceOpModeRuntime <-- ServiceOpModeController
+ServiceOpModeDASpec --> ServiceOpModeController : <<uses>>
+ServiceOpModeDASpec --> ServiceOpModeDAMockup : <<uses>>
 
 @enduml

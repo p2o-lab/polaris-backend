@@ -24,9 +24,8 @@
  */
 
 import {DataItem} from '../../../connection';
-import {BaseDataAssemblyRuntime} from '../../DataAssemblyController';
 
-export type ValueLimitationRuntime = BaseDataAssemblyRuntime & {
+export type ValueLimitationRuntime = {
 	VMin: DataItem<number>;
 	VMax: DataItem<number>;
 };

@@ -26,9 +26,36 @@
 @startuml
 'https://plantuml.com/class-diagram
 
-class SourceModeController
+interface SourceModeRuntime{
+	+ SrcChannel: DataItem<boolean>
+	+ SrcIntAct: DataItem<boolean>
+	+ SrcIntAut: DataItem<boolean>
+	+ SrcIntOp: DataItem<boolean>
+	+ SrcManAct: DataItem<boolean>
+	+ SrcManAut: DataItem<boolean>
+	+ SrcManOp: DataItem<boolean>
+}
 
-SourceModeController *- SourceModeDASpec
-SourceModeDASpec ..> SourceModeDAMockup : <<use>>
-SourceModeController *- SourceModeDAMockup
+enum SourceMode {
+    Internal
+    Manual
+}
+
+class SourceModeController{
+    - dAController: any
+    - initialize(): void
+    - async writeSourceMode(sourceMode: SourceMode): Promise<void>
+    + getSourceMode(): SourceMode
+    + isSourceMode(expectedSourceMode: SourceMode): boolean
+    + async waitForSourceModeToPassSpecificTest(expectedSourceMode: SourceMode): Promise<void>
+    + async setToManualSourceMode(): Promise<void>
+    + async setToInternalSourceMode(): Promise<void>
+    + isManualSource(): boolean
+    + isInternalSource(): boolean
+
+}
+
+SourceModeRuntime <-- SourceModeController
+SourceModeDASpec --> SourceModeController : <<uses>>
+SourceModeDASpec --> SourceModeDAMockup : <<uses>>
 @enduml

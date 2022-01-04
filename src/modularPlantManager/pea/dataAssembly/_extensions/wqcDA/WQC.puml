@@ -26,9 +26,16 @@
 @startuml
 'https://plantuml.com/class-diagram
 
-class WQC
+interface WQCRuntime {
+    + WQC: DataItem<number>;
+}
 
-WQC *- WQCDASpec
-WQCDASpec ..> WQCDAMockup : <<use>>
-WQC *- WQCDAMockup
+class WQC{
+    - dAController: any
+    - initialize(): void
+}
+
+WQCRuntime <-- WQC
+WQCDASpec --> WQC : <<uses>>
+WQCDASpec --> WQCDAMockup : <<uses>>
 @enduml

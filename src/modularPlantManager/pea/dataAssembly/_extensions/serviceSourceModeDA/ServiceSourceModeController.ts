@@ -25,10 +25,9 @@
 
 import {ServiceSourceMode} from '@p2olab/polaris-interface';
 import {DataItem} from '../../../connection';
-import {BaseDataAssemblyRuntime} from '../../DataAssemblyController';
 import {catDataAssembly} from '../../../../../logging';
 
-export interface ServiceSourceModeRuntime extends BaseDataAssemblyRuntime {
+export interface ServiceSourceModeRuntime {
 	SrcChannel: DataItem<boolean>;
 	SrcIntAct: DataItem<boolean>;
 	SrcIntAut: DataItem<boolean>;
@@ -103,14 +102,28 @@ export class ServiceSourceModeController{
 	 * Set data assembly to external ServiceSourceMode
 	 */
 	public async setToExternalServiceSourceMode(): Promise<void> {
-		if (!this.isExtSource()) {
+		if (this.isIntSource()) {
 			catDataAssembly.trace(`[${this.dAController.name}] Finally to Ext`);
 			await this.writeServiceSourceMode(ServiceSourceMode.Extern);
 			await this.waitForServiceSourceModeToPassSpecificTest(ServiceSourceMode.Extern);
 		}
 	}
 
-	public async writeServiceSourceMode(serviceSourceMode: ServiceSourceMode): Promise<void> {
+	/**
+	 * Set data assembly to internal ServiceSourceMode
+	 */
+	public async setToInternalServiceSourceMode(): Promise<void> {
+		if (this.isExtSource()) {
+			catDataAssembly.trace(`[${this.dAController.name}] Finally to Int`);
+			await this.writeServiceSourceMode(ServiceSourceMode.Intern);
+			await this.waitForServiceSourceModeToPassSpecificTest(ServiceSourceMode.Intern);
+		}
+	}
+
+	/**
+	 * Write ServiceSourceMode to DataItem
+	 */
+	private async writeServiceSourceMode(serviceSourceMode: ServiceSourceMode): Promise<void> {
 		catDataAssembly.debug(`[${this.dAController.name}] Write serviceSourceMode: ${serviceSourceMode}`);
 		if (serviceSourceMode === ServiceSourceMode.Extern) {
 			await this.dAController.communication.SrcExtOp.write(true);

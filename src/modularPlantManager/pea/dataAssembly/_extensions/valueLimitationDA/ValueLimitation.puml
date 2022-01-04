@@ -26,10 +26,18 @@
 @startuml
 'https://plantuml.com/class-diagram
 
-abstract class ValueLimitation
+interface ValueLimitationRuntime {
+	+ VMin: DataItem<number>
+	+ VMax: DataItem<number>
+}
 
-ValueLimitation *- ValueLimitationDASpec
-ValueLimitationDASpec ..> ValueLimitationDAMockup : <<use>>
-ValueLimitation *- ValueLimitationDAMockup
+class ValueLimitation{
+    - dAController: any
+    - initialize(): void
+}
+
+ValueLimitationRuntime <-- ValueLimitation
+ValueLimitationSpec --> ValueLimitation : <<uses>>
+ValueLimitationSpec --> ValueLimitationDAMockup : <<uses>>
 
 @enduml

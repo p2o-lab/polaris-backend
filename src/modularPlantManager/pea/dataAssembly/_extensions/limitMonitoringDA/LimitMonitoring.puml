@@ -26,13 +26,33 @@
 @startuml
 'https://plantuml.com/class-diagram
 
+interface LimitMonitoringRuntime {
++ VAHEn: DataItem<boolean>
++ VAHLim: DataItem<number>
++ VAHAct: DataItem<boolean>
++ VWHEn: DataItem<boolean>
++ VWHLim: DataItem<number>
++ VWHAct: DataItem<boolean>
++ VTHEn: DataItem<boolean>
++ VTHLim: DataItem<number>
++ VTHAct: DataItem<boolean>
++ VALEn: DataItem<boolean>
++ VALLim: DataItem<number>
++ VALAct: DataItem<boolean>
++ VWLEn: DataItem<boolean>
++ VWLLim: DataItem<number>
++ VWLAct: DataItem<boolean>
++ VTLEn: DataItem<boolean>
++ VTLLim: DataItem<number>
++ VTLAct: DataItem<boolean>
+}
 
 class LimitMonitoring{
     - dAController: any
     - initialize(): void
 }
 
-LimitMonitoring *- LimitMonitoringDASpec
-LimitMonitoringDASpec ..> LimitMonitoringDAMockup : <<use>>
-LimitMonitoring *- LimitMonitoringDAMockup
+LimitMonitoringRuntime <-- LimitMonitoring
+LimitMonitoringDASpec --> LimitMonitoring : <<uses>>
+LimitMonitoringDASpec --> LimitMonitoringDAMockup : <<uses>>
 @enduml

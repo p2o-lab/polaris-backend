@@ -24,10 +24,9 @@
  */
 
 import {DataItem} from '../../../connection';
-import {BaseDataAssemblyRuntime} from '../../DataAssemblyController';
 import {UNIT} from './Unit';
 
-export interface UnitDataAssemblyRuntime extends BaseDataAssemblyRuntime {
+export type UnitDataAssemblyRuntime = {
 	VUnit: DataItem<number>;
 }
 
