@@ -25,9 +25,9 @@
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 import {
-	getSourceModeDAMockupReferenceJSON,
-	SourceModeDAMockup
-} from '../../../_extensions/sourceModeDA/SourceModeDA.mockup';
+	getSourceModeMockupReferenceJSON,
+	SourceModeMockup
+} from '../../../_extensions/sourceMode/SourceMode.mockup';
 import {getVlvMockupReferenceJSON, VlvMockup} from '../Vlv.mockup';
 
 
@@ -37,7 +37,7 @@ export function getAnaVlvMockupReferenceJSON(
 
 	return ({
 			...getVlvMockupReferenceJSON(namespace, objectBrowseName),
-			...getSourceModeDAMockupReferenceJSON(namespace,objectBrowseName),
+			...getSourceModeMockupReferenceJSON(namespace,objectBrowseName),
 			Pos: {
 				namespaceIndex: `${namespace}`,
 				nodeId: `${objectBrowseName}.Pos`,
@@ -109,7 +109,7 @@ export function getAnaVlvMockupReferenceJSON(
 
 export class AnaVlvMockup extends VlvMockup{
 
-	public sourceModeMockup: SourceModeDAMockup;
+	public sourceModeMockup: SourceModeMockup;
 
 	public posSclMin = 0;
 	public posSclMax = 0;
@@ -129,7 +129,7 @@ export class AnaVlvMockup extends VlvMockup{
 
 		super(namespace, rootNode, variableName);
 
-		this.sourceModeMockup = new SourceModeDAMockup(namespace, rootNode, variableName);
+		this.sourceModeMockup = new SourceModeMockup(namespace, rootNode, variableName);
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,

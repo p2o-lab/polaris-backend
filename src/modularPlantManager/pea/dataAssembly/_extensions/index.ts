@@ -30,7 +30,7 @@ export * from './opMode/OpMode';
 export * from './osLevel/OSLevel';
 export * from './reset/Reset';
 export * from './scaleSettings/ScaleSettings';
-export * from './sourceModeDA/SourceModeController';
+export * from './sourceMode/SourceModeController';
 export * from './unitDA/UnitSettings';
 export * from './valueLimitationDA/ValueLimitation';
 export * from './wqcDA/WQC';

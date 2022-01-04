@@ -26,9 +26,9 @@
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
 
 import {
-	getSourceModeDAMockupReferenceJSON,
-	SourceModeDAMockup
-} from '../../../_extensions/sourceModeDA/SourceModeDA.mockup';
+	getSourceModeMockupReferenceJSON,
+	SourceModeMockup
+} from '../../../_extensions/sourceMode/SourceMode.mockup';
 import {BinManMockup, getBinManMockupReferenceJSON} from './BinMan.mockup';
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../../_extensions/wqcDA/WQCDA.mockup';
 
@@ -38,7 +38,7 @@ export function getBinManIntMockupReferenceJSON(
 	return ({
 			...getBinManMockupReferenceJSON(namespace, objectBrowseName),
 			...getWQCDAMockupReferenceJSON(namespace, objectBrowseName),
-			...getSourceModeDAMockupReferenceJSON(namespace,objectBrowseName),
+			...getSourceModeMockupReferenceJSON(namespace,objectBrowseName),
 			VInt: {
 				namespaceIndex: `${namespace}`,
 				nodeId: `${objectBrowseName}.VInt`,
@@ -51,13 +51,13 @@ export function getBinManIntMockupReferenceJSON(
 export class BinManIntMockup extends BinManMockup {
 	protected vInt = false;
 	public readonly wqc: WQCDAMockup;
-	public readonly sourceMode: SourceModeDAMockup;
+	public readonly sourceMode: SourceModeMockup;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
 		super(namespace, rootNode, variableName);
 
 		this.wqc = new WQCDAMockup(namespace, this.mockupNode, this.name);
-		this.sourceMode = new SourceModeDAMockup(namespace, this.mockupNode, this.name);
+		this.sourceMode = new SourceModeMockup(namespace, this.mockupNode, this.name);
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,

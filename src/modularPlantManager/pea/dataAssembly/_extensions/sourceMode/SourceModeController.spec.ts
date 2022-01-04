@@ -32,7 +32,7 @@ import {DataAssemblyOptions, SourceMode} from '@p2olab/polaris-interface';
 import * as baseDataAssemblyOptions from './SourceModeController.spec.json';
 import {BinManInt} from '../../operationElement';
 import {MockupServer} from '../../../../_utils';
-import {SourceModeDAMockup} from './SourceModeDA.mockup';
+import {SourceModeMockup} from './SourceMode.mockup';
 import {SourceModeController} from './SourceModeController';
 
 chai.use(chaiAsPromised);
@@ -73,7 +73,7 @@ describe('SourceModeController', () => {
 				organizedBy: mockupServer.rootObject,
 				browseName: 'Variable',
 			});
-			new SourceModeDAMockup(mockupServer.nameSpace, mockupNode,'Variable');
+			new SourceModeMockup(mockupServer.nameSpace, mockupNode,'Variable');
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});
@@ -108,7 +108,7 @@ describe('SourceModeController', () => {
 	describe('dynamic functions, manual', async () => {
 		let mockupServer: MockupServer;
 		let connection: OpcUaConnection;
-		let mockup: SourceModeDAMockup;
+		let mockup: SourceModeMockup;
 		let sourceMode: SourceModeController;
 		let dataAssemblyController: any;
 
@@ -119,7 +119,7 @@ describe('SourceModeController', () => {
 				organizedBy: mockupServer.rootObject,
 				browseName: 'Variable',
 			});
-			mockup = new SourceModeDAMockup(
+			mockup = new SourceModeMockup(
 				mockupServer.nameSpace,
 				mockupNode,
 				'Variable');
@@ -185,7 +185,7 @@ describe('SourceModeController', () => {
 				organizedBy: mockupServer.rootObject,
 				browseName: 'Variable',
 			});
-			new SourceModeDAMockup(mockupServer.nameSpace, mockupNode, 'Variable');
+			new SourceModeMockup(mockupServer.nameSpace, mockupNode, 'Variable');
 			await mockupServer.start();
 
 			connection = new OpcUaConnection();

@@ -25,9 +25,9 @@
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 import {
-	getSourceModeDAMockupReferenceJSON,
-	SourceModeDAMockup
-} from '../../../_extensions/sourceModeDA/SourceModeDA.mockup';
+	getSourceModeMockupReferenceJSON,
+	SourceModeMockup
+} from '../../../_extensions/sourceMode/SourceMode.mockup';
 import {DrvMockup, getDrvMockupReferenceJSON} from '../Drv.mockup';
 
 
@@ -36,7 +36,7 @@ export function getAnaDrvMockupReferenceJSON(
 	objectBrowseName: string): object {
 
 	return ({
-			...getSourceModeDAMockupReferenceJSON(namespace,objectBrowseName),
+			...getSourceModeMockupReferenceJSON(namespace,objectBrowseName),
 			...getDrvMockupReferenceJSON(namespace,objectBrowseName),
 			RpmSclMax: {
 				namespaceIndex: `${namespace}`,
@@ -99,7 +99,7 @@ export function getAnaDrvMockupReferenceJSON(
 
 export class AnaDrvMockup extends DrvMockup{
 
-	public sourceMode: SourceModeDAMockup;
+	public sourceMode: SourceModeMockup;
 
 	public rpmSclMin= 0;
 	public rpmSclMax= 0;
@@ -116,7 +116,7 @@ export class AnaDrvMockup extends DrvMockup{
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
 		super(namespace, rootNode, variableName);
 
-		this.sourceMode= new SourceModeDAMockup(namespace,this.mockupNode,this.name);
+		this.sourceMode= new SourceModeMockup(namespace,this.mockupNode,this.name);
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,

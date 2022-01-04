@@ -30,7 +30,7 @@
 !include dIntServParam/DIntServParam.puml
 !include stringServParam/StringServParam.puml
 
-!include ../../_extensions/serviceSourceModeDA/ServiceSourceModeController.puml
+!include ../../_extensions/serviceSourceMode/ServiceSourceModeController.puml
 !include ../../_extensions/opMode/opModeController.puml
 !include ../../_extensions/wqcDA/WQC.puml
 

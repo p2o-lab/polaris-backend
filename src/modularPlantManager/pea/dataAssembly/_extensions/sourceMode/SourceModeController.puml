@@ -56,6 +56,6 @@ class SourceModeController{
 }
 
 SourceModeRuntime <-- SourceModeController
-SourceModeDASpec --> SourceModeController : <<uses>>
-SourceModeDASpec --> SourceModeDAMockup : <<uses>>
+SourceModeSpec --> SourceModeController : <<uses>>
+SourceModeSpec --> SourceModeMockup : <<uses>>
 @enduml

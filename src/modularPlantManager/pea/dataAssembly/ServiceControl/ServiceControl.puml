@@ -27,7 +27,7 @@
 'https://plantuml.com/class-diagram
 !include ../_extensions/wqcDA/WQC.puml
 !include ../_extensions/opMode/OpModeController.puml
-!include ../_extensions/serviceSourceModeDA/ServiceSourceModeController.puml
+!include ../_extensions/serviceSourceMode/ServiceSourceModeController.puml
 class ServiceControl{
     + readonly communication!: ServiceControlRuntime
     + readonly wqc: WQC

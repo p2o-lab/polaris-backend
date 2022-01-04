@@ -26,9 +26,9 @@
 
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
 import {
-	getSourceModeDAMockupReferenceJSON,
-	SourceModeDAMockup
-} from '../../../_extensions/sourceModeDA/SourceModeDA.mockup';
+	getSourceModeMockupReferenceJSON,
+	SourceModeMockup
+} from '../../../_extensions/sourceMode/SourceMode.mockup';
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../../_extensions/wqcDA/WQCDA.mockup';
 import {AnaManMockup, getAnaManMockupReferenceJSON} from './AnaMan.mockup';
 
@@ -39,7 +39,7 @@ export function getAnaManIntMockupReferenceJSON(
 	return ({
 			...getAnaManMockupReferenceJSON(namespace,objectBrowseName),
 			...getWQCDAMockupReferenceJSON(namespace,objectBrowseName),
-			...getSourceModeDAMockupReferenceJSON(namespace,objectBrowseName),
+			...getSourceModeMockupReferenceJSON(namespace,objectBrowseName),
 			VInt: {
 				namespaceIndex: `${namespace}`,
 				nodeId: `${objectBrowseName}.VInt`,
@@ -53,13 +53,13 @@ export class AnaManIntMockup extends AnaManMockup{
 
 	protected vInt = 0;
 	public readonly wqc: WQCDAMockup;
-	public readonly sourceMode: SourceModeDAMockup;
+	public readonly sourceMode: SourceModeMockup;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
 		super(namespace, rootNode, variableName);
 
 		this.wqc = new WQCDAMockup(namespace, this.mockupNode, this.name);
-		this.sourceMode = new SourceModeDAMockup(namespace, this.mockupNode, this.name);
+		this.sourceMode = new SourceModeMockup(namespace, this.mockupNode, this.name);
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,

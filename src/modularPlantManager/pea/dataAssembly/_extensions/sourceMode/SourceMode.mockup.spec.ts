@@ -26,7 +26,7 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../_utils';
-import {SourceModeDAMockup} from './SourceModeDA.mockup';
+import {SourceModeMockup} from './SourceMode.mockup';
 import {OpcUaConnection} from '../../../connection';
 import {ServiceSourceMode, SourceMode} from '@p2olab/polaris-interface';
 
@@ -34,7 +34,7 @@ chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 
-describe('SourceModeDAMockup', () => {
+describe('SourceModeMockup', () => {
     describe('static', () => {
         let mockupServer: MockupServer;
         beforeEach(async()=>{
@@ -42,16 +42,16 @@ describe('SourceModeDAMockup', () => {
             await mockupServer.initialize();
         });
 
-        it('should create SourceModeDAMockup', async () => {
-            const mockup= new SourceModeDAMockup(mockupServer.nameSpace,
+        it('should create SourceModeMockup', async () => {
+            const mockup= new SourceModeMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
             expect(mockup).to.not.be.undefined;
         });
 
         it('getSourceModeMockupReferenceJSON()',  () => {
-            const mockup = new SourceModeDAMockup(mockupServer.nameSpace,
+            const mockup = new SourceModeMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const json = mockup.getSourceModeDAInstanceMockupJSON() as any;
+            const json = mockup.getSourceModeInstanceMockupJSON() as any;
             expect(Object.keys(json).length).to.equal(7);
             expect(json.SrcChannel).to.not.be.undefined;
             expect(json.SrcManAut).to.not.be.undefined;
@@ -65,14 +65,14 @@ describe('SourceModeDAMockup', () => {
     describe('dynamic', () => {
 
         let mockupServer: MockupServer;
-        let mockup: SourceModeDAMockup;
+        let mockup: SourceModeMockup;
         let connection: OpcUaConnection;
 
         beforeEach(async function () {
             this.timeout(10000);
             mockupServer = new MockupServer();
             await mockupServer.initialize();
-            mockup = new SourceModeDAMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
+            mockup = new SourceModeMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
             await mockupServer.start();
             connection = new OpcUaConnection();
             connection.initialize({endpoint: mockupServer.endpoint});
@@ -125,14 +125,14 @@ describe('SourceModeDAMockup', () => {
     describe('dynamic, srcChannel is true', () => {
 
         let mockupServer: MockupServer;
-        let mockup: SourceModeDAMockup;
+        let mockup: SourceModeMockup;
         let connection: OpcUaConnection;
 
         beforeEach(async function () {
             this.timeout(10000);
             mockupServer = new MockupServer();
             await mockupServer.initialize();
-            mockup = new SourceModeDAMockup(mockupServer.nameSpace,
+            mockup = new SourceModeMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
             mockup.srcChannel = true;
             await mockupServer.start();
