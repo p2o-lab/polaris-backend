@@ -26,7 +26,7 @@
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {OpcUaConnection, DataItem} from '../../../connection';
 import {
-	OpModeController, OpModeRuntime,
+	OpMode, OpModeRuntime,
 	SourceModeController, SourceModeRuntime
 } from '../../_extensions';
 import {ActiveElement, ActiveElementRuntime} from '../ActiveElement';
@@ -64,13 +64,13 @@ export type PIDCtrlRuntime = ActiveElementRuntime & OpModeRuntime & SourceModeRu
 export class PIDCtrl extends ActiveElement {
 	public readonly communication!: PIDCtrlRuntime;
 	sourceMode: SourceModeController;
-	opMode: OpModeController;
+	opMode: OpMode;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
 
 		this.sourceMode = new SourceModeController(this);
-		this.opMode = new OpModeController(this);
+		this.opMode = new OpMode(this);
 
 		this.communication.PV = this.createDataItem('PV', 'number');
 		this.communication.PVSclMin = this.createDataItem('PVSclMin', 'number');

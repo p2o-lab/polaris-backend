@@ -41,7 +41,7 @@ export type OpModeRuntime = BaseDataAssemblyRuntime & {
 	StateOffAct: DataItem<boolean>;
 };
 
-export class OpModeController {
+export class OpMode {
 
 	private dAController: any;
 

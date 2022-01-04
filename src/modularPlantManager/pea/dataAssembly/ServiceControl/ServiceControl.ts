@@ -28,7 +28,7 @@ import {
 	BaseDataAssemblyRuntime, DataAssemblyController, OpModeRuntime, WQCRuntime
 } from '../index';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpModeController, WQC} from '../_extensions';
+import {OpMode, WQC} from '../_extensions';
 import {
 	ServiceSourceModeController,
 	ServiceSourceModeRuntime
@@ -55,14 +55,14 @@ export type ServiceControlRuntime = BaseDataAssemblyRuntime & OpModeRuntime & Se
 export class ServiceControl extends DataAssemblyController {
 	public readonly communication!: ServiceControlRuntime;
 	public readonly wqc: WQC;
-	public readonly opMode: OpModeController;
+	public readonly opMode: OpMode;
 	public readonly serviceSourceMode: ServiceSourceModeController;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
 
 		this.wqc = new WQC(this);
-		this.opMode = new OpModeController(this);
+		this.opMode = new OpMode(this);
 		this.serviceSourceMode = new ServiceSourceModeController(this);
 
 		this.communication.CommandOp = this.createDataItem('CommandOp', 'number', 'write');

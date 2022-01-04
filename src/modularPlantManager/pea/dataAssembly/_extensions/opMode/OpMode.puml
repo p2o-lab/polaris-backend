@@ -45,7 +45,7 @@ enum OperationMode{
     Automatic
 }
 
-class OpModeController{
+class OpMode{
     - dAController: any
     - initialize(): void
     + getOperationMode(): OperationMode
@@ -60,9 +60,9 @@ class OpModeController{
     + isAutomaticState(): boolean
 }
 
-OpModeRuntime <-- OpModeController
-OperationMode <-- OpModeController
-OpModeControllerSpec --> OpModeController : <<uses>>
-OpModeControllerSpec --> OpModeControllerMockup : <<uses>>
+OpModeRuntime <-- OpMode
+OperationMode <-- OpMode
+OpModeSpec --> OpMode : <<uses>>
+OpModeSpec --> OpModeMockup : <<uses>>
 
 @enduml

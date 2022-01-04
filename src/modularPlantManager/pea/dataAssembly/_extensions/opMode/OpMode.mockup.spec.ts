@@ -26,7 +26,7 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../_utils';
-import {OpModeDAMockup} from './OpModeDA.mockup';
+import {OpModeMockup} from './OpMode.mockup';
 import {OpcUaConnection} from '../../../connection';
 import {OperationMode} from '@p2olab/polaris-interface';
 
@@ -34,7 +34,7 @@ import {OperationMode} from '@p2olab/polaris-interface';
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-describe('OpModeDAMockup', () => {
+describe('OpModeMockup', () => {
     describe('', () => {
         let mockupServer: MockupServer;
         beforeEach(async()=>{
@@ -42,15 +42,15 @@ describe('OpModeDAMockup', () => {
             await mockupServer.initialize();
         });
 
-        it('should create OpModeDAMockup', async () => {
-            const mockup= new OpModeDAMockup(mockupServer.nameSpace,
+        it('should create OpModeMockup', async () => {
+            const mockup= new OpModeMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
             expect(mockup).to.not.be.undefined;
         });
-        it('OpModeDAMockupReferenceJSON()',  () => {
-            const mockup = new OpModeDAMockup(mockupServer.nameSpace,
+        it('OpModeMockupReferenceJSON()',  () => {
+            const mockup = new OpModeMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const json = mockup.getOpModeDAInstanceMockupJSON() as any;
+            const json = mockup.getOpModeInstanceMockupJSON() as any;
             expect(Object.keys(json).length).to.equal(10);
             expect(json.StateChannel).to.not.be.undefined;
             expect(json.StateOffAut).to.not.be.undefined;
@@ -65,17 +65,17 @@ describe('OpModeDAMockup', () => {
         });
 
         it('get stateOpAct', async () => {
-            const mockup= new OpModeDAMockup(mockupServer.nameSpace,
+            const mockup= new OpModeMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
             expect(mockup.stateOpAct).to.be.false;
         });
         it('get stateAutAct', async () => {
-            const mockup= new OpModeDAMockup(mockupServer.nameSpace,
+            const mockup= new OpModeMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
             expect(mockup.stateAutAct).to.be.false;
         });
         it('get stateOffAct', async () => {
-            const mockup= new OpModeDAMockup(mockupServer.nameSpace,
+            const mockup= new OpModeMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
             expect(mockup.stateOffAct).to.be.true;
         });
@@ -84,13 +84,13 @@ describe('OpModeDAMockup', () => {
     describe('dynamic', () => {
 
         let mockupServer: MockupServer;
-        let mockup: OpModeDAMockup;
+        let mockup: OpModeMockup;
         let connection: OpcUaConnection;
         beforeEach(async function () {
             this.timeout(10000);
             mockupServer = new MockupServer();
             await mockupServer.initialize();
-            mockup = new OpModeDAMockup(mockupServer.nameSpace,
+            mockup = new OpModeMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
             await mockupServer.start();
             connection = new OpcUaConnection();
@@ -153,14 +153,14 @@ describe('OpModeDAMockup', () => {
     describe('dynamic', () => {
 
         let mockupServer: MockupServer;
-        let mockup: OpModeDAMockup;
+        let mockup: OpModeMockup;
         let connection: OpcUaConnection;
 
         beforeEach(async function () {
             this.timeout(10000);
             mockupServer = new MockupServer();
             await mockupServer.initialize();
-            mockup = new OpModeDAMockup(mockupServer.nameSpace,
+            mockup = new OpModeMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
             mockup.stateChannel = true;
             await mockupServer.start();

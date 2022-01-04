@@ -24,7 +24,7 @@
  */
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {getOpModeDAMockupReferenceJSON, OpModeDAMockup} from '../_extensions/opModeDA/OpModeDA.mockup';
+import {getOpModeMockupReferenceJSON, OpModeMockup} from '../_extensions/opMode/OpMode.mockup';
 import {
     getServiceSourceModeDAMockupReferenceJSON,
     ServiceSourceModeDAMockup
@@ -44,7 +44,7 @@ export function getServiceControlMockupReferenceJSON(
           ...getWQCDAMockupReferenceJSON(namespace,objectBrowseName),
           ...getOSLevelDAMockupReferenceJSON(namespace,objectBrowseName),
           ...getServiceSourceModeDAMockupReferenceJSON(namespace,objectBrowseName),
-        ...getOpModeDAMockupReferenceJSON(namespace,objectBrowseName),
+        ...getOpModeMockupReferenceJSON(namespace,objectBrowseName),
         CommandOp: {
           namespaceIndex: `${namespace}`,
           nodeId: `${objectBrowseName}.CommandOp`,
@@ -115,7 +115,7 @@ export function getServiceControlMockupReferenceJSON(
 
 export class ServiceControlMockup extends DataAssemblyControllerMockup{
     public serviceSourceMode: ServiceSourceModeDAMockup;
-    public operationMode: OpModeDAMockup;
+    public operationMode: OpModeMockup;
     protected wqc: WQCDAMockup;
 
     protected commandOp = 0;
@@ -138,7 +138,7 @@ export class ServiceControlMockup extends DataAssemblyControllerMockup{
 
     constructor(namespace: Namespace, rootNode: UAObject, variableName: string){
           super(namespace, rootNode, variableName);
-          this.operationMode = new OpModeDAMockup(namespace, this.mockupNode, variableName);
+          this.operationMode = new OpModeMockup(namespace, this.mockupNode, variableName);
           this.serviceSourceMode = new ServiceSourceModeDAMockup(namespace, this.mockupNode, variableName);
           this.wqc = new WQCDAMockup(namespace, this.mockupNode, variableName);
 

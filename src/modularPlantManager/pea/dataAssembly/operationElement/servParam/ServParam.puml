@@ -31,7 +31,7 @@
 !include stringServParam/StringServParam.puml
 
 !include ../../_extensions/serviceSourceModeDA/ServiceSourceModeController.puml
-!include ../../_extensions/opModeDA/opModeController.puml
+!include ../../_extensions/opMode/opModeController.puml
 !include ../../_extensions/wqcDA/WQC.puml
 
 class ServParam{

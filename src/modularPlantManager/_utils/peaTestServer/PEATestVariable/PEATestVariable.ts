@@ -24,13 +24,13 @@
  */
 
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
-import {OpModeDAMockup} from '../../../pea/dataAssembly/_extensions/opModeDA/OpModeDA.mockup';
+import {OpModeMockup} from '../../../pea/dataAssembly/_extensions/opMode/OpMode.mockup';
 import {catPEAMockup} from '../../../../logging';
 
 export abstract class PEATestVariable {
 
 	public readonly name: string;
-	public opMode: OpModeDAMockup;
+	public opMode: OpModeMockup;
 	public wqc = 0;
 	public osLevel = 0;
 	protected variableNode: UAObject;
@@ -69,6 +69,6 @@ export abstract class PEATestVariable {
 			}
 		});
 
-		this.opMode = new OpModeDAMockup(namespace, this.variableNode, variableName);
+		this.opMode = new OpModeMockup(namespace, this.variableNode, variableName);
 	}
 }

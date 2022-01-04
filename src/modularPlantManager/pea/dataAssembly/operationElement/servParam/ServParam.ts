@@ -26,7 +26,7 @@
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {OpcUaConnection, DataItem} from '../../../connection';
 import {
-	OpModeController, OpModeRuntime,
+	OpMode, OpModeRuntime,
 	WQC, WQCRuntime
 } from '../../_extensions';
 import {
@@ -45,7 +45,7 @@ export class ServParam extends OperationElement {
 
 	public readonly communication!: ServParamRuntime;
 	public readonly serviceSourceMode: ServiceSourceModeController;
-	public readonly serviceOpMode: OpModeController;
+	public readonly serviceOpMode: OpMode;
 	public readonly wqc: WQC;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
@@ -53,7 +53,7 @@ export class ServParam extends OperationElement {
 		this.wqc = new WQC(this);
 
 		this.serviceSourceMode = new ServiceSourceModeController(this);
-		this.serviceOpMode = new OpModeController(this);
+		this.serviceOpMode = new OpMode(this);
 
 		this.communication.Sync = this.createDataItem('Sync', 'boolean');
 	}

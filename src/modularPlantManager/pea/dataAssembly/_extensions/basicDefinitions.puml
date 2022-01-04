@@ -28,7 +28,7 @@
 !include FeedbackMonitoring/FeedbackMonitoring.puml
 !include Interlock/Interlock.puml
 !include LimitMonitoring/LimitMonitoring.puml
-!include opModeDA/OpModeController.puml
+!include opMode/OpModeController.puml
 !include osLevelDA/OSLevel.puml
 !include resetDA/Reset.puml
 !include scaleSettingsDA/ScaleSettings.puml
@@ -43,7 +43,7 @@ abstract class DataAssemblyController
 DataAssemblyController "0..1" o-- FeedbackMonitoring
 DataAssemblyController "0..1" o-- Interlock
 DataAssemblyController "0..1" o-- LimitMonitoring
-DataAssemblyController "0..1" o-- OpModeDA
+DataAssemblyController "0..1" o-- OpMode
 DataAssemblyController "0..1" o-- OSLevelDA
 DataAssemblyController "0..1" o-- ResetDA
 DataAssemblyController "0..1" o-- ScaleSettingDA

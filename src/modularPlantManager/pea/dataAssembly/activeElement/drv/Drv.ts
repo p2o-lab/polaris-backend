@@ -27,7 +27,7 @@ import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {OpcUaConnection, DataItem} from '../../../connection';
 import {
 	Interlock, InterlockRuntime,
-	OpModeController, OpModeRuntime,
+	OpMode, OpModeRuntime,
 	Reset, ResetRuntime
 } from '../../_extensions';
 import {ActiveElement, ActiveElementRuntime} from '../ActiveElement';
@@ -60,14 +60,14 @@ export class Drv extends ActiveElement {
 	public readonly communication!: DrvRuntime;
 	public readonly reset: Reset;
 	public readonly interlock: Interlock;
-	public readonly opMode: OpModeController;
+	public readonly opMode: OpMode;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
 
 		this.reset = new Reset(this);
 		this.interlock = new Interlock(this);
-		this.opMode = new OpModeController(this);
+		this.opMode = new OpMode(this);
 
 		this.communication.SafePos = this.createDataItem('SafePos', 'boolean');
 		this.communication.SafePosAct = this.createDataItem('SafePosAct', 'boolean');

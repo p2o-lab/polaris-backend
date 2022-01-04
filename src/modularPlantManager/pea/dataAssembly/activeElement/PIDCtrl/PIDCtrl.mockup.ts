@@ -24,7 +24,7 @@
  */
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {getOpModeDAMockupReferenceJSON, OpModeDAMockup} from '../../_extensions/opModeDA/OpModeDA.mockup';
+import {getOpModeMockupReferenceJSON, OpModeMockup} from '../../_extensions/opMode/OpMode.mockup';
 import {WQCDAMockup} from '../../_extensions/wqcDA/WQCDA.mockup';
 import {OSLevelDAMockup} from '../../_extensions/osLevelDA/OSLevelDA.mockup';
 import {getSourceModeDAMockupReferenceJSON, SourceModeDAMockup} from '../../_extensions/sourceModeDA/SourceModeDA.mockup';
@@ -38,7 +38,7 @@ export function getPIDCtrlMockupReferenceJSON(
 	return ({
 			...getActiveElementMockupReferenceJSON(namespace,objectBrowseName),
 			...getSourceModeDAMockupReferenceJSON(namespace,objectBrowseName),
-			...getOpModeDAMockupReferenceJSON(namespace, objectBrowseName),
+			...getOpModeMockupReferenceJSON(namespace, objectBrowseName),
 			PV: {
 				namespaceIndex: `${namespace}`,
 				nodeId: `${objectBrowseName}.PV`,
@@ -168,7 +168,7 @@ export class PIDCtrlMockup {
 	public readonly name: string;
 	public wqc: WQCDAMockup;
 	public osLevel: OSLevelDAMockup;
-	public opMode: OpModeDAMockup;
+	public opMode: OpModeMockup;
 	public sourceMode: SourceModeDAMockup;
 	public pv= 0;
 	public pvSclMin= 0;
@@ -211,7 +211,7 @@ export class PIDCtrlMockup {
 
 		this.osLevel = new OSLevelDAMockup(namespace, this.mockupNode, this.name);
 		this.wqc = new WQCDAMockup(namespace, this.mockupNode, this.name);
-		this.opMode = new OpModeDAMockup(namespace, this.mockupNode, this.name);
+		this.opMode = new OpModeMockup(namespace, this.mockupNode, this.name);
 		this.sourceMode = new SourceModeDAMockup(namespace, this.mockupNode, this.name);
 
 		namespace.addVariable({

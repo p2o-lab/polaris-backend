@@ -26,7 +26,7 @@
 import {OperationMode} from '@p2olab/polaris-interface';
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 
-export function getOpModeDAMockupReferenceJSON(
+export function getOpModeMockupReferenceJSON(
 	namespace: number,
 	objectBrowseName: string): object {
 
@@ -85,7 +85,7 @@ export function getOpModeDAMockupReferenceJSON(
 	);
 }
 
-export class OpModeDAMockup {
+export class OpModeMockup {
 	public opMode: OperationMode = OperationMode.Offline;
 	public stateChannel = false;
 	public stateOffAut = false;
@@ -259,8 +259,8 @@ export class OpModeDAMockup {
 		return this.opMode === OperationMode.Offline;
 	}
 
-	public getOpModeDAInstanceMockupJSON(): object {
-		return getOpModeDAMockupReferenceJSON(
+	public getOpModeInstanceMockupJSON(): object {
+		return getOpModeMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
 			this.mockupNode.browseName.name as string);
 	}

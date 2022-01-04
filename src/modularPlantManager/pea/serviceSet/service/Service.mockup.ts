@@ -28,7 +28,7 @@ import {ServiceControlEnable, ServiceMtpCommand, ServiceState} from './enum';
 // eslint-disable-next-line no-undef
 import Timeout = NodeJS.Timeout;
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {OpModeDAMockup} from '../../dataAssembly/_extensions/opModeDA/OpModeDA.mockup';
+import {OpModeMockup} from '../../dataAssembly/_extensions/opMode/OpMode.mockup';
 import {PEATestNumericVariable} from '../../../_utils';
 
 export function getServiceMockupReferenceJSON(
@@ -97,7 +97,7 @@ export class ServiceMockup {
 	public varProcedure = 1;
 	public varCommand = 0;
 	public varCommandEnable = 0;
-	public opMode: OpModeDAMockup;
+	public opMode: OpModeMockup;
 	public readonly serviceName: string;
 
 	public readonly offset: PEATestNumericVariable;
@@ -179,7 +179,7 @@ export class ServiceMockup {
 			}
 		});
 
-		this.opMode = new OpModeDAMockup(ns, serviceNode, this.serviceName);
+		this.opMode = new OpModeMockup(ns, serviceNode, this.serviceName);
 
 		ns.addVariable({
 			componentOf: serviceNode,
