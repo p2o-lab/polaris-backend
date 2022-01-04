@@ -31,7 +31,7 @@ import * as baseDataAssemblyOptions from '../../operationElement/servParam/anaSe
 import {DataAssemblyController} from '../../DataAssemblyController';
 import {ServiceSourceModeController} from './ServiceSourceModeController';
 import {MockupServer} from '../../../../_utils';
-import {ServiceSourceModeDAMockup} from './ServiceSourceModeDA.mockup';
+import {ServiceSourceModeMockup} from './ServiceSourceMode.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -70,7 +70,7 @@ describe('ServiceSourceMode', () => {
 			this.timeout(5000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			new ServiceSourceModeDAMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
+			new ServiceSourceModeMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});
@@ -104,14 +104,14 @@ describe('ServiceSourceMode', () => {
 	describe('dynamic functions, Extern on', async () => {
 		let mockupServer: MockupServer;
 		let connection: OpcUaConnection;
-		let mockup: ServiceSourceModeDAMockup;
+		let mockup: ServiceSourceModeMockup;
 		let serviceSourceModeController: ServiceSourceModeController;
 		let dataAssemblyController: any;
 
 		beforeEach(async function () {
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			mockup = new ServiceSourceModeDAMockup(
+			mockup = new ServiceSourceModeMockup(
 				mockupServer.nameSpace,
 				mockupServer.rootObject,
 				'Variable');
@@ -149,7 +149,7 @@ describe('ServiceSourceMode', () => {
 	describe('dynamic functions, Intern on', async () => {
 		let mockupServer: MockupServer;
 		let connection: OpcUaConnection;
-		let mockup: ServiceSourceModeDAMockup;
+		let mockup: ServiceSourceModeMockup;
 		let serviceSourceModeController: ServiceSourceModeController;
 		let dataAssemblyController: any;
 		beforeEach(async function () {
@@ -159,7 +159,7 @@ describe('ServiceSourceMode', () => {
 				organizedBy: mockupServer.rootObject,
 				browseName: 'Variable',
 			});
-			mockup = new ServiceSourceModeDAMockup(
+			mockup = new ServiceSourceModeMockup(
 				mockupServer.nameSpace,
 				mockupNode,
 				'Variable');

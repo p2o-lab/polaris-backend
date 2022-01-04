@@ -56,6 +56,6 @@ class ServiceSourceModeController{
 }
 
 ServiceSourceModeRuntime <-- ServiceSourceModeController
-ServiceSourceModeDASpec --> ServiceSourceModeController : <<uses>>
-ServiceSourceModeDASpec --> ServiceSourceModeDAMockup : <<uses>>
+ServiceSourceModeSpec --> ServiceSourceModeController : <<uses>>
+ServiceSourceModeSpec --> ServiceSourceModeMockup : <<uses>>
 @enduml

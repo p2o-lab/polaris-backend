@@ -26,7 +26,7 @@
 import {ServiceSourceMode} from '@p2olab/polaris-interface';
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 
-export function getServiceSourceModeDAMockupReferenceJSON(
+export function getServiceSourceModeMockupReferenceJSON(
 	namespace: number,
 	objectBrowseName: string): object {
 
@@ -70,7 +70,7 @@ export function getServiceSourceModeDAMockupReferenceJSON(
 	);
 }
 
-export class ServiceSourceModeDAMockup {
+export class ServiceSourceModeMockup {
 	public srcMode: ServiceSourceMode = ServiceSourceMode.Intern;
 	public srcChannel = false;
 	public srcIntAut = false;
@@ -197,8 +197,8 @@ export class ServiceSourceModeDAMockup {
 
 
 
-	public getServiceSourceModeDAInstanceMockupJSON(): object {
-		return getServiceSourceModeDAMockupReferenceJSON(
+	public getServiceSourceModeInstanceMockupJSON(): object {
+		return getServiceSourceModeMockupReferenceJSON(
 			this.mockupNode.namespaceIndex,
 			this.mockupNode.browseName.name as string);
 	}

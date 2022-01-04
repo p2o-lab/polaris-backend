@@ -35,7 +35,7 @@ import {
 import {
 	ServiceSourceModeController,
 	ServiceSourceModeRuntime
-} from '../../_extensions/serviceSourceModeDA/ServiceSourceModeController';
+} from '../../_extensions/serviceSourceMode/ServiceSourceModeController';
 
 export type ServParamRuntime = OperationElementRuntime & OpModeRuntime & ServiceSourceModeRuntime & WQCRuntime & {
 	Sync: DataItem<boolean>;

@@ -47,7 +47,7 @@ DataAssemblyController "0..1" o-- OpMode
 DataAssemblyController "0..1" o-- OSLevel
 DataAssemblyController "0..1" o-- Reset
 DataAssemblyController "0..1" o-- ScaleSettingDA
-DataAssemblyController "0..1" o-- ServiceSourceModeDA
+DataAssemblyController "0..1" o-- ServiceSourceMode
 DataAssemblyController "0..1" o-- SourceModeDA
 DataAssemblyController "0..1" o-- UnitDA
 DataAssemblyController "0..1" o-- ValueLimitationDA

@@ -26,9 +26,9 @@
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 import {getOpModeMockupReferenceJSON, OpModeMockup} from '../_extensions/opMode/OpMode.mockup';
 import {
-    getServiceSourceModeDAMockupReferenceJSON,
-    ServiceSourceModeDAMockup
-} from '../_extensions/serviceSourceModeDA/ServiceSourceModeDA.mockup';
+    getServiceSourceModeMockupReferenceJSON,
+    ServiceSourceModeMockup
+} from '../_extensions/serviceSourceMode/ServiceSourceMode.mockup';
 import {ServiceMtpCommand, ServiceState, ServiceStateString} from '../../serviceSet/service/enum';
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../_extensions/wqcDA/WQCDA.mockup';
 import {getOSLevelMockupReferenceJSON} from '../_extensions/osLevel/OSLevel.mockup';
@@ -43,7 +43,7 @@ export function getServiceControlMockupReferenceJSON(
           
           ...getWQCDAMockupReferenceJSON(namespace,objectBrowseName),
           ...getOSLevelMockupReferenceJSON(namespace,objectBrowseName),
-          ...getServiceSourceModeDAMockupReferenceJSON(namespace,objectBrowseName),
+          ...getServiceSourceModeMockupReferenceJSON(namespace,objectBrowseName),
         ...getOpModeMockupReferenceJSON(namespace,objectBrowseName),
         CommandOp: {
           namespaceIndex: `${namespace}`,
@@ -114,7 +114,7 @@ export function getServiceControlMockupReferenceJSON(
 }
 
 export class ServiceControlMockup extends DataAssemblyControllerMockup{
-    public serviceSourceMode: ServiceSourceModeDAMockup;
+    public serviceSourceMode: ServiceSourceModeMockup;
     public operationMode: OpModeMockup;
     protected wqc: WQCDAMockup;
 
@@ -139,7 +139,7 @@ export class ServiceControlMockup extends DataAssemblyControllerMockup{
     constructor(namespace: Namespace, rootNode: UAObject, variableName: string){
           super(namespace, rootNode, variableName);
           this.operationMode = new OpModeMockup(namespace, this.mockupNode, variableName);
-          this.serviceSourceMode = new ServiceSourceModeDAMockup(namespace, this.mockupNode, variableName);
+          this.serviceSourceMode = new ServiceSourceModeMockup(namespace, this.mockupNode, variableName);
           this.wqc = new WQCDAMockup(namespace, this.mockupNode, variableName);
 
           this.stateMachine = new MtpStateMachine(variableName, {} as UserDefinedGuard, {} as UserDefinedActions);

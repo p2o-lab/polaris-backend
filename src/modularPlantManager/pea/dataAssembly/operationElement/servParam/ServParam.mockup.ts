@@ -26,8 +26,8 @@
 
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
 import {
-	getServiceSourceModeDAMockupReferenceJSON, ServiceSourceModeDAMockup
-} from '../../_extensions/serviceSourceModeDA/ServiceSourceModeDA.mockup';
+	getServiceSourceModeMockupReferenceJSON, ServiceSourceModeMockup
+} from '../../_extensions/serviceSourceMode/ServiceSourceMode.mockup';
 import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../_extensions/wqcDA/WQCDA.mockup';
 import {getOpModeMockupReferenceJSON, OpModeMockup} from '../../_extensions/opMode/OpMode.mockup';
 import {getOperationElementMockupReferenceJSON, OperationElementMockup} from '../OperationElement.mockup';
@@ -40,7 +40,7 @@ export function getServParamMockupReferenceJSON(
 	return ({
 			...getOperationElementMockupReferenceJSON(namespace, objectBrowseName),
 			...getOpModeMockupReferenceJSON(namespace,objectBrowseName),
-			...getServiceSourceModeDAMockupReferenceJSON(namespace,objectBrowseName),
+			...getServiceSourceModeMockupReferenceJSON(namespace,objectBrowseName),
 			...getWQCDAMockupReferenceJSON(namespace,objectBrowseName),
 			Sync: {
 				namespaceIndex: `${namespace}`,
@@ -55,14 +55,14 @@ export class ServParamMockup extends OperationElementMockup{
 
 	public readonly varSync: boolean = false;
 	protected opMode: OpModeMockup;
-	protected serviceSourceMode: ServiceSourceModeDAMockup;
+	protected serviceSourceMode: ServiceSourceModeMockup;
 	protected wqc: WQCDAMockup;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
 		super(namespace, rootNode, variableName);
 
 		this.opMode = new OpModeMockup(namespace, this.mockupNode, this.name);
-		this.serviceSourceMode = new ServiceSourceModeDAMockup(namespace, this.mockupNode, this.name);
+		this.serviceSourceMode = new ServiceSourceModeMockup(namespace, this.mockupNode, this.name);
 		this.wqc = new WQCDAMockup(namespace, this.mockupNode, this.name);
 
 		namespace.addVariable({

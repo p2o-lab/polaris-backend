@@ -32,7 +32,7 @@ import {OpMode, WQC} from '../_extensions';
 import {
 	ServiceSourceModeController,
 	ServiceSourceModeRuntime
-} from '../_extensions/serviceSourceModeDA/ServiceSourceModeController';
+} from '../_extensions/serviceSourceMode/ServiceSourceModeController';
 
 export type ServiceControlRuntime = BaseDataAssemblyRuntime & OpModeRuntime & ServiceSourceModeRuntime & WQCRuntime & {
 	CommandOp: DataItem<number>;
