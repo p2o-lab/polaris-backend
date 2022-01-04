@@ -24,25 +24,25 @@
  */
 
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
-import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../../_extensions/wqcDA/WQCDA.mockup';
+import {getWQCMockupReferenceJSON, WQCMockup} from '../../../baseFunction/wqc/WQC.mockup';
 import {
-	getScaleSettingDAMockupReferenceJSON,
+	getScaleSettingsMockupReferenceJSON,
 	ScaleSettingMockup
-} from '../../../_extensions/scaleSettings/ScaleSetting.mockup';
-import {getUnitMockupReferenceJSON, UnitMockup} from '../../../_extensions/unit/Unit.mockup';
-import {getOSLevelMockupReferenceJSON, OSLevelMockup} from '../../../_extensions/osLevel/OSLevel.mockup';
+} from '../../../baseFunction/scaleSettings/ScaleSetting.mockup';
+import {getUnitMockupReferenceJSON, UnitMockup} from '../../../baseFunction/unit/Unit.mockup';
+import {getOSLevelMockupReferenceJSON, OSLevelMockup} from '../../../baseFunction/osLevel/OSLevel.mockup';
 import {
 	getLimitMonitoringMockupReferenceJSON,
 	LimitMonitoringMockup
-} from '../../../_extensions/limitMonitoring/LimitMonitoring.mockup';
+} from '../../../baseFunction/limitMonitoring/LimitMonitoring.mockup';
 
 export function getDIntMonMockupReferenceJSON(
 	namespace: number,
 	objectBrowseName: string): object {
 	return (
 		{
-			...getWQCDAMockupReferenceJSON(namespace, objectBrowseName),
-			...getScaleSettingDAMockupReferenceJSON(namespace, objectBrowseName, 'Int32'),
+			...getWQCMockupReferenceJSON(namespace, objectBrowseName),
+			...getScaleSettingsMockupReferenceJSON(namespace, objectBrowseName, 'Int32'),
 			...getUnitMockupReferenceJSON(namespace, objectBrowseName),
 			...getOSLevelMockupReferenceJSON(namespace, objectBrowseName),
 			...getLimitMonitoringMockupReferenceJSON(namespace, objectBrowseName),
@@ -59,7 +59,7 @@ export class DIntMonMockup {
 
 	public readonly name: string;
 	protected v = 0;
-	public wqc: WQCDAMockup;
+	public wqc: WQCMockup;
 	public scaleSettings: ScaleSettingMockup<DataType.Int32>;
 	public unit: UnitMockup;
 	public osLevel: OSLevelMockup;
@@ -74,7 +74,7 @@ export class DIntMonMockup {
 			organizedBy: rootNode,
 			browseName: variableName
 		});
-		this.wqc = new WQCDAMockup(namespace, this.mockupNode, this.name);
+		this.wqc = new WQCMockup(namespace, this.mockupNode, this.name);
 		this.scaleSettings = new ScaleSettingMockup<DataType.Int32>(namespace, this.mockupNode, this.name, DataType.Int32);
 		this.unit = new UnitMockup(namespace, this.mockupNode, this.name);
 		this.osLevel = new OSLevelMockup(namespace, this.mockupNode, this.name);

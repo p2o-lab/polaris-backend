@@ -27,7 +27,7 @@ import {Namespace, UAObject} from 'node-opcua';
 import {
 	FeedbackMonitoringMockup,
 	getFeedbackMonitoringMockupReferenceJSON
-} from '../../../_extensions/feedbackMonitoring/FeedbackMonitoring.mockup';
+} from '../../../baseFunction/feedbackMonitoring/FeedbackMonitoring.mockup';
 import {BinDrvMockup, getBinDrvMockupReferenceJSON} from './BinDrv.mockup';
 
 

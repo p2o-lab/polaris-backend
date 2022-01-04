@@ -24,7 +24,7 @@
  */
 
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
-import {getWQCDAMockupReferenceJSON} from '../../../_extensions/wqcDA/WQCDA.mockup';
+import {getWQCMockupReferenceJSON} from '../../../baseFunction/wqc/WQC.mockup';
 import {LockView4Mockup} from '../LockView4/LockView4.mockup';
 
 export function getLockView8MockupReferenceJSON(
@@ -32,7 +32,7 @@ export function getLockView8MockupReferenceJSON(
 	objectBrowseName: string): object {
 	return (
 		{	
-			...getWQCDAMockupReferenceJSON(namespace,objectBrowseName),
+			...getWQCMockupReferenceJSON(namespace,objectBrowseName),
 			Logic: {
 				namespaceIndex: `${namespace}`,
 				nodeId: `${objectBrowseName}.Logic`,

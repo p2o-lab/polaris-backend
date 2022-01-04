@@ -28,14 +28,14 @@ import {OpcUaConnection, DataItem} from '../../../connection';
 import {
 	OpMode, OpModeRuntime,
 	WQC, WQCRuntime
-} from '../../_extensions';
+} from '../../baseFunction';
 import {
 	OperationElement, OperationElementRuntime,
 } from '../OperationElement';
 import {
 	ServiceSourceModeController,
 	ServiceSourceModeRuntime
-} from '../../_extensions/serviceSourceMode/ServiceSourceModeController';
+} from '../../baseFunction/serviceSourceMode/ServiceSourceModeController';
 
 export type ServParamRuntime = OperationElementRuntime & OpModeRuntime & ServiceSourceModeRuntime & WQCRuntime & {
 	Sync: DataItem<boolean>;

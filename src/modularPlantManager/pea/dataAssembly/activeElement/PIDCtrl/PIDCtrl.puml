@@ -29,7 +29,7 @@
 class PIDCtrl{
     + readonly communication!: PIDCtrlRuntime
     + sourceMode: SourceModeController
-    + opMode: OpModeController
+    + opMode: OpMode
 }
 
 PIDCtrl *- PIDCtrlSpec
@@ -37,7 +37,7 @@ PIDCtrlSpec ..> PIDCtrlMockup : <<use>>
 PIDCtrl *- PIDCtrlMockup
 PIDCtrl *- PIDCtrlRuntime
 PIDCtrl *- SourceModeController
-PIDCtrl *- OpModeController
+PIDCtrl *- OpMode
 
 
 

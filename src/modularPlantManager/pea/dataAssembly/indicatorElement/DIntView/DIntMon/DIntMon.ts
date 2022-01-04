@@ -27,7 +27,7 @@ import {DIntView} from '../DIntView';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {OpcUaConnection} from '../../../../connection';
 import {AnaMonRuntime} from '../../AnaView/AnaMon/AnaMon';
-import {LimitMonitoring, OSLevel} from '../../../_extensions';
+import {LimitMonitoring, OSLevel} from '../../../baseFunction';
 
 export class DIntMon extends DIntView {
 

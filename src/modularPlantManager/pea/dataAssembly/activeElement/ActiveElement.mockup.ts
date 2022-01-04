@@ -24,8 +24,8 @@
  */
 
 import {Namespace, UAObject} from 'node-opcua';
-import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../_extensions/wqcDA/WQCDA.mockup';
-import {getOSLevelMockupReferenceJSON, OSLevelMockup} from '../_extensions/osLevel/OSLevel.mockup';
+import {getWQCMockupReferenceJSON, WQCMockup} from '../baseFunction/wqc/WQC.mockup';
+import {getOSLevelMockupReferenceJSON, OSLevelMockup} from '../baseFunction/osLevel/OSLevel.mockup';
 import {DataAssemblyControllerMockup} from '../DataAssemblyController.mockup';
 
 export function getActiveElementMockupReferenceJSON(
@@ -33,7 +33,7 @@ export function getActiveElementMockupReferenceJSON(
 	objectBrowseName: string): object {
 
 	return ({
-			...getWQCDAMockupReferenceJSON(namespace,objectBrowseName),
+			...getWQCMockupReferenceJSON(namespace,objectBrowseName),
 			...getOSLevelMockupReferenceJSON(namespace,objectBrowseName)
 		}
 	);
@@ -41,13 +41,13 @@ export function getActiveElementMockupReferenceJSON(
 
 export class ActiveElementMockup extends DataAssemblyControllerMockup{
 
-	public wqc: WQCDAMockup;
+	public wqc: WQCMockup;
 	public osLevel: OSLevelMockup;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string){
 		super(namespace, rootNode, variableName);
 		this.osLevel = new OSLevelMockup(namespace, this.mockupNode, this.name);
-		this.wqc = new WQCDAMockup(namespace, this.mockupNode, this.name);
+		this.wqc = new WQCMockup(namespace, this.mockupNode, this.name);
 	}
 
 

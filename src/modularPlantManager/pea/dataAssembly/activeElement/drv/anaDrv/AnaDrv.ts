@@ -26,7 +26,7 @@
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {OpcUaConnection, DataItem} from '../../../../connection';
 import {Drv, DrvRuntime} from '../Drv';
-import {SourceModeController, SourceModeRuntime} from '../../../_extensions';
+import {SourceModeController, SourceModeRuntime} from '../../../baseFunction';
 
 export type AnaDrvRuntime = DrvRuntime & SourceModeRuntime & {
 	RpmSclMax: DataItem<number>;

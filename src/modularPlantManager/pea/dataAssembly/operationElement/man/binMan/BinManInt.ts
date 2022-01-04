@@ -25,7 +25,7 @@
 
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {OpcUaConnection, DataItem} from '../../../../connection';
-import {SourceModeController, SourceModeRuntime, WQC, WQCRuntime} from '../../../_extensions';
+import {SourceModeController, SourceModeRuntime, WQC, WQCRuntime} from '../../../baseFunction';
 import {BinMan, BinManRuntime} from './BinMan';
 
 export type BinManIntRuntime = BinManRuntime & SourceModeRuntime & WQCRuntime & {

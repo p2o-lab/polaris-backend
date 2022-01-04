@@ -55,6 +55,7 @@ class SourceModeController{
 
 }
 
+SourceMode <-- SourceModeController
 SourceModeRuntime <-- SourceModeController
 SourceModeSpec --> SourceModeController : <<uses>>
 SourceModeSpec --> SourceModeMockup : <<uses>>

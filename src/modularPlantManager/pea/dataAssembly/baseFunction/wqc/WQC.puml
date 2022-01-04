@@ -23,14 +23,20 @@
  * SOFTWARE.
  */
  
-export * from './feedbackMonitoring/FeedbackMonitoring';
-export * from './interlock/Interlock';
-export * from './limitMonitoring/LimitMonitoring';
-export * from './opMode/OpMode';
-export * from './osLevel/OSLevel';
-export * from './reset/Reset';
-export * from './scaleSettings/ScaleSettings';
-export * from './sourceMode/SourceModeController';
-export * from './unit/UnitSettings';
-export * from './valueLimitation/ValueLimitation';
-export * from './wqcDA/WQC';
+@startuml
+'https://plantuml.com/class-diagram
+
+interface WQCRuntime {
+    + WQC: DataItem<number>;
+}
+
+class WQC{
+    - dAController: any
+    - initialize(): void
+    + WQC: number
+}
+
+WQCRuntime <-- WQC
+WQCSpec --> WQC : <<uses>>
+WQCSpec --> WQCMockup : <<uses>>
+@enduml

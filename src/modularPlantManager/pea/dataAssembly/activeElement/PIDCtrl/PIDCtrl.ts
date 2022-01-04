@@ -28,7 +28,7 @@ import {OpcUaConnection, DataItem} from '../../../connection';
 import {
 	OpMode, OpModeRuntime,
 	SourceModeController, SourceModeRuntime
-} from '../../_extensions';
+} from '../../baseFunction';
 import {ActiveElement, ActiveElementRuntime} from '../ActiveElement';
 
 export type PIDCtrlRuntime = ActiveElementRuntime & OpModeRuntime & SourceModeRuntime & {

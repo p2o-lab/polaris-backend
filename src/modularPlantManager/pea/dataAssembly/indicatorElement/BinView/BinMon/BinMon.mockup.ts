@@ -24,7 +24,7 @@
  */
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {getOSLevelMockupReferenceJSON, OSLevelMockup} from '../../../_extensions/osLevel/OSLevel.mockup';
+import {getOSLevelMockupReferenceJSON, OSLevelMockup} from '../../../baseFunction/osLevel/OSLevel.mockup';
 import {BinViewMockup, getBinViewMockupReferenceJSON} from '../BinView.mockup';
 
 export function getBinMonMockupReferenceJSON(namespace: number, objectBrowseName: string): object {

@@ -27,7 +27,7 @@ import {Namespace, UAObject} from 'node-opcua';
 import {
 	FeedbackMonitoringMockup,
 	getFeedbackMonitoringMockupReferenceJSON
-} from '../../../../_extensions/feedbackMonitoring/FeedbackMonitoring.mockup';
+} from '../../../../baseFunction/feedbackMonitoring/FeedbackMonitoring.mockup';
 import {BinVlvMockup, getBinVlvMockupReferenceJSON} from '../BinVlv.mockup';
 
 export function getMonBinVlvMockupReferenceJSON(namespace: number, objectBrowseName: string): object {

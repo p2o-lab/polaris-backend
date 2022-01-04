@@ -27,7 +27,7 @@ import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
 import {
 	FeedbackMonitoringMockup,
 	getFeedbackMonitoringMockupReferenceJSON
-} from '../../../../_extensions/feedbackMonitoring/FeedbackMonitoring.mockup';
+} from '../../../../baseFunction/feedbackMonitoring/FeedbackMonitoring.mockup';
 import {AnaVlvMockup, getAnaVlvMockupReferenceJSON} from '../AnaVlv.mockup';
 
 

@@ -30,7 +30,7 @@ import {
 } from '@p2olab/polaris-interface';
 import {BaseStaticDataItem, DataItem, DynamicDataItem, OpcUaConnection} from '../../connection';
 import {PEAController} from '../../PEAController';
-import {WQC, WQCRuntime} from '../_extensions';
+import {WQC, WQCRuntime} from '../baseFunction';
 import {BaseDataAssemblyRuntime, DataAssemblyController} from '../DataAssemblyController';
 import {catDataAssembly} from '../../../../logging';
 import {Parameter} from '../../../recipe';

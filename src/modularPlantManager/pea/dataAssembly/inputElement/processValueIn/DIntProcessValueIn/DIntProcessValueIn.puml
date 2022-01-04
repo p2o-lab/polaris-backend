@@ -26,7 +26,7 @@
 @startuml
 'https://plantuml.com/class-diagram
 !include ../../../_extensions/scaleSettings/ScaleSettings.puml
-!include ../../../_extensions/unitDA/UnitSettings.puml
+!include ../../../_extensions/unit/UnitSettings.puml
 
 class DIntProcessValueIn{
     + readonly communication!: DIntProcessValueInRuntime

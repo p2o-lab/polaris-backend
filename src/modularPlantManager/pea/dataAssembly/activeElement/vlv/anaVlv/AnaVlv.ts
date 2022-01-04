@@ -26,7 +26,7 @@
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {OpcUaConnection, DataItem} from '../../../../connection';
 import {Vlv, VlvRuntime} from '../Vlv';
-import {SourceModeController, SourceModeRuntime} from '../../../_extensions';
+import {SourceModeController, SourceModeRuntime} from '../../../baseFunction';
 
 export type AnaVlvRuntime = VlvRuntime & SourceModeRuntime & {
 	Pos: DataItem<number>;

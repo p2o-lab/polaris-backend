@@ -23,9 +23,9 @@
  * SOFTWARE.
  */
  
-export * from './_extensions/_helper';
+export * from './baseFunction/_helper';
 export * from './activeElement';
-export * from './_extensions';
+export * from './baseFunction';
 export * from './diagnosticElement';
 export * from './indicatorElement';
 export * from './inputElement';

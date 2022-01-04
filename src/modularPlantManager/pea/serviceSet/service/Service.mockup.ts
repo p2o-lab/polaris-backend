@@ -28,7 +28,7 @@ import {ServiceControlEnable, ServiceMtpCommand, ServiceState} from './enum';
 // eslint-disable-next-line no-undef
 import Timeout = NodeJS.Timeout;
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {OpModeMockup} from '../../dataAssembly/_extensions/opMode/OpMode.mockup';
+import {OpModeMockup} from '../../dataAssembly/baseFunction/opMode/OpMode.mockup';
 import {PEATestNumericVariable} from '../../../_utils';
 
 export function getServiceMockupReferenceJSON(

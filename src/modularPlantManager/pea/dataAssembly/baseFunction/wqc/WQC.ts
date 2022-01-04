@@ -22,35 +22,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
- 
-@startuml
-'https://plantuml.com/class-diagram
-!include FeedbackMonitoring/FeedbackMonitoring.puml
-!include Interlock/Interlock.puml
-!include LimitMonitoring/LimitMonitoring.puml
-!include opMode/OpModeController.puml
-!include OSLevel/OSLevel.puml
-!include resetDA/Reset.puml
-!include scaleSettings/ScaleSettings.puml
-!include serviceSourceMode/ServiceSourceModeController.puml
-!include sourceModeDA/SourceModeController.puml
-!include unitDA/UnitSettings.puml
-!include valueLimitationDA/ValueLimitation.puml
-!include wqcDA/WQC.puml
 
-abstract class DataAssemblyController
+import {DataItem} from '../../../connection';
 
-DataAssemblyController "0..1" o-- FeedbackMonitoring
-DataAssemblyController "0..1" o-- Interlock
-DataAssemblyController "0..1" o-- LimitMonitoring
-DataAssemblyController "0..1" o-- OpMode
-DataAssemblyController "0..1" o-- OSLevel
-DataAssemblyController "0..1" o-- Reset
-DataAssemblyController "0..1" o-- ScaleSettingDA
-DataAssemblyController "0..1" o-- ServiceSourceMode
-DataAssemblyController "0..1" o-- SourceMode
-DataAssemblyController "0..1" o-- Unit
-DataAssemblyController "0..1" o-- ValueLimitation
-DataAssemblyController "0..1" o-- WQCDA
+export type WQCRuntime = {
+	WQC: DataItem<number>;
+}
 
-@enduml
+export class WQC {
+	private dAController: any;
+
+	constructor(dAController: any) {
+		this.dAController = dAController;
+		this.dAController.communication.WQC = this.dAController.createDataItem('WQC', 'number');
+	}
+
+	get WQC(): number{
+		return this.dAController.communication.WQC.value;
+	}
+}

@@ -32,7 +32,7 @@ class Vlv{
     + readonly communication!: VlvRuntime
     + readonly reset: Reset
     + readonly interlock: Interlock
-    + readonly opMode: OpModeController
+    + readonly opMode: OpMode
 }
 
 Vlv *- VlvSpec
@@ -41,7 +41,7 @@ Vlv *- VlvMockup
 Vlv *- VlvRuntime
 Vlv *- Reset
 Vlv *- Interlock
-Vlv *- OpModeController
+Vlv *- OpMode
 
 Vlv <|-- AnaVlv
 Vlv <|-- BinVlv

@@ -24,14 +24,14 @@
  */
 
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
-import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../_extensions/wqcDA/WQCDA.mockup';
+import {getWQCMockupReferenceJSON, WQCMockup} from '../../baseFunction/wqc/WQC.mockup';
 
 export function getStringViewMockupReferenceJSON(
 	namespace: number,
 	objectBrowseName: string): object {
 	return (
 		{
-			...getWQCDAMockupReferenceJSON(namespace, objectBrowseName),
+			...getWQCMockupReferenceJSON(namespace, objectBrowseName),
 			Text: {
 				namespaceIndex: `${namespace}`,
 				nodeId: `${objectBrowseName}.Text`,
@@ -45,7 +45,7 @@ export class StringViewMockup {
 
 	public readonly name: string;
 	protected text = 'dummyText';
-	public wqc: WQCDAMockup;
+	public wqc: WQCMockup;
 	protected mockupNode: UAObject;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
@@ -56,7 +56,7 @@ export class StringViewMockup {
 			organizedBy: rootNode,
 			browseName: variableName
 		});
-		this.wqc = new WQCDAMockup(namespace, this.mockupNode, this.name);
+		this.wqc = new WQCMockup(namespace, this.mockupNode, this.name);
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,

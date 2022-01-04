@@ -25,7 +25,7 @@
 
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
 
-export function getScaleSettingDAMockupReferenceJSON<T extends 'Float' | 'Int32' >(
+export function getScaleSettingsMockupReferenceJSON<T extends 'Float' | 'Int32' >(
     namespace: number,
     objectBrowseName: string,
     type: T): object {
@@ -79,8 +79,8 @@ export class ScaleSettingMockup<T extends DataType.Double | DataType.Int32> {
     });
     }
 
-  public getScaleSettingDAInstanceMockupJSON(): object {
-    return getScaleSettingDAMockupReferenceJSON(
+  public getScaleSettingsInstanceMockupJSON(): object {
+    return getScaleSettingsMockupReferenceJSON(
         this.mockupNode.namespaceIndex,
         this.mockupNode.browseName.name as string,
         (this.type === DataType.Double)? 'Float' : 'Int32'

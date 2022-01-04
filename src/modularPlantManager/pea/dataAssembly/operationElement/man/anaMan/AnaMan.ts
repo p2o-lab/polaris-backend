@@ -29,7 +29,7 @@ import {
 	ScaleSettings, ScaleSettingsRuntime,
 	UnitDataAssemblyRuntime, UnitSettings,
 	ValueLimitation, ValueLimitationRuntime
-} from '../../../_extensions';
+} from '../../../baseFunction';
 import {OperationElement, OperationElementRuntime} from '../../OperationElement';
 
 export type AnaManRuntime =

@@ -31,7 +31,7 @@ import {
     LimitMonitoringRuntime,
     OSLevel,
     OSLevelRuntime
-} from '../../../_extensions';
+} from '../../../baseFunction';
 
 export type AnaMonRuntime = AnaViewRuntime & LimitMonitoringRuntime & OSLevelRuntime
 

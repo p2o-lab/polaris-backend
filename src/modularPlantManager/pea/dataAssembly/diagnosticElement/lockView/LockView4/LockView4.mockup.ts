@@ -24,13 +24,13 @@
  */
 
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
-import {getWQCDAMockupReferenceJSON} from '../../../_extensions/wqcDA/WQCDA.mockup';
+import {getWQCMockupReferenceJSON} from '../../../baseFunction/wqc/WQC.mockup';
 import {DiagnosticElementMockup} from '../../DiagnosticElement.mockup';
 
 export function getLockView4MockupReferenceJSON(namespace: number, objectBrowseName: string): object {
 	return (
 		{	
-			...getWQCDAMockupReferenceJSON(namespace,objectBrowseName),
+			...getWQCMockupReferenceJSON(namespace,objectBrowseName),
 			Logic: {
 				namespaceIndex: `${namespace}`,
 				nodeId: `${objectBrowseName}.Logic`,

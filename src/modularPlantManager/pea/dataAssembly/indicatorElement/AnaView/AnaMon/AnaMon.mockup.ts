@@ -24,17 +24,17 @@
  */
 
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
-import {getWQCDAMockupReferenceJSON} from '../../../_extensions/wqcDA/WQCDA.mockup';
+import {getWQCMockupReferenceJSON} from '../../../baseFunction/wqc/WQC.mockup';
 import {
-	getScaleSettingDAMockupReferenceJSON,
+	getScaleSettingsMockupReferenceJSON,
 	ScaleSettingMockup
-} from '../../../_extensions/scaleSettings/ScaleSetting.mockup';
-import {getUnitMockupReferenceJSON, UnitMockup} from '../../../_extensions/unit/Unit.mockup';
-import {getOSLevelMockupReferenceJSON, OSLevelMockup} from '../../../_extensions/osLevel/OSLevel.mockup';
+} from '../../../baseFunction/scaleSettings/ScaleSetting.mockup';
+import {getUnitMockupReferenceJSON, UnitMockup} from '../../../baseFunction/unit/Unit.mockup';
+import {getOSLevelMockupReferenceJSON, OSLevelMockup} from '../../../baseFunction/osLevel/OSLevel.mockup';
 import {
 	getLimitMonitoringMockupReferenceJSON,
 	LimitMonitoringMockup
-} from '../../../_extensions/limitMonitoring/LimitMonitoring.mockup';
+} from '../../../baseFunction/limitMonitoring/LimitMonitoring.mockup';
 import {IndicatorElementMockup} from '../../IndicatorElement.mockup';
 
 export function getAnaMonMockupReferenceJSON(
@@ -42,8 +42,8 @@ export function getAnaMonMockupReferenceJSON(
 	objectBrowseName: string): object {
 	return (
 		{
-			...getWQCDAMockupReferenceJSON(namespace, objectBrowseName),
-			...getScaleSettingDAMockupReferenceJSON(namespace, objectBrowseName, 'Float'),
+			...getWQCMockupReferenceJSON(namespace, objectBrowseName),
+			...getScaleSettingsMockupReferenceJSON(namespace, objectBrowseName, 'Float'),
 			...getUnitMockupReferenceJSON(namespace, objectBrowseName),
 			...getOSLevelMockupReferenceJSON(namespace, objectBrowseName),
 			...getLimitMonitoringMockupReferenceJSON(namespace, objectBrowseName),

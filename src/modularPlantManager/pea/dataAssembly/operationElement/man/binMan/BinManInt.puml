@@ -26,8 +26,8 @@
 @startuml
 'https://plantuml.com/class-diagram
 
-!include ../../../_extensions/sourceModeDA/SourceModeController.puml
-!include ../../../_extensions/wqcDA/WQC.puml
+!include ../../../_extensions/sourceMode/SourceModeController.puml
+!include ../../../_extensions/wqc/WQC.puml
 class BinManInt{
     + readonly communication!: BinManIntRuntime
     + readonly sourceMode: SourceModeController

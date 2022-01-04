@@ -24,20 +24,20 @@
  */
 
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
-import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../_extensions/wqcDA/WQCDA.mockup';
+import {getWQCMockupReferenceJSON, WQCMockup} from '../../baseFunction/wqc/WQC.mockup';
 import {
-	getScaleSettingDAMockupReferenceJSON,
+	getScaleSettingsMockupReferenceJSON,
 	ScaleSettingMockup
-} from '../../_extensions/scaleSettings/ScaleSetting.mockup';
-import {getUnitMockupReferenceJSON, UnitMockup} from '../../_extensions/unit/Unit.mockup';
+} from '../../baseFunction/scaleSettings/ScaleSetting.mockup';
+import {getUnitMockupReferenceJSON, UnitMockup} from '../../baseFunction/unit/Unit.mockup';
 
 export function getAnaViewMockupReferenceJSON(
 	namespace: number,
 	objectBrowseName: string): object {
 	return (
 		{
-			...getWQCDAMockupReferenceJSON(namespace, objectBrowseName),
-			...getScaleSettingDAMockupReferenceJSON(namespace, objectBrowseName, 'Float'),
+			...getWQCMockupReferenceJSON(namespace, objectBrowseName),
+			...getScaleSettingsMockupReferenceJSON(namespace, objectBrowseName, 'Float'),
 			...getUnitMockupReferenceJSON(namespace, objectBrowseName),
 			V: {
 				namespaceIndex: `${namespace}`,
@@ -52,7 +52,7 @@ export class AnaViewMockup {
 
 	public readonly name: string;
 	protected v = 0;
-	public wqc: WQCDAMockup;
+	public wqc: WQCMockup;
 	public scaleSettings: ScaleSettingMockup<DataType.Double>;
 	public unit: UnitMockup;
 	protected mockupNode: UAObject;
@@ -64,7 +64,7 @@ export class AnaViewMockup {
 			organizedBy: rootNode,
 			browseName: variableName
 		});
-		this.wqc = new WQCDAMockup(namespace, this.mockupNode, this.name);
+		this.wqc = new WQCMockup(namespace, this.mockupNode, this.name);
 		this.scaleSettings = new ScaleSettingMockup<DataType.Double>(namespace, this.mockupNode, this.name, DataType.Double);
 		this.unit = new UnitMockup(namespace, this.mockupNode, this.name);
 		if(removeVariable == undefined || removeVariable){

@@ -33,7 +33,7 @@ import {
 	UnitSettings,
 	ValueLimitation,
 	ValueLimitationRuntime
-} from '../../../_extensions';
+} from '../../../baseFunction';
 
 export type AnaServParamRuntime = ServParamRuntime & ScaleSettingsRuntime & UnitDataAssemblyRuntime & ValueLimitationRuntime & {
 	VExt: DataItem<number>;

@@ -55,6 +55,7 @@ class ServiceSourceModeController{
     + isIntSource(): boolean
 }
 
+ServiceSourceMode <-- ServiceSourceModeController
 ServiceSourceModeRuntime <-- ServiceSourceModeController
 ServiceSourceModeSpec --> ServiceSourceModeController : <<uses>>
 ServiceSourceModeSpec --> ServiceSourceModeMockup : <<uses>>

@@ -24,11 +24,11 @@
  */
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {WQCDAMockup} from '../../_extensions/wqcDA/WQCDA.mockup';
-import {OSLevelMockup} from '../../_extensions/osLevel/OSLevel.mockup';
-import {getOpModeMockupReferenceJSON, OpModeMockup} from '../../_extensions/opMode/OpMode.mockup';
-import {getInterlockMockupReferenceJSON, InterlockMockup} from '../../_extensions/interlock/Interlock.mockup';
-import {getResetMockupReferenceJSON, ResetMockup} from '../../_extensions/reset/Reset.mockup';
+import {WQCMockup} from '../../baseFunction/wqc/WQC.mockup';
+import {OSLevelMockup} from '../../baseFunction/osLevel/OSLevel.mockup';
+import {getOpModeMockupReferenceJSON, OpModeMockup} from '../../baseFunction/opMode/OpMode.mockup';
+import {getInterlockMockupReferenceJSON, InterlockMockup} from '../../baseFunction/interlock/Interlock.mockup';
+import {getResetMockupReferenceJSON, ResetMockup} from '../../baseFunction/reset/Reset.mockup';
 import {getActiveElementMockupReferenceJSON} from '../ActiveElement.mockup';
 
 
@@ -103,7 +103,7 @@ export function getVlvMockupReferenceJSON(
 export class VlvMockup {
 
 	public readonly name: string;
-	public wqc: WQCDAMockup;
+	public wqc: WQCMockup;
 	public osLevel: OSLevelMockup;
 	public operationMode: OpModeMockup;
 	public interlock: InterlockMockup;
@@ -134,7 +134,7 @@ export class VlvMockup {
 		});
 
 		this.osLevel = new OSLevelMockup(namespace, this.mockupNode, this.name);
-		this.wqc = new WQCDAMockup(namespace, this.mockupNode, this.name);
+		this.wqc = new WQCMockup(namespace, this.mockupNode, this.name);
 		this.operationMode = new OpModeMockup(namespace,this.mockupNode,this.name);
 		this.interlock= new InterlockMockup(namespace,this.mockupNode,this.name);
 		this.reset= new ResetMockup(namespace,this.mockupNode,this.name);

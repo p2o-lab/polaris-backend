@@ -25,7 +25,7 @@
 
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {OpcUaConnection, DataItem} from '../../../../../connection';
-import {FeedbackMonitoring, FeedbackMonitoringRuntime} from '../../../../_extensions';
+import {FeedbackMonitoring, FeedbackMonitoringRuntime} from '../../../../baseFunction';
 import {AnaDrv, AnaDrvRuntime} from '../AnaDrv';
 
 export type MonAnaDrvRuntime = AnaDrvRuntime & FeedbackMonitoringRuntime & {

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 P2O-Lab <p2o-lab@mailbox.tu-dresden.de>,
+ * Copyright (c) 2020 P2O-Lab <p2o-lab@mailbox.tu-dresden.de>,
  * Chair for Process Control Systems, Technische Universität Dresden
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,22 +23,43 @@
  * SOFTWARE.
  */
 
-import {DataItem} from '../../../connection';
-import {BaseDataAssemblyRuntime} from '../../index';
+import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
 
-export interface WQCRuntime extends BaseDataAssemblyRuntime {
-	WQC: DataItem<number>;
+export function getWQCMockupReferenceJSON(
+    namespace: number,
+    objectBrowseName: string): object {
+
+  return ({
+    WQC:   {
+      namespaceIndex: `${namespace}`,
+      nodeId: `${objectBrowseName}.TagName`,
+      dataType: 'Byte'
+    }
+  });
 }
 
-export class WQC {
-	private dAController: any;
+export class WQCMockup {
+  protected wqc = 0;
+  protected mockupNode: UAObject;
 
-	constructor(dAController: any) {
-		this.dAController = dAController;
-		this.dAController.communication.WQC = this.dAController.createDataItem('WQC', 'number');
-	}
+  constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
+    this.mockupNode = rootNode;
+      namespace.addVariable({
+        componentOf: rootNode,
+        nodeId: `ns=${namespace.index};s=${variableName}.WQC`,
+        browseName: `${variableName}.WQC`,
+        dataType: DataType.Byte,
+        value: {
+          get: (): Variant => {
+            return new Variant({dataType: DataType.Byte, value: this.wqc});
+          },
+        },
+      });
+    }
 
-	get WQC(): number | undefined {
-		return this.dAController.communication.WQC.value;
-	}
+  public getWQCInstanceMockupJSON(): object {
+    return getWQCMockupReferenceJSON(
+        this.mockupNode.namespaceIndex,
+        this.mockupNode.browseName.name as string);
+  }
 }

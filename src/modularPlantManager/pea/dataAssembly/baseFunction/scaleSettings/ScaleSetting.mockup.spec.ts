@@ -32,7 +32,7 @@ import {ScaleSettingMockup} from './ScaleSetting.mockup';
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-describe('ScaleSettingDAMockup', () => {
+describe('ScaleSettingsMockup', () => {
     describe('', () => {
         let mockupServer: MockupServer;
         beforeEach(async()=>{
@@ -40,28 +40,28 @@ describe('ScaleSettingDAMockup', () => {
             await mockupServer.initialize();
         });
 
-        it('should create ScaleSettingDAMockup, Double', async () => {
+        it('should create ScaleSettingsMockup, Double', async () => {
             const mockup= new ScaleSettingMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable', DataType.Double);
             expect(mockup).to.not.be.undefined;
         });
-        it('should create ScaleSettingDAMockup', async () => {
+        it('should create ScaleSettingsMockup', async () => {
             const mockup= new ScaleSettingMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable', DataType.Int32);
             expect(mockup).to.not.be.undefined;
         });
-        it('getScaleSettingDAMockupReferenceJSON(), Double',  () => {
+        it('getScaleSettingsMockupReferenceJSON(), Double',  () => {
             const mockup = new ScaleSettingMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable', DataType.Double);
-            const json = mockup.getScaleSettingDAInstanceMockupJSON() as {VSclMin: {} ; VSclMax: {}};
+            const json = mockup.getScaleSettingsInstanceMockupJSON() as {VSclMin: {} ; VSclMax: {}};
             expect(Object.keys(json).length).to.equal(2);
             expect(json.VSclMax).to.not.be.undefined;
             expect(json.VSclMin).to.not.be.undefined;
         });
-        it('getScaleSettingDAMockupReferenceJSON()',  () => {
+        it('getScaleSettingsMockupReferenceJSON()',  () => {
             const mockup = new ScaleSettingMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable', DataType.Int32);
-            const json = mockup.getScaleSettingDAInstanceMockupJSON() as {VSclMin: {} ; VSclMax: {}};
+            const json = mockup.getScaleSettingsInstanceMockupJSON() as {VSclMin: {} ; VSclMax: {}};
             expect(Object.keys(json).length).to.equal(2);
             expect(json.VSclMax).to.not.be.undefined;
             expect(json.VSclMin).to.not.be.undefined;

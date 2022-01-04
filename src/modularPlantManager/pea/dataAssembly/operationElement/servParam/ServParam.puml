@@ -32,12 +32,12 @@
 
 !include ../../_extensions/serviceSourceMode/ServiceSourceModeController.puml
 !include ../../_extensions/opMode/opModeController.puml
-!include ../../_extensions/wqcDA/WQC.puml
+!include ../../_extensions/wqc/WQC.puml
 
 class ServParam{
     + readonly communication!: ServParamRuntime
     + readonly serviceSourceMode: ServiceSourceModeController
-    + readonly serviceOpMode: OpModeController
+    + readonly serviceOpMode: OpMode
     + readonly wqc: WQC
 }
 
@@ -47,7 +47,7 @@ ServParam *- ServParamMockup
 
 ServParam *- ServParamRuntime
 ServParam *- ServiceSourceModeController
-ServParam *- OpModeController
+ServParam *- OpMode
 ServParam *- WQC
 
 

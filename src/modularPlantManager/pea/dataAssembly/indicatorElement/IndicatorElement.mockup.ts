@@ -24,24 +24,24 @@
  */
 
 import {Namespace, UAObject} from 'node-opcua';
-import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../_extensions/wqcDA/WQCDA.mockup';
+import {getWQCMockupReferenceJSON, WQCMockup} from '../baseFunction/wqc/WQC.mockup';
 import {DataAssemblyControllerMockup} from '../DataAssemblyController.mockup';
 
 export function getIndicatorElementMockupReferenceJSON(namespace: number, objectBrowseName: string): object {
 	return (
 		{
-			...getWQCDAMockupReferenceJSON(namespace, objectBrowseName)
+			...getWQCMockupReferenceJSON(namespace, objectBrowseName)
 		}
 	);
 }
 
 export class IndicatorElementMockup extends DataAssemblyControllerMockup{
 
-	public wqc: WQCDAMockup;
+	public wqc: WQCMockup;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string){
 		super(namespace, rootNode, variableName);
-		this.wqc = new WQCDAMockup(namespace, this.mockupNode, this.name);
+		this.wqc = new WQCMockup(namespace, this.mockupNode, this.name);
 
 	}
 

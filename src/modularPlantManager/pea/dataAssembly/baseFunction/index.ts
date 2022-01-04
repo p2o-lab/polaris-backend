@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2020 P2O-Lab <p2o-lab@mailbox.tu-dresden.de>,
+ * Copyright (c) 2021 P2O-Lab <p2o-lab@mailbox.tu-dresden.de>,
  * Chair for Process Control Systems, Technische Universität Dresden
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -22,44 +22,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
-import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
-
-export function getWQCDAMockupReferenceJSON(
-    namespace: number,
-    objectBrowseName: string): object {
-
-  return ({
-    WQC:   {
-      namespaceIndex: `${namespace}`,
-      nodeId: `${objectBrowseName}.TagName`,
-      dataType: 'Byte'
-    }
-  });
-}
-
-export class WQCDAMockup {
-  protected wqc = 0;
-  protected mockupNode: UAObject;
-
-  constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
-    this.mockupNode = rootNode;
-      namespace.addVariable({
-        componentOf: rootNode,
-        nodeId: `ns=${namespace.index};s=${variableName}.WQC`,
-        browseName: `${variableName}.WQC`,
-        dataType: DataType.Byte,
-        value: {
-          get: (): Variant => {
-            return new Variant({dataType: DataType.Byte, value: this.wqc});
-          },
-        },
-      });
-    }
-
-  public getWQCDAInstanceMockupJSON(): object {
-    return getWQCDAMockupReferenceJSON(
-        this.mockupNode.namespaceIndex,
-        this.mockupNode.browseName.name as string);
-  }
-}
+ 
+export * from './feedbackMonitoring/FeedbackMonitoring';
+export * from './interlock/Interlock';
+export * from './limitMonitoring/LimitMonitoring';
+export * from './opMode/OpMode';
+export * from './osLevel/OSLevel';
+export * from './reset/Reset';
+export * from './scaleSettings/ScaleSettings';
+export * from './sourceMode/SourceModeController';
+export * from './unit/UnitSettings';
+export * from './valueLimitation/ValueLimitation';
+export * from './wqc/WQC';

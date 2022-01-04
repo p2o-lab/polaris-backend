@@ -27,7 +27,7 @@ import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {OpcUaConnection, DataItem} from '../../../../connection';
 import {SourceModeController, SourceModeRuntime,
 	WQC, WQCRuntime
-} from '../../../_extensions';
+} from '../../../baseFunction';
 import {AnaMan, AnaManRuntime} from './AnaMan';
 
 export type AnaManIntRuntime = AnaManRuntime & SourceModeRuntime & WQCRuntime & {

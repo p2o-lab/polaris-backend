@@ -27,9 +27,9 @@ import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
 import {
 	getSourceModeMockupReferenceJSON,
 	SourceModeMockup
-} from '../../../_extensions/sourceMode/SourceMode.mockup';
+} from '../../../baseFunction/sourceMode/SourceMode.mockup';
 import {DIntManMockup, getDIntManMockupReferenceJSON} from './DIntMan.mockup';
-import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../../_extensions/wqcDA/WQCDA.mockup';
+import {getWQCMockupReferenceJSON, WQCMockup} from '../../../baseFunction/wqc/WQC.mockup';
 
 export function getDIntManIntMockupReferenceJSON(
 	namespace: number,
@@ -37,7 +37,7 @@ export function getDIntManIntMockupReferenceJSON(
 
 	return ({
 			...getDIntManMockupReferenceJSON(namespace, objectBrowseName),
-			...getWQCDAMockupReferenceJSON(namespace, objectBrowseName),
+			...getWQCMockupReferenceJSON(namespace, objectBrowseName),
 			...getSourceModeMockupReferenceJSON(namespace,objectBrowseName),
 			VInt: {
 				namespaceIndex: `${namespace}`,
@@ -51,13 +51,13 @@ export function getDIntManIntMockupReferenceJSON(
 export class DIntManIntMockup extends DIntManMockup {
 
 	protected vInt = 0;
-	public readonly wqc: WQCDAMockup;
+	public readonly wqc: WQCMockup;
 	public readonly sourceMode: SourceModeMockup;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
 		super(namespace, rootNode, variableName);
 
-		this.wqc = new WQCDAMockup(namespace, this.mockupNode, this.name);
+		this.wqc = new WQCMockup(namespace, this.mockupNode, this.name);
 		this.sourceMode = new SourceModeMockup(namespace, this.mockupNode, this.name);
 
 		namespace.addVariable({

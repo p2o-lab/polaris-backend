@@ -27,7 +27,7 @@ import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 import {
 	getSourceModeMockupReferenceJSON,
 	SourceModeMockup
-} from '../../../_extensions/sourceMode/SourceMode.mockup';
+} from '../../../baseFunction/sourceMode/SourceMode.mockup';
 import {DrvMockup, getDrvMockupReferenceJSON} from '../Drv.mockup';
 
 

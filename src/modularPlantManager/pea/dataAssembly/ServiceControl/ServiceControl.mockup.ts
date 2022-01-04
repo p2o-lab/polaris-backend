@@ -24,14 +24,14 @@
  */
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {getOpModeMockupReferenceJSON, OpModeMockup} from '../_extensions/opMode/OpMode.mockup';
+import {getOpModeMockupReferenceJSON, OpModeMockup} from '../baseFunction/opMode/OpMode.mockup';
 import {
     getServiceSourceModeMockupReferenceJSON,
     ServiceSourceModeMockup
-} from '../_extensions/serviceSourceMode/ServiceSourceMode.mockup';
+} from '../baseFunction/serviceSourceMode/ServiceSourceMode.mockup';
 import {ServiceMtpCommand, ServiceState, ServiceStateString} from '../../serviceSet/service/enum';
-import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../_extensions/wqcDA/WQCDA.mockup';
-import {getOSLevelMockupReferenceJSON} from '../_extensions/osLevel/OSLevel.mockup';
+import {getWQCMockupReferenceJSON, WQCMockup} from '../baseFunction/wqc/WQC.mockup';
+import {getOSLevelMockupReferenceJSON} from '../baseFunction/osLevel/OSLevel.mockup';
 import {DataAssemblyControllerMockup} from '../DataAssemblyController.mockup';
 import {MtpStateMachine, UserDefinedActions, UserDefinedGuard} from '../../StateMachine/MtpStateMachine';
 
@@ -41,7 +41,7 @@ export function getServiceControlMockupReferenceJSON(
   return (
       {
           
-          ...getWQCDAMockupReferenceJSON(namespace,objectBrowseName),
+          ...getWQCMockupReferenceJSON(namespace,objectBrowseName),
           ...getOSLevelMockupReferenceJSON(namespace,objectBrowseName),
           ...getServiceSourceModeMockupReferenceJSON(namespace,objectBrowseName),
         ...getOpModeMockupReferenceJSON(namespace,objectBrowseName),
@@ -116,7 +116,7 @@ export function getServiceControlMockupReferenceJSON(
 export class ServiceControlMockup extends DataAssemblyControllerMockup{
     public serviceSourceMode: ServiceSourceModeMockup;
     public operationMode: OpModeMockup;
-    protected wqc: WQCDAMockup;
+    protected wqc: WQCMockup;
 
     protected commandOp = 0;
     protected commandInt = 0;
@@ -140,7 +140,7 @@ export class ServiceControlMockup extends DataAssemblyControllerMockup{
           super(namespace, rootNode, variableName);
           this.operationMode = new OpModeMockup(namespace, this.mockupNode, variableName);
           this.serviceSourceMode = new ServiceSourceModeMockup(namespace, this.mockupNode, variableName);
-          this.wqc = new WQCDAMockup(namespace, this.mockupNode, variableName);
+          this.wqc = new WQCMockup(namespace, this.mockupNode, variableName);
 
           this.stateMachine = new MtpStateMachine(variableName, {} as UserDefinedGuard, {} as UserDefinedActions);
           this.stateMachine.start();

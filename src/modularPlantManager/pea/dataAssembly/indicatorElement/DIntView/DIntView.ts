@@ -27,7 +27,7 @@ import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {OpcUaConnection} from '../../../connection';
 import {AnaViewRuntime} from '../AnaView/AnaView';
 import {IndicatorElement} from '../IndicatorElement';
-import {ScaleSettings, UnitSettings} from '../../_extensions';
+import {ScaleSettings, UnitSettings} from '../../baseFunction';
 
 
 export class DIntView extends IndicatorElement {

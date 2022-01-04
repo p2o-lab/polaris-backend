@@ -24,8 +24,8 @@
  */
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {getScaleSettingDAMockupReferenceJSON, ScaleSettingMockup} from '../../../_extensions/scaleSettings/ScaleSetting.mockup';
-import {getUnitMockupReferenceJSON, UnitMockup} from '../../../_extensions/unit/Unit.mockup';
+import {getScaleSettingsMockupReferenceJSON, ScaleSettingMockup} from '../../../baseFunction/scaleSettings/ScaleSetting.mockup';
+import {getUnitMockupReferenceJSON, UnitMockup} from '../../../baseFunction/unit/Unit.mockup';
 import {getInputElementMockupReferenceJSON, InputElementMockup} from '../../InputElement.mockup';
 
 export function getDIntProcessValueInMockupReferenceJSON(
@@ -34,7 +34,7 @@ export function getDIntProcessValueInMockupReferenceJSON(
 	return (
 		{
 			...getInputElementMockupReferenceJSON(namespace, objectBrowseName),
-			...getScaleSettingDAMockupReferenceJSON(namespace, objectBrowseName, 'Int32'),
+			...getScaleSettingsMockupReferenceJSON(namespace, objectBrowseName, 'Int32'),
 			...getUnitMockupReferenceJSON(namespace, objectBrowseName),
 			VExt: {
 				namespaceIndex: `${namespace}`,

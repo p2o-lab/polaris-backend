@@ -28,11 +28,11 @@ import {
 	BaseDataAssemblyRuntime, DataAssemblyController, OpModeRuntime, WQCRuntime
 } from '../index';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpMode, WQC} from '../_extensions';
+import {OpMode, WQC} from '../baseFunction';
 import {
 	ServiceSourceModeController,
 	ServiceSourceModeRuntime
-} from '../_extensions/serviceSourceMode/ServiceSourceModeController';
+} from '../baseFunction/serviceSourceMode/ServiceSourceModeController';
 
 export type ServiceControlRuntime = BaseDataAssemblyRuntime & OpModeRuntime & ServiceSourceModeRuntime & WQCRuntime & {
 	CommandOp: DataItem<number>;

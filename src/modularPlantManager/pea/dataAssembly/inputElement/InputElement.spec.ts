@@ -32,7 +32,7 @@ import {MockupServer} from '../../../_utils';
 import {InputElementMockup} from './InputElement.mockup';
 import {InputElement} from './InputElement';
 import {DataAssemblyControllerFactory} from '../DataAssemblyControllerFactory';
-import {WQC} from '../_extensions';
+import {WQC} from '../baseFunction';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;

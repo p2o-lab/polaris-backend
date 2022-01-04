@@ -33,7 +33,7 @@ import {DataAssemblyController} from '../../DataAssemblyController';
 import {WQC} from './WQC';
 import * as baseDataAssemblyOptions from './WQC.spec.json';
 import {MockupServer} from '../../../../_utils';
-import {WQCDAMockup} from './WQCDA.mockup';
+import {WQCMockup} from './WQC.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -46,7 +46,7 @@ const staticWQC = {
 	}
 };
 
-describe('WQCDA', () => {
+describe('WQC', () => {
 	const dataAssemblyOptionsStatic: DataAssemblyOptions = {
 		name: 'Variable',
 		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/BinMon',
@@ -107,7 +107,7 @@ describe('WQCDA', () => {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			new WQCDAMockup( mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
+			new WQCMockup( mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});

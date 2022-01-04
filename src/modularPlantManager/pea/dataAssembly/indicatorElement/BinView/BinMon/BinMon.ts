@@ -26,7 +26,7 @@
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {OpcUaConnection, DataItem} from '../../../../connection';
 import {BinView, BinViewRuntime} from '../BinView';
-import {OSLevel, OSLevelRuntime} from '../../../_extensions';
+import {OSLevel, OSLevelRuntime} from '../../../baseFunction';
 
 export type BinMonRuntime = BinViewRuntime & OSLevelRuntime & {
 	VFlutTi: DataItem<number>;

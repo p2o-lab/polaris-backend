@@ -27,9 +27,9 @@
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
 import {
 	getServiceSourceModeMockupReferenceJSON, ServiceSourceModeMockup
-} from '../../_extensions/serviceSourceMode/ServiceSourceMode.mockup';
-import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../_extensions/wqcDA/WQCDA.mockup';
-import {getOpModeMockupReferenceJSON, OpModeMockup} from '../../_extensions/opMode/OpMode.mockup';
+} from '../../baseFunction/serviceSourceMode/ServiceSourceMode.mockup';
+import {getWQCMockupReferenceJSON, WQCMockup} from '../../baseFunction/wqc/WQC.mockup';
+import {getOpModeMockupReferenceJSON, OpModeMockup} from '../../baseFunction/opMode/OpMode.mockup';
 import {getOperationElementMockupReferenceJSON, OperationElementMockup} from '../OperationElement.mockup';
 
 
@@ -41,7 +41,7 @@ export function getServParamMockupReferenceJSON(
 			...getOperationElementMockupReferenceJSON(namespace, objectBrowseName),
 			...getOpModeMockupReferenceJSON(namespace,objectBrowseName),
 			...getServiceSourceModeMockupReferenceJSON(namespace,objectBrowseName),
-			...getWQCDAMockupReferenceJSON(namespace,objectBrowseName),
+			...getWQCMockupReferenceJSON(namespace,objectBrowseName),
 			Sync: {
 				namespaceIndex: `${namespace}`,
 				nodeId: `${objectBrowseName}.Sync`,
@@ -56,14 +56,14 @@ export class ServParamMockup extends OperationElementMockup{
 	public readonly varSync: boolean = false;
 	protected opMode: OpModeMockup;
 	protected serviceSourceMode: ServiceSourceModeMockup;
-	protected wqc: WQCDAMockup;
+	protected wqc: WQCMockup;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
 		super(namespace, rootNode, variableName);
 
 		this.opMode = new OpModeMockup(namespace, this.mockupNode, this.name);
 		this.serviceSourceMode = new ServiceSourceModeMockup(namespace, this.mockupNode, this.name);
-		this.wqc = new WQCDAMockup(namespace, this.mockupNode, this.name);
+		this.wqc = new WQCMockup(namespace, this.mockupNode, this.name);
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,

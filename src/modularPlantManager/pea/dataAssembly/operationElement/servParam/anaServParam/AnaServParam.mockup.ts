@@ -26,15 +26,15 @@
 // eslint-disable-next-line no-undef
 import Timeout = NodeJS.Timeout;
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {getUnitMockupReferenceJSON, UnitMockup} from '../../../_extensions/unit/Unit.mockup';
+import {getUnitMockupReferenceJSON, UnitMockup} from '../../../baseFunction/unit/Unit.mockup';
 import {
-	getScaleSettingDAMockupReferenceJSON,
+	getScaleSettingsMockupReferenceJSON,
 	ScaleSettingMockup
-} from '../../../_extensions/scaleSettings/ScaleSetting.mockup';
+} from '../../../baseFunction/scaleSettings/ScaleSetting.mockup';
 import {
 	getValueLimitationMockupReferenceJSON,
 	ValueLimitationMockup
-} from '../../../_extensions/valueLimitation/ValueLimitation.mockup';
+} from '../../../baseFunction/valueLimitation/ValueLimitation.mockup';
 import {getServParamMockupReferenceJSON, ServParamMockup} from '../ServParam.mockup';
 
 export function getAnaServParamMockupReferenceJSON(
@@ -44,7 +44,7 @@ export function getAnaServParamMockupReferenceJSON(
 	return ({
 			...getServParamMockupReferenceJSON(namespace, objectBrowseName),
 			...getUnitMockupReferenceJSON(namespace,objectBrowseName),
-			...getScaleSettingDAMockupReferenceJSON(namespace,objectBrowseName,'Float'),
+			...getScaleSettingsMockupReferenceJSON(namespace,objectBrowseName,'Float'),
 			...getValueLimitationMockupReferenceJSON(namespace,objectBrowseName, 'Float'),
 			VExt: {
 				namespaceIndex: `${namespace}`,

@@ -25,9 +25,9 @@
 
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {OpcUaConnection} from '../../../../connection';
-import {FeedbackMonitoringRuntime} from '../../../_extensions';
+import {FeedbackMonitoringRuntime} from '../../../baseFunction';
 import {BinDrv, BinDrvRuntime} from './BinDrv';
-import {FeedbackMonitoring} from '../../../_extensions/feedbackMonitoring/FeedbackMonitoring';
+import {FeedbackMonitoring} from '../../../baseFunction/feedbackMonitoring/FeedbackMonitoring';
 
 export type MonBinDrvRuntime = BinDrvRuntime & FeedbackMonitoringRuntime;
 

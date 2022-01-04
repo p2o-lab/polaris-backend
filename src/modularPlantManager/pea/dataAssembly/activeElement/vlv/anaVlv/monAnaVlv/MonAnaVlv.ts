@@ -25,9 +25,9 @@
 
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {OpcUaConnection, DataItem} from '../../../../../connection';
-import {FeedbackMonitoringRuntime} from '../../../../_extensions';
+import {FeedbackMonitoringRuntime} from '../../../../baseFunction';
 import {AnaVlv, AnaVlvRuntime} from '../AnaVlv';
-import {FeedbackMonitoring} from '../../../../_extensions';
+import {FeedbackMonitoring} from '../../../../baseFunction';
 
 export type MonAnaVlvRuntime = AnaVlvRuntime & FeedbackMonitoringRuntime & {
 	PosReachedFbk: DataItem<boolean>;

@@ -29,7 +29,7 @@ import {
 	Interlock, InterlockRuntime,
 	OpMode, OpModeRuntime,
 	Reset, ResetRuntime
-} from '../../_extensions';
+} from '../../baseFunction';
 import {ActiveElement, ActiveElementRuntime} from '../ActiveElement';
 
 export type DrvRuntime = ActiveElementRuntime & OpModeRuntime & InterlockRuntime & ResetRuntime & {

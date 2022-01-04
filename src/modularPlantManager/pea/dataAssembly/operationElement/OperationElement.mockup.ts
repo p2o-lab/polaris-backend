@@ -24,7 +24,7 @@
  */
 
 import {Namespace, UAObject} from 'node-opcua';
-import {getOSLevelMockupReferenceJSON, OSLevelMockup} from '../_extensions/osLevel/OSLevel.mockup';
+import {getOSLevelMockupReferenceJSON, OSLevelMockup} from '../baseFunction/osLevel/OSLevel.mockup';
 import {DataAssemblyControllerMockup} from '../DataAssemblyController.mockup';
 
 export function getOperationElementMockupReferenceJSON(
