@@ -41,7 +41,7 @@ class FeedbackMonitoring{
 }
 
 FeedbackMonitoringRuntime <-- FeedbackMonitoring
-FeedbackMonitoringDASpec --> FeedbackMonitoring : <<uses>>
-FeedbackMonitoringDASpec --> FeedbackMonitoringDAMockup : <<uses>>
+FeedbackMonitoringSpec --> FeedbackMonitoring : <<uses>>
+FeedbackMonitoringSpec --> FeedbackMonitoringMockup : <<uses>>
 
 @enduml

@@ -25,9 +25,9 @@
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 import {
-	FeedbackMonitoringDAMockup,
-	getFeedbackMonitoringDAMockupReferenceJSON
-} from '../../../../_extensions/feedbackMonitoringDA/FeedbackMonitoringDA.mockup';
+	FeedbackMonitoringMockup,
+	getFeedbackMonitoringMockupReferenceJSON
+} from '../../../../_extensions/feedbackMonitoring/FeedbackMonitoring.mockup';
 import {AnaDrvMockup, getAnaDrvMockupReferenceJSON} from '../AnaDrv.mockup';
 
 
@@ -37,7 +37,7 @@ export function getMonAnaDrvMockupReferenceJSON(
 
 	return ({
 			...getAnaDrvMockupReferenceJSON(namespace, objectBrowseName),
-			...getFeedbackMonitoringDAMockupReferenceJSON(namespace,objectBrowseName),
+			...getFeedbackMonitoringMockupReferenceJSON(namespace,objectBrowseName),
 			RpmErr: {
 				namespaceIndex: `${namespace}`,
 				nodeId: `${objectBrowseName}.RpmErr`,
@@ -79,7 +79,7 @@ export function getMonAnaDrvMockupReferenceJSON(
 
 export class MonAnaDrvMockup extends AnaDrvMockup {
 
-	public feedbackMonitoring: FeedbackMonitoringDAMockup;
+	public feedbackMonitoring: FeedbackMonitoringMockup;
 	
 	public rpmErr = 0;
 	public rpmAHEn = false;
@@ -105,7 +105,7 @@ export class MonAnaDrvMockup extends AnaDrvMockup {
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
 		super(namespace, rootNode, variableName);
 
-		this.feedbackMonitoring= new FeedbackMonitoringDAMockup(namespace,this.mockupNode,this.name);
+		this.feedbackMonitoring= new FeedbackMonitoringMockup(namespace,this.mockupNode,this.name);
 
 		namespace.addVariable({
 			componentOf: rootNode,

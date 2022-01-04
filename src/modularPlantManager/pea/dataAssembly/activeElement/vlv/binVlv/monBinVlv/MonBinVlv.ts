@@ -29,7 +29,7 @@ import {FeedbackMonitoringRuntime} from '../../../../_extensions';
 import {
 	BinVlv, BinVlvRuntime
 } from '../BinVlv';
-import {FeedbackMonitoring} from '../../../../_extensions/feedbackMonitoringDA/FeedbackMonitoring';
+import {FeedbackMonitoring} from '../../../../_extensions/feedbackMonitoring/FeedbackMonitoring';
 
 export type MonBinVlvRuntime = BinVlvRuntime & FeedbackMonitoringRuntime;
 

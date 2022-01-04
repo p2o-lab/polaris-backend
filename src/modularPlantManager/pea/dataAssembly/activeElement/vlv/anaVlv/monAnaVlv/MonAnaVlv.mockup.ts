@@ -25,9 +25,9 @@
 
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
 import {
-	FeedbackMonitoringDAMockup,
-	getFeedbackMonitoringDAMockupReferenceJSON
-} from '../../../../_extensions/feedbackMonitoringDA/FeedbackMonitoringDA.mockup';
+	FeedbackMonitoringMockup,
+	getFeedbackMonitoringMockupReferenceJSON
+} from '../../../../_extensions/feedbackMonitoring/FeedbackMonitoring.mockup';
 import {AnaVlvMockup, getAnaVlvMockupReferenceJSON} from '../AnaVlv.mockup';
 
 
@@ -37,7 +37,7 @@ export function getMonAnaVlvMockupReferenceJSON(
 
 	return ({
 			...getAnaVlvMockupReferenceJSON(namespace, objectBrowseName),
-			...getFeedbackMonitoringDAMockupReferenceJSON(namespace,objectBrowseName),
+			...getFeedbackMonitoringMockupReferenceJSON(namespace,objectBrowseName),
 			PosReachedFbk: {
 				namespaceIndex: `${namespace}`,
 				nodeId: `${objectBrowseName}.PosReachedFbk`,
@@ -64,7 +64,7 @@ export function getMonAnaVlvMockupReferenceJSON(
 
 export class MonAnaVlvMockup extends AnaVlvMockup {
 
-	public feedbackMonitoring: FeedbackMonitoringDAMockup;
+	public feedbackMonitoring: FeedbackMonitoringMockup;
 
 	public posReachedFbk = false;
 	public posTolerance = 0.0;
@@ -75,7 +75,7 @@ export class MonAnaVlvMockup extends AnaVlvMockup {
 
 		super(namespace, rootNode, variableName);
 
-		this.feedbackMonitoring= new FeedbackMonitoringDAMockup(namespace,this.mockupNode,this.name);
+		this.feedbackMonitoring= new FeedbackMonitoringMockup(namespace,this.mockupNode,this.name);
 		
 		namespace.addVariable({
 			componentOf: this.mockupNode,

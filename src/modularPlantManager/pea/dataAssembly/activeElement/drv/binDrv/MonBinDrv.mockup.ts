@@ -25,27 +25,27 @@
 
 import {Namespace, UAObject} from 'node-opcua';
 import {
-	FeedbackMonitoringDAMockup,
-	getFeedbackMonitoringDAMockupReferenceJSON
-} from '../../../_extensions/feedbackMonitoringDA/FeedbackMonitoringDA.mockup';
+	FeedbackMonitoringMockup,
+	getFeedbackMonitoringMockupReferenceJSON
+} from '../../../_extensions/feedbackMonitoring/FeedbackMonitoring.mockup';
 import {BinDrvMockup, getBinDrvMockupReferenceJSON} from './BinDrv.mockup';
 
 
 export function getMonBinDrvMockupReferenceJSON(namespace: number, objectBrowseName: string): object {
 	return ({
 			...getBinDrvMockupReferenceJSON(namespace, objectBrowseName),
-			...getFeedbackMonitoringDAMockupReferenceJSON(namespace,objectBrowseName),
+			...getFeedbackMonitoringMockupReferenceJSON(namespace,objectBrowseName),
 		}
 	);
 }
 
 export class MonBinDrvMockup extends BinDrvMockup{
 
-	public feedbackMonitoring: FeedbackMonitoringDAMockup;
+	public feedbackMonitoring: FeedbackMonitoringMockup;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
 		super(namespace, rootNode, variableName);
-		this.feedbackMonitoring= new FeedbackMonitoringDAMockup(namespace, this.mockupNode, this.name);
+		this.feedbackMonitoring= new FeedbackMonitoringMockup(namespace, this.mockupNode, this.name);
 	}
 
 	public getMonBinDrvMockupJSON(): object {

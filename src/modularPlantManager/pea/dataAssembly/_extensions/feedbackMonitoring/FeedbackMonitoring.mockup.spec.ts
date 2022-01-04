@@ -26,13 +26,13 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../_utils';
-import {FeedbackMonitoringDAMockup} from './FeedbackMonitoringDA.mockup';
+import {FeedbackMonitoringMockup} from './FeedbackMonitoring.mockup';
 import {OpcUaConnection} from '../../../connection';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-describe('FeedbackMonitoringDAMockup', () => {
+describe('FeedbackMonitoringMockup', () => {
     describe('static', () => {
         let mockupServer: MockupServer;
         beforeEach(async()=>{
@@ -40,16 +40,16 @@ describe('FeedbackMonitoringDAMockup', () => {
             await mockupServer.initialize();
         });
 
-        it('should create FeedbackMonitoringDAMockup', async () => {
-            const mockup= new FeedbackMonitoringDAMockup(mockupServer.nameSpace,
+        it('should create FeedbackMonitoringMockup', async () => {
+            const mockup= new FeedbackMonitoringMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
             expect(mockup).to.not.be.undefined;
         });
 
         it('getFeedbackMonitoringMockupReferenceJSON()',  () => {
-            const mockup = new FeedbackMonitoringDAMockup(mockupServer.nameSpace,
+            const mockup = new FeedbackMonitoringMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const json = mockup.getFeedbackMonitoringDAInstanceMockupJSON() as any;
+            const json = mockup.getFeedbackMonitoringInstanceMockupJSON() as any;
 
             expect(Object.keys(json).length).to.equal(6);
             expect(json.MonDynTi).to.not.be.undefined;
@@ -69,7 +69,7 @@ describe('FeedbackMonitoringDAMockup', () => {
             this.timeout(5000);
             mockupServer = new MockupServer();
             await mockupServer.initialize();
-            new FeedbackMonitoringDAMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
+            new FeedbackMonitoringMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
             await mockupServer.start();
             connection = new OpcUaConnection();
             connection.initialize({endpoint: mockupServer.endpoint});

@@ -32,7 +32,7 @@ import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import * as baseDataAssemblyOptions from '../../activeElement/vlv/binVlv/monBinVlv/MonBinVlv.spec.json';
 import {FeedbackMonitoring} from './FeedbackMonitoring';
 import {MockupServer} from '../../../../_utils';
-import {FeedbackMonitoringDAMockup} from './FeedbackMonitoringDA.mockup';
+import {FeedbackMonitoringMockup} from './FeedbackMonitoring.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -68,7 +68,7 @@ describe('FeedbackMonitoring', () => {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			new FeedbackMonitoringDAMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
+			new FeedbackMonitoringMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});

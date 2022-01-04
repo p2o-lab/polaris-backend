@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
  
-export * from './feedbackMonitoringDA/FeedbackMonitoring';
+export * from './feedbackMonitoring/FeedbackMonitoring';
 export * from './interlockDA/Interlock';
 export * from './limitMonitoringDA/LimitMonitoring';
 export * from './opModeDA/OpModeController';
