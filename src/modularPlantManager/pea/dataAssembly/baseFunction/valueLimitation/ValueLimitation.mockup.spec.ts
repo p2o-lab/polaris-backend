@@ -25,11 +25,8 @@
  
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {DataType} from 'node-opcua';
 import {MockupServer} from '../../../../_utils';
 import {getValueLimitationDataItemOptions, ValueLimitationMockup} from './ValueLimitation.mockup';
-import {getLimitMonitoringDataItemOptions, LimitMonitoringMockup} from '../limitMonitoring/LimitMonitoring.mockup';
-import {LimitMonitoringRuntime} from '../limitMonitoring/LimitMonitoring';
 import {ValueLimitationRuntime} from './ValueLimitation';
 
 chai.use(chaiAsPromised);

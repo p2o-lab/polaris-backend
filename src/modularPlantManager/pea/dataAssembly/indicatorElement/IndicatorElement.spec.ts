@@ -27,9 +27,9 @@ import {OpcUaConnection} from '../../connection';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {IndicatorElement, IndicatorElementRuntime} from './IndicatorElement';
+import {IndicatorElement} from './IndicatorElement';
 import {MockupServer} from '../../../_utils';
-import {getIndicatorElementDataItemOptions, getIndicatorElementOptions, IndicatorElementMockup} from './IndicatorElement.mockup';
+import {getIndicatorElementOptions, IndicatorElementMockup} from './IndicatorElement.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;

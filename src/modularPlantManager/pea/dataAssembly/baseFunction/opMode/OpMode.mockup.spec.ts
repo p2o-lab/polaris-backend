@@ -29,7 +29,6 @@ import {MockupServer} from '../../../../_utils';
 import {getOpModeDataItemOptions, OpModeMockup} from './OpMode.mockup';
 import {OpcUaConnection} from '../../../connection';
 import {OperationMode} from '@p2olab/polaris-interface';
-import {InterlockMockup} from '../interlock/Interlock.mockup';
 import {OpModeRuntime} from './OpMode';
 
 

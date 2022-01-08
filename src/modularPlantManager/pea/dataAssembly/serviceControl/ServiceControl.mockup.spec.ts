@@ -168,7 +168,7 @@ describe('ServiceControlMockup', () => {
         describe('ProcedureExt', () => {
 
             it('set and get ProcedureExt, should work', async () => {
-                expect(connection.writeNode('Variable.ProcedureExt', mockupServer.nameSpaceUri, 1, 'UInt32'))
+                expect(connection.writeNode('Variable.ProcedureExt', mockupServer.nameSpaceUri, 1, 'UInt32'));
                 await connection.readNode('Variable.ProcedureExt', mockupServer.nameSpaceUri)
                     .then((dataValue) => expect((dataValue)?.value.value).to.equal(1));
             });

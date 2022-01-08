@@ -31,7 +31,6 @@ import {MockupServer} from '../../../../../_utils';
 import {OpcUaConnection} from '../../../../connection';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {AnaVlvRuntime} from './AnaVlv';
-import {MonAnaVlvMockup} from './monAnaVlv/MonAnaVlv.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;

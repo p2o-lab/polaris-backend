@@ -35,7 +35,7 @@ chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('LockView8', () => {
-	const delay = require('timeout-as-promise');
+
 	let dataAssemblyOptions: DataAssemblyOptions;
 
 	describe('static', () => {

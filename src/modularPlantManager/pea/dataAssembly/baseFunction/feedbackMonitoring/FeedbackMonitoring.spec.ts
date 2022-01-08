@@ -31,7 +31,7 @@ import {DataAssemblyController} from '../../DataAssemblyController';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {FeedbackMonitoring} from './FeedbackMonitoring';
 import {MockupServer} from '../../../../_utils';
-import {FeedbackMonitoringMockup, getFeedbackMonitoringDataItemOptions} from './FeedbackMonitoring.mockup';
+import {FeedbackMonitoringMockup} from './FeedbackMonitoring.mockup';
 import {getMonBinVlvOptions} from '../../activeElement/vlv/binVlv/monBinVlv/MonBinVlv.mockup';
 
 chai.use(chaiAsPromised);

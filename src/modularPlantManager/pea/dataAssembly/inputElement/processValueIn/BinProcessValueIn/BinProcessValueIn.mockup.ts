@@ -24,7 +24,7 @@
  */
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {getInputElementDataItemOptions, getInputElementOptions, InputElementMockup} from '../../InputElement.mockup';
+import {getInputElementDataItemOptions, InputElementMockup} from '../../InputElement.mockup';
 import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
 import {getDataAssemblyOptions} from '../../../DataAssemblyController.mockup';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';

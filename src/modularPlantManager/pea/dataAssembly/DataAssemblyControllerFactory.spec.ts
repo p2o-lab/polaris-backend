@@ -27,13 +27,11 @@ import {
 	BaseDataAssemblyOptions, DataAssemblyOptions
 } from '@p2olab/polaris-interface';
 import {OpcUaConnection} from '../connection';
-import {DataAssemblyController, DataAssemblyControllerFactory} from './index';
+import {DataAssemblyControllerFactory} from './index';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {getDataAssemblyOptions} from './DataAssemblyController.mockup';
-import {OpcUaNodeOptions} from '../connection/DataItemFactory';
-import {getAnaViewOptions} from './indicatorElement/AnaView/AnaView.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;

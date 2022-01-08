@@ -28,8 +28,6 @@ import * as chaiAsPromised from 'chai-as-promised';
 import {BinProcessValueInMockup, getBinProcessValueInDataItemOptions, getBinProcessValueInOptions} from './BinProcessValueIn.mockup';
 import {MockupServer} from '../../../../../_utils';
 import {OpcUaConnection} from '../../../../connection';
-import {ActiveElementMockup, getActiveElementDataItemOptions, getActiveElementOptions} from '../../../activeElement/ActiveElement.mockup';
-import {ActiveElementRuntime} from '../../../activeElement';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {BinProcessValueInRuntime} from './BinProcessValueIn';
 

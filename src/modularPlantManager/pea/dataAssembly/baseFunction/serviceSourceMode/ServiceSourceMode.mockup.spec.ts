@@ -29,7 +29,6 @@ import {MockupServer} from '../../../../_utils';
 import {getServiceSourceModeDataItemOptions, ServiceSourceModeMockup} from './ServiceSourceMode.mockup';
 import {OpcUaConnection} from '../../../connection';
 import {ServiceSourceMode} from '@p2olab/polaris-interface';
-import {LimitMonitoringMockup} from '../limitMonitoring/LimitMonitoring.mockup';
 import {ServiceSourceModeRuntime} from './ServiceSourceModeController';
 
 

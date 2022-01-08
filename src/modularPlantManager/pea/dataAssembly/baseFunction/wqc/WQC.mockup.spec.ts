@@ -27,8 +27,6 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../_utils';
 import {getWQCDataItemOptions, WQCMockup} from './WQC.mockup';
-import {getLimitMonitoringDataItemOptions, LimitMonitoringMockup} from '../limitMonitoring/LimitMonitoring.mockup';
-import {LimitMonitoringRuntime} from '../limitMonitoring/LimitMonitoring';
 import {WQCRuntime} from './WQC';
 
 chai.use(chaiAsPromised);

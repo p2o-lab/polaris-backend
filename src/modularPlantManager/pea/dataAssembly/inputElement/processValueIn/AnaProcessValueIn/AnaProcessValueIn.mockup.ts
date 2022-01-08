@@ -26,7 +26,7 @@
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 import {getScaleSettingsDataItemOptions, ScaleSettingMockup} from '../../../baseFunction/scaleSettings/ScaleSetting.mockup';
 import {getUnitSettingsDataItemOptions, UnitSettingsMockup} from '../../../baseFunction/unitSettings/UnitSettings.mockup';
-import {getInputElementDataItemOptions, getInputElementOptions, InputElementMockup} from '../../InputElement.mockup';
+import {getInputElementDataItemOptions, InputElementMockup} from '../../InputElement.mockup';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
 import {getDataAssemblyOptions} from '../../../DataAssemblyController.mockup';

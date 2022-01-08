@@ -32,7 +32,6 @@ import {LimitMonitoring} from './LimitMonitoring';
 import {DataAssemblyController} from '../../DataAssemblyController';
 import {AnaMon} from '../../indicatorElement';
 import {MockupServer} from '../../../../_utils';
-import {DataType} from 'node-opcua';
 import {LimitMonitoringMockup} from './LimitMonitoring.mockup';
 import {getAnaMonOptions} from '../../indicatorElement/AnaView/AnaMon/AnaMon.mockup';
 

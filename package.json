@@ -32,7 +32,7 @@
     "clrTypeDoc:win32": "(IF EXIST typedoc (rd /s /q typedoc))",
     "dist": "node ./build/index.js",
     "doc": "npm run apidoc && npm run typedoc",
-    "lint": "eslint -f pretty --ext .ts --ignore-pattern \"**/*.spec.ts\" --ignore-pattern \"**/*.mockup.ts\" src",
+    "lint": "eslint -f pretty --ext .ts src",
     "prebuild": "npm run clrBuild && npm run lint",
     "start": "ts-node ./src/index.ts",
     "test": "nyc mocha --exit --require ts-node/register --recursive \"./src/**/*.spec.ts\"",

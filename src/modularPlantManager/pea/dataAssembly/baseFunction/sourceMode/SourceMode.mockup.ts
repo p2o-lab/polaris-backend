@@ -25,9 +25,6 @@
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 import {SourceMode} from '@p2olab/polaris-interface';
-import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
-import {getWQCDataItemOptions} from '../wqc/WQC.mockup';
-
 
 function getSourceModeSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
   return ({

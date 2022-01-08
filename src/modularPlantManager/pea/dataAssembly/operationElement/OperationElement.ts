@@ -30,7 +30,6 @@ import {BaseDataAssemblyRuntime, DataAssemblyController} from '../DataAssemblyCo
 import {PEAController} from '../../PEAController';
 import {catDataAssembly} from '../../../../logging';
 import {OSLevel} from '../baseFunction';
-import {Parameter} from '../../../recipe';
 import {ParameterRequest} from '../ParameterRequest';
 
 export type OperationElementRuntime = BaseDataAssemblyRuntime & OSLevelRuntime
