@@ -342,7 +342,7 @@ export class MtpStateMachine {
       onStartingStatic: (): void  => {this.updateProcedureCur();},
       onResettingStatic: (): void  => {return;}
     }
-  }
+  };
 
   public reconfigure(updatedGuards: Partial<UserDefinedGuard>, updatedActions: Partial<UserDefinedActions>): void {
     const guards: UserDefinedGuard =

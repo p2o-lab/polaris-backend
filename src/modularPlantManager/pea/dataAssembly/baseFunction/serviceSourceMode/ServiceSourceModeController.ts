@@ -78,7 +78,7 @@ export class ServiceSourceModeController{
 
 	public async waitForServiceSourceModeToPassSpecificTest(expectedServiceSourceMode: ServiceSourceMode): Promise<unknown> {
 		await this.dAController.subscribe();
-		return new Promise((resolve, reject) => {
+		return new Promise<void>((resolve, reject) => {
 			if (this.isServiceSourceMode(expectedServiceSourceMode)) {
 				resolve();
 			} else {

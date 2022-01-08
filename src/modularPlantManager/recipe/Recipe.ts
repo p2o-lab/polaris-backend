@@ -184,7 +184,7 @@ export class Recipe extends (EventEmitter as new() => RecipeEmitter) {
 			throw new Error('Can only pause running recipe');
 		}
 		this.peaSet.forEach((peaController) => {
-			peaController.pauseAllServices();
+			peaController.pauseAllServices().then();
 		});
 	}
 

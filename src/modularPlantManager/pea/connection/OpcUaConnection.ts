@@ -485,7 +485,7 @@ export class OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionEm
 			priority: 10
 		});
 
-		await new Promise((resolve) =>
+		await new Promise<void>((resolve) =>
 			subscriptionItem
 				.on('started', () => {
 					this.logger.info(`[${this.id}] subscription started - ` +

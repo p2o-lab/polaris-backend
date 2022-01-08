@@ -93,7 +93,7 @@ export class AnaManMockup extends OperationElementMockup {
 
 	protected vRbk = 0;
 	protected vMan = 0;
-	protected vOut = 0
+	protected vOut = 0;
 	protected vFbk = 0;
 
 	public readonly scaleSettings: ScaleSettingMockup<'Ana'>;

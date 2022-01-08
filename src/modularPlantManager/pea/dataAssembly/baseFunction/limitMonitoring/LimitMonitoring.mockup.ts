@@ -137,7 +137,7 @@ export class LimitMonitoringMockup<T extends 'Ana' | 'DInt'>{
   protected varWHLim = 0;
   protected varWHAct = false;
   protected varTHEn = false;
-  protected varTHLim = 0
+  protected varTHLim = 0;
   protected varTHAct = false;
 
   protected varTLEn = false;

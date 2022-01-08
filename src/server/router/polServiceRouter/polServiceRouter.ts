@@ -39,7 +39,7 @@ export const polServiceRouter: Router = Router();
  */
 polServiceRouter.get('/', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
-	res.json(await manager.getPOLServices());
+	res.json(manager.getPOLServices());
 }));
 
 /**
@@ -56,7 +56,7 @@ polServiceRouter.get('/:polServiceId', asyncHandler(async (req: Request, res: Re
 			throw new Error('POL Service not found');
 		}
 		res.json(polService.json());
-	} catch (err) {
+	} catch (err: any) {
 		res.status(400).send(err.toString());
 	}
 }));
@@ -72,7 +72,7 @@ polServiceRouter.delete('/:polServiceId', asyncHandler(async (req: Request, res:
 		const manager: ModularPlantManager = req.app.get('manager');
 		manager.removePOLService(req.params.polServiceId);
 		res.send({status: 'Successful deleted', id: req.params.polServiceId});
-	} catch (err) {
+	} catch (err: any) {
 		res.status(400).send(err.toString());
 	}
 }));

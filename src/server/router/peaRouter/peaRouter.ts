@@ -44,7 +44,7 @@ peaRouter.post('/loadPEA', async (req, res) => {
 	try {
 		await manager.loadPEAController(req.body.id);
 		res.status(200).send('"Success!"');
-	} catch (e) {
+	} catch (e: any) {
 		console.log(e);
 		res.status(500).send(e.toString());
 	}
@@ -59,7 +59,7 @@ peaRouter.get('/allPEAs', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
 	try {
 		res.json(manager.getAllPEAControllers());
-	} catch (e) {
+	} catch (e: any) {
 		console.log(e);
 		res.status(500).send(e.toString());
 	}
@@ -75,7 +75,7 @@ peaRouter.get('/:peaId', (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
 	try {
 		res.send(manager.getPEAController(req.params.peaId).json());
-	} catch (e) {
+	} catch (e: any) {
 		console.log(e);
 		res.status(constants.HTTP_STATUS_NOT_FOUND).send(e.toString());
 	}
@@ -93,7 +93,7 @@ peaRouter.get('/:peaId/getConnectionSettings', (req: Request, res: Response) => 
 		const peaController = manager.getPEAController(req.params.peaId);
 		const body = peaController.getCurrentConnectionSettings();
 		res.status(200).send(body);
-	}catch (e) {
+	}catch (e: any) {
 		res.status(500).send(e.toString());
 	}
 });
@@ -110,7 +110,7 @@ peaRouter.post('/:peaId/updateConnectionSettings', asyncHandler(async (req: Requ
 		const peaController = manager.getPEAController(req.params.peaId);
 		peaController.updateConnection(req.body);
 		res.status(200).send('"'+'Successfully updated the connection settings!'+'"');
-	} catch(e){
+	} catch(e: any){
 		res.status(500).send(e.toString());
 	}
 }));
@@ -138,7 +138,7 @@ peaRouter.post('/:peaId/connect', asyncHandler(async (req: Request, res: Respons
 		const pea = manager.getPEAController(req.params.peaId);
 		await pea.connectAndSubscribe();
 		res.status(200).send({peaId: pea.id, status: 'Successfully connected'});
-	} catch (e) {
+	} catch (e: any) {
 		res.status(500).send(e.toString());
 		console.log(e);
 	}
@@ -156,7 +156,7 @@ peaRouter.post('/:peaId/disconnect', asyncHandler(async (req: Request, res: Resp
 		const pea = manager.getPEAController(req.params.peaId);
 		await pea.disconnectAndUnsubscribe();
 		res.status(200).send({peaId: pea.id, status: 'Successfully disconnected'});
-	}catch (e) {
+	}catch (e: any) {
 		console.log(e);
 		res.status(500).send(e.toString());
 	}
@@ -174,7 +174,7 @@ peaRouter.delete('/:peaId', asyncHandler(async (req: Request, res: Response) => 
 	try {
 		await manager.removePEAController(req.params.peaId);
 		res.status(200).send({peaId: req.params.peaId, status: 'Successfully deleted'});
-	} catch (e) {
+	} catch (e: any) {
 		console.log(e);
 		res.status(500).send(e.toString());
 	}
@@ -205,7 +205,7 @@ peaRouter.post('/:peaId/service/:serviceName', asyncHandler(async (req: Request,
 			await service.setParameters(req.body.parameters, manager.peas);
 		}
 		res.json(service.json());
-	}catch(e){
+	}catch(e: any){
 		console.log(e);
 		res.status(500).send('"'+e.toString()+'"');
 	}
@@ -244,7 +244,7 @@ peaRouter.post('/:peaId/service/:serviceName/:command', asyncHandler(async (req:
 			command: req.params.command,
 			status: 'Command successfully send'
 		});
-	} catch (e) {
+	} catch (e: any) {
 		console.log(e);
 		res.status(500).send(e.toString());
 	}
@@ -263,7 +263,7 @@ peaRouter.get('/:peaId/service/:serviceName', asyncHandler(async (req: Request, 
 		const service = manager.getService(req.params.peaId, req.params.serviceName);
 		res.json(service.json());
 	}
-	catch(e){
+	catch(e: any){
 		console.log(e);
 		res.status(500).send(e.toString());
 	}

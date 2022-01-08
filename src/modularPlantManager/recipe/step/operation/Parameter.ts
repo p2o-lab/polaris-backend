@@ -93,8 +93,8 @@ export class Parameter {
 			);
 			this.expression = extraction.expression;
 			this.scopeArray.push(...extraction.scopeItems);
-		} catch (err) {
-			throw new Error('Parsing error for Parameter ' + err.toString());
+		} catch (e) {
+			throw new Error(`Parsing error for Parameter ${(e as Error).message}`);
 		}
 		this.logger.debug(`Scope array: ${this.scopeArray.map((s) => s.dataAssembly.name)}`);
 

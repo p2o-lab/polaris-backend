@@ -262,7 +262,7 @@ export class ParameterRequest {
 			);
 			this.expression = extraction.expression;
 			this.scopeArray.push(...extraction.scopeItems);
-		} catch (err) {
+		} catch (err: any) {
 			throw new Error('Parsing error for Parameter ' + err.toString());
 		}
 		this.logger.debug(`Scope array: ${this.scopeArray.map((s) => s.dataAssembly.name)}`);

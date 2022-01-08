@@ -28,4 +28,4 @@
  * see https://basarat.gitbooks.io/typescript/docs/types/mixins.html
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type Constructor<T = {}> = new (...args: any[]) => T;
+export type Constructor<T = Record<string, never>> = new (...args: any[]) => T;

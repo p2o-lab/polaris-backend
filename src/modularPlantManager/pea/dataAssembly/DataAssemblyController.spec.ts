@@ -61,7 +61,7 @@ describe('DataAssembly', () => {
 
         it('should fail with undefined DataItems', () => {
             expect(() => new DataAssemblyController(
-                {dataItems:undefined as any, name:'test', metaModelRef:'Test'}, emptyOPCUAConnection)
+                {dataItems: undefined as any, name:'test', metaModelRef:'Test'}, emptyOPCUAConnection)
             ).to.throw('Creating DataAssemblyController Error: No Communication dataAssemblies found in DataAssemblyOptions');
         });
 

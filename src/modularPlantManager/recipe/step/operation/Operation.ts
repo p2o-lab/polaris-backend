@@ -110,9 +110,9 @@ export class Operation {
 				this.state = 'completed';
 				this.emitter.emit('changed', 'completed');
 				this.emitter.removeAllListeners('changed');
-			} catch (err) {
+			} catch (e) {
 				numberOfTries++;
-				catOperation.debug(`Operation could not be executed due to error: : ${err.toString()}`);
+				catOperation.debug(`Operation could not be executed due to error: ${(e as Error).message}`);
 				if (numberOfTries === Operation.MAX_RETRIES) {
 					this.state = 'aborted';
 					this.emitter.emit('changed', 'aborted');

@@ -84,8 +84,8 @@ recipeRouter.delete('/:recipeId', (req: Request, res: Response) => {
 	try {
 		manager.removeRecipe(req.params.recipeId);
 		res.send({status: 'Successful deleted', id: req.params.recipeId});
-	} catch (err) {
-		res.status(400).send(err.toString());
+	} catch (e) {
+		res.status(400).send((e as Error).message);
 	}
 });
 

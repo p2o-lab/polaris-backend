@@ -52,7 +52,6 @@ const optionDefinitions = [
 	},
 	{
 		name: 'polService',
-		alias: 'ps',
 		type: String,
 		multiple: true,
 		typeLabel: '{underline polServicePath[]}',
@@ -109,7 +108,7 @@ const sections = [
 let options;
 try {
 	options = commandLineArgs(optionDefinitions);
-} catch (err) {
+} catch (err: any) {
 	console.log('Error: Could not parse commandNode line arguments', err.toString());
 	console.log(commandLineUsage(sections));
 }
@@ -129,7 +128,7 @@ if (options) {
 			console.log(`Load PEAs from ${options.peas}`);
 			options.peas.forEach((pea: string) => {
 				const peasOptions = JSON.parse(fs.readFileSync(pea).toString());
-				manager.loadPEAController(peasOptions);
+				manager.loadPEAController(peasOptions).then();
 			});
 			manager.peas.forEach((p) =>
 				p.connectAndSubscribe()

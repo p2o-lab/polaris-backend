@@ -123,10 +123,10 @@ export abstract class DynamicDataItem<T extends string | number | boolean> exten
 		this.writable = options.dynamicDataItemOptions.writable;
 	}
 
-	public abstract async read(): Promise<T>;
+	public abstract read(): Promise<T>;
 	public abstract write<T extends number | string | boolean>(value: T): Promise<void>;
-	public abstract async subscribe(): Promise<any>;
-	public abstract async unsubscribe(): Promise<void>;
+	public abstract subscribe(): Promise<any>;
+	public abstract unsubscribe(): Promise<void>;
 }
 
 

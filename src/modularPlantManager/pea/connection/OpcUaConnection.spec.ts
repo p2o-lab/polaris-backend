@@ -63,7 +63,7 @@ describe('OpcUaConnection', () => {
 		await connection.connect();
 		expect(connection.isConnected()).to.equal(true);
 
-		await new Promise((resolve) => {
+		await new Promise<void>((resolve) => {
 			connection.once('disconnected', () => {
 				expect(connection.isConnected()).to.equal(false);
 				resolve();

@@ -306,7 +306,7 @@ describe('POLService', () => {
 			expect(params[0]).to.have.property('value', '2*t');
 
 			await f1.start();
-			await new Promise((resolve) => {
+			await new Promise<void>((resolve) => {
 				f1.eventEmitter.once('parameterChanged', () => {
 					resolve();
 				});

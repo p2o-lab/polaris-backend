@@ -45,8 +45,7 @@ describe('PEATestServer', () => {
 
 	it('should connect to OPC UA server', async () => {
 		const client = OPCUAClient.create({
-			// eslint-disable-next-line @typescript-eslint/camelcase
-			endpoint_must_exist: false,
+			endpointMustExist: false,
 			connectionStrategy: {
 				maxRetry: 10
 			}

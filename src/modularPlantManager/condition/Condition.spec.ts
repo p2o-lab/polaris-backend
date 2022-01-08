@@ -239,7 +239,7 @@ describe('with MockupServer containing a PEAController', () => {
 			expect(condition).to.have.property('fulfilled', false);
 
 			anaViewMockup.v = 26;
-			await new Promise((resolve) => {
+			await new Promise<void>((resolve) => {
 				condition.once('stateChanged', () => {
 					resolve();
 				});
@@ -279,7 +279,7 @@ describe('with MockupServer containing a PEAController', () => {
 			await delay(100);
 			expect(condition).to.have.property('fulfilled', false);
 			serviceControlMockup.sendCommand(ServiceMtpCommand.COMPLETE);
-			await new Promise((resolve) => {
+			await new Promise<void>((resolve) => {
 				condition.on('stateChanged', function test(state) {
 					if (state) {
 						condition.removeListener('stateChanged', test);
@@ -322,7 +322,7 @@ describe('with MockupServer containing a PEAController', () => {
 
 			serviceControlMockup.sendCommand(ServiceMtpCommand.START);
 			serviceControlMockup.sendCommand(ServiceMtpCommand.COMPLETE);
-			await new Promise((resolve) => {
+			await new Promise<void>((resolve) => {
 				condition.on('stateChanged', (state) => {
 					if (state) {
 						resolve();

@@ -62,7 +62,7 @@ describe('ExternalTrigger', () => {
 
 	it('should work with the sample server', async () => {
 		let et: ExternalTrigger;
-		await new Promise( (resolve) => {
+		await new Promise<void>( (resolve) => {
 			et = new ExternalTrigger('opc.tcp://localhost:4334/Ua/MyLittleServer',
 				'ns=1;s=trigger', resolve);
 			et.startMonitoring();

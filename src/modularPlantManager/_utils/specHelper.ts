@@ -26,7 +26,7 @@
 import {PEAController} from '../PEA';
 
 export function waitForParameterChange(pea: PEAController, parameterName: string, expected?: number | string | boolean): Promise<unknown> {
-	return new Promise((resolve) =>
+	return new Promise<void>((resolve) =>
 		pea.on('parameterChanged', (data) => {
 			if (data.parameter === parameterName && (expected === undefined || data.value === expected)) {
 				resolve();
@@ -37,7 +37,7 @@ export function waitForParameterChange(pea: PEAController, parameterName: string
 }
 
 export function waitForVariableChange(pea: PEAController, variableName: string, expected?: number | string | boolean): Promise<unknown> {
-	return new Promise((resolve) =>
+	return new Promise<void>((resolve) =>
 		pea.on('variableChanged', function test(data) {
 			if (data.variable === variableName && (expected === undefined || data.value === expected)) {
 				resolve();

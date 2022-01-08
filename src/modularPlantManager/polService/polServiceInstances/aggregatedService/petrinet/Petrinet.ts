@@ -77,7 +77,7 @@ export class Petrinet {
 	public async run(): Promise<void> {
 		if (this.initialTransition) {
 			this.listenToTransition(this.initialTransition);
-			await new Promise((resolve) => this.eventEmitter.once('completed', () => resolve()));
+			await new Promise<void>((resolve) => this.eventEmitter.once('completed', () => resolve()));
 		}
 	}
 

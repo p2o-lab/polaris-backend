@@ -108,7 +108,7 @@ export class AnaServParamMockup extends ServParamMockup{
 	protected vOp = 0;
 	protected vInt = 0;
 	protected vReq = 0;
-	protected vOut = 0
+	protected vOut = 0;
 	protected vFbk = 0;
 	
 	public readonly unit: UnitSettingsMockup;

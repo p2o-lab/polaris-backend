@@ -65,7 +65,7 @@ describe('Player', () => {
 			player.enqueue(recipe);
 
 			player.start();
-			await new Promise((resolve) => player.once('completed', resolve));
+			await new Promise<void>((resolve) => player.once('completed', resolve));
 
 			await pea.disconnectAndUnsubscribe();
 		}).timeout(10000);

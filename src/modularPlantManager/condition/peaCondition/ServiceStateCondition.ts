@@ -78,5 +78,5 @@ export class ServiceStateCondition extends PEACondition {
 	private check = (expectedState: ServiceState): void => {
 		this._fulfilled = (expectedState === this.state);
 		this.emit('stateChanged', this._fulfilled);
-	}
+	};
 }
