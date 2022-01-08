@@ -25,65 +25,69 @@
 
 import {OperationMode} from '@p2olab/polaris-interface';
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
+import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
 
-export function getOpModeMockupReferenceJSON(
-	namespace: number,
-	objectBrowseName: string): object {
 
+function getOpModeSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
 	return ({
-			StateChannel: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.StateChannel`,
-				dataType: 'Boolean'
-			},
-			StateOffAut: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.StateOffAut`,
-				dataType: 'Boolean'
-			},
-			StateOpAut: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.StateOpAut`,
-				dataType: 'Boolean'
-			},
-			StateAutAut: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.StateAutAut`,
-				dataType: 'Boolean'
-			},
-			StateOffOp: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.StateOffOp`,
-				dataType: 'Boolean'
-			},
-			StateOpOp: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.StateOpOp`,
-				dataType: 'Boolean'
-			},
-			StateAutOp: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.StateAutOp`,
-				dataType: 'Boolean'
-			},
-			StateOpAct: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.StateOpAct`,
-				dataType: 'Boolean'
-			},
-			StateAutAct: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.StateAutAct`,
-				dataType: 'Boolean'
-			},
-			StateOffAct: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.StateOffAct`,
-				dataType: 'Boolean'
-			}
-		}
-	);
+		StateChannel: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.StateChannel`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		StateOffAut: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.StateOffAut`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		StateOpAut: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.StateOpAut`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		StateAutAut: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.StateAutAut`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		StateOffOp: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.StateOffOp`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		StateOpOp: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.StateOpOp`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		StateAutOp: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.StateAutOp`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		StateOpAct: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.StateOpAct`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		StateAutAct: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.StateAutAct`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		StateOffAct: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.StateOffAct`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions
+	});
 }
+
+
+export function getOpModeDataItemOptions(namespace: number, objectBrowseName: string): object {
+	return getOpModeSpecificDataItemOptions(namespace, objectBrowseName);
+}
+
 
 export class OpModeMockup {
 	public opMode: OperationMode = OperationMode.Offline;
@@ -259,8 +263,8 @@ export class OpModeMockup {
 		return this.opMode === OperationMode.Offline;
 	}
 
-	public getOpModeInstanceMockupJSON(): object {
-		return getOpModeMockupReferenceJSON(
+	public getDataItemOptions(): object {
+		return getOpModeDataItemOptions(
 			this.mockupNode.namespaceIndex,
 			this.mockupNode.browseName.name as string);
 	}

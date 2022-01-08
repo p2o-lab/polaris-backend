@@ -25,10 +25,10 @@
 
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {OpcUaConnection, DataItem} from '../../../../connection';
-import {ScaleSettings, ScaleSettingsRuntime, UnitDataAssemblyRuntime, UnitSettings} from '../../../baseFunction';
-import {InputElement, InputElementRuntime} from '../../InputElement';
+import {ScaleSettings, ScaleSettingsRuntime, UnitSettingsRuntime, UnitSettings} from '../../../baseFunction';
+import {InputElement, InputElementRuntime} from '../../';
 
-export type AnaProcessValueInRuntime = InputElementRuntime & UnitDataAssemblyRuntime & ScaleSettingsRuntime & {
+export type AnaProcessValueInRuntime = InputElementRuntime & UnitSettingsRuntime & ScaleSettingsRuntime & {
 	VExt: DataItem<number>;
 };
 
@@ -39,7 +39,9 @@ export class AnaProcessValueIn extends InputElement {
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
-		this.communication.VExt = this.createDataItem('VExt', 'number');
+		this.communication.VExt = this.createDataItem('VExt', 'number', 'write');
+
+		// TODO: These should be writable therefore new Object required
 		this.unitSettings = new UnitSettings(this);
 		this.scaleSettings = new ScaleSettings(this);
 

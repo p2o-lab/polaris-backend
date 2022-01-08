@@ -25,16 +25,21 @@
  
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {DIntProcessValueInMockup} from './DIntProcessValueIn.mockup';
+import {DIntProcessValueInMockup, getDIntProcessValueInDataItemOptions, getDIntProcessValueInOptions} from './DIntProcessValueIn.mockup';
 import {MockupServer} from '../../../../../_utils';
 import {OpcUaConnection} from '../../../../connection';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {AnaProcessValueInRuntime} from '../AnaProcessValueIn/AnaProcessValueIn';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('DIntProcessValueInMockup', () => {
+
     describe('static', () => {
+
         let mockupServer: MockupServer;
+
         beforeEach(async()=>{
             mockupServer = new MockupServer();
             await mockupServer.initialize();
@@ -44,18 +49,27 @@ describe('DIntProcessValueInMockup', () => {
             const mockup= new DIntProcessValueInMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
             expect(mockup).to.not.be.undefined;
-            //TODO: test more
-
         });
-        it('getDIntProcessValueInMockupReferenceJSON()',  () => {
+
+        it('static DataItemOptions', () => {
+            const options = getDIntProcessValueInDataItemOptions(1, 'Test') as AnaProcessValueInRuntime;
+            expect(Object.keys(options).length).to.equal(5);
+        });
+
+        it('static DataAssemblyOptions', () => {
+            const options = getDIntProcessValueInOptions(1, 'Test') as DataAssemblyOptions;
+            expect(Object.keys(options.dataItems).length).to.equal(7);
+        });
+
+        it('dynamic DataAssemblyOptions', () => {
             const mockup = new DIntProcessValueInMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const json = mockup.getDIntProcessValueInInstanceMockupJSON();
-            expect(json).not.to.be.undefined;
-            expect(Object.keys(json).length).to.equal(5);
-            //TODO: test more
+            const options = mockup.getDataAssemblyOptions();
+
+            expect(Object.keys(options.dataItems).length).to.equal(7);
         });
     });
+
     describe('dynamic', () => {
 
         let mockupServer: MockupServer;
@@ -95,7 +109,5 @@ describe('DIntProcessValueInMockup', () => {
             await connection.readNode('Variable.VExt', mockupServer.nameSpaceUri)
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(0));
         }).timeout(3000);
-
-        //TODO get the rest
     });
 });

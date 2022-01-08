@@ -29,21 +29,21 @@ import {Vlv} from './Vlv';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from './binVlv/monBinVlv/MonBinVlv.spec.json';
 import {MockupServer} from '../../../../_utils';
-import {VlvMockup} from './Vlv.mockup';
+import {getVlvOptions, VlvMockup} from './Vlv.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('Vlv', () => {
-	const dataAssemblyOptions: DataAssemblyOptions = {
-		name: 'Variable',
-		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperationElement/',
-		dataItems: baseDataAssemblyOptions
-	};
-	describe('', () => {
+
+	let dataAssemblyOptions: DataAssemblyOptions;
+
+	describe('static', () => {
+
 		const emptyOPCUAConnection = new OpcUaConnection();
+		dataAssemblyOptions = getVlvOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
+
 		it('should create Vlv',  () => {
 
 			const dataAssemblyController = new Vlv(dataAssemblyOptions, emptyOPCUAConnection);
@@ -76,7 +76,8 @@ describe('Vlv', () => {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			new VlvMockup( mockupServer.nameSpace, mockupServer.rootObject,'Variable');
+			const vlvMockup = new VlvMockup( mockupServer.nameSpace, mockupServer.rootObject,'Variable');
+			dataAssemblyOptions = vlvMockup.getDataAssemblyOptions();
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});

@@ -26,17 +26,21 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 
-import {PIDCtrlMockup} from './PIDCtrl.mockup';
+import {getPIDCtrlDataItemOptions, getPIDCtrlOptions, PIDCtrlMockup} from './PIDCtrl.mockup';
 import {MockupServer} from '../../../../_utils';
 import {OpcUaConnection} from '../../../connection';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {PIDCtrlRuntime} from './PIDCtrl';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('PIDCtrlMockup', () => {
 
-    describe('', () => {
+    describe('static', () => {
+
         let mockupServer: MockupServer;
+
         beforeEach(async()=>{
             mockupServer = new MockupServer();
             await mockupServer.initialize();
@@ -47,13 +51,23 @@ describe('PIDCtrlMockup', () => {
                 mockupServer.rootObject, 'Variable');
             expect(mockup).to.not.be.undefined;
         });
-        it('getPIDCtrlMockupReferenceJSON()',  () => {
+
+        it('static DataItemOptions', () => {
+            const options = getPIDCtrlDataItemOptions(1, 'Test') as PIDCtrlRuntime;
+            expect(Object.keys(options).length).to.equal(43);
+        });
+
+        it('static DataAssemblyOptions', () => {
+            const options = getPIDCtrlOptions(1, 'Test') as DataAssemblyOptions;
+            expect(Object.keys(options.dataItems).length).to.equal(43);
+        });
+
+        it('dynamic DataAssemblyOptions', () => {
             const mockup = new PIDCtrlMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const json = mockup.getPIDCtrlMockupJSON();
-            expect(json).to.not.be.undefined;
-            expect(Object.keys(json).length).to.equal(43);
-            //TODO test more?
+            const options = mockup.getDataAssemblyOptions();
+
+            expect(Object.keys(options.dataItems).length).to.equal(45);
         });
     });
 

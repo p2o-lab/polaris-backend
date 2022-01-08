@@ -28,23 +28,23 @@ import {AnaServParam} from './AnaServParam';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from './AnaServParam.spec.json';
 import {DataAssemblyControllerFactory} from '../../../DataAssemblyControllerFactory';
 import {MockupServer} from '../../../../../_utils';
-import {AnaServParamMockup} from './AnaServParam.mockup';
+import {AnaServParamMockup, getAnaServParamOptions} from './AnaServParam.mockup';
 
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('AnaServParam', () => {
-	const dataAssemblyOptions: DataAssemblyOptions = {
-		name: 'Variable',
-		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperationElement/AnaServParam',
-		dataItems: baseDataAssemblyOptions
-	};
+
+	let dataAssemblyOptions: DataAssemblyOptions;
+
 	describe('static', () => {
+
 		const emptyOPCUAConnection = new OpcUaConnection();
+		dataAssemblyOptions = getAnaServParamOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
+
 		it('should create AnaServParam', () => {
 
 			const dataAssemblyController = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as AnaServParam;
@@ -60,6 +60,7 @@ describe('AnaServParam', () => {
 			expect(dataAssemblyController.communication.VFbk).to.not.be.undefined;
 		});
 	});
+
 	describe('dynamic', () => {
 		let mockupServer: MockupServer;
 		let connection: OpcUaConnection;
@@ -68,7 +69,8 @@ describe('AnaServParam', () => {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			new AnaServParamMockup( mockupServer.nameSpace, mockupServer.rootObject,'Variable');
+			const anaServParamMockup = new AnaServParamMockup( mockupServer.nameSpace, mockupServer.rootObject,'Variable');
+			dataAssemblyOptions = anaServParamMockup.getDataAssemblyOptions();
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});

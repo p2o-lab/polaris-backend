@@ -24,36 +24,55 @@
  */
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {getOSLevelMockupReferenceJSON, OSLevelMockup} from '../../../baseFunction/osLevel/OSLevel.mockup';
-import {BinViewMockup, getBinViewMockupReferenceJSON} from '../BinView.mockup';
+import {getOSLevelDataItemOptions, OSLevelMockup} from '../../../baseFunction/osLevel/OSLevel.mockup';
+import {BinViewMockup, getBinViewDataItemOptions} from '../BinView.mockup';
+import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
+import {getDataAssemblyOptions} from '../../../DataAssemblyController.mockup';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 
-export function getBinMonMockupReferenceJSON(namespace: number, objectBrowseName: string): object {
-	return (
-		{
-			...getOSLevelMockupReferenceJSON(namespace, objectBrowseName),
-			...getBinViewMockupReferenceJSON(namespace,objectBrowseName),
-			VFlutEn: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VFlutEn`,
-				dataType: 'Boolean'
-			},
-			VFlutTi: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VFlutTi`,
-				dataType: 'Float'
-			},
-			VFlutCnt: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VFlutCnt`,
-				dataType: 'Int16'
-			},
-			VFlutAct: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VFlutAct`,
-				dataType: 'Boolean'
-			}
-		}
+const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/BinView/BinMon';
+
+function getBinMonSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
+	return ({
+		VFlutEn: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.VFlutEn`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		VFlutTi: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.VFlutTi`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions,
+		VFlutCnt: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.VFlutCnt`,
+			dataType: 'Int16'
+		} as OpcUaNodeOptions,
+		VFlutAct: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.VFlutAct`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions
+	});
+}
+
+export function getBinMonDataItemOptions(namespace: number, objectBrowseName: string): object {
+	return ({
+			...getBinViewDataItemOptions(namespace, objectBrowseName),
+			...getOSLevelDataItemOptions(namespace, objectBrowseName),
+			...getBinMonSpecificDataItemOptions(namespace, objectBrowseName),
+		} as OpcUaNodeOptions
 	);
+}
+
+export function getBinMonOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
+	const options = getDataAssemblyOptions(name, tagName, tagDescription);
+	options.metaModelRef = metaModelReference;
+	options.dataItems = {
+		...options.dataItems,
+		...getBinMonDataItemOptions(namespace, objectBrowseName)};
+	return options;
 }
 
 export class BinMonMockup extends BinViewMockup{
@@ -126,9 +145,15 @@ export class BinMonMockup extends BinViewMockup{
 		});
 	}
 
-	public getBinMonInstanceMockupJSON(): object {
-		return getBinMonMockupReferenceJSON(
-			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name as string);
+
+	public getDataAssemblyOptions(): DataAssemblyOptions {
+		const options = super.getDataAssemblyOptions();
+		options.metaModelRef = metaModelReference;
+		options.dataItems = {
+			...options.dataItems,
+			...this.osLevel.getDataItemOptions(),
+			...getBinMonSpecificDataItemOptions(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
+		};
+		return options;
 	}
 }

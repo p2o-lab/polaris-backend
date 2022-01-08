@@ -26,58 +26,80 @@
 // eslint-disable-next-line no-undef
 import Timeout = NodeJS.Timeout;
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {getUnitMockupReferenceJSON, UnitMockup} from '../../../baseFunction/unit/Unit.mockup';
+import {getUnitSettingsDataItemOptions, UnitSettingsMockup} from '../../../baseFunction/unitSettings/UnitSettings.mockup';
 import {
-	getScaleSettingsMockupReferenceJSON,
+	getScaleSettingsDataItemOptions,
 	ScaleSettingMockup
 } from '../../../baseFunction/scaleSettings/ScaleSetting.mockup';
 import {
-	getValueLimitationMockupReferenceJSON,
+	getValueLimitationDataItemOptions,
 	ValueLimitationMockup
 } from '../../../baseFunction/valueLimitation/ValueLimitation.mockup';
-import {getServParamMockupReferenceJSON, ServParamMockup} from '../ServParam.mockup';
+import {getServParamDataItemOptions, ServParamMockup} from '../ServParam.mockup';
+import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
+import {getDataAssemblyOptions} from '../../../DataAssemblyController.mockup';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 
-export function getAnaServParamMockupReferenceJSON(
-	namespace: number,
-	objectBrowseName: string): object {
+const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/OperationElement/AnaServParam';
 
+function getAnaServParamSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
 	return ({
-			...getServParamMockupReferenceJSON(namespace, objectBrowseName),
-			...getUnitMockupReferenceJSON(namespace,objectBrowseName),
-			...getScaleSettingsMockupReferenceJSON(namespace,objectBrowseName,'Float'),
-			...getValueLimitationMockupReferenceJSON(namespace,objectBrowseName, 'Float'),
-			VExt: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VExt`,
-				dataType: 'Float'
-			},
-			VOp: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VOp`,
-				dataType: 'Float'
-			},
-			VInt: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VInt`,
-				dataType: 'Float'
-			},
-			VReq: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VReq`,
-				dataType: 'Float'
-			},
-			VOut: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VOut`,
-				dataType: 'Float'
-			},
-			VFbk: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VFbk`,
-				dataType: 'Float'
-			}
-		}
+		VExt: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.VExt`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions,
+		VOp: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.VOp`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions,
+		VInt: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.VInt`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions,
+		VReq: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.VReq`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions,
+		VOut: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.VOut`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions,
+		VFbk: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.VFbk`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions,
+		Sync: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.Sync`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions
+	});
+}
+
+export function getAnaServParamDataItemOptions(namespace: number, objectBrowseName: string): object {
+	return ({
+			...getServParamDataItemOptions(namespace, objectBrowseName),
+			...getUnitSettingsDataItemOptions(namespace, objectBrowseName),
+			...getScaleSettingsDataItemOptions(namespace, objectBrowseName, 'Ana'),
+			...getValueLimitationDataItemOptions(namespace, objectBrowseName, 'Ana'),
+			...getAnaServParamSpecificDataItemOptions(namespace, objectBrowseName),
+		} as OpcUaNodeOptions
 	);
+}
+
+export function getAnaServParamOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
+	const options = getDataAssemblyOptions(name, tagName, tagDescription);
+	options.metaModelRef = metaModelReference;
+	options.dataItems = {
+		...options.dataItems,
+		...getAnaServParamDataItemOptions(namespace, objectBrowseName)};
+	return options;
 }
 
 export class AnaServParamMockup extends ServParamMockup{
@@ -89,17 +111,17 @@ export class AnaServParamMockup extends ServParamMockup{
 	protected vOut = 0
 	protected vFbk = 0;
 	
-	public readonly unit: UnitMockup;
-	public readonly scaleSettings: ScaleSettingMockup<DataType.Double>;
-	public readonly valueLimitation: ValueLimitationMockup<DataType.Double>;
+	public readonly unit: UnitSettingsMockup;
+	public readonly scaleSettings: ScaleSettingMockup<'Ana'>;
+	public readonly valueLimitation: ValueLimitationMockup<'Ana'>;
 	protected interval: Timeout | undefined;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
 		super(namespace, rootNode, variableName);
 
-		this.unit = new UnitMockup(namespace, this.mockupNode, this.name);
-		this.scaleSettings = new ScaleSettingMockup(namespace, this.mockupNode, this.name, DataType.Double);
-		this.valueLimitation = new ValueLimitationMockup(namespace, this.mockupNode, this.name,DataType.Double);
+		this.unit = new UnitSettingsMockup(namespace, this.mockupNode, this.name);
+		this.scaleSettings = new ScaleSettingMockup(namespace, this.mockupNode, this.name, 'Ana');
+		this.valueLimitation = new ValueLimitationMockup(namespace, this.mockupNode, this.name,'Ana');
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
@@ -177,10 +199,17 @@ export class AnaServParamMockup extends ServParamMockup{
 		});
 	}
 
-	public getAnaServParamMockupJSON(): object {
-		return getAnaServParamMockupReferenceJSON(
-			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name as string);
+	public getDataAssemblyOptions(): DataAssemblyOptions {
+		const options = super.getDataAssemblyOptions();
+		options.metaModelRef = metaModelReference;
+		options.dataItems = {
+			...options.dataItems,
+			...this.unit.getDataItemOptions(),
+			...this.scaleSettings.getDataItemOptions(),
+			...this.valueLimitation.getDataItemOptions(),
+			...getAnaServParamSpecificDataItemOptions(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
+		};
+		return options;
 	}
 
 	public startCurrentTimeUpdate(): void {

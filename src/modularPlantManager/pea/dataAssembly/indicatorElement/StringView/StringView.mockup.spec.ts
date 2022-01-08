@@ -26,13 +26,16 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../_utils';
-import {StringViewMockup} from './StringView.mockup';
+import {getStringViewDataItemOptions, getStringViewOptions, StringViewMockup} from './StringView.mockup';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {StringViewRuntime} from './StringView';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('StringViewMockup', () => {
-    describe('', () => {
+
+    describe('static', () => {
 
         let mockupServer: MockupServer;
 
@@ -45,16 +48,24 @@ describe('StringViewMockup', () => {
             const mockup= new StringViewMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
             expect(mockup).to.not.be.undefined;
-            //TODO: test more
-
         });
-        it('getStringViewMockupReferenceJSON()',  () => {
+
+        it('static DataItemOptions', () => {
+            const options = getStringViewDataItemOptions(1, 'Test') as StringViewRuntime;
+            expect(Object.keys(options).length).to.equal(2);
+        });
+
+        it('static DataAssemblyOptions', () => {
+            const options = getStringViewOptions(1, 'Test') as DataAssemblyOptions;
+            expect(Object.keys(options.dataItems).length).to.equal(4);
+        });
+
+        it('dynamic DataAssemblyOptions', () => {
             const mockup = new StringViewMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const json = mockup.getStringViewInstanceMockupJSON();
-            expect(json).not.to.be.undefined;
-            expect(Object.keys(json).length).to.equal(2);
-            //TODO: test more
+            const options = mockup.getDataAssemblyOptions();
+
+            expect(Object.keys(options.dataItems).length).to.equal(4);
         });
     });
 });

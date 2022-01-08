@@ -25,43 +25,47 @@
 
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
 
-export function getScaleSettingsMockupReferenceJSON<T extends 'Float' | 'Int32' >(
-    namespace: number,
-    objectBrowseName: string,
-    type: T): object {
-
+function getScaleSettingsSpecificDataItemOptions<T extends 'Ana' | 'DInt'>(namespace: number, objectBrowseName: string, type: T): object {
   return ({
     VSclMin: {
       namespaceIndex: `${namespace}`,
       nodeId: `${objectBrowseName}.VSclMin`,
-      dataType: type
+      dataType: (type === 'Ana')? 'Float': 'Int32'
     },
     VSclMax: {
       namespaceIndex: `${namespace}`,
       nodeId: `${objectBrowseName}.VSclMax`,
-      dataType: type
+      dataType: (type === 'Ana')? 'Float': 'Int32'
     }
   });
 }
 
-export class ScaleSettingMockup<T extends DataType.Double | DataType.Int32> {
+
+export function getScaleSettingsDataItemOptions<T extends 'Ana' | 'DInt'>(namespace: number, objectBrowseName: string, type: T): object {
+  return getScaleSettingsSpecificDataItemOptions(namespace, objectBrowseName, type);
+}
+
+
+export class ScaleSettingMockup<T extends 'Ana' | 'DInt'> {
   public vSclMin = 0;
   public vSclMax = 0;
-  private readonly type: DataType;
+  private readonly type: 'Ana' | 'DInt';
+  private readonly dataType: DataType;
   protected mockupNode: UAObject;
 
   constructor(namespace: Namespace, rootNode: UAObject, variableName: string,  type: T) {
     this.type = type;
+    this.dataType = (type === 'Ana')? DataType.Double : DataType.Int32;
     this.mockupNode = rootNode;
 
     namespace.addVariable({
       componentOf: this.mockupNode,
       nodeId: `ns=${namespace.index};s=${variableName}.VSclMin`,
       browseName: `${variableName}.VSclMin`,
-      dataType: this.type,
+      dataType: this.dataType,
       value: {
         get: (): Variant => {
-          return new Variant({dataType: this.type, value: this.vSclMin});
+          return new Variant({dataType: this.dataType, value: this.vSclMin});
         },
       },
     });
@@ -70,20 +74,19 @@ export class ScaleSettingMockup<T extends DataType.Double | DataType.Int32> {
       componentOf: this.mockupNode,
       nodeId: `ns=${namespace.index};s=${variableName}.VSclMax`,
       browseName: `${variableName}.VSclMax`,
-      dataType: this.type,
+      dataType: this.dataType,
       value: {
         get: (): Variant => {
-          return new Variant({dataType: this.type, value: this.vSclMax});
+          return new Variant({dataType: this.dataType, value: this.vSclMax});
         },
       },
     });
     }
 
-  public getScaleSettingsInstanceMockupJSON(): object {
-    return getScaleSettingsMockupReferenceJSON(
+  public getDataItemOptions(): object {
+    return getScaleSettingsDataItemOptions(
         this.mockupNode.namespaceIndex,
         this.mockupNode.browseName.name as string,
-        (this.type === DataType.Double)? 'Float' : 'Int32'
-        );
+        this.type);
   }
 }

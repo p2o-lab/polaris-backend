@@ -27,79 +27,87 @@
 import Timeout = NodeJS.Timeout;
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 
-import {getOSLevelMockupReferenceJSON, OSLevelMockup} from '../../../baseFunction/osLevel/OSLevel.mockup';
-import {getUnitMockupReferenceJSON, UnitMockup} from '../../../baseFunction/unit/Unit.mockup';
+import {getUnitSettingsDataItemOptions, UnitSettingsMockup} from '../../../baseFunction/unitSettings/UnitSettings.mockup';
 import {
-	getScaleSettingsMockupReferenceJSON,
+	getScaleSettingsDataItemOptions,
 	ScaleSettingMockup
 } from '../../../baseFunction/scaleSettings/ScaleSetting.mockup';
 import {
-	getValueLimitationMockupReferenceJSON,
+	getValueLimitationDataItemOptions,
 	ValueLimitationMockup
 } from '../../../baseFunction/valueLimitation/ValueLimitation.mockup';
+import {getOperationElementDataItemOptions, OperationElementMockup} from '../../OperationElement.mockup';
+import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
+import {getDataAssemblyOptions} from '../../../DataAssemblyController.mockup';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 
-export function getAnaManMockupReferenceJSON(
-	namespace: number,
-	objectBrowseName: string): object {
+const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/OperationElement/AnaMan';
 
+function getAnaManSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
 	return ({
-			...getOSLevelMockupReferenceJSON(namespace,objectBrowseName),
-			...getScaleSettingsMockupReferenceJSON(namespace,objectBrowseName,'Float'),
-			...getValueLimitationMockupReferenceJSON(namespace,objectBrowseName, 'Float'),
-			...getUnitMockupReferenceJSON(namespace,objectBrowseName),
-			VOut: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VOut`,
-				dataType: 'Float'
-			},
-			VMan: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VMan`,
-				dataType: 'Float'
-			},
-			VRbk: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VRbk`,
-				dataType: 'Float'
-			},
+		VOut: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.VOut`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions,
+		VMan: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.VMan`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions,
+		VRbk: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.VRbk`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions,
 
-			VFbk: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VFbk`,
-				dataType: 'Float'
-			}
-		}
+		VFbk: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.VFbk`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions
+	});
+}
+
+export function getAnaManDataItemOptions(namespace: number, objectBrowseName: string): object {
+	return ({
+			...getOperationElementDataItemOptions(namespace, objectBrowseName),
+			...getScaleSettingsDataItemOptions(namespace, objectBrowseName, 'Ana'),
+			...getValueLimitationDataItemOptions(namespace, objectBrowseName, 'Ana'),
+			...getUnitSettingsDataItemOptions(namespace, objectBrowseName),
+			...getAnaManSpecificDataItemOptions(namespace, objectBrowseName),
+		} as OpcUaNodeOptions
 	);
 }
 
-export class AnaManMockup {
+export function getAnaManOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
+	const options = getDataAssemblyOptions(name, tagName, tagDescription);
+	options.metaModelRef = metaModelReference;
+	options.dataItems = {
+		...options.dataItems,
+		...getAnaManDataItemOptions(namespace, objectBrowseName)};
+	return options;
+}
 
-	public readonly name: string;
+export class AnaManMockup extends OperationElementMockup {
+
 	protected vRbk = 0;
 	protected vMan = 0;
 	protected vOut = 0
 	protected vFbk = 0;
-	
-	public readonly osLevel: OSLevelMockup;
-	public readonly scaleSettings: ScaleSettingMockup<DataType.Double>;
-	public readonly valueLimitation: ValueLimitationMockup<DataType.Double>;
-	public readonly unit: UnitMockup;
+
+	public readonly scaleSettings: ScaleSettingMockup<'Ana'>;
+	public readonly valueLimitation: ValueLimitationMockup<'Ana'>;
+	public readonly unit: UnitSettingsMockup;
 	protected interval: Timeout | undefined;
-	protected mockupNode: UAObject;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
+		super(namespace, rootNode, variableName);
 
-		this.name = variableName;
+		this.scaleSettings = new ScaleSettingMockup(namespace, this.mockupNode, this.name, 'Ana');
+		this.valueLimitation = new ValueLimitationMockup(namespace, this.mockupNode, this.name,'Ana');
+		this.unit = new UnitSettingsMockup(namespace, this.mockupNode, this.name);
 
-		this.mockupNode = namespace.addObject({
-			organizedBy: rootNode,
-			browseName: variableName
-		});
-		
-		this.osLevel = new OSLevelMockup(namespace, this.mockupNode, this.name);
-		this.scaleSettings = new ScaleSettingMockup(namespace, this.mockupNode, this.name, DataType.Double);
-		this.valueLimitation = new ValueLimitationMockup(namespace, this.mockupNode, this.name,DataType.Double);
-		this.unit = new UnitMockup(namespace, this.mockupNode, this.name);
 		namespace.addVariable({
 			componentOf: this.mockupNode,
 			nodeId: `ns=${namespace.index};s=${variableName}.VMan`,
@@ -150,10 +158,17 @@ export class AnaManMockup {
 		});
 	}
 
-	public getAnaManMockupJSON(): object {
-		return getAnaManMockupReferenceJSON(
-			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name as string);
+	public getDataAssemblyOptions(): DataAssemblyOptions {
+		const options = super.getDataAssemblyOptions();
+		options.metaModelRef = metaModelReference;
+		options.dataItems = {
+			...options.dataItems,
+			...this.scaleSettings.getDataItemOptions(),
+			...this.valueLimitation.getDataItemOptions(),
+			...this.unit.getDataItemOptions(),
+			...getAnaManSpecificDataItemOptions(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
+		};
+		return options;
 	}
 
 	public startCurrentTimeUpdate(): void {

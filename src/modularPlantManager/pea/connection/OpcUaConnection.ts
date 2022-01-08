@@ -530,16 +530,16 @@ export class OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionEm
 		const isURL = isNaN(+namespace);
 		if (isURL) {
 			result = this.findNamespaceIndex(namespace);
-			if (result === -1) {
-				throw new Error(`Namespace ${namespace} is unknown!`);
-			}
 		} else {
 			// check if provided namespace is a known namespace index
 			const namespaceIndex = Number(namespace);
 			const namespaceIndexExists = this.checkNamespaceIndexExists(namespaceIndex);
-			if (!namespaceIndexExists) {
-				throw new Error(`Namespace ${namespace} is unknown!`);
+			if (namespaceIndexExists) {
+				result = namespaceIndex;
 			}
+		}
+		if (result === -1) {
+			throw new Error(`Failed to resolve namespace ${namespace}!`);
 		}
 		return result;
 	}

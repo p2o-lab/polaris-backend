@@ -28,6 +28,8 @@ import {OPCUAServer} from 'node-opcua-server';
 import * as net from 'net';
 import {AccessLevelFlag, AddressSpace, DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 import {catMockupServer} from '../../logging';
+import {PEAOptions} from '@p2olab/polaris-interface';
+import {IDProvider} from './idProvider/IDProvider';
 
 function validateUser(username: string, password: string): boolean {
 	catMockupServer.info(`Try to login with ${username}:${password}`);
@@ -39,7 +41,10 @@ export class MockupServer {
 	public externalTrigger = false;
 
 	private server: OPCUAServer;
+	private serverName = 'MockupServer';
+
 	private initialized = false;
+	private identifier = IDProvider.generateIdentifier();
 	private namespace: Namespace | undefined = undefined;
 	private rootComponent: UAObject | undefined = undefined;
 	private readonly port: number;
@@ -131,7 +136,7 @@ export class MockupServer {
 		// declare a new object
 		const myMockup = this.namespace.addObject({
 			organizedBy: addressSpace.rootFolder.objects,
-			browseName: 'MockupServer'
+			browseName: this.serverName
 		});
 		this.rootComponent = myMockup;
 
@@ -164,5 +169,20 @@ export class MockupServer {
 			}
 		});
 
+	}
+
+	get basicPEAOptions(): PEAOptions{
+		return {
+			name: this.serverName,
+			id: this.identifier,
+			// TODO: Is it wise to provide a default identifier, could be IDProvider.generateIdentifier()
+			pimadIdentifier: 'a289fc13-72e0-49ac-bad9-dd0e6672fcc7',
+			services:[],
+			username: '',
+			password: '',
+			hmiUrl: '',
+			opcuaServerUrl: this.endpoint,
+			dataAssemblies:[]
+		};
 	}
 }

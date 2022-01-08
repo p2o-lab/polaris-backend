@@ -55,7 +55,7 @@ describe('ScopeItem', () => {
 		expect(extraction.scopeItems[0].name).to.equal('PEATestServer.Variable001');
 	});
 
-	it('should work for multiple variables', () => {
+	it('should work for multiple dataAssemblies', () => {
 		const extraction = ScopeItem.extractFromExpressionString(
 			'PEATestServer.Variable001 + PEATestServer.Variable002', [peaTestServer]);
 		expect(extraction.scopeItems).to.have.lengthOf(2);
@@ -63,7 +63,7 @@ describe('ScopeItem', () => {
 		expect(extraction.scopeItems[1].name).to.equal('PEATestServer.Variable002');
 	});
 
-	it('should work for multiple times of same variables', () => {
+	it('should work for multiple times of same dataAssemblies', () => {
 		const extraction = ScopeItem.extractFromExpressionString(
 			'PEATestServer.Variable001 + PEATestServer.Variable001', [peaTestServer]);
 		expect(extraction.scopeItems).to.have.lengthOf(1);
@@ -171,7 +171,7 @@ describe('ScopeItem', () => {
 				}
 			});
 
-			//(peaServer.variables[0] as PEATestNumericVariable).v = 3;
+			//(peaServer.dataAssemblies[0] as PEATestNumericVariable).v = 3;
 			await waitForVariableChange(peaTestServer, 'Variable001', 3);
 			expect(item.getScopeValue()).to.deep.equal({
 				'PEATestServer': {
@@ -179,7 +179,7 @@ describe('ScopeItem', () => {
 				}
 			});
 
-			//(peaServer.variables[0] as PEATestNumericVariable).v = 4;
+			//(peaServer.dataAssemblies[0] as PEATestNumericVariable).v = 4;
 			await waitForVariableChange(peaTestServer, 'Variable001', 4);
 			expect(item.getScopeValue()).to.deep.equal({
 				'PEATestServer': {

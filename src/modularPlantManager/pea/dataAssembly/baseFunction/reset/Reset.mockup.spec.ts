@@ -26,16 +26,19 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../_utils';
-import {ResetMockup} from './Reset.mockup';
+import {getResetDataItemOptions, ResetMockup} from './Reset.mockup';
 import {OpcUaConnection} from '../../../connection';
-
+import {ResetRuntime} from './Reset';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('ResetMockup', () => {
+
     describe('static', () => {
+
         let mockupServer: MockupServer;
+
         beforeEach(async()=>{
             mockupServer = new MockupServer();
             await mockupServer.initialize();
@@ -47,15 +50,25 @@ describe('ResetMockup', () => {
             expect(mockup).to.not.be.undefined;
 
         });
-        it('getResetMockupReferenceJSON()',  () => {
-            const mockup = new ResetMockup(mockupServer.nameSpace,
-                mockupServer.rootObject, 'Variable');
-            const json = mockup.getResetInstanceMockupJSON() as any;
-            expect(Object.keys(json).length).to.equal(2);
-            expect(json.ResetOp).to.not.be.undefined;
-            expect(json.ResetAut).to.not.be.undefined;
+
+        it('static Reset DataItemOptions',  () => {
+            const options = getResetDataItemOptions(1, 'Test') as ResetRuntime;
+
+            expect(Object.keys(options).length).to.equal(2);
+            expect(options.ResetOp).to.not.be.undefined;
+            expect(options.ResetAut).to.not.be.undefined;
+        });
+
+        it('dynamic Reset DataItemOptions',  () => {
+            const mockup = new ResetMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
+            const options = mockup.getDataItemOptions() as ResetRuntime;
+
+            expect(Object.keys(options).length).to.equal(2);
+            expect(options.ResetOp).to.not.be.undefined;
+            expect(options.ResetAut).to.not.be.undefined;
         });
     });
+
     describe('dynamic', () => {
 
         let mockupServer: MockupServer;
@@ -71,6 +84,7 @@ describe('ResetMockup', () => {
             connection.initialize({endpoint: mockupServer.endpoint});
             await connection.connect();
         });
+
         afterEach(async () => {
             await connection.disconnect();
             await mockupServer.shutdown();

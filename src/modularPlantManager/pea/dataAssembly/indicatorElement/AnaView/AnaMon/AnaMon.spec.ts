@@ -29,24 +29,25 @@ import {AnaMon} from './AnaMon';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from './AnaMon.spec.json';
 import {MockupServer} from '../../../../../_utils';
+import {AnaMonMockup, getAnaMonOptions} from './AnaMon.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('AnaMon', () => {
-	const dataAssemblyOptions: DataAssemblyOptions = {
-		name: 'Variable',
-		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/AnaMon',
-		dataItems: baseDataAssemblyOptions
-	};
+
+	let dataAssemblyOptions: DataAssemblyOptions;
+
 	describe('static', () => {
+
 		const emptyOPCUAConnection = new OpcUaConnection();
+		dataAssemblyOptions = getAnaMonOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
+
 		it('should create AnaMon', async () => {
-			const dataAssemblyController: AnaMon= new AnaMon(dataAssemblyOptions, emptyOPCUAConnection);
-			expect(dataAssemblyController.tagName).to.equal('Variable');
-			expect(dataAssemblyController.tagDescription).to.equal('Test');
+			const dataAssemblyController: AnaMon = new AnaMon(dataAssemblyOptions, emptyOPCUAConnection);
+			expect(dataAssemblyController.tagName).to.not.equal(undefined);
+			expect(dataAssemblyController.tagDescription).to.not.equal(undefined);
 			expect(dataAssemblyController.communication.V).to.not.equal(undefined);
 			expect(dataAssemblyController.communication.WQC).to.not.equal(undefined);
 			expect(dataAssemblyController.communication.VSclMax).to.not.equal(undefined);
@@ -87,6 +88,8 @@ describe('AnaMon', () => {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
+			const anaMonMockup = new AnaMonMockup(mockupServer.nameSpace, mockupServer.rootObject,'Variable');
+			dataAssemblyOptions = anaMonMockup.getDataAssemblyOptions();
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});

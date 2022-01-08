@@ -28,25 +28,23 @@ import {BinView} from './BinView';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from './BinView.spec.json';
 import {MockupServer} from '../../../../_utils';
-import {BinViewMockup} from './BinView.mockup';
+import {BinViewMockup, getBinViewOptions} from './BinView.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('BinView', () => {
-	const dataAssemblyOptions: DataAssemblyOptions = {
-		name: 'Variable',
-		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/BinView',
-		dataItems: baseDataAssemblyOptions
-	};
+
+	const dataAssemblyOptions: DataAssemblyOptions = getBinViewOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
+
 	describe('static', () => {
 		const emptyOPCUAConnection = new OpcUaConnection();
 		it('should create BinView', async () => {
 			const dataAssemblyController: BinView = new BinView(dataAssemblyOptions, emptyOPCUAConnection);
-			expect(dataAssemblyController.tagName).to.equal('Variable');
-			expect(dataAssemblyController.tagDescription).to.equal('Test');
+
+			expect(dataAssemblyController.communication.TagName).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.TagDescription).to.not.equal(undefined);
 			expect(dataAssemblyController.communication.WQC).to.not.equal(undefined);
 			expect(dataAssemblyController.communication.V).to.not.equal(undefined);
 			expect(dataAssemblyController.communication.VState0).to.not.equal(undefined);

@@ -150,7 +150,7 @@ export class Service extends BaseService {
 	public async subscribeToService(): Promise<ServiceEmitter> {
 		this.logger.info(`[${this.qualifiedName}] Subscribe to service`);
 		this.serviceControl
-			.on('CommandEnable', () => {
+			.on('CommandEn', () => {
 				this.logger.debug(`[${this.qualifiedName}] ControlEnable changed: ` +
 					`${JSON.stringify(this.commandEnable)}`);
 				this.eventEmitter.emit('controlEnable', this.commandEnable);
@@ -164,7 +164,7 @@ export class Service extends BaseService {
 						sourceMode: this.serviceControl.serviceSourceMode.getServiceSourceMode()
 					});
 			})
-			.on('State', () => {
+			.on('StateCur', () => {
 				this.logger.debug(`[${this.qualifiedName}] State changed: ` +
 					`${ServiceState[this.state]}`);
 				this.eventEmitter.emit('state', this.state);
@@ -238,34 +238,35 @@ export class Service extends BaseService {
 		let expectedState='';
 		switch(command){
 			case('start'):
-				expectedState='EXECUTE';
+				expectedState = 'EXECUTE';
 				break;
 			case('stop'):
-				expectedState='STOPPED';
+				expectedState = 'STOPPED';
 				break;
 			case('reset'):
-				expectedState='IDLE';
+				expectedState = 'IDLE';
 				break;
 			case('abort'):
-				expectedState='ABORTED';
+				expectedState = 'ABORTED';
 				break;
 			case('complete'):
-				expectedState='COMPLETED';
+				expectedState = 'COMPLETED';
 				break;
 			case('pause'):
-				expectedState='PAUSED';
+				expectedState = 'PAUSED';
 				break;
 			case('resume'):
-				expectedState='EXECUTE';
+				expectedState = 'EXECUTE';
 				break;
 			case('hold'):
-				expectedState='HOLD';
+				expectedState = 'HOLD';
+				break;
+			case('unhold'):
+				expectedState = 'EXECUTE';
 				break;
 			case('restart'):
-				// TODO is this okay?
-				// on 'restart' the program can't detect a change, because in the end the state stays at 'EXECUTE'
-				if (ServiceState[this.state] === 'EXECUTE') return;
-
+				expectedState = 'EXECUTE';
+				break;
 		}
 		await this.waitForStateChangeWithTimeout(expectedState);
 	}

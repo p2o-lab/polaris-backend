@@ -29,26 +29,25 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyController} from '../../DataAssemblyController';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from '../../activeElement/vlv/binVlv/monBinVlv/MonBinVlv.spec.json';
 import {FeedbackMonitoring} from './FeedbackMonitoring';
 import {MockupServer} from '../../../../_utils';
-import {FeedbackMonitoringMockup} from './FeedbackMonitoring.mockup';
+import {FeedbackMonitoringMockup, getFeedbackMonitoringDataItemOptions} from './FeedbackMonitoring.mockup';
+import {getMonBinVlvOptions} from '../../activeElement/vlv/binVlv/monBinVlv/MonBinVlv.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('FeedbackMonitoring', () => {
-	const dataAssemblyOptions: DataAssemblyOptions = {
-		name: 'Variable',
-		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/ActiveElement/MonBinVlv',
-		dataItems: baseDataAssemblyOptions
-	};
+
+	let dataAssemblyOptions: DataAssemblyOptions;
 
 	describe('static', () => {
 
 		const emptyOPCUAConnection = new OpcUaConnection();
 
 		it('should create FeedbackMonitoring', () => {
+
+			dataAssemblyOptions = getMonBinVlvOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
 			const dataAssemblyController = new DataAssemblyController(dataAssemblyOptions, emptyOPCUAConnection) as any;
 			const feedbackMonitoring = new FeedbackMonitoring(dataAssemblyController);
 			expect(feedbackMonitoring).to.not.to.undefined;

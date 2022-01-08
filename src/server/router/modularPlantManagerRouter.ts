@@ -73,7 +73,7 @@ modularPlantManagerRouter.get('/version', (req: Request, res: Response) => {
  */
 modularPlantManagerRouter.get('/autoReset', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
-	res.json({autoReset: manager.autoreset});
+	res.json({autoReset: manager.autoReset});
 }));
 
 /**
@@ -85,8 +85,8 @@ modularPlantManagerRouter.get('/autoReset', asyncHandler(async (req: Request, re
  */
 modularPlantManagerRouter.post('/autoReset', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
-	manager.autoreset = yn(req.body.autoReset, {default: false});
-	res.json({autoReset: manager.autoreset});
+	manager.autoReset = yn(req.body.autoReset, {default: false});
+	res.json({autoReset: manager.autoReset});
 }));
 
 /**
@@ -136,11 +136,11 @@ modularPlantManagerRouter.get('/logs(.json)?', asyncHandler(async (req: Request,
 }));
 
 /**
- * @api {get} /logs/variables   Get variable logs
+ * @api {get} /logs/dataAssemblies   Get variable logs
  * @apiName GetVariableLogs
  * @apiGroup ModularPlantManager
  */
-modularPlantManagerRouter.get('/logs/variables(.json)?', asyncHandler(async (req: Request, res: Response) => {
+modularPlantManagerRouter.get('/logs/dataAssemblies(.json)?', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
 	res.contentType('application/json').attachment()
 		.send(JSON.stringify(manager.variableArchive.slice(-1000), null, 2));

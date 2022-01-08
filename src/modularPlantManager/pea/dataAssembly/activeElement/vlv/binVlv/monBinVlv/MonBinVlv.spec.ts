@@ -28,9 +28,8 @@ import {OpcUaConnection} from '../../../../../connection';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from './MonBinVlv.spec.json';
 import {MockupServer} from '../../../../../../_utils';
-import {MonBinVlvMockup} from './MonBinVlv.mockup';
+import {getMonBinVlvOptions, MonBinVlvMockup} from './MonBinVlv.mockup';
 
 import {MonBinVlv} from './MonBinVlv';
 
@@ -38,19 +37,19 @@ chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('MonBinVlv', () => {
-	const dataAssemblyOptions: DataAssemblyOptions = {
-		name: 'Variable',
-		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperationElement/MonBinVlv',
-		dataItems: baseDataAssemblyOptions
-	};
-	describe('', () => {
+
+	let dataAssemblyOptions: DataAssemblyOptions;
+
+	describe('static', () => {
+
 		const emptyOPCUAConnection = new OpcUaConnection();
+		dataAssemblyOptions = getMonBinVlvOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
+
 		it('should create MonBinVlv',  () => {
 
 			const dataAssemblyController = new MonBinVlv(dataAssemblyOptions, emptyOPCUAConnection);
 			expect(dataAssemblyController).to.not.be.undefined;
 			expect(dataAssemblyController.feedBackMonitoring).to.not.be.undefined;
-
 		});
 	});
 
@@ -62,7 +61,8 @@ describe('MonBinVlv', () => {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			new MonBinVlvMockup( mockupServer.nameSpace, mockupServer.rootObject,'Variable');
+			const monBinVlvMockup = new MonBinVlvMockup( mockupServer.nameSpace, mockupServer.rootObject,'Variable');
+			dataAssemblyOptions = monBinVlvMockup.getDataAssemblyOptions();
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});

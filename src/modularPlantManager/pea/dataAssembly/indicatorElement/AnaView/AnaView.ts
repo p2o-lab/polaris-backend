@@ -25,10 +25,10 @@
 
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {DataItem, OpcUaConnection} from '../../../connection';
-import {ScaleSettings, ScaleSettingsRuntime, UnitDataAssemblyRuntime, UnitSettings} from '../../baseFunction';
+import {ScaleSettings, ScaleSettingsRuntime, UnitSettingsRuntime, UnitSettings} from '../../baseFunction';
 import {IndicatorElement, IndicatorElementRuntime} from '../IndicatorElement';
 
-export type AnaViewRuntime = IndicatorElementRuntime & UnitDataAssemblyRuntime & ScaleSettingsRuntime & {
+export type AnaViewRuntime = IndicatorElementRuntime & UnitSettingsRuntime & ScaleSettingsRuntime & {
 	V: DataItem<number>;
 };
 

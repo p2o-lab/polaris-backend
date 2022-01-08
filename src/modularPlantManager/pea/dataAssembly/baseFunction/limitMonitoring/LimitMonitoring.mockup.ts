@@ -24,105 +24,112 @@
  */
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
+import {OpcUaNodeOptions} from '../../../connection/DataItemFactory';
 
-export function getLimitMonitoringMockupReferenceJSON(
-    namespace: number,
-    objectBrowseName: string): object {
+function getLimitMonitoringSpecificDataItemOptions<T extends 'Ana' | 'DInt'>(namespace: number, objectBrowseName: string, type: T): object {
   return ({
     VAHEn: {
       namespaceIndex: `${namespace}`,
       nodeId: `${objectBrowseName}.VAHEn`,
       dataType: 'Boolean'
-    },
+    } as OpcUaNodeOptions,
     VAHLim: {
       namespaceIndex: `${namespace}`,
       nodeId: `${objectBrowseName}.VAHLim`,
-      dataType: 'Float'
-    },
+      dataType: (type === 'Ana')? 'Float': 'Int32'
+    } as OpcUaNodeOptions,
     VAHAct: {
       namespaceIndex: `${namespace}`,
       nodeId: `${objectBrowseName}.VAHAct`,
       dataType: 'Boolean'
-    },
+    } as OpcUaNodeOptions,
     VWHEn: {
       namespaceIndex: `${namespace}`,
       nodeId: `${objectBrowseName}.VWHEn`,
       dataType: 'Boolean'
-    },
+    } as OpcUaNodeOptions,
     VWHLim: {
       namespaceIndex: `${namespace}`,
       nodeId: `${objectBrowseName}.VWHLim`,
-      dataType: 'Float'
-    },
+      dataType: (type === 'Ana')? 'Float': 'Int32'
+    } as OpcUaNodeOptions,
     VWHAct: {
       namespaceIndex: `${namespace}`,
       nodeId: `${objectBrowseName}.VWHAct`,
       dataType: 'Boolean'
-    },
+    } as OpcUaNodeOptions,
     VTHEn: {
       namespaceIndex: `${namespace}`,
       nodeId: `${objectBrowseName}.VTHEn`,
       dataType: 'Boolean'
-    },
+    } as OpcUaNodeOptions,
     VTHLim: {
       namespaceIndex: `${namespace}`,
       nodeId: `${objectBrowseName}.VTHLim`,
-      dataType: 'Float'
-    },
+      dataType: (type === 'Ana')? 'Float': 'Int32'
+    } as OpcUaNodeOptions,
     VTHAct: {
       namespaceIndex: `${namespace}`,
       nodeId: `${objectBrowseName}.VTHAct`,
       dataType: 'Boolean'
-    },
+    } as OpcUaNodeOptions,
     VALEn: {
       namespaceIndex: `${namespace}`,
       nodeId: `${objectBrowseName}.VALEn`,
       dataType: 'Boolean'
-    },
+    } as OpcUaNodeOptions,
     VALLim: {
       namespaceIndex: `${namespace}`,
       nodeId: `${objectBrowseName}.VALLim`,
-      dataType: 'Float'
-    },
+      dataType: (type === 'Ana')? 'Float': 'Int32'
+    } as OpcUaNodeOptions,
     VALAct: {
       namespaceIndex: `${namespace}`,
       nodeId: `${objectBrowseName}.VALAct`,
       dataType: 'Boolean'
-    },
+    } as OpcUaNodeOptions,
     VWLEn: {
       namespaceIndex: `${namespace}`,
       nodeId: `${objectBrowseName}.VWLEn`,
       dataType: 'Boolean'
-    },
+    } as OpcUaNodeOptions,
     VWLLim: {
       namespaceIndex: `${namespace}`,
       nodeId: `${objectBrowseName}.VWLLim`,
-      dataType: 'Float'
-    },
+      dataType: (type === 'Ana')? 'Float': 'Int32'
+    } as OpcUaNodeOptions,
     VWLAct: {
       namespaceIndex: `${namespace}`,
       nodeId: `${objectBrowseName}.VWLAct`,
       dataType: 'Boolean'
-    },
+    } as OpcUaNodeOptions,
     VTLEn: {
       namespaceIndex: `${namespace}`,
       nodeId: `${objectBrowseName}.VTLEn`,
       dataType: 'Boolean'
-    },
+    } as OpcUaNodeOptions,
     VTLLim: {
       namespaceIndex: `${namespace}`,
       nodeId: `${objectBrowseName}.VTLLim`,
-      dataType: 'Float'
-    },
+      dataType: (type === 'Ana')? 'Float': 'Int32'
+    } as OpcUaNodeOptions,
     VTLAct: {
       namespaceIndex: `${namespace}`,
       nodeId: `${objectBrowseName}.VTLAct`,
       dataType: 'Boolean'
-    }
+    } as OpcUaNodeOptions
   });
 }
 
-export class LimitMonitoringMockup<T extends DataType.Double | DataType.Int32>{
+
+export function getLimitMonitoringDataItemOptions<T extends 'Ana' | 'DInt'>(namespace: number, objectBrowseName: string, type: T): object {
+  return getLimitMonitoringSpecificDataItemOptions(namespace, objectBrowseName, type);
+}
+
+export class LimitMonitoringMockup<T extends 'Ana' | 'DInt'>{
+  private readonly type: 'Ana' | 'DInt';
+  private readonly dataType: DataType;
+
   protected varAHEn = false;
   protected varAHLim = 0;
   protected varAHAct = false;
@@ -144,10 +151,9 @@ export class LimitMonitoringMockup<T extends DataType.Double | DataType.Int32>{
   protected varALAct = false;
   protected mockupNode: UAObject;
 
-  constructor(namespace: Namespace,
-                        rootNode: UAObject,
-                        variableName: string,
-                        limDataType: T) {
+  constructor(namespace: Namespace, rootNode: UAObject, variableName: string, type: T) {
+    this.type = type;
+    this.dataType = (type === 'Ana')? DataType.Double : DataType.Int32;
     this.mockupNode = rootNode;
 
     namespace.addVariable({
@@ -165,14 +171,14 @@ export class LimitMonitoringMockup<T extends DataType.Double | DataType.Int32>{
       componentOf: rootNode,
       nodeId: `ns=${namespace.index};s=${variableName}.VAHLim`,
       browseName: `${variableName}.VAHLim`,
-      dataType: limDataType,
+      dataType: this.dataType,
       value: {
         get: (): Variant => {
-          return new Variant({dataType: limDataType, value: this.varAHLim});
+          return new Variant({dataType: this.dataType, value: this.varAHLim});
         },
 
         set: (variant: Variant): StatusCodes => {
-          switch (limDataType) {
+          switch (this.dataType) {
             case DataType.Double:
               this.varAHLim = parseFloat(variant.value);
               return StatusCodes.Good;
@@ -209,14 +215,14 @@ export class LimitMonitoringMockup<T extends DataType.Double | DataType.Int32>{
       componentOf: rootNode,
       nodeId: `ns=${namespace.index};s=${variableName}.VWHLim`,
       browseName: `${variableName}.VWHLim`,
-      dataType: limDataType,
+      dataType: this.dataType,
       value: {
         get: (): Variant => {
-          return new Variant({dataType: limDataType, value: this.varWHLim});
+          return new Variant({dataType: this.dataType, value: this.varWHLim});
         },
 
         set: (variant: Variant): StatusCodes => {
-          switch (limDataType) {
+          switch (this.dataType) {
             case DataType.Double:
               this.varWHLim = parseFloat(variant.value);
               return StatusCodes.Good;
@@ -253,14 +259,14 @@ export class LimitMonitoringMockup<T extends DataType.Double | DataType.Int32>{
       componentOf: rootNode,
       nodeId: `ns=${namespace.index};s=${variableName}.VTHLim`,
       browseName: `${variableName}.VTHLim`,
-      dataType: limDataType,
+      dataType: this.dataType,
       value: {
         get: (): Variant => {
-          return new Variant({dataType: limDataType, value: this.varTHLim});
+          return new Variant({dataType: this.dataType, value: this.varTHLim});
         },
 
         set: (variant: Variant): StatusCodes => {
-          switch (limDataType) {
+          switch (this.dataType) {
             case DataType.Double:
               this.varTHLim = parseFloat(variant.value);
               return StatusCodes.Good;
@@ -297,14 +303,14 @@ export class LimitMonitoringMockup<T extends DataType.Double | DataType.Int32>{
       componentOf: rootNode,
       nodeId: `ns=${namespace.index};s=${variableName}.VTLLim`,
       browseName: `${variableName}.VTLLim`,
-      dataType: limDataType,
+      dataType: this.dataType,
       value: {
         get: (): Variant => {
-          return new Variant({dataType: limDataType, value: this.varTLLim});
+          return new Variant({dataType: this.dataType, value: this.varTLLim});
         },
 
         set: (variant: Variant): StatusCodes => {
-          switch (limDataType) {
+          switch (this.dataType) {
             case DataType.Double:
               this.varTLLim = parseFloat(variant.value);
               return StatusCodes.Good;
@@ -341,14 +347,14 @@ export class LimitMonitoringMockup<T extends DataType.Double | DataType.Int32>{
       componentOf: rootNode,
       nodeId: `ns=${namespace.index};s=${variableName}.VWLLim`,
       browseName: `${variableName}.VWLLim`,
-      dataType: limDataType,
+      dataType: this.dataType,
       value: {
         get: (): Variant => {
-          return new Variant({dataType: limDataType, value: this.varWLLim});
+          return new Variant({dataType: this.dataType, value: this.varWLLim});
         },
 
         set: (variant: Variant): StatusCodes => {
-          switch (limDataType) {
+          switch (this.dataType) {
             case DataType.Double:
               this.varWLLim = parseFloat(variant.value);
               return StatusCodes.Good;
@@ -385,14 +391,14 @@ export class LimitMonitoringMockup<T extends DataType.Double | DataType.Int32>{
       componentOf: rootNode,
       nodeId: `ns=${namespace.index};s=${variableName}.VALLim`,
       browseName: `${variableName}.VALLim`,
-      dataType: limDataType,
+      dataType: this.dataType,
       value: {
         get: (): Variant => {
-          return new Variant({dataType: limDataType, value: this.varALLim});
+          return new Variant({dataType: this.dataType, value: this.varALLim});
         },
 
         set: (variant: Variant): StatusCodes => {
-          switch (limDataType) {
+          switch (this.dataType) {
             case DataType.Double:
               this.varALLim = parseFloat(variant.value);
               return StatusCodes.Good;
@@ -416,9 +422,10 @@ export class LimitMonitoringMockup<T extends DataType.Double | DataType.Int32>{
     });
   }
 
-  public getLimitMonitoringInstanceMockupJSON(): object {
-    return getLimitMonitoringMockupReferenceJSON(
+  public getDataItemOptions(): object {
+    return getLimitMonitoringDataItemOptions(
         this.mockupNode.namespaceIndex,
-        this.mockupNode.browseName.name as string);
+        this.mockupNode.browseName.name as string,
+        this.type);
   }
 }

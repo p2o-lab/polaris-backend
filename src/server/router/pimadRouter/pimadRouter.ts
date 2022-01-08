@@ -77,7 +77,7 @@ pimadRouter.post('/addPEA', upload.single('uploadedFile'), async (req, res) => {
 
 	const manager: ModularPlantManager = req.app.get('manager');
 	try{
-		await manager.addPEAToPimadPool(object);
+		await manager.peaProvider.addPEAToPool(object);
 		res.status(200).send('"Success!"');
 	} catch(e){
 		console.log(e);
@@ -93,7 +93,7 @@ pimadRouter.post('/addPEA', upload.single('uploadedFile'), async (req, res) => {
 pimadRouter.get('/allPEAs', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
 	try{
-		const pimadPEAs = await manager.getAllPEAsFromPimadPool();
+		const pimadPEAs = await manager.peaProvider.getAllPEAsFromPEAPool();
 		res.status(200).send(pimadPEAs);
 	} catch(e){
 		console.log(e);
@@ -127,7 +127,7 @@ pimadRouter.get('/:peaId', (req: Request, res: Response) => {
 pimadRouter.delete('/:peaId', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
 	try{
-		await manager.deletePEAFromPimadPool(req.params.peaId);
+		await manager.peaProvider.deletePEAFromPEAPool(req.params.peaId);
 		res.status(200).send('"Successfully deleted PiMAd-PEA!"');
 	} catch(e){
 		console.log(e);

@@ -29,22 +29,22 @@ import {MonAnaDrv} from './MonAnaDrv';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from './MonAnaDrv.spec.json';
 import {MockupServer} from '../../../../../../_utils';
 
-import {MonAnaDrvMockup} from './MonAnaDrv.mockup';
+import {getMonAnaDrvOptions, MonAnaDrvMockup} from './MonAnaDrv.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('MonAnaDrv', () => {
-	const dataAssemblyOptions: DataAssemblyOptions = {
-		name: 'Variable',
-		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/ActiveElement/MonAnaDrv',
-		dataItems: baseDataAssemblyOptions
-	};
-	describe('', () => {
+
+	let dataAssemblyOptions: DataAssemblyOptions;
+
+	describe('static', () => {
+
 		const emptyOPCUAConnection = new OpcUaConnection();
+		dataAssemblyOptions = getMonAnaDrvOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
+
 		it('should create MonAnaDrv',  () => {
 			const dataAssemblyController = new MonAnaDrv(dataAssemblyOptions, emptyOPCUAConnection);
 			expect(dataAssemblyController.feedbackMonitoring).to.not.be.undefined;
@@ -58,7 +58,7 @@ describe('MonAnaDrv', () => {
 			expect(dataAssemblyController.communication.RpmALEn).to.not.be.undefined;
 			expect(dataAssemblyController.communication.RpmALAct).to.not.be.undefined;
 			expect(dataAssemblyController.communication.RpmALLim).to.not.be.undefined;
-			expect(Object.keys(dataAssemblyController.communication).length).to.equal(68);
+			expect(Object.keys(dataAssemblyController.communication).length).to.equal(70);
 		});
 	});
 	describe('dynamic', () => {
@@ -69,7 +69,8 @@ describe('MonAnaDrv', () => {
 			this.timeout(10000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			new MonAnaDrvMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
+			const monAnaDrvMockup =new MonAnaDrvMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
+			dataAssemblyOptions = monAnaDrvMockup.getDataAssemblyOptions();
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});

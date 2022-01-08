@@ -26,22 +26,27 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 
-import {AnaVlvMockup} from './AnaVlv.mockup';
+import {AnaVlvMockup, getAnaVlvDataItemOptions, getAnaVlvOptions} from './AnaVlv.mockup';
 import {MockupServer} from '../../../../../_utils';
 import {OpcUaConnection} from '../../../../connection';
-
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {AnaVlvRuntime} from './AnaVlv';
+import {MonAnaVlvMockup} from './monAnaVlv/MonAnaVlv.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('AnaVlvMockup', () => {
 
-    describe('', () => {
+    describe('static', () => {
+
         let mockupServer: MockupServer;
+
         beforeEach(async()=>{
             mockupServer = new MockupServer();
             await mockupServer.initialize();
         });
+
         it('should create AnaVlvMockup', async () => {
             const mockup= new AnaVlvMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
@@ -49,28 +54,41 @@ describe('AnaVlvMockup', () => {
             expect(mockup.sourceModeMockup).to.not.be.undefined;
 
         });
-        it('getAnaAnaVlvMockupReferenceJSON()',  () => {
+
+        it('static DataItemOptions', () => {
+            const options = getAnaVlvDataItemOptions(2, 'Test') as AnaVlvRuntime;
+            expect(Object.keys(options).length).to.equal(51);
+        });
+
+        it('static DataAssemblyOptions', () => {
+            const options = getAnaVlvOptions(2, 'Test') as DataAssemblyOptions;
+            expect(Object.keys(options.dataItems).length).to.equal(53);
+        });
+
+        it('dynamic DataAssemblyOptions', () => {
             const mockup = new AnaVlvMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const json = mockup.getAnaVlvMockupJSON();
-            expect(json).to.not.be.undefined;
-            expect(Object.keys(json).length).to.equal(51);
-            //TODO test more?
+            const options = mockup.getDataAssemblyOptions();
+
+            expect(Object.keys(options.dataItems).length).to.equal(53);
         });
     });
     describe('dynamic', () => {
 
         let mockupServer: MockupServer;
         let connection: OpcUaConnection;
+
         beforeEach(async function () {
             this.timeout(5000);
             mockupServer = new MockupServer();
             await mockupServer.initialize();
+            new AnaVlvMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
             await mockupServer.start();
             connection = new OpcUaConnection();
             connection.initialize({endpoint: mockupServer.endpoint});
             await connection.connect();
         });
+
         afterEach(async () => {
             await connection.disconnect();
             await mockupServer.shutdown();
@@ -81,7 +99,5 @@ describe('AnaVlvMockup', () => {
             await connection.readNode('Variable.PosMan', mockupServer.nameSpaceUri)
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(1.1));
         }).timeout(3000);
-
-        //TODO get the rest
     });
 });

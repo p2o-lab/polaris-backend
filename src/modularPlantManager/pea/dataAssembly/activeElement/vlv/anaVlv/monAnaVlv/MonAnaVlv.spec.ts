@@ -27,24 +27,23 @@ import {OpcUaConnection} from '../../../../../connection';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from './MonAnaVlv.spec.json';
 import {MockupServer} from '../../../../../../_utils';
-
-import {MonAnaVlvMockup} from './MonAnaVlv.mockup';
+import {getMonAnaVlvOptions, MonAnaVlvMockup} from './MonAnaVlv.mockup';
 import {MonAnaVlv} from './MonAnaVlv';
 
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
-const dataAssemblyOptions: DataAssemblyOptions = {
-	name: 'Variable',
-	metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperationElement/MonAnaMonAnaVlv',
-	dataItems: baseDataAssemblyOptions
-};
 
 describe('MonAnaVlv', () => {
+
+	let dataAssemblyOptions: DataAssemblyOptions;
+
 	describe('static', () => {
+
 		const emptyOPCUAConnection = new OpcUaConnection();
+		dataAssemblyOptions = getMonAnaVlvOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
+
 		it('should create MonAnaMonAnaVlv', () => {
 
 			const dataAssemblyController = new MonAnaVlv(dataAssemblyOptions, emptyOPCUAConnection);
@@ -65,7 +64,8 @@ describe('MonAnaVlv', () => {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			new MonAnaVlvMockup( mockupServer.nameSpace, mockupServer.rootObject,'Variable');
+			const monAnaVlvMockup = new MonAnaVlvMockup( mockupServer.nameSpace, mockupServer.rootObject,'Variable');
+			dataAssemblyOptions = monAnaVlvMockup.getDataAssemblyOptions();
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});

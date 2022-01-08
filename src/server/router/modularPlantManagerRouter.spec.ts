@@ -161,14 +161,14 @@ describe('ModularPlantMangerRoutes', () => {
 					.expect(200, done);
 			});
 
-			it('should provide variables logs', (done) => {
-				request(app).get('/api/logs/variables')
+			it('should provide dataAssemblies logs', (done) => {
+				request(app).get('/api/logs/dataAssemblies')
 					.expect('Content-Type', /json/)
 					.expect(200, done);
 			});
 
 			it('should provide service logs 2', (done) => {
-				request(app).get('/api/logs/variables.json')
+				request(app).get('/api/logs/dataAssemblies.json')
 					.expect('Content-Type', /json/)
 					.expect(200, done);
 			});

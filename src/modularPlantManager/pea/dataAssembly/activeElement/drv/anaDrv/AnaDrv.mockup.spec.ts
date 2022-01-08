@@ -26,34 +26,47 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 
-import {AnaDrvMockup} from './AnaDrv.mockup';
+import {AnaDrvMockup, getAnaDrvDataItemOptions, getAnaDrvOptions} from './AnaDrv.mockup';
 import {MockupServer} from '../../../../../_utils';
 import {OpcUaConnection} from '../../../../connection';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {AnaDrvRuntime} from './AnaDrv';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('AnaDrvMockup', () => {
 
-    describe('', () => {
+    describe('static ', () => {
+
         let mockupServer: MockupServer;
+
         beforeEach(async()=>{
             mockupServer = new MockupServer();
             await mockupServer.initialize();
         });
 
         it('should create AnaDrvMockup', async () => {
-            const mockup= new AnaDrvMockup(mockupServer.nameSpace,
-                mockupServer.rootObject, 'Variable');
+            const mockup= new AnaDrvMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
             expect(mockup).to.not.be.undefined;
-
         });
-        it('getAnaDrvMockupReferenceJSON()',  () => {
+
+        it('static DataItemOptions', () => {
+            const options = getAnaDrvDataItemOptions(1, 'Test') as AnaDrvRuntime;
+            expect(Object.keys(options).length).to.equal(55);
+        });
+
+        it('static DataAssemblyOptions', () => {
+            const options = getAnaDrvOptions(1, 'Test') as DataAssemblyOptions;
+            expect(Object.keys(options.dataItems).length).to.equal(57);
+        });
+
+        it('dynamic DataAssemblyOptions', () => {
             const mockup = new AnaDrvMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const json = mockup.getAnaDrvMockupJSON();
-            expect(json).to.not.be.undefined;
-            expect(Object.keys(json).length).to.equal(55);
+            const options = mockup.getDataAssemblyOptions();
+
+            expect(Object.keys(options.dataItems).length).to.equal(57);
         });
     });
     describe('dynamic', () => {
@@ -65,6 +78,7 @@ describe('AnaDrvMockup', () => {
             this.timeout(5000);
             mockupServer = new MockupServer();
             await mockupServer.initialize();
+            new AnaDrvMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
             await mockupServer.start();
             connection = new OpcUaConnection();
             connection.initialize({endpoint: mockupServer.endpoint});

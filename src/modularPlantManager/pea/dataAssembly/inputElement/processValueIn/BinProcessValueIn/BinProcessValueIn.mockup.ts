@@ -24,31 +24,49 @@
  */
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {getInputElementMockupReferenceJSON, InputElementMockup} from '../../InputElement.mockup';
+import {getInputElementDataItemOptions, getInputElementOptions, InputElementMockup} from '../../InputElement.mockup';
+import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
+import {getDataAssemblyOptions} from '../../../DataAssemblyController.mockup';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 
-export function getBinProcessValueInMockupReferenceJSON(
-	namespace: number,
-	objectBrowseName: string): object {
-	return (
-		{
-			...getInputElementMockupReferenceJSON(namespace, objectBrowseName),
-			VExt: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VExt`,
-				dataType: 'Boolean'
-			},
-			VState0: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VState0`,
-				dataType: 'String'
-			},
-			VState1: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VState1`,
-				dataType: 'String'
-			}
-		}
+const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/InputElement/BinProcessValueIn';
+
+function getBinProcessValueInSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
+	return ({
+		VExt: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.VExt`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		VState0: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.VState0`,
+			dataType: 'String'
+		} as OpcUaNodeOptions,
+		VState1: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.VState1`,
+			dataType: 'String'
+		} as OpcUaNodeOptions
+	});
+}
+
+export function getBinProcessValueInDataItemOptions(namespace: number, objectBrowseName: string): object {
+	return ({
+			...getInputElementDataItemOptions(namespace, objectBrowseName),
+			...getBinProcessValueInSpecificDataItemOptions(namespace, objectBrowseName),
+		} as OpcUaNodeOptions
 	);
+}
+
+export function getBinProcessValueInOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
+	const options = getDataAssemblyOptions(name, tagName, tagDescription);
+	options.metaModelRef = metaModelReference;
+	options.dataItems = {
+		...options.dataItems,
+		...getInputElementDataItemOptions(namespace, objectBrowseName),
+		...getBinProcessValueInDataItemOptions(namespace, objectBrowseName)};
+	return options;
 }
 
 export class BinProcessValueInMockup extends InputElementMockup{
@@ -107,9 +125,13 @@ export class BinProcessValueInMockup extends InputElementMockup{
 		});
 	}
 
-	public getBinProcessValueInInstanceMockupJSON(): object {
-		return getBinProcessValueInMockupReferenceJSON(
-			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name as string);
+	public getDataAssemblyOptions(): DataAssemblyOptions {
+		const options = super.getDataAssemblyOptions();
+		options.metaModelRef = metaModelReference;
+		options.dataItems = {
+			...options.dataItems,
+			...getBinProcessValueInSpecificDataItemOptions(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
+		};
+		return options;
 	}
 }

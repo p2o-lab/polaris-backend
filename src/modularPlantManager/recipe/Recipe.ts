@@ -183,8 +183,8 @@ export class Recipe extends (EventEmitter as new() => RecipeEmitter) {
 		if (this.status !== RecipeState.running) {
 			throw new Error('Can only pause running recipe');
 		}
-		this.peaSet.forEach((p) => {
-			p.pause();
+		this.peaSet.forEach((peaController) => {
+			peaController.pauseAllServices();
 		});
 	}
 
@@ -198,7 +198,7 @@ export class Recipe extends (EventEmitter as new() => RecipeEmitter) {
 			throw new Error('Can only stop running recipe');
 		}
 		catRecipe.info(`Stop recipe ${this.name}`);
-		await Promise.all(Array.from(this.peaSet).map((p) => p.stop()));
+		await Promise.all(Array.from(this.peaSet).map((peaController) => peaController.stopAllServices()));
 		this.status = RecipeState.stopped;
 		if (this.stepListener) {
 			this.stepListener.removeAllListeners('completed');

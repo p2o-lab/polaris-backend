@@ -28,27 +28,26 @@ import {StringView} from './StringView';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from './StringView.spec.json';
 import {MockupServer} from '../../../../_utils';
-import {StringViewMockup} from './StringView.mockup';
+import {getStringViewOptions, StringViewMockup} from './StringView.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('StringView', () => {
-	const dataAssemblyOptions: DataAssemblyOptions = {
-		name: 'Variable',
-		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/StringView',
-		dataItems: baseDataAssemblyOptions
-	};
+
+	let dataAssemblyOptions: DataAssemblyOptions;
 
 	describe('static', () => {
+
 		const emptyOPCUAConnection = new OpcUaConnection();
+		dataAssemblyOptions = getStringViewOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
+
 		it('should create StringView', async () => {
 
 			const dataAssemblyController: StringView = new StringView(dataAssemblyOptions, emptyOPCUAConnection);
-			expect(dataAssemblyController.tagName).to.equal('Variable');
-			expect(dataAssemblyController.tagDescription).to.equal('Test');
+			expect(dataAssemblyController.communication.TagName).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.TagDescription).to.not.equal(undefined);
 			expect(dataAssemblyController.communication.WQC).to.not.equal(undefined);
 			expect(dataAssemblyController.communication.Text).to.not.equal(undefined);
 		});
@@ -58,11 +57,11 @@ describe('StringView', () => {
 		let connection: OpcUaConnection;
 
 		beforeEach(async function () {
-
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			new StringViewMockup( mockupServer.nameSpace, mockupServer.rootObject,'Variable');
+			const stringViewMockup = new StringViewMockup( mockupServer.nameSpace, mockupServer.rootObject,'Variable');
+			dataAssemblyOptions = stringViewMockup.getDataAssemblyOptions();
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});

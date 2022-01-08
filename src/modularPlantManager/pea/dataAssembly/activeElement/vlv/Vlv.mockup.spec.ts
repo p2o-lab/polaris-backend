@@ -26,17 +26,21 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 
-import {VlvMockup} from './Vlv.mockup';
+import {getVlvDataItemOptions, getVlvOptions, VlvMockup} from './Vlv.mockup';
 import {MockupServer} from '../../../../_utils';
 import {OpcUaConnection} from '../../../connection';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {VlvRuntime} from './Vlv';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('VlvMockup', () => {
 
-    describe('', () => {
+    describe('static', () => {
+
         let mockupServer: MockupServer;
+
         beforeEach(async()=>{
             mockupServer = new MockupServer();
             await mockupServer.initialize();
@@ -46,16 +50,26 @@ describe('VlvMockup', () => {
             const mockup= new VlvMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
             expect(mockup).to.not.be.undefined;
-
         });
-        it('getVlvMockupReferenceJSON()',  () => {
+
+        it('static DataItemOptions', () => {
+            const options = getVlvDataItemOptions(1, 'Test') as VlvRuntime;
+            expect(Object.keys(options).length).to.equal(31);
+        });
+
+        it('static DataAssemblyOptions', () => {
+            const options = getVlvOptions(1, 'Test') as DataAssemblyOptions;
+            expect(Object.keys(options.dataItems).length).to.equal(33);
+        });
+
+        it('dynamic DataAssemblyOptions', () => {
             const mockup = new VlvMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const json = mockup.getVlvMockupJSON();
-            expect(json).to.not.be.undefined;
-            expect(Object.keys(json).length).to.equal(31);
-            //TODO test more?
+            const options = mockup.getDataAssemblyOptions();
+
+            expect(Object.keys(options.dataItems).length).to.equal(33);
         });
+
     });
     describe('dynamic', () => {
 

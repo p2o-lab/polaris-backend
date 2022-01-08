@@ -25,17 +25,21 @@
  
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {MonAnaDrvMockup} from './MonAnaDrv.mockup';
+import {getMonAnaDrvDataItemOptions, getMonAnaDrvOptions, MonAnaDrvMockup} from './MonAnaDrv.mockup';
 import {MockupServer} from '../../../../../../_utils';
 import {OpcUaConnection} from '../../../../../connection';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {MonAnaDrvRuntime} from './MonAnaDrv';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('MonAnaDrvMockup', () => {
 
-    describe('', () => {
+    describe('static', () => {
+
         let mockupServer: MockupServer;
+
         beforeEach(async()=>{
             mockupServer = new MockupServer();
             await mockupServer.initialize();
@@ -47,14 +51,25 @@ describe('MonAnaDrvMockup', () => {
             expect(mockup).to.not.be.undefined;
 
         });
-        it('getMonAnaDrvMockupReferenceJSON()',  () => {
+
+        it('static DataItemOptions', () => {
+            const options = getMonAnaDrvDataItemOptions(1, 'Test') as MonAnaDrvRuntime;
+            expect(Object.keys(options).length).to.equal(68);
+        });
+
+        it('static DataAssemblyOptions', () => {
+            const options = getMonAnaDrvOptions(1, 'Test') as DataAssemblyOptions;
+            expect(Object.keys(options.dataItems).length).to.equal(70);
+        });
+
+        it('dynamic DataAssemblyOptions', () => {
             const mockup = new MonAnaDrvMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const json = mockup.getMonAnaDrvMockupJSON();
-            expect(json).to.not.be.undefined;
-            expect(Object.keys(json).length).to.equal(68);
-            //TODO test more?
+            const options = mockup.getDataAssemblyOptions();
+
+            expect(Object.keys(options.dataItems).length).to.equal(70);
         });
+
     });
     describe('dynamic', () => {
 
@@ -71,6 +86,7 @@ describe('MonAnaDrvMockup', () => {
             connection.initialize({endpoint: mockupServer.endpoint});
             await connection.connect();
         });
+
         afterEach(async () => {
             await connection.disconnect();
             await mockupServer.shutdown();
@@ -89,7 +105,6 @@ describe('MonAnaDrvMockup', () => {
         }).timeout(3000);
 
         //TODO get the rest
-
 
     });
 });

@@ -25,8 +25,9 @@
  
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {DiagnosticElementMockup} from './DiagnosticElement.mockup';
+import {DiagnosticElementMockup, getDiagnosticElementDataItemOptions, getDiagnosticElementOptions} from './DiagnosticElement.mockup';
 import {MockupServer} from '../../../_utils';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -47,11 +48,22 @@ describe('DiagnosticElementMockup', () => {
             expect(mockup.wqc).to.not.be.undefined;
         });
 
-        it('getDiagnosticElementMockupReferenceJSON()',  () => {
+        it('static DataItemOptions', () => {
+            const options = getDiagnosticElementDataItemOptions(1, 'Test') as DiagnosticElementMockup;
+            expect(Object.keys(options).length).to.equal(1);
+        });
+
+        it('static DataAssemblyOptions', () => {
+            const options = getDiagnosticElementOptions(1, 'Test') as DataAssemblyOptions;
+            expect(Object.keys(options.dataItems).length).to.equal(3);
+        });
+
+        it('dynamic DataAssemblyOptions', () => {
             const mockup = new DiagnosticElementMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const json = mockup.getDiagnosticElementInstanceMockupJSON();
-            expect(Object.keys(json).length).to .equal(1);
+            const options = mockup.getDataAssemblyOptions();
+
+            expect(Object.keys(options.dataItems).length).to.equal(3);
         });
     });
 });

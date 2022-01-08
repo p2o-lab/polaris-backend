@@ -28,31 +28,31 @@ import {OpcUaConnection} from '../../../connection';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from './AnaView.spec.json';
 import {MockupServer} from '../../../../_utils';
 import {AnaView} from './AnaView';
-import {AnaViewMockup} from './AnaView.mockup';
+import {AnaViewMockup, getAnaViewOptions} from './AnaView.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('AnaView', () => {
-	const dataAssemblyOptions: DataAssemblyOptions = {
-		name: 'Variable',
-		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/AnaView',
-		dataItems: baseDataAssemblyOptions
-	};
+
+	let dataAssemblyOptions: DataAssemblyOptions;
+
 	describe('static', () => {
+
 		const emptyOPCUAConnection = new OpcUaConnection();
+		dataAssemblyOptions = getAnaViewOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
+
 		it('should create AnaView', async () => {
 			const dataAssemblyController: AnaView = new AnaView(dataAssemblyOptions, emptyOPCUAConnection);
-+			expect(dataAssemblyController.communication.V).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.V).to.not.equal(undefined);
 			expect(dataAssemblyController.communication.WQC).to.not.equal(undefined);
 			expect(dataAssemblyController.communication.VSclMax).to.not.equal(undefined);
 			expect(dataAssemblyController.communication.VSclMin).to.not.equal(undefined);
 			expect(dataAssemblyController.communication.VUnit).to.not.equal(undefined);
-			expect(dataAssemblyController.tagName).to.equal('Variable');
-			expect(dataAssemblyController.tagDescription).to.equal('Test');
+			expect(dataAssemblyController.communication.TagName).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.TagDescription).to.not.equal(undefined);
 		});
 	});
 
@@ -61,10 +61,11 @@ describe('AnaView', () => {
 		let connection: OpcUaConnection;
 
 		beforeEach(async function () {
-			this.timeout(4000);
+			this.timeout(5000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			new AnaViewMockup(mockupServer.nameSpace, mockupServer.rootObject,'Variable');
+			const anaViewMockup = new AnaViewMockup(mockupServer.nameSpace, mockupServer.rootObject,'Variable');
+			dataAssemblyOptions = anaViewMockup.getDataAssemblyOptions();
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});

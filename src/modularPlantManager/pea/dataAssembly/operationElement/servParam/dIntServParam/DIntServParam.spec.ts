@@ -27,10 +27,9 @@ import {OpcUaConnection} from '../../../../connection';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from './DIntServParam.spec.json';
 import {DataAssemblyControllerFactory} from '../../../DataAssemblyControllerFactory';
 import {MockupServer} from '../../../../../_utils';
-import {DIntServParamMockup} from './DIntServParam.mockup';
+import {DIntServParamMockup, getDIntServParamOptions} from './DIntServParam.mockup';
 
 import {DIntServParam} from './DIntServParam';
 
@@ -38,13 +37,14 @@ chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('DIntServParam', () => {
-	const dataAssemblyOptions: DataAssemblyOptions = {
-		name: 'Variable',
-		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperationElement/DIntServParam',
-		dataItems: baseDataAssemblyOptions
-	};
-	describe('', () => {
+
+	let dataAssemblyOptions: DataAssemblyOptions;
+
+	describe('static', () => {
+
 		const emptyOPCUAConnection = new OpcUaConnection();
+		dataAssemblyOptions = getDIntServParamOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
+
 		it('should create DIntServParam',  () => {
 
 			const dataAssemblyController = new DIntServParam(dataAssemblyOptions, emptyOPCUAConnection);
@@ -68,7 +68,8 @@ describe('DIntServParam', () => {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			new DIntServParamMockup(mockupServer.nameSpace,	mockupServer.rootObject,'Variable');
+			const dIntServParamMockup = new DIntServParamMockup(mockupServer.nameSpace,	mockupServer.rootObject,'Variable');
+			dataAssemblyOptions = dIntServParamMockup.getDataAssemblyOptions();
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});

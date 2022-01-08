@@ -24,131 +24,150 @@
  */
 
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
-import {getWQCMockupReferenceJSON} from '../../../baseFunction/wqc/WQC.mockup';
-import {DiagnosticElementMockup} from '../../DiagnosticElement.mockup';
+import {DiagnosticElementMockup, getDiagnosticElementDataItemOptions} from '../../DiagnosticElement.mockup';
+import {getDataAssemblyOptions} from '../../../DataAssemblyController.mockup';
+import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 
-export function getLockView4MockupReferenceJSON(namespace: number, objectBrowseName: string): object {
-	return (
-		{	
-			...getWQCMockupReferenceJSON(namespace,objectBrowseName),
-			Logic: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.Logic`,
-				dataType: 'Boolean'
-			},
-			Out: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.Out`,
-				dataType: 'Boolean'
-			},
-			OutQC: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.OutQC`,
-				dataType: 'Byte'
-			},
-			In1En: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In1En`,
-				dataType: 'Boolean'
-			},
-			In1: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In1`,
-				dataType: 'Boolean'
-			},
-			In1QC: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In1QC`,
-				dataType: 'Byte'
-			},
-			In1Inv: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In1Inv`,
-				dataType: 'Boolean'
-			},
-			In1Txt: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In1Txt`,
-				dataType: 'String'
-			},
-			In2En: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In2En`,
-				dataType: 'Boolean'
-			},
-			In2: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In2`,
-				dataType: 'Boolean'
-			},
-			In2QC: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In2QC`,
-				dataType: 'Byte'
-			},
-			In2Inv: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In2Inv`,
-				dataType: 'Boolean'
-			},
-			In2Txt: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In2Txt`,
-				dataType: 'String'
-			},
-			In3En: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In3En`,
-				dataType: 'Boolean'
-			},
-			In3: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In3`,
-				dataType: 'Boolean'
-			},
-			In3QC: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In3QC`,
-				dataType: 'Byte'
-			},
-			In3Inv: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In3Inv`,
-				dataType: 'Boolean'
-			},
-			In3Txt: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In3Txt`,
-				dataType: 'String'
-			},
-			In4En: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In4En`,
-				dataType: 'Boolean'
-			},
-			In4: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In4`,
-				dataType: 'Boolean'
-			},
-			In4QC: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In4QC`,
-				dataType: 'Byte'
-			},
-			In4Inv: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In4Inv`,
-				dataType: 'Boolean'
-			},
-			In4Txt: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In4Txt`,
-				dataType: 'String'
-			}
-		}
+const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/DiagnosticElement/LockView4';
+
+function getLockView4SpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
+	return ({
+		Logic: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.Logic`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		Out: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.Out`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		OutQC: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.OutQC`,
+			dataType: 'Byte'
+		} as OpcUaNodeOptions,
+		In1En: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.In1En`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		In1: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.In1`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		In1QC: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.In1QC`,
+			dataType: 'Byte'
+		} as OpcUaNodeOptions,
+		In1Inv: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.In1Inv`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		In1Txt: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.In1Txt`,
+			dataType: 'String'
+		} as OpcUaNodeOptions,
+		In2En: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.In2En`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		In2: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.In2`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		In2QC: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.In2QC`,
+			dataType: 'Byte'
+		} as OpcUaNodeOptions,
+		In2Inv: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.In2Inv`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		In2Txt: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.In2Txt`,
+			dataType: 'String'
+		} as OpcUaNodeOptions,
+		In3En: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.In3En`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		In3: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.In3`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		In3QC: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.In3QC`,
+			dataType: 'Byte'
+		} as OpcUaNodeOptions,
+		In3Inv: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.In3Inv`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		In3Txt: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.In3Txt`,
+			dataType: 'String'
+		} as OpcUaNodeOptions,
+		In4En: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.In4En`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		In4: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.In4`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		In4QC: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.In4QC`,
+			dataType: 'Byte'
+		} as OpcUaNodeOptions,
+		In4Inv: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.In4Inv`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		In4Txt: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.In4Txt`,
+			dataType: 'String'
+		} as OpcUaNodeOptions
+	});
+}
+
+export function getLockView4DataItemOptions(namespace: number, objectBrowseName: string): object {
+	return ({
+			...getDiagnosticElementDataItemOptions(namespace, objectBrowseName),
+			...getLockView4SpecificDataItemOptions(namespace, objectBrowseName),
+		} as OpcUaNodeOptions
 	);
 }
+
+export function getLockView4Options(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
+	const options = getDataAssemblyOptions(name, tagName, tagDescription);
+	options.metaModelRef = metaModelReference;
+	options.dataItems = {
+		...options.dataItems,
+		...getLockView4DataItemOptions(namespace, objectBrowseName)};
+	return options;
+}
+
 
 export class LockView4Mockup extends DiagnosticElementMockup{
 
@@ -443,9 +462,14 @@ export class LockView4Mockup extends DiagnosticElementMockup{
 		});
 	}
 
-	public getLockView4InstanceMockupJSON(): object {
-		return getLockView4MockupReferenceJSON(
-			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name as string);
+
+	public getDataAssemblyOptions(): DataAssemblyOptions {
+		const options = super.getDataAssemblyOptions();
+		options.metaModelRef = metaModelReference;
+		options.dataItems = {
+			...options.dataItems,
+			...getLockView4SpecificDataItemOptions(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
+		};
+		return options;
 	}
 }

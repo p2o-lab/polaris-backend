@@ -29,22 +29,20 @@ import {LockView4} from './LockView4';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from './LockView4.spec.json';
 import {MockupServer} from '../../../../../_utils';
-import {LockView4Mockup} from './LockView4.mockup';
+import {getLockView4Options, LockView4Mockup} from './LockView4.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('LockView4', () => {
-	const dataAssemblyOptions: DataAssemblyOptions = {
-		name: 'Variable',
-		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/DiagnosticElement/LockView4/',
-		dataItems: baseDataAssemblyOptions
-	};
+
+	let dataAssemblyOptions: DataAssemblyOptions;
 
 	describe('static', () => {
+
 		const emptyOPCUAConnection = new OpcUaConnection();
+		dataAssemblyOptions = getLockView4Options(2, 'Variable', 'Variable') as DataAssemblyOptions;
 
 		it('should create LockView4', async () => {
 			const dataAssemblyController = new LockView4(dataAssemblyOptions, emptyOPCUAConnection);
@@ -62,7 +60,8 @@ describe('LockView4', () => {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			new LockView4Mockup( mockupServer.nameSpace, mockupServer.rootObject,'Variable');
+			const lockView4Mockup = new LockView4Mockup( mockupServer.nameSpace, mockupServer.rootObject,'Variable');
+			dataAssemblyOptions = lockView4Mockup.getDataAssemblyOptions();
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});
@@ -80,7 +79,7 @@ describe('LockView4', () => {
 			const dataAssemblyController = new LockView4(dataAssemblyOptions, connection);
 			await dataAssemblyController.subscribe();
 			await connection.startMonitoring();
-			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
+			await new Promise((resolve => dataAssemblyController.communication.In4Txt.on('changed', resolve)));
 
 			expect(dataAssemblyController.communication.WQC.value).equal(0);
 			expect(dataAssemblyController.communication.Logic.value).equal(false);

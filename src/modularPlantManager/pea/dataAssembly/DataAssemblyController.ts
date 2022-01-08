@@ -28,7 +28,7 @@ import {DataItem, DynamicDataItem, OpcUaConnection, OpcUaDataItem} from '../conn
 
 import {EventEmitter} from 'events';
 import {catDataAssembly} from '../../../logging';
-import {DataItemFactory, DynamicDataItemOptions} from '../connection/DataItemFactory';
+import {DataItemFactory, DataItemOptions, DynamicDataItemOptions} from '../connection/DataItemFactory';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface BaseDataAssemblyRuntime {
@@ -59,7 +59,7 @@ export class DataAssemblyController extends EventEmitter {
 		super();
 		this.options = options;
 		if (!options.dataItems || Object.keys(options.dataItems).length == 0) {
-			throw new Error('Creating DataAssemblyController Error: No Communication variables found in DataAssemblyOptions');
+			throw new Error('Creating DataAssemblyController Error: No Communication dataAssemblies found in DataAssemblyOptions');
 		}
 		this.connection = connection;
 		if (!this.connection) {
@@ -77,9 +77,9 @@ export class DataAssemblyController extends EventEmitter {
 	}
 
 	/**
-	 * subscribe to all changes in any of the variables of a DataAssemblyController
+	 * subscribe to all changes in any of the dataAssemblies of a DataAssemblyController
 	 *
-	 * The appropriate variables are detected via the type of the DataAssemblyController
+	 * The appropriate dataAssemblies are detected via the type of the DataAssemblyController
 	 */
 	public async subscribe(): Promise<DataAssemblyController> {
 		if (!this.subscriptionActive) {
@@ -107,7 +107,7 @@ export class DataAssemblyController extends EventEmitter {
 	}
 
 	/**
-	 * unsubscribe to all changes in any of the variables of a DataAssemblyController
+	 * unsubscribe to all changes in any of the dataAssemblies of a DataAssemblyController
 	 *
 	 */
 	public unsubscribe(): void {
@@ -154,17 +154,25 @@ export class DataAssemblyController extends EventEmitter {
 		const names = typeof name === 'string' ? [name] : name;
 		for (const [key, value] of names.entries()) {
 			if (this.options.dataItems[value as keyof BaseDataAssemblyRuntime]) {
-				const options = this.getDataAssemblyProperty(this.options.dataItems, value as keyof BaseDataAssemblyRuntime) as any as OpcUaNodeOptions;
-				const factoryOptions: DynamicDataItemOptions = {
-					type: type,
-					defaultValue: options.value,
-					dynamicDataItemOptions: {
-						dataType: options.dataType,
-						writable: access === 'write',
-						namespaceIndex: options.namespaceIndex,
-						nodeId: options.nodeId
-					}
-				};
+				const options = this.getDataAssemblyProperty(this.options.dataItems, value as keyof BaseDataAssemblyRuntime) as any;
+				let factoryOptions: DynamicDataItemOptions | DataItemOptions;
+				if ((options as OpcUaNodeOptions).namespaceIndex !== undefined) {
+					factoryOptions = {
+						type: type,
+						defaultValue: options.value,
+						dynamicDataItemOptions: {
+							dataType: options.dataType,
+							writable: access === 'write',
+							namespaceIndex: options.namespaceIndex,
+							nodeId: options.nodeId
+						} as OpcUaNodeOptions
+					} as DynamicDataItemOptions;
+				} else {
+					factoryOptions = {
+						type: type,
+						defaultValue: options.value
+					} as DataItemOptions;
+				}
 				return this.dataItemFactory.create(factoryOptions);
 			}
 		}

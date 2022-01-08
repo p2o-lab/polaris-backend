@@ -24,17 +24,29 @@
  */
 
 import {Namespace, UAObject} from 'node-opcua';
-import {DrvMockup, getDrvMockupReferenceJSON} from '../Drv.mockup';
+import {DrvMockup, getDrvDataItemOptions} from '../Drv.mockup';
+import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
+import {getDataAssemblyOptions} from '../../../DataAssemblyController.mockup';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 
 
-export function getBinDrvMockupReferenceJSON(
-	namespace: number,
-	objectBrowseName: string): object {
+const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/ActiveElement/BinDrv';
 
+
+export function getBinDrvDataItemOptions(namespace: number, objectBrowseName: string): object {
 	return ({
-			...getDrvMockupReferenceJSON(namespace, objectBrowseName)
-		}
+			...getDrvDataItemOptions(namespace, objectBrowseName),
+		} as OpcUaNodeOptions
 	);
+}
+
+export function getBinDrvOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
+	const options = getDataAssemblyOptions(name, tagName, tagDescription);
+	options.metaModelRef = metaModelReference;
+	options.dataItems = {
+		...options.dataItems,
+		...getBinDrvDataItemOptions(namespace, objectBrowseName)};
+	return options;
 }
 
 export class BinDrvMockup extends DrvMockup {
@@ -43,9 +55,9 @@ export class BinDrvMockup extends DrvMockup {
 		super(namespace, rootNode, variableName);
 	}
 
-	public getBinDrvMockupJSON(): object {
-		return getBinDrvMockupReferenceJSON(
-			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name as string);
+	public getDataAssemblyOptions(): DataAssemblyOptions {
+		const options = super.getDataAssemblyOptions();
+		options.metaModelRef = metaModelReference;
+		return options;
 	}
 }

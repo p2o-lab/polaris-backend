@@ -23,9 +23,10 @@
  * SOFTWARE.
  */
  
-export * from './anaMan/AnaMan';
-export * from './anaMan/AnaManInt';
+
+export * from './anaMan/anaManInt/AnaManInt';
 export * from './binMan/BinMan';
-export * from './binMan/BinManInt';
+export * from './binMan/binManInt/BinManInt';
 export * from './dintMan/DIntMan';
-export * from './dintMan/DIntManInt';
+export * from './dintMan/DIntManInt/DIntManInt';
+export * from './anaMan/AnaMan';

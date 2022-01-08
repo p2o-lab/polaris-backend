@@ -27,10 +27,9 @@ import {OpcUaConnection} from '../../connection';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from './processValueIn/BinProcessValueIn/BinProcessValueIn.spec.json';
 import {MockupServer} from '../../../_utils';
-import {InputElementMockup} from './InputElement.mockup';
-import {InputElement} from './InputElement';
+import {getInputElementOptions, InputElementMockup} from './InputElement.mockup';
+import {InputElement} from './';
 import {DataAssemblyControllerFactory} from '../DataAssemblyControllerFactory';
 import {WQC} from '../baseFunction';
 
@@ -38,17 +37,17 @@ chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('InputElement', () => {
+
+	let dataAssemblyOptions: DataAssemblyOptions;
+
 	describe('static', () => {
+
 		const emptyOPCUAConnection = new OpcUaConnection();
+		dataAssemblyOptions = getInputElementOptions(2, 'Variable') as DataAssemblyOptions;
+
 		it('should create InputElement', async () => {
-			const dataAssemblyOptions: DataAssemblyOptions = {
-				name: 'Variable',
-				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/InputElement/BinProcessValueIn',
-				dataItems: baseDataAssemblyOptions
-			};
-			//TODO: problem with circular dependencies, new InputElement() does not work
-			const dataAssemblyController = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as InputElement;
-			//const dataAssemblyController = new InputElement(dataAssemblyOptions, emptyOPCUAConnection);
+
+			const dataAssemblyController = new InputElement(dataAssemblyOptions, emptyOPCUAConnection);
 
 			expect(dataAssemblyController).to.be.not.undefined;
 			expect(dataAssemblyController.communication).to.be.not.undefined;
@@ -57,11 +56,6 @@ describe('InputElement', () => {
 	});
 
 	describe('dynamic', () => {
-		const dataAssemblyOptions: DataAssemblyOptions = {
-			name: 'Variable',
-			metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/InputElement/',
-			dataItems: baseDataAssemblyOptions
-		};
 		let mockupServer: MockupServer;
 		let connection: OpcUaConnection;
 
@@ -69,7 +63,8 @@ describe('InputElement', () => {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			new InputElementMockup( mockupServer.nameSpace,	mockupServer.rootObject,'Variable');
+			const inputElementMockup = new InputElementMockup(mockupServer.nameSpace, mockupServer.rootObject,'Variable');
+			dataAssemblyOptions = inputElementMockup.getDataAssemblyOptions();
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});

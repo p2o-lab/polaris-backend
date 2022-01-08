@@ -25,27 +25,21 @@
  
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {Namespace, UAObject} from 'node-opcua';
-import {DIntServParamMockup} from './DIntServParam.mockup';
+import {DIntServParamMockup, getDIntServParamDataItemOptions, getDIntServParamOptions} from './DIntServParam.mockup';
 import {MockupServer} from '../../../../../_utils';
 import {OpcUaConnection} from '../../../../connection';
-
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {DIntServParamRuntime} from './DIntServParam';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-// this fake class is needed to test the protected variable
-class FakeClass extends DIntServParamMockup{
-    constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
-        super(namespace, rootNode, variableName);
-    }
-    public getVOut(): number {
-        return this.vOut;
-    }
-}
 describe('DIntServParamMockup', () => {
-    describe('', () => {
+
+    describe('static', () => {
+
         let mockupServer: MockupServer;
+
         beforeEach(async()=>{
             mockupServer = new MockupServer();
             await mockupServer.initialize();
@@ -55,19 +49,28 @@ describe('DIntServParamMockup', () => {
             const mockup= new DIntServParamMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
             expect(mockup).to.not.be.undefined;
-            //TODO: test more
-
         });
-        it('getDIntServParamMockupReferenceJSON()',  () => {
+
+        it('static DataItemOptions', () => {
+            const options = getDIntServParamDataItemOptions(1, 'Test') as DIntServParamRuntime;
+            expect(Object.keys(options).length).to.equal(31);
+        });
+
+        it('static DataAssemblyOptions', () => {
+            const options = getDIntServParamOptions(1, 'Test') as DataAssemblyOptions;
+            expect(Object.keys(options.dataItems).length).to.equal(33);
+        });
+
+        it('dynamic DataAssemblyOptions', () => {
             const mockup = new DIntServParamMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const json = mockup.getDIntServParamMockupJSON();
-            expect(json).not.to.be.undefined;
-            expect(Object.keys(json).length).to .equal(31);
-            //TODO: test more
+            const options = mockup.getDataAssemblyOptions();
+
+            expect(Object.keys(options.dataItems).length).to.equal(33);
         });
-        //TODO test more
-        it('startCurrentTimeUpdate()',  async() => {
+
+        // TODO
+        /*it('startCurrentTimeUpdate()',  async() => {
             const mockup: FakeClass = new FakeClass(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable') as FakeClass;
             mockup.startCurrentTimeUpdate();
@@ -91,7 +94,7 @@ describe('DIntServParamMockup', () => {
             const mockup: FakeClass = new FakeClass(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable') as FakeClass;
             expect((() => mockup.stopCurrentTimeUpdate())).to.throw();
-        });
+        });*/
     });
 
     describe('dynamic', () => {

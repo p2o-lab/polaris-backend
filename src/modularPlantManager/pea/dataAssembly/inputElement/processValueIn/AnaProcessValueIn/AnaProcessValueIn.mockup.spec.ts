@@ -25,36 +25,50 @@
  
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {AnaProcessValueInMockup} from './AnaProcessValueIn.mockup';
+import {AnaProcessValueInMockup, getAnaProcessValueInDataItemOptions, getAnaProcessValueInOptions} from './AnaProcessValueIn.mockup';
 import {MockupServer} from '../../../../../_utils';
 import {OpcUaConnection} from '../../../../connection';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {AnaProcessValueInRuntime} from './AnaProcessValueIn';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('AnaProcessValueInMockup', () => {
+
     describe('static', () => {
+
         let mockupServer: MockupServer;
+
         beforeEach(async()=>{
             mockupServer = new MockupServer();
             await mockupServer.initialize();
         });
-        it('should create AnaProcessValueInMockup', async () => {
-            const mockup= new AnaProcessValueInMockup(mockupServer.nameSpace,
-                mockupServer.rootObject, 'Variable');
-            expect(mockup).to.not.be.undefined;
-            //TODO: test more
 
+        it('should create AnaProcessValueInMockup', async () => {
+            const mockup= new AnaProcessValueInMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
+            expect(mockup).to.not.be.undefined;
         });
-        it('getAnaProcessValueInMockupReferenceJSON()',  () => {
+
+        it('static DataItemOptions', () => {
+            const options = getAnaProcessValueInDataItemOptions(1, 'Test') as AnaProcessValueInRuntime;
+            expect(Object.keys(options).length).to.equal(5);
+        });
+
+        it('static DataAssemblyOptions', () => {
+            const options = getAnaProcessValueInOptions(1, 'Test') as DataAssemblyOptions;
+            expect(Object.keys(options.dataItems).length).to.equal(7);
+        });
+
+        it('dynamic DataAssemblyOptions', () => {
             const mockup = new AnaProcessValueInMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const json = mockup.getAnaProcessValueInInstanceMockupJSON();
-            expect(json).not.to.be.undefined;
-            expect(Object.keys(json).length).to.equal(5);
-            //TODO: test more
+            const options = mockup.getDataAssemblyOptions();
+
+            expect(Object.keys(options.dataItems).length).to.equal(7);
         });
     });
+
     describe('dynamic', () => {
 
         let mockupServer: MockupServer;
@@ -92,6 +106,5 @@ describe('AnaProcessValueInMockup', () => {
             await connection.readNode('Variable.VExt', mockupServer.nameSpaceUri)
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(0));
         }).timeout(3000);
-        //TODO get the rest
     });
 });

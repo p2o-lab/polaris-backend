@@ -26,15 +26,20 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../../_utils';
-import {BinMonMockup} from './BinMon.mockup';
+import {BinMonMockup, getBinMonDataItemOptions, getBinMonOptions} from './BinMon.mockup';
 import {OpcUaConnection} from '../../../../connection';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {BinMonRuntime} from './BinMon';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('BinMonMockup', () => {
-    describe('', () => {
+
+    describe('static', () => {
+
         let mockupServer: MockupServer;
+
         beforeEach(async function(){
             this.timeout(5000);
             mockupServer = new MockupServer();
@@ -46,18 +51,27 @@ describe('BinMonMockup', () => {
                 mockupServer.rootObject, 'Variable');
             expect(mockup).to.not.be.undefined;
             expect(mockup.wqc).to.not.be.undefined;
-            //TODO: test more?
         });
 
-        it('getBinMonMockupReferenceJSON()',  () => {
+        it('static DataItemOptions', () => {
+            const options = getBinMonDataItemOptions(1, 'Test') as BinMonRuntime;
+            expect(Object.keys(options).length).to.equal(6);
+        });
+
+        it('static DataAssemblyOptions', () => {
+            const options = getBinMonOptions(1, 'Test') as DataAssemblyOptions;
+            expect(Object.keys(options.dataItems).length).to.equal(8);
+        });
+
+        it('dynamic DataAssemblyOptions', () => {
             const mockup = new BinMonMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const json = mockup.getBinMonInstanceMockupJSON();
-            expect(json).not.to.be.undefined;
-            expect(Object.keys(json).length).to.equal(9);
-            //TODO: test more?
+            const options = mockup.getDataAssemblyOptions();
+
+            expect(Object.keys(options.dataItems).length).to.equal(8);
         });
     });
+
     describe('dynamic (with MockupServer)', () => {
 
         let mockupServer: MockupServer;

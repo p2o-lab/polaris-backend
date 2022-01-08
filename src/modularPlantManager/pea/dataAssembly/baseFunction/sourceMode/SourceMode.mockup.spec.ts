@@ -26,17 +26,20 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../_utils';
-import {SourceModeMockup} from './SourceMode.mockup';
+import {getSourceModeDataItemOptions, SourceModeMockup} from './SourceMode.mockup';
 import {OpcUaConnection} from '../../../connection';
 import {ServiceSourceMode, SourceMode} from '@p2olab/polaris-interface';
+import {SourceModeRuntime} from './SourceModeController';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-
 describe('SourceModeMockup', () => {
+
     describe('static', () => {
+
         let mockupServer: MockupServer;
+
         beforeEach(async()=>{
             mockupServer = new MockupServer();
             await mockupServer.initialize();
@@ -48,19 +51,34 @@ describe('SourceModeMockup', () => {
             expect(mockup).to.not.be.undefined;
         });
 
-        it('getSourceModeMockupReferenceJSON()',  () => {
+        it('static DataItemOptions', () => {
+            const options = getSourceModeDataItemOptions(1, 'Test') as SourceModeRuntime;
+
+            expect(Object.keys(options).length).to.equal(7);
+            expect(options.SrcChannel).to.not.be.undefined;
+            expect(options.SrcManAut).to.not.be.undefined;
+            expect(options.SrcIntAut).to.not.be.undefined;
+            expect(options.SrcManOp).to.not.be.undefined;
+            expect(options.SrcIntOp).to.not.be.undefined;
+            expect(options.SrcManAct).to.not.be.undefined;
+            expect(options.SrcIntAct).to.not.be.undefined;
+        });
+
+        it('dynamic DataItemOptions', () => {
             const mockup = new SourceModeMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const json = mockup.getSourceModeInstanceMockupJSON() as any;
-            expect(Object.keys(json).length).to.equal(7);
-            expect(json.SrcChannel).to.not.be.undefined;
-            expect(json.SrcManAut).to.not.be.undefined;
-            expect(json.SrcIntAut).to.not.be.undefined;
-            expect(json.SrcManOp).to.not.be.undefined;
-            expect(json.SrcIntOp).to.not.be.undefined;
-            expect(json.SrcManAct).to.not.be.undefined;
-            expect(json.SrcIntAct).to.not.be.undefined;
+            const options = mockup.getDataItemOptions() as SourceModeRuntime;
+
+            expect(Object.keys(options).length).to.equal(7);
+            expect(options.SrcChannel).to.not.be.undefined;
+            expect(options.SrcManAut).to.not.be.undefined;
+            expect(options.SrcIntAut).to.not.be.undefined;
+            expect(options.SrcManOp).to.not.be.undefined;
+            expect(options.SrcIntOp).to.not.be.undefined;
+            expect(options.SrcManAct).to.not.be.undefined;
+            expect(options.SrcIntAct).to.not.be.undefined;
         });
+
     });
     describe('dynamic', () => {
 
@@ -118,10 +136,8 @@ describe('SourceModeMockup', () => {
             expect(mockup.srcManAct).to.false;
             expect(mockup.srcMode).to.equal(ServiceSourceMode.Intern);
         }).timeout(3000);
-
-        //TODO get the rest
-
     });
+
     describe('dynamic, srcChannel is true', () => {
 
         let mockupServer: MockupServer;

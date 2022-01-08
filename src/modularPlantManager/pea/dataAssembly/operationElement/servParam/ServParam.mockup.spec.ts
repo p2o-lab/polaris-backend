@@ -26,14 +26,19 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../_utils';
-import {ServParamMockup} from './ServParam.mockup';
+import {getServParamDataItemOptions, getServParamOptions, ServParamMockup} from './ServParam.mockup';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {ServParamRuntime} from './ServParam';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('ServParamMockup', () => {
-    describe('', () => {
+
+    describe('static', () => {
+
         let mockupServer: MockupServer;
+
         beforeEach(async()=>{
             mockupServer = new MockupServer();
             await mockupServer.initialize();
@@ -43,16 +48,24 @@ describe('ServParamMockup', () => {
             const mockup= new ServParamMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
             expect(mockup).to.not.be.undefined;
-            //TODO: test more
-
         });
-        it('getServParamMockupReferenceJSON(namespace, objectBrowseName)',  () => {
+
+        it('static DataItemOptions', () => {
+            const options = getServParamDataItemOptions(1, 'Test') as ServParamRuntime;
+            expect(Object.keys(options).length).to.equal(20);
+        });
+
+        it('static DataAssemblyOptions', () => {
+            const options = getServParamOptions(1, 'Test') as DataAssemblyOptions;
+            expect(Object.keys(options.dataItems).length).to.equal(22);
+        });
+
+        it('dynamic DataAssemblyOptions', () => {
             const mockup = new ServParamMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const json = mockup.getServParamMockupJSON();
-            expect(json).not.to.be.undefined;
-            expect(Object.keys(json).length).to .equal(20);
-            //TODO: test more
+            const options = mockup.getDataAssemblyOptions();
+
+            expect(Object.keys(options.dataItems).length).to.equal(22);
         });
     });
 });

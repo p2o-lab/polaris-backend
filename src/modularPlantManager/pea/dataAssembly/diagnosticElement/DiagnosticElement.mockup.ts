@@ -24,11 +24,24 @@
  */
 
 import {Namespace, UAObject} from 'node-opcua';
-import {getWQCMockupReferenceJSON, WQCMockup} from '../baseFunction/wqc/WQC.mockup';
-import {DataAssemblyControllerMockup} from '../DataAssemblyController.mockup';
+import {getWQCDataItemOptions, WQCMockup} from '../baseFunction/wqc/WQC.mockup';
+import {DataAssemblyControllerMockup, getDataAssemblyOptions} from '../DataAssemblyController.mockup';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 
-export function getDiagnosticElementMockupReferenceJSON(namespace: number, objectBrowseName: string): object {
-	return (getWQCMockupReferenceJSON(namespace,objectBrowseName));
+const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/DiagnosticElement';
+
+export function getDiagnosticElementDataItemOptions(namespace: number, objectBrowseName: string): object {
+	return getWQCDataItemOptions(namespace, objectBrowseName);
+}
+
+export function getDiagnosticElementOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
+	const options = getDataAssemblyOptions(name, tagName, tagDescription);
+	options.metaModelRef = metaModelReference;
+	options.dataItems = {
+		...options.dataItems,
+		...getDiagnosticElementDataItemOptions(namespace, objectBrowseName)
+	};
+	return options;
 }
 
 export class DiagnosticElementMockup extends DataAssemblyControllerMockup {
@@ -38,12 +51,15 @@ export class DiagnosticElementMockup extends DataAssemblyControllerMockup {
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string){
 		super(namespace, rootNode, variableName);
 		this.wqc = new WQCMockup(namespace, this.mockupNode, this.name);
-
 	}
 
-	public getDiagnosticElementInstanceMockupJSON(): object {
-		return getDiagnosticElementMockupReferenceJSON(
-			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name as string);
+	public getDataAssemblyOptions(): DataAssemblyOptions {
+		const options = super.getDataAssemblyOptions();
+		options.metaModelRef = metaModelReference;
+		options.dataItems = {
+			...options.dataItems,
+			...this.wqc.getDataItemOptions()
+		};
+		return options;
 	}
 }

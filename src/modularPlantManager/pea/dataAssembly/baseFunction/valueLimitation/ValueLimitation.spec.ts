@@ -28,23 +28,19 @@ import {OpcUaConnection} from '../../../connection';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from '../../operationElement/man/dintMan/DIntMan.spec.json';
 import {DataAssemblyController} from '../../DataAssemblyController';
 import {DIntMan} from '../../operationElement';
 import {ValueLimitation} from './ValueLimitation';
 import {MockupServer} from '../../../../_utils';
-import {DataType} from 'node-opcua';
 import {ValueLimitationMockup} from './ValueLimitation.mockup';
+import {getDIntManOptions} from '../../operationElement/man/dintMan/DIntMan.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('ValueLimitation', () => {
-	const dataAssemblyOptions: DataAssemblyOptions = {
-		name: 'Variable',
-		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperatorElement/DIntMan',
-		dataItems: baseDataAssemblyOptions
-	};
+
+	const dataAssemblyOptions = getDIntManOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
 
 	describe('static', () => {
 		const emptyOPCUAConnection = new OpcUaConnection();
@@ -64,7 +60,7 @@ describe('ValueLimitation', () => {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			new ValueLimitationMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable', DataType.Double);
+			new ValueLimitationMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable', 'Ana');
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});

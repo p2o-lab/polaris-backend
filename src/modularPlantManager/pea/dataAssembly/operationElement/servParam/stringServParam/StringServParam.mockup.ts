@@ -26,46 +26,63 @@
 // eslint-disable-next-line no-undef
 import Timeout = NodeJS.Timeout;
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {getServParamMockupReferenceJSON, ServParamMockup} from '../ServParam.mockup';
+import {getServParamDataItemOptions, ServParamMockup} from '../ServParam.mockup';
+import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
+import {getDataAssemblyOptions} from '../../../DataAssemblyController.mockup';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 
-export function getStringServParamMockupReferenceJSON(
-	namespace: number,
-	objectBrowseName: string): object {
+const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/OperationElement/StringServParam';
 
+function getStringServParamSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
 	return ({
-			...getServParamMockupReferenceJSON(namespace, objectBrowseName),
-			VExt: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VExt`,
-				dataType: 'String'
-			},
-			VOp: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VOp`,
-				dataType: 'String'
-			},
-			VInt: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VInt`,
-				dataType: 'String'
-			},
-			VReq: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VReq`,
-				dataType: 'String'
-			},
-			VOut: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VOut`,
-				dataType: 'String'
-			},
-			VFbk: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VFbk`,
-				dataType: 'String'
-			}
-		}
+		VExt: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.VExt`,
+			dataType: 'String'
+		} as OpcUaNodeOptions,
+		VOp: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.VOp`,
+			dataType: 'String'
+		} as OpcUaNodeOptions,
+		VInt: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.VInt`,
+			dataType: 'String'
+		} as OpcUaNodeOptions,
+		VReq: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.VReq`,
+			dataType: 'String'
+		} as OpcUaNodeOptions,
+		VOut: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.VOut`,
+			dataType: 'String'
+		} as OpcUaNodeOptions,
+		VFbk: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.VFbk`,
+			dataType: 'String'
+		} as OpcUaNodeOptions
+	});
+}
+
+export function getStringServParamDataItemOptions(namespace: number, objectBrowseName: string): object {
+	return ({
+			...getServParamDataItemOptions(namespace, objectBrowseName),
+			...getStringServParamSpecificDataItemOptions(namespace, objectBrowseName),
+		} as OpcUaNodeOptions
 	);
+}
+
+export function getStringServParamOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
+	const options = getDataAssemblyOptions(name, tagName, tagDescription);
+	options.metaModelRef = metaModelReference;
+	options.dataItems = {
+		...options.dataItems,
+		...getStringServParamDataItemOptions(namespace, objectBrowseName)};
+	return options;
 }
 
 export class StringServParamMockup extends ServParamMockup{
@@ -159,10 +176,14 @@ export class StringServParamMockup extends ServParamMockup{
 
 	}
 
-	public getStringServParamMockupJSON(): object {
-		return getStringServParamMockupReferenceJSON(
-			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name as string);
+	public getDataAssemblyOptions(): DataAssemblyOptions {
+		const options = super.getDataAssemblyOptions();
+		options.metaModelRef = metaModelReference;
+		options.dataItems = {
+			...options.dataItems,
+			...getStringServParamSpecificDataItemOptions(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
+		};
+		return options;
 	}
 
 	public startCurrentTimeUpdate(): void {

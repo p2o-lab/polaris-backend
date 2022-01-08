@@ -26,17 +26,22 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../_utils';
-import {ServiceSourceModeMockup} from './ServiceSourceMode.mockup';
+import {getServiceSourceModeDataItemOptions, ServiceSourceModeMockup} from './ServiceSourceMode.mockup';
 import {OpcUaConnection} from '../../../connection';
 import {ServiceSourceMode} from '@p2olab/polaris-interface';
+import {LimitMonitoringMockup} from '../limitMonitoring/LimitMonitoring.mockup';
+import {ServiceSourceModeRuntime} from './ServiceSourceModeController';
 
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('ServiceSourceModeMockup', () => {
-    describe('', () => {
+
+    describe('static', () => {
+
         let mockupServer: MockupServer;
+
         beforeEach(async()=>{
             mockupServer = new MockupServer();
             await mockupServer.initialize();
@@ -48,18 +53,32 @@ describe('ServiceSourceModeMockup', () => {
             expect(mockup).to.not.be.undefined;
         });
 
-        it('getServiceSourceModeMockupReferenceJSON()',  () => {
+        it('static DataItemOptions', () => {
+            const options = getServiceSourceModeDataItemOptions(1, 'Test') as ServiceSourceModeRuntime;
+
+            expect(Object.keys(options).length).to.equal(7);
+            expect(options.SrcChannel).to.not.be.undefined;
+            expect(options.SrcExtAut).to.not.be.undefined;
+            expect(options.SrcIntAut).to.not.be.undefined;
+            expect(options.SrcExtOp).to.not.be.undefined;
+            expect(options.SrcIntOp).to.not.be.undefined;
+            expect(options.SrcExtAct).to.not.be.undefined;
+            expect(options.SrcIntAct).to.not.be.undefined;
+        });
+
+        it('dynamic DataItemOptions', () => {
             const mockup = new ServiceSourceModeMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const json = mockup.getServiceSourceModeInstanceMockupJSON() as any;
-            expect(Object.keys(json).length).to.equal(7);
-            expect(json.SrcChannel).to.not.be.undefined;
-            expect(json.SrcExtAut).to.not.be.undefined;
-            expect(json.SrcIntAut).to.not.be.undefined;
-            expect(json.SrcExtOp).to.not.be.undefined;
-            expect(json.SrcIntOp).to.not.be.undefined;
-            expect(json.SrcExtAct).to.not.be.undefined;
-            expect(json.SrcIntAct).to.not.be.undefined;
+            const options = mockup.getDataItemOptions() as ServiceSourceModeRuntime;
+
+            expect(Object.keys(options).length).to.equal(7);
+            expect(options.SrcChannel).to.not.be.undefined;
+            expect(options.SrcExtAut).to.not.be.undefined;
+            expect(options.SrcIntAut).to.not.be.undefined;
+            expect(options.SrcExtOp).to.not.be.undefined;
+            expect(options.SrcIntOp).to.not.be.undefined;
+            expect(options.SrcExtAct).to.not.be.undefined;
+            expect(options.SrcIntAct).to.not.be.undefined;
         });
     });
     describe('dynamic', () => {
@@ -79,6 +98,7 @@ describe('ServiceSourceModeMockup', () => {
             connection.initialize({endpoint: mockupServer.endpoint});
             await connection.connect();
         });
+
         afterEach(async () => {
             await connection.disconnect();
             await mockupServer.shutdown();
@@ -119,13 +139,14 @@ describe('ServiceSourceModeMockup', () => {
             expect(mockup.srcExtAct).to.false;
         }).timeout(3000);
 
-        //TODO get the rest
-
     });
-    describe('dynamic, srcChannel is true , nothing should happen', () => {
+
+    describe('dynamic with SrcChannel:= true, nothing should happen', () => {
+
         let mockupServer: MockupServer;
         let mockup: ServiceSourceModeMockup;
         let connection: OpcUaConnection;
+
         beforeEach(async function () {
             this.timeout(5000);
             mockupServer = new MockupServer();
@@ -138,6 +159,7 @@ describe('ServiceSourceModeMockup', () => {
             connection.initialize({endpoint: mockupServer.endpoint});
             await connection.connect();
         });
+
         afterEach(async () => {
             await connection.disconnect();
             await mockupServer.shutdown();

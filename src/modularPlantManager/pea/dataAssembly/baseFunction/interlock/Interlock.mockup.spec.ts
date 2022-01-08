@@ -26,7 +26,8 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../_utils';
-import {InterlockMockup} from './Interlock.mockup';
+import {getInterlockDataItemOptions, InterlockMockup} from './Interlock.mockup';
+import {InterlockRuntime} from './Interlock';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -45,16 +46,29 @@ describe('InterlockMockup', () => {
             expect(mockup).to.not.be.undefined;
         });
 
-        it('getAnaServParamMockupReferenceJSON()',  () => {
+        it('static Interlock DataItemOptions',  () => {
+            const options = getInterlockDataItemOptions(1, 'Test') as InterlockRuntime;
+
+            expect(Object.keys(options).length).to.equal(6);
+            expect(options.PermEn).to.not.be.undefined;
+            expect(options.Interlock).to.not.be.undefined;
+            expect(options.IntlEn).to.not.be.undefined;
+            expect(options.Permit).to.not.be.undefined;
+            expect(options.Protect).to.not.be.undefined;
+            expect(options.ProtEn).to.not.be.undefined;
+        });
+
+        it('dynamic Interlock DataItemOptions',  () => {
             const mockup = new InterlockMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
-            const json = mockup.getInterlockInstanceMockupJSON() as any;
-            expect(Object.keys(json).length).to.equal(6);
-            expect(json.PermEn).to.not.be.undefined;
-            expect(json.Interlock).to.not.be.undefined;
-            expect(json.IntlEn).to.not.be.undefined;
-            expect(json.Permit).to.not.be.undefined;
-            expect(json.Protect).to.not.be.undefined;
-            expect(json.ProtEn).to.not.be.undefined;
+            const options = mockup.getDataItemOptions() as InterlockRuntime;
+
+            expect(Object.keys(options).length).to.equal(6);
+            expect(options.PermEn).to.not.be.undefined;
+            expect(options.Interlock).to.not.be.undefined;
+            expect(options.IntlEn).to.not.be.undefined;
+            expect(options.Permit).to.not.be.undefined;
+            expect(options.Protect).to.not.be.undefined;
+            expect(options.ProtEn).to.not.be.undefined;
         });
     });
 });

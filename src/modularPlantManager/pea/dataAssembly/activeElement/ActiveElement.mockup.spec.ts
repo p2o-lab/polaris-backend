@@ -26,15 +26,19 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../_utils';
-import {ActiveElementMockup} from './ActiveElement.mockup';
+import {ActiveElementMockup, getActiveElementDataItemOptions, getActiveElementOptions} from './ActiveElement.mockup';
+import {ActiveElementRuntime} from './ActiveElement';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('ActiveElementMockup', () => {
 
-    describe('', () => {
+    describe('static', () => {
+
         let mockupServer: MockupServer;
+
         beforeEach(async()=>{
             mockupServer = new MockupServer();
             await mockupServer.initialize();
@@ -46,11 +50,23 @@ describe('ActiveElementMockup', () => {
             expect(mockup).to.not.be.undefined;
 
         });
-        it('getActiveElementMockupReferenceJSON()',  () => {
+
+        it('static DataItemOptions', () => {
+            const options = getActiveElementDataItemOptions(1, 'Test') as ActiveElementRuntime;
+            expect(Object.keys(options).length).to.equal(2);
+        });
+
+        it('static DataAssemblyOptions', () => {
+            const options = getActiveElementOptions(1, 'Test') as DataAssemblyOptions;
+            expect(Object.keys(options.dataItems).length).to.equal(4);
+        });
+
+        it('dynamic DataAssemblyOptions', () => {
             const mockup = new ActiveElementMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const json = mockup.getActiveElementMockupJSON();
-            expect(Object.keys(json).length).to .equal(2);
+            const options = mockup.getDataAssemblyOptions();
+
+            expect(Object.keys(options.dataItems).length).to.equal(4);
         });
     });
 });

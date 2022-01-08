@@ -27,13 +27,13 @@ import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {OpcUaConnection, DataItem} from '../../../connection';
 import {IndicatorElement, IndicatorElementRuntime} from '../IndicatorElement';
 
-export type StrRuntime = IndicatorElementRuntime & {
+export type StringViewRuntime = IndicatorElementRuntime & {
 	Text: DataItem<string>;
 };
 
 export class StringView extends IndicatorElement {
 
-	public readonly communication!: StrRuntime;
+	public readonly communication!: StringViewRuntime;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);

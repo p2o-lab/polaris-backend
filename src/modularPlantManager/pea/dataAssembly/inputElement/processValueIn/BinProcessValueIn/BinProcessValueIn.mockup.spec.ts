@@ -25,17 +25,23 @@
  
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {BinProcessValueInMockup} from './BinProcessValueIn.mockup';
+import {BinProcessValueInMockup, getBinProcessValueInDataItemOptions, getBinProcessValueInOptions} from './BinProcessValueIn.mockup';
 import {MockupServer} from '../../../../../_utils';
 import {OpcUaConnection} from '../../../../connection';
-
+import {ActiveElementMockup, getActiveElementDataItemOptions, getActiveElementOptions} from '../../../activeElement/ActiveElement.mockup';
+import {ActiveElementRuntime} from '../../../activeElement';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {BinProcessValueInRuntime} from './BinProcessValueIn';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('BinProcessValueInMockup', () => {
+
     describe('static', () => {
+
         let mockupServer: MockupServer;
+
         beforeEach(async()=>{
             mockupServer = new MockupServer();
             await mockupServer.initialize();
@@ -47,14 +53,24 @@ describe('BinProcessValueInMockup', () => {
             expect(mockup).to.not.be.undefined;
         });
 
-        it('getBinProcessValueInMockupReferenceJSON()',  () => {
+        it('static DataItemOptions', () => {
+            const options = getBinProcessValueInDataItemOptions(1, 'Test') as BinProcessValueInRuntime;
+            expect(Object.keys(options).length).to.equal(4);
+        });
+
+        it('static DataAssemblyOptions', () => {
+            const options = getBinProcessValueInOptions(1, 'Test') as DataAssemblyOptions;
+            expect(Object.keys(options.dataItems).length).to.equal(6);
+        });
+
+        it('dynamic DataAssemblyOptions', () => {
             const mockup = new BinProcessValueInMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const json = mockup.getBinProcessValueInInstanceMockupJSON();
-            expect(json).not.to.be.undefined;
-            expect(Object.keys(json).length).to.equal(4);
-            //TODO: test more
+            const options = mockup.getDataAssemblyOptions();
+
+            expect(Object.keys(options.dataItems).length).to.equal(6);
         });
+
     });
     describe('dynamic', () => {
 
@@ -94,7 +110,5 @@ describe('BinProcessValueInMockup', () => {
             await connection.readNode('Variable.VState1', mockupServer.nameSpaceUri)
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal('state1_inactive'));
         }).timeout(3000);
-
-        //TODO get the rest
     });
 });

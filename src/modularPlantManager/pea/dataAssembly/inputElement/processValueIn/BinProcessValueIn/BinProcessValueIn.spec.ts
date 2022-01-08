@@ -27,9 +27,8 @@ import {OpcUaConnection} from '../../../../connection';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from './BinProcessValueIn.spec.json';
 import {MockupServer} from '../../../../../_utils';
-import {BinProcessValueInMockup} from './BinProcessValueIn.mockup';
+import {BinProcessValueInMockup, getBinProcessValueInOptions} from './BinProcessValueIn.mockup';
 
 import {DataAssemblyControllerFactory} from '../../../DataAssemblyControllerFactory';
 import {BinProcessValueIn} from './BinProcessValueIn';
@@ -38,14 +37,14 @@ chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('BinProcessValueIn', () => {
-	const dataAssemblyOptions: DataAssemblyOptions = {
-		name: 'Variable',
-		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/InputElement/BinProcessValueIn',
-		dataItems: baseDataAssemblyOptions
-	};
 
-	describe('', () => {
+	let dataAssemblyOptions: DataAssemblyOptions;
+
+	describe('static', () => {
+
 		const emptyOPCUAConnection = new OpcUaConnection();
+		dataAssemblyOptions = getBinProcessValueInOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
+
 		it('should create BinProcessValueIn', () => {
 
 			const dataAssemblyController = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as BinProcessValueIn;
@@ -59,16 +58,14 @@ describe('BinProcessValueIn', () => {
 	describe('dynamic', () => {
 		let mockupServer: MockupServer;
 		let connection: OpcUaConnection;
-		let mockup: BinProcessValueInMockup;
+		let binProcessValueInMockup: BinProcessValueInMockup;
 
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			mockup = new BinProcessValueInMockup(
-				mockupServer.nameSpace,
-				mockupServer.rootObject,
-				'Variable');
+			binProcessValueInMockup = new BinProcessValueInMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
+			dataAssemblyOptions = binProcessValueInMockup.getDataAssemblyOptions();
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});
@@ -92,7 +89,7 @@ describe('BinProcessValueIn', () => {
 			expect(dataAssemblyController.communication.VState1.value).equal('state1_active');
 		}).timeout(4000);
 
-		it('setparameter', async () => {
+		it('set Parameter', async () => {
 			const dataAssemblyController = new BinProcessValueIn(dataAssemblyOptions, connection);
 			await dataAssemblyController.subscribe();
 			await connection.startMonitoring();
@@ -102,20 +99,13 @@ describe('BinProcessValueIn', () => {
 			await dataAssemblyController.setParameter('test','VState0');
 			await dataAssemblyController.setParameter('test','VState1');
 
-			expect(mockup.vExt).equal(true);
-			//TODO: problem: we have to wait for the variable to change (EventEmitter), maybe this is not optimal
-			await new Promise(f => setTimeout(f, 1000));
+			expect(binProcessValueInMockup.vExt).equal(true);
+
+			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
 			expect(dataAssemblyController.communication.VExt.value).equal(true);
 			expect(dataAssemblyController.communication.VState0.value).equal('test');
 			expect(dataAssemblyController.communication.VState1.value).equal('test');
-		}).timeout(4000);
+		}).timeout(8000);
 
-		it('setValue', async () => {
-			// TODO
-		}).timeout(4000);
-
-		it('tojson', async () => {
-			// TODO
-		}).timeout(4000);
 	});
 });

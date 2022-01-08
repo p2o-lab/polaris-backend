@@ -199,8 +199,8 @@ export class Player extends (EventEmitter as new() => PlayerEmitter) {
 			this.emit('completed');
 		} else if (this.status === RecipeState.paused) {
 			this._status = RecipeState.running;
-			this.getCurrentRecipe().peaSet.forEach((p) => {
-				p.resume();
+			this.getCurrentRecipe().peaSet.forEach((peaController) => {
+				peaController.resumeAllServices();
 			});
 		} else {
 			throw new Error('Player currently already running');

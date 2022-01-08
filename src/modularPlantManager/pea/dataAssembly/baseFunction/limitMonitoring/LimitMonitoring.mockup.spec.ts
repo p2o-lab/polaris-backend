@@ -22,147 +22,258 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
- 
+
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {DataType} from 'node-opcua';
 import {MockupServer} from '../../../../_utils';
-import {LimitMonitoringMockup} from './LimitMonitoring.mockup';
+import {getLimitMonitoringDataItemOptions, LimitMonitoringMockup} from './LimitMonitoring.mockup';
 import {OpcUaConnection} from '../../../connection';
+import {LimitMonitoringRuntime} from './LimitMonitoring';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('LimitMonitoringMockup', () => {
-    describe('static', () => {
-        let mockupServer: MockupServer;
-        beforeEach(async()=>{
-            mockupServer = new MockupServer();
-            await mockupServer.initialize();
-        });
 
-        it('should create LimitMonitoringMockup, Int32', async () => {
-            const mockup= new LimitMonitoringMockup(mockupServer.nameSpace,
-                mockupServer.rootObject, 'Variable', DataType.Int32);
-            expect(mockup).to.not.be.undefined;
-        });
+	describe('static', () => {
 
-        it('should create LimitMonitoringMockup, Double', async () => {
-            const mockup= new LimitMonitoringMockup(mockupServer.nameSpace,
-                mockupServer.rootObject, 'Variable', DataType.Double);
-            expect(mockup).to.not.be.undefined;
-        });
+		let mockupServer: MockupServer;
 
-        it('getAnaServParamMockupReferenceJSON()',  () => {
-            const mockup = new LimitMonitoringMockup(mockupServer.nameSpace,
-                mockupServer.rootObject, 'Variable', DataType.Int32);
-            const json = mockup.getLimitMonitoringInstanceMockupJSON();
-            expect(Object.keys(json).length).to.equal(18);
-        });
+		beforeEach(async () => {
+			mockupServer = new MockupServer();
+			await mockupServer.initialize();
+		});
 
-    });
-    describe('dynamic, Double', () => {
+		describe('DIntLimitMonitoring', () => {
 
-        let mockupServer: MockupServer;
-        let connection: OpcUaConnection;
+			it('should create DIntLimitMonitoring', async () => {
+				const mockup = new LimitMonitoringMockup(mockupServer.nameSpace,
+					mockupServer.rootObject, 'Variable', 'DInt');
+				expect(mockup).to.not.be.undefined;
+			});
 
-        beforeEach(async function () {
-            this.timeout(5000);
-            mockupServer = new MockupServer();
-            await mockupServer.initialize();
-            new LimitMonitoringMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable', DataType.Double);
-            await mockupServer.start();
-            connection = new OpcUaConnection();
-            connection.initialize({endpoint: mockupServer.endpoint});
-            await connection.connect();
-        });
-        afterEach(async () => {
-            await connection.disconnect();
-            await mockupServer.shutdown();
-        });
+			it('static DataItemOptions', () => {
+				const options = getLimitMonitoringDataItemOptions(1, 'Test', 'DInt') as LimitMonitoringRuntime;
 
-        it('set and get VAHLim', async () => {
-            await connection.writeNode('Variable.VAHLim', mockupServer.nameSpaceUri, 1, 'Double');
-            await connection.readNode('Variable.VAHLim', mockupServer.nameSpaceUri)
-                .then((dataValue) => expect((dataValue)?.value.value).to.equal(1));
-        }).timeout(2000);
-        it('set and get VWHLim', async () => {
-            await connection.writeNode('Variable.VWHLim', mockupServer.nameSpaceUri, 1, 'Double');
-            await connection.readNode('Variable.VWHLim', mockupServer.nameSpaceUri)
-                .then((dataValue) => expect((dataValue)?.value.value).to.equal(1));
-        }).timeout(2000);
-        it('set and get VTHLim', async () => {
-            await connection.writeNode('Variable.VTHLim', mockupServer.nameSpaceUri, 1, 'Double');
-            await connection.readNode('Variable.VTHLim', mockupServer.nameSpaceUri)
-                .then((dataValue) => expect((dataValue)?.value.value).to.equal(1));
-        }).timeout(2000);
-        it('set and get VTLLim', async () => {
-            await connection.writeNode('Variable.VTLLim', mockupServer.nameSpaceUri, 1, 'Double');
-            await connection.readNode('Variable.VTLLim', mockupServer.nameSpaceUri)
-                .then((dataValue) => expect((dataValue)?.value.value).to.equal(1));
-        }).timeout(2000);
-        it('set and get VALLim', async () => {
-            await connection.writeNode('Variable.VALLim', mockupServer.nameSpaceUri, 1, 'Double');
-            await connection.readNode('Variable.VALLim', mockupServer.nameSpaceUri)
-                .then((dataValue) => expect((dataValue)?.value.value).to.equal(1));
-        }).timeout(2000);
-        it('set and get VWLLim', async () => {
-            await connection.writeNode('Variable.VWLLim', mockupServer.nameSpaceUri, 1, 'Double');
-            await connection.readNode('Variable.VWLLim', mockupServer.nameSpaceUri)
-                .then((dataValue) => expect((dataValue)?.value.value).to.equal(1));
-        }).timeout(2000);
-        //TODO: get the rest of values
+				expect(Object.keys(options).length).to.equal(18);
+				expect(options.VAHEn).to.not.be.undefined;
+				expect(options.VAHLim).to.not.be.undefined;
+				expect(options.VAHAct).to.not.be.undefined;
+				expect(options.VWHEn).to.not.be.undefined;
+				expect(options.VWHLim).to.not.be.undefined;
+				expect(options.VWHAct).to.not.be.undefined;
+				expect(options.VTHEn).to.not.be.undefined;
+				expect(options.VTHLim).to.not.be.undefined;
+				expect(options.VTHAct).to.not.be.undefined;
+				expect(options.VALEn).to.not.be.undefined;
+				expect(options.VALLim).to.not.be.undefined;
+				expect(options.VALAct).to.not.be.undefined;
+				expect(options.VWLEn).to.not.be.undefined;
+				expect(options.VWLLim).to.not.be.undefined;
+				expect(options.VWLAct).to.not.be.undefined;
+				expect(options.VTLEn).to.not.be.undefined;
+				expect(options.VTLLim).to.not.be.undefined;
+				expect(options.VTLAct).to.not.be.undefined;
+			});
 
-    });
-    describe('dynamic, Int32', () => {
+			it('dynamic DataItemOptions', () => {
+				const mockup = new LimitMonitoringMockup(mockupServer.nameSpace,
+					mockupServer.rootObject, 'Variable', 'DInt');
+				const options = mockup.getDataItemOptions() as LimitMonitoringRuntime;
 
-        let mockupServer: MockupServer;
-        let connection: OpcUaConnection;
-        beforeEach(async function () {
-            this.timeout(5000);
-            mockupServer = new MockupServer();
-            await mockupServer.initialize();
-            new LimitMonitoringMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable', DataType.Int32);
-            await mockupServer.start();
-            connection = new OpcUaConnection();
-            connection.initialize({endpoint: mockupServer.endpoint});
-            await connection.connect();
-        });
-        afterEach(async () => {
-            await connection.disconnect();
-            await mockupServer.shutdown();
-        });
+				expect(Object.keys(options).length).to.equal(18);
+				expect(options.VAHEn).to.not.be.undefined;
+				expect(options.VAHLim).to.not.be.undefined;
+				expect(options.VAHAct).to.not.be.undefined;
+				expect(options.VWHEn).to.not.be.undefined;
+				expect(options.VWHLim).to.not.be.undefined;
+				expect(options.VWHAct).to.not.be.undefined;
+				expect(options.VTHEn).to.not.be.undefined;
+				expect(options.VTHLim).to.not.be.undefined;
+				expect(options.VTHAct).to.not.be.undefined;
+				expect(options.VALEn).to.not.be.undefined;
+				expect(options.VALLim).to.not.be.undefined;
+				expect(options.VALAct).to.not.be.undefined;
+				expect(options.VWLEn).to.not.be.undefined;
+				expect(options.VWLLim).to.not.be.undefined;
+				expect(options.VWLAct).to.not.be.undefined;
+				expect(options.VTLEn).to.not.be.undefined;
+				expect(options.VTLLim).to.not.be.undefined;
+				expect(options.VTLAct).to.not.be.undefined;
+			});
 
-        it('set and get VAHLim', async () => {
-            await connection.writeNode('Variable.VAHLim', mockupServer.nameSpaceUri, 1, 'Int32');
-            await connection.readNode('Variable.VAHLim', mockupServer.nameSpaceUri)
-                .then((dataValue) => expect((dataValue)?.value.value).to.equal(1));
-        }).timeout(2000);
-        it('set and get VWHLim', async () => {
-            await connection.writeNode('Variable.VWHLim', mockupServer.nameSpaceUri, 1, 'Int32');
-            await connection.readNode('Variable.VWHLim', mockupServer.nameSpaceUri)
-                .then((dataValue) => expect((dataValue)?.value.value).to.equal(1));
-        }).timeout(2000);
-        it('set and get VTHLim', async () => {
-            await connection.writeNode('Variable.VTHLim', mockupServer.nameSpaceUri, 1, 'Int32');
-            await connection.readNode('Variable.VTHLim', mockupServer.nameSpaceUri)
-                .then((dataValue) => expect((dataValue)?.value.value).to.equal(1));
-        }).timeout(2000);
-        it('set and get VTLLim', async () => {
-            await connection.writeNode('Variable.VTLLim', mockupServer.nameSpaceUri, 1, 'Int32');
-            await connection.readNode('Variable.VTLLim', mockupServer.nameSpaceUri)
-                .then((dataValue) => expect((dataValue)?.value.value).to.equal(1));
-        }).timeout(2000);
-        it('set and get VALLim', async () => {
-            await connection.writeNode('Variable.VALLim', mockupServer.nameSpaceUri, 1, 'Int32');
-            await connection.readNode('Variable.VALLim', mockupServer.nameSpaceUri)
-                .then((dataValue) => expect((dataValue)?.value.value).to.equal(1));
-        }).timeout(2000);
-        it('set and get VWLLim', async () => {
-            await connection.writeNode('Variable.VWLLim', mockupServer.nameSpaceUri, 1, 'Int32');
-            await connection.readNode('Variable.VWLLim', mockupServer.nameSpaceUri)
-                .then((dataValue) => expect((dataValue)?.value.value).to.equal(1));
-        }).timeout(2000);
-        //TODO: get the rest of values
-    });
+		});
+
+		describe('AnaLimitMonitoring', () => {
+
+			it('should create AnaLimitMonitoring', async () => {
+				const mockup = new LimitMonitoringMockup(mockupServer.nameSpace,
+					mockupServer.rootObject, 'Variable', 'Ana');
+				expect(mockup).to.not.be.undefined;
+			});
+
+			it('static AnaLimitMonitoring DataItemOptions', () => {
+				const options = getLimitMonitoringDataItemOptions(1, 'Test', 'Ana') as LimitMonitoringRuntime;
+
+				expect(Object.keys(options).length).to.equal(18);
+				expect(options.VAHEn).to.not.be.undefined;
+				expect(options.VAHLim).to.not.be.undefined;
+				expect(options.VAHAct).to.not.be.undefined;
+				expect(options.VWHEn).to.not.be.undefined;
+				expect(options.VWHLim).to.not.be.undefined;
+				expect(options.VWHAct).to.not.be.undefined;
+				expect(options.VTHEn).to.not.be.undefined;
+				expect(options.VTHLim).to.not.be.undefined;
+				expect(options.VTHAct).to.not.be.undefined;
+				expect(options.VALEn).to.not.be.undefined;
+				expect(options.VALLim).to.not.be.undefined;
+				expect(options.VALAct).to.not.be.undefined;
+				expect(options.VWLEn).to.not.be.undefined;
+				expect(options.VWLLim).to.not.be.undefined;
+				expect(options.VWLAct).to.not.be.undefined;
+				expect(options.VTLEn).to.not.be.undefined;
+				expect(options.VTLLim).to.not.be.undefined;
+				expect(options.VTLAct).to.not.be.undefined;
+			});
+
+			it('dynamic AnaLimitMonitoring DataItemOptions', () => {
+				const mockup = new LimitMonitoringMockup(mockupServer.nameSpace,
+					mockupServer.rootObject, 'Variable', 'Ana');
+
+				const options = mockup.getDataItemOptions() as LimitMonitoringRuntime;
+
+				expect(Object.keys(options).length).to.equal(18);
+				expect(options.VAHEn).to.not.be.undefined;
+				expect(options.VAHLim).to.not.be.undefined;
+				expect(options.VAHAct).to.not.be.undefined;
+				expect(options.VWHEn).to.not.be.undefined;
+				expect(options.VWHLim).to.not.be.undefined;
+				expect(options.VWHAct).to.not.be.undefined;
+				expect(options.VTHEn).to.not.be.undefined;
+				expect(options.VTHLim).to.not.be.undefined;
+				expect(options.VTHAct).to.not.be.undefined;
+				expect(options.VALEn).to.not.be.undefined;
+				expect(options.VALLim).to.not.be.undefined;
+				expect(options.VALAct).to.not.be.undefined;
+				expect(options.VWLEn).to.not.be.undefined;
+				expect(options.VWLLim).to.not.be.undefined;
+				expect(options.VWLAct).to.not.be.undefined;
+				expect(options.VTLEn).to.not.be.undefined;
+				expect(options.VTLLim).to.not.be.undefined;
+				expect(options.VTLAct).to.not.be.undefined;
+			});
+		});
+
+	});
+
+	describe('dynamic', () => {
+
+		describe('AnaLimitMonitoring', () => {
+
+			let mockupServer: MockupServer;
+			let connection: OpcUaConnection;
+
+			beforeEach(async function () {
+				this.timeout(5000);
+				mockupServer = new MockupServer();
+				await mockupServer.initialize();
+				new LimitMonitoringMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable', 'Ana');
+				await mockupServer.start();
+				connection = new OpcUaConnection();
+				connection.initialize({endpoint: mockupServer.endpoint});
+				await connection.connect();
+			});
+			afterEach(async () => {
+				await connection.disconnect();
+				await mockupServer.shutdown();
+			});
+
+			it('set and get VAHLim', async () => {
+				await connection.writeNode('Variable.VAHLim', mockupServer.nameSpaceUri, 1, 'Double');
+				await connection.readNode('Variable.VAHLim', mockupServer.nameSpaceUri)
+					.then((dataValue) => expect((dataValue)?.value.value).to.equal(1));
+			}).timeout(2000);
+			it('set and get VWHLim', async () => {
+				await connection.writeNode('Variable.VWHLim', mockupServer.nameSpaceUri, 1, 'Double');
+				await connection.readNode('Variable.VWHLim', mockupServer.nameSpaceUri)
+					.then((dataValue) => expect((dataValue)?.value.value).to.equal(1));
+			}).timeout(2000);
+			it('set and get VTHLim', async () => {
+				await connection.writeNode('Variable.VTHLim', mockupServer.nameSpaceUri, 1, 'Double');
+				await connection.readNode('Variable.VTHLim', mockupServer.nameSpaceUri)
+					.then((dataValue) => expect((dataValue)?.value.value).to.equal(1));
+			}).timeout(2000);
+			it('set and get VTLLim', async () => {
+				await connection.writeNode('Variable.VTLLim', mockupServer.nameSpaceUri, 1, 'Double');
+				await connection.readNode('Variable.VTLLim', mockupServer.nameSpaceUri)
+					.then((dataValue) => expect((dataValue)?.value.value).to.equal(1));
+			}).timeout(2000);
+			it('set and get VALLim', async () => {
+				await connection.writeNode('Variable.VALLim', mockupServer.nameSpaceUri, 1, 'Double');
+				await connection.readNode('Variable.VALLim', mockupServer.nameSpaceUri)
+					.then((dataValue) => expect((dataValue)?.value.value).to.equal(1));
+			}).timeout(2000);
+			it('set and get VWLLim', async () => {
+				await connection.writeNode('Variable.VWLLim', mockupServer.nameSpaceUri, 1, 'Double');
+				await connection.readNode('Variable.VWLLim', mockupServer.nameSpaceUri)
+					.then((dataValue) => expect((dataValue)?.value.value).to.equal(1));
+			}).timeout(2000);
+			//TODO: get the rest of values
+
+		});
+
+
+		describe('DIntLimitMonitoring', () => {
+
+			let mockupServer: MockupServer;
+			let connection: OpcUaConnection;
+			beforeEach(async function () {
+				this.timeout(5000);
+				mockupServer = new MockupServer();
+				await mockupServer.initialize();
+				new LimitMonitoringMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable', 'DInt');
+				await mockupServer.start();
+				connection = new OpcUaConnection();
+				connection.initialize({endpoint: mockupServer.endpoint});
+				await connection.connect();
+			});
+			afterEach(async () => {
+				await connection.disconnect();
+				await mockupServer.shutdown();
+			});
+
+			it('set and get VAHLim', async () => {
+				await connection.writeNode('Variable.VAHLim', mockupServer.nameSpaceUri, 1, 'Int32');
+				await connection.readNode('Variable.VAHLim', mockupServer.nameSpaceUri)
+					.then((dataValue) => expect((dataValue)?.value.value).to.equal(1));
+			}).timeout(2000);
+			it('set and get VWHLim', async () => {
+				await connection.writeNode('Variable.VWHLim', mockupServer.nameSpaceUri, 1, 'Int32');
+				await connection.readNode('Variable.VWHLim', mockupServer.nameSpaceUri)
+					.then((dataValue) => expect((dataValue)?.value.value).to.equal(1));
+			}).timeout(2000);
+			it('set and get VTHLim', async () => {
+				await connection.writeNode('Variable.VTHLim', mockupServer.nameSpaceUri, 1, 'Int32');
+				await connection.readNode('Variable.VTHLim', mockupServer.nameSpaceUri)
+					.then((dataValue) => expect((dataValue)?.value.value).to.equal(1));
+			}).timeout(2000);
+			it('set and get VTLLim', async () => {
+				await connection.writeNode('Variable.VTLLim', mockupServer.nameSpaceUri, 1, 'Int32');
+				await connection.readNode('Variable.VTLLim', mockupServer.nameSpaceUri)
+					.then((dataValue) => expect((dataValue)?.value.value).to.equal(1));
+			}).timeout(2000);
+			it('set and get VALLim', async () => {
+				await connection.writeNode('Variable.VALLim', mockupServer.nameSpaceUri, 1, 'Int32');
+				await connection.readNode('Variable.VALLim', mockupServer.nameSpaceUri)
+					.then((dataValue) => expect((dataValue)?.value.value).to.equal(1));
+			}).timeout(2000);
+			it('set and get VWLLim', async () => {
+				await connection.writeNode('Variable.VWLLim', mockupServer.nameSpaceUri, 1, 'Int32');
+				await connection.readNode('Variable.VWLLim', mockupServer.nameSpaceUri)
+					.then((dataValue) => expect((dataValue)?.value.value).to.equal(1));
+			}).timeout(2000);
+			//TODO: get the rest of values
+		});
+
+	});
 });

@@ -28,23 +28,21 @@ import {AnaVlv} from './AnaVlv';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from './AnaVlv.spec.json';
 import {MockupServer} from '../../../../../_utils';
-
-import {AnaVlvMockup} from './AnaVlv.mockup';
+import {AnaVlvMockup, getAnaVlvOptions} from './AnaVlv.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('AnaVlv', () => {
-	const dataAssemblyOptions: DataAssemblyOptions = {
-		name: 'Variable',
-		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperationElement/AnaVlv',
-		dataItems: baseDataAssemblyOptions
-	};
+
+	let dataAssemblyOptions: DataAssemblyOptions;
 	
 	describe('static', () => {
+
 		const emptyOPCUAConnection = new OpcUaConnection();
+		dataAssemblyOptions = getAnaVlvOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
+
 		it('should create AnaVlv',  () => {
 			const dataAssemblyController = new AnaVlv(dataAssemblyOptions, emptyOPCUAConnection);
 			expect(dataAssemblyController).to.not.be.undefined;
@@ -67,8 +65,6 @@ describe('AnaVlv', () => {
 			expect(dataAssemblyController.communication.PosMax).to.not.be.undefined;
 			expect(dataAssemblyController.communication.OpenAct).to.not.be.undefined;
 			expect(dataAssemblyController.communication.CloseAct).to.not.be.undefined;
-
-			// rest is tested in Vlv class
 		});
 	});
 	
@@ -80,7 +76,8 @@ describe('AnaVlv', () => {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			new AnaVlvMockup( mockupServer.nameSpace, mockupServer.rootObject,'Variable');
+			const anaVlvMockup = new AnaVlvMockup( mockupServer.nameSpace, mockupServer.rootObject,'Variable');
+			dataAssemblyOptions = anaVlvMockup.getDataAssemblyOptions();
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});
@@ -118,7 +115,7 @@ describe('AnaVlv', () => {
 			expect(dataAssemblyController.communication.SrcIntAut.value).equal(false);
 			expect(dataAssemblyController.communication.SrcIntOp.value).equal(false);
 			expect(dataAssemblyController.communication.SrcManOp.value).equal(false);
-			expect(dataAssemblyController.communication.SrcIntAct.value).equal(true);
+			expect(dataAssemblyController.communication.SrcIntAct.value).equal(false);
 			expect(dataAssemblyController.communication.SrcManAct.value).equal(false);
 
 			expect(dataAssemblyController.communication.StateChannel.value).equal(false);

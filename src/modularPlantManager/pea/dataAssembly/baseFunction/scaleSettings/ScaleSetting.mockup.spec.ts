@@ -25,46 +25,82 @@
  
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {DataType} from 'node-opcua';
 import {MockupServer} from '../../../../_utils';
-import {ScaleSettingMockup} from './ScaleSetting.mockup';
+import {getScaleSettingsDataItemOptions, ScaleSettingMockup} from './ScaleSetting.mockup';
+import {ScaleSettingsRuntime} from './ScaleSettings';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('ScaleSettingsMockup', () => {
-    describe('', () => {
+
+    describe('static', () => {
+
         let mockupServer: MockupServer;
+
         beforeEach(async()=>{
             mockupServer = new MockupServer();
             await mockupServer.initialize();
         });
 
-        it('should create ScaleSettingsMockup, Double', async () => {
+        describe('DIntScaleSettings', () => {
+
+            it('should create DIntScaleSettingsMockup', async () => {
+                const mockup= new ScaleSettingMockup(mockupServer.nameSpace,
+                    mockupServer.rootObject, 'Variable', 'DInt');
+                expect(mockup).to.not.be.undefined;
+            });
+
+            it('static DataItemOptions', () => {
+                const options = getScaleSettingsDataItemOptions(1, 'Test', 'DInt') as ScaleSettingsRuntime;
+
+                expect(Object.keys(options).length).to.equal(2);
+                expect(options.VSclMax).to.not.be.undefined;
+                expect(options.VSclMin).to.not.be.undefined;
+            });
+
+            it('dynamic DataItemOptions', () => {
+                const mockup = new ScaleSettingMockup(mockupServer.nameSpace,
+                    mockupServer.rootObject, 'Variable', 'DInt');
+                const options = mockup.getDataItemOptions() as ScaleSettingsRuntime;
+
+                expect(Object.keys(options).length).to.equal(2);
+                expect(options.VSclMax).to.not.be.undefined;
+                expect(options.VSclMin).to.not.be.undefined;
+            });
+        });
+
+        describe('AnaScaleSettings', () => {
+
+            it('should create AnaScaleSettingsMockup', async () => {
+                const mockup= new ScaleSettingMockup(mockupServer.nameSpace,
+                    mockupServer.rootObject, 'Variable', 'Ana');
+                expect(mockup).to.not.be.undefined;
+            });
+
+            it('static DataItemOptions', () => {
+                const options = getScaleSettingsDataItemOptions(1, 'Test', 'Ana') as ScaleSettingsRuntime;
+
+                expect(Object.keys(options).length).to.equal(2);
+                expect(options.VSclMax).to.not.be.undefined;
+                expect(options.VSclMin).to.not.be.undefined;
+            });
+
+            it('dynamic DataItemOptions', () => {
+                const mockup = new ScaleSettingMockup(mockupServer.nameSpace,
+                    mockupServer.rootObject, 'Variable', 'Ana');
+                const options = mockup.getDataItemOptions() as ScaleSettingsRuntime;
+
+                expect(Object.keys(options).length).to.equal(2);
+                expect(options.VSclMax).to.not.be.undefined;
+                expect(options.VSclMin).to.not.be.undefined;
+            });
+        });
+
+        it('should create DIntScaleSettingsMockup', async () => {
             const mockup= new ScaleSettingMockup(mockupServer.nameSpace,
-                mockupServer.rootObject, 'Variable', DataType.Double);
+                mockupServer.rootObject, 'Variable', 'DInt');
             expect(mockup).to.not.be.undefined;
-        });
-        it('should create ScaleSettingsMockup', async () => {
-            const mockup= new ScaleSettingMockup(mockupServer.nameSpace,
-                mockupServer.rootObject, 'Variable', DataType.Int32);
-            expect(mockup).to.not.be.undefined;
-        });
-        it('getScaleSettingsMockupReferenceJSON(), Double',  () => {
-            const mockup = new ScaleSettingMockup(mockupServer.nameSpace,
-                mockupServer.rootObject, 'Variable', DataType.Double);
-            const json = mockup.getScaleSettingsInstanceMockupJSON() as {VSclMin: {} ; VSclMax: {}};
-            expect(Object.keys(json).length).to.equal(2);
-            expect(json.VSclMax).to.not.be.undefined;
-            expect(json.VSclMin).to.not.be.undefined;
-        });
-        it('getScaleSettingsMockupReferenceJSON()',  () => {
-            const mockup = new ScaleSettingMockup(mockupServer.nameSpace,
-                mockupServer.rootObject, 'Variable', DataType.Int32);
-            const json = mockup.getScaleSettingsInstanceMockupJSON() as {VSclMin: {} ; VSclMax: {}};
-            expect(Object.keys(json).length).to.equal(2);
-            expect(json.VSclMax).to.not.be.undefined;
-            expect(json.VSclMin).to.not.be.undefined;
         });
 
     });

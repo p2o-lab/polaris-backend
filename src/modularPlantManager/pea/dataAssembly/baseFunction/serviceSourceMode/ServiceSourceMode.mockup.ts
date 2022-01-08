@@ -25,49 +25,51 @@
 
 import {ServiceSourceMode} from '@p2olab/polaris-interface';
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
+import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
 
-export function getServiceSourceModeMockupReferenceJSON(
-	namespace: number,
-	objectBrowseName: string): object {
 
+function getServiceSourceModeSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
 	return ({
-			SrcChannel: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.SrcChannel`,
-				dataType: 'Boolean'
-			},
-			SrcIntAct: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.SrcIntAct`,
-				dataType: 'Boolean'
-			},
-			SrcIntAut: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.SrcIntAut`,
-				dataType: 'Boolean'
-			},
-			SrcIntOp: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.SrcIntOp`,
-				dataType: 'Boolean'
-			},
-			SrcExtAct: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.SrcExtAct`,
-				dataType: 'Boolean'
-			},
-			SrcExtAut: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.SrcExtAut`,
-				dataType: 'Boolean'
-			},
-			SrcExtOp: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.SrcExtOp`,
-				dataType: 'Boolean'
-			}
-		}
-	);
+		SrcChannel: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.SrcChannel`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		SrcIntAct: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.SrcIntAct`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		SrcIntAut: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.SrcIntAut`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		SrcIntOp: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.SrcIntOp`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		SrcExtAct: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.SrcExtAct`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		SrcExtAut: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.SrcExtAut`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		SrcExtOp: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.SrcExtOp`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions
+	});
+}
+
+export function getServiceSourceModeDataItemOptions(namespace: number, objectBrowseName: string): object {
+	return getServiceSourceModeSpecificDataItemOptions(namespace, objectBrowseName);
 }
 
 export class ServiceSourceModeMockup {
@@ -187,6 +189,7 @@ export class ServiceSourceModeMockup {
 		});
 
 	}
+
 	public get srcExtAct(): boolean {
 		return this.srcMode === ServiceSourceMode.Extern;
 	}
@@ -195,13 +198,10 @@ export class ServiceSourceModeMockup {
 		return this.srcMode === ServiceSourceMode.Intern;
 	}
 
-
-
-	public getServiceSourceModeInstanceMockupJSON(): object {
-		return getServiceSourceModeMockupReferenceJSON(
+	public getDataItemOptions(): object {
+		return getServiceSourceModeDataItemOptions(
 			this.mockupNode.namespaceIndex,
 			this.mockupNode.browseName.name as string);
 	}
-
 
 }

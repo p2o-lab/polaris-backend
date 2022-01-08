@@ -24,61 +24,46 @@
  */
 
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
-import {getWQCMockupReferenceJSON, WQCMockup} from '../../../baseFunction/wqc/WQC.mockup';
+import {getOSLevelDataItemOptions, OSLevelMockup} from '../../../baseFunction/osLevel/OSLevel.mockup';
 import {
-	getScaleSettingsMockupReferenceJSON,
-	ScaleSettingMockup
-} from '../../../baseFunction/scaleSettings/ScaleSetting.mockup';
-import {getUnitMockupReferenceJSON, UnitMockup} from '../../../baseFunction/unit/Unit.mockup';
-import {getOSLevelMockupReferenceJSON, OSLevelMockup} from '../../../baseFunction/osLevel/OSLevel.mockup';
-import {
-	getLimitMonitoringMockupReferenceJSON,
+	getLimitMonitoringDataItemOptions,
 	LimitMonitoringMockup
 } from '../../../baseFunction/limitMonitoring/LimitMonitoring.mockup';
+import {DIntViewMockup, getDIntViewOptions} from '../DIntView.mockup';
+import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
+import {getDataAssemblyOptions} from '../../../DataAssemblyController.mockup';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 
-export function getDIntMonMockupReferenceJSON(
-	namespace: number,
-	objectBrowseName: string): object {
-	return (
-		{
-			...getWQCMockupReferenceJSON(namespace, objectBrowseName),
-			...getScaleSettingsMockupReferenceJSON(namespace, objectBrowseName, 'Int32'),
-			...getUnitMockupReferenceJSON(namespace, objectBrowseName),
-			...getOSLevelMockupReferenceJSON(namespace, objectBrowseName),
-			...getLimitMonitoringMockupReferenceJSON(namespace, objectBrowseName),
-			V: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.V`,
-				dataType: 'Int32'
-			}
-		}
+const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/DIntView/DIntMon';
+
+export function getDIntMonDataItemOptions(namespace: number, objectBrowseName: string): object {
+	return ({
+			...getOSLevelDataItemOptions(namespace, objectBrowseName),
+			...getLimitMonitoringDataItemOptions(namespace, objectBrowseName, 'DInt'),
+		} as OpcUaNodeOptions
 	);
 }
 
-export class DIntMonMockup {
+export function getDIntMonOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
+	const options = getDataAssemblyOptions(name, tagName, tagDescription);
+	options.metaModelRef = metaModelReference;
+	options.dataItems = {
+		...options.dataItems,
+		...getDIntViewOptions(namespace, objectBrowseName),
+		...getDIntMonDataItemOptions(namespace, objectBrowseName)};
+	return options;
+}
 
-	public readonly name: string;
-	protected v = 0;
-	public wqc: WQCMockup;
-	public scaleSettings: ScaleSettingMockup<DataType.Int32>;
-	public unit: UnitMockup;
+export class DIntMonMockup extends DIntViewMockup{
+
 	public osLevel: OSLevelMockup;
-	public limitMonitoring: LimitMonitoringMockup<DataType.Double | DataType.Int32>;
-	protected mockupNode: UAObject;
+	public limitMonitoring: LimitMonitoringMockup<'DInt'>;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
+		super(namespace, rootNode, variableName);
 
-		this.name = variableName;
-
-		this.mockupNode = namespace.addObject({
-			organizedBy: rootNode,
-			browseName: variableName
-		});
-		this.wqc = new WQCMockup(namespace, this.mockupNode, this.name);
-		this.scaleSettings = new ScaleSettingMockup<DataType.Int32>(namespace, this.mockupNode, this.name, DataType.Int32);
-		this.unit = new UnitMockup(namespace, this.mockupNode, this.name);
 		this.osLevel = new OSLevelMockup(namespace, this.mockupNode, this.name);
-		this.limitMonitoring = new LimitMonitoringMockup(namespace, this.mockupNode, this.name, DataType.Int32);
+		this.limitMonitoring = new LimitMonitoringMockup(namespace, this.mockupNode, this.name, 'DInt');
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
@@ -93,9 +78,14 @@ export class DIntMonMockup {
 		});
 	}
 
-	public getDIntMonInstanceMockupJSON(): object {
-		return getDIntMonMockupReferenceJSON(
-			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name as string);
+	public getDataAssemblyOptions(): DataAssemblyOptions {
+		const options = super.getDataAssemblyOptions();
+		options.metaModelRef = metaModelReference;
+		options.dataItems = {
+			...options.dataItems,
+			...this.osLevel.getDataItemOptions(),
+			...this.limitMonitoring.getDataItemOptions()
+		};
+		return options;
 	}
 }

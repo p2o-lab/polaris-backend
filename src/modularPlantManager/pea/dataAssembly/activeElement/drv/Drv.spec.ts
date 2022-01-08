@@ -31,22 +31,22 @@ import {
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from './anaDrv/monAnaDrv/MonAnaDrv.spec.json';
 import {MockupServer} from '../../../../_utils';
-import {DrvMockup} from './Drv.mockup';
+import {DrvMockup, getDrvOptions} from './Drv.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
-const dataAssemblyOptions: DataAssemblyOptions = {
-	name: 'Variable',
-	metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/ActiveElement/BinDrv',
-	dataItems: baseDataAssemblyOptions
-};
 
 describe('Drv', () => {
-	describe('', () => {
+
+	let dataAssemblyOptions: DataAssemblyOptions;
+
+	describe('static', () => {
+
 		const emptyOPCUAConnection = new OpcUaConnection();
-		it('should create Drv/BinDrv',  () => {
+		dataAssemblyOptions = getDrvOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
+
+		it('should create Drv',  () => {
 			const dataAssemblyController = new Drv(dataAssemblyOptions, emptyOPCUAConnection);
 
 			expect(dataAssemblyController.reset).to.be.not.undefined;
@@ -74,7 +74,7 @@ describe('Drv', () => {
 			expect(dataAssemblyController.communication.StopOp).to.be.not.undefined;
 			expect(dataAssemblyController.communication.Trip).to.be.not.undefined;
 
-			expect(Object.keys(dataAssemblyController.communication).length).to.equal(37);
+			expect(Object.keys(dataAssemblyController.communication).length).to.equal(39);
 		});
 	});
 	describe('dynamic', () => {
@@ -86,13 +86,13 @@ describe('Drv', () => {
 			this.timeout(10000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			new DrvMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
+			const drvMockup = new DrvMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
+			dataAssemblyOptions = drvMockup.getDataAssemblyOptions();
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});
 			await connection.connect();
-
-			dataAssemblyController = new Drv(dataAssemblyOptions, connection) ;
+			dataAssemblyController = new Drv(dataAssemblyOptions, connection);
 			await dataAssemblyController.subscribe();
 			await connection.startMonitoring();
 			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));

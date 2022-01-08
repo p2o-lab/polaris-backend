@@ -29,23 +29,22 @@ import {AnaProcessValueIn} from './AnaProcessValueIn';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from './AnaProcessValueIn.spec.json';
 import {MockupServer} from '../../../../../_utils';
-import {AnaProcessValueInMockup} from './AnaProcessValueIn.mockup';
+import {AnaProcessValueInMockup, getAnaProcessValueInOptions} from './AnaProcessValueIn.mockup';
 import {DataAssemblyControllerFactory} from '../../../DataAssemblyControllerFactory';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('AnaProcessValueIn', () => {
-	const dataAssemblyOptions: DataAssemblyOptions = {
-		name: 'Variable',
-		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/InputElement/AnaProcessValueIn',
-		dataItems: baseDataAssemblyOptions
-	};
+
+	let dataAssemblyOptions: DataAssemblyOptions;
 
 	describe('static', () => {
+
 		const emptyOPCUAConnection = new OpcUaConnection();
+		dataAssemblyOptions = getAnaProcessValueInOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
+
 		it('should create AnaProcessValueIn', async () => {
 			const dataAssemblyController = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as AnaProcessValueIn;
 			expect(dataAssemblyController).to.be.not.undefined;
@@ -59,17 +58,15 @@ describe('AnaProcessValueIn', () => {
 	describe('dynamic', () => {
 		let mockupServer: MockupServer;
 		let connection: OpcUaConnection;
-		let mockup: AnaProcessValueInMockup;
+		let anaProcessValueInMockup: AnaProcessValueInMockup;
 
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			mockup = new AnaProcessValueInMockup(
-				mockupServer.nameSpace,
-				mockupServer.rootObject,
-				'Variable');
-			mockup.scaleSettings.vSclMax= 1;
+			anaProcessValueInMockup = new AnaProcessValueInMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
+			anaProcessValueInMockup.scaleSettings.vSclMax= 1;
+			dataAssemblyOptions = anaProcessValueInMockup.getDataAssemblyOptions();
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});
@@ -104,7 +101,7 @@ describe('AnaProcessValueIn', () => {
 			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
 
 			await dataAssemblyController.setParameter(1,'VExt');
-			expect(mockup.vExt).equal(1);
+			expect(anaProcessValueInMockup.vExt).equal(1);
 			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
 			expect(dataAssemblyController.communication.VExt.value).equal(1);
 

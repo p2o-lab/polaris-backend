@@ -30,23 +30,21 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../../_utils';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-
-import * as baseDataAssemblyOptions from './StringServParam.spec.json';
 import {DataAssemblyControllerFactory} from '../../../DataAssemblyControllerFactory';
-import {StringServParamMockup} from './StringServParam.mockup';
+import {getStringServParamOptions, StringServParamMockup} from './StringServParam.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('StringServParam', () => {
-	const dataAssemblyOptions: DataAssemblyOptions = {
-		name: 'Variable',
-		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperationElement/StringServParam',
-		dataItems: baseDataAssemblyOptions
-	};
+
+	let dataAssemblyOptions: DataAssemblyOptions;
 
 	describe('static', () => {
+
 		const emptyOPCUAConnection = new OpcUaConnection();
+		dataAssemblyOptions = getStringServParamOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
+
 		it('should create StringServParam', () => {
 			const dataAssemblyController = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as StringServParam;
 			expect(dataAssemblyController.serviceSourceMode).to.not.be.undefined;
@@ -69,7 +67,8 @@ describe('StringServParam', () => {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			new StringServParamMockup(mockupServer.nameSpace, mockupServer.rootObject,'Variable');
+			const stringServParamMockup = new StringServParamMockup(mockupServer.nameSpace, mockupServer.rootObject,'Variable');
+			dataAssemblyOptions = stringServParamMockup.getDataAssemblyOptions();
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});
@@ -120,5 +119,4 @@ describe('StringServParam', () => {
 			expect(dataAssemblyController.communication.VFbk.value).equal('');
 		}).timeout(4000);
 	});
-
 });

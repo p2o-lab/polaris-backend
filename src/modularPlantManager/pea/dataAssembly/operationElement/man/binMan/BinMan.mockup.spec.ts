@@ -25,47 +25,51 @@
  
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {Namespace, UAObject} from 'node-opcua';
 import {MockupServer} from '../../../../../_utils';
-import {BinManMockup} from './BinMan.mockup';
+import {BinManMockup, getBinManDataItemOptions, getBinManOptions} from './BinMan.mockup';
 import {OpcUaConnection} from '../../../../connection';
-
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {BinManRuntime} from './BinMan';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-// this fake class is needed to test the protected variable
-class FakeClass extends BinManMockup{
-    constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
-        super(namespace, rootNode, variableName);
-    }
-    public getVOut(): boolean{
-        return this.vOut;
-    }
-}
 describe('BinManMockup', () => {
-    describe('', () => {
+
+    describe('static', () => {
+
         let mockupServer: MockupServer;
+
         beforeEach(async()=>{
             mockupServer = new MockupServer();
             await mockupServer.initialize();
         });
-        it('should create BinManMockup', async () => {
-            const mockup= new BinManMockup(mockupServer.nameSpace,
-                mockupServer.rootObject, 'Variable');
-            expect(mockup).to.not.be.undefined;
-            //TODO: test more
 
+        it('should create BinManMockup', async () => {
+            const mockup= new BinManMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
+            expect(mockup).to.not.be.undefined;
         });
-        it('getBinManMockupReferenceJSON(namespace, objectBrowseName)',  () => {
+
+        it('static DataItemOptions', () => {
+            const options = getBinManDataItemOptions(1, 'Test') as BinManRuntime;
+            expect(Object.keys(options).length).to.equal(7);
+        });
+
+        it('static DataAssemblyOptions', () => {
+            const options = getBinManOptions(1, 'Test') as DataAssemblyOptions;
+            expect(Object.keys(options.dataItems).length).to.equal(9);
+        });
+
+        it('dynamic DataAssemblyOptions', () => {
             const mockup = new BinManMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const json = mockup.getBinManMockupJSON();
-            expect(json).not.to.be.undefined;
-            expect(Object.keys(json).length).to.equal(7);
-            //TODO: test more
+            const options = mockup.getDataAssemblyOptions();
+
+            expect(Object.keys(options.dataItems).length).to.equal(9);
         });
-        it('startCurrentTimeUpdate()',  async() => {
+
+        // TODO
+/*        it('startCurrentTimeUpdate()',  async() => {
             const mockup: FakeClass = new FakeClass(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable') as FakeClass;
             mockup.startCurrentTimeUpdate();
@@ -73,6 +77,7 @@ describe('BinManMockup', () => {
             await new Promise(f => setTimeout(f, 1000));
             expect(mockup.getVOut()).to.equal(true);
         });
+
         it('stopCurrentTimeUpdate()',  async() => {
             const mockup: FakeClass = new FakeClass(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable') as FakeClass;
@@ -83,20 +88,23 @@ describe('BinManMockup', () => {
             //vOut should not change, because Update is stopped!
             expect(mockup.getVOut()).to.equal(false);
         });
+
         it('stopCurrentTimeUpdate(), interval undefined',  () => {
             const mockup: FakeClass = new FakeClass(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable') as FakeClass;
             expect((() => mockup.stopCurrentTimeUpdate())).to.throw();
-        });
+        });*/
     });
     describe('dynamic', () => {
 
         let mockupServer: MockupServer;
         let connection: OpcUaConnection;
+
         beforeEach(async function () {
             this.timeout(5000);
             mockupServer = new MockupServer();
             await mockupServer.initialize();
+            new BinManMockup(mockupServer.nameSpace, mockupServer.rootObject,'Variable');
             await mockupServer.start();
             connection = new OpcUaConnection();
             connection.initialize({endpoint: mockupServer.endpoint});
@@ -113,7 +121,5 @@ describe('BinManMockup', () => {
             await connection.readNode('Variable.VMan', mockupServer.nameSpaceUri)
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(true));
         }).timeout(3000);
-
-        //TODO get the rest
     });
 });

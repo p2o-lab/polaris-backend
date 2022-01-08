@@ -28,28 +28,28 @@ import {OpcUaConnection} from '../../../connection';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from '../../activeElement/vlv/binVlv/monBinVlv/MonBinVlv.spec.json';
 import {DataAssemblyController} from '../../DataAssemblyController';
 import {MonBinVlv} from '../../activeElement';
 import {Interlock} from './Interlock';
 import {MockupServer} from '../../../../_utils';
 import {InterlockMockup} from './Interlock.mockup';
+import {getMonBinVlvOptions} from '../../activeElement/vlv/binVlv/monBinVlv/MonBinVlv.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('Interlock', () => {
-	const dataAssemblyOptions: DataAssemblyOptions = {
-		name: 'Variable',
-		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/ActiveElement/MonBinVlv',
-		dataItems: baseDataAssemblyOptions
-	};
+
+	let dataAssemblyOptions: DataAssemblyOptions;
 
 	describe('static', () => {
+
 		const emptyOPCUAConnection = new OpcUaConnection();
+		dataAssemblyOptions = getMonBinVlvOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
+
 		it('should create Interlock', () => {
 			const dataAssemblyController = new DataAssemblyController(dataAssemblyOptions, emptyOPCUAConnection) as MonBinVlv;
-			const interlock = new Interlock(dataAssemblyController); //this will set communication variables
+			const interlock = new Interlock(dataAssemblyController);
 			expect(interlock).to.not.to.undefined;
 			expect(dataAssemblyController.communication.PermEn).to.not.to.undefined;
 			expect(dataAssemblyController.communication.Permit).to.not.to.undefined;
@@ -59,6 +59,7 @@ describe('Interlock', () => {
 			expect(dataAssemblyController.communication.Protect).to.not.to.undefined;
 		});
 	});
+
 	describe('dynamic', () => {
 		let mockupServer: MockupServer;
 		let connection: OpcUaConnection;
@@ -67,10 +68,7 @@ describe('Interlock', () => {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			new InterlockMockup(
-				mockupServer.nameSpace,
-				mockupServer.rootObject,
-				'Variable');
+			new InterlockMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});

@@ -33,23 +33,21 @@ import {
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import * as baseDataAssemblyOptions from './ServiceControl.spec.json';
 import {MockupServer} from '../../../_utils';
-import {ServiceControlMockup} from './ServiceControl.mockup';
+import {getServiceControlOptions, ServiceControlMockup} from './ServiceControl.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('ServiceControl', () => {
 
-	const dataAssemblyOptions: DataAssemblyOptions = {
-		name: 'Variable',
-		metaModelRef: 'ServiceControl',
-		dataItems: baseDataAssemblyOptions
-	};
+	let dataAssemblyOptions: DataAssemblyOptions;
 
 	describe('static', () => {
+
 		const emptyOPCUAConnection = new OpcUaConnection();
+		dataAssemblyOptions = getServiceControlOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
+
 		it('should create ServiceControl', async () => {
 			const dataAssemblyController = new ServiceControl(dataAssemblyOptions, emptyOPCUAConnection);
 			expect(dataAssemblyController.opMode).to.not.equal(undefined);
@@ -81,7 +79,8 @@ describe('ServiceControl', () => {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			new ServiceControlMockup(mockupServer.nameSpace, mockupServer.rootObject,'Variable');
+			const serviceControlMockup =new ServiceControlMockup(mockupServer.nameSpace, mockupServer.rootObject,'Variable');
+			dataAssemblyOptions = serviceControlMockup.getDataAssemblyOptions();
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});

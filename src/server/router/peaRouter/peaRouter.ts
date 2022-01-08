@@ -127,7 +127,7 @@ peaRouter.get('/:peaId/download', (req: Request, res: Response) => {
 });
 
 /**
- * @api {post} /:peaId/connect    Connect PEAController by ID and subscribe to variables
+ * @api {post} /:peaId/connect    Connect PEAController by ID and subscribe to dataAssemblies
  * @apiName ConnectPEA
  * @apiGroup PEAController
  * @apiParam {string} peaId    ID of PEAController to be connected.

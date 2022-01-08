@@ -38,10 +38,11 @@ export type BinManRuntime = OperationElementRuntime & {
 
 export class BinMan extends OperationElement {
 
-	public readonly communication!: BinManRuntime;
+	public communication!: BinManRuntime;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
+
 		this.communication.VMan = this.createDataItem('VMan', 'boolean', 'write');
 		this.communication.VRbk = this.createDataItem('VRbk', 'boolean');
 		this.communication.VFbk = this.createDataItem('VFbk', 'boolean');

@@ -25,17 +25,30 @@
 
 import {Namespace, UAObject} from 'node-opcua';
 import {
-	FeedbackMonitoringMockup,
-	getFeedbackMonitoringMockupReferenceJSON
+	FeedbackMonitoringMockup, getFeedbackMonitoringDataItemOptions,
 } from '../../../../baseFunction/feedbackMonitoring/FeedbackMonitoring.mockup';
-import {BinVlvMockup, getBinVlvMockupReferenceJSON} from '../BinVlv.mockup';
+import {BinVlvMockup, getBinVlvDataItemOptions} from '../BinVlv.mockup';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
+import {getDataAssemblyOptions} from '../../../../DataAssemblyController.mockup';
 
-export function getMonBinVlvMockupReferenceJSON(namespace: number, objectBrowseName: string): object {
+const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/ActiveElement/BinVlv/MonBinVlv';
+
+export function getMonBinVlvDataItemOptions(namespace: number, objectBrowseName: string): object {
 	return ({
-			...getBinVlvMockupReferenceJSON(namespace,objectBrowseName),
-			...getFeedbackMonitoringMockupReferenceJSON(namespace,objectBrowseName),
-		}
+			...getBinVlvDataItemOptions(namespace, objectBrowseName),
+			...getFeedbackMonitoringDataItemOptions(namespace, objectBrowseName),
+		} as OpcUaNodeOptions
 	);
+}
+
+export function getMonBinVlvOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
+	const options = getDataAssemblyOptions(name, tagName, tagDescription);
+	options.metaModelRef = metaModelReference;
+	options.dataItems = {
+		...options.dataItems,
+		...getMonBinVlvDataItemOptions(namespace, objectBrowseName)};
+	return options;
 }
 
 export class MonBinVlvMockup extends BinVlvMockup{
@@ -49,9 +62,13 @@ export class MonBinVlvMockup extends BinVlvMockup{
 
 	}
 
-	public getMonBinVlvMockupJSON(): object {
-		return getMonBinVlvMockupReferenceJSON(
-			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name as string);
+	public getDataAssemblyOptions(): DataAssemblyOptions {
+		const options = super.getDataAssemblyOptions();
+		options.metaModelRef = metaModelReference;
+		options.dataItems = {
+			...options.dataItems,
+			...this.feedbackMonitoring.getDataItemOptions()
+		};
+		return options;
 	}
 }

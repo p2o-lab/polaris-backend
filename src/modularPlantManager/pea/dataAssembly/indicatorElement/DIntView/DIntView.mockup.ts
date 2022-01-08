@@ -24,50 +24,58 @@
  */
 
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
-import {getWQCMockupReferenceJSON, WQCMockup} from '../../baseFunction/wqc/WQC.mockup';
 import {
-	getScaleSettingsMockupReferenceJSON,
+	getScaleSettingsDataItemOptions,
 	ScaleSettingMockup
 } from '../../baseFunction/scaleSettings/ScaleSetting.mockup';
-import {getUnitMockupReferenceJSON, UnitMockup} from '../../baseFunction/unit/Unit.mockup';
+import {getUnitSettingsDataItemOptions, UnitSettingsMockup} from '../../baseFunction/unitSettings/UnitSettings.mockup';
+import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
+import {getDataAssemblyOptions} from '../../DataAssemblyController.mockup';
+import {getIndicatorElementDataItemOptions, IndicatorElementMockup} from '../IndicatorElement.mockup';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 
-export function getDIntViewMockupReferenceJSON(
-	namespace: number,
-	objectBrowseName: string): object {
-	return (
-		{
-			...getWQCMockupReferenceJSON(namespace, objectBrowseName),
-			...getScaleSettingsMockupReferenceJSON(namespace, objectBrowseName, 'Int32'),
-			...getUnitMockupReferenceJSON(namespace, objectBrowseName),
-			V: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.V`,
-				dataType: 'Int32'
-			}
-		}
+const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/DIntView';
+
+function getDIntViewSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
+	return ({
+		V: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.V`,
+			dataType: 'Int32'
+		} as OpcUaNodeOptions
+	});
+}
+
+export function getDIntViewDataItemOptions(namespace: number, objectBrowseName: string): object {
+	return ({
+			...getIndicatorElementDataItemOptions(namespace, objectBrowseName),
+			...getScaleSettingsDataItemOptions(namespace, objectBrowseName, 'DInt'),
+			...getUnitSettingsDataItemOptions(namespace, objectBrowseName),
+			...getDIntViewSpecificDataItemOptions(namespace, objectBrowseName),
+		} as OpcUaNodeOptions
 	);
 }
 
-export class DIntViewMockup {
+export function getDIntViewOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
+	const options = getDataAssemblyOptions(name, tagName, tagDescription);
+	options.metaModelRef = metaModelReference;
+	options.dataItems = {
+		...options.dataItems,
+		...getDIntViewDataItemOptions(namespace, objectBrowseName)};
+	return options;
+}
 
-	public readonly name: string;
+export class DIntViewMockup extends IndicatorElementMockup{
+
 	protected v = 0;
-	public wqc: WQCMockup;
-	public scaleSettings: ScaleSettingMockup<DataType.Int32>;
-	public unit: UnitMockup;
-	protected mockupNode: UAObject;
+	public scaleSettings: ScaleSettingMockup<'DInt'>;
+	public unit: UnitSettingsMockup;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
+		super(namespace, rootNode, variableName);
 
-		this.name = variableName;
-
-		this.mockupNode = namespace.addObject({
-			organizedBy: rootNode,
-			browseName: variableName
-		});
-		this.wqc = new WQCMockup(namespace, this.mockupNode, this.name);
-		this.scaleSettings = new ScaleSettingMockup<DataType.Int32>(namespace, this.mockupNode, this.name, DataType.Int32);
-		this.unit = new UnitMockup(namespace, this.mockupNode, this.name);
+		this.scaleSettings = new ScaleSettingMockup(namespace, this.mockupNode, this.name, 'DInt');
+		this.unit = new UnitSettingsMockup(namespace, this.mockupNode, this.name);
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
@@ -82,9 +90,15 @@ export class DIntViewMockup {
 		});
 	}
 
-	public getDIntViewInstanceMockupJSON(): object {
-		return getDIntViewMockupReferenceJSON(
-			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name as string);
+	public getDataAssemblyOptions(): DataAssemblyOptions {
+		const options = super.getDataAssemblyOptions();
+		options.metaModelRef = metaModelReference;
+		options.dataItems = {
+			...options.dataItems,
+			...this.scaleSettings.getDataItemOptions(),
+			...this.unit.getDataItemOptions(),
+			...getDIntViewSpecificDataItemOptions(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
+		};
+		return options;
 	}
 }

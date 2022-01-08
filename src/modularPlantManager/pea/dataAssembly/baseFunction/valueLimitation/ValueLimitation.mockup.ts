@@ -25,33 +25,38 @@
 
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
 
-export function getValueLimitationMockupReferenceJSON<T extends 'Float' | 'Int32' >(
-    namespace: number,
-    objectBrowseName: string,
-    type: T): object {
-
+function getValueLimitationSpecificDataItemOptions<T extends 'Ana' | 'DInt'>(namespace: number, objectBrowseName: string, type: T): object {
   return ({
     VMin: {
       namespaceIndex: `${namespace}`,
       nodeId: `${objectBrowseName}.VMin`,
-      dataType: type
+      dataType: (type === 'Ana')? 'Float': 'Int32'
     },
     VMax: {
       namespaceIndex: `${namespace}`,
       nodeId: `${objectBrowseName}.VMax`,
-      dataType: type
+      dataType: (type === 'Ana')? 'Float': 'Int32'
     }
   });
 }
 
-export class ValueLimitationMockup<T extends DataType.Double | DataType.Int32> {
+export function getValueLimitationDataItemOptions<T extends 'Ana' | 'DInt'>(namespace: number, objectBrowseName: string, type: T): object {
+  return getValueLimitationSpecificDataItemOptions(namespace, objectBrowseName, type);
+}
+
+export class ValueLimitationMockup<T extends 'Ana' | 'DInt'> {
+
+  private readonly type: 'Ana' | 'DInt';
+  private readonly dataType: DataType;
+
   protected vMin = 0;
   protected vMax = 0;
-  private readonly type: DataType;
+
   protected mockupNode: UAObject;
 
   constructor(namespace: Namespace, rootNode: UAObject, variableName: string, type: T) {
     this.type = type;
+    this.dataType = (type === 'Ana')? DataType.Double : DataType.Int32;
 
     this.mockupNode = namespace.addObject({
       organizedBy: rootNode,
@@ -62,10 +67,10 @@ export class ValueLimitationMockup<T extends DataType.Double | DataType.Int32> {
       componentOf: this.mockupNode,
       nodeId: `ns=${namespace.index};s=${variableName}.VMin`,
       browseName: `${variableName}.VMin`,
-      dataType: this.type,
+      dataType: this.dataType,
       value: {
         get: (): Variant => {
-          return new Variant({dataType: this.type, value: this.vMin});
+          return new Variant({dataType: this.dataType, value: this.vMin});
         },
       },
     });
@@ -74,19 +79,19 @@ export class ValueLimitationMockup<T extends DataType.Double | DataType.Int32> {
       componentOf: this.mockupNode,
       nodeId: `ns=${namespace.index};s=${variableName}.VMax`,
       browseName: `${variableName}.VMax`,
-      dataType: this.type,
+      dataType: this.dataType,
       value: {
         get: (): Variant => {
-          return new Variant({dataType: this.type, value: this.vMax});
+          return new Variant({dataType: this.dataType, value: this.vMax});
         },
       },
     });
     }
 
-  public getValueLimitationInstanceMockupJSON(): object {
-    return getValueLimitationMockupReferenceJSON(
+  public getDataItemOptions(): object {
+    return getValueLimitationDataItemOptions(
         this.mockupNode.namespaceIndex,
         this.mockupNode.browseName.name as string,
-        (this.type === DataType.Double)? 'Float' : 'Int32');
+        this.type);
   }
 }

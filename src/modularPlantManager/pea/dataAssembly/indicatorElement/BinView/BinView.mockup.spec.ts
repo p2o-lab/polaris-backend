@@ -26,15 +26,20 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../_utils';
-import {BinViewMockup} from './BinView.mockup';
+import {BinViewMockup, getBinViewDataItemOptions, getBinViewOptions} from './BinView.mockup';
 import {OpcUaConnection} from '../../../connection';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {BinViewRuntime} from './BinView';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('BinViewMockup', () => {
-    describe('', () => {
+
+    describe('static', () => {
+
         let mockupServer: MockupServer;
+
         beforeEach(async()=>{
             mockupServer = new MockupServer();
             await mockupServer.initialize();
@@ -44,18 +49,27 @@ describe('BinViewMockup', () => {
             const mockup= new BinViewMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
             expect(mockup).to.not.be.undefined;
-            //TODO: test more
-
         });
-        it('getBinViewMockupReferenceJSON()',  () => {
+
+        it('static DataItemOptions', () => {
+            const options = getBinViewDataItemOptions(1, 'Test') as BinViewRuntime;
+            expect(Object.keys(options).length).to.equal(4);
+        });
+
+        it('static DataAssemblyOptions', () => {
+            const options = getBinViewOptions(1, 'Test') as DataAssemblyOptions;
+            expect(Object.keys(options.dataItems).length).to.equal(6);
+        });
+
+        it('dynamic DataAssemblyOptions', () => {
             const mockup = new BinViewMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const json = mockup.getBinViewInstanceMockupJSON();
-            expect(json).not.to.be.undefined;
-            expect(Object.keys(json).length).to.equal(4);
-            //TODO: test more
+            const options = mockup.getDataAssemblyOptions();
+
+            expect(Object.keys(options.dataItems).length).to.equal(6);
         });
     });
+
     describe('dynamic', () => {
 
         let mockupServer: MockupServer;

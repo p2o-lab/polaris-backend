@@ -23,72 +23,57 @@
  * SOFTWARE.
  */
 
-import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
-import {getWQCMockupReferenceJSON} from '../../../baseFunction/wqc/WQC.mockup';
+import {Namespace, UAObject} from 'node-opcua';
+import {getOSLevelDataItemOptions, OSLevelMockup} from '../../../baseFunction/osLevel/OSLevel.mockup';
 import {
-	getScaleSettingsMockupReferenceJSON,
-	ScaleSettingMockup
-} from '../../../baseFunction/scaleSettings/ScaleSetting.mockup';
-import {getUnitMockupReferenceJSON, UnitMockup} from '../../../baseFunction/unit/Unit.mockup';
-import {getOSLevelMockupReferenceJSON, OSLevelMockup} from '../../../baseFunction/osLevel/OSLevel.mockup';
-import {
-	getLimitMonitoringMockupReferenceJSON,
+	getLimitMonitoringDataItemOptions,
 	LimitMonitoringMockup
 } from '../../../baseFunction/limitMonitoring/LimitMonitoring.mockup';
-import {IndicatorElementMockup} from '../../IndicatorElement.mockup';
+import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
+import {getDataAssemblyOptions} from '../../../DataAssemblyController.mockup';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {AnaViewMockup, getAnaViewDataItemOptions} from '../AnaView.mockup';
 
-export function getAnaMonMockupReferenceJSON(
-	namespace: number,
-	objectBrowseName: string): object {
-	return (
-		{
-			...getWQCMockupReferenceJSON(namespace, objectBrowseName),
-			...getScaleSettingsMockupReferenceJSON(namespace, objectBrowseName, 'Float'),
-			...getUnitMockupReferenceJSON(namespace, objectBrowseName),
-			...getOSLevelMockupReferenceJSON(namespace, objectBrowseName),
-			...getLimitMonitoringMockupReferenceJSON(namespace, objectBrowseName),
-			V: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.V`,
-				dataType: 'Float'
-			}
-		}
+const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/AnaView/AnaMon';
+
+export function getAnaMonDataItemOptions(namespace: number, objectBrowseName: string): object {
+	return ({
+			...getAnaViewDataItemOptions(namespace, objectBrowseName),
+			...getOSLevelDataItemOptions(namespace, objectBrowseName),
+			...getLimitMonitoringDataItemOptions(namespace, objectBrowseName, 'Ana'),
+		} as OpcUaNodeOptions
 	);
 }
 
-export class AnaMonMockup extends IndicatorElementMockup{
+export function getAnaMonOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
+	const options = getDataAssemblyOptions(name, tagName, tagDescription);
+	options.metaModelRef = metaModelReference;
+	options.dataItems = {
+		...options.dataItems,
+		...getAnaMonDataItemOptions(namespace, objectBrowseName)};
+	return options;
+}
 
-	protected v = 0;
-	public scaleSettings: ScaleSettingMockup<DataType.Double>;
-	public unit: UnitMockup;
+export class AnaMonMockup extends AnaViewMockup{
+
 	public osLevel: OSLevelMockup;
-	public limitMonitoring: LimitMonitoringMockup<DataType.Double | DataType.Int32>;
+	public limitMonitoring: LimitMonitoringMockup<'Ana'>;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
-
 		super(namespace, rootNode, variableName);
 
-		this.scaleSettings = new ScaleSettingMockup<DataType.Double>(namespace, this.mockupNode, this.name, DataType.Double);
-		this.unit = new UnitMockup(namespace, this.mockupNode, this.name);
 		this.osLevel = new OSLevelMockup(namespace, this.mockupNode, this.name);
-		this.limitMonitoring = new LimitMonitoringMockup(namespace, this.mockupNode, this.name, DataType.Double);
-
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace.index};s=${variableName}.V`,
-			browseName: `${variableName}.V`,
-			dataType: DataType.Double,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.Double, value: this.v});
-				},
-			},
-		});
+		this.limitMonitoring = new LimitMonitoringMockup(namespace, this.mockupNode, this.name, 'Ana');
 	}
 
-	public getAnaMonInstanceMockupJSON(): object {
-		return getAnaMonMockupReferenceJSON(
-			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name as string);
+	public getDataAssemblyOptions(): DataAssemblyOptions {
+		const options = super.getDataAssemblyOptions();
+		options.metaModelRef = metaModelReference;
+		options.dataItems = {
+			...options.dataItems,
+			...this.osLevel.getDataItemOptions(),
+			...this.limitMonitoring.getDataItemOptions()
+		};
+		return options;
 	}
 }

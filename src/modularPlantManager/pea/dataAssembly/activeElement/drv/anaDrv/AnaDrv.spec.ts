@@ -29,7 +29,7 @@ import {AnaDrv} from './AnaDrv';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from './AnaDrv.spec.json';
+import {getAnaDrvOptions} from './AnaDrv.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -37,13 +37,11 @@ const expect = chai.expect;
 describe('AnaDrv', () => {
 
 	describe('', () => {
+
 		const emptyOPCUAConnection = new OpcUaConnection();
+
 		it('should create AnaDrv',  () => {
-			const dataAssemblyOptions: DataAssemblyOptions = {
-				name: 'Variable',
-				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/ActiveElement/AnaDrv',
-				dataItems: baseDataAssemblyOptions
-			};
+			const dataAssemblyOptions: DataAssemblyOptions = getAnaDrvOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
 			const dataAssemblyController = new AnaDrv(dataAssemblyOptions, emptyOPCUAConnection);
 			expect(dataAssemblyController.sourceMode).to.not.be.undefined;
 

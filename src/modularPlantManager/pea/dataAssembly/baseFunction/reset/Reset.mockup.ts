@@ -24,24 +24,29 @@
  */
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
+import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
 
-export function getResetMockupReferenceJSON(
-    namespace: number,
-    objectBrowseName: string): object {
 
+function getResetSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
   return ({
     ResetOp: {
       namespaceIndex: `${namespace}`,
       nodeId: `${objectBrowseName}.ResetOp`,
       dataType: 'Boolean'
-    },
+    } as OpcUaNodeOptions,
     ResetAut: {
       namespaceIndex: `${namespace}`,
       nodeId: `${objectBrowseName}.ResetAut`,
       dataType: 'Boolean'
-    }
+    } as OpcUaNodeOptions
   });
 }
+
+
+export function getResetDataItemOptions(namespace: number, objectBrowseName: string): object {
+  return getResetSpecificDataItemOptions(namespace, objectBrowseName);
+}
+
 
 export class ResetMockup {
   protected resetOp = false;
@@ -84,8 +89,8 @@ export class ResetMockup {
     });
     }
 
-  public getResetInstanceMockupJSON(): object {
-    return getResetMockupReferenceJSON(
+  public getDataItemOptions(): object {
+    return getResetDataItemOptions(
         this.mockupNode.namespaceIndex,
         this.mockupNode.browseName.name as string);
   }

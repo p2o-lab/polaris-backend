@@ -25,7 +25,7 @@
  
 @startuml
 'https://plantuml.com/class-diagram
-!include AnaManInt.puml
+!include anaManInt/AnaManInt.puml
 
 !include ../../../_extensions/scaleSettings/ScaleSettings.puml
 !include ../../../_extensions/unit/UnitSettings.puml

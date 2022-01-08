@@ -29,23 +29,21 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyController} from '../../DataAssemblyController';
 import {DataAssemblyOptions, SourceMode} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from './SourceModeController.spec.json';
 import {BinManInt} from '../../operationElement';
 import {MockupServer} from '../../../../_utils';
 import {SourceModeMockup} from './SourceMode.mockup';
 import {SourceModeController} from './SourceModeController';
+import {getBinManIntOptions} from '../../operationElement/man/binMan/binManInt/BinManInt.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('SourceModeController', () => {
-	const dataAssemblyOptions: DataAssemblyOptions = {
-		name: 'Variable',
-		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/BinManInt',
-		dataItems: baseDataAssemblyOptions
-	};
+
+	const dataAssemblyOptions = getBinManIntOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
 
 	describe('static', () => {
+
 		const emptyOPCUAConnection = new OpcUaConnection();
 
 		it('should create SourceModeController', async () => {
@@ -62,7 +60,9 @@ describe('SourceModeController', () => {
 		});
 
 	});
+
 	describe('dynamic', () => {
+
 		let mockupServer: MockupServer;
 		let connection: OpcUaConnection;
 
@@ -173,6 +173,7 @@ describe('SourceModeController', () => {
 	});
 
 	describe('dynamic functions, Intern on', async () => {
+
 		let mockupServer: MockupServer;
 		let connection: OpcUaConnection;
 		let sourceMode: SourceModeController;

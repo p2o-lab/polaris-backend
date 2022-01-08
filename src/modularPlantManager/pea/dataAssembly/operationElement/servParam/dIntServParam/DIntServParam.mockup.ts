@@ -26,64 +26,80 @@
 // eslint-disable-next-line no-undef
 import Timeout = NodeJS.Timeout;
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {getUnitMockupReferenceJSON, UnitMockup} from '../../../baseFunction/unit/Unit.mockup';
+import {getUnitSettingsDataItemOptions, UnitSettingsMockup} from '../../../baseFunction/unitSettings/UnitSettings.mockup';
 import {
-	getScaleSettingsMockupReferenceJSON,
+	getScaleSettingsDataItemOptions,
 	ScaleSettingMockup
 } from '../../../baseFunction/scaleSettings/ScaleSetting.mockup';
 import {
-	getValueLimitationMockupReferenceJSON,
+	getValueLimitationDataItemOptions,
 	ValueLimitationMockup
 } from '../../../baseFunction/valueLimitation/ValueLimitation.mockup';
-import {getServParamMockupReferenceJSON, ServParamMockup} from '../ServParam.mockup';
+import {getServParamDataItemOptions, ServParamMockup} from '../ServParam.mockup';
+import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
+import {getDataAssemblyOptions} from '../../../DataAssemblyController.mockup';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 
+const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/OperationElement/DIntServParam';
 
-export function getDIntServParamMockupReferenceJSON(
-	namespace: number,
-	objectBrowseName: string): object {
-
+function getDIntServParamSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
 	return ({
-			...getServParamMockupReferenceJSON(namespace,objectBrowseName),
-			...getUnitMockupReferenceJSON(namespace,objectBrowseName),
-			...getScaleSettingsMockupReferenceJSON(namespace,objectBrowseName,'Int32'),
-			...getValueLimitationMockupReferenceJSON(namespace,objectBrowseName, 'Int32'),
-			Sync: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.Sync`,
-				dataType: 'Boolean'
-			},
-			VExt: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VExt`,
-				dataType: 'Int32'
-			},
-			VOp: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VOp`,
-				dataType: 'Int32'
-			},
-			VInt: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VInt`,
-				dataType: 'Int32'
-			},
-			VReq: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VReq`,
-				dataType: 'Int32'
-			},
-			VOut: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VOut`,
-				dataType: 'Int32'
-			},
-			VFbk: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VFbk`,
-				dataType: 'Int32'
-			}
-		}
+		Sync: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.Sync`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		VExt: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.VExt`,
+			dataType: 'Int32'
+		} as OpcUaNodeOptions,
+		VOp: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.VOp`,
+			dataType: 'Int32'
+		} as OpcUaNodeOptions,
+		VInt: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.VInt`,
+			dataType: 'Int32'
+		} as OpcUaNodeOptions,
+		VReq: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.VReq`,
+			dataType: 'Int32'
+		} as OpcUaNodeOptions,
+		VOut: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.VOut`,
+			dataType: 'Int32'
+		} as OpcUaNodeOptions,
+		VFbk: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.VFbk`,
+			dataType: 'Int32'
+		} as OpcUaNodeOptions
+	});
+}
+
+export function getDIntServParamDataItemOptions(namespace: number, objectBrowseName: string): object {
+	return ({
+			...getServParamDataItemOptions(namespace, objectBrowseName),
+			...getUnitSettingsDataItemOptions(namespace, objectBrowseName),
+			...getScaleSettingsDataItemOptions(namespace, objectBrowseName, 'DInt'),
+			...getValueLimitationDataItemOptions(namespace, objectBrowseName, 'DInt'),
+			...getDIntServParamSpecificDataItemOptions(namespace, objectBrowseName),
+		} as OpcUaNodeOptions
 	);
+}
+
+export function getDIntServParamOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
+	const options = getDataAssemblyOptions(name, tagName, tagDescription);
+	options.metaModelRef = metaModelReference;
+	options.dataItems = {
+		...options.dataItems,
+		...getDIntServParamDataItemOptions(namespace, objectBrowseName)};
+	return options;
 }
 
 export class DIntServParamMockup extends ServParamMockup {
@@ -95,17 +111,18 @@ export class DIntServParamMockup extends ServParamMockup {
 	protected vOut = 0
 	protected vFbk = 0;
 
-	public readonly unit: UnitMockup;
-	public readonly scaleSettings: ScaleSettingMockup<DataType.Int32>;
-	public readonly valueLimitation: ValueLimitationMockup<DataType.Int32>;
+	public readonly unit: UnitSettingsMockup;
+	public readonly scaleSettings: ScaleSettingMockup<'DInt'>;
+	public readonly valueLimitation: ValueLimitationMockup<'DInt'>;
+
 	protected interval: Timeout | undefined;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
 		super(namespace, rootNode, variableName);
 
-		this.unit = new UnitMockup(namespace, this.mockupNode, this.name);
-		this.scaleSettings = new ScaleSettingMockup(namespace, this.mockupNode, this.name, DataType.Int32);
-		this.valueLimitation = new ValueLimitationMockup(namespace, this.mockupNode, this.name,DataType.Int32);
+		this.unit = new UnitSettingsMockup(namespace, this.mockupNode, this.name);
+		this.scaleSettings = new ScaleSettingMockup(namespace, this.mockupNode, this.name, 'DInt');
+		this.valueLimitation = new ValueLimitationMockup(namespace, this.mockupNode, this.name, 'DInt');
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
@@ -183,10 +200,17 @@ export class DIntServParamMockup extends ServParamMockup {
 		});
 	}
 
-	public getDIntServParamMockupJSON(): object {
-		return getDIntServParamMockupReferenceJSON(
-			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name as string);
+	public getDataAssemblyOptions(): DataAssemblyOptions {
+		const options = super.getDataAssemblyOptions();
+		options.metaModelRef = metaModelReference;
+		options.dataItems = {
+			...options.dataItems,
+			...this.unit.getDataItemOptions(),
+			...this.scaleSettings.getDataItemOptions(),
+			...this.valueLimitation.getDataItemOptions(),
+			...getDIntServParamSpecificDataItemOptions(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
+		};
+		return options;
 	}
 
 	public startCurrentTimeUpdate(): void {

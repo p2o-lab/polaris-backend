@@ -24,58 +24,57 @@
  */
 
 import {AccessLevelFlag, DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
+import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
 
-export function getOSLevelMockupReferenceJSON(
-    namespace: number,
-    objectBrowseName: string): object {
 
-  return ({
-    OSLevel:   {
-      namespaceIndex: `${namespace}`,
-      nodeId: `${objectBrowseName}.OSLevel`,
-      dataType: 'Byte'
-    }
-  });
+function getOSLevelSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
+	return ({
+		OSLevel: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.OSLevel`,
+			dataType: 'Byte'
+		} as OpcUaNodeOptions
+	});
+}
+
+export function getOSLevelDataItemOptions(namespace: number, objectBrowseName: string): object {
+	return getOSLevelSpecificDataItemOptions(namespace, objectBrowseName);
 }
 
 export class OSLevelMockup {
-  protected osLevel = 0;
- protected mockupNode: UAObject;
+	public osLevel = 0;
+	protected mockupNode: UAObject;
 
-  constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
+	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
 
-    /*this.mockupNode = namespace.addObject({
-      organizedBy: rootNode,
-      browseName: variableName,
-    });*/
-    this.mockupNode = rootNode;
+		this.mockupNode = rootNode;
 
-      namespace.addVariable({
-        componentOf: rootNode,
-        nodeId: `ns=${namespace.index};s=${variableName}.OSLevel`,
-        browseName: `${variableName}.OSLevel`,
-        dataType: DataType.Byte,
-        accessLevel: AccessLevelFlag.CurrentRead + AccessLevelFlag.CurrentWrite,
-        value: {
-          get: (): Variant => {
-            return new Variant({dataType: DataType.Byte, value: this.osLevel});
-          },
-          set: (variant: Variant): StatusCodes => {
-            let response = StatusCodes.Bad;
-            const reqOSLevel = parseInt(variant.value, 10);
-            if(reqOSLevel <= 255 && reqOSLevel >= 0){
-              this.osLevel = reqOSLevel;
-              response = StatusCodes.Good;
-            }
-            return response;
-          },
-        },
-      });
-    }
+		namespace.addVariable({
+			componentOf: rootNode,
+			nodeId: `ns=${namespace.index};s=${variableName}.OSLevel`,
+			browseName: `${variableName}.OSLevel`,
+			dataType: DataType.Byte,
+			accessLevel: AccessLevelFlag.CurrentRead + AccessLevelFlag.CurrentWrite,
+			value: {
+				get: (): Variant => {
+					return new Variant({dataType: DataType.Byte, value: this.osLevel});
+				},
+				set: (variant: Variant): StatusCodes => {
+					let response = StatusCodes.Bad;
+					const reqOSLevel = parseInt(variant.value, 10);
+					if (reqOSLevel <= 255 && reqOSLevel >= 0) {
+						this.osLevel = reqOSLevel;
+						response = StatusCodes.Good;
+					}
+					return response;
+				},
+			},
+		});
+	}
 
-  public getOSLevelInstanceMockupJSON(): object {
-    return getOSLevelMockupReferenceJSON(
-        this.mockupNode.namespaceIndex,
-        this.mockupNode.browseName.name as string);
-  }
+	public getDataItemOptions(): object {
+		return getOSLevelDataItemOptions(
+			this.mockupNode.namespaceIndex,
+			this.mockupNode.browseName.name as string);
+	}
 }

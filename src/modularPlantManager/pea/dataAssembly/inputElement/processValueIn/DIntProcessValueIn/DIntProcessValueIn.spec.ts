@@ -27,10 +27,8 @@ import {OpcUaConnection} from '../../../../connection';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-
-import * as baseDataAssemblyOptions from './DIntProcessValueIn.spec.json';
 import {MockupServer} from '../../../../../_utils';
-import {DIntProcessValueInMockup} from './DIntProcessValueIn.mockup';
+import {DIntProcessValueInMockup, getDIntProcessValueInOptions} from './DIntProcessValueIn.mockup';
 
 import {DIntProcessValueIn} from './DIntProcessValueIn';
 import {DataAssemblyControllerFactory} from '../../../DataAssemblyControllerFactory';
@@ -39,14 +37,14 @@ chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('DIntProcessValueIn', () => {
-	const dataAssemblyOptions: DataAssemblyOptions = {
-		name: 'Variable',
-		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/InputElement/DIntProcessValueIn',
-		dataItems: baseDataAssemblyOptions
-	};
+
+	let dataAssemblyOptions: DataAssemblyOptions;
 	
 	describe('static', () => {
+
 		const emptyOPCUAConnection = new OpcUaConnection();
+		dataAssemblyOptions = getDIntProcessValueInOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
+
 		it('should create DIntProcessValueIn', async () => {
 			const dataAssemblyController = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as DIntProcessValueIn;
 			expect(dataAssemblyController).to.be.not.undefined;
@@ -59,18 +57,16 @@ describe('DIntProcessValueIn', () => {
 	describe('dynamic', () => {
 		let mockupServer: MockupServer;
 		let connection: OpcUaConnection;
-		let mockup: DIntProcessValueInMockup;
+		let dIntProcessValueInMockup: DIntProcessValueInMockup;
 		let dataAssemblyController: DIntProcessValueIn;
 
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			mockup = new DIntProcessValueInMockup(
-				mockupServer.nameSpace,
-				mockupServer.rootObject,
-				'Variable');
-			mockup.scaleSettings.vSclMax= 1;
+			dIntProcessValueInMockup = new DIntProcessValueInMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
+			dIntProcessValueInMockup.scaleSettings.vSclMax= 1;
+			dataAssemblyOptions = dIntProcessValueInMockup.getDataAssemblyOptions();
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});
@@ -97,11 +93,8 @@ describe('DIntProcessValueIn', () => {
 
 		it('setparameter', async () => {
 			await dataAssemblyController.setParameter(1,'VExt');
-
-			expect(mockup.vExt).equal(1);
-			//TODO: problem= we have to wait for the variable to change (EventEmitter), maybe this is not optimal
-			await new Promise(f => setTimeout(f, 1000));
-
+			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
+			expect(dIntProcessValueInMockup.vExt).equal(1);
 		}).timeout(4000);
 
 	});

@@ -26,7 +26,9 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../../_utils';
-import {DIntMonMockup} from './DIntMon.mockup';
+import {DIntMonMockup, getDIntMonDataItemOptions, getDIntMonOptions} from './DIntMon.mockup';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {AnaMonRuntime} from '../../AnaView/AnaMon/AnaMon';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -45,16 +47,24 @@ describe('DIntMonMockup', () => {
             const mockup= new DIntMonMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
             expect(mockup).to.not.be.undefined;
-            //TODO: test more
-
         });
-        it('getDIntMonMockupReferenceJSON()',  () => {
+
+        it('static DataItemOptions', () => {
+            const options = getDIntMonDataItemOptions(1, 'Test') as AnaMonRuntime;
+            expect(Object.keys(options).length).to.equal(2);
+        });
+
+        it('static DataAssemblyOptions', () => {
+            const options = getDIntMonOptions(1, 'Test') as DataAssemblyOptions;
+            expect(Object.keys(options.dataItems).length).to.equal(4);
+        });
+
+        it('dynamic DataAssemblyOptions', () => {
             const mockup = new DIntMonMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const json = mockup.getDIntMonInstanceMockupJSON();
-            expect(json).not.to.be.undefined;
-            expect(Object.keys(json).length).to.equal(24);
-            //TODO: test more
+            const options = mockup.getDataAssemblyOptions();
+
+            expect(Object.keys(options.dataItems).length).to.equal(4);
         });
     });
 });

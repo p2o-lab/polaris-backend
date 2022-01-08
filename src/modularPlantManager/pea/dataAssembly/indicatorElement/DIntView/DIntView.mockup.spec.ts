@@ -26,14 +26,19 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../_utils';
-import {DIntViewMockup} from './DIntView.mockup';
+import {DIntViewMockup, getDIntViewDataItemOptions, getDIntViewOptions} from './DIntView.mockup';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {AnaViewRuntime} from '../AnaView/AnaView';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('DIntViewMockup', () => {
-    describe('', () => {
+
+    describe('static', () => {
+
         let mockupServer: MockupServer;
+
         beforeEach(async()=>{
             mockupServer = new MockupServer();
             await mockupServer.initialize();
@@ -43,16 +48,24 @@ describe('DIntViewMockup', () => {
             const mockup= new DIntViewMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
             expect(mockup).to.not.be.undefined;
-            //TODO: test more
-
         });
-        it('getDIntViewMockupReferenceJSON()',  () => {
+
+        it('static DataItemOptions', () => {
+            const options = getDIntViewDataItemOptions(1, 'Test') as AnaViewRuntime;
+            expect(Object.keys(options).length).to.equal(5);
+        });
+
+        it('static DataAssemblyOptions', () => {
+            const options = getDIntViewOptions(1, 'Test') as DataAssemblyOptions;
+            expect(Object.keys(options.dataItems).length).to.equal(7);
+        });
+
+        it('dynamic DataAssemblyOptions', () => {
             const mockup = new DIntViewMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const json = mockup.getDIntViewInstanceMockupJSON();
-            expect(json).not.to.be.undefined;
-            expect(Object.keys(json).length).to.equal(5);
-            //TODO: test more
+            const options = mockup.getDataAssemblyOptions();
+
+            expect(Object.keys(options.dataItems).length).to.equal(7);
         });
     });
 });

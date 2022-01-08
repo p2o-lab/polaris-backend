@@ -67,7 +67,7 @@ describe('Service', () => {
 			expect(() => new Service(
 				{name: 'test', parameters: [], communication: {} as ServiceControlOptions, procedures: []},
 				opcUAConnection, '')
-			).to.throw('Creating DataAssemblyController Error: No Communication variables found in DataAssemblyOptions');
+			).to.throw('Creating DataAssemblyController Error: No Communication dataAssemblies found in DataAssemblyOptions');
 		});
 
 	});

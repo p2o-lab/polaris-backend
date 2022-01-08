@@ -28,24 +28,23 @@ import {DIntMan} from './DIntMan';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from './DIntMan.spec.json';
 import {DataAssemblyControllerFactory} from '../../../DataAssemblyControllerFactory';
 import {MockupServer} from '../../../../../_utils';
-import {DIntManMockup} from './DIntMan.mockup';
+import {DIntManMockup, getDIntManOptions} from './DIntMan.mockup';
 
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('DIntMan', () => {
-	const dataAssemblyOptions: DataAssemblyOptions = {
-		name: 'Variable',
-		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperationElement/DIntMan',
-		dataItems: baseDataAssemblyOptions
-	};
 
-	describe('', () => {
+	let dataAssemblyOptions: DataAssemblyOptions;
+
+	describe('static', () => {
+
 		const emptyOPCUAConnection = new OpcUaConnection();
+		dataAssemblyOptions = getDIntManOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
+
 		it('should create DIntMan',  () => {
 			const dataAssemblyController: DIntMan = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as DIntMan;
 			expect(dataAssemblyController.communication.VOut).to.not.equal(undefined);
@@ -72,8 +71,8 @@ describe('DIntMan', () => {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			new DIntManMockup(mockupServer.nameSpace, mockupServer.rootObject,'Variable');
-			await mockupServer.start();
+			const dIntManMockup = new DIntManMockup(mockupServer.nameSpace, mockupServer.rootObject,'Variable');
+			dataAssemblyOptions = dIntManMockup.getDataAssemblyOptions();await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});
 			await connection.connect();

@@ -25,6 +25,30 @@
 
 import { Namespace, UAObject} from 'node-opcua';
 import {catMockupServer} from '../../../logging';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {IDProvider} from '../../_utils/idProvider/IDProvider';
+
+function getDataAssemblySpecificDataItemOptions(tagName?: string, tagDescription?: string): object {
+    return ({
+        TagName: {value: tagName || IDProvider.generateIdentifier()},
+        TagDescription: {value: tagDescription || 'Not provided'},
+    });
+}
+
+export function getDataAssemblyDataItemOptions(tagName?: string, tagDescription?: string): object {
+    return ({
+        ...getDataAssemblySpecificDataItemOptions(tagName, tagDescription)
+    });
+}
+
+export function getDataAssemblyOptions(name?: string, tagName?: string, tagDescription?: string): DataAssemblyOptions {
+    return ({
+            name: name || 'Not provided',
+            metaModelRef: 'MTPDataObjectSUCLib/DataAssembly',
+            dataItems: {...getDataAssemblyDataItemOptions(tagName, tagDescription)} as any
+        }
+    );
+}
 
 export class DataAssemblyControllerMockup {
     public readonly name: string;
@@ -36,13 +60,21 @@ export class DataAssemblyControllerMockup {
 
     constructor(namespace: Namespace, rootNode: UAObject, variableName: string, tagName?: string, tagDescription?: string) {
 
-        this.tagName = tagName || 'No TagName available!';
+        this.tagName = tagName || IDProvider.generateIdentifier();
         this.tagDescription = tagDescription || 'No TagDescription available!';
         this.name = variableName;
 
         this.mockupNode = namespace.addObject({
             organizedBy: rootNode,
-            browseName: variableName,
+            browseName: this.name
         });
+    }
+
+    public getDataAssemblyOptions(): DataAssemblyOptions {
+        return getDataAssemblyOptions(this.name, this.tagName, this.tagDescription);
+    }
+
+    public getDataItemOptions(): object {
+        return getDataAssemblyDataItemOptions(this.tagName, this.tagDescription);
     }
 }

@@ -29,20 +29,19 @@ import {PIDCtrl} from './PIDCtrl';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from './PIDCtrl.spec.json';
 import {MockupServer} from '../../../../_utils';
-import {PIDCtrlMockup} from './PIDCtrl.mockup';
+import {getPIDCtrlOptions, PIDCtrlMockup} from './PIDCtrl.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('PIDCtrl', () => {
-	const dataAssemblyOptions: DataAssemblyOptions = {
-		name: 'Variable',
-		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperationElement/PIDCtrl',
-		dataItems: baseDataAssemblyOptions
-	};
+
+	let dataAssemblyOptions: DataAssemblyOptions;
+
 	describe('static', () => {
+
+		dataAssemblyOptions = getPIDCtrlOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
 
 		it('should create PIDCtrl', async () => {
 			const emptyOPCUAConnection = new OpcUaConnection();
@@ -84,9 +83,10 @@ describe('PIDCtrl', () => {
 			expect(dataAssemblyController.communication.Ti).to.not.be.undefined;
 			expect(dataAssemblyController.communication.Td).to.not.be.undefined;
 
-			expect(Object.keys(dataAssemblyController.communication).length).to.equal(43);
+			expect(Object.keys(dataAssemblyController.communication).length).to.equal(45);
 		});
 	});
+
 	describe('dynamic', () => {
 		let mockupServer: MockupServer;
 		let connection: OpcUaConnection;
@@ -95,7 +95,8 @@ describe('PIDCtrl', () => {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			new PIDCtrlMockup( mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
+			const pidCtrlMockup =new PIDCtrlMockup( mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
+			dataAssemblyOptions = pidCtrlMockup.getDataAssemblyOptions();
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});

@@ -25,7 +25,6 @@
 
 import {OperationInterface, OperationOptions, ParameterOptions, ServiceCommand} from '@p2olab/polaris-interface';
 import {BaseService, PEAController, Procedure, Service} from '../../../pea';
-
 import {EventEmitter} from 'events';
 import {catOperation} from '../../../../logging';
 

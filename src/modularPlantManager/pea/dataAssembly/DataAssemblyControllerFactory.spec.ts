@@ -31,54 +31,36 @@ import {DataAssemblyController, DataAssemblyControllerFactory} from './index';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import * as baseDataAssemblyOptions from './activeElement/drv/anaDrv/monAnaDrv/MonAnaDrv.spec.json';
+import {getDataAssemblyOptions} from './DataAssemblyController.mockup';
+import {OpcUaNodeOptions} from '../connection/DataItemFactory';
+import {getAnaViewOptions} from './indicatorElement/AnaView/AnaView.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('DataAssemblyFactory', () => {
 
+	let dataAssemblyOptions: DataAssemblyOptions;
+
 	describe('static', () => {
-		const dataAssemblyOptions: DataAssemblyOptions = {
-			name: 'Variable',
-			metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/',
-			dataItems: baseDataAssemblyOptions
-		};
+
+		dataAssemblyOptions = getDataAssemblyOptions('Variable', 'Variable', 'Test') as DataAssemblyOptions;
+
 		const emptyOPCUAConnection = new OpcUaConnection();
+
 		it('should use default DataAssemblyController when provided type not found', () => {
 			const dataAssemblyController = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection);
 
 			expect(dataAssemblyController.toJson()).to.deep.equal({
 				name: 'Variable',
 			});
-			expect(dataAssemblyController instanceof DataAssemblyController).to.equal(true);
-		});
-
-		it('should fail with xyz', () => {
-/*			const opcUaNode: OpcUaNodeOptions = {
-				namespaceIndex: 'CODESYSSPV3/3S/IecVarAccess',
-				nodeId: 'i=12',
-				dataType: 'Float'
-			};
-			expect(() => new DataAssemblyController({
-					name: 'name',
-					dataItems: {
-						TagName: opcUaNode as OpcUaNodeOptions,
-						TagDescription: opcUaNode as OpcUaNodeOptions,
-						OSLevel: opcUaNode as OpcUaNodeOptions,
-						WQC: null,
-						access: 'read'
-					} as any,
-					metaModelRef: 'analogitem'
-				}, emptyOPCUAConnection)
-			).to.throw('Cannot set property \'TagName\' of undefined');*/
 		});
 
 		it('should fail without provided PEA', async () => {
 			expect(() => DataAssemblyControllerFactory.create(
 				{name: 'test', metaModelRef: 'none', dataItems: {} as BaseDataAssemblyOptions},
 				emptyOPCUAConnection)
-			).to.throw('Creating DataAssemblyController Error: No Communication variables found in DataAssemblyOptions');
+			).to.throw('Creating DataAssemblyController Error: No Communication dataAssemblies found in DataAssemblyOptions');
 
 		});
 	});
@@ -163,7 +145,7 @@ describe('DataAssemblyFactory', () => {
 			await pea.connectAndSubscribe();
 
 			const da = pea.services[0].procedures[0].parameters[0] as ServParam;
-			const inputDa = pea.variables[0];
+			const inputDa = pea.dataAssemblies[0];
 			await da.subscribe();
 			await inputDa.subscribe();
 

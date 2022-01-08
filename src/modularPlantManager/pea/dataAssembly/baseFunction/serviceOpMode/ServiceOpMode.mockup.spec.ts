@@ -27,16 +27,19 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../_utils';
 import {OpcUaConnection} from '../../../connection';
-import {ServiceOpModeMockup} from './ServiceOpMode.mockup';
+import {getServiceOpModeDataItemOptions, ServiceOpModeMockup} from './ServiceOpMode.mockup';
 import {OperationMode} from '@p2olab/polaris-interface';
+import {ServiceOpModeRuntime} from './ServiceOpMode';
 
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('ServiceOpModeMockup', () => {
-    describe('', () => {
+    describe('static', () => {
+
         let mockupServer: MockupServer;
+
         beforeEach(async()=>{
             mockupServer = new MockupServer();
             await mockupServer.initialize();
@@ -48,20 +51,38 @@ describe('ServiceOpModeMockup', () => {
             expect(mockup).to.not.be.undefined;
         });
 
-        it('ServiceOpModeMockupReferenceJSON()',  () => {
-            const mockup = new ServiceOpModeMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
-            const json = mockup.getServiceOpModeInstanceMockupJSON() as any;
-            expect(Object.keys(json).length).to.equal(10);
-            expect(json.StateChannel).to.not.be.undefined;
-            expect(json.StateOffAut).to.not.be.undefined;
-            expect(json.StateOpAut).to.not.be.undefined;
-            expect(json.StateAutAut).to.not.be.undefined;
-            expect(json.StateOffOp).to.not.be.undefined;
-            expect(json.StateOpOp).to.not.be.undefined;
-            expect(json.StateAutOp).to.not.be.undefined;
-            expect(json.StateOpAct).to.not.be.undefined;
-            expect(json.StateAutAct).to.not.be.undefined;
-            expect(json.StateOffAct).to.not.be.undefined;
+        it('static DataItemOptions', () => {
+            const options = getServiceOpModeDataItemOptions(1, 'Test') as ServiceOpModeRuntime;
+
+            expect(Object.keys(options).length).to.equal(10);
+            expect(options.StateChannel).to.not.be.undefined;
+            expect(options.StateOffAut).to.not.be.undefined;
+            expect(options.StateOpAut).to.not.be.undefined;
+            expect(options.StateAutAut).to.not.be.undefined;
+            expect(options.StateOffOp).to.not.be.undefined;
+            expect(options.StateOpOp).to.not.be.undefined;
+            expect(options.StateAutOp).to.not.be.undefined;
+            expect(options.StateOpAct).to.not.be.undefined;
+            expect(options.StateAutAct).to.not.be.undefined;
+            expect(options.StateOffAct).to.not.be.undefined;
+        });
+
+        it('dynamic DataItemOptions', () => {
+            const mockup = new ServiceOpModeMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
+            const options = mockup.getDataItemOptions() as ServiceOpModeRuntime;
+
+            expect(Object.keys(options).length).to.equal(10);
+            expect(options.StateChannel).to.not.be.undefined;
+            expect(options.StateOffAut).to.not.be.undefined;
+            expect(options.StateOpAut).to.not.be.undefined;
+            expect(options.StateAutAut).to.not.be.undefined;
+            expect(options.StateOffOp).to.not.be.undefined;
+            expect(options.StateOpOp).to.not.be.undefined;
+            expect(options.StateAutOp).to.not.be.undefined;
+            expect(options.StateOpAct).to.not.be.undefined;
+            expect(options.StateAutAct).to.not.be.undefined;
+            expect(options.StateOffAct).to.not.be.undefined;
         });
 
         it('get stateOpAct', async () => {

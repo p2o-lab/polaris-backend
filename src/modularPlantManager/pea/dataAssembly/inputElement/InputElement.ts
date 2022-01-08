@@ -25,21 +25,20 @@
 
 import {
 	DataAssemblyOptions,
-	ParameterInterface,
-	ParameterOptions
+	ParameterInterface, ParameterOptions,
 } from '@p2olab/polaris-interface';
-import {BaseStaticDataItem, DataItem, DynamicDataItem, OpcUaConnection} from '../../connection';
-import {PEAController} from '../../PEAController';
+import {DataItem, DynamicDataItem, OpcUaConnection} from '../../connection';
 import {WQC, WQCRuntime} from '../baseFunction';
 import {BaseDataAssemblyRuntime, DataAssemblyController} from '../DataAssemblyController';
 import {catDataAssembly} from '../../../../logging';
-import {Parameter} from '../../../recipe';
+import {PEAController} from '../../PEAController';
+import {ParameterRequest} from '../ParameterRequest';
 
 export type InputElementRuntime = WQCRuntime & BaseDataAssemblyRuntime ;
 
 export class InputElement extends DataAssemblyController {
 	public readonly communication!: InputElementRuntime;
-	public parameterRequest: Parameter | undefined;
+	public parameterRequest: ParameterRequest | undefined;
 	public requestedValue = '';
 
 	wqc: WQC;
@@ -75,13 +74,13 @@ export class InputElement extends DataAssemblyController {
 				}
 			}
 
-			this.parameterRequest = new Parameter(p, peas);
+			this.parameterRequest = new ParameterRequest(p, peas);
 
 			const value = this.parameterRequest.getValue();
 			catDataAssembly.trace(`calculated value: ${value}`);
 			await this.setParameter(+value);
 
-			if (this.parameterRequest.options.continuous) {
+			if (this.parameterRequest.continuous) {
 				catDataAssembly.trace('Continuous parameter change');
 				this.parameterRequest.listenToScopeArray()
 					.on('changed', (data) => this.setParameter(data));

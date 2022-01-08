@@ -129,7 +129,7 @@ if (options) {
 			console.log(`Load PEAs from ${options.peas}`);
 			options.peas.forEach((pea: string) => {
 				const peasOptions = JSON.parse(fs.readFileSync(pea).toString());
-				manager.loadPEAController(peasOptions, true);
+				manager.loadPEAController(peasOptions);
 			});
 			manager.peas.forEach((p) =>
 				p.connectAndSubscribe()
@@ -151,7 +151,7 @@ if (options) {
 			console.log(`Load virtual service from ${options.virtualService}`);
 			options.virtualService.forEach((vs: string) => {
 				const vsOptions = JSON.parse(fs.readFileSync(vs).toString());
-				manager.instantiatePOLService(vsOptions);
+				manager.addPOLService(vsOptions);
 			});
 		}
 

@@ -27,13 +27,13 @@ import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {OpcUaConnection, DataItem} from '../../../../connection';
 import {
 	ScaleSettings, ScaleSettingsRuntime,
-	UnitDataAssemblyRuntime, UnitSettings,
+	UnitSettingsRuntime, UnitSettings,
 	ValueLimitation, ValueLimitationRuntime
 } from '../../../baseFunction';
 import {OperationElement, OperationElementRuntime} from '../../OperationElement';
 
 export type DIntManRuntime =
-	OperationElementRuntime & UnitDataAssemblyRuntime
+	OperationElementRuntime & UnitSettingsRuntime
 	& ValueLimitationRuntime & ScaleSettingsRuntime
 	& {
 	VOut: DataItem<number>;

@@ -27,13 +27,13 @@ import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {OpcUaConnection, DataItem} from '../../../../connection';
 import {
 	ScaleSettings, ScaleSettingsRuntime,
-	UnitDataAssemblyRuntime, UnitSettings,
+	UnitSettingsRuntime, UnitSettings,
 	ValueLimitation, ValueLimitationRuntime
 } from '../../../baseFunction';
 import {OperationElement, OperationElementRuntime} from '../../OperationElement';
 
 export type AnaManRuntime =
-	OperationElementRuntime & UnitDataAssemblyRuntime
+	OperationElementRuntime & UnitSettingsRuntime
 	& ValueLimitationRuntime & ScaleSettingsRuntime
 	& {
 	VOut: DataItem<number>;
@@ -43,6 +43,7 @@ export type AnaManRuntime =
 };
 
 export class AnaMan extends OperationElement {
+
 	public readonly communication!: AnaManRuntime;
 	public readonly scaleSettings: ScaleSettings;
 	public readonly unitSettings: UnitSettings;
@@ -51,6 +52,7 @@ export class AnaMan extends OperationElement {
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
+
 		this.communication.VOut = this.createDataItem('VOut', 'number');
 		this.communication.VRbk = this.createDataItem('VRbk', 'number');
 		this.communication.VFbk = this.createDataItem('VFbk','number');

@@ -128,10 +128,10 @@ describe('PEARoutes', () => {
 				.expect('Error: No valid PiMAd Identifier');
 		});
 		it('should load PEAController', async () => {
-			const peaModel = await manager.addPEAToPimadPool({source: 'tests/testpea.zip'});
-			const pimadIdentifier = peaModel.pimadIdentifier;
+			const peaModel = await manager.peaProvider.addPEAToPool({source: 'tests/testpea.zip'});
+			const identifier = peaModel.pimadIdentifier;
 			await request(app).post('/api/pea/loadPEA')
-				.send({id: pimadIdentifier})
+				.send({id: identifier})
 				.expect(200);
 		});
 	});
@@ -194,7 +194,7 @@ describe('PEARoutes', () => {
 
 		context('connect', ()=>{
 			it('should connect and disconnect, AnaView & Service', async() => {
-				const peaController = new PEAController(peaOptions as unknown as PEAOptions, false);
+				const peaController = new PEAController(peaOptions as unknown as PEAOptions);
 				manager.peas.push(peaController);
 				await request(app).post(`/api/pea/${peaController.id}/connect`).send().expect(200)
 					.expect({peaId:'test',status:'Successfully connected'});
@@ -215,7 +215,7 @@ describe('PEARoutes', () => {
 
 		context('delete PEA', ()=>{
 			it('delete', async() => {
-			const peaController = new PEAController(peaOptions as unknown as PEAOptions, false);
+			const peaController = new PEAController(peaOptions as unknown as PEAOptions);
 			manager.peas.push(peaController);
 			await request(app).delete(`/api/pea/${peaController.id}`)
 				.expect(200)
@@ -223,7 +223,7 @@ describe('PEARoutes', () => {
 			expect(manager.peas.length).to.equal(0);
 			});
 
-			it('delete to fail, wrong id', async() => {
+			it('delete to fail, wrong peaId', async() => {
 				await request(app).delete('/api/pea/abc1234')
 					.expect(500)
 					.expect('Error: PEA with id abc1234 not found');
@@ -233,7 +233,7 @@ describe('PEARoutes', () => {
 		context('/:peaId/service/:serviceName', ()=> {
 			it('should get service', async() => {
 				//connect first
-				const peaController = new PEAController(peaOptions as unknown as PEAOptions, false);
+				const peaController = new PEAController(peaOptions as unknown as PEAOptions);
 				manager.peas.push(peaController);
 				await request(app).get(`/api/pea/${peaController.id}/service/Trigonometry`).send().expect(200);
 			});
@@ -244,7 +244,7 @@ describe('PEARoutes', () => {
 					.expect('Error: PEA with id abc1234 not found');
 			});
 			it('should fail to get service, wrong pea id', async() => {
-				const peaController = new PEAController(peaOptionsDummy, false);
+				const peaController = new PEAController(peaOptionsDummy);
 				manager.peas.push(peaController);
 				await request(app).get(`/api/pea/${peaController.id}/service/Trigonometry`)
 					.send()
@@ -256,7 +256,7 @@ describe('PEARoutes', () => {
 		context('/:peaId/service/:serviceName/:command', ()=> {
 			it('should send command', async () => {
 				//connect first
-				const peaController = new PEAController(peaOptions as unknown as PEAOptions, false);
+				const peaController = new PEAController(peaOptions as unknown as PEAOptions);
 				manager.peas.push(peaController);
 				await request(app).post(`/api/pea/${peaController.id}/connect`).send().expect(200)
 					.expect({peaId: 'test', status: 'Successfully connected'});
@@ -272,7 +272,7 @@ describe('PEARoutes', () => {
 			});
 
 			it('should fail to send command, service not found', async () => {
-				const peaController = new PEAController(peaOptionsDummy, false);
+				const peaController = new PEAController(peaOptionsDummy);
 				manager.peas.push(peaController);
 				await request(app).post(`/api/pea/${peaController.id}/service/Trigonometry/start`).send().expect(500)
 					.expect(`"Error: [${peaController.id}] Could not find service with name Trigonometry"`);
@@ -288,18 +288,20 @@ describe('PEARoutes', () => {
 		});
 
 		it('should fail , service not found', async () => {
-			const peaController = new PEAController(peaOptionsDummy, false);
+			const peaController = new PEAController(peaOptionsDummy);
 			manager.peas.push(peaController);
 			await request(app).post(`/api/pea/${peaController.id}/service/Trigonometry`).send().expect(500)
 				.expect(`"Error: [${peaController.id}] Could not find service with name Trigonometry"`);
 		});
+
 		it('should fail, could not find procedure', async () => {
-			const peaController = new PEAController(peaOptions as unknown as PEAOptions, false);
+			const peaController = new PEAController(peaOptions as unknown as PEAOptions);
 			manager.peas.push(peaController);
 			await request(app).post(`/api/pea/${peaController.id}/service/Trigonometry`).send().expect(500)
 				.send({procedure:'test'})
 				.expect('"Error: Could not find Procedure by Name or Default."');
 		});
+
 		it('should set parameter', async () => {
 			const mockupServer = new MockupServer();
 			await mockupServer.initialize();

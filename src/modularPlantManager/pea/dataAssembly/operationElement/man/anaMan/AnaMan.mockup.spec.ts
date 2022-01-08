@@ -25,27 +25,22 @@
  
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {Namespace, UAObject} from 'node-opcua';
-import {AnaManMockup} from './AnaMan.mockup';
+import {AnaManMockup, getAnaManDataItemOptions, getAnaManOptions} from './AnaMan.mockup';
 import {MockupServer} from '../../../../../_utils';
 import {OpcUaConnection} from '../../../../connection';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {AnaManRuntime} from './AnaMan';
+import {OperationElementMockup} from '../../OperationElement.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-// this fake class is needed to test the protected variable
-class FakeClass extends AnaManMockup{
-    constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
-        super(namespace, rootNode, variableName);
-    }
-    public getVOut(): number{
-        return this.vOut;
-    }
-}
-
 describe('AnaManMockup', () => {
+
     describe('static', () => {
+
         let mockupServer: MockupServer;
+
         beforeEach(async() => {
             mockupServer = new MockupServer();
             await mockupServer.initialize();
@@ -57,15 +52,25 @@ describe('AnaManMockup', () => {
             expect(mockup).to.not.be.undefined;
         });
 
-        it('getAnaManMockupReferenceJSON()',  () => {
-            const mockup = new AnaManMockup(mockupServer.nameSpace,
-                mockupServer.rootObject, 'Variable');
-            const json = mockup.getAnaManMockupJSON();
-            expect(json).not.to.be.undefined;
-            expect(Object.keys(json).length).to.equal(10);
+        it('static DataItemOptions', () => {
+            const options = getAnaManDataItemOptions(1, 'Test') as AnaManRuntime;
+            expect(Object.keys(options).length).to.equal(10);
         });
 
-        it('startCurrentTimeUpdate()',  async() => {
+        it('static DataAssemblyOptions', () => {
+            const options = getAnaManOptions(1, 'Test') as DataAssemblyOptions;
+            expect(Object.keys(options.dataItems).length).to.equal(12);
+        });
+
+        it('dynamic DataAssemblyOptions', () => {
+            const mockup = new AnaManMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
+            const options = mockup.getDataAssemblyOptions();
+
+            expect(Object.keys(options.dataItems).length).to.equal(12);
+        });
+
+        // TODO
+       /* it('startCurrentTimeUpdate()',  async() => {
             const mockup: FakeClass = new FakeClass(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable') as FakeClass;
             mockup.startCurrentTimeUpdate();
@@ -89,17 +94,18 @@ describe('AnaManMockup', () => {
             const mockup: FakeClass = new FakeClass(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable') as FakeClass;
             expect((() => mockup.stopCurrentTimeUpdate())).to.throw();
-        });
+        });*/
     });
     describe('dynamic', () => {
 
         let mockupServer: MockupServer;
-
         let connection: OpcUaConnection;
+
         beforeEach(async function () {
             this.timeout(5000);
             mockupServer = new MockupServer();
             await mockupServer.initialize();
+            new OperationElementMockup(	mockupServer.nameSpace,	mockupServer.rootObject,'Variable');
             await mockupServer.start();
             connection = new OpcUaConnection();
             connection.initialize({endpoint: mockupServer.endpoint});

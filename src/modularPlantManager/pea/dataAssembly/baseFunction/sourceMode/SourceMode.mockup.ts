@@ -25,11 +25,11 @@
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 import {SourceMode} from '@p2olab/polaris-interface';
+import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
+import {getWQCDataItemOptions} from '../wqc/WQC.mockup';
 
-export function getSourceModeMockupReferenceJSON(
-    namespace: number,
-    objectBrowseName: string): object {
 
+function getSourceModeSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
   return ({
     SrcChannel: {
       namespaceIndex: `${namespace}`,
@@ -68,6 +68,12 @@ export function getSourceModeMockupReferenceJSON(
     }
   });
 }
+
+
+export function getSourceModeDataItemOptions(namespace: number, objectBrowseName: string): object {
+  return getSourceModeSpecificDataItemOptions(namespace, objectBrowseName);
+}
+
 
 export class SourceModeMockup {
   srcMode: SourceMode = SourceMode.Intern;
@@ -194,9 +200,8 @@ export class SourceModeMockup {
     return this.srcMode === SourceMode.Intern;
   }
 
-
-  public getSourceModeInstanceMockupJSON(): object {
-    return getSourceModeMockupReferenceJSON(
+  public getDataItemOptions(): object {
+    return getSourceModeDataItemOptions(
         this.mockupNode.namespaceIndex,
         this.mockupNode.browseName.name as string);
   }

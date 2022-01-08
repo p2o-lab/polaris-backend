@@ -142,7 +142,7 @@ describe('Parameter', () => {
 				expect(param.getValue()).to.be.closeTo(1, 0.01);
 			});
 
-			it('should load with complex expression with dataAssembly variables', () => {
+			it('should load with complex expression with dataAssembly dataAssemblies', () => {
 				const param = new Parameter({
 					name: 'Parameter001',
 					value: '2 * PEATestServer.Variable001.V + peaTestServer.Variable002 + Variable\\.003'
@@ -167,7 +167,7 @@ describe('Parameter', () => {
 				expect(param.scopeArray[0].dataAssembly.name).to.equal('Variable001');
 				expect(param.scopeArray[0].dataAssembly.defaultReadDataItem?.value).to.equal(20);
 
-				//(mockupServer.variables[0] as PEATestNumericVariable).v = 10;
+				//(mockupServer.dataAssemblies[0] as PEATestNumericVariable).v = 10;
 				await new Promise((resolve) => {
 					param.listenToScopeArray().once('changed', () => resolve());
 				});
@@ -181,14 +181,14 @@ describe('Parameter', () => {
 				}, [pea]);
 
 				param.listenToScopeArray();
-				//(peaTestServer.variables[0] as PEATestNumericVariable).v = 10;
+				//(peaTestServer.dataAssemblies[0] as PEATestNumericVariable).v = 10;
 				await Promise.race([
 					new Promise((resolve) => param.eventEmitter.once('changed', resolve)),
 					new Promise((resolve, reject) => setTimeout(reject, 1000, 'timeout'))
 				]);
 
 				param.unlistenToScopeArray();
-				//(peaTestServer.variables[0] as PEATestNumericVariable).v = 11;
+				//(peaTestServer.dataAssemblies[0] as PEATestNumericVariable).v = 11;
 				await Promise.race([
 					new Promise((resolve, reject) => param.eventEmitter.once('changed', reject)),
 					new Promise((resolve) => setTimeout(resolve, 1000))

@@ -24,26 +24,33 @@
  */
 
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
+import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
 
-export function getWQCMockupReferenceJSON(
-    namespace: number,
-    objectBrowseName: string): object {
 
+function getWQCSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
   return ({
-    WQC:   {
+    WQC: {
       namespaceIndex: `${namespace}`,
-      nodeId: `${objectBrowseName}.TagName`,
+      nodeId: `${objectBrowseName}.WQC`,
       dataType: 'Byte'
-    }
+    } as OpcUaNodeOptions
   });
 }
+
+
+export function getWQCDataItemOptions(namespace: number, objectBrowseName: string): object {
+  return getWQCSpecificDataItemOptions(namespace, objectBrowseName);
+}
+
 
 export class WQCMockup {
   protected wqc = 0;
   protected mockupNode: UAObject;
 
   constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
+
     this.mockupNode = rootNode;
+
       namespace.addVariable({
         componentOf: rootNode,
         nodeId: `ns=${namespace.index};s=${variableName}.WQC`,
@@ -57,8 +64,8 @@ export class WQCMockup {
       });
     }
 
-  public getWQCInstanceMockupJSON(): object {
-    return getWQCMockupReferenceJSON(
+  public getDataItemOptions(): object {
+    return getWQCDataItemOptions(
         this.mockupNode.namespaceIndex,
         this.mockupNode.browseName.name as string);
   }

@@ -25,28 +25,22 @@
  
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {Namespace, UAObject} from 'node-opcua';
-import {StringServParamMockup} from './StringServParam.mockup';
+import {getStringServParamDataItemOptions, getStringServParamOptions, StringServParamMockup} from './StringServParam.mockup';
 import {MockupServer} from '../../../../../_utils';
 import {OpcUaConnection} from '../../../../connection';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {StringServParamRuntime} from './StringServParam';
 
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-// this fake class is needed to test the protected variable
-class FakeClass extends StringServParamMockup{
-    constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
-        super(namespace, rootNode, variableName);
-    }
-    public getVOut(): string {
-        return this.vOut;
-    }
-}
-
 describe('StringServParamMockup', () => {
-    describe('', () => {
+
+    describe('static', () => {
+
         let mockupServer: MockupServer;
+
         beforeEach(async()=>{
             mockupServer = new MockupServer();
             await mockupServer.initialize();
@@ -56,19 +50,28 @@ describe('StringServParamMockup', () => {
             const mockup= new StringServParamMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
             expect(mockup).to.not.be.undefined;
-            //TODO: test more
-
         });
-        it('getStringServParamMockupReferenceJSON()',  () => {
+
+        it('static DataItemOptions', () => {
+            const options = getStringServParamDataItemOptions(1, 'Test') as StringServParamRuntime;
+            expect(Object.keys(options).length).to.equal(26);
+        });
+
+        it('static DataAssemblyOptions', () => {
+            const options = getStringServParamOptions(1, 'Test') as DataAssemblyOptions;
+            expect(Object.keys(options.dataItems).length).to.equal(28);
+        });
+
+        it('dynamic DataAssemblyOptions', () => {
             const mockup = new StringServParamMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const json = mockup.getStringServParamMockupJSON();
-            expect(json).not.to.be.undefined;
-            expect(Object.keys(json).length).to .equal(26);
-            //TODO: test more
+            const options = mockup.getDataAssemblyOptions();
+
+            expect(Object.keys(options.dataItems).length).to.equal(28);
         });
 
-        it('startCurrentTimeUpdate()',  async() => {
+        // TODO
+        /*it('startCurrentTimeUpdate()',  async() => {
             const mockup: FakeClass = new FakeClass(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable') as FakeClass;
             mockup.startCurrentTimeUpdate();
@@ -92,7 +95,7 @@ describe('StringServParamMockup', () => {
             const mockup: FakeClass = new FakeClass(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable') as FakeClass;
             expect((() => mockup.stopCurrentTimeUpdate())).to.throw();
-        });
+        });*/
     });
 
     describe('dynamic', () => {
@@ -127,7 +130,5 @@ describe('StringServParamMockup', () => {
             await connection.readNode('Variable.VOp', mockupServer.nameSpaceUri)
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal('test'));
         }).timeout(3000);
-
-        //TODO get the rest
     });
 });

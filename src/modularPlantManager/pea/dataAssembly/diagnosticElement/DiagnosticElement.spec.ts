@@ -29,23 +29,21 @@ import {DiagnosticElement} from './DiagnosticElement';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from '../inputElement/processValueIn/BinProcessValueIn/BinProcessValueIn.spec.json';
 import {MockupServer} from '../../../_utils';
-import {DiagnosticElementMockup} from './DiagnosticElement.mockup';
-
+import {DiagnosticElementMockup, getDiagnosticElementOptions} from './DiagnosticElement.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('DiagnosticElement', () => {
-	const dataAssemblyOptions: DataAssemblyOptions = {
-		name: 'Variable',
-		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/DiagnosticElement/',
-		dataItems: baseDataAssemblyOptions
-	};
+
+	let dataAssemblyOptions: DataAssemblyOptions;
 
 	describe('static', () => {
+
 		const emptyOPCUAConnection = new OpcUaConnection();
+		dataAssemblyOptions = getDiagnosticElementOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
+
 		it('should create DiagnosticElement', async () => {
 			const dataAssemblyController = new DiagnosticElement(dataAssemblyOptions, emptyOPCUAConnection);
 
@@ -62,7 +60,8 @@ describe('DiagnosticElement', () => {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			new DiagnosticElementMockup( mockupServer.nameSpace, mockupServer.rootObject,'Variable');
+			const diagnosticElementMockup = new DiagnosticElementMockup( mockupServer.nameSpace, mockupServer.rootObject,'Variable');
+			dataAssemblyOptions = diagnosticElementMockup.getDataAssemblyOptions();
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});
@@ -81,6 +80,7 @@ describe('DiagnosticElement', () => {
 			await dataAssemblyController.subscribe();
 			await connection.startMonitoring();
 			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
+
 			expect(dataAssemblyController.communication.WQC.value).equal(0);
 		}).timeout(4000);
 	});

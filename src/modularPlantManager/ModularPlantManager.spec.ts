@@ -43,58 +43,26 @@ describe('ModularPlantManager', () => {
 		expect(modularPlantManager.getAllPEAControllers()).empty;
 	});
 
-	it('addPEAToPimadPool()', async () => {
-		const modularPlantManager = new ModularPlantManager();
-		const peaModel = await modularPlantManager.addPEAToPimadPool({source: 'tests/testpea.zip'});
-		expect(peaModel).to.not.be.undefined;
-
-	});
-	it('addPEAToPimadPool() fails', () => {
-		const modularPlantManager = new ModularPlantManager();
-		return expect(modularPlantManager.addPEAToPimadPool({source: 'tests/StringView.spec.json'})).to.be.rejected;
-	});
-
-	it('getAllPEAsFromPimadPool(), empty', async () => {
-		const modularPlantManager = new ModularPlantManager();
-		return expect(modularPlantManager.getAllPEAsFromPimadPool()).to.be.empty;
-	});
-
-	describe('functions, which need PiMAdPEA', () => {
+	describe('functions, which require PEA', () => {
 		let modularPlantManager = new ModularPlantManager();
-		let pimadId = '';
+		let identifier = '';
 
 		beforeEach(async () => {
 			modularPlantManager = new ModularPlantManager();
-			const peaModel = await modularPlantManager.addPEAToPimadPool({source: 'tests/testpea.zip'});
-			pimadId = peaModel.pimadIdentifier;
+			const peaModel = await modularPlantManager.peaProvider.addPEAToPool({source: 'tests/testpea.zip'});
+			identifier = peaModel.pimadIdentifier;
 		});
 
-		it('getPEAFromPimadPool()', () => {
-			return expect(modularPlantManager.getPEAFromPimadPool(pimadId)).to.not.be.rejected;
-		});
-		it('getPEAFromPimadPool() to fail', () => {
-			return expect(modularPlantManager.getPEAFromPimadPool('')).to.be.rejected;
-		});
-
-		it('getAllPEAsFromPimadPool()', () => {
-			return expect(modularPlantManager.getAllPEAsFromPimadPool()).to.not.be.rejected;
-		});
 
 		it('loadPEAController()', async () => {
-			await modularPlantManager.loadPEAController(pimadId);
+			await modularPlantManager.loadPEAController(identifier);
 			expect(modularPlantManager.peas.length).equal(1);
 		});
 
-		it('loadPEAController() to fail, wrong pimadIdentifier', async () => {
-			return expect(modularPlantManager.loadPEAController('')).to.be.rejectedWith('No valid PiMAd Identifier');
+		it('loadPEAController() to fail, wrong identifier', async () => {
+			return expect(modularPlantManager.loadPEAController('')).to.be.rejectedWith('PEA with identifier [] not found.');
 		});
 
-		it('deletePEAFromPimadPool()', () => {
-			return expect(modularPlantManager.deletePEAFromPimadPool(pimadId)).to.not.throw;
-		});
-		it('deletePEAFromPimadPool() to fail', () => {
-			return expect(modularPlantManager.deletePEAFromPimadPool('')).to.be.rejected;
-		});
 	});
 
 	describe('functions, which need PEAController instance', () => {
@@ -111,6 +79,7 @@ describe('ModularPlantManager', () => {
 			services:[],
 			dataAssemblies:[]
 		};
+
 		beforeEach(async()=>{
 			peaController = new PEAController(peaOptionsDummy);
 			modularPlantManager = new ModularPlantManager();
@@ -135,11 +104,13 @@ describe('ModularPlantManager', () => {
 		it('removePEAController() should fail with empty peaId', () => {
 			return expect(modularPlantManager.removePEAController('')).to.rejected;
 		});
+
 		it('removePEAController() should fail if pea is protected', async() => {
-			const peaController = new PEAController(peaOptionsDummy, true);
+			const peaController = new PEAController(peaOptionsDummy);
+			peaController.protection = true;
 			modularPlantManager.peas.length = 0;
 			modularPlantManager.peas.push(peaController);
-			return expect(modularPlantManager.removePEAController(peaId)).to.rejectedWith(`PEA ${peaOptionsDummy.name} is protected and thus can not be removed`);
+			return expect(modularPlantManager.removePEAController(peaId)).to.rejectedWith(`PEA ${peaOptionsDummy.name} can not be deleted since it is protected.`);
 		});
 
 
@@ -191,7 +162,7 @@ describe('ModularPlantManager', () => {
 
 		expect(modularPlantManager.recipes).to.have.lengthOf(2);
 
-		expect(() => modularPlantManager.removeRecipe('whatever')).to.throw('not available');
+		expect(() => modularPlantManager.removeRecipe('whatever')).to.throw('Recipe whatever not found.');
 
 		modularPlantManager.removeRecipe(modularPlantManager.recipes[0].id);
 		expect(modularPlantManager.recipes).to.have.lengthOf(1);
@@ -203,7 +174,7 @@ describe('ModularPlantManager', () => {
 		const modularPlantManager = new ModularPlantManager();
 		expect(modularPlantManager.getPOLServices()).to.have.length(0);
 
-		modularPlantManager.instantiatePOLService({name: 'timer1', type: 'timer'});
+		modularPlantManager.addPOLService({name: 'timer1', type: 'timer'});
 		expect(modularPlantManager.getPOLServices()).to.have.length(1);
 		expect(modularPlantManager.getPOLServices()[0]).to.have.property('name', 'timer1');
 
@@ -216,7 +187,7 @@ describe('ModularPlantManager', () => {
 
 	it('should instantiate and run pol service', async () => {
 		const modularPlantManager = new ModularPlantManager();
-		modularPlantManager.instantiatePOLService({name: 'timer1', type: 'timer'});
+		modularPlantManager.addPOLService({name: 'timer1', type: 'timer'});
 		await modularPlantManager.polServices[0].setParameters([{name: 'duration', value: 100}]);
 		await modularPlantManager.polServices[0].start();
 		await modularPlantManager.polServices[0].waitForStateChangeWithTimeout('COMPLETED');

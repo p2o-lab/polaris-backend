@@ -24,26 +24,29 @@
  */
 
 import {DataAssemblyOptions, ParameterInterface, ParameterOptions} from '@p2olab/polaris-interface';
-import {Parameter} from '../../../recipe';
 import {DataItem, DynamicDataItem, OpcUaConnection} from '../../connection';
 import {OSLevelRuntime} from '../baseFunction';
 import {BaseDataAssemblyRuntime, DataAssemblyController} from '../DataAssemblyController';
 import {PEAController} from '../../PEAController';
 import {catDataAssembly} from '../../../../logging';
 import {OSLevel} from '../baseFunction';
+import {Parameter} from '../../../recipe';
+import {ParameterRequest} from '../ParameterRequest';
 
 export type OperationElementRuntime = BaseDataAssemblyRuntime & OSLevelRuntime
 
 export class OperationElement extends DataAssemblyController {
+
 	public communication!: OperationElementRuntime;
-	public parameterRequest: Parameter | undefined;
+	// TODO: This creates a circular dependency as parameter also imports OperationElement
+	public parameterRequest: ParameterRequest | undefined;
 	public requestedValue = '';
 	public readonly osLevel: OSLevel;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
+
 		this.osLevel = new OSLevel(this);
-		
 	}
 
 
@@ -59,6 +62,7 @@ export class OperationElement extends DataAssemblyController {
 		await (dataItem as DynamicDataItem<any>)?.write(paramValue);
 	}
 
+
 	public async setValue(p: ParameterOptions, peas: PEAController[]): Promise<void> {
 		catDataAssembly.debug(`set value: ${JSON.stringify(p)}`);
 		if (p.value) {
@@ -72,16 +76,16 @@ export class OperationElement extends DataAssemblyController {
 				}
 			}
 
-			this.parameterRequest = new Parameter(p, peas);
+			this.parameterRequest = new ParameterRequest(p, peas);
 
 			const value = this.parameterRequest.getValue();
 			catDataAssembly.trace(`calculated value: ${value}`);
 			await this.setParameter(value as number);
 
-			if (this.parameterRequest.options.continuous) {
+			if (this.parameterRequest.continuous) {
 				catDataAssembly.trace('Continuous parameter change');
 				this.parameterRequest.listenToScopeArray()
-					.on('changed', (data) => this.setParameter(data));
+					.on('changed', (data: any) => this.setParameter(data));
 			}
 		}
 	}

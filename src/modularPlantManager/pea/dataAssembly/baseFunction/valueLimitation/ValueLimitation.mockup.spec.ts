@@ -27,41 +27,79 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataType} from 'node-opcua';
 import {MockupServer} from '../../../../_utils';
-import {ValueLimitationMockup} from './ValueLimitation.mockup';
+import {getValueLimitationDataItemOptions, ValueLimitationMockup} from './ValueLimitation.mockup';
+import {getLimitMonitoringDataItemOptions, LimitMonitoringMockup} from '../limitMonitoring/LimitMonitoring.mockup';
+import {LimitMonitoringRuntime} from '../limitMonitoring/LimitMonitoring';
+import {ValueLimitationRuntime} from './ValueLimitation';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('ValueLimitationMockup', () => {
-    describe('', () => {
+
+    describe('static', () => {
+
         let mockupServer: MockupServer;
+
         beforeEach(async()=>{
             mockupServer = new MockupServer();
             await mockupServer.initialize();
         });
 
-        it('should create ValueLimitationMockup', async () => {
-            const mockup= new ValueLimitationMockup(mockupServer.nameSpace,
-                mockupServer.rootObject, 'Variable', DataType.Double);
-            expect(mockup).to.not.be.undefined;
+        describe('DIntValueMonitoring', () => {
+
+            it('should create ValueLimitationMockup', async () => {
+                const mockup= new ValueLimitationMockup(mockupServer.nameSpace,
+                    mockupServer.rootObject, 'Variable', 'DInt');
+                expect(mockup).to.not.be.undefined;
+            });
+
+            it('static DataItemOptions', () => {
+                const options = getValueLimitationDataItemOptions(1, 'Test', 'DInt') as ValueLimitationRuntime;
+
+                expect(Object.keys(options).length).to.equal(2);
+                expect(options.VMin).to.not.be.undefined;
+                expect(options.VMax).to.not.be.undefined;
+            });
+
+            it('dynamic DataItemOptions', () => {
+                const mockup = new ValueLimitationMockup(mockupServer.nameSpace,
+                    mockupServer.rootObject, 'Variable', 'DInt');
+                const options = mockup.getDataItemOptions() as ValueLimitationRuntime;
+
+                expect(Object.keys(options).length).to.equal(2);
+                expect(options.VMin).to.not.be.undefined;
+                expect(options.VMax).to.not.be.undefined;
+            });
         });
 
-        it('getValueLimitationMockupReferenceJSON(), Double',  () => {
-            const mockup = new ValueLimitationMockup(mockupServer.nameSpace,
-                mockupServer.rootObject, 'Variable', DataType.Double);
-            const json = mockup.getValueLimitationInstanceMockupJSON() as {VMin: {} ; VMax: {}};
-            expect(Object.keys(json).length).to.equal(2);
-            expect(json.VMin).to.not.be.undefined;
-            expect(json.VMax).to.not.be.undefined;
+        describe('AnaValueMonitoring', () => {
+
+            it('should create ValueLimitationMockup', async () => {
+                const mockup= new ValueLimitationMockup(mockupServer.nameSpace,
+                    mockupServer.rootObject, 'Variable', 'Ana');
+                expect(mockup).to.not.be.undefined;
+            });
+
+            it('static DataItemOptions', () => {
+                const options = getValueLimitationDataItemOptions(1, 'Test', 'Ana') as ValueLimitationRuntime;
+
+                expect(Object.keys(options).length).to.equal(2);
+                expect(options.VMin).to.not.be.undefined;
+                expect(options.VMax).to.not.be.undefined;
+            });
+
+            it('dynamic DataItemOptions', () => {
+                const mockup = new ValueLimitationMockup(mockupServer.nameSpace,
+                    mockupServer.rootObject, 'Variable', 'Ana');
+                const options = mockup.getDataItemOptions() as ValueLimitationRuntime;
+
+                expect(Object.keys(options).length).to.equal(2);
+                expect(options.VMin).to.not.be.undefined;
+                expect(options.VMax).to.not.be.undefined;
+            });
         });
-        it('getValueLimitationMockupReferenceJSON(), Int32',  () => {
-            const mockup = new ValueLimitationMockup(mockupServer.nameSpace,
-                mockupServer.rootObject, 'Variable', DataType.Int32);
-            const json = mockup.getValueLimitationInstanceMockupJSON() as {VMin: {} ; VMax: {}};
-            expect(Object.keys(json).length).to.equal(2);
-            expect(json.VMin).to.not.be.undefined;
-            expect(json.VMax).to.not.be.undefined;
-        });
-        //TODO get/read values
+
+
     });
 });

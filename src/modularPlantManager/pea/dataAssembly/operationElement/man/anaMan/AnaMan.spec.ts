@@ -27,41 +27,42 @@ import {OpcUaConnection} from '../../../../connection';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from './AnaMan.spec.json';
 import {MockupServer} from '../../../../../_utils';
 
 import {AnaMan} from './AnaMan';
 import {DataAssemblyControllerFactory} from '../../../DataAssemblyControllerFactory';
+import {AnaManMockup, getAnaManOptions} from './AnaMan.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('AnaMan', () => {
-	const dataAssemblyOptions: DataAssemblyOptions = {
-		name: 'Variable',
-		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperationElement/AnaMan',
-		dataItems: baseDataAssemblyOptions
-	};
-	describe('', () => {
+
+	let dataAssemblyOptions: DataAssemblyOptions;
+
+	describe('static', () => {
+
 		const emptyOPCUAConnection = new OpcUaConnection();
+		dataAssemblyOptions = getAnaManOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
+
 		it('should create AnaMan',  () => {
 			const dataAssemblyController = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as AnaMan;
 			expect(dataAssemblyController.communication.VOut).to.not.equal(undefined);
 			expect(dataAssemblyController.scaleSettings).to.not.be.undefined;
 			expect(dataAssemblyController.unitSettings).to.not.be.undefined;
 			expect(dataAssemblyController.valueLimitation).to.not.be.undefined;
-
 			expect(dataAssemblyController.communication.VMan).to.not.equal(undefined);
 			expect(dataAssemblyController.communication.VRbk).to.not.equal(undefined);
 			expect(dataAssemblyController.communication.VFbk).to.not.equal(undefined);
-
 			expect(dataAssemblyController.defaultReadDataItem).equal(dataAssemblyController.communication.VOut);
 			expect(dataAssemblyController.defaultReadDataItemType).to.equal('number');
 			expect(dataAssemblyController.defaultWriteDataItem).equal(dataAssemblyController.communication.VMan);
 			expect(dataAssemblyController.defaultWriteDataItemType).to.equal('number');
 		});
 	});
+
 	describe('dynamic', () => {
+
 		let mockupServer: MockupServer;
 		let connection: OpcUaConnection;
 
@@ -69,6 +70,8 @@ describe('AnaMan', () => {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
+			const anaManMockup = new AnaManMockup(mockupServer.nameSpace, mockupServer.rootObject,'Variable');
+			dataAssemblyOptions = anaManMockup.getDataAssemblyOptions();
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});

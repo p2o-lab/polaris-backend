@@ -28,27 +28,25 @@ import {OpcUaConnection} from '../../../connection';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from './anaServParam/AnaServParam.spec.json';
-import {DataAssemblyControllerFactory} from '../../DataAssemblyControllerFactory';
 import {MockupServer} from '../../../../_utils';
-import {ServParam} from './ServParam';
-import {ServParamMockup} from './ServParam.mockup';
+import {ServParam} from './';
+import {getServParamOptions, ServParamMockup} from './ServParam.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('ServParam', () => {
-	const dataAssemblyOptions: DataAssemblyOptions = {
-		name: 'Variable',
-		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperationElement/StringServParam',
-		dataItems: baseDataAssemblyOptions
-	};
-	describe('static', () => {
-		const emptyOPCUAConnection = new OpcUaConnection();
-		it('should create ServParam', () => {
-			//TODO should be new ServParam, but circular dependency problem
-			const dataAssemblyController = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as ServParam;
 
+	let dataAssemblyOptions: DataAssemblyOptions;
+
+	describe('static', () => {
+
+		const emptyOPCUAConnection = new OpcUaConnection();
+		dataAssemblyOptions = getServParamOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
+
+		it('should create ServParam', () => {
+
+			const dataAssemblyController = new ServParam(dataAssemblyOptions, emptyOPCUAConnection) as ServParam;
 			expect(dataAssemblyController.serviceSourceMode).to.not.be.undefined;
 			expect(dataAssemblyController.serviceOpMode).to.not.be.undefined;
 			expect(dataAssemblyController.wqc).to.not.be.undefined;
@@ -63,7 +61,8 @@ describe('ServParam', () => {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			new ServParamMockup(mockupServer.nameSpace,	mockupServer.rootObject,'Variable');
+			const servParamMockup = new ServParamMockup(mockupServer.nameSpace,	mockupServer.rootObject,'Variable');
+			dataAssemblyOptions = servParamMockup.getDataAssemblyOptions();
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});

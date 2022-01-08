@@ -26,8 +26,9 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../_utils';
-import {FeedbackMonitoringMockup} from './FeedbackMonitoring.mockup';
+import {FeedbackMonitoringMockup, getFeedbackMonitoringDataItemOptions} from './FeedbackMonitoring.mockup';
 import {OpcUaConnection} from '../../../connection';
+import {FeedbackMonitoringRuntime} from './FeedbackMonitoring';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -46,18 +47,29 @@ describe('FeedbackMonitoringMockup', () => {
             expect(mockup).to.not.be.undefined;
         });
 
-        it('getFeedbackMonitoringMockupReferenceJSON()',  () => {
-            const mockup = new FeedbackMonitoringMockup(mockupServer.nameSpace,
-                mockupServer.rootObject, 'Variable');
-            const json = mockup.getFeedbackMonitoringInstanceMockupJSON() as any;
+        it('generic FeedbackMonitoring DataItemOptions',  () => {
+            const options = getFeedbackMonitoringDataItemOptions(1, 'Test') as FeedbackMonitoringRuntime;
 
-            expect(Object.keys(json).length).to.equal(6);
-            expect(json.MonDynTi).to.not.be.undefined;
-            expect(json.MonStatTi).to.not.be.undefined;
-            expect(json.MonDynErr).to.not.be.undefined;
-            expect(json.MonEn).to.not.be.undefined;
-            expect(json.MonStatErr).to.not.be.undefined;
-            expect(json.MonSafePos).to.not.be.undefined;
+            expect(Object.keys(options).length).to.equal(6);
+            expect(options.MonDynTi).to.not.be.undefined;
+            expect(options.MonStatTi).to.not.be.undefined;
+            expect(options.MonDynErr).to.not.be.undefined;
+            expect(options.MonEn).to.not.be.undefined;
+            expect(options.MonStatErr).to.not.be.undefined;
+            expect(options.MonSafePos).to.not.be.undefined;
+        });
+
+        it('dynamic FeedbackMonitoring DataItemOptions',  () => {
+            const mockup = new FeedbackMonitoringMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Test');
+            const options = mockup.getDataItemOptions() as FeedbackMonitoringRuntime;
+
+            expect(Object.keys(options).length).to.equal(6);
+            expect(options.MonDynTi).to.not.be.undefined;
+            expect(options.MonStatTi).to.not.be.undefined;
+            expect(options.MonDynErr).to.not.be.undefined;
+            expect(options.MonEn).to.not.be.undefined;
+            expect(options.MonStatErr).to.not.be.undefined;
+            expect(options.MonSafePos).to.not.be.undefined;
         });
     });
 
@@ -65,6 +77,7 @@ describe('FeedbackMonitoringMockup', () => {
 
         let mockupServer: MockupServer;
         let connection: OpcUaConnection;
+
         beforeEach(async function () {
             this.timeout(5000);
             mockupServer = new MockupServer();

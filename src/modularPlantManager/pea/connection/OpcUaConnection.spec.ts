@@ -50,11 +50,14 @@ describe('OpcUaConnection', () => {
 		expect(connection.isConnected()).to.equal(false);
 	}).timeout(5000);
 
+
 	it('should connect to a opc ua test server and recognize a shutdown of this server', async () => {
-/*		const connection = new OpcUaConnection();
-        connection.initialize({endpoint: mockupServer.endpoint});
+
 		const mockupServer = new MockupServer();
 		await mockupServer.start();
+
+		const connection = new OpcUaConnection();
+        connection.initialize({endpoint: mockupServer.endpoint});
 
 		expect(connection.isConnected()).to.equal(false);
 		await connection.connect();
@@ -66,7 +69,7 @@ describe('OpcUaConnection', () => {
 				resolve();
 			});
 			mockupServer.shutdown();
-		});*/
+		});
 	}).timeout(3000);
 
 
@@ -172,7 +175,7 @@ describe('OpcUaConnection', () => {
 
 			const invalidUrn = 'urn:nan';
 			expect(() => connection.addNodeToMonitoring('nonexistant', invalidUrn))
-				.to.throw(`Namespace ${invalidUrn} is unknown!`);
+				.to.throw(`Failed to resolve namespace ${invalidUrn}!`);
 			expect(connection.monitoredNodesCount()).equals(2);
 
 			connection.addNodeToMonitoring('Service1.OpMode', mockupServerNamespace);
@@ -180,6 +183,7 @@ describe('OpcUaConnection', () => {
 			await connection.createSubscription();
 			await connection.startMonitoring();
 			await connection.disconnect();
+
 		}).timeout(5000);
 
 		it('should connect with username and password', async () => {

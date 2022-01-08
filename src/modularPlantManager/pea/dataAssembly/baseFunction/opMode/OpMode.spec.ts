@@ -27,21 +27,18 @@ import {OpcUaConnection} from '../../../connection';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions, OperationMode} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from '../../operationElement/servParam/anaServParam/AnaServParam.spec.json';
 import {DataAssemblyController} from '../../DataAssemblyController';
 import {MockupServer} from '../../../../_utils';
 import {OpModeMockup} from './OpMode.mockup';
 import {OpMode} from './OpMode';
+import {getAnaServParamOptions} from '../../operationElement/servParam/anaServParam/AnaServParam.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('OpMode', () => {
-	const dataAssemblyOptions: DataAssemblyOptions = {
-		name: 'Variable',
-		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperatorElement/AnaServParam',
-		dataItems: baseDataAssemblyOptions
-	};
+
+	const dataAssemblyOptions = getAnaServParamOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
 
 	describe('static', () => {
 		const emptyOPCUAConnection = new OpcUaConnection();

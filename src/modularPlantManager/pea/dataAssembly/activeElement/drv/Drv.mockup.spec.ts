@@ -26,17 +26,20 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 
-import {DrvMockup} from './Drv.mockup';
+import {DrvMockup, getDrvDataItemOptions, getDrvOptions} from './Drv.mockup';
 import {MockupServer} from '../../../../_utils';
 import {BinDrvMockup} from './binDrv/BinDrv.mockup';
 import {OpcUaConnection} from '../../../connection';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {DrvRuntime} from './Drv';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('DrvMockup', () => {
 
-    describe('', () => {
+    describe('static', () => {
+
         let mockupServer: MockupServer;
         beforeEach(async()=>{
             mockupServer = new MockupServer();
@@ -49,14 +52,25 @@ describe('DrvMockup', () => {
             expect(mockup).to.not.be.undefined;
 
         });
-        it('getDrvMockupReferenceJSON()',  () => {
+
+        it('static DataItemOptions', () => {
+            const options = getDrvDataItemOptions(1, 'Test') as DrvRuntime;
+            expect(Object.keys(options).length).to.equal(37);
+        });
+
+        it('static DataAssemblyOptions', () => {
+            const options = getDrvOptions(1, 'Test') as DataAssemblyOptions;
+            expect(Object.keys(options.dataItems).length).to.equal(39);
+        });
+
+        it('dynamic DataAssemblyOptions', () => {
             const mockup = new DrvMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const json = mockup.getDrvMockupJSON();
-            expect(json).to.not.be.undefined;
-            expect(Object.keys(json).length).to.equal(37);
-            //TODO test more
+            const options = mockup.getDataAssemblyOptions();
+
+            expect(Object.keys(options.dataItems).length).to.equal(39);
         });
+
     });
     describe('dynamic', () => {
 

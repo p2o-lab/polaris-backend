@@ -29,27 +29,26 @@ import {BinMon} from './BinMon';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from './BinMon.spec.json';
 import {MockupServer} from '../../../../../_utils';
-import {BinMonMockup} from './BinMon.mockup';
+import {BinMonMockup, getBinMonOptions} from './BinMon.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('BinMon', () => {
-	const dataAssemblyOptions: DataAssemblyOptions = {
-		name: 'Variable',
-		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/BinMon',
-		dataItems: baseDataAssemblyOptions
-	};
+
+	let dataAssemblyOptions: DataAssemblyOptions;
 
 	describe('static', () => {
+
 		const emptyOPCUAConnection = new OpcUaConnection();
+		dataAssemblyOptions = getBinMonOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
+
 		it('should create BinMon', async () => {
 			const dataAssemblyController: BinMon = new BinMon(dataAssemblyOptions, emptyOPCUAConnection);
 
-			expect(dataAssemblyController.tagName).to.equal('Variable');
-			expect(dataAssemblyController.tagDescription).to.equal('Test');
+			expect(dataAssemblyController.communication.TagName).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.TagDescription).to.not.equal(undefined);
 			
 			expect(dataAssemblyController.communication.WQC).to.not.equal(undefined);
 			expect(dataAssemblyController.communication.V).to.not.equal(undefined);
@@ -70,7 +69,8 @@ describe('BinMon', () => {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			new BinMonMockup( mockupServer.nameSpace, mockupServer.rootObject,'Variable');
+			const binMonMockup = new BinMonMockup( mockupServer.nameSpace, mockupServer.rootObject,'Variable');
+			dataAssemblyOptions = binMonMockup.getDataAssemblyOptions();
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});

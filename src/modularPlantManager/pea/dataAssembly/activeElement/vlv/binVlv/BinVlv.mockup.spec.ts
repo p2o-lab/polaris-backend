@@ -25,9 +25,10 @@
  
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {BinVlvMockup} from './BinVlv.mockup';
+import {BinVlvMockup, getBinVlvDataItemOptions, getBinVlvOptions} from './BinVlv.mockup';
 import {MockupServer} from '../../../../../_utils';
-import {OpcUaConnection} from '../../../../connection';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {BinVlvRuntime} from './BinVlv';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -35,7 +36,9 @@ const expect = chai.expect;
 describe('BinVlvMockup', () => {
 
     describe('static', () => {
+
         let mockupServer: MockupServer;
+
         beforeEach(async()=>{
             mockupServer = new MockupServer();
             await mockupServer.initialize();
@@ -47,38 +50,23 @@ describe('BinVlvMockup', () => {
             expect(mockup).to.not.be.undefined;
 
         });
-        it('getBinVlvMockupReferenceJSON()',  () => {
+
+        it('static DataItemOptions', () => {
+            const options = getBinVlvDataItemOptions(1, 'Test') as BinVlvRuntime;
+            expect(Object.keys(options).length).to.equal(32);
+        });
+
+        it('static DataAssemblyOptions', () => {
+            const options = getBinVlvOptions(1, 'Test') as DataAssemblyOptions;
+            expect(Object.keys(options.dataItems).length).to.equal(34);
+        });
+
+        it('dynamic DataAssemblyOptions', () => {
             const mockup = new BinVlvMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const json = mockup.getBinVlvMockupJSON();
-            expect(json).to.not.be.undefined;
-            expect(Object.keys(json).length).to.equal(32);
-            //TODO test more?
+            const options = mockup.getDataAssemblyOptions();
+
+            expect(Object.keys(options.dataItems).length).to.equal(34);
         });
-    });
-    describe('dynamic', () => {
-
-        let mockupServer: MockupServer;
-        let connection: OpcUaConnection;
-
-        beforeEach(async function () {
-            this.timeout(5000);
-            mockupServer = new MockupServer();
-            await mockupServer.initialize();
-            new BinVlvMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
-            await mockupServer.start();
-            connection = new OpcUaConnection();
-            connection.initialize({endpoint: mockupServer.endpoint});
-            await connection.connect();
-        });
-        afterEach(async () => {
-            await connection.disconnect();
-            await mockupServer.shutdown();
-        });
-
-        it(' get ...', async () => {
-            //TODO get the rest
-        }).timeout(3000);
-
     });
 });

@@ -25,41 +25,57 @@
 
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
 import {
-	FeedbackMonitoringMockup,
-	getFeedbackMonitoringMockupReferenceJSON
+	FeedbackMonitoringMockup, getFeedbackMonitoringDataItemOptions
 } from '../../../../baseFunction/feedbackMonitoring/FeedbackMonitoring.mockup';
-import {AnaVlvMockup, getAnaVlvMockupReferenceJSON} from '../AnaVlv.mockup';
+import {AnaVlvMockup, getAnaVlvDataItemOptions} from '../AnaVlv.mockup';
+import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
+import {getDataAssemblyOptions} from '../../../../DataAssemblyController.mockup';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 
+const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/ActiveElement/AnaVlv/MonAnaVlv';
 
-export function getMonAnaVlvMockupReferenceJSON(
-	namespace: number,
-	objectBrowseName: string): object {
-
+function getMonAnaVlvSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
 	return ({
-			...getAnaVlvMockupReferenceJSON(namespace, objectBrowseName),
-			...getFeedbackMonitoringMockupReferenceJSON(namespace,objectBrowseName),
-			PosReachedFbk: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.PosReachedFbk`,
-				dataType: 'Boolean'
-			},
-			PosTolerance: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.PosTolerance`,
-				dataType: 'Float'
-			},
-			MonPosTi: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.MonPosTi`,
-				dataType: 'Float'
-			},
-			MonPosErr: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.MonPosErr`,
-				dataType: 'Boolean'
-			}
-		}
+		PosReachedFbk: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.PosReachedFbk`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		PosTolerance: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.PosTolerance`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions,
+		MonPosTi: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.MonPosTi`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions,
+		MonPosErr: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.MonPosErr`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions
+	});
+}
+
+
+export function getMonAnaVlvDataItemOptions(namespace: number, objectBrowseName: string): object {
+	return ({
+			...getAnaVlvDataItemOptions(namespace, objectBrowseName),
+			...getFeedbackMonitoringDataItemOptions(namespace, objectBrowseName),
+			...getMonAnaVlvSpecificDataItemOptions(namespace, objectBrowseName),
+		} as OpcUaNodeOptions
 	);
+}
+
+export function getMonAnaVlvOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
+	const options = getDataAssemblyOptions(name, tagName, tagDescription);
+	options.metaModelRef = metaModelReference;
+	options.dataItems = {
+		...options.dataItems,
+		...getMonAnaVlvDataItemOptions(namespace, objectBrowseName)};
+	return options;
 }
 
 export class MonAnaVlvMockup extends AnaVlvMockup {
@@ -123,9 +139,14 @@ export class MonAnaVlvMockup extends AnaVlvMockup {
 		});
 	}
 
-	public getMonAnaVlvMockupJSON(): object {
-		return getMonAnaVlvMockupReferenceJSON(
-			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name as string);
+	public getDataAssemblyOptions(): DataAssemblyOptions {
+		const options = super.getDataAssemblyOptions();
+		options.metaModelRef = metaModelReference;
+		options.dataItems = {
+			...options.dataItems,
+			...this.feedbackMonitoring.getDataItemOptions(),
+			...getMonAnaVlvSpecificDataItemOptions(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
+		};
+		return options;
 	}
 }

@@ -25,51 +25,58 @@
  
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {BinServParamMockup} from './BinServParam.mockup';
+import {BinServParamMockup, getBinServParamDataItemOptions, getBinServParamOptions} from './BinServParam.mockup';
 import {MockupServer} from '../../../../../_utils';
-import {Namespace, UAObject} from 'node-opcua';
 import {OpcUaConnection} from '../../../../connection';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {BinServParamRuntime} from './BinServParam';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-class FakeClass extends BinServParamMockup{
-    constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
-        super(namespace, rootNode, variableName);
-    }
-    public getVOut(): boolean {
-        return this.vOut;
-    }
-}
 describe('BinServParamMockup', () => {
 
     describe('static', () => {
+
         let mockupServer: MockupServer;
+
         beforeEach(async()=>{
             mockupServer = new MockupServer();
             await mockupServer.initialize();
         });
+
         it('should create BinServParamMockup', () => {
             const mockup = new BinServParamMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
             expect(mockup).to.not.be.undefined;
-
         });
-        it('getBinServParamMockupReferenceJSON()',  () => {
+
+        it('static DataItemOptions', () => {
+            const options = getBinServParamDataItemOptions(1, 'Test') as BinServParamRuntime;
+            expect(Object.keys(options).length).to.equal(28);
+        });
+
+        it('static DataAssemblyOptions', () => {
+            const options = getBinServParamOptions(1, 'Test') as DataAssemblyOptions;
+            expect(Object.keys(options.dataItems).length).to.equal(30);
+        });
+
+        it('dynamic DataAssemblyOptions', () => {
             const mockup = new BinServParamMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const json = mockup.getBinServParamMockupJSON() as any;
-            expect(Object.keys(json).length).to .equal(28);
-            expect(json.VExt).to.not.be.undefined;
-            expect(json.VOp).to.not.be.undefined;
-            expect(json.VInt).to.not.be.undefined;
-            expect(json.VReq).to.not.be.undefined;
-            expect(json.VOut).to.not.be.undefined;
-            expect(json.VFbk).to.not.be.undefined;
+            const options = mockup.getDataAssemblyOptions() as any;
+
+            expect(Object.keys(options.dataItems).length).to .equal(30);
+            expect(options.dataItems.VExt).to.not.be.undefined;
+            expect(options.dataItems.VOp).to.not.be.undefined;
+            expect(options.dataItems.VInt).to.not.be.undefined;
+            expect(options.dataItems.VReq).to.not.be.undefined;
+            expect(options.dataItems.VOut).to.not.be.undefined;
+            expect(options.dataItems.VFbk).to.not.be.undefined;
         });
 
-        //TODO test more
-        it('startCurrentTimeUpdate()',  async() => {
+        // TODO
+/*        it('startCurrentTimeUpdate()',  async() => {
             const mockup: FakeClass = new FakeClass(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable') as FakeClass;
             mockup.startCurrentTimeUpdate();
@@ -93,7 +100,7 @@ describe('BinServParamMockup', () => {
             const mockup: FakeClass = new FakeClass(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable') as FakeClass;
             expect((() => mockup.stopCurrentTimeUpdate())).to.throw();
-        });
+        });*/
     });
     describe('dynamic', () => {
 

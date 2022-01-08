@@ -58,7 +58,8 @@ export class OpcUaDataItem<T extends string | number | boolean> extends DynamicD
 				this.emit('changed', {value: this.value, timestamp: this.timestamp || new Date()});
 			});
 
-		this.logger.info(`subscribed to DataItem ${this.nodeId}`);
+		//Todo: uncomment
+		// this.logger.info(`subscribed to DataItem ${this.nodeId}`);
 	}
 
 	public async unsubscribe(): Promise<void> {

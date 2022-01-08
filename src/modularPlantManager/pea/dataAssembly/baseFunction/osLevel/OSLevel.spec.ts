@@ -24,70 +24,43 @@
  */
 
 import {OpcUaConnection} from '../../../connection';
-import * as baseDataAssemblyOptions from '../../indicatorElement/BinView/BinMon/BinMon.spec.json';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptionsStatic from './OSLevel.spec.json';
 import {OSLevel} from './OSLevel';
 import {DataAssemblyController} from '../../DataAssemblyController';
 import {MockupServer} from '../../../../_utils';
 import {OSLevelMockup} from './OSLevel.mockup';
+import {getBinMonOptions} from '../../indicatorElement/BinView/BinMon/BinMon.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('OSLevel', () => {
-	const dataAssemblyOptionsStatic: DataAssemblyOptions = {
-		name: 'Variable',
-		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/BinMon',
-		dataItems: baseDataAssemblyOptionsStatic
-	};
-	const dataAssemblyOptions: DataAssemblyOptions = {
-		name: 'Variable',
-		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/BinMon',
-		dataItems: baseDataAssemblyOptions
-	};
+
+	let dataAssemblyOptions: DataAssemblyOptions;
 
 	describe('static', () => {
 
+		dataAssemblyOptions = getBinMonOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
 		let osLevelObject: OSLevel;
 		let da: any;
 
-		describe('static OSLevel',()=>{
-			beforeEach(()=>{
-				const emptyOPCUAConnection = new OpcUaConnection();
-				da = new DataAssemblyController(dataAssemblyOptionsStatic, emptyOPCUAConnection) as any;
-				osLevelObject = new OSLevel(da);
-			});
-			it('should create OSLevel', async () => {
-				expect(osLevelObject.OSLevel).to.equal(0);
-				expect(da.communication.OSLevel).to.not.be.undefined;
-			});
-
-			it('getter', async () => {
-				expect(osLevelObject.OSLevel).to.equal(0);
-			});
+		beforeEach(()=>{
+			const emptyOPCUAConnection = new OpcUaConnection();
+			da = new DataAssemblyController(dataAssemblyOptions, emptyOPCUAConnection);
+			osLevelObject = new OSLevel(da);
 		});
-		describe('dynamic OSLevel', () => {
-			let osLevelObject: OSLevel;
-			let da: any;
 
-			beforeEach(()=>{
-				const emptyOPCUAConnection = new OpcUaConnection();
-				da = new DataAssemblyController(dataAssemblyOptions, emptyOPCUAConnection);
-				osLevelObject = new OSLevel(da);
-			});
-
-			it('should create OSLevel', async () => {
-				expect(osLevelObject.OSLevel).to.equal(0);
-				expect(da.communication.OSLevel).to.not.be.undefined;
-			});
-
-			it('getter', async () => {
-				expect(osLevelObject.OSLevel).to.equal(0);
-			});
+		it('should create OSLevel', async () => {
+			expect(osLevelObject.OSLevel).to.equal(0);
+			expect(da.communication.OSLevel).to.not.be.undefined;
 		});
+
+		it('getter', async () => {
+			expect(osLevelObject.OSLevel).to.equal(0);
+		});
+
 	});
 	describe('dynamic', () => {
 

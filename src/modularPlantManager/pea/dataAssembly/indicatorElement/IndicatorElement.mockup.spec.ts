@@ -25,15 +25,20 @@
  
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {IndicatorElementMockup} from './IndicatorElement.mockup';
+import {getIndicatorElementDataItemOptions, getIndicatorElementOptions, IndicatorElementMockup} from './IndicatorElement.mockup';
 import {MockupServer} from '../../../_utils';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {IndicatorElementRuntime} from './IndicatorElement';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('IndicatorElementMockup', () => {
-    describe('', () => {
+
+    describe('static', () => {
+
         let mockupServer: MockupServer;
+
         beforeEach(async()=>{
             mockupServer = new MockupServer();
             await mockupServer.initialize();
@@ -46,13 +51,22 @@ describe('IndicatorElementMockup', () => {
             expect(mockup.wqc).to.not.be.undefined;
         });
 
-        it('getIndicatorElementMockupReferenceJSON()',  () => {
+        it('static DataItemOptions', () => {
+            const options = getIndicatorElementDataItemOptions(1, 'Test') as IndicatorElementRuntime;
+            expect(Object.keys(options).length).to.equal(1);
+        });
+
+        it('static DataAssemblyOptions', () => {
+            const options = getIndicatorElementOptions(1, 'Test') as DataAssemblyOptions;
+            expect(Object.keys(options.dataItems).length).to.equal(3);
+        });
+
+        it('dynamic DataAssemblyOptions', () => {
             const mockup = new IndicatorElementMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const json = mockup.getIndicatorElementInstanceMockupJSON();
-            expect(json).not.to.be.undefined;
-            expect(Object.keys(json).length).to.equal(1);
-            //TODO: test more
+            const options = mockup.getDataAssemblyOptions();
+
+            expect(Object.keys(options.dataItems).length).to.equal(3);
         });
     });
 });

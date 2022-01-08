@@ -28,14 +28,16 @@ import {DataAssemblyController} from './DataAssemblyController';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {MockupServer} from '../../_utils';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('DataAssembly', () => {
+
     describe('static', () => {
+
         const emptyOPCUAConnection = new OpcUaConnection();
+
         it('should create DataAssemblyController', () => {
             expect(() => {
                 const dataAssemblyController = new DataAssemblyController({
@@ -60,7 +62,7 @@ describe('DataAssembly', () => {
         it('should fail with undefined DataItems', () => {
             expect(() => new DataAssemblyController(
                 {dataItems:undefined as any, name:'test', metaModelRef:'Test'}, emptyOPCUAConnection)
-            ).to.throw('Creating DataAssemblyController Error: No Communication variables found in DataAssemblyOptions');
+            ).to.throw('Creating DataAssemblyController Error: No Communication dataAssemblies found in DataAssemblyOptions');
         });
 
     });

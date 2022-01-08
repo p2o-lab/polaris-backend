@@ -24,37 +24,54 @@
  */
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {getScaleSettingsMockupReferenceJSON, ScaleSettingMockup} from '../../../baseFunction/scaleSettings/ScaleSetting.mockup';
-import {getUnitMockupReferenceJSON, UnitMockup} from '../../../baseFunction/unit/Unit.mockup';
-import {getInputElementMockupReferenceJSON, InputElementMockup} from '../../InputElement.mockup';
+import {getScaleSettingsDataItemOptions, ScaleSettingMockup} from '../../../baseFunction/scaleSettings/ScaleSetting.mockup';
+import {getUnitSettingsDataItemOptions, UnitSettingsMockup} from '../../../baseFunction/unitSettings/UnitSettings.mockup';
+import {getInputElementDataItemOptions, getInputElementOptions, InputElementMockup} from '../../InputElement.mockup';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
+import {getDataAssemblyOptions} from '../../../DataAssemblyController.mockup';
 
-export function getDIntProcessValueInMockupReferenceJSON(
-	namespace: number,
-	objectBrowseName: string): object {
-	return (
-		{
-			...getInputElementMockupReferenceJSON(namespace, objectBrowseName),
-			...getScaleSettingsMockupReferenceJSON(namespace, objectBrowseName, 'Int32'),
-			...getUnitMockupReferenceJSON(namespace, objectBrowseName),
-			VExt: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VExt`,
-				dataType: 'Int32'
-			}
-		}
+const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/InputElement/DIntProcessValueIn';
+
+function getDIntProcessValueInSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
+	return ({
+		VExt: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.VExt`,
+			dataType: 'Int32'
+		} as OpcUaNodeOptions
+	});
+}
+
+export function getDIntProcessValueInDataItemOptions(namespace: number, objectBrowseName: string): object {
+	return ({
+			...getInputElementDataItemOptions(namespace, objectBrowseName),
+			...getScaleSettingsDataItemOptions(namespace, objectBrowseName, 'DInt'),
+			...getUnitSettingsDataItemOptions(namespace, objectBrowseName),
+			...getDIntProcessValueInSpecificDataItemOptions(namespace, objectBrowseName),
+		} as OpcUaNodeOptions
 	);
+}
+
+export function getDIntProcessValueInOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
+	const options = getDataAssemblyOptions(name, tagName, tagDescription);
+	options.metaModelRef = metaModelReference;
+	options.dataItems = {
+		...options.dataItems,
+		...getDIntProcessValueInDataItemOptions(namespace, objectBrowseName)};
+	return options;
 }
 
 export class DIntProcessValueInMockup extends InputElementMockup{
 
-	public scaleSettings: ScaleSettingMockup<DataType.Int32>;
-	public unit: UnitMockup;
+	public scaleSettings: ScaleSettingMockup<'DInt'>;
+	public unit: UnitSettingsMockup;
 	public vExt = 0;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
 		super(namespace, rootNode, variableName);
-		this.scaleSettings = new ScaleSettingMockup<DataType.Int32>(namespace, this.mockupNode, this.name, DataType.Int32);
-		this.unit = new UnitMockup(namespace, this.mockupNode, this.name);
+		this.scaleSettings = new ScaleSettingMockup(namespace, this.mockupNode, this.name, 'DInt');
+		this.unit = new UnitSettingsMockup(namespace, this.mockupNode, this.name);
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
@@ -80,9 +97,15 @@ export class DIntProcessValueInMockup extends InputElementMockup{
 
 	}
 
-	public getDIntProcessValueInInstanceMockupJSON(): object {
-		return getDIntProcessValueInMockupReferenceJSON(
-			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name as string);
+	public getDataAssemblyOptions(): DataAssemblyOptions {
+		const options = super.getDataAssemblyOptions();
+		options.metaModelRef = metaModelReference;
+		options.dataItems = {
+			...options.dataItems,
+			...this.scaleSettings.getDataItemOptions(),
+			...this.unit.getDataItemOptions(),
+			...getDIntProcessValueInSpecificDataItemOptions(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
+		};
+		return options;
 	}
 }

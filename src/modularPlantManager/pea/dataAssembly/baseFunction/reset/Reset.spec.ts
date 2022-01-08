@@ -28,27 +28,27 @@ import {OpcUaConnection} from '../../../connection';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from '../../activeElement/vlv/binVlv/monBinVlv/MonBinVlv.spec.json';
 import {DataAssemblyController} from '../../DataAssemblyController';
 import {MonBinVlv} from '../../activeElement';
 import {Reset} from './Reset';
 import {MockupServer} from '../../../../_utils';
 import {ResetMockup} from './Reset.mockup';
+import {getMonBinVlvOptions} from '../../activeElement/vlv/binVlv/monBinVlv/MonBinVlv.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('Reset', () => {
-	const dataAssemblyOptions: DataAssemblyOptions = {
-		name: 'Variable',
-		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperationElement/MonBinVlv',
-		dataItems: baseDataAssemblyOptions
-	};
+
+	const dataAssemblyOptions = getMonBinVlvOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
+
 	describe('static', () => {
+
 		const emptyOPCUAConnection = new OpcUaConnection();
+
 		it('should create Reset',  () => {
 			const dataAssemblyController = new DataAssemblyController(dataAssemblyOptions, emptyOPCUAConnection) as MonBinVlv;
-			const reset = new Reset(dataAssemblyController); //this will set communication variables
+			const reset = new Reset(dataAssemblyController); //this will set communication dataAssemblies
 			expect(reset).to.not.to.undefined;
 			expect(dataAssemblyController.communication.ResetAut).to.not.to.undefined;
 			expect(dataAssemblyController.communication.ResetOp).to.not.to.undefined;

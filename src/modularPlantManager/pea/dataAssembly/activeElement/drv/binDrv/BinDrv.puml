@@ -25,7 +25,7 @@
  
 @startuml
 'https://plantuml.com/class-diagram
-!include MonBinDrv.puml
+!include monBinDrv/MonBinDrv.puml
 
 class BinDrv{
 	+ readonly communication!: BinDrvRuntime

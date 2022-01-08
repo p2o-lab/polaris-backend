@@ -25,28 +25,21 @@
  
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {Namespace, UAObject} from 'node-opcua';
 import {MockupServer} from '../../../../../_utils';
-import {DIntManMockup} from './DIntMan.mockup';
+import {DIntManMockup, getDIntManDataItemOptions, getDIntManOptions} from './DIntMan.mockup';
 import {OpcUaConnection} from '../../../../connection';
-
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {DIntManRuntime} from './DIntMan';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-// this fake class is needed to test the protected variable
-class FakeClass extends DIntManMockup{
-    constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
-        super(namespace, rootNode, variableName);
-    }
-    public getVOut(): number {
-        return this.vOut;
-    }
-}
-
 describe('DIntManMockup', () => {
-    describe('', () => {
+
+    describe('static', () => {
+
         let mockupServer: MockupServer;
+
         beforeEach(async()=>{
             mockupServer = new MockupServer();
             await mockupServer.initialize();
@@ -58,15 +51,26 @@ describe('DIntManMockup', () => {
             expect(mockup).to.not.be.undefined;
         });
 
-        it('getDIntManMockupReferenceJSON(namespace, objectBrowseName)',  () => {
-            const mockup = new DIntManMockup(mockupServer.nameSpace,
-                mockupServer.rootObject, 'Variable');
-            const json = mockup.getDIntManMockupJSON();
-            expect(json).not.to.be.undefined;
-            expect(Object.keys(json).length).to.equal(10);
+        it('static DataItemOptions', () => {
+            const options = getDIntManDataItemOptions(1, 'Test') as DIntManRuntime;
+            expect(Object.keys(options).length).to.equal(10);
         });
 
-        it('startCurrentTimeUpdate()',  async() => {
+        it('static DataAssemblyOptions', () => {
+            const options = getDIntManOptions(1, 'Test') as DataAssemblyOptions;
+            expect(Object.keys(options.dataItems).length).to.equal(12);
+        });
+
+        it('dynamic DataAssemblyOptions', () => {
+            const mockup = new DIntManMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
+            const options = mockup.getDataAssemblyOptions();
+
+            expect(Object.keys(options.dataItems).length).to.equal(12);
+        });
+
+        // TODO
+        /*it('startCurrentTimeUpdate()',  async() => {
             const mockup: FakeClass = new FakeClass(mockupServer.nameSpace, mockupServer.rootObject, 'Variable') as FakeClass;
             mockup.startCurrentTimeUpdate();
             expect(mockup.getVOut()).to.equal(0);
@@ -89,7 +93,7 @@ describe('DIntManMockup', () => {
             const mockup: FakeClass = new FakeClass(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable') as FakeClass;
             expect((() => mockup.stopCurrentTimeUpdate())).to.throw();
-        });
+        });*/
     });
     describe('dynamic', () => {
 

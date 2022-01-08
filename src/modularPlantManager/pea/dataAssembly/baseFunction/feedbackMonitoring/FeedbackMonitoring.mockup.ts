@@ -24,44 +24,48 @@
  */
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
+import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
 
-export function getFeedbackMonitoringMockupReferenceJSON(
-    namespace: number,
-    objectBrowseName: string): object {
+function getFeedbackMonitoringSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
   return ({
-        MonEn: {
-          namespaceIndex: `${namespace}`,
-          nodeId: `${objectBrowseName}.MonEn`,
-          dataType: 'Boolean'
-        },
-        MonSafePos: {
-          namespaceIndex: `${namespace}`,
-          nodeId: `${objectBrowseName}.MonSafePos`,
-          dataType: 'Boolean'
-        },
-        MonStatErr: {
-          namespaceIndex: `${namespace}`,
-          nodeId: `${objectBrowseName}.MonStatErr`,
-          dataType: 'Boolean'
-        },
-        MonDynErr: {
-          namespaceIndex: `${namespace}`,
-          nodeId: `${objectBrowseName}.MonDynErr`,
-          dataType: 'Boolean'
-        },
-        MonStatTi: {
-          namespaceIndex: `${namespace}`,
-          nodeId: `${objectBrowseName}.MonStatTi`,
-          dataType: 'Float'
-        },
-        MonDynTi: {
-          namespaceIndex: `${namespace}`,
-          nodeId: `${objectBrowseName}.MonDynTi`,
-          dataType: 'Float'
-        }
-      }
-  );
+    MonEn: {
+      namespaceIndex: `${namespace}`,
+      nodeId: `${objectBrowseName}.MonEn`,
+      dataType: 'Boolean'
+    } as OpcUaNodeOptions,
+    MonSafePos: {
+      namespaceIndex: `${namespace}`,
+      nodeId: `${objectBrowseName}.MonSafePos`,
+      dataType: 'Boolean'
+    } as OpcUaNodeOptions,
+    MonStatErr: {
+      namespaceIndex: `${namespace}`,
+      nodeId: `${objectBrowseName}.MonStatErr`,
+      dataType: 'Boolean'
+    } as OpcUaNodeOptions,
+    MonDynErr: {
+      namespaceIndex: `${namespace}`,
+      nodeId: `${objectBrowseName}.MonDynErr`,
+      dataType: 'Boolean'
+    } as OpcUaNodeOptions,
+    MonStatTi: {
+      namespaceIndex: `${namespace}`,
+      nodeId: `${objectBrowseName}.MonStatTi`,
+      dataType: 'Float'
+    } as OpcUaNodeOptions,
+    MonDynTi: {
+      namespaceIndex: `${namespace}`,
+      nodeId: `${objectBrowseName}.MonDynTi`,
+      dataType: 'Float'
+    } as OpcUaNodeOptions
+  });
 }
+
+
+export function getFeedbackMonitoringDataItemOptions(namespace: number, objectBrowseName: string): object {
+  return getFeedbackMonitoringSpecificDataItemOptions(namespace, objectBrowseName);
+}
+
 
 export class FeedbackMonitoringMockup {
   protected varMonEn = false;
@@ -148,8 +152,8 @@ export class FeedbackMonitoringMockup {
     });
     }
 
-  public getFeedbackMonitoringInstanceMockupJSON(): object {
-    return getFeedbackMonitoringMockupReferenceJSON(
+  public getDataItemOptions(): object {
+    return getFeedbackMonitoringDataItemOptions(
         this.mockupNode.namespaceIndex,
         this.mockupNode.browseName.name as string);
   }

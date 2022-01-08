@@ -23,27 +23,27 @@
  * SOFTWARE.
  */
 
-import * as baseDataAssemblyOptions from '../anaDrv/monAnaDrv/MonAnaDrv.spec.json';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {OpcUaConnection} from '../../../../connection';
 import {BinDrv} from './BinDrv';
 import {MockupServer} from '../../../../../_utils';
-import {BinDrvMockup} from './BinDrv.mockup';
+import {BinDrvMockup, getBinDrvOptions} from './BinDrv.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
-const dataAssemblyOptions: DataAssemblyOptions = {
-	name: 'Variable',
-	metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/ActiveElement/BinBinDrv',
-	dataItems: baseDataAssemblyOptions
-};
+
 
 describe('BinDrv', () => {
 
+	let dataAssemblyOptions: DataAssemblyOptions;
+
 	describe('static', () => {
+
 		const emptyOPCUAConnection = new OpcUaConnection();
+		dataAssemblyOptions = getBinDrvOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
+
 		it('should create BinDrv',  () => {
 			const dataAssemblyController = new BinDrv(dataAssemblyOptions, emptyOPCUAConnection);
 
@@ -72,9 +72,10 @@ describe('BinDrv', () => {
 			expect(dataAssemblyController.communication.StopOp).to.be.not.undefined;
 			expect(dataAssemblyController.communication.Trip).to.be.not.undefined;
 
-			expect(Object.keys(dataAssemblyController.communication).length).to.equal(37);
+			expect(Object.keys(dataAssemblyController.communication).length).to.equal(39);
 		});
 	});
+
 	describe('dynamic', () => {
 		let mockupServer: MockupServer;
 		let connection: OpcUaConnection;
@@ -84,7 +85,8 @@ describe('BinDrv', () => {
 			this.timeout(10000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			new BinDrvMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
+			const binDrvMockup = new BinDrvMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
+			dataAssemblyOptions = binDrvMockup.getDataAssemblyOptions();
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});

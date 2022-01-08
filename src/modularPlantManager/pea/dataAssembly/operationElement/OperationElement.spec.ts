@@ -28,9 +28,8 @@ import {OpcUaConnection} from '../../connection';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from './OperationElement.spec.json';
 import {MockupServer} from '../../../_utils';
-import {OperationElementMockup} from './OperationElement.mockup';
+import {getOperationElementOptions, OperationElementMockup} from './OperationElement.mockup';
 import {OperationElement} from './OperationElement';
 
 
@@ -38,16 +37,16 @@ chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('OperationElement', () => {
-	const dataAssemblyOptions: DataAssemblyOptions = {
-		name: 'Variable',
-		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperationElement',
-		dataItems: baseDataAssemblyOptions
-	};
+
+	let dataAssemblyOptions: DataAssemblyOptions;
 
 	describe('static', () => {
+
 		const emptyOPCUAConnection = new OpcUaConnection();
+		dataAssemblyOptions = getOperationElementOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
+
 		it('should create OperationElement', () => {
-			//TODO: fix this, error because of circular dependencies
+
 			const dataAssemblyController: OperationElement = new OperationElement(dataAssemblyOptions, emptyOPCUAConnection);
 			expect(dataAssemblyController).to.be.not.undefined;
 			expect(dataAssemblyController.osLevel).to.be.not.undefined;
@@ -63,7 +62,8 @@ describe('OperationElement', () => {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			new OperationElementMockup(	mockupServer.nameSpace,	mockupServer.rootObject,'Variable');
+			const operationElementMockup =new OperationElementMockup(	mockupServer.nameSpace,	mockupServer.rootObject,'Variable');
+			dataAssemblyOptions = operationElementMockup.getDataAssemblyOptions();
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});

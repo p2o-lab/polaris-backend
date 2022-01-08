@@ -24,29 +24,26 @@
  */
 
 import {OpcUaConnection} from '../../connection';
-import {
-	ActiveElement
-} from './ActiveElement';
+import {ActiveElement} from './ActiveElement';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {MockupServer} from '../../../_utils';
+import {ActiveElementMockup, getActiveElementOptions} from './ActiveElement.mockup';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from './drv/anaDrv/monAnaDrv/MonAnaDrv.spec.json';
-import {MockupServer} from '../../../_utils';
-
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('ActiveElement', () => {
-	const dataAssemblyOptions: DataAssemblyOptions = {
-		name: 'Variable',
-		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/ActiveElement/',
-		dataItems: baseDataAssemblyOptions
-	};
+
+	let dataAssemblyOptions: DataAssemblyOptions;
+
 	describe('static', () => {
+
 		it('should create ActiveElement', () => {
 			const emptyOPCUAConnection = new OpcUaConnection();
 			emptyOPCUAConnection.initialize({endpoint : ''});
+			dataAssemblyOptions = getActiveElementOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
 			const dataAssemblyController = new ActiveElement(dataAssemblyOptions, emptyOPCUAConnection);
 			expect(dataAssemblyController).to.be.not.undefined;
 			expect(dataAssemblyController.wqc).to.be.not.undefined;
@@ -55,6 +52,7 @@ describe('ActiveElement', () => {
 	});
 
 	describe('dynamic', () => {
+
 		let mockupServer: MockupServer;
 		let connection: OpcUaConnection;
 
@@ -62,6 +60,8 @@ describe('ActiveElement', () => {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
+			const mockup = new ActiveElementMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
+			dataAssemblyOptions = mockup.getDataAssemblyOptions();
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint : mockupServer.endpoint});

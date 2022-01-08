@@ -29,24 +29,23 @@ import {DIntMon} from './DIntMon';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from './DIntMon.spec.json';
 import {MockupServer} from '../../../../../_utils';
-import {DIntMonMockup} from './DIntMon.mockup';
+import {DIntMonMockup, getDIntMonOptions} from './DIntMon.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('DIntMon', () => {
-	const dataAssemblyOptions: DataAssemblyOptions = {
-		name: 'Variable',
-		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/DIntMon',
-		dataItems: baseDataAssemblyOptions
-	};
+
+	let dataAssemblyOptions: DataAssemblyOptions;
+
 	describe('static', () => {
+
 		const emptyOPCUAConnection = new OpcUaConnection();
+		dataAssemblyOptions = getDIntMonOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
+
 		it('should create DIntMon', async () => {
-			const dataAssemblyController: DIntMon= new DIntMon(dataAssemblyOptions, emptyOPCUAConnection);
-			expect(dataAssemblyController instanceof DIntMon).to.equal(true);
+			const dataAssemblyController: DIntMon = new DIntMon(dataAssemblyOptions, emptyOPCUAConnection);
 
 			expect(dataAssemblyController.tagName).to.equal('Variable');
 			expect(dataAssemblyController.tagDescription).to.equal('Test');
@@ -91,7 +90,8 @@ describe('DIntMon', () => {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			new DIntMonMockup( mockupServer.nameSpace, mockupServer.rootObject,'Variable');
+			const dIntMonMockup = new DIntMonMockup( mockupServer.nameSpace, mockupServer.rootObject,'Variable');
+			dataAssemblyOptions = dIntMonMockup.getDataAssemblyOptions();
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});

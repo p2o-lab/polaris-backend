@@ -28,26 +28,26 @@ import {OpcUaConnection} from '../../../connection';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from '../../indicatorElement/AnaView/AnaMon/AnaMon.spec.json';
 import {LimitMonitoring} from './LimitMonitoring';
 import {DataAssemblyController} from '../../DataAssemblyController';
 import {AnaMon} from '../../indicatorElement';
 import {MockupServer} from '../../../../_utils';
 import {DataType} from 'node-opcua';
 import {LimitMonitoringMockup} from './LimitMonitoring.mockup';
+import {getAnaMonOptions} from '../../indicatorElement/AnaView/AnaMon/AnaMon.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('LimitMonitoring', () => {
-	const dataAssemblyOptions: DataAssemblyOptions = {
-		name: 'Variable',
-		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/AnaMon',
-		dataItems: baseDataAssemblyOptions
-	};
 
-	describe('', () => {
+	let dataAssemblyOptions: DataAssemblyOptions;
+
+	describe('static', () => {
+
 		const emptyOPCUAConnection = new OpcUaConnection();
+		dataAssemblyOptions = getAnaMonOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
+
 		it('should create LimitMonitoring', async () => {
 
 			const dataAssemblyController = new AnaMon(dataAssemblyOptions, emptyOPCUAConnection);
@@ -82,6 +82,7 @@ describe('LimitMonitoring', () => {
 	});
 
 	describe('dynamic', () => {
+
 		let mockupServer: MockupServer;
 		let connection: OpcUaConnection;
 
@@ -89,7 +90,7 @@ describe('LimitMonitoring', () => {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			new LimitMonitoringMockup( mockupServer.nameSpace, mockupServer.rootObject, 'Variable', DataType.Double);
+			new LimitMonitoringMockup( mockupServer.nameSpace, mockupServer.rootObject, 'Variable', 'Ana');
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});

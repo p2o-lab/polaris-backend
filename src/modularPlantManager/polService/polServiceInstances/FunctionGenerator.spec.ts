@@ -47,8 +47,8 @@ describe('VirtualService', () => {
 	describe('via ModularPlantManager', () => {
 		it('should instantiate two timers', async () => {
 			const manager = new ModularPlantManager();
-			manager.instantiatePOLService({name: 'timer1', type: 'timer'});
-			manager.instantiatePOLService({name: 'timer2', type: 'timer'});
+			manager.addPOLService({name: 'timer1', type: 'timer'});
+			manager.addPOLService({name: 'timer2', type: 'timer'});
 
 			expect(manager.polServices).to.have.lengthOf(2);
 		});
@@ -89,8 +89,7 @@ describe('VirtualService', () => {
 		it('should instantiate aggregated service', async() => {
 			const manager = new ModularPlantManager();
 			const peaSet = await manager.loadPEAController(
-				JSON.parse(fs.readFileSync('assets/peas/achema_demonstrator/peas_achema.json').toString()),
-				true);
+				JSON.parse(fs.readFileSync('assets/peas/achema_demonstrator/peas_achema.json').toString()));
 			expect(peaSet).to.have.lengthOf(3);
 
 			const asJson = parseJson(

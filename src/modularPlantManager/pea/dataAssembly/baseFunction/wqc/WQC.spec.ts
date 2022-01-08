@@ -31,41 +31,28 @@ import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {BinMon} from '../../indicatorElement';
 import {DataAssemblyController} from '../../DataAssemblyController';
 import {WQC} from './WQC';
-import * as baseDataAssemblyOptions from './WQC.spec.json';
 import {MockupServer} from '../../../../_utils';
 import {WQCMockup} from './WQC.mockup';
+import {getAnaViewOptions} from '../../indicatorElement/AnaView/AnaView.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-const staticWQC = {
-	TagName: 'Variable',
-	TagDescription: 'Test',
-	WQC: {
-		value: '255'
-	}
-};
-
 describe('WQC', () => {
-	const dataAssemblyOptionsStatic: DataAssemblyOptions = {
-		name: 'Variable',
-		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/BinMon',
-		dataItems: staticWQC
-	};
-	const dataAssemblyOptions: DataAssemblyOptions = {
-		name: 'Variable',
-		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/BinMon',
-		dataItems: baseDataAssemblyOptions
-	};
+
+	const dataAssemblyOptions: DataAssemblyOptions = getAnaViewOptions(2, 'Variable') as DataAssemblyOptions;
+
 
 	describe('static WQC', () => {
 
+		const staticWQCDataAssemblyOptions = Object.assign({}, dataAssemblyOptions);
+		staticWQCDataAssemblyOptions.dataItems = {...staticWQCDataAssemblyOptions.dataItems, ...{WQC: {value: '255'}}} as any;
 		let wqcObject: WQC;
 		let da: DataAssemblyController;
 
 		beforeEach(()=>{
 			const emptyOPCUAConnection = new OpcUaConnection();
-			da = new DataAssemblyController(dataAssemblyOptionsStatic, emptyOPCUAConnection);
+			da = new DataAssemblyController(staticWQCDataAssemblyOptions, emptyOPCUAConnection);
 		});
 
 		it('should create WQC', async () => {
@@ -78,6 +65,7 @@ describe('WQC', () => {
 			expect(wqcObject.WQC).to.equal(255);
 		});
 	});
+
 	describe('dynamic WQC', () => {
 
 		let wqcObject: WQC;
@@ -98,6 +86,7 @@ describe('WQC', () => {
 			expect(wqcObject.WQC).to.equal(255);
 		});
 	});
+
 	describe('dynamic', () => {
 
 		let mockupServer: MockupServer;

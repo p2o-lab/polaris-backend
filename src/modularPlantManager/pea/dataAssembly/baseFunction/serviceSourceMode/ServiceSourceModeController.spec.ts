@@ -27,21 +27,18 @@ import {OpcUaConnection} from '../../../connection';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions, ServiceSourceMode} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from '../../operationElement/servParam/anaServParam/AnaServParam.spec.json';
 import {DataAssemblyController} from '../../DataAssemblyController';
 import {ServiceSourceModeController} from './ServiceSourceModeController';
 import {MockupServer} from '../../../../_utils';
 import {ServiceSourceModeMockup} from './ServiceSourceMode.mockup';
+import {getAnaServParamOptions} from '../../operationElement/servParam/anaServParam/AnaServParam.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('ServiceSourceMode', () => {
-	const dataAssemblyOptions: DataAssemblyOptions = {
-		name: 'Variable',
-		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperatorElement/AnaServParam',
-		dataItems: baseDataAssemblyOptions
-	};
+
+	const dataAssemblyOptions = getAnaServParamOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
 
 	describe('static', () => {
 
@@ -111,10 +108,7 @@ describe('ServiceSourceMode', () => {
 		beforeEach(async function () {
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			mockup = new ServiceSourceModeMockup(
-				mockupServer.nameSpace,
-				mockupServer.rootObject,
-				'Variable');
+			mockup = new ServiceSourceModeMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});
@@ -135,10 +129,12 @@ describe('ServiceSourceMode', () => {
 		it('getServiceSourceMode, should be intern', () => {
 			expect(serviceSourceModeController.getServiceSourceMode()).to.equal(ServiceSourceMode.Intern);
 		});
+
 		it('isServiceSourceMode', () => {
 			expect(serviceSourceModeController.isServiceSourceMode(ServiceSourceMode.Intern)).to.be.true;
 			expect(serviceSourceModeController.isServiceSourceMode(ServiceSourceMode.Extern)).to.be.false;
 		});
+
 		it('setToExternalServiceSourceMode(), nothing should happen', async () => {
 			await serviceSourceModeController.setToExternalServiceSourceMode();
 			expect(mockup.srcIntAct).to.be.false;
@@ -175,6 +171,7 @@ describe('ServiceSourceMode', () => {
 			await connection.startMonitoring();
 			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
 		});
+
 		afterEach(async function () {
 			this.timeout(4000);
 			await connection.disconnect();
@@ -220,6 +217,4 @@ describe('ServiceSourceMode', () => {
 			expect(dataAssemblyController.communication.SrcIntAct.value).to.be.true;
 		}).timeout(4000);
 	});
-
 });
-

@@ -26,32 +26,44 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../_utils';
-import {WQCMockup} from './WQC.mockup';
+import {getWQCDataItemOptions, WQCMockup} from './WQC.mockup';
+import {getLimitMonitoringDataItemOptions, LimitMonitoringMockup} from '../limitMonitoring/LimitMonitoring.mockup';
+import {LimitMonitoringRuntime} from '../limitMonitoring/LimitMonitoring';
+import {WQCRuntime} from './WQC';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('WQCMockup', () => {
-    describe('', () => {
+
+    describe('static', () => {
+
         let mockupServer: MockupServer;
+
         beforeEach(async()=>{
             mockupServer = new MockupServer();
             await mockupServer.initialize();
         });
 
         it('should create WQCMockup', async () => {
-            const mockup= new WQCMockup(mockupServer.nameSpace,
-                mockupServer.rootObject, 'Variable');
-
+            const mockup= new WQCMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
             expect(mockup).to.not.be.undefined;
-
         });
-        it('getAnaServParamMockupReferenceJSON()',  () => {
+
+        it('static DataItemOptions', () => {
+            const options = getWQCDataItemOptions(1, 'Test') as WQCRuntime;
+
+            expect(Object.keys(options).length).to.equal(1);
+            expect(options.WQC).to.not.be.undefined;
+        });
+
+        it('dynamic DataItemOptions', () => {
             const mockup = new WQCMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const json = mockup.getWQCInstanceMockupJSON() as any;
-            expect(Object.keys(json).length).to.equal(1);
-            expect(json.WQC).to.not.be.undefined;
+            const options = mockup.getDataItemOptions() as WQCRuntime;
+
+            expect(Object.keys(options).length).to.equal(1);
+            expect(options.WQC).to.not.be.undefined;
         });
     });
 });

@@ -27,23 +27,21 @@ import {OpcUaConnection} from '../../../../connection';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from './LockView16.spec.json';
 import {MockupServer} from '../../../../../_utils';
 import {LockView16} from './LockView16';
-import {LockView16Mockup} from './LockView16.mockup';
+import {getLockView16Options, LockView16Mockup} from './LockView16.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('LockView16', () => {
-	const dataAssemblyOptions: DataAssemblyOptions = {
-		name: 'Variable',
-		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/DiagnosticElement/LockView16',
-		dataItems: baseDataAssemblyOptions
-	};
+
+	let dataAssemblyOptions: DataAssemblyOptions;
 
 	describe('static', () => {
+
 		const emptyOPCUAConnection = new OpcUaConnection();
+		dataAssemblyOptions = getLockView16Options(2, 'Variable', 'Variable') as DataAssemblyOptions;
 
 		it('should create LockView16', async () => {
 			const dataAssemblyController = new LockView16(dataAssemblyOptions, emptyOPCUAConnection);
@@ -61,7 +59,8 @@ describe('LockView16', () => {
 			this.timeout(8000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			new LockView16Mockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
+			const lockView16Mockup =new LockView16Mockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
+			dataAssemblyOptions = lockView16Mockup.getDataAssemblyOptions();
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});
@@ -79,7 +78,7 @@ describe('LockView16', () => {
 			const dataAssemblyController = new LockView16(dataAssemblyOptions, connection);
 			await dataAssemblyController.subscribe();
 			await connection.startMonitoring();
-			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
+			await new Promise((resolve => dataAssemblyController.communication.In16Txt.on('changed', resolve)));
 			
 			expect(dataAssemblyController.communication.WQC.value).equal(0);
 			expect(dataAssemblyController.communication.Logic.value).equal(false);

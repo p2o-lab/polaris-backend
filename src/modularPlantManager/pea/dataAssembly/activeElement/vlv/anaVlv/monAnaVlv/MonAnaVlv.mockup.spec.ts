@@ -25,9 +25,11 @@
  
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {MonAnaVlvMockup} from './MonAnaVlv.mockup';
+import {getMonAnaVlvDataItemOptions, getMonAnaVlvOptions, MonAnaVlvMockup} from './MonAnaVlv.mockup';
 import {MockupServer} from '../../../../../../_utils';
 import {OpcUaConnection} from '../../../../../connection';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {MonAnaVlvRuntime} from './MonAnaVlv';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -35,7 +37,9 @@ const expect = chai.expect;
 describe('MonAnaVlvMockup', () => {
 
     describe('', () => {
+
         let mockupServer: MockupServer;
+
         beforeEach(async()=>{
             mockupServer = new MockupServer();
             await mockupServer.initialize();
@@ -47,13 +51,23 @@ describe('MonAnaVlvMockup', () => {
             expect(mockup).to.not.be.undefined;
 
         });
-        it('getMonAnaVlvMockupReferenceJSON()',  () => {
+
+        it('static DataItemOptions', () => {
+            const options = getMonAnaVlvDataItemOptions(1, 'Test') as MonAnaVlvRuntime;
+            expect(Object.keys(options).length).to.equal(61);
+        });
+
+        it('static DataAssemblyOptions', () => {
+            const options = getMonAnaVlvOptions(1, 'Test') as DataAssemblyOptions;
+            expect(Object.keys(options.dataItems).length).to.equal(63);
+        });
+
+        it('dynamic DataAssemblyOptions', () => {
             const mockup = new MonAnaVlvMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const json = mockup.getMonAnaVlvMockupJSON();
-            expect(json).to.not.be.undefined;
-            expect(Object.keys(json).length).to.equal(61);
-            //TODO test more
+            const options = mockup.getDataAssemblyOptions();
+
+            expect(Object.keys(options.dataItems).length).to.equal(63);
         });
     });
 

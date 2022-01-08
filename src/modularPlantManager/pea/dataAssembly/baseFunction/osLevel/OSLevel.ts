@@ -24,9 +24,8 @@
  */
 
 import {DataItem} from '../../../connection';
-import {BaseDataAssemblyRuntime} from '../../DataAssemblyController';
 
-export interface OSLevelRuntime extends BaseDataAssemblyRuntime {
+export interface OSLevelRuntime {
 	OSLevel: DataItem<number>;
 }
 

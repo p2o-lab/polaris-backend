@@ -26,15 +26,19 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../../_utils';
-import {AnaMonMockup} from './AnaMon.mockup';
-
+import {AnaMonMockup, getAnaMonDataItemOptions, getAnaMonOptions} from './AnaMon.mockup';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {AnaMonRuntime} from './AnaMon';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('AnaMonMockup', () => {
-    describe('', () => {
+
+    describe('static', () => {
+
         let mockupServer: MockupServer;
+
         beforeEach(async()=>{
             mockupServer = new MockupServer();
             await mockupServer.initialize();
@@ -44,14 +48,24 @@ describe('AnaMonMockup', () => {
             const mockup= new AnaMonMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
             expect(mockup).to.not.be.undefined;
-            //TODO: test more
-
         });
-        it('getAnaMonMockupReferenceJSON()',  () => {
+
+        it('static DataItemOptions', () => {
+            const options = getAnaMonDataItemOptions(1, 'Test') as AnaMonRuntime;
+            expect(Object.keys(options).length).to.equal(24);
+        });
+
+        it('static DataAssemblyOptions', () => {
+            const options = getAnaMonOptions(1, 'Test') as DataAssemblyOptions;
+            expect(Object.keys(options.dataItems).length).to.equal(26);
+        });
+
+        it('dynamic DataAssemblyOptions', () => {
             const mockup = new AnaMonMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const json = mockup.getAnaMonInstanceMockupJSON();
-            expect(json).not.to.be.undefined;
+            const options = mockup.getDataAssemblyOptions();
+
+            expect(Object.keys(options.dataItems).length).to.equal(26);
         });
     });
 });

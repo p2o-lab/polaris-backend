@@ -45,7 +45,7 @@ export class ExpressionCondition extends Condition {
 		this.scopeArray = (options.scope || [])
 			.map((item: ScopeOptions) => ScopeItem.extractFromScopeOptions(item, peaSet));
 
-		// evaluate additional variables from expression
+		// evaluate additional dataAssemblies from expression
 		const extraction = ScopeItem.extractFromExpressionString(
 			options.expression,
 			peaSet,
@@ -77,7 +77,7 @@ export class ExpressionCondition extends Condition {
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	public getValue(): any {
-		// get current variables
+		// get current dataAssemblies
 		const tasks = this.scopeArray.map((item) => {
 			return item.getScopeValue();
 		});

@@ -87,7 +87,7 @@ polServiceRouter.delete('/:polServiceId', asyncHandler(async (req: Request, res:
 polServiceRouter.put('', asyncHandler(async (req: Request, res: Response) => {
 	catServer.debug(`PUT /polService: ${JSON.stringify(req.body)}`);
 	const manager: ModularPlantManager = req.app.get('manager');
-	manager.instantiatePOLService(req.body);
+	manager.addPOLService(req.body);
 	res.json({status: 'pol service successful instantiated'});
 }));
 

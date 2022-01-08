@@ -27,23 +27,21 @@ import {OpcUaConnection} from '../../../../connection';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from './LockView8.spec.json';
 import {MockupServer} from '../../../../../_utils';
 import {LockView8} from './LockView8';
-import {LockView8Mockup} from './LockView8.mockup';
+import {getLockView8Options, LockView8Mockup} from './LockView8.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('LockView8', () => {
-	const dataAssemblyOptions: DataAssemblyOptions = {
-		name: 'Variable',
-		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/DiagnosticElement/LockView8',
-		dataItems: baseDataAssemblyOptions
-	};
+	const delay = require('timeout-as-promise');
+	let dataAssemblyOptions: DataAssemblyOptions;
 
 	describe('static', () => {
+
 		const emptyOPCUAConnection = new OpcUaConnection();
+		dataAssemblyOptions = getLockView8Options(2, 'Variable', 'Variable') as DataAssemblyOptions;
 
 		it('should create LockView8', async () => {
 			const dataAssemblyController = new LockView8(dataAssemblyOptions, emptyOPCUAConnection);
@@ -61,8 +59,8 @@ describe('LockView8', () => {
 			this.timeout(8000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			new LockView8Mockup( mockupServer.nameSpace, mockupServer.rootObject,'Variable');
-
+			const lockView8Mockup = new LockView8Mockup( mockupServer.nameSpace, mockupServer.rootObject,'Variable');
+			dataAssemblyOptions = lockView8Mockup.getDataAssemblyOptions();
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});
@@ -80,7 +78,7 @@ describe('LockView8', () => {
 			const dataAssemblyController = new LockView8(dataAssemblyOptions, connection);
 			await dataAssemblyController.subscribe();
 			await connection.startMonitoring();
-			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
+			await new Promise((resolve => dataAssemblyController.communication.In8Txt.on('changed', resolve)));
 
 			expect(dataAssemblyController.communication.WQC.value).equal(0);
 			expect(dataAssemblyController.communication.Logic.value).equal(false);
@@ -105,11 +103,11 @@ describe('LockView8', () => {
 			expect(dataAssemblyController.communication.In3Inv.value).equal(false);
 			expect(dataAssemblyController.communication.In3Txt.value).equal('testText');
 
-			expect(dataAssemblyController.communication.In8En.value).equal(false);
-			expect(dataAssemblyController.communication.In8.value).equal(false);
-			expect(dataAssemblyController.communication.In8QC.value).equal(0);
-			expect(dataAssemblyController.communication.In8Inv.value).equal(false);
-			expect(dataAssemblyController.communication.In8Txt.value).equal('testText');
+			expect(dataAssemblyController.communication.In4En.value).equal(false);
+			expect(dataAssemblyController.communication.In4.value).equal(false);
+			expect(dataAssemblyController.communication.In4QC.value).equal(0);
+			expect(dataAssemblyController.communication.In4Inv.value).equal(false);
+			expect(dataAssemblyController.communication.In4Txt.value).equal('testText');
 
 			expect(dataAssemblyController.communication.In5En.value).equal(false);
 			expect(dataAssemblyController.communication.In5.value).equal(false);

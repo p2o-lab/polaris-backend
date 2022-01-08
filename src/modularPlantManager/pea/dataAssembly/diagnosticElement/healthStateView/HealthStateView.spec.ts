@@ -29,23 +29,21 @@ import {HealthStateView} from './HealthStateView';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from './HealthStateView.spec.json';
 import {MockupServer} from '../../../../_utils';
-import {HealthStateViewMockup} from './HealthStateView.mockup';
+import {getHealthStateViewOptions, HealthStateViewMockup} from './HealthStateView.mockup';
 
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('HealthStateView', () => {
-	const dataAssemblyOptions: DataAssemblyOptions = {
-		name: 'Variable',
-		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/DiagnosticElement/HealthStateView',
-		dataItems: baseDataAssemblyOptions
-	};
+
+	let dataAssemblyOptions: DataAssemblyOptions;
 
 	describe('static', () => {
+
 		const emptyOPCUAConnection = new OpcUaConnection();
+		dataAssemblyOptions = getHealthStateViewOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
 
 		it('should create HealthStateView', async () => {
 			const dataAssemblyController = new HealthStateView(dataAssemblyOptions, emptyOPCUAConnection);
@@ -63,8 +61,8 @@ describe('HealthStateView', () => {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			new HealthStateViewMockup( mockupServer.nameSpace, mockupServer.rootObject,'Variable');
-			await mockupServer.start();
+			const healthStateViewMockup = new HealthStateViewMockup( mockupServer.nameSpace, mockupServer.rootObject,'Variable');
+			dataAssemblyOptions = healthStateViewMockup.getDataAssemblyOptions();await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});
 			await connection.connect();

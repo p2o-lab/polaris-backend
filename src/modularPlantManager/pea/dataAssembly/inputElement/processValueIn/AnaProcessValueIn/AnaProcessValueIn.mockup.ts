@@ -24,37 +24,54 @@
  */
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {getScaleSettingsMockupReferenceJSON, ScaleSettingMockup} from '../../../baseFunction/scaleSettings/ScaleSetting.mockup';
-import {getUnitMockupReferenceJSON, UnitMockup} from '../../../baseFunction/unit/Unit.mockup';
-import {getInputElementMockupReferenceJSON, InputElementMockup} from '../../InputElement.mockup';
+import {getScaleSettingsDataItemOptions, ScaleSettingMockup} from '../../../baseFunction/scaleSettings/ScaleSetting.mockup';
+import {getUnitSettingsDataItemOptions, UnitSettingsMockup} from '../../../baseFunction/unitSettings/UnitSettings.mockup';
+import {getInputElementDataItemOptions, getInputElementOptions, InputElementMockup} from '../../InputElement.mockup';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
+import {getDataAssemblyOptions} from '../../../DataAssemblyController.mockup';
 
-export function getAnaProcessValueInMockupReferenceJSON(
-	namespace: number,
-	objectBrowseName: string): object {
-	return (
-		{
-			...getInputElementMockupReferenceJSON(namespace, objectBrowseName),
-			...getScaleSettingsMockupReferenceJSON(namespace, objectBrowseName, 'Float'),
-			...getUnitMockupReferenceJSON(namespace, objectBrowseName),
-			VExt: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VExt`,
-				dataType: 'Float'
-			}
-		}
+const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/InputElement/AnaProcessValueIn';
+
+function getAnaProcessValueInSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
+	return ({
+		VExt: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.VExt`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions
+	});
+}
+
+export function getAnaProcessValueInDataItemOptions(namespace: number, objectBrowseName: string): object {
+	return ({
+			...getInputElementDataItemOptions(namespace, objectBrowseName),
+			...getScaleSettingsDataItemOptions(namespace, objectBrowseName, 'Ana'),
+			...getUnitSettingsDataItemOptions(namespace, objectBrowseName),
+			...getAnaProcessValueInSpecificDataItemOptions(namespace, objectBrowseName),
+		} as OpcUaNodeOptions
 	);
 }
 
+export function getAnaProcessValueInOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
+	const options = getDataAssemblyOptions(name, tagName, tagDescription);
+	options.metaModelRef = metaModelReference;
+	options.dataItems = {
+		...options.dataItems,
+		...getAnaProcessValueInDataItemOptions(namespace, objectBrowseName)};
+	return options;
+}
+
 export class AnaProcessValueInMockup extends InputElementMockup{
-	public scaleSettings: ScaleSettingMockup<DataType.Double>;
-	public unit: UnitMockup;
+	public scaleSettings: ScaleSettingMockup<'Ana'>;
+	public unit: UnitSettingsMockup;
 	public vExt = 0;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
 		super(namespace, rootNode, variableName);
 
-		this.scaleSettings = new ScaleSettingMockup<DataType.Double>(namespace, this.mockupNode, this.name, DataType.Double);
-		this.unit = new UnitMockup(namespace, this.mockupNode, this.name);
+		this.scaleSettings = new ScaleSettingMockup(namespace, this.mockupNode, this.name, 'Ana');
+		this.unit = new UnitSettingsMockup(namespace, this.mockupNode, this.name);
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
@@ -80,9 +97,15 @@ export class AnaProcessValueInMockup extends InputElementMockup{
 
 	}
 
-	public getAnaProcessValueInInstanceMockupJSON(): object {
-		return getAnaProcessValueInMockupReferenceJSON(
-			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name as string);
+	public getDataAssemblyOptions(): DataAssemblyOptions {
+		const options = super.getDataAssemblyOptions();
+		options.metaModelRef = metaModelReference;
+		options.dataItems = {
+			...options.dataItems,
+			...this.scaleSettings.getDataItemOptions(),
+			...this.unit.getDataItemOptions(),
+			...getAnaProcessValueInSpecificDataItemOptions(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
+		};
+		return options;
 	}
 }

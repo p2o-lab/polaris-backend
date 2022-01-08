@@ -25,56 +25,72 @@
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 import {
-	FeedbackMonitoringMockup,
-	getFeedbackMonitoringMockupReferenceJSON
+	FeedbackMonitoringMockup, getFeedbackMonitoringDataItemOptions
 } from '../../../../baseFunction/feedbackMonitoring/FeedbackMonitoring.mockup';
-import {AnaDrvMockup, getAnaDrvMockupReferenceJSON} from '../AnaDrv.mockup';
+import {AnaDrvMockup, getAnaDrvDataItemOptions} from '../AnaDrv.mockup';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
+import {getDataAssemblyOptions} from '../../../../DataAssemblyController.mockup';
 
+const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/ActiveElement/AnaDrv/MonAnaDrv';
 
-export function getMonAnaDrvMockupReferenceJSON(
-	namespace: number,
-	objectBrowseName: string): object {
-
+function getMonAnaDrvSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
 	return ({
-			...getAnaDrvMockupReferenceJSON(namespace, objectBrowseName),
-			...getFeedbackMonitoringMockupReferenceJSON(namespace,objectBrowseName),
-			RpmErr: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.RpmErr`,
-				dataType: 'Boolean'
-			},
-			RpmAHEn: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.RpmAHEn`,
-				dataType: 'Boolean'
-			},
-			RpmAHLim: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.RpmAHLim`,
-				dataType: 'Float'
-			},
-			RpmAHAct: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.RpmAHAct`,
-				dataType: 'Boolean'
-			},
-			RpmALEn: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.RpmALEn`,
-				dataType: 'Boolean'
-			},
-			RpmALLim: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.RpmALLim`,
-				dataType: 'Float'
-			},
-			RpmALAct: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.RpmALAct`,
-				dataType: 'Boolean'
-			},
-		}
+		RpmErr: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.RpmErr`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		RpmAHEn: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.RpmAHEn`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		RpmAHLim: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.RpmAHLim`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions,
+		RpmAHAct: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.RpmAHAct`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		RpmALEn: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.RpmALEn`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		RpmALLim: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.RpmALLim`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions,
+		RpmALAct: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.RpmALAct`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions
+	});
+}
+
+
+export function getMonAnaDrvDataItemOptions(namespace: number, objectBrowseName: string): object {
+	return ({
+			...getAnaDrvDataItemOptions(namespace, objectBrowseName),
+			...getFeedbackMonitoringDataItemOptions(namespace, objectBrowseName),
+			...getMonAnaDrvSpecificDataItemOptions(namespace, objectBrowseName),
+		} as OpcUaNodeOptions
 	);
+}
+
+export function getMonAnaDrvOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
+	const options = getDataAssemblyOptions(name, tagName, tagDescription);
+	options.metaModelRef = metaModelReference;
+	options.dataItems = {
+		...options.dataItems,
+		...getMonAnaDrvDataItemOptions(namespace, objectBrowseName)};
+	return options;
 }
 
 export class MonAnaDrvMockup extends AnaDrvMockup {
@@ -350,9 +366,14 @@ export class MonAnaDrvMockup extends AnaDrvMockup {
 
 	}
 
-	public getMonAnaDrvMockupJSON(): object {
-		return getMonAnaDrvMockupReferenceJSON(
-			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name as string);
+	public getDataAssemblyOptions(): DataAssemblyOptions {
+		const options = super.getDataAssemblyOptions();
+		options.metaModelRef = metaModelReference;
+		options.dataItems = {
+			...options.dataItems,
+			...this.feedbackMonitoring.getDataItemOptions(),
+			...getMonAnaDrvSpecificDataItemOptions(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
+		};
+		return options;
 	}
 }

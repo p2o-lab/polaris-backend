@@ -28,10 +28,9 @@ import {OpcUaConnection} from '../../../../connection';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from './BinServParam.spec.json';
 import {DataAssemblyControllerFactory} from '../../../DataAssemblyControllerFactory';
 import {MockupServer} from '../../../../../_utils';
-import {BinServParamMockup} from './BinServParam.mockup';
+import {BinServParamMockup, getBinServParamOptions} from './BinServParam.mockup';
 
 import {BinServParam} from './BinServParam';
 
@@ -39,14 +38,14 @@ chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('BinServParam', () => {
-	const dataAssemblyOptions: DataAssemblyOptions = {
-		name: 'Variable',
-		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperationElement/BinServParam',
-		dataItems: baseDataAssemblyOptions
-	};
 
-	describe('', () => {
+	let dataAssemblyOptions: DataAssemblyOptions;
+
+	describe('static', () => {
+
 		const emptyOPCUAConnection = new OpcUaConnection();
+		dataAssemblyOptions = getBinServParamOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
+
 		it('should create BinServParam', async () => {
 			const dataAssemblyController = new BinServParam(dataAssemblyOptions, emptyOPCUAConnection);
 			expect(dataAssemblyController.communication.VExt).to.not.be.undefined;
@@ -67,7 +66,8 @@ describe('BinServParam', () => {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			new BinServParamMockup( mockupServer.nameSpace,	mockupServer.rootObject,'Variable');
+			const binServParamMockup = new BinServParamMockup( mockupServer.nameSpace,	mockupServer.rootObject,'Variable');
+			dataAssemblyOptions = binServParamMockup.getDataAssemblyOptions();
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});
@@ -116,8 +116,8 @@ describe('BinServParam', () => {
 			expect(dataAssemblyController.communication.VOut.value).equal(false);
 			expect(dataAssemblyController.communication.VFbk.value).equal(false);
 
-			expect(dataAssemblyController.communication.VState0.value).equal('off');
-			expect(dataAssemblyController.communication.VState1.value).equal('on');
+			expect(dataAssemblyController.communication.VState0.value).equal('');
+			expect(dataAssemblyController.communication.VState1.value).equal('');
 		}).timeout(4000);
 	});
 });

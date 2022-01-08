@@ -24,232 +24,136 @@
  */
 
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
-import {getWQCMockupReferenceJSON} from '../../../baseFunction/wqc/WQC.mockup';
-import {LockView4Mockup} from '../LockView4/LockView4.mockup';
+import {getLockView4DataItemOptions, LockView4Mockup} from '../LockView4/LockView4.mockup';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
+import {getDataAssemblyOptions} from '../../../DataAssemblyController.mockup';
 
-export function getLockView8MockupReferenceJSON(
-	namespace: number,
-	objectBrowseName: string): object {
-	return (
-		{	
-			...getWQCMockupReferenceJSON(namespace,objectBrowseName),
-			Logic: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.Logic`,
-				dataType: 'Boolean'
-			},
-			Out: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.Out`,
-				dataType: 'Boolean'
-			},
-			OutQC: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.OutQC`,
-				dataType: 'Byte'
-			},
-			In1En: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In1En`,
-				dataType: 'Boolean'
-			},
-			In1: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In1`,
-				dataType: 'Boolean'
-			},
-			In1QC: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In1QC`,
-				dataType: 'Byte'
-			},
-			In1Inv: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In1Inv`,
-				dataType: 'Boolean'
-			},
-			In1Txt: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In1Txt`,
-				dataType: 'String'
-			},
-			In2En: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In2En`,
-				dataType: 'Boolean'
-			},
-			In2: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In2`,
-				dataType: 'Boolean'
-			},
-			In2QC: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In2QC`,
-				dataType: 'Byte'
-			},
-			In2Inv: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In2Inv`,
-				dataType: 'Boolean'
-			},
-			In2Txt: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In2Txt`,
-				dataType: 'String'
-			},
-			In3En: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In3En`,
-				dataType: 'Boolean'
-			},
-			In3: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In3`,
-				dataType: 'Boolean'
-			},
-			In3QC: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In3QC`,
-				dataType: 'Byte'
-			},
-			In3Inv: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In3Inv`,
-				dataType: 'Boolean'
-			},
-			In3Txt: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In3Txt`,
-				dataType: 'String'
-			},
-			In4En: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In4En`,
-				dataType: 'Boolean'
-			},
-			In4: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In4`,
-				dataType: 'Boolean'
-			},
-			In4QC: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In4QC`,
-				dataType: 'Byte'
-			},
-			In4Inv: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In4Inv`,
-				dataType: 'Boolean'
-			},
-			In4Txt: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In4Txt`,
-				dataType: 'String'
-			},
-			In5En: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In5En`,
-				dataType: 'Boolean'
-			},
-			In5: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In5`,
-				dataType: 'Boolean'
-			},
-			In5QC: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In5QC`,
-				dataType: 'Byte'
-			},
-			In5Inv: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In5Inv`,
-				dataType: 'Boolean'
-			},
-			In5Txt: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In5Txt`,
-				dataType: 'String'
-			},
-			In6En: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In6En`,
-				dataType: 'Boolean'
-			},
-			In6: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In6`,
-				dataType: 'Boolean'
-			},
-			In6QC: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In6QC`,
-				dataType: 'Byte'
-			},
-			In6Inv: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In6Inv`,
-				dataType: 'Boolean'
-			},
-			In6Txt: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In6Txt`,
-				dataType: 'String'
-			},
-			In7En: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In7En`,
-				dataType: 'Boolean'
-			},
-			In7: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In7`,
-				dataType: 'Boolean'
-			},
-			In7QC: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In7QC`,
-				dataType: 'Byte'
-			},
-			In7Inv: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In7Inv`,
-				dataType: 'Boolean'
-			},
-			In7Txt: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In7Txt`,
-				dataType: 'String'
-			},
-			In8En: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In8En`,
-				dataType: 'Boolean'
-			},
-			In8: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In8`,
-				dataType: 'Boolean'
-			},
-			In8QC: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In8QC`,
-				dataType: 'Byte'
-			},
-			In8Inv: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In8Inv`,
-				dataType: 'Boolean'
-			},
-			In8Txt: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.In8Txt`,
-				dataType: 'String'
-			}
-		}
+
+const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/DiagnosticElement/LockView8';
+
+function getLockView8SpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
+	return ({
+		In5En: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.In5En`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		In5: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.In5`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		In5QC: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.In5QC`,
+			dataType: 'Byte'
+		} as OpcUaNodeOptions,
+		In5Inv: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.In5Inv`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		In5Txt: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.In5Txt`,
+			dataType: 'String'
+		} as OpcUaNodeOptions,
+		In6En: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.In6En`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		In6: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.In6`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		In6QC: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.In6QC`,
+			dataType: 'Byte'
+		} as OpcUaNodeOptions,
+		In6Inv: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.In6Inv`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		In6Txt: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.In6Txt`,
+			dataType: 'String'
+		} as OpcUaNodeOptions,
+		In7En: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.In7En`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		In7: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.In7`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		In7QC: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.In7QC`,
+			dataType: 'Byte'
+		} as OpcUaNodeOptions,
+		In7Inv: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.In7Inv`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		In7Txt: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.In7Txt`,
+			dataType: 'String'
+		} as OpcUaNodeOptions,
+		In8En: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.In8En`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		In8: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.In8`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		In8QC: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.In8QC`,
+			dataType: 'Byte'
+		} as OpcUaNodeOptions,
+		In8Inv: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.In8Inv`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		In8Txt: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.In8Txt`,
+			dataType: 'String'
+		} as OpcUaNodeOptions
+	});
+}
+
+
+export function getLockView8DataItemOptions(namespace: number, objectBrowseName: string): object {
+	return ({
+			...getLockView4DataItemOptions(namespace, objectBrowseName),
+			...getLockView8SpecificDataItemOptions(namespace, objectBrowseName),
+		} as OpcUaNodeOptions
 	);
+}
+
+
+export function getLockView8Options(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
+	const options = getDataAssemblyOptions(name, tagName, tagDescription);
+	options.metaModelRef = metaModelReference;
+	options.dataItems = {
+		...options.dataItems,
+		...getLockView8DataItemOptions(namespace, objectBrowseName)};
+	return options;
 }
 
 export class LockView8Mockup extends LockView4Mockup{
@@ -508,9 +412,13 @@ export class LockView8Mockup extends LockView4Mockup{
 		});
 	}
 
-	public getLockView8InstanceMockupJSON(): object {
-		return getLockView8MockupReferenceJSON(
-			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name as string);
+	public getDataAssemblyOptions(): DataAssemblyOptions {
+		const options = super.getDataAssemblyOptions();
+		options.metaModelRef = metaModelReference;
+		options.dataItems = {
+			...options.dataItems,
+			...getLockView8SpecificDataItemOptions(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
+		};
+		return options;
 	}
 }

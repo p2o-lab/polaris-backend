@@ -25,16 +25,20 @@
  
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {OperationElementMockup} from './OperationElement.mockup';
+import {getOperationElementDataItemOptions, getOperationElementOptions, OperationElementMockup} from './OperationElement.mockup';
 import {MockupServer} from '../../../_utils';
-
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {OperationElementRuntime} from './OperationElement';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('OperationElementMockup', () => {
-    describe('', () => {
+
+    describe('static', () => {
+
         let mockupServer: MockupServer;
+
         beforeEach(async function (){
             this.timeout(5000);
             mockupServer = new MockupServer();
@@ -45,16 +49,24 @@ describe('OperationElementMockup', () => {
             const mockup= new OperationElementMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
             expect(mockup).to.not.be.undefined;
-            //TODO: test more
-
         });
-        it('getOperationElementMockupReferenceJSON()',  () => {
+
+        it('static DataItemOptions', () => {
+            const options = getOperationElementDataItemOptions(1, 'Test') as OperationElementRuntime;
+            expect(Object.keys(options).length).to.equal(1);
+        });
+
+        it('static DataAssemblyOptions', () => {
+            const options = getOperationElementOptions(1, 'Test') as DataAssemblyOptions;
+            expect(Object.keys(options.dataItems).length).to.equal(3);
+        });
+
+        it('dynamic DataAssemblyOptions', () => {
             const mockup = new OperationElementMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const json = mockup.getOperationElementInstanceMockupJSON();
-            expect(json).not.to.be.undefined;
-            expect(Object.keys(json).length).to.equal(1);
-            //TODO: test more
+            const options = mockup.getDataAssemblyOptions();
+
+            expect(Object.keys(options.dataItems).length).to.equal(3);
         });
     });
 });

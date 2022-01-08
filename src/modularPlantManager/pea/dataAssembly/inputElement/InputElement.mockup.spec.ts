@@ -25,33 +25,47 @@
  
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {InputElementMockup} from './InputElement.mockup';
+import {getInputElementDataItemOptions, getInputElementOptions, InputElementMockup} from './InputElement.mockup';
 import {MockupServer} from '../../../_utils';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {InputElementRuntime} from './InputElement';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('InputElementMockup', () => {
-    describe('', () => {
+
+    describe('static', () => {
+
         let mockupServer: MockupServer;
+
         beforeEach(async()=>{
             mockupServer = new MockupServer();
             await mockupServer.initialize();
         });
 
         it('should create InputElementMockup', async () => {
-            const mockup= new InputElementMockup(mockupServer.nameSpace,
-                mockupServer.rootObject, 'Variable');
+            const mockup= new InputElementMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
             expect(mockup).to.not.be.undefined;
             expect(mockup.wqc).to.not.be.undefined;
         });
-        it('getInputElementMockupReferenceJSON()',  () => {
+
+        it('static DataItemOptions', () => {
+            const options = getInputElementDataItemOptions(1, 'Test') as InputElementRuntime;
+            expect(Object.keys(options).length).to.equal(1);
+        });
+
+        it('static DataAssemblyOptions', () => {
+            const options = getInputElementOptions(1, 'Test') as DataAssemblyOptions;
+            expect(Object.keys(options.dataItems).length).to.equal(3);
+        });
+
+        it('dynamic DataAssemblyOptions', () => {
             const mockup = new InputElementMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const json = mockup.getInputElementInstanceMockupJSON();
-            expect(json).not.to.be.undefined;
-            expect(Object.keys(json).length).to.equal(1);
-            //TODO: test more
+            const options = mockup.getDataAssemblyOptions();
+
+            expect(Object.keys(options.dataItems).length).to.equal(3);
         });
     });
 });

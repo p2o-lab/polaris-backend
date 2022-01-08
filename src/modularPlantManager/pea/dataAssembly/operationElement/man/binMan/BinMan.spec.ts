@@ -28,33 +28,32 @@ import {BinMan} from './BinMan';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from './BinMan.spec.json';
 import {DataAssemblyControllerFactory} from '../../../DataAssemblyControllerFactory';
 import {MockupServer} from '../../../../../_utils';
-import {BinManMockup} from './BinMan.mockup';
-
+import {BinManMockup, getBinManOptions} from './BinMan.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('BinMan', () => {
-	const dataAssemblyOptions: DataAssemblyOptions = {
-		name: 'Variable',
-		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperationElement/BinMan',
-		dataItems: baseDataAssemblyOptions
-	};
+
+	let dataAssemblyOptions: DataAssemblyOptions;
 
 	describe('static', () => {
+
 		const emptyOPCUAConnection = new OpcUaConnection();
+		dataAssemblyOptions = getBinManOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
+
 		it('should create BinMan', () => {
-			//TODO new BinMan()
-			const dataAssemblyController: BinMan = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as BinMan;
+
+			const dataAssemblyController = new BinMan(dataAssemblyOptions, emptyOPCUAConnection);
 			expect(dataAssemblyController.communication.VOut).to.not.equal(undefined);
 			expect(dataAssemblyController.communication.VState0).to.not.equal(undefined);
 			expect(dataAssemblyController.communication.VState1).to.not.equal(undefined);
 			expect(dataAssemblyController.communication.VMan).to.not.equal(undefined);
 			expect(dataAssemblyController.communication.VRbk).to.not.equal(undefined);
 			expect(dataAssemblyController.communication.VFbk).to.not.equal(undefined);
+
 			expect(dataAssemblyController.defaultReadDataItem).equal(dataAssemblyController.communication.VOut);
 			expect(dataAssemblyController.defaultReadDataItemType).to.equal('boolean');
 			expect(dataAssemblyController.defaultWriteDataItem).equal(dataAssemblyController.communication.VMan);
@@ -69,7 +68,8 @@ describe('BinMan', () => {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			new BinManMockup(mockupServer.nameSpace, mockupServer.rootObject,'Variable');
+			const binManMockup = new BinManMockup(mockupServer.nameSpace, mockupServer.rootObject,'Variable');
+			dataAssemblyOptions = binManMockup.getDataAssemblyOptions();
 			await mockupServer.start();
 			connection = new OpcUaConnection();
 			connection.initialize({endpoint: mockupServer.endpoint});

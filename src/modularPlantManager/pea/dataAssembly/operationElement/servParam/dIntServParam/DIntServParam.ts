@@ -29,13 +29,13 @@ import {ServParam, ServParamRuntime} from '../ServParam';
 import {
 	ScaleSettings,
 	ScaleSettingsRuntime,
-	UnitDataAssemblyRuntime,
+	UnitSettingsRuntime,
 	UnitSettings,
 	ValueLimitation,
 	ValueLimitationRuntime
 } from '../../../baseFunction';
 
-export type DIntServParamRuntime = ServParamRuntime & ScaleSettingsRuntime & UnitDataAssemblyRuntime & ValueLimitationRuntime &{
+export type DIntServParamRuntime = ServParamRuntime & ScaleSettingsRuntime & UnitSettingsRuntime & ValueLimitationRuntime &{
 	VExt: DataItem<number>;
 	VOp: DataItem<number>;
 	VInt: DataItem<number>;

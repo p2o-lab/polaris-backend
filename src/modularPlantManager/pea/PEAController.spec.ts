@@ -105,46 +105,50 @@ describe('PEAController', () => {
 		});
 
 		context('control Services',async ()=> {
-			it('should stop()',  async() => {
+
+			it('should stopAllServices()',  async() => {
 				await peaController.connectAndSubscribe();
 				await service.executeCommandAndWaitForStateChange(ServiceCommand.start);
-				await peaController.stop();
+				await peaController.stopAllServices();
 				expect(service.state).to.equal(ServiceState.STOPPED);
 			});
-			it('should fail to stop(), command not executable',async() => {
+
+			it('should fail to stopAllServices(), command not executable',async() => {
 				await peaController.connectAndSubscribe();
-				await peaController.abort();
-				return expect(peaController.stop()).to.be.rejectedWith('Command is not executable');
+				await peaController.stopAllServices();
+				return expect(peaController.stopAllServices()).to.be.rejectedWith('Command is not executable');
 			});
 
-			it('should abort()',  async() => {
+			it('should abortAllServices()',  async() => {
 				await peaController.connectAndSubscribe();
 				await service.executeCommandAndWaitForStateChange(ServiceCommand.start);
-				await peaController.abort();
+				await peaController.abortAllServices();
 				expect(service.state).to.equal(ServiceState.ABORTED);
 			});
 
 			it('should pause()',  async() => {
 				await peaController.connectAndSubscribe();
 				await service.executeCommandAndWaitForStateChange(ServiceCommand.start);
-				await peaController.pause();
+				await peaController.pauseAllServices();
 				expect(service.state).to.equal(ServiceState.PAUSED);
 			});
+
 			it('should fail to pause(), command not executable',  async() => {
 				await peaController.connectAndSubscribe();
-				return expect(peaController.pause()).to.be.rejectedWith('Command is not executable');
+				return expect(peaController.pauseAllServices()).to.be.rejectedWith('Command is not executable');
 			});
 
 			it('should resume()', async() => {
 				await peaController.connectAndSubscribe();
 				await service.executeCommandAndWaitForStateChange(ServiceCommand.start);
 				await service.executeCommandAndWaitForStateChange(ServiceCommand.pause);
-				await peaController.resume();
+				await peaController.pauseAllServices();
 				expect(service.state).to.equal(ServiceState.EXECUTE);
 			}).timeout(10000);
+
 			it('should fail to resume(), command not executable',  async() => {
 				await peaController.connectAndSubscribe();
-				return expect(peaController.resume()).to.be.rejectedWith('Command is not executable');
+				return expect(peaController.resumeAllServices()).to.be.rejectedWith('Command is not executable');
 			});
 		});
 	});
