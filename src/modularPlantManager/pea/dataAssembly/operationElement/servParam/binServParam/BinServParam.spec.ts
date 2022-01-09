@@ -87,7 +87,7 @@ describe('BinServParam', () => {
 			await connection.startMonitoring();
 			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
 			
-			expect(dataAssemblyController.communication.WQC.value).equal(0);
+			// expect(dataAssemblyController.communication.WQC.value).equal(0);
 			expect((dataAssemblyController).communication.StateChannel.value).equal(false);
 			expect((dataAssemblyController).communication.StateOffAut.value).equal(false);
 			expect((dataAssemblyController).communication.StateOpAut.value).equal(false);
