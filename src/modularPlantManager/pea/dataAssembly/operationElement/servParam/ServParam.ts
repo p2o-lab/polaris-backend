@@ -45,6 +45,7 @@ export class ServParam extends OperationElement {
 	public readonly communication!: ServParamRuntime;
 	public readonly serviceSourceMode: ServiceSourceModeController;
 	public readonly serviceOpMode: OpMode;
+
 	//public readonly wqc: WQC;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
