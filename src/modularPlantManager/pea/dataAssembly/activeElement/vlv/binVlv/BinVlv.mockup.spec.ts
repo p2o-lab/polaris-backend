@@ -1,9 +1,34 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2021 P2O-Lab <p2o-lab@mailbox.tu-dresden.de>,
+ * Chair for Process Control Systems, Technische Universität Dresden
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+ 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {Namespace, UAObject} from 'node-opcua';
-import {BinVlvMockup} from './BinVlv.mockup';
+import {BinVlvMockup, getBinVlvDataItemOptions, getBinVlvOptions} from './BinVlv.mockup';
 import {MockupServer} from '../../../../../_utils';
-import {OpcUaConnection} from '../../../../connection';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {BinVlvRuntime} from './BinVlv';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -11,50 +36,37 @@ const expect = chai.expect;
 describe('BinVlvMockup', () => {
 
     describe('static', () => {
-        let mockupServer: any;
+
+        let mockupServer: MockupServer;
+
         beforeEach(async()=>{
             mockupServer = new MockupServer();
             await mockupServer.initialize();
         });
 
         it('should create BinBinVlvMockup', async () => {
-            const mockup= new BinVlvMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            const mockup= new BinVlvMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             expect(mockup).to.not.be.undefined;
 
         });
-        it('getBinVlvMockupReferenceJSON()',  () => {
-            const mockup = new BinVlvMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
-            const json = mockup.getBinVlvMockupJSON();
-            expect(json).to.not.be.undefined;
-            expect(Object.keys(json).length).to.equal(32);
-            //TODO test more?
-        });
-    });
-    describe('dynamic', () => {
-        // we need to check if the nodes was addes succesfully and are writeable and readable
-        let mockupServer: MockupServer;
-        let mockup: BinVlvMockup;
-        let connection: OpcUaConnection;
-        beforeEach(async function () {
-            this.timeout(5000);
-            mockupServer = new MockupServer();
-            await mockupServer.initialize();
-            mockup = new BinVlvMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
-            await mockupServer.start();
-            connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334');
-            await connection.connect();
-        });
-        afterEach(async () => {
-            await connection.disconnect();
-            await mockupServer.shutdown();
+
+        it('static DataItemOptions', () => {
+            const options = getBinVlvDataItemOptions(1, 'Test') as BinVlvRuntime;
+            expect(Object.keys(options).length).to.equal(32);
         });
 
-        it(' get ...', async () => {
-            //TODO get the rest
-        }).timeout(3000);
+        it('static DataAssemblyOptions', () => {
+            const options = getBinVlvOptions(1, 'Test') as DataAssemblyOptions;
+            expect(Object.keys(options.dataItems).length).to.equal(34);
+        });
 
+        it('dynamic DataAssemblyOptions', () => {
+            const mockup = new BinVlvMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
+            const options = mockup.getDataAssemblyOptions();
+
+            expect(Object.keys(options.dataItems).length).to.equal(34);
+        });
     });
 });

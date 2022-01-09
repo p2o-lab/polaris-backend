@@ -1,4 +1,3 @@
-/* tslint:disable:max-classes-per-file */
 /*
  * MIT License
  *
@@ -25,53 +24,51 @@
  */
 
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaConnection, OpcUaDataItem} from '../../../connection';
-import {InterlockRuntime, OpModeController, OpModeRuntime, ResetRuntime} from '../../_extensions';
+import {OpcUaConnection, DataItem} from '../../../connection';
+import {Interlock, InterlockRuntime, OpMode, OpModeRuntime, Reset, ResetRuntime} from '../../baseFunction';
 import {ActiveElement, ActiveElementRuntime} from '../ActiveElement';
-import {Reset} from '../../_extensions/resetDA/Reset';
-import {Interlock} from '../../_extensions/interlockDA/Interlock';
 
 export type VlvRuntime = ActiveElementRuntime & OpModeRuntime & InterlockRuntime & ResetRuntime & {
-	SafePos: OpcUaDataItem<boolean>;
-	SafePosEn: OpcUaDataItem<boolean>;
-	SafePosAct: OpcUaDataItem<boolean>;
+	SafePos: DataItem<boolean>;
+	SafePosEn: DataItem<boolean>;
+	SafePosAct: DataItem<boolean>;
 
-	OpenAut: OpcUaDataItem<boolean>;
-	OpenFbk: OpcUaDataItem<boolean>;
-	OpenFbkCalc: OpcUaDataItem<boolean>;
-	OpenOp: OpcUaDataItem<boolean>;
+	OpenAut: DataItem<boolean>;
+	OpenFbk: DataItem<boolean>;
+	OpenFbkCalc: DataItem<boolean>;
+	OpenOp: DataItem<boolean>;
 
-	CloseAut: OpcUaDataItem<boolean>;
-	CloseFbk: OpcUaDataItem<boolean>;
-	CloseFbkCalc: OpcUaDataItem<boolean>;
-	CloseOp: OpcUaDataItem<boolean>;
+	CloseAut: DataItem<boolean>;
+	CloseFbk: DataItem<boolean>;
+	CloseFbkCalc: DataItem<boolean>;
+	CloseOp: DataItem<boolean>;
 };
 
 export class Vlv extends ActiveElement {
 	public readonly communication!: VlvRuntime;
 	public readonly reset: Reset;
 	public readonly interlock: Interlock;
-	public readonly opMode: OpModeController;
+	public readonly opMode: OpMode;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
 
 		this.reset = new Reset(this);
 		this.interlock = new Interlock(this);
-		this.opMode = new OpModeController(this);
+		this.opMode = new OpMode(this);
 
-		this.communication.SafePos = this.createDataItem('SafePos', 'read', 'boolean');
-		this.communication.SafePosEn = this.createDataItem('SafePosEn', 'read', 'boolean');
-		this.communication.SafePosAct = this.createDataItem('SafePosAct', 'read', 'boolean');
+		this.communication.SafePos = this.createDataItem('SafePos', 'boolean');
+		this.communication.SafePosEn = this.createDataItem('SafePosEn', 'boolean');
+		this.communication.SafePosAct = this.createDataItem('SafePosAct', 'boolean');
 
-		this.communication.OpenAut = this.createDataItem('OpenAut', 'read', 'boolean');
-		this.communication.OpenFbk = this.createDataItem('OpenFbk', 'read', 'boolean');
-		this.communication.OpenFbkCalc = this.createDataItem('OpenFbkCalc', 'read', 'boolean');
-		this.communication.OpenOp = this.createDataItem('OpenOp', 'write', 'boolean');
+		this.communication.OpenAut = this.createDataItem('OpenAut', 'boolean');
+		this.communication.OpenFbk = this.createDataItem('OpenFbk', 'boolean');
+		this.communication.OpenFbkCalc = this.createDataItem('OpenFbkCalc', 'boolean');
+		this.communication.OpenOp = this.createDataItem('OpenOp', 'boolean', 'write');
 
-		this.communication.CloseAut = this.createDataItem('CloseAut', 'read', 'boolean');
-		this.communication.CloseFbk = this.createDataItem('CloseFbk', 'read', 'boolean');
-		this.communication.CloseFbkCalc = this.createDataItem('CloseFbkCalc', 'read', 'boolean');
-		this.communication.CloseOp = this.createDataItem('CloseOp', 'write', 'boolean');
+		this.communication.CloseAut = this.createDataItem('CloseAut', 'boolean');
+		this.communication.CloseFbk = this.createDataItem('CloseFbk', 'boolean');
+		this.communication.CloseFbkCalc = this.createDataItem('CloseFbkCalc', 'boolean');
+		this.communication.CloseOp = this.createDataItem('CloseOp', 'boolean', 'write');
 	}
 }

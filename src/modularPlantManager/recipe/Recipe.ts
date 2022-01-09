@@ -115,7 +115,7 @@ export class Recipe extends (EventEmitter as new() => RecipeEmitter) {
 			this.initialStep = this.steps.find((step) => step.name === options.initialStep);
 		}
 		if (!this.initialStep) {
-			throw new Error(`"initial_step" property '${options.initialStep}' is not found in provided steps`);
+			throw new Error(`"initialStep" property '${options.initialStep}' is not found in provided steps`);
 		}
 
 		this.options = options;
@@ -183,8 +183,8 @@ export class Recipe extends (EventEmitter as new() => RecipeEmitter) {
 		if (this.status !== RecipeState.running) {
 			throw new Error('Can only pause running recipe');
 		}
-		this.peaSet.forEach((p) => {
-			p.pause();
+		this.peaSet.forEach((peaController) => {
+			peaController.pauseAllServices().then();
 		});
 	}
 
@@ -198,7 +198,7 @@ export class Recipe extends (EventEmitter as new() => RecipeEmitter) {
 			throw new Error('Can only stop running recipe');
 		}
 		catRecipe.info(`Stop recipe ${this.name}`);
-		await Promise.all(Array.from(this.peaSet).map((p) => p.stop()));
+		await Promise.all(Array.from(this.peaSet).map((peaController) => peaController.stopAllServices()));
 		this.status = RecipeState.stopped;
 		if (this.stepListener) {
 			this.stepListener.removeAllListeners('completed');

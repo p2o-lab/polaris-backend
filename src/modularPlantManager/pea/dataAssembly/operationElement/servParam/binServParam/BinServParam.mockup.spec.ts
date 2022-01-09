@@ -1,57 +1,85 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2021 P2O-Lab <p2o-lab@mailbox.tu-dresden.de>,
+ * Chair for Process Control Systems, Technische Universität Dresden
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+ 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {BinServParamMockup, getBinServParamMockupReferenceJSON} from './BinServParam.mockup';
+import {BinServParamMockup, getBinServParamDataItemOptions, getBinServParamOptions} from './BinServParam.mockup';
 import {MockupServer} from '../../../../../_utils';
-import {Namespace, UAObject} from 'node-opcua';
-import {AnaServParamMockup} from '../anaServParam/AnaServParam.mockup';
-import {BinViewMockup} from '../../../indicatorElement/BinView/BinView.mockup';
 import {OpcUaConnection} from '../../../../connection';
-import {namespaceUrl} from '../../../../../../../tests/namespaceUrl';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {BinServParamRuntime} from './BinServParam';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-// this fake class is needed to test the protected variable
-class FakeClass extends BinServParamMockup{
-    constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
-        super(namespace, rootNode, variableName);
-    }
-    public getVOut(){
-        return this.vOut;
-    }
-}
 describe('BinServParamMockup', () => {
 
     describe('static', () => {
+
         let mockupServer: MockupServer;
-        beforeEach(async()=>{
+
+        beforeEach(async function () {
+            this.timeout(4000);
             mockupServer = new MockupServer();
             await mockupServer.initialize();
         });
+
         it('should create BinServParamMockup', () => {
-            const mockup = new BinServParamMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            const mockup = new BinServParamMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             expect(mockup).to.not.be.undefined;
-
-        });
-        it('getBinServParamMockupReferenceJSON()',  () => {
-            const mockup = new BinServParamMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
-            const json = mockup.getBinServParamMockupJSON();
-            //TODO: check expected length
-            expect(Object.keys(json).length).to .equal(28);
-            expect(json.VExt).to.not.be.undefined;
-            expect(json.VOp).to.not.be.undefined;
-            expect(json.VInt).to.not.be.undefined;
-            expect(json.VReq).to.not.be.undefined;
-            expect(json.VOut).to.not.be.undefined;
-            expect(json.VFbk).to.not.be.undefined;
         });
 
-        //TODO test more
-        it('startCurrentTimeUpdate()',  async() => {
-            const mockup: FakeClass = new FakeClass(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable') as FakeClass;
+        it('static DataItemOptions', () => {
+            const options = getBinServParamDataItemOptions(1, 'Test') as BinServParamRuntime;
+            expect(Object.keys(options).length).to.equal(28);
+        });
+
+        it('static DataAssemblyOptions', () => {
+            const options = getBinServParamOptions(1, 'Test') as DataAssemblyOptions;
+            expect(Object.keys(options.dataItems).length).to.equal(30);
+        }).timeout(6000);
+
+        it('dynamic DataAssemblyOptions', () => {
+            const mockup = new BinServParamMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
+            const options = mockup.getDataAssemblyOptions() as any;
+
+            expect(Object.keys(options.dataItems).length).to .equal(30);
+            expect(options.dataItems.VExt).to.not.be.undefined;
+            expect(options.dataItems.VOp).to.not.be.undefined;
+            expect(options.dataItems.VInt).to.not.be.undefined;
+            expect(options.dataItems.VReq).to.not.be.undefined;
+            expect(options.dataItems.VOut).to.not.be.undefined;
+            expect(options.dataItems.VFbk).to.not.be.undefined;
+        }).timeout(6000);
+
+        // TODO
+/*        it('startCurrentTimeUpdate()',  async() => {
+            const mockup: FakeClass = new FakeClass(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable') as FakeClass;
             mockup.startCurrentTimeUpdate();
             expect(mockup.getVOut()).to.be.false;
             await new Promise(f => setTimeout(f, 1000));
@@ -59,8 +87,8 @@ describe('BinServParamMockup', () => {
         });
 
         it('stopCurrentTimeUpdate()',  async() => {
-            const mockup: FakeClass = new FakeClass(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable') as FakeClass;
+            const mockup: FakeClass = new FakeClass(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable') as FakeClass;
             mockup.startCurrentTimeUpdate();
             mockup.stopCurrentTimeUpdate();
             expect(mockup.getVOut()).to.be.false;
@@ -70,24 +98,24 @@ describe('BinServParamMockup', () => {
         });
 
         it('stopCurrentTimeUpdate(), interval undefined',  () => {
-            const mockup: FakeClass = new FakeClass(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable') as FakeClass;
+            const mockup: FakeClass = new FakeClass(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable') as FakeClass;
             expect((() => mockup.stopCurrentTimeUpdate())).to.throw();
-        });
+        });*/
     });
     describe('dynamic', () => {
-        // we need to check if the nodes was addes succesfully and are writeable and readable
+
         let mockupServer: MockupServer;
-        let mockup: BinServParamMockup;
         let connection: OpcUaConnection;
+
         beforeEach(async function () {
             this.timeout(5000);
             mockupServer = new MockupServer();
             await mockupServer.initialize();
-            mockup = new BinServParamMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            new BinServParamMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
             await mockupServer.start();
-            connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334');
+            connection = new OpcUaConnection();
+            connection.initialize({endpoint: mockupServer.endpoint});
             await connection.connect();
         });
 
@@ -97,17 +125,15 @@ describe('BinServParamMockup', () => {
         });
 
         it('set and get VExt', async () => {
-            await connection.writeOpcUaNode('Variable.VExt', namespaceUrl, true, 'Boolean');
-            await connection.readOpcUaNode('Variable.VExt', namespaceUrl)
-                .then(datavalue => expect(datavalue?.value.value).to.equal(true));
+            await connection.writeNode('Variable.VExt', mockupServer.nameSpaceUri, true, 'Boolean');
+            await connection.readNode('Variable.VExt', mockupServer.nameSpaceUri)
+                .then((dataValue) => expect((dataValue)?.value.value).to.equal(true));
         }).timeout(3000);
 
         it('set and get VOp', async () => {
-            await connection.writeOpcUaNode('Variable.VOp', namespaceUrl, true, 'Boolean');
-            await connection.readOpcUaNode('Variable.VOp', namespaceUrl)
-                .then(datavalue => expect(datavalue?.value.value).to.equal(true));
+            await connection.writeNode('Variable.VOp', mockupServer.nameSpaceUri, true, 'Boolean');
+            await connection.readNode('Variable.VOp', mockupServer.nameSpaceUri)
+                .then((dataValue) => expect((dataValue)?.value.value).to.equal(true));
         }).timeout(3000);
-
-        //TODO get the rest
     });
 });

@@ -3,7 +3,7 @@
   "name": "Entleeren ACHEMA",
   "description": "Entleert Reaktor",
   "author": "Markus Graube",
-  "initial_step": "Start",
+  "initialStep": "Start",
   "steps": [
     {
       "name": "Start",
@@ -32,7 +32,7 @@
       ],
       "transitions": [
         {
-          "next_step": "Stop",
+          "nextStep": "Stop",
           "condition": {
             "type": "state",
             "pea": "React",
@@ -59,7 +59,7 @@
             "service": "Fill",
             "state": "idle"
           },
-          "next_step": "finished"
+          "nextStep": "finished"
         }
       ]
     }

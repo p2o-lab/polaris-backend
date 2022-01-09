@@ -26,29 +26,33 @@
 
 import {OPCUAServer} from 'node-opcua-server';
 import * as net from 'net';
-import {AddressSpace, DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
+import {AccessLevelFlag, AddressSpace, DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 import {catMockupServer} from '../../logging';
+import {PEAOptions} from '@p2olab/polaris-interface';
+import {IDProvider} from './idProvider/IDProvider';
 
-function validUserFunc(username: string, password: string): boolean {
+function validateUser(username: string, password: string): boolean {
 	catMockupServer.info(`Try to login with ${username}:${password}`);
 	return username === 'admin' && password === '1234';
 }
 
 export class MockupServer {
 
-	public externalTrigger: boolean;
+	public externalTrigger = false;
+
 	private server: OPCUAServer;
+	private serverName = 'MockupServer';
+
 	private initialized = false;
-	namespace: Namespace | undefined = undefined;
-	rootComponent: UAObject | undefined = undefined;
+	private identifier = IDProvider.generateIdentifier();
+	private namespace: Namespace | undefined = undefined;
+	private rootComponent: UAObject | undefined = undefined;
 	private readonly port: number;
-	private testNumber: number;
+	private testNumber = 0;
 
 	constructor(port = 4334) {
 		this.port = port;
-		this.server = new OPCUAServer({port: this.port, userManager: {isValidUser: validUserFunc}});
-		this.externalTrigger = false;
-		this.testNumber = 0;
+		this.server = new OPCUAServer({port: this.port, userManager: {isValidUser: validateUser}});
 	}
 
 	public async portInUse(): Promise<boolean> {
@@ -81,7 +85,7 @@ export class MockupServer {
 
 	public async start(): Promise<void> {
 		if(!this.initialized) await this.initialize();
-		await new Promise((resolve) => this.server.start(resolve));
+		await new Promise<void>((resolve) => this.server.start(resolve));
 		catMockupServer.info('server started on port ' + this.port);
 	}
 
@@ -91,6 +95,35 @@ export class MockupServer {
 		catMockupServer.info('Shutdown finished');
 	}
 
+	get endpoint(): string{
+		return 'opc.tcp://' + require('os').hostname() + ':' + this.endpointPort;
+	}
+
+	get endpointUrl(): string{
+		return 'opc.tcp://' + require('os').hostname() + ':NodeOPCUA-Server';
+	}
+
+	get endpointPort(): number{
+		return this.port;
+	}
+
+	get nameSpaceUri(): string {
+		return this.namespace? this.namespace.namespaceUri : '';
+	}
+
+	get nameSpace(): Namespace {
+		if (!this.namespace) {
+			throw new Error('Namespace is undefined!');
+		}
+		return this.namespace;
+	}
+
+	get rootObject(): UAObject {
+		if (!this.rootComponent) {
+			throw new Error('Root object is undefined!');
+		}
+		return this.rootComponent;
+	}
 
 	private createAddressSpace(): void {
 
@@ -99,35 +132,32 @@ export class MockupServer {
 			throw new Error('AddressSpace is undefined.');
 		}
 
-		const namespace: Namespace = addressSpace.getOwnNamespace();
-		if (!namespace){
-			throw new Error('Namespace is undefined.');
-		}
-
-		this.namespace = namespace;
+		this.namespace = addressSpace.registerNamespace('urn:P2OLab:NodeOPCUA-Server');
 		// declare a new object
-		const myMockup = namespace.addObject({
+		const myMockup = this.namespace.addObject({
 			organizedBy: addressSpace.rootFolder.objects,
-			browseName: 'MockupServer'
+			browseName: this.serverName
 		});
 		this.rootComponent = myMockup;
 
-		namespace.addVariable({
+		this.namespace.addVariable({
 			componentOf: myMockup,
 			browseName: 'ExternalTrigger',
-			nodeId: 'ns=1;s=trigger',
+			nodeId: 'ns=2;s=trigger',
 			dataType: 'Boolean',
+			accessLevel: AccessLevelFlag.CurrentRead,
 			value: {
 				get: (): Variant => {
 					return new Variant({dataType: DataType.Boolean, value: this.externalTrigger});
 				}
 			}
 		});
-		namespace.addVariable({
+		this.namespace.addVariable({
 			componentOf: myMockup,
 			browseName: 'TestNumber',
-			nodeId: 'ns=1;s=testNumber',
+			nodeId: 'ns=2;s=testNumber',
 			dataType: 'Float',
+			accessLevel: AccessLevelFlag.CurrentRead + AccessLevelFlag.CurrentWrite,
 			value: {
 				get: (): Variant => {
 					return new Variant({dataType: DataType.Float, value: this.testNumber});
@@ -140,9 +170,19 @@ export class MockupServer {
 		});
 
 	}
-}
 
-async function start(): Promise<void> {
-	const mockupServer = new MockupServer();
-	await mockupServer.start();
+	get basicPEAOptions(): PEAOptions{
+		return {
+			name: this.serverName,
+			id: this.identifier,
+			// TODO: Is it wise to provide a default identifier, could be IDProvider.generateIdentifier()
+			pimadIdentifier: 'a289fc13-72e0-49ac-bad9-dd0e6672fcc7',
+			services:[],
+			username: '',
+			password: '',
+			hmiUrl: '',
+			opcuaServerUrl: this.endpoint,
+			dataAssemblies:[]
+		};
+	}
 }

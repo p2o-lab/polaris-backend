@@ -44,7 +44,7 @@ describe('ModularPlantMangerRoutes', () => {
 		await appServer.stop();
 	});
 
-	context('#modularPlantManger', () => {
+	context('ModularPlantManger', () => {
 
 		it('should allow interacting with all peas within MP', async () => {
 			await request(app).post('/api/abortAllServices')
@@ -129,10 +129,14 @@ describe('ModularPlantMangerRoutes', () => {
 
 		});
 
-		it('should provide version', (done) => {
-			request(app).get('/api/version')
-				.expect('Content-Type', /json/)
-				.expect(200, done);
+		context('version', () => {
+
+			it('should provide version', (done) => {
+				request(app).get('/api/version')
+					.expect('Content-Type', /json/)
+					.expect(200, done);
+			});
+
 		});
 
 		context('logs', () => {
@@ -161,14 +165,14 @@ describe('ModularPlantMangerRoutes', () => {
 					.expect(200, done);
 			});
 
-			it('should provide variables logs', (done) => {
-				request(app).get('/api/logs/variables')
+			it('should provide dataAssemblies logs', (done) => {
+				request(app).get('/api/logs/dataAssemblies')
 					.expect('Content-Type', /json/)
 					.expect(200, done);
 			});
 
 			it('should provide service logs 2', (done) => {
-				request(app).get('/api/logs/variables.json')
+				request(app).get('/api/logs/dataAssemblies.json')
 					.expect('Content-Type', /json/)
 					.expect(200, done);
 			});

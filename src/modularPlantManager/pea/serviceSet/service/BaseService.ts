@@ -193,23 +193,23 @@ export abstract class BaseService {
 		return await timeout(this.waitForStateChange(expectedState), ms);
 	}
 
-	public abstract async start(): Promise<void>;
+	public abstract start(): Promise<void>;
 
-	public abstract async stop(): Promise<void>;
+	public abstract stop(): Promise<void>;
 
-	public abstract async reset(): Promise<void>;
+	public abstract reset(): Promise<void>;
 
-	public abstract async complete(): Promise<void>;
+	public abstract complete(): Promise<void>;
 
-	public abstract async abort(): Promise<void>;
+	public abstract abort(): Promise<void>;
 
-	public abstract async hold(): Promise<void>;
+	public abstract hold(): Promise<void>;
 
-	public abstract async unhold(): Promise<void>;
+	public abstract unhold(): Promise<void>;
 
-	public abstract async pause(): Promise<void>;
+	public abstract pause(): Promise<void>;
 
-	public abstract async resume(): Promise<void>;
+	public abstract resume(): Promise<void>;
 
-	public abstract async restart(): Promise<void>;
+	public abstract restart(): Promise<void>;
 }

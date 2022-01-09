@@ -23,20 +23,20 @@
  * SOFTWARE.
  */
 
-import {ConditionOptions, ConditionType} from '@p2olab/polaris-interface';
+import {ConditionType, PEAOptions, ServiceOptions} from '@p2olab/polaris-interface';
 import {PEAController} from '../pea';
-import {MockupServer, PEATestNumericVariable, waitForVariableChange} from '../_utils';
-import {ServiceState} from '../pea/dataAssembly';
-import {
-	Condition,
-	ConditionFactory,
-	ExpressionCondition, NotCondition,
-	TimeCondition, TrueCondition
-} from './index';
+import {ConditionFactory, ExpressionCondition, NotCondition, TimeCondition} from './index';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import * as fs from 'fs';
+import * as peaOptions from '../peaOptions.spec.json';
+import {MockupServer, waitForVariableChange} from '../_utils';
+import {AnaViewMockup} from '../pea/dataAssembly/indicatorElement/AnaView/AnaView.mockup';
+import {OpcUaConnection} from '../pea/connection';
+import {ServiceControlMockup} from '../pea/dataAssembly/serviceControl/ServiceControl.mockup';
+import {ProcedureOptions} from '@p2olab/polaris-interface/dist/service/options';
+import {HealthStateViewMockup} from '../pea/dataAssembly/diagnosticElement/healthStateView/HealthStateView.mockup';
+import {ServiceMtpCommand} from '../pea/serviceSet/service/enum';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -143,50 +143,79 @@ describe('Condition', () => {
 				expect(value).to.equal(true);
 			});
 
-			it('should fail when pea is not connected', async () => {
-				const peaJson = JSON.parse(fs.readFileSync('assets/peas/pea_testserver_1.0.0.json', 'utf8'))
-					.peas[0];
+			it('should work with complex expression', async () => {
 
-				const pea = new PEAController(peaJson);
+				const pea = new PEAController(peaOptions as unknown as PEAOptions);
 				const expr = ConditionFactory.create({
 					type: ConditionType.expression,
-					expression: 'sin(a)^2 + cos(PEATestServer.Variable001)^2 < 0.5',
+					expression: 'sin(a)^2 + cos(a)^2 < 0.5',
 					scope: [
 						{
 							name: 'a',
-							pea: 'PEATestServer',
-							dataAssembly: 'Variable001',
+							pea: `${pea.id}`,
+							dataAssembly: 'Variable',
 							variable: 'V'
 						}
 					]
 				}, [pea]) as ExpressionCondition;
-				expect(() => expr.getValue()).to.throw('not connected');
+				expect(expr.getValue()).to.equal(false);
 			});
-
 		});
-
 	});
-//TODO test with MockupServer
-/*	describe('with MockupServer containing a PEAController', () => {
-		let mockupServer: MockupServer;
-		let pea: PEAController;
-		let var0: PEATestNumericVariable;
+
+
+describe('with MockupServer containing a PEAController', () => {
+
+	let mockupServer: MockupServer;
+	let connection: OpcUaConnection;
+	let pea: PEAController;
+	let anaViewMockup: AnaViewMockup;
+	let serviceControlMockup: ServiceControlMockup;
+	let healthStateViewMockup: HealthStateViewMockup;
 
 		beforeEach(async function () {
 			this.timeout(10000);
 			mockupServer = new MockupServer();
+			await mockupServer.initialize();
+			anaViewMockup = new AnaViewMockup(mockupServer.nameSpace, mockupServer.rootObject,'Variable');
+			serviceControlMockup = new ServiceControlMockup(mockupServer.nameSpace, mockupServer.rootObject,'Service1');
+			healthStateViewMockup = new HealthStateViewMockup(mockupServer.nameSpace, mockupServer.rootObject,'Procedure1');
 			await mockupServer.start();
-			//var0 = peaServer.variables[0] as PEATestNumericVariable;
+			connection = new OpcUaConnection();
+			connection.initialize({endpoint: mockupServer.endpoint});
+			await connection.connect();
 
-			const peaJson = JSON.parse(fs.readFileSync('assets/peas/pea_testserver_1.0.0.json', 'utf8'))
-				.peas[0];
+			const procedureOptions: ProcedureOptions = {
+				dataAssembly: [healthStateViewMockup.getDataAssemblyOptions()],
+				id: 'Procedure1',
+				isDefault: true,
+				isSelfCompleting: false,
+				name: 'Procedure1',
+				parameters: []
+			};
 
-			pea = new PEAController(peaJson);
+			const serviceOptions: ServiceOptions = {
+				communication: serviceControlMockup.getDataAssemblyOptions().dataItems as any,
+				name: 'Service1',
+				procedures: [procedureOptions]};
+
+			const peaOptions: PEAOptions = {
+				dataAssemblies: [anaViewMockup.getDataAssemblyOptions()],
+				id: 'PEATestServer',
+				name: 'PEATestServer',
+				opcuaServerUrl: mockupServer.endpoint,
+				pimadIdentifier: '',
+				services: [serviceOptions]
+			};
+
+			pea = new PEAController(peaOptions);
 			await pea.connectAndSubscribe();
 		});
 
 		afterEach(async () => {
-			if(pea) await pea.disconnect();
+			if(pea) {
+				await pea.disconnectAndUnsubscribe();
+			}
 			await mockupServer.shutdown();
 		});
 
@@ -194,21 +223,23 @@ describe('Condition', () => {
 			const condition = ConditionFactory.create({
 				type: ConditionType.variable,
 				pea: 'PEATestServer',
-				dataAssembly: 'Variable001',
+				dataAssembly: 'Variable',
 				variable: 'V',
 				operator: '>',
 				value: 25
 			}, [pea]);
 
 			condition.listen();
+			expect(condition).to.have.property('fulfilled', undefined);
+			await new Promise((resolve) => pea.once('variableChanged', resolve));
 			expect(condition).to.have.property('fulfilled', false);
 
-			var0.v = 22;
-			await waitForVariableChange(pea, 'Variable001', 22);
+			anaViewMockup.v = 22;
+			await waitForVariableChange(pea, 'Variable', 22);
 			expect(condition).to.have.property('fulfilled', false);
 
-			var0.v = 26;
-			await new Promise((resolve) => {
+			anaViewMockup.v = 26;
+			await new Promise<void>((resolve) => {
 				condition.once('stateChanged', () => {
 					resolve();
 				});
@@ -216,15 +247,15 @@ describe('Condition', () => {
 			expect(condition).to.have.property('fulfilled', true);
 
 			condition.clear();
-			var0.v = 24.4;
+			anaViewMockup.v = 24.4;
 			expect(condition).to.have.property('fulfilled', undefined);
-			var0.v = 37;
+			anaViewMockup.v = 37;
 			expect(condition).to.have.property('fulfilled', undefined);
 
-		}).timeout(5000);
+		}).timeout(10000);
 
 		it('specialized as StateCondition should work', async function () {
-			this.timeout(5000);
+
 			const condition = ConditionFactory.create({
 				type: ConditionType.state,
 				pea: 'PEATestServer',
@@ -233,7 +264,7 @@ describe('Condition', () => {
 			}, [pea]);
 			expect(condition.json()).to.deep.equal(
 				{
-					pea: 'ModuleTestServer',
+					pea: 'PEATestServer',
 					service: 'Service1',
 					state: 'completed',
 					type: 'state'
@@ -244,12 +275,11 @@ describe('Condition', () => {
 			expect(pea.services[0]).to.have.property('name', 'Service1');
 			expect(condition).to.have.property('fulfilled', false);
 
-			//peaServer.services[0].varStatus = ServiceState.EXECUTE;
+			serviceControlMockup.sendCommand(ServiceMtpCommand.START);
 			await delay(100);
 			expect(condition).to.have.property('fulfilled', false);
-
-			//peaServer.services[0].varStatus = ServiceState.COMPLETED;
-			await new Promise((resolve) => {
+			serviceControlMockup.sendCommand(ServiceMtpCommand.COMPLETE);
+			await new Promise<void>((resolve) => {
 				condition.on('stateChanged', function test(state) {
 					if (state) {
 						condition.removeListener('stateChanged', test);
@@ -261,16 +291,17 @@ describe('Condition', () => {
 
 			condition.clear();
 			expect(condition).to.have.property('fulfilled', undefined);
-			//pea.services[0].varStatus = ServiceState.EXECUTE;
+			serviceControlMockup.sendCommand(ServiceMtpCommand.START);
 			await delay(100);
 			expect(condition).to.have.property('fulfilled', undefined);
-			//peaServer.services[0].varStatus = ServiceState.COMPLETED;
+			serviceControlMockup.sendCommand(ServiceMtpCommand.COMPLETE);
 			await delay(100);
 			expect(condition).to.have.property('fulfilled', undefined);
 
-		});
+		}).timeout(5000);
 
 		it('should not react on a closed condition', async () => {
+
 			const condition = ConditionFactory.create({
 				type: ConditionType.state,
 				pea: 'PEATestServer',
@@ -279,11 +310,8 @@ describe('Condition', () => {
 			}, [pea]);
 
 			condition.listen();
-			//peaServer.services[0].varStatus = ServiceState.IDLE;
-			await delay(50);
 			expect(condition).to.have.property('fulfilled', false);
-
-			expect(condition.listenerCount('stateChanged')).to.equal(1);
+			expect(condition.listenerCount('stateChanged')).to.equal(0);
 
 			condition.clear();
 			expect(condition).to.have.property('fulfilled', undefined);
@@ -292,8 +320,9 @@ describe('Condition', () => {
 			condition.listen();
 			expect(condition).to.have.property('fulfilled', false);
 
-			//peaServer.services[0].varStatus = ServiceState.COMPLETED;
-			await new Promise((resolve) => {
+			serviceControlMockup.sendCommand(ServiceMtpCommand.START);
+			serviceControlMockup.sendCommand(ServiceMtpCommand.COMPLETE);
+			await new Promise<void>((resolve) => {
 				condition.on('stateChanged', (state) => {
 					if (state) {
 						resolve();
@@ -301,44 +330,44 @@ describe('Condition', () => {
 				});
 			});
 			condition.clear();
-		});
+		}).timeout(5000);
 
 		describe('ExpressionCondition', () => {
 
 			it('should work with simple server expression', async () => {
 				const expr = new ExpressionCondition(
-					{type: ConditionType.expression, expression: 'PEATestServer.Variable001.V>10'}, [pea]);
+					{type: ConditionType.expression, expression: 'PEATestServer.Variable.V>10'}, [pea]);
 				expr.listen();
 
 				expect(expr.getUsedPEAs().size).to.equal(1);
 
-				var0.v = 0;
-				await waitForVariableChange(pea, 'Variable001', 0);
+				anaViewMockup.v = 0;
+				await waitForVariableChange(pea, 'Variable', 0);
 				expect(expr).to.have.property('fulfilled', false);
 				let value = expr.getValue();
 				expect(value).to.equal(false);
 
-				var0.v = 11;
-				await waitForVariableChange(pea, 'Variable001', 11);
+				anaViewMockup.v = 11;
+				await waitForVariableChange(pea, 'Variable', 11);
 				value = expr.getValue();
 				expect(value).to.equal(true);
 				expect(expr).to.have.property('fulfilled', true);
 
-				var0.v = 8;
+				anaViewMockup.v = 8;
 				await Promise.all([
 					new Promise((resolve) => expr.once('stateChanged', resolve)),
-					waitForVariableChange(pea, 'Variable001', 8)
+					waitForVariableChange(pea, 'Variable', 8)
 				]);
 				value = expr.getValue();
 				expect(value).to.equal(false);
 				expect(expr).to.have.property('fulfilled', false);
 
 				expr.clear();
-				var0.v = 12;
+				anaViewMockup.v = 12;
 				expr.once('stateChanged', () => {
 					throw new Error('State has changed after it was cleared');
 				});
-				await waitForVariableChange(pea, 'Variable001', 12);
+				await waitForVariableChange(pea, 'Variable', 12);
 				value = expr.getValue();
 				expect(value).to.equal(true);
 				expect(expr).to.have.property('fulfilled', undefined);
@@ -347,22 +376,22 @@ describe('Condition', () => {
 			it('should work with semi-complex expression', async () => {
 				const expr: ExpressionCondition = ConditionFactory.create({
 					type: ConditionType.expression,
-					expression: 'cos(PEATestServer.Variable001.V)^2 > 0.9'
+					expression: 'cos(PEATestServer.Variable.V)^2 > 0.9'
 				}, [pea]) as ExpressionCondition;
 				expr.listen();
 
-				var0.v = 3.1;
+				anaViewMockup.v = 3.1;
 				await Promise.all([
 					new Promise((resolve) => expr.once('stateChanged', resolve)),
-					waitForVariableChange(pea, 'Variable001', 3.1)
+					waitForVariableChange(pea, 'Variable', 3.1)
 				]);
 				let value = expr.getValue();
 				expect(value).to.equal(true);
 
-				var0.v = 0.7;
+				anaViewMockup.v = 0.7;
 				await Promise.all([
 					new Promise((resolve) => expr.once('stateChanged', resolve)),
-					waitForVariableChange(pea, 'Variable001', 0.7)
+					waitForVariableChange(pea, 'Variable', 0.7)
 				]);
 				value = expr.getValue();
 				expect(value).to.equal(false);
@@ -371,18 +400,18 @@ describe('Condition', () => {
 			it('should work with complex expression', async () => {
 				const expr = ConditionFactory.create({
 					type: ConditionType.expression,
-					expression: 'sin(a)^2 + cos(PEATestServer.Variable001)^2 < 0.5',
+					expression: 'sin(a)^2 + cos(PEATestServer.Variable)^2 < 0.5',
 					scope: [
 						{
 							name: 'a',
 							pea: 'PEATestServer',
-							dataAssembly: 'Variable001',
+							dataAssembly: 'Variable',
 							variable: 'V'
 						}
 					]
 				}, [pea]) as ExpressionCondition;
 
-				var0.v = 0.7;
+				anaViewMockup.v = 0.7;
 				await new Promise((resolve) => pea.once('variableChanged', resolve));
 
 				const value = expr.getValue();
@@ -391,6 +420,6 @@ describe('Condition', () => {
 
 		});
 
-	});*/
+	});
 
 });

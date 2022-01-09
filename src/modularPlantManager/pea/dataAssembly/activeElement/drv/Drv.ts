@@ -1,4 +1,3 @@
-/* tslint:disable:max-classes-per-file */
 /*
  * MIT License
  *
@@ -25,33 +24,35 @@
  */
 
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaConnection, OpcUaDataItem} from '../../../connection';
-import {InterlockRuntime, OpModeController, OpModeRuntime, ResetRuntime} from '../../_extensions';
+import {OpcUaConnection, DataItem} from '../../../connection';
+import {
+	Interlock, InterlockRuntime,
+	OpMode, OpModeRuntime,
+	Reset, ResetRuntime
+} from '../../baseFunction';
 import {ActiveElement, ActiveElementRuntime} from '../ActiveElement';
-import {Reset} from '../../_extensions/resetDA/Reset';
-import {Interlock} from '../../_extensions/interlockDA/Interlock';
 
 export type DrvRuntime = ActiveElementRuntime & OpModeRuntime & InterlockRuntime & ResetRuntime & {
-	SafePos: OpcUaDataItem<boolean>;
-	SafePosAct: OpcUaDataItem<boolean>;
+	SafePos: DataItem<boolean>;
+	SafePosAct: DataItem<boolean>;
 
-	FwdAut: OpcUaDataItem<boolean>;
-	FwdCtrl: OpcUaDataItem<boolean>;
-	FwdEn: OpcUaDataItem<boolean>;
-	FwdFbk: OpcUaDataItem<boolean>;
-	FwdFbkCalc: OpcUaDataItem<boolean>;
-	FwdOp: OpcUaDataItem<boolean>;
+	FwdAut: DataItem<boolean>;
+	FwdCtrl: DataItem<boolean>;
+	FwdEn: DataItem<boolean>;
+	FwdFbk: DataItem<boolean>;
+	FwdFbkCalc: DataItem<boolean>;
+	FwdOp: DataItem<boolean>;
 
-	RevAut: OpcUaDataItem<boolean>;
-	RevCtrl: OpcUaDataItem<boolean>;
-	RevEn: OpcUaDataItem<boolean>;
-	RevFbk: OpcUaDataItem<boolean>;
-	RevFbkCalc: OpcUaDataItem<boolean>;
-	RevOp: OpcUaDataItem<boolean>;
+	RevAut: DataItem<boolean>;
+	RevCtrl: DataItem<boolean>;
+	RevEn: DataItem<boolean>;
+	RevFbk: DataItem<boolean>;
+	RevFbkCalc: DataItem<boolean>;
+	RevOp: DataItem<boolean>;
 
-	StopAut: OpcUaDataItem<boolean>;
-	StopOp: OpcUaDataItem<boolean>;
-	Trip: OpcUaDataItem<boolean>;
+	StopAut: DataItem<boolean>;
+	StopOp: DataItem<boolean>;
+	Trip: DataItem<boolean>;
 };
 
 export class Drv extends ActiveElement {
@@ -59,34 +60,34 @@ export class Drv extends ActiveElement {
 	public readonly communication!: DrvRuntime;
 	public readonly reset: Reset;
 	public readonly interlock: Interlock;
-	public readonly opMode: OpModeController;
+	public readonly opMode: OpMode;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
 
 		this.reset = new Reset(this);
 		this.interlock = new Interlock(this);
-		this.opMode = new OpModeController(this);
+		this.opMode = new OpMode(this);
 
-		this.communication.SafePos = this.createDataItem('SafePos', 'read', 'boolean');
-		this.communication.SafePosAct = this.createDataItem('SafePosAct', 'read', 'boolean');
+		this.communication.SafePos = this.createDataItem('SafePos', 'boolean');
+		this.communication.SafePosAct = this.createDataItem('SafePosAct', 'boolean');
 
-		this.communication.FwdAut = this.createDataItem('FwdAut', 'read', 'boolean');
-		this.communication.FwdCtrl = this.createDataItem('FwdCtrl', 'read', 'boolean');
-		this.communication.FwdEn = this.createDataItem('FwdEn', 'read', 'boolean');
-		this.communication.FwdFbk = this.createDataItem('FwdFbk', 'read', 'boolean');
-		this.communication.FwdFbkCalc = this.createDataItem('FwdFbkCalc', 'read', 'boolean');
-		this.communication.FwdOp = this.createDataItem('FwdOp', 'write', 'boolean');
+		this.communication.FwdAut = this.createDataItem('FwdAut', 'boolean');
+		this.communication.FwdCtrl = this.createDataItem('FwdCtrl', 'boolean');
+		this.communication.FwdEn = this.createDataItem('FwdEn', 'boolean');
+		this.communication.FwdFbk = this.createDataItem('FwdFbk', 'boolean');
+		this.communication.FwdFbkCalc = this.createDataItem('FwdFbkCalc', 'boolean');
+		this.communication.FwdOp = this.createDataItem('FwdOp', 'boolean', 'write');
 
-		this.communication.RevAut = this.createDataItem('RevAut', 'read', 'boolean');
-		this.communication.RevCtrl = this.createDataItem('RevCtrl', 'read', 'boolean');
-		this.communication.RevEn = this.createDataItem('RevEn', 'read', 'boolean');
-		this.communication.RevFbk = this.createDataItem('RevFbk', 'read', 'boolean');
-		this.communication.RevFbkCalc = this.createDataItem('RevFbkCalc', 'read', 'boolean');
-		this.communication.RevOp = this.createDataItem('RevOp', 'write', 'boolean');
+		this.communication.RevAut = this.createDataItem('RevAut', 'boolean');
+		this.communication.RevCtrl = this.createDataItem('RevCtrl', 'boolean');
+		this.communication.RevEn = this.createDataItem('RevEn', 'boolean');
+		this.communication.RevFbk = this.createDataItem('RevFbk', 'boolean');
+		this.communication.RevFbkCalc = this.createDataItem('RevFbkCalc', 'boolean');
+		this.communication.RevOp = this.createDataItem('RevOp', 'boolean', 'write');
 
-		this.communication.StopAut = this.createDataItem('StopAut', 'read', 'boolean');
-		this.communication.StopOp = this.createDataItem('StopOp', 'write', 'boolean');
-		this.communication.Trip = this.createDataItem('Trip', 'read', 'boolean');
+		this.communication.StopAut = this.createDataItem('StopAut', 'boolean');
+		this.communication.StopOp = this.createDataItem('StopOp', 'boolean', 'write');
+		this.communication.Trip = this.createDataItem('Trip', 'boolean');
 	}
 }

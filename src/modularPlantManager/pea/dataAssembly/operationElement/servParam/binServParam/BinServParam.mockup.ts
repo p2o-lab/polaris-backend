@@ -26,65 +26,73 @@
 // eslint-disable-next-line no-undef
 import Timeout = NodeJS.Timeout;
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {getOpModeDAMockupReferenceJSON, OpModeDAMockup} from '../../../_extensions/opModeDA/OpModeDA.mockup';
-import {
-	getServiceSourceModeDAMockupReferenceJSON,
-	ServiceSourceModeDAMockup
-} from '../../../_extensions/serviceSourceModeDA/ServiceSourceModeDA.mockup';
-import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../../_extensions/wqcDA/WQCDA.mockup';
+import {getServParamDataItemOptions, ServParamMockup} from '../ServParam.mockup';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
+import {getDataAssemblyOptions} from '../../../DataAssemblyController.mockup';
 
-import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../../../_extensions/osLevelDA/OSLevelDA.mockup';
-import {getServParamMockupReferenceJSON, ServParamMockup} from '../ServParam.mockup';
-import {BinServParam} from './BinServParam';
+const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/OperationElement/BinServParam';
 
-export function getBinServParamMockupReferenceJSON(
-	namespace: number,
-	objectBrowseName: string) {
-
+function getBinServParamSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
 	return ({
-			...getServParamMockupReferenceJSON(namespace,objectBrowseName),
-			VExt: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VExt`,
-				dataType: 'Boolean'
-			},
-			VOp: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VOp`,
-				dataType: 'Boolean'
-			},
-			VInt: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VInt`,
-				dataType: 'Boolean'
-			},
-			VReq: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VReq`,
-				dataType: 'Boolean'
-			},
-			VOut: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VOut`,
-				dataType: 'Boolean'
-			},
-			VFbk: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VFbk`,
-				dataType: 'Boolean'
-			},
-			VState0: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VState0`,
-				dataType: 'String'
-			},
-			VState1: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VState1`,
-				dataType: 'String'
-			}
+		VExt: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.VExt`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		VOp: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.VOp`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		VInt: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.VInt`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		VReq: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.VReq`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		VOut: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.VOut`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		VFbk: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.VFbk`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		VState0: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.VState0`,
+			dataType: 'String'
+		} as OpcUaNodeOptions,
+		VState1: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.VState1`,
+			dataType: 'String'
+		} as OpcUaNodeOptions
+	});
+}
+
+export function getBinServParamDataItemOptions(namespace: number, objectBrowseName: string): object {
+	return ({
+			...getServParamDataItemOptions(namespace, objectBrowseName),
+			...getBinServParamSpecificDataItemOptions(namespace, objectBrowseName),
 		}
 	);
+}
+
+export function getBinServParamOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
+	const options = getDataAssemblyOptions(name, tagName, tagDescription);
+	options.metaModelRef = metaModelReference;
+	options.dataItems = {
+		...options.dataItems,
+		...getBinServParamDataItemOptions(namespace, objectBrowseName)};
+	return options;
 }
 
 export class BinServParamMockup extends ServParamMockup{
@@ -201,10 +209,14 @@ export class BinServParamMockup extends ServParamMockup{
 
 	}
 
-	public getBinServParamMockupJSON() {
-		return getBinServParamMockupReferenceJSON(
-			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name as string);
+	public getDataAssemblyOptions(): DataAssemblyOptions {
+		const options = super.getDataAssemblyOptions();
+		options.metaModelRef = metaModelReference;
+		options.dataItems = {
+			...options.dataItems,
+			...getBinServParamSpecificDataItemOptions(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
+		};
+		return options;
 	}
 
 	public startCurrentTimeUpdate(): void {

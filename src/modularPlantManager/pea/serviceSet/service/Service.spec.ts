@@ -35,25 +35,21 @@ import {PEAController, Service} from '../../index';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {ServiceState} from './enum';
-import {PEAMockup} from '../../PEA.mockup';
-import * as peaOptions from '../../../../../tests/peaOptions.json';
-import * as peaOptionsServices from '../../../../../tests/peaOptions_testservice.json';
+import * as peaOptions from '../../../peaOptions.spec.json';
+import * as peaOptionsServices from '../../../peaOptions_testservice.spec.json';
 
 import {MockupServer} from '../../../_utils';
 import {AnaViewMockup} from '../../dataAssembly/indicatorElement/AnaView/AnaView.mockup';
-import {Namespace, UAObject} from 'node-opcua';
-import {ServiceControlMockup} from '../../dataAssembly/ServiceControl/ServiceControl.mockup';
-import {namespaceUrl, setNamespaceUrl} from '../../../../../tests/namespaceUrl';
+import {ServiceControlMockup} from '../../dataAssembly/serviceControl/ServiceControl.mockup';
 import {AnaServParamMockup} from '../../dataAssembly/operationElement/servParam/anaServParam/AnaServParam.mockup';
-import {AnaProcessValueIn, AnaServParam} from '../../dataAssembly';
-import {ModularPlantManager} from '../../../ModularPlantManager';
+import {AnaServParam} from '../../dataAssembly';
 import {AnaProcessValueInMockup} from '../../dataAssembly/inputElement/processValueIn/AnaProcessValueIn/AnaProcessValueIn.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('Service', () => {
-	const opcUAConnection = new OpcUaConnection('', '');
+	const opcUAConnection = new OpcUaConnection();
 
 	context('constructor', () => {
 		it('should fail with missing options', () => {
@@ -71,7 +67,7 @@ describe('Service', () => {
 			expect(() => new Service(
 				{name: 'test', parameters: [], communication: {} as ServiceControlOptions, procedures: []},
 				opcUAConnection, '')
-			).to.throw('Creating DataAssemblyController Error: No Communication variables found in DataAssemblyOptions');
+			).to.throw('Creating DataAssemblyController Error: No Communication dataAssemblies found in DataAssemblyOptions');
 		});
 
 	});
@@ -79,7 +75,7 @@ describe('Service', () => {
 	it('should reject command if not connected', async () => {
 		const pea = new PEAController(peaOptions as unknown as PEAOptions);
 		const service = pea.services[0];
-		await expect(service.executeCommand(ServiceCommand.start)).to.be.rejectedWith('Can not write node since OPC UA connection to PEA test is not established');
+		await expect(service.executeCommand(ServiceCommand.start)).to.be.rejectedWith('Can not write node since OPC UA connection is not established');
 	});
 
 	it('should create service from PEATestServer json', () => {
@@ -109,7 +105,7 @@ describe('Service', () => {
 
 		it('should not find non existent procedure', () => {
 			const procedure = service.getProcedureByNameOrDefault('ProcedureNotThere');
-			expect(procedure).to.equal(undefined);
+			expect(procedure).to.throw;
 		});
 
 		it('should get undefined when getting current procedure when not connected', () => {
@@ -118,23 +114,18 @@ describe('Service', () => {
 	});
 
 	context('dynamic test', () => {
-		let peaServer: PEAMockup;
+
 		let service: Service;
-		//let testService: TestServerService;
 		let pea: PEAController;
 		let mockupServer: MockupServer;
-
-		setNamespaceUrl(peaOptions as any);
 
 		beforeEach(async function () {
 			this.timeout(5000);
 			//set up mockup
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			const mockup = new AnaViewMockup(mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject, 'Variable');
-			const mockupService = new ServiceControlMockup(mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject, 'Trigonometry');
+			new AnaViewMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
+			new ServiceControlMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Trigonometry');
 			await mockupServer.start();
 
 			pea = new PEAController(peaOptions as unknown as PEAOptions);
@@ -147,16 +138,14 @@ describe('Service', () => {
 			if(mockupServer) await mockupServer.shutdown();
 		});
 
-/*		it('should get default procedure for default procedure', () => {
-			expect(service.getCurrentProcedure()).to.equal(service.getDefaultProcedure());
-			//TODO: fix
+		it('should get current procedure which is undefined', () => {
+			expect(service.getCurrentProcedure()).to.equal(undefined);
 		});
 
-		it('should find parameter', () => {
-			const param = service.findInputParameter('Offset');
-			expect(param?.name).to.equal('Offset');
-			//TODO: fix
-		});*/
+		it('should not find parameter of indicator element type', () => {
+			const param = service.findInputParameter('Trigonometry_default');
+			expect(param?.name).to.equal(undefined);
+		});
 
 		it('should provide correct JSON', () => {
 			expect(ServiceState[service.state]).to.equal('IDLE');
@@ -247,19 +236,19 @@ describe('Service', () => {
 				stateChangeCount++;
 			});
 
-			await service.executeCommandAndWaitForStateChange(ServiceCommand.start);
-			await service.executeCommandAndWaitForStateChange(ServiceCommand.restart);
-			await service.executeCommandAndWaitForStateChange(ServiceCommand.stop);
-			await service.executeCommandAndWaitForStateChange(ServiceCommand.reset);
-			await service.executeCommandAndWaitForStateChange(ServiceCommand.start);
-			await service.executeCommandAndWaitForStateChange(ServiceCommand.pause);
-			await service.executeCommandAndWaitForStateChange(ServiceCommand.resume);
+			await service.executeCommand(ServiceCommand.start);
+			await service.executeCommand(ServiceCommand.restart);
+			await service.executeCommand(ServiceCommand.stop);
+			await service.executeCommand(ServiceCommand.reset);
+			await service.executeCommand(ServiceCommand.start);
+			await service.executeCommand(ServiceCommand.pause);
+			await service.executeCommand(ServiceCommand.resume);
 
-			await service.executeCommandAndWaitForStateChange(ServiceCommand.complete);
-			await service.executeCommandAndWaitForStateChange(ServiceCommand.abort);
-			await service.executeCommandAndWaitForStateChange(ServiceCommand.reset);
-			await service.executeCommandAndWaitForStateChange(ServiceCommand.start);
-			await service.executeCommandAndWaitForStateChange(ServiceCommand.complete);
+			await service.executeCommand(ServiceCommand.complete);
+			await service.executeCommand(ServiceCommand.abort);
+			await service.executeCommand(ServiceCommand.reset);
+			await service.executeCommand(ServiceCommand.start);
+			await service.executeCommand(ServiceCommand.complete);
 			expect(stateChangeCount).to.equal(11);
 		}).timeout(10000);
 
@@ -269,22 +258,15 @@ describe('Service', () => {
 	});
 	context('parameter dynamic', () => {
 		it('set Parameter', async () => {
-			setNamespaceUrl(peaOptionsServices as any);
 			const mockupServer = new MockupServer();
 			await mockupServer.initialize();
 
-			const mockupConfParam = new AnaServParamMockup(mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject, 'TestService.AnaConfParam_TestService_updateRate');
-			const mockupParam = new AnaServParamMockup(mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject, 'TestService.AnaProcParam_TestService_factor');
-			const mockupReportValue = new AnaViewMockup(mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject, 'TestService.AnaReportValue_TestService_rvTime');
-			const mockupProcessValueIn = new AnaProcessValueInMockup(mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject, 'TestService.AnaProcessValueIn_TestService_pv');
-			const mockupProcessValueOut = new AnaProcessValueInMockup(mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject, 'TestService.AnaProcessValueOut_TestService_pvOutIntegral');
-			const mockupService = new ServiceControlMockup(mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject, 'TestService');
+			new AnaServParamMockup(mockupServer.nameSpace, mockupServer.rootObject, 'TestService.AnaConfParam_TestService_updateRate');
+			new AnaServParamMockup(mockupServer.nameSpace, mockupServer.rootObject, 'TestService.AnaProcParam_TestService_factor');
+			new AnaViewMockup(mockupServer.nameSpace, mockupServer.rootObject, 'TestService.AnaReportValue_TestService_rvTime');
+			new AnaProcessValueInMockup(mockupServer.nameSpace, mockupServer.rootObject, 'TestService.AnaProcessValueIn_TestService_pv');
+			new AnaProcessValueInMockup(mockupServer.nameSpace, mockupServer.rootObject, 'TestService.AnaProcessValueOut_TestService_pvOutIntegral');
+			new ServiceControlMockup(mockupServer.nameSpace, mockupServer.rootObject, 'TestService');
 
 			await mockupServer.start();
 			const pea = new PEAController(peaOptionsServices as unknown as PEAOptions);
@@ -296,11 +278,11 @@ describe('Service', () => {
 				await service.setProcedure(procedure);
 			}
 			let curProcedure = await service.getCurrentProcedure();
-			expect(curProcedure).to.be.undefined; // current procedure will be set on service start
+			expect(curProcedure).to.be.undefined;
 
 			await service.start();
 
-			await new Promise(f => setTimeout(f, 500)); // wait for change
+			await new Promise((resolve => service.serviceControl.on('state', resolve)));
 
 			curProcedure = await service.getCurrentProcedure();
 			expect(curProcedure).to.not.be.undefined;
@@ -309,7 +291,7 @@ describe('Service', () => {
 
 			await service.setParameters([paramOptions], [pea]);
 
-			await new Promise(f => setTimeout(f, 500)); // wait for change
+			await new Promise((resolve => service.serviceControl.on('parameterChanged', resolve)));
 
 			expect((procedure?.parameters[0] as AnaServParam).communication.VExt.value).to.equal(5);
 			await pea.disconnectAndUnsubscribe();

@@ -24,19 +24,19 @@
  */
 
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaConnection, OpcUaDataItem} from '../../../../connection';
+import {OpcUaConnection, DataItem} from '../../../../connection';
 import {ServParam, ServParamRuntime} from '../ServParam';
 
 export type BinServParamRuntime = ServParamRuntime & {
-	VExt: OpcUaDataItem<boolean>;
-	VOp: OpcUaDataItem<boolean>;
-	VInt: OpcUaDataItem<boolean>;
-	VReq: OpcUaDataItem<boolean>;
-	VOut: OpcUaDataItem<boolean>;
-	VFbk: OpcUaDataItem<boolean>;
+	VExt: DataItem<boolean>;
+	VOp: DataItem<boolean>;
+	VInt: DataItem<boolean>;
+	VReq: DataItem<boolean>;
+	VOut: DataItem<boolean>;
+	VFbk: DataItem<boolean>;
 
-	VState0: OpcUaDataItem<string>;
-	VState1: OpcUaDataItem<string>;
+	VState0: DataItem<string>;
+	VState1: DataItem<string>;
 };
 
 export class BinServParam extends ServParam {
@@ -45,20 +45,20 @@ export class BinServParam extends ServParam {
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
 
-		this.communication.VExt = this.createDataItem('VExt', 'write', 'boolean');
-		this.communication.VOp = this.createDataItem('VOp', 'write', 'boolean');
-		this.communication.VInt = this.createDataItem('VInt', 'read', 'boolean');
-		this.communication.VReq = this.createDataItem('VReq', 'read', 'boolean');
-		this.communication.VOut = this.createDataItem('VOut', 'read', 'boolean');
-		this.communication.VFbk = this.createDataItem('VFbk', 'read', 'boolean');
+		this.communication.VExt = this.createDataItem('VExt', 'boolean', 'write');
+		this.communication.VOp = this.createDataItem('VOp', 'boolean', 'write');
+		this.communication.VInt = this.createDataItem('VInt', 'boolean');
+		this.communication.VReq = this.createDataItem('VReq', 'boolean');
+		this.communication.VOut = this.createDataItem('VOut', 'boolean');
+		this.communication.VFbk = this.createDataItem('VFbk', 'boolean');
 
-		this.communication.VState0 = this.createDataItem('VState0', 'read', 'string');
-		this.communication.VState1 = this.createDataItem('VState1', 'read', 'string');
+		this.communication.VState0 = this.createDataItem('VState0', 'string');
+		this.communication.VState1 = this.createDataItem('VState1', 'string');
 
 		this.defaultReadDataItem = this.communication.VOut;
 		this.defaultReadDataItemType = 'boolean';
 
 		this.defaultWriteDataItemType = 'boolean';
-		this.defaultWriteDataItem = this.communication.VExt; //TODO correct?
+		this.defaultWriteDataItem = this.communication.VExt;
 	}
 }

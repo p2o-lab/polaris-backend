@@ -27,79 +27,87 @@
 import Timeout = NodeJS.Timeout;
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 
-import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../../../_extensions/osLevelDA/OSLevelDA.mockup';
-import {getUnitDAMockupReferenceJSON, UnitDAMockup} from '../../../_extensions/unitDA/UnitDA.mockup';
+import {getUnitSettingsDataItemOptions, UnitSettingsMockup} from '../../../baseFunction/unitSettings/UnitSettings.mockup';
 import {
-	getScaleSettingDAMockupReferenceJSON,
-	ScaleSettingDAMockup
-} from '../../../_extensions/scaleSettingsDA/ScaleSettingDA.mockup';
+	getScaleSettingsDataItemOptions,
+	ScaleSettingMockup
+} from '../../../baseFunction/scaleSettings/ScaleSetting.mockup';
 import {
-	getValueLimitationDAMockupReferenceJSON,
-	ValueLimitationDAMockup
-} from '../../../_extensions/valueLimitationDA/ValueLimitationDA.mockup';
+	getValueLimitationDataItemOptions,
+	ValueLimitationMockup
+} from '../../../baseFunction/valueLimitation/ValueLimitation.mockup';
+import {getOperationElementDataItemOptions, OperationElementMockup} from '../../OperationElement.mockup';
+import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
+import {getDataAssemblyOptions} from '../../../DataAssemblyController.mockup';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 
-export function getAnaManMockupReferenceJSON(
-	namespace: number,
-	objectBrowseName: string) {
+const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/OperationElement/AnaMan';
 
+function getAnaManSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
 	return ({
-			...getOSLevelDAMockupReferenceJSON(namespace,objectBrowseName),
-			...getScaleSettingDAMockupReferenceJSON(namespace,objectBrowseName,'Float'),
-			...getValueLimitationDAMockupReferenceJSON(namespace,objectBrowseName, 'Float'),
-			...getUnitDAMockupReferenceJSON(namespace,objectBrowseName),
-			VOut: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VOut`,
-				dataType: 'Float'
-			},
-			VMan: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VMan`,
-				dataType: 'Float'
-			},
-			VRbk: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VRbk`,
-				dataType: 'Float'
-			},
+		VOut: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.VOut`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions,
+		VMan: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.VMan`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions,
+		VRbk: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.VRbk`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions,
 
-			VFbk: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VFbk`,
-				dataType: 'Float'
-			}
-		}
+		VFbk: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.VFbk`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions
+	});
+}
+
+export function getAnaManDataItemOptions(namespace: number, objectBrowseName: string): object {
+	return ({
+			...getOperationElementDataItemOptions(namespace, objectBrowseName),
+			...getScaleSettingsDataItemOptions(namespace, objectBrowseName, 'Ana'),
+			...getValueLimitationDataItemOptions(namespace, objectBrowseName, 'Ana'),
+			...getUnitSettingsDataItemOptions(namespace, objectBrowseName),
+			...getAnaManSpecificDataItemOptions(namespace, objectBrowseName),
+		} as OpcUaNodeOptions
 	);
 }
 
-export class AnaManMockup {
+export function getAnaManOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
+	const options = getDataAssemblyOptions(name, tagName, tagDescription);
+	options.metaModelRef = metaModelReference;
+	options.dataItems = {
+		...options.dataItems,
+		...getAnaManDataItemOptions(namespace, objectBrowseName)};
+	return options;
+}
 
-	public readonly name: string;
+export class AnaManMockup extends OperationElementMockup {
+
 	protected vRbk = 0;
 	protected vMan = 0;
-	protected vOut = 0
+	protected vOut = 0;
 	protected vFbk = 0;
-	
-	public readonly osLevel: OSLevelDAMockup;
-	public readonly scaleSettings: ScaleSettingDAMockup<DataType.Double>;
-	public readonly valueLimitation: ValueLimitationDAMockup<DataType.Double>;
-	public readonly unit: UnitDAMockup;
+
+	public readonly scaleSettings: ScaleSettingMockup<'Ana'>;
+	public readonly valueLimitation: ValueLimitationMockup<'Ana'>;
+	public readonly unit: UnitSettingsMockup;
 	protected interval: Timeout | undefined;
-	protected mockupNode: UAObject;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
+		super(namespace, rootNode, variableName);
 
-		this.name = variableName;
+		this.scaleSettings = new ScaleSettingMockup(namespace, this.mockupNode, this.name, 'Ana');
+		this.valueLimitation = new ValueLimitationMockup(namespace, this.mockupNode, this.name,'Ana');
+		this.unit = new UnitSettingsMockup(namespace, this.mockupNode, this.name);
 
-		this.mockupNode = namespace.addObject({
-			organizedBy: rootNode,
-			browseName: variableName
-		});
-		
-		this.osLevel = new OSLevelDAMockup(namespace, this.mockupNode, this.name);
-		this.scaleSettings = new ScaleSettingDAMockup(namespace, this.mockupNode, this.name, DataType.Double);
-		this.valueLimitation = new ValueLimitationDAMockup(namespace, this.mockupNode, this.name,DataType.Double);
-		this.unit = new UnitDAMockup(namespace, this.mockupNode, this.name);
 		namespace.addVariable({
 			componentOf: this.mockupNode,
 			nodeId: `ns=${namespace.index};s=${variableName}.VMan`,
@@ -150,10 +158,17 @@ export class AnaManMockup {
 		});
 	}
 
-	public getAnaManMockupJSON() {
-		return getAnaManMockupReferenceJSON(
-			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name as string);
+	public getDataAssemblyOptions(): DataAssemblyOptions {
+		const options = super.getDataAssemblyOptions();
+		options.metaModelRef = metaModelReference;
+		options.dataItems = {
+			...options.dataItems,
+			...this.scaleSettings.getDataItemOptions(),
+			...this.valueLimitation.getDataItemOptions(),
+			...this.unit.getDataItemOptions(),
+			...getAnaManSpecificDataItemOptions(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
+		};
+		return options;
 	}
 
 	public startCurrentTimeUpdate(): void {

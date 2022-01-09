@@ -25,23 +25,20 @@
 
 import {
 	DataAssemblyOptions,
-	InputElementOptions,
-	ParameterInterface,
-	ParameterOptions
+	ParameterInterface, ParameterOptions,
 } from '@p2olab/polaris-interface';
-import {DataItem, OpcUaConnection} from '../../connection';
-import {PEAController} from '../../PEAController';
-import {WQCRuntime} from '../_extensions';
+import {DataItem, DynamicDataItem, OpcUaConnection} from '../../connection';
+import {WQC, WQCRuntime} from '../baseFunction';
 import {BaseDataAssemblyRuntime, DataAssemblyController} from '../DataAssemblyController';
 import {catDataAssembly} from '../../../../logging';
-import {WQC} from '../_extensions/wqcDA/WQC';
-import {Parameter} from '../../../recipe';
+import {PEAController} from '../../PEAController';
+import {ParameterRequest} from '../ParameterRequest';
 
 export type InputElementRuntime = WQCRuntime & BaseDataAssemblyRuntime ;
 
 export class InputElement extends DataAssemblyController {
 	public readonly communication!: InputElementRuntime;
-	public parameterRequest: Parameter | undefined;
+	public parameterRequest: ParameterRequest | undefined;
 	public requestedValue = '';
 
 	wqc: WQC;
@@ -58,10 +55,10 @@ export class InputElement extends DataAssemblyController {
 	 */
 	public async setParameter(paramValue: string | number | boolean, variable?: string): Promise<void> {
 		const dataItem: DataItem<any> | undefined = (variable) ?
-			//this.communication[variable as keyof InputElementOptions] : this.defaultWriteDataItem;
+			//this.communication[variable as keyof InputElementRuntime] : this.defaultWriteDataItem;
 			(this.communication as any)[variable] : this.defaultWriteDataItem;
 		catDataAssembly.debug(`Set Parameter: ${this.name} (${variable}) -> ${JSON.stringify(paramValue)}`);
-		await dataItem?.write(paramValue);
+		await (dataItem as DynamicDataItem<any>)?.write(paramValue);
 	}
 
 	public async setValue(p: ParameterOptions, peas: PEAController[]): Promise<void> {
@@ -77,13 +74,13 @@ export class InputElement extends DataAssemblyController {
 				}
 			}
 
-			this.parameterRequest = new Parameter(p, peas);
+			this.parameterRequest = new ParameterRequest(p, peas);
 
 			const value = this.parameterRequest.getValue();
 			catDataAssembly.trace(`calculated value: ${value}`);
 			await this.setParameter(+value);
 
-			if (this.parameterRequest.options.continuous) {
+			if (this.parameterRequest.continuous) {
 				catDataAssembly.trace('Continuous parameter change');
 				this.parameterRequest.listenToScopeArray()
 					.on('changed', (data) => this.setParameter(data));

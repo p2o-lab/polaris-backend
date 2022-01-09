@@ -24,20 +24,20 @@
  */
 
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaConnection, OpcUaDataItem} from '../../../connection';
+import {OpcUaConnection, DataItem} from '../../../connection';
 import {IndicatorElement, IndicatorElementRuntime} from '../IndicatorElement';
 
-export type StrRuntime = IndicatorElementRuntime & {
-	Text: OpcUaDataItem<string>;
+export type StringViewRuntime = IndicatorElementRuntime & {
+	Text: DataItem<string>;
 };
 
 export class StringView extends IndicatorElement {
 
-	public readonly communication!: StrRuntime;
+	public readonly communication!: StringViewRuntime;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
-		this.communication.Text = this.createDataItem('Text', 'read', 'string');
+		this.communication.Text = this.createDataItem('Text', 'string');
 
 		this.defaultReadDataItem = this.communication.Text;
 		this.defaultReadDataItemType = 'string';

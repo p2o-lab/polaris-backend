@@ -23,15 +23,17 @@
  * SOFTWARE.
  */
 
-import {DataAssemblyOptions, ParameterInterface} from '@p2olab/polaris-interface';
-import {DataItem, OpcUaConnection, OpcUaDataItem} from '../connection';
+import {DataAssemblyOptions, OpcUaNodeOptions, ParameterInterface} from '@p2olab/polaris-interface';
+import {DataItem, DynamicDataItem, OpcUaConnection, OpcUaDataItem} from '../connection';
 
 import {EventEmitter} from 'events';
 import {catDataAssembly} from '../../../logging';
+import {DataItemFactory, DataItemOptions, DynamicDataItemOptions} from '../connection/DataItemFactory';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface BaseDataAssemblyRuntime {
-
+	TagName: DataItem<string>;
+	TagDescription: DataItem<string>;
 }
 
 export class DataAssemblyController extends EventEmitter {
@@ -48,36 +50,36 @@ export class DataAssemblyController extends EventEmitter {
 	public defaultReadDataItemType: any;
 	public defaultWriteDataItem: DataItem<any> | undefined;
 	public defaultWriteDataItemType: any;
-	public readonly tagName: string;
-	public readonly tagDescription: string;
+	public readonly tagName: string = '';
+	public readonly tagDescription: string = '';
+
+	private dataItemFactory: DataItemFactory;
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super();
 		this.options = options;
 		if (!options.dataItems || Object.keys(options.dataItems).length == 0) {
-			throw new Error('Creating DataAssemblyController Error: No Communication variables found in DataAssemblyOptions');
+			throw new Error('Creating DataAssemblyController Error: No Communication dataAssemblies found in DataAssemblyOptions');
 		}
 		this.connection = connection;
 		if (!this.connection) {
 			throw new Error('Creating DataAssemblyController Error: No OpcUaConnection provided');
 		}
+		this.dataItemFactory = new DataItemFactory(this.connection);
 		this.name = options.name;
 		this.metaModelRef = options.metaModelRef;
 		this.subscriptionActive = false;
 
 		// initialize communication
-		this.communication = {};
-		this.tagName = options.dataItems.TagName;
-		this.tagDescription = options.dataItems.TagDescription;
-
-
+		this.communication = {} as BaseDataAssemblyRuntime;
+		this.communication.TagName = this.dataItemFactory.create({type: 'string', defaultValue: options.dataItems.TagName});
+		this.communication.TagDescription = this.dataItemFactory.create({type: 'string', defaultValue: options.dataItems.TagDescription});
 	}
 
 	/**
-	 * subscribe to all changes in any of the variables of a DataAssemblyController
+	 * subscribe to all changes in any of the dataAssemblies of a DataAssemblyController
 	 *
-	 * The appropriate variables are detected via the type of the DataAssemblyController
-	 * @param samplingInterval
+	 * The appropriate dataAssemblies are detected via the type of the DataAssemblyController
 	 */
 	public async subscribe(): Promise<DataAssemblyController> {
 		if (!this.subscriptionActive) {
@@ -90,11 +92,10 @@ export class DataAssemblyController extends EventEmitter {
 						dataItem.nodeId &&
 						dataItem.namespaceIndex)
 					.map(([key, dataItem]: [string, OpcUaDataItem<any>]) => {
-						dataItem.on('changed', (info) => {
+						dataItem.on('changed', () => {
 							catDataAssembly.trace(`Emit ${this.name}.${key} = ${dataItem.value}`);
 							this.emit(key, dataItem);
 							this.emit('changed');
-							if(info.nodeId.includes('StateCur')) this.emit('State');
 						});
 						return dataItem.subscribe();
 					})
@@ -106,7 +107,7 @@ export class DataAssemblyController extends EventEmitter {
 	}
 
 	/**
-	 * unsubscribe to all changes in any of the variables of a DataAssemblyController
+	 * unsubscribe to all changes in any of the dataAssemblies of a DataAssemblyController
 	 *
 	 */
 	public unsubscribe(): void {
@@ -126,7 +127,7 @@ export class DataAssemblyController extends EventEmitter {
 	 * Creates a data item from provided options of DataAssemblyController by
 	 * finding first name to match one of the communication options
 	 *!/
-	public populateDataItems(silent = false): OpcUaDataItem<any> {
+	public populateDataItems(silent = false): DataItem<any> {
 		for (const communicationKey of Object.keys(this.communication)) {
 			try {
 				this.communication[communicationKey as keyof BaseDataAssemblyRuntime] =
@@ -149,17 +150,34 @@ export class DataAssemblyController extends EventEmitter {
 	 *
 	 * TODO: Maybe rework this function, because it's hard to understand.
 	 */
-	public createDataItem(name: string | string[], access: 'read' | 'write', type?: 'number' | 'string' | 'boolean', silent = false): OpcUaDataItem<any> {
+	public createDataItem(name: string | string[], type: 'number' | 'string' | 'boolean', access: 'read' | 'write' = 'read' , logErrors = false): DataItem<any> {
 		const names = typeof name === 'string' ? [name] : name;
 		for (const [key, value] of names.entries()) {
 			if (this.options.dataItems[value as keyof BaseDataAssemblyRuntime]) {
-				return OpcUaDataItem.createFromOptions(this.getDataAssemblyProperty(
-					this.options.dataItems, value as keyof BaseDataAssemblyRuntime),
-					this.connection, access);
+				const options = this.getDataAssemblyProperty(this.options.dataItems, value as keyof BaseDataAssemblyRuntime) as any;
+				let factoryOptions: DynamicDataItemOptions | DataItemOptions;
+				if ((options as OpcUaNodeOptions).namespaceIndex !== undefined) {
+					factoryOptions = {
+						type: type,
+						defaultValue: options.value,
+						dynamicDataItemOptions: {
+							dataType: options.dataType,
+							writable: access === 'write',
+							namespaceIndex: options.namespaceIndex,
+							nodeId: options.nodeId
+						} as OpcUaNodeOptions
+					} as DynamicDataItemOptions;
+				} else {
+					factoryOptions = {
+						type: type,
+						defaultValue: options.value
+					} as DataItemOptions;
+				}
+				return this.dataItemFactory.create(factoryOptions);
 			}
 		}
 		this.parsingErrors.push(names[0]);
-		if (!silent) {
+		if (!logErrors) {
 			this.logParsingErrors();
 		}
 		throw new Error('createDataItem Failed ');
@@ -176,7 +194,7 @@ export class DataAssemblyController extends EventEmitter {
 	 * Getter of the timestamp from last change of the default ReadDataItem
 	 */
 	public getLastDefaultReadValueUpdate(): Date | undefined {
-		return this.defaultReadDataItem ? this.defaultReadDataItem.timestamp : undefined;
+		return this.defaultReadDataItem? ((this.defaultReadDataItem instanceof DynamicDataItem)? this.defaultReadDataItem.timestamp: undefined) : undefined;
 	}
 
 	/**
@@ -190,7 +208,7 @@ export class DataAssemblyController extends EventEmitter {
 	 * Getter of the timestamp from last change of the default WriteDataItem
 	 */
 	public getLastDefaultWriteValueUpdate(): Date | undefined {
-		return this.defaultWriteDataItem ? this.defaultWriteDataItem.timestamp : undefined;
+		return this.defaultWriteDataItem? ((this.defaultWriteDataItem instanceof DynamicDataItem)? this.defaultWriteDataItem.timestamp: undefined) : undefined;
 	}
 
 	/**

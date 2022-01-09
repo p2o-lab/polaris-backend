@@ -1,4 +1,3 @@
-/* tslint:disable:max-classes-per-file */
 /*
 * MIT License
 *
@@ -25,26 +24,25 @@
 */
 
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaConnection, OpcUaDataItem} from '../../../../connection';
+import {OpcUaConnection, DataItem} from '../../../../connection';
 import {Vlv, VlvRuntime} from '../Vlv';
-import {SourceModeRuntime} from '../../../_extensions';
-import {SourceModeController} from '../../../_extensions/sourceModeDA/SourceModeController';
+import {SourceModeController, SourceModeRuntime} from '../../../baseFunction';
 
 export type AnaVlvRuntime = VlvRuntime & SourceModeRuntime & {
-	Pos: OpcUaDataItem<number>;
-	PosFbk: OpcUaDataItem<number>;
-	PosFbkCalc: OpcUaDataItem<boolean>;
-	PosRbk: OpcUaDataItem<number>;
-	PosInt: OpcUaDataItem<number>;
-	PosMan: OpcUaDataItem<number>;
-	PosUnit: OpcUaDataItem<number>;
-	PosSclMin: OpcUaDataItem<number>;
-	PosSclMax: OpcUaDataItem<number>;
-	PosMin: OpcUaDataItem<number>;
-	PosMax: OpcUaDataItem<number>;
+	Pos: DataItem<number>;
+	PosFbk: DataItem<number>;
+	PosFbkCalc: DataItem<boolean>;
+	PosRbk: DataItem<number>;
+	PosInt: DataItem<number>;
+	PosMan: DataItem<number>;
+	PosUnit: DataItem<number>;
+	PosSclMin: DataItem<number>;
+	PosSclMax: DataItem<number>;
+	PosMin: DataItem<number>;
+	PosMax: DataItem<number>;
 
-	OpenAct: OpcUaDataItem<boolean>;
-	CloseAct: OpcUaDataItem<boolean>;
+	OpenAct: DataItem<boolean>;
+	CloseAct: DataItem<boolean>;
 };
 
 export class AnaVlv extends Vlv {
@@ -55,21 +53,20 @@ export class AnaVlv extends Vlv {
 		super(options, connection);
 
 		this.sourceMode = new SourceModeController(this);
-		
 
-		this.communication.Pos = this.createDataItem('Pos', 'read', 'number');
-		this.communication.PosFbk = this.createDataItem('PosFbk', 'read', 'number');
-		this.communication.PosFbkCalc = this.createDataItem('PosFbkCalc', 'read', 'boolean');
-		this.communication.PosRbk = this.createDataItem('PosRbk', 'read', 'number');
-		this.communication.PosInt = this.createDataItem('PosInt', 'read', 'number');
-		this.communication.PosMan = this.createDataItem('PosMan', 'read', 'number');
-		this.communication.PosUnit = this.createDataItem('PosUnit', 'read', 'number');
-		this.communication.PosSclMin = this.createDataItem('PosSclMin', 'read', 'number');
-		this.communication.PosSclMax = this.createDataItem('PosSclMax', 'read', 'number');
-		this.communication.PosMin = this.createDataItem('PosMin', 'read', 'number');
-		this.communication.PosMax = this.createDataItem('PosMax', 'read', 'number');
+		this.communication.Pos = this.createDataItem('Pos', 'number');
+		this.communication.PosFbk = this.createDataItem('PosFbk', 'number');
+		this.communication.PosFbkCalc = this.createDataItem('PosFbkCalc','boolean');
+		this.communication.PosRbk = this.createDataItem('PosRbk', 'number');
+		this.communication.PosInt = this.createDataItem('PosInt','number');
+		this.communication.PosMan = this.createDataItem('PosMan',  'number');
+		this.communication.PosUnit = this.createDataItem('PosUnit', 'number');
+		this.communication.PosSclMin = this.createDataItem('PosSclMin', 'number');
+		this.communication.PosSclMax = this.createDataItem('PosSclMax', 'number');
+		this.communication.PosMin = this.createDataItem('PosMin', 'number');
+		this.communication.PosMax = this.createDataItem('PosMax', 'number');
 
-		this.communication.OpenAct = this.createDataItem('OpenAct', 'read', 'boolean');
-		this.communication.CloseAct = this.createDataItem('CloseAct', 'read', 'boolean');
+		this.communication.OpenAct = this.createDataItem('OpenAct', 'boolean');
+		this.communication.CloseAct = this.createDataItem('CloseAct', 'boolean');
 	}
 }

@@ -24,59 +24,47 @@
  */
 
 import {OpcUaConnection} from '../../connection';
-import {
-	ActiveElement
-} from './ActiveElement';
+import {ActiveElement} from './ActiveElement';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {MockupServer} from '../../../_utils';
+import {ActiveElementMockup, getActiveElementOptions} from './ActiveElement.mockup';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from '../../../../../tests/monanadrv.json';
-import {MockupServer} from '../../../_utils';
-import {Namespace, UAObject} from 'node-opcua';
-import {namespaceUrl} from '../../../../../tests/namespaceUrl';
-import {ActiveElementMockup} from './ActiveElement.mockup';
-
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('ActiveElement', () => {
-	const dataAssemblyOptions: DataAssemblyOptions = {
-		name: 'Variable',
-		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/ActiveElement/',
-		dataItems: baseDataAssemblyOptions
-	};
+
+	let dataAssemblyOptions: DataAssemblyOptions;
+
 	describe('static', () => {
+
 		it('should create ActiveElement', () => {
-			const emptyOPCUAConnection = new OpcUaConnection('', '');
-			const da1 = new ActiveElement(dataAssemblyOptions, emptyOPCUAConnection);
-			expect(da1).to.be.not.undefined;
-			expect(da1.wqc).to.be.not.undefined;
-			expect(da1.osLevel).to.not.be.undefined;
+			const emptyOPCUAConnection = new OpcUaConnection();
+			emptyOPCUAConnection.initialize({endpoint : ''});
+			dataAssemblyOptions = getActiveElementOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
+			const dataAssemblyController = new ActiveElement(dataAssemblyOptions, emptyOPCUAConnection);
+			expect(dataAssemblyController).to.be.not.undefined;
+			expect(dataAssemblyController.wqc).to.be.not.undefined;
+			expect(dataAssemblyController.osLevel).to.not.be.undefined;
 		});
 	});
 
 	describe('dynamic', () => {
+
 		let mockupServer: MockupServer;
 		let connection: OpcUaConnection;
-		// set namespaceUrl
-		for (const key in dataAssemblyOptions.dataItems as any) {
-			//skip static values
-			if((typeof(dataAssemblyOptions.dataItems as any)[key] != 'string')){
-				(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
-			}
-		}
+
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			const mockup = new ActiveElementMockup(
-				mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject,
-				'Variable');
-
+			const mockup = new ActiveElementMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
+			dataAssemblyOptions = mockup.getDataAssemblyOptions();
 			await mockupServer.start();
-			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334','','');
+			connection = new OpcUaConnection();
+			connection.initialize({endpoint : mockupServer.endpoint});
 			await connection.connect();
 		});
 
@@ -87,12 +75,14 @@ describe('ActiveElement', () => {
 		});
 
 		it('should subscribe successfully', async () => {
-			const da1 = new ActiveElement(dataAssemblyOptions, connection);
-			const pv = da1.subscribe();
-			await connection.startListening();
-			await pv;
-			expect(da1.communication.WQC.value).equal(0);
-			expect(da1.communication.OSLevel.value).equal(0);
+
+			const dataAssemblyController = new ActiveElement(dataAssemblyOptions, connection);
+			await dataAssemblyController.subscribe();
+			await connection.startMonitoring();
+			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
+
+			expect(dataAssemblyController.communication.WQC.value).equal(0);
+			expect(dataAssemblyController.communication.OSLevel.value).equal(0);
 		}).timeout(4000);
 	});
 });

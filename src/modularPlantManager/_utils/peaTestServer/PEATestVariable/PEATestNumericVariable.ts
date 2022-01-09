@@ -32,7 +32,7 @@ import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 export class PEATestNumericVariable extends PEATestVariable {
 
 	public v: number;
-	public vext: number;
+	public vExt: number;
 	public sclMin: number;
 	public sclMax: number;
 	public unit: number;
@@ -43,16 +43,16 @@ export class PEATestNumericVariable extends PEATestVariable {
 		super(namespace, rootNode, variableName);
 
 		this.v = initialValue;
-		this.vext = initialValue;
+		this.vExt = initialValue;
 		this.sclMin = initialMin || initialValue - Math.random() * 100;
 		this.sclMax = initialMax || initialValue + Math.random() * 100;
 		this.unit = initialUnit || Math.floor((Math.random() * 100) + 1000);
 
 		namespace.addVariable({
 			componentOf: this.variableNode,
-			nodeId: `ns=1;s=${variableName}.V`,
+			nodeId: `ns=${namespace.index};s=${variableName}.V`,
 			browseName: `${variableName}.V`,
-			dataType: 'Double',
+			dataType: DataType.Double,
 			value: {
 				get: (): Variant => {
 					return new Variant({dataType: DataType.Double, value: this.v});
@@ -62,9 +62,9 @@ export class PEATestNumericVariable extends PEATestVariable {
 
 		namespace.addVariable({
 			componentOf: this.variableNode,
-			nodeId: `ns=1;s=${variableName}.VUnit`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VUnit`,
 			browseName: `${variableName}.VUnit`,
-			dataType: 'Double',
+			dataType: DataType.Double,
 			value: {
 				get: (): Variant => {
 					return new Variant({dataType: DataType.Double, value: this.unit});
@@ -74,9 +74,9 @@ export class PEATestNumericVariable extends PEATestVariable {
 
 		namespace.addVariable({
 			componentOf: this.variableNode,
-			nodeId: `ns=1;s=${variableName}.VSclMin`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VSclMin`,
 			browseName: `${variableName}.VSclMin`,
-			dataType: 'Double',
+			dataType: DataType.Double,
 			value: {
 				get: (): Variant => {
 					return new Variant({dataType: DataType.Double, value: this.sclMin});
@@ -86,9 +86,9 @@ export class PEATestNumericVariable extends PEATestVariable {
 
 		namespace.addVariable({
 			componentOf: this.variableNode,
-			nodeId: `ns=1;s=${variableName}.VSclMax`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VSclMax`,
 			browseName: `${variableName}.VSclMax`,
-			dataType: 'Double',
+			dataType: DataType.Double,
 			value: {
 				get: (): Variant => {
 					return new Variant({dataType: DataType.Double, value: this.sclMax});
@@ -98,18 +98,18 @@ export class PEATestNumericVariable extends PEATestVariable {
 
 		namespace.addVariable({
 			componentOf: this.variableNode,
-			nodeId: `ns=1;s=${variableName}.VExt`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VExt`,
 			browseName: `${variableName}.VExt`,
-			dataType: 'Double',
+			dataType: DataType.Double,
 			value: {
 				get: (): Variant => {
-					return new Variant({dataType: DataType.Double, value: this.vext});
+					return new Variant({dataType: DataType.Double, value: this.vExt});
 				},
 				set: (variant: Variant): StatusCodes => {
-					this.vext = parseFloat(variant.value);
+					this.vExt = parseFloat(variant.value);
 					setTimeout(() => {
-						this.v = this.vext;
-					}, 500);
+						this.v = this.vExt;
+					}, 100);
 					return StatusCodes.Good;
 				}
 

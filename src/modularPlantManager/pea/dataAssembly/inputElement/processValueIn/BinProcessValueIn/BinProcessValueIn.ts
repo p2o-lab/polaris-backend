@@ -1,4 +1,3 @@
-/* tslint:disable:max-classes-per-file */
 /*
  * MIT License
  *
@@ -25,14 +24,13 @@
  */
 
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaConnection, OpcUaDataItem} from '../../../../connection';
+import {OpcUaConnection, DataItem} from '../../../../connection';
 import {InputElement, InputElementRuntime} from '../../InputElement';
 
-
 export type BinProcessValueInRuntime = InputElementRuntime & {
-	VExt: OpcUaDataItem<boolean>;
-	VState0: OpcUaDataItem<boolean>;
-	VState1: OpcUaDataItem<boolean>;
+	VExt: DataItem<boolean>;
+	VState0: DataItem<boolean>;
+	VState1: DataItem<boolean>;
 };
 
 export class BinProcessValueIn extends InputElement {
@@ -40,9 +38,9 @@ export class BinProcessValueIn extends InputElement {
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
-		this.communication.VExt = this.createDataItem('VExt', 'read');
-		this.communication.VState0 = this.createDataItem('VState0','read'); //TODO: Check read, write?
-		this.communication.VState1 = this.createDataItem('VState1','read'); //TODO: Check read, write?
+		this.communication.VExt = this.createDataItem('VExt', 'boolean', 'write');
+		this.communication.VState0 = this.createDataItem('VState0', 'boolean', 'write');
+		this.communication.VState1 = this.createDataItem('VState1', 'boolean', 'write');
 
 		this.defaultReadDataItem = this.communication.VExt;
 		this.defaultReadDataItemType = 'boolean';

@@ -24,7 +24,7 @@
 */
 
 export interface ServiceRelationInterface {
-	uuid?: string;
+	id?: string;
 	description?: string;
 	sourceServiceID: string;
 	sourceProcedureID: string;
@@ -35,7 +35,7 @@ export interface ServiceRelationInterface {
 }
 
 export interface ServiceRelationOptions {
-	uuid?: string;
+	id?: string;
 	name?: string;
 	sourceServiceID: string;
 	sourceProcedureID: string;
@@ -62,17 +62,17 @@ export abstract class ServiceRelation {
 	// type of the ServiceRelation
 	protected _type!: ServiceRelationType;
 	protected _parentID: string;
-	protected _uuid: string;
+	protected _id: string;
 
 	protected constructor(serviceRelationOptions: ServiceRelationOptions, parentID: string) {
-		// TODO: Define generic Object reference --> {name, uuid, type, description}
+		// TODO: Define generic Object reference --> {name, id, type, description}
 		this.sourceServiceID = serviceRelationOptions.sourceServiceID;
 		this.sourceProcedureID = serviceRelationOptions.sourceProcedureID;
 		this.targetServiceID = serviceRelationOptions.targetServiceID;
 		this.targetProcedureID = serviceRelationOptions.targetServiceID;
 		this.sourceValue = serviceRelationOptions.sourceValue;
 		this._parentID = parentID;
-		this._uuid = serviceRelationOptions.uuid || 'No uuid given';
+		this._id = serviceRelationOptions.id || 'No id given';
 	}
 
 	public getSourceServiceID(): string {
@@ -101,7 +101,7 @@ export abstract class ServiceRelation {
 
 	public json(): ServiceRelationInterface {
 		return {
-			uuid: this._uuid,
+			id: this._id,
 			sourceServiceID: this.sourceServiceID,
 			sourceProcedureID: this.sourceProcedureID,
 			sourceValue: this.sourceValue,

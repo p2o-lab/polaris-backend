@@ -57,9 +57,9 @@ export abstract class Condition extends (EventEmitter as new() => ConditionEmitt
 		}
 	}
 
-	protected _fulfilled = false;
+	protected _fulfilled: boolean | undefined = undefined;
 
-	get fulfilled(): boolean {
+	get fulfilled(): boolean | undefined {
 		return this._fulfilled;
 	}
 
@@ -72,7 +72,7 @@ export abstract class Condition extends (EventEmitter as new() => ConditionEmitt
 	 * Clear listening on condition
 	 */
 	public clear(): void {
-		this._fulfilled = false;
+		this._fulfilled = undefined;
 		this.removeAllListeners('stateChanged');
 	}
 

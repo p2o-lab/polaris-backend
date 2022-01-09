@@ -31,8 +31,6 @@ import {Player, Recipe} from './index';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
-import {timeout} from 'promise-timeout';
-import {PEAMockup} from '../pea/PEA.mockup';
 import {MockupServer} from '../_utils';
 
 chai.use(chaiAsPromised);
@@ -67,7 +65,7 @@ describe('Player', () => {
 			player.enqueue(recipe);
 
 			player.start();
-			await new Promise((resolve) => player.once('completed', resolve));
+			await new Promise<void>((resolve) => player.once('completed', resolve));
 
 			await pea.disconnectAndUnsubscribe();
 		}).timeout(10000);

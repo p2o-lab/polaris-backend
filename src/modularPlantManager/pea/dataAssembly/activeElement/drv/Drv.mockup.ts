@@ -24,125 +24,136 @@
  */
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../_extensions/wqcDA/WQCDA.mockup';
-import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../../_extensions/osLevelDA/OSLevelDA.mockup';
-import {getOpModeDAMockupReferenceJSON, OpModeDAMockup} from '../../_extensions/opModeDA/OpModeDA.mockup';
-import {getInterlockDAMockupReferenceJSON, InterlockDAMockup} from '../../_extensions/interlockDA/InterlockDA.mockup';
-import {getResetDAMockupReferenceJSON, ResetDAMockup} from '../../_extensions/resetDA/ResetDA.mockup';
-import {getActiveElementMockupReferenceJSON} from '../ActiveElement.mockup';
+import {getOpModeDataItemOptions, OpModeMockup} from '../../baseFunction/opMode/OpMode.mockup';
+import {getInterlockDataItemOptions, InterlockMockup} from '../../baseFunction/interlock/Interlock.mockup';
+import {getResetDataItemOptions, ResetMockup} from '../../baseFunction/reset/Reset.mockup';
+import {ActiveElementMockup, getActiveElementDataItemOptions} from '../ActiveElement.mockup';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
+import {getDataAssemblyOptions} from '../../DataAssemblyController.mockup';
 
+const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/ActiveElement';
 
-export function getDrvMockupReferenceJSON(
-	namespace: number,
-	objectBrowseName: string) {
-
+function getDrvSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
 	return ({
-			
-			...getActiveElementMockupReferenceJSON(namespace,objectBrowseName),
-			...getOpModeDAMockupReferenceJSON(namespace,objectBrowseName),
-			...getInterlockDAMockupReferenceJSON(namespace,objectBrowseName),
-			...getResetDAMockupReferenceJSON(namespace,objectBrowseName),
-			SafePos: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.SafePos`,
-				dataType: 'Boolean'
-			},
-			SafePosAct: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.SafePosAct`,
-				dataType: 'Boolean'
-			},
-			FwdAut: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.FwdAut`,
-				dataType: 'Boolean'
-			},
-			FwdCtrl: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.FwdCtrl`,
-				dataType: 'Boolean'
-			},
-			FwdEn: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.FwdEn`,
-				dataType: 'Boolean'
-			},
-			FwdFbk: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.FwdFbk`,
-				dataType: 'Boolean'
-			},
-			FwdFbkCalc: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.FwdFbkCalc`,
-				dataType: 'Boolean'
-			},
-			FwdOp: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.FwdOp`,
-				dataType: 'Boolean'
-			},
-			RevAut: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.RevAut`,
-				dataType: 'Boolean'
-			},
-			RevCtrl: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.RevCtrl`,
-				dataType: 'Boolean'
-			},
-			RevEn: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.RevEn`,
-				dataType: 'Boolean'
-			},
-			RevFbk: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.RevFbk`,
-				dataType: 'Boolean'
-			},
-			RevFbkCalc: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.RevFbkCalc`,
-				dataType: 'Boolean'
-			},
-			RevOp: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.RevOp`,
-				dataType: 'Boolean'
-			},
-			StopAut: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.StopAut`,
-				dataType: 'Boolean'
-			},
-			StopOp: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.StopOp`,
-				dataType: 'Boolean'
-			},
-			Trip: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.Trip`,
-				dataType: 'Boolean'
-			}
-		}
+		SafePos: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.SafePos`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		SafePosAct: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.SafePosAct`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		FwdAut: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.FwdAut`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		FwdCtrl: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.FwdCtrl`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		FwdEn: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.FwdEn`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		FwdFbk: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.FwdFbk`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		FwdFbkCalc: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.FwdFbkCalc`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		FwdOp: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.FwdOp`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		RevAut: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.RevAut`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		RevCtrl: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.RevCtrl`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		RevEn: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.RevEn`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		RevFbk: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.RevFbk`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		RevFbkCalc: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.RevFbkCalc`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		RevOp: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.RevOp`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		StopAut: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.StopAut`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		StopOp: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.StopOp`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		Trip: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.Trip`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions
+	});
+}
+
+
+export function getDrvDataItemOptions(namespace: number, objectBrowseName: string): object {
+	return ({
+			...getActiveElementDataItemOptions(namespace, objectBrowseName),
+			...getOpModeDataItemOptions(namespace, objectBrowseName),
+			...getInterlockDataItemOptions(namespace, objectBrowseName),
+			...getResetDataItemOptions(namespace, objectBrowseName),
+			...getDrvSpecificDataItemOptions(namespace, objectBrowseName),
+		} as OpcUaNodeOptions
 	);
 }
 
-export class DrvMockup {
 
-	public readonly name: string;
-	public wqc: WQCDAMockup;
-	public osLevel: OSLevelDAMockup;
-	public operationMode: OpModeDAMockup;
-	public interlock: InterlockDAMockup;
-	public reset: ResetDAMockup;
+export function getDrvOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
+	const options = getDataAssemblyOptions(name, tagName, tagDescription);
+	options.metaModelRef = metaModelReference;
+	options.dataItems = {
+		...options.dataItems,
+		...getDrvDataItemOptions(namespace, objectBrowseName)};
+	return options;
+}
+
+export class DrvMockup extends ActiveElementMockup{
+
+	public operationMode: OpModeMockup;
+	public interlock: InterlockMockup;
+	public reset: ResetMockup;
 
 	public safePos = false;
 	public safePosAct = false;
-
 
 	public fwdEn= false;
 	public revEn= false;
@@ -160,22 +171,12 @@ export class DrvMockup {
 	public fwdFbk= false;
 	public trip= false;
 
-	protected mockupNode: UAObject;
-
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
+		super(namespace, rootNode, variableName);
 
-		this.name = variableName;
-
-		this.mockupNode = namespace.addObject({
-			organizedBy: rootNode,
-			browseName: variableName
-		});
-
-		this.osLevel = new OSLevelDAMockup(namespace, this.mockupNode, this.name);
-		this.wqc = new WQCDAMockup(namespace, this.mockupNode, this.name);
-		this.operationMode = new OpModeDAMockup(namespace,this.mockupNode,this.name);
-		this.interlock= new InterlockDAMockup(namespace,this.mockupNode,this.name);
-		this.reset= new ResetDAMockup(namespace,this.mockupNode,this.name);
+		this.operationMode = new OpModeMockup(namespace,this.mockupNode,this.name);
+		this.interlock= new InterlockMockup(namespace,this.mockupNode,this.name);
+		this.reset= new ResetMockup(namespace,this.mockupNode,this.name);
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
@@ -382,9 +383,16 @@ export class DrvMockup {
 
 	}
 
-	public getDrvMockupJSON() {
-		return getDrvMockupReferenceJSON(
-			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name as string);
+	public getDataAssemblyOptions(): DataAssemblyOptions {
+		const options = super.getDataAssemblyOptions();
+		options.metaModelRef = metaModelReference;
+		options.dataItems = {
+			...options.dataItems,
+			...this.operationMode.getDataItemOptions(),
+			...this.reset.getDataItemOptions(),
+			...this.interlock.getDataItemOptions(),
+			...getDrvSpecificDataItemOptions(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
+		};
+		return options;
 	}
 }

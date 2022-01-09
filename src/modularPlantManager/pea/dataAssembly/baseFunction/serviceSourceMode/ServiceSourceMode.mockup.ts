@@ -1,0 +1,207 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2021 P2O-Lab <p2o-lab@mailbox.tu-dresden.de>,
+ * Chair for Process Control Systems, Technische Universität Dresden
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+import {ServiceSourceMode} from '@p2olab/polaris-interface';
+import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
+import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
+
+
+function getServiceSourceModeSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
+	return ({
+		SrcChannel: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.SrcChannel`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		SrcIntAct: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.SrcIntAct`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		SrcIntAut: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.SrcIntAut`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		SrcIntOp: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.SrcIntOp`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		SrcExtAct: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.SrcExtAct`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		SrcExtAut: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.SrcExtAut`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		SrcExtOp: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.SrcExtOp`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions
+	});
+}
+
+export function getServiceSourceModeDataItemOptions(namespace: number, objectBrowseName: string): object {
+	return getServiceSourceModeSpecificDataItemOptions(namespace, objectBrowseName);
+}
+
+export class ServiceSourceModeMockup {
+	public srcMode: ServiceSourceMode = ServiceSourceMode.Intern;
+	public srcChannel = false;
+	public srcIntAut = false;
+	public srcIntOp = false;
+	public srcExtAut = false;
+	public srcExtOp = false;
+	public readonly  mockupNode: UAObject;
+
+	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
+		this.mockupNode = rootNode;
+
+		namespace.addVariable({
+			componentOf: rootNode,
+			nodeId: `ns=${namespace.index};s=${variableName}.SrcChannel`,
+			browseName: `${variableName}.SrcChannel`,
+			dataType: DataType.Boolean,
+			value: {
+				get: (): Variant => {
+					return new Variant({dataType: DataType.Boolean, value: this.srcChannel});
+				},
+			},
+		});
+
+		namespace.addVariable({
+			componentOf: rootNode,
+			nodeId: `ns=${namespace.index};s=${variableName}.SrcExtAut`,
+			browseName: `${variableName}.SrcExtAut`,
+			dataType: DataType.Boolean,
+			value: {
+				get: (): Variant => {
+					return new Variant({dataType: DataType.Boolean, value: this.srcExtAut});
+				},
+			},
+		});
+		namespace.addVariable({
+			componentOf: rootNode,
+			nodeId: `ns=${namespace.index};s=${variableName}.SrcIntAut`,
+			browseName: `${variableName}.SrcIntAut`,
+			dataType: DataType.Boolean,
+			value: {
+				get: (): Variant => {
+					return new Variant({dataType: DataType.Boolean, value: this.srcIntAut});
+				},
+			},
+		});
+		namespace.addVariable({
+			componentOf: rootNode,
+			nodeId: `ns=${namespace.index};s=${variableName}.SrcIntOp`,
+			browseName: `${variableName}.SrcIntOp`,
+			dataType: DataType.Boolean,
+			value: {
+				get: (): Variant => {
+					return new Variant({dataType: DataType.Boolean, value: this.srcIntOp});
+				},
+				set: (variant: Variant): StatusCodes => {
+					this.srcIntOp = variant.value;
+					if (this.srcIntOp) {
+						if (!this.srcChannel) {
+							this.srcMode = ServiceSourceMode.Intern;
+						}
+					}
+					this.srcIntOp = false;
+					return StatusCodes.Good;
+				},
+			},
+		});
+
+
+		namespace.addVariable({
+			componentOf: rootNode,
+			nodeId: `ns=${namespace.index};s=${variableName}.SrcExtOp`,
+			browseName: `${variableName}.SrcExtOp`,
+			dataType: DataType.Boolean,
+			value: {
+				get: (): Variant => {
+					return new Variant({dataType: DataType.Boolean, value: this.srcExtOp});
+				},
+				set: (variant: Variant): StatusCodes => {
+					this.srcExtOp = variant.value;
+					if (this.srcExtOp) {
+						if (!this.srcChannel) {
+							this.srcMode = ServiceSourceMode.Extern;
+						}
+					}
+					this.srcExtOp = false;
+					return StatusCodes.Good;
+				},
+			},
+		});
+
+		namespace.addVariable({
+			componentOf: rootNode,
+			nodeId: `ns=${namespace.index};s=${variableName}.SrcIntAct`,
+			browseName: `${variableName}.SrcIntAct`,
+			dataType: DataType.Boolean,
+			value: {
+				get: (): Variant => {
+					return new Variant({dataType: DataType.Boolean, value: this.srcIntAct});
+				},
+
+			},
+		});
+		namespace.addVariable({
+			componentOf: rootNode,
+			nodeId: `ns=${namespace.index};s=${variableName}.SrcExtAct`,
+			browseName: `${variableName}.SrcExtAct`,
+			dataType: DataType.Boolean,
+			value: {
+				get: (): Variant => {
+					return new Variant({dataType: DataType.Boolean, value: this.srcExtAct});
+				},
+
+			},
+		});
+
+	}
+
+	public get srcExtAct(): boolean {
+		return this.srcMode === ServiceSourceMode.Extern;
+	}
+
+	public get srcIntAct(): boolean {
+		return this.srcMode === ServiceSourceMode.Intern;
+	}
+
+	public getDataItemOptions(): object {
+		return getServiceSourceModeDataItemOptions(
+			this.mockupNode.namespaceIndex,
+			this.mockupNode.browseName.name as string);
+	}
+
+}

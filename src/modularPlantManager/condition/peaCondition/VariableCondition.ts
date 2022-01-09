@@ -76,6 +76,6 @@ export class VariableCondition extends PEACondition {
 		}
 		this._fulfilled = result;
 		this.emit('stateChanged', this._fulfilled);
-	}
+	};
 
 }

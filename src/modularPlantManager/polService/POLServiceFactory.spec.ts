@@ -46,8 +46,8 @@ describe('POLServiceFactory', () => {
 	describe('via ModularPlantManager', () => {
 		it('should instantiate two timers', async () => {
 			const manager = new ModularPlantManager();
-			manager.instantiatePOLService({name: 'timer1', type: 'timer'});
-			manager.instantiatePOLService({name: 'timer2', type: 'timer'});
+			manager.addPOLService({name: 'timer1', type: 'timer'});
+			manager.addPOLService({name: 'timer2', type: 'timer'});
 
 			expect(manager.polServices).to.have.lengthOf(2);
 		});
@@ -55,7 +55,10 @@ describe('POLServiceFactory', () => {
 
 	describe('Factory', () => {
 		it('should instantiate timer', () => {
-			const timerJson = parseJson(fs.readFileSync('assets/polService/timer.json', 'utf8'), null, 60);
+			const timerJson = {
+				'name': 'timer1',
+				'type': 'timer'
+			};
 
 			const timer = POLServiceFactory.create(timerJson);
 
@@ -88,8 +91,7 @@ describe('POLServiceFactory', () => {
 		it('should instantiate aggregated service', async() => {
 			const manager = new ModularPlantManager();
 			const peaSet = await manager.loadPEAController(
-				JSON.parse(fs.readFileSync('assets/peas/achema_demonstrator/peas_achema.json').toString()),
-				true);
+				JSON.parse(fs.readFileSync('assets/peas/achema_demonstrator/peas_achema.json').toString()));
 			expect(peaSet).to.have.lengthOf(3);
 
 			const asJson = parseJson(
@@ -305,7 +307,7 @@ describe('POLServiceFactory', () => {
 			expect(params[0]).to.have.property('value', '2*t');
 
 			await f1.start();
-			await new Promise((resolve) => {
+			await new Promise<void>((resolve) => {
 				f1.eventEmitter.once('parameterChanged', () => {
 					resolve();
 				});

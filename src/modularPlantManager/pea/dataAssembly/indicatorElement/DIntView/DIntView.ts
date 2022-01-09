@@ -1,4 +1,3 @@
-/* tslint:disable:max-classes-per-file */
 /*
  * MIT License
  *
@@ -24,12 +23,11 @@
  * SOFTWARE.
  */
 
-import {DataAssemblyOptions, ParameterInterface} from '@p2olab/polaris-interface';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {OpcUaConnection} from '../../../connection';
 import {AnaViewRuntime} from '../AnaView/AnaView';
 import {IndicatorElement} from '../IndicatorElement';
-import {UnitSettings} from '../../_extensions/unitDA/UnitSettings';
-import {ScaleSettings} from '../../_extensions/scaleSettingsDA/ScaleSettings';
+import {ScaleSettings, UnitSettings} from '../../baseFunction';
 
 
 export class DIntView extends IndicatorElement {
@@ -39,11 +37,11 @@ export class DIntView extends IndicatorElement {
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
-		this.communication.V = this.createDataItem('V', 'read');
 
 		this.unitSettings = new UnitSettings(this);
-
 		this.scaleSettings = new ScaleSettings(this);
+
+		this.communication.V = this.createDataItem('V', 'number');
 
 		this.defaultReadDataItem = this.communication.V;
 		this.defaultReadDataItemType = 'number';

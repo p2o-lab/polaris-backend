@@ -23,38 +23,30 @@
  * SOFTWARE.
  */
 
-import {
-	BaseDataAssemblyOptions, BinMonOptions, BinViewOptions, DataAssemblyOptions, DIntMonOptions, MonAnaDrvOptions,
-	OpcUaNodeOptions,
-	OperationMode, ServiceControlOptions
-} from '@p2olab/polaris-interface';
 import {OpcUaConnection} from '../connection';
-import {PEAController} from '../PEAController';
-import {
-	BinMon, BinView, DataAssemblyController, DataAssemblyControllerFactory,
-	DIntMon, MonAnaDrv, ServiceControl, ServParam
-} from './index';
+import {DataAssemblyController} from './DataAssemblyController';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import * as fs from 'fs';
-import {MockupServer} from '../../_utils';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('DataAssembly', () => {
+
     describe('static', () => {
-        const emptyOPCUAConnection = new OpcUaConnection('', '');
+
+        const emptyOPCUAConnection = new OpcUaConnection();
+
         it('should create DataAssemblyController', () => {
             expect(() => {
-                const da1 = new DataAssemblyController({
+                const dataAssemblyController = new DataAssemblyController({
                     name: 'name',
                     dataItems: {TagName: 'test', TagDescription: 'test',},
                     metaModelRef: 'analogitem'
                 }, emptyOPCUAConnection);
-                expect(da1.tagName).to.equal('test');
-                expect(da1.tagDescription).to.equal('test');
+                expect(dataAssemblyController.communication.TagName.value).to.equal('test');
+                expect(dataAssemblyController.communication.TagDescription.value).to.equal('test');
             }).to.not.throw();
         });
 
@@ -67,35 +59,10 @@ describe('DataAssembly', () => {
             ).to.throw('Creating DataAssemblyController Error: No OpcUaConnection provided');
         });
 
-        it('should fail with undefined dataitems', () => {
+        it('should fail with undefined DataItems', () => {
             expect(() => new DataAssemblyController(
-                {dataItems:undefined as any, name:'test', metaModelRef:'Test'}, emptyOPCUAConnection)
-            ).to.throw('Creating DataAssemblyController Error: No Communication variables found in DataAssemblyOptions');
-        });
-
-        describe('dynamic with PEATestServer', () => {
-
-            let mockupServer: MockupServer;
-            let connection: OpcUaConnection;
-
-            beforeEach(async function () {
-                this.timeout(4000);
-                mockupServer = new MockupServer();
-                await mockupServer.start();
-                connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334','','');
-                await connection.connect();
-            });
-
-            afterEach(async function () {
-                this.timeout(4000);
-                await connection.disconnect();
-                await mockupServer.shutdown();
-            });
-
-            it('should ', async () => {
-
-            });
-
+                {dataItems: undefined as any, name:'test', metaModelRef:'Test'}, emptyOPCUAConnection)
+            ).to.throw('Creating DataAssemblyController Error: No Communication dataAssemblies found in DataAssemblyOptions');
         });
 
     });

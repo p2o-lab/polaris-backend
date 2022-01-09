@@ -35,6 +35,7 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
 import {POLServiceFactory} from '../POLServiceFactory';
+import {ParameterInterface} from '@p2olab/polaris-interface';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -46,8 +47,8 @@ describe('POLService', () => {
 	describe('via ModularPlantManager', () => {
 		it('should instantiate two timers', async () => {
 			const manager = new ModularPlantManager();
-			manager.instantiatePOLService({name: 'timer1', type: 'timer'});
-			manager.instantiatePOLService({name: 'timer2', type: 'timer'});
+			manager.addPOLService({name: 'timer1', type: 'timer'});
+			manager.addPOLService({name: 'timer2', type: 'timer'});
 
 			expect(manager.polServices).to.have.lengthOf(2);
 		});
@@ -88,8 +89,7 @@ describe('POLService', () => {
 		it('should instantiate aggregated service', async () => {
 			const manager = new ModularPlantManager();
 			const peaSet = await manager.loadPEAController(
-				JSON.parse(fs.readFileSync('assets/peas/achema_demonstrator/peas_achema.json').toString()),
-				true);
+				JSON.parse(fs.readFileSync('assets/peas/achema_demonstrator/peas_achema.json').toString()));
 			expect(peaSet).to.have.lengthOf(3);
 
 			const asJson = parseJson(
@@ -161,13 +161,13 @@ describe('POLService', () => {
 			await timer.start();
 			expect(timer.state).to.equal(ServiceState.EXECUTE);
 			expect(hit).to.equal(1);
-			expect(timer.json().procedures[0].processValuesOut.find((p: any) => p.name === 'remainingTime'))
+			expect(timer.json().procedures[0].processValuesOut.find((p: ParameterInterface) => p.name === 'remainingTime'))
 				.to.have.property('value')
 				.to.equal(100);
 
 			await delay(45);
 			expect(hit).to.equal(5);
-			expect(timer.json().procedures[0].processValuesOut.find((p: any) => p.name === 'remainingTime'))
+			expect(timer.json().procedures[0].processValuesOut.find((p: ParameterInterface) => p.name === 'remainingTime'))
 				.to.have.property('value')
 				.to.closeTo(55, 5);
 
@@ -176,7 +176,7 @@ describe('POLService', () => {
 			expect(hit).to.equal(6);
 			await delay(25);
 			expect(hit).to.equal(6);
-			expect(timer.json().procedures[0].processValuesOut.find((p: any) => p.name === 'remainingTime'))
+			expect(timer.json().procedures[0].processValuesOut.find((p: ParameterInterface) => p.name === 'remainingTime'))
 				.to.have.property('value')
 				.to.closeTo(55, 5);
 
@@ -184,13 +184,13 @@ describe('POLService', () => {
 			expect(hit).to.equal(6);
 			await delay(12);
 			expect(hit).to.equal(7);
-			expect(timer.json().procedures[0].processValuesOut.find((p: any) => p.name === 'remainingTime'))
+			expect(timer.json().procedures[0].processValuesOut.find((p: ParameterInterface) => p.name === 'remainingTime'))
 				.to.have.property('value')
 				.to.closeTo(43, 5);
 
 			await delay(20);
 			expect(hit).to.equal(9);
-			expect(timer.json().procedures[0].processValuesOut.find((p: any) => p.name === 'remainingTime'))
+			expect(timer.json().procedures[0].processValuesOut.find((p: ParameterInterface) => p.name === 'remainingTime'))
 				.to.have.property('value')
 				.to.closeTo(23, 5);
 
@@ -247,13 +247,13 @@ describe('POLService', () => {
 
 			await delay(110);
 			params = f1.json().procedures[0].processValuesOut;
-			let value = params.find((p: any) => p.name === 'output');
+			let value = params.find((p: ParameterInterface) => p.name === 'output');
 			expect(value).to.have.property('value').to.be.closeTo(0.5, 0.03);
 			await f1.pause();
 			await delay(100);
 
 			params = f1.json().procedures[0].processValuesOut;
-			value = params.find((p: any) => p.name === 'output');
+			value = params.find((p: ParameterInterface) => p.name === 'output');
 			expect(value).to.have.property('value').to.be.closeTo(0.841, 0.03);
 			await f1.resume();
 			await delay(100);
@@ -278,11 +278,11 @@ describe('POLService', () => {
 			expect(params[0]).to.have.property('name', 'storage');
 			expect(params[0]).to.have.property('value', 2);
 
-			s1.setParameters([{name: 'storage', value: 'teststring'}]);
+			s1.setParameters([{name: 'storage', value: 'testing'}]);
 			params = s1.json().procedures[0].parameters;
 			expect(params).to.have.lengthOf(1);
 			expect(params[0]).to.have.property('name', 'storage');
-			expect(params[0]).to.have.property('value', 'teststring');
+			expect(params[0]).to.have.property('value', 'testing');
 
 			await s1.start();
 			await s1.complete();
@@ -306,7 +306,7 @@ describe('POLService', () => {
 			expect(params[0]).to.have.property('value', '2*t');
 
 			await f1.start();
-			await new Promise((resolve) => {
+			await new Promise<void>((resolve) => {
 				f1.eventEmitter.once('parameterChanged', () => {
 					resolve();
 				});

@@ -24,7 +24,7 @@
  */
 
 import {
-	OperationMode,
+	OperationMode, PEAOptions,
 	ServiceCommand,
 	ServiceControlOptions,
 	ServiceOptions, ServiceSourceMode
@@ -35,6 +35,7 @@ import {PEAController, Service} from '../index';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
+import * as peaOptions from '../../peaOptions.spec.json';
 import {ServiceState} from './service/enum';
 import {PEAMockup} from '../PEA.mockup';
 
@@ -43,7 +44,8 @@ const expect = chai.expect;
 
 describe('ServiceSet', () => {
 	const parseJson = require('json-parse-better-errors');
-	const opcUAConnection = new OpcUaConnection('', '');
+	const opcUAConnection = new OpcUaConnection();
+	const peaOptionsReference = peaOptions as any as PEAOptions;
 
 	context('constructor', () => {
 		it('should fail with missing options', () => {
@@ -61,26 +63,21 @@ describe('ServiceSet', () => {
 			expect(() => new Service(
 				{name: 'test', parameters: [], communication: {} as ServiceControlOptions, procedures: []},
 				opcUAConnection, '')
-			).to.throw('No connection defined for creating data assembly');
+			).to.throw('Creating DataAssemblyController Error: No Communication dataAssemblies found in DataAssemblyOptions');
 		});
 
 	});
 
 	it('should reject command if not connected', async () => {
-		const peaJson =
-			parseJson(fs.readFileSync('src/modularPlantManager/pea/_assets/JSON/pea_testserver_1.0.0_2.json', 'utf8'), null, 60)
-				.peas[0];
-		const pea = new PEAController(peaJson);
+
+		const pea = new PEAController(peaOptionsReference);
 		const service = pea.services[0];
 		await expect(service.executeCommand(ServiceCommand.start)).to.be.rejectedWith('PEAController is not connected');
 	});
 
-	it('should create service from PEATestServer json', () => {
-		const json =
-			parseJson(fs.readFileSync('src/modularPlantManager/pea/_assets/JSON/pea_testserver_1.0.0_2.json', 'utf8'), null, 60)
-				.peas[0].services[0];
-		const service = new Service(json, opcUAConnection, 'root');
-		expect(service.name).to.equal('Service1');
+	it('should create service from reference options', () => {
+		const service = new Service(peaOptionsReference.services[0], opcUAConnection, 'root');
+		expect(service.name).to.equal('Trigonometry');
 	});
 
 	context('with PEATestServer', () => {
@@ -88,24 +85,21 @@ describe('ServiceSet', () => {
 		let service: Service;
 
 		before(() => {
-			const peaJson =
-				parseJson(fs.readFileSync('assets/peas/pea_testserver_1.0.0.json', 'utf8'), null, 60)
-					.peas[0];
-			pea = new PEAController(peaJson);
+			pea = new PEAController(peaOptionsReference);
 			service = pea.services[0];
 		});
 
 		it('should get default procedure', () => {
 			const procedure = service.getDefaultProcedure();
-			expect(procedure?.name).to.equal('Procedure 1');
+			expect(procedure?.name).to.equal('Trigonometry_default');
 		});
 
 		it('should find procedure', () => {
-			const procedure = service.getProcedureByNameOrDefault('Procedure 1');
-			expect(procedure?.name).to.equal('Procedure 1');
+			const procedure = service.getProcedureByNameOrDefault('Trigonometry_default');
+			expect(procedure?.name).to.equal('Trigonometry_default');
 		});
 
-		it('should find procedure 2', () => {
+		it('should not find unknown procedure', () => {
 			const procedure = service.getProcedureByNameOrDefault('ProcedureNotThere');
 			expect(procedure).to.equal(undefined);
 		});
@@ -124,21 +118,16 @@ describe('ServiceSet', () => {
 		beforeEach(async function () {
 			this.timeout(5000);
 			peaServer = new PEAMockup();
-			//await peaServer.start();
-			peaServer.startSimulation();
-			//testService = peaServer.services[0];
-
-			const peaJson =
-				parseJson(fs.readFileSync('assets/peas/pea_testserver_1.0.0.json', 'utf8'), null, 60)
-					.peas[0];
-			pea = new PEAController(peaJson);
+			peaServer.services.push();
+			await peaServer.startSimulation();
+			pea = new PEAController(peaOptionsReference);
 			service = pea.services[0];
 			await pea.connectAndSubscribe();
 		});
 
 		afterEach(async () => {
 			await pea.disconnectAndUnsubscribe();
-			peaServer.stopSimulation();
+			await peaServer.stopSimulation();
 		});
 
 		it('should get default procedure for default procedure', () => {

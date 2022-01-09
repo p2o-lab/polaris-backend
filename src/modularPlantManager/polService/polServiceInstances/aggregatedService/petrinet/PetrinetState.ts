@@ -57,7 +57,7 @@ export class PetrinetState {
 	 * @returns {Promise<void>}
 	 */
 	public async execute(): Promise<void> {
-		const tasks = this.operations.map((operation) => new Promise((resolve, reject) => {
+		const tasks = this.operations.map((operation) => new Promise<void>((resolve, reject) => {
 				catRecipe.info(`Start operation ${operation.pea?.id} ${operation.service.name} ` +
 					`${JSON.stringify(operation.command)}`);
 				operation.execute();

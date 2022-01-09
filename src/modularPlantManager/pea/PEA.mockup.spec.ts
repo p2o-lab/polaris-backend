@@ -25,12 +25,10 @@
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {ClientSession, OPCUAClient} from 'node-opcua-client';
-import {controlEnableToJson, ServiceState} from './serviceSet/service/enum';
+import {OPCUAClient} from 'node-opcua-client';
 import {MockupServer} from '../_utils';
 
 chai.use(chaiAsPromised);
-const expect = chai.expect;
 
 describe('PEATestServer', () => {
 
@@ -47,15 +45,14 @@ describe('PEATestServer', () => {
 
 	it('should connect to OPC UA server', async () => {
 		const client = OPCUAClient.create({
-			// eslint-disable-next-line @typescript-eslint/camelcase
-			endpoint_must_exist: false,
+			endpointMustExist: false,
 			connectionStrategy: {
 				maxRetry: 10
 			}
 		});
 
 		await client.connect('opc.tcp://localhost:4334/');
-		const session: ClientSession = await client.createSession();
+		await client.createSession();
 
 	/*	let result = await session.read({nodeId: 'ns=1;s=Service1.State'});
 		expect(result.value.value).to.equal(ServiceState.IDLE);

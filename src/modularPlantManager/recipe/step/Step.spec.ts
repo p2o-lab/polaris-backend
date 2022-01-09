@@ -23,12 +23,8 @@
  * SOFTWARE.
  */
 
-import {ConditionType, ServiceCommand} from '@p2olab/polaris-interface';
-import {PEAController} from '../../pea';
 import {Step} from './Step';
-
 import {expect} from 'chai';
-import * as fs from 'fs';
 import {MockupServer} from '../../_utils';
 
 describe('Step', () => {

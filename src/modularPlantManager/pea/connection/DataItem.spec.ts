@@ -23,178 +23,140 @@
  * SOFTWARE.
  */
 
-import {OpcUaConnection} from './index';
+import {BaseStaticDataItem} from './index';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {OpcUaDataItem} from './OpcUaDataItem';
-import {MockupServer} from '../../_utils';
-import {namespaceUrl} from '../../../../tests/namespaceUrl';
-import {AnaViewMockup} from '../dataAssembly/indicatorElement/AnaView/AnaView.mockup';
-import {Namespace, UAObject} from 'node-opcua';
+import {DataItemOptions} from './DataItemFactory';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('DataItem', () => {
-	describe('static', () => {
-		const connection = new OpcUaConnection('PEATestServer', 'opc.tcp://127.0.0.1:4334/PEATestServer');
 
-		it('should work with float', () => {
-			const di = OpcUaDataItem.createFromOptions(
-				{value: 1.2, dataType: 'Float', nodeId: 'test', namespaceIndex: 'test2'},
-				connection, 'read', 'number');
-			expect(di.value).to.equal(1.2);
+	describe('BaseStaticDataItem', () => {
+
+		describe('Type number', () => {
+
+			it('should work with float default value', () => {
+				const options: DataItemOptions = {type: 'number', defaultValue: 1.2};
+				const dataItem = new BaseStaticDataItem<number>(options);
+				expect(dataItem.value).to.equal(1.2);
+			});
+
+			it('should work with string default value', () => {
+				const options: DataItemOptions = {type: 'number', defaultValue: '1.2'};
+				const dataItem = new BaseStaticDataItem<number>(options);
+				expect(dataItem.value).to.equal(1.2);
+			});
+
+			it('should work with boolean default value', () => {
+				const options: DataItemOptions = {type: 'number', defaultValue: true};
+				const dataItem = new BaseStaticDataItem<number>(options);
+				expect(dataItem.value).to.equal(1);
+			});
+
+			it('should work with value = 0', () => {
+				const options: DataItemOptions = {type: 'number', defaultValue: 0.0};
+				const dataItem = new BaseStaticDataItem<number>(options);
+				expect(dataItem.value).to.equal(0);
+			});
+
+			it('should work with negative value', () => {
+				const options: DataItemOptions = {type: 'number', defaultValue: -2};
+				const dataItem = new BaseStaticDataItem<number>(options);
+				expect(dataItem.value).to.equal(-2.0);
+			});
+
+			it('should work with undefined value', () => {
+				const options: DataItemOptions = {type: 'number', defaultValue: undefined};
+				const dataItem = new BaseStaticDataItem<number>(options);
+				expect(dataItem.value).to.equal(0);
+			});
 		});
 
-		it('should work with float conversion', () => {
-			const di = OpcUaDataItem.createFromOptions(
-				{value: '1.2', dataType: 'Float', nodeId: 'test', namespaceIndex: 'test2'},
-				connection, 'read', 'number');
-			expect(di.value).to.equal(1.2);
+		describe('Type string', () => {
+
+			it('should work with float default value', () => {
+				const options: DataItemOptions = {type: 'string', defaultValue: 1.2};
+				const dataItem = new BaseStaticDataItem<string>(options);
+				expect(dataItem.value).to.equal('1.2');
+			});
+
+			it('should work with string default value', () => {
+				const options: DataItemOptions = {type: 'string', defaultValue: '1.2'};
+				const dataItem = new BaseStaticDataItem<string>(options);
+				expect(dataItem.value).to.equal('1.2');
+			});
+
+			it('should work with boolean default value', () => {
+				const options: DataItemOptions = {type: 'string', defaultValue: true};
+				const dataItem = new BaseStaticDataItem<string>(options);
+				expect(dataItem.value).to.equal('true');
+			});
+
+			it('should work with value = 0', () => {
+				const options: DataItemOptions = {type: 'string', defaultValue: 0.0};
+				const dataItem = new BaseStaticDataItem<string>(options);
+				expect(dataItem.value).to.equal('');
+			});
+
+			it('should work with value = 0', () => {
+				const options: DataItemOptions = {type: 'string', defaultValue: 0};
+				const dataItem = new BaseStaticDataItem<string>(options);
+				expect(dataItem.value).to.equal('');
+			});
+
+			it('should work with negative value', () => {
+				const options: DataItemOptions = {type: 'string', defaultValue: -2};
+				const dataItem = new BaseStaticDataItem<string>(options);
+				expect(dataItem.value).to.equal('-2');
+			});
+
+			it('should work with undefined value', () => {
+				const options: DataItemOptions = {type: 'string', defaultValue: undefined};
+				const dataItem = new BaseStaticDataItem<string>(options);
+				expect(dataItem.value).to.equal('');
+			});
 		});
 
-		it('should work with value = 0', () => {
-			const di = OpcUaDataItem.createFromOptions(
-				{value: 0.0, dataType: 'Float', nodeId: 'test', namespaceIndex: 'test2'},
-				connection, 'read', 'number');
-			expect(di.value).to.equal(0);
-		});
+		describe('Type boolean', () => {
 
-		it('should work with negative value', () => {
-			const di = OpcUaDataItem.createFromOptions(
-				{value: -2, dataType: 'Float', nodeId: 'test', namespaceIndex: 'test2'},
-				connection, 'read', 'number');
-			expect(di.value).to.equal(-2.0);
-		});
+			it('should work with float default value', () => {
+				const options: DataItemOptions = {type: 'boolean', defaultValue: 1};
+				const dataItem = new BaseStaticDataItem<boolean>(options);
+				expect(dataItem.value).to.equal(true);
+			});
 
-		it('should work with undefined value', () => {
-			const di = OpcUaDataItem.createFromOptions(
-				{value: undefined, dataType: 'Float', nodeId: 'test', namespaceIndex: 'test2'},
-				connection, 'read', 'number');
-			expect(di.value).to.equal(undefined);
-			expect(di.access).to.equal('read');
-		});
+			it('should work with string default value', () => {
+				const options: DataItemOptions = {type: 'boolean', defaultValue: '1.2'};
+				const dataItem = new BaseStaticDataItem<boolean>(options);
+				expect(dataItem.value).to.equal(false);
+			});
 
-		it('should work with string conversion', () => {
-			const di = OpcUaDataItem.createFromOptions(
-				{value: 1.2, dataType: 'Float', nodeId: 'test', namespaceIndex: 'test2'},
-				connection, 'read', 'string');
-			expect(di.value).to.equal('1.2');
-		});
+			it('should work with boolean default value', () => {
+				const options: DataItemOptions = {type: 'boolean', defaultValue: true};
+				const dataItem = new BaseStaticDataItem<boolean>(options);
+				expect(dataItem.value).to.equal(true);
+			});
 
-		it('should reject, when not connected', async () => {
-			const di = OpcUaDataItem.createFromOptions(
-				{
-					namespaceIndex: 'urn:NodeOPCUA-Server-default',
-					nodeId: 'Service1.Factor.VExt',
-					dataType: 'Double'
-				}, connection, 'write', 'number');
-			await expect(di.read()).to.be.rejectedWith('Could not read Service1.Factor.VExt');
-		});
-	});
+			it('should work with value = 0', () => {
+				const options: DataItemOptions = {type: 'boolean', defaultValue: 0.0};
+				const dataItem = new BaseStaticDataItem<boolean>(options);
+				expect(dataItem.value).to.equal(false);
+			});
 
-	describe('with testserver', () => {
-		// DO NOT FORGET TO ADJUST NAMESPACEURL IN namespaceUrl.ts
-		let mockupServer: MockupServer;
-		let connection: OpcUaConnection;
+			it('should work with negative value', () => {
+				const options: DataItemOptions = {type: 'boolean', defaultValue: -2};
+				const dataItem = new BaseStaticDataItem<boolean>(options);
+				expect(dataItem.value).to.equal(false);
+			});
 
-		before(async function () {
-			this.timeout(5000);
-			mockupServer = new MockupServer();
-			await mockupServer.initialize();
-			const mockup = new AnaViewMockup(mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject, 'Variable');
-			await mockupServer.start();
-			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334','','');
-			await connection.connect();
-		});
-
-		after(async () => {
-			await connection.disconnect();
-			await mockupServer.shutdown();
-		});
-
-		it('should subscribe', async () => {
-			const di = OpcUaDataItem.createFromOptions(
-				{
-					nodeId: 'trigger',
-					namespaceIndex: namespaceUrl,
-					dataType: 'xs:IDREF'
-				}, connection, 'read');
-			di.subscribe(); //Don't use 'await', because without startListening, this won't resolve //TODO: maybe refactor
-			await connection.startListening();
-			await new Promise((resolve) => di.on('changed', resolve));
-			expect(di.value).to.equal(false);
-		});
-
-		it('should subscribe, disconnect and resubscribe', async () => {
-			const di = OpcUaDataItem.createFromOptions(
-				{
-					nodeId: 'trigger',
-					namespaceIndex: namespaceUrl,
-					dataType: 'xs:IDREF'
-				}, connection, 'write');
-
-			di.subscribe();
-			await connection.startListening();
-			await new Promise((resolve) => di.on('changed', resolve));
-
-			await connection.disconnect();
-			await connection.connect();
-
-			di.subscribe();
-			await connection.startListening();
-			await new Promise((resolve) => di.on('changed', resolve));
-		}).timeout(5000);
-
-		it('should write', async () => {
-			const di = OpcUaDataItem.createFromOptions(
-				{
-					namespaceIndex: namespaceUrl,
-					nodeId: 'testNumber',
-					dataType: 'Float'
-				}, connection, 'write');
-			await di.write(22.0);
-			const value = await di.read();
-			expect(value).to.be.equal(22.0);
-		});
-
-		it('should fail while writing with wrong datatype', async () => {
-			const di = OpcUaDataItem.createFromOptions(
-				{
-					namespaceIndex: namespaceUrl,
-					nodeId: 'testNumber',
-					dataType: 'Float'
-				}, connection, 'write');
-			await expect(di.write('test')).to.be.rejectedWith('value supplied for ' +
-				'the attribute is not of the same type');
-			const value = await di.read();
-			expect(value).to.be.equal(22.0);
-			//TODO: this should throw error, but it does not, needs to be implemented
-		});
-
-		it('should fail while writing with wrong datatype 2', async () => {
-			const di = OpcUaDataItem.createFromOptions(
-				{
-					namespaceIndex: namespaceUrl,
-					nodeId: 'testNumber',
-					dataType: 'abc'
-				}, connection, 'write');
-
-			await expect(di.write(22)).to.be.rejectedWith('datatype abc must be registered');
-		});
-
-		it('should fail while writing with wrong datatype 3', async () => {
-			const di = OpcUaDataItem.createFromOptions(
-				{
-					namespaceIndex: namespaceUrl,
-					nodeId: 'testNumber',
-					dataType: 'Boolean'
-				}, connection, 'write');
-
-			await expect(di.write(22)).to.be.rejectedWith(
-				'Invalid variant arrayType: Scalar  dataType: Boolean value:22 (javascript type = number )');
+			it('should work with undefined value', () => {
+				const options: DataItemOptions = {type: 'boolean', defaultValue: undefined};
+				const dataItem = new BaseStaticDataItem<boolean>(options);
+				expect(dataItem.value).to.equal(false);
+			});
 		});
 	});
 });

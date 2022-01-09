@@ -29,40 +29,34 @@ import {StringServParam} from './StringServParam';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../../_utils';
-import {ServParamMockup} from '../ServParam.mockup';
-import {Namespace, UAObject} from 'node-opcua';
-import {namespaceUrl} from '../../../../../../../tests/namespaceUrl';
-import {ServParam} from '../ServParam';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-//stringservparam overlaps with anaservparam.json
-import * as baseDataAssemblyOptions from '../../../../../../../tests/anaserveparam.json';
 import {DataAssemblyControllerFactory} from '../../../DataAssemblyControllerFactory';
-import {StringServParamMockup} from './StringServParam.mockup';
+import {getStringServParamOptions, StringServParamMockup} from './StringServParam.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('StringServParam', () => {
-	const dataAssemblyOptions: DataAssemblyOptions = {
-		name: 'Variable',
-		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperationElement/StringServParam',
-		dataItems: baseDataAssemblyOptions
-	};
+
+	let dataAssemblyOptions: DataAssemblyOptions;
 
 	describe('static', () => {
-		const emptyOPCUAConnection = new OpcUaConnection('', '');
+
+		const emptyOPCUAConnection = new OpcUaConnection();
+		dataAssemblyOptions = getStringServParamOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
+
 		it('should create StringServParam', () => {
-			const da1 = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as StringServParam;
-			expect(da1.serviceSourceMode).to.not.be.undefined;
-			expect(da1.serviceOpMode).to.not.be.undefined;
-			expect(da1.wqc).to.not.be.undefined;
-			expect(da1.communication.Sync).to.not.be.undefined;
-			expect(da1.communication.VExt).to.not.be.undefined;
-			expect(da1.communication.VOp).to.not.be.undefined;
-			expect(da1.communication.VInt).to.not.be.undefined;
-			expect(da1.communication.VReq).to.not.be.undefined;
-			expect(da1.communication.VOut).to.not.be.undefined;
-			expect(da1.communication.VFbk).to.not.be.undefined;
+			const dataAssemblyController = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as StringServParam;
+			expect(dataAssemblyController.serviceSourceMode).to.not.be.undefined;
+			expect(dataAssemblyController.serviceOpMode).to.not.be.undefined;
+			expect(dataAssemblyController.wqc).to.not.be.undefined;
+			expect(dataAssemblyController.communication.Sync).to.not.be.undefined;
+			expect(dataAssemblyController.communication.VExt).to.not.be.undefined;
+			expect(dataAssemblyController.communication.VOp).to.not.be.undefined;
+			expect(dataAssemblyController.communication.VInt).to.not.be.undefined;
+			expect(dataAssemblyController.communication.VReq).to.not.be.undefined;
+			expect(dataAssemblyController.communication.VOut).to.not.be.undefined;
+			expect(dataAssemblyController.communication.VFbk).to.not.be.undefined;
 		});
 	});
 	describe('dynamic', () => {
@@ -73,12 +67,11 @@ describe('StringServParam', () => {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			const mockup = new StringServParamMockup(
-				mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject,
-				'Variable');
+			const stringServParamMockup = new StringServParamMockup(mockupServer.nameSpace, mockupServer.rootObject,'Variable');
+			dataAssemblyOptions = stringServParamMockup.getDataAssemblyOptions();
 			await mockupServer.start();
-			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334','','');
+			connection = new OpcUaConnection();
+			connection.initialize({endpoint: mockupServer.endpoint});
 			await connection.connect();
 		});
 
@@ -89,47 +82,41 @@ describe('StringServParam', () => {
 		});
 
 		it('should subscribe successfully', async () => {
-			// set namespaceUrl
-			for (const key in dataAssemblyOptions.dataItems as any) {
-				//skip static values
-				if((typeof(dataAssemblyOptions.dataItems as any)[key] != 'string')){
-					(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
-				}
-			}
-			const da1 = DataAssemblyControllerFactory.create(dataAssemblyOptions, connection) as StringServParam;
-			const pv = da1.subscribe();
-			await connection.startListening();
-			await pv;
-			expect(da1.communication.WQC.value).equal(0);
 
-			expect((da1).communication.StateChannel.value).equal(false);
-			expect((da1).communication.StateOffAut.value).equal(false);
-			expect((da1).communication.StateOpAut.value).equal(false);
-			expect((da1).communication.StateAutAut.value).equal(false);
-			expect((da1).communication.StateOffOp.value).equal(false);
-			expect((da1).communication.StateOpOp.value).equal(false);
-			expect((da1).communication.StateAutOp.value).equal(false);
-			expect((da1).communication.StateOpAct.value).equal(false);
-			expect((da1).communication.StateAutAct.value).equal(false);
-			expect((da1).communication.StateOffAct.value).equal(true);
+			const dataAssemblyController = DataAssemblyControllerFactory.create(dataAssemblyOptions, connection) as StringServParam;
+			await dataAssemblyController.subscribe();
+			await connection.startMonitoring();
+			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
+			
+			expect(dataAssemblyController.communication.WQC.value).equal(0);
 
-			expect(da1.communication.SrcChannel.value).equal(false);
-			expect(da1.communication.SrcExtAut.value).equal(false);
-			expect(da1.communication.SrcIntAut.value).equal(false);
-			expect(da1.communication.SrcIntOp.value).equal(false);
-			expect(da1.communication.SrcExtOp.value).equal(false);
-			expect(da1.communication.SrcIntAct.value).equal(true);
-			expect(da1.communication.SrcExtAct.value).equal(false);
+			expect((dataAssemblyController).communication.StateChannel.value).equal(false);
+			expect((dataAssemblyController).communication.StateOffAut.value).equal(false);
+			expect((dataAssemblyController).communication.StateOpAut.value).equal(false);
+			expect((dataAssemblyController).communication.StateAutAut.value).equal(false);
+			expect((dataAssemblyController).communication.StateOffOp.value).equal(false);
+			expect((dataAssemblyController).communication.StateOpOp.value).equal(false);
+			expect((dataAssemblyController).communication.StateAutOp.value).equal(false);
+			expect((dataAssemblyController).communication.StateOpAct.value).equal(false);
+			expect((dataAssemblyController).communication.StateAutAct.value).equal(false);
+			expect((dataAssemblyController).communication.StateOffAct.value).equal(true);
 
-			expect(da1.communication.Sync.value).equal(false);
+			expect(dataAssemblyController.communication.SrcChannel.value).equal(false);
+			expect(dataAssemblyController.communication.SrcExtAut.value).equal(false);
+			expect(dataAssemblyController.communication.SrcIntAut.value).equal(false);
+			expect(dataAssemblyController.communication.SrcIntOp.value).equal(false);
+			expect(dataAssemblyController.communication.SrcExtOp.value).equal(false);
+			expect(dataAssemblyController.communication.SrcIntAct.value).equal(true);
+			expect(dataAssemblyController.communication.SrcExtAct.value).equal(false);
 
-			expect(da1.communication.VExt.value).equal('');
-			expect(da1.communication.VOp.value).equal('');
-			expect(da1.communication.VInt.value).equal('');
-			expect(da1.communication.VReq.value).equal('');
-			expect(da1.communication.VOut.value).equal('');
-			expect(da1.communication.VFbk.value).equal('');
+			expect(dataAssemblyController.communication.Sync.value).equal(false);
+
+			expect(dataAssemblyController.communication.VExt.value).equal('');
+			expect(dataAssemblyController.communication.VOp.value).equal('');
+			expect(dataAssemblyController.communication.VInt.value).equal('');
+			expect(dataAssemblyController.communication.VReq.value).equal('');
+			expect(dataAssemblyController.communication.VOut.value).equal('');
+			expect(dataAssemblyController.communication.VFbk.value).equal('');
 		}).timeout(4000);
 	});
-
 });

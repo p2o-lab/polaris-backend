@@ -24,13 +24,13 @@
  */
 
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
-import {OpModeDAMockup} from '../../../pea/dataAssembly/_extensions/opModeDA/OpModeDA.mockup';
+import {OpModeMockup} from '../../../pea/dataAssembly/baseFunction/opMode/OpMode.mockup';
 import {catPEAMockup} from '../../../../logging';
 
 export abstract class PEATestVariable {
 
 	public readonly name: string;
-	public opMode: OpModeDAMockup;
+	public opMode: OpModeMockup;
 	public wqc = 0;
 	public osLevel = 0;
 	protected variableNode: UAObject;
@@ -47,7 +47,7 @@ export abstract class PEATestVariable {
 
 		namespace.addVariable({
 			componentOf: this.variableNode,
-			nodeId: `ns=1;s=${variableName}.WQC`,
+			nodeId: `ns=${namespace.index};s=${variableName}.WQC`,
 			browseName: `${variableName}.WQC`,
 			dataType: DataType.UInt32,
 			value: {
@@ -59,7 +59,7 @@ export abstract class PEATestVariable {
 
 		namespace.addVariable({
 			componentOf: this.variableNode,
-			nodeId: `ns=1;s=${variableName}.OSLevel`,
+			nodeId: `ns=${namespace.index};s=${variableName}.OSLevel`,
 			browseName: `${variableName}.OSLevel`,
 			dataType: DataType.UInt32,
 			value: {
@@ -69,6 +69,6 @@ export abstract class PEATestVariable {
 			}
 		});
 
-		this.opMode = new OpModeDAMockup(namespace, this.variableNode, variableName);
+		this.opMode = new OpModeMockup(namespace, this.variableNode, variableName);
 	}
 }

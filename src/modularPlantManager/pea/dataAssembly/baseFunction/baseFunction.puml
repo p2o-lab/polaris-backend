@@ -1,0 +1,56 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2021 P2O-Lab <p2o-lab@mailbox.tu-dresden.de>,
+ * Chair for Process Control Systems, Technische Universität Dresden
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+ 
+@startuml
+'https://plantuml.com/class-diagram
+!include FeedbackMonitoring/FeedbackMonitoring.puml
+!include Interlock/Interlock.puml
+!include limitMonitoring/LimitMonitoring.puml
+!include opMode/OpMode.puml
+!include OSLevel/OSLevel.puml
+!include reset/Reset.puml
+!include scaleSettings/ScaleSettings.puml
+!include serviceSourceMode/ServiceSourceModeController.puml
+!include sourceMode/SourceModeController.puml
+!include unit/UnitSettings.puml
+!include valueLimitation/ValueLimitation.puml
+!include wqc/WQC.puml
+
+abstract class DataAssemblyController
+
+DataAssemblyController "0..1" o-- FeedbackMonitoring
+DataAssemblyController "0..1" o-- Interlock
+DataAssemblyController "0..1" o-- LimitMonitoring
+DataAssemblyController "0..1" o-- OpMode
+DataAssemblyController "0..1" o-- OSLevel
+DataAssemblyController "0..1" o-- Reset
+DataAssemblyController "0..1" o-- ScaleSettings
+DataAssemblyController "0..1" o-- ServiceSourceModeController
+DataAssemblyController "0..1" o-- SourceModeController
+DataAssemblyController "0..1" o-- UnitSettings
+DataAssemblyController "0..1" o-- ValueLimitation
+DataAssemblyController "0..1" o-- WQC
+
+@enduml

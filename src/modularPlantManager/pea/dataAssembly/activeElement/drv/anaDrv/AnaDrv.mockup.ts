@@ -24,88 +24,98 @@
  */
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../../_extensions/wqcDA/WQCDA.mockup';
-import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../../../_extensions/osLevelDA/OSLevelDA.mockup';
-import {getOpModeDAMockupReferenceJSON, OpModeDAMockup} from '../../../_extensions/opModeDA/OpModeDA.mockup';
-import {getInterlockDAMockupReferenceJSON, InterlockDAMockup} from '../../../_extensions/interlockDA/InterlockDA.mockup';
-import {getResetDAMockupReferenceJSON, ResetDAMockup} from '../../../_extensions/resetDA/ResetDA.mockup';
 import {
-	getSourceModeDAMockupReferenceJSON,
-	SourceModeDAMockup
-} from '../../../_extensions/sourceModeDA/SourceModeDA.mockup';
-import {getActiveElementMockupReferenceJSON} from '../../ActiveElement.mockup';
-import {DrvMockup, getDrvMockupReferenceJSON} from '../Drv.mockup';
+	getSourceModeDataItemOptions,
+	SourceModeMockup
+} from '../../../baseFunction/sourceMode/SourceMode.mockup';
+import {DrvMockup, getDrvDataItemOptions} from '../Drv.mockup';
+import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
+import {getDataAssemblyOptions} from '../../../DataAssemblyController.mockup';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 
+const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/ActiveElement/AnaDrv';
 
-export function getAnaDrvMockupReferenceJSON(
-	namespace: number,
-	objectBrowseName: string) {
-
+function getAnaDrvSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
 	return ({
-			...getSourceModeDAMockupReferenceJSON(namespace,objectBrowseName),
-			...getDrvMockupReferenceJSON(namespace,objectBrowseName),
-			RpmSclMax: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.RpmSclMax`,
-				dataType: 'Float'
-			},
-			RpmSclMin: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.RpmSclMin`,
-				dataType: 'Float'
-			},
-			RpmUnit: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.RpmUnit`,
-				dataType: 'Int16'
-			},
-			RpmMax: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.RpmMax`,
-				dataType: 'Float'
-			},
-			RpmMin: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.RpmMin`,
-				dataType: 'Float'
-			},
-			RpmInt: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.RpmInt`,
-				dataType: 'Float'
-			},
-			RpmMan: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.RpmMan`,
-				dataType: 'Float'
-			},
-			Rpm: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.Rpm`,
-				dataType: 'Float'
-			},
-			RpmFbk: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.RpmFbk`,
-				dataType: 'Float'
-			},
-			RpmFbkCalc: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.RpmFbkCalc`,
-				dataType: 'Boolean'
-			},
-			RpmRbk: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.RpmRbk`,
-				dataType: 'Float'
-			}
-		}
+		RpmSclMax: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.RpmSclMax`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions,
+		RpmSclMin: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.RpmSclMin`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions,
+		RpmUnit: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.RpmUnit`,
+			dataType: 'Int16'
+		} as OpcUaNodeOptions,
+		RpmMax: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.RpmMax`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions,
+		RpmMin: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.RpmMin`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions,
+		RpmInt: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.RpmInt`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions,
+		RpmMan: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.RpmMan`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions,
+		Rpm: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.Rpm`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions,
+		RpmFbk: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.RpmFbk`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions,
+		RpmFbkCalc: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.RpmFbkCalc`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		RpmRbk: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.RpmRbk`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions
+	});
+}
+
+export function getAnaDrvDataItemOptions(namespace: number, objectBrowseName: string): object {
+	return ({
+			...getDrvDataItemOptions(namespace, objectBrowseName),
+			...getSourceModeDataItemOptions(namespace, objectBrowseName),
+			...getAnaDrvSpecificDataItemOptions(namespace, objectBrowseName),
+		} as OpcUaNodeOptions
 	);
+}
+
+export function getAnaDrvOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
+	const options = getDataAssemblyOptions(name, tagName, tagDescription);
+	options.metaModelRef = metaModelReference;
+	options.dataItems = {
+		...options.dataItems,
+		...getAnaDrvDataItemOptions(namespace, objectBrowseName)};
+	return options;
 }
 
 export class AnaDrvMockup extends DrvMockup{
 
-	public sourceMode: SourceModeDAMockup;
+	public sourceMode: SourceModeMockup;
 
 	public rpmSclMin= 0;
 	public rpmSclMax= 0;
@@ -122,7 +132,7 @@ export class AnaDrvMockup extends DrvMockup{
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
 		super(namespace, rootNode, variableName);
 
-		this.sourceMode= new SourceModeDAMockup(namespace,this.mockupNode,this.name);
+		this.sourceMode = new SourceModeMockup(namespace,this.mockupNode,this.name);
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
@@ -260,9 +270,14 @@ export class AnaDrvMockup extends DrvMockup{
 
 	}
 
-	public getAnaDrvMockupJSON() {
-		return getAnaDrvMockupReferenceJSON(
-			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name as string);
+	public getDataAssemblyOptions(): DataAssemblyOptions {
+		const options = super.getDataAssemblyOptions();
+		options.metaModelRef = metaModelReference;
+		options.dataItems = {
+			...options.dataItems,
+			...this.sourceMode.getDataItemOptions(),
+			...getAnaDrvSpecificDataItemOptions(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
+		};
+		return options;
 	}
 }

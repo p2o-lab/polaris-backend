@@ -2,7 +2,7 @@
   "version": "1.0.0",
   "name": "Simples Testrezept nur für Dosierer von PLT/SVT",
   "author": "Markus Graube",
-  "initial_step": "S1",
+  "initialStep": "S1",
   "steps": [
     {
       "name": "S1",
@@ -15,7 +15,7 @@
       ],
       "transitions": [
         {
-          "next_step": "S2",
+          "nextStep": "S2",
           "condition": {
             "type": "time",
             "duration": "5"
@@ -34,7 +34,7 @@
       ],
       "transitions": [
         {
-          "next_step": "S3",
+          "nextStep": "S3",
           "condition": {
             "type": "state",
             "pea": "Dose",
@@ -60,7 +60,7 @@
       ],
       "transitions": [
         {
-          "next_step": "S4",
+          "nextStep": "S4",
           "condition": {
             "type": "time",
             "duration": "5"
@@ -79,7 +79,7 @@
       ],
       "transitions": [
         {
-          "next_step": "S5",
+          "nextStep": "S5",
           "condition": {
             "type": "state",
             "pea": "Dose",
@@ -100,7 +100,7 @@
       ],
       "transitions": [
         {
-          "next_step": "finished",
+          "nextStep": "finished",
           "condition": {
             "type": "state",
             "pea": "Dose",

@@ -24,43 +24,50 @@
  */
 
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
-import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../_extensions/wqcDA/WQCDA.mockup';
+import {getIndicatorElementDataItemOptions, IndicatorElementMockup} from '../IndicatorElement.mockup';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
+import {getDataAssemblyOptions} from '../../DataAssemblyController.mockup';
 
-export function getStringViewMockupReferenceJSON(
-	namespace: number,
-	objectBrowseName: string) {
-	return (
-		{
-			...getWQCDAMockupReferenceJSON(namespace, objectBrowseName),
-			Text: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.Text`,
-				dataType: 'String'
-			}
-		}
+const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/StringView';
+
+function getStringViewSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
+	return ({
+		Text: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.Text`,
+			dataType: 'String'
+		} as OpcUaNodeOptions
+	});
+}
+
+export function getStringViewDataItemOptions(namespace: number, objectBrowseName: string): object {
+	return ({
+			...getIndicatorElementDataItemOptions(namespace, objectBrowseName),
+			...getStringViewSpecificDataItemOptions(namespace, objectBrowseName),
+		} as OpcUaNodeOptions
 	);
 }
 
-export class StringViewMockup {
+export function getStringViewOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
+	const options = getDataAssemblyOptions(name, tagName, tagDescription);
+	options.metaModelRef = metaModelReference;
+	options.dataItems = {
+		...options.dataItems,
+		...getStringViewDataItemOptions(namespace, objectBrowseName)};
+	return options;
+}
 
-	public readonly name: string;
-	protected text = 'dummyText';
-	public wqc: WQCDAMockup;
-	protected mockupNode: UAObject;
+export class StringViewMockup extends IndicatorElementMockup {
+
+	public text = 'dummyText';
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
-
-		this.name = variableName;
-
-		this.mockupNode = namespace.addObject({
-			organizedBy: rootNode,
-			browseName: variableName
-		});
-		this.wqc = new WQCDAMockup(namespace, this.mockupNode, this.name);
+		super(namespace, rootNode, variableName);
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=1;s=${variableName}.Text`,
+			nodeId: `ns=${namespace.index};s=${variableName}.Text`,
 			browseName: `${variableName}.Text`,
 			dataType: DataType.String,
 			value: {
@@ -71,9 +78,13 @@ export class StringViewMockup {
 		});
 	}
 
-	public getStringViewInstanceMockupJSON() {
-		return getStringViewMockupReferenceJSON(
-			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name as string);
+	public getDataAssemblyOptions(): DataAssemblyOptions {
+		const options = super.getDataAssemblyOptions();
+		options.metaModelRef = metaModelReference;
+		options.dataItems = {
+			...options.dataItems,
+			...getStringViewSpecificDataItemOptions(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
+		};
+		return options;
 	}
 }

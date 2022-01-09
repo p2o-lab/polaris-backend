@@ -25,10 +25,8 @@
 
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {OpcUaConnection} from '../../connection';
-import {OSLevelRuntime, WQCRuntime} from '../_extensions';
+import {OSLevel, OSLevelRuntime, WQC, WQCRuntime} from '../baseFunction';
 import {BaseDataAssemblyRuntime, DataAssemblyController} from '../DataAssemblyController';
-import {OSLevel} from '../_extensions/osLevelDA/OSLevel';
-import {WQC} from '../_extensions/wqcDA/WQC';
 
 export type ActiveElementRuntime = BaseDataAssemblyRuntime & WQCRuntime & OSLevelRuntime;
 

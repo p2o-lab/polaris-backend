@@ -30,7 +30,7 @@ import {
 	ServiceInterface,
 	ServiceOptions, ServiceSourceMode
 } from '@p2olab/polaris-interface';
-import {OpcUaConnection} from '../../connection';
+import {DynamicDataItem, OpcUaConnection} from '../../connection';
 import {
 	controlEnableToJson, DataAssemblyControllerFactory,
 	InputElement, ServiceControl,
@@ -120,8 +120,7 @@ export class Service extends BaseService {
 	}
 
 	public get lastStatusChange(): Date {
-		if(this.serviceControl.communication.StateCur.timestamp) return this.serviceControl.communication.StateCur.timestamp;
-		else return new Date();
+		return (this.serviceControl.communication.StateCur as DynamicDataItem<number>)?.timestamp || new Date();
 	}
 
 	public get currentProcedure(): number | undefined {
@@ -151,7 +150,7 @@ export class Service extends BaseService {
 	public async subscribeToService(): Promise<ServiceEmitter> {
 		this.logger.info(`[${this.qualifiedName}] Subscribe to service`);
 		this.serviceControl
-			.on('CommandEnable', () => {
+			.on('CommandEn', () => {
 				this.logger.debug(`[${this.qualifiedName}] ControlEnable changed: ` +
 					`${JSON.stringify(this.commandEnable)}`);
 				this.eventEmitter.emit('controlEnable', this.commandEnable);
@@ -165,7 +164,7 @@ export class Service extends BaseService {
 						sourceMode: this.serviceControl.serviceSourceMode.getServiceSourceMode()
 					});
 			})
-			.on('State', () => {
+			.on('StateCur', () => {
 				this.logger.debug(`[${this.qualifiedName}] State changed: ` +
 					`${ServiceState[this.state]}`);
 				this.eventEmitter.emit('state', this.state);
@@ -222,7 +221,7 @@ export class Service extends BaseService {
 	}
 
 	// overridden method from Base Service
-	public async executeCommandAndWaitForStateChange(command: ServiceCommand): Promise<void> {
+	public async executeCommand(command: ServiceCommand): Promise<void> {
 		if (!this.connection.isConnected()) {
 			throw new Error('PEAController is not connected');
 		}
@@ -239,34 +238,35 @@ export class Service extends BaseService {
 		let expectedState='';
 		switch(command){
 			case('start'):
-				expectedState='EXECUTE';
+				expectedState = 'EXECUTE';
 				break;
 			case('stop'):
-				expectedState='STOPPED';
+				expectedState = 'STOPPED';
 				break;
 			case('reset'):
-				expectedState='IDLE';
+				expectedState = 'IDLE';
 				break;
 			case('abort'):
-				expectedState='ABORTED';
+				expectedState = 'ABORTED';
 				break;
 			case('complete'):
-				expectedState='COMPLETED';
+				expectedState = 'COMPLETED';
 				break;
 			case('pause'):
-				expectedState='PAUSED';
+				expectedState = 'PAUSED';
 				break;
 			case('resume'):
-				expectedState='EXECUTE';
+				expectedState = 'EXECUTE';
 				break;
 			case('hold'):
-				expectedState='HOLD';
+				expectedState = 'HOLD';
+				break;
+			case('unhold'):
+				expectedState = 'EXECUTE';
 				break;
 			case('restart'):
-				// TODO is this okay?
-				// on 'restart' the program can't detect a change, because in the end the state stays at 'EXECUTE'
-				if (ServiceState[this.state] === 'EXECUTE') return;
-
+				expectedState = 'EXECUTE';
+				break;
 		}
 		await this.waitForStateChangeWithTimeout(expectedState);
 	}
@@ -321,7 +321,7 @@ export class Service extends BaseService {
 
 		// first set opMode and then set procedure
 		await this.setOperationMode();
-		await this.serviceControl.communication.ProcedureExt.write(procedure.id);
+		await (this.serviceControl.communication.ProcedureExt as DynamicDataItem<number>).write(procedure.id);
 	}
 
 	public getProcedureByNameOrDefault(procedureName: string): Procedure | undefined {
@@ -330,9 +330,6 @@ export class Service extends BaseService {
 			procedure = this.getDefaultProcedure();
 		} else {
 			procedure = this.procedures.find((proc) => proc.name === procedureName);
-		}
-		if(!procedure){
-			throw new Error('Could not find Procedure by Name or Default.');
 		}
 		return procedure;
 	}
@@ -376,7 +373,7 @@ export class Service extends BaseService {
 		this.logger.debug(`[${this.qualifiedName}] Send command ${ServiceMtpCommand[command]}`);
 		await this.setOperationMode();
 
-		await this.serviceControl.communication.CommandExt.write(command);
+		await (this.serviceControl.communication.CommandExt as DynamicDataItem<number>).write(command);
 		this.logger.trace(`[${this.qualifiedName}] Command ${ServiceMtpCommand[command]} written`);
 	}
 

@@ -24,91 +24,103 @@
  */
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../_extensions/wqcDA/WQCDA.mockup';
-import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../../_extensions/osLevelDA/OSLevelDA.mockup';
-import {getSourceModeDAMockupReferenceJSON} from '../../_extensions/sourceModeDA/SourceModeDA.mockup';
-import {getOpModeDAMockupReferenceJSON, OpModeDAMockup} from '../../_extensions/opModeDA/OpModeDA.mockup';
-import {getInterlockDAMockupReferenceJSON, InterlockDAMockup} from '../../_extensions/interlockDA/InterlockDA.mockup';
-import {getResetDAMockupReferenceJSON, ResetDAMockup} from '../../_extensions/resetDA/ResetDA.mockup';
-import {getActiveElementMockupReferenceJSON} from '../ActiveElement.mockup';
+import {getOpModeDataItemOptions, OpModeMockup} from '../../baseFunction/opMode/OpMode.mockup';
+import {getInterlockDataItemOptions, InterlockMockup} from '../../baseFunction/interlock/Interlock.mockup';
+import {getResetDataItemOptions, ResetMockup} from '../../baseFunction/reset/Reset.mockup';
+import {ActiveElementMockup, getActiveElementDataItemOptions} from '../ActiveElement.mockup';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
+import {getDataAssemblyOptions} from '../../DataAssemblyController.mockup';
 
+const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/ActiveElement';
 
-export function getVlvMockupReferenceJSON(
-	namespace: number,
-	objectBrowseName: string) {
-
+function getVlvSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
 	return ({
-			...getActiveElementMockupReferenceJSON(namespace, objectBrowseName),
-			...getOpModeDAMockupReferenceJSON(namespace,objectBrowseName),
-			...getInterlockDAMockupReferenceJSON(namespace,objectBrowseName),
-			...getResetDAMockupReferenceJSON(namespace,objectBrowseName),
-			SafePos: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.SafePos`,
-				dataType: 'Boolean'
-			},
-			SafePosEn: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.SafePosEn`,
-				dataType: 'Boolean'
-			},
-			SafePosAct: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.SafePosAct`,
-				dataType: 'Boolean'
-			},
-			OpenAut: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.OpenAut`,
-				dataType: 'Boolean'
-			},
-			OpenFbk: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.OpenFbk`,
-				dataType: 'Boolean'
-			},
-			OpenFbkCalc: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.OpenFbkCalc`,
-				dataType: 'Boolean'
-			},
-			OpenOp: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.OpenOp`,
-				dataType: 'Boolean'
-			},
-			CloseAut: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.CloseAut`,
-				dataType: 'Boolean'
-			},
-			CloseFbk: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.CloseFbk`,
-				dataType: 'Boolean'
-			},
-			CloseFbkCalc: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.CloseFbkCalc`,
-				dataType: 'Boolean'
-			},
-			CloseOp: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.CloseOp`,
-				dataType: 'Boolean'
-			}
-		}
+		SafePos: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.SafePos`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		SafePosEn: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.SafePosEn`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		SafePosAct: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.SafePosAct`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		OpenAut: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.OpenAut`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		OpenFbk: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.OpenFbk`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		OpenFbkCalc: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.OpenFbkCalc`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		OpenOp: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.OpenOp`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		CloseAut: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.CloseAut`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		CloseFbk: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.CloseFbk`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		CloseFbkCalc: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.CloseFbkCalc`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		CloseOp: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.CloseOp`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions
+	});
+}
+
+
+export function getVlvDataItemOptions(namespace: number, objectBrowseName: string): object {
+	return ({
+			...getActiveElementDataItemOptions(namespace, objectBrowseName),
+			...getOpModeDataItemOptions(namespace, objectBrowseName),
+			...getInterlockDataItemOptions(namespace, objectBrowseName),
+			...getResetDataItemOptions(namespace, objectBrowseName),
+			...getVlvSpecificDataItemOptions(namespace, objectBrowseName),
+		} as OpcUaNodeOptions
 	);
 }
 
-export class VlvMockup {
 
-	public readonly name: string;
-	public wqc: WQCDAMockup;
-	public osLevel: OSLevelDAMockup;
-	public operationMode: OpModeDAMockup;
-	public interlock: InterlockDAMockup;
-	public reset: ResetDAMockup;
+export function getVlvOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
+	const options = getDataAssemblyOptions(name, tagName, tagDescription);
+	options.metaModelRef = metaModelReference;
+	options.dataItems = {
+		...options.dataItems,
+		...getVlvDataItemOptions(namespace, objectBrowseName)};
+	return options;
+}
+
+export class VlvMockup extends ActiveElementMockup{
+
+	public operationMode: OpModeMockup;
+	public interlock: InterlockMockup;
+	public reset: ResetMockup;
 
 	public safePos = false;
 	public safePosEn = false;
@@ -123,22 +135,12 @@ export class VlvMockup {
 	public closeFbkCalc = false;
 	public closeFbk = false;
 
-	protected mockupNode: UAObject;
-
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
+		super(namespace, rootNode, variableName);
 
-		this.name = variableName;
-
-		this.mockupNode = namespace.addObject({
-			organizedBy: rootNode,
-			browseName: variableName
-		});
-
-		this.osLevel = new OSLevelDAMockup(namespace, this.mockupNode, this.name);
-		this.wqc = new WQCDAMockup(namespace, this.mockupNode, this.name);
-		this.operationMode = new OpModeDAMockup(namespace,this.mockupNode,this.name);
-		this.interlock= new InterlockDAMockup(namespace,this.mockupNode,this.name);
-		this.reset= new ResetDAMockup(namespace,this.mockupNode,this.name);
+		this.operationMode = new OpModeMockup(namespace,this.mockupNode,this.name);
+		this.interlock= new InterlockMockup(namespace,this.mockupNode,this.name);
+		this.reset= new ResetMockup(namespace,this.mockupNode,this.name);
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
@@ -271,9 +273,16 @@ export class VlvMockup {
 		});
 	}
 
-	public getVlvMockupJSON() {
-		return getVlvMockupReferenceJSON(
-			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name as string);
+	public getDataAssemblyOptions(): DataAssemblyOptions {
+		const options = super.getDataAssemblyOptions();
+		options.metaModelRef = metaModelReference;
+		options.dataItems = {
+			...options.dataItems,
+			...this.operationMode.getDataItemOptions(),
+			...this.reset.getDataItemOptions(),
+			...this.interlock.getDataItemOptions(),
+			...getVlvSpecificDataItemOptions(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
+		};
+		return options;
 	}
 }

@@ -23,6 +23,7 @@
  * SOFTWARE.
  */
 
+/* eslint-disable */
 import {OperationOptions, ServiceCommand} from '@p2olab/polaris-interface';
 import {PEAController, Service} from '../../../pea';
 import {Operation} from '../../index';
@@ -33,10 +34,13 @@ import * as fs from 'fs';
 import {PEAMockup} from '../../../pea/PEA.mockup';
 import {MockupServer} from '../../../_utils';
 
+
 chai.use(chaiAsPromised);
 const expect = chai.expect;
+/* eslint-enable */
 
 describe('Operation', () => {
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const delay = require('timeout-as-promise');
 	/*
 	context('constructor', () => {

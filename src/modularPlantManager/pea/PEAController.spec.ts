@@ -27,12 +27,10 @@ import {PEAController} from './PEAController';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../_utils';
-import * as peaOptions from '../../../tests/peaOptions.json';
-import {namespaceUrl, setNamespaceUrl} from '../../../tests/namespaceUrl';
+import * as peaOptions from '../peaOptions.spec.json';
 import {PEAOptions, ServiceCommand} from '@p2olab/polaris-interface';
 import {AnaViewMockup} from './dataAssembly/indicatorElement/AnaView/AnaView.mockup';
-import {Namespace, UAObject} from 'node-opcua';
-import {ServiceControlMockup} from './dataAssembly/ServiceControl/ServiceControl.mockup';
+import {ServiceControlMockup} from './dataAssembly/serviceControl/ServiceControl.mockup';
 import {ServiceState} from './serviceSet/service/enum';
 import {Service} from './serviceSet';
 
@@ -47,40 +45,41 @@ describe('PEAController', () => {
 	});
 
 	describe('with MockupServer', () => {
+
 		let mockupServer: MockupServer;
 		let peaController: PEAController;
 		let service: Service;
-		//set namespaceUrl in peaOptions
-		setNamespaceUrl(peaOptions as any);
 
 		beforeEach(async () => {
 			mockupServer = new MockupServer();
 			peaController = new PEAController(peaOptions as unknown as PEAOptions);
 			service = peaController.services[0];
 			await mockupServer.initialize();
-			const mockup = new AnaViewMockup(mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject, 'Variable');
-			const mockupService = new ServiceControlMockup(mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject, 'Trigonometry');
+			new AnaViewMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
+			new ServiceControlMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Trigonometry');
 			await mockupServer.start();
 		});
+
 		afterEach(async () => {
 			await peaController.disconnectAndUnsubscribe();
 			await mockupServer.shutdown();
 		});
+
 		context('connect, subscribe',()=>{
+
 			it('should connect and subscribe',  async() => {
 				return expect(peaController.connectAndSubscribe()).to.not.be.rejected;
 			});
+
 			it('should fail to subscribe, missing variable on mockupServer',  async() => {
 				await mockupServer.shutdown();
 				mockupServer = new MockupServer();
 				peaController = new PEAController(peaOptions as unknown as PEAOptions);
 				await mockupServer.initialize();
-				new AnaViewMockup(mockupServer.namespace as Namespace,
-					mockupServer.rootComponent as UAObject, 'Variable', false);
-				new ServiceControlMockup(mockupServer.namespace as Namespace,
-					mockupServer.rootComponent as UAObject, 'Trigonometry');
+				new AnaViewMockup(mockupServer.nameSpace,
+					mockupServer.rootObject, 'Variable', false);
+				new ServiceControlMockup(mockupServer.nameSpace,
+					mockupServer.rootObject, 'Trigonometry');
 				await mockupServer.start();
 				return expect(peaController.connectAndSubscribe()).to.be.rejectedWith('Timeout: Could not subscribe to Variable.V');
 			}).timeout(5000);
@@ -108,52 +107,53 @@ describe('PEAController', () => {
 				await peaController.disconnectAndUnsubscribe();
 			});
 
-/*			it('should fail to disconnect and unsubscribe',  async() => {
-				//TODO when could this occure?
-			});*/
-		});
+		}).timeout(8000);
 
 		context('control Services',async ()=> {
-			it('should stop()',  async() => {
+
+			it('should stopAllServices()',  async() => {
 				await peaController.connectAndSubscribe();
-				await service.executeCommandAndWaitForStateChange(ServiceCommand.start);
-				await peaController.stop();
+				await service.executeCommand(ServiceCommand.start);
+				await peaController.stopAllServices();
 				expect(service.state).to.equal(ServiceState.STOPPED);
 			});
-			it('should fail to stop(), command not executable',async() => {
+
+			it('should fail to stopAllServices(), command not executable',async() => {
 				await peaController.connectAndSubscribe();
-				await peaController.abort();
-				return expect(peaController.stop()).to.be.rejectedWith('Command is not executable');
+				await peaController.stopAllServices();
+				return expect(peaController.stopAllServices()).to.be.rejectedWith('Command is not executable');
 			});
 
-			it('should abort()',  async() => {
+			it('should abortAllServices()',  async() => {
 				await peaController.connectAndSubscribe();
-				await service.executeCommandAndWaitForStateChange(ServiceCommand.start);
-				await peaController.abort();
+				await service.executeCommand(ServiceCommand.start);
+				await peaController.abortAllServices();
 				expect(service.state).to.equal(ServiceState.ABORTED);
 			});
 
 			it('should pause()',  async() => {
 				await peaController.connectAndSubscribe();
-				await service.executeCommandAndWaitForStateChange(ServiceCommand.start);
-				await peaController.pause();
+				await service.executeCommand(ServiceCommand.start);
+				await peaController.pauseAllServices();
 				expect(service.state).to.equal(ServiceState.PAUSED);
 			});
+
 			it('should fail to pause(), command not executable',  async() => {
 				await peaController.connectAndSubscribe();
-				return expect(peaController.pause()).to.be.rejectedWith('Command is not executable');
+				return expect(peaController.pauseAllServices()).to.be.rejectedWith('Command is not executable');
 			});
 
 			it('should resume()', async() => {
 				await peaController.connectAndSubscribe();
-				await service.executeCommandAndWaitForStateChange(ServiceCommand.start);
-				await service.executeCommandAndWaitForStateChange(ServiceCommand.pause);
-				await peaController.resume();
+				await service.executeCommand(ServiceCommand.start);
+				await service.executeCommand(ServiceCommand.pause);
+				await peaController.pauseAllServices();
 				expect(service.state).to.equal(ServiceState.EXECUTE);
 			}).timeout(10000);
+
 			it('should fail to resume(), command not executable',  async() => {
 				await peaController.connectAndSubscribe();
-				return expect(peaController.resume()).to.be.rejectedWith('Command is not executable');
+				return expect(peaController.resumeAllServices()).to.be.rejectedWith('Command is not executable');
 			});
 		});
 	});

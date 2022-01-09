@@ -1,4 +1,3 @@
-/* tslint:disable:max-classes-per-file */
 /*
  * MIT License
  *
@@ -25,16 +24,14 @@
  */
 
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaConnection, OpcUaDataItem} from '../../../../connection';
-import {ScaleSettingsRuntime, UnitDataAssemblyRuntime} from '../../../_extensions';
+import {OpcUaConnection, DataItem} from '../../../../connection';
+import {ScaleSettings, ScaleSettingsRuntime, UnitSettingsRuntime, UnitSettings} from '../../../baseFunction';
 import {
 	InputElement, InputElementRuntime,
 } from '../../InputElement';
-import {UnitSettings} from '../../../_extensions/unitDA/UnitSettings';
-import {ScaleSettings} from '../../../_extensions/scaleSettingsDA/ScaleSettings';
 
-export type DIntProcessValueInRuntime = InputElementRuntime & UnitDataAssemblyRuntime & ScaleSettingsRuntime & {
-	VExt: OpcUaDataItem<number>;
+export type DIntProcessValueInRuntime = InputElementRuntime & UnitSettingsRuntime & ScaleSettingsRuntime & {
+	VExt: DataItem<number>;
 };
 
 export class DIntProcessValueIn extends InputElement {
@@ -44,14 +41,16 @@ export class DIntProcessValueIn extends InputElement {
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
-		this.communication.VExt = this.createDataItem('VExt', 'read');
 
 		this.unitSettings = new UnitSettings(this);
 		this.scaleSettings = new ScaleSettings(this);
 
+		this.communication.VExt = this.createDataItem('VExt', 'number', 'write');
+
 		this.defaultReadDataItem = this.communication.VExt;
 		this.defaultReadDataItemType = 'number';
-		this.defaultWriteDataItemType = 'number';
+
 		this.defaultWriteDataItem = this.communication.VExt;
+		this.defaultWriteDataItemType = 'number';
 	}
 }

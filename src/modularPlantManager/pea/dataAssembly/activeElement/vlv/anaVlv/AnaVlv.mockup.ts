@@ -24,98 +24,106 @@
  */
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../../_extensions/wqcDA/WQCDA.mockup';
-import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../../../_extensions/osLevelDA/OSLevelDA.mockup';
-import {
-	getSourceModeDAMockupReferenceJSON,
-	SourceModeDAMockup
-} from '../../../_extensions/sourceModeDA/SourceModeDA.mockup';
-import {getOpModeDAMockupReferenceJSON, OpModeDAMockup} from '../../../_extensions/opModeDA/OpModeDA.mockup';
-import {getInterlockDAMockupReferenceJSON, InterlockDAMockup} from '../../../_extensions/interlockDA/InterlockDA.mockup';
-import {getResetDAMockupReferenceJSON, ResetDAMockup} from '../../../_extensions/resetDA/ResetDA.mockup';
-import {getActiveElementMockupReferenceJSON} from '../../ActiveElement.mockup';
-import {getVlvMockupReferenceJSON, VlvMockup} from '../Vlv.mockup';
+import {getSourceModeDataItemOptions, SourceModeMockup} from '../../../baseFunction/sourceMode/SourceMode.mockup';
+import {getVlvDataItemOptions, VlvMockup} from '../Vlv.mockup';
+import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
+import {getDataAssemblyOptions} from '../../../DataAssemblyController.mockup';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 
+const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/ActiveElement/AnaVlv';
 
-export function getAnaVlvMockupReferenceJSON(
-	namespace: number,
-	objectBrowseName: string) {
-
+function getAnaVlvSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
 	return ({
-			...getVlvMockupReferenceJSON(namespace, objectBrowseName),
-			...getSourceModeDAMockupReferenceJSON(namespace,objectBrowseName),
-			Pos: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.Pos`,
-				dataType: 'Float'
-			},
-			PosFbk: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.PosFbk`,
-				dataType: 'Float'
-			},
-			PosFbkCalc: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.PosFbkCalc`,
-				dataType: 'Boolean'
-			},
-			PosRbk: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.PosRbk`,
-				dataType: 'Float'
-			},
-			PosInt: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.PosInt`,
-				dataType: 'Float'
-			},
-			PosMan: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.PosMan`,
-				dataType: 'Float'
-			},
-			PosUnit: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.PosUnit`,
-				dataType: 'Int16'
-			},
-			PosSclMin: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.PosSclMin`,
-				dataType: 'Float'
-			},
-			PosSclMax: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.PosSclMax`,
-				dataType: 'Float'
-			},
-			PosMin: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.PosMin`,
-				dataType: 'Float'
-			},
-			PosMax: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.PosMax`,
-				dataType: 'Float'
-			},
-			OpenAct: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.OpenAct`,
-				dataType: 'Boolean'
-			},
-			CloseAct: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.CloseAct`,
-				dataType: 'Boolean'
-			}
-		}
+		Pos: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.Pos`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions,
+		PosFbk: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.PosFbk`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions,
+		PosFbkCalc: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.PosFbkCalc`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		PosRbk: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.PosRbk`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions,
+		PosInt: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.PosInt`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions,
+		PosMan: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.PosMan`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions,
+		PosUnit: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.PosUnit`,
+			dataType: 'Int16'
+		} as OpcUaNodeOptions,
+		PosSclMin: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.PosSclMin`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions,
+		PosSclMax: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.PosSclMax`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions,
+		PosMin: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.PosMin`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions,
+		PosMax: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.PosMax`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions,
+		OpenAct: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.OpenAct`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		CloseAct: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.CloseAct`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions
+	});
+}
+
+
+export function getAnaVlvDataItemOptions(namespace: number, objectBrowseName: string): object {
+	return ({
+			...getVlvDataItemOptions(namespace, objectBrowseName),
+			...getSourceModeDataItemOptions(namespace, objectBrowseName),
+			...getAnaVlvSpecificDataItemOptions(namespace, objectBrowseName),
+		} as OpcUaNodeOptions
 	);
+}
+
+export function getAnaVlvOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
+	const options = getDataAssemblyOptions(name, tagName, tagDescription);
+	options.metaModelRef = metaModelReference;
+	options.dataItems = {
+		...options.dataItems,
+		...getAnaVlvDataItemOptions(namespace, objectBrowseName)};
+	return options;
 }
 
 export class AnaVlvMockup extends VlvMockup{
 
-	public sourceModeMockup: SourceModeDAMockup;
+	public sourceModeMockup: SourceModeMockup;
 
 	public posSclMin = 0;
 	public posSclMax = 0;
@@ -135,7 +143,7 @@ export class AnaVlvMockup extends VlvMockup{
 
 		super(namespace, rootNode, variableName);
 
-		this.sourceModeMockup = new SourceModeDAMockup(namespace, rootNode, variableName);
+		this.sourceModeMockup = new SourceModeMockup(namespace, rootNode, variableName);
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
@@ -240,7 +248,7 @@ export class AnaVlvMockup extends VlvMockup{
 				get: (): Variant => {
 					return new Variant({dataType: DataType.Double, value: this.posMan});
 				},
-				set: (variant: Variant) => {
+				set: (variant: Variant): StatusCodes => {
 					this.posMan = parseFloat(variant.value);
 					return StatusCodes.Good;
 				},
@@ -292,9 +300,14 @@ export class AnaVlvMockup extends VlvMockup{
 		});
 	}
 
-	public getAnaVlvMockupJSON() {
-		return getAnaVlvMockupReferenceJSON(
-			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name as string);
+	public getDataAssemblyOptions(): DataAssemblyOptions {
+		const options = super.getDataAssemblyOptions();
+		options.metaModelRef = metaModelReference;
+		options.dataItems = {
+			...options.dataItems,
+			...this.sourceModeMockup.getDataItemOptions(),
+			...getAnaVlvSpecificDataItemOptions(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
+		};
+		return options;
 	}
 }

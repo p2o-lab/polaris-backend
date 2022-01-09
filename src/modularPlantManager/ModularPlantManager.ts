@@ -23,35 +23,15 @@
  * SOFTWARE.
  */
 
-import {
-	BackendNotification,
-	PEAInterface,
-	POLServiceInterface,
-	POLServiceOptions,
-	PEAOptions,
-	RecipeOptions,
-	ServiceCommand,
-	VariableChange,
-	ServerSettingsOptions,
-	PEAModel,
-} from '@p2olab/polaris-interface';
-import {
-	Backbone,
-	PEAPool,
-	PEAPoolVendor,
-} from '@p2olab/pimad-core';
-import {catManager, catOpcUA, ServiceLogEntry} from '../logging';
+import {BackendNotification, PEAInterface, PEAOptions, POLServiceInterface, POLServiceOptions, RecipeOptions, ServiceCommand, VariableChange,} from '@p2olab/polaris-interface';
+import {catManager, ServiceLogEntry} from '../logging';
 import {ParameterChange, PEAController, Service} from './pea';
 import {ServiceState} from './pea/dataAssembly';
 import {POLService, POLServiceFactory} from './polService';
 import {Player, Recipe} from './recipe';
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
-import PiMAdResponse = Backbone.PiMAdResponse;
-import { v4 as uuidv4 } from 'uuid';
-import {PiMAdParser} from './pea/PiMAdParser/PiMAdParser';
-import {ProcedureOptions} from '@p2olab/polaris-interface/dist/service/options';
-
+import {PEAProvider} from '../peaProvider/PEAProvider';
 
 interface ModularPlantManagerEvents {
 	/**
@@ -73,24 +53,25 @@ export interface LoadOptions {
 
 export class ModularPlantManager extends (EventEmitter as new() => ModularPlantManagerEmitter) {
 
+	public readonly peaProvider = new PEAProvider();
 	// loaded recipes
 	public readonly recipes: Recipe[] = [];
-	// loaded PEAs
+	// instantiated PEAs
 	public readonly peas: PEAController[] = [];
+	
 	// instantiated POL services
 	public readonly polServices: POLService[] = [];
+	
 	public readonly player: Player;
 	public variableArchive: VariableChange[] = [];
 	public serviceArchive: ServiceLogEntry[] = [];
-	// autoreset timeout in milliseconds
-	private _autoresetTimeout = 500;
-	// PiMAd-core
-	public pimadPool: PEAPool;
+
+	// autoReset determines if a service is automatically reset
+	private _autoReset = true;
+	private _autoResetTimeout = 500; //milliseconds
 
 	constructor() {
 		super();
-		this.pimadPool = new PEAPoolVendor().buyDependencyPEAPool();
-		this.pimadPool.initializeMTPFreeze202001Importer();
 
 		this.player = new Player()
 			.on('started', () => {
@@ -107,178 +88,80 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 			});
 	}
 
-	// autoreset determines if a service is automatically reset when
-	private _autoreset = true;
 
-	get autoreset(): boolean {
-		return this._autoreset;
+	get autoReset(): boolean {
+		return this._autoReset;
 	}
 
-	set autoreset(value: boolean) {
+
+	set autoReset(value: boolean) {
 		catManager.info(`Set AutoReset to ${value}`);
-		this._autoreset = value;
+		this._autoReset = value;
 	}
 
-	generateUniqueIdentifier(): string {
-		// the extinction of all life on earth will occur long before you have a collision (with uuid) (stackoverflow.com)
-		const identifier = uuidv4();
-		return identifier;
-	}
 
 	/**
 	 * get PEAController by given identifier
-	 * @param peaId
+	 * @param identifier
 	 * @returns {PEAController}
 	 */
-	public getPEAController(peaId: string): PEAController {
-		const pea = this.peas.find((p) => p.id === peaId);
-		if (pea) return pea;
-		else throw Error(`PEA with id ${peaId} not found`);
-	}
-
-	/**
-	 * Get PEAController from Pimad-Pool by given Pimad-Identifier
-	 * @param pimadIdentifier	Pimad-Identifier
-	 * @param callback Response from PiMad...
-	 */
-	public getPEAFromPimadPool(pimadIdentifier: string): Promise<PEAModel>{
-		return new Promise<PEAModel>((resolve,reject) => {
-			this.pimadPool.getPEA(pimadIdentifier, (response: PiMAdResponse) => {
-				if(response.getMessage()=='Success!') {
-					const peaModel = response.getContent() as PEAModel;
-					resolve(peaModel);
-				} else reject(new Error(response.getMessage()));
-			});
-		});
-	}
-
-	/**
-	 * Delete PEAController from Pimad-Pool by given Pimad-Identifier
-	 * //TODO: use more convenient Promise
-	 * @param peaId	Pimad-Identifier
-	 * @param callback Response from PiMad...
-	 */
-	public deletePEAFromPimadPool(peaId: string): Promise<void> {
-		return new Promise((resolve,reject)=> {
-			this.pimadPool.deletePEA(peaId,(response: PiMAdResponse) => {
-				if(response.getMessage()=='Success!') resolve();
-				else reject(new Error(response.getMessage()));
-			});
-		});
-	}
-
-	/**
-	 * Get All PEAs from PiMAd-Pool
-	 * @return {Promise<PEAModel[]>}
-	 */
-	public getAllPEAsFromPimadPool(): Promise<PEAModel[]>{
-		return new Promise((resolve, reject)=>{
-			this.pimadPool.getAllPEAs((response: PiMAdResponse) => {
-				if(response.getMessage()=='Success!') resolve(response.getContent() as PEAModel[]);
-				else reject(new Error((response.getMessage())));
-			});
-		});
-	}
-
-	/**
-	 * add PEAController to PiMaD-Pool by given filepath
-	 *  //TODO: use more convenient Promise
-	 * @param filePath - filepath of the uploaded file in /uploads
-	 */
-	public addPEAToPimadPool(filePath: { source: string}): Promise<PEAModel>{
-		return new Promise<PEAModel>((resolve, reject)=>{
-			this.pimadPool.addPEA(filePath, (response: PiMAdResponse) => {
-				if(response.getMessage() == 'Success!') resolve(response.getContent() as PEAModel);
-				else reject(new Error(response.getMessage()));
-			});
-		});
-	}
-
-	/**
-	 * get server settings of PEAController
-	 * @param {string} peaId
-	 */
-	public getServerSettings(peaId: string): object{
-		const peaControllerCon = this.getPEAController(peaId).connection;
-		const body= {serverUrl: peaControllerCon.endpoint, username: peaControllerCon.username, password: peaControllerCon.password};
-		return body;
-	}
-
-	/**
-	 * update server settings of PEAController
-	 * @param {ServerSettingsOptions} options
-	 */
-	public updateServerSettings(options: ServerSettingsOptions){
-		const pea = this.getPEAController(options.id);
-		pea.updateConnection(options);
-	}
-
-	/**
-	 * Load PEAControllers by given pimadIdentifier
-	 * //TODO needs refactoring -> input should be Object with pimadIdentifier and protected information
-	 * @param {string} pimadIdentifier
-	 * @param {boolean} protectedPEAs  should PEAs be protected from being deleted
-	 */
-	public async loadPEAController(pimadIdentifier: string, protectedPEAs = false): Promise<PEAController[]>{
-		const newPEAs: PEAController[] = [];
-		if (pimadIdentifier) {
-			const peaOptions: PEAOptions = await PiMAdParser.createPEAOptions(pimadIdentifier, this);
-			newPEAs.push(new PEAController(peaOptions, protectedPEAs));
-			this.peas.push(...newPEAs);
-			this.setEventListeners(newPEAs);
-			return newPEAs;
+	public getPEAController(identifier: string): PEAController {
+		const pea = this.peas.find((p) => p.id === identifier);
+		if (!pea) {
+			throw Error(`PEA with id ${identifier} not found`);
 		}
-		else throw new Error('No valid PiMAd Identifier');
+		return pea;
+	}
 
-		/*if (options.subMP) {
-			options.subMP.forEach((subMPOptions) => {
-				subMPOptions.peas.forEach((peaOptions: PEAOptions) => {
-					if (this.peas.find((p) => p.id === peaOptions.pea.getPiMAdIdentifier())) {
-						catManager.warn(`PEAController ${peaOptions.pea.getPiMAdIdentifier()} already in registered PEAs`);
-						throw new Error(`PEAController ${peaOptions.pea.getPiMAdIdentifier()} already in registered PEAs`);
-					} else {
-						newPEAs.push(new PEAController(peaOptions, protectedPEAs));
-					}
-				});
-			});
-		} else if (options.peas) {
-			options.peas.forEach((peaOptions: PEAOptions) => {
-				if (this.peas.find((p) => p.id === peaOptions.pea.getPiMAdIdentifier())) {
-					catManager.warn(`PEAController ${peaOptions.pea.getPiMAdIdentifier()} already in registered PEAs`);
-					throw new Error(`PEAController ${peaOptions.pea.getPiMAdIdentifier()} already in registered PEAs`);
-				} else {
-					newPEAs.push(new PEAController(peaOptions, protectedPEAs));
-				}
-			});*/
+
+	/**
+	 * Load PEAControllers by given identifier
+	 * @param {string} identifier
+	 */
+	public async loadPEAController(identifier: string): Promise<PEAController[]>{
+		const newPEAs: PEAController[] = [];
+		const peaOptions: PEAOptions = await this.peaProvider.getPEAControllerOptionsByPEAIdentifier(identifier);
+
+		newPEAs.push(new PEAController(peaOptions));
+		this.peas.push(...newPEAs);
+		this.setPEAEventListeners(newPEAs);
+
+		return newPEAs;
 	}
 
 	/**
 	 * Remove PEAController by given identifier
-	 * @param peaID
+	 * @param identifier
 	 */
-	public async removePEAController(peaID: string): Promise<void> {
-		catManager.info(`Remove PEA ${peaID}`);
-		const pea = this.getPEAController(peaID);
+	public async removePEAController(identifier: string): Promise<void> {
+		catManager.info(`Remove PEA ${identifier}`);
+		const pea = this.getPEAController(identifier);
 
-		if (pea.protected) throw new Error(`PEA ${peaID} is protected and can't be deleted`);
+		if (pea.isProtected()) {
+			throw new Error(`PEA ${identifier} can not be deleted since it is protected.`);
+		}
 
-		catManager.debug(`Disconnecting pea ${peaID} ...`);
+		catManager.debug(`Disconnecting pea ${identifier} ...`);
 		await pea.disconnectAndUnsubscribe()
 			.catch((err) => catManager.warn('Something wrong while disconnecting from PEAController: ' + err.toString()));
 
-		catManager.debug(`Deleting pea ${peaID} ...`);
+		catManager.debug(`Deleting pea ${identifier} ...`);
 		const index = this.peas.indexOf(pea, 0);
 		if (pea) this.peas.splice(index, 1);
 	}
 
 	/**
-	 * get all PEAControllers as json
+	 * get all PEAController as json
 	 * @returns {PEAInterface[]}
 	 */
 	public getAllPEAControllers(): PEAInterface[] {
 		return this.peas.map((pea) => pea.json());
 	}
 
+	/**
+	 * get all POLServices as json
+	 * @returns {POLServiceInterface[]}
+	 */
 	public getPOLServices(): POLServiceInterface[] {
 		return this.polServices.map((ps) => ps.json());
 	}
@@ -291,40 +174,40 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 	}
 
 	/**
-	 * Abort all services from all loaded PEAs
+	 * Abort all services of all PEAs
 	 */
 	public abortAllServices(): Promise<Promise<void[]>[][]> {
 		const tasks = [];
-		tasks.push(this.peas.map((p) => p.abort()));
+		tasks.push(this.peas.map((peaController) => peaController.abortAllServices()));
 		return Promise.all(tasks);
 	}
 
 	/**
-	 * Stop all services from all loaded PEAs
+	 * Stop all services of all PEAs
 	 */
 	public stopAllServices(): Promise<Promise<void[]>[][]> {
 		const tasks = [];
-		tasks.push(this.peas.map((p) => p.stop()));
+		tasks.push(this.peas.map((peaController) => peaController.stopAllServices()));
 		return Promise.all(tasks);
 	}
 
 	/**
-	 * Reset all services from all loaded PEAs
+	 * Reset all services of all PEAs
 	 */
 	public resetAllServices(): Promise<Promise<void[]>[][]> {
 		const tasks = [];
-		tasks.push(this.peas.map((p) => p.reset()));
+		tasks.push(this.peas.map((peaController) => peaController.resetAllServices()));
 		return Promise.all(tasks);
 	}
 
-	public removeRecipe(recipeID: string): void {
-		catManager.debug(`Remove recipe ${recipeID}`);
-		const recipe = this.recipes.find((r) => r.id === recipeID);
+	public removeRecipe(identifier: string): void {
+		catManager.debug(`Remove recipe ${identifier}`);
+		const recipe = this.recipes.find((r) => r.id === identifier);
 		if (!recipe) {
-			throw new Error(`Recipe ${recipeID} not available.`);
+			throw new Error(`Recipe ${identifier} not found.`);
 		}
 		if (recipe.protected) {
-			throw new Error(`Recipe ${recipeID} can not be deleted since it is protected.`);
+			throw new Error(`Recipe ${identifier} can not be deleted since it is protected.`);
 		} else {
 			const index = this.recipes.indexOf(recipe, 0);
 			if (index > -1) {
@@ -334,17 +217,17 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 	}
 
 	/**
-	 * find [Service] of a [PEAController] registered in manager
-	 * @param {string} peaName
+	 * find [Service] of a [PEAController]
+	 * @param identifier
 	 * @param {string} serviceName
 	 * @returns {Service}
 	 */
-	public getService(peaId: string, serviceName: string): Service {
-		const pea: PEAController = this.getPEAController(peaId);
+	public getService(identifier: string, serviceName: string): Service {
+		const pea: PEAController = this.getPEAController(identifier);
 		return pea.getService(serviceName);
 	}
 
-	public instantiatePOLService(options: POLServiceOptions): void {
+	public addPOLService(options: POLServiceOptions): void {
 		const polService = POLServiceFactory.create(options, this.peas);
 		catManager.info(`instantiated POLService ${polService.name}`);
 		polService.eventEmitter
@@ -403,9 +286,9 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 	 * @param {Service} service
 	 */
 	private performAutoReset(service: Service): void {
-		if (this.autoreset) {
+		if (this.autoReset) {
 			catManager.info(`Service ${service.connection.id}.${service.name} completed. ` +
-				`Short waiting time (${this._autoresetTimeout}) to AutoReset`);
+				`Short waiting time (${this._autoResetTimeout}) to AutoReset`);
 			setTimeout(async () => {
 				if (service.connection.isConnected() && service.state === ServiceState.COMPLETED) {
 					catManager.info(`Service ${service.connection.id}.${service.name} completed. ` +
@@ -416,16 +299,16 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 						catManager.debug('AutoReset not possible');
 					}
 				}
-			}, this._autoresetTimeout);
+			}, this._autoResetTimeout);
 		}
 	}
 
 	/**
-	 * set all event listeners for the new PEAControllers
-	 * @param newPEAs - new loaded/instantiated PEAControllers
+	 * set all event listeners for new PEAControllers
+	 * @param newPEAs - new PEAControllers
 	 * @private
 	 */
-	private setEventListeners(newPEAs: PEAController[]): PEAController[] {
+	private setPEAEventListeners(newPEAs: PEAController[]): void {
 		newPEAs.forEach((p: PEAController) => {
 			p
 				.on('connected', () => {
@@ -489,6 +372,5 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 				});
 			this.emit('notify', {message: 'pea', pea: p.json()});
 		});
-		return newPEAs;
 	}
 }

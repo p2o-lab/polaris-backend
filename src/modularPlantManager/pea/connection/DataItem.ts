@@ -1,4 +1,3 @@
-/* tslint:disable:max-classes-per-file */
 /*
  * MIT License
  *
@@ -28,35 +27,107 @@ import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Category} from 'typescript-logging';
 import {catDataItem} from '../../../logging';
+import {DataItemOptions, DynamicDataItemOptions} from './DataItemFactory';
 
+export interface DataItem<T extends string | number | boolean> {
+	defaultValue: T;
+	value: T;
+}
 
+export interface DynamicDataItem<T extends string | number | boolean> extends DataItem<T>{
+	dataType: string;
+	timestamp: Date | undefined;
+	writable: boolean;
+	lastWritten: Date | undefined;
+}
 
 /**
  * Events emitted by [[DataItem]]
  */
-export interface DataItemEvents {
+export interface DataItemEvents<T> {
 	/**
-	 * when OpcUaNodeOptions changes its value
+	 * value changed
 	 * @event changed
 	 */
-	changed: { value: any; timestamp: Date; nodeId: string };
+	changed: {value: T; timestamp: Date};
 }
 
-export type DataItemEmitter = StrictEventEmitter<EventEmitter, DataItemEvents>;
-//change name
-export abstract class DataItem<T> extends (EventEmitter as new() => DataItemEmitter) {
-	// data type of data item
-	public dataType!: string;
-	// recent value
-	public value: T | undefined = undefined;
-	// timestamp of last update of value
-	public timestamp!: Date;
-	// can DataItem be accessed
-	public access: 'read' | 'write' = 'read';
+export type DataItemEmitter = StrictEventEmitter<EventEmitter, DataItemEvents<any>>;
+
+type FalseY = undefined | null;
+const parseBoolean = (val: string | boolean | number | FalseY): boolean => {
+	const s = val && val.toString().toLowerCase().trim();
+	return s == 'true' || s == '1';
+};
+
+export abstract class DataItem<T extends string | number | boolean> extends (EventEmitter as new() => DataItemEmitter) implements DataItem<T>{
+	
+	public defaultValue!: T;
+	public value!: T;
 
 	protected logger: Category = catDataItem;
 
-	public abstract async subscribe(samplingInterval: number): Promise<any>;
+	constructor(options: DataItemOptions) {
+		super();
 
-	public abstract write(value: string | number | boolean): Promise<void>;
+		let parsedValue: T;
+
+		switch (options.type) {
+			case 'number':
+				parsedValue = +(options.defaultValue || 0) as T;
+				break;
+			case 'string':
+				if (!options.defaultValue) {
+					parsedValue = '' as T;
+				} else {
+					parsedValue = String(options.defaultValue) as T;
+				}
+				break;
+			case 'boolean':
+				// parsedValue = !!(options.defaultValue || false) as T;
+				parsedValue = parseBoolean(options.defaultValue) as T;
+				break;
+		}
+		this.defaultValue = parsedValue;
+		this.value = parsedValue;
+	}
 }
+
+
+
+export abstract class StaticDataItem<T extends string | number | boolean> extends DataItem<T>{
+
+	protected constructor(options: DataItemOptions) {
+		super(options);
+
+	}
+}
+
+export class BaseStaticDataItem<T extends string | number | boolean> extends StaticDataItem<T>{
+	constructor(options: DataItemOptions) {
+		super(options);
+	}
+}
+
+export abstract class DynamicDataItem<T extends string | number | boolean> extends DataItem<T> {
+	
+	// data type of data item
+	public dataType: string;
+	public writable = false;
+	public timestamp: Date | undefined = undefined;
+	public lastWritten: Date | undefined = undefined;
+
+	protected constructor(options: DynamicDataItemOptions) {
+		super(options);
+		this.dataType = options.dynamicDataItemOptions.dataType;
+		this.writable = options.dynamicDataItemOptions.writable;
+	}
+
+	public abstract read(): Promise<T>;
+	public abstract write<T extends number | string | boolean>(value: T): Promise<void>;
+	public abstract subscribe(): Promise<any>;
+	public abstract unsubscribe(): Promise<void>;
+}
+
+
+

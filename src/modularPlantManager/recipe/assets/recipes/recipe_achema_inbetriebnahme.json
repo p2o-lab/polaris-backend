@@ -3,7 +3,7 @@
   "name": "Inbetriebnahme für ACHEMA-Demonstrator",
   "description": "Befüllt Schläuche zwischen Dosierer und Reaktor. Rührt Gasblasen aus Kühlmedium",
   "author": "Markus Graube",
-  "initial_step": "Startup.Init.1",
+  "initialStep": "Startup.Init.1",
   "steps": [
     {
       "name": "Startup.Init.1",
@@ -16,7 +16,7 @@
       ],
       "transitions": [
         {
-          "next_step": "Startup.Init.2",
+          "nextStep": "Startup.Init.2",
           "condition": {
             "type": "state",
             "pea": "Dose",
@@ -63,7 +63,7 @@
               }
             ]
           },
-          "next_step": "Running.Vorlegen"
+          "nextStep": "Running.Vorlegen"
         }
       ]
     },
@@ -116,7 +116,7 @@
       ],
       "transitions": [
         {
-          "next_step": "Running.Reagieren",
+          "nextStep": "Running.Reagieren",
           "condition": {
             "type": "state",
             "pea": "Dose",
@@ -181,7 +181,7 @@
       ],
       "transitions": [
         {
-          "next_step": "Running.Ruhen",
+          "nextStep": "Running.Ruhen",
           "condition": {
             "type": "and",
             "conditions": [
@@ -208,7 +208,7 @@
       "operations": [],
       "transitions": [
         {
-          "next_step": "Running.Ruhen.Stop",
+          "nextStep": "Running.Ruhen.Stop",
           "condition": {
             "type": "time",
             "duration": 30
@@ -227,7 +227,7 @@
       ],
       "transitions": [
         {
-          "next_step": "Running.Aufheizen",
+          "nextStep": "Running.Aufheizen",
           "condition": {
             "type": "state",
             "pea": "React",
@@ -259,7 +259,7 @@
       ],
       "transitions": [
         {
-          "next_step": "Running.Aufheizen.Stop",
+          "nextStep": "Running.Aufheizen.Stop",
           "condition": {
             "type": "variable",
             "pea": "Temper",
@@ -286,7 +286,7 @@
       ],
       "transitions": [
         {
-          "next_step": "Shutdown.Entleeren.Start",
+          "nextStep": "Shutdown.Entleeren.Start",
           "condition": {
             "type": "and",
             "conditions": [
@@ -318,7 +318,7 @@
       ],
       "transitions": [
         {
-          "next_step": "Shutdown.Entleeren.Running",
+          "nextStep": "Shutdown.Entleeren.Running",
           "condition": {
             "type": "state",
             "pea": "Dose",
@@ -340,7 +340,7 @@
       ],
       "transitions": [
         {
-          "next_step": "Shutdown.Entleeren.Stop",
+          "nextStep": "Shutdown.Entleeren.Stop",
           "condition": {
             "type": "state",
             "pea": "React",
@@ -361,7 +361,7 @@
       ],
       "transitions": [
         {
-          "next_step": "finished",
+          "nextStep": "finished",
           "condition": {
             "type": "state",
             "pea": "Dose",

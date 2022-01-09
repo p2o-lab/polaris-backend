@@ -23,15 +23,12 @@
  * SOFTWARE.
  */
 
-import {Category} from 'typescript-logging';
 import {ServiceMockup} from './serviceSet/service/Service.mockup';
-import {PEATestNumericVariable} from '../_utils';
+import {MockupServer, PEATestNumericVariable} from '../_utils';
+import {ActiveElementMockup} from './dataAssembly/activeElement/ActiveElement.mockup';
 
 
-
-export function getPEAMockupReferenceJSON(
-	namespace: number,
-	objectBrowseName: string): any {
+export function getPEAMockupReferenceJSON(): object {
 
 	return ({
 			peas: [
@@ -72,18 +69,22 @@ export class PEAMockup {
 
 	public variables: PEATestNumericVariable[] = [];
 	public services: ServiceMockup[] = [];
+	public mockupServer: MockupServer;
 
 	constructor() {
-		//do nothing
+		this.mockupServer = new MockupServer();
+		this.mockupServer.initialize().then();
 	}
 
-	public startSimulation(): void {
+	public async startSimulation(): Promise<void> {
+		await this.mockupServer.start();
 		this.variables.forEach((variable) => variable.startRandomOscillation());
 		this.services.forEach((service) => service.startSimulation());
 	}
 
-	public stopSimulation(): void {
+	public async stopSimulation(): Promise<void> {
 		this.variables.forEach((variable) => variable.stopRandomOscillation());
 		this.services.forEach((services) => services.stopSimulation());
+		await this.mockupServer.shutdown();
 	}
 }

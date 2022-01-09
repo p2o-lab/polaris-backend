@@ -29,64 +29,42 @@ import {DiagnosticElement} from './DiagnosticElement';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from '../../../../../tests/binprocessvaluein.json';
-import {DataAssemblyControllerFactory} from '../DataAssemblyControllerFactory';
-import {InputElement} from '../inputElement';
 import {MockupServer} from '../../../_utils';
-import {InputElementMockup} from '../inputElement/InputElement.mockup';
-import {Namespace, UAObject} from 'node-opcua';
-import {namespaceUrl} from '../../../../../tests/namespaceUrl';
-import {DiagnosticElementMockup} from './DiagnosticElement.mockup';
-
+import {DiagnosticElementMockup, getDiagnosticElementOptions} from './DiagnosticElement.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('DiagnosticElement', () => {
-	const dataAssemblyOptions: DataAssemblyOptions = {
-		name: 'Variable',
-		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/DiagnosticElement/',
-		dataItems: baseDataAssemblyOptions
-	};
-	// set namespaceUrl
-	for (const key in dataAssemblyOptions.dataItems as any) {
-		//skip static values
-		if ((typeof (dataAssemblyOptions.dataItems as any)[key] != 'string')) {
-			(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
-		}
-	}
+
+	let dataAssemblyOptions: DataAssemblyOptions;
 
 	describe('static', () => {
-		const emptyOPCUAConnection = new OpcUaConnection('', '');
-		it('should create DiagnosticElement', async () => {
-			const da1 = new DiagnosticElement(dataAssemblyOptions, emptyOPCUAConnection);
 
-			expect(da1).to.be.not.undefined;
-			expect(da1.communication).to.be.not.undefined;
-			expect(da1.wqc).to.be.not.undefined;
+		const emptyOPCUAConnection = new OpcUaConnection();
+		dataAssemblyOptions = getDiagnosticElementOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
+
+		it('should create DiagnosticElement', async () => {
+			const dataAssemblyController = new DiagnosticElement(dataAssemblyOptions, emptyOPCUAConnection);
+
+			expect(dataAssemblyController).to.be.not.undefined;
+			expect(dataAssemblyController.communication).to.be.not.undefined;
+			expect(dataAssemblyController.wqc).to.be.not.undefined;
 		});
 	});
 	describe('dynamic', () => {
 		let mockupServer: MockupServer;
 		let connection: OpcUaConnection;
-		// set namespaceUrl
-		for (const key in dataAssemblyOptions.dataItems as any) {
-			//skip static values
-			if((typeof(dataAssemblyOptions.dataItems as any)[key] != 'string')){
-				(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
-			}
-		}
+
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			const mockup = new DiagnosticElementMockup(
-				mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject,
-				'Variable');
-
+			const diagnosticElementMockup = new DiagnosticElementMockup( mockupServer.nameSpace, mockupServer.rootObject,'Variable');
+			dataAssemblyOptions = diagnosticElementMockup.getDataAssemblyOptions();
 			await mockupServer.start();
-			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334','','');
+			connection = new OpcUaConnection();
+			connection.initialize({endpoint: mockupServer.endpoint});
 			await connection.connect();
 		});
 
@@ -97,11 +75,13 @@ describe('DiagnosticElement', () => {
 		});
 
 		it('should subscribe successfully', async () => {
-			const da1 = new DiagnosticElement(dataAssemblyOptions, connection);
-			const pv = da1.subscribe();
-			await connection.startListening();
-			await pv;
-			expect(da1.communication.WQC.value).equal(0);
+
+			const dataAssemblyController = new DiagnosticElement(dataAssemblyOptions, connection);
+			await dataAssemblyController.subscribe();
+			await connection.startMonitoring();
+			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
+
+			expect(dataAssemblyController.communication.WQC.value).equal(0);
 		}).timeout(4000);
 	});
 

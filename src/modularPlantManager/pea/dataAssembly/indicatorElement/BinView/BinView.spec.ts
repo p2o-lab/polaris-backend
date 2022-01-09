@@ -28,34 +28,27 @@ import {BinView} from './BinView';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from '../../../../../../tests/binview.json';
-import {DataAssemblyControllerFactory} from '../../DataAssemblyControllerFactory';
 import {MockupServer} from '../../../../_utils';
-import {AnaViewMockup} from '../AnaView/AnaView.mockup';
-import {Namespace, UAObject} from 'node-opcua';
-import {namespaceUrl} from '../../../../../../tests/namespaceUrl';
-import {AnaView} from '../AnaView/AnaView';
-import {BinViewMockup} from './BinView.mockup';
+import {BinViewMockup, getBinViewOptions} from './BinView.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('BinView', () => {
-	const dataAssemblyOptions: DataAssemblyOptions = {
-		name: 'Variable',
-		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/BinView',
-		dataItems: baseDataAssemblyOptions
-	};
+
+	const dataAssemblyOptions: DataAssemblyOptions = getBinViewOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
+
 	describe('static', () => {
-		const emptyOPCUAConnection = new OpcUaConnection('', '');
+		const emptyOPCUAConnection = new OpcUaConnection();
 		it('should create BinView', async () => {
-			const da1: BinView = new BinView(dataAssemblyOptions, emptyOPCUAConnection);
-			expect(da1.tagName).to.equal('Variable');
-			expect(da1.tagDescription).to.equal('Test');
-			expect(da1.communication.WQC).to.not.equal(undefined);
-			expect(da1.communication.V).to.not.equal(undefined);
-			expect(da1.communication.VState0).to.not.equal(undefined);
-			expect(da1.communication.VState1).to.not.equal(undefined);
+			const dataAssemblyController: BinView = new BinView(dataAssemblyOptions, emptyOPCUAConnection);
+
+			expect(dataAssemblyController.communication.TagName).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.TagDescription).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.WQC).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.V).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.VState0).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.VState1).to.not.equal(undefined);
 		});
 
 	});
@@ -67,12 +60,10 @@ describe('BinView', () => {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			const mockup = new BinViewMockup(
-				mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject,
-				'Variable');
+			new BinViewMockup( mockupServer.nameSpace, mockupServer.rootObject,'Variable');
 			await mockupServer.start();
-			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334','','');
+			connection = new OpcUaConnection();
+			connection.initialize({endpoint: mockupServer.endpoint});
 			await connection.connect();
 		});
 
@@ -83,21 +74,16 @@ describe('BinView', () => {
 		});
 
 		it('should subscribe successfully', async () => {
-			// set namespaceUrl
-			for (const key in dataAssemblyOptions.dataItems as any) {
-				//skip static values
-				if((typeof(dataAssemblyOptions.dataItems as any)[key] != 'string')){
-					(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
-				}
-			}
-			const da1: BinView = new BinView(dataAssemblyOptions, connection);
-			const pv = da1.subscribe();
-			await connection.startListening();
-			await pv;
-			expect(da1.communication.WQC.value).equal(0);
-			expect(da1.communication.V.value).equal(false);
-			expect(da1.communication.VState0.value).equal('state0_active');
-			expect(da1.communication.VState1.value).equal('state1_active');
+
+			const dataAssemblyController: BinView = new BinView(dataAssemblyOptions, connection);
+			await dataAssemblyController.subscribe();
+			await connection.startMonitoring();
+			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
+
+			expect(dataAssemblyController.communication.WQC.value).equal(0);
+			expect(dataAssemblyController.communication.V.value).equal(false);
+			expect(dataAssemblyController.communication.VState0.value).equal('state0_active');
+			expect(dataAssemblyController.communication.VState1.value).equal('state1_active');
 
 		}).timeout(4000);
 	});

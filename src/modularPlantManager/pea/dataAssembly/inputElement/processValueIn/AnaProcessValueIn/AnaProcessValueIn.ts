@@ -1,4 +1,3 @@
-/* tslint:disable:max-classes-per-file */
 /*
  * MIT License
  *
@@ -25,16 +24,12 @@
  */
 
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaConnection, OpcUaDataItem} from '../../../../connection';
-import {ScaleSettingsRuntime, UnitDataAssemblyRuntime} from '../../../_extensions';
-import {
-	InputElement, InputElementRuntime,
-} from '../../InputElement';
-import {ScaleSettings} from '../../../_extensions/scaleSettingsDA/ScaleSettings';
-import {UnitSettings} from '../../../_extensions/unitDA/UnitSettings';
+import {OpcUaConnection, DataItem} from '../../../../connection';
+import {ScaleSettings, ScaleSettingsRuntime, UnitSettingsRuntime, UnitSettings} from '../../../baseFunction';
+import {InputElement, InputElementRuntime} from '../../';
 
-export type AnaProcessValueInRuntime = InputElementRuntime & UnitDataAssemblyRuntime & ScaleSettingsRuntime & {
-	VExt: OpcUaDataItem<number>;
+export type AnaProcessValueInRuntime = InputElementRuntime & UnitSettingsRuntime & ScaleSettingsRuntime & {
+	VExt: DataItem<number>;
 };
 
 export class AnaProcessValueIn extends InputElement {
@@ -44,7 +39,9 @@ export class AnaProcessValueIn extends InputElement {
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
-		this.communication.VExt = this.createDataItem('VExt', 'read', 'number');
+		this.communication.VExt = this.createDataItem('VExt', 'number', 'write');
+
+		// TODO: These should be writable therefore new Object required
 		this.unitSettings = new UnitSettings(this);
 		this.scaleSettings = new ScaleSettings(this);
 

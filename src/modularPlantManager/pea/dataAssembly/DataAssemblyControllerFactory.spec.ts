@@ -24,71 +24,41 @@
  */
 
 import {
-	BaseDataAssemblyOptions, DataAssemblyOptions,
-	OpcUaNodeOptions
+	BaseDataAssemblyOptions, DataAssemblyOptions
 } from '@p2olab/polaris-interface';
 import {OpcUaConnection} from '../connection';
-import {PEAController} from '../PEAController';
-import {
-	AnaMan,
-	BinMon, BinView, DataAssemblyController, DataAssemblyControllerFactory,
-	DIntMan, DIntMon, MonAnaDrv, ServiceControl, ServParam
-} from './index';
+import {DataAssemblyControllerFactory} from './index';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import * as fs from 'fs';
-import {PEAMockup} from '../PEA.mockup';
-import {MockupServer} from '../../_utils';
-import * as baseDataAssemblyOptions from '../../../../tests/monanadrv.json';
+import {getDataAssemblyOptions} from './DataAssemblyController.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('DataAssemblyFactory', () => {
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
-	const parseJson = require('json-parse-better-errors');
-	describe('static', () => {
-		const dataAssemblyOptions: DataAssemblyOptions = {
-			name: 'Variable',
-			metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/',
-			dataItems: baseDataAssemblyOptions
-		};
-		const emptyOPCUAConnection = new OpcUaConnection('', '');
-		it('should use default DataAssemblyController when provided type not found', () => {
-			const da1 = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection);
 
-			expect(da1.toJson()).to.deep.equal({
+	let dataAssemblyOptions: DataAssemblyOptions;
+
+	describe('static', () => {
+
+		dataAssemblyOptions = getDataAssemblyOptions('Variable', 'Variable', 'Test') as DataAssemblyOptions;
+
+		const emptyOPCUAConnection = new OpcUaConnection();
+
+		it('should use default DataAssemblyController when provided type not found', () => {
+			const dataAssemblyController = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection);
+
+			expect(dataAssemblyController.toJson()).to.deep.equal({
 				name: 'Variable',
 			});
-			expect(da1 instanceof DataAssemblyController).to.equal(true);
-		});
-
-		it('should fail with xyz', () => {
-/*			const opcUaNode: OpcUaNodeOptions = {
-				namespaceIndex: 'CODESYSSPV3/3S/IecVarAccess',
-				nodeId: 'i=12',
-				dataType: 'Float'
-			};
-			expect(() => new DataAssemblyController({
-					name: 'name',
-					dataItems: {
-						TagName: opcUaNode as OpcUaNodeOptions,
-						TagDescription: opcUaNode as OpcUaNodeOptions,
-						OSLevel: opcUaNode as OpcUaNodeOptions,
-						WQC: null,
-						access: 'read'
-					} as any,
-					metaModelRef: 'analogitem'
-				}, emptyOPCUAConnection)
-			).to.throw('Cannot set property \'TagName\' of undefined');*/
 		});
 
 		it('should fail without provided PEA', async () => {
 			expect(() => DataAssemblyControllerFactory.create(
 				{name: 'test', metaModelRef: 'none', dataItems: {} as BaseDataAssemblyOptions},
 				emptyOPCUAConnection)
-			).to.throw('Creating DataAssemblyController Error: No Communication variables found in DataAssemblyOptions');
+			).to.throw('Creating DataAssemblyController Error: No Communication dataAssemblies found in DataAssemblyOptions');
 
 		});
 	});
@@ -102,8 +72,8 @@ describe('DataAssemblyFactory', () => {
 		beforeEach(async () => {
 			mockupServer = new MockupServer();
 			await mockupServer.start();
-
-			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://127.0.0.1:4334/PEATestServer');
+			connection = new OpcUaConnection();
+            connection.initialize({endpoint: 'opc.tcp://localhost:4334/PEATestServer'});
 			await connection.connect();
 		});
 
@@ -173,7 +143,7 @@ describe('DataAssemblyFactory', () => {
 			await pea.connectAndSubscribe();
 
 			const da = pea.services[0].procedures[0].parameters[0] as ServParam;
-			const inputDa = pea.variables[0];
+			const inputDa = pea.dataAssemblies[0];
 			await da.subscribe();
 			await inputDa.subscribe();
 

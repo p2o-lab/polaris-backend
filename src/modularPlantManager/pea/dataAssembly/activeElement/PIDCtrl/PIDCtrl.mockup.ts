@@ -24,152 +24,165 @@
  */
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {getOpModeDAMockupReferenceJSON, OpModeDAMockup} from '../../_extensions/opModeDA/OpModeDA.mockup';
-import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../_extensions/wqcDA/WQCDA.mockup';
-import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../../_extensions/osLevelDA/OSLevelDA.mockup';
-import {getSourceModeDAMockupReferenceJSON, SourceModeDAMockup} from '../../_extensions/sourceModeDA/SourceModeDA.mockup';
-import {getActiveElementMockupReferenceJSON} from '../ActiveElement.mockup';
+import {getOpModeDataItemOptions, OpModeMockup} from '../../baseFunction/opMode/OpMode.mockup';
+import {getSourceModeDataItemOptions, SourceModeMockup} from '../../baseFunction/sourceMode/SourceMode.mockup';
+import {ActiveElementMockup, getActiveElementDataItemOptions} from '../ActiveElement.mockup';
+import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {getDataAssemblyOptions} from '../../DataAssemblyController.mockup';
 
+const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/ActiveElement/PIDCtrl';
 
-export function getPIDCtrlMockupReferenceJSON(
-	namespace: number,
-	objectBrowseName: string) {
-
+function getPIDCtrlSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
 	return ({
-			...getActiveElementMockupReferenceJSON(namespace,objectBrowseName),
-			...getSourceModeDAMockupReferenceJSON(namespace,objectBrowseName),
-			...getOpModeDAMockupReferenceJSON(namespace, objectBrowseName),
-			PV: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.PV`,
-				dataType: 'Float'
-			},
-			PVSclMin: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.PVSclMin`,
-				dataType: 'Float'
-			},
-			PVSclMax: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.PVSclMax`,
-				dataType: 'Float'
-			},
-			PVUnit: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.PVUnit`,
-				dataType: 'Int16'
-			},
-			SP: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.SP`,
-				dataType: 'Float'
-			},
-			SPSclMin: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.SPSclMin`,
-				dataType: 'Float'
-			},
-			SPSclMax: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.SPSclMax`,
-				dataType: 'Float'
-			},
-			SPUnit: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.SPUnit`,
-				dataType: 'Int16'
-			},
-			SPMan: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.SPMan`,
-				dataType: 'Float'
-			},
-			SPManMin: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.SPManMin`,
-				dataType: 'Float'
-			},
-			SPManMax: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.SPManMax`,
-				dataType: 'Float'
-			},
-			SPInt: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.SPInt`,
-				dataType: 'Float'
-			},
-			SPIntMin: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.SPIntMin`,
-				dataType: 'Float'
-			},
-			SPIntMax: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.SPIntMax`,
-				dataType: 'Float'
-			},
-			MV: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.MV`,
-				dataType: 'Float'
-			},
-			MVMan: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.MVMan`,
-				dataType: 'Float'
-			},
-			MVSclMin: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.MVSclMin`,
-				dataType: 'Float'
-			},
-			MVSclMax: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.MVSclMax`,
-				dataType: 'Float'
-			},
-			MVUnit: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.MVUnit`,
-				dataType: 'Int16'
-			},
-			MVMin: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.MVMin`,
-				dataType: 'Float'
-			},
-			MVMax: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.MVMax`,
-				dataType: 'Float'
-			},
-			P: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.P`,
-				dataType: 'Float'
-			},
-			Ti: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.Ti`,
-				dataType: 'Float'
-			},
-			Td: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.Td`,
-				dataType: 'Float'
-			}
-		}
+		PV: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.PV`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions,
+		PVSclMin: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.PVSclMin`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions,
+		PVSclMax: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.PVSclMax`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions,
+		PVUnit: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.PVUnit`,
+			dataType: 'Int16'
+		} as OpcUaNodeOptions,
+		SP: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.SP`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions,
+		SPSclMin: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.SPSclMin`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions,
+		SPSclMax: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.SPSclMax`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions,
+		SPUnit: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.SPUnit`,
+			dataType: 'Int16'
+		} as OpcUaNodeOptions,
+		SPMan: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.SPMan`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions,
+		SPManMin: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.SPManMin`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions,
+		SPManMax: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.SPManMax`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions,
+		SPInt: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.SPInt`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions,
+		SPIntMin: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.SPIntMin`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions,
+		SPIntMax: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.SPIntMax`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions,
+		MV: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.MV`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions,
+		MVMan: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.MVMan`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions,
+		MVSclMin: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.MVSclMin`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions,
+		MVSclMax: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.MVSclMax`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions,
+		MVUnit: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.MVUnit`,
+			dataType: 'Int16'
+		} as OpcUaNodeOptions,
+		MVMin: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.MVMin`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions,
+		MVMax: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.MVMax`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions,
+		P: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.P`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions,
+		Ti: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.Ti`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions,
+		Td: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.Td`,
+			dataType: 'Float'
+		} as OpcUaNodeOptions
+	});
+}
+
+
+export function getPIDCtrlDataItemOptions(namespace: number, objectBrowseName: string): object {
+	return ({
+			...getActiveElementDataItemOptions(namespace, objectBrowseName),
+			...getSourceModeDataItemOptions(namespace, objectBrowseName),
+			...getOpModeDataItemOptions(namespace, objectBrowseName),
+			...getPIDCtrlSpecificDataItemOptions(namespace, objectBrowseName),
+		} as OpcUaNodeOptions
 	);
 }
 
-export class PIDCtrlMockup {
+export function getPIDCtrlOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
+	const options = getDataAssemblyOptions(name, tagName, tagDescription);
+	options.metaModelRef = metaModelReference;
+	options.dataItems = {
+		...options.dataItems,
+		...getPIDCtrlDataItemOptions(namespace, objectBrowseName)};
+	return options;
+}
 
-	public readonly name: string;
-	public wqc: WQCDAMockup;
-	public osLevel: OSLevelDAMockup;
-	public opMode: OpModeDAMockup;
-	public sourceMode: SourceModeDAMockup;
+export class PIDCtrlMockup extends ActiveElementMockup {
+
+	public opMode: OpModeMockup;
+	public sourceMode: SourceModeMockup;
+
 	public pv= 0;
 	public pvSclMin= 0;
 	public pvSclMax= 0;
@@ -197,22 +210,12 @@ export class PIDCtrlMockup {
 	public p= 0;
 	public ti= 0;
 	public td= 0;
-	
-	protected mockupNode: UAObject;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
+		super(namespace, rootNode, variableName);
 
-		this.name = variableName;
-
-		this.mockupNode = namespace.addObject({
-			organizedBy: rootNode,
-			browseName: variableName
-		});
-
-		this.osLevel = new OSLevelDAMockup(namespace, this.mockupNode, this.name);
-		this.wqc = new WQCDAMockup(namespace, this.mockupNode, this.name);
-		this.opMode = new OpModeDAMockup(namespace, this.mockupNode, this.name);
-		this.sourceMode = new SourceModeDAMockup(namespace, this.mockupNode, this.name);
+		this.opMode = new OpModeMockup(namespace, this.mockupNode, this.name);
+		this.sourceMode = new SourceModeMockup(namespace, this.mockupNode, this.name);
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
@@ -383,7 +386,7 @@ export class PIDCtrlMockup {
 				get: (): Variant => {
 					return new Variant({dataType: DataType.Double, value: this.mvMan});
 				},
-				set: (variant: Variant) => {
+				set: (variant: Variant): StatusCodes => {
 					this.mvMan = parseFloat(variant.value);
 					return StatusCodes.Good;
 				},
@@ -490,9 +493,15 @@ export class PIDCtrlMockup {
 		});
 	}
 
-	public getPIDCtrlMockupJSON() {
-		return getPIDCtrlMockupReferenceJSON(
-			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name as string);
+	public getDataAssemblyOptions(): DataAssemblyOptions {
+		const options = super.getDataAssemblyOptions();
+		options.metaModelRef = metaModelReference;
+		options.dataItems = {
+			...options.dataItems,
+			...this.opMode.getDataItemOptions(),
+			...this.sourceMode.getDataItemOptions(),
+			...getPIDCtrlDataItemOptions(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
+		};
+		return options;
 	}
 }

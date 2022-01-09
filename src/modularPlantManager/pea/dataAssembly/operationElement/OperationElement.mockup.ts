@@ -24,31 +24,41 @@
  */
 
 import {Namespace, UAObject} from 'node-opcua';
-import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../_extensions/osLevelDA/OSLevelDA.mockup';
-import {DataAssemblyControllerMockup} from '../DataAssemblyController.mockup';
+import {getOSLevelDataItemOptions, OSLevelMockup} from '../baseFunction/osLevel/OSLevel.mockup';
+import {DataAssemblyControllerMockup, getDataAssemblyOptions} from '../DataAssemblyController.mockup';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 
-export function getOperationElementMockupReferenceJSON(
-	namespace: number,
-	objectBrowseName: string) {
-	return (
-		{
-			...getOSLevelDAMockupReferenceJSON(namespace,objectBrowseName),
-		}
-	);
+const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/OperationElement';
+
+export function getOperationElementDataItemOptions(namespace: number, objectBrowseName: string): object {
+	return getOSLevelDataItemOptions(namespace, objectBrowseName);
+}
+
+export function getOperationElementOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
+	const options = getDataAssemblyOptions(name, tagName, tagDescription);
+	options.metaModelRef = metaModelReference;
+	options.dataItems = {
+		...options.dataItems,
+		...getOperationElementDataItemOptions(namespace, objectBrowseName)};
+	return options;
 }
 
 export class OperationElementMockup extends DataAssemblyControllerMockup {
-	protected osLevel: OSLevelDAMockup;
+	protected osLevel: OSLevelMockup;
+
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string){
 		super(namespace, rootNode, variableName);
-		this.osLevel = new OSLevelDAMockup(namespace, this.mockupNode, this.name);
 
+		this.osLevel = new OSLevelMockup(namespace, this.mockupNode, this.name);
 	}
 
-
-	public getOperationElementInstanceMockupJSON() {
-		return getOperationElementMockupReferenceJSON(
-			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name as string);
+	public getDataAssemblyOptions(): DataAssemblyOptions {
+		const options = super.getDataAssemblyOptions();
+		options.metaModelRef = metaModelReference;
+		options.dataItems = {
+			...options.dataItems,
+			...this.osLevel.getDataItemOptions()
+		};
+		return options;
 	}
 }

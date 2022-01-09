@@ -27,64 +27,47 @@ import {OpcUaConnection} from '../../connection';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from '../../../../../tests/binprocessvaluein.json';
 import {MockupServer} from '../../../_utils';
-import {Namespace, UAObject} from 'node-opcua';
-import {namespaceUrl} from '../../../../../tests/namespaceUrl';
-import {InputElementMockup} from './InputElement.mockup';
-import {InputElement} from './InputElement';
+import {getInputElementOptions, InputElementMockup} from './InputElement.mockup';
+import {InputElement} from './';
 import {DataAssemblyControllerFactory} from '../DataAssemblyControllerFactory';
-import {OSLevel, WQC} from '../_extensions';
-import {ActiveElementMockup} from '../activeElement/ActiveElement.mockup';
+import {WQC} from '../baseFunction';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('InputElement', () => {
-	describe('static', () => {
-		const emptyOPCUAConnection = new OpcUaConnection('', '');
-		it('should create InputElement', async () => {
-			const dataAssemblyOptions: DataAssemblyOptions = {
-				name: 'Variable',
-				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/InputElement/BinProcessValueIn',
-				dataItems: baseDataAssemblyOptions
-			};
-			//TODO: problem with circular dependencies, new InputElement() does not work
-			const da1 = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as InputElement;
-			//const da1 = new InputElement(dataAssemblyOptions, emptyOPCUAConnection);
 
-			expect(da1).to.be.not.undefined;
-			expect(da1.communication).to.be.not.undefined;
-			expect(da1.wqc).to.be.not.undefined;
+	let dataAssemblyOptions: DataAssemblyOptions;
+
+	describe('static', () => {
+
+		const emptyOPCUAConnection = new OpcUaConnection();
+		dataAssemblyOptions = getInputElementOptions(2, 'Variable') as DataAssemblyOptions;
+
+		it('should create InputElement', async () => {
+
+			const dataAssemblyController = new InputElement(dataAssemblyOptions, emptyOPCUAConnection);
+
+			expect(dataAssemblyController).to.be.not.undefined;
+			expect(dataAssemblyController.communication).to.be.not.undefined;
+			expect(dataAssemblyController.wqc).to.be.not.undefined;
 		});
 	});
 
 	describe('dynamic', () => {
-		const dataAssemblyOptions: DataAssemblyOptions = {
-			name: 'Variable',
-			metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/InputElement/',
-			dataItems: baseDataAssemblyOptions
-		};
 		let mockupServer: MockupServer;
 		let connection: OpcUaConnection;
-		// set namespaceUrl
-		for (const key in dataAssemblyOptions.dataItems as any) {
-			//skip static values
-			if((typeof(dataAssemblyOptions.dataItems as any)[key] != 'string')){
-				(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
-			}
-		}
+
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			const mockup = new InputElementMockup(
-				mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject,
-				'Variable');
-
+			const inputElementMockup = new InputElementMockup(mockupServer.nameSpace, mockupServer.rootObject,'Variable');
+			dataAssemblyOptions = inputElementMockup.getDataAssemblyOptions();
 			await mockupServer.start();
-			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334','','');
+			connection = new OpcUaConnection();
+			connection.initialize({endpoint: mockupServer.endpoint});
 			await connection.connect();
 		});
 
@@ -95,15 +78,14 @@ describe('InputElement', () => {
 		});
 
 		it('should subscribe successfully', async () => {
-			//TODO: problem with circular dependencies, new InputElement() does not work
-			//const da1 = new InputElement(dataAssemblyOptions, connection);
-			const da1 = DataAssemblyControllerFactory.create(dataAssemblyOptions, connection) as InputElement;
-			new WQC(da1);
-			const pv = da1.subscribe();
-			await connection.startListening();
-			await pv;
-			expect(da1.communication.WQC.value).equal(0);
+
+			const dataAssemblyController = DataAssemblyControllerFactory.create(dataAssemblyOptions, connection) as InputElement;
+			new WQC(dataAssemblyController);
+			await dataAssemblyController.subscribe();
+			await connection.startMonitoring();
+			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
+
+			expect(dataAssemblyController.communication.WQC.value).equal(0);
 		}).timeout(4000);
-		//TODO toJSON
 	});
 });

@@ -24,24 +24,32 @@
  */
 
 import {Namespace, UAObject} from 'node-opcua';
-import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../_extensions/wqcDA/WQCDA.mockup';
-import {catPEAMockup} from '../../../../../logging';
-import {DiagnosticElementMockup} from '../DiagnosticElement.mockup';
+import {DiagnosticElementMockup, getDiagnosticElementDataItemOptions} from '../DiagnosticElement.mockup';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {getDataAssemblyOptions} from '../../DataAssemblyController.mockup';
 
-export function getHealthStateViewMockupReferenceJSON(namespace: number, objectBrowseName: string) {
-	return (getWQCDAMockupReferenceJSON(namespace,objectBrowseName));
+const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/DiagnosticElement/HealthStateView';
+
+export function getHealthStateViewDataItemOptions(namespace: number, objectBrowseName: string): object {
+	return ({...getDiagnosticElementDataItemOptions(namespace, objectBrowseName)});
+}
+
+export function getHealthStateViewOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
+	const options = getDataAssemblyOptions(name, tagName, tagDescription);
+	options.metaModelRef = metaModelReference;
+	options.dataItems = {...options.dataItems, ...getHealthStateViewDataItemOptions(namespace, objectBrowseName)};
+	return options;
 }
 
 export class HealthStateViewMockup extends DiagnosticElementMockup{
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
 		super(namespace, rootNode, variableName);
-
 	}
 
-	public getHealthStateViewInstanceMockupJSON() {
-		return getHealthStateViewMockupReferenceJSON(
-			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name as string);
+	public getDataAssemblyOptions(): DataAssemblyOptions {
+		const options = super.getDataAssemblyOptions();
+		options.metaModelRef = metaModelReference;
+		return options;
 	}
 }

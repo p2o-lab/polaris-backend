@@ -23,22 +23,27 @@
  * SOFTWARE.
  */
 
+/* eslint-disable */
 import {ConditionType, RecipeInterface, RecipeOptions} from '@p2olab/polaris-interface';
 import {PEAController} from '../pea';
 import {Recipe} from './Recipe';
 
 import * as assert from 'assert';
-import * as chai from 'chai';
-import * as chaiAsPromised from 'chai-as-promised';
+
 import * as fs from 'fs';
 import {PEAMockup} from '../pea/PEA.mockup';
 import {MockupServer} from '../_utils';
+/* eslint-enable */
+
+import * as chai from 'chai';
+import * as chaiAsPromised from 'chai-as-promised';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('Recipe', () => {
 
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const delay = require('timeout-as-promise');
 	it('should fail with missing name', () => {
 		expect(() => new Recipe({
@@ -196,7 +201,7 @@ describe('Recipe', () => {
 					expect(json).to.have.property('peas')
 						.to.deep.equal(['Temper', 'React', 'Dose']);
 					expect(json).to.have.property('options')
-						.to.have.property('initial_step', 'Startup.Init');
+						.to.have.property('initialStep', 'Startup.Init');
 					expect(json).to.have.property('status', 'idle');
 
 					const step = recipe.steps[0];

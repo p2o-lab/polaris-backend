@@ -63,11 +63,11 @@ export class PidController extends POLService {
 
     public async onStarting(): Promise<void> {
         this.ctr = new Controller({
-			// eslint-disable-next-line @typescript-eslint/camelcase
+			// eslint-disable-next-line camelcase
             k_p: this.procedureParameters.find((param) => param.name === 'p')?.value as number,
-			// eslint-disable-next-line @typescript-eslint/camelcase
+			// eslint-disable-next-line camelcase
             k_i: this.procedureParameters.find((param) => param.name === 'i')?.value as number,
-			// eslint-disable-next-line @typescript-eslint/camelcase
+			// eslint-disable-next-line camelcase
             k_d: this.procedureParameters.find((param) => param.name === 'd')?.value as number
         });
     }

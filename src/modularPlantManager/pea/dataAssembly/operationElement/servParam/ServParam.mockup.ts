@@ -26,44 +26,61 @@
 
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
 import {
-	getServiceSourceModeDAMockupReferenceJSON, ServiceSourceModeDAMockup
-} from '../../_extensions/serviceSourceModeDA/ServiceSourceModeDA.mockup';
-import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../_extensions/wqcDA/WQCDA.mockup';
-import {getOpModeDAMockupReferenceJSON, OpModeDAMockup} from '../../_extensions/opModeDA/OpModeDA.mockup';
-import {getOperationElementMockupReferenceJSON, OperationElementMockup} from '../OperationElement.mockup';
+	getServiceSourceModeDataItemOptions,
+	ServiceSourceModeMockup
+} from '../../baseFunction/serviceSourceMode/ServiceSourceMode.mockup';
+import {getWQCDataItemOptions, WQCMockup} from '../../baseFunction/wqc/WQC.mockup';
+import {getOpModeDataItemOptions, OpModeMockup} from '../../baseFunction/opMode/OpMode.mockup';
+import {getOperationElementDataItemOptions, OperationElementMockup} from '../OperationElement.mockup';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
+import {getDataAssemblyOptions} from '../../DataAssemblyController.mockup';
 
+const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/OperationElement';
 
-export function getServParamMockupReferenceJSON(
-	namespace: number,
-	objectBrowseName: string) {
-
+function getServParamSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
 	return ({
-			...getOperationElementMockupReferenceJSON(namespace, objectBrowseName),
-			...getOpModeDAMockupReferenceJSON(namespace,objectBrowseName),
-			...getServiceSourceModeDAMockupReferenceJSON(namespace,objectBrowseName),
-			...getWQCDAMockupReferenceJSON(namespace,objectBrowseName),
-			Sync: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.Sync`,
-				dataType: 'Boolean'
-			}
+		Sync: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.Sync`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions
+	});
+}
+
+export function getServParamDataItemOptions(namespace: number, objectBrowseName: string): object {
+	return ({
+			...getOperationElementDataItemOptions(namespace, objectBrowseName),
+			...getWQCDataItemOptions(namespace, objectBrowseName),
+			...getOpModeDataItemOptions(namespace, objectBrowseName),
+			...getServiceSourceModeDataItemOptions(namespace, objectBrowseName),
+			...getServParamSpecificDataItemOptions(namespace, objectBrowseName),
 		}
 	);
+}
+
+export function getServParamOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
+	const options = getDataAssemblyOptions(name, tagName, tagDescription);
+	options.metaModelRef = metaModelReference;
+	options.dataItems = {
+		...options.dataItems,
+		...getServParamDataItemOptions(namespace, objectBrowseName)};
+	return options;
 }
 
 export class ServParamMockup extends OperationElementMockup{
 
 	public readonly varSync: boolean = false;
-	protected opMode: OpModeDAMockup;
-	protected serviceSourceMode: ServiceSourceModeDAMockup;
-	protected wqc: WQCDAMockup;
+	protected opMode: OpModeMockup;
+	protected serviceSourceMode: ServiceSourceModeMockup;
+	protected wqc: WQCMockup;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
 		super(namespace, rootNode, variableName);
 
-		this.opMode = new OpModeDAMockup(namespace, this.mockupNode, this.name);
-		this.serviceSourceMode = new ServiceSourceModeDAMockup(namespace, this.mockupNode, this.name);
-		this.wqc = new WQCDAMockup(namespace, this.mockupNode, this.name);
+		this.wqc = new WQCMockup(namespace, this.mockupNode, this.name);
+		this.opMode = new OpModeMockup(namespace, this.mockupNode, this.name);
+		this.serviceSourceMode = new ServiceSourceModeMockup(namespace, this.mockupNode, this.name);
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
@@ -78,9 +95,16 @@ export class ServParamMockup extends OperationElementMockup{
 		});
 	}
 
-	public getServParamMockupJSON() {
-		return getServParamMockupReferenceJSON(
-			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name as string);
+	public getDataAssemblyOptions(): DataAssemblyOptions {
+		const options = super.getDataAssemblyOptions();
+		options.metaModelRef = metaModelReference;
+		options.dataItems = {
+			...options.dataItems,
+			...this.wqc.getDataItemOptions(),
+			...this.opMode.getDataItemOptions(),
+			...this.serviceSourceMode.getDataItemOptions(),
+			...getServParamSpecificDataItemOptions(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
+		};
+		return options;
 	}
 }

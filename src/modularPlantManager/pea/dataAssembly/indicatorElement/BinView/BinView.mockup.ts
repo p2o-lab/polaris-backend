@@ -24,33 +24,48 @@
  */
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {getWQCDAMockupReferenceJSON, WQCDAMockup} from '../../_extensions/wqcDA/WQCDA.mockup';
-import {IndicatorElement} from '../IndicatorElement';
-import {getIndicatorElementMockupReferenceJSON, IndicatorElementMockup} from '../IndicatorElement.mockup';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {getIndicatorElementDataItemOptions, IndicatorElementMockup} from '../IndicatorElement.mockup';
+import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
+import {getDataAssemblyOptions} from '../../DataAssemblyController.mockup';
 
-export function getBinViewMockupReferenceJSON(
-	namespace: number,
-	objectBrowseName: string) {
-	return (
-		{
-			...getIndicatorElementMockupReferenceJSON(namespace, objectBrowseName),
-			V: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.V`,
-				dataType: 'Boolean'
-			},
-			VState0: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VState0`,
-				dataType: 'String'
-			},
-			VState1: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VState1`,
-				dataType: 'String'
-			}
-		}
+const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/BinView';
+
+function getBinViewSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
+	return ({
+		V: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.V`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		VState0: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.VState0`,
+			dataType: 'String'
+		} as OpcUaNodeOptions,
+		VState1: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.VState1`,
+			dataType: 'String'
+		} as OpcUaNodeOptions
+	});
+}
+
+export function getBinViewDataItemOptions(namespace: number, objectBrowseName: string): object {
+	return ({
+			...getIndicatorElementDataItemOptions(namespace, objectBrowseName),
+			...getBinViewSpecificDataItemOptions(namespace, objectBrowseName),
+		} as OpcUaNodeOptions
 	);
+}
+
+export function getBinViewOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
+	const options = getDataAssemblyOptions(name, tagName, tagDescription);
+	options.metaModelRef = metaModelReference;
+	options.dataItems = {
+		...options.dataItems,
+		...getBinViewDataItemOptions(namespace, objectBrowseName)};
+	return options;
 }
 
 export class BinViewMockup extends IndicatorElementMockup{
@@ -106,9 +121,13 @@ export class BinViewMockup extends IndicatorElementMockup{
 		});
 	}
 
-	public getBinViewInstanceMockupJSON() {
-		return getBinViewMockupReferenceJSON(
-			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name as string);
+	public getDataAssemblyOptions(): DataAssemblyOptions {
+		const options = super.getDataAssemblyOptions();
+		options.metaModelRef = metaModelReference;
+		options.dataItems = {
+			...options.dataItems,
+			...getBinViewSpecificDataItemOptions(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
+		};
+		return options;
 	}
 }

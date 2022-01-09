@@ -1,4 +1,3 @@
-/* tslint:disable:max-classes-per-file */
 /*
  * MIT License
  *
@@ -25,13 +24,13 @@
  */
 
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaConnection, OpcUaDataItem} from '../../../connection';
+import {OpcUaConnection, DataItem} from '../../../connection';
 import {IndicatorElement, IndicatorElementRuntime} from '../IndicatorElement';
 
 export type BinViewRuntime = IndicatorElementRuntime & {
-	V: OpcUaDataItem<boolean>;
-	VState0: OpcUaDataItem<string>;
-	VState1: OpcUaDataItem<string>;
+	V: DataItem<boolean>;
+	VState0: DataItem<string>;
+	VState1: DataItem<string>;
 };
 
 export class BinView extends IndicatorElement {
@@ -39,9 +38,9 @@ export class BinView extends IndicatorElement {
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
-		this.communication.V = this.createDataItem('V', 'read', 'boolean');
-		this.communication.VState0 = this.createDataItem('VState0', 'read', 'string');
-		this.communication.VState1 = this.createDataItem('VState1', 'read', 'string');
+		this.communication.V = this.createDataItem('V', 'boolean');
+		this.communication.VState0 = this.createDataItem('VState0', 'string');
+		this.communication.VState1 = this.createDataItem('VState1',  'string');
 
 		this.defaultReadDataItem = this.communication.V;
 		this.defaultReadDataItemType = 'boolean';

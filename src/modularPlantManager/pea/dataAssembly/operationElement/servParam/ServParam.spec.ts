@@ -28,33 +28,29 @@ import {OpcUaConnection} from '../../../connection';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from '../../../../../../tests/anaserveparam.json';
-import {DataAssemblyControllerFactory} from '../../DataAssemblyControllerFactory';
 import {MockupServer} from '../../../../_utils';
-import {Namespace, UAObject} from 'node-opcua';
-import {namespaceUrl} from '../../../../../../tests/namespaceUrl';
-import {ServParam} from './ServParam';
-import {ServParamMockup} from './ServParam.mockup';
+import {ServParam} from './';
+import {getServParamOptions, ServParamMockup} from './ServParam.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('ServParam', () => {
-	const dataAssemblyOptions: DataAssemblyOptions = {
-		name: 'Variable',
-		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/OperationElement/StringServParam',
-		dataItems: baseDataAssemblyOptions
-	};
-	describe('static', () => {
-		const emptyOPCUAConnection = new OpcUaConnection('', '');
-		it('should create ServParam', () => {
-			//TODO should be new ServParam, but circular dependency problem
-			const da1 = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as ServParam;
 
-			expect(da1.serviceSourceMode).to.not.be.undefined;
-			expect(da1.serviceOpMode).to.not.be.undefined;
-			expect(da1.wqc).to.not.be.undefined;
-			expect(da1.communication.Sync).to.not.be.undefined;
+	let dataAssemblyOptions: DataAssemblyOptions;
+
+	describe('static', () => {
+
+		const emptyOPCUAConnection = new OpcUaConnection();
+		dataAssemblyOptions = getServParamOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
+
+		it('should create ServParam', () => {
+
+			const dataAssemblyController = new ServParam(dataAssemblyOptions, emptyOPCUAConnection) as ServParam;
+			expect(dataAssemblyController.serviceSourceMode).to.not.be.undefined;
+			expect(dataAssemblyController.serviceOpMode).to.not.be.undefined;
+			expect(dataAssemblyController.wqc).to.not.be.undefined;
+			expect(dataAssemblyController.communication.Sync).to.not.be.undefined;
 		});
 	});
 	describe('dynamic', () => {
@@ -65,12 +61,11 @@ describe('ServParam', () => {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			const mockup = new ServParamMockup(
-				mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject,
-				'Variable');
+			const servParamMockup = new ServParamMockup(mockupServer.nameSpace,	mockupServer.rootObject,'Variable');
+			dataAssemblyOptions = servParamMockup.getDataAssemblyOptions();
 			await mockupServer.start();
-			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334','','');
+			connection = new OpcUaConnection();
+			connection.initialize({endpoint: mockupServer.endpoint});
 			await connection.connect();
 		});
 
@@ -81,39 +76,31 @@ describe('ServParam', () => {
 		});
 
 		it('should subscribe successfully', async () => {
-			// set namespaceUrl
-			for (const key in dataAssemblyOptions.dataItems as any) {
-				//skip static values
-				if((typeof(dataAssemblyOptions.dataItems as any)[key] != 'string')){
-					(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
-				}
-			}
-			const da1: ServParam = new ServParam(dataAssemblyOptions, connection);
-			const pv = da1.subscribe();
-			await connection.startListening();
-			await pv;
-			expect(da1.communication.WQC.value).equal(0);
 
-			expect((da1).communication.StateChannel.value).equal(false);
-			expect((da1).communication.StateOffAut.value).equal(false);
-			expect((da1).communication.StateOpAut.value).equal(false);
-			expect((da1).communication.StateAutAut.value).equal(false);
-			expect((da1).communication.StateOffOp.value).equal(false);
-			expect((da1).communication.StateOpOp.value).equal(false);
-			expect((da1).communication.StateAutOp.value).equal(false);
-			expect((da1).communication.StateOpAct.value).equal(false);
-			expect((da1).communication.StateAutAct.value).equal(false);
-			expect((da1).communication.StateOffAct.value).equal(true);
-
-			expect(da1.communication.SrcChannel.value).equal(false);
-			expect(da1.communication.SrcExtAut.value).equal(false);
-			expect(da1.communication.SrcIntAut.value).equal(false);
-			expect(da1.communication.SrcIntOp.value).equal(false);
-			expect(da1.communication.SrcExtOp.value).equal(false);
-			expect(da1.communication.SrcIntAct.value).equal(true);
-			expect(da1.communication.SrcExtAct.value).equal(false);
-
-			expect(da1.communication.Sync.value).equal(false);
+			const dataAssemblyController: ServParam = new ServParam(dataAssemblyOptions, connection);
+			await dataAssemblyController.subscribe();
+			await connection.startMonitoring();
+			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
+			
+			expect(dataAssemblyController.communication.WQC.value).equal(0);
+			expect((dataAssemblyController).communication.StateChannel.value).equal(false);
+			expect((dataAssemblyController).communication.StateOffAut.value).equal(false);
+			expect((dataAssemblyController).communication.StateOpAut.value).equal(false);
+			expect((dataAssemblyController).communication.StateAutAut.value).equal(false);
+			expect((dataAssemblyController).communication.StateOffOp.value).equal(false);
+			expect((dataAssemblyController).communication.StateOpOp.value).equal(false);
+			expect((dataAssemblyController).communication.StateAutOp.value).equal(false);
+			expect((dataAssemblyController).communication.StateOpAct.value).equal(false);
+			expect((dataAssemblyController).communication.StateAutAct.value).equal(false);
+			expect((dataAssemblyController).communication.StateOffAct.value).equal(true);
+			expect(dataAssemblyController.communication.SrcChannel.value).equal(false);
+			expect(dataAssemblyController.communication.SrcExtAut.value).equal(false);
+			expect(dataAssemblyController.communication.SrcIntAut.value).equal(false);
+			expect(dataAssemblyController.communication.SrcIntOp.value).equal(false);
+			expect(dataAssemblyController.communication.SrcExtOp.value).equal(false);
+			expect(dataAssemblyController.communication.SrcIntAct.value).equal(true);
+			expect(dataAssemblyController.communication.SrcExtAct.value).equal(false);
+			expect(dataAssemblyController.communication.Sync.value).equal(false);
 		}).timeout(4000);
 	});
 });

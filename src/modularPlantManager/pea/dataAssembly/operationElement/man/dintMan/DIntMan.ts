@@ -1,4 +1,3 @@
-/* tslint:disable:max-classes-per-file */
 /*
  * MIT License
  *
@@ -25,24 +24,22 @@
  */
 
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaConnection, OpcUaDataItem} from '../../../../connection';
+import {OpcUaConnection, DataItem} from '../../../../connection';
 import {
-	ScaleSettingsRuntime,
-	UnitDataAssemblyRuntime, UnitSettings,
-	ValueLimitationRuntime
-} from '../../../_extensions';
+	ScaleSettings, ScaleSettingsRuntime,
+	UnitSettingsRuntime, UnitSettings,
+	ValueLimitation, ValueLimitationRuntime
+} from '../../../baseFunction';
 import {OperationElement, OperationElementRuntime} from '../../OperationElement';
-import {ValueLimitation} from '../../../_extensions/valueLimitationDA/ValueLimitation';
-import {ScaleSettings} from '../../../_extensions/scaleSettingsDA/ScaleSettings';
 
 export type DIntManRuntime =
-	OperationElementRuntime & UnitDataAssemblyRuntime
+	OperationElementRuntime & UnitSettingsRuntime
 	& ValueLimitationRuntime & ScaleSettingsRuntime
 	& {
-	VOut: OpcUaDataItem<number>;
-	VRbk: OpcUaDataItem<number>;
-	VFbk: OpcUaDataItem<number>;
-	VMan: OpcUaDataItem<number>;
+	VOut: DataItem<number>;
+	VRbk: DataItem<number>;
+	VFbk: DataItem<number>;
+	VMan: DataItem<number>;
 };
 
 export class DIntMan extends OperationElement {
@@ -53,10 +50,10 @@ export class DIntMan extends OperationElement {
 
 	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
 		super(options, connection);
-		this.communication.VOut = this.createDataItem('VOut', 'read');
-		this.communication.VRbk = this.createDataItem('VRbk', 'read');
-		this.communication.VFbk = this.createDataItem('VFbk', 'read');
-		this.communication.VMan = this.createDataItem('VMan', 'write');
+		this.communication.VOut = this.createDataItem('VOut', 'number');
+		this.communication.VRbk = this.createDataItem('VRbk','number');
+		this.communication.VFbk = this.createDataItem('VFbk','number');
+		this.communication.VMan = this.createDataItem('VMan','number', 'write');
 
 
 		this.valueLimitation = new ValueLimitation(this);

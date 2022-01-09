@@ -36,7 +36,7 @@ import {catPEA} from './logging';
 const optionDefinitions = [
 	{
 		name: 'pea',
-		alias: 'm',
+		alias: 'p',
 		type: String,
 		multiple: true,
 		typeLabel: '{underline peaPath[]}',
@@ -51,12 +51,11 @@ const optionDefinitions = [
 		description: 'path to recipe.json which should be loaded at startup'
 	},
 	{
-		name: 'virtualService',
-		alias: 'v',
+		name: 'polService',
 		type: String,
 		multiple: true,
-		typeLabel: '{underline virtualServicePath[]}',
-		description: 'path to virtualService.json which should be loaded at startup'
+		typeLabel: '{underline polServicePath[]}',
+		description: 'path to polService.json which should be loaded at startup'
 	},
 	{
 		name: 'help',
@@ -78,7 +77,7 @@ const optionDefinitions = [
 const sections = [
 	{
 		header: 'polaris-backend',
-		content: 'Starts polaris backend engine for controlling services of PEAs.'
+		content: 'Starts polaris backend engine to interact with PEAs.'
 	},
 	{
 		header: 'Synopsis',
@@ -86,7 +85,7 @@ const sections = [
 			'$ ./bin/polaris-backend' +
 			'[{bold --pea} {underline peaPath}] ' +
 			'[{bold --recipe} {underline recipePath}] ' +
-			'[{bold --virtualService} {underline virtualServicePath}] ' +
+			'[{bold --polService} {underline polServicePath}] ' +
 			'[{bold --externalTrigger} {underline opcuaEndpoint} {underline opcuaNodeid}]'
 		]
 	},
@@ -109,7 +108,7 @@ const sections = [
 let options;
 try {
 	options = commandLineArgs(optionDefinitions);
-} catch (err) {
+} catch (err: any) {
 	console.log('Error: Could not parse commandNode line arguments', err.toString());
 	console.log(commandLineUsage(sections));
 }
@@ -129,7 +128,7 @@ if (options) {
 			console.log(`Load PEAs from ${options.peas}`);
 			options.peas.forEach((pea: string) => {
 				const peasOptions = JSON.parse(fs.readFileSync(pea).toString());
-				manager.loadPEAController(peasOptions, true);
+				manager.loadPEAController(peasOptions).then();
 			});
 			manager.peas.forEach((p) =>
 				p.connectAndSubscribe()
@@ -147,11 +146,11 @@ if (options) {
 			});
 		}
 
-		if (options.virtualService && options.virtualService.length > 0) {
-			console.log(`Load virtual service from ${options.virtualService}`);
-			options.virtualService.forEach((vs: string) => {
-				const vsOptions = JSON.parse(fs.readFileSync(vs).toString());
-				manager.instantiatePOLService(vsOptions);
+		if (options.polService && options.polService.length > 0) {
+			console.log(`Load pol service from ${options.polService}`);
+			options.polService.forEach((ps: string) => {
+				const psOptions = JSON.parse(fs.readFileSync(ps).toString());
+				manager.addPOLService(psOptions);
 			});
 		}
 

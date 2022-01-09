@@ -79,7 +79,7 @@ export class ScopeItem {
 		if (!pea){
 			throw new Error(`PEA "${item.pea}" couldn't be found`);
 		}
-		const dataAssembly = pea.variables.find((v) => v.name === item.dataAssembly);
+		const dataAssembly = pea.dataAssemblies.find((v) => v.name === item.dataAssembly);
 		if (!dataAssembly){
 			throw new Error(`DataAssembly "${item.dataAssembly}" couldn't be found within PEA "${item.pea}"`);
 		}
@@ -152,18 +152,18 @@ export class ScopeItem {
 			}
 		} else {
 			// find DataAssemblyController in ProcessValues
-			if (pea.variables.find((v) => v.name === token)) {
-				dataAssembly = pea.variables.find((v) => v.name === token);
+			if (pea.dataAssemblies.find((v) => v.name === token)) {
+				dataAssembly = pea.dataAssemblies.find((v) => v.name === token);
 			} else {
 				catScopeItem.warn(`Could not evaluate variable "${variable}": ` +
 					`Token "${token}" not found as dataAssembly ` +
-					`in PEA ${pea.id}: ${pea.variables.map((v) => v.name)}`);
+					`in PEA ${pea.id}: ${pea.dataAssemblies.map((v) => v.name)}`);
 			}
 		}
 		if (!dataAssembly) {
 			throw new Error(`Could not evaluate variable "${variable}": ` +
 				`Token "${token}" not found as dataAssembly ` +
-				`in PEA ${pea.id}: ${pea.variables.map((v) => v.name)}`);
+				`in PEA ${pea.id}: ${pea.dataAssemblies.map((v) => v.name)}`);
 		}
 
 		// find DataAssemblyController variable

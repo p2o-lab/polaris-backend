@@ -37,7 +37,7 @@ import {ScopeItem} from '../../ScopeItem';
 const assign = require('assign-deep');
 
 /**
- * Static or Dynamic Parameter. Dynamic Parameters can depend on variables of the same or
+ * Static or Dynamic Parameter. Dynamic Parameters can depend on dataAssemblies of the same or
  * other PEAs. These can also be continuously updated (specified via continuous property)
  */
 export class Parameter {
@@ -48,7 +48,7 @@ export class Parameter {
 	public readonly name: string;
 	/**
 	 * Expression to be calculated and used as value.
-	 * Can contain variables, which can be declared inside scopeArray or by using correct variable names
+	 * Can contain dataAssemblies, which can be declared inside scopeArray or by using correct variable names
 	 * following this syntax "[pea].[processValue].[variable]". PEAController can be omitted if only one PEAController
 	 * is loaded. TestServerVariable can be omitted. Then "V" is used as variable.
 	 * "." in the name of PEAs or processVariables can be escaped with "\\."
@@ -86,15 +86,15 @@ export class Parameter {
 		// evaluate scopeArray
 		this.scopeArray = (parameterOptions.scope || [])
 			.map((item: ScopeOptions) => ScopeItem.extractFromScopeOptions(item, peas));
-		// evaluate additional variables from expression
+		// evaluate additional dataAssemblies from expression
 		try {
 			const extraction = ScopeItem.extractFromExpressionString(
 				this.value.toString(), peas, this.scopeArray.map((scope) => scope.name)
 			);
 			this.expression = extraction.expression;
 			this.scopeArray.push(...extraction.scopeItems);
-		} catch (err) {
-			throw new Error('Parsing error for Parameter ' + err.toString());
+		} catch (e) {
+			throw new Error(`Parsing error for Parameter ${(e as Error).message}`);
 		}
 		this.logger.debug(`Scope array: ${this.scopeArray.map((s) => s.dataAssembly.name)}`);
 
@@ -129,7 +129,7 @@ export class Parameter {
 	 * @returns number | boolean
 	 */
 	public getValue(): number | boolean {
-		// get current variables
+		// get current dataAssemblies
 		const tasks = this.scopeArray.map((item) => item.getScopeValue());
 
 		const scope = assign(...tasks);

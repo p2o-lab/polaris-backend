@@ -1,54 +1,88 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2021 P2O-Lab <p2o-lab@mailbox.tu-dresden.de>,
+ * Chair for Process Control Systems, Technische Universität Dresden
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+ 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {Namespace, UAObject} from 'node-opcua';
-import {BinProcessValueInMockup} from './BinProcessValueIn.mockup';
+import {BinProcessValueInMockup, getBinProcessValueInDataItemOptions, getBinProcessValueInOptions} from './BinProcessValueIn.mockup';
 import {MockupServer} from '../../../../../_utils';
-import {AnaProcessValueInMockup} from '../AnaProcessValueIn/AnaProcessValueIn.mockup';
 import {OpcUaConnection} from '../../../../connection';
-import {namespaceUrl} from '../../../../../../../tests/namespaceUrl';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {BinProcessValueInRuntime} from './BinProcessValueIn';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('BinProcessValueInMockup', () => {
+
     describe('static', () => {
-        let mockupServer: any;
+
+        let mockupServer: MockupServer;
+
         beforeEach(async()=>{
             mockupServer = new MockupServer();
             await mockupServer.initialize();
         });
-        afterEach(async () => {
 
-        });
         it('should create BinProcessValueInMockup', () => {
-            const mockup= new BinProcessValueInMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            const mockup= new BinProcessValueInMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             expect(mockup).to.not.be.undefined;
-            //TODO: test more
+        });
 
+        it('static DataItemOptions', () => {
+            const options = getBinProcessValueInDataItemOptions(1, 'Test') as BinProcessValueInRuntime;
+            expect(Object.keys(options).length).to.equal(4);
         });
-        it('getBinProcessValueInMockupReferenceJSON()',  () => {
-            const mockup = new BinProcessValueInMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
-            const json = mockup.getBinProcessValueInInstanceMockupJSON();
-            expect(json).not.to.be.undefined;
-            expect(Object.keys(json).length).to.equal(4);
-            //TODO: test more
+
+        it('static DataAssemblyOptions', () => {
+            const options = getBinProcessValueInOptions(1, 'Test') as DataAssemblyOptions;
+            expect(Object.keys(options.dataItems).length).to.equal(6);
         });
+
+        it('dynamic DataAssemblyOptions', () => {
+            const mockup = new BinProcessValueInMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
+            const options = mockup.getDataAssemblyOptions();
+
+            expect(Object.keys(options.dataItems).length).to.equal(6);
+        });
+
     });
     describe('dynamic', () => {
-        // we need to check if the nodes was addes succesfully and are writeable and readable
+
         let mockupServer: MockupServer;
-        let mockup: BinProcessValueInMockup;
         let connection: OpcUaConnection;
+
         beforeEach(async function () {
             this.timeout(5000);
             mockupServer = new MockupServer();
             await mockupServer.initialize();
-            mockup = new BinProcessValueInMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            new BinProcessValueInMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
             await mockupServer.start();
-            connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334');
+            connection = new OpcUaConnection();
+            connection.initialize({endpoint: mockupServer.endpoint});
             await connection.connect();
         });
 
@@ -58,23 +92,21 @@ describe('BinProcessValueInMockup', () => {
         });
 
         it('set and get VExt', async () => {
-            await connection.writeOpcUaNode('Variable.VExt', namespaceUrl, true, 'Boolean');
-            await connection.readOpcUaNode('Variable.VExt', namespaceUrl)
-                .then(datavalue => expect(datavalue?.value.value).to.equal(true));
+            await connection.writeNode('Variable.VExt', mockupServer.nameSpaceUri, true, 'Boolean');
+            await connection.readNode('Variable.VExt', mockupServer.nameSpaceUri)
+                .then((dataValue) => expect((dataValue)?.value.value).to.equal(true));
         }).timeout(3000);
 
         it('set and get VState0', async () => {
-            await connection.writeOpcUaNode('Variable.VState0', namespaceUrl, 'state0_inactive', 'String');
-            await connection.readOpcUaNode('Variable.VState0', namespaceUrl)
-                .then(datavalue => expect(datavalue?.value.value).to.equal('state0_inactive'));
+            await connection.writeNode('Variable.VState0', mockupServer.nameSpaceUri, 'state0_inactive', 'String');
+            await connection.readNode('Variable.VState0', mockupServer.nameSpaceUri)
+                .then((dataValue) => expect((dataValue)?.value.value).to.equal('state0_inactive'));
         }).timeout(3000);
 
         it('set and get VState1', async () => {
-            await connection.writeOpcUaNode('Variable.VState1', namespaceUrl, 'state1_inactive', 'String');
-            await connection.readOpcUaNode('Variable.VState1', namespaceUrl)
-                .then(datavalue => expect(datavalue?.value.value).to.equal('state1_inactive'));
+            await connection.writeNode('Variable.VState1', mockupServer.nameSpaceUri, 'state1_inactive', 'String');
+            await connection.readNode('Variable.VState1', mockupServer.nameSpaceUri)
+                .then((dataValue) => expect((dataValue)?.value.value).to.equal('state1_inactive'));
         }).timeout(3000);
-
-        //TODO get the rest
     });
 });

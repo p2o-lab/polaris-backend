@@ -27,78 +27,87 @@
 import Timeout = NodeJS.Timeout;
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 
-import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../../../_extensions/osLevelDA/OSLevelDA.mockup';
-import {getUnitDAMockupReferenceJSON, UnitDAMockup} from '../../../_extensions/unitDA/UnitDA.mockup';
+import { getUnitSettingsDataItemOptions, UnitSettingsMockup} from '../../../baseFunction/unitSettings/UnitSettings.mockup';
 import {
-	getScaleSettingDAMockupReferenceJSON,
-	ScaleSettingDAMockup
-} from '../../../_extensions/scaleSettingsDA/ScaleSettingDA.mockup';
+	getScaleSettingsDataItemOptions,
+	ScaleSettingMockup
+} from '../../../baseFunction/scaleSettings/ScaleSetting.mockup';
 import {
-	getValueLimitationDAMockupReferenceJSON,
-	ValueLimitationDAMockup
-} from '../../../_extensions/valueLimitationDA/ValueLimitationDA.mockup';
+	getValueLimitationDataItemOptions,
+	ValueLimitationMockup
+} from '../../../baseFunction/valueLimitation/ValueLimitation.mockup';
+import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
+import {getOperationElementDataItemOptions, OperationElementMockup} from '../../OperationElement.mockup';
+import {getDataAssemblyOptions} from '../../../DataAssemblyController.mockup';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 
-export function getDIntManMockupReferenceJSON(
-	namespace: number,
-	objectBrowseName: string) {
+const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/OperationElement/DIntMan';
 
+function getDIntManSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
 	return ({
-			...getOSLevelDAMockupReferenceJSON(namespace,objectBrowseName),
-			...getScaleSettingDAMockupReferenceJSON(namespace,objectBrowseName,'Int32'),
-			...getValueLimitationDAMockupReferenceJSON(namespace,objectBrowseName, 'Int32'),
-			...getUnitDAMockupReferenceJSON(namespace,objectBrowseName),
-			VOut: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VOut`,
-				dataType: 'Int32'
-			},
-			VMan: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VMan`,
-				dataType: 'Int32'
-			},
-			VRbk: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VRbk`,
-				dataType: 'Int32'
-			},
+		VOut: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.VOut`,
+			dataType: 'Int32'
+		} as OpcUaNodeOptions,
+		VMan: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.VMan`,
+			dataType: 'Int32'
+		} as OpcUaNodeOptions,
+		VRbk: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.VRbk`,
+			dataType: 'Int32'
+		} as OpcUaNodeOptions,
 
-			VFbk: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VFbk`,
-				dataType: 'Int32'
-			}
-		}
+		VFbk: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.VFbk`,
+			dataType: 'Int32'
+		} as OpcUaNodeOptions
+	});
+}
+
+export function getDIntManDataItemOptions(namespace: number, objectBrowseName: string): object {
+	return ({
+			...getOperationElementDataItemOptions(namespace, objectBrowseName),
+			...getScaleSettingsDataItemOptions(namespace, objectBrowseName, 'DInt'),
+			...getValueLimitationDataItemOptions(namespace, objectBrowseName, 'DInt'),
+			...getUnitSettingsDataItemOptions(namespace, objectBrowseName),
+			...getDIntManSpecificDataItemOptions(namespace, objectBrowseName),
+		} as OpcUaNodeOptions
 	);
 }
 
-export class DIntManMockup {
-	public readonly name: string;
+export function getDIntManOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
+	const options = getDataAssemblyOptions(name, tagName, tagDescription);
+	options.metaModelRef = metaModelReference;
+	options.dataItems = {
+		...options.dataItems,
+		...getDIntManDataItemOptions(namespace, objectBrowseName)};
+	return options;
+}
+
+export class DIntManMockup extends OperationElementMockup {
+
 	protected vRbk = 0;
 	protected vMan = 0;
 	protected vOut = 0;
 	protected vFbk = 0;
-	
-	public readonly osLevel: OSLevelDAMockup;
-	public readonly scaleSettings: ScaleSettingDAMockup<DataType.Int32>;
-	public readonly valueLimitation: ValueLimitationDAMockup<DataType.Int32>;
-	public readonly unit: UnitDAMockup;
+
+	public readonly scaleSettings: ScaleSettingMockup<'DInt'>;
+	public readonly valueLimitation: ValueLimitationMockup<'DInt'>;
+	public readonly unit: UnitSettingsMockup;
+
 	protected interval: Timeout | undefined;
-	protected mockupNode: UAObject;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
+		super(namespace, rootNode, variableName);
 
-		this.name = variableName;
-
-		this.mockupNode = namespace.addObject({
-			organizedBy: rootNode,
-			browseName: variableName
-		});
-		
-		this.osLevel = new OSLevelDAMockup(namespace, this.mockupNode, this.name);
-		this.scaleSettings = new ScaleSettingDAMockup(namespace, this.mockupNode, this.name, DataType.Int32);
-		this.valueLimitation = new ValueLimitationDAMockup(namespace, this.mockupNode, this.name,DataType.Int32);
-		this.unit = new UnitDAMockup(namespace, this.mockupNode, this.name);
+		this.scaleSettings = new ScaleSettingMockup(namespace, this.mockupNode, this.name, 'DInt');
+		this.valueLimitation = new ValueLimitationMockup(namespace, this.mockupNode, this.name, 'DInt');
+		this.unit = new UnitSettingsMockup(namespace, this.mockupNode, this.name);
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
@@ -150,10 +159,17 @@ export class DIntManMockup {
 		});
 	}
 
-	public getDIntManMockupJSON() {
-		return getDIntManMockupReferenceJSON(
-			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name as string);
+	public getDataAssemblyOptions(): DataAssemblyOptions {
+		const options = super.getDataAssemblyOptions();
+		options.metaModelRef = metaModelReference;
+		options.dataItems = {
+			...options.dataItems,
+			...this.scaleSettings.getDataItemOptions(),
+			...this.valueLimitation.getDataItemOptions(),
+			...this.unit.getDataItemOptions(),
+			...getDIntManSpecificDataItemOptions(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
+		};
+		return options;
 	}
 
 	public startCurrentTimeUpdate(): void {

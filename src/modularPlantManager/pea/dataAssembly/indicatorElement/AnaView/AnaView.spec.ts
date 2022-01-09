@@ -28,34 +28,31 @@ import {OpcUaConnection} from '../../../connection';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from '../../../../../../tests/anaview.json';
 import {MockupServer} from '../../../../_utils';
-import {OperationElementMockup} from '../../operationElement/OperationElement.mockup';
-import {Namespace, UAObject} from 'node-opcua';
 import {AnaView} from './AnaView';
-import {AnaViewMockup} from './AnaView.mockup';
-import {namespaceUrl} from '../../../../../../tests/namespaceUrl';
+import {AnaViewMockup, getAnaViewOptions} from './AnaView.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('AnaView', () => {
-	const dataAssemblyOptions: DataAssemblyOptions = {
-		name: 'Variable',
-		metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/AnaView',
-		dataItems: baseDataAssemblyOptions
-	};
+
+	let dataAssemblyOptions: DataAssemblyOptions;
+
 	describe('static', () => {
-		const emptyOPCUAConnection = new OpcUaConnection('', '');
+
+		const emptyOPCUAConnection = new OpcUaConnection();
+		dataAssemblyOptions = getAnaViewOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
+
 		it('should create AnaView', async () => {
-			const da1: AnaView = new AnaView(dataAssemblyOptions, emptyOPCUAConnection);
-+			expect(da1.communication.V).to.not.equal(undefined);
-			expect(da1.communication.WQC).to.not.equal(undefined);
-			expect(da1.communication.VSclMax).to.not.equal(undefined);
-			expect(da1.communication.VSclMin).to.not.equal(undefined);
-			expect(da1.communication.VUnit).to.not.equal(undefined);
-			expect(da1.tagName).to.equal('Variable');
-			expect(da1.tagDescription).to.equal('Test');
+			const dataAssemblyController: AnaView = new AnaView(dataAssemblyOptions, emptyOPCUAConnection);
+			expect(dataAssemblyController.communication.V).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.WQC).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.VSclMax).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.VSclMin).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.VUnit).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.TagName).to.not.equal(undefined);
+			expect(dataAssemblyController.communication.TagDescription).to.not.equal(undefined);
 		});
 	});
 
@@ -64,15 +61,14 @@ describe('AnaView', () => {
 		let connection: OpcUaConnection;
 
 		beforeEach(async function () {
-			this.timeout(4000);
+			this.timeout(5000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			const mockup = new AnaViewMockup(
-				mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject,
-				'Variable');
+			const anaViewMockup = new AnaViewMockup(mockupServer.nameSpace, mockupServer.rootObject,'Variable');
+			dataAssemblyOptions = anaViewMockup.getDataAssemblyOptions();
 			await mockupServer.start();
-			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334','','');
+			connection = new OpcUaConnection();
+			connection.initialize({endpoint: mockupServer.endpoint});
 			await connection.connect();
 		});
 
@@ -83,22 +79,17 @@ describe('AnaView', () => {
 		});
 
 		it('should subscribe successfully', async () => {
-			// set namespaceUrl
-			for (const key in dataAssemblyOptions.dataItems as any) {
-				//skip static values
-				if((typeof(dataAssemblyOptions.dataItems as any)[key] != 'string')){
-					(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
-				}
-			}
-			const da1: AnaView = new AnaView(dataAssemblyOptions, connection);
-			const pv = da1.subscribe();
-			await connection.startListening();
-			await pv;
-			expect(da1.communication.V.value).equal(0);
-			expect(da1.communication.WQC.value).equal(0);
-			expect(da1.communication.VUnit.value).equal(0);
-			expect(da1.communication.VSclMin.value).equal(0);
-			expect(da1.communication.VSclMax.value).equal(0);
+
+			const dataAssemblyController: AnaView = new AnaView(dataAssemblyOptions, connection);
+			await dataAssemblyController.subscribe();
+			await connection.startMonitoring();
+			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
+
+			expect(dataAssemblyController.communication.V.value).equal(0);
+			expect(dataAssemblyController.communication.WQC.value).equal(0);
+			expect(dataAssemblyController.communication.VUnit.value).equal(0);
+			expect(dataAssemblyController.communication.VSclMin.value).equal(0);
+			expect(dataAssemblyController.communication.VSclMax.value).equal(0);
 		}).timeout(4000);
 	});
 });

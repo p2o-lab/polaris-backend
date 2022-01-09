@@ -26,90 +26,82 @@
 // eslint-disable-next-line no-undef
 import Timeout = NodeJS.Timeout;
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
+import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
+import {getOperationElementDataItemOptions, OperationElementMockup} from '../../OperationElement.mockup';
+import {getDataAssemblyOptions} from '../../../DataAssemblyController.mockup';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 
-import {getOSLevelDAMockupReferenceJSON, OSLevelDAMockup} from '../../../_extensions/osLevelDA/OSLevelDA.mockup';
-import {getUnitDAMockupReferenceJSON, UnitDAMockup} from '../../../_extensions/unitDA/UnitDA.mockup';
-import {
-	getScaleSettingDAMockupReferenceJSON,
-	ScaleSettingDAMockup
-} from '../../../_extensions/scaleSettingsDA/ScaleSettingDA.mockup';
-import {
-	getValueLimitationDAMockupReferenceJSON,
-	ValueLimitationDAMockup
-} from '../../../_extensions/valueLimitationDA/ValueLimitationDA.mockup';
-import {
-	getSourceModeDAMockupReferenceJSON,
-	SourceModeDAMockup
-} from '../../../_extensions/sourceModeDA/SourceModeDA.mockup';
+const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/OperationElement/BinMan';
 
-export function getBinManMockupReferenceJSON(
-	namespace: number,
-	objectBrowseName: string) {
-
+function getBinManSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
 	return ({
-			...getOSLevelDAMockupReferenceJSON(namespace,objectBrowseName),
-			VOut: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VOut`,
-				dataType: 'Boolean'
-			},
-			VState0: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VState0`,
-				dataType: 'Boolean'
-			},
-			VState1: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VState1`,
-				dataType: 'Boolean'
-			},
-			VMan: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VMan`,
-				dataType: 'Boolean'
-			},
-			VRbk: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VRbk`,
-				dataType: 'Boolean'
-			},
-			VFbk: {
-				namespaceIndex: `${namespace}`,
-				nodeId: `${objectBrowseName}.VFbk`,
-				dataType: 'Boolean'
-			}
-		}
+		VOut: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.VOut`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		VState0: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.VState0`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		VState1: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.VState1`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		VMan: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.VMan`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		VRbk: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.VRbk`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions,
+		VFbk: {
+			namespaceIndex: `${namespace}`,
+			nodeId: `${objectBrowseName}.VFbk`,
+			dataType: 'Boolean'
+		} as OpcUaNodeOptions
+	});
+}
+
+export function getBinManDataItemOptions(namespace: number, objectBrowseName: string): object {
+	return ({
+			...getOperationElementDataItemOptions(namespace, objectBrowseName),
+			...getBinManSpecificDataItemOptions(namespace, objectBrowseName),
+		} as OpcUaNodeOptions
 	);
 }
 
-export class BinManMockup {
+export function getBinManOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
+	const options = getDataAssemblyOptions(name, tagName, tagDescription);
+	options.metaModelRef = metaModelReference;
+	options.dataItems = {
+		...options.dataItems,
+		...getBinManDataItemOptions(namespace, objectBrowseName)};
+	return options;
+}
 
-	public readonly name: string;
+export class BinManMockup extends OperationElementMockup {
+
 	protected vState0= 'off';
 	protected vState1= 'on';
 	protected vRbk = false;
 	protected vMan = false;
 	protected vOut = false;
 	protected vFbk = false;
-	
-	public readonly osLevel: OSLevelDAMockup;
+
 	protected interval: Timeout | undefined;
-	protected mockupNode: UAObject;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
-
-		this.name = variableName;
-
-		this.mockupNode = namespace.addObject({
-			organizedBy: rootNode,
-			browseName: variableName
-		});
-		
-		this.osLevel = new OSLevelDAMockup(namespace, this.mockupNode, this.name);
+		super(namespace, rootNode, variableName);
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=1;s=${variableName}.VState0`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VState0`,
 			browseName: `${variableName}.VState0`,
 			dataType: DataType.String,
 			value: {
@@ -121,7 +113,7 @@ export class BinManMockup {
 
 		namespace.addVariable({
 			componentOf: this.mockupNode,
-			nodeId: `ns=1;s=${variableName}.VState1`,
+			nodeId: `ns=${namespace.index};s=${variableName}.VState1`,
 			browseName: `${variableName}.VState1`,
 			dataType: DataType.String,
 			value: {
@@ -181,10 +173,14 @@ export class BinManMockup {
 		});
 	}
 
-	public getBinManMockupJSON() {
-		return getBinManMockupReferenceJSON(
-			this.mockupNode.namespaceIndex,
-			this.mockupNode.browseName.name as string);
+	public getDataAssemblyOptions(): DataAssemblyOptions {
+		const options = super.getDataAssemblyOptions();
+		options.metaModelRef = metaModelReference;
+		options.dataItems = {
+			...options.dataItems,
+			...getBinManSpecificDataItemOptions(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
+		};
+		return options;
 	}
 
 	public startCurrentTimeUpdate(): void {

@@ -1,52 +1,89 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2021 P2O-Lab <p2o-lab@mailbox.tu-dresden.de>,
+ * Chair for Process Control Systems, Technische Universität Dresden
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+ 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {Namespace, UAObject} from 'node-opcua';
 
-import {PIDCtrlMockup} from './PIDCtrl.mockup';
+import {getPIDCtrlDataItemOptions, getPIDCtrlOptions, PIDCtrlMockup} from './PIDCtrl.mockup';
 import {MockupServer} from '../../../../_utils';
 import {OpcUaConnection} from '../../../connection';
-import {namespaceUrl} from '../../../../../../tests/namespaceUrl';
+import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {PIDCtrlRuntime} from './PIDCtrl';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('PIDCtrlMockup', () => {
 
-    describe('', () => {
-        let mockupServer: any;
+    describe('static', () => {
+
+        let mockupServer: MockupServer;
+
         beforeEach(async()=>{
             mockupServer = new MockupServer();
             await mockupServer.initialize();
         });
 
         it('should create PIDCtrlMockup', async () => {
-            const mockup= new PIDCtrlMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            const mockup= new PIDCtrlMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
             expect(mockup).to.not.be.undefined;
         });
-        it('getPIDCtrlMockupReferenceJSON()',  () => {
-            const mockup = new PIDCtrlMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
-            const json = mockup.getPIDCtrlMockupJSON();
-            expect(json).to.not.be.undefined;
-            expect(Object.keys(json).length).to.equal(43);
-            //TODO test more?
+
+        it('static DataItemOptions', () => {
+            const options = getPIDCtrlDataItemOptions(1, 'Test') as PIDCtrlRuntime;
+            expect(Object.keys(options).length).to.equal(43);
+        });
+
+        it('static DataAssemblyOptions', () => {
+            const options = getPIDCtrlOptions(1, 'Test') as DataAssemblyOptions;
+            expect(Object.keys(options.dataItems).length).to.equal(45);
+        });
+
+        it('dynamic DataAssemblyOptions', () => {
+            const mockup = new PIDCtrlMockup(mockupServer.nameSpace,
+                mockupServer.rootObject, 'Variable');
+            const options = mockup.getDataAssemblyOptions();
+
+            expect(Object.keys(options.dataItems).length).to.equal(45);
         });
     });
 
     describe('dynamic', () => {
-        // we need to check if the nodes was addes succesfully and are writeable and readable
+
         let mockupServer: MockupServer;
-        let mockup: PIDCtrlMockup;
         let connection: OpcUaConnection;
+
         beforeEach(async function () {
             this.timeout(5000);
             mockupServer = new MockupServer();
             await mockupServer.initialize();
-            mockup = new PIDCtrlMockup(mockupServer.namespace as Namespace,
-                mockupServer.rootComponent as UAObject, 'Variable');
+            new PIDCtrlMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
             await mockupServer.start();
-            connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334');
+            connection = new OpcUaConnection();
+            connection.initialize({endpoint: mockupServer.endpoint});
             await connection.connect();
         });
         afterEach(async () => {
@@ -55,15 +92,15 @@ describe('PIDCtrlMockup', () => {
         });
 
         it('set and get SPMan', async () => {
-            await connection.writeOpcUaNode('Variable.SPMan', namespaceUrl, 1.1, 'Double');
-            await connection.readOpcUaNode('Variable.SPMan', namespaceUrl)
-                .then(datavalue => expect(datavalue?.value.value).to.equal(1.1));
+            await connection.writeNode('Variable.SPMan', mockupServer.nameSpaceUri, 1.1, 'Double');
+            await connection.readNode('Variable.SPMan', mockupServer.nameSpaceUri)
+                .then((dataValue) => expect((dataValue)?.value.value).to.equal(1.1));
         }).timeout(3000);
 
         it('set and get SPMan', async () => {
-            await connection.writeOpcUaNode('Variable.MVMan', namespaceUrl, 1.1, 'Double');
-            await connection.readOpcUaNode('Variable.MVMan', namespaceUrl)
-                .then(datavalue => expect(datavalue?.value.value).to.equal(1.1));
+            await connection.writeNode('Variable.MVMan', mockupServer.nameSpaceUri, 1.1, 'Double');
+            await connection.readNode('Variable.MVMan', mockupServer.nameSpaceUri)
+                .then((dataValue) => expect((dataValue)?.value.value).to.equal(1.1));
         }).timeout(3000);
 
         //TODO get the rest

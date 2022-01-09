@@ -35,10 +35,12 @@ import {recipeRunRouter} from './recipeRouter/recipeRunRouter';
 import {recipeRouter} from './recipeRouter/recipeRouter';
 import {playerRouter} from './recipeRouter/playerRouter';
 import {polServiceRouter} from './polServiceRouter/polServiceRouter';
+import {pimadRouter} from './pimadRouter/pimadRouter';
 
 export const modularPlantManagerRouter: Router = Router();
 
 modularPlantManagerRouter.use('/pea', peaRouter);
+modularPlantManagerRouter.use('/pimad', pimadRouter);
 modularPlantManagerRouter.use('/polService', polServiceRouter);
 modularPlantManagerRouter.use('/recipeRun', recipeRunRouter);
 modularPlantManagerRouter.use('/recipe', recipeRouter);
@@ -71,7 +73,7 @@ modularPlantManagerRouter.get('/version', (req: Request, res: Response) => {
  */
 modularPlantManagerRouter.get('/autoReset', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
-	res.json({autoReset: manager.autoreset});
+	res.json({autoReset: manager.autoReset});
 }));
 
 /**
@@ -83,12 +85,12 @@ modularPlantManagerRouter.get('/autoReset', asyncHandler(async (req: Request, re
  */
 modularPlantManagerRouter.post('/autoReset', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
-	manager.autoreset = yn(req.body.autoReset, {default: false});
-	res.json({autoReset: manager.autoreset});
+	manager.autoReset = yn(req.body.autoReset, {default: false});
+	res.json({autoReset: manager.autoReset});
 }));
 
 /**
- * @api {post} /abort    Abort all services
+ * @api {post} /abortAllServices    Abort all services
  * @apiName AbortAllServices
  * @apiDescription Abort all services from all PEAs
  * @apiGroup ModularPlantManager
@@ -100,7 +102,7 @@ modularPlantManagerRouter.post('/abortAllServices', asyncHandler(async (req: Req
 }));
 
 /**
- * @api {post} /stop    Stop all services
+ * @api {post} /stopAllServices    Stop all services
  * @apiName StopAllServices
  * @apiDescription Abort all services from all PEAs
  * @apiGroup ModularPlantManager
@@ -134,11 +136,11 @@ modularPlantManagerRouter.get('/logs(.json)?', asyncHandler(async (req: Request,
 }));
 
 /**
- * @api {get} /logs/variables   Get variable logs
+ * @api {get} /logs/dataAssemblies   Get variable logs
  * @apiName GetVariableLogs
  * @apiGroup ModularPlantManager
  */
-modularPlantManagerRouter.get('/logs/variables(.json)?', asyncHandler(async (req: Request, res: Response) => {
+modularPlantManagerRouter.get('/logs/dataAssemblies(.json)?', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
 	res.contentType('application/json').attachment()
 		.send(JSON.stringify(manager.variableArchive.slice(-1000), null, 2));

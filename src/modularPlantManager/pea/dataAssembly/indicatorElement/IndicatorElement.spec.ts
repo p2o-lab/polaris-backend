@@ -27,72 +27,42 @@ import {OpcUaConnection} from '../../connection';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import * as baseDataAssemblyOptions from '../../../../../tests/anaview.json';
-import * as baseDataAssemblyOptionsStatic from '../../../../../tests/binmon_static.json';
-
 import {IndicatorElement} from './IndicatorElement';
 import {MockupServer} from '../../../_utils';
-import {Namespace, UAObject} from 'node-opcua';
-import {namespaceUrl} from '../../../../../tests/namespaceUrl';
-import {IndicatorElementMockup} from './IndicatorElement.mockup';
-import {AnaViewMockup} from './AnaView/AnaView.mockup';
-import {AnaView} from './AnaView/AnaView';
+import {getIndicatorElementOptions, IndicatorElementMockup} from './IndicatorElement.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('IndicatorElement', () => {
 
+	let dataAssemblyOptions: DataAssemblyOptions;
+
 	describe('static', () => {
-		const emptyOPCUAConnection = new OpcUaConnection('', '');
-		it('should create IndicatorElement, static WQC', () => {
-			const dataAssemblyOptions: DataAssemblyOptions = {
-				name: 'Variable',
-				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/BinMon',
-				dataItems: baseDataAssemblyOptionsStatic
-			};
-			const da1 = new IndicatorElement(dataAssemblyOptions, emptyOPCUAConnection) ;
-			expect(da1.communication.WQC).to.equal(undefined);
-			expect(da1.wqc.WQC).to.equal(0);
-		});
-		it('should create IndicatorElement, dynamic WQC', () => {
-			const dataAssemblyOptions: DataAssemblyOptions = {
-				name: 'Variable',
-				metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/BinMon',
-				dataItems: baseDataAssemblyOptions
-			};
-			const da1 = new IndicatorElement(dataAssemblyOptions, emptyOPCUAConnection) ;
-			expect(da1.communication.WQC).to.not.be.undefined;
-			expect(da1.wqc.WQC).to.be.undefined;
+
+		const emptyOPCUAConnection = new OpcUaConnection();
+		dataAssemblyOptions = getIndicatorElementOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
+
+		it('should create IndicatorElement', () => {
+			const dataAssemblyController = new IndicatorElement(dataAssemblyOptions, emptyOPCUAConnection) ;
+			expect(dataAssemblyController.communication.WQC).to.not.be.undefined;
+			expect(dataAssemblyController.wqc.WQC).to.equal(0);
 		});
 	});
 
 	describe('dynamic', () => {
 		let mockupServer: MockupServer;
 		let connection: OpcUaConnection;
-		const dataAssemblyOptions: DataAssemblyOptions = {
-			name: 'Variable',
-			metaModelRef: 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/BinMon',
-			dataItems: baseDataAssemblyOptions
-		};
-		// set namespaceUrl
-		for (const key in dataAssemblyOptions.dataItems as any) {
-			//skip static values
-			if((typeof(dataAssemblyOptions.dataItems as any)[key] != 'string')){
-				(dataAssemblyOptions.dataItems as any)[key].namespaceIndex = namespaceUrl;
-			}
-		}
+
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			const mockup = new IndicatorElementMockup(
-				mockupServer.namespace as Namespace,
-				mockupServer.rootComponent as UAObject,
-				'Variable');
-
+			const indicatorElementMockup = new IndicatorElementMockup(mockupServer.nameSpace, mockupServer.rootObject,'Variable');
+			dataAssemblyOptions = indicatorElementMockup.getDataAssemblyOptions();
 			await mockupServer.start();
-			connection = new OpcUaConnection('PEATestServer', 'opc.tcp://localhost:4334','','');
+			connection = new OpcUaConnection();
+			connection.initialize({endpoint: mockupServer.endpoint});
 			await connection.connect();
 		});
 
@@ -103,11 +73,13 @@ describe('IndicatorElement', () => {
 		});
 
 		it('should subscribe successfully', async () => {
-			const da1 = new IndicatorElement(dataAssemblyOptions, connection);
-			const pv = da1.subscribe();
-			await connection.startListening();
-			await pv;
-			expect(da1.communication.WQC.value).equal(0);
+
+			const dataAssemblyController = new IndicatorElement(dataAssemblyOptions, connection);
+			await dataAssemblyController.subscribe();
+			await connection.startMonitoring();
+			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
+
+			expect(dataAssemblyController.communication.WQC.value).equal(0);
 		}).timeout(4000);
 	});
 });
