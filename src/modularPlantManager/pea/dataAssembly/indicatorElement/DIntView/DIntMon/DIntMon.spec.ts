@@ -47,8 +47,8 @@ describe('DIntMon', () => {
 		it('should create DIntMon', async () => {
 			const dataAssemblyController: DIntMon = new DIntMon(dataAssemblyOptions, emptyOPCUAConnection);
 
-			expect(dataAssemblyController.tagName).to.equal('Variable');
-			expect(dataAssemblyController.tagDescription).to.equal('Test');
+			expect(dataAssemblyController.tagName).to.not.equal(undefined);
+			expect(dataAssemblyController.tagDescription).to.not.equal(undefined);
 
 			expect(dataAssemblyController.communication.V).to.not.equal(undefined);
 			expect(dataAssemblyController.communication.WQC).to.not.equal(undefined);

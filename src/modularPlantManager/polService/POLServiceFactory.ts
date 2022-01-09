@@ -54,7 +54,7 @@ export class POLServiceFactory {
 			}
 			return new AggregatedService(options as AggregatedServiceOptions, peaSet, polServices);
 		} else {
-			throw new Error('Unknown pol service type ${options.type}');
+			throw new Error(`Unknown pol service type ${options.type}`);
 		}
 	}
 }

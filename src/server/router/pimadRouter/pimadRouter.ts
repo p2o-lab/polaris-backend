@@ -26,7 +26,6 @@
 import {ModularPlantManager} from '../../../modularPlantManager';
 import {Request, Response, Router} from 'express';
 import * as asyncHandler from 'express-async-handler';
-import {constants} from 'http2';
 import * as path from 'path';
 
 export const pimadRouter: Router = Router();
@@ -43,12 +42,13 @@ interface MulterRequest extends Request {
 const fs = require('fs');
 const multer = require('multer');
 
-// delete uploads folder if exists
+// create uploads directory
 if (fs.existsSync('uploads/')) {
-	fs.rmdirSync('uploads/', {recursive: true});
-}
-// create new uploads folder
+	// delete uploads folder, because it could contain files, which haven't been deleted successfully due to crash
+	fs.rmSync('uploads/', {recursive: true});
+}// create new uploads folder
 fs.mkdirSync('uploads/');
+
 
 // set up filename and destination
 const storage = multer.diskStorage({
@@ -113,7 +113,7 @@ pimadRouter.get('/:peaId', (req: Request, res: Response) => {
 		res.send(manager.getPEAController(req.params.peaId).json());
 	} catch (e: any) {
 		console.log(e);
-		res.status(constants.HTTP_STATUS_NOT_FOUND).send(e.toString());
+		res.status(500).send(e.toString());
 	}
 });
 

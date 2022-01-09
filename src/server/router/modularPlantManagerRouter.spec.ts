@@ -44,7 +44,7 @@ describe('ModularPlantMangerRoutes', () => {
 		await appServer.stop();
 	});
 
-	context('#modularPlantManger', () => {
+	context('ModularPlantManger', () => {
 
 		it('should allow interacting with all peas within MP', async () => {
 			await request(app).post('/api/abortAllServices')
@@ -129,10 +129,14 @@ describe('ModularPlantMangerRoutes', () => {
 
 		});
 
-		it('should provide version', (done) => {
-			request(app).get('/api/version')
-				.expect('Content-Type', /json/)
-				.expect(200, done);
+		context('version', () => {
+
+			it('should provide version', (done) => {
+				request(app).get('/api/version')
+					.expect('Content-Type', /json/)
+					.expect(200, done);
+			});
+
 		});
 
 		context('logs', () => {

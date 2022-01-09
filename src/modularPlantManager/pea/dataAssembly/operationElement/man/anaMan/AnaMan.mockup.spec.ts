@@ -30,7 +30,6 @@ import {MockupServer} from '../../../../../_utils';
 import {OpcUaConnection} from '../../../../connection';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {AnaManRuntime} from './AnaMan';
-import {OperationElementMockup} from '../../OperationElement.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -41,7 +40,8 @@ describe('AnaManMockup', () => {
 
         let mockupServer: MockupServer;
 
-        beforeEach(async() => {
+        beforeEach(async function () {
+            this.timeout(4000);
             mockupServer = new MockupServer();
             await mockupServer.initialize();
         });
@@ -60,14 +60,14 @@ describe('AnaManMockup', () => {
         it('static DataAssemblyOptions', () => {
             const options = getAnaManOptions(1, 'Test') as DataAssemblyOptions;
             expect(Object.keys(options.dataItems).length).to.equal(12);
-        });
+        }).timeout(6000);
 
         it('dynamic DataAssemblyOptions', () => {
             const mockup = new AnaManMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
             const options = mockup.getDataAssemblyOptions();
 
             expect(Object.keys(options.dataItems).length).to.equal(12);
-        });
+        }).timeout(6000);
 
         // TODO
        /* it('startCurrentTimeUpdate()',  async() => {
@@ -105,7 +105,7 @@ describe('AnaManMockup', () => {
             this.timeout(5000);
             mockupServer = new MockupServer();
             await mockupServer.initialize();
-            new OperationElementMockup(	mockupServer.nameSpace,	mockupServer.rootObject,'Variable');
+            new AnaManMockup(mockupServer.nameSpace, mockupServer.rootObject,'Variable');
             await mockupServer.start();
             connection = new OpcUaConnection();
             connection.initialize({endpoint: mockupServer.endpoint});

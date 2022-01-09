@@ -23,13 +23,13 @@
  * SOFTWARE.
  */
 
-import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
+import {Namespace, UAObject} from 'node-opcua';
 import {getOSLevelDataItemOptions, OSLevelMockup} from '../../../baseFunction/osLevel/OSLevel.mockup';
 import {
 	getLimitMonitoringDataItemOptions,
 	LimitMonitoringMockup
 } from '../../../baseFunction/limitMonitoring/LimitMonitoring.mockup';
-import {DIntViewMockup, getDIntViewOptions} from '../DIntView.mockup';
+import {DIntViewMockup, getDIntViewDataItemOptions} from '../DIntView.mockup';
 import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
 import {getDataAssemblyOptions} from '../../../DataAssemblyController.mockup';
 import {DataAssemblyOptions} from '@p2olab/polaris-interface';
@@ -38,6 +38,7 @@ const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/DI
 
 export function getDIntMonDataItemOptions(namespace: number, objectBrowseName: string): object {
 	return ({
+			...getDIntViewDataItemOptions(namespace, objectBrowseName),
 			...getOSLevelDataItemOptions(namespace, objectBrowseName),
 			...getLimitMonitoringDataItemOptions(namespace, objectBrowseName, 'DInt'),
 		} as OpcUaNodeOptions
@@ -49,7 +50,6 @@ export function getDIntMonOptions(namespace: number, objectBrowseName: string, n
 	options.metaModelRef = metaModelReference;
 	options.dataItems = {
 		...options.dataItems,
-		...getDIntViewOptions(namespace, objectBrowseName),
 		...getDIntMonDataItemOptions(namespace, objectBrowseName)};
 	return options;
 }
@@ -64,18 +64,6 @@ export class DIntMonMockup extends DIntViewMockup{
 
 		this.osLevel = new OSLevelMockup(namespace, this.mockupNode, this.name);
 		this.limitMonitoring = new LimitMonitoringMockup(namespace, this.mockupNode, this.name, 'DInt');
-
-		namespace.addVariable({
-			componentOf: this.mockupNode,
-			nodeId: `ns=${namespace.index};s=${variableName}.V`,
-			browseName: `${variableName}.V`,
-			dataType: DataType.Int32,
-			value: {
-				get: (): Variant => {
-					return new Variant({dataType: DataType.Int32, value: this.v});
-				},
-			},
-		});
 	}
 
 	public getDataAssemblyOptions(): DataAssemblyOptions {

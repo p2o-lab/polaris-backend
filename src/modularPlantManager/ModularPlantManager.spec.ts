@@ -47,7 +47,8 @@ describe('ModularPlantManager', () => {
 		let modularPlantManager = new ModularPlantManager();
 		let identifier = '';
 
-		beforeEach(async () => {
+		beforeEach(async function () {
+			this.timeout(5000);
 			modularPlantManager = new ModularPlantManager();
 			const peaModel = await modularPlantManager.peaProvider.addPEAToPool({source: 'tests/testpea.zip'});
 			identifier = peaModel.pimadIdentifier;
@@ -57,7 +58,7 @@ describe('ModularPlantManager', () => {
 		it('loadPEAController()', async () => {
 			await modularPlantManager.loadPEAController(identifier);
 			expect(modularPlantManager.peas.length).equal(1);
-		});
+		}).timeout(5000);
 
 		it('loadPEAController() to fail, wrong identifier', async () => {
 			return expect(modularPlantManager.loadPEAController('')).to.be.rejectedWith('PEA with identifier [] not found.');

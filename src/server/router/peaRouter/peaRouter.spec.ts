@@ -275,7 +275,7 @@ describe('PEARoutes', () => {
 				const peaController = new PEAController(peaOptionsDummy);
 				manager.peas.push(peaController);
 				await request(app).post(`/api/pea/${peaController.id}/service/Trigonometry/start`).send().expect(500)
-					.expect(`"Error: [${peaController.id}] Could not find service with name Trigonometry"`);
+					.expect(`Error: [${peaController.id}] Could not find service with name Trigonometry`);
 			});
 		});
 	});

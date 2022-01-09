@@ -40,7 +40,8 @@ describe('BinManMockup', () => {
 
         let mockupServer: MockupServer;
 
-        beforeEach(async()=>{
+        beforeEach(async function () {
+            this.timeout(4000);
             mockupServer = new MockupServer();
             await mockupServer.initialize();
         });
@@ -58,7 +59,7 @@ describe('BinManMockup', () => {
         it('static DataAssemblyOptions', () => {
             const options = getBinManOptions(1, 'Test') as DataAssemblyOptions;
             expect(Object.keys(options.dataItems).length).to.equal(9);
-        });
+        }).timeout(6000);
 
         it('dynamic DataAssemblyOptions', () => {
             const mockup = new BinManMockup(mockupServer.nameSpace,
@@ -66,7 +67,7 @@ describe('BinManMockup', () => {
             const options = mockup.getDataAssemblyOptions();
 
             expect(Object.keys(options.dataItems).length).to.equal(9);
-        });
+        }).timeout(6000);
 
         // TODO
 /*        it('startCurrentTimeUpdate()',  async() => {

@@ -34,7 +34,7 @@ export const peaRouter: Router = Router();
 
 
 /**
- * @api {post} /loadPEA    Load/Instantiate PEAController via PEAController-options
+ * @api {post} /loadPEA   Load/Instantiate PEAController in ModularPlantManager
  * @apiName PostPEA
  * @apiGroup PEAController
  */
@@ -51,7 +51,7 @@ peaRouter.post('/loadPEA', async (req, res) => {
 });
 
 /**
- * @api {get} Get all PEAControllers
+ * @api {get} Get all PEAControllers of ModularPlantManager
  * @apiName GetPEAControllers
  * @apiGroup PEAController
  */
@@ -237,7 +237,7 @@ peaRouter.post('/:peaId/service/:serviceName/:command', asyncHandler(async (req:
 			await service.setParameters(req.body.parameters, manager.peas);
 		}
 		const command = req.params.command as ServiceCommand;
-		await service.executeCommandAndWaitForStateChange(command);
+		await service.executeCommand(command);
 		res.json({
 			pea: req.params.peaId,
 			service: service.name,

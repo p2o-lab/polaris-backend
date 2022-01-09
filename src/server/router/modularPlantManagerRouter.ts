@@ -90,7 +90,7 @@ modularPlantManagerRouter.post('/autoReset', asyncHandler(async (req: Request, r
 }));
 
 /**
- * @api {post} /abort    Abort all services
+ * @api {post} /abortAllServices    Abort all services
  * @apiName AbortAllServices
  * @apiDescription Abort all services from all PEAs
  * @apiGroup ModularPlantManager
@@ -102,7 +102,7 @@ modularPlantManagerRouter.post('/abortAllServices', asyncHandler(async (req: Req
 }));
 
 /**
- * @api {post} /stop    Stop all services
+ * @api {post} /stopAllServices    Stop all services
  * @apiName StopAllServices
  * @apiDescription Abort all services from all PEAs
  * @apiGroup ModularPlantManager

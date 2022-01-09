@@ -221,7 +221,7 @@ export class Service extends BaseService {
 	}
 
 	// overridden method from Base Service
-	public async executeCommandAndWaitForStateChange(command: ServiceCommand): Promise<void> {
+	public async executeCommand(command: ServiceCommand): Promise<void> {
 		if (!this.connection.isConnected()) {
 			throw new Error('PEAController is not connected');
 		}
@@ -330,9 +330,6 @@ export class Service extends BaseService {
 			procedure = this.getDefaultProcedure();
 		} else {
 			procedure = this.procedures.find((proc) => proc.name === procedureName);
-		}
-		if(!procedure){
-			throw new Error('Could not find Procedure by Name or Default.');
 		}
 		return procedure;
 	}

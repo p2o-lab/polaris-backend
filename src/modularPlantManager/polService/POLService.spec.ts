@@ -248,7 +248,7 @@ describe('POLService', () => {
 			await delay(110);
 			params = f1.json().procedures[0].processValuesOut;
 			let value = params.find((p: ParameterInterface) => p.name === 'output');
-			expect(value).to.have.property('value').to.be.closeTo(0.5, 0.03);
+			expect(value).to.have.property('value').to.be.closeTo(0.5, 0.04);
 			await f1.pause();
 			await delay(100);
 

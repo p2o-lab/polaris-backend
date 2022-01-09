@@ -45,6 +45,7 @@ describe('PEAController', () => {
 	});
 
 	describe('with MockupServer', () => {
+
 		let mockupServer: MockupServer;
 		let peaController: PEAController;
 		let service: Service;
@@ -58,14 +59,18 @@ describe('PEAController', () => {
 			new ServiceControlMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Trigonometry');
 			await mockupServer.start();
 		});
+
 		afterEach(async () => {
 			await peaController.disconnectAndUnsubscribe();
 			await mockupServer.shutdown();
 		});
+
 		context('connect, subscribe',()=>{
+
 			it('should connect and subscribe',  async() => {
 				return expect(peaController.connectAndSubscribe()).to.not.be.rejected;
 			});
+
 			it('should fail to subscribe, missing variable on mockupServer',  async() => {
 				await mockupServer.shutdown();
 				mockupServer = new MockupServer();
@@ -102,13 +107,13 @@ describe('PEAController', () => {
 				await peaController.disconnectAndUnsubscribe();
 			});
 
-		});
+		}).timeout(8000);
 
 		context('control Services',async ()=> {
 
 			it('should stopAllServices()',  async() => {
 				await peaController.connectAndSubscribe();
-				await service.executeCommandAndWaitForStateChange(ServiceCommand.start);
+				await service.executeCommand(ServiceCommand.start);
 				await peaController.stopAllServices();
 				expect(service.state).to.equal(ServiceState.STOPPED);
 			});
@@ -121,14 +126,14 @@ describe('PEAController', () => {
 
 			it('should abortAllServices()',  async() => {
 				await peaController.connectAndSubscribe();
-				await service.executeCommandAndWaitForStateChange(ServiceCommand.start);
+				await service.executeCommand(ServiceCommand.start);
 				await peaController.abortAllServices();
 				expect(service.state).to.equal(ServiceState.ABORTED);
 			});
 
 			it('should pause()',  async() => {
 				await peaController.connectAndSubscribe();
-				await service.executeCommandAndWaitForStateChange(ServiceCommand.start);
+				await service.executeCommand(ServiceCommand.start);
 				await peaController.pauseAllServices();
 				expect(service.state).to.equal(ServiceState.PAUSED);
 			});
@@ -140,8 +145,8 @@ describe('PEAController', () => {
 
 			it('should resume()', async() => {
 				await peaController.connectAndSubscribe();
-				await service.executeCommandAndWaitForStateChange(ServiceCommand.start);
-				await service.executeCommandAndWaitForStateChange(ServiceCommand.pause);
+				await service.executeCommand(ServiceCommand.start);
+				await service.executeCommand(ServiceCommand.pause);
 				await peaController.pauseAllServices();
 				expect(service.state).to.equal(ServiceState.EXECUTE);
 			}).timeout(10000);

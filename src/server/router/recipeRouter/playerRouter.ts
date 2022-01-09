@@ -60,8 +60,8 @@ playerRouter.post('/start', asyncHandler(async (req: Request, res: Response) => 
  */
 playerRouter.post('/pause', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
-	const result = await manager.player.pause();
-	res.json(result);
+	await manager.player.pause();
+	res.status(200).send;
 }));
 
 /**
@@ -71,8 +71,8 @@ playerRouter.post('/pause', asyncHandler(async (req: Request, res: Response) => 
  */
 playerRouter.post('/stop', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
-	const result = await manager.player.stop();
-	res.json(result);
+	await manager.player.stop();
+	res.status(200).send;
 }));
 
 /**
@@ -82,8 +82,8 @@ playerRouter.post('/stop', asyncHandler(async (req: Request, res: Response) => {
  */
 playerRouter.post('/reset', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
-	const result = await manager.player.reset();
-	res.json(result);
+	await manager.player.reset();
+	res.status(200).send;
 }));
 
 /**

@@ -55,12 +55,12 @@ describe('BinMonMockup', () => {
 
         it('static DataItemOptions', () => {
             const options = getBinMonDataItemOptions(1, 'Test') as BinMonRuntime;
-            expect(Object.keys(options).length).to.equal(6);
+            expect(Object.keys(options).length).to.equal(9);
         });
 
         it('static DataAssemblyOptions', () => {
             const options = getBinMonOptions(1, 'Test') as DataAssemblyOptions;
-            expect(Object.keys(options.dataItems).length).to.equal(8);
+            expect(Object.keys(options.dataItems).length).to.equal(11);
         });
 
         it('dynamic DataAssemblyOptions', () => {
@@ -68,7 +68,7 @@ describe('BinMonMockup', () => {
                 mockupServer.rootObject, 'Variable');
             const options = mockup.getDataAssemblyOptions();
 
-            expect(Object.keys(options.dataItems).length).to.equal(8);
+            expect(Object.keys(options.dataItems).length).to.equal(11);
         });
     });
 

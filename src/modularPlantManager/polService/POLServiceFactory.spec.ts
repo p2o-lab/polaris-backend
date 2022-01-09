@@ -55,7 +55,10 @@ describe('POLServiceFactory', () => {
 
 	describe('Factory', () => {
 		it('should instantiate timer', () => {
-			const timerJson = parseJson(fs.readFileSync('assets/polService/timer.json', 'utf8'), null, 60);
+			const timerJson = {
+				'name': 'timer1',
+				'type': 'timer'
+			};
 
 			const timer = POLServiceFactory.create(timerJson);
 

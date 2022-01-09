@@ -34,7 +34,8 @@ chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('DIntMonMockup', () => {
-    describe('', () => {
+
+    describe('static', () => {
 
         let mockupServer: MockupServer;
 
@@ -51,12 +52,12 @@ describe('DIntMonMockup', () => {
 
         it('static DataItemOptions', () => {
             const options = getDIntMonDataItemOptions(1, 'Test') as AnaMonRuntime;
-            expect(Object.keys(options).length).to.equal(2);
+            expect(Object.keys(options).length).to.equal(24);
         });
 
         it('static DataAssemblyOptions', () => {
             const options = getDIntMonOptions(1, 'Test') as DataAssemblyOptions;
-            expect(Object.keys(options.dataItems).length).to.equal(4);
+            expect(Object.keys(options.dataItems).length).to.equal(26);
         });
 
         it('dynamic DataAssemblyOptions', () => {
@@ -64,7 +65,7 @@ describe('DIntMonMockup', () => {
                 mockupServer.rootObject, 'Variable');
             const options = mockup.getDataAssemblyOptions();
 
-            expect(Object.keys(options.dataItems).length).to.equal(4);
+            expect(Object.keys(options.dataItems).length).to.equal(26);
         });
     });
 });

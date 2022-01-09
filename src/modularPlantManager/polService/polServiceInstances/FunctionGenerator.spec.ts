@@ -40,7 +40,7 @@ chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 
-describe('VirtualService', () => {
+describe('POLService', () => {
 	const delay = require('timeout-as-promise');
 	const parseJson = require('json-parse-better-errors');
 
@@ -113,7 +113,7 @@ describe('VirtualService', () => {
 
 		it('should fail with unknown virtual service type', () => {
 			expect(() => POLServiceFactory.create({type: 'unknown', name: 'myUnknownVirtualService'}))
-				.to.throw('Unknown virtual service type');
+				.to.throw('Unknown pol service type unknown');
 		});
 
 	});

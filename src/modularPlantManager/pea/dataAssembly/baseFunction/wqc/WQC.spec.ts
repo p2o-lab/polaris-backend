@@ -83,7 +83,7 @@ describe('WQC', () => {
 
 		it('getter', async () => {
 			wqcObject = new WQC(da);
-			expect(wqcObject.WQC).to.equal(255);
+			expect(wqcObject.WQC).to.equal(0);
 		});
 	});
 

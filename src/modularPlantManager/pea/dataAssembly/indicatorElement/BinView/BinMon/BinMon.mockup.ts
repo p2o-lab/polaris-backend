@@ -123,7 +123,7 @@ export class BinMonMockup extends BinViewMockup{
 			dataType: DataType.Int32,
 			value: {
 				get: (): Variant => {
-					return new Variant({dataType: DataType.Double, value: this.vFlutCnt});
+					return new Variant({dataType: DataType.Int32, value: this.vFlutCnt});
 				},
 				set: (variant: Variant): StatusCodes => {
 					this.vFlutCnt = parseInt(variant.value,10);

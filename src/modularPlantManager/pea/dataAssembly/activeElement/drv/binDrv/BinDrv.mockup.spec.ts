@@ -39,7 +39,8 @@ describe('BinDrvMockup', () => {
 
         let mockupServer: MockupServer;
 
-        beforeEach(async()=>{
+        beforeEach(async function() {
+            this.timeout(4000);
             mockupServer = new MockupServer();
             await mockupServer.initialize();
         });
@@ -67,7 +68,7 @@ describe('BinDrvMockup', () => {
             const options = mockup.getDataAssemblyOptions();
 
             expect(Object.keys(options.dataItems).length).to.equal(39);
-        });
+        }).timeout(8000);
 
     });
 });

@@ -294,7 +294,7 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 		this.logger.info(`[${this.id}] Pause all running services`);
 		const tasks = this.services.map(async (service) => {
 			if (service.isCommandExecutable(ServiceCommand.pause)) {
-				return await service.executeCommandAndWaitForStateChange(ServiceCommand.pause);
+				return await service.executeCommand(ServiceCommand.pause);
 			} else {
 				throw new Error('Command is not executable');
 			}
@@ -309,7 +309,7 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 		this.logger.info(`[${this.id}] Resume all paused services`);
 		const tasks = this.services.map(async (service) => {
 			if (service.isCommandExecutable(ServiceCommand.resume)) {
-				return await service.executeCommandAndWaitForStateChange(ServiceCommand.resume);
+				return await service.executeCommand(ServiceCommand.resume);
 			} else {
 				throw new Error('Command is not executable');
 			}
@@ -324,7 +324,7 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 		this.logger.info(`[${this.id}] Hold all executed services`);
 		const tasks = this.services.map(async (service) => {
 			if (service.isCommandExecutable(ServiceCommand.hold)) {
-				return await service.executeCommandAndWaitForStateChange(ServiceCommand.hold);
+				return await service.executeCommand(ServiceCommand.hold);
 			} else {
 				throw new Error('Command is not executable');
 			}
@@ -339,7 +339,7 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 		this.logger.info(`[${this.id}] Resume all held services`);
 		const tasks = this.services.map(async (service) => {
 			if (service.isCommandExecutable(ServiceCommand.unhold)) {
-				return await service.executeCommandAndWaitForStateChange(ServiceCommand.unhold);
+				return await service.executeCommand(ServiceCommand.unhold);
 			} else {
 				throw new Error('Command is not executable');
 			}
@@ -352,7 +352,7 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 	 */
 	public abortAllServices(): Promise<void[]> {
 		this.logger.info(`[${this.id}] Abort all services`);
-		const tasks = this.services.map((service) => service.executeCommandAndWaitForStateChange(ServiceCommand.abort));
+		const tasks = this.services.map((service) => service.executeCommand(ServiceCommand.abort));
 		return Promise.all(tasks);
 	}
 
@@ -363,7 +363,7 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 		this.logger.info(`[${this.id}] Stop all non-idle services`);
 		const tasks = this.services.map(async (service) => {
 			if (service.isCommandExecutable(ServiceCommand.stop)) {
-				return await service.executeCommandAndWaitForStateChange(ServiceCommand.stop);
+				return await service.executeCommand(ServiceCommand.stop);
 			} else {
 				throw new Error('Command is not executable');
 			}
@@ -376,7 +376,7 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 	 */
 	public resetAllServices(): Promise<void[]> {
 		this.logger.info(`[${this.id}] Reset all services`);
-		const tasks = this.services.map((service) => service.executeCommandAndWaitForStateChange(ServiceCommand.reset));
+		const tasks = this.services.map((service) => service.executeCommand(ServiceCommand.reset));
 		return Promise.all(tasks);
 	}
 

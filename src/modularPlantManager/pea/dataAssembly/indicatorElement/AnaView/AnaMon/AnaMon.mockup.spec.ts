@@ -39,7 +39,8 @@ describe('AnaMonMockup', () => {
 
         let mockupServer: MockupServer;
 
-        beforeEach(async()=>{
+        beforeEach(async function () {
+            this.timeout(4000);
             mockupServer = new MockupServer();
             await mockupServer.initialize();
         });
@@ -58,7 +59,7 @@ describe('AnaMonMockup', () => {
         it('static DataAssemblyOptions', () => {
             const options = getAnaMonOptions(1, 'Test') as DataAssemblyOptions;
             expect(Object.keys(options.dataItems).length).to.equal(26);
-        });
+        }).timeout(6000);
 
         it('dynamic DataAssemblyOptions', () => {
             const mockup = new AnaMonMockup(mockupServer.nameSpace,
@@ -66,6 +67,6 @@ describe('AnaMonMockup', () => {
             const options = mockup.getDataAssemblyOptions();
 
             expect(Object.keys(options.dataItems).length).to.equal(26);
-        });
+        }).timeout(6000);
     });
 });

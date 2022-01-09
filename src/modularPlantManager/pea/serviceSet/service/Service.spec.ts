@@ -75,7 +75,7 @@ describe('Service', () => {
 	it('should reject command if not connected', async () => {
 		const pea = new PEAController(peaOptions as unknown as PEAOptions);
 		const service = pea.services[0];
-		await expect(service.executeCommand(ServiceCommand.start)).to.be.rejectedWith('Can not write node since OPC UA connection to PEA test is not established');
+		await expect(service.executeCommand(ServiceCommand.start)).to.be.rejectedWith('Can not write node since OPC UA connection is not established');
 	});
 
 	it('should create service from PEATestServer json', () => {
@@ -105,7 +105,7 @@ describe('Service', () => {
 
 		it('should not find non existent procedure', () => {
 			const procedure = service.getProcedureByNameOrDefault('ProcedureNotThere');
-			expect(procedure).to.equal(undefined);
+			expect(procedure).to.throw;
 		});
 
 		it('should get undefined when getting current procedure when not connected', () => {
@@ -138,16 +138,14 @@ describe('Service', () => {
 			if(mockupServer) await mockupServer.shutdown();
 		});
 
-/*		it('should get default procedure for default procedure', () => {
-			expect(service.getCurrentProcedure()).to.equal(service.getDefaultProcedure());
-			//TODO: fix
+		it('should get current procedure which is undefined', () => {
+			expect(service.getCurrentProcedure()).to.equal(undefined);
 		});
 
-		it('should find parameter', () => {
-			const param = service.findInputParameter('Offset');
-			expect(param?.name).to.equal('Offset');
-			//TODO: fix
-		});*/
+		it('should not find parameter of indicator element type', () => {
+			const param = service.findInputParameter('Trigonometry_default');
+			expect(param?.name).to.equal(undefined);
+		});
 
 		it('should provide correct JSON', () => {
 			expect(ServiceState[service.state]).to.equal('IDLE');
@@ -238,19 +236,19 @@ describe('Service', () => {
 				stateChangeCount++;
 			});
 
-			await service.executeCommandAndWaitForStateChange(ServiceCommand.start);
-			await service.executeCommandAndWaitForStateChange(ServiceCommand.restart);
-			await service.executeCommandAndWaitForStateChange(ServiceCommand.stop);
-			await service.executeCommandAndWaitForStateChange(ServiceCommand.reset);
-			await service.executeCommandAndWaitForStateChange(ServiceCommand.start);
-			await service.executeCommandAndWaitForStateChange(ServiceCommand.pause);
-			await service.executeCommandAndWaitForStateChange(ServiceCommand.resume);
+			await service.executeCommand(ServiceCommand.start);
+			await service.executeCommand(ServiceCommand.restart);
+			await service.executeCommand(ServiceCommand.stop);
+			await service.executeCommand(ServiceCommand.reset);
+			await service.executeCommand(ServiceCommand.start);
+			await service.executeCommand(ServiceCommand.pause);
+			await service.executeCommand(ServiceCommand.resume);
 
-			await service.executeCommandAndWaitForStateChange(ServiceCommand.complete);
-			await service.executeCommandAndWaitForStateChange(ServiceCommand.abort);
-			await service.executeCommandAndWaitForStateChange(ServiceCommand.reset);
-			await service.executeCommandAndWaitForStateChange(ServiceCommand.start);
-			await service.executeCommandAndWaitForStateChange(ServiceCommand.complete);
+			await service.executeCommand(ServiceCommand.complete);
+			await service.executeCommand(ServiceCommand.abort);
+			await service.executeCommand(ServiceCommand.reset);
+			await service.executeCommand(ServiceCommand.start);
+			await service.executeCommand(ServiceCommand.complete);
 			expect(stateChangeCount).to.equal(11);
 		}).timeout(10000);
 

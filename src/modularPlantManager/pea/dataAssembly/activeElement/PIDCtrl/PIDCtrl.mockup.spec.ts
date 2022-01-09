@@ -59,7 +59,7 @@ describe('PIDCtrlMockup', () => {
 
         it('static DataAssemblyOptions', () => {
             const options = getPIDCtrlOptions(1, 'Test') as DataAssemblyOptions;
-            expect(Object.keys(options.dataItems).length).to.equal(43);
+            expect(Object.keys(options.dataItems).length).to.equal(45);
         });
 
         it('dynamic DataAssemblyOptions', () => {
