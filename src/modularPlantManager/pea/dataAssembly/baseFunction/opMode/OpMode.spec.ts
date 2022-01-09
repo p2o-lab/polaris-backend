@@ -132,7 +132,7 @@ describe('OpMode', () => {
 			await mockupServer.shutdown();
 		});
 
-		it('getOperationMode, should be Offline', () => {
+		it('should pass getOperationMode, should be Offline', () => {
 			expect(opMode.getOperationMode()).to.equal(OperationMode.Offline);
 		});
 		it('isOpMode', () => {
@@ -140,25 +140,34 @@ describe('OpMode', () => {
 			expect(opMode.isOpMode(OperationMode.Operator)).to.be.false;
 			expect(opMode.isOpMode(OperationMode.Automatic)).to.be.false;
 		});
+
 		it('isOfflineState', () => {
 			expect(opMode.isOfflineState()).to.be.true;
+			expect(opMode.isOperatorState()).to.be.false;
+			expect(opMode.isAutomaticState()).to.be.false;
 		});
 
-		it('setToAutomaticOperationMode(), should set to Automatic', async () => {
+		it('should pass setToAutomaticOperationMode(), should set to Automatic', async () => {
 			await opMode.setToAutomaticOperationMode();
+			expect(dataAssemblyController.communication.StateOffAct.value).to.be.false;
+			expect(dataAssemblyController.communication.StateOpAct.value).to.be.false;
 			expect(dataAssemblyController.communication.StateAutAct.value).to.be.true;
 			expect(mockup.opMode = OperationMode.Automatic);
 		});
 
-		it('setToOperatorOperationMode(), should set to Operator', async () => {
+		it('should pass setToOperatorOperationMode(), should set to Operator', async () => {
 			await opMode.setToOperatorOperationMode();
+			expect(dataAssemblyController.communication.StateOffAct.value).to.be.false;
 			expect(dataAssemblyController.communication.StateOpAct.value).to.be.true;
+			expect(dataAssemblyController.communication.StateAutAct.value).to.be.false;
 			expect(mockup.opMode = OperationMode.Operator);
 		});
 
 		it('setToOfflineOperationMode(), should set to Offline', async () => {
 			await opMode.setToOfflineOperationMode();
 			expect(dataAssemblyController.communication.StateOffAct.value).to.be.true;
+			expect(dataAssemblyController.communication.StateOpAct.value).to.be.false;
+			expect(dataAssemblyController.communication.StateAutAct.value).to.be.false;
 			expect(mockup.opMode = OperationMode.Offline);
 		});
 	});
@@ -193,25 +202,32 @@ describe('OpMode', () => {
 			await mockupServer.shutdown();
 		});
 
-		it('getOperationMode, should be Operator', () => {
+		it('should pass getOperationMode, should be Operator', () => {
 			expect(opMode.getOperationMode()).to.equal(OperationMode.Operator);
 		});
-		it('Verify correct State recognition', () => {
+
+		it('should pass isOpMode Operator', () => {
 			expect(opMode.isOpMode(OperationMode.Offline)).to.be.false;
 			expect(opMode.isOpMode(OperationMode.Operator)).to.be.true;
 			expect(opMode.isOpMode(OperationMode.Automatic)).to.be.false;
 		});
-		it('setToAutomaticOperationMode(), should set to Automatic', async () => {
+
+		it('should pass switch state setToAutomaticOperationMode()', async () => {
 			await opMode.setToAutomaticOperationMode();
+			expect(dataAssemblyController.communication.StateOffAct.value).to.be.false;
+			expect(dataAssemblyController.communication.StateOpAct.value).to.be.false;
 			expect(dataAssemblyController.communication.StateAutAct.value).to.be.true;
 			expect(mockup.opMode = OperationMode.Automatic);
 		});
 
-		it('setToOperatorOperationMode(), nothing should happen', async () => {
+		it('should happen nothing if already on requested OpMode, ', async () => {
 			await opMode.setToOperatorOperationMode();
+			expect(dataAssemblyController.communication.StateOffAct.value).to.be.false;
 			expect(dataAssemblyController.communication.StateOpAct.value).to.be.true;
+			expect(dataAssemblyController.communication.StateAutAct.value).to.be.false;
 			expect(mockup.opMode = OperationMode.Operator);
 		});
+
 	});
 	describe('dynamic functions, Automatic', async () => {
 		let mockupServer: MockupServer;
@@ -242,17 +258,17 @@ describe('OpMode', () => {
 			await mockupServer.shutdown();
 		});
 
-		it('getOperationMode, should be Automatic', () => {
+		it('should pass getOperationMode, should be Automatic', () => {
 			expect(opMode.getOperationMode()).to.equal(OperationMode.Automatic);
 		});
 
-		it('Verify correct state recognition', () => {
+		it('should pass isAutomaticState', () => {
 			expect(opMode.isOfflineState()).to.be.false;
 			expect(opMode.isOperatorState()).to.be.false;
 			expect(opMode.isAutomaticState()).to.be.true;
 		});
 
-		it('Verify correct state check', () => {
+		it('should pass isOpMode Automatic', () => {
 			expect(opMode.isOpMode(OperationMode.Offline)).to.be.false;
 			expect(opMode.isOpMode(OperationMode.Operator)).to.be.false;
 			expect(opMode.isOpMode(OperationMode.Automatic)).to.be.true;
@@ -260,19 +276,25 @@ describe('OpMode', () => {
 
 		it('setToAutomaticOperationMode() while already in Automatic --> nothing should happen', async () => {
 			await opMode.setToAutomaticOperationMode();
+			expect(dataAssemblyController.communication.StateOffAct.value).to.be.false;
+			expect(dataAssemblyController.communication.StateOpAct.value).to.be.false;
 			expect(dataAssemblyController.communication.StateAutAct.value).to.be.true;
 			expect(mockup.opMode = OperationMode.Automatic);
 		});
 
 		it('setToOperatorOperationMode()', async () => {
 			await opMode.setToOperatorOperationMode();
+			expect(dataAssemblyController.communication.StateOffAct.value).to.be.false;
 			expect(dataAssemblyController.communication.StateOpAct.value).to.be.true;
+			expect(dataAssemblyController.communication.StateAutAct.value).to.be.false;
 			expect(mockup.opMode = OperationMode.Operator);
 		});
 
 		it('setToOfflineOperationMode()', async () => {
 			await opMode.setToOfflineOperationMode();
 			expect(dataAssemblyController.communication.StateOffAct.value).to.be.true;
+			expect(dataAssemblyController.communication.StateOpAct.value).to.be.false;
+			expect(dataAssemblyController.communication.StateAutAct.value).to.be.false;
 			expect(mockup.opMode = OperationMode.Offline);
 		});
 

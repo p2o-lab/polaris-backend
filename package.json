@@ -13,7 +13,8 @@
     "Sebastian Heinze",
     "Christoph Jesaja Heidelbach <christoph.jesaja.heidelbach@gmail.com>",
     "Julius Lorenz <julius.lorenz@tu-dresden.de>",
-    "Tuan Son Dinh <tuansondinh96@gmail.com"
+    "Tuan Son Dinh <tuansondinh96@gmail.com>",
+    "Patrick Suwinski <patrick.suwinski@tu-dresden.de>"
   ],
   "scripts": {
     "apidoc": "npm run clrApiDoc && apidoc -i src/server/ -o apidoc",

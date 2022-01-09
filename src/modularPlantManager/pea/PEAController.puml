@@ -50,6 +50,8 @@ class PEAController{
     + updateConnection(options: ServerSettingsOptions): void
     + getService(serviceName: string): Service
     + getServiceStates(): ServiceInterface[]
+    + getPossibleStateChange(): any
+    + overwatchRTCondition(): any
     + //async// connectAndSubscribe(): Promise<void>
     + //async// disconnectAndSubscribe(): Promise<void>
     + json(): PEAInterface
@@ -58,6 +60,7 @@ class PEAController{
     + abort(): Promise<void[]>
     + pause(): Promise<void[]>
     + resume(): Promise<void[]>
+    + hold(): Promise<void[]>
     + stop(): Promise<void[]>
     + reset(): Promise<void[]>
 
