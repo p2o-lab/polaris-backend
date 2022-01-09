@@ -30,9 +30,9 @@
 !include dIntServParam/DIntServParam.puml
 !include stringServParam/StringServParam.puml
 
-!include ../../_extensions/serviceSourceMode/ServiceSourceModeController.puml
-!include ../../_extensions/opMode/opModeController.puml
-!include ../../_extensions/wqc/WQC.puml
+!include ../../baseFunction/serviceSourceMode/ServiceSourceModeController.puml
+!include ../../baseFunction/opMode/opModeController.puml
+!include ../../baseFunction/wqc/WQC.puml
 
 class ServParam{
     + readonly communication!: ServParamRuntime

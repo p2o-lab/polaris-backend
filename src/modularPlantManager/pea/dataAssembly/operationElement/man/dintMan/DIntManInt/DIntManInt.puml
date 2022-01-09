@@ -26,8 +26,8 @@
 @startuml
 'https://plantuml.com/class-diagram
 
-!include ../../../_extensions/sourceMode/SourceModeController.puml
-!include ../../../_extensions/wqc/WQC.puml
+!include ../../../baseFunction/sourceMode/SourceModeController.puml
+!include ../../../baseFunction/wqc/WQC.puml
 class DIntManInt{
     + readonly communication!: DIntManIntRuntime
     + readonly sourceMode: SourceModeController
