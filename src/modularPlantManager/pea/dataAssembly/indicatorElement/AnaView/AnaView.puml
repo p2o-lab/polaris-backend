@@ -27,7 +27,7 @@
 'https://plantuml.com/class-diagram
 !include AnaMon/AnaMon.puml
 !include ../../baseFunction/scaleSettings/ScaleSettings.puml
-!include ../../baseFunction/unit/UnitSettings.puml
+!include ../../baseFunction/unitSettings/UnitSettings.puml
 
 class AnaView{
     + readonly communication!: AnaViewRuntime

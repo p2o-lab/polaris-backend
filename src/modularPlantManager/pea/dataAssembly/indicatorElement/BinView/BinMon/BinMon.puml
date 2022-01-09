@@ -26,7 +26,7 @@
 @startuml
 'https://plantuml.com/class-diagram
 
-!include ../../baseFunction/osLevel/OSLevel.puml
+!include ../../../baseFunction/osLevel/OSLevel.puml
 
 class BinMon{
 	+ readonly communication!: BinMonRuntime;

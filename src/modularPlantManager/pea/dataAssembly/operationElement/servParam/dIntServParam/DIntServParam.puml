@@ -26,7 +26,7 @@
 @startuml
 'https://plantuml.com/class-diagram
 !include ../../../baseFunction/scaleSettings/ScaleSettings.puml
-!include ../../../baseFunction/unit/UnitSettings.puml
+!include ../../../baseFunction/unitSettings/UnitSettings.puml
 !include ../../../baseFunction/valueLimitation/ValueLimitation.puml
 
 class DIntServParam{
