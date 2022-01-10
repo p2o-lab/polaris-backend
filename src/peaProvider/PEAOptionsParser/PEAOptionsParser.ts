@@ -23,8 +23,9 @@
  * SOFTWARE.
  */
  
-import {DataAssemblyModel, DataAssemblyOptions, DataItemModel, PEAModel, PEAOptions, ProcedureModel, ServiceControlOptions, ServiceModel, ServiceOptions} from '@p2olab/polaris-interface';
-import {ProcedureOptions} from '@p2olab/polaris-interface/dist/service/options';
+import {DataAssemblyModel, DataItemModel, PEAModel,  ProcedureModel, ServiceModel} from '@p2olab/pimad-interface';
+import {DataAssemblyOptions,  PEAOptions, ServiceControlOptions, ServiceOptions} from '@p2olab/polaris-interface';
+import {ProcedureOptions} from '@p2olab/polaris-interface';
 import {IDProvider} from '../../modularPlantManager/_utils/idProvider/IDProvider';
 
 export interface PEAOptionsParserInterface{
@@ -136,7 +137,7 @@ export class PEAOptionsParser {
                 }
             });
 
-            //healthstateview
+            //healthStateView
             const procedureDataAssemblyOptions = [PEAOptionsParser.createDataAssemblyOptions(procedure.dataAssembly as DataAssemblyModel)];
 
             const procedureParameters = PEAOptionsParser.createDataAssemblyOptionsArray(procedure.parameters);

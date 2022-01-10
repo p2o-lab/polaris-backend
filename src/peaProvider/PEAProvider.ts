@@ -23,7 +23,8 @@
  * SOFTWARE.
  */
 
-import {PEAModel, PEAOptions} from '@p2olab/polaris-interface';
+import {PEAModel} from '@p2olab/pimad-interface';
+import {PEAOptions} from '@p2olab/polaris-interface';
 import {Backbone, PEAPool, PEAPoolVendor,} from '@p2olab/pimad-core';
 import {PEAOptionsParser} from './PEAOptionsParser/PEAOptionsParser';
 import PiMAdResponse = Backbone.PiMAdResponse;

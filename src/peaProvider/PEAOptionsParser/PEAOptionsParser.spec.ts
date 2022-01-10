@@ -27,7 +27,7 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {PEAOptionsParser} from './PEAOptionsParser';
 import * as peaReferenceModel from './PEAOptionsParser.spec.json';
-import {PEAModel} from '@p2olab/polaris-interface';
+import {PEAModel} from '@p2olab/pimad-interface';
 
 
 chai.use(chaiAsPromised);
