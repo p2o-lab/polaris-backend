@@ -57,7 +57,6 @@ export class OpcUaDataItem<T extends string | number | boolean> extends DynamicD
 				this.timestamp = dataValue.serverTimestamp;
 				this.emit('changed', {value: this.value, timestamp: this.timestamp || new Date()});
 			});
-
 		//Todo: uncomment
 		// this.logger.info(`subscribed to DataItem ${this.nodeId}`);
 	}
@@ -73,6 +72,9 @@ export class OpcUaDataItem<T extends string | number | boolean> extends DynamicD
 			throw new Error('DataItem not writable.');
 		}
 		this.logger.info(`write: ${value} to ${this.nodeId}`);
+		if (this.dataType == 'xs:IDREF'){
+			await this.read();
+		}
 		return this.connection.writeNode(this.nodeId, this.namespaceIndex, value, this.dataType);
 	}
 
@@ -90,7 +92,7 @@ export class OpcUaDataItem<T extends string | number | boolean> extends DynamicD
 		}
 		this.value = result.value.value;
 		this.timestamp = result.serverTimestamp || new Date();
-		//this.dataType = DataType[result.value.dataType];
+		this.dataType = DataType[result.value.dataType];
 		this.logger.debug(`[${this.connection.id}] initialized Variable: ${this.nodeId.toString()} - ${this.value}`);
 		return this.value;
 	}
