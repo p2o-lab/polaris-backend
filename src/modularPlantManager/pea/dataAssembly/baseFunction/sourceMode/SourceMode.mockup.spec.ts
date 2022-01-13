@@ -93,7 +93,7 @@ describe('SourceModeMockup', () => {
             mockup = new SourceModeMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
             await mockupServer.start();
             connection = new OpcUaConnection();
-            connection.initialize({endpoint: mockupServer.endpoint});
+            connection.initialize({endpointUrl: mockupServer.endpoint});
             await connection.connect();
         });
         afterEach(async () => {
@@ -153,7 +153,7 @@ describe('SourceModeMockup', () => {
             mockup.srcChannel = true;
             await mockupServer.start();
             connection = new OpcUaConnection();
-            connection.initialize({endpoint: mockupServer.endpoint});
+            connection.initialize({endpointUrl: mockupServer.endpoint});
             await connection.connect();
         });
         afterEach(async () => {

@@ -41,7 +41,7 @@ describe('PEAOptionsParser', () => {
         let k: keyof typeof peaOptions;  // Type is "one" | "two" | "three"
         expect(peaOptions).to.not.empty;
         for (k in peaOptions) {
-            if(!(k == 'username'|| k == 'password' || k == 'hmiUrl' )){
+            if(!(k == 'hmiUrl' )){
                 expect(peaOptions[k]).to.be.not.empty;
             }
         }

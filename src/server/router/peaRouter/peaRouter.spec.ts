@@ -23,8 +23,8 @@
  * SOFTWARE.
  */
 
-import {PEAOptions} from '@p2olab/polaris-interface';
-import {ModularPlantManager, OpcUaConnectionSettings, PEAController} from '../../../modularPlantManager';
+import {OpcUaConnectionSettings, PEAOptions} from '@p2olab/polaris-interface';
+import {ModularPlantManager, PEAController} from '../../../modularPlantManager';
 import {Server} from '../../server';
 
 import {Application} from 'express';
@@ -158,7 +158,7 @@ describe('PEARoutes', () => {
 				.expect(200)
 				.expect({endpointUrl: 'localhost', securityPolicy: 'None', securityMode: 'None', userIdentityInfo: 'Anonymous'});
 
-			const options: OpcUaConnectionSettings = {endpoint: 'localhost:4334'};
+			const options: OpcUaConnectionSettings = {endpointUrl: 'localhost:4334'};
 			await request(app).post(`/api/pea/${peaController.id}/updateConnectionSettings`)
 				.send(options)
 				.expect(200)
@@ -170,7 +170,7 @@ describe('PEARoutes', () => {
 		});
 
 		it('updateServerSettings should fail with invalid peaId', async () => {
-			const options: OpcUaConnectionSettings = {endpoint: 'localhost:4334'};
+			const options: OpcUaConnectionSettings = {endpointUrl: 'localhost:4334'};
 			await request(app).post('/api/pea/xyz/updateConnectionSettings')
 				.send(options)
 				.expect(500)

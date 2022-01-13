@@ -52,8 +52,6 @@ export class PEAOptionsParser {
             id: IDProvider.generateIdentifier(),
             pimadIdentifier: peaModel.pimadIdentifier,
             services: parsedOptions.serviceOptionsArray,
-            username: '',
-            password: '',
             hmiUrl: '',
             opcuaServerUrl: endpoint,
             dataAssemblies: parsedOptions.dataAssemblyOptionsArray

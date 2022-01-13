@@ -42,7 +42,7 @@ describe('ActiveElement', () => {
 
 		it('should create ActiveElement', () => {
 			const emptyOPCUAConnection = new OpcUaConnection();
-			emptyOPCUAConnection.initialize({endpoint : ''});
+			emptyOPCUAConnection.initialize({endpointUrl : ''});
 			dataAssemblyOptions = getActiveElementOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
 			const dataAssemblyController = new ActiveElement(dataAssemblyOptions, emptyOPCUAConnection);
 			expect(dataAssemblyController).to.be.not.undefined;
@@ -64,7 +64,7 @@ describe('ActiveElement', () => {
 			dataAssemblyOptions = mockup.getDataAssemblyOptions();
 			await mockupServer.start();
 			connection = new OpcUaConnection();
-			connection.initialize({endpoint : mockupServer.endpoint});
+			connection.initialize({endpointUrl: mockupServer.endpoint});
 			await connection.connect();
 		});
 

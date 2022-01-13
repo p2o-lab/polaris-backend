@@ -180,7 +180,7 @@ describe('LimitMonitoringMockup', () => {
 				new LimitMonitoringMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable', 'Ana');
 				await mockupServer.start();
 				connection = new OpcUaConnection();
-				connection.initialize({endpoint: mockupServer.endpoint});
+				connection.initialize({endpointUrl: mockupServer.endpoint});
 				await connection.connect();
 			});
 			afterEach(async () => {
@@ -234,7 +234,7 @@ describe('LimitMonitoringMockup', () => {
 				new LimitMonitoringMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable', 'DInt');
 				await mockupServer.start();
 				connection = new OpcUaConnection();
-				connection.initialize({endpoint: mockupServer.endpoint});
+				connection.initialize({endpointUrl: mockupServer.endpoint});
 				await connection.connect();
 			});
 			afterEach(async () => {

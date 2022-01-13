@@ -37,14 +37,14 @@ describe('OpcUaConnection', () => {
 
 	it('should reject connecting to a server with too high port', async () => {
 		const connection = new OpcUaConnection();
-		connection.initialize({endpoint: 'opc.tcp://127.0.0.1:44447777'});
+		connection.initialize({endpointUrl: 'opc.tcp://127.0.0.1:44447777'});
 		expect(connection.isConnected()).to.equal(false);
 		await expect(connection.connect()).to.be.rejected;
 	});
 
 	it('should reject connecting to a server with not existing endpoint', async () => {
 		const connection = new OpcUaConnection();
-		connection.initialize({endpoint: ''});
+		connection.initialize({endpointUrl: ''});
 		expect(connection.isConnected()).to.equal(false);
 		await expect(connection.connect()).to.be.rejected;
 		expect(connection.isConnected()).to.equal(false);
@@ -57,7 +57,7 @@ describe('OpcUaConnection', () => {
 		await mockupServer.start();
 
 		const connection = new OpcUaConnection();
-        connection.initialize({endpoint: mockupServer.endpoint});
+        connection.initialize({endpointUrl: mockupServer.endpoint});
 
 		expect(connection.isConnected()).to.equal(false);
 		await connection.connect();
@@ -92,7 +92,7 @@ describe('OpcUaConnection', () => {
 
 		it('should add and remove Nodes to connection for monitoring', async () => {
 			const connection = new OpcUaConnection();
-			connection.initialize({endpoint: mockupServer.endpoint});
+			connection.initialize({endpointUrl: mockupServer.endpoint});
 			await connection.connect();
 			connection.addNodeToMonitoring('trigger', mockupServerNamespace);
 			expect(connection.monitoredNodesCount()).to.equal(1);
@@ -107,7 +107,7 @@ describe('OpcUaConnection', () => {
 		it('should connect to MockupServer, read an opc item and disconnect', async () => {
 
 			const connection = new OpcUaConnection();
-			connection.initialize({endpoint: mockupServer.endpoint});
+			connection.initialize({endpointUrl: mockupServer.endpoint});
 			expect(connection.isConnected()).to.equal(false);
 
 			await connection.connect();
@@ -119,7 +119,7 @@ describe('OpcUaConnection', () => {
 
 		it('should connect to a opc ua test server, subscribe to one opc ua item and disconnect', async () => {
 			const connection = new OpcUaConnection();
-			connection.initialize({endpoint: mockupServer.endpoint});
+			connection.initialize({endpointUrl: mockupServer.endpoint});
 			expect(connection.isConnected()).to.equal(false);
 
 			await connection.connect();
@@ -134,7 +134,7 @@ describe('OpcUaConnection', () => {
 
 		it('should work after reconnection', async () => {
 			const connection = new OpcUaConnection();
-			connection.initialize({endpoint: mockupServer.endpoint});
+			connection.initialize({endpointUrl: mockupServer.endpoint});
 			await connection.connect();
 
 			const eventName1 = connection.addNodeToMonitoring('trigger', mockupServerNamespace);
@@ -157,7 +157,7 @@ describe('OpcUaConnection', () => {
 
 		it('should not add same nodeId, invalid namespace should throw, should listen to multiple items', async () => {
 			const connection = new OpcUaConnection();
-			connection.initialize({endpoint: mockupServer.endpoint});
+			connection.initialize({endpointUrl: mockupServer.endpoint});
 			expect(connection.isConnected()).to.equal(false);
 
 			await connection.connect();
@@ -188,7 +188,7 @@ describe('OpcUaConnection', () => {
 
 		it('should connect with username and password', async () => {
 			const connection = new OpcUaConnection();
-			connection.initialize({endpoint: mockupServer.endpoint});
+			connection.initialize({endpointUrl: mockupServer.endpoint});
 			await connection.connect();
 			await connection.disconnect();
 		});

@@ -142,8 +142,6 @@ describe('ModularPlantManager', () => {
 				name:'test',
 				id: 'test',
 				pimadIdentifier: 'test',
-				username: 'admin',
-				password: '1234',
 				opcuaServerUrl:'localhost',
 				services:[],
 				dataAssemblies:[]

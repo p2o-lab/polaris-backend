@@ -64,7 +64,7 @@ describe('HealthStateView', () => {
 			const healthStateViewMockup = new HealthStateViewMockup( mockupServer.nameSpace, mockupServer.rootObject,'Variable');
 			dataAssemblyOptions = healthStateViewMockup.getDataAssemblyOptions();await mockupServer.start();
 			connection = new OpcUaConnection();
-			connection.initialize({endpoint: mockupServer.endpoint});
+			connection.initialize({endpointUrl: mockupServer.endpoint});
 			await connection.connect();
 		});
 

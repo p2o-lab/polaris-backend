@@ -76,7 +76,7 @@ describe('SourceModeController', () => {
 			new SourceModeMockup(mockupServer.nameSpace, mockupNode,'Variable');
 			await mockupServer.start();
 			connection = new OpcUaConnection();
-			connection.initialize({endpoint: mockupServer.endpoint});
+			connection.initialize({endpointUrl: mockupServer.endpoint});
 		});
 
 		afterEach(async function () {
@@ -127,7 +127,7 @@ describe('SourceModeController', () => {
 			await mockupServer.start();
 
 			connection = new OpcUaConnection();
-			connection.initialize({endpoint: mockupServer.endpoint});
+			connection.initialize({endpointUrl: mockupServer.endpoint});
 			dataAssemblyController = new DataAssemblyController(dataAssemblyOptions, connection);
 			sourceMode = new SourceModeController(dataAssemblyController);
 			await connection.connect();
@@ -190,7 +190,7 @@ describe('SourceModeController', () => {
 			await mockupServer.start();
 
 			connection = new OpcUaConnection();
-			connection.initialize({endpoint: mockupServer.endpoint});
+			connection.initialize({endpointUrl: mockupServer.endpoint});
 			dataAssemblyController = new DataAssemblyController(dataAssemblyOptions, connection);
 			sourceMode = new SourceModeController(dataAssemblyController);
 			await connection.connect();

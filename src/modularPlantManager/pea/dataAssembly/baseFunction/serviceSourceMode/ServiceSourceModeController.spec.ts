@@ -70,7 +70,7 @@ describe('ServiceSourceMode', () => {
 			new ServiceSourceModeMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			await mockupServer.start();
 			connection = new OpcUaConnection();
-			connection.initialize({endpoint: mockupServer.endpoint});
+			connection.initialize({endpointUrl: mockupServer.endpoint});
 			await connection.connect();
 		});
 
@@ -111,7 +111,7 @@ describe('ServiceSourceMode', () => {
 			mockup = new ServiceSourceModeMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			await mockupServer.start();
 			connection = new OpcUaConnection();
-			connection.initialize({endpoint: mockupServer.endpoint});
+			connection.initialize({endpointUrl: mockupServer.endpoint});
 			dataAssemblyController = new DataAssemblyController(dataAssemblyOptions, connection) as any;
 			serviceSourceModeController = new ServiceSourceModeController(dataAssemblyController);
 			await connection.connect();
@@ -163,7 +163,7 @@ describe('ServiceSourceMode', () => {
 			await mockupServer.start();
 
 			connection = new OpcUaConnection();
-			connection.initialize({endpoint: mockupServer.endpoint});
+			connection.initialize({endpointUrl: mockupServer.endpoint});
 			dataAssemblyController = new DataAssemblyController(dataAssemblyOptions, connection);
 			serviceSourceModeController = new ServiceSourceModeController(dataAssemblyController);
 			await connection.connect();

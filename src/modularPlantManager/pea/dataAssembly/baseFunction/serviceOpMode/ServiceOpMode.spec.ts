@@ -71,7 +71,7 @@ describe('ServiceOpMode', () => {
 			new ServiceOpModeMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			await mockupServer.start();
 			connection = new OpcUaConnection();
-			connection.initialize({endpoint: mockupServer.endpoint});
+			connection.initialize({endpointUrl: mockupServer.endpoint});
 			await connection.connect();
 		});
 
@@ -115,7 +115,7 @@ describe('ServiceOpMode', () => {
 			mockup = new ServiceOpModeMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			await mockupServer.start();
 			connection = new OpcUaConnection();
-			connection.initialize({endpoint: mockupServer.endpoint});
+			connection.initialize({endpointUrl: mockupServer.endpoint});
 
 			dataAssemblyController = new DataAssemblyController(dataAssemblyOptions, connection) as any;
 			opMode = new ServiceOpMode(dataAssemblyController);
@@ -170,7 +170,7 @@ describe('ServiceOpMode', () => {
 			mockup = new ServiceOpModeMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable', OperationMode.Operator);
 			await mockupServer.start();
 			connection = new OpcUaConnection();
-			connection.initialize({endpoint: mockupServer.endpoint});
+			connection.initialize({endpointUrl: mockupServer.endpoint});
 
 			dataAssemblyController = new DataAssemblyController(dataAssemblyOptions, connection) as any;
 			opMode = new ServiceOpMode(dataAssemblyController);
@@ -221,7 +221,7 @@ describe('ServiceOpMode', () => {
 			mockup = new ServiceOpModeMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable', OperationMode.Automatic);
 			await mockupServer.start();
 			connection = new OpcUaConnection();
-			connection.initialize({endpoint: mockupServer.endpoint});
+			connection.initialize({endpointUrl: mockupServer.endpoint});
 			dataAssemblyController = new DataAssemblyController(dataAssemblyOptions, connection) as any;
 			opMode = new ServiceOpMode(dataAssemblyController);
 			await connection.connect();

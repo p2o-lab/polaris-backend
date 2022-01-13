@@ -24,14 +24,13 @@
  */
 
 import {
-	CommandEnableInterface, DataAssemblyOptions,
-	OperationMode,
+	CommandEnableInterface, DataAssemblyOptions, OpcUaConnectionInfo, OpcUaConnectionSettings,	OperationMode,
 	ParameterInterface, PEAInterface, PEAOptions,
 	ServiceCommand,
 	ServiceInterface, ServiceOptions, ServiceSourceMode,
 	VariableChange
 } from '@p2olab/polaris-interface';
-import {DataItemEmitter, OpcUaConnection, OpcUaConnectionSettings, OpcUaDataItem} from './connection';
+import {DataItemEmitter, OpcUaConnection, OpcUaDataItem} from './connection';
 import {
 	DataAssemblyController, DataAssemblyControllerFactory,
 	ServiceState
@@ -158,7 +157,7 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 		this.connection = new OpcUaConnection()
 			.on('connected', () => this.emit('connected'))
 			.on('disconnected', () => this.emit('disconnected'));
-		this.connection.initialize({endpoint: options.opcuaServerUrl});
+		this.connection.initialize({endpointUrl: options.opcuaServerUrl});
 
 
 		if (options.services) {
@@ -187,16 +186,7 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 	 * @param options {OpcUaConnectionSettings}
 	 */
 	public updateConnection(options: OpcUaConnectionSettings): void{
-		this.connection = new OpcUaConnection()
-			.on('connected', () => this.emit('connected'))
-			.on('disconnected', () => this.emit('disconnected'));
-		this.connection.initialize(options);
-		// rebuild dAControllers with new connection
-		this.dataAssemblies = this.options.dataAssemblies
-			.map((variableOptions: DataAssemblyOptions) =>
-				DataAssemblyControllerFactory.create(variableOptions, this.connection)
-			);
-		this.services = this.options.services.map((serviceOpts: ServiceOptions) => new Service(serviceOpts, this.connection, this.id));
+		this.connection.update(options);
 
 	}
 
@@ -271,7 +261,7 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 	/**
 	 * get current connection settings of PEAController
 	 */
-	public getCurrentConnectionSettings(): object {
+	public getCurrentConnectionSettings(): OpcUaConnectionInfo {
 		return this.connection.settingsInfo;
 	}
 

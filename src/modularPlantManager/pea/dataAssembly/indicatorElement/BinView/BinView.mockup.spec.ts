@@ -82,7 +82,7 @@ describe('BinViewMockup', () => {
             new BinViewMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
             await mockupServer.start();
             connection = new OpcUaConnection();
-            connection.initialize({endpoint: mockupServer.endpoint});
+            connection.initialize({endpointUrl: mockupServer.endpoint});
             await connection.connect();
         });
         afterEach(async () => {

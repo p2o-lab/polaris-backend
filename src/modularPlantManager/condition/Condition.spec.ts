@@ -182,7 +182,7 @@ describe('with MockupServer containing a PEAController', () => {
 			healthStateViewMockup = new HealthStateViewMockup(mockupServer.nameSpace, mockupServer.rootObject,'Procedure1');
 			await mockupServer.start();
 			connection = new OpcUaConnection();
-			connection.initialize({endpoint: mockupServer.endpoint});
+			connection.initialize({endpointUrl: mockupServer.endpoint});
 			await connection.connect();
 
 			const procedureOptions: ProcedureOptions = {

@@ -49,49 +49,7 @@ import StrictEventEmitter from 'strict-event-emitter-types';
 import {Category} from 'typescript-logging';
 import {catOpcUA} from '../../../logging';
 import {IDProvider} from '../../_utils/idProvider/IDProvider';
-
-export interface OpcUaConnectionSettings{
-	endpoint: string;
-	securitySettings?: OpcUaSecuritySettings;
-	authenticationSettings?: OpcUaAuthenticationSettings;
-}
-
-export interface OpcUaSecuritySettings{
-	securityMode: OpcUaMessageSecurityModes;
-	securityPolicy: OpcUaSecurityPolicies;
-}
-
-export enum OpcUaMessageSecurityModes {
-	'None',
-	'Sign',
-	'SignAndEncrypt'
-}
-
-export enum OpcUaSecurityPolicies {
-	'None',
-	'Aes128_Sha256_RsaOaep',
-	'Basic128',
-	'Basic128Rsa15',
-	'Basic192',
-	'Basic192Rsa15',
-	'Basic256',
-	'Basic256Rsa15',
-	'Basic256Sha256',
-	'PubSub_Aes128_CTR',
-	'PubSub_Aes256_CTR',
-}
-
-export interface OpcUaAuthenticationSettings{
-	userCredentials?: { userName: string; password: string};
-	certificate?: never;
-}
-
-export interface OpcUaConnectionSettingsInfo{
-	endpointUrl: string;
-	securityPolicy: string;
-	securityMode: string;
-	userIdentityInfo: string;
-}
+import {OpcUaAuthenticationSettings, OpcUaAuthenticationType, OpcUaConnectionInfo, OpcUaConnectionSettings, OpcUaMessageSecurityModes, OpcUaSecurityPolicies, OpcUaSecuritySettings} from '@p2olab/polaris-interface';
 
 /**
  * Events emitted by {@link OpcUaConnection}
@@ -137,7 +95,7 @@ export class OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionEm
 
 	public initialize(connectionSettings: OpcUaConnectionSettings): void {
 		if (!this.initialized){
-			this.endpoint = connectionSettings.endpoint;
+			this.endpoint = connectionSettings.endpointUrl;
 			this.setAuthenticationSettings(connectionSettings.authenticationSettings || {});
 
 			const securitySettings = connectionSettings.securitySettings;
@@ -154,11 +112,11 @@ export class OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionEm
 			this.logger.warn('Connection is not initialized.');
 			throw new Error('Connection is not initialized.');
 		}
-		if (!this.isConnected()) {
+		if (this.isConnected()) {
 			this.logger.warn('Connection is active.');
 			throw new Error('Connection is active.');
 		}
-		this.endpoint = connectionSettings.endpoint;
+		this.endpoint = connectionSettings.endpointUrl;
 		this.setAuthenticationSettings(connectionSettings.authenticationSettings || {});
 
 		const securitySettings = connectionSettings.securitySettings;
@@ -182,13 +140,36 @@ export class OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionEm
 		return this.endpoint;
 	}
 
-	public get settingsInfo(): OpcUaConnectionSettingsInfo {
+	public get settingsInfo(): OpcUaConnectionInfo {
 		return {
 			endpointUrl: this.endpointUrl,
-			securityPolicy: OpcUaSecurityPolicies[this.securityPolicy],
-			securityMode: OpcUaMessageSecurityModes[this.securityMode],
-			userIdentityInfo: (this.userIdentitySetting.type === UserTokenType.Anonymous)? 'Anonymous': 'User',
+			connected: this.isConnected(),
+			monitoredItemsCount: this.monitoredNodesCount(),
+			securitySettings: {
+				securityPolicy: OpcUaSecurityPolicies[this.securityPolicy],
+				securityMode: OpcUaMessageSecurityModes[this.securityMode],
+			},
+			authenticationSettings: this.authenticationSettingsInfo,
 		};
+	}
+
+	private get authenticationSettingsInfo(): OpcUaAuthenticationType {
+		let info;
+		switch (this.userIdentitySetting.type) {
+			case UserTokenType.Certificate:
+				info = OpcUaAuthenticationType.Certificate;
+				break;
+			case UserTokenType.UserName:
+				info = OpcUaAuthenticationType.UserName;
+				break;
+			case UserTokenType.Anonymous:
+				info = OpcUaAuthenticationType.Anonymous;
+				break;
+			default:
+				info = OpcUaAuthenticationType.Anonymous;
+				break;
+		}
+		return info;
 	}
 
 	/**
@@ -404,7 +385,7 @@ export class OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionEm
 	}
 
 	private getNodeOpcUaSecurityPolicy(): SecurityPolicy{
-		return SecurityPolicy[OpcUaMessageSecurityModes[this.securityPolicy] as keyof typeof SecurityPolicy];
+		return SecurityPolicy[OpcUaSecurityPolicies[this.securityPolicy] as keyof typeof SecurityPolicy];
 	}
 
 	private createClient(): void {
