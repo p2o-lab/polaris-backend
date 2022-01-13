@@ -23,12 +23,7 @@
  * SOFTWARE.
  */
 
-import {
-	OperationMode, ParameterOptions, PEAOptions,
-	ServiceCommand,
-	ServiceControlOptions,
-	ServiceOptions, ServiceSourceMode,
-} from '@p2olab/polaris-interface';
+import {OperationMode, ParameterOptions, PEAOptions, ServiceCommand, ServiceControlOptions, ServiceOptions, ServiceSourceMode,} from '@p2olab/polaris-interface';
 import {OpcUaConnection} from '../../connection';
 import {PEAController, Service} from '../../index';
 
@@ -175,12 +170,10 @@ describe('Service', () => {
 			await service.serviceControl.opMode.waitForOpModeToPassSpecificTest(OperationMode.Offline);
 			expect(service.serviceControl.opMode.getOperationMode()).to.equal(OperationMode.Offline);
 
-			service.setOperationMode();
-
-			await service.serviceControl.opMode.waitForOpModeToPassSpecificTest(OperationMode.Automatic);
+			await service.requestOpMode(OperationMode.Automatic);
 			expect(service.serviceControl.opMode.getOperationMode()).to.equal(OperationMode.Automatic);
 
-			await service.serviceControl.serviceSourceMode.waitForServiceSourceModeToPassSpecificTest(ServiceSourceMode.Extern);
+			await service.requestServiceSourceMode(ServiceSourceMode.Extern);
 			expect(service.serviceControl.serviceSourceMode.getServiceSourceMode()).to.equal(ServiceSourceMode.Extern);
 		}).timeout(3000);
 
@@ -206,7 +199,8 @@ describe('Service', () => {
 			expect(result).to.have.property('operationMode').to.equal('offline');
 			expect(result).to.have.property('serviceSourceMode').to.equal('intern');
 
-			await service.setOperationMode();
+			await service.requestOpMode(OperationMode.Automatic);
+			await service.requestServiceSourceMode(ServiceSourceMode.Extern);
 
 			result = service.json();
 			expect(result).to.have.property('status', 'IDLE');

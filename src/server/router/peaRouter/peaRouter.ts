@@ -28,7 +28,7 @@ import {Request, Response, Router} from 'express';
 import * as asyncHandler from 'express-async-handler';
 import {constants} from 'http2';
 import {catServer} from '../../../logging';
-import {ServiceCommand} from '@p2olab/polaris-interface';
+import {OperationMode, ServiceCommand, ServiceSourceMode} from '@p2olab/polaris-interface';
 
 export const peaRouter: Router = Router();
 
@@ -242,6 +242,62 @@ peaRouter.post('/:peaId/service/:serviceName/:command', asyncHandler(async (req:
 			pea: req.params.peaId,
 			service: service.name,
 			command: req.params.command,
+			status: 'Command successfully send'
+		});
+	} catch (e: any) {
+		console.log(e);
+		res.status(500).send(e.toString());
+	}
+}));
+
+/**
+ * @api {post} /:peaId/service/:serviceName/opMode/:opMode
+ * @apiName Change service operation mode
+ * @apiGroup PEAController
+ * @apiParam {string} peaId     PEAController identifier
+ * @apiParam {string} serviceName   Name of service
+ * @apiParam {string="offline","operator","automatic"} opMode      OpMode name
+ */
+peaRouter.post('/:peaId/service/:serviceName/opMode/:opMode ', asyncHandler(async (req: Request, res: Response) => {
+	catServer.debug(`Call service: ${JSON.stringify(req.params)} ${JSON.stringify(req.body)}`);
+	const manager: ModularPlantManager = req.app.get('manager');
+	try{
+		const service = manager.getService(req.params.peaId, req.params.serviceName);
+
+		const opMode = req.params.opMode as OperationMode;
+		await service.requestOpMode(opMode);
+		res.json({
+			pea: req.params.peaId,
+			service: service.name,
+			opMode: req.params.opMode,
+			status: 'Command successfully send'
+		});
+	} catch (e: any) {
+		console.log(e);
+		res.status(500).send(e.toString());
+	}
+}));
+
+/**
+ * @api {post} /:peaId/service/:serviceName/serviceSourceMode/:serviceSourceMode
+ * @apiName Change service source mode
+ * @apiGroup PEAController
+ * @apiParam {string} peaId     PEAController identifier
+ * @apiParam {string} serviceName   Name of service
+ * @apiParam {string="extern","intern"} serviceSourceMode      ServiceSourceMode name
+ */
+peaRouter.post('/:peaId/service/:serviceName/sourceMode/:sourceMode ', asyncHandler(async (req: Request, res: Response) => {
+	catServer.debug(`Call service: ${JSON.stringify(req.params)} ${JSON.stringify(req.body)}`);
+	const manager: ModularPlantManager = req.app.get('manager');
+	try{
+		const service = manager.getService(req.params.peaId, req.params.serviceName);
+
+		const serviceSourceMode = req.params.serviceSourceMode as ServiceSourceMode;
+		await service.requestServiceSourceMode(serviceSourceMode);
+		res.json({
+			pea: req.params.peaId,
+			service: service.name,
+			serviceSourceMode: req.params.serviceSourceMode,
 			status: 'Command successfully send'
 		});
 	} catch (e: any) {

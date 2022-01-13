@@ -23,20 +23,9 @@
  * SOFTWARE.
  */
 
-import {
-	CommandEnableInterface, OperationMode, ParameterInterface,
-	ParameterOptions,
-	ServiceCommand,
-	ServiceInterface,
-	ServiceOptions, ServiceSourceMode
-} from '@p2olab/polaris-interface';
+import {CommandEnableInterface, OperationMode, ParameterInterface, ParameterOptions, ServiceCommand, ServiceInterface, ServiceOptions, ServiceSourceMode} from '@p2olab/polaris-interface';
 import {DynamicDataItem, OpcUaConnection} from '../../connection';
-import {
-	controlEnableToJson, DataAssemblyControllerFactory,
-	InputElement, ServiceControl,
-	ServiceControlEnable, ServiceMtpCommand,
-	ServiceState, ServParam
-} from '../../dataAssembly';
+import {controlEnableToJson, DataAssemblyControllerFactory, InputElement, ServiceControl, ServiceControlEnable, ServiceMtpCommand, ServiceState, ServParam} from '../../dataAssembly';
 
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
@@ -45,7 +34,6 @@ import {PEAController} from '../../PEAController';
 import {BaseService, BaseServiceEvents} from './BaseService';
 import {Procedure} from './procedure/Procedure';
 import {catService} from '../../../../logging';
-
 
 
 /**
@@ -319,8 +307,9 @@ export class Service extends BaseService {
 	public async setProcedure(procedure: Procedure): Promise<void> {
 		this.logger.debug(`[${this.qualifiedName}] set procedure: ${procedure.name}`);
 
-		// first set opMode and then set procedure
-		await this.setOperationMode();
+		// first set opMode and serviceSourceMode and then set procedure
+		await this.requestOpMode(OperationMode.Automatic);
+		await this.requestServiceSourceMode(ServiceSourceMode.Extern);
 		await (this.serviceControl.communication.ProcedureExt as DynamicDataItem<number>).write(procedure.id);
 	}
 
@@ -344,10 +333,6 @@ export class Service extends BaseService {
 		});
 	}
 
-	public async setOperationMode(): Promise<void> {
-		await this.serviceControl.opMode.setToAutomaticOperationMode();
-		await this.serviceControl.serviceSourceMode.setToExternalServiceSourceMode();
-	}
 
 	public findInputParameter(parameterName: string): InputElement | ServParam | undefined {
 		let result: InputElement | ServParam | undefined;
@@ -371,10 +356,34 @@ export class Service extends BaseService {
 
 	private async sendCommand(command: ServiceMtpCommand): Promise<void> {
 		this.logger.debug(`[${this.qualifiedName}] Send command ${ServiceMtpCommand[command]}`);
-		await this.setOperationMode();
+		await this.requestOpMode(OperationMode.Automatic);
 
 		await (this.serviceControl.communication.CommandExt as DynamicDataItem<number>).write(command);
 		this.logger.trace(`[${this.qualifiedName}] Command ${ServiceMtpCommand[command]} written`);
 	}
 
+	async requestServiceSourceMode(serviceSourceMode: ServiceSourceMode): Promise<void>{
+		switch (serviceSourceMode) {
+			case ServiceSourceMode.Extern:
+				await this.serviceControl.serviceSourceMode.setToExternalServiceSourceMode();
+				break;
+			case ServiceSourceMode.Intern:
+				await this.serviceControl.serviceSourceMode.setToInternalServiceSourceMode();
+				break;
+		}
+	}
+
+	async requestOpMode(opMode: OperationMode) {
+		switch (opMode) {
+			case OperationMode.Offline:
+				await this.serviceControl.opMode.setToOfflineOperationMode();
+				break;
+			case OperationMode.Operator:
+				await this.serviceControl.opMode.setToOperatorOperationMode();
+				break;
+			case OperationMode.Automatic:
+				await this.serviceControl.opMode.setToAutomaticOperationMode();
+				break;
+		}
+	}
 }
