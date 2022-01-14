@@ -130,10 +130,7 @@ class ScopeItem {
 			catScopeItem.debug(`Found service "${service.name}" for expression "${variable}"`);
 			procedure = service.getCurrentProcedure();
 			if (!procedure) {
-				procedure = service.getDefaultProcedure();
-				if (!procedure){
-					throw new Error(`Neither a default nor current procedure was found for service "${service.name}"`);
-				}
+				throw new Error(`Current procedure is not set for service "${service.name}"`);
 			}
 			token = components.shift();
 

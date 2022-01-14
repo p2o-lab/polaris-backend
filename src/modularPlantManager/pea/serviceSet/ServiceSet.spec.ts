@@ -89,18 +89,13 @@ describe('ServiceSet', () => {
 			service = pea.services[0];
 		});
 
-		it('should get default procedure', () => {
-			const procedure = service.getDefaultProcedure();
-			expect(procedure?.name).to.equal('Trigonometry_default');
-		});
-
 		it('should find procedure', () => {
-			const procedure = service.getProcedureByNameOrDefault('Trigonometry_default');
+			const procedure = service.getProcedureByName('Trigonometry_default');
 			expect(procedure?.name).to.equal('Trigonometry_default');
 		});
 
 		it('should not find unknown procedure', () => {
-			const procedure = service.getProcedureByNameOrDefault('ProcedureNotThere');
+			const procedure = service.getProcedureByName('ProcedureNotThere');
 			expect(procedure).to.equal(undefined);
 		});
 
@@ -130,8 +125,8 @@ describe('ServiceSet', () => {
 			await peaServer.stopSimulation();
 		});
 
-		it('should get default procedure for default procedure', () => {
-			expect(service.getCurrentProcedure()).to.equal(service.getDefaultProcedure());
+		it('should get undefined procedure', () => {
+			expect(service.getCurrentProcedure()).to.equal(undefined);
 		});
 
 		it('should find parameter', () => {

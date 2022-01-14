@@ -102,7 +102,7 @@ export class ServiceSourceModeController{
 	 * Set data assembly to external ServiceSourceMode
 	 */
 	public async setToExternalServiceSourceMode(): Promise<void> {
-		if (this.isIntSource()) {
+		if (!this.isExtSource()) {
 			catDataAssembly.trace(`[${this.dAController.name}] Finally to Ext`);
 			await this.writeServiceSourceMode(ServiceSourceMode.Extern);
 			await this.waitForServiceSourceModeToPassSpecificTest(ServiceSourceMode.Extern);
@@ -113,7 +113,7 @@ export class ServiceSourceModeController{
 	 * Set data assembly to internal ServiceSourceMode
 	 */
 	public async setToInternalServiceSourceMode(): Promise<void> {
-		if (this.isExtSource()) {
+		if (!this.isIntSource()) {
 			catDataAssembly.trace(`[${this.dAController.name}] Finally to Int`);
 			await this.writeServiceSourceMode(ServiceSourceMode.Intern);
 			await this.waitForServiceSourceModeToPassSpecificTest(ServiceSourceMode.Intern);

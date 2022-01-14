@@ -88,18 +88,13 @@ describe('Service', () => {
 			service = pea.services[0];
 		});
 
-		it('should get default procedure', () => {
-			const procedure = service.getDefaultProcedure();
-			expect(procedure?.name).to.equal('Trigonometry_default');
-		});
-
 		it('should find procedure', () => {
-			const procedure = service.getProcedureByNameOrDefault('Trigonometry_default');
+			const procedure = service.getProcedureByName('Trigonometry_default');
 			expect(procedure?.name).to.equal('Trigonometry_default');
 		});
 
 		it('should not find non existent procedure', () => {
-			const procedure = service.getProcedureByNameOrDefault('ProcedureNotThere');
+			const procedure = service.getProcedureByName('ProcedureNotThere');
 			expect(procedure).to.throw;
 		});
 
@@ -267,7 +262,7 @@ describe('Service', () => {
 			await pea.connectAndSubscribe();
 
 			const service = pea.getService('TestService');
-			const procedure = service.getProcedureByNameOrDefault('TestService_default');
+			const procedure = service.getProcedureByName('TestService_default');
 			if (procedure) {
 				await service.setProcedure(procedure);
 			}

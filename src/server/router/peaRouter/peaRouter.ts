@@ -196,7 +196,7 @@ peaRouter.post('/:peaId/service/:serviceName', asyncHandler(async (req: Request,
 	try{
 		const service = manager.getService(req.params.peaId, req.params.serviceName);
 		if (req.body.procedure) {
-			const procedure = service.getProcedureByNameOrDefault(req.body.procedure);
+			const procedure = service.getProcedureByName(req.body.procedure);
 			if (procedure) {
 				await service.setProcedure(procedure);
 			}
@@ -228,7 +228,7 @@ peaRouter.post('/:peaId/service/:serviceName/:command', asyncHandler(async (req:
 	try{
 		const service = manager.getService(req.params.peaId, req.params.serviceName);
 		if (req.body.procedure) {
-			const procedure = service.getProcedureByNameOrDefault(req.body.procedure);
+			const procedure = service.getProcedureByName(req.body.procedure);
 			if (procedure) {
 				await service.setProcedure(procedure);
 			}
@@ -237,6 +237,7 @@ peaRouter.post('/:peaId/service/:serviceName/:command', asyncHandler(async (req:
 			await service.setParameters(req.body.parameters, manager.peas);
 		}
 		const command = req.params.command as ServiceCommand;
+		console.log('execute');
 		await service.executeCommand(command);
 		res.json({
 			pea: req.params.peaId,
@@ -258,13 +259,12 @@ peaRouter.post('/:peaId/service/:serviceName/:command', asyncHandler(async (req:
  * @apiParam {string} serviceName   Name of service
  * @apiParam {string="offline","operator","automatic"} opMode      OpMode name
  */
-peaRouter.post('/:peaId/service/:serviceName/opMode/:opMode ', asyncHandler(async (req: Request, res: Response) => {
-	catServer.debug(`Call service: ${JSON.stringify(req.params)} ${JSON.stringify(req.body)}`);
+peaRouter.post('/:peaId/service/:serviceName/opMode/:opModeParam', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
 	try{
 		const service = manager.getService(req.params.peaId, req.params.serviceName);
 
-		const opMode = req.params.opMode as OperationMode;
+		const opMode = req.params.opModeParam as OperationMode;
 		await service.requestOpMode(opMode);
 		res.json({
 			pea: req.params.peaId,
@@ -286,8 +286,7 @@ peaRouter.post('/:peaId/service/:serviceName/opMode/:opMode ', asyncHandler(asyn
  * @apiParam {string} serviceName   Name of service
  * @apiParam {string="extern","intern"} serviceSourceMode      ServiceSourceMode name
  */
-peaRouter.post('/:peaId/service/:serviceName/sourceMode/:sourceMode ', asyncHandler(async (req: Request, res: Response) => {
-	catServer.debug(`Call service: ${JSON.stringify(req.params)} ${JSON.stringify(req.body)}`);
+peaRouter.post('/:peaId/service/:serviceName/serviceSourceMode/:serviceSourceMode', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
 	try{
 		const service = manager.getService(req.params.peaId, req.params.serviceName);

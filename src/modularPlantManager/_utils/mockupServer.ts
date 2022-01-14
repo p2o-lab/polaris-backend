@@ -175,8 +175,7 @@ export class MockupServer {
 		return {
 			name: this.serverName,
 			id: this.identifier,
-			// TODO: Is it wise to provide a default identifier, could be IDProvider.generateIdentifier()
-			pimadIdentifier: 'a289fc13-72e0-49ac-bad9-dd0e6672fcc7',
+			pimadIdentifier: IDProvider.generateIdentifier(),
 			services:[],
 			hmiUrl: '',
 			opcuaServerUrl: this.endpoint,

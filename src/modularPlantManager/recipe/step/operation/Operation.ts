@@ -66,12 +66,6 @@ export class Operation {
 		if (this.service instanceof Service) {
 			if (options.procedure) {
 				this.procedure = this.service.procedures.find((procedure) => procedure.name === options.procedure);
-				if (!this.procedure) {
-					throw new Error(`Could not find procedure ${options.procedure} ` +
-						`in ${options.service}`);
-				}
-			} else {
-				this.procedure = this.service.getDefaultProcedure();
 			}
 			if (!this.procedure) {
 				throw new Error(`Procedure '${options.procedure}' could not be found in ${this.service.name}.`);

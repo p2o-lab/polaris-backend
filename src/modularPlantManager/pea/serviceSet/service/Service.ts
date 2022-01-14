@@ -115,10 +115,6 @@ export class Service extends BaseService {
 		return this.serviceControl.communication.ProcedureCur.value;
 	}
 
-	public getDefaultProcedure(): Procedure | undefined {
-		return this.procedures.find((procedure) => procedure.defaultProcedure);
-	}
-
 	/**
 	 * Get current procedure from internal memory.
 	 */
@@ -256,7 +252,7 @@ export class Service extends BaseService {
 				expectedState = 'EXECUTE';
 				break;
 		}
-		await this.waitForStateChangeWithTimeout(expectedState);
+		// await this.waitForStateChangeWithTimeout(expectedState, 1000);
 	}
 
 	public start(): Promise<void> {
@@ -313,14 +309,8 @@ export class Service extends BaseService {
 		await (this.serviceControl.communication.ProcedureExt as DynamicDataItem<number>).write(procedure.id);
 	}
 
-	public getProcedureByNameOrDefault(procedureName: string): Procedure | undefined {
-		let procedure: Procedure | undefined;
-		if (!procedureName) {
-			procedure = this.getDefaultProcedure();
-		} else {
-			procedure = this.procedures.find((proc) => proc.name === procedureName);
-		}
-		return procedure;
+	public getProcedureByName(procedureName: string): Procedure | undefined {
+		return this.procedures.find((proc) => proc.name === procedureName);
 	}
 
 	public async setParameters(parameterOptions: ParameterOptions[], peaSet: PEAController[] = []): Promise<void> {

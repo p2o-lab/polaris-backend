@@ -215,8 +215,7 @@ export class Player extends (EventEmitter as new() => PlayerEmitter) {
 	}
 
 	/**
-	 * Pause all peas used in current recipe
-	 * TODO: pause only those which should be currently in running due to the recipe
+	 * Pause the current recipe
 	 */
 	public async pause(): Promise<void> {
 		if (this.status === RecipeState.running) {

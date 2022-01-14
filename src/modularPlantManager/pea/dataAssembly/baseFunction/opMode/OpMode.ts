@@ -112,20 +112,21 @@ export class OpMode {
 	 *
 	 */
 	public async setToAutomaticOperationMode(): Promise<void> {
+		// TODO: introduce resolve reject mechanism
 		catDataAssembly.info(`[${this.dAController.name}] Current opMode = ${this.getOperationMode()}`);
 		if (this.isOfflineState()) {
 			catDataAssembly.trace(`[${this.dAController.name}] First go to Manual state`);
 			this.writeOpMode(OperationMode.Operator);
 			await this.waitForOpModeToPassSpecificTest(OperationMode.Operator);
+			catDataAssembly.info(`[${this.dAController.name}] New opMode = ${this.getOperationMode()}`);
 		}
-		catDataAssembly.info(`[${this.dAController.name}] Current opMode = ${this.getOperationMode()}`);
 
 		if (this.isOperatorState()) {
 			catDataAssembly.trace(`[${this.dAController.name}] Then to automatic`);
 			this.writeOpMode(OperationMode.Automatic);
 			await this.waitForOpModeToPassSpecificTest(OperationMode.Automatic);
+			catDataAssembly.info(`[${this.dAController.name}] New opMode = ${this.getOperationMode()}`);
 		}
-		catDataAssembly.info(`[${this.dAController.name}] Current opMode = ${this.getOperationMode()}`);
 	}
 
 	/**
@@ -173,14 +174,14 @@ export class OpMode {
 	}
 
 	public isOfflineState(): boolean {
-		return this.dAController.communication.StateOffAct.value === true;
+		return this.dAController.communication.StateOffAct.value;
 	}
 
 	public isAutomaticState(): boolean {
-		return this.dAController.communication.StateAutAct.value === true;
+		return this.dAController.communication.StateAutAct.value;
 	}
 
 	public isOperatorState(): boolean {
-		return this.dAController.communication.StateOpAct.value === true;
+		return this.dAController.communication.StateOpAct.value;
 	}
 }
