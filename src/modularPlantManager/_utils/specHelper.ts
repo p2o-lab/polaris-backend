@@ -23,11 +23,12 @@
  * SOFTWARE.
  */
 
-import {PEAController} from '../PEA';
+import {ParameterChange, PEAController} from '../pea';
+import {VariableChange} from '@p2olab/polaris-interface';
 
 export function waitForParameterChange(pea: PEAController, parameterName: string, expected?: number | string | boolean): Promise<unknown> {
 	return new Promise<void>((resolve) =>
-		pea.on('parameterChanged', (data) => {
+		pea.on('parameterChanged', (data: ParameterChange) => {
 			if (data.parameter === parameterName && (expected === undefined || data.value === expected)) {
 				resolve();
 				pea.removeListener('parameterChanged', test);
@@ -38,7 +39,7 @@ export function waitForParameterChange(pea: PEAController, parameterName: string
 
 export function waitForVariableChange(pea: PEAController, variableName: string, expected?: number | string | boolean): Promise<unknown> {
 	return new Promise<void>((resolve) =>
-		pea.on('variableChanged', function test(data) {
+		pea.on('variableChanged', function test(data: VariableChange) {
 			if (data.variable === variableName && (expected === undefined || data.value === expected)) {
 				resolve();
 				pea.removeListener('variableChanged', test);

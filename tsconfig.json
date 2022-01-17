@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "skipLibCheck": true,
     "baseUrl": ".",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
