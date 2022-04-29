@@ -28,7 +28,7 @@ import {Request, Response, Router} from 'express';
 import * as asyncHandler from 'express-async-handler';
 import {constants} from 'http2';
 import {catServer} from '../../../logging';
-import {OperationMode, ServiceCommand, ServiceSourceMode} from '@p2olab/polaris-interface';
+import {DataAssemblyOptions, OperationMode, ServiceCommand, ServiceSourceMode} from '@p2olab/polaris-interface';
 
 export const peaRouter: Router = Router();
 
@@ -82,6 +82,30 @@ peaRouter.get('/:peaId', (req: Request, res: Response) => {
 });
 
 /**
+ * @api {get} /:peaId/dataAssemblies    Get all DataAssemblies of PEAController
+ * @apiName GetDataAssemblies
+ * @apiGroup PEAController
+ * @apiParam {string} peaId    ID of PEAController owning DataAssemblies
+ */
+peaRouter.get('/:peaId/dataAssemblies', (req: Request, res: Response) => {
+	const manager: ModularPlantManager = req.app.get('manager');
+	try {
+		if(!req.params.peaId){
+			throw new Error('Invalid PEA ID');
+		}
+		const pea = manager.getPEAController(req.params.peaId);
+		if(!pea){
+			throw new Error(`PEA with ID ${req.params.peaId} not found.`);
+		}
+		const dataAssemblies = pea.getDataAssemblyJson();
+		res.send(dataAssemblies);
+	} catch (e: any) {
+		console.log(e);
+		res.status(constants.HTTP_STATUS_NOT_FOUND).send(e.toString());
+	}
+});
+
+/**
  * @api {get} /:peaId/getConnectionSettings
  * @apiName GetConnectionSettings
  * @apiGroup PEAController
@@ -116,8 +140,8 @@ peaRouter.post('/:peaId/updateConnectionSettings', asyncHandler(async (req: Requ
 }));
 
 /**
- * @api {get} /:peaId/download    Download PEAController options by ID
- * @apiName GetModuleDownload
+ * @api {get} /:peaId/download - Download PEAController options by ID
+ * @apiName GetPEADownload
  * @apiGroup PEAController
  * @apiParam {string} peaId    ID of PEAController to download related options.
  */
@@ -127,7 +151,7 @@ peaRouter.get('/:peaId/download', (req: Request, res: Response) => {
 });
 
 /**
- * @api {post} /:peaId/connect    Connect PEAController by ID and subscribe to dataAssemblies
+ * @api {post} /:peaId/connect - Connect PEAController by ID and subscribe to dataAssemblies
  * @apiName ConnectPEA
  * @apiGroup PEAController
  * @apiParam {string} peaId    ID of PEAController to be connected.
@@ -145,7 +169,7 @@ peaRouter.post('/:peaId/connect', asyncHandler(async (req: Request, res: Respons
 }));
 
 /**
- * @api {post} /:peaId/disconnect    Disconnect PEAController
+ * @api {post} /:peaId/disconnect -  Disconnect PEAController
  * @apiName DisconnectPEA
  * @apiGroup PEAController
  * @apiParam {string} peaId    ID of PEAController to be disconnected.
@@ -163,7 +187,7 @@ peaRouter.post('/:peaId/disconnect', asyncHandler(async (req: Request, res: Resp
 }));
 
 /**
- * @api {delete} /:peaId    Delete PEAController by ID
+ * @api {delete} /:peaId - Delete PEAController by ID
  * @apiName DeletePEA
  * @apiGroup PEAController
  * @apiParam {string} peaId    ID of PEAController to be deleted

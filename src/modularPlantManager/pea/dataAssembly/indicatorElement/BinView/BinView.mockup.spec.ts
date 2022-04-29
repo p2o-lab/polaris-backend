@@ -76,7 +76,7 @@ describe('BinViewMockup', () => {
         let connection: OpcUaConnection;
 
         beforeEach(async function () {
-            this.timeout(5000);
+            //this.timeout(5000);
             mockupServer = new MockupServer();
             await mockupServer.initialize();
             new BinViewMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');

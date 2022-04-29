@@ -448,4 +448,14 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 	private unsubscribeFromAllServices(): void {
 		this.services.forEach((service) => service.unsubscribe());
 	}
+
+	getDataAssemblyJson(): DataAssemblyOptions[] {
+		const result: DataAssemblyOptions[] = [];
+		this.dataAssemblies.forEach((dataAssembly) => result.push(dataAssembly.toDataAssemblyOptionsJson()));
+		console.log(`DataAssemblies: ${this.services.length} Services: ${this.services.length}`
+		);
+		this.services.forEach((service) => service.getDataAssemblyJson().forEach((r) => result.push(r)));
+
+		return result;
+	}
 }

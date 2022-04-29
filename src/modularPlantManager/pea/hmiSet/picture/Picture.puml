@@ -31,9 +31,9 @@
 !include connection/Connection.puml
 
 class Picture{
-Width: DataItem<ReadAccess, IntDataType>
-Height: DataItem<ReadAccess, IntDataType>
-HierarchyLevel: DataItem<ReadAccess, StringDataType>
+Width: IntDataType
+Height: IntDataType
+HierarchyLevel: StringDataType
 }
 
 Picture *-down- TopologyObject

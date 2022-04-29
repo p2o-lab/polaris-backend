@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import {CommandEnableInterface, OperationMode, ParameterInterface, ParameterOptions, ServiceCommand, ServiceInterface, ServiceOptions, ServiceSourceMode} from '@p2olab/polaris-interface';
+import {CommandEnableInterface, DataAssemblyOptions, OperationMode, ParameterInterface, ParameterOptions, ServiceCommand, ServiceInterface, ServiceOptions, ServiceSourceMode} from '@p2olab/polaris-interface';
 import {DynamicDataItem, OpcUaConnection} from '../../connection';
 import {controlEnableToJson, DataAssemblyControllerFactory, InputElement, ServiceControl, ServiceControlEnable, ServiceMtpCommand, ServiceState, ServParam} from '../../dataAssembly';
 
@@ -375,5 +375,13 @@ export class Service extends BaseService {
 				await this.serviceControl.opMode.setToAutomaticOperationMode();
 				break;
 		}
+	}
+
+	getDataAssemblyJson(): DataAssemblyOptions[] {
+		const result: DataAssemblyOptions[] = [];
+		result.push(this.serviceControl.toDataAssemblyOptionsJson());
+		this.procedures.forEach((procedure) => procedure.getDataAssemblyJson().forEach((r) => result.push(r)));
+		this.parameters.forEach((serviceParam) => result.push(serviceParam.toDataAssemblyOptionsJson()));
+		return result;
 	}
 }

@@ -130,4 +130,13 @@ export class Procedure extends (EventEmitter as new() => ProcedureEmitter) {
 			reportParameters: this.reportParameters.map((param) => param.toJson())
 		};
 	}
+
+	getDataAssemblyJson(): DataAssemblyOptions[] {
+		const result: DataAssemblyOptions[] = [];
+		this.processValuesIn.forEach((inputElement) => result.push(inputElement.toDataAssemblyOptionsJson()));
+		this.processValuesOut.forEach((indicatorElement) => result.push(indicatorElement.toDataAssemblyOptionsJson()));
+		this.reportParameters.forEach((indicatorElement) => result.push(indicatorElement.toDataAssemblyOptionsJson()));
+		this.parameters.forEach((serviceParameter) => result.push(serviceParameter.toDataAssemblyOptionsJson()));
+		return result;
+	}
 }

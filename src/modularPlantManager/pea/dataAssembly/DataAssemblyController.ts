@@ -219,6 +219,13 @@ export class DataAssemblyController extends EventEmitter {
 			`"${this.name}" of type "${this.constructor.name}": ${JSON.stringify(this.parsingErrors)}`);
 	}
 
+	public toDataAssemblyOptionsJson(): DataAssemblyOptions {
+		return {
+			dataItems: this.options.dataItems,
+			metaModelRef: this.metaModelRef,
+			name: this.name};
+	}
+
 	public toJson(): ParameterInterface {
 		return {
 			name: this.name
