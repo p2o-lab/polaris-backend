@@ -34,7 +34,6 @@ import {PEAController, Service} from '../index';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import * as fs from 'fs';
 import * as peaOptions from '../../peaOptions.spec.json';
 import {ServiceState} from './service/enum';
 import {PEAMockup} from '../PEA.mockup';
@@ -43,7 +42,6 @@ chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('ServiceSet', () => {
-	const parseJson = require('json-parse-better-errors');
 	const opcUAConnection = new OpcUaConnection();
 	const peaOptionsReference = peaOptions as any as PEAOptions;
 
@@ -90,17 +88,17 @@ describe('ServiceSet', () => {
 		});
 
 		it('should find procedure', () => {
-			const procedure = service.getProcedureByName('Trigonometry_default');
+			const procedure = service.findProcedure(1);
 			expect(procedure?.name).to.equal('Trigonometry_default');
 		});
 
 		it('should not find unknown procedure', () => {
-			const procedure = service.getProcedureByName('ProcedureNotThere');
+			const procedure = service.findProcedure(123);
 			expect(procedure).to.equal(undefined);
 		});
 
 		it('should get undefined when getting current procedure when not connected', () => {
-			expect(service.getCurrentProcedure()).to.equal(undefined);
+			expect(service.currentProcedure).to.equal(undefined);
 		});
 	});
 
@@ -126,7 +124,7 @@ describe('ServiceSet', () => {
 		});
 
 		it('should get undefined procedure', () => {
-			expect(service.getCurrentProcedure()).to.equal(undefined);
+			expect(service.currentProcedure).to.equal(undefined);
 		});
 
 		it('should find parameter', () => {
@@ -188,11 +186,11 @@ describe('ServiceSet', () => {
 
 		it('waitForOpModeSpecificTest', async () => {
 			//testService.opMode.opMode = OperationMode.Offline;
-			await service.serviceControl.opMode.waitForOpModeToPassSpecificTest(OperationMode.Offline);
-			expect(service.serviceControl.opMode.getOperationMode()).to.equal(OperationMode.Offline);
+			await service.serviceControl.opMode.waitForServiceOpModeToPassSpecificTest(OperationMode.Offline);
+			expect(service.serviceControl.opMode.getServiceOperationMode()).to.equal(OperationMode.Offline);
 
 			await service.requestOpMode(OperationMode.Automatic);
-			expect(service.serviceControl.opMode.getOperationMode()).to.equal(OperationMode.Automatic);
+			expect(service.serviceControl.opMode.getServiceOperationMode()).to.equal(OperationMode.Automatic);
 
 			await service.requestServiceSourceMode(ServiceSourceMode.Extern);
 			expect(service.serviceControl.serviceSourceMode.getServiceSourceMode()).to.equal(ServiceSourceMode.Extern);
@@ -251,61 +249,61 @@ describe('ServiceSet', () => {
 			expect(result.procedures[0].reportParameters).to.have.length(3);
 
 			let stateChangeCount = 0;
-			service.eventEmitter.on('state', () => {
+			service.on('state', () => {
 				stateChangeCount++;
 			});
 
-			service.executeCommand(ServiceCommand.start);
+			service.executeCommand(ServiceCommand.start).then();
 			await service.waitForStateChangeWithTimeout('STARTING');
 			await service.waitForStateChangeWithTimeout('EXECUTE');
 
-			service.executeCommand(ServiceCommand.restart);
+			service.executeCommand(ServiceCommand.restart).then();
 			await service.waitForStateChangeWithTimeout('STARTING');
 			await service.waitForStateChangeWithTimeout('EXECUTE');
 
-			service.executeCommand(ServiceCommand.stop);
+			service.executeCommand(ServiceCommand.stop).then();
 			await service.waitForStateChangeWithTimeout('STOPPING');
 			await service.waitForStateChangeWithTimeout('STOPPED');
 
-			service.executeCommand(ServiceCommand.reset);
+			service.executeCommand(ServiceCommand.reset).then();
 			await service.waitForStateChangeWithTimeout('IDLE');
 
-			service.executeCommand(ServiceCommand.start);
+			service.executeCommand(ServiceCommand.start).then();
 			await service.waitForStateChangeWithTimeout('STARTING');
 			await service.waitForStateChangeWithTimeout('EXECUTE');
 
-			service.executeCommand(ServiceCommand.pause);
+			service.executeCommand(ServiceCommand.pause).then();
 			await service.waitForStateChangeWithTimeout('PAUSING');
 			await service.waitForStateChangeWithTimeout('PAUSED');
 
-			service.executeCommand(ServiceCommand.resume);
+			service.executeCommand(ServiceCommand.resume).then();
 			await service.waitForStateChangeWithTimeout('RESUMING');
 			await service.waitForStateChangeWithTimeout('EXECUTE');
 
-			service.executeCommand(ServiceCommand.hold);
+			service.executeCommand(ServiceCommand.hold).then();
 			await service.waitForStateChangeWithTimeout('HOLDING');
 			await service.waitForStateChangeWithTimeout('HELD');
 
-			service.executeCommand(ServiceCommand.unhold);
+			service.executeCommand(ServiceCommand.unhold).then();
 			await service.waitForStateChangeWithTimeout('UNHOLDING');
 			await service.waitForStateChangeWithTimeout('EXECUTE');
 
-			service.executeCommand(ServiceCommand.complete);
+			service.executeCommand(ServiceCommand.complete).then();
 			await service.waitForStateChangeWithTimeout('COMPLETING');
 			await service.waitForStateChangeWithTimeout('COMPLETED');
 
-			service.executeCommand(ServiceCommand.abort);
+			service.executeCommand(ServiceCommand.abort).then();
 			await service.waitForStateChangeWithTimeout('ABORTING');
 			await service.waitForStateChangeWithTimeout('ABORTED');
 
-			service.executeCommand(ServiceCommand.reset);
+			service.executeCommand(ServiceCommand.reset).then();
 			await service.waitForStateChangeWithTimeout('IDLE');
 
-			service.executeCommand(ServiceCommand.start);
+			service.executeCommand(ServiceCommand.start).then();
 			await service.waitForStateChangeWithTimeout('STARTING');
 			await service.waitForStateChangeWithTimeout('EXECUTE');
 
-			service.executeCommand(ServiceCommand.complete);
+			service.executeCommand(ServiceCommand.complete).then();
 			await service.waitForStateChangeWithTimeout('COMPLETING');
 			await service.waitForStateChangeWithTimeout('COMPLETED');
 

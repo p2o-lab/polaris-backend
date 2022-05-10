@@ -69,10 +69,7 @@ export class OperationElement extends DataAssemblyController {
 
 			if (this.parameterRequest) {
 				this.parameterRequest.unlistenToScopeArray();
-
-				if (this.parameterRequest.eventEmitter) {
-					this.parameterRequest.eventEmitter.removeListener('changed', this.setParameter);
-				}
+				this.parameterRequest.removeListener('changed', this.setParameter);
 			}
 
 			this.parameterRequest = new ParameterRequest(p, peas);
@@ -83,8 +80,8 @@ export class OperationElement extends DataAssemblyController {
 
 			if (this.parameterRequest.continuous) {
 				catDataAssembly.trace('Continuous parameter change');
-				this.parameterRequest.listenToScopeArray()
-					.on('changed', (data: any) => this.setParameter(data));
+				this.parameterRequest.on('changed', (data: any) => this.setParameter(data));
+				this.parameterRequest.listenToScopeArray();
 			}
 		}
 	}

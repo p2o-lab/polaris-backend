@@ -28,7 +28,7 @@ import {Request, Response, Router} from 'express';
 import * as asyncHandler from 'express-async-handler';
 import {constants} from 'http2';
 import {catServer} from '../../../logging';
-import {DataAssemblyOptions, OperationMode, ServiceCommand, ServiceSourceMode} from '@p2olab/polaris-interface';
+import {OperationMode, ServiceCommand, ServiceSourceMode} from '@p2olab/polaris-interface';
 
 export const peaRouter: Router = Router();
 
@@ -42,7 +42,7 @@ peaRouter.post('/loadPEA', async (req, res) => {
 	catServer.info('Load PEAController via PEAController-Options');
 	const manager: ModularPlantManager = req.app.get('manager');
 	try {
-		await manager.loadPEAController(req.body.id);
+		await manager.createPEAControllerInstance(req.body.id);
 		res.status(200).send('"Success!"');
 	} catch (e: any) {
 		console.log(e);
@@ -82,7 +82,7 @@ peaRouter.get('/:peaId', (req: Request, res: Response) => {
 });
 
 /**
- * @api {get} /:peaId/dataAssemblies    Get all DataAssemblies of PEAController
+ * @api {get} /:peaId/dataAssemblies    Get all DataAssemblies of PEA
  * @apiName GetDataAssemblies
  * @apiGroup PEAController
  * @apiParam {string} peaId    ID of PEAController owning DataAssemblies
@@ -90,9 +90,7 @@ peaRouter.get('/:peaId', (req: Request, res: Response) => {
 peaRouter.get('/:peaId/dataAssemblies', (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
 	try {
-		if(!req.params.peaId){
-			throw new Error('Invalid PEA ID');
-		}
+
 		const pea = manager.getPEAController(req.params.peaId);
 		if(!pea){
 			throw new Error(`PEA with ID ${req.params.peaId} not found.`);
@@ -205,8 +203,8 @@ peaRouter.delete('/:peaId', asyncHandler(async (req: Request, res: Response) => 
 }));
 
 /**
- * @api {post} /:peaId/service/:serviceName    Configure service
- * @apiName ConfigureService
+ * @api {post} /:peaId/service/:serviceId/procedureRequest/:procedureId    Request a procedure change of service in pea
+ * @apiName ProcedureRequest
  * @apiDescription Configure procedure and parameters of service
  * @apiGroup PEAController
  * @apiParam {string} peaId    PEAController id
@@ -214,17 +212,15 @@ peaRouter.delete('/:peaId', asyncHandler(async (req: Request, res: Response) => 
  * @apiParam {string} procedure      Name of procedure
  * @apiParam {ParameterOptions[]} [parameters]    Service Procedure Parameters
  */
-peaRouter.post('/:peaId/service/:serviceName', asyncHandler(async (req: Request, res: Response) => {
-	catServer.info(`Set Procedure: ${req.body.procedure}; Parameters: ${JSON.stringify(req.body.parameters)}`);
+peaRouter.post('/:peaId/service/:serviceId/procedureRequest/:procedureId', asyncHandler(async (req: Request, res: Response) => {
+	catServer.info(`Request Procedure: ${req.params.procedureId}; Parameters: ${JSON.stringify(req.body.parameters)}`);
 	const manager: ModularPlantManager = req.app.get('manager');
 	try{
-		const service = manager.getService(req.params.peaId, req.params.serviceName);
-		if (req.body.procedure) {
-			const procedure = service.getProcedureByName(req.body.procedure);
-			if (procedure) {
-				await service.setProcedure(procedure);
-			}
-		}
+		const pea = manager.getPEAController(req.params.peaId);
+		const service = pea.getService(req.params.serviceId);
+		const procedureId = parseInt(req.params.procedureId,10);
+		await service.requestProcedureOperator(procedureId);
+
 		if (req.body.parameters) {
 			await service.setParameters(req.body.parameters, manager.peas);
 		}
@@ -233,8 +229,35 @@ peaRouter.post('/:peaId/service/:serviceName', asyncHandler(async (req: Request,
 		console.log(e);
 		res.status(500).send('"'+e.toString()+'"');
 	}
-
 }));
+
+
+/**
+ * @api {post} /:peaId/service/:serviceId/procedureRequest/:procedureId    Request a procedure change of service in pea
+ * @apiName ProcedureRequest
+ * @apiDescription Configure procedure and parameters of service
+ * @apiGroup PEAController
+ * @apiParam {string} peaId    PEAController id
+ * @apiParam {string} serviceName   Name of service
+ * @apiParam {string} procedure      Name of procedure
+ * @apiParam {ParameterOptions[]} [parameters]    Service Procedure Parameters
+ */
+peaRouter.post('/:peaId/service/:serviceId/osLevel/:osLevel', asyncHandler(async (req: Request, res: Response) => {
+	catServer.info(`Set OsLevel: ${req.params.osLevel};`);
+	const manager: ModularPlantManager = req.app.get('manager');
+	try{
+		const pea = manager.getPEAController(req.params.peaId);
+		const service = pea.getService(req.params.serviceId);
+		const osLevel = parseInt(req.params.osLevel,10);
+		await service.changeOsLevel(osLevel);
+		res.json(service.json());
+	}catch(e: any){
+		console.log(e);
+		res.status(500).send('"'+e.toString()+'"');
+	}
+}));
+
+
 
 /**
  * @api {post} /:peaId/service/:serviceName/:command   Call service
@@ -246,29 +269,27 @@ peaRouter.post('/:peaId/service/:serviceName', asyncHandler(async (req: Request,
  * @apiParam {string} [procedure]      Name of procedure
  * @apiParam {ParameterOptions[]} [parameters]    Service Strategy Parameters
  */
-peaRouter.post('/:peaId/service/:serviceName/:command', asyncHandler(async (req: Request, res: Response) => {
+peaRouter.post('/:peaId/service/:serviceId/:command', asyncHandler(async (req: Request, res: Response) => {
 	catServer.debug(`Call service: ${JSON.stringify(req.params)} ${JSON.stringify(req.body)}`);
 	const manager: ModularPlantManager = req.app.get('manager');
 	try{
 		const service = manager.getService(req.params.peaId, req.params.serviceName);
-		if (req.body.procedure) {
-			const procedure = service.getProcedureByName(req.body.procedure);
-			if (procedure) {
-				await service.setProcedure(procedure);
+		if (service){
+			if (req.body.parameters) {
+				await service.setParameters(req.body.parameters, manager.peas);
 			}
+			const command = req.params.command as ServiceCommand;
+			console.log('execute');
+			await service.executeCommand(command);
+			res.json({
+				pea: req.params.peaId,
+				service: service.name,
+				command: req.params.command,
+				status: 'Command successfully sent'
+			});
+		} else {
+			res.status(404).send('Service not found');
 		}
-		if (req.body.parameters) {
-			await service.setParameters(req.body.parameters, manager.peas);
-		}
-		const command = req.params.command as ServiceCommand;
-		console.log('execute');
-		await service.executeCommand(command);
-		res.json({
-			pea: req.params.peaId,
-			service: service.name,
-			command: req.params.command,
-			status: 'Command successfully send'
-		});
 	} catch (e: any) {
 		console.log(e);
 		res.status(500).send(e.toString());
@@ -283,19 +304,23 @@ peaRouter.post('/:peaId/service/:serviceName/:command', asyncHandler(async (req:
  * @apiParam {string} serviceName   Name of service
  * @apiParam {string="offline","operator","automatic"} opMode      OpMode name
  */
-peaRouter.post('/:peaId/service/:serviceName/opMode/:opModeParam', asyncHandler(async (req: Request, res: Response) => {
+peaRouter.post('/:peaId/service/:serviceId/opMode/:opModeParam', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
 	try{
-		const service = manager.getService(req.params.peaId, req.params.serviceName);
-
+		const service = manager.getService(req.params.peaId, req.params.serviceId);
 		const opMode = req.params.opModeParam as OperationMode;
+
+		if(service){
 		await service.requestOpMode(opMode);
 		res.json({
 			pea: req.params.peaId,
 			service: service.name,
 			opMode: req.params.opMode,
-			status: 'Command successfully send'
+			status: 'OpMode successfully changed'
 		});
+		} else {
+			res.status(404).send('Service not found.');
+		}
 	} catch (e: any) {
 		console.log(e);
 		res.status(500).send(e.toString());
@@ -308,7 +333,7 @@ peaRouter.post('/:peaId/service/:serviceName/opMode/:opModeParam', asyncHandler(
  * @apiGroup PEAController
  * @apiParam {string} peaId     PEAController identifier
  * @apiParam {string} serviceName   Name of service
- * @apiParam {string="extern","intern"} serviceSourceMode      ServiceSourceMode name
+ * @apiParam {string="extern","intern"} serviceSourceMode
  */
 peaRouter.post('/:peaId/service/:serviceName/serviceSourceMode/:serviceSourceMode', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
@@ -316,13 +341,17 @@ peaRouter.post('/:peaId/service/:serviceName/serviceSourceMode/:serviceSourceMod
 		const service = manager.getService(req.params.peaId, req.params.serviceName);
 
 		const serviceSourceMode = req.params.serviceSourceMode as ServiceSourceMode;
-		await service.requestServiceSourceMode(serviceSourceMode);
-		res.json({
-			pea: req.params.peaId,
-			service: service.name,
-			serviceSourceMode: req.params.serviceSourceMode,
-			status: 'Command successfully send'
-		});
+		if(service){
+			await service.requestServiceSourceMode(serviceSourceMode);
+			res.json({
+				pea: req.params.peaId,
+				service: service.name,
+				serviceSourceMode: req.params.serviceSourceMode,
+				status: 'SourceMode successfully changed.'
+			});
+		} else {
+			res.status(404).send('Service not found.');
+		}
 	} catch (e: any) {
 		console.log(e);
 		res.status(500).send(e.toString());
@@ -330,17 +359,21 @@ peaRouter.post('/:peaId/service/:serviceName/serviceSourceMode/:serviceSourceMod
 }));
 
 /**
- * @api {get} /pea/:peaId/service/:serviceName    Get service statusNode
+ * @api {get} /pea/:peaId/service/:serviceName    Get service status
  * @apiName GetService
  * @apiGroup PEAController
  * @apiParam {string} peaId   PEA ID
- * @apiParam {string} serviceName   Name of service
+ * @apiParam {string} serviceId
  */
-peaRouter.get('/:peaId/service/:serviceName', asyncHandler(async (req: Request, res: Response) => {
+peaRouter.get('/:peaId/service/:serviceId', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
 	try{
-		const service = manager.getService(req.params.peaId, req.params.serviceName);
-		res.json(service.json());
+		const service = manager.getService(req.params.peaId, req.params.serviceId);
+		if (service) {
+			res.json(service.json());
+		} else {
+			res.status(404).send('Service not found.');
+		}
 	}
 	catch(e: any){
 		console.log(e);

@@ -55,15 +55,14 @@ export interface ServiceSetEvents {
 
 type ServiceSetEmitter = StrictEventEmitter<EventEmitter, ServiceSetEvents>;
 
-export abstract class ServiceSet {
-	public readonly eventEmitter: ServiceSetEmitter;
+export abstract class ServiceSet extends (EventEmitter as new() => ServiceSetEmitter){
 	public readonly services: Service[] = [];
 	public readonly serviceRelations: ServiceRelation[] = [];
 	// name of the ServiceSet
 	protected _name = '';
 
 	protected constructor() {
-		this.eventEmitter = new EventEmitter();
+		super();
 	}
 
 	public get qualifiedName(): string {

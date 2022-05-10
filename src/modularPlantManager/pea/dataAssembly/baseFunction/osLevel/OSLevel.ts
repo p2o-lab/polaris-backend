@@ -24,20 +24,42 @@
  */
 
 import {DataItem} from '../../../connection';
+import {BaseServiceEvents} from '../../../serviceSet';
+import StrictEventEmitter from 'strict-event-emitter-types';
+import {EventEmitter} from 'events';
 
 export interface OSLevelRuntime {
 	OSLevel: DataItem<number>;
 }
 
-export class OSLevel {
+/**
+ * Events emitted by [[OSLevel]]
+ */
+export interface OSLevelEvents extends BaseServiceEvents {
+	changed: number;
+}
+
+type OSLevelEmitter = StrictEventEmitter<EventEmitter, OSLevelEvents>;
+
+export class OSLevel extends (EventEmitter as new()=> OSLevelEmitter){
 	private dAController: any;
 
 	constructor(dAController: any) {
+		super();
 		this.dAController = dAController;
+
 		this.dAController.communication.OSLevel = this.dAController.createDataItem('OSLevel', 'number', 'write');
+
+		this.dAController.communication.OSLevel.on('changed', () => {
+			this.emit('changed', this.dAController.communication.OSLevel.value);
+		});
 	}
 
-	get OSLevel(): number {
+	get osLevel(): number {
 		return this.dAController.communication.OSLevel.value;
+	}
+
+	set osLevel(value: number) {
+		if (Number.isInteger(value) && value >= 0) this.dAController.communication.OSLevel.write(value);
 	}
 }

@@ -61,7 +61,7 @@ export class PetrinetState {
 				catRecipe.info(`Start operation ${operation.pea?.id} ${operation.service.name} ` +
 					`${JSON.stringify(operation.command)}`);
 				operation.execute();
-				operation.emitter.on('changed', (state) => {
+				operation.on('changed', (state) => {
 					if (state === 'completed') {
 						resolve();
 					} else if (state === 'aborted') {

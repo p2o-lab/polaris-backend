@@ -186,9 +186,8 @@ describe('with MockupServer containing a PEAController', () => {
 			await connection.connect();
 
 			const procedureOptions: ProcedureOptions = {
-				dataAssembly: [healthStateViewMockup.getDataAssemblyOptions()],
-				id: 'Procedure1',
-				isDefault: true,
+				dataAssemblies: [healthStateViewMockup.getDataAssemblyOptions()],
+				procedureId: 1,
 				isSelfCompleting: false,
 				name: 'Procedure1',
 				parameters: []

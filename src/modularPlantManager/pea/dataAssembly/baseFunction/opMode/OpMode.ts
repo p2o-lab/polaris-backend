@@ -27,6 +27,9 @@ import {OperationMode} from '@p2olab/polaris-interface';
 import {DataItem} from '../../../connection';
 import {BaseDataAssemblyRuntime} from '../../DataAssemblyController';
 import {catDataAssembly} from '../../../../../logging';
+import {BaseServiceEvents} from '../../../serviceSet';
+import StrictEventEmitter from 'strict-event-emitter-types';
+import {EventEmitter} from 'events';
 
 export type OpModeRuntime = BaseDataAssemblyRuntime & {
 	StateChannel: DataItem<boolean>;
@@ -41,11 +44,24 @@ export type OpModeRuntime = BaseDataAssemblyRuntime & {
 	StateOffAct: DataItem<boolean>;
 };
 
-export class OpMode {
+/**
+ * Events emitted by [[OpMode]]
+ */
+export interface OpModeEvents extends BaseServiceEvents {
+	changed: {
+		opMode: OperationMode;
+		stateChannel: boolean;
+	};
+}
+
+type OpModeEmitter = StrictEventEmitter<EventEmitter, OpModeEvents>;
+
+export class OpMode extends (EventEmitter as new() => OpModeEmitter) {
 
 	private dAController: any;
 
 	constructor(dAController: any) {
+		super();
 		this.dAController = dAController;
 		this.initialize();
 	}
@@ -64,6 +80,20 @@ export class OpMode {
 		this.dAController.communication.StateOffAct = this.dAController.createDataItem('StateOffAct', 'boolean');
 		this.dAController.communication.StateOpAct = this.dAController.createDataItem('StateOpAct',  'boolean');
 		this.dAController.communication.StateAutAct = this.dAController.createDataItem('StateAutAct', 'boolean');
+
+		this.dAController.communication.StateChannel.on('changed', () => {
+			this.emit('changed', {opMode: this.getOperationMode(), stateChannel: this.dAController.communication.StateChannel.value});
+		});
+		// TODO: Always two of them will change in parallel --> Smart way to just emit one event?
+		this.dAController.communication.StateOffAct.on('changed', () => {
+			this.emit('changed', {opMode: this.getOperationMode(), stateChannel: this.dAController.communication.StateChannel.value});
+		});
+		this.dAController.communication.StateOpAct.on('changed', () => {
+			this.emit('changed', {opMode: this.getOperationMode(), stateChannel: this.dAController.communication.StateChannel.value});
+		});
+		this.dAController.communication.StateAutAct.on('changed', () => {
+			this.emit('changed', {opMode: this.getOperationMode(), stateChannel: this.dAController.communication.StateChannel.value});
+		});
 	}
 
 	public getOperationMode(): OperationMode {

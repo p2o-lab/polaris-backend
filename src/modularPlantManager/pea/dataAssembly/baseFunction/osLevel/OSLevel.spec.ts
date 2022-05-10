@@ -53,12 +53,12 @@ describe('OSLevel', () => {
 		});
 
 		it('should create OSLevel', async () => {
-			expect(osLevelObject.OSLevel).to.equal(0);
+			expect(osLevelObject.osLevel).to.equal(0);
 			expect(da.communication.OSLevel).to.not.be.undefined;
 		});
 
 		it('getter', async () => {
-			expect(osLevelObject.OSLevel).to.equal(0);
+			expect(osLevelObject.osLevel).to.equal(0);
 		});
 
 	});

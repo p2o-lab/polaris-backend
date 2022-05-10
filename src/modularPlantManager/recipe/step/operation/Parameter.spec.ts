@@ -183,14 +183,14 @@ describe('Parameter', () => {
 				param.listenToScopeArray();
 				//(peaTestServer.dataAssemblies[0] as PEATestNumericVariable).v = 10;
 				await Promise.race([
-					new Promise((resolve) => param.eventEmitter.once('changed', resolve)),
+					new Promise((resolve) => param.once('changed', resolve)),
 					new Promise((resolve, reject) => setTimeout(reject, 1000, 'timeout'))
 				]);
 
 				param.unlistenToScopeArray();
 				//(peaTestServer.dataAssemblies[0] as PEATestNumericVariable).v = 11;
 				await Promise.race([
-					new Promise((resolve, reject) => param.eventEmitter.once('changed', reject)),
+					new Promise((resolve, reject) => param.once('changed', reject)),
 					new Promise((resolve) => setTimeout(resolve, 1000))
 				]);
 			});

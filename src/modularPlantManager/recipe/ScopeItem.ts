@@ -118,24 +118,27 @@ export class ScopeItem {
 		let procedure: Procedure | undefined;
 		if (service) {
 			catScopeItem.debug(`Found service "${service.name}" for expression "${variable}"`);
-			procedure = service.getCurrentProcedure();
-			if (!procedure) {
-				throw new Error(`Current procedure is not set for service "${service.name}"`);
+			const currentProcedureId = service.currentProcedureId;
+			const requestedProcedureId = service.requestedProcedureId;
+			if (!currentProcedureId || !requestedProcedureId || (currentProcedureId == 0 && requestedProcedureId == 0)) {
+				throw new Error(`No procedure option is set for service "${service.name}"`);
 			}
 			token = components.shift();
-
+			procedure = service.requestedProcedure;
+			if (procedure){
+				// TODO: This needs to be reviewed and reworked
 			dataAssembly = service.parameters.find((p: DataAssemblyController) => p.name === token);
 			if (!dataAssembly) {
-				procedure.parameters.find((p: DataAssemblyController) => p.name === token);
+				dataAssembly = procedure.parameters.find((p: DataAssemblyController) => p.name === token);
 			}
 			if (!dataAssembly) {
-				procedure.processValuesIn.find((p: DataAssemblyController) => p.name === token);
+				dataAssembly = procedure.processValuesIn.find((p: DataAssemblyController) => p.name === token);
 			}
 			if (!dataAssembly) {
-				procedure.processValuesOut.find((p: DataAssemblyController) => p.name === token);
+				dataAssembly = procedure.processValuesOut.find((p: DataAssemblyController) => p.name === token);
 			}
 			if (!dataAssembly) {
-				procedure.reportParameters.find((p: DataAssemblyController) => p.name === token);
+				dataAssembly = procedure.reportParameters.find((p: DataAssemblyController) => p.name === token);
 			}
 
 			if (!dataAssembly) {
@@ -147,6 +150,7 @@ export class ScopeItem {
 						`in Service ${service.qualifiedName}.${procedure.name}`);
 				}
 			}
+		}
 		} else {
 			// find DataAssemblyController in ProcessValues
 			if (pea.dataAssemblies.find((v) => v.name === token)) {

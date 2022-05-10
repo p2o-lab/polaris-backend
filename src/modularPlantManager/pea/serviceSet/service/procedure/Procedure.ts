@@ -40,6 +40,7 @@ import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Category} from 'typescript-logging';
 import {catProcedure} from '../../../../../logging';
+import {IDProvider} from '../../../../_utils/idProvider/IDProvider';
 
 export interface ProcedureEvents {
 	parameterChanged: {
@@ -51,9 +52,11 @@ export interface ProcedureEvents {
 type ProcedureEmitter = StrictEventEmitter<EventEmitter, ProcedureEvents>;
 
 export class Procedure extends (EventEmitter as new() => ProcedureEmitter) {
-	public readonly id: string;
+
+	public readonly id = IDProvider.generateIdentifier();
+	public readonly procedureId: number;
+
 	public readonly name: string;
-	public readonly defaultProcedure: boolean;
 	public readonly selfCompleting: boolean;
 	public readonly processValuesIn: InputElement[] = [];
 	public readonly processValuesOut: IndicatorElement[] = [];
@@ -63,9 +66,13 @@ export class Procedure extends (EventEmitter as new() => ProcedureEmitter) {
 
 	constructor(options: ProcedureOptions, connection: OpcUaConnection) {
 		super();
-		this.id = options.id;
+
+		if (!Procedure.validProcedureId(options.procedureId)){
+			throw new Error(`The procedure id should be Int and greater than 0 - got ${options.procedureId}`);
+		}
+
+		this.procedureId = options.procedureId;
 		this.name = options.name;
-		this.defaultProcedure = options.isDefault;
 		this.selfCompleting = options.isSelfCompleting;
 		if (options.parameters) {
 			this.parameters = options.parameters.map((daOptions: DataAssemblyOptions) => DataAssemblyControllerFactory.create(daOptions, connection) as ServParam);
@@ -121,8 +128,8 @@ export class Procedure extends (EventEmitter as new() => ProcedureEmitter) {
 	public toJson(): ProcedureInterface {
 		return {
 			id: this.id,
+			procedureId: this.procedureId,
 			name: this.name,
-			isDefault: this.defaultProcedure,
 			isSelfCompleting: this.selfCompleting,
 			parameters: this.parameters.map((param) => param.toJson()),
 			processValuesIn: this.processValuesIn.map((param) => param.toJson()),
@@ -139,4 +146,9 @@ export class Procedure extends (EventEmitter as new() => ProcedureEmitter) {
 		this.parameters.forEach((serviceParameter) => result.push(serviceParameter.toDataAssemblyOptionsJson()));
 		return result;
 	}
+
+	private static validProcedureId(valueToCheck: number): boolean {
+		return (Number.isInteger(valueToCheck) && valueToCheck > 0);
+	}
+
 }

@@ -24,17 +24,34 @@
  */
 
 import {DataItem} from '../../../connection';
+import {BaseServiceEvents} from '../../../serviceSet';
+import StrictEventEmitter from 'strict-event-emitter-types';
+import {EventEmitter} from 'events';
 
 export type WQCRuntime = {
 	WQC: DataItem<number>;
 }
 
-export class WQC {
+/**
+ * Events emitted by [[OSLevel]]
+ */
+export interface WQCEvents extends BaseServiceEvents {
+	changed: number;
+}
+
+type WQCEmitter = StrictEventEmitter<EventEmitter, WQCEvents>;
+
+export class WQC extends (EventEmitter as new () => WQCEmitter) {
 	private dAController: any;
 
 	constructor(dAController: any) {
+		super();
 		this.dAController = dAController;
+
 		this.dAController.communication.WQC = this.dAController.createDataItem('WQC', 'number');
+		this.dAController.communication.WQC.on('changed', () => {
+			this.emit('changed', this.dAController.communication.WQC.value);
+		});
 	}
 
 	get WQC(): number{

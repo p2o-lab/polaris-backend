@@ -89,17 +89,17 @@ describe('Service', () => {
 		});
 
 		it('should find procedure', () => {
-			const procedure = service.getProcedureByName('Trigonometry_default');
+			const procedure = service.findProcedure(1);
 			expect(procedure?.name).to.equal('Trigonometry_default');
 		});
 
 		it('should not find non existent procedure', () => {
-			const procedure = service.getProcedureByName('ProcedureNotThere');
+			const procedure = service.findProcedure(100);
 			expect(procedure).to.throw;
 		});
 
 		it('should get undefined when getting current procedure when not connected', () => {
-			expect(service.getCurrentProcedure()).to.equal(undefined);
+			expect(service.currentProcedure).to.equal(undefined);
 		});
 	});
 
@@ -129,7 +129,7 @@ describe('Service', () => {
 		});
 
 		it('should get current procedure which is undefined', () => {
-			expect(service.getCurrentProcedure()).to.equal(undefined);
+			expect(service.currentProcedure).to.equal(undefined);
 		});
 
 		it('should not find parameter of indicator element type', () => {
@@ -162,11 +162,11 @@ describe('Service', () => {
 		});
 
 		it('waitForOpModeSpecificTest', async () => {
-			await service.serviceControl.opMode.waitForOpModeToPassSpecificTest(OperationMode.Offline);
-			expect(service.serviceControl.opMode.getOperationMode()).to.equal(OperationMode.Offline);
+			await service.serviceControl.opMode.waitForServiceOpModeToPassSpecificTest(OperationMode.Offline);
+			expect(service.serviceControl.opMode.getServiceOperationMode()).to.equal(OperationMode.Offline);
 
 			await service.requestOpMode(OperationMode.Automatic);
-			expect(service.serviceControl.opMode.getOperationMode()).to.equal(OperationMode.Automatic);
+			expect(service.serviceControl.opMode.getServiceOperationMode()).to.equal(OperationMode.Automatic);
 
 			await service.requestServiceSourceMode(ServiceSourceMode.Extern);
 			expect(service.serviceControl.serviceSourceMode.getServiceSourceMode()).to.equal(ServiceSourceMode.Extern);
@@ -221,7 +221,7 @@ describe('Service', () => {
 			expect(result.procedures[0].reportParameters).to.have.length(3);*/
 
 			let stateChangeCount = 0;
-			service.eventEmitter.on('state', () => {
+			service.on('state', () => {
 				stateChangeCount++;
 			});
 
@@ -261,19 +261,24 @@ describe('Service', () => {
 			const pea = new PEAController(peaOptionsServices as unknown as PEAOptions);
 			await pea.connectAndSubscribe();
 
-			const service = pea.getService('TestService');
-			const procedure = service.getProcedureByName('TestService_default');
-			if (procedure) {
-				await service.setProcedure(procedure);
+			const serviceId = pea.findService('TestService');
+			if (!serviceId) {
+				throw new Error('Service not found.');
 			}
-			let curProcedure = await service.getCurrentProcedure();
+			const service = pea.getService(serviceId);
+
+			const procedure = service.findProcedure(1);
+			if (procedure) {
+				await service.requestProcedureOperator(procedure.procedureId);
+			}
+			let curProcedure = service.currentProcedure;
 			expect(curProcedure).to.be.undefined;
 
 			await service.start();
 
 			await new Promise((resolve => service.serviceControl.on('state', resolve)));
 
-			curProcedure = await service.getCurrentProcedure();
+			curProcedure = service.currentProcedure;
 			expect(curProcedure).to.not.be.undefined;
 			const paramOptions: ParameterOptions = {value: 5, name: 'AnaProcParam_TestService_factor'};
 			expect((procedure?.parameters[0] as AnaServParam).communication.VExt.value).to.equal(0);

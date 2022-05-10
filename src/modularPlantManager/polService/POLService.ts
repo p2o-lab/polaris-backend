@@ -24,7 +24,7 @@
  */
 
 import {
-	CommandEnableInterface,
+	CommandEnableInfo,
 	ParameterInterface,
 	ParameterOptions,
 	POLServiceInterface
@@ -63,9 +63,9 @@ export abstract class POLService extends BaseService {
 		};
 	}
 
-	protected _controlEnable: CommandEnableInterface;
+	protected _controlEnable: CommandEnableInfo;
 
-	public get commandEnable(): CommandEnableInterface {
+	public get commandEnable(): CommandEnableInfo {
 		return this._controlEnable;
 	}
 
@@ -79,23 +79,25 @@ export abstract class POLService extends BaseService {
 
 	public json(): POLServiceInterface {
 		return {
+			id: this.id,
+			requestedProcedure: 0,
 			name: this.name,
 			type: this.constructor.name,
 			procedures: [{
-				id: 'default',
+				id: 'not-supported',
+				procedureId: 1,
 				name: 'default',
-				isDefault: true,
 				isSelfCompleting: this.selfCompleting,
 				parameters: this.procedureParameters,
 				processValuesIn: this.processValuesIn,
 				processValuesOut: this.processValuesOut,
 				reportParameters: this.reportParameters
 			}],
-			currentProcedure: '0',
+			currentProcedure: 0,
 			parameters: [],
-			status: ServiceState[this.state],
-			controlEnable: this.commandEnable,
-			lastChange: (new Date().getTime() - this.lastStatusChange.getTime()) / 1000,
+			state: ServiceState[this.state],
+			commandEnable: this.commandEnable,
+			lastChange: (new Date().getTime() - this.lastStatusChange.getTime()) / 1000
 		};
 	}
 
@@ -252,12 +254,12 @@ export abstract class POLService extends BaseService {
 	private setState(newState: ServiceState): void {
 		catPOLService.info(`[${this.name}] state changed to ${ServiceState[newState]}`);
 		this._state = newState;
-		this.eventEmitter.emit('state', newState);
+		this.emit('state', newState);
 	}
 
-	private setControlEnable(controlEnable: CommandEnableInterface): void {
-		this._controlEnable = controlEnable;
-		this.eventEmitter.emit('controlEnable', controlEnable);
+	private setControlEnable(commandEnable: CommandEnableInfo): void {
+		this._controlEnable = commandEnable;
+		this.emit('commandEnable', commandEnable);
 	}
 
 	private async gotoStarting(): Promise<void> {

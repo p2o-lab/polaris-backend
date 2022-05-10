@@ -50,6 +50,7 @@ import {Category} from 'typescript-logging';
 import {catOpcUA} from '../../../logging';
 import {IDProvider} from '../../_utils/idProvider/IDProvider';
 import {OpcUaAuthenticationSettings, OpcUaAuthenticationType, OpcUaConnectionInfo, OpcUaConnectionSettings, OpcUaMessageSecurityModes, OpcUaSecurityPolicies, OpcUaSecuritySettings} from '@p2olab/polaris-interface';
+import {DataType} from 'node-opcua-client';
 
 /**
  * Events emitted by {@link OpcUaConnection}
@@ -65,6 +66,16 @@ interface OpcUaConnectionEvents {
 	 * @event disconnected
 	 */
 	disconnected: void;
+	/**
+	 * when monitored item changes
+	 * @event monitoredItemChanged
+	 */
+	monitoredItemChanged: {
+		monitoredItemId: string;
+		value: string | number | boolean;
+		dataType: string;
+		timestamp: Date;
+	};
 }
 
 type OpcUaConnectionEmitter = StrictEventEmitter<EventEmitter, OpcUaConnectionEvents>;
@@ -72,7 +83,6 @@ type OpcUaConnectionEmitter = StrictEventEmitter<EventEmitter, OpcUaConnectionEv
 export class OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionEmitter) {
 
 	public readonly id: string = IDProvider.generateIdentifier();
-	public readonly eventEmitter: EventEmitter = new EventEmitter();
 	private readonly logger: Category = catOpcUA;
 
 	private initialized = false;
@@ -336,7 +346,7 @@ export class OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionEm
 		this.nodes.delete(identifier);
 	}
 
-	public async startMonitoring(samplingInterval = 100): Promise<EventEmitter> {
+	public async startMonitoring(samplingInterval = 100): Promise<void> {
 		const options = Array.from(this.nodes.values()).map((item) => {
 			return {
 				nodeId: item,
@@ -356,12 +366,15 @@ export class OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionEm
 
 		monitoredItemGroup.on('changed', (monitoredItem: ClientMonitoredItemBase, dataValue: DataValue) => {
 				this.logger.trace(`[${this.id}] ${monitoredItem.itemToMonitor.nodeId.toString()} changed to ${dataValue}`);
-				this.eventEmitter.emit(monitoredItem.itemToMonitor.nodeId.toString(), dataValue);
+				this.emit('monitoredItemChanged',
+					{monitoredItemId : monitoredItem.itemToMonitor.nodeId.toString(),
+						value: dataValue.value.value,
+						dataType: DataType[dataValue.value.dataType],
+						timestamp: dataValue.value.value.serverTimestamp || new Date()
+					});
 			});
 
 		await monitoredItemGroup.setMonitoringMode(MonitoringMode.Reporting);
-		
-		return this.eventEmitter;
 	}
 
 	public async stopMonitoring(): Promise<void>{

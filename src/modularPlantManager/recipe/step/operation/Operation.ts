@@ -31,7 +31,7 @@ import {catOperation} from '../../../../logging';
 /** Operation used in a [[Step]] of a [[Recipe]] or [[PetrinetState]]
  *
  */
-export class Operation {
+export class Operation extends EventEmitter{
 
 	private static MAX_RETRIES = 10;
 	private static RETRY_DELAY = 500;
@@ -41,10 +41,10 @@ export class Operation {
 	public procedure!: Procedure | undefined;
 	public command!: ServiceCommand;
 	public parameterOptions: ParameterOptions[] = [];
-	public readonly emitter: EventEmitter;
 	private state!: 'executing' | 'completed' | 'aborted';
 
 	constructor(options: OperationOptions, peas: PEAController[]) {
+		super();
 		if (peas) {
 			if (options.pea) {
 				this.pea = peas.find((p) => p.id === options.pea);
@@ -61,8 +61,12 @@ export class Operation {
 		} else {
 			throw new Error('No PEAs specified');
 		}
+		const serviceInstanceId = this.pea.findService(options.service);
+		if (!serviceInstanceId) {
+			throw new Error(`Service '${options.service}' not be found in ${this.pea.name}.`);
+		}
 
-		this.service = this.pea.getService(options.service);
+		this.service = this.pea.getService(serviceInstanceId);
 		if (this.service instanceof Service) {
 			if (options.procedure) {
 				this.procedure = this.service.procedures.find((procedure) => procedure.name === options.procedure);
@@ -77,7 +81,6 @@ export class Operation {
 		if (options.parameter) {
 			this.parameterOptions = options.parameter || [];
 		}
-		this.emitter = new EventEmitter();
 	}
 
 	/**
@@ -94,7 +97,7 @@ export class Operation {
 			catOperation.info(`Perform operation ${this.pea?.id}.${this.service.name}.${this.command}() ` +
 				`(Procedure: ${this.procedure ? this.procedure.name : ''})`);
 			if (this.service instanceof Service && this.procedure) {
-				await this.service.setProcedure(this.procedure);
+				await this.service.requestProcedureAutomatic(this.procedure.procedureId);
 			}
 			if (this.parameterOptions) {
 				await this.service.setParameters(this.parameterOptions);
@@ -102,15 +105,15 @@ export class Operation {
 			try {
 				await this.service.executeCommand(this.command);
 				this.state = 'completed';
-				this.emitter.emit('changed', 'completed');
-				this.emitter.removeAllListeners('changed');
+				this.emit('changed', 'completed');
+				this.removeAllListeners('changed');
 			} catch (e) {
 				numberOfTries++;
 				catOperation.debug(`Operation could not be executed due to error: ${(e as Error).message}`);
 				if (numberOfTries === Operation.MAX_RETRIES) {
 					this.state = 'aborted';
-					this.emitter.emit('changed', 'aborted');
-					this.emitter.removeAllListeners('changed');
+					this.emit('changed', 'aborted');
+					this.removeAllListeners('changed');
 					catOperation.warn('Could not execute operation. Stop restarting');
 				} else {
 					catOperation.warn(`Could not execute operation. Another try in ${Operation.RETRY_DELAY}ms`);

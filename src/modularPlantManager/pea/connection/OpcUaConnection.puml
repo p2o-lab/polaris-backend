@@ -29,7 +29,6 @@
 class OpcUaConnection{
 	+ //readonly// endpoint: string
 	+ //readonly// id: string
-	+ //readonly// eventEmitter: EventEmitter
 	+ //readonly// username: string | undefined
     + //readonly// password: string | undefined
 	- session: ClientSession | undefined

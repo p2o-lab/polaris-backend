@@ -84,7 +84,7 @@ describe('Step', () => {
 			}, [pea]);
 
 			step.execute();
-			await new Promise((resolve) => step.eventEmitter.on('completed', resolve));
+			await new Promise((resolve) => step.on('completed', resolve));
 		});
 		*/
 	});

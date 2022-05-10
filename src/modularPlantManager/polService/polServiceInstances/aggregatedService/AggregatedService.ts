@@ -124,7 +124,8 @@ export class AggregatedService extends POLService {
 			if (opts.pea) {
 				const pea = peas.find((p) => p.id === opts.pea);
 				if (pea) {
-					result = pea.getService(opts.service);
+					const serviceId = pea.findService(opts.service);
+					result = serviceId? pea.getService(serviceId): undefined;
 				}
 			} else if (virtualServices) {
 				result = virtualServices.find((vs) => vs.name === opts.service);

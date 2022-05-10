@@ -28,7 +28,6 @@
 !include Service.puml
 
 abstract class BaseService{
-    + readonly eventEmitter: BaseServiceEmitter
     + _name!: string
     + _lastStatusChange: Date = new Date()
     + _selfCompleting = false

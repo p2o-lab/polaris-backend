@@ -56,12 +56,12 @@ describe('ModularPlantManager', () => {
 
 
 		it('loadPEAController()', async () => {
-			await modularPlantManager.loadPEAController(identifier);
+			await modularPlantManager.createPEAControllerInstance(identifier);
 			expect(modularPlantManager.peas.length).equal(1);
 		}).timeout(5000);
 
 		it('loadPEAController() to fail, wrong identifier', async () => {
-			return expect(modularPlantManager.loadPEAController('')).to.be.rejectedWith('PEA with identifier [] not found.');
+			return expect(modularPlantManager.createPEAControllerInstance('')).to.be.rejectedWith('PEA with identifier [] not found.');
 		});
 
 	});

@@ -48,15 +48,17 @@ export class OpcUaDataItem<T extends string | number | boolean> extends DynamicD
 
 	public async subscribe(): Promise<void> {
 		const dataItemKey = this.connection.addNodeToMonitoring(this.nodeId, this.namespaceIndex);
-		this.connection.eventEmitter.on(dataItemKey,
-			(dataValue) => {
-				this.logger.info(`[${this.nodeId}] Variable Changed (${dataItemKey}) ` +
-					`= ${dataValue.value.value.toString()}`);
-				this.value = dataValue.value.value;
-				this.dataType = DataType[dataValue.value.dataType];
-				this.timestamp = dataValue.serverTimestamp;
-				this.emit('changed', {value: this.value, timestamp: this.timestamp || new Date()});
-			});
+		this.connection.on('monitoredItemChanged',
+			(data) => {
+			if (dataItemKey === data.monitoredItemId){
+/*				this.logger.info(`[${this.nodeId}] Variable Changed (${dataItemKey}) ` +
+					`= ${data.value.toString()}`);*/
+				this.value = data.value as T;
+				this.dataType = data.dataType;
+				this.timestamp = data.timestamp;
+				this.emit('changed', {value: this.value, timestamp: this.timestamp});
+			}
+		});
 		//Todo: uncomment
 		// this.logger.info(`subscribed to DataItem ${this.nodeId}`);
 	}

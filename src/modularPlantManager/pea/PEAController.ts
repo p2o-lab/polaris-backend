@@ -24,7 +24,7 @@
  */
 
 import {
-	CommandEnableInterface, DataAssemblyOptions, OpcUaConnectionInfo, OpcUaConnectionSettings,	OperationMode,
+	CommandEnableInfo, DataAssemblyOptions, OpcUaConnectionInfo, OpcUaConnectionSettings,	OperationMode,
 	ParameterInterface, PEAInterface, PEAOptions,
 	ServiceCommand,
 	ServiceInterface, ServiceOptions, ServiceSourceMode,
@@ -35,12 +35,13 @@ import {
 	DataAssemblyController, DataAssemblyControllerFactory,
 	ServiceState
 } from './dataAssembly';
-import {Procedure, Service, ServiceEvents} from './serviceSet';
+import {BaseServiceEvents, Procedure, Service} from './serviceSet';
 
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Category} from 'typescript-logging';
 import {catPEA} from '../../logging';
+import {ServiceEvents} from '../../../build/src/modularPlantManager';
 
 export interface ParameterChange {
 	timestampPEA: Date;
@@ -70,7 +71,10 @@ interface PEAEvents {
 	 * when commandEnable of one service changes
 	 * @event commandEnable
 	 */
-	controlEnable: { service: Service; controlEnable: CommandEnableInterface };
+	controlEnable: {
+		service: Service;
+		controlEnable: CommandEnableInfo
+	};
 	/**
 	 * Notify when a service changes its state
 	 * @event stateChanged
@@ -86,7 +90,31 @@ interface PEAEvents {
 	opModeChanged: {
 		service: Service;
 		operationMode: OperationMode;
+	};
+	/**
+	 * Notify when a service changes its osLevel
+	 * @event osLevelChanged
+	 */
+	osLevelChanged: {
+		service: Service;
+		osLevel: number;
+	};
+	/**
+	 * Notify when a service changes its sourceMode
+	 * @event sourceModeChanged
+	 */
+	serviceSourceModeChanged: {
+		service: Service;
 		sourceMode: ServiceSourceMode;
+	};
+	/**
+	 * Notify when a procedure of a service changes
+	 * @event procedureChanged
+	 */
+	procedureChanged: {
+		service: Service;
+		requestedProcedure: number | undefined,
+		currentProcedure: number | undefined,
 	};
 	/**
 	 * Notify when a variable inside a PEAController changes
@@ -120,12 +148,6 @@ interface PEAEvents {
 
 type PEAEmitter = StrictEventEmitter<EventEmitter, PEAEvents>;
 
-/**
- * PEAController with its Services and DataAssemblies
- *
- * in order to interact with a PEAController, you must first [[connect]] to it
- *
- */
 export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 
 	public readonly options: PEAOptions;
@@ -190,14 +212,17 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 
 	}
 
-	public getService(serviceName: string): Service {
+	public findService(serviceName: string): string | undefined {
 		const service = this.services.find((service) => service.name === serviceName);
+		return service? service.id : undefined;
+	}
+
+	public getService(serviceId: string): Service {
+		const service = this.services.find((service) => service.id === serviceId);
 		if (service) {
 			return service;
-		} else if (!serviceName && this.services.length === 1) {
-			return this.services[0];
 		} else {
-			throw new Error(`[${this.id}] Could not find service with name ${serviceName}`);
+			throw new Error(`[${this.id}] Could not find service with name ${serviceId}`);
 		}
 	}
 
@@ -396,9 +421,9 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 		this.dataAssemblies.forEach((variable: DataAssemblyController) => variable.unsubscribe());
 	}
 
-	private subscribeToAllServices(): Promise<StrictEventEmitter<EventEmitter, ServiceEvents, ServiceEvents, 'addEventListener' | 'removeEventListener', 'on' | 'addListener' | 'removeListener' | 'once' | 'emit'>[]>{
-		return Promise.all(this.services.map((service) => {
-			service.eventEmitter
+	private subscribeToAllServices(): void {
+		this.services.forEach((service) => {
+			service
 				.on('commandExecuted', (data) => {
 					this.emit('commandExecuted', {
 						service,
@@ -407,7 +432,7 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 						parameter: data.parameter
 					});
 				})
-				.on('controlEnable', (controlEnable: CommandEnableInterface) => {
+				.on('commandEnable', (controlEnable: CommandEnableInfo) => {
 					this.emit('controlEnable', {service, controlEnable});
 				})
 				.on('state', (state) => {
@@ -425,7 +450,19 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 				})
 				.on('opMode', (opMode) => {
 					this.logger.info(`[${this.id}] opMode changed: ${service.name} = ${JSON.stringify(opMode)}`);
-					this.emit('opModeChanged', {service: service, ...opMode});
+					this.emit('opModeChanged', {service: service, operationMode: opMode});
+				})
+				.on('sourceMode', (sourceMode) => {
+					this.logger.info(`[${this.id}] sourceMode changed: ${service.name} = ${JSON.stringify(sourceMode)}`);
+					this.emit('serviceSourceModeChanged', {service: service, sourceMode});
+				})
+				.on('osLevel', (osLevel) => {
+					this.logger.info(`[${this.id}] osLevel changed: ${service.name} = ${JSON.stringify(osLevel)}`);
+					this.emit('osLevelChanged', {service: service, osLevel});
+				})
+				.on('procedure', (procedure) => {
+					this.logger.info(`[${this.id}] procedure changed: ${service.name} = ${JSON.stringify(procedure)}`);
+					this.emit('procedureChanged', {service: service, ...procedure});
 				})
 				.on('parameterChanged', (data) => {
 					this.logger.info(`[${this.id}] parameter changed: ` +
@@ -441,8 +478,8 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 					};
 					this.emit('parameterChanged', entry);
 				});
-			return service.subscribeToService();
-		}));
+			service.subscribeToChanges().then();
+		});
 	}
 
 	private unsubscribeFromAllServices(): void {
@@ -452,10 +489,7 @@ export class PEAController extends (EventEmitter as new() => PEAEmitter) {
 	getDataAssemblyJson(): DataAssemblyOptions[] {
 		const result: DataAssemblyOptions[] = [];
 		this.dataAssemblies.forEach((dataAssembly) => result.push(dataAssembly.toDataAssemblyOptionsJson()));
-		console.log(`DataAssemblies: ${this.services.length} Services: ${this.services.length}`
-		);
 		this.services.forEach((service) => service.getDataAssemblyJson().forEach((r) => result.push(r)));
-
 		return result;
 	}
 }

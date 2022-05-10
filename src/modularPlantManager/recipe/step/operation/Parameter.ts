@@ -36,11 +36,14 @@ import {ScopeItem} from '../../ScopeItem';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const assign = require('assign-deep');
 
+
+type ParameterEmitter = StrictEventEmitter<EventEmitter, { changed: number | boolean }>;
+
 /**
  * Static or Dynamic Parameter. Dynamic Parameters can depend on dataAssemblies of the same or
  * other PEAs. These can also be continuously updated (specified via continuous property)
  */
-export class Parameter {
+export class Parameter extends (EventEmitter as new () => ParameterEmitter){
 
 	/**
 	 * name of parameter which should be updated
@@ -57,7 +60,6 @@ export class Parameter {
 	 */
 	public readonly value: string | number | boolean;
 	public readonly scopeArray: ScopeItem[];
-	public readonly eventEmitter: StrictEventEmitter<EventEmitter, { changed: number | boolean }> = new EventEmitter();
 	/**
 	 * should parameter continuously be updated
 	 */
@@ -74,6 +76,8 @@ export class Parameter {
 	 *
 	 */
 	constructor(parameterOptions: ParameterOptions, peas: PEAController[] = []) {
+		super();
+
 		catParameter.info(`Create Parameter: ${JSON.stringify(parameterOptions)}`);
 
 		this.options = parameterOptions;
@@ -101,7 +105,7 @@ export class Parameter {
 		this.notify = this.notify.bind(this);
 	}
 
-	public listenToScopeArray(): EventEmitter {
+	public listenToScopeArray(): void {
 		if (this.active) {
 			this.logger.info('Provide existent emitter');
 		} else {
@@ -112,7 +116,6 @@ export class Parameter {
 				item.dataAssembly.on('changed', this.notify);
 			});
 		}
-		return this.eventEmitter;
 	}
 
 	public unlistenToScopeArray(): void {
@@ -141,7 +144,6 @@ export class Parameter {
 	private notify(): void {
 		const newValue = this.getValue();
 		this.logger.debug(`Parameter has updated due to dependant variable to: ${newValue}`);
-		this.eventEmitter.emit('changed', newValue);
+		this.emit('changed', newValue);
 	}
-
 }

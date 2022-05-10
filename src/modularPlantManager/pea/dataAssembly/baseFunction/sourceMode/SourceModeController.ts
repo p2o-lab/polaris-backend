@@ -23,9 +23,12 @@
  * SOFTWARE.
  */
 
-import {SourceMode} from '@p2olab/polaris-interface';
+import {ServiceSourceMode, SourceMode} from '@p2olab/polaris-interface';
 import {DataItem} from '../../../connection';
 import {catDataAssembly} from '../../../../../logging';
+import {BaseServiceEvents} from '../../../serviceSet';
+import StrictEventEmitter from 'strict-event-emitter-types';
+import {EventEmitter} from 'events';
 
 export type SourceModeRuntime = {
 	SrcChannel: DataItem<boolean>;
@@ -37,10 +40,22 @@ export type SourceModeRuntime = {
 	SrcManOp: DataItem<boolean>;
 }
 
-export class SourceModeController {
+/**
+ * Events emitted by [[SourceMode]]
+ */
+export interface SourceModeEvents extends BaseServiceEvents {
+	changed: {
+		sourceMode: SourceMode;
+		sourceChannel: boolean;
+	};
+}
+type SourceModeEmitter = StrictEventEmitter<EventEmitter, SourceModeEvents>;
+
+export class SourceModeController extends (EventEmitter as new () => SourceModeEmitter) {
 	private dAController: any;
 
 	constructor(dAController: any) {
+		super();
 		this.dAController = dAController;
 		this.initialize();
 	}
@@ -53,6 +68,18 @@ export class SourceModeController {
 		this.dAController.communication.SrcIntOp = this.dAController.createDataItem('SrcIntOp', 'boolean', 'write');
 		this.dAController.communication.SrcManAct = this.dAController.createDataItem('SrcManAct', 'boolean');
 		this.dAController.communication.SrcIntAct = this.dAController.createDataItem('SrcIntAct','boolean');
+
+		this.dAController.communication.SrcChannel.on('changed', () => {
+			this.emit('changed', {sourceMode: this.getSourceMode(), sourceChannel: this.dAController.communication.SrcChannel.value});
+		});
+		// TODO: Always two of them will change in parallel --> Smart way to just emit one event?
+		// Even if there are just inverted options both can be 0 initially, to not miss a change both were added here
+		this.dAController.communication.SrcIntAct.on('changed', () => {
+			this.emit('changed', {sourceMode: this.getSourceMode(), sourceChannel: this.dAController.communication.SrcChannel.value});
+		});
+		this.dAController.communication.SrcExtAct.on('changed', () => {
+			this.emit('changed', {sourceMode: this.getSourceMode(), sourceChannel: this.dAController.communication.SrcChannel.value});
+		});
 	}
 
 	public getSourceMode(): SourceMode {

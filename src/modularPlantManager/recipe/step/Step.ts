@@ -55,16 +55,19 @@ interface StepEvents {
 	operationChanged: Operation;
 }
 
+type StepEmitter = StrictEventEmitter<EventEmitter, StepEvents>;
+
 /**
  * Executable [[Step]] from [[Recipe]]
  */
-export class Step {
+export class Step extends (EventEmitter as new () => StepEmitter) {
 	public name: string;
 	public operations: Operation[];
 	public transitions: Transition[];
-	public readonly eventEmitter: StrictEventEmitter<EventEmitter, StepEvents>;
 
 	constructor(options: StepOptions, peaSet: PEAController[]) {
+		super();
+
 		if (options.name) {
 			this.name = options.name;
 		} else {
@@ -84,7 +87,6 @@ export class Step {
 		} else {
 			throw new Error(`"transitions" array is missing in ${JSON.stringify(options)}`);
 		}
-		this.eventEmitter = new EventEmitter();
 	}
 
 	public getUsedPEAs(): Set<PEAController> {
@@ -101,11 +103,11 @@ export class Step {
 			catRecipe.info(`Start operation ${operation.pea?.id} ${operation.service.name} ` +
 				`${JSON.stringify(operation.command)}`);
 			operation.execute().then();
-			operation.emitter.on('changed', (state) => {
+			operation.on('changed', (state) => {
 				if (state === 'completed' || state === 'aborted') {
-					operation.emitter.removeAllListeners('changed');
+					operation.removeAllListeners('changed');
 				}
-				this.eventEmitter.emit('operationChanged', operation);
+				this.emit('operationChanged', operation);
 			});
 		});
 
@@ -135,7 +137,7 @@ export class Step {
 		this.transitions.forEach((transition) => {
 			transition.condition.clear();
 		});
-		this.eventEmitter.emit('completed', nextTransition);
+		this.emit('completed', nextTransition);
 	}
 
 	public json(): StepInterface {

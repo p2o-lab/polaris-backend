@@ -128,9 +128,10 @@ class ScopeItem {
 		let procedure: Procedure | undefined;
 		if (service) {
 			catScopeItem.debug(`Found service "${service.name}" for expression "${variable}"`);
-			procedure = service.getCurrentProcedure();
+
+			procedure = service.currentProcedure;
 			if (!procedure) {
-				throw new Error(`Current procedure is not set for service "${service.name}"`);
+				throw new Error(`Current procedure not found for service "${service.name}"`);
 			}
 			token = components.shift();
 
@@ -202,10 +203,23 @@ class ScopeItem {
 
 
 /**
+ * Events emitted by {@link ParameterRequest}
+ */
+interface ParameterRequestEvents {
+	/**
+	 * when changes
+	 * @event changed
+	 */
+	changed:  number | boolean;
+}
+
+type ParameterRequestEmitter = StrictEventEmitter<EventEmitter, ParameterRequestEvents>;
+
+/**
  * Static or Dynamic Parameter. Dynamic Parameters can depend on dataAssemblies of the same or
  * other PEAs. These can also be continuously updated (specified via continuous property)
  */
-export class ParameterRequest {
+export class ParameterRequest extends (EventEmitter as new() => ParameterRequestEmitter) {
 
 	/**
 	 * name of parameter which should be updated
@@ -222,7 +236,6 @@ export class ParameterRequest {
 	 */
 	public readonly value: string | number | boolean;
 	public readonly scopeArray: ScopeItem[];
-	public readonly eventEmitter: StrictEventEmitter<EventEmitter, { changed: number | boolean }> = new EventEmitter();
 
 	/**
 	 * should parameter continuously be updated
@@ -240,6 +253,8 @@ export class ParameterRequest {
 	 *
 	 */
 	constructor(parameterOptions: ParameterOptions, peas: PEAController[] = []) {
+		super();
+
 		catParameter.info(`Create Parameter: ${JSON.stringify(parameterOptions)}`);
 
 		this.options = parameterOptions;
@@ -267,7 +282,7 @@ export class ParameterRequest {
 		this.notify = this.notify.bind(this);
 	}
 
-	public listenToScopeArray(): EventEmitter {
+	public listenToScopeArray(): void {
 		if (this.active) {
 			this.logger.info('Provide existent emitter');
 		} else {
@@ -278,7 +293,6 @@ export class ParameterRequest {
 				item.dataAssembly.on('changed', this.notify);
 			});
 		}
-		return this.eventEmitter;
 	}
 
 	public unlistenToScopeArray(): void {
@@ -307,7 +321,7 @@ export class ParameterRequest {
 	private notify(): void {
 		const newValue = this.getValue();
 		this.logger.debug(`Parameter has updated due to dependant variable to: ${newValue}`);
-		this.eventEmitter.emit('changed', newValue);
+		this.emit('changed', newValue);
 	}
 
 }

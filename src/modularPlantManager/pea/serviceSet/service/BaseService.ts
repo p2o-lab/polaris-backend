@@ -25,10 +25,10 @@
 
 import {
 	BaseServiceInterface,
-	CommandEnableInterface,
+	CommandEnableInfo, OperationMode,
 	ParameterInterface,
 	ParameterOptions,
-	ServiceCommand
+	ServiceCommand, ServiceSourceMode
 } from '@p2olab/polaris-interface';
 import {Parameter} from '../../../recipe';
 import {PEAController} from '../../PEAController';
@@ -39,6 +39,7 @@ import {timeout} from 'promise-timeout';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Procedure} from './procedure/Procedure';
 import {catService} from '../../../../logging';
+import {IDProvider} from '../../../_utils/idProvider/IDProvider';
 
 /**
  * Events emitted by [[BaseService]]
@@ -50,10 +51,10 @@ export interface BaseServiceEvents {
 	 */
 	state: ServiceState;
 	/**
-	 * Notify when controlEnableNode changes
-	 * @event controlEnable
+	 * Notify when commandEnableNode changes
+	 * @event commandEnable
 	 */
-	controlEnable: CommandEnableInterface;
+	commandEnable: CommandEnableInfo;
 	/**
 	 * whenever a commandNode is executed from the POL
 	 * @event commandExecuted
@@ -70,25 +71,32 @@ export interface BaseServiceEvents {
 		parameter: ParameterInterface;
 		parameterType: 'parameter' | 'processValueIn' | 'processValueOut' | 'reportValue';
 	};
+	opMode: OperationMode;
+	sourceMode: ServiceSourceMode;
+	osLevel: number;
+	procedure: {
+		requestedProcedure: number | undefined,
+		currentProcedure: number | undefined,
+	};
 }
 
 type BaseServiceEmitter = StrictEventEmitter<EventEmitter, BaseServiceEvents>;
 
-export abstract class BaseService {
+export abstract class BaseService extends (EventEmitter as new() => BaseServiceEmitter) {
 
-	public readonly eventEmitter: BaseServiceEmitter;
+	public readonly id = IDProvider.generateIdentifier();
 
 	protected constructor() {
-		this.eventEmitter = new EventEmitter();
+		super();
 	}
 
 	public get qualifiedName(): string {
-		return `${this.name}`;
+		return this.name;
 	}
 
 	public abstract get state(): ServiceState;
 
-	public abstract get commandEnable(): CommandEnableInterface
+	public abstract get commandEnable(): CommandEnableInfo
 
 	// name of the base service
 	protected _name!: string;
@@ -120,7 +128,7 @@ export abstract class BaseService {
 	 * @returns {Promise<boolean>}
 	 */
 	public isCommandExecutable(command: ServiceCommand): boolean {
-		const controlEnable: CommandEnableInterface = this.commandEnable;
+		const controlEnable: CommandEnableInfo = this.commandEnable;
 		catService.debug(`[${this.qualifiedName}] ControlEnable: ${JSON.stringify(controlEnable)}`);
 		return controlEnable[command];
 	}
@@ -173,9 +181,9 @@ export abstract class BaseService {
 		return new Promise((resolve) => {
 			// eslint-disable-next-line @typescript-eslint/no-this-alias
 			const service = this;
-			service.eventEmitter.on('state', function test(state) {
+			service.on('state', function test(state) {
 				if (ServiceState[state] === expectedState) {
-					service.eventEmitter.removeListener('state', test);
+					service.removeListener('state', test);
 					resolve();
 				}
 			});

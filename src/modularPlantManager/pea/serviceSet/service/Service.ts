@@ -23,30 +23,17 @@
  * SOFTWARE.
  */
 
-import {CommandEnableInterface, DataAssemblyOptions, OperationMode, ParameterInterface, ParameterOptions, ServiceCommand, ServiceInterface, ServiceOptions, ServiceSourceMode} from '@p2olab/polaris-interface';
+import {CommandEnableInfo, DataAssemblyOptions, OperationMode, ParameterInterface, ParameterOptions, ServiceCommand, ServiceInterface, ServiceOptions, ServiceSourceMode} from '@p2olab/polaris-interface';
 import {DynamicDataItem, OpcUaConnection} from '../../connection';
 import {controlEnableToJson, DataAssemblyControllerFactory, InputElement, ServiceControl, ServiceControlEnable, ServiceMtpCommand, ServiceState, ServParam} from '../../dataAssembly';
 
 import {EventEmitter} from 'events';
-import StrictEventEmitter from 'strict-event-emitter-types';
 import {Category} from 'typescript-logging';
 import {PEAController} from '../../PEAController';
-import {BaseService, BaseServiceEvents} from './BaseService';
+import {BaseService} from './BaseService';
 import {Procedure} from './procedure/Procedure';
 import {catService} from '../../../../logging';
 
-
-/**
- * Events emitted by [[Service]]
- */
-export interface ServiceEvents extends BaseServiceEvents {
-	opMode: {
-		operationMode: OperationMode;
-		sourceMode: ServiceSourceMode;
-	};
-}
-
-type ServiceEmitter = StrictEventEmitter<EventEmitter, ServiceEvents>;
 
 /**
  * Service of a [[PEAController]]
@@ -54,9 +41,8 @@ type ServiceEmitter = StrictEventEmitter<EventEmitter, ServiceEvents>;
  * after connection to a real PEAController, commands can be triggered and states can be retrieved
  *
  */
-export class Service extends BaseService {
+export class Service extends BaseService{
 
-	public readonly eventEmitter!: ServiceEmitter;
 	public readonly procedures: Procedure[] = [];
 	public readonly parameters: ServParam[] = [];
 	public readonly connection: OpcUaConnection;
@@ -99,7 +85,7 @@ export class Service extends BaseService {
 		return `${this._parentId}.${this.name}`;
 	}
 
-	public get commandEnable(): CommandEnableInterface {
+	public get commandEnable(): CommandEnableInfo {
 		return controlEnableToJson(this.serviceControl.communication.CommandEn.value as ServiceControlEnable);
 	}
 
@@ -111,47 +97,78 @@ export class Service extends BaseService {
 		return (this.serviceControl.communication.StateCur as DynamicDataItem<number>)?.timestamp || new Date();
 	}
 
-	public get currentProcedure(): number | undefined {
-		return this.serviceControl.communication.ProcedureCur.value;
+	public get currentProcedureId(): number | undefined {
+		return this.serviceControl.currentProcedure();
+	}
+
+	public get currentProcedure(): Procedure | undefined {
+		let result = undefined;
+		const currentProcedureId = this.currentProcedureId;
+		if (currentProcedureId) {
+			result = this.findProcedure(currentProcedureId);
+		}
+		return result;
+	}
+
+	public get requestedProcedureId(): number | undefined {
+		return this.serviceControl.requestedProcedure();
+	}
+
+	public get requestedProcedure(): Procedure | undefined {
+		let result = undefined;
+		const requestedProcedureId = this.requestedProcedureId;
+		if (requestedProcedureId) {
+			result = this.findProcedure(requestedProcedureId);
+		}
+		return result;
 	}
 
 	/**
-	 * Get current procedure from internal memory.
+	 * Find procedure from internal memory.
 	 */
-	public getCurrentProcedure(): Procedure |undefined{
-		const curProc = this.procedures.find((proc) => parseInt(proc.id, 10) === this.currentProcedure);
-		// TODO: why throw error? program will crash if there is no current procedure
-/*		if (!curProc) {
-			throw new Error('Current Procedure not found.');
-		}*/
-		return curProc;
+	public findProcedure(procedureId: number): Procedure | undefined {
+		return this.procedures.find((proc) => proc.procedureId === procedureId);
 	}
 
 	/**
 	 * Notify about changes in to serviceControl, procedures, configuration parameters and process values
 	 * via events and log messages
 	 */
-	public async subscribeToService(): Promise<ServiceEmitter> {
-		this.logger.info(`[${this.qualifiedName}] Subscribe to service`);
+	public async subscribeToChanges(): Promise<void> {
+		this.logger.info(`[${this.qualifiedName}] Subscribe to changes`);
 		this.serviceControl
-			.on('CommandEn', () => {
+			.on('commandEn', () => {
 				this.logger.debug(`[${this.qualifiedName}] ControlEnable changed: ` +
 					`${JSON.stringify(this.commandEnable)}`);
-				this.eventEmitter.emit('controlEnable', this.commandEnable);
+				this.emit('commandEnable', this.commandEnable);
 			})
-			.on('OpMode', () => {
+			.on('opMode', () => {
 				this.logger.debug(`[${this.qualifiedName}] Current OpMode changed: ` +
-					`${this.serviceControl.opMode.getOperationMode()}`);
-				this.eventEmitter.emit('opMode',
+					`${this.serviceControl.opMode.getServiceOperationMode()}`);
+				this.emit('opMode', this.serviceControl.opMode.getServiceOperationMode());
+			})
+			.on('serviceSourceMode', () => {
+				this.logger.debug(`[${this.qualifiedName}] Current SourceMode changed: ` +
+					`${this.serviceControl.serviceSourceMode.getServiceSourceMode()}`);
+				this.emit('sourceMode', this.serviceControl.serviceSourceMode.getServiceSourceMode());
+			})
+			.on('osLevel', (data) => {
+				this.logger.debug(`[${this.qualifiedName}] Current OSLevel changed: ` +
+					`${data}`);
+				this.emit('osLevel', data);
+			})
+			.on('Procedure', () => {
+				this.logger.debug(`[${this.qualifiedName}] Procedure changed:`);
+				this.emit('procedure',
 					{
-						operationMode: this.serviceControl.opMode.getOperationMode(),
-						sourceMode: this.serviceControl.serviceSourceMode.getServiceSourceMode()
+						requestedProcedure: this.serviceControl.requestedProcedure(),
+						currentProcedure: this.serviceControl.currentProcedure()
 					});
 			})
 			.on('StateCur', () => {
 				this.logger.debug(`[${this.qualifiedName}] State changed: ` +
 					`${ServiceState[this.state]}`);
-				this.eventEmitter.emit('state', this.state);
+				this.emit('state', this.state);
 				if (this.state === ServiceState.COMPLETED ||
 					this.state === ServiceState.ABORTED ||
 					this.state === ServiceState.STOPPED) {
@@ -159,25 +176,18 @@ export class Service extends BaseService {
 				}
 			});
 
-		const psc = this.serviceControl.subscribe();
-		const par = this.parameters.map((param) => {
-			return param.subscribe();
-		});
+		await this.serviceControl.subscribe();
+		await this.parameters.forEach((param) => {param.subscribe();});
 
-		const procedures = this.procedures.map((procedure) => {
+		this.procedures.forEach((procedure) => {
 				procedure.on('parameterChanged', (data) => {
-					this.eventEmitter.emit('parameterChanged', {
+					this.emit('parameterChanged', {
 						procedure,
 						parameter: data.parameter,
 						parameterType: data.parameterType
 					});
 				});
-				return procedure.subscribe();
-			}
-		);
-
-		await Promise.all([procedures, psc, par]);
-		return this.eventEmitter;
+			});
 	}
 
 	public unsubscribe(): void {
@@ -191,31 +201,33 @@ export class Service extends BaseService {
 	 */
 	public json(): ServiceInterface {
 		return {
+			id: this.id,
 			name: this.name,
-			operationMode: this.serviceControl.opMode.getOperationMode(),
-			serviceSourceMode: this.serviceControl.serviceSourceMode.getServiceSourceMode(),
-			status: ServiceState[this.state],
-			procedures: this.procedures.map((procedure) => procedure.toJson()),
-			currentProcedure: this.getCurrentProcedure()?.name,
-			parameters: this.parameters.map((param) => param.toJson()),
-			controlEnable: this.commandEnable,
-			lastChange: (new Date().getTime() - this.lastStatusChange.getTime()) / 1000,
 			peaId: this._parentId,
+			operationMode: this.serviceControl.opMode.getServiceOperationMode(),
+			requestedProcedure: this.requestedProcedureId || 0,
+			serviceSourceMode: this.serviceControl.serviceSourceMode.getServiceSourceMode(),
+			osLevel: this.serviceControl.osLevel.osLevel,
+			state: ServiceState[this.state],
+			procedures: this.procedures.map((procedure) => procedure.toJson()),
+			currentProcedure: this.currentProcedureId || 0,
+			parameters: this.parameters.map((param) => param.toJson()),
+			commandEnable: this.commandEnable,
+			lastChange: (new Date().getTime() - this.lastStatusChange.getTime()) / 1000,
 		};
 	}
 
-	// overridden method from Base Service
 	public async executeCommand(command: ServiceCommand): Promise<void> {
 		if (!this.connection.isConnected()) {
 			throw new Error('PEAController is not connected');
 		}
 		await super.executeCommand(command);
-		const currentProcedure = this.getCurrentProcedure();
+		const currentProcedure = this.currentProcedure;
 		if(currentProcedure){
-			this.eventEmitter.emit('commandExecuted', {
+			this.emit('commandExecuted', {
 				procedure: currentProcedure,
 				command: command,
-				parameter: currentProcedure?.parameters.map((param) => param.toJson() as ParameterInterface)
+				parameter: currentProcedure.parameters.map((param) => param.toJson() as ParameterInterface)
 			});
 			this.logger.info(`[${this.qualifiedName}] ${command} executed`);
 		}
@@ -295,22 +307,34 @@ export class Service extends BaseService {
 		return this.sendCommand(ServiceMtpCommand.RESUME);
 	}
 
-	/** Set procedure
-	 * Use default procedure if procedure is omitted
+	/** Request a procedure
 	 * @returns {Promise<void>}
 	 */
 
-	public async setProcedure(procedure: Procedure): Promise<void> {
-		this.logger.debug(`[${this.qualifiedName}] set procedure: ${procedure.name}`);
-
-		// first set opMode and serviceSourceMode and then set procedure
-		await this.requestOpMode(OperationMode.Automatic);
-		await this.requestServiceSourceMode(ServiceSourceMode.Extern);
-		await (this.serviceControl.communication.ProcedureExt as DynamicDataItem<number>).write(procedure.id);
+	public async requestProcedureAutomatic(id: number): Promise<void> {
+		if(this.validProcedureId(id) && this.serviceControl.opMode.isAutomaticState() && this.serviceControl.serviceSourceMode.isExtSource()){
+			this.logger.debug(`[${this.qualifiedName}] request procedure: ${id}`);
+		await (this.serviceControl.communication.ProcedureExt as DynamicDataItem<number>).write(id);
+		} else {
+			this.logger.debug(`[${this.qualifiedName}] cant set procedure: ${id}. Expected a valid procedure id, automatic external mode`);
+		}
 	}
 
-	public getProcedureByName(procedureName: string): Procedure | undefined {
-		return this.procedures.find((proc) => proc.name === procedureName);
+	public async requestProcedureOperator(id: number): Promise<void> {
+		if(this.validProcedureId(id) && this.serviceControl.opMode.isOperatorState() && this.serviceControl.osLevel.osLevel>0){
+			this.logger.debug(`[${this.qualifiedName}] request procedure: ${id}`);
+			await (this.serviceControl.communication.ProcedureOp as DynamicDataItem<number>).write(id);
+		} else {
+			this.logger.debug(`[${this.qualifiedName}] cant set procedure: ${id}. Expected a valid procedure id and operator mode`);
+		}
+	}
+
+	public async changeOsLevel(value: number): Promise<void> {
+		this.serviceControl.osLevel.osLevel = value;
+	}
+
+	private validProcedureId(id: number): boolean {
+		return !!this.procedures.find(p => p.procedureId == id) || id === 0;
 	}
 
 	public async setParameters(parameterOptions: ParameterOptions[], peaSet: PEAController[] = []): Promise<void> {
@@ -327,11 +351,12 @@ export class Service extends BaseService {
 	public findInputParameter(parameterName: string): InputElement | ServParam | undefined {
 		let result: InputElement | ServParam | undefined;
 		result = this.parameters.find((obj) => (obj.name === parameterName));
+
 		if (!result) {
-			result = this.getCurrentProcedure()?.parameters.find((obj) => (obj.name === parameterName));
+			result = this.currentProcedure?.parameters.find((obj) => (obj.name === parameterName));
 		}
 		if (!result) {
-			result = this.getCurrentProcedure()?.processValuesIn.find((obj) => (obj.name === parameterName));
+			result = this.currentProcedure?.processValuesIn.find((obj) => (obj.name === parameterName));
 		}
 		return result;
 	}
@@ -363,7 +388,7 @@ export class Service extends BaseService {
 		}
 	}
 
-	async requestOpMode(opMode: OperationMode) {
+	async requestOpMode(opMode: OperationMode): Promise<void> {
 		switch (opMode) {
 			case OperationMode.Offline:
 				await this.serviceControl.opMode.setToOfflineOperationMode();

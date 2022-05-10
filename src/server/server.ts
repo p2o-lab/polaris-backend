@@ -47,7 +47,9 @@ export class Server {
 		Middleware.init(this.app, manager);
 		Routes.init(this.app);
 
-		manager.on('notify', (notification) => this.notifyClients(notification));
+		manager.on('notify', (notification) => {
+			this.notifyClients(notification);
+		});
 	}
 
 	/**

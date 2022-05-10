@@ -57,7 +57,7 @@ export class FunctionGenerator extends POLService {
 			throw new Error('ProcessValueOut output is undefined.');
 		}
 		output.value = value;
-		this.eventEmitter.emit('parameterChanged', {parameter: output, parameterType: 'processValueOut'});
+		this.emit('parameterChanged', {parameter: output, parameterType: 'processValueOut'});
 	}
 
 	public async onStarting(): Promise<void> {

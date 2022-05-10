@@ -214,7 +214,7 @@ export class Recipe extends (EventEmitter as new() => RecipeEmitter) {
 	private executeStep(): void {
 		catRecipe.info(`Execute step: ${this.currentStep!.name}`);
 		this.lastChange = new Date();
-		this.stepListener = this.currentStep!.eventEmitter
+		this.currentStep!
 			.on('operationChanged', () => {
 				this.emit('changed');
 			})

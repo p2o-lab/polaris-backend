@@ -88,7 +88,7 @@ describe('POLService', () => {
 
 		it('should instantiate aggregated service', async() => {
 			const manager = new ModularPlantManager();
-			const peaSet = await manager.loadPEAController(
+			const peaSet = await manager.createPEAControllerInstance(
 				JSON.parse(fs.readFileSync('assets/peas/achema_demonstrator/peas_achema.json').toString()));
 			expect(peaSet).to.have.lengthOf(3);
 
@@ -153,7 +153,7 @@ describe('POLService', () => {
 			await timer.setParameters([{name: 'duration', value: 100}, {name: 'updateRate', value: 10}]);
 
 			let hit = 0;
-			timer.eventEmitter.on('parameterChanged', (parameterChange) => {
+			timer.on('parameterChanged', (parameterChange) => {
 				if (parameterChange.parameter.name === 'remainingTime') {
 					hit = hit + 1;
 				}
@@ -307,7 +307,7 @@ describe('POLService', () => {
 
 			await f1.start();
 			await new Promise<void>((resolve) => {
-				f1.eventEmitter.once('parameterChanged', () => {
+				f1.once('parameterChanged', () => {
 					resolve();
 				});
 			});

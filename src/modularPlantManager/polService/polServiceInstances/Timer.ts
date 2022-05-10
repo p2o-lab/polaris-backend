@@ -54,7 +54,7 @@ export class Timer extends POLService {
 		const param = this.processValuesOut.find((p) => p.name === 'remainingTime');
 		if (param) {
 			param.value = this._remainingTime;
-			this.eventEmitter.emit('parameterChanged', {parameter: param, parameterType: 'processValueOut'});
+			this.emit('parameterChanged', {parameter: param, parameterType: 'processValueOut'});
 		} else {
 			throw new Error('tried to write a non-existent parameter remainingTime');
 		}

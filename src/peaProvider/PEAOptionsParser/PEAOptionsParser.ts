@@ -117,20 +117,16 @@ export class PEAOptionsParser {
         const procedureOptionsArray: ProcedureOptions[] = [];
         procedureModels.forEach(procedure =>{
             const procedureName = procedure.name;
-            let isDefault = false;
             let isSelfCompleting = false;
-            let procedureID = '';
+            let procedureId = -1;
             
             procedure.attributes.forEach((attribute: { name: string; value: string}) =>{
                 switch(attribute.name){
                     case ('IsSelfCompleting'):
                         isSelfCompleting = JSON.parse(attribute.value.toLocaleLowerCase());
                         break;
-                    case ('IsDefault'):
-                        isDefault = JSON.parse(attribute.value.toLocaleLowerCase());
-                        break;
                     case ('ProcedureID'):
-                        procedureID = JSON.parse(attribute.value.toLocaleLowerCase());
+                        procedureId = JSON.parse(attribute.value);
                         break;
                 }
             });
@@ -144,17 +140,15 @@ export class PEAOptionsParser {
             const processValuesOut = PEAOptionsParser.createDataAssemblyOptionsArray(procedure.processValuesOut);
 
             const procedureOptions: ProcedureOptions = {
-                id: procedureID,
+                procedureId: procedureId,
                 name: procedureName,
-                isDefault : isDefault,
                 isSelfCompleting: isSelfCompleting,
-                dataAssembly: procedureDataAssemblyOptions,
+                dataAssemblies: procedureDataAssemblyOptions,
                 parameters: procedureParameters,
                 reportParameters: reportValues,
                 processValuesIn: processValuesIn,
                 processValuesOut: processValuesOut
             };
-
             procedureOptionsArray.push(procedureOptions);
         });
         return procedureOptionsArray;

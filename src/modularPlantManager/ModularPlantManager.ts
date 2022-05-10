@@ -45,12 +45,6 @@ interface ModularPlantManagerEvents {
 
 type ModularPlantManagerEmitter = StrictEventEmitter<EventEmitter, ModularPlantManagerEvents>;
 
-export interface LoadOptions {
-	pea?: PEAOptions;
-	peas?: PEAOptions[];
-	subMP?: Array<{ peas: PEAOptions[] }>;
-}
-
 export class ModularPlantManager extends (EventEmitter as new() => ModularPlantManagerEmitter) {
 
 	public readonly peaProvider = new PEAProvider();
@@ -101,7 +95,7 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 
 
 	/**
-	 * get PEAController by given identifier
+	 * get PEAController by identifier
 	 * @param identifier
 	 * @returns {PEAController}
 	 */
@@ -115,12 +109,12 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 
 
 	/**
-	 * Load PEAControllers by given identifier
-	 * @param {string} identifier
+	 * Create PEAController instance by identifier of type
+	 * @param {string} typeIdentifier
 	 */
-	public async loadPEAController(identifier: string): Promise<PEAController[]>{
+	public async createPEAControllerInstance(typeIdentifier: string): Promise<PEAController[]>{
 		const newPEAs: PEAController[] = [];
-		const peaOptions: PEAOptions = await this.peaProvider.getPEAControllerOptionsByPEAIdentifier(identifier);
+		const peaOptions: PEAOptions = await this.peaProvider.getPEAControllerOptionsByPEAIdentifier(typeIdentifier);
 
 		newPEAs.push(new PEAController(peaOptions));
 		this.peas.push(...newPEAs);
@@ -218,20 +212,20 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 
 	/**
 	 * find [Service] of a [PEAController]
-	 * @param identifier
-	 * @param {string} serviceName
+	 * @param peaId
+	 * @param {string} serviceId
 	 * @returns {Service}
 	 */
-	public getService(identifier: string, serviceName: string): Service {
-		const pea: PEAController = this.getPEAController(identifier);
-		return pea.getService(serviceName);
+	public getService(peaId: string, serviceId: string): Service | undefined {
+		const pea: PEAController = this.getPEAController(peaId);
+		return pea.getService(serviceId);
 	}
 
 	public addPOLService(options: POLServiceOptions): void {
 		const polService = POLServiceFactory.create(options, this.peas);
 		catManager.info(`instantiated POLService ${polService.name}`);
-		polService.eventEmitter
-			.on('controlEnable', () => {
+		polService
+			.on('commandEnable', () => {
 				this.emit('notify', {message: 'polService', polService: polService.json()});
 			})
 			.on('parameterChanged', () => {
@@ -365,6 +359,16 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 					this.emit('notify', {message: 'service', peaId: p.id, service: service.json()});
 				})
 				.on('opModeChanged', ({service}) => {
+					this.emit('notify', {message: 'service', peaId: p.id, service: service.json()});
+				})
+				.on('osLevelChanged', ({service}) => {
+					console.log('OSLevel reached ModularPlantManager');
+					this.emit('notify', {message: 'service', peaId: p.id, service: service.json()});
+				})
+				.on('serviceSourceModeChanged', ({service}) => {
+					this.emit('notify', {message: 'service', peaId: p.id, service: service.json()});
+				})
+				.on('procedureChanged', ({service}) => {
 					this.emit('notify', {message: 'service', peaId: p.id, service: service.json()});
 				})
 				.on('serviceCompleted', (service: Service) => {

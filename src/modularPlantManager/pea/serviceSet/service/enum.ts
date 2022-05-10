@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import {CommandEnableInterface} from '@p2olab/polaris-interface';
+import {CommandEnableInfo} from '@p2olab/polaris-interface';
 
 export enum ServiceState {
 	UNDEFINED = 1 << 0, // 1
@@ -59,7 +59,7 @@ export enum ServiceControlEnable {
 	COMPLETE = 1 << 10, // 1024
 }
 
-export function controlEnableToJson(controlEnable: ServiceControlEnable): CommandEnableInterface {
+export function controlEnableToJson(controlEnable: ServiceControlEnable): CommandEnableInfo {
 	return {
 		start: (controlEnable & ServiceControlEnable.START) !== 0,
 		restart: (controlEnable & ServiceControlEnable.RESTART) !== 0,

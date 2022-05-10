@@ -28,7 +28,6 @@
 !include procedure/Procedure.puml
 
 class Service{
-    + readonly eventEmitter!: ServiceEmitter;
     + readonly procedures: Procedure[] = [];
     + readonly parameters: ServParam[] = [];
     + readonly connection: OpcUaConnection;

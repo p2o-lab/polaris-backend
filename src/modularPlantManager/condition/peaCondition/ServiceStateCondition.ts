@@ -57,7 +57,12 @@ export class ServiceStateCondition extends PEACondition {
 		if (!this.usedPEA) {
 			throw new Error(`State ${options.state} is not a valid state for a condition (${JSON.stringify(options)}`);
 		}
-		this.service = this.usedPEA.getService(options.service);
+		const serviceId = this.usedPEA.findService(options.service);
+		if (!serviceId) {
+			throw new Error(`Service ${options.service} is was not found.`);
+		}
+		this.service = this.usedPEA.getService(serviceId);
+
 		this.state = mapping[options.state.toLowerCase()];
 		if (!this.state) {
 			throw new Error(`State ${options.state} is not a valid state for a condition (${JSON.stringify(options)}`);
@@ -65,14 +70,14 @@ export class ServiceStateCondition extends PEACondition {
 	}
 
 	public listen(): Condition {
-		this.service.eventEmitter.on('state', this.check);
+		this.service.on('state', this.check);
 		this.check(this.service.state);
 		return this;
 	}
 
 	public clear(): void {
 		super.clear();
-		this.service.eventEmitter.removeListener('state', this.check);
+		this.service.removeListener('state', this.check);
 	}
 
 	private check = (expectedState: ServiceState): void => {

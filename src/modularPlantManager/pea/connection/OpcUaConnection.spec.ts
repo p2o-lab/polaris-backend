@@ -124,10 +124,10 @@ describe('OpcUaConnection', () => {
 
 			await connection.connect();
 
-			const eventName = connection.addNodeToMonitoring('trigger', mockupServerNamespace);
+			connection.addNodeToMonitoring('trigger', mockupServerNamespace);
 			await connection.createSubscription();
-			const eventEmitter = await connection.startMonitoring();
-			await new Promise(resolve => eventEmitter.on(eventName, resolve));
+			await connection.startMonitoring();
+			await new Promise(resolve => connection.on('monitoredItemChanged', resolve));
 
 			await connection.disconnect();
 		});
@@ -141,7 +141,7 @@ describe('OpcUaConnection', () => {
 			expect(connection.monitoredNodesCount()).to.equal(1);
 			await connection.createSubscription();
 			await connection.startMonitoring();
-			await new Promise(resolve => connection.eventEmitter.on(eventName1, resolve));
+			await new Promise(resolve => connection.on('monitoredItemChanged', resolve));
 			await connection.disconnect();
 
 			expect(connection.monitoredNodesCount()).to.equal(1);
@@ -151,7 +151,7 @@ describe('OpcUaConnection', () => {
 			expect(eventName1).to.equal(eventName2);
 			await connection.createSubscription();
 			await connection.startMonitoring();
-			await new Promise((resolve) => connection.eventEmitter.on(eventName1, resolve));
+			await new Promise((resolve) => connection.on('monitoredItemChanged', resolve));
 			expect(connection.monitoredNodesCount()).to.equal(1);
 		}).timeout(4000);
 

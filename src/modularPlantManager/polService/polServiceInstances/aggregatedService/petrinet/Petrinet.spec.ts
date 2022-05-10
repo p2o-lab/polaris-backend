@@ -41,17 +41,17 @@ describe('Petrinet', () => {
 		expect(pn.activeStates).to.have.lengthOf(0);
 		const stateChanges: string[] = [];
 		const transitionChanges: string[] = [];
-		pn.eventEmitter.on('state', (state) => {
+		pn.on('state', (state) => {
 			expect(pn.activeStates.length).to.be.greaterThan(0);
 			stateChanges.push(state.id);
 		});
-		pn.eventEmitter.on('transition', (tr) => {
+		pn.on('transition', (tr) => {
 			transitionChanges.push(tr.id);
 		});
 
 		pn.run();
 
-		pn.eventEmitter.once('completed', () => {
+		pn.once('completed', () => {
 			expect(pn.activeStates).to.have.lengthOf(0);
 			expect(stateChanges).to.deep.equal(['Init']);
 			expect(transitionChanges).to.deep.equal(['t1', 't2']);
@@ -71,17 +71,17 @@ describe('Petrinet', () => {
 		expect(pn.activeStates).to.have.lengthOf(0);
 		const stateChanges: string[] = [];
 		const transitionChanges: string[] = [];
-		pn.eventEmitter.on('state', (state) => {
+		pn.on('state', (state) => {
 			expect(pn.activeStates.length).to.be.greaterThan(0);
 			stateChanges.push(state.id);
 		});
-		pn.eventEmitter.on('transition', (tr) => {
+		pn.on('transition', (tr) => {
 			transitionChanges.push(tr.id);
 		});
 
 		pn.run();
 
-		pn.eventEmitter.once('completed', () => {
+		pn.once('completed', () => {
 			expect(pn.activeStates).to.have.lengthOf(0);
 			expect(stateChanges).to.deep.equal(['s1a', 's1b', 's2', 's3a', 's4']);
 			expect(transitionChanges).to.deep.equal(['t1', 't2', 't3a', 't4a', 't5']);

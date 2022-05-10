@@ -171,7 +171,7 @@
       },
       "procedures":[
         {
-          "id":1,
+          "procedureId":1,
           "name":"Trigonometry_default",
           "isDefault":true,
           "isSelfCompleting":false,

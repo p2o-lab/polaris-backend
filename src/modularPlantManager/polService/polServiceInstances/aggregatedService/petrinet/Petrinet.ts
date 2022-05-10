@@ -37,9 +37,8 @@ export interface PetrinetOptions {
 	initialTransition: string;
 }
 
-export class Petrinet {
+export class Petrinet extends EventEmitter{
 
-	public readonly eventEmitter: EventEmitter;
 
 	public readonly options: PetrinetOptions;
 	public readonly states: PetrinetState[] = [];
@@ -48,9 +47,10 @@ export class Petrinet {
 	public readonly activeStates: PetrinetState[];
 
 	constructor(options: PetrinetOptions, peas: PEAController[]) {
+		super();
+
 		this.options = options;
 		this.activeStates = [];
-		this.eventEmitter = new EventEmitter();
 
 		if (options) {
 			this.states = options.states.map((opt) => new PetrinetState(opt, peas));
@@ -77,12 +77,12 @@ export class Petrinet {
 	public async run(): Promise<void> {
 		if (this.initialTransition) {
 			this.listenToTransition(this.initialTransition);
-			await new Promise<void>((resolve) => this.eventEmitter.once('completed', () => resolve()));
+			await new Promise<void>((resolve) => this.once('completed', () => resolve()));
 		}
 	}
 
 	private listenToTransition(transition: PetrinetTransition): void {
-		this.eventEmitter.emit('transition', transition);
+		this.emit('transition', transition);
 		catRecipe.debug(`Start listening to transition ${transition.id}: ` +
 			`${JSON.stringify(transition.condition.json())}`);
 		transition.condition
@@ -104,7 +104,7 @@ export class Petrinet {
 	 */
 	private activateState(state: PetrinetState): void {
 		this.activeStates.push(state);
-		this.eventEmitter.emit('state', state);
+		this.emit('state', state);
 		state.execute()
 			.then(() => {
 				state.nextTransitions.forEach((tr) => {
@@ -139,7 +139,7 @@ export class Petrinet {
 		} else {
 			// clear all transition conditions
 			this.transitions.forEach((transition) => transition.condition.clear());
-			this.eventEmitter.emit('completed');
+			this.emit('completed');
 		}
 	}
 
