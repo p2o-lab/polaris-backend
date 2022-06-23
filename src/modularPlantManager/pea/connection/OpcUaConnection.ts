@@ -285,7 +285,7 @@ export class OpcUaConnection extends (EventEmitter as new() => OpcUaConnectionEm
 	 */
 	public async readNode(identifier: string, namespace: string):  Promise<DataValue | undefined> {
 		const resolvedID = this.resolveNodeId(identifier, namespace);
-		return await this.session?.read({nodeId: resolvedID });
+		return this.session?.read({nodeId: resolvedID });
 	}
 
 	/**

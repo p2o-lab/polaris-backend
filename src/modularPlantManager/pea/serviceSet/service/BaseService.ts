@@ -198,7 +198,7 @@ export abstract class BaseService extends (EventEmitter as new() => BaseServiceE
 	 * @returns {Promise<void>}
 	 */
 	public async waitForStateChangeWithTimeout(expectedState: string, ms = 1000): Promise<void> {
-		return await timeout(this.waitForStateChange(expectedState), ms);
+		return timeout(this.waitForStateChange(expectedState), ms);
 	}
 
 	public abstract start(): Promise<void>;

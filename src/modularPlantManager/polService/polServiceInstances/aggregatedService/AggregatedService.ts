@@ -120,7 +120,7 @@ export class AggregatedService extends POLService {
 		}
 
 		this.services = options.necessaryServices.map((opts: {pea: string; service: string}) => {
-			let result = undefined;
+			let result;
 			if (opts.pea) {
 				const pea = peas.find((p) => p.id === opts.pea);
 				if (pea) {

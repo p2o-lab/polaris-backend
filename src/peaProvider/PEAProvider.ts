@@ -126,7 +126,7 @@ export class PEAProvider {
 			throw new Error(`PEA with identifier [${identifier}] not found.`);
 		}
 		const model = await this.getPEAFromPEAPool(identifier);
-		return await PEAOptionsParser.createPEAOptions(model);
+		return PEAOptionsParser.createPEAOptions(model);
 	}
 
 	/**
@@ -137,6 +137,6 @@ export class PEAProvider {
 		if (!model) {
 			throw new Error('No valid model provided!');
 		}
-		return await PEAOptionsParser.createPEAOptions(model);
+		return PEAOptionsParser.createPEAOptions(model);
 	}
 }

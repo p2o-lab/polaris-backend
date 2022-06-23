@@ -102,7 +102,7 @@ export class Service extends BaseService{
 	}
 
 	public get currentProcedure(): Procedure | undefined {
-		let result = undefined;
+		let result;
 		const currentProcedureId = this.currentProcedureId;
 		if (currentProcedureId) {
 			result = this.findProcedure(currentProcedureId);
@@ -115,7 +115,7 @@ export class Service extends BaseService{
 	}
 
 	public get requestedProcedure(): Procedure | undefined {
-		let result = undefined;
+		let result;
 		const requestedProcedureId = this.requestedProcedureId;
 		if (requestedProcedureId) {
 			result = this.findProcedure(requestedProcedureId);

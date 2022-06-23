@@ -86,7 +86,7 @@ export class RecipeRun extends (EventEmitter as new() => RecipeEmitter) {
 			.on('completed', this.boundOnCompleted)
 			.on('changed', this.boundOnChanged)
 			.on('started', this.boundOnStarted);
-		return await this.recipe.start();
+		return this.recipe.start();
 	}
 
 	/** Stop the linked recipe
