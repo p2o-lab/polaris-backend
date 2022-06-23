@@ -26,7 +26,6 @@
 import {ModularPlantManager} from '../../../modularPlantManager';
 import {Request, Response, Router} from 'express';
 import * as asyncHandler from 'express-async-handler';
-import {constants} from 'http2';
 import {catServer} from '../../../logging';
 import {OperationMode, ServiceCommand, ServiceSourceMode} from '@p2olab/polaris-interface';
 
@@ -44,9 +43,12 @@ peaRouter.post('/loadPEA', async (req, res) => {
 	try {
 		await manager.createPEAControllerInstance(req.body.id);
 		res.status(200).send('"Success!"');
-	} catch (e: any) {
-		console.log(e);
-		res.status(500).send(e.toString());
+	} catch (error) {
+		let message;
+		if (error instanceof Error) message = error.message;
+		else message = String(error);
+		console.log(message);
+		res.status(500).send(message);
 	}
 });
 
@@ -59,9 +61,12 @@ peaRouter.get('/allPEAs', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
 	try {
 		res.json(manager.getAllPEAControllers());
-	} catch (e: any) {
-		console.log(e);
-		res.status(500).send(e.toString());
+	} catch (error) {
+		let message;
+		if (error instanceof Error) message = error.message;
+		else message = String(error);
+		console.log(message);
+		res.status(500).send(message);
 	}
 }));
 
@@ -75,9 +80,12 @@ peaRouter.get('/:peaId', (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
 	try {
 		res.send(manager.getPEAController(req.params.peaId).json());
-	} catch (e: any) {
-		console.log(e);
-		res.status(constants.HTTP_STATUS_NOT_FOUND).send(e.toString());
+	} catch (error) {
+		let message;
+		if (error instanceof Error) message = error.message;
+		else message = String(error);
+		console.log(message);
+		res.status(500).send(message);
 	}
 });
 
@@ -92,14 +100,15 @@ peaRouter.get('/:peaId/dataAssemblies', (req: Request, res: Response) => {
 	try {
 
 		const pea = manager.getPEAController(req.params.peaId);
-		if(!pea){
-			throw new Error(`PEA with ID ${req.params.peaId} not found.`);
-		}
 		const dataAssemblies = pea.getDataAssemblyJson();
 		res.send(dataAssemblies);
-	} catch (e: any) {
-		console.log(e);
-		res.status(constants.HTTP_STATUS_NOT_FOUND).send(e.toString());
+
+	} catch (error) {
+		let message;
+		if (error instanceof Error) message = error.message;
+		else message = String(error);
+		console.log(message);
+		res.status(500).send(message);
 	}
 });
 
@@ -115,8 +124,12 @@ peaRouter.get('/:peaId/getConnectionSettings', (req: Request, res: Response) => 
 		const peaController = manager.getPEAController(req.params.peaId);
 		const body = peaController.getCurrentConnectionSettings();
 		res.status(200).send(body);
-	}catch (e: any) {
-		res.status(500).send(e.toString());
+	}catch (error) {
+		let message;
+		if (error instanceof Error) message = error.message;
+		else message = String(error);
+		console.log(message);
+		res.status(500).send(message);
 	}
 });
 
@@ -132,8 +145,12 @@ peaRouter.post('/:peaId/updateConnectionSettings', asyncHandler(async (req: Requ
 		const peaController = manager.getPEAController(req.params.peaId);
 		peaController.updateConnection(req.body);
 		res.status(200).send('"'+'Successfully updated the connection settings!'+'"');
-	} catch(e: any){
-		res.status(500).send(e.toString());
+	} catch(error){
+		let message;
+		if (error instanceof Error) message = error.message;
+		else message = String(error);
+		console.log(message);
+		res.status(500).send(message);
 	}
 }));
 
@@ -160,9 +177,12 @@ peaRouter.post('/:peaId/connect', asyncHandler(async (req: Request, res: Respons
 		const pea = manager.getPEAController(req.params.peaId);
 		await pea.connectAndSubscribe();
 		res.status(200).send({peaId: pea.id, status: 'Successfully connected'});
-	} catch (e: any) {
-		res.status(500).send(e.toString());
-		console.log(e);
+	} catch (error) {
+		let message;
+		if (error instanceof Error) message = error.message;
+		else message = String(error);
+		console.log(message);
+		res.status(500).send(message);
 	}
 }));
 
@@ -178,9 +198,12 @@ peaRouter.post('/:peaId/disconnect', asyncHandler(async (req: Request, res: Resp
 		const pea = manager.getPEAController(req.params.peaId);
 		await pea.disconnectAndUnsubscribe();
 		res.status(200).send({peaId: pea.id, status: 'Successfully disconnected'});
-	}catch (e: any) {
-		console.log(e);
-		res.status(500).send(e.toString());
+	}catch (error) {
+		let message;
+		if (error instanceof Error) message = error.message;
+		else message = String(error);
+		console.log(message);
+		res.status(500).send(message);
 	}
 }));
 
@@ -196,9 +219,12 @@ peaRouter.delete('/:peaId', asyncHandler(async (req: Request, res: Response) => 
 	try {
 		await manager.removePEAController(req.params.peaId);
 		res.status(200).send({peaId: req.params.peaId, status: 'Successfully deleted'});
-	} catch (e: any) {
-		console.log(e);
-		res.status(500).send(e.toString());
+	} catch (error) {
+		let message;
+		if (error instanceof Error) message = error.message;
+		else message = String(error);
+		console.log(message);
+		res.status(500).send(message);
 	}
 }));
 
@@ -225,9 +251,12 @@ peaRouter.post('/:peaId/service/:serviceId/procedureRequest/:procedureId', async
 			await service.setParameters(req.body.parameters, manager.peas);
 		}
 		res.json(service.json());
-	}catch(e: any){
-		console.log(e);
-		res.status(500).send('"'+e.toString()+'"');
+	} catch (error){
+		let message;
+		if (error instanceof Error) message = error.message;
+		else message = String(error);
+		console.log(message);
+		res.status(500).send(message);
 	}
 }));
 
@@ -251,9 +280,12 @@ peaRouter.post('/:peaId/service/:serviceId/osLevel/:osLevel', asyncHandler(async
 		const osLevel = parseInt(req.params.osLevel,10);
 		await service.changeOsLevel(osLevel);
 		res.json(service.json());
-	}catch(e: any){
-		console.log(e);
-		res.status(500).send('"'+e.toString()+'"');
+	} catch(error){
+		let message;
+		if (error instanceof Error) message = error.message;
+		else message = String(error);
+		console.log(message);
+		res.status(500).send(message);
 	}
 }));
 
@@ -290,9 +322,12 @@ peaRouter.post('/:peaId/service/:serviceId/:command', asyncHandler(async (req: R
 		} else {
 			res.status(404).send('Service not found');
 		}
-	} catch (e: any) {
-		console.log(e);
-		res.status(500).send(e.toString());
+	} catch (error) {
+		let message;
+		if (error instanceof Error) message = error.message;
+		else message = String(error);
+		console.log(message);
+		res.status(500).send(message);
 	}
 }));
 
@@ -321,9 +356,12 @@ peaRouter.post('/:peaId/service/:serviceId/opMode/:opModeParam', asyncHandler(as
 		} else {
 			res.status(404).send('Service not found.');
 		}
-	} catch (e: any) {
-		console.log(e);
-		res.status(500).send(e.toString());
+	} catch (error) {
+		let message;
+		if (error instanceof Error) message = error.message;
+		else message = String(error);
+		console.log(message);
+		res.status(500).send(message);
 	}
 }));
 
@@ -352,9 +390,12 @@ peaRouter.post('/:peaId/service/:serviceName/serviceSourceMode/:serviceSourceMod
 		} else {
 			res.status(404).send('Service not found.');
 		}
-	} catch (e: any) {
-		console.log(e);
-		res.status(500).send(e.toString());
+	} catch (error) {
+		let message;
+		if (error instanceof Error) message = error.message;
+		else message = String(error);
+		console.log(message);
+		res.status(500).send(message);
 	}
 }));
 
@@ -375,8 +416,11 @@ peaRouter.get('/:peaId/service/:serviceId', asyncHandler(async (req: Request, re
 			res.status(404).send('Service not found.');
 		}
 	}
-	catch(e: any){
-		console.log(e);
-		res.status(500).send(e.toString());
+	catch(error){
+		let message;
+		if (error instanceof Error) message = error.message;
+		else message = String(error);
+		console.log(message);
+		res.status(500).send(message);
 	}
 }));

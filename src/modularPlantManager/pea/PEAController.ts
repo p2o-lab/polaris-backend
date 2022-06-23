@@ -35,13 +35,12 @@ import {
 	DataAssemblyController, DataAssemblyControllerFactory,
 	ServiceState
 } from './dataAssembly';
-import {BaseServiceEvents, Procedure, Service} from './serviceSet';
+import {Procedure, Service} from './serviceSet';
 
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Category} from 'typescript-logging';
 import {catPEA} from '../../logging';
-import {ServiceEvents} from '../../../build/src/modularPlantManager';
 
 export interface ParameterChange {
 	timestampPEA: Date;

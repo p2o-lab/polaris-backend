@@ -46,7 +46,7 @@ export interface RecipeEvents {
 	 * when recipe has been stopped, returns recent step
 	 * @event stopped
 	 */
-	stopped: Step;
+	stopped: Step | undefined;
 	/**
 	 * when something internal changes in a recipe (e.g. a step is finished or operation is executed)
 	 * @event changed
@@ -164,7 +164,7 @@ export class Recipe extends (EventEmitter as new() => RecipeEmitter) {
 		if (this.status === RecipeState.running) {
 			throw new Error('Recipe is already running');
 		}
-		this.currentStep = this.initialStep!;
+		this.currentStep = this.initialStep;
 		this.status = RecipeState.running;
 		await this.connectPEAs()
 			.catch((reason) => {
@@ -207,7 +207,7 @@ export class Recipe extends (EventEmitter as new() => RecipeEmitter) {
 			this.currentStep.operations.forEach((operation) => operation.stop());
 			this.currentStep.transitions.forEach((trans) => trans.condition.clear());
 		}
-		this.emit('stopped', this.currentStep!);
+		this.emit('stopped', this.currentStep);
 		this.currentStep = undefined;
 	}
 
