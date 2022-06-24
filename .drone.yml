@@ -3,7 +3,7 @@ name: default
 
 platform:
   os: linux
-  arch: ia32
+  arch: arm64
 
 steps:
 
