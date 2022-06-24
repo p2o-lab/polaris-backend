@@ -1,5 +1,5 @@
 # Docker Parent Image with Node and Typescript
-FROM node:16.13-alpine3.15 as base
+FROM node:16.13-alpine3.16 as base
 WORKDIR /app
 
 ENV RUN_OS_WINBASH_IS_LINUX=true
