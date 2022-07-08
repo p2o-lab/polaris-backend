@@ -24,119 +24,34 @@
  */
 
 import {PEAModel} from '@p2olab/pimad-interface';
-import {PEAOptions} from '@p2olab/polaris-interface';
-import {Backbone, PEAPool, PEAPoolVendor,} from '@p2olab/pimad-core';
-import {PEAOptionsParser} from './PEAOptionsParser/PEAOptionsParser';
-import PiMAdResponse = Backbone.PiMAdResponse;
+import fetch from 'node-fetch';
+import * as peaModelFileContent from '../modularPlantManager/peaModel.spec.json';
 
 
-export interface LoadOptions {
-	pea?: PEAOptions;
-	peas?: PEAOptions[];
-	subMP?: Array<{ peas: PEAOptions[] }>;
-}
+const peaModel = peaModelFileContent as unknown as PEAModel;
 
 export class PEAProvider {
-
-	public peaPool: PEAPool;
-
-	constructor() {
-		this.peaPool = new PEAPoolVendor().buyDependencyPEAPool();
-		this.peaPool.initializeMTPFreeze202001Importer();
-	}
-
-	/**
-	 * Get PEAController from PEA-Pool by given identifier
-	 * @param identifier	Identifier
-	 */
-	public getPEAFromPEAPool(identifier: string): Promise<PEAModel>{
-		return new Promise<PEAModel>((resolve,reject) => {
-			this.peaPool.getPEA(identifier, (response: PiMAdResponse) => {
-				if(response.getMessage()=='Success!') {
-					const peaModel = response.getContent() as PEAModel;
-					resolve(peaModel);
-				} else {
-					reject(new Error(response.getMessage()));
-				}
-			});
-		});
-	}
-
-	/**
-	 * Delete PEAController from PEA-Pool by given PEA-Identifier
-	 * @param identifier	PEA-Identifier
-	 */
-	public deletePEAFromPEAPool(identifier: string): Promise<void> {
-		return new Promise((resolve,reject)=> {
-			this.peaPool.deletePEA(identifier,(response: PiMAdResponse) => {
-				if(response.getMessage()=='Success!') {
-					resolve();
-				}
-				else {
-					reject(new Error(response.getMessage()));
-				}
-			});
-		});
-	}
-
-	/**
-	 * Delete PEAController from PEA-Pool by given PEA-Identifier
-	 */
-	public async deleteAllPEAsFromPEAPool(): Promise<unknown> {
-		const peaModels = await this.getAllPEAsFromPEAPool();
-		const tasks = peaModels.map((peaModel) => new Promise((resolve) => {
-				this.deletePEAFromPEAPool(peaModel.pimadIdentifier).then(resolve);
-			})
-		);
-		return Promise.all(tasks);
-	}
 
 	/**
 	 * Get all PEAs from PEA-Pool
 	 * @return {Promise<PEAModel[]>}
 	 */
-	public async getAllPEAsFromPEAPool(): Promise<PEAModel[]>{
-		return new Promise<PEAModel[]>((resolve, reject)=>{
-			this.peaPool.getAllPEAs((response: PiMAdResponse) => {
-				if(response.getMessage()=='Success!') resolve(response.getContent() as PEAModel[]);
-				else reject(new Error((response.getMessage())));
-			});
-		});
+	public async getAllPEAsFromPiMAd(): Promise<PEAModel[]> {
+		const response = await fetch('http://localhost:3002/api/allPEAs');
+		return await response.json() as PEAModel[];
 	}
 
 	/**
-	 * add PEA to PEAPool by given filepath
-	 * @param filePath - filepath of the uploaded file in /uploads
+	 * Get PEA from PiMAd
+	 * @param {string} peaId ID of PEA
+	 * @return {Promise<PEAModel[]>}
 	 */
-	public addPEAToPool(filePath: { source: string}): Promise<PEAModel>{
-		return new Promise<PEAModel>((resolve, reject)=>{
-			this.peaPool.addPEA(filePath, (response: PiMAdResponse) => {
-				if(response.getMessage() == 'Success!') resolve(response.getContent() as PEAModel);
-				else reject(new Error(response.getMessage()));
-			});
-		});
-	}
+	public async getPEAFromPiMAd(peaId: string): Promise<PEAModel> {
 
-	/**
-	 * Get PEAControllerOptions of PEA identified by given identifier
-	 * @param {string} identifier
-	 */
-	public async getPEAControllerOptionsByPEAIdentifier(identifier: string): Promise<PEAOptions>{
-		if (!identifier) {
-			throw new Error(`PEA with identifier [${identifier}] not found.`);
-		}
-		const model = await this.getPEAFromPEAPool(identifier);
-		return PEAOptionsParser.createPEAOptions(model);
-	}
+		//Todo create mockup for test purpose
+		if(peaId === 'test') return peaModel;
 
-	/**
-	 * Get PEAControllerOptions of provided PEA-Model
-	 * @param {PEAModel} model
-	 */
-	public async getPEAControllerOptionsByProvidedPEAModel(model: PEAModel): Promise<PEAOptions>{
-		if (!model) {
-			throw new Error('No valid model provided!');
-		}
-		return PEAOptionsParser.createPEAOptions(model);
+		const response = await fetch(`http://localhost:3002/api/${peaId}`);
+		return await response.json() as PEAModel;
 	}
 }

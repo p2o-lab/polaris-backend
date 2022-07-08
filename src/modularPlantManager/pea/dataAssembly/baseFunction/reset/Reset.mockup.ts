@@ -24,33 +24,47 @@
  */
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
+import {DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../dataItem/DataItem.mockup';
 
 
-function getResetSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
-  return ({
-    ResetOp: {
-      namespaceIndex: `${namespace}`,
-      nodeId: `${objectBrowseName}.ResetOp`,
-      dataType: 'Boolean'
-    } as OpcUaNodeOptions,
-    ResetAut: {
-      namespaceIndex: `${namespace}`,
-      nodeId: `${objectBrowseName}.ResetAut`,
-      dataType: 'Boolean'
-    } as OpcUaNodeOptions
-  });
+
+function getResetSpecificDataItemModels(namespace: number, objectBrowseName: string): DataItemModel[] {
+
+  const result: DataItemModel[] = [];
+  let dataItem: DataItemModel = getEmptyDataItemModel();
+  dataItem.name = 'ResetOp';
+  dataItem.dataType = 'Boolean';
+  let ciOptions = getEmptyCIDataModel();
+  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.identifier = `${objectBrowseName}.ResetOp`;
+  ciOptions.nodeId.namespaceIndex = `${namespace}`;
+  dataItem.cIData = ciOptions;
+  result.push(dataItem);
+
+  dataItem = getEmptyDataItemModel();
+  dataItem.name = 'ResetAut';
+  dataItem.dataType = 'Boolean';
+  ciOptions = getEmptyCIDataModel();
+  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.identifier = `${objectBrowseName}.ResetAut`;
+  ciOptions.nodeId.namespaceIndex = `${namespace}`;
+  dataItem.cIData = ciOptions;
+  result.push(dataItem);
+
+
+  return result;
 }
 
-
-export function getResetDataItemOptions(namespace: number, objectBrowseName: string): object {
-  return getResetSpecificDataItemOptions(namespace, objectBrowseName);
+export function getResetDataItemModel(namespace: number, objectBrowseName: string): DataItemModel[] {
+  return getResetSpecificDataItemModels(namespace, objectBrowseName);
 }
-
 
 export class ResetMockup {
-  protected resetOp = false;
-  protected resetAut = false;
+
+  public resetOp = false;
+  public resetAut = false;
+
   protected mockupNode: UAObject;
 
   constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
@@ -89,8 +103,8 @@ export class ResetMockup {
     });
     }
 
-  public getDataItemOptions(): object {
-    return getResetDataItemOptions(
+  public getDataItemModel(): DataItemModel[] {
+    return getResetDataItemModel(
         this.mockupNode.namespaceIndex,
         this.mockupNode.browseName.name as string);
   }

@@ -23,10 +23,12 @@
  * SOFTWARE.
  */
 
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaConnection, DataItem} from '../../../../../connection';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
+import {DataItem} from '../../../../dataItem/DataItem';
 import {SourceModeController, SourceModeRuntime, WQC, WQCRuntime} from '../../../../baseFunction';
 import {BinMan, BinManRuntime} from '../BinMan';
+import {ConnectionHandler} from '../../../../../connectionHandler/ConnectionHandler';
+import {DataItemFactory, getDataItemModel} from '../../../../dataItem/DataItemFactory';
 
 export type BinManIntRuntime = BinManRuntime & SourceModeRuntime & WQCRuntime & {
 	VInt: DataItem<boolean>;
@@ -38,14 +40,12 @@ export class BinManInt extends BinMan {
 	public readonly sourceMode: SourceModeController;
 	public readonly wqc: WQC;
 
-	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
-		super(options, connection);
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+		super(options, connectionHandler);
 
-		this.wqc = new WQC(this);
+		this.wqc = new WQC(options, connectionHandler);
+		this.sourceMode = new SourceModeController(options, connectionHandler);
 
-		this.communication.VInt = this.createDataItem('VInt', 'boolean');
-
-		this.sourceMode = new SourceModeController(this);
-		
+		this.communication.VInt = DataItemFactory.create(getDataItemModel(options, 'VInt'), connectionHandler);
 	}
 }

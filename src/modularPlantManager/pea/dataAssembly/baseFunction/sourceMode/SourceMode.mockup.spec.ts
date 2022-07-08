@@ -26,10 +26,11 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../_utils';
-import {getSourceModeDataItemOptions, SourceModeMockup} from './SourceMode.mockup';
-import {OpcUaConnection} from '../../../connection';
+import {getSourceModeDataItemModel, SourceModeMockup} from './SourceMode.mockup';
+
 import {ServiceSourceMode, SourceMode} from '@p2olab/polaris-interface';
-import {SourceModeRuntime} from './SourceModeController';
+import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
+import {DataItemAccessLevel} from '@p2olab/pimad-interface';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -52,31 +53,24 @@ describe('SourceModeMockup', () => {
         });
 
         it('static DataItemOptions', () => {
-            const options = getSourceModeDataItemOptions(1, 'Test') as SourceModeRuntime;
+            const options = getSourceModeDataItemModel(1, 'Test');
 
             expect(Object.keys(options).length).to.equal(7);
-            expect(options.SrcChannel).to.not.be.undefined;
-            expect(options.SrcManAut).to.not.be.undefined;
-            expect(options.SrcIntAut).to.not.be.undefined;
-            expect(options.SrcManOp).to.not.be.undefined;
-            expect(options.SrcIntOp).to.not.be.undefined;
-            expect(options.SrcManAct).to.not.be.undefined;
-            expect(options.SrcIntAct).to.not.be.undefined;
         });
 
         it('dynamic DataItemOptions', () => {
             const mockup = new SourceModeMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const options = mockup.getDataItemOptions() as SourceModeRuntime;
+            const options = mockup.getDataItemModel();
 
             expect(Object.keys(options).length).to.equal(7);
-            expect(options.SrcChannel).to.not.be.undefined;
-            expect(options.SrcManAut).to.not.be.undefined;
-            expect(options.SrcIntAut).to.not.be.undefined;
-            expect(options.SrcManOp).to.not.be.undefined;
-            expect(options.SrcIntOp).to.not.be.undefined;
-            expect(options.SrcManAct).to.not.be.undefined;
-            expect(options.SrcIntAct).to.not.be.undefined;
+            expect(options.find(i => i.name === 'SrcChannel')).to.not.be.undefined;
+            expect(options.find(i => i.name === 'SrcManAut')).to.not.be.undefined;
+            expect(options.find(i => i.name === 'SrcIntAut')).to.not.be.undefined;
+            expect(options.find(i => i.name === 'SrcManOp')).to.not.be.undefined;
+            expect(options.find(i => i.name === 'SrcIntOp')).to.not.be.undefined;
+            expect(options.find(i => i.name === 'SrcManAct')).to.not.be.undefined;
+            expect(options.find(i => i.name === 'SrcIntAct')).to.not.be.undefined;
         });
 
     });
@@ -84,7 +78,7 @@ describe('SourceModeMockup', () => {
 
         let mockupServer: MockupServer;
         let mockup: SourceModeMockup;
-        let connection: OpcUaConnection;
+        let connectionHandler: ConnectionHandler;
 
         beforeEach(async function () {
             this.timeout(10000);
@@ -92,18 +86,18 @@ describe('SourceModeMockup', () => {
             await mockupServer.initialize();
             mockup = new SourceModeMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
             await mockupServer.start();
-            connection = new OpcUaConnection();
-            connection.initialize({endpointUrl: mockupServer.endpoint});
-            await connection.connect();
+            connectionHandler= new ConnectionHandler();
+            connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+            await connectionHandler.connect();
         });
         afterEach(async () => {
-            await connection.disconnect();
+            await connectionHandler.disconnect();
             await mockupServer.shutdown();
         });
 
         it('set and get SrcManOp', async () => {
-            await connection.writeNode('Variable.SrcManOp', mockupServer.nameSpaceUri, true, 'Boolean');
-            await connection.readNode('Variable.SrcManOp', mockupServer.nameSpaceUri)
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.SrcManOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, true);
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.SrcManOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(false));
             expect(mockup.srcIntAct).to.false;
             expect(mockup.srcManAct).to.true;
@@ -111,8 +105,8 @@ describe('SourceModeMockup', () => {
         }).timeout(3000);
 
         it('set and get SrcIntOp', async () => {
-            await connection.writeNode('Variable.SrcIntOp', mockupServer.nameSpaceUri, true, 'Boolean');
-            await connection.readNode('Variable.SrcIntOp', mockupServer.nameSpaceUri)
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.SrcIntOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, true);
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.SrcIntOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(false));
             expect(mockup.srcIntAct).to.true;
             expect(mockup.srcManAct).to.false;
@@ -120,8 +114,8 @@ describe('SourceModeMockup', () => {
         }).timeout(3000);
 
         it('set and get SrcManOp, write false', async () => {
-            await connection.writeNode('Variable.SrcManOp', mockupServer.nameSpaceUri, false, 'Boolean');
-            await connection.readNode('Variable.SrcManOp', mockupServer.nameSpaceUri)
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.SrcManOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, false);
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.SrcManOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(false));
             expect(mockup.srcIntAct).to.true;
             expect(mockup.srcManAct).to.false;
@@ -129,8 +123,8 @@ describe('SourceModeMockup', () => {
         }).timeout(3000);
 
         it('set and get SrcIntOp, write false', async () => {
-            await connection.writeNode('Variable.SrcIntOp', mockupServer.nameSpaceUri, false, 'Boolean');
-            await connection.readNode('Variable.SrcIntOp', mockupServer.nameSpaceUri)
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.SrcIntOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, false);
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.SrcIntOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(false));
             expect(mockup.srcIntAct).to.true;
             expect(mockup.srcManAct).to.false;
@@ -142,7 +136,7 @@ describe('SourceModeMockup', () => {
 
         let mockupServer: MockupServer;
         let mockup: SourceModeMockup;
-        let connection: OpcUaConnection;
+        let connectionHandler: ConnectionHandler;
 
         beforeEach(async function () {
             this.timeout(10000);
@@ -152,18 +146,18 @@ describe('SourceModeMockup', () => {
                 mockupServer.rootObject, 'Variable');
             mockup.srcChannel = true;
             await mockupServer.start();
-            connection = new OpcUaConnection();
-            connection.initialize({endpointUrl: mockupServer.endpoint});
-            await connection.connect();
+            connectionHandler= new ConnectionHandler();
+            connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+            await connectionHandler.connect();
         });
         afterEach(async () => {
-            await connection.disconnect();
+            await connectionHandler.disconnect();
             await mockupServer.shutdown();
         });
 
         it('set and get SrcManOp, nothing should change', async () => {
-            await connection.writeNode('Variable.SrcManOp', mockupServer.nameSpaceUri, true, 'Boolean');
-            await connection.readNode('Variable.SrcManOp', mockupServer.nameSpaceUri)
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.SrcManOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, true);
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.SrcManOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(false));
             expect(mockup.srcIntAct).to.true;
             expect(mockup.srcManAct).to.false;
@@ -171,8 +165,8 @@ describe('SourceModeMockup', () => {
         }).timeout(3000);
 
         it('set and get SrcIntOp, nothing should change', async () => {
-            await connection.writeNode('Variable.SrcIntOp', mockupServer.nameSpaceUri, true, 'Boolean');
-            await connection.readNode('Variable.SrcIntOp', mockupServer.nameSpaceUri)
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.SrcIntOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, true);
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.SrcIntOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(false));
             expect(mockup.srcIntAct).to.true;
             expect(mockup.srcManAct).to.false;

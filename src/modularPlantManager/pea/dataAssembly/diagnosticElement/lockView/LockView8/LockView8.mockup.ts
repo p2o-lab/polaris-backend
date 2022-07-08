@@ -24,135 +24,236 @@
  */
 
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
-import {getLockView4DataItemOptions, LockView4Mockup} from '../LockView4/LockView4.mockup';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
-import {getDataAssemblyOptions} from '../../../DataAssemblyController.mockup';
+import {getLockView4DataItemModel, LockView4Mockup} from '../LockView4/LockView4.mockup';
+import {CIData, DataAssemblyModel, DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+
+import {getDataAssemblyModel} from '../../../DataAssembly.mockup';
+import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../../dataItem/DataItem.mockup';
 
 
 const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/DiagnosticElement/LockView8';
 
-function getLockView8SpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return ({
-		In5En: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In5En`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		In5: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In5`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		In5QC: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In5QC`,
-			dataType: 'Byte'
-		} as OpcUaNodeOptions,
-		In5Inv: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In5Inv`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		In5Txt: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In5Txt`,
-			dataType: 'String'
-		} as OpcUaNodeOptions,
-		In6En: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In6En`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		In6: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In6`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		In6QC: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In6QC`,
-			dataType: 'Byte'
-		} as OpcUaNodeOptions,
-		In6Inv: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In6Inv`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		In6Txt: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In6Txt`,
-			dataType: 'String'
-		} as OpcUaNodeOptions,
-		In7En: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In7En`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		In7: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In7`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		In7QC: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In7QC`,
-			dataType: 'Byte'
-		} as OpcUaNodeOptions,
-		In7Inv: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In7Inv`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		In7Txt: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In7Txt`,
-			dataType: 'String'
-		} as OpcUaNodeOptions,
-		In8En: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In8En`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		In8: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In8`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		In8QC: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In8QC`,
-			dataType: 'Byte'
-		} as OpcUaNodeOptions,
-		In8Inv: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In8Inv`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		In8Txt: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In8Txt`,
-			dataType: 'String'
-		} as OpcUaNodeOptions
-	});
+function getLockView8SpecificDataItemModels(namespace: number, objectBrowseName: string): DataItemModel[] {
+
+	const result: DataItemModel[] = [];
+	let dataItem: DataItemModel = getEmptyDataItemModel();
+	dataItem.name = 'In5En';
+	dataItem.dataType = 'Boolean';
+	let ciOptions: CIData = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In5En`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In5';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In5`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In5QC';
+	dataItem.dataType = 'Byte';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In5QC`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In5Inv';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In5Inv`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In5Txt';
+	dataItem.dataType = 'String';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In5Inv`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In6En';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In6En`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In6';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In6`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In6QC';
+	dataItem.dataType = 'Byte';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In6QC`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In6Inv';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In6Inv`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In6Txt';
+	dataItem.dataType = 'String';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In6Inv`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In7En';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In7En`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In7';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In7`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In7QC';
+	dataItem.dataType = 'Byte';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In7QC`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In7Inv';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In7Inv`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In7Txt';
+	dataItem.dataType = 'String';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In7Inv`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In8En';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In8En`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In8';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In8`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In8QC';
+	dataItem.dataType = 'Byte';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In8QC`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In8Inv';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In8Inv`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In8Txt';
+	dataItem.dataType = 'String';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In8Inv`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	return result;
 }
 
 
-export function getLockView8DataItemOptions(namespace: number, objectBrowseName: string): object {
-	return ({
-			...getLockView4DataItemOptions(namespace, objectBrowseName),
-			...getLockView8SpecificDataItemOptions(namespace, objectBrowseName),
-		} as OpcUaNodeOptions
-	);
+export function getLockView8DataItemModel(namespace: number, objectBrowseName: string): DataItemModel[] {
+	return [
+			...getLockView4DataItemModel(namespace, objectBrowseName),
+			...getLockView8SpecificDataItemModels(namespace, objectBrowseName),
+		];
 }
 
 
-export function getLockView8Options(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
-	const options = getDataAssemblyOptions(name, tagName, tagDescription);
-	options.metaModelRef = metaModelReference;
-	options.dataItems = {
+export function getLockView8DataAssemblyModel(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): DataAssemblyModel {
+	const options = getDataAssemblyModel(metaModelReference, name, tagName, tagDescription);
+	options.dataItems = [
 		...options.dataItems,
-		...getLockView8DataItemOptions(namespace, objectBrowseName)};
+		...getLockView8DataItemModel(namespace, objectBrowseName)
+	];
 	return options;
 }
 
@@ -412,13 +513,12 @@ export class LockView8Mockup extends LockView4Mockup{
 		});
 	}
 
-	public getDataAssemblyOptions(): DataAssemblyOptions {
-		const options = super.getDataAssemblyOptions();
-		options.metaModelRef = metaModelReference;
-		options.dataItems = {
+	public getDataAssemblyModel(metaModelReferenceOption?: string): DataAssemblyModel {
+		const options = super.getDataAssemblyModel(metaModelReferenceOption || metaModelReference);
+		options.dataItems = [
 			...options.dataItems,
-			...getLockView8SpecificDataItemOptions(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
-		};
+			...getLockView8SpecificDataItemModels(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
+		];
 		return options;
 	}
 }

@@ -23,5 +23,5 @@
  * SOFTWARE.
  */
  
-export * from './PEAController';
+export * from './PEA';
 export * from './serviceSet';

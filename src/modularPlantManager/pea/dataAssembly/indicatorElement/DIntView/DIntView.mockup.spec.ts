@@ -26,8 +26,8 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../_utils';
-import {DIntViewMockup, getDIntViewDataItemOptions, getDIntViewOptions} from './DIntView.mockup';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {DIntViewMockup, getDIntViewDataAssemblyModel, getDIntViewDataItemModel} from './DIntView.mockup';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {AnaViewRuntime} from '../AnaView/AnaView';
 
 chai.use(chaiAsPromised);
@@ -51,19 +51,19 @@ describe('DIntViewMockup', () => {
         });
 
         it('static DataItemOptions', () => {
-            const options = getDIntViewDataItemOptions(1, 'Test') as AnaViewRuntime;
+            const options = getDIntViewDataItemModel(1, 'Test');
             expect(Object.keys(options).length).to.equal(5);
         });
 
-        it('static DataAssemblyOptions', () => {
-            const options = getDIntViewOptions(1, 'Test') as DataAssemblyOptions;
+        it('static DataAssemblyModel', () => {
+            const options = getDIntViewDataAssemblyModel(1, 'Test');
             expect(Object.keys(options.dataItems).length).to.equal(7);
         });
 
-        it('dynamic DataAssemblyOptions', () => {
+        it('dynamic DataAssemblyModel', () => {
             const mockup = new DIntViewMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const options = mockup.getDataAssemblyOptions();
+            const options = mockup.getDataAssemblyModel();
 
             expect(Object.keys(options.dataItems).length).to.equal(7);
         });

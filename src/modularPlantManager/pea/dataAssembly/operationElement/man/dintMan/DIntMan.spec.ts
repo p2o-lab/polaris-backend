@@ -23,14 +23,14 @@
  * SOFTWARE.
  */
 
-import {OpcUaConnection} from '../../../../connection';
 import {DIntMan} from './DIntMan';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {DataAssemblyControllerFactory} from '../../../DataAssemblyControllerFactory';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
+import {DataAssemblyFactory} from '../../../DataAssemblyFactory';
 import {MockupServer} from '../../../../../_utils';
-import {DIntManMockup, getDIntManOptions} from './DIntMan.mockup';
+import {DIntManMockup, getDIntManDataAssemblyModel} from './DIntMan.mockup';
+import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
 
 
 chai.use(chaiAsPromised);
@@ -38,69 +38,69 @@ const expect = chai.expect;
 
 describe('DIntMan', () => {
 
-	let dataAssemblyOptions: DataAssemblyOptions;
+	let options: DataAssemblyModel;
 
 	describe('static', () => {
 
-		const emptyOPCUAConnection = new OpcUaConnection();
-		dataAssemblyOptions = getDIntManOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
+		const connectionHandler = new ConnectionHandler();
+		options = getDIntManDataAssemblyModel(2, 'Variable', 'Variable');
 
 		it('should create DIntMan',  () => {
-			const dataAssemblyController: DIntMan = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as DIntMan;
-			expect(dataAssemblyController.communication.VOut).to.not.equal(undefined);
-			expect(dataAssemblyController.scaleSettings).to.not.be.undefined;
-			expect(dataAssemblyController.unitSettings).to.not.be.undefined;
-			expect(dataAssemblyController.valueLimitation).to.not.be.undefined;
+			const dataAssembly: DIntMan = DataAssemblyFactory.create(options, connectionHandler) as DIntMan;
+			expect(dataAssembly.communication.VOut).to.not.equal(undefined);
+			expect(dataAssembly.scaleSettings).to.not.be.undefined;
+			expect(dataAssembly.unitSettings).to.not.be.undefined;
+			expect(dataAssembly.valueLimitation).to.not.be.undefined;
 
-			expect(dataAssemblyController.communication.VMan).to.not.equal(undefined);
-			expect(dataAssemblyController.communication.VRbk).to.not.equal(undefined);
-			expect(dataAssemblyController.communication.VFbk).to.not.equal(undefined);
+			expect(dataAssembly.communication.VMan).to.not.equal(undefined);
+			expect(dataAssembly.communication.VRbk).to.not.equal(undefined);
+			expect(dataAssembly.communication.VFbk).to.not.equal(undefined);
 
 
-			expect(dataAssemblyController.defaultReadDataItem).equal(dataAssemblyController.communication.VOut);
-			expect(dataAssemblyController.defaultReadDataItemType).to.equal('number');
-			expect(dataAssemblyController.defaultWriteDataItem).equal(dataAssemblyController.communication.VMan);
-			expect(dataAssemblyController.defaultWriteDataItemType).to.equal('number');
+			expect(dataAssembly.defaultReadDataItem).equal(dataAssembly.communication.VOut);
+			expect(dataAssembly.defaultReadDataItemType).to.equal('number');
+			expect(dataAssembly.defaultWriteDataItem).equal(dataAssembly.communication.VMan);
+			expect(dataAssembly.defaultWriteDataItemType).to.equal('number');
 		});
 	});
 	describe('dynamic', () => {
 		let mockupServer: MockupServer;
-		let connection: OpcUaConnection;
+		let connectionHandler: ConnectionHandler;
 
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
 			const dIntManMockup = new DIntManMockup(mockupServer.nameSpace, mockupServer.rootObject,'Variable');
-			dataAssemblyOptions = dIntManMockup.getDataAssemblyOptions();await mockupServer.start();
-			connection = new OpcUaConnection();
-			connection.initialize({endpointUrl: mockupServer.endpoint});
-			await connection.connect();
+			options = dIntManMockup.getDataAssemblyModel();await mockupServer.start();
+			connectionHandler= new ConnectionHandler();
+			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			await connectionHandler.connect();
 		});
 
 		afterEach(async function () {
 			this.timeout(4000);
-			await connection.disconnect();
+			await connectionHandler.disconnect();
 			await mockupServer.shutdown();
 		});
 
 		it('should subscribe successfully', async () => {
 
-			const dataAssemblyController = DataAssemblyControllerFactory.create(dataAssemblyOptions, connection) as DIntMan;
-			await dataAssemblyController.subscribe();
-			await connection.startMonitoring();
-			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
+			const dataAssembly = DataAssemblyFactory.create(options, connectionHandler) as DIntMan;
+			await dataAssembly.subscribe();
+			await connectionHandler.connect();
+			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 
-			expect(dataAssemblyController.communication.OSLevel.value).to.equal(0);
-			expect(dataAssemblyController.communication.VOut.value).to.equal(0);
-			expect(dataAssemblyController.communication.VMan.value).to.equal(0);
-			expect(dataAssemblyController.communication.VRbk.value).to.equal(0);
-			expect(dataAssemblyController.communication.VFbk.value).to.equal(0);
-			expect(dataAssemblyController.communication.VUnit.value).equal(0);
-			expect(dataAssemblyController.communication.VSclMin.value).equal(0);
-			expect(dataAssemblyController.communication.VSclMax.value).equal(0);
-			expect(dataAssemblyController.communication.VMin.value).equal(0);
-			expect(dataAssemblyController.communication.VMax.value).equal(0);
+			expect(dataAssembly.communication.OSLevel.value).to.equal(0);
+			expect(dataAssembly.communication.VOut.value).to.equal(0);
+			expect(dataAssembly.communication.VMan.value).to.equal(0);
+			expect(dataAssembly.communication.VRbk.value).to.equal(0);
+			expect(dataAssembly.communication.VFbk.value).to.equal(0);
+			expect(dataAssembly.communication.VUnit.value).equal(0);
+			expect(dataAssembly.communication.VSclMin.value).equal(0);
+			expect(dataAssembly.communication.VSclMax.value).equal(0);
+			expect(dataAssembly.communication.VMin.value).equal(0);
+			expect(dataAssembly.communication.VMax.value).equal(0);
 		}).timeout(4000);
 	});
 });

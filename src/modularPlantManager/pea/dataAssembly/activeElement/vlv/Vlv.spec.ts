@@ -23,115 +23,116 @@
  * SOFTWARE.
  */
 
-import {OpcUaConnection} from '../../../connection';
+
 import {Vlv} from './Vlv';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {MockupServer} from '../../../../_utils';
-import {getVlvOptions, VlvMockup} from './Vlv.mockup';
+import {getVlvDataAssemblyModel, VlvMockup} from './Vlv.mockup';
+import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('Vlv', () => {
 
-	let dataAssemblyOptions: DataAssemblyOptions;
+	let options: DataAssemblyModel;
 
 	describe('static', () => {
 
-		const emptyOPCUAConnection = new OpcUaConnection();
-		dataAssemblyOptions = getVlvOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
+		const connectionHandler = new ConnectionHandler();
+		options = getVlvDataAssemblyModel(2, 'Variable', 'Variable');
 
 		it('should create Vlv',  () => {
 
-			const dataAssemblyController = new Vlv(dataAssemblyOptions, emptyOPCUAConnection);
-			expect(dataAssemblyController).to.be.not.undefined;
-			expect(dataAssemblyController.osLevel).to.be.not.undefined;
-			expect(dataAssemblyController.wqc).to.be.not.undefined;
-			expect(dataAssemblyController.reset).to.be.not.undefined;
-			expect(dataAssemblyController.opMode).to.be.not.undefined;
-			expect(dataAssemblyController.interlock).to.be.not.undefined;
+			const dataAssembly = new Vlv(options, connectionHandler);
+			expect(dataAssembly).to.be.not.undefined;
+			expect(dataAssembly.osLevel).to.be.not.undefined;
+			expect(dataAssembly.wqc).to.be.not.undefined;
+			expect(dataAssembly.reset).to.be.not.undefined;
+			expect(dataAssembly.opMode).to.be.not.undefined;
+			expect(dataAssembly.interlock).to.be.not.undefined;
 
-			expect(dataAssemblyController.communication.SafePos).to.be.not.undefined;
-			expect(dataAssemblyController.communication.SafePosEn).to.be.not.undefined;
-			expect(dataAssemblyController.communication.SafePosAct).to.be.not.undefined;
-			expect(dataAssemblyController.communication.OpenAut).to.be.not.undefined;
-			expect(dataAssemblyController.communication.OpenFbk).to.be.not.undefined;
-			expect(dataAssemblyController.communication.OpenFbkCalc).to.be.not.undefined;
-			expect(dataAssemblyController.communication.OpenOp).to.be.not.undefined;
-			expect(dataAssemblyController.communication.CloseAut).to.be.not.undefined;
-			expect(dataAssemblyController.communication.CloseFbk).to.be.not.undefined;
-			expect(dataAssemblyController.communication.CloseFbkCalc).to.be.not.undefined;
-			expect(dataAssemblyController.communication.CloseOp).to.be.not.undefined;
+			expect(dataAssembly.communication.SafePos).to.be.not.undefined;
+			expect(dataAssembly.communication.SafePosEn).to.be.not.undefined;
+			expect(dataAssembly.communication.SafePosAct).to.be.not.undefined;
+			expect(dataAssembly.communication.OpenAut).to.be.not.undefined;
+			expect(dataAssembly.communication.OpenFbk).to.be.not.undefined;
+			expect(dataAssembly.communication.OpenFbkCalc).to.be.not.undefined;
+			expect(dataAssembly.communication.OpenOp).to.be.not.undefined;
+			expect(dataAssembly.communication.CloseAut).to.be.not.undefined;
+			expect(dataAssembly.communication.CloseFbk).to.be.not.undefined;
+			expect(dataAssembly.communication.CloseFbkCalc).to.be.not.undefined;
+			expect(dataAssembly.communication.CloseOp).to.be.not.undefined;
 		});
 	});
 
 	describe('dynamic', () => {
 		let mockupServer: MockupServer;
-		let connection: OpcUaConnection;
+		let connectionHandler: ConnectionHandler;
 
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
 			const vlvMockup = new VlvMockup( mockupServer.nameSpace, mockupServer.rootObject,'Variable');
-			dataAssemblyOptions = vlvMockup.getDataAssemblyOptions();
+			options = vlvMockup.getDataAssemblyModel();
 			await mockupServer.start();
-			connection = new OpcUaConnection();
-			connection.initialize({endpointUrl: mockupServer.endpoint});
-			await connection.connect();
+			connectionHandler= new ConnectionHandler();
+			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			await connectionHandler.connect();
 		});
 
 		afterEach(async function () {
 			this.timeout(4000);
-			await connection.disconnect();
+			await connectionHandler.disconnect();
 			await mockupServer.shutdown();
 		});
 
 		it('should subscribe successfully', async () => {
 
-			const dataAssemblyController = new Vlv(dataAssemblyOptions, connection);
-			await dataAssemblyController.subscribe();
-			await connection.startMonitoring();
-			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
+			const dataAssembly = new Vlv(options, connectionHandler);
+			await dataAssembly.subscribe();
+			await connectionHandler.connect();
+			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 
-			expect(dataAssemblyController.communication.OSLevel.value).equal(0);
-			expect(dataAssemblyController.communication.WQC.value).equal(0);
+			expect(dataAssembly.communication.OSLevel.value).equal(0);
+			expect(dataAssembly.communication.WQC.value).equal(0);
 
-			expect(dataAssemblyController.communication.PermEn.value).equal(false);
-			expect(dataAssemblyController.communication.Permit.value).equal(false);
-			expect(dataAssemblyController.communication.IntlEn.value).equal(false);
-			expect(dataAssemblyController.communication.Interlock.value).equal(false);
-			expect(dataAssemblyController.communication.ProtEn.value).equal(false);
-			expect(dataAssemblyController.communication.Protect.value).equal(false);
+			expect(dataAssembly.communication.PermEn.value).equal(false);
+			expect(dataAssembly.communication.Permit.value).equal(false);
+			expect(dataAssembly.communication.IntlEn.value).equal(false);
+			expect(dataAssembly.communication.Interlock.value).equal(false);
+			expect(dataAssembly.communication.ProtEn.value).equal(false);
+			expect(dataAssembly.communication.Protect.value).equal(false);
 
-			expect(dataAssemblyController.communication.ResetAut.value).equal(false);
-			expect(dataAssemblyController.communication.ResetOp.value).equal(false);
+			expect(dataAssembly.communication.ResetAut.value).equal(false);
+			expect(dataAssembly.communication.ResetOp.value).equal(false);
 
-			expect(dataAssemblyController.communication.StateChannel.value).equal(false);
-			expect(dataAssemblyController.communication.StateOffAut.value).equal(false);
-			expect(dataAssemblyController.communication.StateOpAut.value).equal(false);
-			expect(dataAssemblyController.communication.StateAutAut.value).equal(false);
-			expect(dataAssemblyController.communication.StateOffOp.value).equal(false);
-			expect(dataAssemblyController.communication.StateOpOp.value).equal(false);
-			expect(dataAssemblyController.communication.StateAutOp.value).equal(false);
-			expect(dataAssemblyController.communication.StateOpAct.value).equal(false);
-			expect(dataAssemblyController.communication.StateAutAct.value).equal(false);
-			expect(dataAssemblyController.communication.StateOffAct.value).equal(true);
+			expect(dataAssembly.communication.StateChannel.value).equal(false);
+			expect(dataAssembly.communication.StateOffAut.value).equal(false);
+			expect(dataAssembly.communication.StateOpAut.value).equal(false);
+			expect(dataAssembly.communication.StateAutAut.value).equal(false);
+			expect(dataAssembly.communication.StateOffOp.value).equal(false);
+			expect(dataAssembly.communication.StateOpOp.value).equal(false);
+			expect(dataAssembly.communication.StateAutOp.value).equal(false);
+			expect(dataAssembly.communication.StateOpAct.value).equal(false);
+			expect(dataAssembly.communication.StateAutAct.value).equal(false);
+			expect(dataAssembly.communication.StateOffAct.value).equal(true);
 
-			expect(dataAssemblyController.communication.SafePos.value).equal(false);
-			expect(dataAssemblyController.communication.SafePosEn.value).equal(false);
-			expect(dataAssemblyController.communication.SafePosAct.value).equal(false);
-			expect(dataAssemblyController.communication.OpenAut.value).equal(false);
-			expect(dataAssemblyController.communication.OpenFbk.value).equal(false);
-			expect(dataAssemblyController.communication.OpenFbkCalc.value).equal(false);
-			expect(dataAssemblyController.communication.OpenOp.value).equal(false);
-			expect(dataAssemblyController.communication.CloseAut.value).equal(false);
-			expect(dataAssemblyController.communication.CloseFbk.value).equal(false);
-			expect(dataAssemblyController.communication.CloseFbkCalc.value).equal(false);
-			expect(dataAssemblyController.communication.CloseOp.value).equal(false);
+			expect(dataAssembly.communication.SafePos.value).equal(false);
+			expect(dataAssembly.communication.SafePosEn.value).equal(false);
+			expect(dataAssembly.communication.SafePosAct.value).equal(false);
+			expect(dataAssembly.communication.OpenAut.value).equal(false);
+			expect(dataAssembly.communication.OpenFbk.value).equal(false);
+			expect(dataAssembly.communication.OpenFbkCalc.value).equal(false);
+			expect(dataAssembly.communication.OpenOp.value).equal(false);
+			expect(dataAssembly.communication.CloseAut.value).equal(false);
+			expect(dataAssembly.communication.CloseFbk.value).equal(false);
+			expect(dataAssembly.communication.CloseFbkCalc.value).equal(false);
+			expect(dataAssembly.communication.CloseOp.value).equal(false);
 		}).timeout(5000);
 	});
 });

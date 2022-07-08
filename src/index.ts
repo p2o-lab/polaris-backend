@@ -128,7 +128,7 @@ if (options) {
 			console.log(`Load PEAs from ${options.peas}`);
 			options.peas.forEach((pea: string) => {
 				const peasOptions = JSON.parse(fs.readFileSync(pea).toString());
-				manager.createPEAControllerInstance(peasOptions).then();
+				manager.addPEA(peasOptions).then();
 			});
 			manager.peas.forEach((p) =>
 				p.connectAndSubscribe()

@@ -25,30 +25,28 @@
 
 import {Namespace, UAObject} from 'node-opcua';
 import {
-	FeedbackMonitoringMockup, getFeedbackMonitoringDataItemOptions
-} from '../../../../baseFunction/feedbackMonitoring/FeedbackMonitoring.mockup';
-import {BinDrvMockup, getBinDrvDataItemOptions} from '../BinDrv.mockup';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
-import {getDataAssemblyOptions} from '../../../../DataAssemblyController.mockup';
+	FeedbackMonitoringMockup, getFeedbackMonitoringDataItemModel} from '../../../../baseFunction/feedbackMonitoring/FeedbackMonitoring.mockup';
+import {BinDrvMockup, getBinDrvDataItemModel} from '../BinDrv.mockup';
+import {DataAssemblyModel, DataItemModel} from '@p2olab/pimad-interface';
+
+import {getDataAssemblyModel} from '../../../../DataAssembly.mockup';
 
 const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/ActiveElement/BinDrv/MonBinDrv';
 
 
-export function getMonBinDrvDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return ({
-			...getBinDrvDataItemOptions(namespace, objectBrowseName),
-			...getFeedbackMonitoringDataItemOptions(namespace, objectBrowseName),
-		} as OpcUaNodeOptions
-	);
+export function getMonBinDrvDataItemModel(namespace: number, objectBrowseName: string): DataItemModel[] {
+	return [
+			...getBinDrvDataItemModel(namespace, objectBrowseName),
+			...getFeedbackMonitoringDataItemModel(namespace, objectBrowseName),
+		];
 }
 
-export function getMonBinDrvOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
-	const options = getDataAssemblyOptions(name, tagName, tagDescription);
-	options.metaModelRef = metaModelReference;
-	options.dataItems = {
+export function getMonBinDrvDataAssemblyModel(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): DataAssemblyModel {
+	const options = getDataAssemblyModel(metaModelReference, name, tagName, tagDescription);
+	options.dataItems = [
 		...options.dataItems,
-		...getMonBinDrvDataItemOptions(namespace, objectBrowseName)};
+		...getMonBinDrvDataItemModel(namespace, objectBrowseName)
+	];
 	return options;
 }
 
@@ -63,12 +61,12 @@ export class MonBinDrvMockup extends BinDrvMockup{
 	}
 
 
-	public getDataAssemblyOptions(): DataAssemblyOptions {
-		const options = super.getDataAssemblyOptions();
+	public getDataAssemblyModel(): DataAssemblyModel {
+		const options = super.getDataAssemblyModel();
 		options.metaModelRef = metaModelReference;
 		options.dataItems = {
 			...options.dataItems,
-			...this.feedbackMonitoring.getDataItemOptions()
+			...this.feedbackMonitoring.getDataItemModel()
 		};
 		return options;
 	}

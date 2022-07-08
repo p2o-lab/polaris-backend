@@ -23,10 +23,15 @@
  * SOFTWARE.
  */
 
-import {DataItem} from '../../../connection';
-import {BaseDataAssemblyRuntime} from '../../DataAssemblyController';
+import {DataItem} from '../../dataItem/DataItem';
+import {DataAssemblyDataItems} from '../../DataAssembly';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
+import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
+import {DataItemFactory, getDataItemModel} from '../../dataItem/DataItemFactory';
+import StrictEventEmitter from 'strict-event-emitter-types';
+import {EventEmitter} from 'events';
 
-export interface FeedbackMonitoringRuntime extends BaseDataAssemblyRuntime {
+export interface FeedbackMonitoringRuntime extends DataAssemblyDataItems {
 	MonEn: DataItem<boolean>;
 	MonSafePos: DataItem<boolean>;
 	MonStatErr: DataItem<boolean>;
@@ -35,20 +40,31 @@ export interface FeedbackMonitoringRuntime extends BaseDataAssemblyRuntime {
 	MonDynTi: DataItem<number>;
 }
 
-export class FeedbackMonitoring {
-	private dAController: any;
-	
-	constructor(dAController: any) {
-		this.dAController = dAController;
-		this.initialize();
-	}
+/**
+ * Events emitted by [[FeedbackMonitoring]]
+ */
+export interface FeedbackMonitoringEvents {
+	changed: string;
+}
 
-	private initialize(): void {
-		this.dAController.communication.MonEn = this.dAController.createDataItem('MonEn', 'boolean', 'write');
-		this.dAController.communication.MonSafePos = this.dAController.createDataItem('MonSafePos', 'boolean');
-		this.dAController.communication.MonStatErr = this.dAController.createDataItem('MonStatErr', 'boolean');
-		this.dAController.communication.MonDynErr = this.dAController.createDataItem('MonDynErr', 'boolean');
-		this.dAController.communication.MonStatTi = this.dAController.createDataItem('MonStatTi', 'number');
-		this.dAController.communication.MonDynTi = this.dAController.createDataItem('MonDynTi', 'number');
+type FeedbackMonitoringEmitter = StrictEventEmitter<EventEmitter, FeedbackMonitoringEvents>;
+
+export class FeedbackMonitoring extends (EventEmitter as new() => FeedbackMonitoringEmitter) {
+	MonEn: DataItem<boolean>;
+	MonSafePos: DataItem<boolean>;
+	MonStatErr: DataItem<boolean>;
+	MonDynErr: DataItem<boolean>;
+	MonStatTi: DataItem<number>;
+	MonDynTi: DataItem<number>;
+	
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+		super();
+
+		this.MonEn = DataItemFactory.create(getDataItemModel(options, 'MonEn'), connectionHandler);
+		this.MonSafePos = DataItemFactory.create(getDataItemModel(options, 'MonSafePos'), connectionHandler);
+		this.MonStatErr = DataItemFactory.create(getDataItemModel(options, 'MonStatErr'), connectionHandler);
+		this.MonDynErr = DataItemFactory.create(getDataItemModel(options, 'MonDynErr'), connectionHandler);
+		this.MonStatTi = DataItemFactory.create(getDataItemModel(options, 'MonStatTi'), connectionHandler);
+		this.MonDynTi = DataItemFactory.create(getDataItemModel(options, 'MonDynTi'), connectionHandler);
 	}
 }

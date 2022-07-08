@@ -24,232 +24,433 @@
  */
 
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
-import {getLockView8DataItemOptions, LockView8Mockup} from '../LockView8/LockView8.mockup';
-import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
-import {getDataAssemblyOptions} from '../../../DataAssemblyController.mockup';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {getLockView8DataItemModel, LockView8Mockup} from '../LockView8/LockView8.mockup';
+
+import {getDataAssemblyModel} from '../../../DataAssembly.mockup';
+import {CIData, DataAssemblyModel, DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../../dataItem/DataItem.mockup';
 
 const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/DiagnosticElement/LockView16';
 
-function getLockView16SpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return ({
-		In9En: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In9En`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		In9: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In9`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		In9QC: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In9QC`,
-			dataType: 'Byte'
-		} as OpcUaNodeOptions,
-		In9Inv: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In9Inv`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		In9Txt: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In9Txt`,
-			dataType: 'String'
-		} as OpcUaNodeOptions,
-		In10En: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In10En`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		In10: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In10`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		In10QC: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In10QC`,
-			dataType: 'Byte'
-		} as OpcUaNodeOptions,
-		In10Inv: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In10Inv`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		In10Txt: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In10Txt`,
-			dataType: 'String'
-		} as OpcUaNodeOptions,
-		In11En: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In11En`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		In11: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In11`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		In11QC: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In11QC`,
-			dataType: 'Byte'
-		} as OpcUaNodeOptions,
-		In11Inv: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In11Inv`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		In11Txt: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In11Txt`,
-			dataType: 'String'
-		} as OpcUaNodeOptions,
-		In12En: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In12En`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		In12: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In12`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		In12QC: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In12QC`,
-			dataType: 'Byte'
-		} as OpcUaNodeOptions,
-		In12Inv: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In12Inv`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		In12Txt: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In12Txt`,
-			dataType: 'String'
-		} as OpcUaNodeOptions,
-		In13En: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In13En`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		In13: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In13`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		In13QC: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In13QC`,
-			dataType: 'Byte'
-		} as OpcUaNodeOptions,
-		In13Inv: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In13Inv`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		In13Txt: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In13Txt`,
-			dataType: 'String'
-		} as OpcUaNodeOptions,
-		In14En: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In14En`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		In14: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In14`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		In14QC: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In14QC`,
-			dataType: 'Byte'
-		} as OpcUaNodeOptions,
-		In14Inv: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In14Inv`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		In14Txt: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In14Txt`,
-			dataType: 'String'
-		} as OpcUaNodeOptions,
-		In15En: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In15En`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		In15: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In15`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		In15QC: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In15QC`,
-			dataType: 'Byte'
-		} as OpcUaNodeOptions,
-		In15Inv: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In15Inv`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		In15Txt: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In15Txt`,
-			dataType: 'String'
-		} as OpcUaNodeOptions,
-		In16En: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In16En`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		In16: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In16`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		In16QC: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In16QC`,
-			dataType: 'Byte'
-		} as OpcUaNodeOptions,
-		In16Inv: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In16Inv`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		In16Txt: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.In16Txt`,
-			dataType: 'String'
-		} as OpcUaNodeOptions,
-	});
+function getLockView16SpecificDataItemModels(namespace: number, objectBrowseName: string): DataItemModel[] {
+	const result: DataItemModel[] = [];
+	let dataItem: DataItemModel = getEmptyDataItemModel();
+	dataItem.name = 'In9En';
+	dataItem.dataType = 'Boolean';
+	let ciOptions: CIData = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In9En`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In9';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In9`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In9QC';
+	dataItem.dataType = 'Byte';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In9QC`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In9Inv';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In9Inv`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In9Txt';
+	dataItem.dataType = 'String';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In9Inv`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In10En';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In10En`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In10';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In10`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In10QC';
+	dataItem.dataType = 'Byte';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In10QC`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In10Inv';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In10Inv`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In10Txt';
+	dataItem.dataType = 'String';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In10Inv`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In11En';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In11En`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In11';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In11`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In11QC';
+	dataItem.dataType = 'Byte';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In11QC`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In11Inv';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In11Inv`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In11Txt';
+	dataItem.dataType = 'String';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In11Inv`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In12En';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In12En`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In12';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In12`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In12QC';
+	dataItem.dataType = 'Byte';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In12QC`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In12Inv';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In12Inv`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In12Txt';
+	dataItem.dataType = 'String';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In12Inv`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In13En';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In13En`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In13';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In13`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In13QC';
+	dataItem.dataType = 'Byte';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In13QC`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In13Inv';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In13Inv`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In13Txt';
+	dataItem.dataType = 'String';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In13Inv`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In14En';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In14En`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In14';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In14`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In14QC';
+	dataItem.dataType = 'Byte';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In14QC`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In14Inv';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In14Inv`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In14Txt';
+	dataItem.dataType = 'String';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In14Inv`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In15En';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In15En`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In15';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In15`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In15QC';
+	dataItem.dataType = 'Byte';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In15QC`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In15Inv';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In15Inv`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In15Txt';
+	dataItem.dataType = 'String';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In15Inv`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In16En';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In16En`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In16';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In16`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In16QC';
+	dataItem.dataType = 'Byte';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In16QC`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In16Inv';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In16Inv`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'In16Txt';
+	dataItem.dataType = 'String';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.In16Inv`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+
+	return result;
 }
 
-export function getLockView16DataItemOptions(namespace: number, objectBrowseName: string): object {
-	return ({
-			...getLockView8DataItemOptions(namespace, objectBrowseName),
-			...getLockView16SpecificDataItemOptions(namespace, objectBrowseName),
-		} as OpcUaNodeOptions
-	);
+export function getLockView16DataItemModel(namespace: number, objectBrowseName: string): DataItemModel[] {
+	return [
+			...getLockView8DataItemModel(namespace, objectBrowseName),
+			...getLockView16SpecificDataItemModels(namespace, objectBrowseName),
+		];
 }
 
-export function getLockView16Options(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
-	const options = getDataAssemblyOptions(name, tagName, tagDescription);
-	options.metaModelRef = metaModelReference;
-	options.dataItems = {
+export function getLockView16DataAssemblyModel(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): DataAssemblyModel {
+	const options = getDataAssemblyModel(metaModelReference, name, tagName, tagDescription);
+	options.dataItems = [
 		...options.dataItems,
-		...getLockView16DataItemOptions(namespace, objectBrowseName)};
+		...getLockView16DataItemModel(namespace, objectBrowseName)
+	];
 	return options;
 }
 
@@ -757,13 +958,12 @@ export class LockView16Mockup extends LockView8Mockup{
 		});
 	}
 
-	public getDataAssemblyOptions(): DataAssemblyOptions {
-		const options = super.getDataAssemblyOptions();
-		options.metaModelRef = metaModelReference;
-		options.dataItems = {
+	public getDataAssemblyModel(metaModelReferenceOption?: string): DataAssemblyModel {
+		const options = super.getDataAssemblyModel(metaModelReferenceOption || metaModelReference);
+		options.dataItems = [
 			...options.dataItems,
-			...getLockView16SpecificDataItemOptions(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
-		};
+			...getLockView16SpecificDataItemModels(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
+		];
 		return options;
 	}
 }

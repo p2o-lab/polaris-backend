@@ -23,13 +23,15 @@
  * SOFTWARE.
  */
 
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {
 	SourceModeController, SourceModeRuntime,
 	WQC, WQCRuntime
 } from '../../../../baseFunction';
 import {DIntMan, DIntManRuntime} from '../DIntMan';
-import {OpcUaConnection, DataItem} from '../../../../../connection';
+import {DataItem} from '../../../../dataItem/DataItem';
+import {ConnectionHandler} from '../../../../../connectionHandler/ConnectionHandler';
+import {DataItemFactory, getDataItemModel} from '../../../../dataItem/DataItemFactory';
 
 export type DIntManIntRuntime = DIntManRuntime & SourceModeRuntime & WQCRuntime & {
 	VInt: DataItem<number>;
@@ -41,12 +43,12 @@ export class DIntManInt extends DIntMan {
 	public readonly sourceMode: SourceModeController;
 	public readonly wqc: WQC;
 
-	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
-		super(options, connection);
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+		super(options, connectionHandler);
 
-		this.sourceMode = new SourceModeController(this);
-		this.wqc = new WQC(this);
+		this.sourceMode = new SourceModeController(options, connectionHandler);
+		this.wqc = new WQC(options, connectionHandler);
 
-		this.communication.VInt = this.createDataItem('VInt', 'number');
+		this.communication.VInt = DataItemFactory.create(getDataItemModel(options, 'VInt'), connectionHandler);
 	}
 }

@@ -26,8 +26,8 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../../../_utils';
-import {BinManIntMockup, getBinManIntDataItemOptions, getBinManIntOptions} from './BinManInt.mockup';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {BinManIntMockup, getBinManIntDataAssemblyModel, getBinManIntDataItemModel} from './BinManInt.mockup';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {BinManIntRuntime} from './BinManInt';
 
 chai.use(chaiAsPromised);
@@ -50,18 +50,18 @@ describe('BinManIntMockup', () => {
         });
 
         it('static DataItemOptions', () => {
-            const options = getBinManIntDataItemOptions(1, 'Test') as BinManIntRuntime;
+            const options = getBinManIntDataItemModel(1, 'Test');
             expect(Object.keys(options).length).to.equal(16);
         });
 
-        it('static DataAssemblyOptions', () => {
-            const options = getBinManIntOptions(1, 'Test') as DataAssemblyOptions;
+        it('static DataAssemblyModel', () => {
+            const options = getBinManIntDataAssemblyModel(1, 'Test');
             expect(Object.keys(options.dataItems).length).to.equal(18);
         });
 
-        it('dynamic DataAssemblyOptions', () => {
+        it('dynamic DataAssemblyModel', () => {
             const mockup = new BinManIntMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
-            const options = mockup.getDataAssemblyOptions();
+            const options = mockup.getDataAssemblyModel();
 
             expect(Object.keys(options.dataItems).length).to.equal(18);
         });

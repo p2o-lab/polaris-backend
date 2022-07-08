@@ -23,79 +23,79 @@
  * SOFTWARE.
  */
 
-import {OpcUaConnection} from '../../../../connection';
 import {BinMan} from './BinMan';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {DataAssemblyControllerFactory} from '../../../DataAssemblyControllerFactory';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
+import {DataAssemblyFactory} from '../../../DataAssemblyFactory';
 import {MockupServer} from '../../../../../_utils';
-import {BinManMockup, getBinManOptions} from './BinMan.mockup';
+import {BinManMockup, getBinManDataAssemblyModel} from './BinMan.mockup';
+import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('BinMan', () => {
 
-	let dataAssemblyOptions: DataAssemblyOptions;
+	let options: DataAssemblyModel;
 
 	describe('static', () => {
 
-		const emptyOPCUAConnection = new OpcUaConnection();
-		dataAssemblyOptions = getBinManOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
+		const connectionHandler = new ConnectionHandler();
+		options = getBinManDataAssemblyModel(2, 'Variable', 'Variable');
 
 		it('should create BinMan', () => {
 
-			const dataAssemblyController = new BinMan(dataAssemblyOptions, emptyOPCUAConnection);
-			expect(dataAssemblyController.communication.VOut).to.not.equal(undefined);
-			expect(dataAssemblyController.communication.VState0).to.not.equal(undefined);
-			expect(dataAssemblyController.communication.VState1).to.not.equal(undefined);
-			expect(dataAssemblyController.communication.VMan).to.not.equal(undefined);
-			expect(dataAssemblyController.communication.VRbk).to.not.equal(undefined);
-			expect(dataAssemblyController.communication.VFbk).to.not.equal(undefined);
+			const dataAssembly = new BinMan(options, connectionHandler);
+			expect(dataAssembly.communication.VOut).to.not.equal(undefined);
+			expect(dataAssembly.communication.VState0).to.not.equal(undefined);
+			expect(dataAssembly.communication.VState1).to.not.equal(undefined);
+			expect(dataAssembly.communication.VMan).to.not.equal(undefined);
+			expect(dataAssembly.communication.VRbk).to.not.equal(undefined);
+			expect(dataAssembly.communication.VFbk).to.not.equal(undefined);
 
-			expect(dataAssemblyController.defaultReadDataItem).equal(dataAssemblyController.communication.VOut);
-			expect(dataAssemblyController.defaultReadDataItemType).to.equal('boolean');
-			expect(dataAssemblyController.defaultWriteDataItem).equal(dataAssemblyController.communication.VMan);
-			expect(dataAssemblyController.defaultWriteDataItemType).to.equal('boolean');
+			expect(dataAssembly.defaultReadDataItem).equal(dataAssembly.communication.VOut);
+			expect(dataAssembly.defaultReadDataItemType).to.equal('boolean');
+			expect(dataAssembly.defaultWriteDataItem).equal(dataAssembly.communication.VMan);
+			expect(dataAssembly.defaultWriteDataItemType).to.equal('boolean');
 		});
 	});
 	describe('dynamic', () => {
 		let mockupServer: MockupServer;
-		let connection: OpcUaConnection;
+		let connectionHandler: ConnectionHandler;
 
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
 			const binManMockup = new BinManMockup(mockupServer.nameSpace, mockupServer.rootObject,'Variable');
-			dataAssemblyOptions = binManMockup.getDataAssemblyOptions();
+			options = binManMockup.getDataAssemblyModel();
 			await mockupServer.start();
-			connection = new OpcUaConnection();
-			connection.initialize({endpointUrl: mockupServer.endpoint});
-			await connection.connect();
+			connectionHandler= new ConnectionHandler();
+			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			await connectionHandler.connect();
 		});
 
 		afterEach(async function () {
 			this.timeout(4000);
-			await connection.disconnect();
+			await connectionHandler.disconnect();
 			await mockupServer.shutdown();
 		});
 
 		it('should subscribe successfully', async () => {
 
-			const dataAssemblyController = DataAssemblyControllerFactory.create(dataAssemblyOptions, connection) as BinMan;
-			await dataAssemblyController.subscribe();
-			await connection.startMonitoring();
-			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
+			const dataAssembly = DataAssemblyFactory.create(options, connectionHandler) as BinMan;
+			await dataAssembly.subscribe();
+			await connectionHandler.connect();
+			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 
-			expect(dataAssemblyController.communication.OSLevel.value).to.equal(0);
-			expect(dataAssemblyController.communication.VOut.value).to.equal(false);
-			expect(dataAssemblyController.communication.VMan.value).to.equal(false);
-			expect(dataAssemblyController.communication.VRbk.value).to.equal(false);
-			expect(dataAssemblyController.communication.VFbk.value).to.equal(false);
-			expect(dataAssemblyController.communication.VState0.value).to.equal('off');
-			expect(dataAssemblyController.communication.VState1.value).to.equal('on');
+			expect(dataAssembly.communication.OSLevel.value).to.equal(0);
+			expect(dataAssembly.communication.VOut.value).to.equal(false);
+			expect(dataAssembly.communication.VMan.value).to.equal(false);
+			expect(dataAssembly.communication.VRbk.value).to.equal(false);
+			expect(dataAssembly.communication.VFbk.value).to.equal(false);
+			expect(dataAssembly.communication.VState0.value).to.equal('off');
+			expect(dataAssembly.communication.VState1.value).to.equal('on');
 		}).timeout(4000);
 	});
 });

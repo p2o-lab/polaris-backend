@@ -24,48 +24,66 @@
  */
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {getInputElementDataItemOptions, InputElementMockup} from '../../InputElement.mockup';
-import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
-import {getDataAssemblyOptions} from '../../../DataAssemblyController.mockup';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {getInputElementDataItemModel, InputElementMockup} from '../../InputElement.mockup';
+
+import {getDataAssemblyModel} from '../../../DataAssembly.mockup';
+import {DataAssemblyModel, DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../../dataItem/DataItem.mockup';
 
 const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/InputElement/BinProcessValueIn';
 
-function getBinProcessValueInSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return ({
-		VExt: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.VExt`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		VState0: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.VState0`,
-			dataType: 'String'
-		} as OpcUaNodeOptions,
-		VState1: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.VState1`,
-			dataType: 'String'
-		} as OpcUaNodeOptions
-	});
+function getBinProcessValueInSpecificDataItemModels(namespace: number, objectBrowseName: string): DataItemModel[] {
+
+	const result: DataItemModel[] = [];
+	let dataItem: DataItemModel = getEmptyDataItemModel();
+	dataItem.name = 'VExt';
+	dataItem.dataType = 'Boolean';
+	let ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.VExt`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'VState0';
+	dataItem.dataType = 'String';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.VState0`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'VState1';
+	dataItem.dataType = 'String';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.VState1`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+
+	return result;
 }
 
-export function getBinProcessValueInDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return ({
-			...getInputElementDataItemOptions(namespace, objectBrowseName),
-			...getBinProcessValueInSpecificDataItemOptions(namespace, objectBrowseName),
-		} as OpcUaNodeOptions
-	);
+export function getBinProcessValueInDataItemModel(namespace: number, objectBrowseName: string): DataItemModel[] {
+	return [
+			...getInputElementDataItemModel(namespace, objectBrowseName),
+			...getBinProcessValueInSpecificDataItemModels(namespace, objectBrowseName),
+		];
 }
 
-export function getBinProcessValueInOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
-	const options = getDataAssemblyOptions(name, tagName, tagDescription);
-	options.metaModelRef = metaModelReference;
-	options.dataItems = {
+export function getBinProcessValueInDataAssembly(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): DataAssemblyModel {
+	const options = getDataAssemblyModel(metaModelReference, name, tagName, tagDescription);
+
+	options.dataItems = [
 		...options.dataItems,
-		...getInputElementDataItemOptions(namespace, objectBrowseName),
-		...getBinProcessValueInDataItemOptions(namespace, objectBrowseName)};
+		...getInputElementDataItemModel(namespace, objectBrowseName),
+		...getBinProcessValueInDataItemModel(namespace, objectBrowseName)
+		];
 	return options;
 }
 
@@ -125,13 +143,12 @@ export class BinProcessValueInMockup extends InputElementMockup{
 		});
 	}
 
-	public getDataAssemblyOptions(): DataAssemblyOptions {
-		const options = super.getDataAssemblyOptions();
-		options.metaModelRef = metaModelReference;
-		options.dataItems = {
+	public getDataAssemblyModel(metaModelReferenceOption?: string): DataAssemblyModel {
+		const options = super.getDataAssemblyModel(metaModelReferenceOption || metaModelReference);
+		options.dataItems = [
 			...options.dataItems,
-			...getBinProcessValueInSpecificDataItemOptions(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
-		};
+			...getBinProcessValueInSpecificDataItemModels(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
+		];
 		return options;
 	}
 }

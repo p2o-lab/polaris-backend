@@ -24,14 +24,15 @@
  */
 
 import {OperationMode} from '@p2olab/polaris-interface';
-import {DataItem} from '../../../connection';
-import {BaseDataAssemblyRuntime} from '../../DataAssemblyController';
-import {catDataAssembly} from '../../../../../logging';
-import {BaseServiceEvents} from '../../../serviceSet';
+import {DataItem} from '../../dataItem/DataItem';
+import {DataAssemblyDataItems} from '../../DataAssembly';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {EventEmitter} from 'events';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
+import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
+import {DataItemFactory, getDataItemModel} from '../../dataItem/DataItemFactory';
 
-export type OpModeRuntime = BaseDataAssemblyRuntime & {
+export type OpModeRuntime = DataAssemblyDataItems & {
 	StateChannel: DataItem<boolean>;
 	StateOffAut: DataItem<boolean>;
 	StateOpAut: DataItem<boolean>;
@@ -47,7 +48,7 @@ export type OpModeRuntime = BaseDataAssemblyRuntime & {
 /**
  * Events emitted by [[OpMode]]
  */
-export interface OpModeEvents extends BaseServiceEvents {
+export interface OpModeEvents {
 	changed: {
 		opMode: OperationMode;
 		stateChannel: boolean;
@@ -57,42 +58,45 @@ export interface OpModeEvents extends BaseServiceEvents {
 type OpModeEmitter = StrictEventEmitter<EventEmitter, OpModeEvents>;
 
 export class OpMode extends (EventEmitter as new() => OpModeEmitter) {
+	StateChannel: DataItem<boolean>;
+	StateOffAut: DataItem<boolean>;
+	StateOpAut: DataItem<boolean>;
+	StateAutAut: DataItem<boolean>;
+	StateOffOp: DataItem<boolean>;
+	StateOpOp: DataItem<boolean>;
+	StateAutOp: DataItem<boolean>;
+	StateOpAct: DataItem<boolean>;
+	StateAutAct: DataItem<boolean>;
+	StateOffAct: DataItem<boolean>;
 
-	private dAController: any;
-
-	constructor(dAController: any) {
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
 		super();
-		this.dAController = dAController;
-		this.initialize();
-	}
+		this.StateChannel = DataItemFactory.create(getDataItemModel(options, 'StateChannel'), connectionHandler);
 
-	private initialize(): void {
-		this.dAController.communication.StateChannel = this.dAController.createDataItem('StateChannel', 'boolean');
+		this.StateOffAut = DataItemFactory.create(getDataItemModel(options, 'StateOffAut'), connectionHandler);
+		this.StateOpAut = DataItemFactory.create(getDataItemModel(options, 'StateOpAut'), connectionHandler);
+		this.StateAutAut = DataItemFactory.create(getDataItemModel(options, 'StateAutAut'), connectionHandler);
 
-		this.dAController.communication.StateOffAut = this.dAController.createDataItem('StateOffAut', 'boolean');
-		this.dAController.communication.StateOpAut = this.dAController.createDataItem('StateOpAut', 'boolean');
-		this.dAController.communication.StateAutAut = this.dAController.createDataItem('StateAutAut', 'boolean');
+		this.StateOffOp = DataItemFactory.create(getDataItemModel(options, 'StateOffOp'), connectionHandler);
+		this.StateOpOp = DataItemFactory.create(getDataItemModel(options, 'StateOpOp'), connectionHandler);
+		this.StateAutOp = DataItemFactory.create(getDataItemModel(options, 'StateAutOp'), connectionHandler);
 
-		this.dAController.communication.StateOffOp = this.dAController.createDataItem('StateOffOp', 'boolean', 'write');
-		this.dAController.communication.StateOpOp = this.dAController.createDataItem('StateOpOp', 'boolean', 'write');
-		this.dAController.communication.StateAutOp = this.dAController.createDataItem('StateAutOp', 'boolean', 'write');
+		this.StateOffAct = DataItemFactory.create(getDataItemModel(options, 'StateOffAct'), connectionHandler);
+		this.StateOpAct = DataItemFactory.create(getDataItemModel(options, 'StateOpAct'), connectionHandler);
+		this.StateAutAct = DataItemFactory.create(getDataItemModel(options, 'StateAutAct'), connectionHandler);
 
-		this.dAController.communication.StateOffAct = this.dAController.createDataItem('StateOffAct', 'boolean');
-		this.dAController.communication.StateOpAct = this.dAController.createDataItem('StateOpAct',  'boolean');
-		this.dAController.communication.StateAutAct = this.dAController.createDataItem('StateAutAct', 'boolean');
-
-		this.dAController.communication.StateChannel.on('changed', () => {
-			this.emit('changed', {opMode: this.getOperationMode(), stateChannel: this.dAController.communication.StateChannel.value});
+		this.StateChannel.on('changed', () => {
+			this.emit('changed', {opMode: this.getOperationMode(), stateChannel: this.StateChannel.value});
 		});
 		// TODO: Always two of them will change in parallel --> Smart way to just emit one event?
-		this.dAController.communication.StateOffAct.on('changed', () => {
-			this.emit('changed', {opMode: this.getOperationMode(), stateChannel: this.dAController.communication.StateChannel.value});
+		this.StateOffAct.on('changed', () => {
+			this.emit('changed', {opMode: this.getOperationMode(), stateChannel: this.StateChannel.value});
 		});
-		this.dAController.communication.StateOpAct.on('changed', () => {
-			this.emit('changed', {opMode: this.getOperationMode(), stateChannel: this.dAController.communication.StateChannel.value});
+		this.StateOpAct.on('changed', () => {
+			this.emit('changed', {opMode: this.getOperationMode(), stateChannel: this.StateChannel.value});
 		});
-		this.dAController.communication.StateAutAct.on('changed', () => {
-			this.emit('changed', {opMode: this.getOperationMode(), stateChannel: this.dAController.communication.StateChannel.value});
+		this.StateAutAct.on('changed', () => {
+			this.emit('changed', {opMode: this.getOperationMode(), stateChannel: this.StateChannel.value});
 		});
 	}
 
@@ -119,16 +123,13 @@ export class OpMode extends (EventEmitter as new() => OpModeEmitter) {
 	}
 
 	public async waitForOpModeToPassSpecificTest(expectedOpMode: OperationMode): Promise<void> {
-		await this.dAController.subscribe();
 		return new Promise((resolve) => {
 			if (this.isOpMode(expectedOpMode)) {
 				resolve();
 			} else {
-				// eslint-disable-next-line @typescript-eslint/no-this-alias
-				const da = this;
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				this.dAController.on('changed', function test(this: any) {
-					if (da.isOpMode(expectedOpMode)) {
+				this.on('changed', function test(this: any) {
+					if (this.isOpMode(expectedOpMode)) {
 						this.removeListener('OpMode', test);
 						resolve();
 					}
@@ -142,20 +143,14 @@ export class OpMode extends (EventEmitter as new() => OpModeEmitter) {
 	 *
 	 */
 	public async setToAutomaticOperationMode(): Promise<void> {
-		// TODO: introduce resolve reject mechanism
-		catDataAssembly.info(`[${this.dAController.name}] Current opMode = ${this.getOperationMode()}`);
 		if (this.isOfflineState()) {
-			catDataAssembly.trace(`[${this.dAController.name}] First go to Manual state`);
 			this.writeOpMode(OperationMode.Operator);
 			await this.waitForOpModeToPassSpecificTest(OperationMode.Operator);
-			catDataAssembly.info(`[${this.dAController.name}] New opMode = ${this.getOperationMode()}`);
 		}
 
 		if (this.isOperatorState()) {
-			catDataAssembly.trace(`[${this.dAController.name}] Then to automatic`);
 			this.writeOpMode(OperationMode.Automatic);
 			await this.waitForOpModeToPassSpecificTest(OperationMode.Automatic);
-			catDataAssembly.info(`[${this.dAController.name}] New opMode = ${this.getOperationMode()}`);
 		}
 	}
 
@@ -175,43 +170,36 @@ export class OpMode extends (EventEmitter as new() => OpModeEmitter) {
 	 *
 	 */
 	public async setToOfflineOperationMode(): Promise<void> {
-		catDataAssembly.info(`[${this.dAController.name}] Current opMode = ${this.getOperationMode()}`);
 		if (this.isAutomaticState()) {
-			catDataAssembly.trace(`[${this.dAController.name}] First go to Manual state`);
 			this.writeOpMode(OperationMode.Operator);
 			await this.waitForOpModeToPassSpecificTest(OperationMode.Operator);
 		}
-		catDataAssembly.info(`[${this.dAController.name}] Current opMode = ${this.getOperationMode()}`);
 
 		if (this.isOperatorState()) {
-			catDataAssembly.trace(`[${this.dAController.name}] Then to offline`);
 			this.writeOpMode(OperationMode.Offline);
 			await this.waitForOpModeToPassSpecificTest(OperationMode.Offline);
 		}
-		catDataAssembly.info(`[${this.dAController.name}] Current opMode = ${this.getOperationMode()}`);
 	}
 
 	public async writeOpMode(opMode: OperationMode): Promise<void> {
-		catDataAssembly.info(`[${this.dAController.name}] Write opMode: ${opMode}`);
 		if (opMode === OperationMode.Automatic) {
-			await this.dAController.communication.StateAutOp.write(true);
+			await this.StateAutOp.write(true);
 		} else if (opMode === OperationMode.Operator) {
-			await this.dAController.communication.StateOpOp.write(true);
+			await this.StateOpOp.write(true);
 		} else if (opMode === OperationMode.Offline) {
-			await this.dAController.communication.StateOffOp.write(true);
+			await this.StateOffOp.write(true);
 		}
-		catDataAssembly.info(`[${this.dAController.name}] OpMode changed successfully`);
 	}
 
 	public isOfflineState(): boolean {
-		return this.dAController.communication.StateOffAct.value;
+		return this.StateOffAct.value;
 	}
 
 	public isAutomaticState(): boolean {
-		return this.dAController.communication.StateAutAct.value;
+		return this.StateAutAct.value;
 	}
 
 	public isOperatorState(): boolean {
-		return this.dAController.communication.StateOpAct.value;
+		return this.StateOpAct.value;
 	}
 }

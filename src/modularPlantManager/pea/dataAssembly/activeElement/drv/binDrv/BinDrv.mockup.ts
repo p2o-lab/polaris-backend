@@ -24,28 +24,27 @@
  */
 
 import {Namespace, UAObject} from 'node-opcua';
-import {DrvMockup, getDrvDataItemOptions} from '../Drv.mockup';
-import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
-import {getDataAssemblyOptions} from '../../../DataAssemblyController.mockup';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {DrvMockup, getDrvDataItemModel} from '../Drv.mockup';
+
+import {getDataAssemblyModel} from '../../../DataAssembly.mockup';
+import {DataAssemblyModel, DataItemModel} from '@p2olab/pimad-interface';
 
 
 const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/ActiveElement/BinDrv';
 
 
-export function getBinDrvDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return ({
-			...getDrvDataItemOptions(namespace, objectBrowseName),
-		} as OpcUaNodeOptions
-	);
+export function getBinDrvDataItemModel(namespace: number, objectBrowseName: string): DataItemModel[] {
+	return [
+			...getDrvDataItemModel(namespace, objectBrowseName)
+		];
 }
 
-export function getBinDrvOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
-	const options = getDataAssemblyOptions(name, tagName, tagDescription);
-	options.metaModelRef = metaModelReference;
-	options.dataItems = {
+export function getBinDrvDataAssemblyModel(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): DataAssemblyModel {
+	const options = getDataAssemblyModel(metaModelReference, name, tagName, tagDescription);
+	options.dataItems = [
 		...options.dataItems,
-		...getBinDrvDataItemOptions(namespace, objectBrowseName)};
+		...getBinDrvDataItemModel(namespace, objectBrowseName)
+		];
 	return options;
 }
 
@@ -55,9 +54,8 @@ export class BinDrvMockup extends DrvMockup {
 		super(namespace, rootNode, variableName);
 	}
 
-	public getDataAssemblyOptions(): DataAssemblyOptions {
-		const options = super.getDataAssemblyOptions();
-		options.metaModelRef = metaModelReference;
+	public getDataAssemblyModel(metaModelReferenceOption?: string): DataAssemblyModel {
+		const options = super.getDataAssemblyModel(metaModelReferenceOption || metaModelReference);
 		return options;
 	}
 }

@@ -26,9 +26,10 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 
-import {getMonBinVlvDataItemOptions, getMonBinVlvOptions, MonBinVlvMockup} from './MonBinVlv.mockup';
+import {getMonBinVlvDataAssemblyModel, getMonBinVlvDataItemModel, MonBinVlvMockup} from './MonBinVlv.mockup';
 import {MockupServer} from '../../../../../../_utils';
-import {DataAssemblyOptions, MonBinVlvOptions} from '@p2olab/polaris-interface';
+import {MonBinVlvOptions} from '@p2olab/polaris-interface';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -52,19 +53,19 @@ describe('MonBinVlvMockup', () => {
         });
 
         it('static DataItemOptions', () => {
-            const options = getMonBinVlvDataItemOptions(1, 'Test') as MonBinVlvOptions;
+            const options = getMonBinVlvDataItemModel(1, 'Test');
             expect(Object.keys(options).length).to.equal(38);
         });
 
-        it('static DataAssemblyOptions', () => {
-            const options = getMonBinVlvOptions(1, 'Test') as DataAssemblyOptions;
+        it('static DataAssemblyModel', () => {
+            const options = getMonBinVlvDataAssemblyModel(1, 'Test');
             expect(Object.keys(options.dataItems).length).to.equal(40);
         });
 
-        it('dynamic DataAssemblyOptions', () => {
+        it('dynamic DataAssemblyModel', () => {
             const mockup = new MonBinVlvMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const options = mockup.getDataAssemblyOptions();
+            const options = mockup.getDataAssemblyModel();
 
             expect(Object.keys(options.dataItems).length).to.equal(40);
         });

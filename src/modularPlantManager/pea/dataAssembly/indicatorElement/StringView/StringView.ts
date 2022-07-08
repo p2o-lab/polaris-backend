@@ -23,9 +23,11 @@
  * SOFTWARE.
  */
 
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaConnection, DataItem} from '../../../connection';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
+import {DataItem} from '../../dataItem/DataItem';
 import {IndicatorElement, IndicatorElementRuntime} from '../IndicatorElement';
+import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
+import {DataItemFactory, getDataItemModel} from '../../dataItem/DataItemFactory';
 
 export type StringViewRuntime = IndicatorElementRuntime & {
 	Text: DataItem<string>;
@@ -35,9 +37,9 @@ export class StringView extends IndicatorElement {
 
 	public readonly communication!: StringViewRuntime;
 
-	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
-		super(options, connection);
-		this.communication.Text = this.createDataItem('Text', 'string');
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+		super(options, connectionHandler);
+		this.communication.Text = DataItemFactory.create(getDataItemModel(options, 'Text'), connectionHandler);
 
 		this.defaultReadDataItem = this.communication.Text;
 		this.defaultReadDataItemType = 'string';

@@ -23,45 +23,41 @@
  * SOFTWARE.
  */
 
-import {OpcUaConnection} from '../../../connection';
-
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {DataAssemblyController} from '../../DataAssemblyController';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {FeedbackMonitoring} from './FeedbackMonitoring';
 import {MockupServer} from '../../../../_utils';
 import {FeedbackMonitoringMockup} from './FeedbackMonitoring.mockup';
-import {getMonBinVlvOptions} from '../../activeElement/vlv/binVlv/monBinVlv/MonBinVlv.mockup';
+import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
+import {getMonBinVlvDataAssemblyModel} from '../../activeElement/vlv/binVlv/monBinVlv/MonBinVlv.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('FeedbackMonitoring', () => {
 
-	let dataAssemblyOptions: DataAssemblyOptions;
+	let options: DataAssemblyModel;
 
 	describe('static', () => {
 
-		const emptyOPCUAConnection = new OpcUaConnection();
+		const connectionHandler = new ConnectionHandler();
 
 		it('should create FeedbackMonitoring', () => {
 
-			dataAssemblyOptions = getMonBinVlvOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
-			const dataAssemblyController = new DataAssemblyController(dataAssemblyOptions, emptyOPCUAConnection) as any;
-			const feedbackMonitoring = new FeedbackMonitoring(dataAssemblyController);
-			expect(feedbackMonitoring).to.not.to.undefined;
-			expect(dataAssemblyController.communication.MonEn).to.not.to.undefined;
-			expect(dataAssemblyController.communication.MonSafePos).to.not.to.undefined;
-			expect(dataAssemblyController.communication.MonStatErr).to.not.to.undefined;
-			expect(dataAssemblyController.communication.MonDynErr).to.not.to.undefined;
-			expect(dataAssemblyController.communication.MonStatTi).to.not.to.undefined;
-			expect(dataAssemblyController.communication.MonDynTi).to.not.to.undefined;
+			options = getMonBinVlvDataAssemblyModel(2, 'Variable', 'Variable');
+			const dataAssembly = new FeedbackMonitoring(options, connectionHandler);
+			expect(dataAssembly.MonEn).to.not.to.undefined;
+			expect(dataAssembly.MonSafePos).to.not.to.undefined;
+			expect(dataAssembly.MonStatErr).to.not.to.undefined;
+			expect(dataAssembly.MonDynErr).to.not.to.undefined;
+			expect(dataAssembly.MonStatTi).to.not.to.undefined;
+			expect(dataAssembly.MonDynTi).to.not.to.undefined;
 		});
 	});
 	describe('dynamic', () => {
 		let mockupServer: MockupServer;
-		let connection: OpcUaConnection;
+		let connectionHandler: ConnectionHandler;
 
 		beforeEach(async function () {
 			this.timeout(4000);
@@ -69,32 +65,30 @@ describe('FeedbackMonitoring', () => {
 			await mockupServer.initialize();
 			new FeedbackMonitoringMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			await mockupServer.start();
-			connection = new OpcUaConnection();
-			connection.initialize({endpointUrl: mockupServer.endpoint});
-			await connection.connect();
+			connectionHandler= new ConnectionHandler();
+			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			await connectionHandler.connect();
 		});
 
 		afterEach(async function () {
 			this.timeout(4000);
-			await connection.disconnect();
+			await connectionHandler.disconnect();
 			await mockupServer.shutdown();
 		});
 
 		it('should subscribe successfully', async () => {
 
-			const dataAssemblyController = new DataAssemblyController(dataAssemblyOptions, connection) as any;
+			const dataAssembly = new FeedbackMonitoring(options, connectionHandler) as any;
+			await dataAssembly.subscribe();
+			await connectionHandler.connect();
+			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 
-			new FeedbackMonitoring(dataAssemblyController);
-			await dataAssemblyController.subscribe();
-			await connection.startMonitoring();
-			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
-
-			expect(dataAssemblyController.communication.MonEn.value).equal(false);
-			expect(dataAssemblyController.communication.MonSafePos.value).equal(false);
-			expect(dataAssemblyController.communication.MonStatErr.value).equal(false);
-			expect(dataAssemblyController.communication.MonDynErr.value).equal(false);
-			expect(dataAssemblyController.communication.MonStatTi.value).equal(0);
-			expect(dataAssemblyController.communication.MonDynTi.value).equal(0);
+			expect(dataAssembly.MonEn.value).equal(false);
+			expect(dataAssembly.MonSafePos.value).equal(false);
+			expect(dataAssembly.MonStatErr.value).equal(false);
+			expect(dataAssembly.MonDynErr.value).equal(false);
+			expect(dataAssembly.MonStatTi.value).equal(0);
+			expect(dataAssembly.MonDynTi.value).equal(0);
 		}).timeout(5000);
 	});
 });

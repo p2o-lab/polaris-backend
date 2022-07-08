@@ -23,10 +23,17 @@
  * SOFTWARE.
  */
 
-import {DataItem} from '../../../connection';
-import {BaseDataAssemblyRuntime} from '../../DataAssemblyController';
+import {DataItem} from '../../dataItem/DataItem';
+import {DataAssemblyDataItems} from '../../DataAssembly';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
+import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
+import {DataItemFactory, getDataItemModel} from '../../dataItem/DataItemFactory';
+import {EventEmitter} from 'events';
+import {BaseServiceEvents} from '../../../serviceSet';
+import {OperationMode} from '@p2olab/polaris-interface';
+import StrictEventEmitter from 'strict-event-emitter-types';
 
-export type InterlockRuntime = BaseDataAssemblyRuntime & {
+export type InterlockRuntime = DataAssemblyDataItems & {
 	PermEn: DataItem<boolean>;
 	Permit: DataItem<boolean>;
 	IntlEn: DataItem<boolean>;
@@ -35,20 +42,31 @@ export type InterlockRuntime = BaseDataAssemblyRuntime & {
 	Protect: DataItem<boolean>;
 };
 
-export class Interlock{
-	private dAController: any;
+/**
+ * Events emitted by [[OpMode]]
+ */
+export interface InterlockEvents extends BaseServiceEvents {
+	changed: string;
+}
 
-	constructor(dAController: any) {
-		this.dAController = dAController;
-		this.initialize();
-	}
+type InterlockEmitter = StrictEventEmitter<EventEmitter, InterlockEvents>;
 
-	private initialize(): void {
-		this.dAController.communication.PermEn = this.dAController.createDataItem('PermEn', 'boolean');
-		this.dAController.communication.Permit = this.dAController.createDataItem('Permit', 'boolean');
-		this.dAController.communication.IntlEn = this.dAController.createDataItem('IntlEn', 'boolean');
-		this.dAController.communication.Interlock = this.dAController.createDataItem('Interlock', 'boolean');
-		this.dAController.communication.ProtEn = this.dAController.createDataItem('ProtEn', 'boolean');
-		this.dAController.communication.Protect = this.dAController.createDataItem('Protect', 'boolean');
+export class Interlock extends (EventEmitter as new() => InterlockEmitter) {
+	PermEn: DataItem<boolean>;
+	Permit: DataItem<boolean>;
+	IntlEn: DataItem<boolean>;
+	Interlock: DataItem<boolean>;
+	ProtEn: DataItem<boolean>;
+	Protect: DataItem<boolean>;
+
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+		super();
+
+		this.PermEn = DataItemFactory.create(getDataItemModel(options, 'PermEn'), connectionHandler);
+		this.Permit = DataItemFactory.create(getDataItemModel(options, 'Permit'), connectionHandler);
+		this.IntlEn = DataItemFactory.create(getDataItemModel(options, 'IntlEn'), connectionHandler);
+		this.Interlock = DataItemFactory.create(getDataItemModel(options, 'Interlock'), connectionHandler);
+		this.ProtEn = DataItemFactory.create(getDataItemModel(options, 'ProtEn'), connectionHandler);
+		this.Protect = DataItemFactory.create(getDataItemModel(options, 'Protect'), connectionHandler);
 	}
 }

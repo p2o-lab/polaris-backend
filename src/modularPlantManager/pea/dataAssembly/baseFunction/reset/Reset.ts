@@ -23,20 +23,41 @@
  * SOFTWARE.
  */
 
-import {DataItem} from '../../../connection';
-import {BaseDataAssemblyRuntime} from '../../DataAssemblyController';
+import {DataItem} from '../../dataItem/DataItem';
+import {DataAssemblyDataItems} from '../../DataAssembly';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
+import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
+import {DataItemFactory, getDataItemModel} from '../../dataItem/DataItemFactory';
+import {EventEmitter} from 'events';
+import {BaseServiceEvents} from '../../../serviceSet';
+import {OperationMode} from '@p2olab/polaris-interface';
+import StrictEventEmitter from 'strict-event-emitter-types';
 
-export interface ResetRuntime extends BaseDataAssemblyRuntime {
+export interface ResetRuntime extends DataAssemblyDataItems {
 	ResetOp: DataItem<boolean>;
 	ResetAut: DataItem<boolean>;
 }
 
-export class Reset {
-	private dAController: any;
+/**
+ * Events emitted by [[Reset]]
+ */
+export interface ResetEvents {
+	changed: {
+		ResetOp: boolean;
+		ResetAut: boolean;
+	};
+}
 
-	constructor(dAController: any) {
-		this.dAController = dAController;
-		this.dAController.communication.ResetOp= this.dAController.createDataItem('ResetOp', 'boolean', 'write');
-		this.dAController.communication.ResetAut = this.dAController.createDataItem('ResetAut', 'boolean', 'write');
+type ResetEmitter = StrictEventEmitter<EventEmitter, ResetEvents>;
+
+export class Reset extends (EventEmitter as new () => ResetEmitter) {
+	ResetOp: DataItem<boolean>;
+	ResetAut: DataItem<boolean>;
+
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+		super();
+
+		this.ResetOp = DataItemFactory.create(getDataItemModel(options, 'ResetOp'), connectionHandler);
+		this.ResetAut = DataItemFactory.create(getDataItemModel(options, 'ResetAut'), connectionHandler);
 	}
 }

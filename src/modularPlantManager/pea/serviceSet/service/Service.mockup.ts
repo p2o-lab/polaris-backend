@@ -29,7 +29,9 @@ import {ServiceControlEnable, ServiceMtpCommand, ServiceState} from './enum';
 import Timeout = NodeJS.Timeout;
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 import {OpModeMockup} from '../../dataAssembly/baseFunction/opMode/OpMode.mockup';
-import {PEATestNumericVariable} from '../../../_utils';
+import {AnaServParamMockup} from '../../dataAssembly/operationElement/servParam/anaServParam/AnaServParam.mockup';
+import {AnaProcessValueInMockup} from '../../dataAssembly/inputElement/processValueIn/AnaProcessValueIn/AnaProcessValueIn.mockup';
+import {AnaViewMockup} from '../../dataAssembly/indicatorElement/AnaView/AnaView.mockup';
 
 export function getServiceMockupReferenceJSON(
 	namespace: number,
@@ -100,48 +102,67 @@ export class ServiceMockup {
 	public opMode: OpModeMockup;
 	public readonly serviceName: string;
 
-	public readonly offset: PEATestNumericVariable;
-	public readonly factor: PEATestNumericVariable;
-	public readonly pvIn: PEATestNumericVariable;
-	public readonly pvOut: PEATestNumericVariable;
-	public readonly pvIntegral: PEATestNumericVariable;
-	//public readonly currentTime: PEATestStringVariable;
-	public readonly updateRate: PEATestNumericVariable;
-	public readonly finalOut: PEATestNumericVariable;
-	public readonly finalIntegral: PEATestNumericVariable;
-	//public readonly finalTime: PEATestStringVariable;
+	public readonly offset: AnaServParamMockup;
+	public readonly factor: AnaServParamMockup;
+	public readonly updateRate: AnaServParamMockup;
+	public readonly pvIn: AnaProcessValueInMockup;
+
+	public readonly pvIntegral: AnaViewMockup;
+	public readonly finalOut: AnaViewMockup;
+	public readonly pvOut: AnaViewMockup;
+	public readonly finalIntegral: AnaViewMockup;
 
 	private interval: Timeout | undefined;
 	private timeoutAutomaticStateChange: Timeout | undefined;
 	private unit = 1351;
 	private unitIntegral = 1038;
 
-	constructor(ns: Namespace, rootNode: UAObject, serviceName: string) {
+	constructor(namespace: Namespace, rootNode: UAObject, serviceName: string) {
 		this.serviceName = serviceName;
 		this.state(ServiceState.IDLE);
 
-		const serviceNode = ns.addObject({
+		const serviceNode = namespace.addObject({
 			organizedBy: rootNode,
 			browseName: serviceName
 		});
 
-		this.factor = new PEATestNumericVariable(ns, serviceNode, serviceName + '.Factor', 2, 0);
-		this.offset = new PEATestNumericVariable(ns, serviceNode, serviceName + '.Offset', 20, this.unit);
-		this.pvIn = new PEATestNumericVariable(ns, serviceNode, serviceName + '.ProcessValueIn', 1, this.unit);
-		this.pvOut = new PEATestNumericVariable(ns, serviceNode, serviceName + '.ProcessValueOut', 22, this.unit);
-		this.pvIntegral = new PEATestNumericVariable(ns, serviceNode, serviceName + '.ProcessValueIntegral',
-			0, this.unitIntegral);
-		//this.currentTime = new PEATestStringVariable(ns, serviceNode, serviceName + '.CurrentTime');
-		this.updateRate = new PEATestNumericVariable(ns, serviceNode, serviceName + '.UpdateRate',
-			1000, 1056, 100, 10000);
-		this.finalOut = new PEATestNumericVariable(ns, serviceNode, serviceName + '.FinalOut', 0, this.unit);
-		this.finalIntegral = new PEATestNumericVariable(ns, serviceNode, serviceName + '.FinalIntegral',
-			0, this.unitIntegral);
-		//this.finalTime = new PEATestStringVariable(ns, serviceNode, serviceName + '.FinalTime');
+		this.factor = new AnaServParamMockup(namespace, serviceNode, serviceName + '.Factor');
+		this.factor.vOut = 2;
 
-		ns.addVariable({
+		this.offset = new AnaServParamMockup(namespace, serviceNode, serviceName + '.Offset');
+		this.offset.vOut = 20;
+		this.offset.unit.unit = this.unit;
+
+		this.pvIn = new AnaProcessValueInMockup(namespace, serviceNode, serviceName + '.ProcessValueIn');
+		this.pvIn.vExt = 1;
+		this.pvIn.unit.unit = this.unit;
+
+		this.pvOut = new AnaViewMockup(namespace, serviceNode, serviceName + '.ProcessValueOut');
+		this.pvOut.v = 22;
+		this.pvOut.unit.unit = this.unit;
+
+		this.pvIntegral = new AnaViewMockup(namespace, serviceNode, serviceName + '.ProcessValueIntegral');
+		this.pvIntegral.v = 0;
+		this.pvIntegral.unit.unit = this.unitIntegral;
+
+		this.updateRate = new AnaServParamMockup(namespace, serviceNode, serviceName + '.UpdateRate');
+		this.updateRate.vExt = 1000;
+		this.updateRate.vOut = 1000;
+		this.updateRate.unit.unit = 1056;
+		this.updateRate.valueLimitation.vMin = 100;
+		this.updateRate.valueLimitation.vMax = 10000;
+
+		this.finalOut = new AnaViewMockup(namespace, serviceNode, serviceName + '.FinalOut');
+		this.finalOut.v = 0;
+		this.finalOut.unit.unit = this.unit;
+
+		this.finalIntegral = new AnaViewMockup(namespace, serviceNode, serviceName + '.FinalIntegral');
+		this.finalIntegral.v = 0;
+		this.finalIntegral.unit.unit = this.unitIntegral;
+
+		namespace.addVariable({
 			componentOf: serviceNode,
-			nodeId: `ns=1;s=${serviceName}.Procedure`,
+			nodeId: `ns=${namespace.index};s=${serviceName}.Procedure`,
 			browseName: `${serviceName}.Procedure`,
 			dataType: 'UInt32',
 			value: {
@@ -155,10 +176,10 @@ export class ServiceMockup {
 			}
 		});
 
-		ns.addVariable({
+		namespace.addVariable({
 			componentOf: serviceNode,
-			nodeId: `ns=1;s=${serviceName}.CurrentStrategy`,
-			browseName: `${serviceName}.CurrentStrategy`,
+			nodeId: `ns=1;s=${serviceName}.ProcedureCur`,
+			browseName: `${serviceName}.ProcedureCur`,
 			dataType: 'UInt32',
 			value: {
 				get: (): Variant => {
@@ -167,10 +188,10 @@ export class ServiceMockup {
 			}
 		});
 
-		ns.addVariable({
+		namespace.addVariable({
 			componentOf: serviceNode,
-			nodeId: `ns=1;s=${serviceName}.CommandEnable`,
-			browseName: `${serviceName}.CommandEnable`,
+			nodeId: `ns=${namespace.index};s=${serviceName}.CommandEn`,
+			browseName: `${serviceName}.CommandEn`,
 			dataType: 'UInt32',
 			value: {
 				get: (): Variant => {
@@ -179,12 +200,12 @@ export class ServiceMockup {
 			}
 		});
 
-		this.opMode = new OpModeMockup(ns, serviceNode, this.serviceName);
+		this.opMode = new OpModeMockup(namespace, serviceNode, this.serviceName);
 
-		ns.addVariable({
+		namespace.addVariable({
 			componentOf: serviceNode,
-			nodeId: `ns=1;s=${serviceName}.State`,
-			browseName: `${serviceName}.State`,
+			nodeId: `ns=${namespace.index};s=${serviceName}.StateCur`,
+			browseName: `${serviceName}.StateCur`,
 			dataType: 'UInt32',
 			value: {
 				get: (): Variant => {
@@ -193,9 +214,9 @@ export class ServiceMockup {
 			}
 		});
 
-		ns.addVariable({
+		namespace.addVariable({
 			componentOf: serviceNode,
-			nodeId: `ns=1;s=${serviceName}.Command`,
+			nodeId: `ns=${namespace.index};s=${serviceName}.Command`,
 			browseName: `${serviceName}.Command`,
 			dataType: 'UInt32',
 			value: {
@@ -260,9 +281,9 @@ export class ServiceMockup {
 					global.clearInterval(this.interval);
 				}
 				this.interval = global.setInterval(() => {
-					this.pvOut.v = this.factor.v * this.pvIn.v + this.offset.v;
-					this.pvIntegral.v = this.pvIntegral.v + this.pvOut.v * this.updateRate.v / 1000;
-				}, this.updateRate.v);
+					this.pvOut.v = this.factor.vOut * this.pvIn.vExt + this.offset.vOut;
+					this.pvIntegral.v = this.pvIntegral.v + this.pvOut.v * this.updateRate.vOut / 1000;
+				}, this.updateRate.vOut);
 				break;
 			case ServiceState.PAUSED:
 				this.varCommandEnable += ServiceControlEnable.RESUME;

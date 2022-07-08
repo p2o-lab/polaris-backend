@@ -23,25 +23,22 @@
  * SOFTWARE.
  */
 
-import {DataAssemblyOptions, ParameterInterface} from '@p2olab/polaris-interface';
-import {OpcUaConnection} from '../../connection';
+import {ParameterInterface} from '@p2olab/polaris-interface';
 import {WQCRuntime} from '../baseFunction';
-import {
-	BaseDataAssemblyRuntime, DataAssemblyController
-} from '../DataAssemblyController';
+import {DataAssembly, DataAssemblyDataItems} from '../DataAssembly';
 import {WQC} from '../baseFunction';
+import {ConnectionHandler} from '../../connectionHandler/ConnectionHandler';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
 
-export type IndicatorElementRuntime = BaseDataAssemblyRuntime & WQCRuntime
+export type IndicatorElementRuntime = DataAssemblyDataItems & WQCRuntime
 
-export class IndicatorElement extends DataAssemblyController {
+export class IndicatorElement extends DataAssembly {
 	public readonly communication!: IndicatorElementRuntime;
 	public readonly wqc: WQC;
 
-	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
-		super(options, connection);
-
-		this.wqc = new WQC(this);
-
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+		super(options);
+		this.wqc = new WQC(options, connectionHandler);
 	}
 
 	public toJson(): ParameterInterface {

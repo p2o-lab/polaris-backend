@@ -22,15 +22,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
- 
+
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 
-import {AnaDrvMockup, getAnaDrvDataItemOptions, getAnaDrvOptions} from './AnaDrv.mockup';
+import {AnaDrvMockup, getAnaDrvDataAssemblyModel, getAnaDrvDataItemModel} from './AnaDrv.mockup';
 import {MockupServer} from '../../../../../_utils';
-import {OpcUaConnection} from '../../../../connection';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {AnaDrvRuntime} from './AnaDrv';
+import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
+import {DataItemAccessLevel} from '@p2olab/pimad-interface';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -52,19 +53,19 @@ describe('AnaDrvMockup', () => {
         });
 
         it('static DataItemOptions', () => {
-            const options = getAnaDrvDataItemOptions(1, 'Test') as AnaDrvRuntime;
+            const options = getAnaDrvDataItemModel(1, 'Test');
             expect(Object.keys(options).length).to.equal(55);
         });
 
-        it('static DataAssemblyOptions', () => {
-            const options = getAnaDrvOptions(1, 'Test') as DataAssemblyOptions;
+        it('static DataAssemblyModel', () => {
+            const options = getAnaDrvDataAssemblyModel(1, 'Test');
             expect(Object.keys(options.dataItems).length).to.equal(57);
         });
 
-        it('dynamic DataAssemblyOptions', () => {
+        it('dynamic DataAssemblyModel', () => {
             const mockup = new AnaDrvMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const options = mockup.getDataAssemblyOptions();
+            const options = mockup.getDataAssemblyModel();
 
             expect(Object.keys(options.dataItems).length).to.equal(57);
         });
@@ -72,7 +73,7 @@ describe('AnaDrvMockup', () => {
     describe('dynamic', () => {
 
         let mockupServer: MockupServer;
-        let connection: OpcUaConnection;
+        let connectionHandler: ConnectionHandler;
 
         beforeEach(async function () {
             this.timeout(5000);
@@ -80,19 +81,27 @@ describe('AnaDrvMockup', () => {
             await mockupServer.initialize();
             new AnaDrvMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
             await mockupServer.start();
-            connection = new OpcUaConnection();
-            connection.initialize({endpointUrl: mockupServer.endpoint});
-            await connection.connect();
+            connectionHandler = new ConnectionHandler();
+            connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+            await connectionHandler.connect();
         });
 
         afterEach(async () => {
-            await connection.disconnect();
+            await connectionHandler.disconnect();
             await mockupServer.shutdown();
         });
 
         it('set and get RpmMan', async () => {
-            await connection.writeNode('Variable.RpmMan', mockupServer.nameSpaceUri, 1.1, 'Double');
-            await connection.readNode('Variable.RpmMan', mockupServer.nameSpaceUri)
+            await connectionHandler.writeDataItemValue(
+                {nodeId:
+                        {
+                            identifier: 'Variable.RpmMan',
+                            namespaceIndex: mockupServer.nameSpaceUri,
+                            access: DataItemAccessLevel.ReadWrite
+                        }
+                       },
+                1.1);
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.RpmMan', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
                 .then((dataValue) => expect(dataValue?.value.value).to.equal(1.1));
         }).timeout(3000);
     });

@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import {PEAController} from '../../../../pea';
+import {PEA} from '../../../../pea';
 import {PetrinetState, PetrinetStateOptions} from './PetrinetState';
 import {PetrinetTransition, PetrinetTransitionOptions} from './PetrinetTransition';
 
@@ -46,7 +46,7 @@ export class Petrinet extends EventEmitter{
 	public readonly initialTransition?: PetrinetTransition;
 	public readonly activeStates: PetrinetState[];
 
-	constructor(options: PetrinetOptions, peas: PEAController[]) {
+	constructor(options: PetrinetOptions, peas: PEA[]) {
 		super();
 
 		this.options = options;

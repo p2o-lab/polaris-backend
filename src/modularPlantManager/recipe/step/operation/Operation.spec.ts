@@ -25,7 +25,7 @@
 
 /* eslint-disable */
 import {OperationOptions, ServiceCommand} from '@p2olab/polaris-interface';
-import {PEAController, Service} from '../../../pea';
+import {PEA, Service} from '../../../pea';
 import {Operation} from '../../index';
 
 import * as chai from 'chai';

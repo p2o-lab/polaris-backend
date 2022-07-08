@@ -24,49 +24,57 @@
  */
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {getScaleSettingsDataItemOptions, ScaleSettingMockup} from '../../../baseFunction/scaleSettings/ScaleSetting.mockup';
-import {getUnitSettingsDataItemOptions, UnitSettingsMockup} from '../../../baseFunction/unitSettings/UnitSettings.mockup';
-import {getInputElementDataItemOptions, InputElementMockup} from '../../InputElement.mockup';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
-import {getDataAssemblyOptions} from '../../../DataAssemblyController.mockup';
+import {getScaleSettingsDataItemModel, ScaleSettingMockup} from '../../../baseFunction/scaleSettings/ScaleSetting.mockup';
+import {getUnitSettingsDataItemModel, UnitSettingsMockup} from '../../../baseFunction/unitSettings/UnitSettings.mockup';
+import {getInputElementDataItemModel, InputElementMockup} from '../../InputElement.mockup';
+import {DataAssemblyModel, DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+
+import {getDataAssemblyModel} from '../../../DataAssembly.mockup';
+import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../../dataItem/DataItem.mockup';
 
 const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/InputElement/DIntProcessValueIn';
 
-function getDIntProcessValueInSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return ({
-		VExt: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.VExt`,
-			dataType: 'Int32'
-		} as OpcUaNodeOptions
-	});
+function getDIntProcessValueInSpecificDataItemModels(namespace: number, objectBrowseName: string): DataItemModel[] {
+
+	const result: DataItemModel[] = [];
+	const dataItem: DataItemModel = getEmptyDataItemModel();
+	dataItem.name = 'VExt';
+	dataItem.dataType = 'Int32';
+	const ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.VExt`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	return result;
 }
 
-export function getDIntProcessValueInDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return ({
-			...getInputElementDataItemOptions(namespace, objectBrowseName),
-			...getScaleSettingsDataItemOptions(namespace, objectBrowseName, 'DInt'),
-			...getUnitSettingsDataItemOptions(namespace, objectBrowseName),
-			...getDIntProcessValueInSpecificDataItemOptions(namespace, objectBrowseName),
-		} as OpcUaNodeOptions
-	);
+export function getDIntProcessValueInDataItemModel(namespace: number, objectBrowseName: string): DataItemModel[] {
+	return [
+			...getInputElementDataItemModel(namespace, objectBrowseName),
+			...getScaleSettingsDataItemModel(namespace, objectBrowseName, 'DInt'),
+			...getUnitSettingsDataItemModel(namespace, objectBrowseName),
+			...getDIntProcessValueInSpecificDataItemModels(namespace, objectBrowseName),
+	];
 }
 
-export function getDIntProcessValueInOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
-	const options = getDataAssemblyOptions(name, tagName, tagDescription);
-	options.metaModelRef = metaModelReference;
-	options.dataItems = {
+export function getDIntProcessValueInDataAssemblyModel(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): DataAssemblyModel {
+	const options = getDataAssemblyModel(metaModelReference, name, tagName, tagDescription);
+	options.dataItems = [
 		...options.dataItems,
-		...getDIntProcessValueInDataItemOptions(namespace, objectBrowseName)};
+		...getDIntProcessValueInDataItemModel(namespace, objectBrowseName)
+	];
 	return options;
 }
 
 export class DIntProcessValueInMockup extends InputElementMockup{
 
+	public vExt = 0;
+
 	public scaleSettings: ScaleSettingMockup<'DInt'>;
 	public unit: UnitSettingsMockup;
-	public vExt = 0;
+
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
 		super(namespace, rootNode, variableName);
@@ -97,15 +105,14 @@ export class DIntProcessValueInMockup extends InputElementMockup{
 
 	}
 
-	public getDataAssemblyOptions(): DataAssemblyOptions {
-		const options = super.getDataAssemblyOptions();
-		options.metaModelRef = metaModelReference;
-		options.dataItems = {
+	public getDataAssemblyModel(metaModelReferenceOption?: string): DataAssemblyModel {
+		const options = super.getDataAssemblyModel(metaModelReferenceOption || metaModelReference);
+		options.dataItems = [
 			...options.dataItems,
-			...this.scaleSettings.getDataItemOptions(),
-			...this.unit.getDataItemOptions(),
-			...getDIntProcessValueInSpecificDataItemOptions(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
-		};
+			...this.scaleSettings.getDataItemModel(),
+			...this.unit.getDataItemModel(),
+			...getDIntProcessValueInSpecificDataItemModels(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
+		];
 		return options;
 	}
 }

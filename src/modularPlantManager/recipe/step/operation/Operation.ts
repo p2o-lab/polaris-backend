@@ -24,7 +24,7 @@
  */
 
 import {OperationInterface, OperationOptions, ParameterOptions, ServiceCommand} from '@p2olab/polaris-interface';
-import {BaseService, PEAController, Procedure, Service} from '../../../pea';
+import {BaseService, PEA, Procedure, Service} from '../../../pea';
 import {EventEmitter} from 'events';
 import {catOperation} from '../../../../logging';
 
@@ -36,14 +36,14 @@ export class Operation extends EventEmitter{
 	private static MAX_RETRIES = 10;
 	private static RETRY_DELAY = 500;
 
-	public pea: PEAController | undefined;
+	public pea: PEA | undefined;
 	public service: BaseService;
 	public procedure!: Procedure | undefined;
 	public command!: ServiceCommand;
 	public parameterOptions: ParameterOptions[] = [];
 	private state!: 'executing' | 'completed' | 'aborted';
 
-	constructor(options: OperationOptions, peas: PEAController[]) {
+	constructor(options: OperationOptions, peas: PEA[]) {
 		super();
 		if (peas) {
 			if (options.pea) {
@@ -61,12 +61,15 @@ export class Operation extends EventEmitter{
 		} else {
 			throw new Error('No PEAs specified');
 		}
-		const serviceInstanceId = this.pea.findService(options.service);
+		const serviceInstanceId = this.pea.findServiceId(options.service);
 		if (!serviceInstanceId) {
 			throw new Error(`Service '${options.service}' not be found in ${this.pea.name}.`);
 		}
 
-		this.service = this.pea.getService(serviceInstanceId);
+		const resolvedService = this.pea.findService(serviceInstanceId);
+		if(!resolvedService) throw new Error(`Service '${serviceInstanceId}' could not be found in ${this.pea.name}.`);
+		this.service = resolvedService;
+
 		if (this.service instanceof Service) {
 			if (options.procedure) {
 				this.procedure = this.service.procedures.find((procedure) => procedure.name === options.procedure);

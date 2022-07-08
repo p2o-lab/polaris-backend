@@ -25,7 +25,7 @@
 
 import {TransitionInterface, TransitionOptions} from '@p2olab/polaris-interface';
 import {Condition, ConditionFactory} from '../../../condition';
-import {PEAController} from '../../../pea';
+import {PEA} from '../../../pea';
 import {Step} from '../Step';
 
 export class Transition {
@@ -33,7 +33,7 @@ export class Transition {
 	public readonly nextStepName: string;
 	public readonly condition: Condition;
 
-	constructor(options: TransitionOptions, peas: PEAController[]) {
+	constructor(options: TransitionOptions, peas: PEA[]) {
 		if (options.nextStep) {
 			this.nextStepName = options.nextStep;
 		} else {
@@ -46,7 +46,7 @@ export class Transition {
 		}
 	}
 
-	public getUsedPEAs(): Set<PEAController> {
+	public getUsedPEAs(): Set<PEA> {
 		return new Set([...this.condition.getUsedPEAs()]);
 	}
 

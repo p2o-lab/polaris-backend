@@ -23,15 +23,16 @@
  * SOFTWARE.
  */
 
-import {PEAOptions} from '@p2olab/polaris-interface';
 import {ModularPlantManager} from './ModularPlantManager';
-import {PEAController} from './pea';
+import {PEA} from './pea';
 
 import * as fs from 'fs';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import 'mocha';
-import * as peaOptions from './peaOptions.spec.json';
+import * as peaModel from './peaModel.spec.json';
+import {PEAModel} from '@p2olab/pimad-interface';
+import {getEmptyPEAModel} from './pea/PEA.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -40,89 +41,74 @@ describe('ModularPlantManager', () => {
 
 	it('getAllPEAControllers(), empty', async () => {
 		const modularPlantManager = new ModularPlantManager();
-		expect(modularPlantManager.getAllPEAControllers()).empty;
+		expect(modularPlantManager.getAllPEAs()).empty;
 	});
 
 	describe('functions, which require PEA', () => {
 		let modularPlantManager = new ModularPlantManager();
-		let identifier = '';
 
 		beforeEach(async function () {
 			this.timeout(5000);
 			modularPlantManager = new ModularPlantManager();
-			const peaModel = await modularPlantManager.peaProvider.addPEAToPool({source: 'tests/testpea.zip'});
-			identifier = peaModel.pimadIdentifier;
 		});
 
 
-		it('loadPEAController()', async () => {
-			await modularPlantManager.createPEAControllerInstance(identifier);
+		it('addPEA()', async () => {
+			await modularPlantManager.addPEA(peaModel as unknown as PEAModel);
 			expect(modularPlantManager.peas.length).equal(1);
 		}).timeout(5000);
 
-		it('loadPEAController() to fail, wrong identifier', async () => {
-			return expect(modularPlantManager.createPEAControllerInstance('')).to.be.rejectedWith('PEA with identifier [] not found.');
-		});
 
 	});
 
-	describe('functions, which need PEAController instance', () => {
+	describe('functions, which need PEA instance', () => {
 		let peaId='';
 		let modularPlantManager: ModularPlantManager;
-		let peaController: PEAController;
-		const peaOptionsDummy = {
-			name:'test',
-			id: 'test',
-			pimadIdentifier: 'test',
-			username: 'admin',
-			password: '1234',
-			opcuaServerUrl:'localhost',
-			services:[],
-			dataAssemblies:[]
-		};
+		let pea: PEA;
+		const peaModelDummy = getEmptyPEAModel();
 
 		beforeEach(async()=>{
-			peaController = new PEAController(peaOptionsDummy);
+			pea = new PEA(peaModelDummy);
 			modularPlantManager = new ModularPlantManager();
-			modularPlantManager.peas.push(peaController);
-			peaId = peaController.id;
+			modularPlantManager.peas.push(pea);
+			peaId = pea.id;
 		});
 
 		it('getPEAController()',  () => {
-			expect(() => modularPlantManager.getPEAController(peaId)).not.to.throw();
+			expect(() => modularPlantManager.findPEAController(peaId)).not.to.throw();
 		});
 
 		it('getPEAController() to fail', () => {
-			expect(() => modularPlantManager.getPEAController('')).to.throw();
+			expect(() => modularPlantManager.findPEAController('')).to.throw();
 		});
 
 		it('removePEAController()',  () => {
 			expect(modularPlantManager.peas.length = 1);
-			expect(modularPlantManager.removePEAController(peaId)).to.not.throw;
+			expect(modularPlantManager.removePEA(peaId)).to.not.throw;
 			expect(modularPlantManager.peas.length = 0);
 		});
 
-		it('removePEAController() should fail with empty peaId', () => {
-			return expect(modularPlantManager.removePEAController('')).to.rejected;
+		it('removePEAController() should fail with empty identifier', () => {
+			return expect(modularPlantManager.removePEA('')).to.rejected;
 		});
 
 		it('removePEAController() should fail if pea is protected', async() => {
-			const peaController = new PEAController(peaOptionsDummy);
-			peaController.protection = true;
+			const pea = new PEA(peaModelDummy);
+			pea.protection = true;
 			modularPlantManager.peas.length = 0;
-			modularPlantManager.peas.push(peaController);
-			return expect(modularPlantManager.removePEAController(peaId)).to.rejectedWith(`PEA ${peaOptionsDummy.name} can not be deleted since it is protected.`);
+			modularPlantManager.peas.push(pea);
+			return expect(modularPlantManager.removePEA(peaId)).to.rejectedWith(`PEA ${peaModelDummy.name} can not be deleted since it is protected.`);
 		});
 
 
 		it('getAllPEAControllers()',  () => {
-			expect(modularPlantManager.getAllPEAControllers()).to.not.empty;
+			expect(modularPlantManager.getAllPEAs()).to.not.empty;
 		});
 
 		it('getService()',  async() => {
-			const peaController = new PEAController(peaOptions as unknown as PEAOptions);
+			const pea = new PEA(peaModel as unknown as PEAModel);
 			modularPlantManager.peas.length = 0;
-			modularPlantManager.peas.push(peaController);
+			modularPlantManager.peas.push(pea);
 			expect(()=>modularPlantManager.getService(peaId, 'Trigonometry')).to.not.throw();
 		});
 		it('getService() to fail, wrong peaId',  () => {
@@ -135,21 +121,13 @@ describe('ModularPlantManager', () => {
 	});
 	context('ServerSettings', () => {
 		const modularPlantManager = new ModularPlantManager();
-		let peaController: PEAController;
+		let pea: PEA;
 
 		before(() => {
-			peaController = new PEAController({
-				name:'test',
-				id: 'test',
-				pimadIdentifier: 'test',
-				opcuaServerUrl:'localhost',
-				services:[],
-				dataAssemblies:[]
-			});
-			modularPlantManager.peas.push(peaController);
+			const peaModelDummy = getEmptyPEAModel();
+			pea = new PEA(peaModelDummy);
+			modularPlantManager.peas.push(pea);
 		});
-
-
 	});
 
 	it('should load and remove recipe', () => {

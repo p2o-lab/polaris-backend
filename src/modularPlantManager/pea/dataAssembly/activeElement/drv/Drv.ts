@@ -23,14 +23,17 @@
  * SOFTWARE.
  */
 
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaConnection, DataItem} from '../../../connection';
+
+import {DataItem} from '../../dataItem/DataItem';
 import {
 	Interlock, InterlockRuntime,
 	OpMode, OpModeRuntime,
 	Reset, ResetRuntime
 } from '../../baseFunction';
 import {ActiveElement, ActiveElementRuntime} from '../ActiveElement';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
+import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
+import { DataItemFactory, getDataItemModel } from '../../dataItem/DataItemFactory';
 
 export type DrvRuntime = ActiveElementRuntime & OpModeRuntime & InterlockRuntime & ResetRuntime & {
 	SafePos: DataItem<boolean>;
@@ -62,32 +65,32 @@ export class Drv extends ActiveElement {
 	public readonly interlock: Interlock;
 	public readonly opMode: OpMode;
 
-	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
-		super(options, connection);
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+		super(options, connectionHandler);
 
-		this.reset = new Reset(this);
-		this.interlock = new Interlock(this);
-		this.opMode = new OpMode(this);
+		this.reset = new Reset(options, connectionHandler);
+		this.interlock = new Interlock(options, connectionHandler);
+		this.opMode = new OpMode(options, connectionHandler);
 
-		this.communication.SafePos = this.createDataItem('SafePos', 'boolean');
-		this.communication.SafePosAct = this.createDataItem('SafePosAct', 'boolean');
+		this.communication.SafePos = DataItemFactory.create(getDataItemModel(options, 'SafePos'), connectionHandler);
+		this.communication.SafePosAct = DataItemFactory.create(getDataItemModel(options, 'SafePosAct'), connectionHandler);
 
-		this.communication.FwdAut = this.createDataItem('FwdAut', 'boolean');
-		this.communication.FwdCtrl = this.createDataItem('FwdCtrl', 'boolean');
-		this.communication.FwdEn = this.createDataItem('FwdEn', 'boolean');
-		this.communication.FwdFbk = this.createDataItem('FwdFbk', 'boolean');
-		this.communication.FwdFbkCalc = this.createDataItem('FwdFbkCalc', 'boolean');
-		this.communication.FwdOp = this.createDataItem('FwdOp', 'boolean', 'write');
+		this.communication.FwdAut = DataItemFactory.create(getDataItemModel(options, 'FwdAut'), connectionHandler);
+		this.communication.FwdCtrl = DataItemFactory.create(getDataItemModel(options, 'FwdCtrl'), connectionHandler);
+		this.communication.FwdEn = DataItemFactory.create(getDataItemModel(options, 'FwdEn'), connectionHandler);
+		this.communication.FwdFbk = DataItemFactory.create(getDataItemModel(options, 'FwdFbk'), connectionHandler);
+		this.communication.FwdFbkCalc = DataItemFactory.create(getDataItemModel(options, 'FwdFbkCalc'), connectionHandler);
+		this.communication.FwdOp = DataItemFactory.create(getDataItemModel(options, 'FwdOp'), connectionHandler);
 
-		this.communication.RevAut = this.createDataItem('RevAut', 'boolean');
-		this.communication.RevCtrl = this.createDataItem('RevCtrl', 'boolean');
-		this.communication.RevEn = this.createDataItem('RevEn', 'boolean');
-		this.communication.RevFbk = this.createDataItem('RevFbk', 'boolean');
-		this.communication.RevFbkCalc = this.createDataItem('RevFbkCalc', 'boolean');
-		this.communication.RevOp = this.createDataItem('RevOp', 'boolean', 'write');
+		this.communication.RevAut = DataItemFactory.create(getDataItemModel(options, 'RevAut'), connectionHandler);
+		this.communication.RevCtrl = DataItemFactory.create(getDataItemModel(options, 'RevCtrl'), connectionHandler);
+		this.communication.RevEn = DataItemFactory.create(getDataItemModel(options, 'RevEn'), connectionHandler);
+		this.communication.RevFbk = DataItemFactory.create(getDataItemModel(options, 'RevFbk'), connectionHandler);
+		this.communication.RevFbkCalc = DataItemFactory.create(getDataItemModel(options, 'RevFbkCalc'), connectionHandler);
+		this.communication.RevOp = DataItemFactory.create(getDataItemModel(options, 'RevOp'), connectionHandler);
 
-		this.communication.StopAut = this.createDataItem('StopAut', 'boolean');
-		this.communication.StopOp = this.createDataItem('StopOp', 'boolean', 'write');
-		this.communication.Trip = this.createDataItem('Trip', 'boolean');
+		this.communication.StopAut = DataItemFactory.create(getDataItemModel(options, 'StopAut'), connectionHandler);
+		this.communication.StopOp = DataItemFactory.create(getDataItemModel(options, 'StopOp'), connectionHandler);
+		this.communication.Trip = DataItemFactory.create(getDataItemModel(options, 'Trip'), connectionHandler);
 	}
 }

@@ -23,12 +23,14 @@
  * SOFTWARE.
  */
 
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaConnection, DataItem} from '../../../../../connection';
+import {DataItem} from '../../../../dataItem/DataItem';
 import {SourceModeController, SourceModeRuntime,
 	WQC, WQCRuntime
 } from '../../../../baseFunction';
 import {AnaMan, AnaManRuntime} from '../AnaMan';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
+import {ConnectionHandler} from '../../../../../connectionHandler/ConnectionHandler';
+import {DataItemFactory, getDataItemModel} from '../../../../dataItem/DataItemFactory';
 
 export type AnaManIntRuntime = AnaManRuntime & SourceModeRuntime & WQCRuntime & {
 	VInt: DataItem<number>;
@@ -40,13 +42,13 @@ export class AnaManInt extends AnaMan {
 	public readonly sourceMode: SourceModeController;
 	public readonly wqc: WQC;
 
-	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
-		super(options, connection);
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+		super(options, connectionHandler);
 
-		this.wqc = new WQC(this);
+		this.wqc = new WQC(options, connectionHandler);
 
-		this.sourceMode = new SourceModeController(this);
+		this.sourceMode = new SourceModeController(options, connectionHandler);
 
-		this.communication.VInt = this.createDataItem('VInt', 'number');
+		this.communication.VInt = DataItemFactory.create<number>(getDataItemModel(options, 'VInt'), connectionHandler);
 	}
 }

@@ -25,12 +25,11 @@
  
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-
-import {getVlvDataItemOptions, getVlvOptions, VlvMockup} from './Vlv.mockup';
+import {getVlvDataAssemblyModel, getVlvDataItemModel, VlvMockup} from './Vlv.mockup';
 import {MockupServer} from '../../../../_utils';
-import {OpcUaConnection} from '../../../connection';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {DataAssemblyModel, DataItemAccessLevel} from '@p2olab/pimad-interface';
 import {VlvRuntime} from './Vlv';
+import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -53,19 +52,19 @@ describe('VlvMockup', () => {
         });
 
         it('static DataItemOptions', () => {
-            const options = getVlvDataItemOptions(1, 'Test') as VlvRuntime;
+            const options = getVlvDataItemModel(1, 'Test');
             expect(Object.keys(options).length).to.equal(31);
         });
 
-        it('static DataAssemblyOptions', () => {
-            const options = getVlvOptions(1, 'Test') as DataAssemblyOptions;
+        it('static DataAssemblyModel', () => {
+            const options = getVlvDataAssemblyModel(1, 'Test');
             expect(Object.keys(options.dataItems).length).to.equal(33);
         });
 
-        it('dynamic DataAssemblyOptions', () => {
+        it('dynamic DataAssemblyModel', () => {
             const mockup = new VlvMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const options = mockup.getDataAssemblyOptions();
+            const options = mockup.getDataAssemblyModel();
 
             expect(Object.keys(options.dataItems).length).to.equal(33);
         });
@@ -74,7 +73,7 @@ describe('VlvMockup', () => {
     describe('dynamic', () => {
 
         let mockupServer: MockupServer;
-        let connection: OpcUaConnection;
+        let connectionHandler: ConnectionHandler;
 
         beforeEach(async function () {
             this.timeout(5000);
@@ -83,27 +82,26 @@ describe('VlvMockup', () => {
             new VlvMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
             await mockupServer.start();
-            connection = new OpcUaConnection();
-            connection.initialize({endpointUrl: mockupServer.endpoint});
-            await connection.connect();
+            connectionHandler= new ConnectionHandler();
+            connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+            await connectionHandler.connect();
         });
         afterEach(async () => {
-            await connection.disconnect();
+            await connectionHandler.disconnect();
             await mockupServer.shutdown();
         });
 
         it('set and get OpenOp', async () => {
-            await connection.writeNode('Variable.OpenOp', mockupServer.nameSpaceUri, true, 'Boolean');
-            await connection.readNode('Variable.OpenOp', mockupServer.nameSpaceUri)
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.OpenOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, true);
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.OpenOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(true));
         }).timeout(3000);
 
         it('set and get CloseOp', async () => {
-            await connection.writeNode('Variable.CloseOp', mockupServer.nameSpaceUri, true, 'Boolean');
-            await connection.readNode('Variable.CloseOp', mockupServer.nameSpaceUri)
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.CloseOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, true);
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.CloseOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(true));
         }).timeout(3000);
 
-        //TODO get the rest
     });
 });

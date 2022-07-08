@@ -24,14 +24,14 @@
  */
 
 import {AndConditionOptions, OrConditionOptions} from '@p2olab/polaris-interface';
-import {PEAController} from '../../pea';
+import {PEA} from '../../pea';
 import {Condition} from '../Condition';
 import {ConditionFactory} from '../ConditionFactory';
 
 export abstract class TwoOperandCondition extends Condition {
 	public conditions: Condition[] = [];
 
-	constructor(options: AndConditionOptions | OrConditionOptions, peaSet: PEAController[]) {
+	constructor(options: AndConditionOptions | OrConditionOptions, peaSet: PEA[]) {
 		super(options, peaSet);
 		this.conditions = options.conditions.map((option) => {
 			return ConditionFactory.create(option, peaSet);
@@ -44,8 +44,8 @@ export abstract class TwoOperandCondition extends Condition {
 		this.conditions.forEach((cond) => cond.clear());
 	}
 
-	public getUsedPEAs(): Set<PEAController> {
-		const set = new Set<PEAController>();
+	public getUsedPEAs(): Set<PEA> {
+		const set = new Set<PEA>();
 		this.conditions.forEach((cond) => {
 			Array.from(cond.getUsedPEAs()).forEach((p) => {
 				set.add(p);

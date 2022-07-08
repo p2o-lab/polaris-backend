@@ -26,9 +26,9 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../_utils';
-import {getResetDataItemOptions, ResetMockup} from './Reset.mockup';
-import {OpcUaConnection} from '../../../connection';
-import {ResetRuntime} from './Reset';
+import {getResetDataItemModel, ResetMockup} from './Reset.mockup';
+import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
+import {DataItemAccessLevel} from '@p2olab/pimad-interface';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -52,27 +52,27 @@ describe('ResetMockup', () => {
         });
 
         it('static Reset DataItemOptions',  () => {
-            const options = getResetDataItemOptions(1, 'Test') as ResetRuntime;
+            const options = getResetDataItemModel(1, 'Test');
 
             expect(Object.keys(options).length).to.equal(2);
-            expect(options.ResetOp).to.not.be.undefined;
-            expect(options.ResetAut).to.not.be.undefined;
+            expect(options.find(i => i.name === 'ResetOp')).to.not.be.undefined;
+            expect(options.find(i => i.name === 'ResetAut')).to.not.be.undefined;
         });
 
         it('dynamic Reset DataItemOptions',  () => {
             const mockup = new ResetMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
-            const options = mockup.getDataItemOptions() as ResetRuntime;
+            const options = mockup.getDataItemModel();
 
             expect(Object.keys(options).length).to.equal(2);
-            expect(options.ResetOp).to.not.be.undefined;
-            expect(options.ResetAut).to.not.be.undefined;
+            expect(options.find(i => i.name === 'ResetOp')).to.not.be.undefined;
+            expect(options.find(i => i.name === 'ResetAut')).to.not.be.undefined;
         });
     });
 
     describe('dynamic', () => {
 
         let mockupServer: MockupServer;
-        let connection: OpcUaConnection;
+        let connectionHandler: ConnectionHandler;
 
         beforeEach(async function () {
             this.timeout(10000);
@@ -80,19 +80,19 @@ describe('ResetMockup', () => {
             await mockupServer.initialize();
             new ResetMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
             await mockupServer.start();
-            connection = new OpcUaConnection();
-            connection.initialize({endpointUrl: mockupServer.endpoint});
-            await connection.connect();
+            connectionHandler= new ConnectionHandler();
+            connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+            await connectionHandler.connect();
         });
 
         afterEach(async () => {
-            await connection.disconnect();
+            await connectionHandler.disconnect();
             await mockupServer.shutdown();
         });
 
         it('set and get ResetOp', async () => {
-            await connection.writeNode('Variable.ResetOp', mockupServer.nameSpaceUri, true, 'Boolean');
-            await connection.readNode('Variable.ResetOp', mockupServer.nameSpaceUri)
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.ResetOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, true);
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.ResetOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(true));
         }).timeout(2000);
 

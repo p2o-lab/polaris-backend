@@ -24,7 +24,7 @@
  */
 
 import {StateConditionOptions} from '@p2olab/polaris-interface';
-import {BaseService, PEAController} from '../../pea';
+import {BaseService, PEA} from '../../pea';
 import {ServiceState} from '../../pea/serviceSet/service/enum';
 import {Condition} from '../Condition';
 import {PEACondition} from './PEACondition';
@@ -52,16 +52,18 @@ export class ServiceStateCondition extends PEACondition {
 	public readonly service: BaseService;
 	public readonly state: ServiceState;
 
-	constructor(options: StateConditionOptions, peaSet: PEAController[]) {
+	constructor(options: StateConditionOptions, peaSet: PEA[]) {
 		super(options, peaSet);
 		if (!this.usedPEA) {
 			throw new Error(`State ${options.state} is not a valid state for a condition (${JSON.stringify(options)}`);
 		}
-		const serviceId = this.usedPEA.findService(options.service);
+		const serviceId = this.usedPEA.findServiceId(options.service);
 		if (!serviceId) {
-			throw new Error(`Service ${options.service} is was not found.`);
+			throw new Error(`ServiceId ${options.service} not found.`);
 		}
-		this.service = this.usedPEA.getService(serviceId);
+		const resolvedService = this.usedPEA.findService(serviceId);
+		if(!resolvedService) throw new Error(`Service ${serviceId} not found.`);
+		this.service = resolvedService;
 
 		this.state = mapping[options.state.toLowerCase()];
 		if (!this.state) {

@@ -25,70 +25,123 @@
 
 import {OperationMode} from '@p2olab/polaris-interface';
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
+import {DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../dataItem/DataItem.mockup';
 
-function getServiceOpModeSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return ({
-		StateChannel: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.StateChannel`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		StateOffAut: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.StateOffAut`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		StateOpAut: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.StateOpAut`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		StateAutAut: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.StateAutAut`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		StateOffOp: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.StateOffOp`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		StateOpOp: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.StateOpOp`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		StateAutOp: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.StateAutOp`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		StateOpAct: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.StateOpAct`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		StateAutAct: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.StateAutAct`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		StateOffAct: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.StateOffAct`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions
-	});
+
+function getServiceOpModeSpecificDataItemModels(namespace: number, objectBrowseName: string): DataItemModel[] {
+
+	const result: DataItemModel[] = [];
+	let dataItem: DataItemModel = getEmptyDataItemModel();
+	dataItem.name = 'StateChannel';
+	dataItem.dataType = 'Boolean';
+	let ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.StateChannel`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'StateOffAut';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.StateOffAut`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'StateOpAut';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.StateOpAut`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'StateAutAut';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.StateAutAut`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'StateOffOp';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.StateOffOp`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'StateOpOp';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.StateOpOp`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'StateAutOp';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.StateAutOp`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'StateOpAct';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.StateOpAct`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'StateAutAct';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.StateAutAct`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'StateOffAct';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.StateOffAct`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	return result;
 }
 
-
-export function getServiceOpModeDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return getServiceOpModeSpecificDataItemOptions(namespace, objectBrowseName);
+export function getServiceOpModeDataItemModel(namespace: number, objectBrowseName: string): DataItemModel[] {
+	return getServiceOpModeSpecificDataItemModels(namespace, objectBrowseName);
 }
 
 export class ServiceOpModeMockup {
 	public opMode: OperationMode = OperationMode.Offline;
+
 	public stateChannel = false;
 	public stateOffAut = false;
 	public stateOpAut = false;
@@ -96,6 +149,7 @@ export class ServiceOpModeMockup {
 	public stateOffOp = false;
 	public stateOpOp = false;
 	public stateAutOp = false;
+
 	protected mockupNode: UAObject;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string, operationMode?: OperationMode) {
@@ -262,8 +316,8 @@ export class ServiceOpModeMockup {
 		return this.opMode === OperationMode.Offline;
 	}
 
-	public getDataItemOptions(): object {
-		return getServiceOpModeDataItemOptions(
+	public getDataItemModel(): DataItemModel[] {
+		return getServiceOpModeDataItemModel(
 			this.mockupNode.namespaceIndex,
 			this.mockupNode.browseName.name as string);
 	}

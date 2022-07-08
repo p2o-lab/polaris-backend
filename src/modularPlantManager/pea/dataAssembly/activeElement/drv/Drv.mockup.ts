@@ -24,125 +24,211 @@
  */
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {getOpModeDataItemOptions, OpModeMockup} from '../../baseFunction/opMode/OpMode.mockup';
-import {getInterlockDataItemOptions, InterlockMockup} from '../../baseFunction/interlock/Interlock.mockup';
-import {getResetDataItemOptions, ResetMockup} from '../../baseFunction/reset/Reset.mockup';
-import {ActiveElementMockup, getActiveElementDataItemOptions} from '../ActiveElement.mockup';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
-import {getDataAssemblyOptions} from '../../DataAssemblyController.mockup';
+import {getOpModeDataItemModel, OpModeMockup} from '../../baseFunction/opMode/OpMode.mockup';
+import {getInterlockDataItemModel, InterlockMockup} from '../../baseFunction/interlock/Interlock.mockup';
+import {getResetDataItemModel, ResetMockup} from '../../baseFunction/reset/Reset.mockup';
+import {ActiveElementMockup, getActiveElementDataItemModel} from '../ActiveElement.mockup';
+import {DataAssemblyModel, DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+
+import {getDataAssemblyModel} from '../../DataAssembly.mockup';
+import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../dataItem/DataItem.mockup';
 
 const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/ActiveElement';
 
-function getDrvSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return ({
-		SafePos: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.SafePos`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		SafePosAct: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.SafePosAct`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		FwdAut: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.FwdAut`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		FwdCtrl: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.FwdCtrl`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		FwdEn: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.FwdEn`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		FwdFbk: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.FwdFbk`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		FwdFbkCalc: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.FwdFbkCalc`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		FwdOp: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.FwdOp`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		RevAut: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.RevAut`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		RevCtrl: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.RevCtrl`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		RevEn: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.RevEn`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		RevFbk: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.RevFbk`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		RevFbkCalc: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.RevFbkCalc`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		RevOp: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.RevOp`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		StopAut: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.StopAut`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		StopOp: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.StopOp`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		Trip: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.Trip`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions
-	});
+function getDrvSpecificDataItemModels(namespace: number, objectBrowseName: string): DataItemModel[] {
+
+	const result: DataItemModel[] = [];
+	let dataItem: DataItemModel = getEmptyDataItemModel();
+	dataItem.name = 'SafePos';
+	dataItem.dataType = 'Boolean';
+	let ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.SafePos`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'SafePosAct';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.SafePosAct`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'FwdAut';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.FwdAut`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'FwdCtrl';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.FwdCtrl`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'FwdEn';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.FwdEn`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'FwdFbk';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.FwdFbk`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'FwdFbkCalc';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.FwdFbkCalc`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'FwdOp';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.FwdOp`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'RevAut';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.RevAut`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'RevCtrl';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.RevCtrl`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'RevEn';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.RevEn`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'RevFbk';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.RevFbk`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'RevFbkCalc';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.RevFbkCalc`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'RevOp';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.RevFbkCalc`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'StopAut';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.StopAut`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'StopOp';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.StopOp`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'Trip';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.Trip`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	return result;
 }
 
 
-export function getDrvDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return ({
-			...getActiveElementDataItemOptions(namespace, objectBrowseName),
-			...getOpModeDataItemOptions(namespace, objectBrowseName),
-			...getInterlockDataItemOptions(namespace, objectBrowseName),
-			...getResetDataItemOptions(namespace, objectBrowseName),
-			...getDrvSpecificDataItemOptions(namespace, objectBrowseName),
-		} as OpcUaNodeOptions
-	);
+export function getDrvDataItemModel(namespace: number, objectBrowseName: string): DataItemModel[] {
+	return [
+			...getActiveElementDataItemModel(namespace, objectBrowseName),
+			...getOpModeDataItemModel(namespace, objectBrowseName),
+			...getInterlockDataItemModel(namespace, objectBrowseName),
+			...getResetDataItemModel(namespace, objectBrowseName),
+			...getDrvSpecificDataItemModels(namespace, objectBrowseName),
+	];
 }
 
 
-export function getDrvOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
-	const options = getDataAssemblyOptions(name, tagName, tagDescription);
-	options.metaModelRef = metaModelReference;
-	options.dataItems = {
+export function getDrvDataAssemblyModel(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): DataAssemblyModel {
+	const options = getDataAssemblyModel(metaModelReference, name, tagName, tagDescription);
+	options.dataItems = [
 		...options.dataItems,
-		...getDrvDataItemOptions(namespace, objectBrowseName)};
+		...getDrvDataItemModel(namespace, objectBrowseName)
+	];
 	return options;
 }
 
@@ -383,16 +469,15 @@ export class DrvMockup extends ActiveElementMockup{
 
 	}
 
-	public getDataAssemblyOptions(): DataAssemblyOptions {
-		const options = super.getDataAssemblyOptions();
-		options.metaModelRef = metaModelReference;
-		options.dataItems = {
+	public getDataAssemblyModel(metaModelReferenceOption?: string): DataAssemblyModel {
+		const options = super.getDataAssemblyModel(metaModelReferenceOption || metaModelReference);
+		options.dataItems = [
 			...options.dataItems,
-			...this.operationMode.getDataItemOptions(),
-			...this.reset.getDataItemOptions(),
-			...this.interlock.getDataItemOptions(),
-			...getDrvSpecificDataItemOptions(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
-		};
+			...this.operationMode.getDataItemModel(),
+			...this.reset.getDataItemModel(),
+			...this.interlock.getDataItemModel(),
+			...getDrvSpecificDataItemModels(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
+		];
 		return options;
 	}
 }

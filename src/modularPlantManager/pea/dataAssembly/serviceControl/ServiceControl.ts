@@ -23,11 +23,11 @@
  * SOFTWARE.
  */
 
-import {OpcUaConnection, DataItem} from '../../connection';
+import {DataItem} from '../dataItem/DataItem';
 import {
-	BaseDataAssemblyRuntime, DataAssemblyController, OpModeRuntime, OSLevel, ServiceState, WQCRuntime
+	DataAssembly, DataAssemblyDataItems, OpModeRuntime, OSLevel, WQCRuntime
 } from '../index';
-import {DataAssemblyOptions, OperationMode, ServiceSourceMode} from '@p2olab/polaris-interface';
+import {OperationMode, ServiceSourceMode} from '@p2olab/polaris-interface';
 import {WQC} from '../baseFunction';
 import {
 	ServiceSourceModeController,
@@ -39,8 +39,11 @@ import {EventEmitter} from 'events';
 import {Category} from 'typescript-logging';
 import {catService} from '../../../../logging';
 import {ServiceOpMode} from '../baseFunction/serviceOpMode/ServiceOpMode';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
+import {ConnectionHandler} from '../../connectionHandler/ConnectionHandler';
+import {DataItemFactory, getDataItemModel} from '../dataItem/DataItemFactory';
 
-export type ServiceControlRuntime = BaseDataAssemblyRuntime & OpModeRuntime & ServiceSourceModeRuntime & WQCRuntime & {
+export type ServiceControlRuntime = DataAssemblyDataItems & OpModeRuntime & ServiceSourceModeRuntime & WQCRuntime & {
 	CommandOp: DataItem<number>;
 	CommandInt: DataItem<number>;
 	CommandExt: DataItem<number>;
@@ -78,7 +81,7 @@ export interface ServiceControlEvents extends BaseServiceEvents {
 type ServiceControlEmitter = StrictEventEmitter<EventEmitter, ServiceControlEvents>;
 
 
-export class ServiceControl extends DataAssemblyController {
+export class ServiceControl extends DataAssembly {
 	public readonly communication!: ServiceControlRuntime;
 	public readonly wqc: WQC;
 	public readonly opMode: ServiceOpMode;
@@ -87,30 +90,30 @@ export class ServiceControl extends DataAssemblyController {
 	public readonly eventEmitter!: ServiceControlEmitter;
 	private readonly logger: Category = catService;
 
-	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
-		super(options, connection);
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+		super(options);
 
-		this.wqc = new WQC(this);
-		this.opMode = new ServiceOpMode(this);
-		this.osLevel = new OSLevel(this);
-		this.serviceSourceMode = new ServiceSourceModeController(this);
+		this.wqc = new WQC(options, connectionHandler);
+		this.opMode = new ServiceOpMode(options, connectionHandler);
+		this.osLevel = new OSLevel(options, connectionHandler);
+		this.serviceSourceMode = new ServiceSourceModeController(options, connectionHandler);
 		this.eventEmitter = new EventEmitter();
 
-		this.communication.CommandOp = this.createDataItem('CommandOp', 'number', 'write');
-		this.communication.CommandInt = this.createDataItem('CommandInt', 'number', 'write');
-		this.communication.CommandExt = this.createDataItem('CommandExt', 'number', 'write');
-		this.communication.CommandEn = this.createDataItem('CommandEn', 'number');
-		this.communication.StateCur = this.createDataItem('StateCur', 'number');
+		this.communication.CommandOp = DataItemFactory.create(getDataItemModel(options, 'CommandOp'), connectionHandler);
+		this.communication.CommandInt = DataItemFactory.create(getDataItemModel(options, 'CommandInt'), connectionHandler);
+		this.communication.CommandExt = DataItemFactory.create(getDataItemModel(options, 'CommandExt'), connectionHandler);
+		this.communication.CommandEn = DataItemFactory.create(getDataItemModel(options, 'CommandEn'), connectionHandler);
+		this.communication.StateCur = DataItemFactory.create(getDataItemModel(options, 'StateCur'), connectionHandler);
 
-		this.communication.ProcedureOp = this.createDataItem('ProcedureOp', 'number', 'write');
-		this.communication.ProcedureExt = this.createDataItem('ProcedureExt', 'number', 'write');
-		this.communication.ProcedureInt = this.createDataItem('ProcedureInt', 'number');
-		this.communication.ProcedureCur = this.createDataItem('ProcedureCur', 'number');
-		this.communication.ProcedureReq = this.createDataItem('ProcedureReq', 'number');
+		this.communication.ProcedureOp = DataItemFactory.create(getDataItemModel(options, 'ProcedureOp'), connectionHandler);
+		this.communication.ProcedureExt = DataItemFactory.create(getDataItemModel(options, 'ProcedureExt'), connectionHandler);
+		this.communication.ProcedureInt = DataItemFactory.create(getDataItemModel(options, 'ProcedureInt'), connectionHandler);
+		this.communication.ProcedureCur = DataItemFactory.create(getDataItemModel(options, 'ProcedureCur'), connectionHandler);
+		this.communication.ProcedureReq = DataItemFactory.create(getDataItemModel(options, 'ProcedureReq'), connectionHandler);
 
-		this.communication.InteractQuestionID = this.createDataItem('InteractQuestionID', 'number');
-		this.communication.InteractAnswerID = this.createDataItem('InteractAnswerID', 'number', 'write');
-		this.communication.PosTextID = this.createDataItem('PosTextID', 'number');
+		this.communication.InteractQuestionID = DataItemFactory.create(getDataItemModel(options, 'InteractQuestionID'), connectionHandler);
+		this.communication.InteractAnswerID = DataItemFactory.create(getDataItemModel(options, 'InteractAnswerID'), connectionHandler);
+		this.communication.PosTextID = DataItemFactory.create(getDataItemModel(options, 'PosTextID'), connectionHandler);
 
 		this.defaultReadDataItem = this.communication.StateCur;
 		this.defaultReadDataItemType = 'number';

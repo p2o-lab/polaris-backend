@@ -24,92 +24,144 @@
  */
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {
-	getSourceModeDataItemOptions,
-	SourceModeMockup
-} from '../../../baseFunction/sourceMode/SourceMode.mockup';
-import {DrvMockup, getDrvDataItemOptions} from '../Drv.mockup';
-import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
-import {getDataAssemblyOptions} from '../../../DataAssemblyController.mockup';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {getSourceModeDataItemModel, SourceModeMockup} from '../../../baseFunction/sourceMode/SourceMode.mockup';
+import {DrvMockup, getDrvDataItemModel} from '../Drv.mockup';
+
+import {getDataAssemblyModel} from '../../../DataAssembly.mockup';
+import {DataAssemblyModel, DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../../dataItem/DataItem.mockup';
 
 const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/ActiveElement/AnaDrv';
 
-function getAnaDrvSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return ({
-		RpmSclMax: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.RpmSclMax`,
-			dataType: 'Float'
-		} as OpcUaNodeOptions,
-		RpmSclMin: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.RpmSclMin`,
-			dataType: 'Float'
-		} as OpcUaNodeOptions,
-		RpmUnit: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.RpmUnit`,
-			dataType: 'Int16'
-		} as OpcUaNodeOptions,
-		RpmMax: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.RpmMax`,
-			dataType: 'Float'
-		} as OpcUaNodeOptions,
-		RpmMin: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.RpmMin`,
-			dataType: 'Float'
-		} as OpcUaNodeOptions,
-		RpmInt: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.RpmInt`,
-			dataType: 'Float'
-		} as OpcUaNodeOptions,
-		RpmMan: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.RpmMan`,
-			dataType: 'Float'
-		} as OpcUaNodeOptions,
-		Rpm: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.Rpm`,
-			dataType: 'Float'
-		} as OpcUaNodeOptions,
-		RpmFbk: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.RpmFbk`,
-			dataType: 'Float'
-		} as OpcUaNodeOptions,
-		RpmFbkCalc: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.RpmFbkCalc`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		RpmRbk: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.RpmRbk`,
-			dataType: 'Float'
-		} as OpcUaNodeOptions
-	});
+function getAnaDrvSpecificDataItemModels(namespace: string | number, objectBrowseName: string): DataItemModel[] {
+	const result: DataItemModel[] = [];
+	let dataItem: DataItemModel = getEmptyDataItemModel();
+	dataItem.name = 'RpmSclMax';
+	dataItem.dataType = 'Float';
+	let ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.RpmSclMax`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'RpmSclMin';
+	dataItem.dataType = 'Float';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.RpmSclMin`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'RpmUnit';
+	dataItem.dataType = 'Int16';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.RpmUnit`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'RpmMax';
+	dataItem.dataType = 'Float';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.RpmMax`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'RpmMin';
+	dataItem.dataType = 'Float';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.RpmMin`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'RpmInt';
+	dataItem.dataType = 'Float';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.RpmInt`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'RpmMan';
+	dataItem.dataType = 'Float';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.RpmMan`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'Rpm';
+	dataItem.dataType = 'Float';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.Rpm`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'RpmFbk';
+	dataItem.dataType = 'Float';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.RpmFbk`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'RpmFbkCalc';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.RpmFbkCalc`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'RpmRbk';
+	dataItem.dataType = 'Float';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.RpmRbk`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	return result;
 }
 
-export function getAnaDrvDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return ({
-			...getDrvDataItemOptions(namespace, objectBrowseName),
-			...getSourceModeDataItemOptions(namespace, objectBrowseName),
-			...getAnaDrvSpecificDataItemOptions(namespace, objectBrowseName),
-		} as OpcUaNodeOptions
-	);
+export function getAnaDrvDataItemModel(namespace: number, objectBrowseName: string): DataItemModel[] {
+	return [
+		...getDrvDataItemModel(namespace, objectBrowseName),
+		...getSourceModeDataItemModel(namespace, objectBrowseName),
+		...getAnaDrvSpecificDataItemModels(namespace, objectBrowseName)
+	];
 }
 
-export function getAnaDrvOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
-	const options = getDataAssemblyOptions(name, tagName, tagDescription);
-	options.metaModelRef = metaModelReference;
-	options.dataItems = {
+export function getAnaDrvDataAssemblyModel(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): DataAssemblyModel {
+	const options = getDataAssemblyModel(metaModelReference, name, tagName, tagDescription);
+	options.dataItems = [
 		...options.dataItems,
-		...getAnaDrvDataItemOptions(namespace, objectBrowseName)};
+		...getAnaDrvDataItemModel(namespace, objectBrowseName)
+	];
 	return options;
 }
 
@@ -270,13 +322,12 @@ export class AnaDrvMockup extends DrvMockup{
 
 	}
 
-	public getDataAssemblyOptions(): DataAssemblyOptions {
-		const options = super.getDataAssemblyOptions();
-		options.metaModelRef = metaModelReference;
+	public getDataAssemblyModel(metaModelReferenceOption?: string): DataAssemblyModel {
+		const options = super.getDataAssemblyModel(metaModelReferenceOption || metaModelReference);
 		options.dataItems = {
 			...options.dataItems,
-			...this.sourceMode.getDataItemOptions(),
-			...getAnaDrvSpecificDataItemOptions(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
+			...this.sourceMode.getDataItemModel(),
+			...getAnaDrvSpecificDataItemModels(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
 		};
 		return options;
 	}

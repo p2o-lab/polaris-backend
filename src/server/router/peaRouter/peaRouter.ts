@@ -38,10 +38,14 @@ export const peaRouter: Router = Router();
  * @apiGroup PEAController
  */
 peaRouter.post('/loadPEA', async (req, res) => {
-	catServer.info('Load PEAController via PEAController-Options');
+	catServer.info('Load PEAController via PiMAd');
 	const manager: ModularPlantManager = req.app.get('manager');
 	try {
-		await manager.createPEAControllerInstance(req.body.id);
+		if (!req.body.id && !req.body.peaModel) {
+			res.status(400).send('Error: Insufficient body content.');
+		}
+
+		await manager.addPEA(req.body.id);
 		res.status(200).send('"Success!"');
 	} catch (error) {
 		let message;
@@ -60,7 +64,7 @@ peaRouter.post('/loadPEA', async (req, res) => {
 peaRouter.get('/allPEAs', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
 	try {
-		res.json(manager.getAllPEAControllers());
+		res.json(manager.getAllPEAs());
 	} catch (error) {
 		let message;
 		if (error instanceof Error) message = error.message;
@@ -79,7 +83,13 @@ peaRouter.get('/allPEAs', asyncHandler(async (req: Request, res: Response) => {
 peaRouter.get('/:peaId', (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
 	try {
-		res.send(manager.getPEAController(req.params.peaId).json());
+		const peaController = manager.findPEAController(req.params.peaId);
+		if (peaController){
+			res.status(200).send(peaController.json());
+		} else {
+			res.status(404).send(`Error: PEA with id ${req.params.peaId} not found`);
+		}
+
 	} catch (error) {
 		let message;
 		if (error instanceof Error) message = error.message;
@@ -98,11 +108,13 @@ peaRouter.get('/:peaId', (req: Request, res: Response) => {
 peaRouter.get('/:peaId/dataAssemblies', (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
 	try {
-
-		const pea = manager.getPEAController(req.params.peaId);
-		const dataAssemblies = pea.getDataAssemblyJson();
-		res.send(dataAssemblies);
-
+		const peaController = manager.findPEAController(req.params.peaId);
+		if (peaController){
+			const dataAssemblies = peaController.getDataAssemblyJson();
+			res.status(200).send(dataAssemblies);
+		} else {
+			res.status(404).send(`Error: PEA with id ${req.params.peaId} not found`);
+		}
 	} catch (error) {
 		let message;
 		if (error instanceof Error) message = error.message;
@@ -121,9 +133,13 @@ peaRouter.get('/:peaId/dataAssemblies', (req: Request, res: Response) => {
 peaRouter.get('/:peaId/getConnectionSettings', (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
 	try{
-		const peaController = manager.getPEAController(req.params.peaId);
-		const body = peaController.getCurrentConnectionSettings();
-		res.status(200).send(body);
+		const peaController = manager.findPEAController(req.params.peaId);
+		if (peaController){
+			const connectionSettings = peaController.getCurrentConnectionSettings();
+			res.status(200).send(connectionSettings);
+		} else {
+			res.status(404).send(`Error: PEA with id ${req.params.peaId} not found`);
+		}
 	}catch (error) {
 		let message;
 		if (error instanceof Error) message = error.message;
@@ -142,9 +158,13 @@ peaRouter.get('/:peaId/getConnectionSettings', (req: Request, res: Response) => 
 peaRouter.post('/:peaId/updateConnectionSettings', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
 	try{
-		const peaController = manager.getPEAController(req.params.peaId);
-		peaController.updateConnection(req.body);
-		res.status(200).send('"'+'Successfully updated the connection settings!'+'"');
+		const peaController = manager.findPEAController(req.params.peaId);
+		if (peaController){
+			peaController.updateConnection(req.body);
+			res.status(200).send('Successfully updated the connection settings!');
+		} else {
+			res.status(404).send(`Error: PEA with id ${req.params.peaId} not found`);
+		}
 	} catch(error){
 		let message;
 		if (error instanceof Error) message = error.message;
@@ -162,7 +182,20 @@ peaRouter.post('/:peaId/updateConnectionSettings', asyncHandler(async (req: Requ
  */
 peaRouter.get('/:peaId/download', (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
-	res.json(manager.getPEAController(req.params.peaId).options);
+	try{
+		const peaController = manager.findPEAController(req.params.peaId);
+		if (peaController){
+			res.status(200).json(peaController.options);
+		} else {
+			res.status(404).send(`Error: PEA with id ${req.params.peaId} not found`);
+		}
+	} catch(error){
+		let message;
+		if (error instanceof Error) message = error.message;
+		else message = String(error);
+		console.log(message);
+		res.status(500).send(message);
+	}
 });
 
 /**
@@ -174,9 +207,13 @@ peaRouter.get('/:peaId/download', (req: Request, res: Response) => {
 peaRouter.post('/:peaId/connect', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
 	try{
-		const pea = manager.getPEAController(req.params.peaId);
-		await pea.connectAndSubscribe();
-		res.status(200).send({peaId: pea.id, status: 'Successfully connected'});
+		const peaController = manager.findPEAController(req.params.peaId);
+		if (peaController){
+			await peaController.connectAndSubscribe();
+			res.status(200).send({peaId: peaController.id, status: 'Successfully connected'});
+		} else {
+			res.status(404).send(`Error: PEA with id ${req.params.peaId} not found`);
+		}
 	} catch (error) {
 		let message;
 		if (error instanceof Error) message = error.message;
@@ -194,11 +231,15 @@ peaRouter.post('/:peaId/connect', asyncHandler(async (req: Request, res: Respons
  */
 peaRouter.post('/:peaId/disconnect', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
-	try{
-		const pea = manager.getPEAController(req.params.peaId);
-		await pea.disconnectAndUnsubscribe();
-		res.status(200).send({peaId: pea.id, status: 'Successfully disconnected'});
-	}catch (error) {
+	try {
+		const peaController = manager.findPEAController(req.params.peaId);
+		if (peaController){
+			await peaController.disconnectAndUnsubscribe();
+			res.status(200).send({peaId: peaController.id, status: 'Successfully disconnected'});
+		} else {
+			res.status(404).send(`Error: PEA with id ${req.params.peaId} not found`);
+		}
+	} catch (error) {
 		let message;
 		if (error instanceof Error) message = error.message;
 		else message = String(error);
@@ -217,8 +258,13 @@ peaRouter.post('/:peaId/disconnect', asyncHandler(async (req: Request, res: Resp
 peaRouter.delete('/:peaId', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
 	try {
-		await manager.removePEAController(req.params.peaId);
-		res.status(200).send({peaId: req.params.peaId, status: 'Successfully deleted'});
+		const peaController = manager.findPEAController(req.params.peaId);
+		if (peaController){
+			await manager.removePEA(req.params.peaId);
+			res.status(200).send({peaId: req.params.peaId, status: 'Successfully deleted'});
+		} else {
+			res.status(404).send(`Error: PEA with id ${req.params.peaId} not found`);
+		}
 	} catch (error) {
 		let message;
 		if (error instanceof Error) message = error.message;
@@ -234,23 +280,30 @@ peaRouter.delete('/:peaId', asyncHandler(async (req: Request, res: Response) => 
  * @apiDescription Configure procedure and parameters of service
  * @apiGroup PEAController
  * @apiParam {string} peaId    PEAController id
- * @apiParam {string} serviceName   Name of service
- * @apiParam {string} procedure      Name of procedure
+ * @apiParam {string} serviceId   ID of service
+ * @apiParam {string} procedureId     ID of procedure
  * @apiParam {ParameterOptions[]} [parameters]    Service Procedure Parameters
  */
 peaRouter.post('/:peaId/service/:serviceId/procedureRequest/:procedureId', asyncHandler(async (req: Request, res: Response) => {
 	catServer.info(`Request Procedure: ${req.params.procedureId}; Parameters: ${JSON.stringify(req.body.parameters)}`);
 	const manager: ModularPlantManager = req.app.get('manager');
 	try{
-		const pea = manager.getPEAController(req.params.peaId);
-		const service = pea.getService(req.params.serviceId);
-		const procedureId = parseInt(req.params.procedureId,10);
-		await service.requestProcedureOperator(procedureId);
-
-		if (req.body.parameters) {
-			await service.setParameters(req.body.parameters, manager.peas);
+		const peaController = manager.findPEAController(req.params.peaId);
+		if (peaController){
+			const service = peaController.findService(req.params.serviceId);
+			if (service){
+				const procedureId = parseInt(req.params.procedureId,10);
+				await service.requestProcedureOperator(procedureId);
+				if (req.body.parameters) {
+					await service.setParameters(req.body.parameters, manager.peas);
+				}
+				res.status(200).json(service.json());
+			} else {
+				res.status(404).send(`Error: Service with id ${req.params.peaId} not found`);
+			}
+		} else {
+			res.status(404).send(`Error: PEA with id ${req.params.peaId} not found`);
 		}
-		res.json(service.json());
 	} catch (error){
 		let message;
 		if (error instanceof Error) message = error.message;
@@ -267,19 +320,27 @@ peaRouter.post('/:peaId/service/:serviceId/procedureRequest/:procedureId', async
  * @apiDescription Configure procedure and parameters of service
  * @apiGroup PEAController
  * @apiParam {string} peaId    PEAController id
- * @apiParam {string} serviceName   Name of service
- * @apiParam {string} procedure      Name of procedure
+ * @apiParam {string} serviceId   ID of service
+ * @apiParam {string} procedure      ID of procedure
  * @apiParam {ParameterOptions[]} [parameters]    Service Procedure Parameters
  */
 peaRouter.post('/:peaId/service/:serviceId/osLevel/:osLevel', asyncHandler(async (req: Request, res: Response) => {
 	catServer.info(`Set OsLevel: ${req.params.osLevel};`);
 	const manager: ModularPlantManager = req.app.get('manager');
 	try{
-		const pea = manager.getPEAController(req.params.peaId);
-		const service = pea.getService(req.params.serviceId);
-		const osLevel = parseInt(req.params.osLevel,10);
-		await service.changeOsLevel(osLevel);
-		res.json(service.json());
+		const pea = manager.findPEAController(req.params.peaId);
+		if (pea){
+			const service = pea.findService(req.params.serviceId);
+			if (service){
+				const osLevel = parseInt(req.params.osLevel,10);
+				await service.changeOsLevel(osLevel);
+				res.status(200).json(service.json());
+			} else {
+				res.status(404).send(`Error: Service with id ${req.params.peaId} not found`);
+			}
+		} else {
+			res.status(404).send(`Error: PEA with id ${req.params.peaId} not found`);
+		}
 	} catch(error){
 		let message;
 		if (error instanceof Error) message = error.message;
@@ -292,26 +353,26 @@ peaRouter.post('/:peaId/service/:serviceId/osLevel/:osLevel', asyncHandler(async
 
 
 /**
- * @api {post} /:peaId/service/:serviceName/:command   Call service
+ * @api {post} /:peaId/service/:serviceId/:command   Call service
  * @apiName CallService
  * @apiGroup PEAController
  * @apiParam {string} peaId      PEAController id
- * @apiParam {string} serviceName   Name of service
+ * @apiParam {string} serviceId   Service id
  * @apiParam {string="start","stop","abort","complete","pause","unhold","reset"} command       Command name
- * @apiParam {string} [procedure]      Name of procedure
+ * @apiParam {string} [procedure]      ID of procedure
  * @apiParam {ParameterOptions[]} [parameters]    Service Strategy Parameters
  */
 peaRouter.post('/:peaId/service/:serviceId/:command', asyncHandler(async (req: Request, res: Response) => {
 	catServer.debug(`Call service: ${JSON.stringify(req.params)} ${JSON.stringify(req.body)}`);
 	const manager: ModularPlantManager = req.app.get('manager');
 	try{
-		const service = manager.getService(req.params.peaId, req.params.serviceName);
+		const service = manager.getService(req.params.peaId, req.params.serviceId);
 		if (service){
 			if (req.body.parameters) {
 				await service.setParameters(req.body.parameters, manager.peas);
 			}
+			// TODO: Check if OSLevel > 1, ServiceSourceMode Extern, ProcedureRequest is >0 and valid;
 			const command = req.params.command as ServiceCommand;
-			console.log('execute');
 			await service.executeCommand(command);
 			res.json({
 				pea: req.params.peaId,
@@ -332,11 +393,11 @@ peaRouter.post('/:peaId/service/:serviceId/:command', asyncHandler(async (req: R
 }));
 
 /**
- * @api {post} /:peaId/service/:serviceName/opMode/:opMode
+ * @api {post} /:peaId/service/:serviceId/opMode/:opMode
  * @apiName Change service operation mode
  * @apiGroup PEAController
  * @apiParam {string} peaId     PEAController identifier
- * @apiParam {string} serviceName   Name of service
+ * @apiParam {string} serviceId   ID of service
  * @apiParam {string="offline","operator","automatic"} opMode      OpMode name
  */
 peaRouter.post('/:peaId/service/:serviceId/opMode/:opModeParam', asyncHandler(async (req: Request, res: Response) => {
@@ -366,17 +427,17 @@ peaRouter.post('/:peaId/service/:serviceId/opMode/:opModeParam', asyncHandler(as
 }));
 
 /**
- * @api {post} /:peaId/service/:serviceName/serviceSourceMode/:serviceSourceMode
+ * @api {post} /:peaId/service/:serviceId/serviceSourceMode/:serviceSourceMode
  * @apiName Change service source mode
  * @apiGroup PEAController
  * @apiParam {string} peaId     PEAController identifier
- * @apiParam {string} serviceName   Name of service
+ * @apiParam {string} serviceId   ID of service
  * @apiParam {string="extern","intern"} serviceSourceMode
  */
-peaRouter.post('/:peaId/service/:serviceName/serviceSourceMode/:serviceSourceMode', asyncHandler(async (req: Request, res: Response) => {
+peaRouter.post('/:peaId/service/:serviceId/serviceSourceMode/:serviceSourceMode', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
 	try{
-		const service = manager.getService(req.params.peaId, req.params.serviceName);
+		const service = manager.getService(req.params.peaId, req.params.serviceId);
 
 		const serviceSourceMode = req.params.serviceSourceMode as ServiceSourceMode;
 		if(service){
@@ -400,11 +461,11 @@ peaRouter.post('/:peaId/service/:serviceName/serviceSourceMode/:serviceSourceMod
 }));
 
 /**
- * @api {get} /pea/:peaId/service/:serviceName    Get service status
+ * @api {get} /pea/:peaId/service/:serviceId    Get service status
  * @apiName GetService
  * @apiGroup PEAController
- * @apiParam {string} peaId   PEA ID
- * @apiParam {string} serviceId
+ * @apiParam {string} peaId   ID of PEA
+ * @apiParam {string} serviceId ID of service
  */
 peaRouter.get('/:peaId/service/:serviceId', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');

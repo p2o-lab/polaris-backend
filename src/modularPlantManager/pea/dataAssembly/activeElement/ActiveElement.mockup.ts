@@ -24,36 +24,37 @@
  */
 
 import {Namespace, UAObject} from 'node-opcua';
-import {getWQCDataItemOptions, WQCMockup} from '../baseFunction/wqc/WQC.mockup';
-import {getOSLevelDataItemOptions, OSLevelMockup} from '../baseFunction/osLevel/OSLevel.mockup';
-import {DataAssemblyControllerMockup, getDataAssemblyOptions} from '../DataAssemblyController.mockup';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {getWQCDataItemModel, WQCMockup} from '../baseFunction/wqc/WQC.mockup';
+import {getOSLevelDataItemModel, OSLevelMockup} from '../baseFunction/osLevel/OSLevel.mockup';
+import {DataAssemblyMockup, getDataAssemblyModel} from '../DataAssembly.mockup';
+import {DataAssemblyModel, DataItemModel} from '@p2olab/pimad-interface';
 
 
 const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/ActiveElement';
 
-export function getActiveElementDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return ({
-		...getWQCDataItemOptions(namespace, objectBrowseName),
-		...getOSLevelDataItemOptions(namespace, objectBrowseName),
-	});
+export function getActiveElementDataItemModel(namespace: number, objectBrowseName: string): DataItemModel[] {
+	return [
+		...getWQCDataItemModel(namespace, objectBrowseName),
+		...getOSLevelDataItemModel(namespace, objectBrowseName),
+	];
 }
 
 export function getActiveElementOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
-	const options = getDataAssemblyOptions(name, tagName, tagDescription);
+	const options = getDataAssemblyModel(metaModelReference, name, tagName, tagDescription);
 	options.metaModelRef = metaModelReference;
 	options.dataItems = {
 		...options.dataItems,
-		...getActiveElementDataItemOptions(namespace, objectBrowseName)};
+		...getActiveElementDataItemModel(namespace, objectBrowseName)
+	};
 	return options;
 }
 
-export class ActiveElementMockup extends DataAssemblyControllerMockup{
+export class ActiveElementMockup extends DataAssemblyMockup {
 
 	public wqc: WQCMockup;
 	public osLevel: OSLevelMockup;
 
-	constructor(namespace: Namespace, rootNode: UAObject, variableName: string){
+	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
 		super(namespace, rootNode, variableName);
 
 		this.wqc = new WQCMockup(namespace, this.mockupNode, this.name);
@@ -61,14 +62,13 @@ export class ActiveElementMockup extends DataAssemblyControllerMockup{
 	}
 
 
-	public getDataAssemblyOptions(): DataAssemblyOptions {
-		const options = super.getDataAssemblyOptions();
-		options.metaModelRef = metaModelReference;
-		options.dataItems = {
+	public getDataAssemblyModel(metaModelReferenceOption?: string): DataAssemblyModel {
+		const options = super.getDataAssemblyModel(metaModelReferenceOption || metaModelReference);
+		options.dataItems = [
 			...options.dataItems,
-			...this.wqc.getDataItemOptions(),
-			...this.osLevel.getDataItemOptions(),
-		};
+			...this.wqc.getDataItemModel(),
+			...this.osLevel.getDataItemModel(),
+		];
 		return options;
 	}
 }

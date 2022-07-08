@@ -24,48 +24,53 @@
  */
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {getScaleSettingsDataItemOptions, ScaleSettingMockup} from '../../../baseFunction/scaleSettings/ScaleSetting.mockup';
-import {getUnitSettingsDataItemOptions, UnitSettingsMockup} from '../../../baseFunction/unitSettings/UnitSettings.mockup';
-import {getInputElementDataItemOptions, InputElementMockup} from '../../InputElement.mockup';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
-import {getDataAssemblyOptions} from '../../../DataAssemblyController.mockup';
+import {getScaleSettingsDataItemModel, ScaleSettingMockup} from '../../../baseFunction/scaleSettings/ScaleSetting.mockup';
+import {getUnitSettingsDataItemModel, UnitSettingsMockup} from '../../../baseFunction/unitSettings/UnitSettings.mockup';
+import {getInputElementDataItemModel, InputElementMockup} from '../../InputElement.mockup';
+import {DataAssemblyModel, DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+
+import {getDataAssemblyModel} from '../../../DataAssembly.mockup';
+import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../../dataItem/DataItem.mockup';
 
 const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/InputElement/AnaProcessValueIn';
 
-function getAnaProcessValueInSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return ({
-		VExt: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.VExt`,
-			dataType: 'Float'
-		} as OpcUaNodeOptions
-	});
+function getAnaProcessValueInSpecificDataItemModels(namespace: number, objectBrowseName: string): DataItemModel[] {
+	const result: DataItemModel[] = [];
+	const dataItem: DataItemModel = getEmptyDataItemModel();
+	dataItem.name = 'VExt';
+	dataItem.dataType = 'Float';
+	const ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.VExt`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+return result;
 }
 
-export function getAnaProcessValueInDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return ({
-			...getInputElementDataItemOptions(namespace, objectBrowseName),
-			...getScaleSettingsDataItemOptions(namespace, objectBrowseName, 'Ana'),
-			...getUnitSettingsDataItemOptions(namespace, objectBrowseName),
-			...getAnaProcessValueInSpecificDataItemOptions(namespace, objectBrowseName),
-		} as OpcUaNodeOptions
-	);
+export function getAnaProcessValueInDataItemModel(namespace: number, objectBrowseName: string): DataItemModel[] {
+	return [
+			...getInputElementDataItemModel(namespace, objectBrowseName),
+			...getScaleSettingsDataItemModel(namespace, objectBrowseName, 'Ana'),
+			...getUnitSettingsDataItemModel(namespace, objectBrowseName),
+			...getAnaProcessValueInSpecificDataItemModels(namespace, objectBrowseName),
+		];
 }
 
-export function getAnaProcessValueInOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
-	const options = getDataAssemblyOptions(name, tagName, tagDescription);
-	options.metaModelRef = metaModelReference;
+export function getAnaProcessValueInDataAssemblyModel(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): DataAssemblyModel {
+	const options = getDataAssemblyModel(metaModelReference, name, tagName, tagDescription);
 	options.dataItems = {
 		...options.dataItems,
-		...getAnaProcessValueInDataItemOptions(namespace, objectBrowseName)};
+		...getAnaProcessValueInDataItemModel(namespace, objectBrowseName)};
 	return options;
 }
 
 export class AnaProcessValueInMockup extends InputElementMockup{
+	public vExt = 0;
+
 	public scaleSettings: ScaleSettingMockup<'Ana'>;
 	public unit: UnitSettingsMockup;
-	public vExt = 0;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
 		super(namespace, rootNode, variableName);
@@ -97,15 +102,14 @@ export class AnaProcessValueInMockup extends InputElementMockup{
 
 	}
 
-	public getDataAssemblyOptions(): DataAssemblyOptions {
-		const options = super.getDataAssemblyOptions();
-		options.metaModelRef = metaModelReference;
-		options.dataItems = {
+	public getDataAssemblyModel(metaModelReferenceOption?: string): DataAssemblyModel {
+		const options = super.getDataAssemblyModel(metaModelReferenceOption || metaModelReference);
+		options.dataItems = [
 			...options.dataItems,
-			...this.scaleSettings.getDataItemOptions(),
-			...this.unit.getDataItemOptions(),
-			...getAnaProcessValueInSpecificDataItemOptions(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
-		};
+			...this.scaleSettings.getDataItemModel(),
+			...this.unit.getDataItemModel(),
+			...getAnaProcessValueInSpecificDataItemModels(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
+		];
 		return options;
 	}
 }

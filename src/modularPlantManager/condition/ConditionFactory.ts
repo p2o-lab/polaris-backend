@@ -26,7 +26,7 @@
 /**
  * Create Condition
  * @param {ConditionOptions} options    options for creating Condition
- * @param {PEAController[]} peas    PEAs to be used for evaluating pea name in expressions
+ * @param {PEA[]} peas    PEAs to be used for evaluating pea name in expressions
  * @returns Condition
  */
 import {
@@ -40,7 +40,7 @@ import {
 	TimeConditionOptions,
 	VariableConditionOptions
 } from '@p2olab/polaris-interface';
-import {PEAController} from '../pea';
+import {PEA} from '../pea/PEA';
 import {Condition} from './Condition';
 import {ExpressionCondition, TimeCondition} from './custom';
 import {
@@ -50,7 +50,7 @@ import {
 import {ServiceStateCondition, VariableCondition} from './peaCondition';
 
 export class ConditionFactory {
-	public static create(options: ConditionOptions, peaSet?: PEAController[]): Condition {
+	public static create(options: ConditionOptions, peaSet?: PEA[]): Condition {
 
 		const type: ConditionType | undefined = options ? options.type : undefined;
 		if (type === ConditionType.time) {

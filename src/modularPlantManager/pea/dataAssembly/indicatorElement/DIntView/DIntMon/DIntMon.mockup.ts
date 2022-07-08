@@ -24,33 +24,29 @@
  */
 
 import {Namespace, UAObject} from 'node-opcua';
-import {getOSLevelDataItemOptions, OSLevelMockup} from '../../../baseFunction/osLevel/OSLevel.mockup';
-import {
-	getLimitMonitoringDataItemOptions,
-	LimitMonitoringMockup
-} from '../../../baseFunction/limitMonitoring/LimitMonitoring.mockup';
-import {DIntViewMockup, getDIntViewDataItemOptions} from '../DIntView.mockup';
-import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
-import {getDataAssemblyOptions} from '../../../DataAssemblyController.mockup';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {getOSLevelDataItemModel, OSLevelMockup} from '../../../baseFunction/osLevel/OSLevel.mockup';
+import {getLimitMonitoringDataItemModel, LimitMonitoringMockup} from '../../../baseFunction/limitMonitoring/LimitMonitoring.mockup';
+import {DIntViewMockup, getDIntViewDataItemModel} from '../DIntView.mockup';
+
+import {getDataAssemblyModel} from '../../../DataAssembly.mockup';
+import {DataAssemblyModel, DataItemModel} from '@p2olab/pimad-interface';
 
 const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/DIntView/DIntMon';
 
-export function getDIntMonDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return ({
-			...getDIntViewDataItemOptions(namespace, objectBrowseName),
-			...getOSLevelDataItemOptions(namespace, objectBrowseName),
-			...getLimitMonitoringDataItemOptions(namespace, objectBrowseName, 'DInt'),
-		} as OpcUaNodeOptions
-	);
+export function getDIntMonDataItemModel(namespace: number, objectBrowseName: string): DataItemModel[] {
+	return [
+			...getDIntViewDataItemModel(namespace, objectBrowseName),
+			...getOSLevelDataItemModel(namespace, objectBrowseName),
+			...getLimitMonitoringDataItemModel(namespace, objectBrowseName, 'DInt'),
+	];
 }
 
-export function getDIntMonOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
-	const options = getDataAssemblyOptions(name, tagName, tagDescription);
-	options.metaModelRef = metaModelReference;
-	options.dataItems = {
+export function getDIntMonDataAssemblyModel(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): DataAssemblyModel {
+	const options = getDataAssemblyModel(metaModelReference, name, tagName, tagDescription);
+	options.dataItems = [
 		...options.dataItems,
-		...getDIntMonDataItemOptions(namespace, objectBrowseName)};
+		...getDIntMonDataItemModel(namespace, objectBrowseName)
+	];
 	return options;
 }
 
@@ -66,14 +62,13 @@ export class DIntMonMockup extends DIntViewMockup{
 		this.limitMonitoring = new LimitMonitoringMockup(namespace, this.mockupNode, this.name, 'DInt');
 	}
 
-	public getDataAssemblyOptions(): DataAssemblyOptions {
-		const options = super.getDataAssemblyOptions();
-		options.metaModelRef = metaModelReference;
-		options.dataItems = {
+	public getDataAssemblyModel(metaModelReferenceOption?: string): DataAssemblyModel {
+		const options = super.getDataAssemblyModel(metaModelReferenceOption || metaModelReference);
+		options.dataItems = [
 			...options.dataItems,
-			...this.osLevel.getDataItemOptions(),
-			...this.limitMonitoring.getDataItemOptions()
-		};
+			...this.osLevel.getDataItemModel(),
+			...this.limitMonitoring.getDataItemModel()
+		];
 		return options;
 	}
 }

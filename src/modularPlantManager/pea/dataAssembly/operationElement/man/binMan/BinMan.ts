@@ -23,9 +23,11 @@
  * SOFTWARE.
  */
 
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaConnection, DataItem} from '../../../../connection';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {OperationElement, OperationElementRuntime} from '../../OperationElement';
+import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
+import {DataItem} from '../../../dataItem/DataItem';
+import {DataItemFactory, getDataItemModel} from '../../../dataItem/DataItemFactory';
 
 export type BinManRuntime = OperationElementRuntime & {
 	VMan: DataItem<boolean>;
@@ -40,16 +42,16 @@ export class BinMan extends OperationElement {
 
 	public communication!: BinManRuntime;
 
-	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
-		super(options, connection);
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+		super(options, connectionHandler);
 
-		this.communication.VMan = this.createDataItem('VMan', 'boolean', 'write');
-		this.communication.VRbk = this.createDataItem('VRbk', 'boolean');
-		this.communication.VFbk = this.createDataItem('VFbk', 'boolean');
+		this.communication.VMan = DataItemFactory.create(getDataItemModel(options, 'VMan'), connectionHandler);
+		this.communication.VRbk = DataItemFactory.create(getDataItemModel(options, 'VRbk'), connectionHandler);
+		this.communication.VFbk = DataItemFactory.create(getDataItemModel(options, 'VFbk'), connectionHandler);
 
-		this.communication.VOut = this.createDataItem('VOut', 'boolean');
-		this.communication.VState0 = this.createDataItem('VState0', 'string');
-		this.communication.VState1 = this.createDataItem('VState1', 'string');
+		this.communication.VOut = DataItemFactory.create(getDataItemModel(options, 'VOut'), connectionHandler);
+		this.communication.VState0 = DataItemFactory.create(getDataItemModel(options, 'VState0'), connectionHandler);
+		this.communication.VState1 = DataItemFactory.create(getDataItemModel(options, 'VState1'), connectionHandler);
 
 		this.defaultReadDataItem = this.communication.VOut;
 		this.defaultReadDataItemType = 'boolean';

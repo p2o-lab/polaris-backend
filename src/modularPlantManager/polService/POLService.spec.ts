@@ -36,6 +36,7 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
 import {ParameterInterface} from '@p2olab/polaris-interface';
+import {PEA} from '../pea';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -88,12 +89,18 @@ describe('POLService', () => {
 
 		it('should instantiate aggregated service', async() => {
 			const manager = new ModularPlantManager();
-			const peaSet = await manager.createPEAControllerInstance(
-				JSON.parse(fs.readFileSync('assets/peas/achema_demonstrator/peas_achema.json').toString()));
-			expect(peaSet).to.have.lengthOf(3);
+			const peaModelSet = JSON.parse(fs.readFileSync('assets/peas/achema_demonstrator/peas_achema.json').toString());
+			expect(peaModelSet).to.have.lengthOf(3);
 
 			const asJson = parseJson(
 				fs.readFileSync('assets/polService/polService_achema_dose_fill.json', 'utf8'), null, 60);
+
+			const peaSet: PEA[] = [];
+			for (const p of peaModelSet) {
+				const pea = await manager.addPEA(p);
+				peaSet.push(pea);
+			}
+
 
 			const aggregatedService = POLServiceFactory.create(asJson, peaSet);
 

@@ -29,9 +29,9 @@ import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Category} from 'typescript-logging';
 import {catParameter, catScopeItem} from '../../../logging';
-import {DataAssemblyController} from './DataAssemblyController';
-import {PEAController} from '../PEAController';
-import {DataItem} from '../connection';
+import {DataAssembly} from './DataAssembly';
+import {PEA} from '../PEA';
+import {DataItem} from './dataItem/DataItem';
 import {Procedure, Service} from '../serviceSet';
 import {ServiceState} from '../serviceSet/service/enum';
 
@@ -45,17 +45,17 @@ class ScopeItem {
 
 	/** name of variable which should be replaced in value */
 	public readonly name: string;
-	public readonly dataAssembly: DataAssemblyController;
-	public readonly pea: PEAController;
+	public readonly dataAssembly: DataAssembly;
+	public readonly pea: PEA;
 	public readonly variableName: string;
 	public readonly dataItem: DataItem<any>;
 
-	constructor(name: string, pea: PEAController, dataAssembly: DataAssemblyController, variableName = '') {
+	constructor(name: string, pea: PEA, dataAssembly: DataAssembly, variableName = '') {
 		this.name = name;
 		this.pea = pea;
 		this.dataAssembly = dataAssembly;
 		this.variableName = variableName;
-		this.dataItem = this.dataAssembly.communication[variableName as keyof typeof dataAssembly.communication] ||
+		this.dataItem = this.dataAssembly.dataItems[variableName as keyof typeof dataAssembly.dataItems] ||
 			this.dataAssembly.defaultReadDataItem;
 	}
 
@@ -65,7 +65,7 @@ class ScopeItem {
 	 * @param peas PEAs to be searched in for variable names (default: all PEAs in manager)
 	 * @param {string[]} ignoredNames don't try to find scopeItems for this variable names
 	 */
-	public static extractFromExpressionString(expression: string, peas: PEAController[], ignoredNames: string[] = []): { expression: Expression; scopeItems: ScopeItem[] } {
+	public static extractFromExpressionString(expression: string, peas: PEA[], ignoredNames: string[] = []): { expression: Expression; scopeItems: ScopeItem[] } {
 		const parser: Parser = new Parser({allowMemberAccess: true});
 		const value = expression.replace(new RegExp('\\\\.', 'g'), '__')
 			.replace('@', '');
@@ -81,10 +81,10 @@ class ScopeItem {
 	/**
 	 *
 	 * @param {ScopeOptions} item
-	 * @param {PEAController[]} peas to be searched in for variable names (default: all PEAs in manager)
+	 * @param {PEA[]} peas to be searched in for variable names (default: all PEAs in manager)
 	 * @returns {ScopeItem}
 	 */
-	public static extractFromScopeOptions(item: ScopeOptions, peas: PEAController[]): ScopeItem {
+	public static extractFromScopeOptions(item: ScopeOptions, peas: PEA[]): ScopeItem {
 		const pea = peas.find((peaObj) => peaObj.id === item.pea);
 		if (!pea){
 			throw new Error(`PEA "${item.pea}" couldn't be found`);
@@ -100,12 +100,12 @@ class ScopeItem {
 	 * Extract scope item from expression variable
 	 *
 	 * @param {string} variable
-	 * @param {PEAController[]} peas to be searched in for variable names
+	 * @param {PEA[]} peas to be searched in for variable names
 	 * @returns {ScopeItem}
 	 */
-	public static extractFromExpressionVariable(variable: string, peas: PEAController[]): ScopeItem {
+	public static extractFromExpressionVariable(variable: string, peas: PEA[]): ScopeItem {
 		catScopeItem.debug(`Extract ScopeItem from "${variable}"`);
-		let dataAssembly: DataAssemblyController | undefined;
+		let dataAssembly: DataAssembly | undefined;
 		const components = variable.split('.').map((tokenT: string) => tokenT.replace(new RegExp('__', 'g'), '.'));
 		let token = components.shift();
 
@@ -135,18 +135,18 @@ class ScopeItem {
 			}
 			token = components.shift();
 
-			dataAssembly = service.parameters.find((p: DataAssemblyController) => p.name === token);
+			dataAssembly = service.parameters.find((p: DataAssembly) => p.name === token);
 			if (!dataAssembly) {
-				procedure.parameters.find((p: DataAssemblyController) => p.name === token);
+				procedure.parameters.find((p: DataAssembly) => p.name === token);
 			}
 			if (!dataAssembly) {
-				procedure.processValuesIn.find((p: DataAssemblyController) => p.name === token);
+				procedure.processValuesIn.find((p: DataAssembly) => p.name === token);
 			}
 			if (!dataAssembly) {
-				procedure.processValuesOut.find((p: DataAssemblyController) => p.name === token);
+				procedure.processValuesOut.find((p: DataAssembly) => p.name === token);
 			}
 			if (!dataAssembly) {
-				procedure.reportParameters.find((p: DataAssemblyController) => p.name === token);
+				procedure.reportParameters.find((p: DataAssembly) => p.name === token);
 			}
 
 			if (!dataAssembly) {
@@ -159,7 +159,7 @@ class ScopeItem {
 				}
 			}
 		} else {
-			// find DataAssemblyController in ProcessValues
+			// find DataAssembly in ProcessValues
 			if (pea.dataAssemblies.find((v) => v.name === token)) {
 				dataAssembly = pea.dataAssemblies.find((v) => v.name === token);
 			} else {
@@ -174,7 +174,7 @@ class ScopeItem {
 				`in PEA ${pea.id}: ${pea.dataAssemblies.map((v) => v.name)}`);
 		}
 
-		// find DataAssemblyController variable
+		// find DataAssembly variable
 		token = components.shift();
 
 		return new ScopeItem(variable, pea, dataAssembly, token);
@@ -252,7 +252,7 @@ export class ParameterRequest extends (EventEmitter as new() => ParameterRequest
 	 * @param peas PEAs where expression can be matched
 	 *
 	 */
-	constructor(parameterOptions: ParameterOptions, peas: PEAController[] = []) {
+	constructor(parameterOptions: ParameterOptions, peas: PEA[] = []) {
 		super();
 
 		catParameter.info(`Create Parameter: ${JSON.stringify(parameterOptions)}`);

@@ -23,23 +23,35 @@
  * SOFTWARE.
  */
 
-import {DataItem} from '../../../connection';
+import {DataItem} from '../../dataItem/DataItem';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
+import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
+import {DataItemFactory, getDataItemModel} from '../../dataItem/DataItemFactory';
+import StrictEventEmitter from 'strict-event-emitter-types';
+import {EventEmitter} from 'events';
 
 export type ValueLimitationRuntime = {
 	VMin: DataItem<number>;
 	VMax: DataItem<number>;
 };
 
-export class ValueLimitation{
-	private dAController: any;
+/**
+ * Events emitted by [[ValueLimitation]]
+ */
+export interface ValueLimitationEvents {
+	changed: number;
+}
 
-	constructor(dAController: any) {
-		this.dAController = dAController;
-		this.initialize();
-	}
+type ValueLimitationEventEmitter = StrictEventEmitter<EventEmitter, ValueLimitationEvents>;
 
-	private initialize(): void{
-		this.dAController.communication.VMax = this.dAController.createDataItem('VMax', 'number');
-		this.dAController.communication.VMin = this.dAController.createDataItem('VMin', 'number');
+export class ValueLimitation extends (EventEmitter as new () => ValueLimitationEventEmitter) {
+	VMin: DataItem<number>;
+	VMax: DataItem<number>;
+
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+		super();
+
+		this.VMax = DataItemFactory.create(getDataItemModel(options, 'VMax'), connectionHandler);
+		this.VMin = DataItemFactory.create(getDataItemModel(options, 'VMin'), connectionHandler);
 	}
 }

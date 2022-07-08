@@ -26,8 +26,7 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../_utils';
-import {getWQCDataItemOptions, WQCMockup} from './WQC.mockup';
-import {WQCRuntime} from './WQC';
+import {getWQCDataItemModel, WQCMockup} from './WQC.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -49,19 +48,19 @@ describe('WQCMockup', () => {
         });
 
         it('static DataItemOptions', () => {
-            const options = getWQCDataItemOptions(1, 'Test') as WQCRuntime;
+            const options = getWQCDataItemModel(1, 'Test');
 
             expect(Object.keys(options).length).to.equal(1);
-            expect(options.WQC).to.not.be.undefined;
+            expect(options.find(i => i.name === 'WQC')).to.not.be.undefined;
         });
 
         it('dynamic DataItemOptions', () => {
             const mockup = new WQCMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const options = mockup.getDataItemOptions() as WQCRuntime;
+            const options = mockup.getDataItemModel();
 
             expect(Object.keys(options).length).to.equal(1);
-            expect(options.WQC).to.not.be.undefined;
+            expect(options.find(i => i.name === 'WQC')).to.not.be.undefined;
         });
     });
 });

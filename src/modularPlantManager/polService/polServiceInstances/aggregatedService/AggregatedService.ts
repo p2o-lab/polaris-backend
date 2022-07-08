@@ -24,13 +24,14 @@
  */
 
 import {ParameterInterface} from '@p2olab/polaris-interface';
-import {BaseService, PEAController, Service} from '../../../pea';
+import {BaseService, Service} from '../../../pea';
 import {POLService} from '../../POLService';
 import {POLServiceOptions} from '../../POLServiceFactory';
 import {Petrinet, PetrinetOptions} from './petrinet';
 
 import {Category} from 'typescript-logging';
 import {catAggregatedService} from '../../../../logging';
+import {PEA} from '../../../pea/PEA';
 
 export interface AggregatedServiceOptions extends POLServiceOptions {
 	type: 'aggregatedService';
@@ -97,7 +98,7 @@ export class AggregatedService extends POLService {
 	public static type = 'aggregatedService';
 
 	// necessary PEAs
-	public readonly peas: Set<PEAController> = new Set<PEAController>();
+	public readonly peas: Set<PEA> = new Set<PEA>();
 	public readonly services: (Service | POLService)[];
 
 	// dynamic properties
@@ -109,7 +110,7 @@ export class AggregatedService extends POLService {
 
 	private logger: Category;
 
-	constructor(options: AggregatedServiceOptions, peas: PEAController[], virtualServices?: POLService[]) {
+	constructor(options: AggregatedServiceOptions, peas: PEA[], virtualServices?: POLService[]) {
 		super(options.name);
 		this.options = options;
 		this._lastStatusChange = new Date();
@@ -124,8 +125,8 @@ export class AggregatedService extends POLService {
 			if (opts.pea) {
 				const pea = peas.find((p) => p.id === opts.pea);
 				if (pea) {
-					const serviceId = pea.findService(opts.service);
-					result = serviceId? pea.getService(serviceId): undefined;
+					const serviceId = pea.findServiceId(opts.service);
+					result = serviceId? pea.findService(serviceId): undefined;
 				}
 			} else if (virtualServices) {
 				result = virtualServices.find((vs) => vs.name === opts.service);

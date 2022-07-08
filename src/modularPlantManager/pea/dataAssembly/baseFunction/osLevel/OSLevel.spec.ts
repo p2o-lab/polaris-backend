@@ -23,33 +23,31 @@
  * SOFTWARE.
  */
 
-import {OpcUaConnection} from '../../../connection';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {OSLevel} from './OSLevel';
-import {DataAssemblyController} from '../../DataAssemblyController';
 import {MockupServer} from '../../../../_utils';
 import {OSLevelMockup} from './OSLevel.mockup';
-import {getBinMonOptions} from '../../indicatorElement/BinView/BinMon/BinMon.mockup';
+import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
+import {getBinMonDataAssemblyModel} from '../../indicatorElement/BinView/BinMon/BinMon.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('OSLevel', () => {
 
-	let dataAssemblyOptions: DataAssemblyOptions;
+	let options: DataAssemblyModel;
 
 	describe('static', () => {
 
-		dataAssemblyOptions = getBinMonOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
+		options = getBinMonDataAssemblyModel(2, 'Variable', 'Variable');
 		let osLevelObject: OSLevel;
 		let da: any;
 
 		beforeEach(()=>{
-			const emptyOPCUAConnection = new OpcUaConnection();
-			da = new DataAssemblyController(dataAssemblyOptions, emptyOPCUAConnection);
-			osLevelObject = new OSLevel(da);
+			const connectionHandler = new ConnectionHandler();
+			da = new OSLevel(options, connectionHandler);
 		});
 
 		it('should create OSLevel', async () => {
@@ -65,7 +63,7 @@ describe('OSLevel', () => {
 	describe('dynamic', () => {
 
 		let mockupServer: MockupServer;
-		let connection: OpcUaConnection;
+		let connectionHandler: ConnectionHandler;
 
 		beforeEach(async function () {
 			this.timeout(4000);
@@ -73,25 +71,23 @@ describe('OSLevel', () => {
 			await mockupServer.initialize();
 			new OSLevelMockup( mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			await mockupServer.start();
-			connection = new OpcUaConnection();
-			connection.initialize({endpointUrl: mockupServer.endpoint});
-			await connection.connect();
+			connectionHandler = new ConnectionHandler();
+			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			await connectionHandler.connect();
 		});
 
 		afterEach(async function () {
 			this.timeout(4000);
-			await connection.disconnect();
+			await connectionHandler.disconnect();
 			await mockupServer.shutdown();
 		});
 
 		it('should subscribe successfully', async () => {
 
-			const dataAssemblyController = new DataAssemblyController(dataAssemblyOptions, connection) as any;
-			new OSLevel(dataAssemblyController);
-			await dataAssemblyController.subscribe();
-			await connection.startMonitoring();
-			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
-			expect(dataAssemblyController.communication.OSLevel.value).to.equal(0);
+			const dataAssembly = new OSLevel(options, connectionHandler);
+			await connectionHandler.connect();
+			await new Promise((resolve => dataAssembly.on('changed', resolve)));
+			expect(dataAssembly.osLevel).to.equal(0);
 		}).timeout(5000);
 	});
 });

@@ -26,8 +26,7 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../_utils';
-import {getUnitSettingsDataItemOptions, UnitSettingsMockup} from './UnitSettings.mockup';
-import {UnitSettingsRuntime} from './UnitSettings';
+import {getUnitSettingsDataItemModel, UnitSettingsMockup} from './UnitSettings.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -50,19 +49,19 @@ describe('UnitMockup', () => {
         });
 
         it('static DataItemOptions', () => {
-            const options = getUnitSettingsDataItemOptions(1, 'Test') as UnitSettingsRuntime;
+            const options = getUnitSettingsDataItemModel(1, 'Test');
 
             expect(Object.keys(options).length).to.equal(1);
-            expect(options.VUnit).to.not.be.undefined;
+            expect(options.find(i => i.name === 'VUnit')).to.not.be.undefined;
         });
 
         it('dynamic DataItemOptions', () => {
             const mockup = new UnitSettingsMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const options = mockup.getDataItemOptions() as UnitSettingsRuntime;
+            const options = mockup.getDataItemModel();
 
             expect(Object.keys(options).length).to.equal(1);
-            expect(options.VUnit).to.not.be.undefined;
+            expect(options.find(i => i.name === 'VUnit')).to.not.be.undefined;
         });
     });
 });

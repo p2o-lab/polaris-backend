@@ -24,27 +24,27 @@
  */
 
 import {Namespace, UAObject} from 'node-opcua';
-import {getOSLevelDataItemOptions, OSLevelMockup} from '../baseFunction/osLevel/OSLevel.mockup';
-import {DataAssemblyControllerMockup, getDataAssemblyOptions} from '../DataAssemblyController.mockup';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {getOSLevelDataItemModel, OSLevelMockup} from '../baseFunction/osLevel/OSLevel.mockup';
+import {DataAssemblyMockup, getDataAssemblyModel} from '../DataAssembly.mockup';
+import {DataAssemblyModel, DataItemModel} from '@p2olab/pimad-interface';
 
 const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/OperationElement';
 
-export function getOperationElementDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return getOSLevelDataItemOptions(namespace, objectBrowseName);
+export function getOperationElementDataItemModel(namespace: number, objectBrowseName: string): DataItemModel[] {
+	return getOSLevelDataItemModel(namespace, objectBrowseName);
 }
 
-export function getOperationElementOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
-	const options = getDataAssemblyOptions(name, tagName, tagDescription);
-	options.metaModelRef = metaModelReference;
-	options.dataItems = {
+export function getOperationElementDataAssemblyModel(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): DataAssemblyModel {
+	const options = getDataAssemblyModel(metaModelReference, name, tagName, tagDescription);
+	options.dataItems = [
 		...options.dataItems,
-		...getOperationElementDataItemOptions(namespace, objectBrowseName)};
+		...getOperationElementDataItemModel(namespace, objectBrowseName)
+	];
 	return options;
 }
 
-export class OperationElementMockup extends DataAssemblyControllerMockup {
-	protected osLevel: OSLevelMockup;
+export class OperationElementMockup extends DataAssemblyMockup {
+	public osLevel: OSLevelMockup;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string){
 		super(namespace, rootNode, variableName);
@@ -52,13 +52,12 @@ export class OperationElementMockup extends DataAssemblyControllerMockup {
 		this.osLevel = new OSLevelMockup(namespace, this.mockupNode, this.name);
 	}
 
-	public getDataAssemblyOptions(): DataAssemblyOptions {
-		const options = super.getDataAssemblyOptions();
-		options.metaModelRef = metaModelReference;
-		options.dataItems = {
+	public getDataAssemblyModel(metaModelReferenceOption?: string): DataAssemblyModel {
+		const options = super.getDataAssemblyModel(metaModelReferenceOption || metaModelReference);
+		options.dataItems = [
 			...options.dataItems,
-			...this.osLevel.getDataItemOptions()
-		};
+			...this.osLevel.getDataItemModel()
+		];
 		return options;
 	}
 }

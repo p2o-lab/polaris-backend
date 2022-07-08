@@ -23,15 +23,16 @@
  * SOFTWARE.
  */
 
-import {BackendNotification, PEAInterface, PEAOptions, POLServiceInterface, POLServiceOptions, RecipeOptions, ServiceCommand, VariableChange,} from '@p2olab/polaris-interface';
+import {BackendNotification, PEAInterface, POLServiceInterface, POLServiceOptions, RecipeOptions, ServiceCommand, VariableChange,} from '@p2olab/polaris-interface';
 import {catManager, ServiceLogEntry} from '../logging';
-import {ParameterChange, PEAController, Service} from './pea';
+import {ParameterChange, PEA, Service} from './pea';
 import {ServiceState} from './pea/dataAssembly';
 import {POLService, POLServiceFactory} from './polService';
 import {Player, Recipe} from './recipe';
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {PEAProvider} from '../peaProvider/PEAProvider';
+import {PEAModel} from '@p2olab/pimad-interface';
 
 interface ModularPlantManagerEvents {
 	/**
@@ -51,7 +52,7 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 	// loaded recipes
 	public readonly recipes: Recipe[] = [];
 	// instantiated PEAs
-	public readonly peas: PEAController[] = [];
+	public readonly peas: PEA[] = [];
 	
 	// instantiated POL services
 	public readonly polServices: POLService[] = [];
@@ -59,10 +60,6 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 	public readonly player: Player;
 	public variableArchive: VariableChange[] = [];
 	public serviceArchive: ServiceLogEntry[] = [];
-
-	// autoReset determines if a service is automatically reset
-	private _autoReset = true;
-	private _autoResetTimeout = 500; //milliseconds
 
 	constructor() {
 		super();
@@ -83,72 +80,53 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 	}
 
 
-	get autoReset(): boolean {
-		return this._autoReset;
-	}
-
-
-	set autoReset(value: boolean) {
-		catManager.info(`Set AutoReset to ${value}`);
-		this._autoReset = value;
-	}
-
-
 	/**
-	 * get PEAController by identifier
+	 * find PEAController by identifier
 	 * @param identifier
-	 * @returns {PEAController}
+	 * @returns {PEA | undefined}
 	 */
-	public getPEAController(identifier: string): PEAController {
-		const pea = this.peas.find((p) => p.id === identifier);
-		if (!pea) {
-			throw Error(`PEA with id ${identifier} not found`);
-		}
-		return pea;
+	public findPEAController(identifier: string): PEA | undefined {
+		return this.peas.find((p) => p.id === identifier);
 	}
 
 
 	/**
 	 * Create PEAController instance by identifier of type
-	 * @param {string} typeIdentifier
+	 * @param peaModel {PEAModel}
 	 */
-	public async createPEAControllerInstance(typeIdentifier: string): Promise<PEAController[]>{
-		const newPEAs: PEAController[] = [];
-		const peaOptions: PEAOptions = await this.peaProvider.getPEAControllerOptionsByPEAIdentifier(typeIdentifier);
-
-		newPEAs.push(new PEAController(peaOptions));
-		this.peas.push(...newPEAs);
-		this.setPEAEventListeners(newPEAs);
-
-		return newPEAs;
+	public async addPEA(peaModel: PEAModel): Promise<PEA>{
+		const newPEA = new PEA(peaModel);
+		this.peas.push(newPEA);
+		this.setPEAEventListeners(newPEA);
+		return newPEA;
 	}
 
 	/**
 	 * Remove PEAController by given identifier
 	 * @param identifier
 	 */
-	public async removePEAController(identifier: string): Promise<void> {
-		catManager.info(`Remove PEA ${identifier}`);
-		const pea = this.getPEAController(identifier);
+	public async removePEA(identifier: string): Promise<void> {
+		catManager.info(`Delete PEA ${identifier}`);
+		const pea = this.findPEAController(identifier);
+		if (pea){
 
 		if (pea.isProtected()) {
 			throw new Error(`PEA ${identifier} can not be deleted since it is protected.`);
 		}
-
-		catManager.debug(`Disconnecting pea ${identifier} ...`);
 		await pea.disconnectAndUnsubscribe()
 			.catch((err) => catManager.warn('Something wrong while disconnecting from PEAController: ' + err.toString()));
 
 		catManager.debug(`Deleting pea ${identifier} ...`);
 		const index = this.peas.indexOf(pea, 0);
 		if (pea) this.peas.splice(index, 1);
+		}
 	}
 
 	/**
 	 * get all PEAController as json
 	 * @returns {PEAInterface[]}
 	 */
-	public getAllPEAControllers(): PEAInterface[] {
+	public getAllPEAs(): PEAInterface[] {
 		return this.peas.map((pea) => pea.json());
 	}
 
@@ -217,8 +195,8 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 	 * @returns {Service}
 	 */
 	public getService(peaId: string, serviceId: string): Service | undefined {
-		const pea: PEAController = this.getPEAController(peaId);
-		return pea.getService(serviceId);
+		const pea = this.findPEAController(peaId);
+		return pea?.findService(serviceId);
 	}
 
 	public addPOLService(options: POLServiceOptions): void {
@@ -276,44 +254,20 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 	}
 
 	/**
-	 * Perform AutoReset for service (bring it automatically from completed to idle)
-	 * @param {Service} service
-	 */
-	private performAutoReset(service: Service): void {
-		if (this.autoReset) {
-			catManager.info(`Service ${service.connection.id}.${service.name} completed. ` +
-				`Short waiting time (${this._autoResetTimeout}) to AutoReset`);
-			setTimeout(async () => {
-				if (service.connection.isConnected() && service.state === ServiceState.COMPLETED) {
-					catManager.info(`Service ${service.connection.id}.${service.name} completed. ` +
-						'Now perform AutoReset');
-					try {
-						await service.executeCommand(ServiceCommand.reset);
-					} catch (err) {
-						catManager.debug('AutoReset not possible');
-					}
-				}
-			}, this._autoResetTimeout);
-		}
-	}
-
-	/**
 	 * set all event listeners for new PEAControllers
 	 * @param newPEAs - new PEAControllers
 	 * @private
 	 */
-	private setPEAEventListeners(newPEAs: PEAController[]): void {
-		newPEAs.forEach((p: PEAController) => {
-			p
-				.on('connected', () => {
-					this.emit('notify', {message: 'pea', pea: p.json()});
+	private setPEAEventListeners(pea: PEA): void {
+		pea.on('connected', () => {
+					this.emit('notify', {message: 'pea', pea: pea.json()});
 				})
 				.on('disconnected', () => {
 					catManager.info('PEAController disconnected');
-					this.emit('notify', {message: 'pea', pea: p.json()});
+					this.emit('notify', {message: 'pea', pea: pea.json()});
 				})
 				.on('controlEnable', ({service}) => {
-					this.emit('notify', {message: 'service', peaId: p.id, service: service.json()});
+					this.emit('notify', {message: 'service', peaId: pea.id, service: service.json()});
 				})
 				.on('variableChanged', (variableChange: VariableChange) => {
 					this.variableArchive.push(variableChange);
@@ -325,14 +279,14 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 				.on('parameterChanged', (parameterChange: ParameterChange) => {
 					this.emit('notify', {
 						message: 'service',
-						peaId: p.id,
+						peaId: pea.id,
 						service: parameterChange.service.json()
 					});
 				})
 				.on('commandExecuted', (data) => {
 					const logEntry: ServiceLogEntry = {
 						timestampPOL: new Date(),
-						pea: p.id,
+						pea: pea.id,
 						service: data.service.name,
 						procedure: data.procedure.name,
 						command: ServiceCommand[data.command],
@@ -348,7 +302,7 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 				.on('stateChanged', ({service, state}) => {
 					const logEntry: ServiceLogEntry = {
 						timestampPOL: new Date(),
-						pea: p.id,
+						pea: pea.id,
 						service: service.name,
 						state: ServiceState[state]
 					};
@@ -356,25 +310,22 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 					if (this.player.currentRecipeRun) {
 						this.player.currentRecipeRun.serviceLog.push(logEntry);
 					}
-					this.emit('notify', {message: 'service', peaId: p.id, service: service.json()});
+					this.emit('notify', {message: 'service', peaId: pea.id, service: service.json()});
 				})
 				.on('opModeChanged', ({service}) => {
-					this.emit('notify', {message: 'service', peaId: p.id, service: service.json()});
+					this.emit('notify', {message: 'service', peaId: pea.id, service: service.json()});
 				})
 				.on('osLevelChanged', ({service}) => {
 					console.log('OSLevel reached ModularPlantManager');
-					this.emit('notify', {message: 'service', peaId: p.id, service: service.json()});
+					this.emit('notify', {message: 'service', peaId: pea.id, service: service.json()});
 				})
 				.on('serviceSourceModeChanged', ({service}) => {
-					this.emit('notify', {message: 'service', peaId: p.id, service: service.json()});
+					this.emit('notify', {message: 'service', peaId: pea.id, service: service.json()});
 				})
 				.on('procedureChanged', ({service}) => {
-					this.emit('notify', {message: 'service', peaId: p.id, service: service.json()});
-				})
-				.on('serviceCompleted', (service: Service) => {
-					this.performAutoReset(service);
+					this.emit('notify', {message: 'service', peaId: pea.id, service: service.json()});
 				});
-			this.emit('notify', {message: 'pea', pea: p.json()});
-		});
+			this.emit('notify', {message: 'pea', pea: pea.json()});
 	}
+
 }

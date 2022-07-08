@@ -26,10 +26,10 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../../_utils';
-import {BinManMockup, getBinManDataItemOptions, getBinManOptions} from './BinMan.mockup';
-import {OpcUaConnection} from '../../../../connection';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {BinManMockup, getBinManDataAssemblyModel, getBinManDataItemModel} from './BinMan.mockup';
+import {DataItemAccessLevel} from '@p2olab/pimad-interface';
 import {BinManRuntime} from './BinMan';
+import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -52,19 +52,19 @@ describe('BinManMockup', () => {
         });
 
         it('static DataItemOptions', () => {
-            const options = getBinManDataItemOptions(1, 'Test') as BinManRuntime;
+            const options = getBinManDataItemModel(1, 'Test');
             expect(Object.keys(options).length).to.equal(7);
         });
 
-        it('static DataAssemblyOptions', () => {
-            const options = getBinManOptions(1, 'Test') as DataAssemblyOptions;
+        it('static DataAssemblyModel', () => {
+            const options = getBinManDataAssemblyModel(1, 'Test');
             expect(Object.keys(options.dataItems).length).to.equal(9);
         }).timeout(6000);
 
-        it('dynamic DataAssemblyOptions', () => {
+        it('dynamic DataAssemblyModel', () => {
             const mockup = new BinManMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const options = mockup.getDataAssemblyOptions();
+            const options = mockup.getDataAssemblyModel();
 
             expect(Object.keys(options.dataItems).length).to.equal(9);
         }).timeout(6000);
@@ -99,7 +99,7 @@ describe('BinManMockup', () => {
     describe('dynamic', () => {
 
         let mockupServer: MockupServer;
-        let connection: OpcUaConnection;
+        let connectionHandler: ConnectionHandler;
 
         beforeEach(async function () {
             this.timeout(5000);
@@ -107,19 +107,19 @@ describe('BinManMockup', () => {
             await mockupServer.initialize();
             new BinManMockup(mockupServer.nameSpace, mockupServer.rootObject,'Variable');
             await mockupServer.start();
-            connection = new OpcUaConnection();
-            connection.initialize({endpointUrl: mockupServer.endpoint});
-            await connection.connect();
+            connectionHandler= new ConnectionHandler();
+            connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+            await connectionHandler.connect();
         });
 
         afterEach(async () => {
-            await connection.disconnect();
+            await connectionHandler.disconnect();
             await mockupServer.shutdown();
         });
 
         it('set and get VMan', async () => {
-            await connection.writeNode('Variable.VMan', mockupServer.nameSpaceUri, true, 'Boolean');
-            await connection.readNode('Variable.VMan', mockupServer.nameSpaceUri)
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.VMan', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, true);
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.VMan', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(true));
         }).timeout(3000);
     });

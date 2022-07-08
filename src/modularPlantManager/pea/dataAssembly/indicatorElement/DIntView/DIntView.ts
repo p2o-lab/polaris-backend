@@ -23,25 +23,25 @@
  * SOFTWARE.
  */
 
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaConnection} from '../../../connection';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {AnaViewRuntime} from '../AnaView/AnaView';
 import {IndicatorElement} from '../IndicatorElement';
 import {ScaleSettings, UnitSettings} from '../../baseFunction';
-
+import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
+import {DataItemFactory, getDataItemModel} from '../../dataItem/DataItemFactory';
 
 export class DIntView extends IndicatorElement {
 	public readonly communication!: AnaViewRuntime;
 	private readonly scaleSettings: ScaleSettings;
 	private readonly unitSettings: UnitSettings;
 
-	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
-		super(options, connection);
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+		super(options, connectionHandler);
 
-		this.unitSettings = new UnitSettings(this);
-		this.scaleSettings = new ScaleSettings(this);
+		this.unitSettings = new UnitSettings(options, connectionHandler);
+		this.scaleSettings = new ScaleSettings(options, connectionHandler);
 
-		this.communication.V = this.createDataItem('V', 'number');
+		this.communication.V = DataItemFactory.create(getDataItemModel(options, 'V'), connectionHandler);
 
 		this.defaultReadDataItem = this.communication.V;
 		this.defaultReadDataItemType = 'number';

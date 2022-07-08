@@ -24,19 +24,20 @@
  */
 
 import {ConditionType, PEAOptions, ServiceOptions} from '@p2olab/polaris-interface';
-import {PEAController} from '../pea';
+import {PEA} from '../pea/PEA';
 import {ConditionFactory, ExpressionCondition, NotCondition, TimeCondition} from './index';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import * as peaOptions from '../peaOptions.spec.json';
+import * as peaModel from '../peaModel.spec.json';
 import {MockupServer, waitForVariableChange} from '../_utils';
 import {AnaViewMockup} from '../pea/dataAssembly/indicatorElement/AnaView/AnaView.mockup';
-import {OpcUaConnection} from '../pea/connection';
 import {ServiceControlMockup} from '../pea/dataAssembly/serviceControl/ServiceControl.mockup';
-import {ProcedureOptions} from '@p2olab/polaris-interface/dist/service/options';
 import {HealthStateViewMockup} from '../pea/dataAssembly/diagnosticElement/healthStateView/HealthStateView.mockup';
 import {ServiceMtpCommand} from '../pea/serviceSet/service/enum';
+import {ConnectionHandler} from '../pea/connectionHandler/ConnectionHandler';
+import {Endpoint, PEAModel, ProcedureModel, ServiceModel} from '@p2olab/pimad-interface';
+import {getEmptyPEAModel} from '../pea/PEA.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -145,7 +146,7 @@ describe('Condition', () => {
 
 			it('should work with complex expression', async () => {
 
-				const pea = new PEAController(peaOptions as unknown as PEAOptions);
+				const pea = new PEA(peaModel as unknown as PEAModel);
 				const expr = ConditionFactory.create({
 					type: ConditionType.expression,
 					expression: 'sin(a)^2 + cos(a)^2 < 0.5',
@@ -167,8 +168,8 @@ describe('Condition', () => {
 describe('with MockupServer containing a PEAController', () => {
 
 	let mockupServer: MockupServer;
-	let connection: OpcUaConnection;
-	let pea: PEAController;
+	let connectionHandler: ConnectionHandler;
+	let pea: PEA;
 	let anaViewMockup: AnaViewMockup;
 	let serviceControlMockup: ServiceControlMockup;
 	let healthStateViewMockup: HealthStateViewMockup;
@@ -181,33 +182,43 @@ describe('with MockupServer containing a PEAController', () => {
 			serviceControlMockup = new ServiceControlMockup(mockupServer.nameSpace, mockupServer.rootObject,'Service1');
 			healthStateViewMockup = new HealthStateViewMockup(mockupServer.nameSpace, mockupServer.rootObject,'Procedure1');
 			await mockupServer.start();
-			connection = new OpcUaConnection();
-			connection.initialize({endpointUrl: mockupServer.endpoint});
-			await connection.connect();
+			connectionHandler = new ConnectionHandler();
+			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			await connectionHandler.connect();
 
-			const procedureOptions: ProcedureOptions = {
-				dataAssemblies: [healthStateViewMockup.getDataAssemblyOptions()],
-				procedureId: 1,
-				isSelfCompleting: false,
+			const procedureModel: ProcedureModel = {
+				dataSourceIdentifier: '',
+				metaModelRef: 'MTPServiceSUCLib/ServiceProcedure',
+				pimadIdentifier: '',
+				processValuesIn: [], processValuesOut: [], reportValues: [],
+				dataAssembly: healthStateViewMockup.getDataAssemblyModel(),
+				attributes: [
+					{name: 'IsSelfCompleting', dataType: 'Boolean', value: 'false'},
+					{name: 'ProcedureID', dataType: 'UnsignedLong', value: '1'}
+					],
 				name: 'Procedure1',
 				parameters: []
 			};
 
-			const serviceOptions: ServiceOptions = {
-				communication: serviceControlMockup.getDataAssemblyOptions().dataItems as any,
-				name: 'Service1',
-				procedures: [procedureOptions]};
-
-			const peaOptions: PEAOptions = {
-				dataAssemblies: [anaViewMockup.getDataAssemblyOptions()],
-				id: 'PEATestServer',
-				name: 'PEATestServer',
-				opcuaServerUrl: mockupServer.endpoint,
+			const serviceModel: ServiceModel = {
+				attributes: [],
+				dataSourceIdentifier: '',
+				metaModelRef: 'MTPServiceSUCLib/Service',
+				parameters: [],
 				pimadIdentifier: '',
-				services: [serviceOptions]
+				dataAssembly: serviceControlMockup.getDataAssemblyModel(),
+				name: 'Service1',
+				procedures: [procedureModel]
 			};
 
-			pea = new PEAController(peaOptions);
+			const peaModel: PEAModel = getEmptyPEAModel();
+			peaModel.name = 'PEATestServer';
+			peaModel.pimadIdentifier = 'PEATestServer';
+			peaModel.endpoint.push({defaultValue: mockupServer.endpoint, value: mockupServer.endpoint} as Endpoint);
+			peaModel.dataAssemblies.push(anaViewMockup.getDataAssemblyModel());
+			peaModel.services.push(serviceModel);
+
+			pea = new PEA(peaModel);
 			await pea.connectAndSubscribe();
 		});
 

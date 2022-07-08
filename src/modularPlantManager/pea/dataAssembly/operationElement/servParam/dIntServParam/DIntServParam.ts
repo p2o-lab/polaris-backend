@@ -23,8 +23,8 @@
  * SOFTWARE.
  */
 
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaConnection, DataItem} from '../../../../connection';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
+import {DataItem} from '../../../dataItem/DataItem';
 import {ServParam, ServParamRuntime} from '../ServParam';
 import {
 	ScaleSettings,
@@ -34,6 +34,8 @@ import {
 	ValueLimitation,
 	ValueLimitationRuntime
 } from '../../../baseFunction';
+import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
+import {DataItemFactory, getDataItemModel} from '../../../dataItem/DataItemFactory';
 
 export type DIntServParamRuntime = ServParamRuntime & ScaleSettingsRuntime & UnitSettingsRuntime & ValueLimitationRuntime &{
 	VExt: DataItem<number>;
@@ -50,25 +52,20 @@ export class DIntServParam extends ServParam {
 	public readonly unitSettings: UnitSettings;
 	public readonly valueLimitation: ValueLimitation;
 
-	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
-		super(options, connection);
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+		super(options, connectionHandler);
 
-		this.scaleSettings = new ScaleSettings(this);
-		this.unitSettings = new UnitSettings(this);
-		this.valueLimitation = new ValueLimitation(this);
+		this.scaleSettings = new ScaleSettings(options, connectionHandler);
+		this.unitSettings = new UnitSettings(options, connectionHandler);
+		this.valueLimitation = new ValueLimitation(options, connectionHandler);
 
-		this.communication.VExt = this.createDataItem('VExt', 'number', 'write');
-		this.communication.VOp = this.createDataItem('VOp', 'number', 'write');
-		this.communication.VInt = this.createDataItem('VInt', 'number');
-		this.communication.VReq = this.createDataItem('VReq','number');
-		this.communication.VOut = this.createDataItem('VOut', 'number');
-		this.communication.VFbk = this.createDataItem('VFbk', 'number');
+		this.communication.VExt = DataItemFactory.create(getDataItemModel(options, 'VExt'), connectionHandler);
+		this.communication.VOp = DataItemFactory.create(getDataItemModel(options, 'VOp'), connectionHandler);
+		this.communication.VInt = DataItemFactory.create(getDataItemModel(options, 'VInt'), connectionHandler);
+		this.communication.VReq = DataItemFactory.create(getDataItemModel(options, 'VReq'), connectionHandler);
+		this.communication.VOut = DataItemFactory.create(getDataItemModel(options, 'VOut'), connectionHandler);
+		this.communication.VFbk = DataItemFactory.create(getDataItemModel(options, 'VFbk'), connectionHandler);
 
-		this.communication.VSclMin = this.createDataItem('VSclMin', 'number');
-		this.communication.VSclMax = this.createDataItem('VSclMax', 'number');
-		this.communication.VUnit = this.createDataItem('VUnit', 'number');
-		this.communication.VMin = this.createDataItem('VMin', 'number');
-		this.communication.VMax = this.createDataItem('VMax', 'number');
 
 		this.defaultReadDataItem = this.communication.VOut;
 		this.defaultReadDataItemType = 'number';

@@ -24,42 +24,40 @@
  */
 
 import {Namespace, UAObject} from 'node-opcua';
-import {getWQCDataItemOptions, WQCMockup} from '../baseFunction/wqc/WQC.mockup';
-import {DataAssemblyControllerMockup, getDataAssemblyOptions} from '../DataAssemblyController.mockup';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {getWQCDataItemModel, WQCMockup} from '../baseFunction/wqc/WQC.mockup';
+import {DataAssemblyMockup, getDataAssemblyModel} from '../DataAssembly.mockup';
+import {DataAssemblyModel, DataItemModel} from '@p2olab/pimad-interface';
 
 const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/DiagnosticElement';
 
-export function getDiagnosticElementDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return getWQCDataItemOptions(namespace, objectBrowseName);
+export function getDiagnosticElementDataItemModel(namespace: number, objectBrowseName: string): DataItemModel[] {
+	return getWQCDataItemModel(namespace, objectBrowseName);
 }
 
-export function getDiagnosticElementOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
-	const options = getDataAssemblyOptions(name, tagName, tagDescription);
-	options.metaModelRef = metaModelReference;
-	options.dataItems = {
+export function getDiagnosticElementDataAssemblyModel(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): DataAssemblyModel {
+	const options = getDataAssemblyModel(metaModelReference, name, tagName, tagDescription);
+	options.dataItems = [
 		...options.dataItems,
-		...getDiagnosticElementDataItemOptions(namespace, objectBrowseName)
-	};
+		...getDiagnosticElementDataItemModel(namespace, objectBrowseName)
+	];
 	return options;
 }
 
-export class DiagnosticElementMockup extends DataAssemblyControllerMockup {
+export class DiagnosticElementMockup extends DataAssemblyMockup {
 
-	public readonly wqc: WQCMockup;
+	public wqc: WQCMockup;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string){
 		super(namespace, rootNode, variableName);
 		this.wqc = new WQCMockup(namespace, this.mockupNode, this.name);
 	}
 
-	public getDataAssemblyOptions(): DataAssemblyOptions {
-		const options = super.getDataAssemblyOptions();
-		options.metaModelRef = metaModelReference;
-		options.dataItems = {
+	public getDataAssemblyModel(metaModelReferenceOption?: string): DataAssemblyModel {
+		const options = super.getDataAssemblyModel(metaModelReferenceOption || metaModelReference);
+		options.dataItems = [
 			...options.dataItems,
-			...this.wqc.getDataItemOptions()
-		};
+			...this.wqc.getDataItemModel()
+		];
 		return options;
 	}
 }

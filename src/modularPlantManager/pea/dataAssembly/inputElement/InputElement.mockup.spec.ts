@@ -25,10 +25,9 @@
  
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {getInputElementDataItemOptions, getInputElementOptions, InputElementMockup} from './InputElement.mockup';
+import {getInputElementDataAssemblyModel, getInputElementDataItemModel, InputElementMockup} from './InputElement.mockup';
 import {MockupServer} from '../../../_utils';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {InputElementRuntime} from './InputElement';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -51,19 +50,19 @@ describe('InputElementMockup', () => {
         });
 
         it('static DataItemOptions', () => {
-            const options = getInputElementDataItemOptions(1, 'Test') as InputElementRuntime;
+            const options = getInputElementDataItemModel(1, 'Test');
             expect(Object.keys(options).length).to.equal(1);
         });
 
-        it('static DataAssemblyOptions', () => {
-            const options = getInputElementOptions(1, 'Test') as DataAssemblyOptions;
+        it('static DataAssemblyModel', () => {
+            const options = getInputElementDataAssemblyModel(1, 'Test');
             expect(Object.keys(options.dataItems).length).to.equal(3);
         });
 
-        it('dynamic DataAssemblyOptions', () => {
+        it('dynamic DataAssemblyModel', () => {
             const mockup = new InputElementMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const options = mockup.getDataAssemblyOptions();
+            const options = mockup.getDataAssemblyModel();
 
             expect(Object.keys(options.dataItems).length).to.equal(3);
         });

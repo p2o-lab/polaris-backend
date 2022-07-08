@@ -26,9 +26,9 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../_utils';
-import {getOSLevelDataItemOptions, OSLevelMockup} from './OSLevel.mockup';
-import {OSLevelRuntime} from './OSLevel';
-import {OpcUaConnection} from '../../../connection';
+import {getOSLevelDataItemModel, OSLevelMockup} from './OSLevel.mockup';
+import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
+import {DataItemAccessLevel} from '@p2olab/pimad-interface';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -52,18 +52,18 @@ describe('OSLevelMockup', () => {
         });
 
         it('static OSLevel DataItemOptions',  () => {
-            const options = getOSLevelDataItemOptions(1, 'Test') as OSLevelRuntime;
+            const options = getOSLevelDataItemModel(1, 'Test');
 
             expect(Object.keys(options).length).to.equal(1);
-            expect(options.OSLevel).to.not.be.undefined;
+            expect(options.find(i => i.name === 'OSLevel')).to.not.be.undefined;
         });
 
         it('dynamic OSLevel DataItemOptions',  () => {
             const mockup = new OSLevelMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
-            const options = mockup.getDataItemOptions() as OSLevelRuntime;
+            const options = mockup.getDataItemModel();
 
             expect(Object.keys(options).length).to.equal(1);
-            expect(options.OSLevel).to.not.be.undefined;
+            expect(options.find(i => i.name === 'OSLevel')).to.not.be.undefined;
         });
     });
 
@@ -71,7 +71,7 @@ describe('OSLevelMockup', () => {
 
         let mockupServer: MockupServer;
         let mockup: OSLevelMockup;
-        let connection: OpcUaConnection;
+        let connectionHandler: ConnectionHandler;
 
         beforeEach(async function () {
             this.timeout(10000);
@@ -80,21 +80,21 @@ describe('OSLevelMockup', () => {
             mockup = new OSLevelMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
             await mockupServer.start();
-            connection = new OpcUaConnection();
-            connection.initialize({endpointUrl: mockupServer.endpoint});
-            await connection.connect();
+            connectionHandler= new ConnectionHandler();
+            connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+            await connectionHandler.connect();
         });
         afterEach(async () => {
-            await connection.disconnect();
+            await connectionHandler.disconnect();
             await mockupServer.shutdown();
         });
 
         it('set and get OsLevel', async () => {
             mockup.osLevel = 12;
-            await connection.readNode('Variable.OSLevel', mockupServer.nameSpaceUri)
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.OSLevel', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(12));
-            await connection.writeNode('Variable.OSLevel', mockupServer.nameSpaceUri, 1, 'Byte');
-            await connection.readNode('Variable.OSLevel', mockupServer.nameSpaceUri)
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.OSLevel', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, 1);
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.OSLevel', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(1));
             expect(mockup.osLevel).to.equal(1);
         }).timeout(2000);

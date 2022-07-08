@@ -23,15 +23,13 @@
  * SOFTWARE.
  */
 
-import {OperationMode, ParameterOptions, PEAOptions, ServiceCommand, ServiceControlOptions, ServiceOptions, ServiceSourceMode,} from '@p2olab/polaris-interface';
-import {OpcUaConnection} from '../../connection';
-import {PEAController, Service} from '../../index';
+import {OperationMode, ParameterOptions, ServiceCommand, ServiceControlOptions, ServiceSourceMode,} from '@p2olab/polaris-interface';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {ServiceState} from './enum';
-import * as peaOptions from '../../../peaOptions.spec.json';
-import * as peaOptionsServices from '../../../peaOptions_testservice.spec.json';
+import * as peaModelFileContent from '../../../peaModel.spec.json';
+import * as peaModelServices from '../../../peaModel_testservice.spec.json';
 
 import {MockupServer} from '../../../_utils';
 import {AnaViewMockup} from '../../dataAssembly/indicatorElement/AnaView/AnaView.mockup';
@@ -39,52 +37,58 @@ import {ServiceControlMockup} from '../../dataAssembly/serviceControl/ServiceCon
 import {AnaServParamMockup} from '../../dataAssembly/operationElement/servParam/anaServParam/AnaServParam.mockup';
 import {AnaServParam} from '../../dataAssembly';
 import {AnaProcessValueInMockup} from '../../dataAssembly/inputElement/processValueIn/AnaProcessValueIn/AnaProcessValueIn.mockup';
+import {ConnectionHandler} from '../../connectionHandler/ConnectionHandler';
+import {Service} from './Service';
+import {PEA} from '../../PEA';
+import {DataAssemblyModel, PEAModel, ServiceModel} from '@p2olab/pimad-interface';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
+const peaModel = peaModelFileContent as unknown as PEAModel;
+
 describe('Service', () => {
-	const opcUAConnection = new OpcUaConnection();
+	const connectionHandler = new ConnectionHandler();
 
 	context('constructor', () => {
 		it('should fail with missing options', () => {
-			expect(() => new Service({} as ServiceOptions, opcUAConnection, '')).to.throw('No service options provided.');
+			expect(() => new Service({} as ServiceModel, connectionHandler, '')).to.throw('No service options provided.');
 		});
 
 		it('should fail with missing name', () => {
 			expect(() => new Service(
-				{name: '', parameters: [], communication: {} as ServiceControlOptions, procedures: []},
-				opcUAConnection, '')
+				{name: '', parameters: [], dataAssembly: {} as DataAssemblyModel, attributes: [], dataSourceIdentifier: '', metaModelRef: '', pimadIdentifier: '', procedures: []},
+				connectionHandler, '')
 			).to.throw('No service name provided');
 		});
 
 		it('should fail with missing PEAController', () => {
 			expect(() => new Service(
-				{name: 'test', parameters: [], communication: {} as ServiceControlOptions, procedures: []},
-				opcUAConnection, '')
-			).to.throw('Creating DataAssemblyController Error: No Communication dataAssemblies found in DataAssemblyOptions');
+				{name: '', parameters: [], dataAssembly: {} as DataAssemblyModel, attributes: [], dataSourceIdentifier: '', metaModelRef: '', pimadIdentifier: '', procedures: []},
+				connectionHandler, '')
+			).to.throw('Creating DataAssembly Error: No Communication dataAssemblies found in DataAssemblyModel');
 		});
 
 	});
 
 	it('should reject command if not connected', async () => {
-		const pea = new PEAController(peaOptions as unknown as PEAOptions);
+		const pea = new PEA(peaModel as unknown as PEAModel);
 		const service = pea.services[0];
-		await expect(service.executeCommand(ServiceCommand.start)).to.be.rejectedWith('Can not write node since OPC UA connection is not established');
+		await expect(service.executeCommand(ServiceCommand.start)).to.be.rejectedWith('Can not write node since OPC UA connectionHandleris not established');
 	});
 
 	it('should create service from PEATestServer json', () => {
-		const serviceOptions = peaOptions.services[0];
-		const service = new Service(serviceOptions as unknown as ServiceOptions, opcUAConnection, 'root');
+		const serviceModel = peaModel.services[0];
+		const service = new Service(serviceModel, connectionHandler, 'root');
 		expect(service.name).to.equal('Trigonometry');
 	});
 
 	context('get procedure', () => {
-		let pea: PEAController;
+		let pea: PEA;
 		let service: Service;
 
 		before(() => {
-			pea = new PEAController(peaOptions as unknown as PEAOptions);
+			pea = new PEA(peaModel as unknown as PEAModel);
 			service = pea.services[0];
 		});
 
@@ -106,7 +110,7 @@ describe('Service', () => {
 	context('dynamic test', () => {
 
 		let service: Service;
-		let pea: PEAController;
+		let pea: PEA;
 		let mockupServer: MockupServer;
 
 		beforeEach(async function () {
@@ -118,7 +122,7 @@ describe('Service', () => {
 			new ServiceControlMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Trigonometry');
 			await mockupServer.start();
 
-			pea = new PEAController(peaOptions as unknown as PEAOptions);
+			pea = new PEA(peaModel as unknown as PEAModel);
 			service = pea.services[0];
 			await pea.connectAndSubscribe();
 		});
@@ -258,15 +262,17 @@ describe('Service', () => {
 			new ServiceControlMockup(mockupServer.nameSpace, mockupServer.rootObject, 'TestService');
 
 			await mockupServer.start();
-			const pea = new PEAController(peaOptionsServices as unknown as PEAOptions);
+			const pea = new PEA(peaModelServices as unknown as PEAModel);
 			await pea.connectAndSubscribe();
 
-			const serviceId = pea.findService('TestService');
+			const serviceId = pea.findServiceId('TestService');
 			if (!serviceId) {
+				throw new Error('ServiceId for service not found.');
+			}
+			const service = pea.findService(serviceId);
+			if (!service) {
 				throw new Error('Service not found.');
 			}
-			const service = pea.getService(serviceId);
-
 			const procedure = service.findProcedure(1);
 			if (procedure) {
 				await service.requestProcedureOperator(procedure.procedureId);

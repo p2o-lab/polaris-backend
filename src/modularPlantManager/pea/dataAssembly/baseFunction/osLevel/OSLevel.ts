@@ -23,10 +23,13 @@
  * SOFTWARE.
  */
 
-import {DataItem} from '../../../connection';
 import {BaseServiceEvents} from '../../../serviceSet';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {EventEmitter} from 'events';
+import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
+import {DataItemFactory, getDataItemModel} from '../../dataItem/DataItemFactory';
+import {DataItem} from '../../dataItem/DataItem';
 
 export interface OSLevelRuntime {
 	OSLevel: DataItem<number>;
@@ -35,31 +38,29 @@ export interface OSLevelRuntime {
 /**
  * Events emitted by [[OSLevel]]
  */
-export interface OSLevelEvents extends BaseServiceEvents {
+export interface OSLevelEvents {
 	changed: number;
 }
 
 type OSLevelEmitter = StrictEventEmitter<EventEmitter, OSLevelEvents>;
 
 export class OSLevel extends (EventEmitter as new()=> OSLevelEmitter){
-	private dAController: any;
+	private _osLevel: DataItem<number>;
 
-	constructor(dAController: any) {
+	constructor(options: DataAssemblyModel, connectionHandler?: ConnectionHandler) {
 		super();
-		this.dAController = dAController;
+		this._osLevel = DataItemFactory.create(getDataItemModel(options, 'OSLevel'), connectionHandler);
 
-		this.dAController.communication.OSLevel = this.dAController.createDataItem('OSLevel', 'number', 'write');
-
-		this.dAController.communication.OSLevel.on('changed', () => {
-			this.emit('changed', this.dAController.communication.OSLevel.value);
+		this._osLevel.on('changed', () => {
+			this.emit('changed', this.osLevel);
 		});
 	}
 
 	get osLevel(): number {
-		return this.dAController.communication.OSLevel.value;
+		return this._osLevel.value;
 	}
 
 	set osLevel(value: number) {
-		if (Number.isInteger(value) && value >= 0) this.dAController.communication.OSLevel.write(value);
+		if (Number.isInteger(value) && value >= 0) this._osLevel.write(value).then();
 	}
 }

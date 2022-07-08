@@ -26,8 +26,8 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../_utils';
-import {getHealthStateViewDataItemOptions, getHealthStateViewOptions, HealthStateViewMockup} from './HealthStateView.mockup';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {getHealthStateViewDataAssemblyModel, getHealthStateViewDataItemModel, HealthStateViewMockup} from './HealthStateView.mockup';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {HealthStateViewRuntime} from './HealthStateView';
 
 chai.use(chaiAsPromised);
@@ -51,19 +51,19 @@ describe('HealthStateViewMockup', () => {
         });
 
         it('static DataItemOptions', () => {
-            const options = getHealthStateViewDataItemOptions(1, 'Test') as HealthStateViewRuntime;
+            const options = getHealthStateViewDataItemModel(1, 'Test');
             expect(Object.keys(options).length).to.equal(1);
         });
 
-        it('static DataAssemblyOptions', () => {
-            const options = getHealthStateViewOptions(1, 'Test') as DataAssemblyOptions;
+        it('static DataAssemblyModel', () => {
+            const options = getHealthStateViewDataAssemblyModel(1, 'Test');
             expect(Object.keys(options.dataItems).length).to.equal(3);
         });
 
-        it('dynamic DataAssemblyOptions', () => {
+        it('dynamic DataAssemblyModel', () => {
             const mockup = new HealthStateViewMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const options = mockup.getDataAssemblyOptions();
+            const options = mockup.getDataAssemblyModel();
 
             expect(Object.keys(options.dataItems).length).to.equal(3);
         });

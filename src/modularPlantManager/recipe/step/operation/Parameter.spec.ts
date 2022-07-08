@@ -24,7 +24,7 @@
  */
 
 /* eslint-disable */
-import {PEAController, Service} from '../../../pea';
+import {PEA, Service} from '../../../pea';
 import {Parameter} from '../../index';
 
 import {expect} from 'chai';

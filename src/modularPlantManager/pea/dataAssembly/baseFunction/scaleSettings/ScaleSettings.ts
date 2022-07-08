@@ -23,24 +23,39 @@
  * SOFTWARE.
  */
 
-import {DataItem} from '../../../connection';
-import {BaseDataAssemblyRuntime} from '../../DataAssemblyController';
+import {DataItem} from '../../dataItem/DataItem';
+import {DataAssemblyDataItems} from '../../DataAssembly';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
+import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
+import {DataItemFactory, getDataItemModel} from '../../dataItem/DataItemFactory';
+import StrictEventEmitter from 'strict-event-emitter-types';
+import {EventEmitter} from 'events';
 
-export interface ScaleSettingsRuntime extends BaseDataAssemblyRuntime {
+export interface ScaleSettingsRuntime extends DataAssemblyDataItems {
 	VSclMin: DataItem<number>;
 	VSclMax: DataItem<number>;
 }
 
-export class ScaleSettings {
-		private dAController: any;
+/**
+ * Events emitted by [[ScaleSettings]]
+ */
+export interface ScaleSettingsEvents {
+	changed: {
+		ScaleSettingsOp: boolean;
+		ScaleSettingsAut: boolean;
+	};
+}
 
-		constructor(dAController: any) {
-			this.dAController = dAController;
-			this.initialize();
-		}
+type ScaleSettingsEmitter = StrictEventEmitter<EventEmitter, ScaleSettingsEvents>;
 
-		private initialize(): void{
-			this.dAController.communication.VSclMax = this.dAController.createDataItem('VSclMax', 'number');
-			this.dAController.communication.VSclMin = this.dAController.createDataItem('VSclMin', 'number');
+export class ScaleSettings extends (EventEmitter as new () => ScaleSettingsEmitter) {
+	VSclMin: DataItem<number>;
+	VSclMax: DataItem<number>;
+
+		constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+			super();
+
+			this.VSclMax = DataItemFactory.create(getDataItemModel(options, 'VSclMax'), connectionHandler);
+			this.VSclMin = DataItemFactory.create(getDataItemModel(options, 'VSclMin'), connectionHandler);
 		}
 }

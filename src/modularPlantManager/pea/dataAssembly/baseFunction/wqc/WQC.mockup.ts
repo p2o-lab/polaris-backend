@@ -24,27 +24,37 @@
  */
 
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
-import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
+import {DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../dataItem/DataItem.mockup';
 
 
-function getWQCSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
-  return ({
-    WQC: {
-      namespaceIndex: `${namespace}`,
-      nodeId: `${objectBrowseName}.WQC`,
-      dataType: 'Byte'
-    } as OpcUaNodeOptions
-  });
+
+function getWQCSpecificDataItemModels(namespace: number, objectBrowseName: string): DataItemModel[] {
+
+  const result: DataItemModel[] = [];
+  const dataItem: DataItemModel = getEmptyDataItemModel();
+  dataItem.name = 'WQC';
+  dataItem.dataType = 'Byte';
+  const ciOptions = getEmptyCIDataModel();
+  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.identifier = `${objectBrowseName}.WQC`;
+  ciOptions.nodeId.namespaceIndex = `${namespace}`;
+  dataItem.cIData = ciOptions;
+  result.push(dataItem);
+
+  return result;
 }
 
 
-export function getWQCDataItemOptions(namespace: number, objectBrowseName: string): object {
-  return getWQCSpecificDataItemOptions(namespace, objectBrowseName);
+export function getWQCDataItemModel(namespace: number, objectBrowseName: string): DataItemModel[] {
+  return getWQCSpecificDataItemModels(namespace, objectBrowseName);
 }
 
 
 export class WQCMockup {
-  protected wqc = 0;
+
+  public wqc = 0;
+
   protected mockupNode: UAObject;
 
   constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
@@ -64,8 +74,8 @@ export class WQCMockup {
       });
     }
 
-  public getDataItemOptions(): object {
-    return getWQCDataItemOptions(
+  public getDataItemModel(): DataItemModel[] {
+    return getWQCDataItemModel(
         this.mockupNode.namespaceIndex,
         this.mockupNode.browseName.name as string);
   }

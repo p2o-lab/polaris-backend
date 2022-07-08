@@ -38,19 +38,19 @@
 !include valueLimitation/ValueLimitation.puml
 !include wqc/WQC.puml
 
-abstract class DataAssemblyController
+abstract class DataAssembly
 
-DataAssemblyController "0..1" o-- FeedbackMonitoring
-DataAssemblyController "0..1" o-- Interlock
-DataAssemblyController "0..1" o-- LimitMonitoring
-DataAssemblyController "0..1" o-- OpMode
-DataAssemblyController "0..1" o-- OSLevel
-DataAssemblyController "0..1" o-- Reset
-DataAssemblyController "0..1" o-- ScaleSettings
-DataAssemblyController "0..1" o-- ServiceSourceModeController
-DataAssemblyController "0..1" o-- SourceModeController
-DataAssemblyController "0..1" o-- UnitSettings
-DataAssemblyController "0..1" o-- ValueLimitation
-DataAssemblyController "0..1" o-- WQC
+DataAssembly "0..1" o-- FeedbackMonitoring
+DataAssembly "0..1" o-- Interlock
+DataAssembly "0..1" o-- LimitMonitoring
+DataAssembly "0..1" o-- OpMode
+DataAssembly "0..1" o-- OSLevel
+DataAssembly "0..1" o-- Reset
+DataAssembly "0..1" o-- ScaleSettings
+DataAssembly "0..1" o-- ServiceSourceModeController
+DataAssembly "0..1" o-- SourceModeController
+DataAssembly "0..1" o-- UnitSettings
+DataAssembly "0..1" o-- ValueLimitation
+DataAssembly "0..1" o-- WQC
 
 @enduml

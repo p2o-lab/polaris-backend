@@ -23,10 +23,12 @@
  * SOFTWARE.
  */
 
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaConnection, DataItem} from '../../../../connection';
+import {DataItem} from '../../../dataItem/DataItem';
 import {ScaleSettings, ScaleSettingsRuntime, UnitSettingsRuntime, UnitSettings} from '../../../baseFunction';
 import {InputElement, InputElementRuntime} from '../../';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
+import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
+import {DataItemFactory, getDataItemModel} from '../../../dataItem/DataItemFactory';
 
 export type AnaProcessValueInRuntime = InputElementRuntime & UnitSettingsRuntime & ScaleSettingsRuntime & {
 	VExt: DataItem<number>;
@@ -37,13 +39,13 @@ export class AnaProcessValueIn extends InputElement {
 	private readonly scaleSettings: ScaleSettings;
 	private readonly unitSettings: UnitSettings;
 
-	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
-		super(options, connection);
-		this.communication.VExt = this.createDataItem('VExt', 'number', 'write');
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+		super(options, connectionHandler);
+		this.communication.VExt = DataItemFactory.create<number>(getDataItemModel(options, 'VExt'), connectionHandler);
 
 		// TODO: These should be writable therefore new Object required
-		this.unitSettings = new UnitSettings(this);
-		this.scaleSettings = new ScaleSettings(this);
+		this.unitSettings = new UnitSettings(options, connectionHandler);
+		this.scaleSettings = new ScaleSettings(options, connectionHandler);
 
 		this.defaultReadDataItem = this.communication.VExt;
 		this.defaultReadDataItemType = 'number';

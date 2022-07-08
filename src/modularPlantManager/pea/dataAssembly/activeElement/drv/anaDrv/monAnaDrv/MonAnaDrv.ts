@@ -23,10 +23,12 @@
  * SOFTWARE.
  */
 
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaConnection, DataItem} from '../../../../../connection';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
+import {DataItem} from '../../../../dataItem/DataItem';
 import {FeedbackMonitoring, FeedbackMonitoringRuntime} from '../../../../baseFunction';
 import {AnaDrv, AnaDrvRuntime} from '../AnaDrv';
+import {DataItemFactory, getDataItemModel} from '../../../../dataItem/DataItemFactory';
+import {ConnectionHandler} from '../../../../../connectionHandler/ConnectionHandler';
 
 export type MonAnaDrvRuntime = AnaDrvRuntime & FeedbackMonitoringRuntime & {
 	RpmErr: DataItem<number>;
@@ -43,19 +45,19 @@ export class MonAnaDrv extends AnaDrv {
 	public readonly communication!: MonAnaDrvRuntime;
 	public readonly feedbackMonitoring: FeedbackMonitoring;
 
-	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
-		super(options, connection);
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+		super(options, connectionHandler);
 
-		this.feedbackMonitoring = new FeedbackMonitoring(this);
+		this.feedbackMonitoring = new FeedbackMonitoring(options, connectionHandler);
 
-		this.communication.RpmErr = this.createDataItem('RpmErr', 'number');
+		this.communication.RpmErr = DataItemFactory.create(getDataItemModel(options, 'RpmErr'), connectionHandler);
 
-		this.communication.RpmAHEn = this.createDataItem('RpmAHEn', 'boolean');
-		this.communication.RpmAHLim = this.createDataItem('RpmAHLim', 'number', 'write');
-		this.communication.RpmAHAct = this.createDataItem('RpmAHAct', 'boolean');
+		this.communication.RpmAHEn = DataItemFactory.create(getDataItemModel(options, 'RpmAHEn'), connectionHandler);
+		this.communication.RpmAHLim = DataItemFactory.create(getDataItemModel(options, 'RpmAHLim'), connectionHandler);
+		this.communication.RpmAHAct = DataItemFactory.create(getDataItemModel(options, 'RpmAHAct'), connectionHandler);
 
-		this.communication.RpmALEn = this.createDataItem('RpmALEn', 'boolean');
-		this.communication.RpmALLim = this.createDataItem('RpmALLim', 'number', 'write');
-		this.communication.RpmALAct = this.createDataItem('RpmALAct', 'boolean');
+		this.communication.RpmALEn = DataItemFactory.create(getDataItemModel(options, 'RpmALEn'), connectionHandler);
+		this.communication.RpmALLim = DataItemFactory.create(getDataItemModel(options, 'RpmALLim'), connectionHandler);
+		this.communication.RpmALAct = DataItemFactory.create(getDataItemModel(options, 'RpmALAct'), connectionHandler);
 	}
 }

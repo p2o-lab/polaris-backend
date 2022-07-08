@@ -24,131 +24,228 @@
  */
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {OpcUaNodeOptions} from '../../../connection/DataItemFactory';
+import {DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../dataItem/DataItem.mockup';
 
-function getLimitMonitoringSpecificDataItemOptions<T extends 'Ana' | 'DInt'>(namespace: number, objectBrowseName: string, type: T): object {
-  return ({
-    VAHEn: {
-      namespaceIndex: `${namespace}`,
-      nodeId: `${objectBrowseName}.VAHEn`,
-      dataType: 'Boolean'
-    } as OpcUaNodeOptions,
-    VAHLim: {
-      namespaceIndex: `${namespace}`,
-      nodeId: `${objectBrowseName}.VAHLim`,
-      dataType: (type === 'Ana')? 'Float': 'Int32'
-    } as OpcUaNodeOptions,
-    VAHAct: {
-      namespaceIndex: `${namespace}`,
-      nodeId: `${objectBrowseName}.VAHAct`,
-      dataType: 'Boolean'
-    } as OpcUaNodeOptions,
-    VWHEn: {
-      namespaceIndex: `${namespace}`,
-      nodeId: `${objectBrowseName}.VWHEn`,
-      dataType: 'Boolean'
-    } as OpcUaNodeOptions,
-    VWHLim: {
-      namespaceIndex: `${namespace}`,
-      nodeId: `${objectBrowseName}.VWHLim`,
-      dataType: (type === 'Ana')? 'Float': 'Int32'
-    } as OpcUaNodeOptions,
-    VWHAct: {
-      namespaceIndex: `${namespace}`,
-      nodeId: `${objectBrowseName}.VWHAct`,
-      dataType: 'Boolean'
-    } as OpcUaNodeOptions,
-    VTHEn: {
-      namespaceIndex: `${namespace}`,
-      nodeId: `${objectBrowseName}.VTHEn`,
-      dataType: 'Boolean'
-    } as OpcUaNodeOptions,
-    VTHLim: {
-      namespaceIndex: `${namespace}`,
-      nodeId: `${objectBrowseName}.VTHLim`,
-      dataType: (type === 'Ana')? 'Float': 'Int32'
-    } as OpcUaNodeOptions,
-    VTHAct: {
-      namespaceIndex: `${namespace}`,
-      nodeId: `${objectBrowseName}.VTHAct`,
-      dataType: 'Boolean'
-    } as OpcUaNodeOptions,
-    VALEn: {
-      namespaceIndex: `${namespace}`,
-      nodeId: `${objectBrowseName}.VALEn`,
-      dataType: 'Boolean'
-    } as OpcUaNodeOptions,
-    VALLim: {
-      namespaceIndex: `${namespace}`,
-      nodeId: `${objectBrowseName}.VALLim`,
-      dataType: (type === 'Ana')? 'Float': 'Int32'
-    } as OpcUaNodeOptions,
-    VALAct: {
-      namespaceIndex: `${namespace}`,
-      nodeId: `${objectBrowseName}.VALAct`,
-      dataType: 'Boolean'
-    } as OpcUaNodeOptions,
-    VWLEn: {
-      namespaceIndex: `${namespace}`,
-      nodeId: `${objectBrowseName}.VWLEn`,
-      dataType: 'Boolean'
-    } as OpcUaNodeOptions,
-    VWLLim: {
-      namespaceIndex: `${namespace}`,
-      nodeId: `${objectBrowseName}.VWLLim`,
-      dataType: (type === 'Ana')? 'Float': 'Int32'
-    } as OpcUaNodeOptions,
-    VWLAct: {
-      namespaceIndex: `${namespace}`,
-      nodeId: `${objectBrowseName}.VWLAct`,
-      dataType: 'Boolean'
-    } as OpcUaNodeOptions,
-    VTLEn: {
-      namespaceIndex: `${namespace}`,
-      nodeId: `${objectBrowseName}.VTLEn`,
-      dataType: 'Boolean'
-    } as OpcUaNodeOptions,
-    VTLLim: {
-      namespaceIndex: `${namespace}`,
-      nodeId: `${objectBrowseName}.VTLLim`,
-      dataType: (type === 'Ana')? 'Float': 'Int32'
-    } as OpcUaNodeOptions,
-    VTLAct: {
-      namespaceIndex: `${namespace}`,
-      nodeId: `${objectBrowseName}.VTLAct`,
-      dataType: 'Boolean'
-    } as OpcUaNodeOptions
-  });
+function getLimitMonitoringSpecificDataItemModels<T extends 'Ana' | 'DInt'>(namespace: number, objectBrowseName: string, type: T): DataItemModel[] {
+
+  const result: DataItemModel[] = [];
+  let dataItem: DataItemModel = getEmptyDataItemModel();
+  dataItem.name = 'VAHEn';
+  dataItem.dataType = 'Boolean';
+  let ciOptions = getEmptyCIDataModel();
+  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.identifier = `${objectBrowseName}.VAHEn`;
+  ciOptions.nodeId.namespaceIndex = `${namespace}`;
+  dataItem.cIData = ciOptions;
+  result.push(dataItem);
+
+  dataItem = getEmptyDataItemModel();
+  dataItem.name = 'VAHLim';
+  dataItem.dataType = (type === 'Ana')? 'Float': 'Int32';
+  ciOptions = getEmptyCIDataModel();
+  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.identifier = `${objectBrowseName}.VAHLim`;
+  ciOptions.nodeId.namespaceIndex = `${namespace}`;
+  dataItem.cIData = ciOptions;
+  result.push(dataItem);
+
+  dataItem = getEmptyDataItemModel();
+  dataItem.name = 'VAHAct';
+  dataItem.dataType = 'Boolean';
+  ciOptions = getEmptyCIDataModel();
+  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.identifier = `${objectBrowseName}.VAHAct`;
+  ciOptions.nodeId.namespaceIndex = `${namespace}`;
+  dataItem.cIData = ciOptions;
+  result.push(dataItem);
+
+  //VWH
+  dataItem = getEmptyDataItemModel();
+  dataItem.name = 'VWHEn';
+  dataItem.dataType = 'Boolean';
+  ciOptions = getEmptyCIDataModel();
+  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.identifier = `${objectBrowseName}.VWHEn`;
+  ciOptions.nodeId.namespaceIndex = `${namespace}`;
+  dataItem.cIData = ciOptions;
+  result.push(dataItem);
+
+  dataItem = getEmptyDataItemModel();
+  dataItem.name = 'VWHLim';
+  dataItem.dataType = (type === 'Ana')? 'Float': 'Int32';
+  ciOptions = getEmptyCIDataModel();
+  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.identifier = `${objectBrowseName}.VWHLim`;
+  ciOptions.nodeId.namespaceIndex = `${namespace}`;
+  dataItem.cIData = ciOptions;
+  result.push(dataItem);
+
+  dataItem = getEmptyDataItemModel();
+  dataItem.name = 'VWHAct';
+  dataItem.dataType = 'Boolean';
+  ciOptions = getEmptyCIDataModel();
+  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.identifier = `${objectBrowseName}.VWHAct`;
+  ciOptions.nodeId.namespaceIndex = `${namespace}`;
+  dataItem.cIData = ciOptions;
+  result.push(dataItem);
+
+  //VTH
+  dataItem = getEmptyDataItemModel();
+  dataItem.name = 'VTHEn';
+  dataItem.dataType = 'Boolean';
+  ciOptions = getEmptyCIDataModel();
+  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.identifier = `${objectBrowseName}.VTHEn`;
+  ciOptions.nodeId.namespaceIndex = `${namespace}`;
+  dataItem.cIData = ciOptions;
+  result.push(dataItem);
+
+  dataItem = getEmptyDataItemModel();
+  dataItem.name = 'VTHLim';
+  dataItem.dataType = (type === 'Ana')? 'Float': 'Int32';
+  ciOptions = getEmptyCIDataModel();
+  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.identifier = `${objectBrowseName}.VTHLim`;
+  ciOptions.nodeId.namespaceIndex = `${namespace}`;
+  dataItem.cIData = ciOptions;
+  result.push(dataItem);
+
+  dataItem = getEmptyDataItemModel();
+  dataItem.name = 'VTHAct';
+  dataItem.dataType = 'Boolean';
+  ciOptions = getEmptyCIDataModel();
+  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.identifier = `${objectBrowseName}.VTHAct`;
+  ciOptions.nodeId.namespaceIndex = `${namespace}`;
+  dataItem.cIData = ciOptions;
+  result.push(dataItem);
+
+  //VAL
+  dataItem = getEmptyDataItemModel();
+  dataItem.name = 'VALEn';
+  dataItem.dataType = 'Boolean';
+  ciOptions = getEmptyCIDataModel();
+  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.identifier = `${objectBrowseName}.VALEn`;
+  ciOptions.nodeId.namespaceIndex = `${namespace}`;
+  dataItem.cIData = ciOptions;
+  result.push(dataItem);
+
+  dataItem = getEmptyDataItemModel();
+  dataItem.name = 'VALLim';
+  dataItem.dataType = (type === 'Ana')? 'Float': 'Int32';
+  ciOptions = getEmptyCIDataModel();
+  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.identifier = `${objectBrowseName}.VALLim`;
+  ciOptions.nodeId.namespaceIndex = `${namespace}`;
+  dataItem.cIData = ciOptions;
+  result.push(dataItem);
+
+  dataItem = getEmptyDataItemModel();
+  dataItem.name = 'VALAct';
+  dataItem.dataType = 'Boolean';
+  ciOptions = getEmptyCIDataModel();
+  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.identifier = `${objectBrowseName}.VALAct`;
+  ciOptions.nodeId.namespaceIndex = `${namespace}`;
+  dataItem.cIData = ciOptions;
+  result.push(dataItem);
+
+  //VWL
+  dataItem = getEmptyDataItemModel();
+  dataItem.name = 'VWLEn';
+  dataItem.dataType = 'Boolean';
+  ciOptions = getEmptyCIDataModel();
+  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.identifier = `${objectBrowseName}.VWLEn`;
+  ciOptions.nodeId.namespaceIndex = `${namespace}`;
+  dataItem.cIData = ciOptions;
+  result.push(dataItem);
+
+  dataItem = getEmptyDataItemModel();
+  dataItem.name = 'VWLLim';
+  dataItem.dataType = (type === 'Ana')? 'Float': 'Int32';
+  ciOptions = getEmptyCIDataModel();
+  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.identifier = `${objectBrowseName}.VWLLim`;
+  ciOptions.nodeId.namespaceIndex = `${namespace}`;
+  dataItem.cIData = ciOptions;
+  result.push(dataItem);
+
+  dataItem = getEmptyDataItemModel();
+  dataItem.name = 'VWLAct';
+  dataItem.dataType = 'Boolean';
+  ciOptions = getEmptyCIDataModel();
+  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.identifier = `${objectBrowseName}.VWLAct`;
+  ciOptions.nodeId.namespaceIndex = `${namespace}`;
+  dataItem.cIData = ciOptions;
+  result.push(dataItem);
+
+  //VTL
+  dataItem = getEmptyDataItemModel();
+  dataItem.name = 'VTLEn';
+  dataItem.dataType = 'Boolean';
+  ciOptions = getEmptyCIDataModel();
+  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.identifier = `${objectBrowseName}.VTLEn`;
+  ciOptions.nodeId.namespaceIndex = `${namespace}`;
+  dataItem.cIData = ciOptions;
+  result.push(dataItem);
+
+  dataItem = getEmptyDataItemModel();
+  dataItem.name = 'VTLLim';
+  dataItem.dataType = (type === 'Ana')? 'Float': 'Int32';
+  ciOptions = getEmptyCIDataModel();
+  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.identifier = `${objectBrowseName}.VTLLim`;
+  ciOptions.nodeId.namespaceIndex = `${namespace}`;
+  dataItem.cIData = ciOptions;
+  result.push(dataItem);
+
+  dataItem = getEmptyDataItemModel();
+  dataItem.name = 'VTLAct';
+  dataItem.dataType = 'Boolean';
+  ciOptions = getEmptyCIDataModel();
+  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.identifier = `${objectBrowseName}.VTLAct`;
+  ciOptions.nodeId.namespaceIndex = `${namespace}`;
+  dataItem.cIData = ciOptions;
+  result.push(dataItem);
+
+  return result;
 }
 
 
-export function getLimitMonitoringDataItemOptions<T extends 'Ana' | 'DInt'>(namespace: number, objectBrowseName: string, type: T): object {
-  return getLimitMonitoringSpecificDataItemOptions(namespace, objectBrowseName, type);
+export function getLimitMonitoringDataItemModel<T extends 'Ana' | 'DInt'>(namespace: number, objectBrowseName: string, type: T): DataItemModel[] {
+  return getLimitMonitoringSpecificDataItemModels(namespace, objectBrowseName, type);
 }
 
 export class LimitMonitoringMockup<T extends 'Ana' | 'DInt'>{
   private readonly type: 'Ana' | 'DInt';
   private readonly dataType: DataType;
 
-  protected varAHEn = false;
-  protected varAHLim = 0;
-  protected varAHAct = false;
-  protected varWHEn = false;
-  protected varWHLim = 0;
-  protected varWHAct = false;
-  protected varTHEn = false;
-  protected varTHLim = 0;
-  protected varTHAct = false;
+  public varAHEn = false;
+  public varAHLim = 0;
+  public varAHAct = false;
+  public varWHEn = false;
+  public varWHLim = 0;
+  public varWHAct = false;
+  public varTHEn = false;
+  public varTHLim = 0;
+  public varTHAct = false;
 
-  protected varTLEn = false;
-  protected varTLLim = 0;
-  protected varTLAct = false;
-  protected varWLEn = false;
-  protected varWLLim = 0;
-  protected varWLAct = false;
-  protected varALEn = false;
-  protected varALLim = 0;
-  protected varALAct = false;
+  public varTLEn = false;
+  public varTLLim = 0;
+  public varTLAct = false;
+  public varWLEn = false;
+  public varWLLim = 0;
+  public varWLAct = false;
+  public varALEn = false;
+  public varALLim = 0;
+  public varALAct = false;
   protected mockupNode: UAObject;
 
   constructor(namespace: Namespace, rootNode: UAObject, variableName: string, type: T) {
@@ -422,8 +519,8 @@ export class LimitMonitoringMockup<T extends 'Ana' | 'DInt'>{
     });
   }
 
-  public getDataItemOptions(): object {
-    return getLimitMonitoringDataItemOptions(
+  public getDataItemModel(): DataItemModel[] {
+    return getLimitMonitoringDataItemModel(
         this.mockupNode.namespaceIndex,
         this.mockupNode.browseName.name as string,
         this.type);

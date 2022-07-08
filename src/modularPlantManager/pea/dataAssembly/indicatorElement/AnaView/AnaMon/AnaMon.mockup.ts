@@ -24,33 +24,32 @@
  */
 
 import {Namespace, UAObject} from 'node-opcua';
-import {getOSLevelDataItemOptions, OSLevelMockup} from '../../../baseFunction/osLevel/OSLevel.mockup';
+import {getOSLevelDataItemModel, OSLevelMockup} from '../../../baseFunction/osLevel/OSLevel.mockup';
 import {
-	getLimitMonitoringDataItemOptions,
+	getLimitMonitoringDataItemModel,
 	LimitMonitoringMockup
 } from '../../../baseFunction/limitMonitoring/LimitMonitoring.mockup';
-import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
-import {getDataAssemblyOptions} from '../../../DataAssemblyController.mockup';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {AnaViewMockup, getAnaViewDataItemOptions} from '../AnaView.mockup';
+
+import {getDataAssemblyModel} from '../../../DataAssembly.mockup';
+import {DataAssemblyModel, DataItemModel} from '@p2olab/pimad-interface';
+import {AnaViewMockup, getAnaViewDataItemModel} from '../AnaView.mockup';
 
 const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/AnaView/AnaMon';
 
-export function getAnaMonDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return ({
-			...getAnaViewDataItemOptions(namespace, objectBrowseName),
-			...getOSLevelDataItemOptions(namespace, objectBrowseName),
-			...getLimitMonitoringDataItemOptions(namespace, objectBrowseName, 'Ana'),
-		} as OpcUaNodeOptions
-	);
+export function getAnaMonDataItemModel(namespace: number, objectBrowseName: string): DataItemModel[] {
+	return [
+			...getAnaViewDataItemModel(namespace, objectBrowseName),
+			...getOSLevelDataItemModel(namespace, objectBrowseName),
+			...getLimitMonitoringDataItemModel(namespace, objectBrowseName, 'Ana'),
+		];
 }
 
-export function getAnaMonOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
-	const options = getDataAssemblyOptions(name, tagName, tagDescription);
-	options.metaModelRef = metaModelReference;
-	options.dataItems = {
+export function getAnaMonDataAssemblyModel(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): DataAssemblyModel {
+	const options = getDataAssemblyModel(metaModelReference, name, tagName, tagDescription);
+	options.dataItems = [
 		...options.dataItems,
-		...getAnaMonDataItemOptions(namespace, objectBrowseName)};
+		...getAnaMonDataItemModel(namespace, objectBrowseName)
+		];
 	return options;
 }
 
@@ -66,13 +65,13 @@ export class AnaMonMockup extends AnaViewMockup{
 		this.limitMonitoring = new LimitMonitoringMockup(namespace, this.mockupNode, this.name, 'Ana');
 	}
 
-	public getDataAssemblyOptions(): DataAssemblyOptions {
-		const options = super.getDataAssemblyOptions();
+	public getDataAssemblyModel(): DataAssemblyModel {
+		const options = super.getDataAssemblyModel();
 		options.metaModelRef = metaModelReference;
 		options.dataItems = {
 			...options.dataItems,
-			...this.osLevel.getDataItemOptions(),
-			...this.limitMonitoring.getDataItemOptions()
+			...this.osLevel.getDataItemModel(),
+			...this.limitMonitoring.getDataItemModel()
 		};
 		return options;
 	}

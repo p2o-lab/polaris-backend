@@ -25,71 +25,107 @@
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 import {
-	FeedbackMonitoringMockup, getFeedbackMonitoringDataItemOptions
+	FeedbackMonitoringMockup, getFeedbackMonitoringDataItemModel
 } from '../../../../baseFunction/feedbackMonitoring/FeedbackMonitoring.mockup';
-import {AnaDrvMockup, getAnaDrvDataItemOptions} from '../AnaDrv.mockup';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
-import {getDataAssemblyOptions} from '../../../../DataAssemblyController.mockup';
+import {AnaDrvMockup, getAnaDrvDataItemModel} from '../AnaDrv.mockup';
+import {DataAssemblyModel, DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+
+import {getDataAssemblyModel} from '../../../../DataAssembly.mockup';
+import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../../../dataItem/DataItem.mockup';
 
 const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/ActiveElement/AnaDrv/MonAnaDrv';
 
-function getMonAnaDrvSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return ({
-		RpmErr: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.RpmErr`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		RpmAHEn: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.RpmAHEn`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		RpmAHLim: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.RpmAHLim`,
-			dataType: 'Float'
-		} as OpcUaNodeOptions,
-		RpmAHAct: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.RpmAHAct`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		RpmALEn: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.RpmALEn`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		RpmALLim: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.RpmALLim`,
-			dataType: 'Float'
-		} as OpcUaNodeOptions,
-		RpmALAct: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.RpmALAct`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions
-	});
+function getMonAnaDrvSpecificDataItemModels(namespace: number, objectBrowseName: string): DataItemModel[] {
+
+	const result: DataItemModel[] = [];
+	let dataItem: DataItemModel = getEmptyDataItemModel();
+	dataItem.name = 'RpmErr';
+	dataItem.dataType = 'Boolean';
+	let ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.RpmErr`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'RpmAHEn';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.RpmAHEn`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'RpmAHLim';
+	dataItem.dataType = 'Float';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.RpmAHLim`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'RpmAHAct';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.RpmAHAct`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'RpmALEn';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.RpmALEn`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'RpmALLim';
+	dataItem.dataType = 'Float';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.RpmALLim`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'RpmALAct';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.RpmALAct`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	return result;
 }
 
 
-export function getMonAnaDrvDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return ({
-			...getAnaDrvDataItemOptions(namespace, objectBrowseName),
-			...getFeedbackMonitoringDataItemOptions(namespace, objectBrowseName),
-			...getMonAnaDrvSpecificDataItemOptions(namespace, objectBrowseName),
-		} as OpcUaNodeOptions
-	);
+export function getMonAnaDrvDataItemModel(namespace: number, objectBrowseName: string): DataItemModel[] {
+	return [
+			...getAnaDrvDataItemModel(namespace, objectBrowseName),
+			...getFeedbackMonitoringDataItemModel(namespace, objectBrowseName),
+			...getMonAnaDrvSpecificDataItemModels(namespace, objectBrowseName),
+	];
 }
 
-export function getMonAnaDrvOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
-	const options = getDataAssemblyOptions(name, tagName, tagDescription);
-	options.metaModelRef = metaModelReference;
-	options.dataItems = {
+export function getMonAnaDrvDataAssemblyModel(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): DataAssemblyModel {
+	const options = getDataAssemblyModel(metaModelReference, name, tagName, tagDescription);
+	options.dataItems = [
 		...options.dataItems,
-		...getMonAnaDrvDataItemOptions(namespace, objectBrowseName)};
+		...getMonAnaDrvDataItemModel(namespace, objectBrowseName)
+	];
 	return options;
 }
 
@@ -366,13 +402,13 @@ export class MonAnaDrvMockup extends AnaDrvMockup {
 
 	}
 
-	public getDataAssemblyOptions(): DataAssemblyOptions {
-		const options = super.getDataAssemblyOptions();
-		options.metaModelRef = metaModelReference;
+
+	public getDataAssemblyModel(metaModelReferenceOption?: string): DataAssemblyModel {
+		const options = super.getDataAssemblyModel(metaModelReferenceOption || metaModelReference);
 		options.dataItems = {
 			...options.dataItems,
-			...this.feedbackMonitoring.getDataItemOptions(),
-			...getMonAnaDrvSpecificDataItemOptions(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
+			...this.feedbackMonitoring.getDataItemModel(),
+			...getMonAnaDrvSpecificDataItemModels(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
 		};
 		return options;
 	}

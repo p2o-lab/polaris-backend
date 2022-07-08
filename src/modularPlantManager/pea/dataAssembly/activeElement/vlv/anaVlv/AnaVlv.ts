@@ -23,10 +23,12 @@
 * SOFTWARE.
 */
 
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaConnection, DataItem} from '../../../../connection';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {Vlv, VlvRuntime} from '../Vlv';
 import {SourceModeController, SourceModeRuntime} from '../../../baseFunction';
+import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
+import {DataItem} from '../../../dataItem/DataItem';
+import {DataItemFactory, getDataItemModel} from '../../../dataItem/DataItemFactory';
 
 export type AnaVlvRuntime = VlvRuntime & SourceModeRuntime & {
 	Pos: DataItem<number>;
@@ -49,24 +51,24 @@ export class AnaVlv extends Vlv {
 	public readonly communication!: AnaVlvRuntime;
 	sourceMode: SourceModeController;
 
-	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
-		super(options, connection);
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+		super(options, connectionHandler);
 
-		this.sourceMode = new SourceModeController(this);
+		this.sourceMode = new SourceModeController(options, connectionHandler);
 
-		this.communication.Pos = this.createDataItem('Pos', 'number');
-		this.communication.PosFbk = this.createDataItem('PosFbk', 'number');
-		this.communication.PosFbkCalc = this.createDataItem('PosFbkCalc','boolean');
-		this.communication.PosRbk = this.createDataItem('PosRbk', 'number');
-		this.communication.PosInt = this.createDataItem('PosInt','number');
-		this.communication.PosMan = this.createDataItem('PosMan',  'number');
-		this.communication.PosUnit = this.createDataItem('PosUnit', 'number');
-		this.communication.PosSclMin = this.createDataItem('PosSclMin', 'number');
-		this.communication.PosSclMax = this.createDataItem('PosSclMax', 'number');
-		this.communication.PosMin = this.createDataItem('PosMin', 'number');
-		this.communication.PosMax = this.createDataItem('PosMax', 'number');
+		this.communication.Pos = DataItemFactory.create(getDataItemModel(options, 'Pos'), connectionHandler);
+		this.communication.PosFbk = DataItemFactory.create(getDataItemModel(options, 'PosFbk'), connectionHandler);
+		this.communication.PosFbkCalc = DataItemFactory.create(getDataItemModel(options, 'PosFbkCalc'), connectionHandler);
+		this.communication.PosRbk = DataItemFactory.create(getDataItemModel(options, 'PosRbk'), connectionHandler);
+		this.communication.PosInt = DataItemFactory.create(getDataItemModel(options, 'PosInt'), connectionHandler);
+		this.communication.PosMan = DataItemFactory.create(getDataItemModel(options, 'PosMan'), connectionHandler);
+		this.communication.PosUnit = DataItemFactory.create(getDataItemModel(options, 'PosUnit'), connectionHandler);
+		this.communication.PosSclMin = DataItemFactory.create(getDataItemModel(options, 'PosSclMin'), connectionHandler);
+		this.communication.PosSclMax = DataItemFactory.create(getDataItemModel(options, 'PosSclMax'), connectionHandler);
+		this.communication.PosMin = DataItemFactory.create(getDataItemModel(options, 'PosMin'), connectionHandler);
+		this.communication.PosMax = DataItemFactory.create(getDataItemModel(options, 'PosMax'), connectionHandler);
 
-		this.communication.OpenAct = this.createDataItem('OpenAct', 'boolean');
-		this.communication.CloseAct = this.createDataItem('CloseAct', 'boolean');
+		this.communication.OpenAct = DataItemFactory.create(getDataItemModel(options, 'OpenAct'), connectionHandler);
+		this.communication.CloseAct = DataItemFactory.create(getDataItemModel(options, 'CloseAct'), connectionHandler);
 	}
 }

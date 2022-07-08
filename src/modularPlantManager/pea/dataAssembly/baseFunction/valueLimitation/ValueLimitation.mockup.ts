@@ -24,24 +24,37 @@
  */
 
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
+import {DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../dataItem/DataItem.mockup';
 
-function getValueLimitationSpecificDataItemOptions<T extends 'Ana' | 'DInt'>(namespace: number, objectBrowseName: string, type: T): object {
-  return ({
-    VMin: {
-      namespaceIndex: `${namespace}`,
-      nodeId: `${objectBrowseName}.VMin`,
-      dataType: (type === 'Ana')? 'Float': 'Int32'
-    },
-    VMax: {
-      namespaceIndex: `${namespace}`,
-      nodeId: `${objectBrowseName}.VMax`,
-      dataType: (type === 'Ana')? 'Float': 'Int32'
-    }
-  });
+function getValueLimitationSpecificDataItemModels<T extends 'Ana' | 'DInt'>(namespace: number, objectBrowseName: string, type: T): DataItemModel[] {
+
+  const result: DataItemModel[] = [];
+  let dataItem: DataItemModel = getEmptyDataItemModel();
+  dataItem.name = 'VMin';
+  dataItem.dataType = (type === 'Ana')? 'Float': 'Int32';
+  let ciOptions = getEmptyCIDataModel();
+  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.identifier = `${objectBrowseName}.VMin`;
+  ciOptions.nodeId.namespaceIndex = `${namespace}`;
+  dataItem.cIData = ciOptions;
+  result.push(dataItem);
+
+  dataItem = getEmptyDataItemModel();
+  dataItem.name = 'VMax';
+  dataItem.dataType = (type === 'Ana')? 'Float': 'Int32';
+  ciOptions = getEmptyCIDataModel();
+  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.identifier = `${objectBrowseName}.VMax`;
+  ciOptions.nodeId.namespaceIndex = `${namespace}`;
+  dataItem.cIData = ciOptions;
+  result.push(dataItem);
+
+  return result;
 }
 
-export function getValueLimitationDataItemOptions<T extends 'Ana' | 'DInt'>(namespace: number, objectBrowseName: string, type: T): object {
-  return getValueLimitationSpecificDataItemOptions(namespace, objectBrowseName, type);
+export function getValueLimitationDataItemModel<T extends 'Ana' | 'DInt'>(namespace: number, objectBrowseName: string, type: T): DataItemModel[] {
+  return getValueLimitationSpecificDataItemModels(namespace, objectBrowseName, type);
 }
 
 export class ValueLimitationMockup<T extends 'Ana' | 'DInt'> {
@@ -49,8 +62,8 @@ export class ValueLimitationMockup<T extends 'Ana' | 'DInt'> {
   private readonly type: 'Ana' | 'DInt';
   private readonly dataType: DataType;
 
-  protected vMin = 0;
-  protected vMax = 0;
+  public vMin = 0;
+  public vMax = 0;
 
   protected mockupNode: UAObject;
 
@@ -88,8 +101,8 @@ export class ValueLimitationMockup<T extends 'Ana' | 'DInt'> {
     });
     }
 
-  public getDataItemOptions(): object {
-    return getValueLimitationDataItemOptions(
+  public getDataItemModel(): DataItemModel[] {
+    return getValueLimitationDataItemModel(
         this.mockupNode.namespaceIndex,
         this.mockupNode.browseName.name as string,
         this.type);

@@ -24,53 +24,56 @@
  */
 
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
-import {
-	getSourceModeDataItemOptions,
-	SourceModeMockup
-} from '../../../../baseFunction/sourceMode/SourceMode.mockup';
-import {DIntManMockup, getDIntManDataItemOptions} from '../DIntMan.mockup';
-import {getWQCDataItemOptions, WQCMockup} from '../../../../baseFunction/wqc/WQC.mockup';
-import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
-import {getDataAssemblyOptions} from '../../../../DataAssemblyController.mockup';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {getSourceModeDataItemModel, SourceModeMockup} from '../../../../baseFunction/sourceMode/SourceMode.mockup';
+import {DIntManMockup, getDIntManDataItemModel} from '../DIntMan.mockup';
+import {getWQCDataItemModel, WQCMockup} from '../../../../baseFunction/wqc/WQC.mockup';
+
+import {getDataAssemblyModel} from '../../../../DataAssembly.mockup';
+import {DataAssemblyModel, DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../../../dataItem/DataItem.mockup';
 
 
 const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/OperationElement/DIntMan/DIntManInt';
 
-function getDIntManIntSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return ({
-		VInt: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.VInt`,
-			dataType: 'Int32'
-		} as OpcUaNodeOptions
-	});
+function getDIntManIntSpecificDataItemModels(namespace: number, objectBrowseName: string): DataItemModel[] {
+
+	const result: DataItemModel[] = [];
+	const dataItem: DataItemModel = getEmptyDataItemModel();
+	dataItem.name = 'VInt';
+	dataItem.dataType = 'Int32';
+	const ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.VInt`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	return result;
 }
 
-export function getDIntManIntDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return ({
-			...getDIntManDataItemOptions(namespace, objectBrowseName),
-			...getWQCDataItemOptions(namespace, objectBrowseName),
-			...getSourceModeDataItemOptions(namespace, objectBrowseName),
-			...getDIntManIntSpecificDataItemOptions(namespace, objectBrowseName),
-		} as OpcUaNodeOptions
-	);
+export function getDIntManIntDataItemModel(namespace: number, objectBrowseName: string): DataItemModel[] {
+	return [
+			...getDIntManDataItemModel(namespace, objectBrowseName),
+			...getWQCDataItemModel(namespace, objectBrowseName),
+			...getSourceModeDataItemModel(namespace, objectBrowseName),
+			...getDIntManIntSpecificDataItemModels(namespace, objectBrowseName),
+	];
 }
 
-export function getDIntManIntOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
-	const options = getDataAssemblyOptions(name, tagName, tagDescription);
-	options.metaModelRef = metaModelReference;
-	options.dataItems = {
+export function getDIntManIntDataAssemblyModel(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): DataAssemblyModel {
+	const options = getDataAssemblyModel(metaModelReference, name, tagName, tagDescription);
+	options.dataItems = [
 		...options.dataItems,
-		...getDIntManIntDataItemOptions(namespace, objectBrowseName)};
+		...getDIntManIntDataItemModel(namespace, objectBrowseName)
+	];
 	return options;
 }
 
 export class DIntManIntMockup extends DIntManMockup {
 
-	protected vInt = 0;
-	public readonly wqc: WQCMockup;
-	public readonly sourceMode: SourceModeMockup;
+	public vInt = 0;
+	public wqc: WQCMockup;
+	public sourceMode: SourceModeMockup;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
 		super(namespace, rootNode, variableName);
@@ -91,15 +94,14 @@ export class DIntManIntMockup extends DIntManMockup {
 		});
 	}
 
-	public getDataAssemblyOptions(): DataAssemblyOptions {
-		const options = super.getDataAssemblyOptions();
-		options.metaModelRef = metaModelReference;
-		options.dataItems = {
+	public getDataAssemblyModel(metaModelReferenceOption?: string): DataAssemblyModel {
+		const options = super.getDataAssemblyModel(metaModelReferenceOption || metaModelReference);
+		options.dataItems = [
 			...options.dataItems,
-			...this.wqc.getDataItemOptions(),
-			...this.sourceMode.getDataItemOptions(),
-			...getDIntManIntSpecificDataItemOptions(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
-		};
+			...this.wqc.getDataItemModel(),
+			...this.sourceMode.getDataItemModel(),
+			...getDIntManIntSpecificDataItemModels(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
+		];
 		return options;
 	}
 

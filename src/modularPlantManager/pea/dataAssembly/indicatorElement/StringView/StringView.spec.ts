@@ -23,73 +23,74 @@
  * SOFTWARE.
  */
 
-import {OpcUaConnection} from '../../../connection';
+
 import {StringView} from './StringView';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {MockupServer} from '../../../../_utils';
 import {getStringViewOptions, StringViewMockup} from './StringView.mockup';
+import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('StringView', () => {
 
-	let dataAssemblyOptions: DataAssemblyOptions;
+	let options: DataAssemblyModel;
 
 	describe('static', () => {
 
-		const emptyOPCUAConnection = new OpcUaConnection();
-		dataAssemblyOptions = getStringViewOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
+		const connectionHandler = new ConnectionHandler();
+		options = getStringViewOptions(2, 'Variable', 'Variable') as DataAssemblyModel;
 
 		it('should create StringView', async () => {
 
-			const dataAssemblyController: StringView = new StringView(dataAssemblyOptions, emptyOPCUAConnection);
-			expect(dataAssemblyController.communication.TagName).to.not.equal(undefined);
-			expect(dataAssemblyController.communication.TagDescription).to.not.equal(undefined);
-			expect(dataAssemblyController.communication.WQC).to.not.equal(undefined);
-			expect(dataAssemblyController.communication.Text).to.not.equal(undefined);
+			const dataAssembly: StringView = new StringView(options, connectionHandler);
+			expect(dataAssembly.communication.TagName).to.not.equal(undefined);
+			expect(dataAssembly.communication.TagDescription).to.not.equal(undefined);
+			expect(dataAssembly.communication.WQC).to.not.equal(undefined);
+			expect(dataAssembly.communication.Text).to.not.equal(undefined);
 		});
 	});
 	describe('dynamic', () => {
 		let mockupServer: MockupServer;
-		let connection: OpcUaConnection;
+		let connectionHandler: ConnectionHandler;
 
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
 			const stringViewMockup = new StringViewMockup( mockupServer.nameSpace, mockupServer.rootObject,'Variable');
-			dataAssemblyOptions = stringViewMockup.getDataAssemblyOptions();
+			options = stringViewMockup.getDataAssemblyModel();
 			await mockupServer.start();
-			connection = new OpcUaConnection();
-			connection.initialize({endpointUrl: mockupServer.endpoint});
-			await connection.connect();
+			connectionHandler= new ConnectionHandler();
+			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			await connectionHandler.connect();
 		});
 
 		afterEach(async function () {
 			this.timeout(4000);
-			await connection.disconnect();
+			await connectionHandler.disconnect();
 			await mockupServer.shutdown();
 		});
 
 		it('should subscribe successfully', async () => {
-			const dataAssemblyController: StringView = new StringView(dataAssemblyOptions, connection);
-			await dataAssemblyController.subscribe();
-			await connection.startMonitoring();
-			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
+			const dataAssembly: StringView = new StringView(options, connectionHandler);
+			await dataAssembly.subscribe();
+			await connectionHandler.connect();
+			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 
-			expect(dataAssemblyController.communication.WQC.value).equal(0);
-			expect(dataAssemblyController.communication.Text.value).equal('dummyText');
+			expect(dataAssembly.communication.WQC.value).equal(0);
+			expect(dataAssembly.communication.Text.value).equal('dummyText');
 		}).timeout(4000);
 
 		it('get Text', async () => {
-			const dataAssemblyController: StringView = new StringView(dataAssemblyOptions, connection);
-			await dataAssemblyController.subscribe();
-			await connection.startMonitoring();
-			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
-			expect(dataAssemblyController.Text).to.equal('dummyText');
+			const dataAssembly: StringView = new StringView(options, connectionHandler);
+			await dataAssembly.subscribe();
+			await connectionHandler.connect();
+			await new Promise((resolve => dataAssembly.on('changed', resolve)));
+			expect(dataAssembly.Text).to.equal('dummyText');
 		}).timeout(4000);
 	});
 });

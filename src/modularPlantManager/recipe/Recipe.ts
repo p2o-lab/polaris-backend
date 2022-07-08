@@ -24,7 +24,7 @@
  */
 
 import {RecipeInterface, RecipeOptions, RecipeState, StepInterface} from '@p2olab/polaris-interface';
-import {PEAController} from '../pea';
+import {PEA} from '../pea';
 import {Step} from './step/Step';
 import {Transition} from './step/transition/Transition';
 
@@ -73,7 +73,7 @@ export class Recipe extends (EventEmitter as new() => RecipeEmitter) {
 	public readonly protected: boolean;
 
 	// necessary peas
-	public peaSet: Set<PEAController> = new Set<PEAController>();
+	public peaSet: Set<PEA> = new Set<PEA>();
 	public readonly initialStep: Step | undefined;
 	public readonly steps: Step[];
 
@@ -83,7 +83,7 @@ export class Recipe extends (EventEmitter as new() => RecipeEmitter) {
 	public lastChange: Date;
 	private stepListener: EventEmitter | undefined;
 
-	constructor(options: RecipeOptions, peas: PEAController[], protectedRecipe = false) {
+	constructor(options: RecipeOptions, peas: PEA[], protectedRecipe = false) {
 		// eslint-disable-next-line constructor-super
 		super();
 		this.id = v4();

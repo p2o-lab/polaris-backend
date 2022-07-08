@@ -23,8 +23,7 @@
  * SOFTWARE.
  */
 
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaConnection, DataItem} from '../../../connection';
+import {DataItem} from '../../dataItem/DataItem';
 import {
 	OpMode, OpModeRuntime,
 } from '../../baseFunction';
@@ -35,6 +34,9 @@ import {
 	ServiceSourceModeController,
 	ServiceSourceModeRuntime
 } from '../../baseFunction/serviceSourceMode/ServiceSourceModeController';
+import {DataAssemblyModel, DataItemModel} from '@p2olab/pimad-interface';
+import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
+import {DataItemFactory, getDataItemModel} from '../../dataItem/DataItemFactory';
 
 export type ServParamRuntime = OperationElementRuntime & OpModeRuntime & ServiceSourceModeRuntime & {
 	Sync: DataItem<boolean>;
@@ -48,13 +50,13 @@ export class ServParam extends OperationElement {
 
 	//public readonly wqc: WQC;
 
-	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
-		super(options, connection);
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+		super(options, connectionHandler);
 		//this.wqc = new WQC(this);
 
-		this.serviceSourceMode = new ServiceSourceModeController(this);
-		this.serviceOpMode = new OpMode(this);
+		this.serviceSourceMode = new ServiceSourceModeController(options, connectionHandler);
+		this.serviceOpMode = new OpMode(options, connectionHandler);
 
-		this.communication.Sync = this.createDataItem('Sync', 'boolean');
+		this.communication.Sync = DataItemFactory.create(getDataItemModel(options, 'Sync'), connectionHandler);
 	}
 }

@@ -26,51 +26,57 @@
 
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
 import {
-	getSourceModeDataItemOptions,
+	getSourceModeDataItemModel,
 	SourceModeMockup
 } from '../../../../baseFunction/sourceMode/SourceMode.mockup';
-import {getWQCDataItemOptions, WQCMockup} from '../../../../baseFunction/wqc/WQC.mockup';
-import {AnaManMockup, getAnaManDataItemOptions} from '../AnaMan.mockup';
-import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
-import {getDataAssemblyOptions} from '../../../../DataAssemblyController.mockup';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {getWQCDataItemModel, WQCMockup} from '../../../../baseFunction/wqc/WQC.mockup';
+import {AnaManMockup, getAnaManDataItemModel} from '../AnaMan.mockup';
+
+import {getDataAssemblyModel} from '../../../../DataAssembly.mockup';
+import {DataAssemblyModel, DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../../../dataItem/DataItem.mockup';
 
 const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/OperationElement/AnaMan/AnaManInt';
 
-function getAnaManIntSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return ({
-		VInt: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.VInt`,
-			dataType: 'Float'
-		} as OpcUaNodeOptions
-	});
+function getAnaManIntSpecificDataItemModels(namespace: number, objectBrowseName: string): DataItemModel[] {
+
+	const result: DataItemModel[] = [];
+	const dataItem: DataItemModel = getEmptyDataItemModel();
+	dataItem.name = 'VInt';
+	dataItem.dataType = 'Float';
+	const ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.VInt`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	return result;
 }
 
-export function getAnaManIntDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return ({
-			...getAnaManDataItemOptions(namespace, objectBrowseName),
-			...getWQCDataItemOptions(namespace, objectBrowseName),
-			...getSourceModeDataItemOptions(namespace, objectBrowseName),
-			...getAnaManIntSpecificDataItemOptions(namespace, objectBrowseName),
-		} as OpcUaNodeOptions
-	);
+export function getAnaManIntDataItemModel(namespace: number, objectBrowseName: string): DataItemModel[] {
+	return [
+			...getAnaManDataItemModel(namespace, objectBrowseName),
+			...getWQCDataItemModel(namespace, objectBrowseName),
+			...getSourceModeDataItemModel(namespace, objectBrowseName),
+			...getAnaManIntSpecificDataItemModels(namespace, objectBrowseName),
+		];
 }
 
-export function getAnaManIntOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
-	const options = getDataAssemblyOptions(name, tagName, tagDescription);
-	options.metaModelRef = metaModelReference;
-	options.dataItems = {
+export function getAnaManIntDataAssemblyModel(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): DataAssemblyModel {
+	const options = getDataAssemblyModel(metaModelReference, name, tagName, tagDescription);
+	options.dataItems = [
 		...options.dataItems,
-		...getAnaManIntDataItemOptions(namespace, objectBrowseName)};
+		...getAnaManIntDataItemModel(namespace, objectBrowseName)
+	];
 	return options;
 }
 
 export class AnaManIntMockup extends AnaManMockup{
 
-	protected vInt = 0;
-	public readonly wqc: WQCMockup;
-	public readonly sourceMode: SourceModeMockup;
+	public vInt = 0;
+	public wqc: WQCMockup;
+	public sourceMode: SourceModeMockup;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
 		super(namespace, rootNode, variableName);
@@ -91,14 +97,13 @@ export class AnaManIntMockup extends AnaManMockup{
 		});
 	}
 
-	public getDataAssemblyOptions(): DataAssemblyOptions {
-		const options = super.getDataAssemblyOptions();
-		options.metaModelRef = metaModelReference;
+	public getDataAssemblyModel(metaModelReferenceOption?: string): DataAssemblyModel {
+		const options = super.getDataAssemblyModel(metaModelReferenceOption || metaModelReference);
 		options.dataItems = {
 			...options.dataItems,
-			...this.wqc.getDataItemOptions(),
-			...this.sourceMode.getDataItemOptions(),
-			...getAnaManIntSpecificDataItemOptions(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
+			...this.wqc.getDataItemModel(),
+			...this.sourceMode.getDataItemModel(),
+			...getAnaManIntSpecificDataItemModels(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
 		};
 		return options;
 	}

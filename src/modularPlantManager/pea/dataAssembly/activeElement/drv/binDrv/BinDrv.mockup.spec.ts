@@ -25,9 +25,9 @@
  
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {BinDrvMockup, getBinDrvDataItemOptions, getBinDrvOptions} from './BinDrv.mockup';
+import {BinDrvMockup, getBinDrvDataAssemblyModel, getBinDrvDataItemModel} from './BinDrv.mockup';
 import {MockupServer} from '../../../../../_utils';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {BinDrvRuntime} from './BinDrv';
 
 chai.use(chaiAsPromised);
@@ -53,19 +53,19 @@ describe('BinDrvMockup', () => {
         });
 
         it('static DataItemOptions', () => {
-            const options = getBinDrvDataItemOptions(1, 'Test') as BinDrvRuntime;
+            const options = getBinDrvDataItemModel(1, 'Test');
             expect(Object.keys(options).length).to.equal(37);
         });
 
-        it('static DataAssemblyOptions', () => {
-            const options = getBinDrvOptions(1, 'Test') as DataAssemblyOptions;
+        it('static DataAssemblyModel', () => {
+            const options = getBinDrvDataAssemblyModel(1, 'Test');
             expect(Object.keys(options.dataItems).length).to.equal(39);
         });
 
-        it('dynamic DataAssemblyOptions', () => {
+        it('dynamic DataAssemblyModel', () => {
             const mockup = new BinDrvMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const options = mockup.getDataAssemblyOptions();
+            const options = mockup.getDataAssemblyModel();
 
             expect(Object.keys(options.dataItems).length).to.equal(39);
         }).timeout(8000);

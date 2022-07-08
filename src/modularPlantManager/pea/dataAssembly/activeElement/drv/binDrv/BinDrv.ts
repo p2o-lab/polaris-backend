@@ -23,9 +23,9 @@
  * SOFTWARE.
  */
 
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaConnection} from '../../../../connection';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {Drv, DrvRuntime} from '../Drv';
+import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
 
 export type BinDrvRuntime = DrvRuntime;
 
@@ -33,8 +33,8 @@ export class BinDrv extends Drv {
 
 	public readonly communication!: BinDrvRuntime;
 
-	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
-		super(options, connection);
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+		super(options, connectionHandler);
 
 	}
 }

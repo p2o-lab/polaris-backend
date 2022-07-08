@@ -24,29 +24,30 @@
  */
 
 import {
-	DataAssemblyOptions,
 	ParameterInterface, ParameterOptions,
 } from '@p2olab/polaris-interface';
-import {DataItem, DynamicDataItem, OpcUaConnection} from '../../connection';
+import {DataItem, DynamicDataItem} from '../dataItem/DataItem';
 import {WQC, WQCRuntime} from '../baseFunction';
-import {BaseDataAssemblyRuntime, DataAssemblyController} from '../DataAssemblyController';
+import {DataAssembly, DataAssemblyDataItems} from '../DataAssembly';
 import {catDataAssembly} from '../../../../logging';
-import {PEAController} from '../../PEAController';
+import {PEA} from '../../PEA';
 import {ParameterRequest} from '../ParameterRequest';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
+import {ConnectionHandler} from '../../connectionHandler/ConnectionHandler';
 
-export type InputElementRuntime = WQCRuntime & BaseDataAssemblyRuntime ;
+export type InputElementRuntime = WQCRuntime & DataAssemblyDataItems ;
 
-export class InputElement extends DataAssemblyController {
+export class InputElement extends DataAssembly {
 	public readonly communication!: InputElementRuntime;
 	public parameterRequest: ParameterRequest | undefined;
 	public requestedValue = '';
 
 	wqc: WQC;
 
-	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
-		super(options, connection);
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+		super(options);
 
-		this.wqc = new WQC(this);
+		this.wqc = new WQC(options, connectionHandler);
 	}
 	/**
 	 * Set parameter on PEAController
@@ -61,7 +62,7 @@ export class InputElement extends DataAssemblyController {
 		await (dataItem as DynamicDataItem<any>)?.write(paramValue);
 	}
 
-	public async setValue(p: ParameterOptions, peas: PEAController[]): Promise<void> {
+	public async setValue(p: ParameterOptions, peas: PEA[]): Promise<void> {
 		catDataAssembly.debug(`set value: ${JSON.stringify(p)}`);
 		if (p.value) {
 			this.requestedValue = p.value.toString();

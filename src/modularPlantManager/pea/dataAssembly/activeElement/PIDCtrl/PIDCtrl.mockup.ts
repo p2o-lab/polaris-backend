@@ -24,157 +24,279 @@
  */
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {getOpModeDataItemOptions, OpModeMockup} from '../../baseFunction/opMode/OpMode.mockup';
-import {getSourceModeDataItemOptions, SourceModeMockup} from '../../baseFunction/sourceMode/SourceMode.mockup';
-import {ActiveElementMockup, getActiveElementDataItemOptions} from '../ActiveElement.mockup';
-import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {getDataAssemblyOptions} from '../../DataAssemblyController.mockup';
+import {getOpModeDataItemModel, OpModeMockup} from '../../baseFunction/opMode/OpMode.mockup';
+import {getSourceModeDataItemModel, SourceModeMockup} from '../../baseFunction/sourceMode/SourceMode.mockup';
+import {ActiveElementMockup, getActiveElementDataItemModel} from '../ActiveElement.mockup';
+
+import {DataAssemblyModel, DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+import {getDataAssemblyModel} from '../../DataAssembly.mockup';
+import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../dataItem/DataItem.mockup';
 
 const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/ActiveElement/PIDCtrl';
 
-function getPIDCtrlSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return ({
-		PV: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.PV`,
-			dataType: 'Float'
-		} as OpcUaNodeOptions,
-		PVSclMin: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.PVSclMin`,
-			dataType: 'Float'
-		} as OpcUaNodeOptions,
-		PVSclMax: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.PVSclMax`,
-			dataType: 'Float'
-		} as OpcUaNodeOptions,
-		PVUnit: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.PVUnit`,
-			dataType: 'Int16'
-		} as OpcUaNodeOptions,
-		SP: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.SP`,
-			dataType: 'Float'
-		} as OpcUaNodeOptions,
-		SPSclMin: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.SPSclMin`,
-			dataType: 'Float'
-		} as OpcUaNodeOptions,
-		SPSclMax: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.SPSclMax`,
-			dataType: 'Float'
-		} as OpcUaNodeOptions,
-		SPUnit: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.SPUnit`,
-			dataType: 'Int16'
-		} as OpcUaNodeOptions,
-		SPMan: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.SPMan`,
-			dataType: 'Float'
-		} as OpcUaNodeOptions,
-		SPManMin: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.SPManMin`,
-			dataType: 'Float'
-		} as OpcUaNodeOptions,
-		SPManMax: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.SPManMax`,
-			dataType: 'Float'
-		} as OpcUaNodeOptions,
-		SPInt: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.SPInt`,
-			dataType: 'Float'
-		} as OpcUaNodeOptions,
-		SPIntMin: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.SPIntMin`,
-			dataType: 'Float'
-		} as OpcUaNodeOptions,
-		SPIntMax: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.SPIntMax`,
-			dataType: 'Float'
-		} as OpcUaNodeOptions,
-		MV: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.MV`,
-			dataType: 'Float'
-		} as OpcUaNodeOptions,
-		MVMan: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.MVMan`,
-			dataType: 'Float'
-		} as OpcUaNodeOptions,
-		MVSclMin: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.MVSclMin`,
-			dataType: 'Float'
-		} as OpcUaNodeOptions,
-		MVSclMax: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.MVSclMax`,
-			dataType: 'Float'
-		} as OpcUaNodeOptions,
-		MVUnit: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.MVUnit`,
-			dataType: 'Int16'
-		} as OpcUaNodeOptions,
-		MVMin: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.MVMin`,
-			dataType: 'Float'
-		} as OpcUaNodeOptions,
-		MVMax: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.MVMax`,
-			dataType: 'Float'
-		} as OpcUaNodeOptions,
-		P: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.P`,
-			dataType: 'Float'
-		} as OpcUaNodeOptions,
-		Ti: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.Ti`,
-			dataType: 'Float'
-		} as OpcUaNodeOptions,
-		Td: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.Td`,
-			dataType: 'Float'
-		} as OpcUaNodeOptions
-	});
+function getPIDCtrlSpecificDataItemModels(namespace: number, objectBrowseName: string): DataItemModel[] {
+
+
+	const result: DataItemModel[] = [];
+	let dataItem: DataItemModel = getEmptyDataItemModel();
+	dataItem.name = 'PV';
+	dataItem.dataType = 'Float';
+	let ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.PV`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'PVSclMin';
+	dataItem.dataType = 'Float';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.PVSclMin`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'PVSclMax';
+	dataItem.dataType = 'Float';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.PVSclMax`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'PVUnit';
+	dataItem.dataType = 'Int16';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.PVUnit`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'SP';
+	dataItem.dataType = 'Float';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.SP`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'SPSclMin';
+	dataItem.dataType = 'Float';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.SPSclMin`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'SPSclMax';
+	dataItem.dataType = 'Float';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.SPSclMax`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'SPUnit';
+	dataItem.dataType = 'Int16';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.SPUnit`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'SPMan';
+	dataItem.dataType = 'Float';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.SPMan`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'SPManMin';
+	dataItem.dataType = 'Float';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.SPManMin`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'SPManMax';
+	dataItem.dataType = 'Float';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.SPManMax`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'SPInt';
+	dataItem.dataType = 'Float';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.SPInt`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'SPIntMin';
+	dataItem.dataType = 'Float';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.SPIntMin`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'SPIntMax';
+	dataItem.dataType = 'Float';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.SPIntMax`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'MV';
+	dataItem.dataType = 'Float';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.MV`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'MVMan';
+	dataItem.dataType = 'Float';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.MVMan`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'MVSclMin';
+	dataItem.dataType = 'Float';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.MVSclMin`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'MVSclMax';
+	dataItem.dataType = 'Float';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.MVSclMax`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'MVUnit';
+	dataItem.dataType = 'Int16';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.MVUnit`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'MVMin';
+	dataItem.dataType = 'Float';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.MVMin`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'MVMax';
+	dataItem.dataType = 'Float';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.MVMax`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'P';
+	dataItem.dataType = 'Float';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.P`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'Ti';
+	dataItem.dataType = 'Float';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.Ti`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'Td';
+	dataItem.dataType = 'Float';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.Td`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	return result;
 }
 
 
-export function getPIDCtrlDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return ({
-			...getActiveElementDataItemOptions(namespace, objectBrowseName),
-			...getSourceModeDataItemOptions(namespace, objectBrowseName),
-			...getOpModeDataItemOptions(namespace, objectBrowseName),
-			...getPIDCtrlSpecificDataItemOptions(namespace, objectBrowseName),
-		} as OpcUaNodeOptions
-	);
+export function getPIDCtrlDataItemModel(namespace: number, objectBrowseName: string): DataItemModel[] {
+	return [
+		...getActiveElementDataItemModel(namespace, objectBrowseName),
+		...getSourceModeDataItemModel(namespace, objectBrowseName),
+		...getOpModeDataItemModel(namespace, objectBrowseName),
+		...getPIDCtrlSpecificDataItemModels(namespace, objectBrowseName),
+	];
 }
 
-export function getPIDCtrlOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
-	const options = getDataAssemblyOptions(name, tagName, tagDescription);
-	options.metaModelRef = metaModelReference;
-	options.dataItems = {
+export function getPIDCtrlDataAssemblyModel(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): DataAssemblyModel {
+	const options = getDataAssemblyModel(metaModelReference, name, tagName, tagDescription);
+	options.dataItems = [
 		...options.dataItems,
-		...getPIDCtrlDataItemOptions(namespace, objectBrowseName)};
+		...getPIDCtrlDataItemModel(namespace, objectBrowseName)
+	];
 	return options;
 }
 
@@ -183,33 +305,33 @@ export class PIDCtrlMockup extends ActiveElementMockup {
 	public opMode: OpModeMockup;
 	public sourceMode: SourceModeMockup;
 
-	public pv= 0;
-	public pvSclMin= 0;
-	public pvSclMax= 0;
-	public pvUnit= 0;
+	public pv = 0;
+	public pvSclMin = 0;
+	public pvSclMax = 0;
+	public pvUnit = 0;
 
-	public spMan= 0;
-	public spInt= 0;
-	public spSclMin= 0;
-	public spSclMax= 0;
-	public spUnit= 0;
-	public spIntMin= 0;
-	public spIntMax= 0;
-	public spManMin= 0;
-	public spManMax= 0;
-	public sp= 0;
+	public spMan = 0;
+	public spInt = 0;
+	public spSclMin = 0;
+	public spSclMax = 0;
+	public spUnit = 0;
+	public spIntMin = 0;
+	public spIntMax = 0;
+	public spManMin = 0;
+	public spManMax = 0;
+	public sp = 0;
 
-	public mvMan= 0;
-	public mv= 0;
-	public mvSclMin= 0;
-	public mvSclMax= 0;
-	public mvUnit= 0;
-	public mvMin= 0;
-	public mvMax= 0;
+	public mvMan = 0;
+	public mv = 0;
+	public mvSclMin = 0;
+	public mvSclMax = 0;
+	public mvUnit = 0;
+	public mvMin = 0;
+	public mvMax = 0;
 
-	public p= 0;
-	public ti= 0;
-	public td= 0;
+	public p = 0;
+	public ti = 0;
+	public td = 0;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
 		super(namespace, rootNode, variableName);
@@ -493,15 +615,14 @@ export class PIDCtrlMockup extends ActiveElementMockup {
 		});
 	}
 
-	public getDataAssemblyOptions(): DataAssemblyOptions {
-		const options = super.getDataAssemblyOptions();
-		options.metaModelRef = metaModelReference;
-		options.dataItems = {
+	public getDataAssemblyModel(metaModelReferenceOption?: string): DataAssemblyModel {
+		const options = super.getDataAssemblyModel(metaModelReferenceOption || metaModelReference);
+		options.dataItems = [
 			...options.dataItems,
-			...this.opMode.getDataItemOptions(),
-			...this.sourceMode.getDataItemOptions(),
-			...getPIDCtrlDataItemOptions(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
-		};
+			...this.opMode.getDataItemModel(),
+			...this.sourceMode.getDataItemModel(),
+			...getPIDCtrlDataItemModel(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
+		];
 		return options;
 	}
 }

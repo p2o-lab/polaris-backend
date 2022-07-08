@@ -25,11 +25,11 @@
  
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {getMonAnaDrvDataItemOptions, getMonAnaDrvOptions, MonAnaDrvMockup} from './MonAnaDrv.mockup';
+import {getMonAnaDrvDataAssemblyModel, getMonAnaDrvDataItemModel, MonAnaDrvMockup} from './MonAnaDrv.mockup';
 import {MockupServer} from '../../../../../../_utils';
-import {OpcUaConnection} from '../../../../../connection';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {DataAssemblyModel, DataItemAccessLevel} from '@p2olab/pimad-interface';
 import {MonAnaDrvRuntime} from './MonAnaDrv';
+import {ConnectionHandler} from '../../../../../connectionHandler/ConnectionHandler';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -53,19 +53,19 @@ describe('MonAnaDrvMockup', () => {
         });
 
         it('static DataItemOptions', () => {
-            const options = getMonAnaDrvDataItemOptions(1, 'Test') as MonAnaDrvRuntime;
+            const options = getMonAnaDrvDataItemModel(1, 'Test');
             expect(Object.keys(options).length).to.equal(68);
         });
 
-        it('static DataAssemblyOptions', () => {
-            const options = getMonAnaDrvOptions(1, 'Test') as DataAssemblyOptions;
+        it('static DataAssemblyModel', () => {
+            const options = getMonAnaDrvDataAssemblyModel(1, 'Test');
             expect(Object.keys(options.dataItems).length).to.equal(70);
         });
 
-        it('dynamic DataAssemblyOptions', () => {
+        it('dynamic DataAssemblyModel', () => {
             const mockup = new MonAnaDrvMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const options = mockup.getDataAssemblyOptions();
+            const options = mockup.getDataAssemblyModel();
 
             expect(Object.keys(options.dataItems).length).to.equal(70);
         });
@@ -74,7 +74,7 @@ describe('MonAnaDrvMockup', () => {
     describe('dynamic', () => {
 
         let mockupServer: MockupServer;
-        let connection: OpcUaConnection;
+        let connectionHandler: ConnectionHandler;
 
         beforeEach(async function () {
             this.timeout(5000);
@@ -82,25 +82,25 @@ describe('MonAnaDrvMockup', () => {
             await mockupServer.initialize();
             new MonAnaDrvMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
             await mockupServer.start();
-            connection = new OpcUaConnection();
-            connection.initialize({endpointUrl: mockupServer.endpoint});
-            await connection.connect();
+            connectionHandler = new ConnectionHandler();
+            connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+            await connectionHandler.connect();
         });
 
         afterEach(async () => {
-            await connection.disconnect();
+            await connectionHandler.disconnect();
             await mockupServer.shutdown();
         });
 
         it('set and get RpmAHLim, Double', async () => {
-            await connection.writeNode('Variable.RpmAHLim', mockupServer.nameSpaceUri, 1.1, 'Double');
-            await connection.readNode('Variable.RpmAHLim', mockupServer.nameSpaceUri)
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.RpmAHLim', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, 1.1);
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.RpmAHLim', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(1.1));
         }).timeout(3000);
 
         it('set and get RpmALLim, Double', async () => {
-            await connection.writeNode('Variable.RpmALLim', mockupServer.nameSpaceUri, 1.1, 'Double');
-            await connection.readNode('Variable.RpmALLim', mockupServer.nameSpaceUri)
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.RpmALLim', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, 1.1);
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.RpmALLim', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(1.1));
         }).timeout(3000);
 

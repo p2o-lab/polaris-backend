@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import {PEAController} from '../pea';
+import {PEA} from '../pea';
 import {
 	AggregatedService,
 	AggregatedServiceOptions,
@@ -39,7 +39,7 @@ export interface POLServiceOptions {
 }
 
 export class POLServiceFactory {
-	public static create(options: POLServiceOptions, peaSet?: PEAController[], polServices?: POLService[]): POLService {
+	public static create(options: POLServiceOptions, peaSet?: PEA[], polServices?: POLService[]): POLService {
 		if (options.type === Timer.type) {
 			return new Timer(options.name);
 		} else if (options.type === Storage.type) {

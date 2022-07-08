@@ -25,56 +25,76 @@
 
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
 import {
-	FeedbackMonitoringMockup, getFeedbackMonitoringDataItemOptions
-} from '../../../../baseFunction/feedbackMonitoring/FeedbackMonitoring.mockup';
-import {AnaVlvMockup, getAnaVlvDataItemOptions} from '../AnaVlv.mockup';
-import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
-import {getDataAssemblyOptions} from '../../../../DataAssemblyController.mockup';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+	FeedbackMonitoringMockup, getFeedbackMonitoringDataItemModel} from '../../../../baseFunction/feedbackMonitoring/FeedbackMonitoring.mockup';
+import {AnaVlvMockup, getAnaVlvDataItemModel} from '../AnaVlv.mockup';
+
+import {getDataAssemblyModel} from '../../../../DataAssembly.mockup';
+import {DataAssemblyModel, DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../../../dataItem/DataItem.mockup';
 
 const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/ActiveElement/AnaVlv/MonAnaVlv';
 
-function getMonAnaVlvSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return ({
-		PosReachedFbk: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.PosReachedFbk`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		PosTolerance: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.PosTolerance`,
-			dataType: 'Float'
-		} as OpcUaNodeOptions,
-		MonPosTi: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.MonPosTi`,
-			dataType: 'Float'
-		} as OpcUaNodeOptions,
-		MonPosErr: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.MonPosErr`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions
-	});
+function getMonAnaVlvSpecificDataItemModels(namespace: number, objectBrowseName: string): DataItemModel[] {
+
+	const result: DataItemModel[] = [];
+	let dataItem: DataItemModel = getEmptyDataItemModel();
+	dataItem.name = 'PosReachedFbk';
+	dataItem.dataType = 'Boolean';
+	let ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.PosReachedFbk`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'PosTolerance';
+	dataItem.dataType = 'Float';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.PosTolerance`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'MonPosTi';
+	dataItem.dataType = 'Float';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.MonPosTi`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'MonPosErr';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.MonPosErr`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	return result;
 }
 
 
-export function getMonAnaVlvDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return ({
-			...getAnaVlvDataItemOptions(namespace, objectBrowseName),
-			...getFeedbackMonitoringDataItemOptions(namespace, objectBrowseName),
-			...getMonAnaVlvSpecificDataItemOptions(namespace, objectBrowseName),
-		} as OpcUaNodeOptions
-	);
+export function getMonAnaVlvDataItemModel(namespace: number, objectBrowseName: string): DataItemModel[] {
+	return [
+			...getAnaVlvDataItemModel(namespace, objectBrowseName),
+			...getFeedbackMonitoringDataItemModel(namespace, objectBrowseName),
+			...getMonAnaVlvSpecificDataItemModels(namespace, objectBrowseName),
+	];
 }
 
-export function getMonAnaVlvOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
-	const options = getDataAssemblyOptions(name, tagName, tagDescription);
-	options.metaModelRef = metaModelReference;
-	options.dataItems = {
+export function getMonAnaVlvDataAssemblyModel(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): DataAssemblyModel {
+	const options = getDataAssemblyModel(metaModelReference, name, tagName, tagDescription);
+	options.dataItems = [
 		...options.dataItems,
-		...getMonAnaVlvDataItemOptions(namespace, objectBrowseName)};
+		...getMonAnaVlvDataItemModel(namespace, objectBrowseName)
+	];
 	return options;
 }
 
@@ -139,14 +159,14 @@ export class MonAnaVlvMockup extends AnaVlvMockup {
 		});
 	}
 
-	public getDataAssemblyOptions(): DataAssemblyOptions {
-		const options = super.getDataAssemblyOptions();
-		options.metaModelRef = metaModelReference;
-		options.dataItems = {
+
+	public getDataAssemblyModel(metaModelReferenceOption?: string): DataAssemblyModel {
+		const options = super.getDataAssemblyModel(metaModelReferenceOption || metaModelReference);
+		options.dataItems = [
 			...options.dataItems,
-			...this.feedbackMonitoring.getDataItemOptions(),
-			...getMonAnaVlvSpecificDataItemOptions(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
-		};
+			...this.feedbackMonitoring.getDataItemModel(),
+			...getMonAnaVlvSpecificDataItemModels(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
+		];
 		return options;
 	}
 }

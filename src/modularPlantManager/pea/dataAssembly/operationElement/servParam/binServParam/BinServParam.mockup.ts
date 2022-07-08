@@ -26,83 +26,124 @@
 // eslint-disable-next-line no-undef
 import Timeout = NodeJS.Timeout;
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {getServParamDataItemOptions, ServParamMockup} from '../ServParam.mockup';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
-import {getDataAssemblyOptions} from '../../../DataAssemblyController.mockup';
+import {getServParamDataItemModel, ServParamMockup} from '../ServParam.mockup';
+import {DataAssemblyModel, DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+
+import {getDataAssemblyModel} from '../../../DataAssembly.mockup';
+import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../../dataItem/DataItem.mockup';
 
 const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/OperationElement/BinServParam';
 
-function getBinServParamSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return ({
-		VExt: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.VExt`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		VOp: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.VOp`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		VInt: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.VInt`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		VReq: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.VReq`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		VOut: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.VOut`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		VFbk: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.VFbk`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		VState0: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.VState0`,
-			dataType: 'String'
-		} as OpcUaNodeOptions,
-		VState1: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.VState1`,
-			dataType: 'String'
-		} as OpcUaNodeOptions
-	});
+function getBinServParamSpecificDataItemModels(namespace: number, objectBrowseName: string): DataItemModel[] {
+
+	const result: DataItemModel[] = [];
+	let dataItem: DataItemModel = getEmptyDataItemModel();
+	dataItem.name = 'VExt';
+	dataItem.dataType = 'Boolean';
+	let ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.VExt`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'VOp';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.VOp`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'VInt';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.VInt`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'VReq';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.VReq`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'VOut';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.VOut`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'VFbk';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.VFbk`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'VState0';
+	dataItem.dataType = 'String';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.VState0`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'VState1';
+	dataItem.dataType = 'String';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.VState1`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	return result;
 }
 
-export function getBinServParamDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return ({
-			...getServParamDataItemOptions(namespace, objectBrowseName),
-			...getBinServParamSpecificDataItemOptions(namespace, objectBrowseName),
-		}
-	);
+export function getBinServParamDataItemModel(namespace: number, objectBrowseName: string): DataItemModel[] {
+	return [
+			...getServParamDataItemModel(namespace, objectBrowseName),
+			...getBinServParamSpecificDataItemModels(namespace, objectBrowseName),
+		];
 }
 
-export function getBinServParamOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
-	const options = getDataAssemblyOptions(name, tagName, tagDescription);
-	options.metaModelRef = metaModelReference;
-	options.dataItems = {
+export function getBinServParamDataAssemblyModel(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): DataAssemblyModel {
+	const options = getDataAssemblyModel(metaModelReference, name, tagName, tagDescription);
+	options.dataItems = [
 		...options.dataItems,
-		...getBinServParamDataItemOptions(namespace, objectBrowseName)};
+		...getBinServParamDataItemModel(namespace, objectBrowseName)
+	];
 	return options;
 }
 
 export class BinServParamMockup extends ServParamMockup{
 
-	protected vExt = false;
-	protected vOp = false;
-	protected vInt = false;
-	protected vReq = false;
-	protected vOut = false;
-	protected vFbk = false;
+	public vExt = false;
+	public vOp = false;
+	public vInt = false;
+	public vReq = false;
+	public vOut = false;
+	public vFbk = false;
 
 	protected interval: Timeout | undefined;
 
@@ -209,13 +250,12 @@ export class BinServParamMockup extends ServParamMockup{
 
 	}
 
-	public getDataAssemblyOptions(): DataAssemblyOptions {
-		const options = super.getDataAssemblyOptions();
-		options.metaModelRef = metaModelReference;
-		options.dataItems = {
+	public getDataAssemblyModel(metaModelReferenceOption?: string): DataAssemblyModel {
+		const options = super.getDataAssemblyModel(metaModelReferenceOption || metaModelReference);
+		options.dataItems = [
 			...options.dataItems,
-			...getBinServParamSpecificDataItemOptions(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
-		};
+			...getBinServParamSpecificDataItemModels(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
+	];
 		return options;
 	}
 

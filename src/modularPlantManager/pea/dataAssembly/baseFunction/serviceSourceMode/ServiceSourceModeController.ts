@@ -24,11 +24,14 @@
  */
 
 import {ServiceSourceMode} from '@p2olab/polaris-interface';
-import {DataItem} from '../../../connection';
+import {DataItem} from '../../dataItem/DataItem';
 import {catDataAssembly} from '../../../../../logging';
 import {BaseServiceEvents} from '../../../serviceSet';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {EventEmitter} from 'events';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
+import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
+import {DataItemFactory, getDataItemModel} from '../../dataItem/DataItemFactory';
 
 export interface ServiceSourceModeRuntime {
 	SrcChannel: DataItem<boolean>;
@@ -52,36 +55,38 @@ export interface ServiceSourceModeEvents extends BaseServiceEvents {
 type ServiceSourceModeEmitter = StrictEventEmitter<EventEmitter, ServiceSourceModeEvents>;
 
 export class ServiceSourceModeController extends (EventEmitter as new() => ServiceSourceModeEmitter){
-	private dAController: any;
+	SrcChannel: DataItem<boolean>;
+	SrcIntAct: DataItem<boolean>;
+	SrcIntAut: DataItem<boolean>;
+	SrcIntOp: DataItem<boolean>;
+	SrcExtAct: DataItem<boolean>;
+	SrcExtAut: DataItem<boolean>;
+	SrcExtOp: DataItem<boolean>;
 
-	constructor(dAController: any) {
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
 		super();
-		this.dAController = dAController;
-		this.initialize();
-	}
 
-	private initialize(): void {
-		this.dAController.communication.SrcChannel = this.dAController.createDataItem('SrcChannel',  'boolean');
+		this.SrcChannel = DataItemFactory.create(getDataItemModel(options, 'SrcChannel'), connectionHandler);
 
-		this.dAController.communication.SrcExtAut = this.dAController.createDataItem('SrcExtAut', 'boolean');
-		this.dAController.communication.SrcIntAut = this.dAController.createDataItem('SrcIntAut', 'boolean');
+		this.SrcExtAut = DataItemFactory.create(getDataItemModel(options, 'SrcExtAut'), connectionHandler);
+		this.SrcIntAut = DataItemFactory.create(getDataItemModel(options, 'SrcIntAut'), connectionHandler);
 
-		this.dAController.communication.SrcExtOp = this.dAController.createDataItem('SrcExtOp', 'boolean', 'write');
-		this.dAController.communication.SrcIntOp = this.dAController.createDataItem('SrcIntOp', 'boolean', 'write');
+		this.SrcExtOp = DataItemFactory.create(getDataItemModel(options, 'SrcExtOp'), connectionHandler);
+		this.SrcIntOp = DataItemFactory.create(getDataItemModel(options, 'SrcIntOp'), connectionHandler);
 
-		this.dAController.communication.SrcExtAct = this.dAController.createDataItem('SrcExtAct', 'boolean');
-		this.dAController.communication.SrcIntAct = this.dAController.createDataItem('SrcIntAct', 'boolean');
+		this.SrcExtAct = DataItemFactory.create(getDataItemModel(options, 'SrcExtAct'), connectionHandler);
+		this.SrcIntAct = DataItemFactory.create(getDataItemModel(options, 'SrcIntAct'), connectionHandler);
 
-		this.dAController.communication.SrcChannel.on('changed', () => {
-			this.emit('changed', {serviceSourceMode: this.getServiceSourceMode(), sourceChannel: this.dAController.communication.SrcChannel.value});
+		this.SrcChannel.on('changed', () => {
+			this.emit('changed', {serviceSourceMode: this.getServiceSourceMode(), sourceChannel: this.SrcChannel.value});
 		});
 		// TODO: Always two of them will change in parallel --> Smart way to just emit one event?
 		// Even if there are just inverted options both can be 0 initially, to not miss a change both were added here
-		this.dAController.communication.SrcIntAct.on('changed', () => {
-			this.emit('changed', {serviceSourceMode: this.getServiceSourceMode(), sourceChannel: this.dAController.communication.SrcChannel.value});
+		this.SrcIntAct.on('changed', () => {
+			this.emit('changed', {serviceSourceMode: this.getServiceSourceMode(), sourceChannel: this.SrcChannel.value});
 		});
-		this.dAController.communication.SrcExtAct.on('changed', () => {
-			this.emit('changed', {serviceSourceMode: this.getServiceSourceMode(), sourceChannel: this.dAController.communication.SrcChannel.value});
+		this.SrcExtAct.on('changed', () => {
+			this.emit('changed', {serviceSourceMode: this.getServiceSourceMode(), sourceChannel: this.SrcChannel.value});
 		});
 	}
 
@@ -104,7 +109,6 @@ export class ServiceSourceModeController extends (EventEmitter as new() => Servi
 	}
 
 	public async waitForServiceSourceModeToPassSpecificTest(expectedServiceSourceMode: ServiceSourceMode): Promise<unknown> {
-		await this.dAController.subscribe();
 		return new Promise<void>((resolve, reject) => {
 			if (this.isServiceSourceMode(expectedServiceSourceMode)) {
 				resolve();
@@ -115,7 +119,7 @@ export class ServiceSourceModeController extends (EventEmitter as new() => Servi
 				// eslint-disable-next-line @typescript-eslint/no-this-alias
 				const da = this;
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				this.dAController.on('changed', function test(this: any) {
+				this.on('changed', function test(this: any) {
 					if (da.isServiceSourceMode(expectedServiceSourceMode)) {
 						this.removeListener('OpMode', test);
 						resolve();
@@ -130,7 +134,6 @@ export class ServiceSourceModeController extends (EventEmitter as new() => Servi
 	 */
 	public async setToExternalServiceSourceMode(): Promise<void> {
 		if (!this.isExtSource()) {
-			catDataAssembly.trace(`[${this.dAController.name}] Finally to Ext`);
 			await this.writeServiceSourceMode(ServiceSourceMode.Extern);
 			await this.waitForServiceSourceModeToPassSpecificTest(ServiceSourceMode.Extern);
 		}
@@ -141,7 +144,6 @@ export class ServiceSourceModeController extends (EventEmitter as new() => Servi
 	 */
 	public async setToInternalServiceSourceMode(): Promise<void> {
 		if (!this.isIntSource()) {
-			catDataAssembly.trace(`[${this.dAController.name}] Finally to Int`);
 			await this.writeServiceSourceMode(ServiceSourceMode.Intern);
 			await this.waitForServiceSourceModeToPassSpecificTest(ServiceSourceMode.Intern);
 		}
@@ -151,20 +153,20 @@ export class ServiceSourceModeController extends (EventEmitter as new() => Servi
 	 * Write ServiceSourceMode to DataItem
 	 */
 	private async writeServiceSourceMode(serviceSourceMode: ServiceSourceMode): Promise<void> {
-		catDataAssembly.debug(`[${this.dAController.name}] Write serviceSourceMode: ${serviceSourceMode}`);
+		catDataAssembly.debug(`Write serviceSourceMode: ${serviceSourceMode}`);
 		if (serviceSourceMode === ServiceSourceMode.Extern) {
-			await this.dAController.communication.SrcExtOp.write(true);
+			await this.SrcExtOp.write(true);
 		} else if (serviceSourceMode === ServiceSourceMode.Intern) {
-			await this.dAController.communication.SrcIntOp.write(true);
+			await this.SrcIntOp.write(true);
 		}
-		catDataAssembly.debug(`[${this.dAController.name}] Setting serviceSourceMode successfully`);
+		catDataAssembly.debug('Set serviceSourceMode');
 	}
 
 	public isExtSource(): boolean {
-		return this.dAController.communication.SrcExtAct.value === true;
+		return this.SrcExtAct.value;
 	}
 
 	public isIntSource(): boolean {
-		return this.dAController.communication.SrcIntAct.value === true;
+		return this.SrcIntAct.value;
 	}
 }

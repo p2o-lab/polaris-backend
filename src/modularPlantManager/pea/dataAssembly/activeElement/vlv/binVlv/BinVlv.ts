@@ -23,9 +23,11 @@
 * SOFTWARE.
 */
 
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaConnection, DataItem} from '../../../../connection';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
+import {DataItem} from '../../../dataItem/DataItem';
 import {Vlv, VlvRuntime} from '../Vlv';
+import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
+import {DataItemFactory, getDataItemModel} from '../../../dataItem/DataItemFactory';
 
 export type BinVlvRuntime = VlvRuntime & {
 	Ctrl: DataItem<boolean>;
@@ -34,9 +36,9 @@ export type BinVlvRuntime = VlvRuntime & {
 export class BinVlv extends Vlv {
 	public readonly communication!: BinVlvRuntime;
 
-	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
-		super(options, connection);
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+		super(options, connectionHandler);
 
-		this.communication.Ctrl = this.createDataItem('Ctrl', 'boolean');
+		this.communication.Ctrl = DataItemFactory.create(getDataItemModel(options, 'Ctrl'), connectionHandler);
 	}
 }

@@ -24,66 +24,64 @@
  */
 
 import {
-	OperationMode, PEAOptions,
+	OperationMode,
 	ServiceCommand,
 	ServiceControlOptions,
 	ServiceOptions, ServiceSourceMode
 } from '@p2olab/polaris-interface';
-import {OpcUaConnection} from '../connection';
-import {PEAController, Service} from '../index';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import * as peaOptions from '../../peaOptions.spec.json';
+import * as peaModel from '../../peaModel.spec.json';
 import {ServiceState} from './service/enum';
 import {PEAMockup} from '../PEA.mockup';
+import {ConnectionHandler} from '../connectionHandler/ConnectionHandler';
+import {Service} from './service/Service';
+import {PEA} from '../PEA';
+import {PEAModel, ServiceModel} from '@p2olab/pimad-interface';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('ServiceSet', () => {
-	const opcUAConnection = new OpcUaConnection();
-	const peaOptionsReference = peaOptions as any as PEAOptions;
+	const connectionHandler = new ConnectionHandler();
+	const peaModelReference = peaModel as any as PEAModel;
 
 	context('constructor', () => {
 		it('should fail with missing options', () => {
-			expect(() => new Service({} as ServiceOptions, opcUAConnection, '')).to.throw();
+			expect(() => new Service({} as ServiceModel, connectionHandler, '')).to.throw();
 		});
 
 		it('should fail with missing name', () => {
-			expect(() => new Service(
-				{name: '', parameters: [], communication: {} as ServiceControlOptions, procedures: []},
-				opcUAConnection, '')
+			expect(() => new Service({} as ServiceModel, connectionHandler, '')
 			).to.throw('No service name');
 		});
 
 		it('should fail with missing PEAController', () => {
-			expect(() => new Service(
-				{name: 'test', parameters: [], communication: {} as ServiceControlOptions, procedures: []},
-				opcUAConnection, '')
-			).to.throw('Creating DataAssemblyController Error: No Communication dataAssemblies found in DataAssemblyOptions');
+			expect(() => new Service({} as ServiceModel, connectionHandler, ''))
+				.to.throw('Creating DataAssembly Error: No Communication dataAssemblies found in DataAssemblyModel');
 		});
 
 	});
 
 	it('should reject command if not connected', async () => {
 
-		const pea = new PEAController(peaOptionsReference);
+		const pea = new PEA(peaModelReference);
 		const service = pea.services[0];
 		await expect(service.executeCommand(ServiceCommand.start)).to.be.rejectedWith('PEAController is not connected');
 	});
 
 	it('should create service from reference options', () => {
-		const service = new Service(peaOptionsReference.services[0], opcUAConnection, 'root');
+		const service = new Service(peaModelReference.services[0], connectionHandler, 'root');
 		expect(service.name).to.equal('Trigonometry');
 	});
 
 	context('with PEATestServer', () => {
-		let pea: PEAController;
+		let pea: PEA;
 		let service: Service;
 
 		before(() => {
-			pea = new PEAController(peaOptionsReference);
+			pea = new PEA(peaModelReference);
 			service = pea.services[0];
 		});
 
@@ -106,14 +104,14 @@ describe('ServiceSet', () => {
 		let peaServer: PEAMockup;
 		let service: Service;
 		//let testService: TestServerService;
-		let pea: PEAController;
+		let pea: PEA;
 
 		beforeEach(async function () {
 			this.timeout(5000);
 			peaServer = new PEAMockup();
 			peaServer.services.push();
 			await peaServer.startSimulation();
-			pea = new PEAController(peaOptionsReference);
+			pea = new PEA(peaModelReference);
 			service = pea.services[0];
 			await pea.connectAndSubscribe();
 		});

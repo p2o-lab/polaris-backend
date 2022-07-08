@@ -23,42 +23,37 @@
  * SOFTWARE.
  */
 
-import {OpcUaConnection} from '../../../connection';
-
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {DataAssemblyController} from '../../DataAssemblyController';
-import {DIntMan} from '../../operationElement';
 import {UnitSettings} from './UnitSettings';
 import {MockupServer} from '../../../../_utils';
 import {UnitSettingsMockup} from './UnitSettings.mockup';
-import {getDIntManOptions} from '../../operationElement/man/dintMan/DIntMan.mockup';
+import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
+import {getDIntManDataAssemblyModel} from '../../operationElement/man/dintMan/DIntMan.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('UnitSettings', () => {
 
-	const dataAssemblyOptions = getDIntManOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
+	const options = getDIntManDataAssemblyModel(2, 'Variable', 'Variable');
 
 	describe('static', () => {
 
-		const emptyOPCUAConnection = new OpcUaConnection();
+		const connectionHandler = new ConnectionHandler();
 
 		it('should create UnitSettings',  () => {
-			const da = new DataAssemblyController(dataAssemblyOptions, emptyOPCUAConnection);
-			const unitSettings = new UnitSettings(da);
-			expect(unitSettings).to.not.be.undefined;
-			expect((da as DIntMan).communication.VUnit).to.not.be.undefined;
-			expect(unitSettings.Unit).to.be.empty;
+			const da = new UnitSettings(options, connectionHandler);
+			expect(da).to.not.be.undefined;
+			expect(da.VUnit).to.not.be.undefined;
+			expect(da.Unit).to.be.empty;
 		});
 	});
 
 	describe('dynamic', () => {
 
 		let mockupServer: MockupServer;
-		let connection: OpcUaConnection;
+		let connectionHandler: ConnectionHandler;
 
 		beforeEach(async function () {
 			this.timeout(4000);
@@ -66,26 +61,24 @@ describe('UnitSettings', () => {
 			await mockupServer.initialize();
 			new UnitSettingsMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			await mockupServer.start();
-			connection = new OpcUaConnection();
-			connection.initialize({endpointUrl: mockupServer.endpoint});
-			await connection.connect();
+			connectionHandler= new ConnectionHandler();
+			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			await connectionHandler.connect();
 		});
 
 		afterEach(async function () {
 			this.timeout(4000);
-			await connection.disconnect();
+			await connectionHandler.disconnect();
 			await mockupServer.shutdown();
 		});
 
 		it('should subscribe successfully', async () => {
 
-			const dataAssemblyController = new DataAssemblyController(dataAssemblyOptions, connection) as any;
-			new UnitSettings(dataAssemblyController);
-			await dataAssemblyController.subscribe();
-			await connection.startMonitoring();
-			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
+			const dataAssembly = new UnitSettings(options, connectionHandler);
+			await connectionHandler.connect();
+			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 
-			expect(dataAssemblyController.communication.VUnit.value).to.equal(0);
+			expect(dataAssembly.VUnit.value).to.equal(0);
 		}).timeout(5000);
 	});
 });

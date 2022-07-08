@@ -24,7 +24,7 @@
  */
 
 import {ParameterOptions, ScopeOptions} from '@p2olab/polaris-interface';
-import {PEAController} from '../../../pea';
+import {PEA} from '../../../pea';
 
 import {EventEmitter} from 'events';
 import {Expression} from 'expr-eval';
@@ -75,7 +75,7 @@ export class Parameter extends (EventEmitter as new () => ParameterEmitter){
 	 * @param peas PEAs where expression can be matched
 	 *
 	 */
-	constructor(parameterOptions: ParameterOptions, peas: PEAController[] = []) {
+	constructor(parameterOptions: ParameterOptions, peas: PEA[] = []) {
 		super();
 
 		catParameter.info(`Create Parameter: ${JSON.stringify(parameterOptions)}`);

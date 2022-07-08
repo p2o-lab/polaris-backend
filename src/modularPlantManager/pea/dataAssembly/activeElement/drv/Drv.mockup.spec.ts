@@ -26,12 +26,12 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 
-import {DrvMockup, getDrvDataItemOptions, getDrvOptions} from './Drv.mockup';
+import {DrvMockup, getDrvDataAssemblyModel, getDrvDataItemModel} from './Drv.mockup';
 import {MockupServer} from '../../../../_utils';
 import {BinDrvMockup} from './binDrv/BinDrv.mockup';
-import {OpcUaConnection} from '../../../connection';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {DataAssemblyModel, DataItemAccessLevel} from '@p2olab/pimad-interface';
 import {DrvRuntime} from './Drv';
+import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -54,19 +54,19 @@ describe('DrvMockup', () => {
         });
 
         it('static DataItemOptions', () => {
-            const options = getDrvDataItemOptions(1, 'Test') as DrvRuntime;
+            const options = getDrvDataItemModel(1, 'Test');
             expect(Object.keys(options).length).to.equal(37);
         });
 
-        it('static DataAssemblyOptions', () => {
-            const options = getDrvOptions(1, 'Test') as DataAssemblyOptions;
+        it('static DataAssemblyModel', () => {
+            const options = getDrvDataAssemblyModel(1, 'Test');
             expect(Object.keys(options.dataItems).length).to.equal(39);
         });
 
-        it('dynamic DataAssemblyOptions', () => {
+        it('dynamic DataAssemblyModel', () => {
             const mockup = new DrvMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const options = mockup.getDataAssemblyOptions();
+            const options = mockup.getDataAssemblyModel();
 
             expect(Object.keys(options.dataItems).length).to.equal(39);
         });
@@ -75,7 +75,7 @@ describe('DrvMockup', () => {
     describe('dynamic', () => {
 
         let mockupServer: MockupServer;
-        let connection: OpcUaConnection;
+        let connectionHandler: ConnectionHandler;
 
         beforeEach(async function () {
             this.timeout(5000);
@@ -83,31 +83,31 @@ describe('DrvMockup', () => {
             await mockupServer.initialize();
             new BinDrvMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
             await mockupServer.start();
-            connection = new OpcUaConnection();
-            connection.initialize({endpointUrl: mockupServer.endpoint});
-            await connection.connect();
+            connectionHandler = new ConnectionHandler();
+            connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+            await connectionHandler.connect();
         });
         afterEach(async () => {
-            await connection.disconnect();
+            await connectionHandler.disconnect();
             await mockupServer.shutdown();
         });
 
         it('set and get StopOp', async () => {
-            await connection.writeNode('Variable.StopOp', mockupServer.nameSpaceUri, true, 'Boolean');
-            await connection.readNode('Variable.StopOp', mockupServer.nameSpaceUri)
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.StopOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, true);
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.StopOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(true));
         }).timeout(3000);
 
         it('set and get FwdOp', async () => {
-            await connection.writeNode('Variable.FwdOp', mockupServer.nameSpaceUri, true, 'Boolean');
-            await connection.readNode('Variable.FwdOp', mockupServer.nameSpaceUri)
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.FwdOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, true);
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.FwdOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(true));
 
         }).timeout(3000);
 
         it('set and get RevOp', async () => {
-            await connection.writeNode('Variable.RevOp', mockupServer.nameSpaceUri, true, 'Boolean');
-            await connection.readNode('Variable.RevOp', mockupServer.nameSpaceUri)
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.RevOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, true);
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.RevOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(true));
         }).timeout(3000);
 

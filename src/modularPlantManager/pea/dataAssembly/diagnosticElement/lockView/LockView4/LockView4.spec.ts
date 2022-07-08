@@ -23,92 +23,92 @@
  * SOFTWARE.
  */
 
-import {OpcUaConnection} from '../../../../connection';
 import {LockView4} from './LockView4';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {MockupServer} from '../../../../../_utils';
-import {getLockView4Options, LockView4Mockup} from './LockView4.mockup';
+import {getLockView4DataAssemblyModel, LockView4Mockup} from './LockView4.mockup';
+import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('LockView4', () => {
 
-	let dataAssemblyOptions: DataAssemblyOptions;
+	let options: DataAssemblyModel;
 
 	describe('static', () => {
 
-		const emptyOPCUAConnection = new OpcUaConnection();
-		dataAssemblyOptions = getLockView4Options(2, 'Variable', 'Variable') as DataAssemblyOptions;
+		const emptyOPCUAConnection = new ConnectionHandler();
+		options = getLockView4DataAssemblyModel(2, 'Variable', 'Variable') as DataAssemblyModel;
 
 		it('should create LockView4', async () => {
-			const dataAssemblyController = new LockView4(dataAssemblyOptions, emptyOPCUAConnection);
-			expect(dataAssemblyController).to.be.not.undefined;
-			expect(dataAssemblyController.communication).to.be.not.undefined;
-			expect(dataAssemblyController.wqc).to.be.not.undefined;
+			const dataAssembly = new LockView4(options, emptyOPCUAConnection);
+			expect(dataAssembly).to.be.not.undefined;
+			expect(dataAssembly.communication).to.be.not.undefined;
+			expect(dataAssembly.wqc).to.be.not.undefined;
 		});
 
 	});
 	describe('dynamic', () => {
 		let mockupServer: MockupServer;
-		let connection: OpcUaConnection;
+		let connectionHandler: ConnectionHandler;
 
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
 			const lockView4Mockup = new LockView4Mockup( mockupServer.nameSpace, mockupServer.rootObject,'Variable');
-			dataAssemblyOptions = lockView4Mockup.getDataAssemblyOptions();
+			options = lockView4Mockup.getDataAssemblyModel();
 			await mockupServer.start();
-			connection = new OpcUaConnection();
-			connection.initialize({endpointUrl: mockupServer.endpoint});
-			await connection.connect();
+			connectionHandler= new ConnectionHandler();
+			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			await connectionHandler.connect();
 		});
 
 		afterEach(async function () {
 			this.timeout(4000);
-			await connection.disconnect();
+			await connectionHandler.disconnect();
 			await mockupServer.shutdown();
 		});
 
 		it('should subscribe successfully', async () => {
 
-			const dataAssemblyController = new LockView4(dataAssemblyOptions, connection);
-			await dataAssemblyController.subscribe();
-			await connection.startMonitoring();
-			await new Promise((resolve => dataAssemblyController.communication.In4Txt.on('changed', resolve)));
+			const dataAssembly = new LockView4(options, connectionHandler);
+			await dataAssembly.subscribe();
+			await connectionHandler.connect();
+			await new Promise((resolve => dataAssembly.In4Txt.on('changed', resolve)));
 
-			expect(dataAssemblyController.communication.WQC.value).equal(0);
-			expect(dataAssemblyController.communication.Logic.value).equal(false);
-			expect(dataAssemblyController.communication.Out.value).equal(false);
-			expect(dataAssemblyController.communication.OutQC.value).equal(0);
+			expect(dataAssembly.wqc.WQC).equal(0);
+			expect(dataAssembly.Logic.value).equal(false);
+			expect(dataAssembly.Out.value).equal(false);
+			expect(dataAssembly.OutQC.value).equal(0);
 
-			expect(dataAssemblyController.communication.In1En.value).equal(false);
-			expect(dataAssemblyController.communication.In1.value).equal(false);
-			expect(dataAssemblyController.communication.In1QC.value).equal(0);
-			expect(dataAssemblyController.communication.In1Inv.value).equal(false);
-			expect(dataAssemblyController.communication.In1Txt.value).equal('testText');
+			expect(dataAssembly.In1En.value).equal(false);
+			expect(dataAssembly.In1.value).equal(false);
+			expect(dataAssembly.In1QC.value).equal(0);
+			expect(dataAssembly.In1Inv.value).equal(false);
+			expect(dataAssembly.In1Txt.value).equal('testText');
 
-			expect(dataAssemblyController.communication.In2En.value).equal(false);
-			expect(dataAssemblyController.communication.In2.value).equal(false);
-			expect(dataAssemblyController.communication.In2QC.value).equal(0);
-			expect(dataAssemblyController.communication.In2Inv.value).equal(false);
-			expect(dataAssemblyController.communication.In2Txt.value).equal('testText');
+			expect(dataAssembly.In2En.value).equal(false);
+			expect(dataAssembly.In2.value).equal(false);
+			expect(dataAssembly.In2QC.value).equal(0);
+			expect(dataAssembly.In2Inv.value).equal(false);
+			expect(dataAssembly.In2Txt.value).equal('testText');
 
-			expect(dataAssemblyController.communication.In3En.value).equal(false);
-			expect(dataAssemblyController.communication.In3.value).equal(false);
-			expect(dataAssemblyController.communication.In3QC.value).equal(0);
-			expect(dataAssemblyController.communication.In3Inv.value).equal(false);
-			expect(dataAssemblyController.communication.In3Txt.value).equal('testText');
+			expect(dataAssembly.In3En.value).equal(false);
+			expect(dataAssembly.In3.value).equal(false);
+			expect(dataAssembly.In3QC.value).equal(0);
+			expect(dataAssembly.In3Inv.value).equal(false);
+			expect(dataAssembly.In3Txt.value).equal('testText');
 
-			expect(dataAssemblyController.communication.In4En.value).equal(false);
-			expect(dataAssemblyController.communication.In4.value).equal(false);
-			expect(dataAssemblyController.communication.In4QC.value).equal(0);
-			expect(dataAssemblyController.communication.In4Inv.value).equal(false);
-			expect(dataAssemblyController.communication.In4Txt.value).equal('testText');
+			expect(dataAssembly.In4En.value).equal(false);
+			expect(dataAssembly.In4.value).equal(false);
+			expect(dataAssembly.In4QC.value).equal(0);
+			expect(dataAssembly.In4Inv.value).equal(false);
+			expect(dataAssembly.In4Txt.value).equal('testText');
 		}).timeout(4000);
 	});
 });

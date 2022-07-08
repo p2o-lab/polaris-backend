@@ -23,9 +23,11 @@
  * SOFTWARE.
  */
 
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaConnection, DataItem} from '../../../connection';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
+import {DataItem} from '../../dataItem/DataItem';
 import {IndicatorElement, IndicatorElementRuntime} from '../IndicatorElement';
+import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
+import {DataItemFactory, getDataItemModel} from '../../dataItem/DataItemFactory';
 
 export type BinViewRuntime = IndicatorElementRuntime & {
 	V: DataItem<boolean>;
@@ -36,11 +38,11 @@ export type BinViewRuntime = IndicatorElementRuntime & {
 export class BinView extends IndicatorElement {
 	public readonly communication!: BinViewRuntime;
 
-	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
-		super(options, connection);
-		this.communication.V = this.createDataItem('V', 'boolean');
-		this.communication.VState0 = this.createDataItem('VState0', 'string');
-		this.communication.VState1 = this.createDataItem('VState1',  'string');
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+		super(options, connectionHandler);
+		this.communication.V = DataItemFactory.create(getDataItemModel(options, 'V'), connectionHandler);
+		this.communication.VState0 = DataItemFactory.create(getDataItemModel(options, 'VState0'), connectionHandler);
+		this.communication.VState1 = DataItemFactory.create(getDataItemModel(options, 'VState1'), connectionHandler);
 
 		this.defaultReadDataItem = this.communication.V;
 		this.defaultReadDataItemType = 'boolean';

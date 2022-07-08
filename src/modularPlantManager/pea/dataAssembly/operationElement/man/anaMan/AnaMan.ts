@@ -23,14 +23,16 @@
  * SOFTWARE.
  */
 
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaConnection, DataItem} from '../../../../connection';
+import {DataItem} from '../../../dataItem/DataItem';
 import {
 	ScaleSettings, ScaleSettingsRuntime,
 	UnitSettingsRuntime, UnitSettings,
 	ValueLimitation, ValueLimitationRuntime
 } from '../../../baseFunction';
 import {OperationElement, OperationElementRuntime} from '../../OperationElement';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
+import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
+import {DataItemFactory, getDataItemModel} from '../../../dataItem/DataItemFactory';
 
 export type AnaManRuntime =
 	OperationElementRuntime & UnitSettingsRuntime
@@ -50,17 +52,17 @@ export class AnaMan extends OperationElement {
 	public readonly valueLimitation: ValueLimitation;
 
 
-	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
-		super(options, connection);
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+		super(options, connectionHandler);
 
-		this.communication.VOut = this.createDataItem('VOut', 'number');
-		this.communication.VRbk = this.createDataItem('VRbk', 'number');
-		this.communication.VFbk = this.createDataItem('VFbk','number');
-		this.communication.VMan = this.createDataItem('VMan', 'number','write');
+		this.communication.VOut = DataItemFactory.create<number>(getDataItemModel(options, 'VOut'), connectionHandler);
+		this.communication.VRbk = DataItemFactory.create<number>(getDataItemModel(options, 'VRbk'), connectionHandler);
+		this.communication.VFbk = DataItemFactory.create<number>(getDataItemModel(options, 'VFbk'), connectionHandler);
+		this.communication.VMan = DataItemFactory.create<number>(getDataItemModel(options, 'VMan'), connectionHandler);
 
-		this.unitSettings = new UnitSettings(this);
-		this.scaleSettings = new ScaleSettings(this);
-		this.valueLimitation = new ValueLimitation(this);
+		this.unitSettings = new UnitSettings(options, connectionHandler);
+		this.scaleSettings = new ScaleSettings(options, connectionHandler);
+		this.valueLimitation = new ValueLimitation(options, connectionHandler);
 
 		this.defaultReadDataItem = this.communication.VOut;
 		this.defaultReadDataItemType = 'number';

@@ -24,7 +24,7 @@
  */
 
 import {TimeConditionOptions} from '@p2olab/polaris-interface';
-import {PEAController} from '../../pea';
+import {PEA} from '../../pea';
 import {Condition} from '../condition';
 
 export class TimeCondition extends Condition {
@@ -58,7 +58,7 @@ export class TimeCondition extends Condition {
 		}
 	}
 
-	public getUsedPEAs(): Set<PEAController> {
-		return new Set<PEAController>();
+	public getUsedPEAs(): Set<PEA> {
+		return new Set<PEA>();
 	}
 }

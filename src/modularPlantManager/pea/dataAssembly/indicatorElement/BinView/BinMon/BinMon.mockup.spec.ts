@@ -26,10 +26,10 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../../_utils';
-import {BinMonMockup, getBinMonDataItemOptions, getBinMonOptions} from './BinMon.mockup';
-import {OpcUaConnection} from '../../../../connection';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {BinMonMockup, getBinMonDataAssemblyModel, getBinMonDataItemModel} from './BinMon.mockup';
+import {DataAssemblyModel, DataItemAccessLevel} from '@p2olab/pimad-interface';
 import {BinMonRuntime} from './BinMon';
+import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -54,19 +54,19 @@ describe('BinMonMockup', () => {
         });
 
         it('static DataItemOptions', () => {
-            const options = getBinMonDataItemOptions(1, 'Test') as BinMonRuntime;
+            const options = getBinMonDataItemModel(1, 'Test');
             expect(Object.keys(options).length).to.equal(9);
         });
 
-        it('static DataAssemblyOptions', () => {
-            const options = getBinMonOptions(1, 'Test') as DataAssemblyOptions;
+        it('static DataAssemblyModel', () => {
+            const options = getBinMonDataAssemblyModel(1, 'Test');
             expect(Object.keys(options.dataItems).length).to.equal(11);
         });
 
-        it('dynamic DataAssemblyOptions', () => {
+        it('dynamic DataAssemblyModel', () => {
             const mockup = new BinMonMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const options = mockup.getDataAssemblyOptions();
+            const options = mockup.getDataAssemblyModel();
 
             expect(Object.keys(options.dataItems).length).to.equal(11);
         });
@@ -75,7 +75,7 @@ describe('BinMonMockup', () => {
     describe('dynamic (with MockupServer)', () => {
 
         let mockupServer: MockupServer;
-        let connection: OpcUaConnection;
+        let connectionHandler: ConnectionHandler;
 
         beforeEach(async function () {
             this.timeout(5000);
@@ -83,31 +83,25 @@ describe('BinMonMockup', () => {
             await mockupServer.initialize();
             new BinMonMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
             await mockupServer.start();
-            connection = new OpcUaConnection();
-            connection.initialize({endpointUrl: mockupServer.endpoint});
-            await connection.connect();
+            connectionHandler = new ConnectionHandler();
+            connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+            await connectionHandler.connect();
         });
 
         afterEach(async () => {
-            await connection.disconnect();
+            await connectionHandler.disconnect();
             await mockupServer.shutdown();
         });
 
         it('set VFlutTi', async () => {
-            await connection.writeNode('Variable.VFlutTi',
-                mockupServer.nameSpaceUri,
-                1.1, 'Double');
-            await connection.readNode('Variable.VFlutTi',
-                mockupServer.nameSpaceUri)
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.VFlutTi', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}},1.1);
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.VFlutTi', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(1.1));
         }).timeout(5000);
 
         it('set VFlutCnt', async () => {
-            await connection.writeNode('Variable.VFlutCnt',
-                mockupServer.nameSpaceUri,
-                1.1, 'Int32');
-            await connection.readNode('Variable.VFlutCnt',
-                mockupServer.nameSpaceUri)
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.VFlutCnt', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}},1.1);
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.VFlutCnt', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(1));
         }).timeout(5000);
 

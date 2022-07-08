@@ -24,26 +24,26 @@
  */
 
 import {Namespace, UAObject} from 'node-opcua';
-import {getWQCDataItemOptions, WQCMockup} from '../baseFunction/wqc/WQC.mockup';
-import {DataAssemblyControllerMockup, getDataAssemblyOptions} from '../DataAssemblyController.mockup';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {getWQCDataItemModel, WQCMockup} from '../baseFunction/wqc/WQC.mockup';
+import {DataAssemblyMockup, getDataAssemblyModel} from '../DataAssembly.mockup';
+import {DataAssemblyModel, DataItemModel} from '@p2olab/pimad-interface';
 
 const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement';
 
-export function getIndicatorElementDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return getWQCDataItemOptions(namespace, objectBrowseName);
+export function getIndicatorElementDataItemModel(namespace: number, objectBrowseName: string): DataItemModel[] {
+	return getWQCDataItemModel(namespace, objectBrowseName);
 }
 
-export function getIndicatorElementOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
-	const options = getDataAssemblyOptions(name, tagName, tagDescription);
+export function getIndicatorElementDataAssemblyModel(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): DataAssemblyModel {
+	const options = getDataAssemblyModel(metaModelReference, name, tagName, tagDescription);
 	options.metaModelRef = metaModelReference;
 	options.dataItems = {
 		...options.dataItems,
-		...getIndicatorElementDataItemOptions(namespace, objectBrowseName)};
+		...getIndicatorElementDataItemModel(namespace, objectBrowseName)};
 	return options;
 }
 
-export class IndicatorElementMockup extends DataAssemblyControllerMockup{
+export class IndicatorElementMockup extends DataAssemblyMockup{
 
 	public wqc: WQCMockup;
 
@@ -53,13 +53,12 @@ export class IndicatorElementMockup extends DataAssemblyControllerMockup{
 		this.wqc = new WQCMockup(namespace, this.mockupNode, this.name);
 	}
 
-	public getDataAssemblyOptions(): DataAssemblyOptions {
-		const options = super.getDataAssemblyOptions();
-		options.metaModelRef = metaModelReference;
-		options.dataItems = {
+	public getDataAssemblyModel(metaModelReferenceOption?: string): DataAssemblyModel {
+		const options = super.getDataAssemblyModel(metaModelReferenceOption || metaModelReference);
+		options.dataItems = [
 			...options.dataItems,
-			...this.wqc.getDataItemOptions()
-		};
+			...this.wqc.getDataItemModel()
+		];
 		return options;
 	}
 }

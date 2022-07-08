@@ -24,37 +24,43 @@
  */
 
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
-import {getIndicatorElementDataItemOptions, IndicatorElementMockup} from '../IndicatorElement.mockup';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
-import {getDataAssemblyOptions} from '../../DataAssemblyController.mockup';
+import {getIndicatorElementDataItemModel, IndicatorElementMockup} from '../IndicatorElement.mockup';
+import {DataAssemblyModel, DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+
+import {getDataAssemblyModel} from '../../DataAssembly.mockup';
+import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../dataItem/DataItem.mockup';
 
 const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/StringView';
 
-function getStringViewSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return ({
-		Text: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.Text`,
-			dataType: 'String'
-		} as OpcUaNodeOptions
-	});
+function getStringViewSpecificDataItemModels(namespace: number, objectBrowseName: string): DataItemModel[] {
+
+	const result: DataItemModel[] = [];
+	const dataItem: DataItemModel = getEmptyDataItemModel();
+	dataItem.name = 'Text';
+	dataItem.dataType = 'String';
+	const ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.Text`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	return result;
 }
 
-export function getStringViewDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return ({
-			...getIndicatorElementDataItemOptions(namespace, objectBrowseName),
-			...getStringViewSpecificDataItemOptions(namespace, objectBrowseName),
-		} as OpcUaNodeOptions
-	);
+export function getStringViewDataItemModel(namespace: number, objectBrowseName: string): DataItemModel[] {
+	return [
+			...getIndicatorElementDataItemModel(namespace, objectBrowseName),
+			...getStringViewSpecificDataItemModels(namespace, objectBrowseName),
+		];
 }
 
 export function getStringViewOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
-	const options = getDataAssemblyOptions(name, tagName, tagDescription);
+	const options = getDataAssemblyModel(metaModelReference, name, tagName, tagDescription);
 	options.metaModelRef = metaModelReference;
 	options.dataItems = {
 		...options.dataItems,
-		...getStringViewDataItemOptions(namespace, objectBrowseName)};
+		...getStringViewDataItemModel(namespace, objectBrowseName)};
 	return options;
 }
 
@@ -78,13 +84,12 @@ export class StringViewMockup extends IndicatorElementMockup {
 		});
 	}
 
-	public getDataAssemblyOptions(): DataAssemblyOptions {
-		const options = super.getDataAssemblyOptions();
-		options.metaModelRef = metaModelReference;
-		options.dataItems = {
+	public getDataAssemblyModel(metaModelReferenceOption?: string): DataAssemblyModel {
+		const options = super.getDataAssemblyModel(metaModelReferenceOption || metaModelReference);
+		options.dataItems = [
 			...options.dataItems,
-			...getStringViewSpecificDataItemOptions(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
-		};
+			...getStringViewSpecificDataItemModels(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
+		];
 		return options;
 	}
 }

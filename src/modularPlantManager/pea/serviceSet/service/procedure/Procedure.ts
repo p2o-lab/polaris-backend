@@ -29,9 +29,8 @@ import {
 	ProcedureInterface,
 	ProcedureOptions
 } from '@p2olab/polaris-interface';
-import {OpcUaConnection} from '../../../connection';
 import {
-	DataAssemblyControllerFactory,
+	DataAssemblyFactory,
 	IndicatorElement, InputElement,
 	ServParam
 } from '../../../dataAssembly';
@@ -40,7 +39,9 @@ import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Category} from 'typescript-logging';
 import {catProcedure} from '../../../../../logging';
-import {IDProvider} from '../../../../_utils/idProvider/IDProvider';
+import {IDProvider} from '../../../../_utils';
+import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
+import {DataAssemblyModel, ProcedureModel} from '@p2olab/pimad-interface';
 
 export interface ProcedureEvents {
 	parameterChanged: {
@@ -64,28 +65,32 @@ export class Procedure extends (EventEmitter as new() => ProcedureEmitter) {
 	public readonly parameters: ServParam[] = [];
 	private readonly logger: Category;
 
-	constructor(options: ProcedureOptions, connection: OpcUaConnection) {
+	constructor(options: ProcedureModel, connectionHandler: ConnectionHandler) {
 		super();
 
-		if (!Procedure.validProcedureId(options.procedureId)){
-			throw new Error(`The procedure id should be Int and greater than 0 - got ${options.procedureId}`);
-		}
+		const procedureId = parseInt(options.attributes.find(a => a.name === 'ProcedureID')!.value);
 
-		this.procedureId = options.procedureId;
+		if (!Procedure.validProcedureId(procedureId)){
+			throw new Error(`The procedure id should be Int and greater than 0 - got ${procedureId}`);
+		}
+		this.procedureId = procedureId;
 		this.name = options.name;
-		this.selfCompleting = options.isSelfCompleting;
+		this.selfCompleting = options.attributes.find(a => a.name === 'ProcedureID')!.value === 'true';
 		if (options.parameters) {
-			this.parameters = options.parameters.map((daOptions: DataAssemblyOptions) => DataAssemblyControllerFactory.create(daOptions, connection) as ServParam);
+			this.parameters = options.parameters
+				.map((daOptions: DataAssemblyModel) => DataAssemblyFactory.create(daOptions, connectionHandler) as ServParam);
 		}
 		if (options.processValuesIn) {
-			this.processValuesIn = options.processValuesIn.map((daOptions: DataAssemblyOptions) => DataAssemblyControllerFactory.create(daOptions, connection) as InputElement);
+			this.processValuesIn = options.processValuesIn
+				.map((daOptions: DataAssemblyModel) => DataAssemblyFactory.create(daOptions, connectionHandler) as InputElement);
 		}
 		if (options.processValuesOut) {
-			this.processValuesOut = options.processValuesOut.map((daOptions: DataAssemblyOptions) => DataAssemblyControllerFactory.create(daOptions, connection) as IndicatorElement);
+			this.processValuesOut = options.processValuesOut
+				.map((daOptions: DataAssemblyModel) => DataAssemblyFactory.create(daOptions, connectionHandler) as IndicatorElement);
 		}
-		if (options.reportParameters) {
-			this.reportParameters = options.reportParameters
-				.map((daOptions: DataAssemblyOptions) => DataAssemblyControllerFactory.create(daOptions, connection) as IndicatorElement);
+		if (options.reportValues) {
+			this.reportParameters = options.reportValues
+				.map((daOptions: DataAssemblyModel) => DataAssemblyFactory.create(daOptions, connectionHandler) as IndicatorElement);
 		}
 		this.logger = catProcedure;
 	}

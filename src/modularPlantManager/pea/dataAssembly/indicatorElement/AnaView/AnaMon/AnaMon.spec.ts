@@ -23,116 +23,116 @@
  * SOFTWARE.
  */
 
-import {OpcUaConnection} from '../../../../connection';
 import {AnaMon} from './AnaMon';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {MockupServer} from '../../../../../_utils';
-import {AnaMonMockup, getAnaMonOptions} from './AnaMon.mockup';
+import {AnaMonMockup, getAnaMonDataAssemblyModel} from './AnaMon.mockup';
+import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('AnaMon', () => {
 
-	let dataAssemblyOptions: DataAssemblyOptions;
+	let options: DataAssemblyModel;
 
 	describe('static', () => {
 
-		const emptyOPCUAConnection = new OpcUaConnection();
-		dataAssemblyOptions = getAnaMonOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
+		const connectionHandler = new ConnectionHandler();
+		options = getAnaMonDataAssemblyModel(2, 'Variable', 'Variable') as DataAssemblyModel;
 
 		it('should create AnaMon', async () => {
-			const dataAssemblyController: AnaMon = new AnaMon(dataAssemblyOptions, emptyOPCUAConnection);
-			expect(dataAssemblyController.tagName).to.not.equal(undefined);
-			expect(dataAssemblyController.tagDescription).to.not.equal(undefined);
-			expect(dataAssemblyController.communication.V).to.not.equal(undefined);
-			expect(dataAssemblyController.communication.WQC).to.not.equal(undefined);
-			expect(dataAssemblyController.communication.VSclMax).to.not.equal(undefined);
-			expect(dataAssemblyController.communication.VSclMin).to.not.equal(undefined);
-			expect(dataAssemblyController.communication.VUnit).to.not.equal(undefined);
+			const dataAssembly: AnaMon = new AnaMon(options, connectionHandler);
+			expect(dataAssembly.dataItems.TagName).to.not.equal(undefined);
+			expect(dataAssembly.dataItems.TagDescription).to.not.equal(undefined);
+			expect(dataAssembly.communication.V).to.not.equal(undefined);
+			expect(dataAssembly.communication.WQC).to.not.equal(undefined);
+			expect(dataAssembly.communication.VSclMax).to.not.equal(undefined);
+			expect(dataAssembly.communication.VSclMin).to.not.equal(undefined);
+			expect(dataAssembly.communication.VUnit).to.not.equal(undefined);
 
-			expect(dataAssemblyController.communication.OSLevel).to.not.equal(undefined);
-			expect(dataAssemblyController.communication.VAHEn).to.not.equal(undefined);
-			expect(dataAssemblyController.communication.VAHLim).to.not.equal(undefined);
-			expect(dataAssemblyController.communication.VAHAct).to.not.equal(undefined);
+			expect(dataAssembly.communication.OSLevel).to.not.equal(undefined);
+			expect(dataAssembly.communication.VAHEn).to.not.equal(undefined);
+			expect(dataAssembly.communication.VAHLim).to.not.equal(undefined);
+			expect(dataAssembly.communication.VAHAct).to.not.equal(undefined);
 
-			expect(dataAssemblyController.communication.VWHEn).to.not.equal(undefined);
-			expect(dataAssemblyController.communication.VWHLim).to.not.equal(undefined);
-			expect(dataAssemblyController.communication.VWHAct).to.not.equal(undefined);
+			expect(dataAssembly.communication.VWHEn).to.not.equal(undefined);
+			expect(dataAssembly.communication.VWHLim).to.not.equal(undefined);
+			expect(dataAssembly.communication.VWHAct).to.not.equal(undefined);
 
-			expect(dataAssemblyController.communication.VTHEn).to.not.equal(undefined);
-			expect(dataAssemblyController.communication.VTHLim).to.not.equal(undefined);
-			expect(dataAssemblyController.communication.VTHAct).to.not.equal(undefined);
+			expect(dataAssembly.communication.VTHEn).to.not.equal(undefined);
+			expect(dataAssembly.communication.VTHLim).to.not.equal(undefined);
+			expect(dataAssembly.communication.VTHAct).to.not.equal(undefined);
 
-			expect(dataAssemblyController.communication.VTLEn).to.not.equal(undefined);
-			expect(dataAssemblyController.communication.VTLLim).to.not.equal(undefined);
-			expect(dataAssemblyController.communication.VTLAct).to.not.equal(undefined);
+			expect(dataAssembly.communication.VTLEn).to.not.equal(undefined);
+			expect(dataAssembly.communication.VTLLim).to.not.equal(undefined);
+			expect(dataAssembly.communication.VTLAct).to.not.equal(undefined);
 
-			expect(dataAssemblyController.communication.VWLEn).to.not.equal(undefined);
-			expect(dataAssemblyController.communication.VWLLim).to.not.equal(undefined);
-			expect(dataAssemblyController.communication.VWLAct).to.not.equal(undefined);
+			expect(dataAssembly.communication.VWLEn).to.not.equal(undefined);
+			expect(dataAssembly.communication.VWLLim).to.not.equal(undefined);
+			expect(dataAssembly.communication.VWLAct).to.not.equal(undefined);
 
-			expect(dataAssemblyController.communication.VALEn).to.not.equal(undefined);
-			expect(dataAssemblyController.communication.VALLim).to.not.equal(undefined);
-			expect(dataAssemblyController.communication.VALAct).to.not.equal(undefined);
+			expect(dataAssembly.communication.VALEn).to.not.equal(undefined);
+			expect(dataAssembly.communication.VALLim).to.not.equal(undefined);
+			expect(dataAssembly.communication.VALAct).to.not.equal(undefined);
 		});
 	});
 	describe('dynamic', () => {
 		let mockupServer: MockupServer;
-		let connection: OpcUaConnection;
+		let connectionHandler: ConnectionHandler;
 
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
 			const anaMonMockup = new AnaMonMockup(mockupServer.nameSpace, mockupServer.rootObject,'Variable');
-			dataAssemblyOptions = anaMonMockup.getDataAssemblyOptions();
+			options = anaMonMockup.getDataAssemblyModel();
 			await mockupServer.start();
-			connection = new OpcUaConnection();
-			connection.initialize({endpointUrl: mockupServer.endpoint});
-			await connection.connect();
+			connectionHandler = new ConnectionHandler();
+			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			await connectionHandler.connect();
 		});
 
 		afterEach(async function () {
 			this.timeout(4000);
-			await connection.disconnect();
+			await connectionHandler.disconnect();
 			await mockupServer.shutdown();
 		});
 
 		it('should subscribe successfully', async () => {
 
-			const dataAssemblyController = new AnaMon(dataAssemblyOptions, connection);
-			await dataAssemblyController.subscribe();
-			await connection.startMonitoring();
-			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
+			const dataAssembly = new AnaMon(options, connectionHandler);
+			await dataAssembly.subscribe();
+			await connectionHandler.connect();
+			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 
-			expect(dataAssemblyController.communication.V.value).equal(0);
-			expect(dataAssemblyController.communication.WQC.value).equal(0);
-			expect(dataAssemblyController.communication.VUnit.value).equal(0);
-			expect(dataAssemblyController.communication.VSclMin.value).equal(0);
-			expect(dataAssemblyController.communication.VSclMax.value).equal(0);
-			expect(dataAssemblyController.communication.OSLevel.value).to.equal(0);
-			expect(dataAssemblyController.communication.VAHEn.value).to.equal(false);
-			expect(dataAssemblyController.communication.VAHLim.value).to.equal(0);
-			expect(dataAssemblyController.communication.VAHAct.value).to.equal(false);
-			expect(dataAssemblyController.communication.VWHEn.value).to.equal(false);
-			expect(dataAssemblyController.communication.VWHLim.value).to.equal(0);
-			expect(dataAssemblyController.communication.VWHAct.value).to.equal(false);
-			expect(dataAssemblyController.communication.VTHEn.value).to.equal(false);
-			expect(dataAssemblyController.communication.VTHLim.value).to.equal(0);
-			expect(dataAssemblyController.communication.VTHAct.value).to.equal(false);
-			expect(dataAssemblyController.communication.VTLEn.value).to.equal(false);
-			expect(dataAssemblyController.communication.VTLLim.value).to.equal(0);
-			expect(dataAssemblyController.communication.VTLAct.value).to.equal(false);
-			expect(dataAssemblyController.communication.VWLEn.value).to.equal(false);
-			expect(dataAssemblyController.communication.VWLLim.value).to.equal(0);
-			expect(dataAssemblyController.communication.VWLAct.value).to.equal(false);
-			expect(dataAssemblyController.communication.VALEn.value).to.equal(false);
-			expect(dataAssemblyController.communication.VALLim.value).to.equal(0);
-			expect(dataAssemblyController.communication.VALAct.value).to.equal(false);
+			expect(dataAssembly.communication.V.value).equal(0);
+			expect(dataAssembly.communication.WQC.value).equal(0);
+			expect(dataAssembly.communication.VUnit.value).equal(0);
+			expect(dataAssembly.communication.VSclMin.value).equal(0);
+			expect(dataAssembly.communication.VSclMax.value).equal(0);
+			expect(dataAssembly.communication.OSLevel.value).to.equal(0);
+			expect(dataAssembly.communication.VAHEn.value).to.equal(false);
+			expect(dataAssembly.communication.VAHLim.value).to.equal(0);
+			expect(dataAssembly.communication.VAHAct.value).to.equal(false);
+			expect(dataAssembly.communication.VWHEn.value).to.equal(false);
+			expect(dataAssembly.communication.VWHLim.value).to.equal(0);
+			expect(dataAssembly.communication.VWHAct.value).to.equal(false);
+			expect(dataAssembly.communication.VTHEn.value).to.equal(false);
+			expect(dataAssembly.communication.VTHLim.value).to.equal(0);
+			expect(dataAssembly.communication.VTHAct.value).to.equal(false);
+			expect(dataAssembly.communication.VTLEn.value).to.equal(false);
+			expect(dataAssembly.communication.VTLLim.value).to.equal(0);
+			expect(dataAssembly.communication.VTLAct.value).to.equal(false);
+			expect(dataAssembly.communication.VWLEn.value).to.equal(false);
+			expect(dataAssembly.communication.VWLLim.value).to.equal(0);
+			expect(dataAssembly.communication.VWLAct.value).to.equal(false);
+			expect(dataAssembly.communication.VALEn.value).to.equal(false);
+			expect(dataAssembly.communication.VALLim.value).to.equal(0);
+			expect(dataAssembly.communication.VALAct.value).to.equal(false);
 		}).timeout(4000);
 	});
 });

@@ -24,10 +24,10 @@
  */
 
 import {DIntView} from '../DIntView';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaConnection} from '../../../../connection';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {AnaMonRuntime} from '../../AnaView/AnaMon/AnaMon';
 import {LimitMonitoring, OSLevel} from '../../../baseFunction';
+import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
 
 export class DIntMon extends DIntView {
 
@@ -35,11 +35,10 @@ export class DIntMon extends DIntView {
     public limitMonitoring: LimitMonitoring;
     public readonly osLevel: OSLevel;
 
-    constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
-        super(options, connection);
+    constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+        super(options, connectionHandler);
 
-        this.osLevel = new OSLevel(this);
-
-        this.limitMonitoring = new LimitMonitoring(this);
+        this.osLevel = new OSLevel(options, connectionHandler);
+        this.limitMonitoring = new LimitMonitoring(options, connectionHandler);
     }
 }

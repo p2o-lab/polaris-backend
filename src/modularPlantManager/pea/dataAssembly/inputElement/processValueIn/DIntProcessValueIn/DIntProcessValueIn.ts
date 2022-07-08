@@ -23,12 +23,14 @@
  * SOFTWARE.
  */
 
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaConnection, DataItem} from '../../../../connection';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
+import {DataItem} from '../../../dataItem/DataItem';
 import {ScaleSettings, ScaleSettingsRuntime, UnitSettingsRuntime, UnitSettings} from '../../../baseFunction';
 import {
 	InputElement, InputElementRuntime,
 } from '../../InputElement';
+import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
+import {DataItemFactory, getDataItemModel} from '../../../dataItem/DataItemFactory';
 
 export type DIntProcessValueInRuntime = InputElementRuntime & UnitSettingsRuntime & ScaleSettingsRuntime & {
 	VExt: DataItem<number>;
@@ -39,13 +41,13 @@ export class DIntProcessValueIn extends InputElement {
 	private readonly scaleSettings: ScaleSettings;
 	private readonly unitSettings: UnitSettings;
 
-	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
-		super(options, connection);
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+		super(options, connectionHandler);
 
-		this.unitSettings = new UnitSettings(this);
-		this.scaleSettings = new ScaleSettings(this);
+		this.unitSettings = new UnitSettings(options, connectionHandler);
+		this.scaleSettings = new ScaleSettings(options, connectionHandler);
 
-		this.communication.VExt = this.createDataItem('VExt', 'number', 'write');
+		this.communication.VExt = DataItemFactory.create(getDataItemModel(options, 'VExt'), connectionHandler);
 
 		this.defaultReadDataItem = this.communication.VExt;
 		this.defaultReadDataItemType = 'number';

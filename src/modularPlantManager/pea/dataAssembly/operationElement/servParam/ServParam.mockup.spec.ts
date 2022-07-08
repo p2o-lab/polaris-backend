@@ -26,8 +26,8 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../_utils';
-import {getServParamDataItemOptions, getServParamOptions, ServParamMockup} from './ServParam.mockup';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {getServParamDataAssemblyModel, getServParamDataItemModel, ServParamMockup} from './ServParam.mockup';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {ServParamRuntime} from './ServParam';
 
 chai.use(chaiAsPromised);
@@ -51,19 +51,19 @@ describe('ServParamMockup', () => {
         });
 
         it('static DataItemOptions', () => {
-            const options = getServParamDataItemOptions(1, 'Test') as ServParamRuntime;
+            const options = getServParamDataItemModel(1, 'Test');
             expect(Object.keys(options).length).to.equal(20);
         });
 
-        it('static DataAssemblyOptions', () => {
-            const options = getServParamOptions(1, 'Test') as DataAssemblyOptions;
+        it('static DataAssemblyModel', () => {
+            const options = getServParamDataAssemblyModel(1, 'Test');
             expect(Object.keys(options.dataItems).length).to.equal(22);
         });
 
-        it('dynamic DataAssemblyOptions', () => {
+        it('dynamic DataAssemblyModel', () => {
             const mockup = new ServParamMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const options = mockup.getDataAssemblyOptions();
+            const options = mockup.getDataAssemblyModel();
 
             expect(Object.keys(options.dataItems).length).to.equal(22);
         });

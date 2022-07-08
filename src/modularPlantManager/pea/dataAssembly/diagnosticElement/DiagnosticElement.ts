@@ -23,22 +23,22 @@
  * SOFTWARE.
  */
 
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaConnection} from '../../connection';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {OSLevelRuntime, WQC, WQCRuntime} from '../baseFunction';
 import {
-	BaseDataAssemblyRuntime, DataAssemblyController,
-} from '../DataAssemblyController';
+	DataAssemblyDataItems, DataAssembly,
+} from '../DataAssembly';
+import {ConnectionHandler} from '../../connectionHandler/ConnectionHandler';
 
-export type DiagnosticElementRuntime = BaseDataAssemblyRuntime & WQCRuntime & OSLevelRuntime;
+export type DiagnosticElementRuntime = DataAssemblyDataItems & WQCRuntime & OSLevelRuntime;
 
-export class DiagnosticElement extends DataAssemblyController {
+export class DiagnosticElement extends DataAssembly {
 	public readonly communication!: DiagnosticElementRuntime;
 	wqc: WQC;
 
-	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
-		super(options, connection);
-		this.wqc = new WQC(this);
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+		super(options);
+		this.wqc = new WQC(options, connectionHandler);
 
 	}
 }

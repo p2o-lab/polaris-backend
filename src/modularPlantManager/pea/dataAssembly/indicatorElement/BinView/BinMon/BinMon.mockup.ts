@@ -24,54 +24,75 @@
  */
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {getOSLevelDataItemOptions, OSLevelMockup} from '../../../baseFunction/osLevel/OSLevel.mockup';
-import {BinViewMockup, getBinViewDataItemOptions} from '../BinView.mockup';
-import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
-import {getDataAssemblyOptions} from '../../../DataAssemblyController.mockup';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {getOSLevelDataItemModel, OSLevelMockup} from '../../../baseFunction/osLevel/OSLevel.mockup';
+import {BinViewMockup, getBinViewDataItemModel} from '../BinView.mockup';
+
+import {getDataAssemblyModel} from '../../../DataAssembly.mockup';
+import {DataAssemblyModel, DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../../dataItem/DataItem.mockup';
 
 const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/BinView/BinMon';
 
-function getBinMonSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return ({
-		VFlutEn: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.VFlutEn`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		VFlutTi: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.VFlutTi`,
-			dataType: 'Float'
-		} as OpcUaNodeOptions,
-		VFlutCnt: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.VFlutCnt`,
-			dataType: 'Int16'
-		} as OpcUaNodeOptions,
-		VFlutAct: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.VFlutAct`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions
-	});
+function getBinMonSpecificDataItemModels(namespace: number, objectBrowseName: string): DataItemModel[] {
+
+	const result: DataItemModel[] = [];
+	let dataItem: DataItemModel = getEmptyDataItemModel();
+	dataItem.name = 'VFlutEn';
+	dataItem.dataType = 'Boolean';
+	let ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.VFlutEn`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'VFlutTi';
+	dataItem.dataType = 'Float';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.VFlutTi`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'VFlutCnt';
+	dataItem.dataType = 'Int16';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.VFlutCnt`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'VFlutAct';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.VFlutAct`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	return result;
 }
 
-export function getBinMonDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return ({
-			...getBinViewDataItemOptions(namespace, objectBrowseName),
-			...getOSLevelDataItemOptions(namespace, objectBrowseName),
-			...getBinMonSpecificDataItemOptions(namespace, objectBrowseName),
-		} as OpcUaNodeOptions
-	);
+export function getBinMonDataItemModel(namespace: number, objectBrowseName: string): DataItemModel[] {
+	return [
+			...getBinViewDataItemModel(namespace, objectBrowseName),
+			...getOSLevelDataItemModel(namespace, objectBrowseName),
+			...getBinMonSpecificDataItemModels(namespace, objectBrowseName),
+	];
 }
 
-export function getBinMonOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
-	const options = getDataAssemblyOptions(name, tagName, tagDescription);
-	options.metaModelRef = metaModelReference;
-	options.dataItems = {
+export function getBinMonDataAssemblyModel(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): DataAssemblyModel {
+	const options = getDataAssemblyModel(metaModelReference, name, tagName, tagDescription);
+	options.dataItems = [
 		...options.dataItems,
-		...getBinMonDataItemOptions(namespace, objectBrowseName)};
+		...getBinMonDataItemModel(namespace, objectBrowseName)
+		];
 	return options;
 }
 
@@ -146,14 +167,13 @@ export class BinMonMockup extends BinViewMockup{
 	}
 
 
-	public getDataAssemblyOptions(): DataAssemblyOptions {
-		const options = super.getDataAssemblyOptions();
-		options.metaModelRef = metaModelReference;
-		options.dataItems = {
+	public getDataAssemblyModel(metaModelReferenceOption?: string): DataAssemblyModel {
+		const options = super.getDataAssemblyModel(metaModelReferenceOption || metaModelReference);
+		options.dataItems = [
 			...options.dataItems,
-			...this.osLevel.getDataItemOptions(),
-			...getBinMonSpecificDataItemOptions(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
-		};
+			...this.osLevel.getDataItemModel(),
+			...getBinMonSpecificDataItemModels(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
+		];
 		return options;
 	}
 }

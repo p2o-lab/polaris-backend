@@ -31,7 +31,7 @@ import {
 	ServiceCommand, ServiceSourceMode
 } from '@p2olab/polaris-interface';
 import {Parameter} from '../../../recipe';
-import {PEAController} from '../../PEAController';
+import {PEA} from '../../PEA';
 import {ServiceState} from './enum';
 
 import {EventEmitter} from 'events';
@@ -39,7 +39,7 @@ import {timeout} from 'promise-timeout';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Procedure} from './procedure/Procedure';
 import {catService} from '../../../../logging';
-import {IDProvider} from '../../../_utils/idProvider/IDProvider';
+import {IDProvider} from '../../../_utils';
 
 /**
  * Events emitted by [[BaseService]]
@@ -120,7 +120,7 @@ export abstract class BaseService extends (EventEmitter as new() => BaseServiceE
 
 	public abstract json(): BaseServiceInterface;
 
-	public abstract setParameters(parameters: Array<Parameter | ParameterOptions>, peaSet?: PEAController[]): Promise<void>;
+	public abstract setParameters(parameters: Array<Parameter | ParameterOptions>, peaSet?: PEA[]): Promise<void>;
 
 	/**
 	 * allow commandEnable to execute specified command

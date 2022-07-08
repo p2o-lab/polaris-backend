@@ -26,90 +26,126 @@
 // eslint-disable-next-line no-undef
 import Timeout = NodeJS.Timeout;
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {getUnitSettingsDataItemOptions, UnitSettingsMockup} from '../../../baseFunction/unitSettings/UnitSettings.mockup';
+import {getUnitSettingsDataItemModel, UnitSettingsMockup} from '../../../baseFunction/unitSettings/UnitSettings.mockup';
 import {
-	getScaleSettingsDataItemOptions,
+	getScaleSettingsDataItemModel,
 	ScaleSettingMockup
 } from '../../../baseFunction/scaleSettings/ScaleSetting.mockup';
 import {
-	getValueLimitationDataItemOptions,
+	getValueLimitationDataItemModel,
 	ValueLimitationMockup
 } from '../../../baseFunction/valueLimitation/ValueLimitation.mockup';
-import {getServParamDataItemOptions, ServParamMockup} from '../ServParam.mockup';
-import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
-import {getDataAssemblyOptions} from '../../../DataAssemblyController.mockup';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {getServParamDataItemModel, ServParamMockup} from '../ServParam.mockup';
+
+import {getDataAssemblyModel} from '../../../DataAssembly.mockup';
+import {DataAssemblyModel, DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../../dataItem/DataItem.mockup';
 
 const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/OperationElement/DIntServParam';
 
-function getDIntServParamSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return ({
-		Sync: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.Sync`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		VExt: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.VExt`,
-			dataType: 'Int32'
-		} as OpcUaNodeOptions,
-		VOp: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.VOp`,
-			dataType: 'Int32'
-		} as OpcUaNodeOptions,
-		VInt: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.VInt`,
-			dataType: 'Int32'
-		} as OpcUaNodeOptions,
-		VReq: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.VReq`,
-			dataType: 'Int32'
-		} as OpcUaNodeOptions,
-		VOut: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.VOut`,
-			dataType: 'Int32'
-		} as OpcUaNodeOptions,
-		VFbk: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.VFbk`,
-			dataType: 'Int32'
-		} as OpcUaNodeOptions
-	});
+function getDIntServParamSpecificDataItemModels(namespace: number, objectBrowseName: string): DataItemModel[] {
+
+	const result: DataItemModel[] = [];
+	let dataItem: DataItemModel = getEmptyDataItemModel();
+	dataItem.name = 'Sync';
+	dataItem.dataType = 'Boolean';
+	let ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.Sync`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'VExt';
+	dataItem.dataType = 'Int32';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.VExt`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'VOp';
+	dataItem.dataType = 'Int32';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.VOp`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'VInt';
+	dataItem.dataType = 'Int32';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.VInt`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'VReq';
+	dataItem.dataType = 'Int32';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.VReq`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'VOut';
+	dataItem.dataType = 'Int32';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.VOut`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'VFbk';
+	dataItem.dataType = 'Int32';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.VOut`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	return result;
 }
 
-export function getDIntServParamDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return ({
-			...getServParamDataItemOptions(namespace, objectBrowseName),
-			...getUnitSettingsDataItemOptions(namespace, objectBrowseName),
-			...getScaleSettingsDataItemOptions(namespace, objectBrowseName, 'DInt'),
-			...getValueLimitationDataItemOptions(namespace, objectBrowseName, 'DInt'),
-			...getDIntServParamSpecificDataItemOptions(namespace, objectBrowseName),
-		} as OpcUaNodeOptions
-	);
+export function getDIntServParamDataItemModel(namespace: number, objectBrowseName: string): DataItemModel[] {
+	return [
+			...getServParamDataItemModel(namespace, objectBrowseName),
+			...getUnitSettingsDataItemModel(namespace, objectBrowseName),
+			...getScaleSettingsDataItemModel(namespace, objectBrowseName, 'DInt'),
+			...getValueLimitationDataItemModel(namespace, objectBrowseName, 'DInt'),
+			...getDIntServParamSpecificDataItemModels(namespace, objectBrowseName),
+];
 }
 
-export function getDIntServParamOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
-	const options = getDataAssemblyOptions(name, tagName, tagDescription);
-	options.metaModelRef = metaModelReference;
-	options.dataItems = {
+export function getDIntServParamDataAssemblyModel(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): DataAssemblyModel {
+	const options = getDataAssemblyModel(metaModelReference, name, tagName, tagDescription);
+	options.dataItems = [
 		...options.dataItems,
-		...getDIntServParamDataItemOptions(namespace, objectBrowseName)};
+		...getDIntServParamDataItemModel(namespace, objectBrowseName)
+	];
 	return options;
 }
 
 export class DIntServParamMockup extends ServParamMockup {
 
-	protected vExt = 0;
-	protected vOp = 0;
-	protected vInt = 0;
-	protected vReq = 0;
-	protected vOut = 0;
-	protected vFbk = 0;
+	public vExt = 0;
+	public vOp = 0;
+	public vInt = 0;
+	public vReq = 0;
+	public vOut = 0;
+	public vFbk = 0;
 
 	public readonly unit: UnitSettingsMockup;
 	public readonly scaleSettings: ScaleSettingMockup<'DInt'>;
@@ -200,16 +236,16 @@ export class DIntServParamMockup extends ServParamMockup {
 		});
 	}
 
-	public getDataAssemblyOptions(): DataAssemblyOptions {
-		const options = super.getDataAssemblyOptions();
-		options.metaModelRef = metaModelReference;
-		options.dataItems = {
+	public getDataAssemblyModel(metaModelReferenceOption?: string): DataAssemblyModel {
+		const options = super.getDataAssemblyModel(metaModelReferenceOption || metaModelReference);
+
+		options.dataItems = [
 			...options.dataItems,
-			...this.unit.getDataItemOptions(),
-			...this.scaleSettings.getDataItemOptions(),
-			...this.valueLimitation.getDataItemOptions(),
-			...getDIntServParamSpecificDataItemOptions(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
-		};
+			...this.unit.getDataItemModel(),
+			...this.scaleSettings.getDataItemModel(),
+			...this.valueLimitation.getDataItemModel(),
+			...getDIntServParamSpecificDataItemModels(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
+		];
 		return options;
 	}
 

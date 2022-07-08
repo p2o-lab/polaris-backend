@@ -24,20 +24,23 @@
  */
 
 import {Namespace, UAObject} from 'node-opcua';
-import {DiagnosticElementMockup, getDiagnosticElementDataItemOptions} from '../DiagnosticElement.mockup';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {getDataAssemblyOptions} from '../../DataAssemblyController.mockup';
+import {DiagnosticElementMockup, getDiagnosticElementDataItemModel} from '../DiagnosticElement.mockup';
+import {DataAssemblyModel, DataItemModel} from '@p2olab/pimad-interface';
+import {getDataAssemblyModel} from '../../DataAssembly.mockup';
 
 const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/DiagnosticElement/HealthStateView';
 
-export function getHealthStateViewDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return ({...getDiagnosticElementDataItemOptions(namespace, objectBrowseName)});
+export function getHealthStateViewDataItemModel(namespace: number, objectBrowseName: string): DataItemModel[] {
+	return getDiagnosticElementDataItemModel(namespace, objectBrowseName);
 }
 
-export function getHealthStateViewOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
-	const options = getDataAssemblyOptions(name, tagName, tagDescription);
+export function getHealthStateViewDataAssemblyModel(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): DataAssemblyModel {
+	const options = getDataAssemblyModel(metaModelReference, name, tagName, tagDescription);
 	options.metaModelRef = metaModelReference;
-	options.dataItems = {...options.dataItems, ...getHealthStateViewDataItemOptions(namespace, objectBrowseName)};
+	options.dataItems = [
+		...options.dataItems,
+		...getHealthStateViewDataItemModel(namespace, objectBrowseName)
+	];
 	return options;
 }
 
@@ -47,9 +50,7 @@ export class HealthStateViewMockup extends DiagnosticElementMockup{
 		super(namespace, rootNode, variableName);
 	}
 
-	public getDataAssemblyOptions(): DataAssemblyOptions {
-		const options = super.getDataAssemblyOptions();
-		options.metaModelRef = metaModelReference;
-		return options;
+	public getDataAssemblyModel(metaModelReferenceOption?: string): DataAssemblyModel {
+		return super.getDataAssemblyModel(metaModelReferenceOption || metaModelReference);
 	}
 }

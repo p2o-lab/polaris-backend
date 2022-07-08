@@ -26,8 +26,8 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../../../_utils';
-import {DIntManIntMockup, getDIntManIntDataItemOptions, getDIntManIntOptions} from './DIntManInt.mockup';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {DIntManIntMockup, getDIntManIntDataAssemblyModel, getDIntManIntDataItemModel} from './DIntManInt.mockup';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {DIntManIntRuntime} from './DIntManInt';
 
 chai.use(chaiAsPromised);
@@ -51,19 +51,19 @@ describe('DIntManIntMockup', () => {
         });
 
         it('static DataItemOptions', () => {
-            const options = getDIntManIntDataItemOptions(1, 'Test') as DIntManIntRuntime;
+            const options = getDIntManIntDataItemModel(1, 'Test');
             expect(Object.keys(options).length).to.equal(19);
         });
 
-        it('static DataAssemblyOptions', () => {
-            const options = getDIntManIntOptions(1, 'Test') as DataAssemblyOptions;
+        it('static DataAssemblyModel', () => {
+            const options = getDIntManIntDataAssemblyModel(1, 'Test');
             expect(Object.keys(options.dataItems).length).to.equal(21);
         });
 
-        it('dynamic DataAssemblyOptions', () => {
+        it('dynamic DataAssemblyModel', () => {
             const mockup = new DIntManIntMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const options = mockup.getDataAssemblyOptions();
+            const options = mockup.getDataAssemblyModel();
 
             expect(Object.keys(options.dataItems).length).to.equal(21);
         });

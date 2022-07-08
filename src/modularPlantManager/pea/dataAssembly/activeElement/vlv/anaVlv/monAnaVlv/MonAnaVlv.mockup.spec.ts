@@ -25,11 +25,11 @@
  
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {getMonAnaVlvDataItemOptions, getMonAnaVlvOptions, MonAnaVlvMockup} from './MonAnaVlv.mockup';
+import {getMonAnaVlvDataAssemblyModel, getMonAnaVlvDataItemModel, MonAnaVlvMockup} from './MonAnaVlv.mockup';
 import {MockupServer} from '../../../../../../_utils';
-import {OpcUaConnection} from '../../../../../connection';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {MonAnaVlvRuntime} from './MonAnaVlv';
+import {ConnectionHandler} from '../../../../../connectionHandler/ConnectionHandler';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -53,19 +53,19 @@ describe('MonAnaVlvMockup', () => {
         });
 
         it('static DataItemOptions', () => {
-            const options = getMonAnaVlvDataItemOptions(1, 'Test') as MonAnaVlvRuntime;
+            const options = getMonAnaVlvDataItemModel(1, 'Test');
             expect(Object.keys(options).length).to.equal(61);
         });
 
-        it('static DataAssemblyOptions', () => {
-            const options = getMonAnaVlvOptions(1, 'Test') as DataAssemblyOptions;
+        it('static DataAssemblyModel', () => {
+            const options = getMonAnaVlvDataAssemblyModel(1, 'Test');
             expect(Object.keys(options.dataItems).length).to.equal(63);
         });
 
-        it('dynamic DataAssemblyOptions', () => {
+        it('dynamic DataAssemblyModel', () => {
             const mockup = new MonAnaVlvMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const options = mockup.getDataAssemblyOptions();
+            const options = mockup.getDataAssemblyModel();
 
             expect(Object.keys(options.dataItems).length).to.equal(63);
         });
@@ -74,7 +74,7 @@ describe('MonAnaVlvMockup', () => {
     describe('dynamic', () => {
 
         let mockupServer: MockupServer;
-        let connection: OpcUaConnection;
+        let connectionHandler: ConnectionHandler;
 
         beforeEach(async function () {
             this.timeout(5000);
@@ -82,13 +82,13 @@ describe('MonAnaVlvMockup', () => {
             await mockupServer.initialize();
             new MonAnaVlvMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
             await mockupServer.start();
-            connection = new OpcUaConnection();
-            connection.initialize({endpointUrl: mockupServer.endpoint});
-            await connection.connect();
+            connectionHandler= new ConnectionHandler();
+            connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+            await connectionHandler.connect();
         });
 
         afterEach(async () => {
-            await connection.disconnect();
+            await connectionHandler.disconnect();
             await mockupServer.shutdown();
         });
     });

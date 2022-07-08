@@ -23,17 +23,20 @@
  * SOFTWARE.
  */
 
-import {DataItem} from '../../../connection';
+import {DataItem} from '../../dataItem/DataItem';
 import {BaseServiceEvents} from '../../../serviceSet';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {EventEmitter} from 'events';
+import {DataItemFactory, getDataItemModel} from '../../dataItem/DataItemFactory';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
+import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
 
 export type WQCRuntime = {
 	WQC: DataItem<number>;
 }
 
 /**
- * Events emitted by [[OSLevel]]
+ * Events emitted by [[WQC]]
  */
 export interface WQCEvents extends BaseServiceEvents {
 	changed: number;
@@ -42,19 +45,17 @@ export interface WQCEvents extends BaseServiceEvents {
 type WQCEmitter = StrictEventEmitter<EventEmitter, WQCEvents>;
 
 export class WQC extends (EventEmitter as new () => WQCEmitter) {
-	private dAController: any;
+	private _wqc: any;
 
-	constructor(dAController: any) {
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
 		super();
-		this.dAController = dAController;
-
-		this.dAController.communication.WQC = this.dAController.createDataItem('WQC', 'number');
-		this.dAController.communication.WQC.on('changed', () => {
-			this.emit('changed', this.dAController.communication.WQC.value);
+		this._wqc = DataItemFactory.create(getDataItemModel(options, 'WQC'), connectionHandler);
+		this._wqc.on('changed', () => {
+			this.emit('changed', this.WQC);
 		});
 	}
 
 	get WQC(): number{
-		return this.dAController.communication.WQC.value;
+		return this._wqc.value;
 	}
 }

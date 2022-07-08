@@ -23,56 +23,91 @@
  * SOFTWARE.
  */
 
+import {DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
-import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
+import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../dataItem/DataItem.mockup';
 
-function getInterlockSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
-  return ({
-    PermEn: {
-      namespaceIndex: `${namespace}`,
-      nodeId: `${objectBrowseName}.PermEn`,
-      dataType: 'Boolean'
-    } as OpcUaNodeOptions,
-    Permit: {
-      namespaceIndex: `${namespace}`,
-      nodeId: `${objectBrowseName}.Permit`,
-      dataType: 'Boolean'
-    } as OpcUaNodeOptions,
-    IntlEn: {
-      namespaceIndex: `${namespace}`,
-      nodeId: `${objectBrowseName}.IntlEn`,
-      dataType: 'Boolean'
-    } as OpcUaNodeOptions,
-    Interlock: {
-      namespaceIndex: `${namespace}`,
-      nodeId: `${objectBrowseName}.Interlock`,
-      dataType: 'Boolean'
-    } as OpcUaNodeOptions,
-    ProtEn: {
-      namespaceIndex: `${namespace}`,
-      nodeId: `${objectBrowseName}.ProtEn`,
-      dataType: 'Boolean'
-    } as OpcUaNodeOptions,
-    Protect: {
-      namespaceIndex: `${namespace}`,
-      nodeId: `${objectBrowseName}.Protect`,
-      dataType: 'Boolean'
-    } as OpcUaNodeOptions
-  });
+
+function getInterlockSpecificDataItemModels(namespace: number, objectBrowseName: string): DataItemModel[] {
+
+  const result: DataItemModel[] = [];
+  let dataItem: DataItemModel = getEmptyDataItemModel();
+  dataItem.name = 'PermEn';
+  dataItem.dataType = 'Boolean';
+  let ciOptions = getEmptyCIDataModel();
+  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.identifier = `${objectBrowseName}.PermEn`;
+  ciOptions.nodeId.namespaceIndex = `${namespace}`;
+  dataItem.cIData = ciOptions;
+  result.push(dataItem);
+
+  dataItem = getEmptyDataItemModel();
+  dataItem.name = 'Permit';
+  dataItem.dataType = 'Boolean';
+  ciOptions = getEmptyCIDataModel();
+  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.identifier = `${objectBrowseName}.Permit`;
+  ciOptions.nodeId.namespaceIndex = `${namespace}`;
+  dataItem.cIData = ciOptions;
+  result.push(dataItem);
+
+  dataItem = getEmptyDataItemModel();
+  dataItem.name = 'IntlEn';
+  dataItem.dataType = 'Boolean';
+  ciOptions = getEmptyCIDataModel();
+  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.identifier = `${objectBrowseName}.IntlEn`;
+  ciOptions.nodeId.namespaceIndex = `${namespace}`;
+  dataItem.cIData = ciOptions;
+  result.push(dataItem);
+
+  dataItem = getEmptyDataItemModel();
+  dataItem.name = 'Interlock';
+  dataItem.dataType = 'Boolean';
+  ciOptions = getEmptyCIDataModel();
+  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.identifier = `${objectBrowseName}.Interlock`;
+  ciOptions.nodeId.namespaceIndex = `${namespace}`;
+  dataItem.cIData = ciOptions;
+  result.push(dataItem);
+
+  dataItem = getEmptyDataItemModel();
+  dataItem.name = 'ProtEn';
+  dataItem.dataType = 'Boolean';
+  ciOptions = getEmptyCIDataModel();
+  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.identifier = `${objectBrowseName}.ProtEn`;
+  ciOptions.nodeId.namespaceIndex = `${namespace}`;
+  dataItem.cIData = ciOptions;
+  result.push(dataItem);
+
+  dataItem = getEmptyDataItemModel();
+  dataItem.name = 'Protect';
+  dataItem.dataType = 'Boolean';
+  ciOptions = getEmptyCIDataModel();
+  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.identifier = `${objectBrowseName}.Protect`;
+  ciOptions.nodeId.namespaceIndex = `${namespace}`;
+  dataItem.cIData = ciOptions;
+  result.push(dataItem);
+
+return result;
 }
 
 
-export function getInterlockDataItemOptions(namespace: number, objectBrowseName: string): object {
-  return getInterlockSpecificDataItemOptions(namespace, objectBrowseName);
+export function getInterlockDataItemModel(namespace: number, objectBrowseName: string): DataItemModel[] {
+  return getInterlockSpecificDataItemModels(namespace, objectBrowseName);
 }
 
 export class InterlockMockup {
-  protected varPermEn = false;
-  protected varPermit = false;
-  protected varIntlEn = false;
-  protected varInterlock = false;
-  protected varProtEn = false;
-  protected varProtect = false;
+
+  public varPermEn = false;
+  public varPermit = false;
+  public varIntlEn = false;
+  public varInterlock = false;
+  public varProtEn = false;
+  public varProtect = false;
+
   protected mockupNode: UAObject;
 
   constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
@@ -147,8 +182,8 @@ export class InterlockMockup {
     });
   }
 
-  public getDataItemOptions(): object {
-    return getInterlockDataItemOptions(
+  public getDataItemModel(): DataItemModel[] {
+    return getInterlockDataItemModel(
         this.mockupNode.namespaceIndex,
         this.mockupNode.browseName.name as string);
   }

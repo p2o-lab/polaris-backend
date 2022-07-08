@@ -34,67 +34,10 @@ const expect = chai.expect;
 describe('PEAProvider', async () => {
 
 	const peaProvider = new PEAProvider();
-	let testPeaIdentifier = '';
 
-	it('getAllPEAsFromPEAPool()', async () => {
-		expect(peaProvider.getAllPEAsFromPEAPool()).to.not.be.rejected;
-	});
-
-	it('getAllPEAsFromPEAPool(), empty', async () => {
-		const peaProvider = new PEAProvider();
-		return expect(peaProvider.getAllPEAsFromPEAPool()).to.be.empty;
-	});
-
-	it('addPEAToPool() fails', async () => {
-		expect(peaProvider.addPEAToPool({source: 'tests/a.zip'})).to.be.rejected;
-	});
-
-	it('addPEAToPool()', async () => {
-		const peaModel = await peaProvider.addPEAToPool({source: 'tests/testpea.zip'});
-		expect(peaModel).to.not.be.undefined;
-		testPeaIdentifier = peaModel.pimadIdentifier;
-	});
-
-	it('getPEAControllerOptionsByPEAIdentifier() to fail with empty identifier', async () => {
-		expect(peaProvider.getPEAControllerOptionsByPEAIdentifier('')).to.be.rejected;
-	});
-
-	it('getPEAControllerOptionsByPEAIdentifier() to fail with invalid identifier', async () => {
-		expect(peaProvider.getPEAControllerOptionsByPEAIdentifier('qwer1234')).to.be.rejected;
-	});
-
-	it('getPEAControllerOptionsByPEAIdentifier()', async () => {
-		expect(peaProvider.getPEAControllerOptionsByPEAIdentifier(testPeaIdentifier)).to.not.be.rejected;
-	});
-
-	it('deletePEAFromPEAPool() to fail with invalid identifier', async () => {
-		expect(peaProvider.deletePEAFromPEAPool('qwer1234')).to.not.throw;
-	});
-
-	it('deletePEAFromPEAPool() to fail with empty identifier', async () => {
-		expect(peaProvider.deletePEAFromPEAPool('')).to.be.rejected;
-	});
-
-	it('deletePEAFromPEAPool()', async () => {
-		let result;
-		await peaProvider.getAllPEAsFromPEAPool().then(value => result = value);
-		expect(result).to.be.an.instanceof(Array);
-		expect(result).to.have.lengthOf(1);
-		expect(peaProvider.deletePEAFromPEAPool(testPeaIdentifier)).to.not.throw;
-		expect(peaProvider.getAllPEAsFromPEAPool()).to.be.empty;
-		expect(peaProvider.deletePEAFromPEAPool(testPeaIdentifier)).to.be.rejected;
-	});
-
-	it('deleteAllPEAsFromPEAPool()', async () => {
-		expect(peaProvider.getAllPEAsFromPEAPool()).to.be.empty;
-		await peaProvider.addPEAToPool({source: 'tests/testpea.zip'});
-		await peaProvider.addPEAToPool({source: 'tests/testpea.zip'});
-		let result;
-		await peaProvider.getAllPEAsFromPEAPool().then(value => result = value);
-		expect(result).to.be.an.instanceof(Array);
-		expect(result).to.have.lengthOf(2);
-		expect(peaProvider.deleteAllPEAsFromPEAPool()).to.not.throw;
-		expect(peaProvider.getAllPEAsFromPEAPool()).to.be.empty;
+	it('should getAllPEAsFromPiMAd() via http', async () => {
+		const result = await peaProvider.getAllPEAsFromPiMAd();
+		expect(result).to.not.be.undefined;
 	});
 
 });

@@ -23,9 +23,11 @@
  * SOFTWARE.
  */
 
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {DiagnosticElement, DiagnosticElementRuntime} from '../../DiagnosticElement';
-import {OpcUaConnection, DataItem} from '../../../../connection';
+import {DataItem} from '../../../dataItem/DataItem';
+import {DataItemFactory, getDataItemModel} from '../../../dataItem/DataItemFactory';
+import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
 
 export type LockView4Runtime = DiagnosticElementRuntime & {
 	Logic: DataItem<boolean>; // False = AND; TRUE = OR;
@@ -58,40 +60,66 @@ export type LockView4Runtime = DiagnosticElementRuntime & {
 };
 
 export class LockView4 extends DiagnosticElement {
-	public readonly communication!: LockView4Runtime;
+	Logic: DataItem<boolean>; // False = AND; TRUE = OR;
+	Out: DataItem<boolean>;
+	OutQC: DataItem<number>;
 
-	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
-		super(options, connection);
+	In1En: DataItem<boolean>;
+	In1: DataItem<boolean>;
+	In1QC: DataItem<number>;
+	In1Inv: DataItem<boolean>;
+	In1Txt: DataItem<string>;
 
-		this.communication.Logic = this.createDataItem('Logic', 'boolean');
-		this.communication.Out = this.createDataItem('Out', 'boolean');
-		this.communication.OutQC = this.createDataItem('OutQC', 'number');
+	In2En: DataItem<boolean>;
+	In2: DataItem<boolean>;
+	In2QC: DataItem<number>;
+	In2Inv: DataItem<boolean>;
+	In2Txt: DataItem<string>;
 
-		this.communication.In1En = this.createDataItem('In1En', 'boolean');
-		this.communication.In1 = this.createDataItem('In1', 'boolean');
-		this.communication.In1QC = this.createDataItem('In1QC', 'number');
-		this.communication.In1Inv = this.createDataItem('In1Inv', 'boolean');
-		this.communication.In1Txt = this.createDataItem('In1Txt', 'string');
+	In3En: DataItem<boolean>;
+	In3: DataItem<boolean>;
+	In3QC: DataItem<number>;
+	In3Inv: DataItem<boolean>;
+	In3Txt: DataItem<string>;
 
-		this.communication.In2En = this.createDataItem('In2En', 'boolean');
-		this.communication.In2 = this.createDataItem('In2', 'boolean');
-		this.communication.In2QC = this.createDataItem('In2QC', 'number');
-		this.communication.In2Inv = this.createDataItem('In2Inv', 'boolean');
-		this.communication.In2Txt = this.createDataItem('In2Txt', 'string');
+	In4En: DataItem<boolean>;
+	In4: DataItem<boolean>;
+	In4QC: DataItem<number>;
+	In4Inv: DataItem<boolean>;
+	In4Txt: DataItem<string>;
 
-		this.communication.In3En = this.createDataItem('In3En', 'boolean');
-		this.communication.In3 = this.createDataItem('In3', 'boolean');
-		this.communication.In3QC = this.createDataItem('In3QC', 'number');
-		this.communication.In3Inv = this.createDataItem('In3Inv', 'boolean');
-		this.communication.In3Txt = this.createDataItem('In3Txt', 'string');
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+		super(options, connectionHandler);
 
-		this.communication.In4En = this.createDataItem('In4En', 'boolean');
-		this.communication.In4 = this.createDataItem('In4', 'boolean');
-		this.communication.In4QC = this.createDataItem('In4QC', 'number');
-		this.communication.In4Inv = this.createDataItem('In4Inv', 'boolean');
-		this.communication.In4Txt = this.createDataItem('In4Txt', 'string');
+		this.Logic = DataItemFactory.create(getDataItemModel(options, 'Logic'), connectionHandler);
+		this.Out = DataItemFactory.create(getDataItemModel(options, 'Out'), connectionHandler);
+		this.OutQC = DataItemFactory.create(getDataItemModel(options, 'OutQC'), connectionHandler);
 
-		this.defaultReadDataItem = this.communication.Out;
+		this.In1En = DataItemFactory.create(getDataItemModel(options, 'In1En'), connectionHandler);
+		this.In1 = DataItemFactory.create(getDataItemModel(options, 'In1'), connectionHandler);
+		this.In1QC = DataItemFactory.create(getDataItemModel(options, 'In1QC'), connectionHandler);
+		this.In1Inv = DataItemFactory.create(getDataItemModel(options, 'In1Inv'), connectionHandler);
+		this.In1Txt = DataItemFactory.create(getDataItemModel(options, 'In1Txt'), connectionHandler);
+
+		this.In2En = DataItemFactory.create(getDataItemModel(options, 'In2En'), connectionHandler);
+		this.In2 = DataItemFactory.create(getDataItemModel(options, 'In2'), connectionHandler);
+		this.In2QC = DataItemFactory.create(getDataItemModel(options, 'In2QC'), connectionHandler);
+		this.In2Inv = DataItemFactory.create(getDataItemModel(options, 'In2Inv'), connectionHandler);
+		this.In2Txt = DataItemFactory.create(getDataItemModel(options, 'In2Txt'), connectionHandler);
+
+		this.In3En = DataItemFactory.create(getDataItemModel(options, 'In3En'), connectionHandler);
+		this.In3 = DataItemFactory.create(getDataItemModel(options, 'In3'), connectionHandler);
+		this.In3QC = DataItemFactory.create(getDataItemModel(options, 'In3QC'), connectionHandler);
+		this.In3Inv = DataItemFactory.create(getDataItemModel(options, 'In3Inv'), connectionHandler);
+		this.In3Txt = DataItemFactory.create(getDataItemModel(options, 'In3Txt'), connectionHandler);
+
+		this.In4En = DataItemFactory.create(getDataItemModel(options, 'In4En'), connectionHandler);
+		this.In4 = DataItemFactory.create(getDataItemModel(options, 'In4'), connectionHandler);
+		this.In4QC = DataItemFactory.create(getDataItemModel(options, 'In4QC'), connectionHandler);
+		this.In4Inv = DataItemFactory.create(getDataItemModel(options, 'In4Inv'), connectionHandler);
+		this.In4Txt = DataItemFactory.create(getDataItemModel(options, 'In4Txt'), connectionHandler);
+
+		this.defaultReadDataItem = this.Out;
 		this.defaultReadDataItemType = 'boolean';
 	}
 

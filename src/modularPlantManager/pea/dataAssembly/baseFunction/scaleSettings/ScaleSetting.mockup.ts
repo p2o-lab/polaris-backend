@@ -24,31 +24,47 @@
  */
 
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
+import {DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../dataItem/DataItem.mockup';
 
-function getScaleSettingsSpecificDataItemOptions<T extends 'Ana' | 'DInt'>(namespace: number, objectBrowseName: string, type: T): object {
-  return ({
-    VSclMin: {
-      namespaceIndex: `${namespace}`,
-      nodeId: `${objectBrowseName}.VSclMin`,
-      dataType: (type === 'Ana')? 'Float': 'Int32'
-    },
-    VSclMax: {
-      namespaceIndex: `${namespace}`,
-      nodeId: `${objectBrowseName}.VSclMax`,
-      dataType: (type === 'Ana')? 'Float': 'Int32'
-    }
-  });
+function getScaleSettingsSpecificDataItemModels<T extends 'Ana' | 'DInt'>(namespace: number, objectBrowseName: string, type: T): DataItemModel[] {
+
+  const result: DataItemModel[] = [];
+  let dataItem: DataItemModel = getEmptyDataItemModel();
+  dataItem.name = 'VSclMin';
+  dataItem.dataType = (type === 'Ana')? 'Float': 'Int32';
+  let ciOptions = getEmptyCIDataModel();
+  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.identifier = `${objectBrowseName}.VSclMin`;
+  ciOptions.nodeId.namespaceIndex = `${namespace}`;
+  dataItem.cIData = ciOptions;
+  result.push(dataItem);
+
+  dataItem = getEmptyDataItemModel();
+  dataItem.name = 'VSclMax';
+  dataItem.dataType = (type === 'Ana')? 'Float': 'Int32';
+  ciOptions = getEmptyCIDataModel();
+  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.identifier = `${objectBrowseName}.VSclMax`;
+  ciOptions.nodeId.namespaceIndex = `${namespace}`;
+  dataItem.cIData = ciOptions;
+  result.push(dataItem);
+
+
+  return result;
 }
 
 
-export function getScaleSettingsDataItemOptions<T extends 'Ana' | 'DInt'>(namespace: number, objectBrowseName: string, type: T): object {
-  return getScaleSettingsSpecificDataItemOptions(namespace, objectBrowseName, type);
+export function getScaleSettingsDataItemModel<T extends 'Ana' | 'DInt'>(namespace: number, objectBrowseName: string, type: T): DataItemModel[] {
+  return getScaleSettingsSpecificDataItemModels(namespace, objectBrowseName, type);
 }
 
 
 export class ScaleSettingMockup<T extends 'Ana' | 'DInt'> {
+
   public vSclMin = 0;
   public vSclMax = 0;
+
   private readonly type: 'Ana' | 'DInt';
   private readonly dataType: DataType;
   protected mockupNode: UAObject;
@@ -83,8 +99,8 @@ export class ScaleSettingMockup<T extends 'Ana' | 'DInt'> {
     });
     }
 
-  public getDataItemOptions(): object {
-    return getScaleSettingsDataItemOptions(
+  public getDataItemModel(): DataItemModel[] {
+    return getScaleSettingsDataItemModel(
         this.mockupNode.namespaceIndex,
         this.mockupNode.browseName.name as string,
         this.type);

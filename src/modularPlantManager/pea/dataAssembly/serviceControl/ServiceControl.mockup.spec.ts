@@ -26,10 +26,10 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../_utils';
-import {getServiceControlDataItemOptions, getServiceControlOptions, ServiceControlMockup} from './ServiceControl.mockup';
-import {OpcUaConnection} from '../../connection';
-import {DataAssemblyOptions, OperationMode, ServiceSourceMode} from '@p2olab/polaris-interface';
-import {ServiceControlRuntime} from './ServiceControl';
+import {getServiceControlDataAssemblyModel, getServiceControlDataItemModel, ServiceControlMockup} from './ServiceControl.mockup';
+import {OperationMode, ServiceSourceMode} from '@p2olab/polaris-interface';
+import {ConnectionHandler} from '../../connectionHandler/ConnectionHandler';
+import {DataItemAccessLevel} from '@p2olab/pimad-interface';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -53,19 +53,19 @@ describe('ServiceControlMockup', () => {
         });
 
         it('static DataItemOptions', () => {
-            const options = getServiceControlDataItemOptions(1, 'Test') as ServiceControlRuntime;
+            const options = getServiceControlDataItemModel(1, 'Test');
             expect(Object.keys(options).length).to.equal(32);
         });
 
-        it('static DataAssemblyOptions', () => {
-            const options = getServiceControlOptions(1, 'Test') as DataAssemblyOptions;
+        it('static DataAssemblyModel', () => {
+            const options = getServiceControlDataAssemblyModel(1, 'Test');
             expect(Object.keys(options.dataItems).length).to.equal(34);
         });
 
-        it('dynamic DataAssemblyOptions', () => {
+        it('dynamic DataAssemblyModel', () => {
             const mockup = new ServiceControlMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const options = mockup.getDataAssemblyOptions();
+            const options = mockup.getDataAssemblyModel();
 
             expect(Object.keys(options.dataItems).length).to.equal(34);
         });
@@ -75,49 +75,50 @@ describe('ServiceControlMockup', () => {
 
         let mockupServer: MockupServer;
         let mockup: ServiceControlMockup;
-        let connection: OpcUaConnection;
+        let connectionHandler: ConnectionHandler;
+        const mockupName = 'Variable';
 
         beforeEach(async function () {
             this.timeout(5000);
             mockupServer = new MockupServer();
             await mockupServer.initialize();
-            mockup = new ServiceControlMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
+            mockup = new ServiceControlMockup(mockupServer.nameSpace, mockupServer.rootObject, mockupName);
             await mockupServer.start();
 
-            connection = new OpcUaConnection();
-            connection.initialize({endpointUrl: mockupServer.endpoint});
-            await connection.connect();
+            connectionHandler= new ConnectionHandler();
+            connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+            await connectionHandler.connect();
         });
 
         afterEach(async () => {
-            await connection.disconnect();
+            await connectionHandler.disconnect();
             await mockupServer.shutdown();
         });
 
         describe('CommandOp', () => {
             it('set and get CommandOp, should work', async () => {
                 // set up mockup
-                mockup.operationMode.opMode = OperationMode.Operator;
+                mockup.serviceOpMode.opMode = OperationMode.Operator;
                 mockup.commandEn = 1;
 
-                await connection.writeNode('Variable.CommandOp', mockupServer.nameSpaceUri, 1, 'UInt32');
-                await connection.readNode('Variable.CommandOp', mockupServer.nameSpaceUri)
+                await connectionHandler.writeDataItemValue({nodeId: {identifier: `${mockupName}.CommandOp`, namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, 1);
+                await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.CommandOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
                     .then((dataValue) => expect((dataValue)?.value.value).to.equal(1));
             });
 
             it('set CommandOp, value not valid, should fail', async () => {
-                return expect(connection.writeNode('Variable.CommandOp', mockupServer.nameSpaceUri, 100, 'UInt32'))
+                return expect(connectionHandler.writeDataItemValue({nodeId: {identifier: `${mockupName}.CommandOp`, namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, 100))
                     .rejectedWith('One or more arguments are invalid.');
             });
 
             it('set CommandOp, not Operator, should fail', async () => {
-                return expect(connection.writeNode('Variable.CommandOp', mockupServer.nameSpaceUri, 1, 'UInt32'))
+                return expect(connectionHandler.writeDataItemValue({nodeId: {identifier: `${mockupName}.CommandOp`, namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, 1))
                     .rejectedWith('One or more arguments are invalid.');
             });
 
             it('set CommandOp, commandEn=0, should fail', async () => {
-                mockup.operationMode.opMode = OperationMode.Operator; // set up mockup
-                return expect(connection.writeNode('Variable.CommandOp', mockupServer.nameSpaceUri, 1, 'UInt32'))
+                mockup.serviceOpMode.opMode = OperationMode.Operator; // set up mockup
+                return expect(connectionHandler.writeDataItemValue({nodeId: {identifier: `${mockupName}.CommandOp`, namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, 1))
                     .rejectedWith('One or more arguments are invalid.');
             });
         });
@@ -126,25 +127,25 @@ describe('ServiceControlMockup', () => {
 
             it('set CommandExt, should change state', async () => {
                 // set up mockup
-                mockup.operationMode.opMode = OperationMode.Automatic;
+                mockup.serviceOpMode.opMode = OperationMode.Automatic;
                 mockup.serviceSourceMode.srcMode = ServiceSourceMode.Extern;
-                await connection.writeNode('Variable.CommandExt', mockupServer.nameSpaceUri, 4, 'UInt32');
-                await connection.readNode('Variable.StateCur', mockupServer.nameSpaceUri)
+                await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.CommandExt', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, 4);
+                await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.CommandExt', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
                     .then((dataValue) => expect((dataValue)?.value.value).to.equal(64));
 
             });
 
             it('set CommandExt, value not valid, should fail', async () => {
-                return expect(connection.writeNode('Variable.CommandExt', mockupServer.nameSpaceUri, 100, 'UInt32'))
+                return expect(connectionHandler.writeDataItemValue({nodeId: {identifier: `${mockupName}.CommandExt`, namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, 100))
                     .rejectedWith('One or more arguments are invalid.');
             });
             it('set CommandExt, not Automatic, should fail', async () => {
-                return expect(connection.writeNode('Variable.CommandExt', mockupServer.nameSpaceUri, 1, 'UInt32'))
+                return expect(connectionHandler.writeDataItemValue({nodeId: {identifier: `${mockupName}.CommandExt`, namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, 1))
                     .rejectedWith('One or more arguments are invalid.');
             });
             it('set CommandExt, commandEn=0, should fail', async () => {
-                mockup.operationMode.opMode = OperationMode.Automatic;
-                return expect(connection.writeNode('Variable.CommandExt', mockupServer.nameSpaceUri, 1, 'UInt32'))
+                mockup.serviceOpMode.opMode = OperationMode.Automatic;
+                return expect(connectionHandler.writeDataItemValue({nodeId: {identifier: `${mockupName}.CommandExt`, namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, 1))
                     .rejectedWith('One or more arguments are invalid.');
             });
         });
@@ -153,14 +154,14 @@ describe('ServiceControlMockup', () => {
 
             it('set and get ProcedureOp, should work', async () => {
                 // set up mockup
-                mockup.operationMode.opMode = OperationMode.Operator;
-                await connection.writeNode('Variable.ProcedureOp', mockupServer.nameSpaceUri, 1, 'UInt32');
-                await connection.readNode('Variable.ProcedureOp', mockupServer.nameSpaceUri)
+                mockup.serviceOpMode.opMode = OperationMode.Operator;
+                await connectionHandler.writeDataItemValue({nodeId: {identifier: `${mockupName}.ProcedureOp`, namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, 1);
+                await connectionHandler.readDataItemValue({nodeId: {identifier: `${mockupName}.ProcedureOp`, namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
                     .then((dataValue) => expect((dataValue)?.value.value).to.equal(1));
             });
 
             it('set and get ProcedureOp, should fail', async () => {
-                return expect(connection.writeNode('Variable.ProcedureOp', mockupServer.nameSpaceUri, 1, 'UInt32'))
+                return expect(connectionHandler.writeDataItemValue({nodeId: {identifier: `${mockupName}.ProcedureOp`, namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, 1))
                     .rejectedWith('One or more arguments are invalid.');
             });
         });
@@ -168,16 +169,16 @@ describe('ServiceControlMockup', () => {
         describe('ProcedureExt', () => {
 
             it('set and get ProcedureExt, should work', async () => {
-                expect(connection.writeNode('Variable.ProcedureExt', mockupServer.nameSpaceUri, 1, 'UInt32'));
-                await connection.readNode('Variable.ProcedureExt', mockupServer.nameSpaceUri)
+                expect(connectionHandler.writeDataItemValue({nodeId: {identifier: `${mockupName}.ProcedureExt`, namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, 1));
+                await connectionHandler.readDataItemValue({nodeId: {identifier: `${mockupName}.ProcedureExt`, namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
                     .then((dataValue) => expect((dataValue)?.value.value).to.equal(1));
             });
 
             it('set ProcedureExt and get ProcedureReq, should work', async () => {
-                mockup.operationMode.opMode = OperationMode.Automatic;
+                mockup.serviceOpMode.opMode = OperationMode.Automatic;
                 mockup.serviceSourceMode.srcMode = ServiceSourceMode.Extern;
-                await connection.writeNode('Variable.ProcedureExt', mockupServer.nameSpaceUri, 1, 'UInt32');
-                await connection.readNode('Variable.ProcedureReq', mockupServer.nameSpaceUri)
+                await connectionHandler.writeDataItemValue({nodeId: {identifier: `${mockupName}.ProcedureExt`, namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, 1);
+                await connectionHandler.readDataItemValue({nodeId: {identifier: `${mockupName}.ProcedureExt`, namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
                     .then((dataValue) => expect((dataValue)?.value.value).to.equal(1));
             });
         });

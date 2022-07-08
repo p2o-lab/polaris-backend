@@ -25,60 +25,101 @@
 
 import {ServiceSourceMode} from '@p2olab/polaris-interface';
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
+import {DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../dataItem/DataItem.mockup';
 
 
-function getServiceSourceModeSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return ({
-		SrcChannel: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.SrcChannel`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		SrcIntAct: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.SrcIntAct`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		SrcIntAut: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.SrcIntAut`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		SrcIntOp: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.SrcIntOp`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		SrcExtAct: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.SrcExtAct`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		SrcExtAut: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.SrcExtAut`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		SrcExtOp: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.SrcExtOp`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions
-	});
+
+function getServiceSourceModeSpecificDataItemModels(namespace: number, objectBrowseName: string): DataItemModel[] {
+
+	const result: DataItemModel[] = [];
+	let dataItem: DataItemModel = getEmptyDataItemModel();
+	dataItem.name = 'SrcChannel';
+	dataItem.dataType = 'Boolean';
+	let ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.SrcChannel`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'SrcIntAct';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.SrcIntAct`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'SrcIntAut';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.SrcIntAut`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'SrcIntOp';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.SrcIntOp`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'SrcExtAct';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.SrcExtAct`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'SrcExtAut';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.SrcExtAut`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'SrcExtOp';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.SrcExtOp`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	return result;
 }
 
-export function getServiceSourceModeDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return getServiceSourceModeSpecificDataItemOptions(namespace, objectBrowseName);
+export function getServiceSourceModeDataItemModel(namespace: number, objectBrowseName: string): DataItemModel[] {
+	return getServiceSourceModeSpecificDataItemModels(namespace, objectBrowseName);
 }
 
 export class ServiceSourceModeMockup {
+
 	public srcMode: ServiceSourceMode = ServiceSourceMode.Intern;
+
 	public srcChannel = false;
 	public srcIntAut = false;
 	public srcIntOp = false;
 	public srcExtAut = false;
 	public srcExtOp = false;
+
 	public readonly  mockupNode: UAObject;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
@@ -198,8 +239,8 @@ export class ServiceSourceModeMockup {
 		return this.srcMode === ServiceSourceMode.Intern;
 	}
 
-	public getDataItemOptions(): object {
-		return getServiceSourceModeDataItemOptions(
+	public getDataItemModel(): DataItemModel[] {
+		return getServiceSourceModeDataItemModel(
 			this.mockupNode.namespaceIndex,
 			this.mockupNode.browseName.name as string);
 	}

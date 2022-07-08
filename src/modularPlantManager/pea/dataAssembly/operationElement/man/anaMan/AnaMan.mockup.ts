@@ -26,79 +26,91 @@
 // eslint-disable-next-line no-undef
 import Timeout = NodeJS.Timeout;
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
+import {DataAssemblyModel, DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
 
-import {getUnitSettingsDataItemOptions, UnitSettingsMockup} from '../../../baseFunction/unitSettings/UnitSettings.mockup';
-import {
-	getScaleSettingsDataItemOptions,
-	ScaleSettingMockup
-} from '../../../baseFunction/scaleSettings/ScaleSetting.mockup';
-import {
-	getValueLimitationDataItemOptions,
-	ValueLimitationMockup
-} from '../../../baseFunction/valueLimitation/ValueLimitation.mockup';
-import {getOperationElementDataItemOptions, OperationElementMockup} from '../../OperationElement.mockup';
-import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
-import {getDataAssemblyOptions} from '../../../DataAssemblyController.mockup';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {getUnitSettingsDataItemModel, UnitSettingsMockup} from '../../../baseFunction/unitSettings/UnitSettings.mockup';
+import {getScaleSettingsDataItemModel, ScaleSettingMockup} from '../../../baseFunction/scaleSettings/ScaleSetting.mockup';
+import {getValueLimitationDataItemModel, ValueLimitationMockup} from '../../../baseFunction/valueLimitation/ValueLimitation.mockup';
+import {getOperationElementDataItemModel, OperationElementMockup} from '../../OperationElement.mockup';
+import {getDataAssemblyModel} from '../../../DataAssembly.mockup';
+import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../../dataItem/DataItem.mockup';
 
 const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/OperationElement/AnaMan';
 
-function getAnaManSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return ({
-		VOut: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.VOut`,
-			dataType: 'Float'
-		} as OpcUaNodeOptions,
-		VMan: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.VMan`,
-			dataType: 'Float'
-		} as OpcUaNodeOptions,
-		VRbk: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.VRbk`,
-			dataType: 'Float'
-		} as OpcUaNodeOptions,
+function getAnaManSpecificDataItemModels(namespace: number, objectBrowseName: string): DataItemModel[] {
+	const result: DataItemModel[] = [];
+	let dataItem: DataItemModel = getEmptyDataItemModel();
+	dataItem.name = 'VOut';
+	dataItem.dataType = 'Float';
+	let ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.VOut`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
 
-		VFbk: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.VFbk`,
-			dataType: 'Float'
-		} as OpcUaNodeOptions
-	});
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'VMan';
+	dataItem.dataType = 'Float';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.VMan`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'VRbk';
+	dataItem.dataType = 'Float';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.VRbk`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'VFbk';
+	dataItem.dataType = 'Float';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.VFbk`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	return result;
 }
 
-export function getAnaManDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return ({
-			...getOperationElementDataItemOptions(namespace, objectBrowseName),
-			...getScaleSettingsDataItemOptions(namespace, objectBrowseName, 'Ana'),
-			...getValueLimitationDataItemOptions(namespace, objectBrowseName, 'Ana'),
-			...getUnitSettingsDataItemOptions(namespace, objectBrowseName),
-			...getAnaManSpecificDataItemOptions(namespace, objectBrowseName),
-		} as OpcUaNodeOptions
-	);
+export function getAnaManDataItemModel(namespace: number, objectBrowseName: string): DataItemModel[] {
+	return [
+			...getOperationElementDataItemModel(namespace, objectBrowseName),
+			...getScaleSettingsDataItemModel(namespace, objectBrowseName, 'Ana'),
+			...getValueLimitationDataItemModel(namespace, objectBrowseName, 'Ana'),
+			...getUnitSettingsDataItemModel(namespace, objectBrowseName),
+			...getAnaManSpecificDataItemModels(namespace, objectBrowseName),
+		];
 }
 
-export function getAnaManOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
-	const options = getDataAssemblyOptions(name, tagName, tagDescription);
-	options.metaModelRef = metaModelReference;
-	options.dataItems = {
+export function getAnaManDataAssemblyModel(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): DataAssemblyModel {
+	const options = getDataAssemblyModel(metaModelReference, name, tagName, tagDescription);
+	options.dataItems = [
 		...options.dataItems,
-		...getAnaManDataItemOptions(namespace, objectBrowseName)};
+		...getAnaManDataItemModel(namespace, objectBrowseName)
+	];
 	return options;
 }
 
 export class AnaManMockup extends OperationElementMockup {
 
-	protected vRbk = 0;
-	protected vMan = 0;
-	protected vOut = 0;
-	protected vFbk = 0;
+	public vRbk = 0;
+	public vMan = 0;
+	public vOut = 0;
+	public vFbk = 0;
 
-	public readonly scaleSettings: ScaleSettingMockup<'Ana'>;
-	public readonly valueLimitation: ValueLimitationMockup<'Ana'>;
-	public readonly unit: UnitSettingsMockup;
+	public scaleSettings: ScaleSettingMockup<'Ana'>;
+	public valueLimitation: ValueLimitationMockup<'Ana'>;
+	public unit: UnitSettingsMockup;
 	protected interval: Timeout | undefined;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
@@ -158,16 +170,15 @@ export class AnaManMockup extends OperationElementMockup {
 		});
 	}
 
-	public getDataAssemblyOptions(): DataAssemblyOptions {
-		const options = super.getDataAssemblyOptions();
-		options.metaModelRef = metaModelReference;
-		options.dataItems = {
+	public getDataAssemblyModel(metaModelReferenceOption?: string): DataAssemblyModel {
+		const options = super.getDataAssemblyModel(metaModelReferenceOption || metaModelReference);
+		options.dataItems = [
 			...options.dataItems,
-			...this.scaleSettings.getDataItemOptions(),
-			...this.valueLimitation.getDataItemOptions(),
-			...this.unit.getDataItemOptions(),
-			...getAnaManSpecificDataItemOptions(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
-		};
+			...this.scaleSettings.getDataItemModel(),
+			...this.valueLimitation.getDataItemModel(),
+			...this.unit.getDataItemModel(),
+			...getAnaManSpecificDataItemModels(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
+	];
 		return options;
 	}
 

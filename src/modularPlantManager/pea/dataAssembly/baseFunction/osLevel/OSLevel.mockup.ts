@@ -24,25 +24,35 @@
  */
 
 import {AccessLevelFlag, DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
+import {DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../dataItem/DataItem.mockup';
 
 
-function getOSLevelSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return ({
-		OSLevel: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.OSLevel`,
-			dataType: 'Byte'
-		} as OpcUaNodeOptions
-	});
+
+function getOSLevelSpecificDataItemModels(namespace: number, objectBrowseName: string): DataItemModel[] {
+
+	const result: DataItemModel[] = [];
+	const dataItem: DataItemModel = getEmptyDataItemModel();
+	dataItem.name = 'OSLevel';
+	dataItem.dataType = 'Byte';
+	const ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.OSLevel`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	return result;
 }
 
-export function getOSLevelDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return getOSLevelSpecificDataItemOptions(namespace, objectBrowseName);
+export function getOSLevelDataItemModel(namespace: number, objectBrowseName: string): DataItemModel[] {
+	return getOSLevelSpecificDataItemModels(namespace, objectBrowseName);
 }
 
 export class OSLevelMockup {
+
 	public osLevel = 0;
+
 	protected mockupNode: UAObject;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
@@ -72,8 +82,8 @@ export class OSLevelMockup {
 		});
 	}
 
-	public getDataItemOptions(): object {
-		return getOSLevelDataItemOptions(
+	public getDataItemModel(): DataItemModel[] {
+		return getOSLevelDataItemModel(
 			this.mockupNode.namespaceIndex,
 			this.mockupNode.browseName.name as string);
 	}

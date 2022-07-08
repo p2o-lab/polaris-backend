@@ -25,9 +25,9 @@
  
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {DiagnosticElementMockup, getDiagnosticElementDataItemOptions, getDiagnosticElementOptions} from './DiagnosticElement.mockup';
+import {DiagnosticElementMockup, getDiagnosticElementDataAssemblyModel, getDiagnosticElementDataItemModel} from './DiagnosticElement.mockup';
 import {MockupServer} from '../../../_utils';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -49,19 +49,19 @@ describe('DiagnosticElementMockup', () => {
         });
 
         it('static DataItemOptions', () => {
-            const options = getDiagnosticElementDataItemOptions(1, 'Test') as DiagnosticElementMockup;
+            const options = getDiagnosticElementDataItemModel(1, 'Test');
             expect(Object.keys(options).length).to.equal(1);
         });
 
-        it('static DataAssemblyOptions', () => {
-            const options = getDiagnosticElementOptions(1, 'Test') as DataAssemblyOptions;
+        it('static DataAssemblyModel', () => {
+            const options = getDiagnosticElementDataAssemblyModel(1, 'Test');
             expect(Object.keys(options.dataItems).length).to.equal(3);
         });
 
-        it('dynamic DataAssemblyOptions', () => {
+        it('dynamic DataAssemblyModel', () => {
             const mockup = new DiagnosticElementMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const options = mockup.getDataAssemblyOptions();
+            const options = mockup.getDataAssemblyModel();
 
             expect(Object.keys(options.dataItems).length).to.equal(3);
         });

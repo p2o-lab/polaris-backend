@@ -24,9 +24,14 @@
  */
 
 import {ServiceMockup} from './serviceSet/service/Service.mockup';
-import {MockupServer, PEATestNumericVariable} from '../_utils';
-import {ActiveElementMockup} from './dataAssembly/activeElement/ActiveElement.mockup';
+import {MockupServer} from '../_utils';
+import {IndicatorElementMockup} from './dataAssembly/indicatorElement/IndicatorElement.mockup';
+import {PEAModel} from '@p2olab/pimad-interface';
 
+
+export function getEmptyPEAModel(): PEAModel {
+	return {dataAssemblies: [], dataModel: '', endpoint: [], feas: [], name: '', pimadIdentifier: '', services: []};
+}
 
 export function getPEAMockupReferenceJSON(): object {
 
@@ -67,7 +72,7 @@ export function getPEAMockupReferenceJSON(): object {
 
 export class PEAMockup {
 
-	public variables: PEATestNumericVariable[] = [];
+	public indicatorElements: IndicatorElementMockup[] = [];
 	public services: ServiceMockup[] = [];
 	public mockupServer: MockupServer;
 
@@ -78,12 +83,10 @@ export class PEAMockup {
 
 	public async startSimulation(): Promise<void> {
 		await this.mockupServer.start();
-		this.variables.forEach((variable) => variable.startRandomOscillation());
 		this.services.forEach((service) => service.startSimulation());
 	}
 
 	public async stopSimulation(): Promise<void> {
-		this.variables.forEach((variable) => variable.stopRandomOscillation());
 		this.services.forEach((services) => services.stopSimulation());
 		await this.mockupServer.shutdown();
 	}

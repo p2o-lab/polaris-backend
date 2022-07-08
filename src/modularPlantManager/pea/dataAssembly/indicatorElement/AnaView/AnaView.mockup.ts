@@ -24,59 +24,68 @@
  */
 
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
-import {getScaleSettingsDataItemOptions, ScaleSettingMockup } from '../../baseFunction/scaleSettings/ScaleSetting.mockup';
-import {getUnitSettingsDataItemOptions, UnitSettingsMockup} from '../../baseFunction/unitSettings/UnitSettings.mockup';
+import {getScaleSettingsDataItemModel, ScaleSettingMockup} from '../../baseFunction/scaleSettings/ScaleSetting.mockup';
+import {getUnitSettingsDataItemModel, UnitSettingsMockup} from '../../baseFunction/unitSettings/UnitSettings.mockup';
 // eslint-disable-next-line no-undef
 import Timeout = NodeJS.Timeout;
-import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
-import {getIndicatorElementDataItemOptions, IndicatorElementMockup} from '../IndicatorElement.mockup';
-import {getDataAssemblyOptions} from '../../DataAssemblyController.mockup';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+
+import {getIndicatorElementDataItemModel, IndicatorElementMockup} from '../IndicatorElement.mockup';
+import {getDataAssemblyModel} from '../../DataAssembly.mockup';
+import {DataAssemblyModel, DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../dataItem/DataItem.mockup';
 
 const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/AnaView';
 
-function getAnaViewSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return ({
-		V: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.V`,
-			dataType: 'Float'
-		} as OpcUaNodeOptions
-	});
+function getAnaViewSpecificDataItemModels(namespace: number, objectBrowseName: string): DataItemModel[] {
+
+	const result: DataItemModel[] = [];
+	const dataItem: DataItemModel = getEmptyDataItemModel();
+	dataItem.name = 'V';
+	dataItem.dataType = 'Float';
+	const ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.V`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	return result;
 }
 
 
-export function getAnaViewDataItemOptions(namespace: number, objectBrowseName: string): object {
+export function getAnaViewDataItemModel(namespace: number, objectBrowseName: string): DataItemModel[] {
 	return ({
-			...getIndicatorElementDataItemOptions(namespace, objectBrowseName),
-			...getScaleSettingsDataItemOptions(namespace, objectBrowseName, 'Ana'),
-			...getUnitSettingsDataItemOptions(namespace, objectBrowseName),
-			...getAnaViewSpecificDataItemOptions(namespace, objectBrowseName)});
+			...getIndicatorElementDataItemModel(namespace, objectBrowseName),
+			...getScaleSettingsDataItemModel(namespace, objectBrowseName, 'Ana'),
+			...getUnitSettingsDataItemModel(namespace, objectBrowseName),
+			...getAnaViewSpecificDataItemModels(namespace, objectBrowseName)});
 }
 
-export function getAnaViewOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
-	const options = getDataAssemblyOptions(name, tagName, tagDescription);
-	options.metaModelRef = metaModelReference;
-	options.dataItems = {
+export function getAnaViewDataAssemblyModel(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): DataAssemblyModel {
+	const options = getDataAssemblyModel(metaModelReference, name, tagName, tagDescription);
+	options.dataItems = [
 		...options.dataItems,
-		...getAnaViewDataItemOptions(namespace, objectBrowseName)};
+		...getAnaViewDataItemModel(namespace, objectBrowseName)
+	];
 	return options;
 }
 
 export class AnaViewMockup extends IndicatorElementMockup{
 
 	public v = 0;
+
 	public scaleSettings: ScaleSettingMockup<'Ana'>;
 	public unit: UnitSettingsMockup;
+
 	protected interval: Timeout | undefined;
 
-	constructor(namespace: Namespace, rootNode: UAObject, variableName: string, missingV?: boolean) {
+	constructor(namespace: Namespace, rootNode: UAObject, variableName: string, withoutDataItemV = false) {
 		super(namespace, rootNode, variableName);
 
 		this.scaleSettings = new ScaleSettingMockup(namespace, this.mockupNode, this.name, 'Ana');
 		this.unit = new UnitSettingsMockup(namespace, this.mockupNode, this.name);
 
-		if((missingV == undefined || !missingV)){
+		if(!withoutDataItemV){
 			namespace.addVariable({
 				componentOf: this.mockupNode,
 				nodeId: `ns=${namespace.index};s=${variableName}.V`,
@@ -109,15 +118,14 @@ export class AnaViewMockup extends IndicatorElementMockup{
 		}
 	}
 
-	public getDataAssemblyOptions(): DataAssemblyOptions {
-		const options = super.getDataAssemblyOptions();
-		options.metaModelRef = metaModelReference;
-		options.dataItems = {
+	public getDataAssemblyModel(metaModelReferenceOption?: string): DataAssemblyModel {
+		const options = super.getDataAssemblyModel(metaModelReferenceOption || metaModelReference);
+		options.dataItems = [
 			...options.dataItems,
-			...this.scaleSettings.getDataItemOptions(),
-			...this.unit.getDataItemOptions(),
-			...getAnaViewSpecificDataItemOptions(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
-			};
+			...this.scaleSettings.getDataItemModel(),
+			...this.unit.getDataItemModel(),
+			...getAnaViewSpecificDataItemModels(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
+			];
 		return options;
 	}
 }

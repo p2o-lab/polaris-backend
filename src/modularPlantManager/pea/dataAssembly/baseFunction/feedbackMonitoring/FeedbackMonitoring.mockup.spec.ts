@@ -26,9 +26,9 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../_utils';
-import {FeedbackMonitoringMockup, getFeedbackMonitoringDataItemOptions} from './FeedbackMonitoring.mockup';
-import {OpcUaConnection} from '../../../connection';
-import {FeedbackMonitoringRuntime} from './FeedbackMonitoring';
+import {FeedbackMonitoringMockup, getFeedbackMonitoringDataItemModel} from './FeedbackMonitoring.mockup';
+import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
+import {DataItemAccessLevel} from '@p2olab/pimad-interface';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -48,35 +48,29 @@ describe('FeedbackMonitoringMockup', () => {
         });
 
         it('generic FeedbackMonitoring DataItemOptions',  () => {
-            const options = getFeedbackMonitoringDataItemOptions(1, 'Test') as FeedbackMonitoringRuntime;
+            const options = getFeedbackMonitoringDataItemModel(1, 'Test');
 
             expect(Object.keys(options).length).to.equal(6);
-            expect(options.MonDynTi).to.not.be.undefined;
-            expect(options.MonStatTi).to.not.be.undefined;
-            expect(options.MonDynErr).to.not.be.undefined;
-            expect(options.MonEn).to.not.be.undefined;
-            expect(options.MonStatErr).to.not.be.undefined;
-            expect(options.MonSafePos).to.not.be.undefined;
         });
 
         it('dynamic FeedbackMonitoring DataItemOptions',  () => {
             const mockup = new FeedbackMonitoringMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Test');
-            const options = mockup.getDataItemOptions() as FeedbackMonitoringRuntime;
+            const options = mockup.getDataItemModel();
 
             expect(Object.keys(options).length).to.equal(6);
-            expect(options.MonDynTi).to.not.be.undefined;
-            expect(options.MonStatTi).to.not.be.undefined;
-            expect(options.MonDynErr).to.not.be.undefined;
-            expect(options.MonEn).to.not.be.undefined;
-            expect(options.MonStatErr).to.not.be.undefined;
-            expect(options.MonSafePos).to.not.be.undefined;
+            expect(options.find(i => i.name === 'MonDynTi')).to.not.be.undefined;
+            expect(options.find(i => i.name === 'MonStatTi')).to.not.be.undefined;
+            expect(options.find(i => i.name === 'MonDynErr')).to.not.be.undefined;
+            expect(options.find(i => i.name === 'MonEn')).to.not.be.undefined;
+            expect(options.find(i => i.name === 'MonStatErr')).to.not.be.undefined;
+            expect(options.find(i => i.name === 'MonSafePos')).to.not.be.undefined;
         });
     });
 
     describe('dynamic', () => {
 
         let mockupServer: MockupServer;
-        let connection: OpcUaConnection;
+        let connectionHandler: ConnectionHandler;
 
         beforeEach(async function () {
             this.timeout(5000);
@@ -84,42 +78,44 @@ describe('FeedbackMonitoringMockup', () => {
             await mockupServer.initialize();
             new FeedbackMonitoringMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
             await mockupServer.start();
-            connection = new OpcUaConnection();
-            connection.initialize({endpointUrl: mockupServer.endpoint});
-            await connection.connect();
+            connectionHandler= new ConnectionHandler();
+            connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+            await connectionHandler.connect();
         });
+
         afterEach(async () => {
-            await connection.disconnect();
+            await connectionHandler.disconnect();
             await mockupServer.shutdown();
         });
 
         it('set and get MonEn', async () => {
-            await connection.writeNode('Variable.MonEn', mockupServer.nameSpaceUri, true, 'Boolean');
-            await connection.readNode('Variable.MonEn', mockupServer.nameSpaceUri)
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.MonEn', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, true);
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.MonEn', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(true));
         }).timeout(5000);
 
         it('get MonSafePos', async () => {
-            await connection.readNode('Variable.MonSafePos', mockupServer.nameSpaceUri)
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.MonSafePos', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(false));
         }).timeout(5000);
 
         it('get MonStatErr', async () => {
-            await connection.readNode('Variable.MonStatErr', mockupServer.nameSpaceUri)
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.MonStatErr', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(false));
         }).timeout(5000);
 
         it('get MonDynErr', async () => {
-            await connection.readNode('Variable.MonDynErr', mockupServer.nameSpaceUri)
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.MonDynErr', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(false));
         }).timeout(5000);
 
         it('get MonStatTi', async () => {
-            await connection.readNode('Variable.MonStatTi', mockupServer.nameSpaceUri)
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.MonStatTi', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(0));
         }).timeout(5000);
+
         it('get MonDynTi', async () => {
-            await connection.readNode('Variable.MonDynTi', mockupServer.nameSpaceUri)
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.MonDynTi', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(0));
         }).timeout(5000);
 

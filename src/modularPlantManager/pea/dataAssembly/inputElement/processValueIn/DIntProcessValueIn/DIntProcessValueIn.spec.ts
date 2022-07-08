@@ -23,42 +23,42 @@
  * SOFTWARE.
  */
 
-import {OpcUaConnection} from '../../../../connection';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {MockupServer} from '../../../../../_utils';
-import {DIntProcessValueInMockup, getDIntProcessValueInOptions} from './DIntProcessValueIn.mockup';
+import {DIntProcessValueInMockup, getDIntProcessValueInDataAssemblyModel} from './DIntProcessValueIn.mockup';
 
 import {DIntProcessValueIn} from './DIntProcessValueIn';
-import {DataAssemblyControllerFactory} from '../../../DataAssemblyControllerFactory';
+import {DataAssemblyFactory} from '../../../DataAssemblyFactory';
+import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('DIntProcessValueIn', () => {
 
-	let dataAssemblyOptions: DataAssemblyOptions;
+	let options: DataAssemblyModel;
 	
 	describe('static', () => {
 
-		const emptyOPCUAConnection = new OpcUaConnection();
-		dataAssemblyOptions = getDIntProcessValueInOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
+		const connectionHandler = new ConnectionHandler();
+		options = getDIntProcessValueInDataAssemblyModel(2, 'Variable', 'Variable');
 
 		it('should create DIntProcessValueIn', async () => {
-			const dataAssemblyController = DataAssemblyControllerFactory.create(dataAssemblyOptions, emptyOPCUAConnection) as DIntProcessValueIn;
-			expect(dataAssemblyController).to.be.not.undefined;
-			expect(dataAssemblyController.communication.VExt).to.be.not.undefined;
-			expect(dataAssemblyController.communication.VSclMax).to.be.not.undefined;
-			expect(dataAssemblyController.communication.VSclMin).to.be.not.undefined;
-			expect(dataAssemblyController.communication.VUnit).to.be.not.undefined;
+			const dataAssembly = DataAssemblyFactory.create(options, connectionHandler) as DIntProcessValueIn;
+			expect(dataAssembly).to.be.not.undefined;
+			expect(dataAssembly.communication.VExt).to.be.not.undefined;
+			expect(dataAssembly.communication.VSclMax).to.be.not.undefined;
+			expect(dataAssembly.communication.VSclMin).to.be.not.undefined;
+			expect(dataAssembly.communication.VUnit).to.be.not.undefined;
 		});
 	});
 	describe('dynamic', () => {
 		let mockupServer: MockupServer;
-		let connection: OpcUaConnection;
+		let connectionHandler: ConnectionHandler;
 		let dIntProcessValueInMockup: DIntProcessValueInMockup;
-		let dataAssemblyController: DIntProcessValueIn;
+		let dataAssembly: DIntProcessValueIn;
 
 		beforeEach(async function () {
 			this.timeout(4000);
@@ -66,34 +66,34 @@ describe('DIntProcessValueIn', () => {
 			await mockupServer.initialize();
 			dIntProcessValueInMockup = new DIntProcessValueInMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			dIntProcessValueInMockup.scaleSettings.vSclMax= 1;
-			dataAssemblyOptions = dIntProcessValueInMockup.getDataAssemblyOptions();
+			options = dIntProcessValueInMockup.getDataAssemblyModel();
 			await mockupServer.start();
-			connection = new OpcUaConnection();
-			connection.initialize({endpointUrl: mockupServer.endpoint});
-			await connection.connect();
+			connectionHandler= new ConnectionHandler();
+			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			await connectionHandler.connect();
 
-			dataAssemblyController = DataAssemblyControllerFactory.create(dataAssemblyOptions, connection) as DIntProcessValueIn;
-			await dataAssemblyController.subscribe();
-			await connection.startMonitoring();
-			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
+			dataAssembly = DataAssemblyFactory.create(options, connectionHandler) as DIntProcessValueIn;
+			await dataAssembly.subscribe();
+			await connectionHandler.connect();
+			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 		});
 
 		afterEach(async function () {
 			this.timeout(4000);
-			await connection.disconnect();
+			await connectionHandler.disconnect();
 			await mockupServer.shutdown();
 		});
 
 		it('should subscribe successfully', async () => {
-			expect(dataAssemblyController.communication.VExt.value).equal(0);
-			expect(dataAssemblyController.communication.VUnit.value).equal(0);
-			expect(dataAssemblyController.communication.VSclMin.value).equal(0);
-			expect(dataAssemblyController.communication.VSclMax.value).equal(1);
+			expect(dataAssembly.communication.VExt.value).equal(0);
+			expect(dataAssembly.communication.VUnit.value).equal(0);
+			expect(dataAssembly.communication.VSclMin.value).equal(0);
+			expect(dataAssembly.communication.VSclMax.value).equal(1);
 		}).timeout(4000);
 
 		it('setparameter', async () => {
-			await dataAssemblyController.setParameter(1,'VExt');
-			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
+			await dataAssembly.setParameter(1,'VExt');
+			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 			expect(dIntProcessValueInMockup.vExt).equal(1);
 		}).timeout(4000);
 

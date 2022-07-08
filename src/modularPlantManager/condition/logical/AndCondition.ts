@@ -24,13 +24,13 @@
  */
 
 import {AndConditionOptions} from '@p2olab/polaris-interface';
-import {PEAController} from '../../pea';
+import {PEA} from '../../pea/PEA';
 import {Condition} from '../Condition';
 import {TwoOperandCondition} from './TwoOperandCondition';
 
 export class AndCondition extends TwoOperandCondition {
 
-	constructor(options: AndConditionOptions, peas: PEAController[]) {
+	constructor(options: AndConditionOptions, peas: PEA[]) {
 		super(options, peas);
 	}
 

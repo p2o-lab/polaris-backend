@@ -24,14 +24,14 @@
  */
 
 import {NotConditionOptions} from '@p2olab/polaris-interface';
-import {PEAController} from '../../pea';
+import {PEA} from '../../pea';
 import {Condition} from '../Condition';
 import {ConditionFactory} from '../ConditionFactory';
 
 export class NotCondition extends Condition {
 	public condition: Condition;
 
-	constructor(options: NotConditionOptions, peaSet: PEAController[]) {
+	constructor(options: NotConditionOptions, peaSet: PEA[]) {
 		super(options, peaSet);
 		this.condition = ConditionFactory.create(options.condition, peaSet);
 		this._fulfilled = !this.condition.fulfilled;

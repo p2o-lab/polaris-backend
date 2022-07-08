@@ -23,11 +23,13 @@
 * SOFTWARE.
 */
 
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaConnection, DataItem} from '../../../../../connection';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
+import {DataItem} from '../../../../dataItem/DataItem';
 import {FeedbackMonitoringRuntime} from '../../../../baseFunction';
 import {AnaVlv, AnaVlvRuntime} from '../AnaVlv';
 import {FeedbackMonitoring} from '../../../../baseFunction';
+import {DataItemFactory, getDataItemModel} from '../../../../dataItem/DataItemFactory';
+import {ConnectionHandler} from '../../../../../connectionHandler/ConnectionHandler';
 
 export type MonAnaVlvRuntime = AnaVlvRuntime & FeedbackMonitoringRuntime & {
 	PosReachedFbk: DataItem<boolean>;
@@ -40,14 +42,14 @@ export class MonAnaVlv extends AnaVlv {
 	public readonly communication!: MonAnaVlvRuntime;
 	feedBackMonitoring: FeedbackMonitoring;
 
-	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
-		super(options, connection);
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+		super(options, connectionHandler);
 
-		this.feedBackMonitoring = new FeedbackMonitoring(this);
+		this.feedBackMonitoring = new FeedbackMonitoring(options, connectionHandler);
 
-		this.communication.PosReachedFbk = this.createDataItem('PosReachedFbk', 'boolean');
-		this.communication.PosTolerance = this.createDataItem('PosTolerance', 'number');
-		this.communication.MonPosTi = this.createDataItem('MonPosTi', 'number');
-		this.communication.MonPosErr = this.createDataItem('MonPosErr', 'boolean');
+		this.communication.PosReachedFbk = DataItemFactory.create(getDataItemModel(options, 'PosReachedFbk'), connectionHandler);
+		this.communication.PosTolerance = DataItemFactory.create(getDataItemModel(options, 'PosTolerance'), connectionHandler);
+		this.communication.MonPosTi = DataItemFactory.create(getDataItemModel(options, 'MonPosTi'), connectionHandler);
+		this.communication.MonPosErr = DataItemFactory.create(getDataItemModel(options, 'MonPosErr'), connectionHandler);
 	}
 }

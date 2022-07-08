@@ -26,7 +26,7 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../_utils';
-import {getScaleSettingsDataItemOptions, ScaleSettingMockup} from './ScaleSetting.mockup';
+import {getScaleSettingsDataItemModel, ScaleSettingMockup} from './ScaleSetting.mockup';
 import {ScaleSettingsRuntime} from './ScaleSettings';
 
 chai.use(chaiAsPromised);
@@ -52,21 +52,21 @@ describe('ScaleSettingsMockup', () => {
             });
 
             it('static DataItemOptions', () => {
-                const options = getScaleSettingsDataItemOptions(1, 'Test', 'DInt') as ScaleSettingsRuntime;
+                const options = getScaleSettingsDataItemModel(1, 'Test', 'DInt');
 
                 expect(Object.keys(options).length).to.equal(2);
-                expect(options.VSclMax).to.not.be.undefined;
-                expect(options.VSclMin).to.not.be.undefined;
+                expect(options.find(i => i.name === 'VSclMax')).to.not.be.undefined;
+                expect(options.find(i => i.name === 'VSclMin')).to.not.be.undefined;
             });
 
             it('dynamic DataItemOptions', () => {
                 const mockup = new ScaleSettingMockup(mockupServer.nameSpace,
                     mockupServer.rootObject, 'Variable', 'DInt');
-                const options = mockup.getDataItemOptions() as ScaleSettingsRuntime;
+                const options = mockup.getDataItemModel();
 
                 expect(Object.keys(options).length).to.equal(2);
-                expect(options.VSclMax).to.not.be.undefined;
-                expect(options.VSclMin).to.not.be.undefined;
+                expect(options.find(i => i.name === 'VSclMax')).to.not.be.undefined;
+                expect(options.find(i => i.name === 'VSclMin')).to.not.be.undefined;
             });
         });
 
@@ -79,21 +79,21 @@ describe('ScaleSettingsMockup', () => {
             });
 
             it('static DataItemOptions', () => {
-                const options = getScaleSettingsDataItemOptions(1, 'Test', 'Ana') as ScaleSettingsRuntime;
+                const options = getScaleSettingsDataItemModel(1, 'Test', 'Ana');
 
                 expect(Object.keys(options).length).to.equal(2);
-                expect(options.VSclMax).to.not.be.undefined;
-                expect(options.VSclMin).to.not.be.undefined;
+                expect(options.find(i => i.name === 'VSclMax')).to.not.be.undefined;
+                expect(options.find(i => i.name === 'VSclMin')).to.not.be.undefined;
             });
 
             it('dynamic DataItemOptions', () => {
                 const mockup = new ScaleSettingMockup(mockupServer.nameSpace,
                     mockupServer.rootObject, 'Variable', 'Ana');
-                const options = mockup.getDataItemOptions() as ScaleSettingsRuntime;
+                const options = mockup.getDataItemModel();
 
                 expect(Object.keys(options).length).to.equal(2);
-                expect(options.VSclMax).to.not.be.undefined;
-                expect(options.VSclMin).to.not.be.undefined;
+                expect(options.find(i => i.name === 'VSclMax')).to.not.be.undefined;
+                expect(options.find(i => i.name === 'VSclMin')).to.not.be.undefined;
             });
         });
 

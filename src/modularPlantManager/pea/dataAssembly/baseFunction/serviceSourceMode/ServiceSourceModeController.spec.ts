@@ -23,45 +23,44 @@
  * SOFTWARE.
  */
 
-import {OpcUaConnection} from '../../../connection';
+
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {DataAssemblyOptions, ServiceSourceMode} from '@p2olab/polaris-interface';
-import {DataAssemblyController} from '../../DataAssemblyController';
+import {ServiceSourceMode} from '@p2olab/polaris-interface';
 import {ServiceSourceModeController} from './ServiceSourceModeController';
 import {MockupServer} from '../../../../_utils';
 import {ServiceSourceModeMockup} from './ServiceSourceMode.mockup';
-import {getAnaServParamOptions} from '../../operationElement/servParam/anaServParam/AnaServParam.mockup';
+import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
+import {getAnaServParamDataAssemblyModel} from '../../operationElement/servParam/anaServParam/AnaServParam.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('ServiceSourceMode', () => {
 
-	const dataAssemblyOptions = getAnaServParamOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
+	const options = getAnaServParamDataAssemblyModel(2, 'Variable', 'Variable');
 
 	describe('static', () => {
 
-		const emptyOPCUAConnection = new OpcUaConnection();
+		const connectionHandler = new ConnectionHandler();
 
 		it('should create ServiceSourceMode', () => {
-			const da = new DataAssemblyController(dataAssemblyOptions, emptyOPCUAConnection) as any;
-			const serviceSourceModeController = new ServiceSourceModeController(da);
-			expect(serviceSourceModeController).to.not.be.undefined;
-			expect(da.communication.SrcChannel).to.not.be.undefined;
-			expect(da.communication.SrcExtAut).to.not.be.undefined;
-			expect(da.communication.SrcIntAut).to.not.be.undefined;
-			expect(da.communication.SrcIntOp).to.not.be.undefined;
-			expect(da.communication.SrcExtOp).to.not.be.undefined;
-			expect(da.communication.SrcIntAct).to.not.be.undefined;
-			expect(da.communication.SrcExtAct).to.not.be.undefined;
+			const da = new ServiceSourceModeController(options, connectionHandler);
+			expect(da).to.not.be.undefined;
+			expect(da.SrcChannel).to.not.be.undefined;
+			expect(da.SrcExtAut).to.not.be.undefined;
+			expect(da.SrcIntAut).to.not.be.undefined;
+			expect(da.SrcIntOp).to.not.be.undefined;
+			expect(da.SrcExtOp).to.not.be.undefined;
+			expect(da.SrcIntAct).to.not.be.undefined;
+			expect(da.SrcExtAct).to.not.be.undefined;
 		});
 	});
 
 	describe('dynamic', () => {
 
 		let mockupServer: MockupServer;
-		let connection: OpcUaConnection;
+		let connectionHandler: ConnectionHandler;
 
 		beforeEach(async function () {
 			this.timeout(5000);
@@ -69,60 +68,57 @@ describe('ServiceSourceMode', () => {
 			await mockupServer.initialize();
 			new ServiceSourceModeMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			await mockupServer.start();
-			connection = new OpcUaConnection();
-			connection.initialize({endpointUrl: mockupServer.endpoint});
-			await connection.connect();
+			connectionHandler= new ConnectionHandler();
+			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			await connectionHandler.connect();
 		});
 
 		afterEach(async function () {
 			this.timeout(4000);
-			await connection.disconnect();
+			await connectionHandler.disconnect();
 			await mockupServer.shutdown();
 		});
 
 		it('should subscribe successfully', async () => {
 
-			const dataAssemblyController = new DataAssemblyController(dataAssemblyOptions, connection) as any;
-			new ServiceSourceModeController(dataAssemblyController);
-			await dataAssemblyController.subscribe();
-			await connection.startMonitoring();
-			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
+			const dataAssembly = new ServiceSourceModeController(options, connectionHandler);
+			await connectionHandler.connect();
+			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 
-			expect(dataAssemblyController.communication.SrcChannel.value).equal(false);
-			expect(dataAssemblyController.communication.SrcExtAut.value).equal(false);
-			expect(dataAssemblyController.communication.SrcIntAut.value).equal(false);
-			expect(dataAssemblyController.communication.SrcIntOp.value).equal(false);
-			expect(dataAssemblyController.communication.SrcExtOp.value).equal(false);
-			expect(dataAssemblyController.communication.SrcIntAct.value).equal(true);
-			expect(dataAssemblyController.communication.SrcExtAct.value).equal(false);
+			expect(dataAssembly.SrcChannel.value).equal(false);
+			expect(dataAssembly.SrcExtAut.value).equal(false);
+			expect(dataAssembly.SrcIntAut.value).equal(false);
+			expect(dataAssembly.SrcIntOp.value).equal(false);
+			expect(dataAssembly.SrcExtOp.value).equal(false);
+			expect(dataAssembly.SrcIntAct.value).equal(true);
+			expect(dataAssembly.SrcExtAct.value).equal(false);
 		}).timeout(5000);
 	});
 
 	describe('dynamic functions, Extern on', async () => {
 		let mockupServer: MockupServer;
-		let connection: OpcUaConnection;
+		let connectionHandler: ConnectionHandler;
 		let mockup: ServiceSourceModeMockup;
 		let serviceSourceModeController: ServiceSourceModeController;
-		let dataAssemblyController: any;
+		let dataAssembly: any;
 
 		beforeEach(async function () {
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
 			mockup = new ServiceSourceModeMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			await mockupServer.start();
-			connection = new OpcUaConnection();
-			connection.initialize({endpointUrl: mockupServer.endpoint});
-			dataAssemblyController = new DataAssemblyController(dataAssemblyOptions, connection) as any;
-			serviceSourceModeController = new ServiceSourceModeController(dataAssemblyController);
-			await connection.connect();
-			await dataAssemblyController.subscribe();
-			await connection.startMonitoring();
-			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
+			connectionHandler= new ConnectionHandler();
+			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			dataAssembly = new ServiceSourceModeController(options, connectionHandler);
+			await connectionHandler.connect();
+			await dataAssembly.subscribe();
+			await connectionHandler.connect();
+			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 		});
 
 		afterEach(async function () {
 			this.timeout(4000);
-			await connection.disconnect();
+			await connectionHandler.disconnect();
 			await mockupServer.shutdown();
 		});
 
@@ -144,10 +140,10 @@ describe('ServiceSourceMode', () => {
 
 	describe('dynamic functions, Intern on', async () => {
 		let mockupServer: MockupServer;
-		let connection: OpcUaConnection;
+		let connectionHandler: ConnectionHandler;
 		let mockup: ServiceSourceModeMockup;
 		let serviceSourceModeController: ServiceSourceModeController;
-		let dataAssemblyController: any;
+		let dataAssembly: any;
 		beforeEach(async function () {
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
@@ -162,19 +158,18 @@ describe('ServiceSourceMode', () => {
 			mockup.srcMode= ServiceSourceMode.Intern;
 			await mockupServer.start();
 
-			connection = new OpcUaConnection();
-			connection.initialize({endpointUrl: mockupServer.endpoint});
-			dataAssemblyController = new DataAssemblyController(dataAssemblyOptions, connection);
-			serviceSourceModeController = new ServiceSourceModeController(dataAssemblyController);
-			await connection.connect();
-			await dataAssemblyController.subscribe();
-			await connection.startMonitoring();
-			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
+			connectionHandler= new ConnectionHandler();
+			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			dataAssembly = new ServiceSourceModeController(options, connectionHandler);
+			await connectionHandler.connect();
+			await dataAssembly.subscribe();
+			await connectionHandler.connect();
+			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 		});
 
 		afterEach(async function () {
 			this.timeout(4000);
-			await connection.disconnect();
+			await connectionHandler.disconnect();
 			await mockupServer.shutdown();
 		});
 
@@ -188,18 +183,18 @@ describe('ServiceSourceMode', () => {
 		});
 
 		it('waitForServiceSourceModeToPassSpecificTest, promise should resolve instantly', async () => {
-			dataAssemblyController.communication.SrcExtAct.value = true;
+			dataAssembly.SrcExtAct.value = true;
 			await serviceSourceModeController.waitForServiceSourceModeToPassSpecificTest(ServiceSourceMode.Extern);
 		});
 
 		it('waitForServiceSourceModeToPassSpecificTest, promise should resolve after a while', async () => {
-			await dataAssemblyController.communication.SrcExtOp.write(true);
+			await dataAssembly.SrcExtOp.write(true);
 			await serviceSourceModeController.waitForServiceSourceModeToPassSpecificTest(ServiceSourceMode.Extern);
 		}).timeout(4000);
 
 		it('waitForServiceSourceModeToPassSpecificTest, timeout', async () => {
-			expect(dataAssemblyController.communication.SrcExtAct.value).to.be.false;
-			expect(dataAssemblyController.communication.SrcIntAct.value).to.be.true;
+			expect(dataAssembly.SrcExtAct.value).to.be.false;
+			expect(dataAssembly.SrcIntAct.value).to.be.true;
 			return expect(serviceSourceModeController.waitForServiceSourceModeToPassSpecificTest(ServiceSourceMode.Extern)).to.be
 				.rejectedWith('Timeout: ServiceSourceMode did not change');
 		}).timeout(4000);
@@ -208,13 +203,13 @@ describe('ServiceSourceMode', () => {
 			await serviceSourceModeController.setToExternalServiceSourceMode();
 			expect(mockup.srcExtAct).to.be.true;
 			expect(mockup.srcIntAct).to.be.false;
-			expect(dataAssemblyController.communication.SrcExtAct.value).to.be.true;
-			expect(dataAssemblyController.communication.SrcIntAct.value).to.be.false;
+			expect(dataAssembly.SrcExtAct.value).to.be.true;
+			expect(dataAssembly.SrcIntAct.value).to.be.false;
 			await serviceSourceModeController.setToInternalServiceSourceMode();
 			expect(mockup.srcExtAct).to.be.false;
 			expect(mockup.srcIntAct).to.be.true;
-			expect(dataAssemblyController.communication.SrcExtAct.value).to.be.false;
-			expect(dataAssemblyController.communication.SrcIntAct.value).to.be.true;
+			expect(dataAssembly.SrcExtAct.value).to.be.false;
+			expect(dataAssembly.SrcIntAct.value).to.be.true;
 		}).timeout(4000);
 	});
 });

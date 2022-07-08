@@ -24,26 +24,36 @@
  */
 
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
+import {DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../dataItem/DataItem.mockup';
 
 
-function getUnitSettingsSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
-  return ({
-    VUnit:   {
-      namespaceIndex: `${namespace}`,
-      nodeId: `${objectBrowseName}.VUnit`,
-      dataType: 'Int16'
-    }
-  });
+function getUnitSettingsSpecificDataItemModels(namespace: number, objectBrowseName: string): DataItemModel[] {
+
+  const result: DataItemModel[] = [];
+  const dataItem: DataItemModel = getEmptyDataItemModel();
+  dataItem.name = 'VUnit';
+  dataItem.dataType = 'Int16';
+  const ciOptions = getEmptyCIDataModel();
+  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.identifier = `${objectBrowseName}.VUnit`;
+  ciOptions.nodeId.namespaceIndex = `${namespace}`;
+  dataItem.cIData = ciOptions;
+  result.push(dataItem);
+
+  return result;
 }
 
 
-export function getUnitSettingsDataItemOptions(namespace: number, objectBrowseName: string): object {
-  return getUnitSettingsSpecificDataItemOptions(namespace, objectBrowseName);
+export function getUnitSettingsDataItemModel(namespace: number, objectBrowseName: string): DataItemModel[] {
+  return getUnitSettingsSpecificDataItemModels(namespace, objectBrowseName);
 }
 
 
 export class UnitSettingsMockup {
-  protected unit = 0;
+
+  public unit = 0;
+
   protected mockupNode: UAObject;
 
   constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
@@ -63,8 +73,8 @@ export class UnitSettingsMockup {
       });
     }
 
-  public getDataItemOptions(): object {
-    return getUnitSettingsDataItemOptions(
+  public getDataItemModel(): DataItemModel[] {
+    return getUnitSettingsDataItemModel(
         this.mockupNode.namespaceIndex,
         this.mockupNode.browseName.name as string);
   }

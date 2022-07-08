@@ -24,56 +24,91 @@
  */
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
+import {DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../dataItem/DataItem.mockup';
 
-function getFeedbackMonitoringSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
-  return ({
-    MonEn: {
-      namespaceIndex: `${namespace}`,
-      nodeId: `${objectBrowseName}.MonEn`,
-      dataType: 'Boolean'
-    } as OpcUaNodeOptions,
-    MonSafePos: {
-      namespaceIndex: `${namespace}`,
-      nodeId: `${objectBrowseName}.MonSafePos`,
-      dataType: 'Boolean'
-    } as OpcUaNodeOptions,
-    MonStatErr: {
-      namespaceIndex: `${namespace}`,
-      nodeId: `${objectBrowseName}.MonStatErr`,
-      dataType: 'Boolean'
-    } as OpcUaNodeOptions,
-    MonDynErr: {
-      namespaceIndex: `${namespace}`,
-      nodeId: `${objectBrowseName}.MonDynErr`,
-      dataType: 'Boolean'
-    } as OpcUaNodeOptions,
-    MonStatTi: {
-      namespaceIndex: `${namespace}`,
-      nodeId: `${objectBrowseName}.MonStatTi`,
-      dataType: 'Float'
-    } as OpcUaNodeOptions,
-    MonDynTi: {
-      namespaceIndex: `${namespace}`,
-      nodeId: `${objectBrowseName}.MonDynTi`,
-      dataType: 'Float'
-    } as OpcUaNodeOptions
-  });
+
+function getFeedbackMonitoringSpecificDataItemModels(namespace: number, objectBrowseName: string): DataItemModel[] {
+
+  const result: DataItemModel[] = [];
+  let dataItem: DataItemModel = getEmptyDataItemModel();
+  dataItem.name = 'MonEn';
+  dataItem.dataType = 'Boolean';
+  let ciOptions = getEmptyCIDataModel();
+  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.identifier = `${objectBrowseName}.MonEn`;
+  ciOptions.nodeId.namespaceIndex = `${namespace}`;
+  dataItem.cIData = ciOptions;
+  result.push(dataItem);
+
+  dataItem = getEmptyDataItemModel();
+  dataItem.name = 'MonSafePos';
+  dataItem.dataType = 'Boolean';
+  ciOptions = getEmptyCIDataModel();
+  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.identifier = `${objectBrowseName}.MonSafePos`;
+  ciOptions.nodeId.namespaceIndex = `${namespace}`;
+  dataItem.cIData = ciOptions;
+  result.push(dataItem);
+
+  dataItem = getEmptyDataItemModel();
+  dataItem.name = 'MonStatErr';
+  dataItem.dataType = 'Boolean';
+  ciOptions = getEmptyCIDataModel();
+  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.identifier = `${objectBrowseName}.MonStatErr`;
+  ciOptions.nodeId.namespaceIndex = `${namespace}`;
+  dataItem.cIData = ciOptions;
+  result.push(dataItem);
+
+  dataItem = getEmptyDataItemModel();
+  dataItem.name = 'MonDynErr';
+  dataItem.dataType = 'Boolean';
+  ciOptions = getEmptyCIDataModel();
+  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.identifier = `${objectBrowseName}.MonDynErr`;
+  ciOptions.nodeId.namespaceIndex = `${namespace}`;
+  dataItem.cIData = ciOptions;
+  result.push(dataItem);
+
+  dataItem = getEmptyDataItemModel();
+  dataItem.name = 'MonStatTi';
+  dataItem.dataType = 'Float';
+  ciOptions = getEmptyCIDataModel();
+  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.identifier = `${objectBrowseName}.MonStatTi`;
+  ciOptions.nodeId.namespaceIndex = `${namespace}`;
+  dataItem.cIData = ciOptions;
+  result.push(dataItem);
+
+  dataItem = getEmptyDataItemModel();
+  dataItem.name = 'MonDynTi';
+  dataItem.dataType = 'Float';
+  ciOptions = getEmptyCIDataModel();
+  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.identifier = `${objectBrowseName}.MonDynTi`;
+  ciOptions.nodeId.namespaceIndex = `${namespace}`;
+  dataItem.cIData = ciOptions;
+  result.push(dataItem);
+
+  return result;
 }
 
 
-export function getFeedbackMonitoringDataItemOptions(namespace: number, objectBrowseName: string): object {
-  return getFeedbackMonitoringSpecificDataItemOptions(namespace, objectBrowseName);
+export function getFeedbackMonitoringDataItemModel(namespace: number, objectBrowseName: string): DataItemModel[] {
+  return getFeedbackMonitoringSpecificDataItemModels(namespace, objectBrowseName);
 }
 
 
 export class FeedbackMonitoringMockup {
-  protected varMonEn = false;
-  protected varMonSafePos = false;
-  protected varMonStatErr = false;
-  protected varMonDynErr = false;
-  protected varMonStatTi = 0;
-  protected varMonDynTi = 0;
+
+  public varMonEn = false;
+  public varMonSafePos = false;
+  public varMonStatErr = false;
+  public varMonDynErr = false;
+  public varMonStatTi = 0;
+  public varMonDynTi = 0;
+
   protected mockupNode: UAObject;
 
   constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
@@ -152,8 +187,8 @@ export class FeedbackMonitoringMockup {
     });
     }
 
-  public getDataItemOptions(): object {
-    return getFeedbackMonitoringDataItemOptions(
+  public getDataItemModel(): DataItemModel[] {
+    return getFeedbackMonitoringDataItemModel(
         this.mockupNode.namespaceIndex,
         this.mockupNode.browseName.name as string);
   }

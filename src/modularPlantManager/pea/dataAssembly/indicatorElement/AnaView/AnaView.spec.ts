@@ -23,73 +23,72 @@
  * SOFTWARE.
  */
 
-import {OpcUaConnection} from '../../../connection';
-
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {MockupServer} from '../../../../_utils';
 import {AnaView} from './AnaView';
-import {AnaViewMockup, getAnaViewOptions} from './AnaView.mockup';
+import {AnaViewMockup, getAnaViewDataAssemblyModel} from './AnaView.mockup';
+import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('AnaView', () => {
 
-	let dataAssemblyOptions: DataAssemblyOptions;
+	let options: DataAssemblyModel;
 
 	describe('static', () => {
 
-		const emptyOPCUAConnection = new OpcUaConnection();
-		dataAssemblyOptions = getAnaViewOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
+		const connectionHandler = new ConnectionHandler();
+		options = getAnaViewDataAssemblyModel(2, 'Variable', 'Variable');
 
 		it('should create AnaView', async () => {
-			const dataAssemblyController: AnaView = new AnaView(dataAssemblyOptions, emptyOPCUAConnection);
-			expect(dataAssemblyController.communication.V).to.not.equal(undefined);
-			expect(dataAssemblyController.communication.WQC).to.not.equal(undefined);
-			expect(dataAssemblyController.communication.VSclMax).to.not.equal(undefined);
-			expect(dataAssemblyController.communication.VSclMin).to.not.equal(undefined);
-			expect(dataAssemblyController.communication.VUnit).to.not.equal(undefined);
-			expect(dataAssemblyController.communication.TagName).to.not.equal(undefined);
-			expect(dataAssemblyController.communication.TagDescription).to.not.equal(undefined);
+			const dataAssembly: AnaView = new AnaView(options, connectionHandler);
+			expect(dataAssembly.communication.V).to.not.equal(undefined);
+			expect(dataAssembly.communication.WQC).to.not.equal(undefined);
+			expect(dataAssembly.communication.VSclMax).to.not.equal(undefined);
+			expect(dataAssembly.communication.VSclMin).to.not.equal(undefined);
+			expect(dataAssembly.communication.VUnit).to.not.equal(undefined);
+			expect(dataAssembly.communication.TagName).to.not.equal(undefined);
+			expect(dataAssembly.communication.TagDescription).to.not.equal(undefined);
 		});
 	});
 
 	describe('dynamic', () => {
 		let mockupServer: MockupServer;
-		let connection: OpcUaConnection;
+		let connectionHandler: ConnectionHandler;
 
 		beforeEach(async function () {
 			this.timeout(5000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
 			const anaViewMockup = new AnaViewMockup(mockupServer.nameSpace, mockupServer.rootObject,'Variable');
-			dataAssemblyOptions = anaViewMockup.getDataAssemblyOptions();
+			options = anaViewMockup.getDataAssemblyModel();
 			await mockupServer.start();
-			connection = new OpcUaConnection();
-			connection.initialize({endpointUrl: mockupServer.endpoint});
-			await connection.connect();
+			connectionHandler = new ConnectionHandler();
+			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			await connectionHandler.connect();
 		});
 
 		afterEach(async function () {
 			this.timeout(4000);
-			await connection.disconnect();
+			await connectionHandler.disconnect();
 			await mockupServer.shutdown();
 		});
 
 		it('should subscribe successfully', async () => {
 
-			const dataAssemblyController: AnaView = new AnaView(dataAssemblyOptions, connection);
-			await dataAssemblyController.subscribe();
-			await connection.startMonitoring();
-			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
+			const dataAssembly: AnaView = new AnaView(options, connectionHandler);
+			await dataAssembly.subscribe();
+			await connectionHandler.connect();
+			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 
-			expect(dataAssemblyController.communication.V.value).equal(0);
-			expect(dataAssemblyController.communication.WQC.value).equal(0);
-			expect(dataAssemblyController.communication.VUnit.value).equal(0);
-			expect(dataAssemblyController.communication.VSclMin.value).equal(0);
-			expect(dataAssemblyController.communication.VSclMax.value).equal(0);
+			expect(dataAssembly.communication.V.value).equal(0);
+			expect(dataAssembly.communication.WQC.value).equal(0);
+			expect(dataAssembly.communication.VUnit.value).equal(0);
+			expect(dataAssembly.communication.VSclMin.value).equal(0);
+			expect(dataAssembly.communication.VSclMax.value).equal(0);
 		}).timeout(4000);
 	});
 });

@@ -23,18 +23,20 @@
  * SOFTWARE.
  */
 
-import {DataAssemblyOptions, ParameterInterface, ParameterOptions} from '@p2olab/polaris-interface';
-import {DataItem, DynamicDataItem, OpcUaConnection} from '../../connection';
+import {ParameterInterface, ParameterOptions} from '@p2olab/polaris-interface';
+import {DataItem, DynamicDataItem} from '../dataItem/DataItem';
 import {OSLevelRuntime} from '../baseFunction';
-import {BaseDataAssemblyRuntime, DataAssemblyController} from '../DataAssemblyController';
-import {PEAController} from '../../PEAController';
+import {DataAssemblyDataItems, DataAssembly} from '../DataAssembly';
+import {PEA} from '../../PEA';
 import {catDataAssembly} from '../../../../logging';
 import {OSLevel} from '../baseFunction';
 import {ParameterRequest} from '../ParameterRequest';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
+import {ConnectionHandler} from '../../connectionHandler/ConnectionHandler';
 
-export type OperationElementRuntime = BaseDataAssemblyRuntime & OSLevelRuntime
+export type OperationElementRuntime = DataAssemblyDataItems & OSLevelRuntime
 
-export class OperationElement extends DataAssemblyController {
+export class OperationElement extends DataAssembly {
 
 	public communication!: OperationElementRuntime;
 	// TODO: This creates a circular dependency as parameter also imports OperationElement
@@ -42,10 +44,9 @@ export class OperationElement extends DataAssemblyController {
 	public requestedValue = '';
 	public readonly osLevel: OSLevel;
 
-	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
-		super(options, connection);
-
-		this.osLevel = new OSLevel(this);
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+		super(options);
+		this.osLevel = new OSLevel(options, connectionHandler);
 	}
 
 
@@ -62,7 +63,7 @@ export class OperationElement extends DataAssemblyController {
 	}
 
 
-	public async setValue(p: ParameterOptions, peas: PEAController[]): Promise<void> {
+	public async setValue(p: ParameterOptions, peas: PEA[]): Promise<void> {
 		catDataAssembly.debug(`set value: ${JSON.stringify(p)}`);
 		if (p.value) {
 			this.requestedValue = p.value.toString();

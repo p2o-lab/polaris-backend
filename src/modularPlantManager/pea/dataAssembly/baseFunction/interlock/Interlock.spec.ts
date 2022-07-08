@@ -23,46 +23,42 @@
  * SOFTWARE.
  */
 
-import {OpcUaConnection} from '../../../connection';
-
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {DataAssemblyController} from '../../DataAssemblyController';
-import {MonBinVlv} from '../../activeElement';
 import {Interlock} from './Interlock';
 import {MockupServer} from '../../../../_utils';
 import {InterlockMockup} from './Interlock.mockup';
-import {getMonBinVlvOptions} from '../../activeElement/vlv/binVlv/monBinVlv/MonBinVlv.mockup';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
+import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
+import {getMonBinVlvDataAssemblyModel} from '../../activeElement/vlv/binVlv/monBinVlv/MonBinVlv.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('Interlock', () => {
 
-	let dataAssemblyOptions: DataAssemblyOptions;
+	let options: DataAssemblyModel;
 
 	describe('static', () => {
 
-		const emptyOPCUAConnection = new OpcUaConnection();
-		dataAssemblyOptions = getMonBinVlvOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
+		const connectionHandler = new ConnectionHandler();
+		options = getMonBinVlvDataAssemblyModel(2, 'Variable', 'Variable');
 
 		it('should create Interlock', () => {
-			const dataAssemblyController = new DataAssemblyController(dataAssemblyOptions, emptyOPCUAConnection) as MonBinVlv;
-			const interlock = new Interlock(dataAssemblyController);
-			expect(interlock).to.not.to.undefined;
-			expect(dataAssemblyController.communication.PermEn).to.not.to.undefined;
-			expect(dataAssemblyController.communication.Permit).to.not.to.undefined;
-			expect(dataAssemblyController.communication.IntlEn).to.not.to.undefined;
-			expect(dataAssemblyController.communication.Interlock).to.not.to.undefined;
-			expect(dataAssemblyController.communication.ProtEn).to.not.to.undefined;
-			expect(dataAssemblyController.communication.Protect).to.not.to.undefined;
+			const dataAssembly = new Interlock(options, connectionHandler);
+			expect(dataAssembly).to.not.to.undefined;
+			expect(dataAssembly.PermEn).to.not.to.undefined;
+			expect(dataAssembly.Permit).to.not.to.undefined;
+			expect(dataAssembly.IntlEn).to.not.to.undefined;
+			expect(dataAssembly.Interlock).to.not.to.undefined;
+			expect(dataAssembly.ProtEn).to.not.to.undefined;
+			expect(dataAssembly.Protect).to.not.to.undefined;
 		});
 	});
 
 	describe('dynamic', () => {
 		let mockupServer: MockupServer;
-		let connection: OpcUaConnection;
+		let connectionHandler: ConnectionHandler;
 
 		beforeEach(async function () {
 			this.timeout(4000);
@@ -70,31 +66,29 @@ describe('Interlock', () => {
 			await mockupServer.initialize();
 			new InterlockMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			await mockupServer.start();
-			connection = new OpcUaConnection();
-			connection.initialize({endpointUrl: mockupServer.endpoint});
-			await connection.connect();
+			connectionHandler = new ConnectionHandler();
+			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			await connectionHandler.connect();
 		});
 
 		afterEach(async function () {
 			this.timeout(4000);
-			await connection.disconnect();
+			await connectionHandler.disconnect();
 			await mockupServer.shutdown();
 		});
 
 		it('should subscribe successfully', async () => {
 
-			const dataAssemblyController = new DataAssemblyController(dataAssemblyOptions, connection) as any;
-			new Interlock(dataAssemblyController);
-			await dataAssemblyController.subscribe();
-			await connection.startMonitoring();
-			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
+			const dataAssembly = new Interlock(options, connectionHandler);
+			await connectionHandler.connect();
+			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 
-			expect(dataAssemblyController.communication.PermEn.value).equal(false);
-			expect(dataAssemblyController.communication.Permit.value).equal(false);
-			expect(dataAssemblyController.communication.IntlEn.value).equal(false);
-			expect(dataAssemblyController.communication.Interlock.value).equal(false);
-			expect(dataAssemblyController.communication.ProtEn.value).equal(false);
-			expect(dataAssemblyController.communication.Protect.value).equal(false);
+			expect(dataAssembly.PermEn.value).equal(false);
+			expect(dataAssembly.Permit.value).equal(false);
+			expect(dataAssembly.IntlEn.value).equal(false);
+			expect(dataAssembly.Interlock.value).equal(false);
+			expect(dataAssembly.ProtEn.value).equal(false);
+			expect(dataAssembly.Protect.value).equal(false);
 		}).timeout(5000);
 	});
 });

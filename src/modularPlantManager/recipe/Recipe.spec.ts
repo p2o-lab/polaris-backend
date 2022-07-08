@@ -25,7 +25,7 @@
 
 /* eslint-disable */
 import {ConditionType, RecipeInterface, RecipeOptions} from '@p2olab/polaris-interface';
-import {PEAController} from '../pea';
+import {PEA} from '../pea';
 import {Recipe} from './Recipe';
 
 import * as assert from 'assert';

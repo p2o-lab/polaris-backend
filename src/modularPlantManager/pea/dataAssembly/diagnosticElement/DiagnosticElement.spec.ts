@@ -23,65 +23,65 @@
  * SOFTWARE.
  */
 
-import {OpcUaConnection} from '../../connection';
 import {DiagnosticElement} from './DiagnosticElement';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {MockupServer} from '../../../_utils';
-import {DiagnosticElementMockup, getDiagnosticElementOptions} from './DiagnosticElement.mockup';
+import {DiagnosticElementMockup, getDiagnosticElementDataAssemblyModel} from './DiagnosticElement.mockup';
+import {ConnectionHandler} from '../../connectionHandler/ConnectionHandler';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('DiagnosticElement', () => {
 
-	let dataAssemblyOptions: DataAssemblyOptions;
+	let options: DataAssemblyModel;
 
 	describe('static', () => {
 
-		const emptyOPCUAConnection = new OpcUaConnection();
-		dataAssemblyOptions = getDiagnosticElementOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
+		const emptyOPCUAConnection = new ConnectionHandler();
+		options = getDiagnosticElementDataAssemblyModel(2, 'Variable', 'Variable');
 
 		it('should create DiagnosticElement', async () => {
-			const dataAssemblyController = new DiagnosticElement(dataAssemblyOptions, emptyOPCUAConnection);
+			const dataAssembly = new DiagnosticElement(options, emptyOPCUAConnection);
 
-			expect(dataAssemblyController).to.be.not.undefined;
-			expect(dataAssemblyController.communication).to.be.not.undefined;
-			expect(dataAssemblyController.wqc).to.be.not.undefined;
+			expect(dataAssembly).to.be.not.undefined;
+			expect(dataAssembly.communication).to.be.not.undefined;
+			expect(dataAssembly.wqc).to.be.not.undefined;
 		});
 	});
 	describe('dynamic', () => {
 		let mockupServer: MockupServer;
-		let connection: OpcUaConnection;
+		let connectionHandler: ConnectionHandler;
 
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
 			const diagnosticElementMockup = new DiagnosticElementMockup( mockupServer.nameSpace, mockupServer.rootObject,'Variable');
-			dataAssemblyOptions = diagnosticElementMockup.getDataAssemblyOptions();
+			options = diagnosticElementMockup.getDataAssemblyModel();
 			await mockupServer.start();
-			connection = new OpcUaConnection();
-			connection.initialize({endpointUrl: mockupServer.endpoint});
-			await connection.connect();
+			connectionHandler= new ConnectionHandler();
+			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			await connectionHandler.connect();
 		});
 
 		afterEach(async function () {
 			this.timeout(4000);
-			await connection.disconnect();
+			await connectionHandler.disconnect();
 			await mockupServer.shutdown();
 		});
 
 		it('should subscribe successfully', async () => {
 
-			const dataAssemblyController = new DiagnosticElement(dataAssemblyOptions, connection);
-			await dataAssemblyController.subscribe();
-			await connection.startMonitoring();
-			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
+			const dataAssembly = new DiagnosticElement(options, connectionHandler);
+			await dataAssembly.subscribe();
+			await connectionHandler.connect();
+			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 
-			expect(dataAssemblyController.communication.WQC.value).equal(0);
+			expect(dataAssembly.communication.WQC.value).equal(0);
 		}).timeout(4000);
 	});
 

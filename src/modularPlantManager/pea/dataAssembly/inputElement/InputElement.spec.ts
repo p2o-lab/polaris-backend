@@ -22,70 +22,66 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import {OpcUaConnection} from '../../connection';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {MockupServer} from '../../../_utils';
-import {getInputElementOptions, InputElementMockup} from './InputElement.mockup';
+import {getInputElementDataAssemblyModel, InputElementMockup} from './InputElement.mockup';
 import {InputElement} from './';
-import {DataAssemblyControllerFactory} from '../DataAssemblyControllerFactory';
 import {WQC} from '../baseFunction';
+import {ConnectionHandler} from '../../connectionHandler/ConnectionHandler';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('InputElement', () => {
 
-	let dataAssemblyOptions: DataAssemblyOptions;
+	let options: DataAssemblyModel;
 
 	describe('static', () => {
 
-		const emptyOPCUAConnection = new OpcUaConnection();
-		dataAssemblyOptions = getInputElementOptions(2, 'Variable') as DataAssemblyOptions;
+		const connectionHandler = new ConnectionHandler();
+		options = getInputElementDataAssemblyModel(2, 'Variable') as DataAssemblyModel;
 
 		it('should create InputElement', async () => {
 
-			const dataAssemblyController = new InputElement(dataAssemblyOptions, emptyOPCUAConnection);
+			const dataAssembly = new InputElement(options, connectionHandler);
 
-			expect(dataAssemblyController).to.be.not.undefined;
-			expect(dataAssemblyController.communication).to.be.not.undefined;
-			expect(dataAssemblyController.wqc).to.be.not.undefined;
+			expect(dataAssembly).to.be.not.undefined;
+			expect(dataAssembly.communication).to.be.not.undefined;
+			expect(dataAssembly.wqc).to.be.not.undefined;
 		});
 	});
 
 	describe('dynamic', () => {
 		let mockupServer: MockupServer;
-		let connection: OpcUaConnection;
+		let connectionHandler: ConnectionHandler;
 
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
 			const inputElementMockup = new InputElementMockup(mockupServer.nameSpace, mockupServer.rootObject,'Variable');
-			dataAssemblyOptions = inputElementMockup.getDataAssemblyOptions();
+			options = inputElementMockup.getDataAssemblyModel();
 			await mockupServer.start();
-			connection = new OpcUaConnection();
-			connection.initialize({endpointUrl: mockupServer.endpoint});
-			await connection.connect();
+			connectionHandler= new ConnectionHandler();
+			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			await connectionHandler.connect();
 		});
 
 		afterEach(async function () {
 			this.timeout(4000);
-			await connection.disconnect();
+			await connectionHandler.disconnect();
 			await mockupServer.shutdown();
 		});
 
 		it('should subscribe successfully', async () => {
+			const dataAssembly = new WQC(options, connectionHandler);
+			await connectionHandler.connect();
+			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 
-			const dataAssemblyController = DataAssemblyControllerFactory.create(dataAssemblyOptions, connection) as InputElement;
-			new WQC(dataAssemblyController);
-			await dataAssemblyController.subscribe();
-			await connection.startMonitoring();
-			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
-
-			expect(dataAssemblyController.communication.WQC.value).equal(0);
+			expect(dataAssembly.WQC).equal(0);
 		}).timeout(4000);
 	});
 });

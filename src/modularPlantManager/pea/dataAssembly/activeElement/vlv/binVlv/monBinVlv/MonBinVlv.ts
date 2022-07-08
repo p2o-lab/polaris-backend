@@ -23,13 +23,13 @@
 * SOFTWARE.
 */
 
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaConnection} from '../../../../../connection';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {FeedbackMonitoringRuntime} from '../../../../baseFunction';
 import {
 	BinVlv, BinVlvRuntime
 } from '../BinVlv';
-import {FeedbackMonitoring} from '../../../../baseFunction/feedbackMonitoring/FeedbackMonitoring';
+import {FeedbackMonitoring} from '../../../../baseFunction';
+import {ConnectionHandler} from '../../../../../connectionHandler/ConnectionHandler';
 
 export type MonBinVlvRuntime = BinVlvRuntime & FeedbackMonitoringRuntime;
 
@@ -37,9 +37,9 @@ export class MonBinVlv extends BinVlv {
 	public readonly communication!: MonBinVlvRuntime;
 	public readonly feedBackMonitoring: FeedbackMonitoring;
 
-	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
-		super(options, connection);
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+		super(options, connectionHandler);
 
-		this.feedBackMonitoring = new FeedbackMonitoring(this);
+		this.feedBackMonitoring = new FeedbackMonitoring(options, connectionHandler);
 	}
 }

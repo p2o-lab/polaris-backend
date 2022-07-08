@@ -24,7 +24,7 @@
  */
 
 import {ConditionType, PEAOptions} from '@p2olab/polaris-interface';
-import {PEAController} from '../../pea';
+import {PEA} from '../../pea/PEA';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
@@ -33,7 +33,9 @@ import {MockupServer, waitForVariableChange} from '../../_utils';
 import {ExpressionCondition} from './ExpressionCondition';
 import {ConditionFactory} from '../ConditionFactory';
 import {AnaViewMockup} from '../../pea/dataAssembly/indicatorElement/AnaView/AnaView.mockup';
-import {OpcUaConnection} from '../../pea/connection';
+import {ConnectionHandler} from '../../pea/connectionHandler/ConnectionHandler';
+import {Endpoint, PEAModel} from '@p2olab/pimad-interface';
+import {getEmptyPEAModel} from '../../pea/PEA.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -45,8 +47,8 @@ describe('ExpressionCondition', () => {
 
 	describe('with MockupServer', () => {
 		let mockupServer: MockupServer;
-		let connection: OpcUaConnection;
-		let pea: PEAController;
+		let connectionHandler: ConnectionHandler;
+		let pea: PEA;
 		let anaViewMockup: AnaViewMockup;
 
 		beforeEach(async function () {
@@ -55,20 +57,17 @@ describe('ExpressionCondition', () => {
 			await mockupServer.initialize();
 			anaViewMockup = new AnaViewMockup(mockupServer.nameSpace, mockupServer.rootObject,'Variable');
 			await mockupServer.start();
-			connection = new OpcUaConnection();
-			connection.initialize({endpointUrl: mockupServer.endpoint});
-			await connection.connect();
+			connectionHandler = new ConnectionHandler();
+			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			await connectionHandler.connect();
 
-			const peaOptions: PEAOptions = {
-				dataAssemblies: [anaViewMockup.getDataAssemblyOptions()],
-				id: 'PEATestServer',
-				name: 'PEATestServer',
-				opcuaServerUrl: mockupServer.endpoint,
-				pimadIdentifier: '',
-				services: []
-			};
+			const peaModel: PEAModel = getEmptyPEAModel();
+			peaModel.name = 'PEATestServer';
+			peaModel.pimadIdentifier = 'PEATestServer';
+			peaModel.endpoint.push({defaultValue: mockupServer.endpoint} as Endpoint);
+			peaModel.dataAssemblies.push(anaViewMockup.getDataAssemblyModel());
 
-			pea = new PEAController(peaOptions);
+			pea = new PEA(peaModel);
 			await pea.connectAndSubscribe();
 		});
 

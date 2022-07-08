@@ -25,55 +25,59 @@
 
 
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
-import {
-	getServiceSourceModeDataItemOptions,
-	ServiceSourceModeMockup
-} from '../../baseFunction/serviceSourceMode/ServiceSourceMode.mockup';
-import {getWQCDataItemOptions, WQCMockup} from '../../baseFunction/wqc/WQC.mockup';
-import {getOpModeDataItemOptions, OpModeMockup} from '../../baseFunction/opMode/OpMode.mockup';
-import {getOperationElementDataItemOptions, OperationElementMockup} from '../OperationElement.mockup';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
-import {getDataAssemblyOptions} from '../../DataAssemblyController.mockup';
+import {getServiceSourceModeDataItemModel, ServiceSourceModeMockup} from '../../baseFunction/serviceSourceMode/ServiceSourceMode.mockup';
+import {getWQCDataItemModel, WQCMockup} from '../../baseFunction/wqc/WQC.mockup';
+import {getOpModeDataItemModel, OpModeMockup} from '../../baseFunction/opMode/OpMode.mockup';
+import {getOperationElementDataItemModel, OperationElementMockup} from '../OperationElement.mockup';
+import {DataAssemblyModel, DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
 
-const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/OperationElement';
+import {getDataAssemblyModel} from '../../DataAssembly.mockup';
+import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../dataItem/DataItem.mockup';
 
-function getServParamSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return ({
-		Sync: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.Sync`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions
-	});
+const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/OperationElement/ServParam';
+
+function getServParamSpecificDataItemModel(namespace: number, objectBrowseName: string): DataItemModel[] {
+
+	const result: DataItemModel[] = [];
+	const dataItem: DataItemModel = getEmptyDataItemModel();
+	dataItem.name = 'Sync';
+	dataItem.dataType = 'Boolean';
+	const ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.Sync`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	return result;
 }
 
-export function getServParamDataItemOptions(namespace: number, objectBrowseName: string): object {
+export function getServParamDataItemModel(namespace: number, objectBrowseName: string): DataItemModel[] {
 	return ({
-			...getOperationElementDataItemOptions(namespace, objectBrowseName),
-			...getWQCDataItemOptions(namespace, objectBrowseName),
-			...getOpModeDataItemOptions(namespace, objectBrowseName),
-			...getServiceSourceModeDataItemOptions(namespace, objectBrowseName),
-			...getServParamSpecificDataItemOptions(namespace, objectBrowseName),
+			...getOperationElementDataItemModel(namespace, objectBrowseName),
+			...getWQCDataItemModel(namespace, objectBrowseName),
+			...getOpModeDataItemModel(namespace, objectBrowseName),
+			...getServiceSourceModeDataItemModel(namespace, objectBrowseName),
+			...getServParamSpecificDataItemModel(namespace, objectBrowseName),
 		}
 	);
 }
 
-export function getServParamOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
-	const options = getDataAssemblyOptions(name, tagName, tagDescription);
-	options.metaModelRef = metaModelReference;
-	options.dataItems = {
+export function getServParamDataAssemblyModel(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): DataAssemblyModel {
+	const options = getDataAssemblyModel(metaModelReference, name, tagName, tagDescription);
+	options.dataItems = [
 		...options.dataItems,
-		...getServParamDataItemOptions(namespace, objectBrowseName)};
+		...getServParamDataItemModel(namespace, objectBrowseName)
+		];
 	return options;
 }
 
 export class ServParamMockup extends OperationElementMockup{
 
 	public readonly varSync: boolean = false;
-	protected opMode: OpModeMockup;
-	protected serviceSourceMode: ServiceSourceModeMockup;
-	protected wqc: WQCMockup;
+	public opMode: OpModeMockup;
+	public serviceSourceMode: ServiceSourceModeMockup;
+	public wqc: WQCMockup;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
 		super(namespace, rootNode, variableName);
@@ -95,15 +99,14 @@ export class ServParamMockup extends OperationElementMockup{
 		});
 	}
 
-	public getDataAssemblyOptions(): DataAssemblyOptions {
-		const options = super.getDataAssemblyOptions();
-		options.metaModelRef = metaModelReference;
+	public getDataAssemblyModel(metaModelReferenceOption?: string): DataAssemblyModel {
+		const options = super.getDataAssemblyModel(metaModelReferenceOption || metaModelReference);
 		options.dataItems = {
 			...options.dataItems,
-			...this.wqc.getDataItemOptions(),
-			...this.opMode.getDataItemOptions(),
-			...this.serviceSourceMode.getDataItemOptions(),
-			...getServParamSpecificDataItemOptions(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
+			...this.wqc.getDataItemModel(),
+			...this.opMode.getDataItemModel(),
+			...this.serviceSourceMode.getDataItemModel(),
+			...getServParamSpecificDataItemModel(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
 		};
 		return options;
 	}

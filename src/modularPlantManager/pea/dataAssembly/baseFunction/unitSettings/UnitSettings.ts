@@ -23,24 +23,41 @@
  * SOFTWARE.
  */
 
-import {DataItem} from '../../../connection';
+import {DataItem} from '../../dataItem/DataItem';
 import {UnitCollection} from './UnitCollection';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
+import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
+import {DataItemFactory, getDataItemModel} from '../../dataItem/DataItemFactory';
+import {BaseServiceEvents} from '../../../serviceSet';
+import {SourceMode} from '@p2olab/polaris-interface';
+import StrictEventEmitter from 'strict-event-emitter-types';
+import {EventEmitter} from 'events';
 
 export type UnitSettingsRuntime = {
 	VUnit: DataItem<number>;
 }
 
-export class UnitSettings {
 
-	private dAController: any;
+/**
+ * Events emitted by [[UnitSettings]]
+ */
+export interface UnitSettingsEvents {
+	changed: number;
+}
+type UnitSettingsEventEmitter = StrictEventEmitter<EventEmitter, UnitSettingsEvents>;
 
-	constructor(dAController: any) {
-		this.dAController = dAController;
-		this.dAController.communication.VUnit = this.dAController.createDataItem('VUnit', 'number');
+
+export class UnitSettings extends (EventEmitter as new () => UnitSettingsEventEmitter){
+	VUnit: DataItem<number>;
+
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+		super();
+
+		this.VUnit = DataItemFactory.create(getDataItemModel(options, 'VUnit'), connectionHandler);
 	}
 
 	get Unit(): string {
-		const unit = UnitCollection.find((item) => item.value === this.dAController.communication.VUnit.value);
+		const unit = UnitCollection.find((item) => item.value === this.VUnit.value);
 		return unit ? unit.unit : '';
 	}
 }

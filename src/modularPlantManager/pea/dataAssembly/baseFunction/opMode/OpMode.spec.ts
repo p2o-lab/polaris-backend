@@ -23,47 +23,45 @@
  * SOFTWARE.
  */
 
-import {OpcUaConnection} from '../../../connection';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {DataAssemblyOptions, OperationMode} from '@p2olab/polaris-interface';
-import {DataAssemblyController} from '../../DataAssemblyController';
+import {OperationMode} from '@p2olab/polaris-interface';
 import {MockupServer} from '../../../../_utils';
 import {OpModeMockup} from './OpMode.mockup';
 import {OpMode} from './OpMode';
-import {getAnaServParamOptions} from '../../operationElement/servParam/anaServParam/AnaServParam.mockup';
+import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
+import {getAnaServParamDataAssemblyModel} from '../../operationElement/servParam/anaServParam/AnaServParam.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('OpMode', () => {
 
-	const dataAssemblyOptions = getAnaServParamOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
+	const options = getAnaServParamDataAssemblyModel(2, 'Variable', 'Variable');
 
 	describe('static', () => {
-		const emptyOPCUAConnection = new OpcUaConnection();
+		const connectionHandler = new ConnectionHandler();
 		it('should create OpMode', () => {
 
-			const da = new DataAssemblyController(dataAssemblyOptions, emptyOPCUAConnection) as any;
-			const opMode = new OpMode(da);
+			const da = new OpMode(options, connectionHandler);
 
-			expect(opMode).to.not.be.undefined;
-			expect((da).communication.StateChannel).to.not.be.undefined;
-			expect((da).communication.StateOffAut).to.not.be.undefined;
-			expect((da).communication.StateOpAut).to.not.be.undefined;
-			expect((da).communication.StateAutAut).to.not.be.undefined;
-			expect((da).communication.StateOffOp).to.not.be.undefined;
-			expect((da).communication.StateOpOp).to.not.be.undefined;
-			expect((da).communication.StateAutOp).to.not.be.undefined;
-			expect((da).communication.StateOpAct).to.not.be.undefined;
-			expect((da).communication.StateAutAct).to.not.be.undefined;
-			expect((da).communication.StateOffAct).to.not.be.undefined;
+			expect(da).to.not.be.undefined;
+			expect((da).StateChannel).to.not.be.undefined;
+			expect((da).StateOffAut).to.not.be.undefined;
+			expect((da).StateOpAut).to.not.be.undefined;
+			expect((da).StateAutAut).to.not.be.undefined;
+			expect((da).StateOffOp).to.not.be.undefined;
+			expect((da).StateOpOp).to.not.be.undefined;
+			expect((da).StateAutOp).to.not.be.undefined;
+			expect((da).StateOpAct).to.not.be.undefined;
+			expect((da).StateAutAct).to.not.be.undefined;
+			expect((da).StateOffAct).to.not.be.undefined;
 		});
 	});
 
 	describe('dynamic', () => {
 		let mockupServer: MockupServer;
-		let connection: OpcUaConnection;
+		let connectionHandler: ConnectionHandler;
 
 		beforeEach(async function () {
 			this.timeout(4000);
@@ -71,64 +69,61 @@ describe('OpMode', () => {
 			await mockupServer.initialize();
 			new OpModeMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			await mockupServer.start();
-			connection = new OpcUaConnection();
-			connection.initialize({endpointUrl: mockupServer.endpoint});
-			await connection.connect();
+			connectionHandler= new ConnectionHandler();
+			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			await connectionHandler.connect();
 		});
 
 		afterEach(async function () {
 			this.timeout(4000);
-			await connection.disconnect();
+			await connectionHandler.disconnect();
 			await mockupServer.shutdown();
 		});
 
 		it('should subscribe successfully', async () => {
 
-			const dataAssemblyController = new DataAssemblyController(dataAssemblyOptions, connection) as any;
-			new OpMode(dataAssemblyController);
-			await dataAssemblyController.subscribe();
-			await connection.startMonitoring();
-			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
+			const dataAssembly = new OpMode(options, connectionHandler);
+			await connectionHandler.connect();
+			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 
-			expect((dataAssemblyController).communication.StateChannel.value).equal(false);
-			expect((dataAssemblyController).communication.StateOffAut.value).equal(false);
-			expect((dataAssemblyController).communication.StateOpAut.value).equal(false);
-			expect((dataAssemblyController).communication.StateAutAut.value).equal(false);
-			expect((dataAssemblyController).communication.StateOffOp.value).equal(false);
-			expect((dataAssemblyController).communication.StateOpOp.value).equal(false);
-			expect((dataAssemblyController).communication.StateAutOp.value).equal(false);
-			expect((dataAssemblyController).communication.StateOpAct.value).equal(false);
-			expect((dataAssemblyController).communication.StateAutAct.value).equal(false);
-			expect((dataAssemblyController).communication.StateOffAct.value).equal(true);
+			expect((dataAssembly).StateChannel.value).equal(false);
+			expect((dataAssembly).StateOffAut.value).equal(false);
+			expect((dataAssembly).StateOpAut.value).equal(false);
+			expect((dataAssembly).StateAutAut.value).equal(false);
+			expect((dataAssembly).StateOffOp.value).equal(false);
+			expect((dataAssembly).StateOpOp.value).equal(false);
+			expect((dataAssembly).StateAutOp.value).equal(false);
+			expect((dataAssembly).StateOpAct.value).equal(false);
+			expect((dataAssembly).StateAutAct.value).equal(false);
+			expect((dataAssembly).StateOffAct.value).equal(true);
 		}).timeout(5000);
 	});
 
 	describe('dynamic functions, Offline', async () => {
 		let mockupServer: MockupServer;
-		let connection: OpcUaConnection;
+		let connectionHandler: ConnectionHandler;
 		let mockup: OpModeMockup;
 		let opMode: OpMode;
-		let dataAssemblyController: any;
+		let dataAssembly: any;
 
 		beforeEach(async function () {
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
 			mockup = new OpModeMockup(mockupServer.nameSpace,	mockupServer.rootObject,'Variable');
 			await mockupServer.start();
-			connection = new OpcUaConnection();
-			connection.initialize({endpointUrl: mockupServer.endpoint});
+			connectionHandler= new ConnectionHandler();
+			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
 
-			dataAssemblyController = new DataAssemblyController(dataAssemblyOptions, connection) as any;
-			opMode = new OpMode(dataAssemblyController);
-			await connection.connect();
-			await dataAssemblyController.subscribe();
-			await connection.startMonitoring();
-			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
+			dataAssembly = new OpMode(options, connectionHandler);
+			await connectionHandler.connect();
+			await dataAssembly.subscribe();
+			await connectionHandler.connect();
+			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 		});
 
 		afterEach(async function () {
 			this.timeout(4000);
-			await connection.disconnect();
+			await connectionHandler.disconnect();
 			await mockupServer.shutdown();
 		});
 
@@ -149,35 +144,35 @@ describe('OpMode', () => {
 
 		it('should pass setToAutomaticOperationMode(), should set to Automatic', async () => {
 			await opMode.setToAutomaticOperationMode();
-			expect(dataAssemblyController.communication.StateOffAct.value).to.be.false;
-			expect(dataAssemblyController.communication.StateOpAct.value).to.be.false;
-			expect(dataAssemblyController.communication.StateAutAct.value).to.be.true;
+			expect(dataAssembly.StateOffAct.value).to.be.false;
+			expect(dataAssembly.StateOpAct.value).to.be.false;
+			expect(dataAssembly.StateAutAct.value).to.be.true;
 			expect(mockup.opMode = OperationMode.Automatic);
 		});
 
 		it('should pass setToOperatorOperationMode(), should set to Operator', async () => {
 			await opMode.setToOperatorOperationMode();
-			expect(dataAssemblyController.communication.StateOffAct.value).to.be.false;
-			expect(dataAssemblyController.communication.StateOpAct.value).to.be.true;
-			expect(dataAssemblyController.communication.StateAutAct.value).to.be.false;
+			expect(dataAssembly.StateOffAct.value).to.be.false;
+			expect(dataAssembly.StateOpAct.value).to.be.true;
+			expect(dataAssembly.StateAutAct.value).to.be.false;
 			expect(mockup.opMode = OperationMode.Operator);
 		});
 
 		it('setToOfflineOperationMode(), should set to Offline', async () => {
 			await opMode.setToOfflineOperationMode();
-			expect(dataAssemblyController.communication.StateOffAct.value).to.be.true;
-			expect(dataAssemblyController.communication.StateOpAct.value).to.be.false;
-			expect(dataAssemblyController.communication.StateAutAct.value).to.be.false;
+			expect(dataAssembly.StateOffAct.value).to.be.true;
+			expect(dataAssembly.StateOpAct.value).to.be.false;
+			expect(dataAssembly.StateAutAct.value).to.be.false;
 			expect(mockup.opMode = OperationMode.Offline);
 		});
 	});
 
 	describe('dynamic functions, Operator', async () => {
 		let mockupServer: MockupServer;
-		let connection: OpcUaConnection;
+		let connectionHandler: ConnectionHandler;
 		let mockup: OpModeMockup;
 		let opMode: OpMode;
-		let dataAssemblyController: any;
+		let dataAssembly: any;
 
 		beforeEach(async function () {
 			mockupServer = new MockupServer();
@@ -185,20 +180,19 @@ describe('OpMode', () => {
 			// initialize with Operator OperationMode
 			mockup = new OpModeMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable', OperationMode.Operator);
 			await mockupServer.start();
-			connection = new OpcUaConnection();
-			connection.initialize({endpointUrl: mockupServer.endpoint});
+			connectionHandler= new ConnectionHandler();
+			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
 
-			dataAssemblyController = new DataAssemblyController(dataAssemblyOptions, connection) as any;
-			opMode = new OpMode(dataAssemblyController);
-			await connection.connect();
-			await dataAssemblyController.subscribe();
-			await connection.startMonitoring();
-			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
+			dataAssembly = new OpMode(options, connectionHandler);
+			await connectionHandler.connect();
+			await dataAssembly.subscribe();
+			await connectionHandler.connect();
+			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 		});
 
 		afterEach(async function () {
 			this.timeout(4000);
-			await connection.disconnect();
+			await connectionHandler.disconnect();
 			await mockupServer.shutdown();
 		});
 
@@ -214,27 +208,27 @@ describe('OpMode', () => {
 
 		it('should pass switch state setToAutomaticOperationMode()', async () => {
 			await opMode.setToAutomaticOperationMode();
-			expect(dataAssemblyController.communication.StateOffAct.value).to.be.false;
-			expect(dataAssemblyController.communication.StateOpAct.value).to.be.false;
-			expect(dataAssemblyController.communication.StateAutAct.value).to.be.true;
+			expect(dataAssembly.StateOffAct.value).to.be.false;
+			expect(dataAssembly.StateOpAct.value).to.be.false;
+			expect(dataAssembly.StateAutAct.value).to.be.true;
 			expect(mockup.opMode = OperationMode.Automatic);
 		});
 
 		it('should happen nothing if already on requested OpMode, ', async () => {
 			await opMode.setToOperatorOperationMode();
-			expect(dataAssemblyController.communication.StateOffAct.value).to.be.false;
-			expect(dataAssemblyController.communication.StateOpAct.value).to.be.true;
-			expect(dataAssemblyController.communication.StateAutAct.value).to.be.false;
+			expect(dataAssembly.StateOffAct.value).to.be.false;
+			expect(dataAssembly.StateOpAct.value).to.be.true;
+			expect(dataAssembly.StateAutAct.value).to.be.false;
 			expect(mockup.opMode = OperationMode.Operator);
 		});
 
 	});
 	describe('dynamic functions, Automatic', async () => {
 		let mockupServer: MockupServer;
-		let connection: OpcUaConnection;
+		let connectionHandler: ConnectionHandler;
 		let mockup: OpModeMockup;
 		let opMode: OpMode;
-		let dataAssemblyController: any;
+		let dataAssembly: any;
 
 		beforeEach(async function () {
 			mockupServer = new MockupServer();
@@ -242,19 +236,18 @@ describe('OpMode', () => {
 			// initialize with Automatic OperationMode
 			mockup = new OpModeMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable', OperationMode.Automatic);
 			await mockupServer.start();
-			connection = new OpcUaConnection();
-			connection.initialize({endpointUrl: mockupServer.endpoint});
-			dataAssemblyController = new DataAssemblyController(dataAssemblyOptions, connection) as any;
-			opMode = new OpMode(dataAssemblyController);
-			await connection.connect();
-			await dataAssemblyController.subscribe();
-			await connection.startMonitoring();
-			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
+			connectionHandler= new ConnectionHandler();
+			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			dataAssembly = new OpMode(options, connectionHandler);
+			await connectionHandler.connect();
+			await dataAssembly.subscribe();
+			await connectionHandler.connect();
+			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 		});
 
 		afterEach(async function () {
 			this.timeout(4000);
-			await connection.disconnect();
+			await connectionHandler.disconnect();
 			await mockupServer.shutdown();
 		});
 
@@ -276,25 +269,25 @@ describe('OpMode', () => {
 
 		it('setToAutomaticOperationMode() while already in Automatic --> nothing should happen', async () => {
 			await opMode.setToAutomaticOperationMode();
-			expect(dataAssemblyController.communication.StateOffAct.value).to.be.false;
-			expect(dataAssemblyController.communication.StateOpAct.value).to.be.false;
-			expect(dataAssemblyController.communication.StateAutAct.value).to.be.true;
+			expect(dataAssembly.StateOffAct.value).to.be.false;
+			expect(dataAssembly.StateOpAct.value).to.be.false;
+			expect(dataAssembly.StateAutAct.value).to.be.true;
 			expect(mockup.opMode = OperationMode.Automatic);
 		});
 
 		it('setToOperatorOperationMode()', async () => {
 			await opMode.setToOperatorOperationMode();
-			expect(dataAssemblyController.communication.StateOffAct.value).to.be.false;
-			expect(dataAssemblyController.communication.StateOpAct.value).to.be.true;
-			expect(dataAssemblyController.communication.StateAutAct.value).to.be.false;
+			expect(dataAssembly.StateOffAct.value).to.be.false;
+			expect(dataAssembly.StateOpAct.value).to.be.true;
+			expect(dataAssembly.StateAutAct.value).to.be.false;
 			expect(mockup.opMode = OperationMode.Operator);
 		});
 
 		it('setToOfflineOperationMode()', async () => {
 			await opMode.setToOfflineOperationMode();
-			expect(dataAssemblyController.communication.StateOffAct.value).to.be.true;
-			expect(dataAssemblyController.communication.StateOpAct.value).to.be.false;
-			expect(dataAssemblyController.communication.StateAutAct.value).to.be.false;
+			expect(dataAssembly.StateOffAct.value).to.be.true;
+			expect(dataAssembly.StateOpAct.value).to.be.false;
+			expect(dataAssembly.StateAutAct.value).to.be.false;
 			expect(mockup.opMode = OperationMode.Offline);
 		});
 

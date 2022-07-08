@@ -26,10 +26,10 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../../_utils';
-import {DIntManMockup, getDIntManDataItemOptions, getDIntManOptions} from './DIntMan.mockup';
-import {OpcUaConnection} from '../../../../connection';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {DIntManMockup, getDIntManDataAssemblyModel, getDIntManDataItemModel} from './DIntMan.mockup';
+import {DataAssemblyModel, DataItemAccessLevel} from '@p2olab/pimad-interface';
 import {DIntManRuntime} from './DIntMan';
+import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -52,19 +52,19 @@ describe('DIntManMockup', () => {
         });
 
         it('static DataItemOptions', () => {
-            const options = getDIntManDataItemOptions(1, 'Test') as DIntManRuntime;
+            const options = getDIntManDataItemModel(1, 'Test');
             expect(Object.keys(options).length).to.equal(10);
         });
 
-        it('static DataAssemblyOptions', () => {
-            const options = getDIntManOptions(1, 'Test') as DataAssemblyOptions;
+        it('static DataAssemblyModel', () => {
+            const options = getDIntManDataAssemblyModel(1, 'Test');
             expect(Object.keys(options.dataItems).length).to.equal(12);
         });
 
-        it('dynamic DataAssemblyOptions', () => {
+        it('dynamic DataAssemblyModel', () => {
             const mockup = new DIntManMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const options = mockup.getDataAssemblyOptions();
+            const options = mockup.getDataAssemblyModel();
 
             expect(Object.keys(options.dataItems).length).to.equal(12);
         });
@@ -98,7 +98,7 @@ describe('DIntManMockup', () => {
     describe('dynamic', () => {
 
         let mockupServer: MockupServer;
-        let connection: OpcUaConnection;
+        let connectionHandler: ConnectionHandler;
 
         beforeEach(async function () {
             this.timeout(5000);
@@ -106,19 +106,19 @@ describe('DIntManMockup', () => {
             await mockupServer.initialize();
             new DIntManMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
             await mockupServer.start();
-            connection = new OpcUaConnection();
-            connection.initialize({endpointUrl: mockupServer.endpoint});
-            await connection.connect();
+            connectionHandler= new ConnectionHandler();
+            connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+            await connectionHandler.connect();
         });
 
         afterEach(async () => {
-            await connection.disconnect();
+            await connectionHandler.disconnect();
             await mockupServer.shutdown();
         });
         
         it('set and get VMan', async () => {
-            await connection.writeNode('Variable.VMan', mockupServer.nameSpaceUri, 1, 'Int32');
-            await connection.readNode('Variable.VMan', mockupServer.nameSpaceUri)
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.VMan', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, 1);
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.VMan', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(1));
         }).timeout(3000);
     });

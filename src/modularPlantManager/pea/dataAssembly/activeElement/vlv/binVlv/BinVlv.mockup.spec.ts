@@ -25,9 +25,9 @@
  
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {BinVlvMockup, getBinVlvDataItemOptions, getBinVlvOptions} from './BinVlv.mockup';
+import {BinVlvMockup, getBinVlvDataAssemblyModel, getBinVlvDataItemModel} from './BinVlv.mockup';
 import {MockupServer} from '../../../../../_utils';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {BinVlvRuntime} from './BinVlv';
 
 chai.use(chaiAsPromised);
@@ -52,19 +52,19 @@ describe('BinVlvMockup', () => {
         });
 
         it('static DataItemOptions', () => {
-            const options = getBinVlvDataItemOptions(1, 'Test') as BinVlvRuntime;
+            const options = getBinVlvDataItemModel(1, 'Test');
             expect(Object.keys(options).length).to.equal(32);
         });
 
-        it('static DataAssemblyOptions', () => {
-            const options = getBinVlvOptions(1, 'Test') as DataAssemblyOptions;
+        it('static DataAssemblyModel', () => {
+            const options = getBinVlvDataAssemblyModel(1, 'Test');
             expect(Object.keys(options.dataItems).length).to.equal(34);
         });
 
-        it('dynamic DataAssemblyOptions', () => {
+        it('dynamic DataAssemblyModel', () => {
             const mockup = new BinVlvMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const options = mockup.getDataAssemblyOptions();
+            const options = mockup.getDataAssemblyModel();
 
             expect(Object.keys(options.dataItems).length).to.equal(34);
         });

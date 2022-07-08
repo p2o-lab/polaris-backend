@@ -25,49 +25,55 @@
 
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
 import {
-	getScaleSettingsDataItemOptions,
+	getScaleSettingsDataItemModel,
 	ScaleSettingMockup
 } from '../../baseFunction/scaleSettings/ScaleSetting.mockup';
-import {getUnitSettingsDataItemOptions, UnitSettingsMockup} from '../../baseFunction/unitSettings/UnitSettings.mockup';
-import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
-import {getDataAssemblyOptions} from '../../DataAssemblyController.mockup';
-import {getIndicatorElementDataItemOptions, IndicatorElementMockup} from '../IndicatorElement.mockup';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {getUnitSettingsDataItemModel, UnitSettingsMockup} from '../../baseFunction/unitSettings/UnitSettings.mockup';
+
+import {getDataAssemblyModel} from '../../DataAssembly.mockup';
+import {getIndicatorElementDataItemModel, IndicatorElementMockup} from '../IndicatorElement.mockup';
+import {DataAssemblyModel, DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../dataItem/DataItem.mockup';
 
 const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/DIntView';
 
-function getDIntViewSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return ({
-		V: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.V`,
-			dataType: 'Int32'
-		} as OpcUaNodeOptions
-	});
+function getDIntViewSpecificDataItemModels(namespace: number, objectBrowseName: string): DataItemModel[] {
+
+	const result: DataItemModel[] = [];
+	const dataItem: DataItemModel = getEmptyDataItemModel();
+	dataItem.name = 'V';
+	dataItem.dataType = 'Int32';
+	const ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.V`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	return result;
 }
 
-export function getDIntViewDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return ({
-			...getIndicatorElementDataItemOptions(namespace, objectBrowseName),
-			...getScaleSettingsDataItemOptions(namespace, objectBrowseName, 'DInt'),
-			...getUnitSettingsDataItemOptions(namespace, objectBrowseName),
-			...getDIntViewSpecificDataItemOptions(namespace, objectBrowseName),
-		} as OpcUaNodeOptions
-	);
+export function getDIntViewDataItemModel(namespace: number, objectBrowseName: string): DataItemModel[] {
+	return [
+			...getIndicatorElementDataItemModel(namespace, objectBrowseName),
+			...getScaleSettingsDataItemModel(namespace, objectBrowseName, 'DInt'),
+			...getUnitSettingsDataItemModel(namespace, objectBrowseName),
+			...getDIntViewSpecificDataItemModels(namespace, objectBrowseName),
+];
 }
 
-export function getDIntViewOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
-	const options = getDataAssemblyOptions(name, tagName, tagDescription);
-	options.metaModelRef = metaModelReference;
-	options.dataItems = {
+export function getDIntViewDataAssemblyModel(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): DataAssemblyModel {
+	const options = getDataAssemblyModel(metaModelReference, name, tagName, tagDescription);
+	options.dataItems = [
 		...options.dataItems,
-		...getDIntViewDataItemOptions(namespace, objectBrowseName)};
+		...getDIntViewDataItemModel(namespace, objectBrowseName)
+	];
 	return options;
 }
 
 export class DIntViewMockup extends IndicatorElementMockup{
 
-	protected v = 0;
+	public v = 0;
 	public scaleSettings: ScaleSettingMockup<'DInt'>;
 	public unit: UnitSettingsMockup;
 
@@ -90,15 +96,14 @@ export class DIntViewMockup extends IndicatorElementMockup{
 		});
 	}
 
-	public getDataAssemblyOptions(): DataAssemblyOptions {
-		const options = super.getDataAssemblyOptions();
-		options.metaModelRef = metaModelReference;
-		options.dataItems = {
+	public getDataAssemblyModel(metaModelReferenceOption?: string): DataAssemblyModel {
+		const options = super.getDataAssemblyModel(metaModelReferenceOption || metaModelReference);
+		options.dataItems = [
 			...options.dataItems,
-			...this.scaleSettings.getDataItemOptions(),
-			...this.unit.getDataItemOptions(),
-			...getDIntViewSpecificDataItemOptions(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
-		};
+			...this.scaleSettings.getDataItemModel(),
+			...this.unit.getDataItemModel(),
+			...getDIntViewSpecificDataItemModels(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
+		];
 		return options;
 	}
 }

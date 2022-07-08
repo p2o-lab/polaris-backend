@@ -25,11 +25,11 @@
  
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {AnaManMockup, getAnaManDataItemOptions, getAnaManOptions} from './AnaMan.mockup';
+import {AnaManMockup, getAnaManDataAssemblyModel, getAnaManDataItemModel} from './AnaMan.mockup';
 import {MockupServer} from '../../../../../_utils';
-import {OpcUaConnection} from '../../../../connection';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {DataAssemblyModel, DataItemAccessLevel} from '@p2olab/pimad-interface';
 import {AnaManRuntime} from './AnaMan';
+import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -53,18 +53,18 @@ describe('AnaManMockup', () => {
         });
 
         it('static DataItemOptions', () => {
-            const options = getAnaManDataItemOptions(1, 'Test') as AnaManRuntime;
+            const options = getAnaManDataItemModel(1, 'Test');
             expect(Object.keys(options).length).to.equal(10);
         });
 
-        it('static DataAssemblyOptions', () => {
-            const options = getAnaManOptions(1, 'Test') as DataAssemblyOptions;
+        it('static DataAssemblyModel', () => {
+            const options = getAnaManDataAssemblyModel(1, 'Test');
             expect(Object.keys(options.dataItems).length).to.equal(12);
         }).timeout(6000);
 
-        it('dynamic DataAssemblyOptions', () => {
+        it('dynamic DataAssemblyModel', () => {
             const mockup = new AnaManMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
-            const options = mockup.getDataAssemblyOptions();
+            const options = mockup.getDataAssemblyModel();
 
             expect(Object.keys(options.dataItems).length).to.equal(12);
         }).timeout(6000);
@@ -99,7 +99,7 @@ describe('AnaManMockup', () => {
     describe('dynamic', () => {
 
         let mockupServer: MockupServer;
-        let connection: OpcUaConnection;
+        let connectionHandler: ConnectionHandler;
 
         beforeEach(async function () {
             this.timeout(5000);
@@ -107,19 +107,19 @@ describe('AnaManMockup', () => {
             await mockupServer.initialize();
             new AnaManMockup(mockupServer.nameSpace, mockupServer.rootObject,'Variable');
             await mockupServer.start();
-            connection = new OpcUaConnection();
-            connection.initialize({endpointUrl: mockupServer.endpoint});
-            await connection.connect();
+            connectionHandler = new ConnectionHandler();
+            connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+            await connectionHandler.connect();
         });
 
         afterEach(async () => {
-            await connection.disconnect();
+            await connectionHandler.disconnect();
             await mockupServer.shutdown();
         });
 
         it('set and get VMan', async () => {
-            await connection.writeNode('Variable.VMan', mockupServer.nameSpaceUri, 1.1, 'Double');
-            await connection.readNode('Variable.VMan', mockupServer.nameSpaceUri)
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.VMan', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.Write}}, 1.1);
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.VMan', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.Read}})
                 .then((dataValue) => expect(dataValue?.value.value).to.equal(1.1));
         }).timeout(3000);
     });

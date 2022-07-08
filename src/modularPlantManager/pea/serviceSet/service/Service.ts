@@ -24,34 +24,35 @@
  */
 
 import {CommandEnableInfo, DataAssemblyOptions, OperationMode, ParameterInterface, ParameterOptions, ServiceCommand, ServiceInterface, ServiceOptions, ServiceSourceMode} from '@p2olab/polaris-interface';
-import {DynamicDataItem, OpcUaConnection} from '../../connection';
-import {controlEnableToJson, DataAssemblyControllerFactory, InputElement, ServiceControl, ServiceControlEnable, ServiceMtpCommand, ServiceState, ServParam} from '../../dataAssembly';
+import {DynamicDataItem} from '../../connectionHandler';
+import {controlEnableToJson, DataAssemblyFactory, InputElement, ServiceControl, ServiceControlEnable, ServiceMtpCommand, ServiceState, ServParam} from '../../dataAssembly';
 
-import {EventEmitter} from 'events';
 import {Category} from 'typescript-logging';
-import {PEAController} from '../../PEAController';
+import {PEA} from '../../PEA';
 import {BaseService} from './BaseService';
 import {Procedure} from './procedure/Procedure';
 import {catService} from '../../../../logging';
+import {ConnectionHandler} from '../../connectionHandler/ConnectionHandler';
+import {DataAssemblyModel, ServiceModel} from '@p2olab/pimad-interface';
 
 
 /**
- * Service of a [[PEAController]]
+ * Service of a [[PEA]]
  *
- * after connection to a real PEAController, commands can be triggered and states can be retrieved
+ * after connectionHandlerto a real PEA, commands can be triggered and states can be retrieved
  *
  */
 export class Service extends BaseService{
 
 	public readonly procedures: Procedure[] = [];
 	public readonly parameters: ServParam[] = [];
-	public readonly connection: OpcUaConnection;
+	public readonly connectionHandler: ConnectionHandler;
 	public serviceControl: ServiceControl;
 	private readonly logger: Category;
-	private serviceParametersEventEmitters: EventEmitter[];
+	//private serviceParameterEventEmitter: EventEmitter[];
 	private readonly _parentId: string;
 
-	constructor(serviceOptions: ServiceOptions, connection: OpcUaConnection, parentId: string) {
+	constructor(serviceOptions: ServiceModel, connectionHandler: ConnectionHandler, parentId: string) {
 		super();
 		this._parentId = parentId;
 		this._name = serviceOptions.name;
@@ -61,23 +62,20 @@ export class Service extends BaseService{
 		else if (!serviceOptions.name) {
 			throw new Error('No service name provided');
 		}
-		this.connection = connection;
-		this.serviceParametersEventEmitters = [];
+		this.connectionHandler = connectionHandler;
 
 		this._lastStatusChange = new Date();
 		this.logger = catService;
 
-		this.serviceControl = new ServiceControl(
-			{name: this._name, metaModelRef: 'ServiceControl', dataItems: serviceOptions.communication},
-			connection);
+		this.serviceControl = new ServiceControl(serviceOptions.dataAssembly, connectionHandler);
 
 		this.procedures = serviceOptions.procedures
-			.map((option) => new Procedure(option, connection));
+			.map((option) => new Procedure(option, connectionHandler));
 
-		// TODO: Check what happens if DataAssemblyController already exists --> Is that a matter?
+		// TODO: Check what happens if DataAssembly already exists --> Is that a matter?
 		if (serviceOptions.parameters) {
 			this.parameters = serviceOptions.parameters
-				.map((options) => DataAssemblyControllerFactory.create(options, connection) as ServParam);
+				.map((options) => DataAssemblyFactory.create(options, connectionHandler) as ServParam);
 		}
 	}
 
@@ -93,8 +91,8 @@ export class Service extends BaseService{
 		return this.serviceControl.communication.StateCur.value as ServiceState;
 	}
 
-	public get lastStatusChange(): Date {
-		return (this.serviceControl.communication.StateCur as DynamicDataItem<number>)?.timestamp || new Date();
+	public get lastStateCurChange(): Date | undefined {
+		return this.serviceControl.communication.StateCur.lastChange;
 	}
 
 	public get currentProcedureId(): number | undefined {
@@ -169,11 +167,6 @@ export class Service extends BaseService{
 				this.logger.debug(`[${this.qualifiedName}] State changed: ` +
 					`${ServiceState[this.state]}`);
 				this.emit('state', this.state);
-				if (this.state === ServiceState.COMPLETED ||
-					this.state === ServiceState.ABORTED ||
-					this.state === ServiceState.STOPPED) {
-					this.clearListeners();
-				}
 			});
 
 		await this.serviceControl.subscribe();
@@ -218,7 +211,7 @@ export class Service extends BaseService{
 	}
 
 	public async executeCommand(command: ServiceCommand): Promise<void> {
-		if (!this.connection.isConnected()) {
+		if (!this.connectionHandler.connectionEstablished) {
 			throw new Error('PEAController is not connected');
 		}
 		await super.executeCommand(command);
@@ -337,7 +330,7 @@ export class Service extends BaseService{
 		return !!this.procedures.find(p => p.procedureId == id) || id === 0;
 	}
 
-	public async setParameters(parameterOptions: ParameterOptions[], peaSet: PEAController[] = []): Promise<void> {
+	public async setParameters(parameterOptions: ParameterOptions[], peaSet: PEA[] = []): Promise<void> {
 		parameterOptions.map((p) => {
 			const dataAssembly = this.findInputParameter(p.name);
 			if(!dataAssembly){
@@ -361,13 +354,6 @@ export class Service extends BaseService{
 		return result;
 	}
 
-	/**
-	 *
-	 */
-	private clearListeners(): void {
-		this.logger.info(`[${this.qualifiedName}] clear parameter listener`);
-		this.serviceParametersEventEmitters.forEach((listener) => listener.removeAllListeners());
-	}
 
 	private async sendCommand(command: ServiceMtpCommand): Promise<void> {
 		this.logger.debug(`[${this.qualifiedName}] Send command ${ServiceMtpCommand[command]}`);

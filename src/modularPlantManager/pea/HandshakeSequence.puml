@@ -27,20 +27,20 @@
 
 skinparam monochrome false
 
-participant POL.DataAssemblyController
+participant POL.DataAssembly
 participant PEA.DataAssembly
 
     note over PEA.DataAssembly: State:=0
     hnote across: Change Set to 1 should result in Change of State 0->1
-    POL.DataAssemblyController -> PEA.DataAssembly: Set := true
+    POL.DataAssembly -> PEA.DataAssembly: Set := true
     ... PEA internal calculation time ...
-    note over POL.DataAssemblyController : Request was handled by PEA
-    PEA.DataAssembly -> POL.DataAssemblyController: Set := false
+    note over POL.DataAssembly : Request was handled by PEA
+    PEA.DataAssembly -> POL.DataAssembly: Set := false
     ... PEA internal calculation time ...
 alt #Green Successful case
-    PEA.DataAssembly -> POL.DataAssemblyController: State := true
+    PEA.DataAssembly -> POL.DataAssembly: State := true
 else #Red Failure
-    PEA.DataAssembly -> POL.DataAssemblyController: State := false
+    PEA.DataAssembly -> POL.DataAssembly: State := false
 end
 
 @enduml

@@ -23,73 +23,73 @@
  * SOFTWARE.
  */
 
-import {OpcUaConnection} from '../../../connection';
 import {DIntView} from './DIntView';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {MockupServer} from '../../../../_utils';
-import {DIntViewMockup, getDIntViewOptions} from './DIntView.mockup';
+import {DIntViewMockup, getDIntViewDataAssemblyModel} from './DIntView.mockup';
+import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('DIntView', () => {
 
-	let dataAssemblyOptions: DataAssemblyOptions;
+	let options: DataAssemblyModel;
 
 	describe('static', () => {
 
-		const emptyOPCUAConnection = new OpcUaConnection();
-		dataAssemblyOptions = getDIntViewOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
+		const connectionHandler = new ConnectionHandler();
+		options = getDIntViewDataAssemblyModel(2, 'Variable', 'Variable');
 
 		it('should create DIntView', async () => {
-			const dataAssemblyController: DIntView = new DIntView(dataAssemblyOptions, emptyOPCUAConnection);
-			expect(dataAssemblyController.communication.TagName).to.not.equal(undefined);
-			expect(dataAssemblyController.communication.TagDescription).to.not.equal(undefined);
-			expect(dataAssemblyController.communication.V).to.not.equal(undefined);
-			expect(dataAssemblyController.communication.WQC).to.not.equal(undefined);
-			expect(dataAssemblyController.communication.VSclMax).to.not.equal(undefined);
-			expect(dataAssemblyController.communication.VSclMin).to.not.equal(undefined);
-			expect(dataAssemblyController.communication.VUnit).to.not.equal(undefined);
+			const dataAssembly: DIntView = new DIntView(options, connectionHandler);
+			expect(dataAssembly.communication.TagName).to.not.equal(undefined);
+			expect(dataAssembly.communication.TagDescription).to.not.equal(undefined);
+			expect(dataAssembly.communication.V).to.not.equal(undefined);
+			expect(dataAssembly.communication.WQC).to.not.equal(undefined);
+			expect(dataAssembly.communication.VSclMax).to.not.equal(undefined);
+			expect(dataAssembly.communication.VSclMin).to.not.equal(undefined);
+			expect(dataAssembly.communication.VUnit).to.not.equal(undefined);
 		});
 
 	});
 	describe('dynamic', () => {
 		let mockupServer: MockupServer;
-		let connection: OpcUaConnection;
+		let connectionHandler: ConnectionHandler;
 
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
 			const dIntViewMockup = new DIntViewMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
-			dataAssemblyOptions = dIntViewMockup.getDataAssemblyOptions();
+			options = dIntViewMockup.getDataAssemblyModel();
 			await mockupServer.start();
-			connection = new OpcUaConnection();
-			connection.initialize({endpointUrl: mockupServer.endpoint});
-			await connection.connect();
+			connectionHandler= new ConnectionHandler();
+			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			await connectionHandler.connect();
 		});
 
 		afterEach(async function () {
 			this.timeout(4000);
-			await connection.disconnect();
+			await connectionHandler.disconnect();
 			await mockupServer.shutdown();
 		});
 
 		it('should subscribe successfully', async () => {
 
-			const dataAssemblyController: DIntView = new DIntView(dataAssemblyOptions, connection);
-			await dataAssemblyController.subscribe();
-			await connection.startMonitoring();
-			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
+			const dataAssembly: DIntView = new DIntView(options, connectionHandler);
+			await dataAssembly.subscribe();
+			await connectionHandler.connect();
+			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 
-			expect(dataAssemblyController.communication.WQC.value).equal(0);
-			expect(dataAssemblyController.communication.V.value).equal(0);
-			expect(dataAssemblyController.communication.VUnit.value).equal(0);
-			expect(dataAssemblyController.communication.VSclMax.value).equal(0);
-			expect(dataAssemblyController.communication.VSclMin.value).equal(0);
+			expect(dataAssembly.communication.WQC.value).equal(0);
+			expect(dataAssembly.communication.V.value).equal(0);
+			expect(dataAssembly.communication.VUnit.value).equal(0);
+			expect(dataAssembly.communication.VSclMax.value).equal(0);
+			expect(dataAssembly.communication.VSclMin.value).equal(0);
 		}).timeout(4000);
 	});
 });

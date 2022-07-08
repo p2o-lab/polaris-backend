@@ -26,7 +26,7 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../_utils';
-import {getInterlockDataItemOptions, InterlockMockup} from './Interlock.mockup';
+import {getInterlockDataItemModel, InterlockMockup} from './Interlock.mockup';
 import {InterlockRuntime} from './Interlock';
 
 chai.use(chaiAsPromised);
@@ -47,28 +47,28 @@ describe('InterlockMockup', () => {
         });
 
         it('static Interlock DataItemOptions',  () => {
-            const options = getInterlockDataItemOptions(1, 'Test') as InterlockRuntime;
+            const options = getInterlockDataItemModel(1, 'Test');
 
             expect(Object.keys(options).length).to.equal(6);
-            expect(options.PermEn).to.not.be.undefined;
-            expect(options.Interlock).to.not.be.undefined;
-            expect(options.IntlEn).to.not.be.undefined;
-            expect(options.Permit).to.not.be.undefined;
-            expect(options.Protect).to.not.be.undefined;
-            expect(options.ProtEn).to.not.be.undefined;
+            expect(options.find(i => i.name === 'PermEn')).to.not.be.undefined;
+            expect(options.find(i => i.name === 'Interlock')).to.not.be.undefined;
+            expect(options.find(i => i.name === 'IntlEn')).to.not.be.undefined;
+            expect(options.find(i => i.name === 'Permit')).to.not.be.undefined;
+            expect(options.find(i => i.name === 'Protect')).to.not.be.undefined;
+            expect(options.find(i => i.name === 'ProtEn')).to.not.be.undefined;
         });
 
         it('dynamic Interlock DataItemOptions',  () => {
             const mockup = new InterlockMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
-            const options = mockup.getDataItemOptions() as InterlockRuntime;
+            const options = mockup.getDataItemModel();
 
             expect(Object.keys(options).length).to.equal(6);
-            expect(options.PermEn).to.not.be.undefined;
-            expect(options.Interlock).to.not.be.undefined;
-            expect(options.IntlEn).to.not.be.undefined;
-            expect(options.Permit).to.not.be.undefined;
-            expect(options.Protect).to.not.be.undefined;
-            expect(options.ProtEn).to.not.be.undefined;
+            expect(options.find(i => i.name === 'PermEn')).to.not.be.undefined;
+            expect(options.find(i => i.name === 'Interlock')).to.not.be.undefined;
+            expect(options.find(i => i.name === 'IntlEn')).to.not.be.undefined;
+            expect(options.find(i => i.name === 'Permit')).to.not.be.undefined;
+            expect(options.find(i => i.name === 'Protect')).to.not.be.undefined;
+            expect(options.find(i => i.name === 'ProtEn')).to.not.be.undefined;
         });
     });
 });

@@ -26,11 +26,10 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 
-import {getPIDCtrlDataItemOptions, getPIDCtrlOptions, PIDCtrlMockup} from './PIDCtrl.mockup';
+import {getPIDCtrlDataAssemblyModel, getPIDCtrlDataItemModel, PIDCtrlMockup} from './PIDCtrl.mockup';
 import {MockupServer} from '../../../../_utils';
-import {OpcUaConnection} from '../../../connection';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {PIDCtrlRuntime} from './PIDCtrl';
+import {DataItemAccessLevel} from '@p2olab/pimad-interface';
+import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -53,19 +52,19 @@ describe('PIDCtrlMockup', () => {
         });
 
         it('static DataItemOptions', () => {
-            const options = getPIDCtrlDataItemOptions(1, 'Test') as PIDCtrlRuntime;
+            const options = getPIDCtrlDataItemModel(1, 'Test');
             expect(Object.keys(options).length).to.equal(43);
         });
 
-        it('static DataAssemblyOptions', () => {
-            const options = getPIDCtrlOptions(1, 'Test') as DataAssemblyOptions;
+        it('static DataAssemblyModel', () => {
+            const options = getPIDCtrlDataAssemblyModel(1, 'Test');
             expect(Object.keys(options.dataItems).length).to.equal(45);
         });
 
-        it('dynamic DataAssemblyOptions', () => {
+        it('dynamic DataAssemblyModel', () => {
             const mockup = new PIDCtrlMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const options = mockup.getDataAssemblyOptions();
+            const options = mockup.getDataAssemblyModel();
 
             expect(Object.keys(options.dataItems).length).to.equal(45);
         });
@@ -74,7 +73,7 @@ describe('PIDCtrlMockup', () => {
     describe('dynamic', () => {
 
         let mockupServer: MockupServer;
-        let connection: OpcUaConnection;
+        let connectionHandler: ConnectionHandler;
 
         beforeEach(async function () {
             this.timeout(5000);
@@ -82,28 +81,26 @@ describe('PIDCtrlMockup', () => {
             await mockupServer.initialize();
             new PIDCtrlMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
             await mockupServer.start();
-            connection = new OpcUaConnection();
-            connection.initialize({endpointUrl: mockupServer.endpoint});
-            await connection.connect();
+            connectionHandler= new ConnectionHandler();
+            connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+            await connectionHandler.connect();
         });
         afterEach(async () => {
-            await connection.disconnect();
+            await connectionHandler.disconnect();
             await mockupServer.shutdown();
         });
 
         it('set and get SPMan', async () => {
-            await connection.writeNode('Variable.SPMan', mockupServer.nameSpaceUri, 1.1, 'Double');
-            await connection.readNode('Variable.SPMan', mockupServer.nameSpaceUri)
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.SPMan', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, 1.1);
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.SPMan', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(1.1));
         }).timeout(3000);
 
         it('set and get SPMan', async () => {
-            await connection.writeNode('Variable.MVMan', mockupServer.nameSpaceUri, 1.1, 'Double');
-            await connection.readNode('Variable.MVMan', mockupServer.nameSpaceUri)
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.MVMan', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, 1.1);
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.MVMan', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(1.1));
         }).timeout(3000);
-
-        //TODO get the rest
 
     });
 });

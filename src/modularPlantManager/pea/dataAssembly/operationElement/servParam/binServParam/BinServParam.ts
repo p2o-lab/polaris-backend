@@ -23,9 +23,11 @@
  * SOFTWARE.
  */
 
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaConnection, DataItem} from '../../../../connection';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
+import {DataItem} from '../../../dataItem/DataItem';
 import {ServParam, ServParamRuntime} from '../ServParam';
+import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
+import {DataItemFactory, getDataItemModel} from '../../../dataItem/DataItemFactory';
 
 export type BinServParamRuntime = ServParamRuntime & {
 	VExt: DataItem<boolean>;
@@ -42,18 +44,18 @@ export type BinServParamRuntime = ServParamRuntime & {
 export class BinServParam extends ServParam {
 	public readonly communication!: BinServParamRuntime;
 
-	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
-		super(options, connection);
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+		super(options, connectionHandler);
 
-		this.communication.VExt = this.createDataItem('VExt', 'boolean', 'write');
-		this.communication.VOp = this.createDataItem('VOp', 'boolean', 'write');
-		this.communication.VInt = this.createDataItem('VInt', 'boolean');
-		this.communication.VReq = this.createDataItem('VReq', 'boolean');
-		this.communication.VOut = this.createDataItem('VOut', 'boolean');
-		this.communication.VFbk = this.createDataItem('VFbk', 'boolean');
+		this.communication.VExt = DataItemFactory.create(getDataItemModel(options, 'VExt'), connectionHandler);
+		this.communication.VOp = DataItemFactory.create(getDataItemModel(options, 'VOp'), connectionHandler);
+		this.communication.VInt = DataItemFactory.create(getDataItemModel(options, 'VInt'), connectionHandler);
+		this.communication.VReq = DataItemFactory.create(getDataItemModel(options, 'VReq'), connectionHandler);
+		this.communication.VOut = DataItemFactory.create(getDataItemModel(options, 'VOut'), connectionHandler);
+		this.communication.VFbk = DataItemFactory.create(getDataItemModel(options, 'VFbk'), connectionHandler);
 
-		this.communication.VState0 = this.createDataItem('VState0', 'string');
-		this.communication.VState1 = this.createDataItem('VState1', 'string');
+		this.communication.VState0 = DataItemFactory.create(getDataItemModel(options, 'VState0'), connectionHandler);
+		this.communication.VState1 = DataItemFactory.create(getDataItemModel(options, 'VState1'), connectionHandler);
 
 		this.defaultReadDataItem = this.communication.VOut;
 		this.defaultReadDataItemType = 'boolean';

@@ -24,53 +24,70 @@
  */
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {getIndicatorElementDataItemOptions, IndicatorElementMockup} from '../IndicatorElement.mockup';
-import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
-import {getDataAssemblyOptions} from '../../DataAssemblyController.mockup';
+import {DataAssemblyModel, DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+import {getIndicatorElementDataItemModel, IndicatorElementMockup} from '../IndicatorElement.mockup';
+
+import {getDataAssemblyModel} from '../../DataAssembly.mockup';
+import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../dataItem/DataItem.mockup';
 
 const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/BinView';
 
-function getBinViewSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return ({
-		V: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.V`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		VState0: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.VState0`,
-			dataType: 'String'
-		} as OpcUaNodeOptions,
-		VState1: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.VState1`,
-			dataType: 'String'
-		} as OpcUaNodeOptions
-	});
+function getBinViewSpecificDataItemModels(namespace: number, objectBrowseName: string): DataItemModel[] {
+
+	const result: DataItemModel[] = [];
+	let dataItem: DataItemModel = getEmptyDataItemModel();
+	dataItem.name = 'V';
+	dataItem.dataType = 'Boolean';
+	let ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.V`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'VState0';
+	dataItem.dataType = 'String';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.VState0`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'VState1';
+	dataItem.dataType = 'String';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.VState1`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+
+	return result;
 }
 
-export function getBinViewDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return ({
-			...getIndicatorElementDataItemOptions(namespace, objectBrowseName),
-			...getBinViewSpecificDataItemOptions(namespace, objectBrowseName),
-		} as OpcUaNodeOptions
-	);
+export function getBinViewDataItemModel(namespace: number, objectBrowseName: string): DataItemModel[] {
+	return [
+			...getIndicatorElementDataItemModel(namespace, objectBrowseName),
+			...getBinViewSpecificDataItemModels(namespace, objectBrowseName),
+	];
 }
 
-export function getBinViewOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
-	const options = getDataAssemblyOptions(name, tagName, tagDescription);
-	options.metaModelRef = metaModelReference;
-	options.dataItems = {
+export function getBinViewDataAssemblyModel(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): DataAssemblyModel {
+	const options = getDataAssemblyModel(metaModelReference, name, tagName, tagDescription);
+	options.dataItems = [
 		...options.dataItems,
-		...getBinViewDataItemOptions(namespace, objectBrowseName)};
+		...getBinViewDataItemModel(namespace, objectBrowseName)
+	];
 	return options;
 }
 
 export class BinViewMockup extends IndicatorElementMockup{
 
-	protected v = false;
+	public v = false;
 	public vState0 = 'state0_active';
 	public vState1 = 'state1_active';
 
@@ -121,13 +138,12 @@ export class BinViewMockup extends IndicatorElementMockup{
 		});
 	}
 
-	public getDataAssemblyOptions(): DataAssemblyOptions {
-		const options = super.getDataAssemblyOptions();
-		options.metaModelRef = metaModelReference;
-		options.dataItems = {
+	public getDataAssemblyModel(metaModelReferenceOption?: string): DataAssemblyModel {
+		const options = super.getDataAssemblyModel(metaModelReferenceOption || metaModelReference);
+		options.dataItems = [
 			...options.dataItems,
-			...getBinViewSpecificDataItemOptions(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
-		};
+			...getBinViewSpecificDataItemModels(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
+		];
 		return options;
 	}
 }

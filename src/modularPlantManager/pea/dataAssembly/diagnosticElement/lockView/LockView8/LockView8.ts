@@ -23,9 +23,11 @@
  * SOFTWARE.
  */
 
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaConnection, DataItem} from '../../../../connection';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
+import {DataItem} from '../../../dataItem/DataItem';
+import {DataItemFactory, getDataItemModel} from '../../../dataItem/DataItemFactory';
 import {LockView4, LockView4Runtime} from '../LockView4';
+import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
 
 export type LockView8Runtime = LockView4Runtime & {
 	In5En: DataItem<boolean>;
@@ -54,34 +56,56 @@ export type LockView8Runtime = LockView4Runtime & {
 };
 
 export class LockView8 extends LockView4 {
-	public readonly communication!: LockView8Runtime;
+	In5En: DataItem<boolean>;
+	In5: DataItem<boolean>;
+	In5QC: DataItem<number>;
+	In5Inv: DataItem<boolean>;
+	In5Txt: DataItem<string>;
 
-	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
-		super(options, connection);
+	In6En: DataItem<boolean>;
+	In6: DataItem<boolean>;
+	In6QC: DataItem<number>;
+	In6Inv: DataItem<boolean>;
+	In6Txt: DataItem<string>;
 
-		this.communication.In5En = this.createDataItem('In5En', 'boolean');
-		this.communication.In5 = this.createDataItem('In5', 'boolean');
-		this.communication.In5QC = this.createDataItem('In5QC', 'number');
-		this.communication.In5Inv = this.createDataItem('In5Inv', 'boolean');
-		this.communication.In5Txt = this.createDataItem('In5Txt', 'string');
+	In7En: DataItem<boolean>;
+	In7: DataItem<boolean>;
+	In7QC: DataItem<number>;
+	In7Inv: DataItem<boolean>;
+	In7Txt: DataItem<string>;
 
-		this.communication.In6En = this.createDataItem('In6En', 'boolean');
-		this.communication.In6 = this.createDataItem('In6', 'boolean');
-		this.communication.In6QC = this.createDataItem('In6QC', 'number');
-		this.communication.In6Inv = this.createDataItem('In6Inv', 'boolean');
-		this.communication.In6Txt = this.createDataItem('In6Txt', 'string');
+	In8En: DataItem<boolean>;
+	In8: DataItem<boolean>;
+	In8QC: DataItem<number>;
+	In8Inv: DataItem<boolean>;
+	In8Txt: DataItem<string>;
 
-		this.communication.In7En = this.createDataItem('In7En', 'boolean');
-		this.communication.In7 = this.createDataItem('In7', 'boolean');
-		this.communication.In7QC = this.createDataItem('In7QC', 'number');
-		this.communication.In7Inv = this.createDataItem('In7Inv', 'boolean');
-		this.communication.In7Txt = this.createDataItem('In7Txt', 'string');
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+		super(options, connectionHandler);
 
-		this.communication.In8En = this.createDataItem('In8En', 'boolean');
-		this.communication.In8 = this.createDataItem('In8', 'boolean');
-		this.communication.In8QC = this.createDataItem('In8QC', 'number');
-		this.communication.In8Inv = this.createDataItem('In8Inv', 'boolean');
-		this.communication.In8Txt = this.createDataItem('In8Txt', 'string');
+		this.In5En = DataItemFactory.create(getDataItemModel(options, 'In5En'), connectionHandler);
+		this.In5 = DataItemFactory.create(getDataItemModel(options, 'In5'), connectionHandler);
+		this.In5QC = DataItemFactory.create(getDataItemModel(options, 'In5QC'), connectionHandler);
+		this.In5Inv = DataItemFactory.create(getDataItemModel(options, 'In5Inv'), connectionHandler);
+		this.In5Txt = DataItemFactory.create(getDataItemModel(options, 'In5Txt'), connectionHandler);
+
+		this.In6En = DataItemFactory.create(getDataItemModel(options, 'In6En'), connectionHandler);
+		this.In6 = DataItemFactory.create(getDataItemModel(options, 'In6'), connectionHandler);
+		this.In6QC = DataItemFactory.create(getDataItemModel(options, 'In6QC'), connectionHandler);
+		this.In6Inv = DataItemFactory.create(getDataItemModel(options, 'In6Inv'), connectionHandler);
+		this.In6Txt = DataItemFactory.create(getDataItemModel(options, 'In6Txt'), connectionHandler);
+
+		this.In7En = DataItemFactory.create(getDataItemModel(options, 'In7En'), connectionHandler);
+		this.In7 = DataItemFactory.create(getDataItemModel(options, 'In7'), connectionHandler);
+		this.In7QC = DataItemFactory.create(getDataItemModel(options, 'In7QC'), connectionHandler);
+		this.In7Inv = DataItemFactory.create(getDataItemModel(options, 'In7Inv'), connectionHandler);
+		this.In7Txt = DataItemFactory.create(getDataItemModel(options, 'In7Txt'), connectionHandler);
+
+		this.In8En = DataItemFactory.create(getDataItemModel(options, 'In8En'), connectionHandler);
+		this.In8 = DataItemFactory.create(getDataItemModel(options, 'In8'), connectionHandler);
+		this.In8QC = DataItemFactory.create(getDataItemModel(options, 'In8QC'), connectionHandler);
+		this.In8Inv = DataItemFactory.create(getDataItemModel(options, 'In8Inv'), connectionHandler);
+		this.In8Txt = DataItemFactory.create(getDataItemModel(options, 'In8Txt'), connectionHandler);
 	}
 
 }

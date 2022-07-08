@@ -23,10 +23,12 @@
  * SOFTWARE.
  */
 
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaConnection, DataItem} from '../../../../connection';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
+import {DataItem} from '../../../dataItem/DataItem';
 import {BinView, BinViewRuntime} from '../BinView';
 import {OSLevel, OSLevelRuntime} from '../../../baseFunction';
+import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
+import {DataItemFactory, getDataItemModel} from '../../../dataItem/DataItemFactory';
 
 export type BinMonRuntime = BinViewRuntime & OSLevelRuntime & {
 	VFlutTi: DataItem<number>;
@@ -40,15 +42,14 @@ export class BinMon extends BinView {
 	public readonly communication!: BinMonRuntime;
 	public readonly osLevel: OSLevel;
 
-	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
-		super(options, connection);
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+		super(options, connectionHandler);
 
-		this.osLevel = new OSLevel(this);
-		
+		this.osLevel = new OSLevel(options, connectionHandler);
 
-		this.communication.VFlutTi = this.createDataItem('VFlutTi', 'number');
-		this.communication.VFlutEn = this.createDataItem('VFlutEn', 'boolean', 'write');
-		this.communication.VFlutCnt = this.createDataItem('VFlutCnt', 'number');
-		this.communication.VFlutAct = this.createDataItem('VFlutAct', 'boolean');
+		this.communication.VFlutTi = DataItemFactory.create(getDataItemModel(options, 'VFlutTi'), connectionHandler);
+		this.communication.VFlutEn = DataItemFactory.create(getDataItemModel(options, 'VFlutEn'), connectionHandler);
+		this.communication.VFlutCnt = DataItemFactory.create(getDataItemModel(options, 'VFlutCnt'), connectionHandler);
+		this.communication.VFlutAct = DataItemFactory.create(getDataItemModel(options, 'VFlutAct'), connectionHandler);
 	}
 }

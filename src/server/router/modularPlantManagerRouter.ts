@@ -28,19 +28,16 @@ import {ModularPlantManager} from '../../modularPlantManager';
 
 import {Request, Response, Router} from 'express';
 import * as asyncHandler from 'express-async-handler';
-import yn from 'yn';
 import {version} from '../../../package.json';
 import {peaRouter} from './peaRouter/peaRouter';
 import {recipeRunRouter} from './recipeRouter/recipeRunRouter';
 import {recipeRouter} from './recipeRouter/recipeRouter';
 import {playerRouter} from './recipeRouter/playerRouter';
 import {polServiceRouter} from './polServiceRouter/polServiceRouter';
-import {pimadRouter} from './pimadRouter/pimadRouter';
 
 export const modularPlantManagerRouter: Router = Router();
 
 modularPlantManagerRouter.use('/pea', peaRouter);
-modularPlantManagerRouter.use('/pimad', pimadRouter);
 modularPlantManagerRouter.use('/polService', polServiceRouter);
 modularPlantManagerRouter.use('/recipeRun', recipeRunRouter);
 modularPlantManagerRouter.use('/recipe', recipeRouter);
@@ -65,29 +62,6 @@ modularPlantManagerRouter.get('/version', (req: Request, res: Response) => {
 	res.json({version: version});
 });
 
-/**
- * @api {get} /autoReset    Get autoReset
- * @apiName GetAutoReset
- * @apiDescription Get statusNode of autoReset
- * @apiGroup ModularPlantManager
- */
-modularPlantManagerRouter.get('/autoReset', asyncHandler(async (req: Request, res: Response) => {
-	const manager: ModularPlantManager = req.app.get('manager');
-	res.json({autoReset: manager.autoReset});
-}));
-
-/**
- * @api {post} /autoReset   Set autoReset
- * @apiName PostAutoReset
- * @apiDescription Set statusNode of autoReset and returns updated value
- * @apiGroup ModularPlantManager
- * @apiParam {Boolean} autoReset      new value of autoReset
- */
-modularPlantManagerRouter.post('/autoReset', asyncHandler(async (req: Request, res: Response) => {
-	const manager: ModularPlantManager = req.app.get('manager');
-	manager.autoReset = yn(req.body.autoReset, {default: false});
-	res.json({autoReset: manager.autoReset});
-}));
 
 /**
  * @api {post} /abortAllServices    Abort all services

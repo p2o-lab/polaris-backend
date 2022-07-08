@@ -24,28 +24,28 @@
  */
 
 import {Namespace, UAObject} from 'node-opcua';
-import {getWQCDataItemOptions, WQCMockup} from '../baseFunction/wqc/WQC.mockup';
-import {DataAssemblyControllerMockup, getDataAssemblyOptions} from '../DataAssemblyController.mockup';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {getWQCDataItemModel, WQCMockup} from '../baseFunction/wqc/WQC.mockup';
+import {DataAssemblyMockup, getDataAssemblyModel} from '../DataAssembly.mockup';
+import {DataAssemblyModel, DataItemModel} from '@p2olab/pimad-interface';
 
 const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/InputElement';
 
-export function getInputElementDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return getWQCDataItemOptions(namespace, objectBrowseName);
+export function getInputElementDataItemModel(namespace: number, objectBrowseName: string): DataItemModel[] {
+	return getWQCDataItemModel(namespace, objectBrowseName);
 }
 
-export function getInputElementOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
-	const options = getDataAssemblyOptions(name, tagName, tagDescription);
-	options.metaModelRef = metaModelReference;
-	options.dataItems = {
+export function getInputElementDataAssemblyModel(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): DataAssemblyModel {
+	const options = getDataAssemblyModel(metaModelReference, name, tagName, tagDescription);
+	options.dataItems = [
 		...options.dataItems,
-		...getInputElementDataItemOptions(namespace, objectBrowseName)};
+		...getInputElementDataItemModel(namespace, objectBrowseName)
+	];
 	return options;
 }
 
-export class InputElementMockup extends DataAssemblyControllerMockup{
+export class InputElementMockup extends DataAssemblyMockup{
 
-	public readonly wqc: WQCMockup;
+	public wqc: WQCMockup;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string){
 		super(namespace, rootNode, variableName);
@@ -53,13 +53,12 @@ export class InputElementMockup extends DataAssemblyControllerMockup{
 
 	}
 
-	public getDataAssemblyOptions(): DataAssemblyOptions {
-		const options = super.getDataAssemblyOptions();
-		options.metaModelRef = metaModelReference;
-		options.dataItems = {
+	public getDataAssemblyModel(metaModelReferenceOption?: string): DataAssemblyModel {
+		const options = super.getDataAssemblyModel(metaModelReferenceOption || metaModelReference);
+		options.dataItems = [
 			...options.dataItems,
-			...this.wqc.getDataItemOptions()
-		};
+			...this.wqc.getDataItemModel()
+		];
 		return options;
 	}
 }

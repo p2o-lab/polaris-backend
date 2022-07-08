@@ -26,7 +26,7 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../_utils';
-import {getValueLimitationDataItemOptions, ValueLimitationMockup} from './ValueLimitation.mockup';
+import {getValueLimitationDataItemModel, ValueLimitationMockup} from './ValueLimitation.mockup';
 import {ValueLimitationRuntime} from './ValueLimitation';
 
 chai.use(chaiAsPromised);
@@ -52,21 +52,21 @@ describe('ValueLimitationMockup', () => {
             });
 
             it('static DataItemOptions', () => {
-                const options = getValueLimitationDataItemOptions(1, 'Test', 'DInt') as ValueLimitationRuntime;
+                const options = getValueLimitationDataItemModel(1, 'Test', 'DInt');
 
                 expect(Object.keys(options).length).to.equal(2);
-                expect(options.VMin).to.not.be.undefined;
-                expect(options.VMax).to.not.be.undefined;
+                expect(options.find(i => i.name === 'VMin')).to.not.be.undefined;
+                expect(options.find(i => i.name === 'VMax')).to.not.be.undefined;
             });
 
             it('dynamic DataItemOptions', () => {
                 const mockup = new ValueLimitationMockup(mockupServer.nameSpace,
                     mockupServer.rootObject, 'Variable', 'DInt');
-                const options = mockup.getDataItemOptions() as ValueLimitationRuntime;
+                const options = mockup.getDataItemModel();
 
                 expect(Object.keys(options).length).to.equal(2);
-                expect(options.VMin).to.not.be.undefined;
-                expect(options.VMax).to.not.be.undefined;
+                expect(options.find(i => i.name === 'VMin')).to.not.be.undefined;
+                expect(options.find(i => i.name === 'VMax')).to.not.be.undefined;
             });
         });
 
@@ -79,21 +79,21 @@ describe('ValueLimitationMockup', () => {
             });
 
             it('static DataItemOptions', () => {
-                const options = getValueLimitationDataItemOptions(1, 'Test', 'Ana') as ValueLimitationRuntime;
+                const options = getValueLimitationDataItemModel(1, 'Test', 'Ana');
 
                 expect(Object.keys(options).length).to.equal(2);
-                expect(options.VMin).to.not.be.undefined;
-                expect(options.VMax).to.not.be.undefined;
+                expect(options.find(i => i.name === 'VMin')).to.not.be.undefined;
+                expect(options.find(i => i.name === 'VMax')).to.not.be.undefined;
             });
 
             it('dynamic DataItemOptions', () => {
                 const mockup = new ValueLimitationMockup(mockupServer.nameSpace,
                     mockupServer.rootObject, 'Variable', 'Ana');
-                const options = mockup.getDataItemOptions() as ValueLimitationRuntime;
+                const options = mockup.getDataItemModel();
 
                 expect(Object.keys(options).length).to.equal(2);
-                expect(options.VMin).to.not.be.undefined;
-                expect(options.VMax).to.not.be.undefined;
+                expect(options.find(i => i.name === 'VMin')).to.not.be.undefined;
+                expect(options.find(i => i.name === 'VMax')).to.not.be.undefined;
             });
         });
 

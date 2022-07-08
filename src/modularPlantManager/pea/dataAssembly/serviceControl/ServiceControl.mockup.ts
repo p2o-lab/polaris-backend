@@ -24,130 +24,196 @@
  */
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {getOpModeDataItemOptions, OpModeMockup} from '../baseFunction/opMode/OpMode.mockup';
-import {getServiceSourceModeDataItemOptions, ServiceSourceModeMockup} from '../baseFunction/serviceSourceMode/ServiceSourceMode.mockup';
+import {getServiceSourceModeDataItemModel, ServiceSourceModeMockup} from '../baseFunction/serviceSourceMode/ServiceSourceMode.mockup';
 import {ServiceMtpCommand, ServiceState, ServiceStateString} from '../../serviceSet/service/enum';
-import {getWQCDataItemOptions, WQCMockup} from '../baseFunction/wqc/WQC.mockup';
-import {getOSLevelDataItemOptions, OSLevelMockup} from '../baseFunction/osLevel/OSLevel.mockup';
-import {DataAssemblyControllerMockup, getDataAssemblyOptions} from '../DataAssemblyController.mockup';
+import {getWQCDataItemModel, WQCMockup} from '../baseFunction/wqc/WQC.mockup';
+import {getOSLevelDataItemModel, OSLevelMockup} from '../baseFunction/osLevel/OSLevel.mockup';
+import {DataAssemblyMockup, getDataAssemblyModel} from '../DataAssembly.mockup';
 import {MtpStateMachine, UserDefinedActions, UserDefinedGuard} from '../../stateMachine/MtpStateMachine';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
+import {DataAssemblyModel, DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+
+import {getServiceOpModeDataItemModel, ServiceOpModeMockup} from '../baseFunction/serviceOpMode/ServiceOpMode.mockup';
+import {getEmptyCIDataModel, getEmptyDataItemModel} from '../dataItem/DataItem.mockup';
 
 const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/ServiceControl';
 
-function getServiceControlSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
-    return ({
-        CommandOp: {
-            namespaceIndex: `${namespace}`,
-            nodeId: `${objectBrowseName}.CommandOp`,
-            dataType: 'UInt32'
-         } as OpcUaNodeOptions,
-        CommandInt: {
-            namespaceIndex: `${namespace}`,
-            nodeId: `${objectBrowseName}.CommandInt`,
-            dataType: 'UInt32'
-         } as OpcUaNodeOptions,
-        CommandExt: {
-            namespaceIndex: `${namespace}`,
-            nodeId: `${objectBrowseName}.CommandExt`,
-            dataType: 'UInt32'
-         } as OpcUaNodeOptions,
-        CommandEn: {
-            namespaceIndex: `${namespace}`,
-            nodeId: `${objectBrowseName}.CommandEn`,
-            dataType: 'UInt32'
-         } as OpcUaNodeOptions,
-        StateCur: {
-            namespaceIndex: `${namespace}`,
-            nodeId: `${objectBrowseName}.StateCur`,
-            dataType: 'UInt32'
-         } as OpcUaNodeOptions,
-        ProcedureOp: {
-            namespaceIndex: `${namespace}`,
-            nodeId: `${objectBrowseName}.ProcedureOp`,
-            dataType: 'UInt32'
-         } as OpcUaNodeOptions,
-        ProcedureExt: {
-            namespaceIndex: `${namespace}`,
-            nodeId: `${objectBrowseName}.ProcedureExt`,
-            dataType: 'UInt32'
-         } as OpcUaNodeOptions,
-        ProcedureInt: {
-            namespaceIndex: `${namespace}`,
-            nodeId: `${objectBrowseName}.ProcedureInt`,
-            dataType: 'UInt32'
-         } as OpcUaNodeOptions,
-        ProcedureCur: {
-            namespaceIndex: `${namespace}`,
-            nodeId: `${objectBrowseName}.ProcedureCur`,
-            dataType: 'UInt32'
-         } as OpcUaNodeOptions,
-        ProcedureReq: {
-            namespaceIndex: `${namespace}`,
-            nodeId: `${objectBrowseName}.ProcedureReq`,
-            dataType: 'UInt32'
-         } as OpcUaNodeOptions,
-        InteractQuestionID: {
-            namespaceIndex: `${namespace}`,
-            nodeId: `${objectBrowseName}.InteractQuestionID`,
-            dataType: 'UInt32'
-         } as OpcUaNodeOptions,
-        InteractAnswerID: {
-            namespaceIndex: `${namespace}`,
-            nodeId: `${objectBrowseName}.InteractAnswerID`,
-            dataType: 'UInt32'
-         } as OpcUaNodeOptions,
-        PosTextID: {
-            namespaceIndex: `${namespace}`,
-            nodeId: `${objectBrowseName}.PosTextID`,
-            dataType: 'UInt32'
-        } as OpcUaNodeOptions
-    });
+function getServiceControlSpecificDataItemModels(namespace: number, objectBrowseName: string): DataItemModel[] {
+
+	const result: DataItemModel[] = [];
+	let dataItem: DataItemModel = getEmptyDataItemModel();
+	dataItem.name = 'CommandOp';
+	dataItem.dataType = 'UInt32';
+	let ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.CommandOp`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'CommandInt';
+	dataItem.dataType = 'UInt32';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.CommandInt`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'CommandExt';
+	dataItem.dataType = 'UInt32';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.CommandExt`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'CommandEn';
+	dataItem.dataType = 'UInt32';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.CommandEn`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'StateCur';
+	dataItem.dataType = 'UInt32';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.StateCur`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'ProcedureOp';
+	dataItem.dataType = 'UInt32';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.ProcedureOp`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'ProcedureExt';
+	dataItem.dataType = 'UInt32';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.ProcedureExt`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'ProcedureInt';
+	dataItem.dataType = 'UInt32';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.ProcedureInt`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'ProcedureCur';
+	dataItem.dataType = 'UInt32';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.ProcedureCur`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'ProcedureReq';
+	dataItem.dataType = 'UInt32';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.ProcedureReq`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'InteractQuestionID';
+	dataItem.dataType = 'UInt32';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.InteractQuestionID`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'InteractAnswerID';
+	dataItem.dataType = 'UInt32';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.InteractAnswerID`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'PosTextID';
+	dataItem.dataType = 'UInt32';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.PosTextID`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	return result;
 }
 
-export function getServiceControlDataItemOptions(namespace: number, objectBrowseName: string): object {
-    return ({
-			...getOpModeDataItemOptions(namespace, objectBrowseName),
-			...getServiceSourceModeDataItemOptions(namespace, objectBrowseName),
-			...getWQCDataItemOptions(namespace, objectBrowseName),
-			...getOSLevelDataItemOptions(namespace, objectBrowseName),
-            ...getServiceControlSpecificDataItemOptions(namespace, objectBrowseName),
-        } as OpcUaNodeOptions
-    );
+export function getServiceControlDataItemModel(namespace: number, objectBrowseName: string): DataItemModel[] {
+    return [
+			...getServiceOpModeDataItemModel(namespace, objectBrowseName),
+			...getServiceSourceModeDataItemModel(namespace, objectBrowseName),
+			...getWQCDataItemModel(namespace, objectBrowseName),
+			...getOSLevelDataItemModel(namespace, objectBrowseName),
+            ...getServiceControlSpecificDataItemModels(namespace, objectBrowseName),
+        ];
 }
 
-export function getServiceControlOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
-    const options = getDataAssemblyOptions(name, tagName, tagDescription);
-    options.metaModelRef = metaModelReference;
-    options.dataItems = {
+export function getServiceControlDataAssemblyModel(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): DataAssemblyModel {
+    const options = getDataAssemblyModel(metaModelReference, name, tagName, tagDescription);
+    options.dataItems = [
         ...options.dataItems,
-        ...getServiceControlDataItemOptions(namespace, objectBrowseName)};
+        ...getServiceControlDataItemModel(namespace, objectBrowseName)
+	];
     return options;
 }
 
-export class ServiceControlMockup extends DataAssemblyControllerMockup {
+export class ServiceControlMockup extends DataAssemblyMockup {
 
 	public serviceSourceMode: ServiceSourceModeMockup;
-	public operationMode: OpModeMockup;
+	public serviceOpMode: ServiceOpModeMockup;
 	public wqc: WQCMockup;
 	public osLevel: OSLevelMockup;
 
 	public commandEn = 0;
-	protected commandOp = 0;
-	protected commandInt = 0;
-	protected commandExt = 0;
-	protected procedureExt = 0;
-	protected posTextID = 0;
-	protected interactAnswerID = 0;
-	protected interactQuestionID = 0;
+	public commandOp = 0;
+	public commandInt = 0;
+	public commandExt = 0;
+	public procedureExt = 0;
+	public posTextID = 0;
+	public interactAnswerID = 0;
+	public interactQuestionID = 0;
 
 	protected stateMachine: MtpStateMachine;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
 		super(namespace, rootNode, variableName);
 
-		this.operationMode = new OpModeMockup(namespace, this.mockupNode, variableName);
+		this.serviceOpMode = new ServiceOpModeMockup(namespace, this.mockupNode, variableName);
 		this.serviceSourceMode = new ServiceSourceModeMockup(namespace, this.mockupNode, variableName);
 		this.wqc = new WQCMockup(namespace, this.mockupNode, variableName);
 		this.osLevel = new OSLevelMockup(namespace, this.mockupNode, this.name);
@@ -168,7 +234,7 @@ export class ServiceControlMockup extends DataAssemblyControllerMockup {
 					if (!Object.values(ServiceMtpCommand).includes(reqCommandOp)) {
 						return StatusCodes.BadInvalidArgument;
 					}
-					if (this.operationMode.stateOpAct) {
+					if (this.serviceOpMode.stateOpAct) {
 						if (this.commandEn === reqCommandOp) {
 							this.commandOp = reqCommandOp;
 							return StatusCodes.Good;
@@ -204,7 +270,7 @@ export class ServiceControlMockup extends DataAssemblyControllerMockup {
 					if (!Object.values(ServiceMtpCommand).includes(reqCommandExt)) {
 						return StatusCodes.BadInvalidArgument;
 					}
-					if (this.operationMode.stateAutAct && this.serviceSourceMode.srcExtAct) {
+					if (this.serviceOpMode.stateAutAct && this.serviceSourceMode.srcExtAct) {
 						/*                     if(this.commandEn===reqCommandExt){
 												 this.commandExt = reqCommandExt;
 												 return StatusCodes.Good;
@@ -232,7 +298,7 @@ export class ServiceControlMockup extends DataAssemblyControllerMockup {
 				},
 				set: (variant: Variant): StatusCodes => {
 					const reqProcedureOp = parseInt(variant.value, 10);
-					if (this.operationMode.stateOpAct) {
+					if (this.serviceOpMode.stateOpAct) {
 						// TODO: check if procedure is valid
 						this._procedureOp = reqProcedureOp;
 						return StatusCodes.Good;
@@ -265,7 +331,7 @@ export class ServiceControlMockup extends DataAssemblyControllerMockup {
 				set: (variant: Variant): StatusCodes => {
 					const reqProcedureExt = parseInt(variant.value, 10);
 					this.procedureExt = reqProcedureExt;
-					if (this.operationMode.stateAutAct && this.serviceSourceMode.srcExtAct) {
+					if (this.serviceOpMode.stateAutAct && this.serviceSourceMode.srcExtAct) {
 						// TODO: check if procedure is valid
 						this.stateMachine.setProcedureReq(reqProcedureExt);
 						this.logger.info(
@@ -370,7 +436,7 @@ export class ServiceControlMockup extends DataAssemblyControllerMockup {
 
 	public set procedureOp(procedureOp: number) {
 		const procedure = Math.trunc(procedureOp);
-		if (this.operationMode.stateOpAct && this.osLevel.osLevel === 0) {
+		if (this.serviceOpMode.stateOpAct && this.osLevel.osLevel === 0) {
 			// TODO: check if procedure is valid
 			this.stateMachine.setProcedureReq(procedure);
 			this.logger.info(
@@ -382,7 +448,7 @@ export class ServiceControlMockup extends DataAssemblyControllerMockup {
 
 	public set procedureInt(procedureInt: number) {
 		const procedure = Math.trunc(procedureInt);
-		if (this.operationMode.stateAutAct && this.serviceSourceMode.srcIntAct) {
+		if (this.serviceOpMode.stateAutAct && this.serviceSourceMode.srcIntAct) {
 			this.stateMachine.setProcedureReq(procedure);
 			this.logger.info(
 				`Set ProcedureReq by ProcedureInt (${this.name}): ProcedureReq: ${this.stateMachine.getProcedureReq()}`);
@@ -405,17 +471,16 @@ export class ServiceControlMockup extends DataAssemblyControllerMockup {
 		return this.stateMachine.getProcedureReq();
 	}
 
-	public getDataAssemblyOptions(): DataAssemblyOptions {
-		const options = super.getDataAssemblyOptions();
-		options.metaModelRef = metaModelReference;
-		options.dataItems = {
+	public getDataAssemblyModel(metaModelReferenceOption?: string): DataAssemblyModel {
+		const options = super.getDataAssemblyModel((metaModelReferenceOption || metaModelReference));
+		options.dataItems = [
 			...options.dataItems,
-            ...this.operationMode.getDataItemOptions(),
-            ...this.serviceSourceMode.getDataItemOptions(),
-            ...this.wqc.getDataItemOptions(),
-            ...this.osLevel.getDataItemOptions(),
-			...getServiceControlSpecificDataItemOptions(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
-		};
+            ...this.serviceOpMode.getDataItemModel(),
+            ...this.serviceSourceMode.getDataItemModel(),
+            ...this.wqc.getDataItemModel(),
+            ...this.osLevel.getDataItemModel(),
+			...getServiceControlSpecificDataItemModels(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string)
+			];
 		return options;
 	}
 }

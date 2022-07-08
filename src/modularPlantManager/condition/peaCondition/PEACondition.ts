@@ -24,13 +24,13 @@
  */
 
 import {StateConditionOptions, VariableConditionOptions} from '@p2olab/polaris-interface';
-import {PEAController} from '../../pea';
+import {PEA} from '../../pea';
 import {Condition} from '../Condition';
 
 export abstract class PEACondition extends Condition {
 
 
-	constructor(options: StateConditionOptions | VariableConditionOptions, peaSet: PEAController[]) {
+	constructor(options: StateConditionOptions | VariableConditionOptions, peaSet: PEA[]) {
 		super(options, peaSet);
 
 		if (!this.usedPEA) {

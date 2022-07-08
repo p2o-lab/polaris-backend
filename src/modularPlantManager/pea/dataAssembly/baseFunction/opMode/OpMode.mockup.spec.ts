@@ -26,10 +26,10 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../_utils';
-import {getOpModeDataItemOptions, OpModeMockup} from './OpMode.mockup';
-import {OpcUaConnection} from '../../../connection';
+import {getOpModeDataItemModel, OpModeMockup} from './OpMode.mockup';
 import {OperationMode} from '@p2olab/polaris-interface';
-import {OpModeRuntime} from './OpMode';
+import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
+import {DataItemAccessLevel} from '@p2olab/pimad-interface';
 
 
 chai.use(chaiAsPromised);
@@ -53,36 +53,36 @@ describe('OpModeMockup', () => {
         });
 
         it('static OpMode DataItemOptions', () => {
-            const options = getOpModeDataItemOptions(1, 'Test') as OpModeRuntime;
+            const options = getOpModeDataItemModel(1, 'Test');
 
             expect(Object.keys(options).length).to.equal(10);
-            expect(options.StateChannel).to.not.be.undefined;
-            expect(options.StateOffAut).to.not.be.undefined;
-            expect(options.StateOpAut).to.not.be.undefined;
-            expect(options.StateAutAut).to.not.be.undefined;
-            expect(options.StateOffOp).to.not.be.undefined;
-            expect(options.StateOpOp).to.not.be.undefined;
-            expect(options.StateAutOp).to.not.be.undefined;
-            expect(options.StateOpAct).to.not.be.undefined;
-            expect(options.StateAutAct).to.not.be.undefined;
-            expect(options.StateOffAct).to.not.be.undefined;
+            expect(options.find(i => i.name === 'StateChannel')).to.not.be.undefined;
+            expect(options.find(i => i.name === 'StateOffAut')).to.not.be.undefined;
+            expect(options.find(i => i.name === 'StateOpAut')).to.not.be.undefined;
+            expect(options.find(i => i.name === 'StateAutAut')).to.not.be.undefined;
+            expect(options.find(i => i.name === 'StateOffOp')).to.not.be.undefined;
+            expect(options.find(i => i.name === 'StateOpOp')).to.not.be.undefined;
+            expect(options.find(i => i.name === 'StateAutOp')).to.not.be.undefined;
+            expect(options.find(i => i.name === 'StateOpAct')).to.not.be.undefined;
+            expect(options.find(i => i.name === 'StateAutAct')).to.not.be.undefined;
+            expect(options.find(i => i.name === 'StateOffAct')).to.not.be.undefined;
         });
 
         it('dynamic OpMode DataItemOptions', () => {
             const mockup = new OpModeMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
-            const options = mockup.getDataItemOptions() as OpModeRuntime;
+            const options = mockup.getDataItemModel();
 
             expect(Object.keys(options).length).to.equal(10);
-            expect(options.StateChannel).to.not.be.undefined;
-            expect(options.StateOffAut).to.not.be.undefined;
-            expect(options.StateOpAut).to.not.be.undefined;
-            expect(options.StateAutAut).to.not.be.undefined;
-            expect(options.StateOffOp).to.not.be.undefined;
-            expect(options.StateOpOp).to.not.be.undefined;
-            expect(options.StateAutOp).to.not.be.undefined;
-            expect(options.StateOpAct).to.not.be.undefined;
-            expect(options.StateAutAct).to.not.be.undefined;
-            expect(options.StateOffAct).to.not.be.undefined;
+            expect(options.find(i => i.name === 'StateChannel')).to.not.be.undefined;
+            expect(options.find(i => i.name === 'StateOffAut')).to.not.be.undefined;
+            expect(options.find(i => i.name === 'StateOpAut')).to.not.be.undefined;
+            expect(options.find(i => i.name === 'StateAutAut')).to.not.be.undefined;
+            expect(options.find(i => i.name === 'StateOffOp')).to.not.be.undefined;
+            expect(options.find(i => i.name === 'StateOpOp')).to.not.be.undefined;
+            expect(options.find(i => i.name === 'StateAutOp')).to.not.be.undefined;
+            expect(options.find(i => i.name === 'StateOpAct')).to.not.be.undefined;
+            expect(options.find(i => i.name === 'StateAutAct')).to.not.be.undefined;
+            expect(options.find(i => i.name === 'StateOffAct')).to.not.be.undefined;
         });
 
         it('get stateOpAct', async () => {
@@ -108,7 +108,7 @@ describe('OpModeMockup', () => {
 
         let mockupServer: MockupServer;
         let mockup: OpModeMockup;
-        let connection: OpcUaConnection;
+        let connectionHandler: ConnectionHandler;
         beforeEach(async function () {
             this.timeout(10000);
             mockupServer = new MockupServer();
@@ -116,57 +116,57 @@ describe('OpModeMockup', () => {
             mockup = new OpModeMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
             await mockupServer.start();
-            connection = new OpcUaConnection();
-            connection.initialize({endpointUrl: mockupServer.endpoint});
-            await connection.connect();
+            connectionHandler= new ConnectionHandler();
+            connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+            await connectionHandler.connect();
         });
         afterEach(async () => {
-            await connection.disconnect();
+            await connectionHandler.disconnect();
             await mockupServer.shutdown();
         });
 
         it('set and get StateOffOp', async () => {
             mockup.opMode = OperationMode.Operator;
-            await connection.writeNode('Variable.StateOffOp', mockupServer.nameSpaceUri, true, 'Boolean');
-            await connection.readNode('Variable.StateOffOp', mockupServer.nameSpaceUri)
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.StateOffOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, true);
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.StateOffOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(false));
             expect(mockup.opMode).to.equal(OperationMode.Offline);
         }).timeout(2000);
 
         it('set and get StateOpOp', async () => {
-            await connection.writeNode('Variable.StateOpOp', mockupServer.nameSpaceUri, true, 'Boolean');
-            await connection.readNode('Variable.StateOpOp', mockupServer.nameSpaceUri)
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.StateOpOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, true);
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.StateOpOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(false));
             expect(mockup.opMode).to.equal(OperationMode.Operator);
         }).timeout(2000);
 
         it('set and get StateAutOp', async () => {
             mockup.opMode = OperationMode.Operator;
-            await connection.writeNode('Variable.StateAutOp', mockupServer.nameSpaceUri, true, 'Boolean');
-            await connection.readNode('Variable.StateAutOp', mockupServer.nameSpaceUri)
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.StateAutOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, true);
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.StateAutOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(false));
             expect(mockup.opMode).to.equal(OperationMode.Automatic);
         }).timeout(2000);
 
         it('set and get StateOffOp, write false', async () => {
             mockup.opMode = OperationMode.Operator;
-            await connection.writeNode('Variable.StateOffOp', mockupServer.nameSpaceUri, false, 'Boolean');
-            await connection.readNode('Variable.StateOffOp', mockupServer.nameSpaceUri)
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.StateOffOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, false);
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.StateOffOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(false));
             expect(mockup.opMode).to.equal(OperationMode.Operator);
         }).timeout(2000);
 
         it('set and get StateOpOp, write false', async () => {
-            await connection.writeNode('Variable.StateOpOp', mockupServer.nameSpaceUri, false, 'Boolean');
-            await connection.readNode('Variable.StateOpOp', mockupServer.nameSpaceUri)
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.StateOpOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, false);
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.StateOpOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(false));
             expect(mockup.opMode).to.equal(OperationMode.Offline);
         }).timeout(2000);
 
         it('set and get StateAutOp, write false', async () => {
             mockup.opMode = OperationMode.Operator;
-            await connection.writeNode('Variable.StateAutOp', mockupServer.nameSpaceUri, false, 'Boolean');
-            await connection.readNode('Variable.StateAutOp', mockupServer.nameSpaceUri)
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.StateAutOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, false);
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.StateAutOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(false));
             expect(mockup.opMode).to.equal(OperationMode.Operator);
         }).timeout(2000);

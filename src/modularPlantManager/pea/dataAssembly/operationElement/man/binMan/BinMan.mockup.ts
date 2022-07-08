@@ -26,73 +26,104 @@
 // eslint-disable-next-line no-undef
 import Timeout = NodeJS.Timeout;
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
-import {getOperationElementDataItemOptions, OperationElementMockup} from '../../OperationElement.mockup';
-import {getDataAssemblyOptions} from '../../../DataAssemblyController.mockup';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+
+import {getOperationElementDataItemModel, OperationElementMockup} from '../../OperationElement.mockup';
+import {getDataAssemblyModel} from '../../../DataAssembly.mockup';
+import {DataAssemblyModel, DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../../dataItem/DataItem.mockup';
 
 const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/OperationElement/BinMan';
 
-function getBinManSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return ({
-		VOut: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.VOut`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		VState0: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.VState0`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		VState1: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.VState1`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		VMan: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.VMan`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		VRbk: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.VRbk`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		VFbk: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.VFbk`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions
-	});
+function getBinManSpecificDataItemModels(namespace: number, objectBrowseName: string): DataItemModel[] {
+
+	const result: DataItemModel[] = [];
+	let dataItem: DataItemModel = getEmptyDataItemModel();
+	dataItem.name = 'VOut';
+	dataItem.dataType = 'Boolean';
+	let ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.VOut`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'VState0';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.VState0`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'VState1';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.VState1`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'VMan';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.VMan`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'VRbk';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.VRbk`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'VFbk';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.VFbk`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	return result;
 }
 
-export function getBinManDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return ({
-			...getOperationElementDataItemOptions(namespace, objectBrowseName),
-			...getBinManSpecificDataItemOptions(namespace, objectBrowseName),
-		} as OpcUaNodeOptions
-	);
+export function getBinManDataItemModel(namespace: number, objectBrowseName: string): DataItemModel[] {
+	return [
+			...getOperationElementDataItemModel(namespace, objectBrowseName),
+			...getBinManSpecificDataItemModels(namespace, objectBrowseName),
+		];
 }
 
-export function getBinManOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
-	const options = getDataAssemblyOptions(name, tagName, tagDescription);
-	options.metaModelRef = metaModelReference;
-	options.dataItems = {
+export function getBinManDataAssemblyModel(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): DataAssemblyModel {
+	const options = getDataAssemblyModel(metaModelReference, name, tagName, tagDescription);
+	options.dataItems = [
 		...options.dataItems,
-		...getBinManDataItemOptions(namespace, objectBrowseName)};
+		...getBinManDataItemModel(namespace, objectBrowseName)
+		];
 	return options;
 }
 
 export class BinManMockup extends OperationElementMockup {
 
-	protected vState0= 'off';
-	protected vState1= 'on';
-	protected vRbk = false;
-	protected vMan = false;
-	protected vOut = false;
-	protected vFbk = false;
+	public vState0= 'off';
+	public vState1= 'on';
+	public vRbk = false;
+	public vMan = false;
+	public vOut = false;
+	public vFbk = false;
 
 	protected interval: Timeout | undefined;
 
@@ -173,13 +204,13 @@ export class BinManMockup extends OperationElementMockup {
 		});
 	}
 
-	public getDataAssemblyOptions(): DataAssemblyOptions {
-		const options = super.getDataAssemblyOptions();
-		options.metaModelRef = metaModelReference;
-		options.dataItems = {
+
+	public getDataAssemblyModel(metaModelReferenceOption?: string): DataAssemblyModel {
+		const options = super.getDataAssemblyModel(metaModelReferenceOption || metaModelReference);
+		options.dataItems = [
 			...options.dataItems,
-			...getBinManSpecificDataItemOptions(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
-		};
+			...getBinManSpecificDataItemModels(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
+		];
 		return options;
 	}
 

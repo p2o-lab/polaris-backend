@@ -23,38 +23,36 @@
  * SOFTWARE.
  */
 
-import {OpcUaConnection} from '../../../connection';
-
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {DataAssemblyController} from '../../DataAssemblyController';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
+import {DataAssembly} from '../../DataAssembly';
 import {ScaleSettings} from './ScaleSettings';
 import {MockupServer} from '../../../../_utils';
 import {ScaleSettingMockup} from './ScaleSetting.mockup';
-import {getDIntManOptions} from '../../operationElement/man/dintMan/DIntMan.mockup';
+import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
+import {getDIntManDataAssemblyModel} from '../../operationElement/man/dintMan/DIntMan.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('ScaleSettings', () => {
 
-	const dataAssemblyOptions = getDIntManOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
+	const options = getDIntManDataAssemblyModel(2, 'Variable', 'Variable');
 
 	describe('static', () => {
-		const emptyOPCUAConnection = new OpcUaConnection();
+		const connectionHandler = new ConnectionHandler();
 		it('should create ScaleSettings', async () => {
-			const da = new DataAssemblyController(dataAssemblyOptions, emptyOPCUAConnection) as any;
-			const scaleSettings = new ScaleSettings(da);
-			expect(scaleSettings).to.not.be.undefined;
-			expect(da.communication.VSclMax).to.not.be.undefined;
-			expect(da.communication.VSclMin).to.not.be.undefined;
+			const da = new ScaleSettings(options, connectionHandler);
+			expect(da).to.not.be.undefined;
+			expect(da.VSclMax).to.not.be.undefined;
+			expect(da.VSclMin).to.not.be.undefined;
 		});
 	});
 	describe('dynamic', () => {
 
 		let mockupServer: MockupServer;
-		let connection: OpcUaConnection;
+		let connectionHandler: ConnectionHandler;
 
 		beforeEach(async function () {
 			this.timeout(4000);
@@ -62,26 +60,24 @@ describe('ScaleSettings', () => {
 			await mockupServer.initialize();
 			new ScaleSettingMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable', 'Ana');
 			await mockupServer.start();
-			connection = new OpcUaConnection();
-			connection.initialize({endpointUrl: mockupServer.endpoint});
-			await connection.connect();
+			connectionHandler= new ConnectionHandler();
+			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			await connectionHandler.connect();
 		});
 
 		afterEach(async function () {
 			this.timeout(4000);
-			await connection.disconnect();
+			await connectionHandler.disconnect();
 			await mockupServer.shutdown();
 		});
 
 		it('should subscribe successfully', async () => {
 
-			const dataAssemblyController = new DataAssemblyController(dataAssemblyOptions, connection) as any;
-			new ScaleSettings(dataAssemblyController);
-			await dataAssemblyController.subscribe();
-			await connection.startMonitoring();
-			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
-			expect(dataAssemblyController.communication.VSclMin.value).equal(0);
-			expect(dataAssemblyController.communication.VSclMax.value).equal(0);
+			const dataAssembly = new ScaleSettings(options, connectionHandler);
+			await connectionHandler.connect();
+			await new Promise((resolve => dataAssembly.on('changed', resolve)));
+			expect(dataAssembly.VSclMin.value).equal(0);
+			expect(dataAssembly.VSclMax.value).equal(0);
 		}).timeout(5000);
 	});
 });

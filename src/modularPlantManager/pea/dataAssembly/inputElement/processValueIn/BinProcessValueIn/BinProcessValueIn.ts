@@ -23,9 +23,11 @@
  * SOFTWARE.
  */
 
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaConnection, DataItem} from '../../../../connection';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
+import {DataItem} from '../../../dataItem/DataItem';
 import {InputElement, InputElementRuntime} from '../../InputElement';
+import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
+import {DataItemFactory, getDataItemModel} from '../../../dataItem/DataItemFactory';
 
 export type BinProcessValueInRuntime = InputElementRuntime & {
 	VExt: DataItem<boolean>;
@@ -36,11 +38,11 @@ export type BinProcessValueInRuntime = InputElementRuntime & {
 export class BinProcessValueIn extends InputElement {
 	public readonly communication!: BinProcessValueInRuntime;
 
-	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
-		super(options, connection);
-		this.communication.VExt = this.createDataItem('VExt', 'boolean', 'write');
-		this.communication.VState0 = this.createDataItem('VState0', 'boolean', 'write');
-		this.communication.VState1 = this.createDataItem('VState1', 'boolean', 'write');
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+		super(options, connectionHandler);
+		this.communication.VExt = DataItemFactory.create(getDataItemModel(options, 'VExt'), connectionHandler);
+		this.communication.VState0 = DataItemFactory.create(getDataItemModel(options, 'VState0'), connectionHandler);
+		this.communication.VState1 = DataItemFactory.create(getDataItemModel(options, 'VState1'), connectionHandler);
 
 		this.defaultReadDataItem = this.communication.VExt;
 		this.defaultReadDataItemType = 'boolean';

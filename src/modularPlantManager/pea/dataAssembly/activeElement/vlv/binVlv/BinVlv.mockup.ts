@@ -24,44 +24,51 @@
  */
 
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
-import {getVlvDataItemOptions, VlvMockup} from '../Vlv.mockup';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
-import {getDataAssemblyOptions} from '../../../DataAssemblyController.mockup';
+import {getVlvDataItemModel, VlvMockup} from '../Vlv.mockup';
+import {DataAssemblyModel, DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+
+import {getDataAssemblyModel} from '../../../DataAssembly.mockup';
+import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../../dataItem/DataItem.mockup';
 
 
 const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/ActiveElement/BinVlv';
 
-function getBinVlvSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return ({
-		Ctrl: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.Ctrl`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions
-	});
+function getBinVlvSpecificDataItemModels(namespace: number, objectBrowseName: string): DataItemModel[] {
+
+	const result: DataItemModel[] = [];
+	const dataItem: DataItemModel = getEmptyDataItemModel();
+	dataItem.name = 'Ctrl';
+	dataItem.dataType = 'Boolean';
+	const ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.Ctrl`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	return result;
 }
 
 
-export function getBinVlvDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return ({
-			...getVlvDataItemOptions(namespace, objectBrowseName),
-			...getBinVlvSpecificDataItemOptions(namespace, objectBrowseName),
-		} as OpcUaNodeOptions
-	);
+export function getBinVlvDataItemModel(namespace: number, objectBrowseName: string): DataItemModel[] {
+	return [
+			...getVlvDataItemModel(namespace, objectBrowseName),
+			...getBinVlvSpecificDataItemModels(namespace, objectBrowseName),
+	];
 }
 
-export function getBinVlvOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
-	const options = getDataAssemblyOptions(name, tagName, tagDescription);
-	options.metaModelRef = metaModelReference;
-	options.dataItems = {
+export function getBinVlvDataAssemblyModel(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): DataAssemblyModel {
+	const options = getDataAssemblyModel(metaModelReference, name, tagName, tagDescription);
+	options.dataItems = [
 		...options.dataItems,
-		...getBinVlvDataItemOptions(namespace, objectBrowseName)};
+		...getBinVlvDataItemModel(namespace, objectBrowseName)
+	];
 	return options;
 }
 
 
 export class BinVlvMockup extends VlvMockup {
+
 	public ctrl = false;
 
 	constructor(namespace: Namespace, rootNode: UAObject, variableName: string) {
@@ -80,13 +87,12 @@ export class BinVlvMockup extends VlvMockup {
 		});
 	}
 
-	public getDataAssemblyOptions(): DataAssemblyOptions {
-		const options = super.getDataAssemblyOptions();
-		options.metaModelRef = metaModelReference;
-		options.dataItems = {
+	public getDataAssemblyModel(metaModelReferenceOption?: string): DataAssemblyModel {
+		const options = super.getDataAssemblyModel(metaModelReferenceOption || metaModelReference);
+		options.dataItems = [
 			...options.dataItems,
-			...getBinVlvSpecificDataItemOptions(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
-		};
+			...getBinVlvSpecificDataItemModels(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
+		];
 		return options;
 	}
 }

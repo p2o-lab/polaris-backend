@@ -24,7 +24,7 @@
  */
 
 import {ExpressionConditionOptions, ScopeOptions} from '@p2olab/polaris-interface';
-import {PEAController} from '../../pea';
+import {PEA} from '../../pea/PEA';
 import {ScopeItem} from '../../recipe';
 import {Condition} from '../condition';
 
@@ -37,9 +37,9 @@ export class ExpressionCondition extends Condition {
 	/**
 	 *
 	 * @param {ExpressionConditionOptions} options
-	 * @param {PEAController[]} peaSet
+	 * @param {PEA[]} peaSet
 	 */
-	constructor(options: ExpressionConditionOptions, peaSet: PEAController[] = []) {
+	constructor(options: ExpressionConditionOptions, peaSet: PEA[] = []) {
 		super(options, peaSet);
 		// evaluate scopeArray
 		this.scopeArray = (options.scope || [])
@@ -55,8 +55,8 @@ export class ExpressionCondition extends Condition {
 		this._fulfilled = false;
 	}
 
-	public getUsedPEAs(): Set<PEAController> {
-		return new Set<PEAController>([...this.scopeArray.map((sI) => sI.pea)]);
+	public getUsedPEAs(): Set<PEA> {
+		return new Set<PEA>([...this.scopeArray.map((sI) => sI.pea)]);
 	}
 
 	public listen(): Condition {

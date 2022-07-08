@@ -23,38 +23,35 @@
  * SOFTWARE.
  */
 
-import {OpcUaConnection} from '../../../connection';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {DataAssemblyController} from '../../DataAssemblyController';
-import {DIntMan} from '../../operationElement';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {ValueLimitation} from './ValueLimitation';
 import {MockupServer} from '../../../../_utils';
 import {ValueLimitationMockup} from './ValueLimitation.mockup';
-import {getDIntManOptions} from '../../operationElement/man/dintMan/DIntMan.mockup';
+import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
+import {getDIntManDataAssemblyModel} from '../../operationElement/man/dintMan/DIntMan.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('ValueLimitation', () => {
 
-	const dataAssemblyOptions = getDIntManOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
+	const options = getDIntManDataAssemblyModel(2, 'Variable', 'Variable');
 
 	describe('static', () => {
-		const emptyOPCUAConnection = new OpcUaConnection();
+		const connectionHandler = new ConnectionHandler();
 		it('should create ValueLimitation',  () => {
-			const da = new DataAssemblyController(dataAssemblyOptions, emptyOPCUAConnection);
-			const valueLimitation = new ValueLimitation(da);
-			expect(valueLimitation).to.not.be.undefined;
-			expect((da as DIntMan).communication.VMin).to.not.be.undefined;
-			expect((da as DIntMan).communication.VMax).to.not.be.undefined;
+			const da = new ValueLimitation(options, connectionHandler);
+			expect(da).to.not.be.undefined;
+			expect(da.VMin).to.not.be.undefined;
+			expect(da.VMax).to.not.be.undefined;
 		});
 	});
 	describe('dynamic', () => {
 		let mockupServer: MockupServer;
-		let connection: OpcUaConnection;
+		let connectionHandler: ConnectionHandler;
 
 		beforeEach(async function () {
 			this.timeout(4000);
@@ -62,26 +59,24 @@ describe('ValueLimitation', () => {
 			await mockupServer.initialize();
 			new ValueLimitationMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable', 'Ana');
 			await mockupServer.start();
-			connection = new OpcUaConnection();
-			connection.initialize({endpointUrl: mockupServer.endpoint});
-			await connection.connect();
+			connectionHandler= new ConnectionHandler();
+			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			await connectionHandler.connect();
 		});
 
 		afterEach(async function () {
 			this.timeout(4000);
-			await connection.disconnect();
+			await connectionHandler.disconnect();
 			await mockupServer.shutdown();
 		});
 
 		it('should subscribe successfully', async () => {
 
-			const dataAssemblyController = new DataAssemblyController(dataAssemblyOptions, connection) as any;
-			new ValueLimitation(dataAssemblyController);
-			await dataAssemblyController.subscribe();
-			await connection.startMonitoring();
-			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
-			expect(dataAssemblyController.communication.VMax.value).to.equal(0);
-			expect(dataAssemblyController.communication.VMin.value).to.equal(0);
+			const dataAssembly = new ValueLimitation(options, connectionHandler);
+			await connectionHandler.connect();
+			await new Promise((resolve => dataAssembly.on('changed', resolve)));
+			expect(dataAssembly.VMax.value).to.equal(0);
+			expect(dataAssembly.VMin.value).to.equal(0);
 		}).timeout(5000);
 	});
 });

@@ -25,29 +25,28 @@
 
 import {Namespace, UAObject} from 'node-opcua';
 import {
-	FeedbackMonitoringMockup, getFeedbackMonitoringDataItemOptions,
+	FeedbackMonitoringMockup, getFeedbackMonitoringDataItemModel,
 } from '../../../../baseFunction/feedbackMonitoring/FeedbackMonitoring.mockup';
-import {BinVlvMockup, getBinVlvDataItemOptions} from '../BinVlv.mockup';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
-import {getDataAssemblyOptions} from '../../../../DataAssemblyController.mockup';
+import {BinVlvMockup, getBinVlvDataItemModel} from '../BinVlv.mockup';
+import {DataAssemblyModel, DataItemModel} from '@p2olab/pimad-interface';
+
+import {getDataAssemblyModel} from '../../../../DataAssembly.mockup';
 
 const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/ActiveElement/BinVlv/MonBinVlv';
 
-export function getMonBinVlvDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return ({
-			...getBinVlvDataItemOptions(namespace, objectBrowseName),
-			...getFeedbackMonitoringDataItemOptions(namespace, objectBrowseName),
-		} as OpcUaNodeOptions
-	);
+export function getMonBinVlvDataItemModel(namespace: number, objectBrowseName: string): DataItemModel[] {
+	return [
+			...getBinVlvDataItemModel(namespace, objectBrowseName),
+			...getFeedbackMonitoringDataItemModel(namespace, objectBrowseName),
+	];
 }
 
-export function getMonBinVlvOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
-	const options = getDataAssemblyOptions(name, tagName, tagDescription);
+export function getMonBinVlvDataAssemblyModel(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): DataAssemblyModel {
+	const options = getDataAssemblyModel(metaModelReference, name, tagName, tagDescription);
 	options.metaModelRef = metaModelReference;
 	options.dataItems = {
 		...options.dataItems,
-		...getMonBinVlvDataItemOptions(namespace, objectBrowseName)};
+		...getMonBinVlvDataItemModel(namespace, objectBrowseName)};
 	return options;
 }
 
@@ -62,13 +61,12 @@ export class MonBinVlvMockup extends BinVlvMockup{
 
 	}
 
-	public getDataAssemblyOptions(): DataAssemblyOptions {
-		const options = super.getDataAssemblyOptions();
-		options.metaModelRef = metaModelReference;
-		options.dataItems = {
+	public getDataAssemblyModel(metaModelReferenceOption?: string): DataAssemblyModel {
+		const options = super.getDataAssemblyModel(metaModelReferenceOption || metaModelReference);
+		options.dataItems = [
 			...options.dataItems,
-			...this.feedbackMonitoring.getDataItemOptions()
-		};
+			...this.feedbackMonitoring.getDataItemModel()
+		];
 		return options;
 	}
 }

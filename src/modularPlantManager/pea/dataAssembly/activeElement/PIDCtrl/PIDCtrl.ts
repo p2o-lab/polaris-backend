@@ -23,13 +23,15 @@
  * SOFTWARE.
  */
 
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaConnection, DataItem} from '../../../connection';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
+import {DataItem} from '../../dataItem/DataItem';
 import {
 	OpMode, OpModeRuntime,
 	SourceModeController, SourceModeRuntime
 } from '../../baseFunction';
+import {DataItemFactory, getDataItemModel} from '../../dataItem/DataItemFactory';
 import {ActiveElement, ActiveElementRuntime} from '../ActiveElement';
+import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
 
 export type PIDCtrlRuntime = ActiveElementRuntime & OpModeRuntime & SourceModeRuntime & {
 	PV: DataItem<number>;
@@ -66,39 +68,39 @@ export class PIDCtrl extends ActiveElement {
 	sourceMode: SourceModeController;
 	opMode: OpMode;
 
-	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
-		super(options, connection);
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+		super(options, connectionHandler);
 
-		this.sourceMode = new SourceModeController(this);
-		this.opMode = new OpMode(this);
+		this.sourceMode = new SourceModeController(options, connectionHandler);
+		this.opMode = new OpMode(options, connectionHandler);
 
-		this.communication.PV = this.createDataItem('PV', 'number');
-		this.communication.PVSclMin = this.createDataItem('PVSclMin', 'number');
-		this.communication.PVSclMax = this.createDataItem('PVSclMax', 'number');
-		this.communication.PVUnit = this.createDataItem('PVUnit', 'number');
+		this.communication.PV = DataItemFactory.create(getDataItemModel(options, 'PV'), connectionHandler);
+		this.communication.PVSclMin = DataItemFactory.create(getDataItemModel(options, 'PVSclMin'), connectionHandler);
+		this.communication.PVSclMax = DataItemFactory.create(getDataItemModel(options, 'PVSclMax'), connectionHandler);
+		this.communication.PVUnit = DataItemFactory.create(getDataItemModel(options, 'PVUnit'), connectionHandler);
 
-		this.communication.SPMan = this.createDataItem('SPMan', 'number', 'write');
-		this.communication.SPInt = this.createDataItem('SPInt', 'number');
-		this.communication.SPSclMin = this.createDataItem('SPSclMin', 'number');
-		this.communication.SPSclMax = this.createDataItem('SPSclMax', 'number');
-		this.communication.SPUnit = this.createDataItem('SPUnit', 'number');
-		this.communication.SPIntMin = this.createDataItem('SPIntMin', 'number');
-		this.communication.SPIntMax = this.createDataItem('SPIntMax', 'number');
-		this.communication.SPManMin = this.createDataItem('SPManMin', 'number');
-		this.communication.SPManMax = this.createDataItem('SPManMax', 'number');
-		this.communication.SP = this.createDataItem('SP', 'number');
+		this.communication.SPMan = DataItemFactory.create(getDataItemModel(options, 'SPMan'), connectionHandler);
+		this.communication.SPInt = DataItemFactory.create(getDataItemModel(options, 'SPInt'), connectionHandler);
+		this.communication.SPSclMin = DataItemFactory.create(getDataItemModel(options, 'SPSclMin'), connectionHandler);
+		this.communication.SPSclMax = DataItemFactory.create(getDataItemModel(options, 'SPSclMax'), connectionHandler);
+		this.communication.SPUnit = DataItemFactory.create(getDataItemModel(options, 'SPUnit'), connectionHandler);
+		this.communication.SPIntMin = DataItemFactory.create(getDataItemModel(options, 'SPIntMin'), connectionHandler);
+		this.communication.SPIntMax = DataItemFactory.create(getDataItemModel(options, 'SPIntMax'), connectionHandler);
+		this.communication.SPManMin = DataItemFactory.create(getDataItemModel(options, 'SPManMin'), connectionHandler);
+		this.communication.SPManMax = DataItemFactory.create(getDataItemModel(options, 'SPManMax'), connectionHandler);
+		this.communication.SP = DataItemFactory.create(getDataItemModel(options, 'SP'), connectionHandler);
 
-		this.communication.MVMan = this.createDataItem('MVMan', 'number', 'write');
-		this.communication.MV = this.createDataItem('MV', 'number');
-		this.communication.MVSclMin = this.createDataItem('MVSclMin', 'number');
-		this.communication.MVSclMax = this.createDataItem('MVSclMax', 'number');
-		this.communication.MVUnit = this.createDataItem('MVUnit', 'number');
-		this.communication.MVMin = this.createDataItem('MVMin', 'number');
-		this.communication.MVMax = this.createDataItem('MVMax', 'number');
+		this.communication.MVMan = DataItemFactory.create(getDataItemModel(options, 'MVMan'), connectionHandler);
+		this.communication.MV = DataItemFactory.create(getDataItemModel(options, 'MV'), connectionHandler);
+		this.communication.MVSclMin = DataItemFactory.create(getDataItemModel(options, 'MVSclMin'), connectionHandler);
+		this.communication.MVSclMax = DataItemFactory.create(getDataItemModel(options, 'MVSclMax'), connectionHandler);
+		this.communication.MVUnit = DataItemFactory.create(getDataItemModel(options, 'MVUnit'), connectionHandler);
+		this.communication.MVMin = DataItemFactory.create(getDataItemModel(options, 'MVMin'), connectionHandler);
+		this.communication.MVMax = DataItemFactory.create(getDataItemModel(options, 'MVMax'), connectionHandler);
 
-		this.communication.P = this.createDataItem('P', 'number');
-		this.communication.Ti = this.createDataItem('Ti', 'number');
-		this.communication.Td = this.createDataItem('Td', 'number');
+		this.communication.P = DataItemFactory.create(getDataItemModel(options, 'P'), connectionHandler);
+		this.communication.Ti = DataItemFactory.create(getDataItemModel(options, 'Ti'), connectionHandler);
+		this.communication.Td = DataItemFactory.create(getDataItemModel(options, 'Td'), connectionHandler);
 
 		this.defaultReadDataItem = this.communication.PV;
 		this.defaultReadDataItemType = 'number';

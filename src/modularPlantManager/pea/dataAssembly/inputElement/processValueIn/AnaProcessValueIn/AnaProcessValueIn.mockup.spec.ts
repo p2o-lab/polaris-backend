@@ -25,11 +25,11 @@
  
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {AnaProcessValueInMockup, getAnaProcessValueInDataItemOptions, getAnaProcessValueInOptions} from './AnaProcessValueIn.mockup';
+import {AnaProcessValueInMockup, getAnaProcessValueInDataAssemblyModel, getAnaProcessValueInDataItemModel} from './AnaProcessValueIn.mockup';
 import {MockupServer} from '../../../../../_utils';
-import {OpcUaConnection} from '../../../../connection';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {DataAssemblyModel, DataItemAccessLevel} from '@p2olab/pimad-interface';
 import {AnaProcessValueInRuntime} from './AnaProcessValueIn';
+import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -51,19 +51,19 @@ describe('AnaProcessValueInMockup', () => {
         });
 
         it('static DataItemOptions', () => {
-            const options = getAnaProcessValueInDataItemOptions(1, 'Test') as AnaProcessValueInRuntime;
+            const options = getAnaProcessValueInDataItemModel(1, 'Test');
             expect(Object.keys(options).length).to.equal(5);
         });
 
-        it('static DataAssemblyOptions', () => {
-            const options = getAnaProcessValueInOptions(1, 'Test') as DataAssemblyOptions;
+        it('static DataAssemblyModel', () => {
+            const options = getAnaProcessValueInDataAssemblyModel(1, 'Test');
             expect(Object.keys(options.dataItems).length).to.equal(7);
         });
 
-        it('dynamic DataAssemblyOptions', () => {
+        it('dynamic DataAssemblyModel', () => {
             const mockup = new AnaProcessValueInMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const options = mockup.getDataAssemblyOptions();
+            const options = mockup.getDataAssemblyModel();
 
             expect(Object.keys(options.dataItems).length).to.equal(7);
         });
@@ -72,7 +72,7 @@ describe('AnaProcessValueInMockup', () => {
     describe('dynamic', () => {
 
         let mockupServer: MockupServer;
-        let connection: OpcUaConnection;
+        let connectionHandler: ConnectionHandler;
 
         beforeEach(async function () {
             this.timeout(5000);
@@ -80,30 +80,31 @@ describe('AnaProcessValueInMockup', () => {
             await mockupServer.initialize();
             new AnaProcessValueInMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
             await mockupServer.start();
-            connection = new OpcUaConnection();
-            connection.initialize({endpointUrl: mockupServer.endpoint});
-            await connection.connect();
+            connectionHandler = new ConnectionHandler();
+            connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+            await connectionHandler.connect();
         });
 
         afterEach(async () => {
-            await connection.disconnect();
+            await connectionHandler.disconnect();
             await mockupServer.shutdown();
         });
 
         it('set and get VExt, >VSclMax', async () => {
-            await connection.writeNode('Variable.VExt', mockupServer.nameSpaceUri, 1.1, 'Double');
-            await connection.readNode('Variable.VExt', mockupServer.nameSpaceUri)
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.VExt', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, 1.1);
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.VExt', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(0));
         }).timeout(3000);
 
         it('set and get VExt, <VSclMin', async () => {
-            await connection.writeNode('Variable.VExt', mockupServer.nameSpaceUri, -1.1, 'Double');
-            await connection.readNode('Variable.VExt', mockupServer.nameSpaceUri)
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.VExt', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, -1.1);
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.VExt', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(0));
         }).timeout(3000);
+
         it('set and get VExt', async () => {
-            await connection.writeNode('Variable.VExt', mockupServer.nameSpaceUri, 0, 'Double');
-            await connection.readNode('Variable.VExt', mockupServer.nameSpaceUri)
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.VExt', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, 0);
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.VExt', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(0));
         }).timeout(3000);
     });

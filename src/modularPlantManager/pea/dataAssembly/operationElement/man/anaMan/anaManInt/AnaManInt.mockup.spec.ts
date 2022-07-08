@@ -26,8 +26,8 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../../../_utils';
-import {AnaManIntMockup, getAnaManIntDataItemOptions, getAnaManIntOptions} from './AnaManInt.mockup';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {AnaManIntMockup, getAnaManIntDataAssemblyModel, getAnaManIntDataItemModel} from './AnaManInt.mockup';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {AnaManIntRuntime} from './AnaManInt';
 
 chai.use(chaiAsPromised);
@@ -50,19 +50,19 @@ describe('AnaManIntMockup', () => {
         });
 
         it('static DataItemOptions', () => {
-            const options = getAnaManIntDataItemOptions(1, 'Test') as AnaManIntRuntime;
+            const options = getAnaManIntDataItemModel(1, 'Test');
             expect(Object.keys(options).length).to.equal(19);
         });
 
-        it('static DataAssemblyOptions', () => {
-            const options = getAnaManIntOptions(1, 'Test') as DataAssemblyOptions;
+        it('static DataAssemblyModel', () => {
+            const options = getAnaManIntDataAssemblyModel(1, 'Test');
             expect(Object.keys(options.dataItems).length).to.equal(21);
         });
 
-        it('dynamic DataAssemblyOptions', () => {
+        it('dynamic DataAssemblyModel', () => {
             const mockup = new AnaManIntMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const options = mockup.getDataAssemblyOptions();
+            const options = mockup.getDataAssemblyModel();
 
             expect(Object.keys(options.dataItems).length).to.equal(21);
         });

@@ -23,9 +23,11 @@
  * SOFTWARE.
  */
 
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {OpcUaConnection, DataItem} from '../../../../connection';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
+import {DataItem} from '../../../dataItem/DataItem';
 import {ServParam, ServParamRuntime} from '../ServParam';
+import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
+import {DataItemFactory, getDataItemModel} from '../../../dataItem/DataItemFactory';
 
 export type StringServParamRuntime = ServParamRuntime & {
 	VExt: DataItem<string>;
@@ -39,15 +41,15 @@ export type StringServParamRuntime = ServParamRuntime & {
 export class StringServParam extends ServParam {
 	public readonly communication!: StringServParamRuntime;
 
-	constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
-		super(options, connection);
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+		super(options, connectionHandler);
 
-		this.communication.VExt = this.createDataItem('VExt', 'string', 'write');
-		this.communication.VOp = this.createDataItem('VOp', 'string', 'write');
-		this.communication.VInt = this.createDataItem('VInt', 'string');
-		this.communication.VReq = this.createDataItem('VReq', 'string');
-		this.communication.VOut = this.createDataItem('VOut', 'string');
-		this.communication.VFbk = this.createDataItem('VFbk', 'string');
+		this.communication.VExt = DataItemFactory.create(getDataItemModel(options, 'VExt'), connectionHandler);
+		this.communication.VOp = DataItemFactory.create(getDataItemModel(options, 'VOp'), connectionHandler);
+		this.communication.VInt = DataItemFactory.create(getDataItemModel(options, 'VInt'), connectionHandler);
+		this.communication.VReq = DataItemFactory.create(getDataItemModel(options, 'VReq'), connectionHandler);
+		this.communication.VOut = DataItemFactory.create(getDataItemModel(options, 'VOut'), connectionHandler);
+		this.communication.VFbk = DataItemFactory.create(getDataItemModel(options, 'VFbk'), connectionHandler);
 
 		this.defaultReadDataItem = this.communication.VOut;
 		this.defaultReadDataItemType = 'string';

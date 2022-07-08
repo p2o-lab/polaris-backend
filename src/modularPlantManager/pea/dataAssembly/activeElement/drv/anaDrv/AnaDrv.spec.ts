@@ -23,13 +23,13 @@
  * SOFTWARE.
  */
 
-import {OpcUaConnection} from '../../../../connection';
 import {AnaDrv} from './AnaDrv';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {getAnaDrvOptions} from './AnaDrv.mockup';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
+import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
+import {getAnaDrvDataAssemblyModel} from './AnaDrv.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -38,28 +38,28 @@ describe('AnaDrv', () => {
 
 	describe('', () => {
 
-		const emptyOPCUAConnection = new OpcUaConnection();
+		const connectionHandler = new ConnectionHandler();
 
 		it('should create AnaDrv',  () => {
-			const dataAssemblyOptions: DataAssemblyOptions = getAnaDrvOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
-			const dataAssemblyController = new AnaDrv(dataAssemblyOptions, emptyOPCUAConnection);
-			expect(dataAssemblyController.sourceMode).to.not.be.undefined;
+			const dataAssemblyModel: DataAssemblyModel = getAnaDrvDataAssemblyModel(2, 'Variable', 'Variable');
+			const dataAssembly = new AnaDrv(dataAssemblyModel, connectionHandler);
+			expect(dataAssembly.sourceMode).to.not.be.undefined;
 
-			expect(dataAssemblyController.communication.RpmSclMax).to.not.be.undefined;
-			expect(dataAssemblyController.communication.RpmSclMin).to.not.be.undefined;
+			expect(dataAssembly.communication.RpmSclMax).to.not.be.undefined;
+			expect(dataAssembly.communication.RpmSclMin).to.not.be.undefined;
 
-			expect(dataAssemblyController.communication.RpmUnit).to.not.be.undefined;
+			expect(dataAssembly.communication.RpmUnit).to.not.be.undefined;
 
-			expect(dataAssemblyController.communication.RpmMin).to.not.be.undefined;
-			expect(dataAssemblyController.communication.RpmMax).to.not.be.undefined;
+			expect(dataAssembly.communication.RpmMin).to.not.be.undefined;
+			expect(dataAssembly.communication.RpmMax).to.not.be.undefined;
 
-			expect(dataAssemblyController.communication.RpmInt).to.not.be.undefined;
-			expect(dataAssemblyController.communication.RpmMan).to.not.be.undefined;
-			expect(dataAssemblyController.communication.Rpm).to.not.be.undefined;
+			expect(dataAssembly.communication.RpmInt).to.not.be.undefined;
+			expect(dataAssembly.communication.RpmMan).to.not.be.undefined;
+			expect(dataAssembly.communication.Rpm).to.not.be.undefined;
 
-			expect(dataAssemblyController.communication.RpmFbk).to.not.be.undefined;
-			expect(dataAssemblyController.communication.RpmFbkCalc).to.not.be.undefined;
-			expect(dataAssemblyController.communication.RpmRbk).to.not.be.undefined;
+			expect(dataAssembly.communication.RpmFbk).to.not.be.undefined;
+			expect(dataAssembly.communication.RpmFbkCalc).to.not.be.undefined;
+			expect(dataAssembly.communication.RpmRbk).to.not.be.undefined;
 		});
 	});
 });

@@ -23,14 +23,13 @@
  * SOFTWARE.
  */
 
-import {OpcUaConnection} from '../../connection';
-
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {MockupServer} from '../../../_utils';
-import {getOperationElementOptions, OperationElementMockup} from './OperationElement.mockup';
+import {getOperationElementDataAssemblyModel, OperationElementMockup} from './OperationElement.mockup';
 import {OperationElement} from './OperationElement';
+import {ConnectionHandler} from '../../connectionHandler/ConnectionHandler';
 
 
 chai.use(chaiAsPromised);
@@ -38,51 +37,51 @@ const expect = chai.expect;
 
 describe('OperationElement', () => {
 
-	let dataAssemblyOptions: DataAssemblyOptions;
+	let options: DataAssemblyModel;
 
 	describe('static', () => {
 
-		const emptyOPCUAConnection = new OpcUaConnection();
-		dataAssemblyOptions = getOperationElementOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
+		const connectionHandler = new ConnectionHandler();
+		options = getOperationElementDataAssemblyModel(2, 'Variable', 'Variable');
 
 		it('should create OperationElement', () => {
 
-			const dataAssemblyController: OperationElement = new OperationElement(dataAssemblyOptions, emptyOPCUAConnection);
-			expect(dataAssemblyController).to.be.not.undefined;
-			expect(dataAssemblyController.osLevel).to.be.not.undefined;
-			expect(dataAssemblyController.communication).to.be.not.undefined;
+			const dataAssembly: OperationElement = new OperationElement(options, connectionHandler);
+			expect(dataAssembly).to.be.not.undefined;
+			expect(dataAssembly.osLevel).to.be.not.undefined;
+			expect(dataAssembly.communication).to.be.not.undefined;
 		});
 	});
 
 	describe('dynamic', () => {
 		let mockupServer: MockupServer;
-		let connection: OpcUaConnection;
+		let connectionHandler: ConnectionHandler;
 
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			const operationElementMockup =new OperationElementMockup(	mockupServer.nameSpace,	mockupServer.rootObject,'Variable');
-			dataAssemblyOptions = operationElementMockup.getDataAssemblyOptions();
+			const operationElementMockup = new OperationElementMockup(	mockupServer.nameSpace,	mockupServer.rootObject,'Variable');
+			options = operationElementMockup.getDataAssemblyModel();
 			await mockupServer.start();
-			connection = new OpcUaConnection();
-			connection.initialize({endpointUrl: mockupServer.endpoint});
-			await connection.connect();
+			connectionHandler= new ConnectionHandler();
+			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			await connectionHandler.connect();
 		});
 
 		afterEach(async function () {
 			this.timeout(4000);
-			await connection.disconnect();
+			await connectionHandler.disconnect();
 			await mockupServer.shutdown();
 		});
 
 		it('should subscribe successfully', async () => {
 
-			const dataAssemblyController = new OperationElement(dataAssemblyOptions, connection);
-			await dataAssemblyController.subscribe();
-			await connection.startMonitoring();
-			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
-			expect(dataAssemblyController.communication.OSLevel.value).equal(0);
+			const dataAssembly = new OperationElement(options, connectionHandler);
+			await dataAssembly.subscribe();
+			await connectionHandler.connect();
+			await new Promise((resolve => dataAssembly.on('changed', resolve)));
+			expect(dataAssembly.communication.OSLevel.value).equal(0);
 		}).timeout(4000);
 	});
 

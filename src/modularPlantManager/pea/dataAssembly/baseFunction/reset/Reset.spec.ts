@@ -23,40 +23,35 @@
  * SOFTWARE.
  */
 
-import {OpcUaConnection} from '../../../connection';
-
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {DataAssemblyController} from '../../DataAssemblyController';
-import {MonBinVlv} from '../../activeElement';
 import {Reset} from './Reset';
 import {MockupServer} from '../../../../_utils';
 import {ResetMockup} from './Reset.mockup';
-import {getMonBinVlvOptions} from '../../activeElement/vlv/binVlv/monBinVlv/MonBinVlv.mockup';
+import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
+import {getMonBinVlvDataAssemblyModel} from '../../activeElement/vlv/binVlv/monBinVlv/MonBinVlv.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('Reset', () => {
 
-	const dataAssemblyOptions = getMonBinVlvOptions(2, 'Variable', 'Variable') as DataAssemblyOptions;
+	const options = getMonBinVlvDataAssemblyModel(2, 'Variable', 'Variable');
 
 	describe('static', () => {
 
-		const emptyOPCUAConnection = new OpcUaConnection();
+		const connectionHandler = new ConnectionHandler();
 
 		it('should create Reset',  () => {
-			const dataAssemblyController = new DataAssemblyController(dataAssemblyOptions, emptyOPCUAConnection) as MonBinVlv;
-			const reset = new Reset(dataAssemblyController); //this will set communication dataAssemblies
-			expect(reset).to.not.to.undefined;
-			expect(dataAssemblyController.communication.ResetAut).to.not.to.undefined;
-			expect(dataAssemblyController.communication.ResetOp).to.not.to.undefined;
+			const dataAssembly = new Reset(options, connectionHandler); //this will set communication dataAssemblies
+			expect(dataAssembly).to.not.to.undefined;
+			expect(dataAssembly.ResetAut).to.not.to.undefined;
+			expect(dataAssembly.ResetOp).to.not.to.undefined;
 		});
 	});
 	describe('dynamic', () => {
 		let mockupServer: MockupServer;
-		let connection: OpcUaConnection;
+		let connectionHandler: ConnectionHandler;
 
 		beforeEach(async function () {
 			this.timeout(4000);
@@ -64,26 +59,24 @@ describe('Reset', () => {
 			await mockupServer.initialize();
 			new ResetMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			await mockupServer.start();
-			connection = new OpcUaConnection();
-			connection.initialize({endpointUrl: mockupServer.endpoint});
-			await connection.connect();
+			connectionHandler= new ConnectionHandler();
+			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			await connectionHandler.connect();
 		});
 
 		afterEach(async function () {
 			this.timeout(4000);
-			await connection.disconnect();
+			await connectionHandler.disconnect();
 			await mockupServer.shutdown();
 		});
 
 		it('should subscribe successfully', async () => {
 
-			const dataAssemblyController = new DataAssemblyController(dataAssemblyOptions, connection) as any;
-			new Reset(dataAssemblyController);
-			await dataAssemblyController.subscribe();
-			await connection.startMonitoring();
-			await new Promise((resolve => dataAssemblyController.on('changed', resolve)));
-			expect(dataAssemblyController.communication.ResetAut.value).to.be.false;
-			expect(dataAssemblyController.communication.ResetOp.value).to.be.false;
+			const dataAssembly = new Reset(options, connectionHandler);
+			await connectionHandler.connect();
+			await new Promise((resolve => dataAssembly.on('changed', resolve)));
+			expect(dataAssembly.ResetAut.value).to.be.false;
+			expect(dataAssembly.ResetOp.value).to.be.false;
 
 		}).timeout(5000);
 	});

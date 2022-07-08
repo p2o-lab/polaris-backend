@@ -25,10 +25,8 @@
  
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {getLockView4DataItemOptions, getLockView4Options, LockView4Mockup} from './LockView4.mockup';
+import {getLockView4DataAssemblyModel, getLockView4DataItemModel, LockView4Mockup} from './LockView4.mockup';
 import {MockupServer} from '../../../../../_utils';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {LockView4Runtime} from './LockView4';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -52,19 +50,19 @@ describe('LockView4Mockup', () => {
         });
 
         it('static DataItemOptions', () => {
-            const options = getLockView4DataItemOptions(1, 'Test') as LockView4Runtime;
+            const options = getLockView4DataItemModel(1, 'Test');
             expect(Object.keys(options).length).to.equal(24);
         });
 
-        it('static DataAssemblyOptions', () => {
-            const options = getLockView4Options(1, 'Test') as DataAssemblyOptions;
+        it('static DataAssemblyModel', () => {
+            const options = getLockView4DataAssemblyModel(1, 'Test');
             expect(Object.keys(options.dataItems).length).to.equal(26);
         });
 
-        it('dynamic DataAssemblyOptions', () => {
+        it('dynamic DataAssemblyModel', () => {
             const mockup = new LockView4Mockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const options = mockup.getDataAssemblyOptions();
+            const options = mockup.getDataAssemblyModel();
 
             expect(Object.keys(options.dataItems).length).to.equal(26);
         });

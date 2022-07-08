@@ -24,14 +24,14 @@
  */
 
 import {AnaView, AnaViewRuntime} from '../AnaView';
-import {OpcUaConnection} from '../../../../connection';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
 import {
     LimitMonitoring,
     LimitMonitoringRuntime,
     OSLevel,
     OSLevelRuntime
 } from '../../../baseFunction';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
+import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
 
 export type AnaMonRuntime = AnaViewRuntime & LimitMonitoringRuntime & OSLevelRuntime
 
@@ -41,12 +41,12 @@ export class AnaMon extends AnaView {
     public limitMonitoring: LimitMonitoring;
     osLevel: OSLevel;
 
-    constructor(options: DataAssemblyOptions, connection: OpcUaConnection) {
-        super(options, connection);
+    constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+        super(options, connectionHandler);
 
-        this.osLevel = new OSLevel(this);
+        this.osLevel = new OSLevel(options, connectionHandler);
 
-        this.limitMonitoring = new LimitMonitoring(this);
+        this.limitMonitoring = new LimitMonitoring(options, connectionHandler);
     }
 }
 

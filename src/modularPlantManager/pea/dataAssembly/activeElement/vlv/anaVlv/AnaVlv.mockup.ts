@@ -24,100 +24,167 @@
  */
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {getSourceModeDataItemOptions, SourceModeMockup} from '../../../baseFunction/sourceMode/SourceMode.mockup';
-import {getVlvDataItemOptions, VlvMockup} from '../Vlv.mockup';
-import {OpcUaNodeOptions} from '@p2olab/polaris-interface/dist/core/options';
-import {getDataAssemblyOptions} from '../../../DataAssemblyController.mockup';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
+import {getSourceModeDataItemModel, SourceModeMockup} from '../../../baseFunction/sourceMode/SourceMode.mockup';
+import {getVlvDataItemModel, VlvMockup} from '../Vlv.mockup';
+
+import {getDataAssemblyModel} from '../../../DataAssembly.mockup';
+import {DataAssemblyModel, DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../../dataItem/DataItem.mockup';
 
 const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/ActiveElement/AnaVlv';
 
-function getAnaVlvSpecificDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return ({
-		Pos: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.Pos`,
-			dataType: 'Float'
-		} as OpcUaNodeOptions,
-		PosFbk: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.PosFbk`,
-			dataType: 'Float'
-		} as OpcUaNodeOptions,
-		PosFbkCalc: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.PosFbkCalc`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		PosRbk: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.PosRbk`,
-			dataType: 'Float'
-		} as OpcUaNodeOptions,
-		PosInt: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.PosInt`,
-			dataType: 'Float'
-		} as OpcUaNodeOptions,
-		PosMan: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.PosMan`,
-			dataType: 'Float'
-		} as OpcUaNodeOptions,
-		PosUnit: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.PosUnit`,
-			dataType: 'Int16'
-		} as OpcUaNodeOptions,
-		PosSclMin: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.PosSclMin`,
-			dataType: 'Float'
-		} as OpcUaNodeOptions,
-		PosSclMax: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.PosSclMax`,
-			dataType: 'Float'
-		} as OpcUaNodeOptions,
-		PosMin: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.PosMin`,
-			dataType: 'Float'
-		} as OpcUaNodeOptions,
-		PosMax: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.PosMax`,
-			dataType: 'Float'
-		} as OpcUaNodeOptions,
-		OpenAct: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.OpenAct`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions,
-		CloseAct: {
-			namespaceIndex: `${namespace}`,
-			nodeId: `${objectBrowseName}.CloseAct`,
-			dataType: 'Boolean'
-		} as OpcUaNodeOptions
-	});
+function getAnaVlvSpecificDataItemModels(namespace: number, objectBrowseName: string): DataItemModel[] {
+
+	const result: DataItemModel[] = [];
+	let dataItem: DataItemModel = getEmptyDataItemModel();
+	dataItem.name = 'Pos';
+	dataItem.dataType = 'Float';
+	let ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.Pos`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'PosFbk';
+	dataItem.dataType = 'Float';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.PosFbk`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'PosFbkCalc';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.PosFbkCalc`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'PosRbk';
+	dataItem.dataType = 'Float';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.PosRbk`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'PosInt';
+	dataItem.dataType = 'Float';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.PosInt`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'PosMan';
+	dataItem.dataType = 'Float';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.PosMan`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'PosUnit';
+	dataItem.dataType = 'Int16';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.PosUnit`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'PosSclMin';
+	dataItem.dataType = 'Float';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.PosSclMin`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'PosSclMax';
+	dataItem.dataType = 'Float';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.PosSclMax`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'PosMin';
+	dataItem.dataType = 'Float';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.PosMin`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'PosMax';
+	dataItem.dataType = 'Float';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.PosMax`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'OpenAct';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.OpenAct`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	dataItem = getEmptyDataItemModel();
+	dataItem.name = 'CloseAct';
+	dataItem.dataType = 'Boolean';
+	ciOptions = getEmptyCIDataModel();
+	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.identifier = `${objectBrowseName}.CloseAct`;
+	ciOptions.nodeId.namespaceIndex = `${namespace}`;
+	dataItem.cIData = ciOptions;
+	result.push(dataItem);
+
+	return result;
 }
 
 
-export function getAnaVlvDataItemOptions(namespace: number, objectBrowseName: string): object {
-	return ({
-			...getVlvDataItemOptions(namespace, objectBrowseName),
-			...getSourceModeDataItemOptions(namespace, objectBrowseName),
-			...getAnaVlvSpecificDataItemOptions(namespace, objectBrowseName),
-		} as OpcUaNodeOptions
-	);
+export function getAnaVlvDataItemModel(namespace: number, objectBrowseName: string): DataItemModel[] {
+	return [
+		...getVlvDataItemModel(namespace, objectBrowseName),
+			...getSourceModeDataItemModel(namespace, objectBrowseName),
+			...getAnaVlvSpecificDataItemModels(namespace, objectBrowseName),
+
+	];
 }
 
-export function getAnaVlvOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
-	const options = getDataAssemblyOptions(name, tagName, tagDescription);
-	options.metaModelRef = metaModelReference;
-	options.dataItems = {
+export function getAnaVlvDataAssemblyModel(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): DataAssemblyModel {
+	const options = getDataAssemblyModel(metaModelReference, name, tagName, tagDescription);
+	options.dataItems = [
 		...options.dataItems,
-		...getAnaVlvDataItemOptions(namespace, objectBrowseName)};
+		...getAnaVlvDataItemModel(namespace, objectBrowseName)
+		];
 	return options;
 }
 
@@ -300,14 +367,13 @@ export class AnaVlvMockup extends VlvMockup{
 		});
 	}
 
-	public getDataAssemblyOptions(): DataAssemblyOptions {
-		const options = super.getDataAssemblyOptions();
-		options.metaModelRef = metaModelReference;
-		options.dataItems = {
+	public getDataAssemblyModel(metaModelReferenceOption?: string): DataAssemblyModel {
+		const options = super.getDataAssemblyModel(metaModelReferenceOption || metaModelReference);
+		options.dataItems = [
 			...options.dataItems,
-			...this.sourceModeMockup.getDataItemOptions(),
-			...getAnaVlvSpecificDataItemOptions(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
-		};
+			...this.sourceModeMockup.getDataItemModel(),
+			...getAnaVlvSpecificDataItemModels(this.mockupNode.namespaceIndex, this.mockupNode.browseName.name as string),
+		];
 		return options;
 	}
 }

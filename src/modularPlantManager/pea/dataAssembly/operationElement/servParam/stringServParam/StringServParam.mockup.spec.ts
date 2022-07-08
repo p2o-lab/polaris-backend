@@ -25,11 +25,10 @@
  
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {getStringServParamDataItemOptions, getStringServParamOptions, StringServParamMockup} from './StringServParam.mockup';
+import {getStringServParamDataAssemblyModel, getStringServParamDataItemModel, StringServParamMockup} from './StringServParam.mockup';
 import {MockupServer} from '../../../../../_utils';
-import {OpcUaConnection} from '../../../../connection';
-import {DataAssemblyOptions} from '@p2olab/polaris-interface';
-import {StringServParamRuntime} from './StringServParam';
+import {DataItemAccessLevel} from '@p2olab/pimad-interface';
+import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
 
 
 chai.use(chaiAsPromised);
@@ -53,19 +52,19 @@ describe('StringServParamMockup', () => {
         });
 
         it('static DataItemOptions', () => {
-            const options = getStringServParamDataItemOptions(1, 'Test') as StringServParamRuntime;
+            const options = getStringServParamDataItemModel(1, 'Test');
             expect(Object.keys(options).length).to.equal(26);
         });
 
-        it('static DataAssemblyOptions', () => {
-            const options = getStringServParamOptions(1, 'Test') as DataAssemblyOptions;
+        it('static DataAssemblyModel', () => {
+            const options = getStringServParamDataAssemblyModel(1, 'Test');
             expect(Object.keys(options.dataItems).length).to.equal(28);
         });
 
-        it('dynamic DataAssemblyOptions', () => {
+        it('dynamic DataAssemblyModel', () => {
             const mockup = new StringServParamMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
-            const options = mockup.getDataAssemblyOptions();
+            const options = mockup.getDataAssemblyModel();
 
             expect(Object.keys(options.dataItems).length).to.equal(28);
         });
@@ -101,7 +100,7 @@ describe('StringServParamMockup', () => {
     describe('dynamic', () => {
 
         let mockupServer: MockupServer;
-        let connection: OpcUaConnection;
+        let connectionHandler: ConnectionHandler;
 
         beforeEach(async function () {
             this.timeout(5000);
@@ -109,25 +108,25 @@ describe('StringServParamMockup', () => {
             await mockupServer.initialize();
             new StringServParamMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
             await mockupServer.start();
-            connection = new OpcUaConnection();
-            connection.initialize({endpointUrl: mockupServer.endpoint});
-            await connection.connect();
+            connectionHandler= new ConnectionHandler();
+            connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+            await connectionHandler.connect();
         });
 
         afterEach(async () => {
-            await connection.disconnect();
+            await connectionHandler.disconnect();
             await mockupServer.shutdown();
         });
 
         it('set and get VExt', async () => {
-            await connection.writeNode('Variable.VExt', mockupServer.nameSpaceUri, 'test', 'String');
-            await connection.readNode('Variable.VExt', mockupServer.nameSpaceUri)
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.VExt', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, 'test');
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.VExt', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal('test'));
         }).timeout(3000);
 
         it('set and get VOp', async () => {
-            await connection.writeNode('Variable.VOp', mockupServer.nameSpaceUri, 'test', 'String');
-            await connection.readNode('Variable.VOp', mockupServer.nameSpaceUri)
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.VOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, 'test');
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.VOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal('test'));
         }).timeout(3000);
     });
