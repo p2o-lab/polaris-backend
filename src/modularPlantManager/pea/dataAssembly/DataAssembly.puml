@@ -31,9 +31,7 @@
 !include ./IndicatorElement/indicatorElement.puml
 !include ./InputElement/inputElement.puml
 !include ./OperationElement/operationElement.puml
-!include ../connection/OpcUaConnection.puml
-!include ../connection/dataItem/DataItem.puml
-
+!include ./dataItem/DataItem.puml
 
 
 class DataAssembly{
