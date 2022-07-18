@@ -29,7 +29,7 @@
 !include ../../../../baseFunction/sourceMode/SourceModeController.puml
 !include ../../../../baseFunction/wqc/WQC.puml
 class DIntManInt{
-    + readonly communication!: DIntManIntRuntime
+    + readonly dataItems!: DIntManIntRuntime
     + readonly sourceMode: SourceModeController
     + readonly wqc: WQC
 }

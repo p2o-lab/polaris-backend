@@ -27,18 +27,27 @@ import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {DataItem} from '../../../dataItem/DataItem';
 import {Vlv, VlvRuntime} from '../Vlv';
 import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
-import {DataItemFactory, getDataItemModel} from '../../../dataItem/DataItemFactory';
+import {keys} from 'ts-transformer-keys';
 
 export type BinVlvRuntime = VlvRuntime & {
 	Ctrl: DataItem<boolean>;
 };
 
 export class BinVlv extends Vlv {
-	public readonly communication!: BinVlvRuntime;
 
-	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+	public readonly dataItems!: BinVlvRuntime;
+
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false) {
 		super(options, connectionHandler);
 
-		this.communication.Ctrl = DataItemFactory.create(getDataItemModel(options, 'Ctrl'), connectionHandler);
+		if (initial) {
+			const keyList = keys<typeof this.dataItems>();
+			this.initializeDataItems(options, keyList);
+			this.initializeBaseFunctions();
+		}	
+	}
+
+	protected initializeBaseFunctions() {
+		super.initializeBaseFunctions();
 	}
 }

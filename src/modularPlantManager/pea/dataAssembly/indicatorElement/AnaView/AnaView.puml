@@ -30,7 +30,7 @@
 !include ../../baseFunction/unitSettings/UnitSettings.puml
 
 class AnaView{
-    + readonly communication!: AnaViewRuntime
+    + readonly dataItems!: AnaViewRuntime
     - readonly scaleSettings: ScaleSettings
     - readonly unitSettings: UnitSettings
 }

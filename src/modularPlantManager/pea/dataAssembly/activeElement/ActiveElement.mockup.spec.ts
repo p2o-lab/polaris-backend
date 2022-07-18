@@ -41,7 +41,7 @@ describe('ActiveElementMockup', () => {
 
         beforeEach(async()=>{
             mockupServer = new MockupServer();
-            await mockupServer.initialize();
+			await mockupServer.initialize();
         });
  
         it('should create ActiveElementMockup', async () => {

@@ -31,7 +31,7 @@
 !include StringView/StringView.puml
 
 class IndicatorElement{
-    + readonly communication!: IndicatorElementRuntime
+    + readonly dataItems!: IndicatorElementRuntime
     + readonly wqc: WQC
 
     + toJson(): ParameterInterface

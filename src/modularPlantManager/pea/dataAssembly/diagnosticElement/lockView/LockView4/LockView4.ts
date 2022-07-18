@@ -26,8 +26,8 @@
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {DiagnosticElement, DiagnosticElementRuntime} from '../../DiagnosticElement';
 import {DataItem} from '../../../dataItem/DataItem';
-import {DataItemFactory, getDataItemModel} from '../../../dataItem/DataItemFactory';
 import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
+import {keys} from 'ts-transformer-keys';
 
 export type LockView4Runtime = DiagnosticElementRuntime & {
 	Logic: DataItem<boolean>; // False = AND; TRUE = OR;
@@ -60,67 +60,23 @@ export type LockView4Runtime = DiagnosticElementRuntime & {
 };
 
 export class LockView4 extends DiagnosticElement {
-	Logic: DataItem<boolean>; // False = AND; TRUE = OR;
-	Out: DataItem<boolean>;
-	OutQC: DataItem<number>;
 
-	In1En: DataItem<boolean>;
-	In1: DataItem<boolean>;
-	In1QC: DataItem<number>;
-	In1Inv: DataItem<boolean>;
-	In1Txt: DataItem<string>;
+	public readonly dataItems!: LockView4Runtime;
 
-	In2En: DataItem<boolean>;
-	In2: DataItem<boolean>;
-	In2QC: DataItem<number>;
-	In2Inv: DataItem<boolean>;
-	In2Txt: DataItem<string>;
-
-	In3En: DataItem<boolean>;
-	In3: DataItem<boolean>;
-	In3QC: DataItem<number>;
-	In3Inv: DataItem<boolean>;
-	In3Txt: DataItem<string>;
-
-	In4En: DataItem<boolean>;
-	In4: DataItem<boolean>;
-	In4QC: DataItem<number>;
-	In4Inv: DataItem<boolean>;
-	In4Txt: DataItem<string>;
-
-	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false) {
 		super(options, connectionHandler);
 
-		this.Logic = DataItemFactory.create(getDataItemModel(options, 'Logic'), connectionHandler);
-		this.Out = DataItemFactory.create(getDataItemModel(options, 'Out'), connectionHandler);
-		this.OutQC = DataItemFactory.create(getDataItemModel(options, 'OutQC'), connectionHandler);
+		if (initial) {
+			const keyList = keys<typeof this.dataItems>();
+			this.initializeDataItems(options, keyList);
+			this.initializeBaseFunctions();
+		}	
 
-		this.In1En = DataItemFactory.create(getDataItemModel(options, 'In1En'), connectionHandler);
-		this.In1 = DataItemFactory.create(getDataItemModel(options, 'In1'), connectionHandler);
-		this.In1QC = DataItemFactory.create(getDataItemModel(options, 'In1QC'), connectionHandler);
-		this.In1Inv = DataItemFactory.create(getDataItemModel(options, 'In1Inv'), connectionHandler);
-		this.In1Txt = DataItemFactory.create(getDataItemModel(options, 'In1Txt'), connectionHandler);
-
-		this.In2En = DataItemFactory.create(getDataItemModel(options, 'In2En'), connectionHandler);
-		this.In2 = DataItemFactory.create(getDataItemModel(options, 'In2'), connectionHandler);
-		this.In2QC = DataItemFactory.create(getDataItemModel(options, 'In2QC'), connectionHandler);
-		this.In2Inv = DataItemFactory.create(getDataItemModel(options, 'In2Inv'), connectionHandler);
-		this.In2Txt = DataItemFactory.create(getDataItemModel(options, 'In2Txt'), connectionHandler);
-
-		this.In3En = DataItemFactory.create(getDataItemModel(options, 'In3En'), connectionHandler);
-		this.In3 = DataItemFactory.create(getDataItemModel(options, 'In3'), connectionHandler);
-		this.In3QC = DataItemFactory.create(getDataItemModel(options, 'In3QC'), connectionHandler);
-		this.In3Inv = DataItemFactory.create(getDataItemModel(options, 'In3Inv'), connectionHandler);
-		this.In3Txt = DataItemFactory.create(getDataItemModel(options, 'In3Txt'), connectionHandler);
-
-		this.In4En = DataItemFactory.create(getDataItemModel(options, 'In4En'), connectionHandler);
-		this.In4 = DataItemFactory.create(getDataItemModel(options, 'In4'), connectionHandler);
-		this.In4QC = DataItemFactory.create(getDataItemModel(options, 'In4QC'), connectionHandler);
-		this.In4Inv = DataItemFactory.create(getDataItemModel(options, 'In4Inv'), connectionHandler);
-		this.In4Txt = DataItemFactory.create(getDataItemModel(options, 'In4Txt'), connectionHandler);
-
-		this.defaultReadDataItem = this.Out;
+		this.defaultReadDataItem = this.dataItems.Out;
 		this.defaultReadDataItemType = 'boolean';
 	}
 
+	protected initializeBaseFunctions() {
+		super.initializeBaseFunctions();
+	}
 }

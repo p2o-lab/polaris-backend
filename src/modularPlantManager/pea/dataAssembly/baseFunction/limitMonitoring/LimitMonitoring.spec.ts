@@ -31,48 +31,51 @@ import {MockupServer} from '../../../../_utils';
 import {LimitMonitoringMockup} from './LimitMonitoring.mockup';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
 import {getAnaMonDataAssemblyModel} from '../../indicatorElement/AnaView/AnaMon/AnaMon.mockup';
+import {DataAssemblyFactory} from '../../DataAssemblyFactory';
+import {AnaMonRuntime} from '../../indicatorElement';
+import {getEndpointDataModel} from '../../../connectionHandler/ConnectionHandler.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('LimitMonitoring', () => {
 
-	let options: DataAssemblyModel;
+	const connectionHandler = new ConnectionHandler();
+	const referenceDataAssemblyModel = getAnaMonDataAssemblyModel(2, 'Variable', 'Variable');
+	const referenceDataAssembly = DataAssemblyFactory.create(referenceDataAssemblyModel, connectionHandler);
 
 	describe('static', () => {
 
-		const connectionHandler = new ConnectionHandler();
-		options = getAnaMonDataAssemblyModel(2, 'Variable', 'Variable') as DataAssemblyModel;
 
 		it('should create LimitMonitoring', async () => {
 
-			const limitMonitoring = new LimitMonitoring(options, connectionHandler);
+			const limitMonitoring = new LimitMonitoring(referenceDataAssembly.dataItems as AnaMonRuntime);
 
 			expect(limitMonitoring).to.not.be.undefined;
 
-			expect(limitMonitoring.VAHEn).to.not.be.undefined;
-			expect(limitMonitoring.VAHLim).to.not.be.undefined;
-			expect(limitMonitoring.VAHAct).to.not.be.undefined;
+			expect(limitMonitoring.dataItems.VAHEn).to.not.be.undefined;
+			expect(limitMonitoring.dataItems.VAHLim).to.not.be.undefined;
+			expect(limitMonitoring.dataItems.VAHAct).to.not.be.undefined;
 
-			expect(limitMonitoring.VWHEn).to.not.be.undefined;
-			expect(limitMonitoring.VWHLim).to.not.be.undefined;
-			expect(limitMonitoring.VWHAct).to.not.be.undefined;
+			expect(limitMonitoring.dataItems.VWHEn).to.not.be.undefined;
+			expect(limitMonitoring.dataItems.VWHLim).to.not.be.undefined;
+			expect(limitMonitoring.dataItems.VWHAct).to.not.be.undefined;
 
-			expect(limitMonitoring.VTHEn).to.not.be.undefined;
-			expect(limitMonitoring.VTHLim).to.not.be.undefined;
-			expect(limitMonitoring.VTHAct).to.not.be.undefined;
+			expect(limitMonitoring.dataItems.VTHEn).to.not.be.undefined;
+			expect(limitMonitoring.dataItems.VTHLim).to.not.be.undefined;
+			expect(limitMonitoring.dataItems.VTHAct).to.not.be.undefined;
 
-			expect(limitMonitoring.VTLEn).to.not.be.undefined;
-			expect(limitMonitoring.VTLLim).to.not.be.undefined;
-			expect(limitMonitoring.VTLAct).to.not.be.undefined;
+			expect(limitMonitoring.dataItems.VTLEn).to.not.be.undefined;
+			expect(limitMonitoring.dataItems.VTLLim).to.not.be.undefined;
+			expect(limitMonitoring.dataItems.VTLAct).to.not.be.undefined;
 
-			expect(limitMonitoring.VWLEn).to.not.be.undefined;
-			expect(limitMonitoring.VWLLim).to.not.be.undefined;
-			expect(limitMonitoring.VWLAct).to.not.be.undefined;
+			expect(limitMonitoring.dataItems.VWLEn).to.not.be.undefined;
+			expect(limitMonitoring.dataItems.VWLLim).to.not.be.undefined;
+			expect(limitMonitoring.dataItems.VWLAct).to.not.be.undefined;
 
-			expect(limitMonitoring.VALEn).to.not.be.undefined;
-			expect(limitMonitoring.VALLim).to.not.be.undefined;
-			expect(limitMonitoring.VALAct).to.not.be.undefined;
+			expect(limitMonitoring.dataItems.VALEn).to.not.be.undefined;
+			expect(limitMonitoring.dataItems.VALLim).to.not.be.undefined;
+			expect(limitMonitoring.dataItems.VALAct).to.not.be.undefined;
 		});
 	});
 
@@ -85,10 +88,11 @@ describe('LimitMonitoring', () => {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
+
 			new LimitMonitoringMockup( mockupServer.nameSpace, mockupServer.rootObject, 'Variable', 'Ana');
 			await mockupServer.start();
 			connectionHandler= new ConnectionHandler();
-			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
 			await connectionHandler.connect();
 		});
 
@@ -100,33 +104,33 @@ describe('LimitMonitoring', () => {
 
 		it('should subscribe successfully', async () => {
 
-			const limitMonitoring = new LimitMonitoring(options, connectionHandler);
+			const limitMonitoring = new LimitMonitoring(referenceDataAssembly.dataItems as AnaMonRuntime);
 			await connectionHandler.connect();
 			await new Promise((resolve => limitMonitoring.on('changed', resolve)));
 			
-			expect(limitMonitoring.VAHEn.value).to.equal(false);
-			expect(limitMonitoring.VAHLim.value).to.equal(0);
-			expect(limitMonitoring.VAHAct.value).to.equal(false);
+			expect(limitMonitoring.dataItems.VAHEn.value).to.equal(false);
+			expect(limitMonitoring.dataItems.VAHLim.value).to.equal(0);
+			expect(limitMonitoring.dataItems.VAHAct.value).to.equal(false);
 
-			expect(limitMonitoring.VWHEn.value).to.equal(false);
-			expect(limitMonitoring.VWHLim.value).to.equal(0);
-			expect(limitMonitoring.VWHAct.value).to.equal(false);
+			expect(limitMonitoring.dataItems.VWHEn.value).to.equal(false);
+			expect(limitMonitoring.dataItems.VWHLim.value).to.equal(0);
+			expect(limitMonitoring.dataItems.VWHAct.value).to.equal(false);
 
-			expect(limitMonitoring.VTHEn.value).to.equal(false);
-			expect(limitMonitoring.VTHLim.value).to.equal(0);
-			expect(limitMonitoring.VTHAct.value).to.equal(false);
+			expect(limitMonitoring.dataItems.VTHEn.value).to.equal(false);
+			expect(limitMonitoring.dataItems.VTHLim.value).to.equal(0);
+			expect(limitMonitoring.dataItems.VTHAct.value).to.equal(false);
 
-			expect(limitMonitoring.VTLEn.value).to.equal(false);
-			expect(limitMonitoring.VTLLim.value).to.equal(0);
-			expect(limitMonitoring.VTLAct.value).to.equal(false);
+			expect(limitMonitoring.dataItems.VTLEn.value).to.equal(false);
+			expect(limitMonitoring.dataItems.VTLLim.value).to.equal(0);
+			expect(limitMonitoring.dataItems.VTLAct.value).to.equal(false);
 
-			expect(limitMonitoring.VWLEn.value).to.equal(false);
-			expect(limitMonitoring.VWLLim.value).to.equal(0);
-			expect(limitMonitoring.VWLAct.value).to.equal(false);
+			expect(limitMonitoring.dataItems.VWLEn.value).to.equal(false);
+			expect(limitMonitoring.dataItems.VWLLim.value).to.equal(0);
+			expect(limitMonitoring.dataItems.VWLAct.value).to.equal(false);
 
-			expect(limitMonitoring.VALEn.value).to.equal(false);
-			expect(limitMonitoring.VALLim.value).to.equal(0);
-			expect(limitMonitoring.VALAct.value).to.equal(false);
+			expect(limitMonitoring.dataItems.VALEn.value).to.equal(false);
+			expect(limitMonitoring.dataItems.VALLim.value).to.equal(0);
+			expect(limitMonitoring.dataItems.VALAct.value).to.equal(false);
 		}).timeout(5000);
 	});
 });

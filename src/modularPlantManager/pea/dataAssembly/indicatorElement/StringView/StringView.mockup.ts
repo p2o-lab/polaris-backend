@@ -55,12 +55,13 @@ export function getStringViewDataItemModel(namespace: number, objectBrowseName: 
 		];
 }
 
-export function getStringViewOptions(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): object {
+export function getStringViewDataAssemblyModel(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): DataAssemblyModel {
 	const options = getDataAssemblyModel(metaModelReference, name, tagName, tagDescription);
 	options.metaModelRef = metaModelReference;
-	options.dataItems = {
+	options.dataItems = [
 		...options.dataItems,
-		...getStringViewDataItemModel(namespace, objectBrowseName)};
+		...getStringViewDataItemModel(namespace, objectBrowseName)
+	];
 	return options;
 }
 

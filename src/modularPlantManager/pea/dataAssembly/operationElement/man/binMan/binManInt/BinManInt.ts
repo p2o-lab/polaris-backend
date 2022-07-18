@@ -28,7 +28,7 @@ import {DataItem} from '../../../../dataItem/DataItem';
 import {SourceModeController, SourceModeRuntime, WQC, WQCRuntime} from '../../../../baseFunction';
 import {BinMan, BinManRuntime} from '../BinMan';
 import {ConnectionHandler} from '../../../../../connectionHandler/ConnectionHandler';
-import {DataItemFactory, getDataItemModel} from '../../../../dataItem/DataItemFactory';
+import {keys} from 'ts-transformer-keys';
 
 export type BinManIntRuntime = BinManRuntime & SourceModeRuntime & WQCRuntime & {
 	VInt: DataItem<boolean>;
@@ -36,16 +36,24 @@ export type BinManIntRuntime = BinManRuntime & SourceModeRuntime & WQCRuntime & 
 
 export class BinManInt extends BinMan {
 
-	public communication!: BinManIntRuntime;
-	public readonly sourceMode: SourceModeController;
-	public readonly wqc: WQC;
+	public dataItems!: BinManIntRuntime;
 
-	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+	public sourceMode!: SourceModeController;
+	public wqc!: WQC;
+
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false) {
 		super(options, connectionHandler);
 
-		this.wqc = new WQC(options, connectionHandler);
-		this.sourceMode = new SourceModeController(options, connectionHandler);
+		if (initial) {
+			const keyList = keys<typeof this.dataItems>();
+			this.initializeDataItems(options, keyList);
+			this.initializeBaseFunctions();
+		}	
+	}
 
-		this.communication.VInt = DataItemFactory.create(getDataItemModel(options, 'VInt'), connectionHandler);
+	protected initializeBaseFunctions() {
+		super.initializeBaseFunctions();
+		this.sourceMode = new SourceModeController(this.dataItems);
+		this.wqc = new WQC(this.dataItems);
 	}
 }

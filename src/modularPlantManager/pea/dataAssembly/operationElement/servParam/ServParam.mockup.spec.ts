@@ -41,7 +41,6 @@ describe('ServParamMockup', () => {
 
         beforeEach(async()=>{
             mockupServer = new MockupServer();
-            await mockupServer.initialize();
         });
 
         it('should create ServParamMockup',  () => {

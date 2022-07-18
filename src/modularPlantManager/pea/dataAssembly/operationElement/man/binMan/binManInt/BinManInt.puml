@@ -29,7 +29,7 @@
 !include ../../../../baseFunction/sourceMode/SourceModeController.puml
 !include ../../../../baseFunction/wqc/WQC.puml
 class BinManInt{
-    + readonly communication!: BinManIntRuntime
+    + readonly dataItems!: BinManIntRuntime
     + readonly sourceMode: SourceModeController
     + readonly wqc: WQC
 }

@@ -38,7 +38,6 @@ describe('DiagnosticElementMockup', () => {
         let mockupServer: MockupServer;
         beforeEach(async()=>{
             mockupServer = new MockupServer();
-            await mockupServer.initialize();
         });
 
         it('should create DiagnosticElementMockup', async () => {

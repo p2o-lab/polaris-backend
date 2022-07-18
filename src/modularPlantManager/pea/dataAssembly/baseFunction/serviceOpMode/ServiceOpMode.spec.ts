@@ -30,33 +30,37 @@ import {OperationMode} from '@p2olab/polaris-interface';
 import {MockupServer} from '../../../../_utils';
 import {ServiceOpMode} from './ServiceOpMode';
 import {ServiceOpModeMockup} from './ServiceOpMode.mockup';
-import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
 import {getAnaServParamDataAssemblyModel} from '../../operationElement/servParam/anaServParam/AnaServParam.mockup';
+import {DataAssemblyFactory} from '../../DataAssemblyFactory';
+import {AnaServParamRuntime} from '../../operationElement';
+import {getEndpointDataModel} from '../../../connectionHandler/ConnectionHandler.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('ServiceOpMode', () => {
 
-	const options = getAnaServParamDataAssemblyModel(2, 'Variable', 'Variable');
+	const connectionHandler = new ConnectionHandler();
+	const referenceDataAssemblyModel = getAnaServParamDataAssemblyModel(2, 'Variable', 'Variable');
+	const referenceDataAssembly = DataAssemblyFactory.create(referenceDataAssemblyModel, connectionHandler);
 
 	describe('static', () => {
-		const connectionHandler = new ConnectionHandler();
+
 		it('should create ServiceOpMode', () => {
 
-			const da = new ServiceOpMode(options, connectionHandler);
-			expect(da).to.not.be.undefined;
-			expect((da).StateChannel).to.not.be.undefined;
-			expect((da).StateOffAut).to.not.be.undefined;
-			expect((da).StateOpAut).to.not.be.undefined;
-			expect((da).StateAutAut).to.not.be.undefined;
-			expect((da).StateOffOp).to.not.be.undefined;
-			expect((da).StateOpOp).to.not.be.undefined;
-			expect((da).StateAutOp).to.not.be.undefined;
-			expect((da).StateOpAct).to.not.be.undefined;
-			expect((da).StateAutAct).to.not.be.undefined;
-			expect((da).StateOffAct).to.not.be.undefined;
+			const baseFunction = new ServiceOpMode(referenceDataAssembly.dataItems as AnaServParamRuntime);
+			expect(baseFunction).to.not.be.undefined;
+			expect(baseFunction.dataItems.StateChannel).to.not.be.undefined;
+			expect(baseFunction.dataItems.StateOffAut).to.not.be.undefined;
+			expect(baseFunction.dataItems.StateOpAut).to.not.be.undefined;
+			expect(baseFunction.dataItems.StateAutAut).to.not.be.undefined;
+			expect(baseFunction.dataItems.StateOffOp).to.not.be.undefined;
+			expect(baseFunction.dataItems.StateOpOp).to.not.be.undefined;
+			expect(baseFunction.dataItems.StateAutOp).to.not.be.undefined;
+			expect(baseFunction.dataItems.StateOpAct).to.not.be.undefined;
+			expect(baseFunction.dataItems.StateAutAct).to.not.be.undefined;
+			expect(baseFunction.dataItems.StateOffAct).to.not.be.undefined;
 		});
 	});
 	describe('dynamic', () => {
@@ -70,7 +74,7 @@ describe('ServiceOpMode', () => {
 			new ServiceOpModeMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			await mockupServer.start();
 			connectionHandler= new ConnectionHandler();
-			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
 			await connectionHandler.connect();
 		});
 
@@ -82,20 +86,20 @@ describe('ServiceOpMode', () => {
 
 		it('should subscribe successfully', async () => {
 
-			const dataAssembly = new ServiceOpMode(options, connectionHandler);
+			const baseFunction = new ServiceOpMode(referenceDataAssembly.dataItems as AnaServParamRuntime);
 			await connectionHandler.connect();
-			await new Promise((resolve => dataAssembly.on('changed', resolve)));
+			await new Promise((resolve => baseFunction.on('changed', resolve)));
 
-			expect(dataAssembly.StateChannel.value).equal(false);
-			expect((dataAssembly).StateOffAut.value).equal(false);
-			expect((dataAssembly).StateOpAut.value).equal(false);
-			expect((dataAssembly).StateAutAut.value).equal(false);
-			expect((dataAssembly).StateOffOp.value).equal(false);
-			expect((dataAssembly).StateOpOp.value).equal(false);
-			expect((dataAssembly).StateAutOp.value).equal(false);
-			expect((dataAssembly).StateOpAct.value).equal(false);
-			expect((dataAssembly).StateAutAct.value).equal(false);
-			expect((dataAssembly).StateOffAct.value).equal(true);
+			expect(baseFunction.dataItems.StateChannel.value).equal(false);
+			expect(baseFunction.dataItems.StateOffAut.value).equal(false);
+			expect(baseFunction.dataItems.StateOpAut.value).equal(false);
+			expect(baseFunction.dataItems.StateAutAut.value).equal(false);
+			expect(baseFunction.dataItems.StateOffOp.value).equal(false);
+			expect(baseFunction.dataItems.StateOpOp.value).equal(false);
+			expect(baseFunction.dataItems.StateAutOp.value).equal(false);
+			expect(baseFunction.dataItems.StateOpAct.value).equal(false);
+			expect(baseFunction.dataItems.StateAutAct.value).equal(false);
+			expect(baseFunction.dataItems.StateOffAct.value).equal(true);
 		}).timeout(5000);
 	});
 
@@ -104,19 +108,20 @@ describe('ServiceOpMode', () => {
 		let connectionHandler: ConnectionHandler;
 		let mockup: ServiceOpModeMockup;
 		let opMode: ServiceOpMode;
-		let dataAssembly: any;
+		let baseFunction: any;
 
 		beforeEach(async function () {
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
+			
 			mockup = new ServiceOpModeMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			await mockupServer.start();
 			connectionHandler= new ConnectionHandler();
-			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
 
-			dataAssembly = new ServiceOpMode(options,  connectionHandler);
+			baseFunction = new ServiceOpMode(this.dataItems);
 			await connectionHandler.connect();
-			await new Promise((resolve => dataAssembly.on('changed', resolve)));
+			await new Promise((resolve => baseFunction.on('changed', resolve)));
 		});
 
 		afterEach(async function () {
@@ -139,13 +144,13 @@ describe('ServiceOpMode', () => {
 
 		it('setToAutomaticOperationMode(), should set to Automatic', async () => {
 			await opMode.setToAutomaticOperationMode();
-			expect(dataAssembly.StateAutAct.value).to.be.true;
+			expect(baseFunction.StateAutAct.value).to.be.true;
 			expect(mockup.opMode = OperationMode.Automatic);
 		});
 
 		it('setToOperatorOperationMode(), should set to Operator', async () => {
 			await opMode.setToOperatorOperationMode();
-			expect(dataAssembly.StateOpAct.value).to.be.true;
+			expect(baseFunction.StateOpAct.value).to.be.true;
 			expect(mockup.opMode = OperationMode.Operator);
 		});
 	});
@@ -155,22 +160,23 @@ describe('ServiceOpMode', () => {
 		let connectionHandler: ConnectionHandler;
 		let mockup: ServiceOpModeMockup;
 		let opMode: ServiceOpMode;
-		let dataAssembly: any;
+		let baseFunction: any;
 
 		beforeEach(async function () {
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
+			
 			// initialize with operator
 			mockup = new ServiceOpModeMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable', OperationMode.Operator);
 			await mockupServer.start();
 			connectionHandler= new ConnectionHandler();
-			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
 
-			dataAssembly = new ServiceOpMode(options, connectionHandler);
+			baseFunction = new ServiceOpMode(this.dataItems);
 			await connectionHandler.connect();
-			await dataAssembly.subscribe();
+			await baseFunction.subscribe();
 			await connectionHandler.connect();
-			await new Promise((resolve => dataAssembly.on('changed', resolve)));
+			await new Promise((resolve => baseFunction.on('changed', resolve)));
 		});
 
 		afterEach(async function () {
@@ -190,13 +196,13 @@ describe('ServiceOpMode', () => {
 		});
 		it('setToAutomaticOperationMode(), should set to Automatic', async () => {
 			await opMode.setToAutomaticOperationMode();
-			expect(dataAssembly.StateAutAct.value).to.be.true;
+			expect(baseFunction.StateAutAct.value).to.be.true;
 			expect(mockup.opMode = OperationMode.Automatic);
 		});
 
 		it('setToOperatorOperationMode(), nothing should happen', async () => {
 			await opMode.setToOperatorOperationMode();
-			expect(dataAssembly.StateOpAct.value).to.be.true;
+			expect(baseFunction.StateOpAct.value).to.be.true;
 			expect(mockup.opMode = OperationMode.Operator);
 		});
 	});
@@ -205,21 +211,22 @@ describe('ServiceOpMode', () => {
 		let connectionHandler: ConnectionHandler;
 		let mockup: ServiceOpModeMockup;
 		let opMode: ServiceOpMode;
-		let dataAssembly: any;
+		let baseFunction: any;
 
 		beforeEach(async function () {
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
+			
 			// initialize with Automatic
 			mockup = new ServiceOpModeMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable', OperationMode.Automatic);
 			await mockupServer.start();
 			connectionHandler= new ConnectionHandler();
-			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
-			dataAssembly = new ServiceOpMode(options, connectionHandler);
+			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
+			baseFunction = new ServiceOpMode(this.dataItems);
 			await connectionHandler.connect();
-			await dataAssembly.subscribe();
+			await baseFunction.subscribe();
 			await connectionHandler.connect();
-			await new Promise((resolve => dataAssembly.on('changed', resolve)));
+			await new Promise((resolve => baseFunction.on('changed', resolve)));
 		});
 
 		afterEach(async function () {
@@ -242,7 +249,7 @@ describe('ServiceOpMode', () => {
 
 		it('setToAutomaticOperationMode(), nothing should happen', async () => {
 			await opMode.setToAutomaticOperationMode();
-			expect(dataAssembly.StateAutAct.value).to.be.true;
+			expect(baseFunction.StateAutAct.value).to.be.true;
 			expect(mockup.opMode = OperationMode.Automatic);
 		});
 

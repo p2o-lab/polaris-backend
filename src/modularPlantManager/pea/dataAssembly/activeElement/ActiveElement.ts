@@ -27,17 +27,29 @@ import {OSLevel, OSLevelRuntime, WQC, WQCRuntime} from '../baseFunction';
 import {DataAssembly, DataAssemblyDataItems} from '../DataAssembly';
 import {ConnectionHandler} from '../../connectionHandler/ConnectionHandler';
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
+import {keys} from 'ts-transformer-keys';
 
 export type ActiveElementRuntime = DataAssemblyDataItems & WQCRuntime & OSLevelRuntime;
 
 export class ActiveElement extends DataAssembly {
 
-	public readonly osLevel: OSLevel;
-	public readonly wqc: WQC;
+	public dataItems!: ActiveElementRuntime;
 
-	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
-		super(options);
-		this.osLevel = new OSLevel(options, connectionHandler);
-		this.wqc = new WQC(options, connectionHandler);
+	public osLevel!: OSLevel;
+	public wqc!: WQC;
+
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false) {
+		super(options, connectionHandler);
+
+		if (initial) {
+			const keyList = keys<typeof this.dataItems>();
+			this.initializeDataItems(options, keyList);
+			this.initializeBaseFunctions();
+		}
+	}
+
+	protected initializeBaseFunctions(){
+		this.osLevel = new OSLevel(this.dataItems);
+		this.wqc = new WQC(this.dataItems);
 	}
 }

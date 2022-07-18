@@ -31,6 +31,7 @@ import {DataAssemblyFactory} from '../../../DataAssemblyFactory';
 import {MockupServer} from '../../../../../_utils';
 import {BinManMockup, getBinManDataAssemblyModel} from './BinMan.mockup';
 import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
+import {getEndpointDataModel} from '../../../../connectionHandler/ConnectionHandler.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -47,16 +48,16 @@ describe('BinMan', () => {
 		it('should create BinMan', () => {
 
 			const dataAssembly = new BinMan(options, connectionHandler);
-			expect(dataAssembly.communication.VOut).to.not.equal(undefined);
-			expect(dataAssembly.communication.VState0).to.not.equal(undefined);
-			expect(dataAssembly.communication.VState1).to.not.equal(undefined);
-			expect(dataAssembly.communication.VMan).to.not.equal(undefined);
-			expect(dataAssembly.communication.VRbk).to.not.equal(undefined);
-			expect(dataAssembly.communication.VFbk).to.not.equal(undefined);
+			expect(dataAssembly.dataItems.VOut).to.not.equal(undefined);
+			expect(dataAssembly.dataItems.VState0).to.not.equal(undefined);
+			expect(dataAssembly.dataItems.VState1).to.not.equal(undefined);
+			expect(dataAssembly.dataItems.VMan).to.not.equal(undefined);
+			expect(dataAssembly.dataItems.VRbk).to.not.equal(undefined);
+			expect(dataAssembly.dataItems.VFbk).to.not.equal(undefined);
 
-			expect(dataAssembly.defaultReadDataItem).equal(dataAssembly.communication.VOut);
+			expect(dataAssembly.defaultReadDataItem).equal(dataAssembly.dataItems.VOut);
 			expect(dataAssembly.defaultReadDataItemType).to.equal('boolean');
-			expect(dataAssembly.defaultWriteDataItem).equal(dataAssembly.communication.VMan);
+			expect(dataAssembly.defaultWriteDataItem).equal(dataAssembly.dataItems.VMan);
 			expect(dataAssembly.defaultWriteDataItemType).to.equal('boolean');
 		});
 	});
@@ -67,12 +68,11 @@ describe('BinMan', () => {
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
-			await mockupServer.initialize();
 			const binManMockup = new BinManMockup(mockupServer.nameSpace, mockupServer.rootObject,'Variable');
 			options = binManMockup.getDataAssemblyModel();
 			await mockupServer.start();
 			connectionHandler= new ConnectionHandler();
-			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
 			await connectionHandler.connect();
 		});
 
@@ -89,13 +89,13 @@ describe('BinMan', () => {
 			await connectionHandler.connect();
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 
-			expect(dataAssembly.communication.OSLevel.value).to.equal(0);
-			expect(dataAssembly.communication.VOut.value).to.equal(false);
-			expect(dataAssembly.communication.VMan.value).to.equal(false);
-			expect(dataAssembly.communication.VRbk.value).to.equal(false);
-			expect(dataAssembly.communication.VFbk.value).to.equal(false);
-			expect(dataAssembly.communication.VState0.value).to.equal('off');
-			expect(dataAssembly.communication.VState1.value).to.equal('on');
+			expect(dataAssembly.dataItems.OSLevel.value).to.equal(0);
+			expect(dataAssembly.dataItems.VOut.value).to.equal(false);
+			expect(dataAssembly.dataItems.VMan.value).to.equal(false);
+			expect(dataAssembly.dataItems.VRbk.value).to.equal(false);
+			expect(dataAssembly.dataItems.VFbk.value).to.equal(false);
+			expect(dataAssembly.dataItems.VState0.value).to.equal('off');
+			expect(dataAssembly.dataItems.VState1.value).to.equal('on');
 		}).timeout(4000);
 	});
 });

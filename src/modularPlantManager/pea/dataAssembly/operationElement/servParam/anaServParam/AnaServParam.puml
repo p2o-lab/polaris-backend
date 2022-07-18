@@ -31,7 +31,7 @@
 !include ../../../baseFunction/valueLimitation/ValueLimitation.puml
 
 class AnaServParam{
-    + readonly communication!: AnaServParamRuntime
+    + readonly dataItems!: AnaServParamRuntime
     + readonly scaleSettings: ScaleSettings
     + readonly unitSettings: UnitSettings
     + readonly valueLimitation: ValueLimitation

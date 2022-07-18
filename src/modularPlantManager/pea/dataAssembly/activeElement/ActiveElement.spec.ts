@@ -31,6 +31,7 @@ import {ActiveElementMockup, getActiveElementOptions} from './ActiveElement.mock
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {ConnectionHandler} from '../../connectionHandler/ConnectionHandler';
+import {getEndpointDataModel} from '../../connectionHandler/ConnectionHandler.mockup';
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
@@ -63,7 +64,7 @@ describe('ActiveElement', () => {
 			dataAssemblyModel = mockup.getDataAssemblyModel();
 			await mockupServer.start();
 			connectionHandler = new ConnectionHandler();
-			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
 		});
 
 		afterEach(async function () {

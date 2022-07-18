@@ -30,6 +30,7 @@ import {getLimitMonitoringDataItemModel, LimitMonitoringMockup} from './LimitMon
 import {LimitMonitoringRuntime} from './LimitMonitoring';
 import { ConnectionHandler } from 'src/modularPlantManager/pea/connectionHandler/ConnectionHandler';
 import {DataItemAccessLevel} from '@p2olab/pimad-interface';
+import {getEndpointDataModel} from '../../../connectionHandler/ConnectionHandler.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -43,6 +44,7 @@ describe('LimitMonitoringMockup', () => {
 		beforeEach(async () => {
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
+
 		});
 
 		describe('DIntLimitMonitoring', () => {
@@ -177,11 +179,12 @@ describe('LimitMonitoringMockup', () => {
 			beforeEach(async function () {
 				this.timeout(5000);
 				mockupServer = new MockupServer();
-				await mockupServer.initialize();
+			await mockupServer.initialize();
+
 				new LimitMonitoringMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable', 'Ana');
 				await mockupServer.start();
 				connectionHandler= new ConnectionHandler();
-				connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+				connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
 				await connectionHandler.connect();
 			});
 			afterEach(async () => {
@@ -235,11 +238,12 @@ describe('LimitMonitoringMockup', () => {
 			beforeEach(async function () {
 				this.timeout(5000);
 				mockupServer = new MockupServer();
-				await mockupServer.initialize();
+			await mockupServer.initialize();
+
 				new LimitMonitoringMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable', 'DInt');
 				await mockupServer.start();
 				connectionHandler= new ConnectionHandler();
-				connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+				connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
 				await connectionHandler.connect();
 			});
 			afterEach(async () => {

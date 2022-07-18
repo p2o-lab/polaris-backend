@@ -34,9 +34,9 @@ import {
 	ServiceSourceModeController,
 	ServiceSourceModeRuntime
 } from '../../baseFunction/serviceSourceMode/ServiceSourceModeController';
-import {DataAssemblyModel, DataItemModel} from '@p2olab/pimad-interface';
+import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
-import {DataItemFactory, getDataItemModel} from '../../dataItem/DataItemFactory';
+import {keys} from 'ts-transformer-keys';
 
 export type ServParamRuntime = OperationElementRuntime & OpModeRuntime & ServiceSourceModeRuntime & {
 	Sync: DataItem<boolean>;
@@ -44,19 +44,24 @@ export type ServParamRuntime = OperationElementRuntime & OpModeRuntime & Service
 
 export class ServParam extends OperationElement {
 
-	public readonly communication!: ServParamRuntime;
-	public readonly serviceSourceMode: ServiceSourceModeController;
-	public readonly serviceOpMode: OpMode;
+	public readonly dataItems!: ServParamRuntime;
 
-	//public readonly wqc: WQC;
+	public serviceOpMode!: OpMode;
+	public serviceSourceMode!: ServiceSourceModeController;
 
-	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false) {
 		super(options, connectionHandler);
-		//this.wqc = new WQC(this);
 
-		this.serviceSourceMode = new ServiceSourceModeController(options, connectionHandler);
-		this.serviceOpMode = new OpMode(options, connectionHandler);
+		if (initial) {
+			const keyList = keys<typeof this.dataItems>();
+			this.initializeDataItems(options, keyList);
+			this.initializeBaseFunctions();
+		}
+	}
 
-		this.communication.Sync = DataItemFactory.create(getDataItemModel(options, 'Sync'), connectionHandler);
+	protected initializeBaseFunctions() {
+		super.initializeBaseFunctions();
+		this.serviceOpMode = new OpMode(this.dataItems);
+		this.serviceSourceMode = new ServiceSourceModeController(this.dataItems);
 	}
 }

@@ -25,9 +25,9 @@
 
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {DataItem} from '../../../dataItem/DataItem';
-import {DataItemFactory, getDataItemModel} from '../../../dataItem/DataItemFactory';
 import {LockView4, LockView4Runtime} from '../LockView4';
 import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
+import {keys} from 'ts-transformer-keys';
 
 export type LockView8Runtime = LockView4Runtime & {
 	In5En: DataItem<boolean>;
@@ -56,56 +56,20 @@ export type LockView8Runtime = LockView4Runtime & {
 };
 
 export class LockView8 extends LockView4 {
-	In5En: DataItem<boolean>;
-	In5: DataItem<boolean>;
-	In5QC: DataItem<number>;
-	In5Inv: DataItem<boolean>;
-	In5Txt: DataItem<string>;
 
-	In6En: DataItem<boolean>;
-	In6: DataItem<boolean>;
-	In6QC: DataItem<number>;
-	In6Inv: DataItem<boolean>;
-	In6Txt: DataItem<string>;
+	public readonly dataItems!: LockView8Runtime;
 
-	In7En: DataItem<boolean>;
-	In7: DataItem<boolean>;
-	In7QC: DataItem<number>;
-	In7Inv: DataItem<boolean>;
-	In7Txt: DataItem<string>;
-
-	In8En: DataItem<boolean>;
-	In8: DataItem<boolean>;
-	In8QC: DataItem<number>;
-	In8Inv: DataItem<boolean>;
-	In8Txt: DataItem<string>;
-
-	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false) {
 		super(options, connectionHandler);
 
-		this.In5En = DataItemFactory.create(getDataItemModel(options, 'In5En'), connectionHandler);
-		this.In5 = DataItemFactory.create(getDataItemModel(options, 'In5'), connectionHandler);
-		this.In5QC = DataItemFactory.create(getDataItemModel(options, 'In5QC'), connectionHandler);
-		this.In5Inv = DataItemFactory.create(getDataItemModel(options, 'In5Inv'), connectionHandler);
-		this.In5Txt = DataItemFactory.create(getDataItemModel(options, 'In5Txt'), connectionHandler);
-
-		this.In6En = DataItemFactory.create(getDataItemModel(options, 'In6En'), connectionHandler);
-		this.In6 = DataItemFactory.create(getDataItemModel(options, 'In6'), connectionHandler);
-		this.In6QC = DataItemFactory.create(getDataItemModel(options, 'In6QC'), connectionHandler);
-		this.In6Inv = DataItemFactory.create(getDataItemModel(options, 'In6Inv'), connectionHandler);
-		this.In6Txt = DataItemFactory.create(getDataItemModel(options, 'In6Txt'), connectionHandler);
-
-		this.In7En = DataItemFactory.create(getDataItemModel(options, 'In7En'), connectionHandler);
-		this.In7 = DataItemFactory.create(getDataItemModel(options, 'In7'), connectionHandler);
-		this.In7QC = DataItemFactory.create(getDataItemModel(options, 'In7QC'), connectionHandler);
-		this.In7Inv = DataItemFactory.create(getDataItemModel(options, 'In7Inv'), connectionHandler);
-		this.In7Txt = DataItemFactory.create(getDataItemModel(options, 'In7Txt'), connectionHandler);
-
-		this.In8En = DataItemFactory.create(getDataItemModel(options, 'In8En'), connectionHandler);
-		this.In8 = DataItemFactory.create(getDataItemModel(options, 'In8'), connectionHandler);
-		this.In8QC = DataItemFactory.create(getDataItemModel(options, 'In8QC'), connectionHandler);
-		this.In8Inv = DataItemFactory.create(getDataItemModel(options, 'In8Inv'), connectionHandler);
-		this.In8Txt = DataItemFactory.create(getDataItemModel(options, 'In8Txt'), connectionHandler);
+		if (initial) {
+			const keyList = keys<typeof this.dataItems>();
+			this.initializeDataItems(options, keyList);
+			this.initializeBaseFunctions();
+		}	
 	}
 
+	protected initializeBaseFunctions() {
+		super.initializeBaseFunctions();
+	}
 }

@@ -29,7 +29,7 @@
 interface HealthStateViewRuntime
 
 class HealthStateView{
-	+ readonly communication!: HealthStateViewRuntime;
+	+ readonly dataItems!: HealthStateViewRuntime;
 
 }
 

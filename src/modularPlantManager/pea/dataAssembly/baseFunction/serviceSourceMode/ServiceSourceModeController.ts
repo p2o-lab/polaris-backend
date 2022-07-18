@@ -26,12 +26,8 @@
 import {ServiceSourceMode} from '@p2olab/polaris-interface';
 import {DataItem} from '../../dataItem/DataItem';
 import {catDataAssembly} from '../../../../../logging';
-import {BaseServiceEvents} from '../../../serviceSet';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {EventEmitter} from 'events';
-import {DataAssemblyModel} from '@p2olab/pimad-interface';
-import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
-import {DataItemFactory, getDataItemModel} from '../../dataItem/DataItemFactory';
 
 export interface ServiceSourceModeRuntime {
 	SrcChannel: DataItem<boolean>;
@@ -46,7 +42,7 @@ export interface ServiceSourceModeRuntime {
 /**
  * Events emitted by [[ServiceSourceMode]]
  */
-export interface ServiceSourceModeEvents extends BaseServiceEvents {
+export interface ServiceSourceModeEvents {
 	changed: {
 		serviceSourceMode: ServiceSourceMode;
 		sourceChannel: boolean;
@@ -55,38 +51,25 @@ export interface ServiceSourceModeEvents extends BaseServiceEvents {
 type ServiceSourceModeEmitter = StrictEventEmitter<EventEmitter, ServiceSourceModeEvents>;
 
 export class ServiceSourceModeController extends (EventEmitter as new() => ServiceSourceModeEmitter){
-	SrcChannel: DataItem<boolean>;
-	SrcIntAct: DataItem<boolean>;
-	SrcIntAut: DataItem<boolean>;
-	SrcIntOp: DataItem<boolean>;
-	SrcExtAct: DataItem<boolean>;
-	SrcExtAut: DataItem<boolean>;
-	SrcExtOp: DataItem<boolean>;
 
-	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+	public readonly dataItems!: ServiceSourceModeRuntime;
+
+	constructor(requiredDataItems: Required<ServiceSourceModeRuntime>) {
 		super();
 
-		this.SrcChannel = DataItemFactory.create(getDataItemModel(options, 'SrcChannel'), connectionHandler);
+		this.dataItems = requiredDataItems;
 
-		this.SrcExtAut = DataItemFactory.create(getDataItemModel(options, 'SrcExtAut'), connectionHandler);
-		this.SrcIntAut = DataItemFactory.create(getDataItemModel(options, 'SrcIntAut'), connectionHandler);
 
-		this.SrcExtOp = DataItemFactory.create(getDataItemModel(options, 'SrcExtOp'), connectionHandler);
-		this.SrcIntOp = DataItemFactory.create(getDataItemModel(options, 'SrcIntOp'), connectionHandler);
-
-		this.SrcExtAct = DataItemFactory.create(getDataItemModel(options, 'SrcExtAct'), connectionHandler);
-		this.SrcIntAct = DataItemFactory.create(getDataItemModel(options, 'SrcIntAct'), connectionHandler);
-
-		this.SrcChannel.on('changed', () => {
-			this.emit('changed', {serviceSourceMode: this.getServiceSourceMode(), sourceChannel: this.SrcChannel.value});
+		this.dataItems.SrcChannel.on('changed', () => {
+			this.emit('changed', {serviceSourceMode: this.getServiceSourceMode(), sourceChannel: this.dataItems.SrcChannel.value});
 		});
 		// TODO: Always two of them will change in parallel --> Smart way to just emit one event?
 		// Even if there are just inverted options both can be 0 initially, to not miss a change both were added here
-		this.SrcIntAct.on('changed', () => {
-			this.emit('changed', {serviceSourceMode: this.getServiceSourceMode(), sourceChannel: this.SrcChannel.value});
+		this.dataItems.SrcIntAct.on('changed', () => {
+			this.emit('changed', {serviceSourceMode: this.getServiceSourceMode(), sourceChannel: this.dataItems.SrcChannel.value});
 		});
-		this.SrcExtAct.on('changed', () => {
-			this.emit('changed', {serviceSourceMode: this.getServiceSourceMode(), sourceChannel: this.SrcChannel.value});
+		this.dataItems.SrcExtAct.on('changed', () => {
+			this.emit('changed', {serviceSourceMode: this.getServiceSourceMode(), sourceChannel: this.dataItems.SrcChannel.value});
 		});
 	}
 
@@ -155,18 +138,18 @@ export class ServiceSourceModeController extends (EventEmitter as new() => Servi
 	private async writeServiceSourceMode(serviceSourceMode: ServiceSourceMode): Promise<void> {
 		catDataAssembly.debug(`Write serviceSourceMode: ${serviceSourceMode}`);
 		if (serviceSourceMode === ServiceSourceMode.Extern) {
-			await this.SrcExtOp.write(true);
+			await this.dataItems.SrcExtOp.write(true);
 		} else if (serviceSourceMode === ServiceSourceMode.Intern) {
-			await this.SrcIntOp.write(true);
+			await this.dataItems.SrcIntOp.write(true);
 		}
 		catDataAssembly.debug('Set serviceSourceMode');
 	}
 
 	public isExtSource(): boolean {
-		return this.SrcExtAct.value;
+		return this.dataItems.SrcExtAct.value;
 	}
 
 	public isIntSource(): boolean {
-		return this.SrcIntAct.value;
+		return this.dataItems.SrcIntAct.value;
 	}
 }

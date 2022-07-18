@@ -24,12 +24,8 @@
  */
 
 import {DataItem} from '../../dataItem/DataItem';
-import {BaseServiceEvents} from '../../../serviceSet';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {EventEmitter} from 'events';
-import {DataItemFactory, getDataItemModel} from '../../dataItem/DataItemFactory';
-import {DataAssemblyModel} from '@p2olab/pimad-interface';
-import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
 
 export type WQCRuntime = {
 	WQC: DataItem<number>;
@@ -38,24 +34,26 @@ export type WQCRuntime = {
 /**
  * Events emitted by [[WQC]]
  */
-export interface WQCEvents extends BaseServiceEvents {
+export interface WQCEvents {
 	changed: number;
 }
 
 type WQCEmitter = StrictEventEmitter<EventEmitter, WQCEvents>;
 
 export class WQC extends (EventEmitter as new () => WQCEmitter) {
-	private _wqc: any;
 
-	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+	private readonly dataItems!: WQCRuntime;
+
+	constructor(requiredDataItems: Required<WQCRuntime>) {
 		super();
-		this._wqc = DataItemFactory.create(getDataItemModel(options, 'WQC'), connectionHandler);
-		this._wqc.on('changed', () => {
+		this.dataItems = requiredDataItems;
+
+		this.dataItems.WQC.on('changed', () => {
 			this.emit('changed', this.WQC);
 		});
 	}
 
 	get WQC(): number{
-		return this._wqc.value;
+		return this.dataItems.WQC.value;
 	}
 }

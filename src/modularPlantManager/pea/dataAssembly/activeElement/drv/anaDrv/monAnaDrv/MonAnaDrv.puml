@@ -27,7 +27,7 @@
 'https://plantuml.com/class-diagram
 
 class MonAnaDrv{
-    + readonly communication!: MonAnaDrvRuntime
+    + readonly dataItems!: MonAnaDrvRuntime
     + readonly feedbackMonitoring: FeedbackMonitoring
 }
 

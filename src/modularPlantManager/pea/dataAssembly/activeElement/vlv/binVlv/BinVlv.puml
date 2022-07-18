@@ -28,7 +28,7 @@
 !include monBinVlv/MonBinVlv.puml
 
 class BinVlv{
-	+ readonly communication!: BinVlvRuntime;
+	+ readonly dataItems!: BinVlvRuntime;
 }
 
 BinVlv *- BinVlvSpec

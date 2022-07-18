@@ -28,28 +28,34 @@ import {DataAssembly} from './DataAssembly';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {getDataAssemblyModel, getEmptyDataAssemblyModel} from './DataAssembly.mockup';
+import {ConnectionHandler} from '../connectionHandler/ConnectionHandler';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('DataAssembly', () => {
+    const connectionHandler = new ConnectionHandler();
 
     describe('static', () => {
 
         it('should create DataAssembly', () => {
             expect(() => {
                 const newDataAssemblyModel = getDataAssemblyModel('name', undefined, 'test', 'test' );
-                const dataAssembly = new DataAssembly(newDataAssemblyModel);
-                expect(dataAssembly.dataItems.TagName.value).to.equal('test');
-                expect(dataAssembly.dataItems.TagDescription.value).to.equal('test');
+                const dataAssembly = new DataAssembly(newDataAssemblyModel, connectionHandler, true);
+                dataAssembly.dataItems.TagName.read().then(function(data){
+                    expect(data).to.equal('test');
+                });
+                dataAssembly.dataItems.TagName.read().then(function(data){
+                    expect(data).to.equal('test');
+                });
             }).to.not.throw();
         });
 
 
-        it('should fail with undefined DataItems', () => {
+        it('should fail with missing DataItems', () => {
             const newDataAssemblyModel = getEmptyDataAssemblyModel();
-            expect(() => new DataAssembly(newDataAssemblyModel))
-                .to.throw('Creating DataAssembly Error: No Communication dataAssemblies found in DataAssemblyModel');
+            expect(() => new DataAssembly(newDataAssemblyModel,connectionHandler, true))
+                .to.throw('DataAssemblyModel does not contain DataItemModel named TagName!');
         });
 
     });

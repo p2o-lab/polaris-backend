@@ -41,7 +41,6 @@ describe('AnaViewMockup', () => {
 
         beforeEach(async()=>{
             mockupServer = new MockupServer();
-            await mockupServer.initialize();
         });
 
         it('should create AnaViewMockup', async () => {

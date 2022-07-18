@@ -27,7 +27,7 @@ import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {DataItem} from '../../../dataItem/DataItem';
 import {ServParam, ServParamRuntime} from '../ServParam';
 import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
-import {DataItemFactory, getDataItemModel} from '../../../dataItem/DataItemFactory';
+import {keys} from 'ts-transformer-keys';
 
 export type BinServParamRuntime = ServParamRuntime & {
 	VExt: DataItem<boolean>;
@@ -42,25 +42,25 @@ export type BinServParamRuntime = ServParamRuntime & {
 };
 
 export class BinServParam extends ServParam {
-	public readonly communication!: BinServParamRuntime;
 
-	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+	public readonly dataItems!: BinServParamRuntime;
+
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false) {
 		super(options, connectionHandler);
 
-		this.communication.VExt = DataItemFactory.create(getDataItemModel(options, 'VExt'), connectionHandler);
-		this.communication.VOp = DataItemFactory.create(getDataItemModel(options, 'VOp'), connectionHandler);
-		this.communication.VInt = DataItemFactory.create(getDataItemModel(options, 'VInt'), connectionHandler);
-		this.communication.VReq = DataItemFactory.create(getDataItemModel(options, 'VReq'), connectionHandler);
-		this.communication.VOut = DataItemFactory.create(getDataItemModel(options, 'VOut'), connectionHandler);
-		this.communication.VFbk = DataItemFactory.create(getDataItemModel(options, 'VFbk'), connectionHandler);
+		if (initial) {
+			const keyList = keys<typeof this.dataItems>();
+			this.initializeDataItems(options, keyList);
+			this.initializeBaseFunctions();
+		}	
 
-		this.communication.VState0 = DataItemFactory.create(getDataItemModel(options, 'VState0'), connectionHandler);
-		this.communication.VState1 = DataItemFactory.create(getDataItemModel(options, 'VState1'), connectionHandler);
-
-		this.defaultReadDataItem = this.communication.VOut;
+		this.defaultReadDataItem = this.dataItems.VOut;
 		this.defaultReadDataItemType = 'boolean';
-
+		this.defaultWriteDataItem = this.dataItems.VExt;
 		this.defaultWriteDataItemType = 'boolean';
-		this.defaultWriteDataItem = this.communication.VExt;
+	}
+
+	protected initializeBaseFunctions() {
+		super.initializeBaseFunctions();
 	}
 }

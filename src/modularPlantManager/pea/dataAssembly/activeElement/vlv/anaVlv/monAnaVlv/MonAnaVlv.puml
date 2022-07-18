@@ -27,7 +27,7 @@
 'https://plantuml.com/class-diagram
 
 class MonAnaVlv{
-   + readonly communication!: MonAnaVlvRuntime
+   + readonly dataItems!: MonAnaVlvRuntime
    + readonly feedbackMonitoring: FeedbackMonitoring
  }
 MonAnaVlv *- MonAnaVlvSpec

@@ -33,20 +33,33 @@ import {OSLevel} from '../baseFunction';
 import {ParameterRequest} from '../ParameterRequest';
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {ConnectionHandler} from '../../connectionHandler/ConnectionHandler';
+import {keys} from 'ts-transformer-keys';
 
 export type OperationElementRuntime = DataAssemblyDataItems & OSLevelRuntime
 
 export class OperationElement extends DataAssembly {
 
-	public communication!: OperationElementRuntime;
+	public dataItems!: OperationElementRuntime;
+
 	// TODO: This creates a circular dependency as parameter also imports OperationElement
 	public parameterRequest: ParameterRequest | undefined;
 	public requestedValue = '';
-	public readonly osLevel: OSLevel;
 
-	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
-		super(options);
-		this.osLevel = new OSLevel(options, connectionHandler);
+	public osLevel!: OSLevel;
+
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false) {
+		super(options, connectionHandler);
+
+		if (initial) {
+			const keyList = keys<typeof this.dataItems>();
+			this.initializeDataItems(options, keyList);
+			this.initializeBaseFunctions();
+		}	
+	}
+
+	protected initializeBaseFunctions() {
+		super.initializeBaseFunctions();
+		this.osLevel = new OSLevel(this.dataItems);
 	}
 
 
@@ -57,7 +70,7 @@ export class OperationElement extends DataAssembly {
 	 */
 	public async setParameter(paramValue: number | string, variable?: string): Promise<void> {
 		const dataItem: DataItem<number | string> | undefined = (variable) ?
-			this.communication[variable as keyof OperationElementRuntime] : this.defaultWriteDataItem;
+			this.dataItems[variable as keyof OperationElementRuntime] : this.defaultWriteDataItem;
 		catDataAssembly.debug(`Set Parameter: ${this.name} (${variable}) -> ${JSON.stringify(paramValue)}`);
 		await (dataItem as DynamicDataItem<any>)?.write(paramValue);
 	}

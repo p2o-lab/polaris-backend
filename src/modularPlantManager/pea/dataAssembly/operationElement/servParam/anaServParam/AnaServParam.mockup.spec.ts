@@ -30,6 +30,7 @@ import {MockupServer} from '../../../../../_utils';
 import {DataAssemblyModel, DataItemAccessLevel} from '@p2olab/pimad-interface';
 import {AnaServParamRuntime} from './AnaServParam';
 import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
+import {getEndpointDataModel} from '../../../../connectionHandler/ConnectionHandler.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -43,7 +44,7 @@ describe('AnaServParamMockup', () => {
         beforeEach(async function(){
             this.timeout(10000);
             mockupServer = new MockupServer();
-            await mockupServer.initialize();
+            
         });
 
         it('should create AnaServParamMockup', () => {
@@ -111,11 +112,11 @@ describe('AnaServParamMockup', () => {
         beforeEach(async function(){
             this.timeout(10000);
             mockupServer = new MockupServer();
-            await mockupServer.initialize();
+            
             new AnaServParamMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
             await mockupServer.start();
             connectionHandler = new ConnectionHandler();
-            connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+            connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
             await connectionHandler.connect();
         });
         afterEach(async () => {

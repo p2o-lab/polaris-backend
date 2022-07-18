@@ -36,6 +36,7 @@ import {
 } from '../../../baseFunction';
 import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
 import {DataItemFactory, getDataItemModel} from '../../../dataItem/DataItemFactory';
+import {keys} from 'ts-transformer-keys';
 
 export type DIntServParamRuntime = ServParamRuntime & ScaleSettingsRuntime & UnitSettingsRuntime & ValueLimitationRuntime &{
 	VExt: DataItem<number>;
@@ -47,30 +48,32 @@ export type DIntServParamRuntime = ServParamRuntime & ScaleSettingsRuntime & Uni
 };
 
 export class DIntServParam extends ServParam {
-	public readonly communication!: DIntServParamRuntime;
-	public readonly scaleSettings: ScaleSettings;
-	public readonly unitSettings: UnitSettings;
-	public readonly valueLimitation: ValueLimitation;
 
-	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+	public readonly dataItems!: DIntServParamRuntime;
+
+	public scaleSettings!: ScaleSettings;
+	public unitSettings!: UnitSettings;
+	public valueLimitation!: ValueLimitation;
+
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false) {
 		super(options, connectionHandler);
 
-		this.scaleSettings = new ScaleSettings(options, connectionHandler);
-		this.unitSettings = new UnitSettings(options, connectionHandler);
-		this.valueLimitation = new ValueLimitation(options, connectionHandler);
+		if (initial) {
+			const keyList = keys<typeof this.dataItems>();
+			this.initializeDataItems(options, keyList);
+			this.initializeBaseFunctions();
+		}	
 
-		this.communication.VExt = DataItemFactory.create(getDataItemModel(options, 'VExt'), connectionHandler);
-		this.communication.VOp = DataItemFactory.create(getDataItemModel(options, 'VOp'), connectionHandler);
-		this.communication.VInt = DataItemFactory.create(getDataItemModel(options, 'VInt'), connectionHandler);
-		this.communication.VReq = DataItemFactory.create(getDataItemModel(options, 'VReq'), connectionHandler);
-		this.communication.VOut = DataItemFactory.create(getDataItemModel(options, 'VOut'), connectionHandler);
-		this.communication.VFbk = DataItemFactory.create(getDataItemModel(options, 'VFbk'), connectionHandler);
-
-
-		this.defaultReadDataItem = this.communication.VOut;
+		this.defaultReadDataItem = this.dataItems.VOut;
 		this.defaultReadDataItemType = 'number';
-
-		this.defaultWriteDataItem = this.communication.VExt;
+		this.defaultWriteDataItem = this.dataItems.VExt;
 		this.defaultWriteDataItemType = 'number';
+	}
+
+	protected initializeBaseFunctions() {
+		super.initializeBaseFunctions();
+		this.scaleSettings = new ScaleSettings(this.dataItems);
+		this.unitSettings = new UnitSettings(this.dataItems);
+		this.valueLimitation = new ValueLimitation(this.dataItems);
 	}
 }

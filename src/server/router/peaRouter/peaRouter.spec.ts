@@ -35,6 +35,7 @@ import {expect} from 'chai';
 import {Endpoint, PEAModel} from '@p2olab/pimad-interface';
 import * as peaModelFileContent from 'src/modularPlantManager/peaModel.spec.json';
 import {getEmptyPEAModel} from '../../../modularPlantManager/pea/PEA.mockup';
+import {PEAProvider} from '../../../peaProvider/PEAProvider';
 
 const peaModel = peaModelFileContent as unknown as PEAModel;
 
@@ -43,6 +44,7 @@ describe('PEARoutes', () => {
 	let app: Application;
 	let appServer: Server;
 	let manager: ModularPlantManager;
+	let peaProvider: PEAProvider;
 	let mockupServer: MockupServer;
 
 	const peaModelDummy: PEAModel = getEmptyPEAModel();
@@ -53,7 +55,8 @@ describe('PEARoutes', () => {
 
 	beforeEach(() => {
 		manager = new ModularPlantManager();
-		appServer = new Server(manager);
+		peaProvider = new PEAProvider();
+		appServer = new Server(manager, peaProvider);
 		appServer.startHttpServer(3000);
 		appServer.initSocketServer();
 		app = appServer.app;

@@ -29,7 +29,7 @@
 !include ../../../baseFunction/osLevel/OSLevel.puml
 
 class BinMon{
-	+ readonly communication!: BinMonRuntime;
+	+ readonly dataItems!: BinMonRuntime;
 	+ readonly osLevel: OSLevel;
 }
 

@@ -28,7 +28,7 @@
 !include monAnaDrv/MonAnaDrv.puml
 
 class AnaDrv{
-    + readonly communication!: AnaDrvRuntime
+    + readonly dataItems!: AnaDrvRuntime
     + readonly sourceMode: SourceModeController
 }
 

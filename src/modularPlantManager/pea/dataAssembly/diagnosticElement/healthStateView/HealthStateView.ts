@@ -26,14 +26,25 @@
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {DiagnosticElement, DiagnosticElementRuntime} from '../DiagnosticElement';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
+import {keys} from 'ts-transformer-keys';
 
 export type HealthStateViewRuntime = DiagnosticElementRuntime;
 
 export class HealthStateView extends DiagnosticElement {
-	public readonly communication!: HealthStateViewRuntime;
 
-	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+	public readonly dataItems!: HealthStateViewRuntime;
+
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false) {
 		super(options, connectionHandler);
+
+		if (initial) {
+			const keyList = keys<typeof this.dataItems>();
+			this.initializeDataItems(options, keyList);
+			this.initializeBaseFunctions();
+		}
 	}
 
+	protected initializeBaseFunctions() {
+		super.initializeBaseFunctions();
+	}
 }

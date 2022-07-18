@@ -29,16 +29,28 @@ import {
 	DataAssemblyDataItems, DataAssembly,
 } from '../DataAssembly';
 import {ConnectionHandler} from '../../connectionHandler/ConnectionHandler';
+import {keys} from 'ts-transformer-keys';
 
 export type DiagnosticElementRuntime = DataAssemblyDataItems & WQCRuntime & OSLevelRuntime;
 
 export class DiagnosticElement extends DataAssembly {
-	public readonly communication!: DiagnosticElementRuntime;
-	wqc: WQC;
 
-	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
-		super(options);
-		this.wqc = new WQC(options, connectionHandler);
+	public readonly dataItems!: DiagnosticElementRuntime;
 
+	public wqc!: WQC;
+
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false) {
+		super(options, connectionHandler);
+
+		if (initial) {
+			const keyList = keys<typeof this.dataItems>();
+			this.initializeDataItems(options, keyList);
+			this.initializeBaseFunctions();
+		}
+	}
+
+	protected initializeBaseFunctions() {
+		super.initializeBaseFunctions();
+		this.wqc = new WQC(this.dataItems);
 	}
 }

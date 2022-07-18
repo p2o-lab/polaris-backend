@@ -30,23 +30,26 @@ import {MockupServer} from '../../../../_utils';
 import {ResetMockup} from './Reset.mockup';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
 import {getMonBinVlvDataAssemblyModel} from '../../activeElement/vlv/binVlv/monBinVlv/MonBinVlv.mockup';
+import {DataAssemblyFactory} from '../../DataAssemblyFactory';
+import {MonBinVlvRuntime} from '../../activeElement';
+import {getEndpointDataModel} from '../../../connectionHandler/ConnectionHandler.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('Reset', () => {
 
-	const options = getMonBinVlvDataAssemblyModel(2, 'Variable', 'Variable');
+	const connectionHandler = new ConnectionHandler();
+	const referenceDataAssemblyModel = getMonBinVlvDataAssemblyModel(2, 'Variable', 'Variable');
+	const referenceDataAssembly = DataAssemblyFactory.create(referenceDataAssemblyModel, connectionHandler);
 
 	describe('static', () => {
 
-		const connectionHandler = new ConnectionHandler();
-
 		it('should create Reset',  () => {
-			const dataAssembly = new Reset(options, connectionHandler); //this will set communication dataAssemblies
+			const dataAssembly = new Reset(referenceDataAssembly.dataItems as MonBinVlvRuntime); //this will set dataItems dataAssemblies
 			expect(dataAssembly).to.not.to.undefined;
-			expect(dataAssembly.ResetAut).to.not.to.undefined;
-			expect(dataAssembly.ResetOp).to.not.to.undefined;
+			expect(dataAssembly.dataItems.ResetAut).to.not.to.undefined;
+			expect(dataAssembly.dataItems.ResetOp).to.not.to.undefined;
 		});
 	});
 	describe('dynamic', () => {
@@ -60,7 +63,7 @@ describe('Reset', () => {
 			new ResetMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			await mockupServer.start();
 			connectionHandler= new ConnectionHandler();
-			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
 			await connectionHandler.connect();
 		});
 
@@ -72,11 +75,11 @@ describe('Reset', () => {
 
 		it('should subscribe successfully', async () => {
 
-			const dataAssembly = new Reset(options, connectionHandler);
+			const dataAssembly = new Reset(referenceDataAssembly.dataItems as MonBinVlvRuntime);
 			await connectionHandler.connect();
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
-			expect(dataAssembly.ResetAut.value).to.be.false;
-			expect(dataAssembly.ResetOp.value).to.be.false;
+			expect(dataAssembly.dataItems.ResetAut.value).to.be.false;
+			expect(dataAssembly.dataItems.ResetOp.value).to.be.false;
 
 		}).timeout(5000);
 	});

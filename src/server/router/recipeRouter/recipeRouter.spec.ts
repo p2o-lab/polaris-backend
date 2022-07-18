@@ -27,6 +27,7 @@ import {ModularPlantManager} from '../../../modularPlantManager';
 import {Server} from '../../server';
 
 import {Application} from 'express';
+import {PEAProvider} from '../../../peaProvider/PEAProvider';
 
 describe('RecipeRoutes', () => {
 	const request = require('supertest');
@@ -34,7 +35,7 @@ describe('RecipeRoutes', () => {
 	let appServer: Server;
 
 	before(() => {
-		appServer = new Server(new ModularPlantManager());
+		appServer = new Server(new ModularPlantManager(), new PEAProvider());
 		appServer.startHttpServer(3000);
 		appServer.initSocketServer();
 		app = appServer.app;

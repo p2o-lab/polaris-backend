@@ -33,6 +33,7 @@ import {MockupServer} from '../../../_utils';
 import {getServiceControlDataAssemblyModel, ServiceControlMockup} from './ServiceControl.mockup';
 import {ConnectionHandler} from '../../connectionHandler/ConnectionHandler';
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
+import {getEndpointDataModel} from '../../connectionHandler/ConnectionHandler.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -51,20 +52,20 @@ describe('ServiceControl', () => {
 			expect(dataAssembly.opMode).to.not.equal(undefined);
 			expect(dataAssembly.serviceSourceMode).to.not.equal(undefined);
 
-			expect(dataAssembly.communication.WQC).to.not.equal(undefined);
-			expect(dataAssembly.communication.CommandOp).to.not.equal(undefined);
-			expect(dataAssembly.communication.CommandExt).to.not.equal(undefined);
-			expect(dataAssembly.communication.CommandInt).to.not.equal(undefined);
-			expect(dataAssembly.communication.CommandEn).to.not.equal(undefined);
-			expect(dataAssembly.communication.StateCur).to.not.equal(undefined);
-			expect(dataAssembly.communication.ProcedureOp).to.not.equal(undefined);
-			expect(dataAssembly.communication.ProcedureExt).to.not.equal(undefined);
-			expect(dataAssembly.communication.ProcedureInt).to.not.equal(undefined);
-			expect(dataAssembly.communication.ProcedureCur).to.not.equal(undefined);
-			expect(dataAssembly.communication.ProcedureReq).to.not.equal(undefined);
-			expect(dataAssembly.communication.InteractQuestionID).to.not.equal(undefined);
-			expect(dataAssembly.communication.InteractAnswerID).to.not.equal(undefined);
-			expect(dataAssembly.communication.PosTextID).to.not.equal(undefined);
+			expect(dataAssembly.dataItems.WQC).to.not.equal(undefined);
+			expect(dataAssembly.dataItems.CommandOp).to.not.equal(undefined);
+			expect(dataAssembly.dataItems.CommandExt).to.not.equal(undefined);
+			expect(dataAssembly.dataItems.CommandInt).to.not.equal(undefined);
+			expect(dataAssembly.dataItems.CommandEn).to.not.equal(undefined);
+			expect(dataAssembly.dataItems.StateCur).to.not.equal(undefined);
+			expect(dataAssembly.dataItems.ProcedureOp).to.not.equal(undefined);
+			expect(dataAssembly.dataItems.ProcedureExt).to.not.equal(undefined);
+			expect(dataAssembly.dataItems.ProcedureInt).to.not.equal(undefined);
+			expect(dataAssembly.dataItems.ProcedureCur).to.not.equal(undefined);
+			expect(dataAssembly.dataItems.ProcedureReq).to.not.equal(undefined);
+			expect(dataAssembly.dataItems.InteractQuestionID).to.not.equal(undefined);
+			expect(dataAssembly.dataItems.InteractAnswerID).to.not.equal(undefined);
+			expect(dataAssembly.dataItems.PosTextID).to.not.equal(undefined);
 		});
 	});
 
@@ -81,7 +82,7 @@ describe('ServiceControl', () => {
 			options = serviceControlMockup.getDataAssemblyModel();
 			await mockupServer.start();
 			connectionHandler= new ConnectionHandler();
-			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
 			await connectionHandler.connect();
 		});
 
@@ -98,25 +99,25 @@ describe('ServiceControl', () => {
 			await connectionHandler.connect();
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 
-			expect(dataAssembly.communication.WQC.value).equal(0);
-			expect((dataAssembly).communication.StateChannel.value).equal(false);
-			expect((dataAssembly).communication.StateOffAut.value).equal(false);
-			expect((dataAssembly).communication.StateOpAut.value).equal(false);
-			expect((dataAssembly).communication.StateAutAut.value).equal(false);
-			expect((dataAssembly).communication.StateOffOp.value).equal(false);
-			expect((dataAssembly).communication.StateOpOp.value).equal(false);
-			expect((dataAssembly).communication.StateAutOp.value).equal(false);
-			expect((dataAssembly).communication.StateOpAct.value).equal(false);
-			expect((dataAssembly).communication.StateAutAct.value).equal(false);
-			expect((dataAssembly).communication.StateOffAct.value).equal(true);
+			expect(dataAssembly.dataItems.WQC.value).equal(0);
+			expect((dataAssembly).dataItems.StateChannel.value).equal(false);
+			expect((dataAssembly).dataItems.StateOffAut.value).equal(false);
+			expect((dataAssembly).dataItems.StateOpAut.value).equal(false);
+			expect((dataAssembly).dataItems.StateAutAut.value).equal(false);
+			expect((dataAssembly).dataItems.StateOffOp.value).equal(false);
+			expect((dataAssembly).dataItems.StateOpOp.value).equal(false);
+			expect((dataAssembly).dataItems.StateAutOp.value).equal(false);
+			expect((dataAssembly).dataItems.StateOpAct.value).equal(false);
+			expect((dataAssembly).dataItems.StateAutAct.value).equal(false);
+			expect((dataAssembly).dataItems.StateOffAct.value).equal(true);
 
-			expect(dataAssembly.communication.SrcChannel.value).equal(false);
-			expect(dataAssembly.communication.SrcExtAut.value).equal(false);
-			expect(dataAssembly.communication.SrcIntAut.value).equal(false);
-			expect(dataAssembly.communication.SrcIntOp.value).equal(false);
-			expect(dataAssembly.communication.SrcExtOp.value).equal(false);
-			expect(dataAssembly.communication.SrcIntAct.value).equal(true);
-			expect(dataAssembly.communication.SrcExtAct.value).equal(false);
+			expect(dataAssembly.dataItems.SrcChannel.value).equal(false);
+			expect(dataAssembly.dataItems.SrcExtAut.value).equal(false);
+			expect(dataAssembly.dataItems.SrcIntAut.value).equal(false);
+			expect(dataAssembly.dataItems.SrcIntOp.value).equal(false);
+			expect(dataAssembly.dataItems.SrcExtOp.value).equal(false);
+			expect(dataAssembly.dataItems.SrcIntAct.value).equal(true);
+			expect(dataAssembly.dataItems.SrcExtAct.value).equal(false);
 
 		}).timeout(4000);
 	});

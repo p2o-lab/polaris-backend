@@ -31,7 +31,7 @@ import {IDProvider} from '../../_utils';
 
 import {OpcUaConnectionInfo, OpcUaConnectionSettings} from '@p2olab/polaris-interface';
 import {OpcUaAdapter} from './connectionAdapter';
-import {CIData} from '@p2olab/pimad-interface';
+import {CIData, Endpoint} from '@p2olab/pimad-interface';
 import {catConnection} from '../../../logging';
 
 
@@ -68,36 +68,44 @@ export class ConnectionHandler extends (EventEmitter as new() => ConnectionEmitt
 	public readonly id: string = IDProvider.generateIdentifier();
 	private readonly logger: Category = catConnection;
 
+	private _endpoints: Endpoint[] = [];
 	public connectionEstablished = false;
-	private _connectionAdapter: OpcUaAdapter | undefined;
+	private _connectionAdapters: OpcUaAdapter[] = [];
 
 	private monitoredDataItems: Map<string, CIData> = new Map<string, CIData>();
 
+
 	constructor() {
 		super();
+		process.setMaxListeners(0);
 	}
 
 
-	public setupConnectionAdapter(adapterSettings: OpcUaConnectionSettings): void {
-		if (this.connectionEstablished) {
-			this.logger.warn('Connection is active.');
-			throw new Error('Connection is active.');
-		}
-		this._connectionAdapter = new OpcUaAdapter(adapterSettings);
+	public initializeConnectionAdapters(endpoints: Endpoint[]): void {
+		const newAdapter = new OpcUaAdapter({endpointUrl: endpoints[0].value});
+		this._connectionAdapters.push(newAdapter) ;
 	}
 
 
-	public get connectionAdapterInfo(): OpcUaConnectionInfo | undefined {
-		return this._connectionAdapter?.settingsInfo;
+	public get connectionAdapterInfo(): OpcUaConnectionInfo[] {
+		return this._connectionAdapters.map(adapter => adapter.settingsInfo);
 	}
 
 	/**
 	 * Connect Connection Adapter
 	 * @returns {Promise<void>}
 	 */
-	public async connect(): Promise<void> {
-		if(!this._connectionAdapter) throw new Error('No Connection Adapter available!');
-		await this._connectionAdapter.connect();
+	public async connect(specificConnectionAdapterId?:string): Promise<void> {
+		if (specificConnectionAdapterId){
+			const adapter = this._connectionAdapters.find(adapter => adapter.id === specificConnectionAdapterId);
+			if (adapter){
+				await adapter.connect();
+			} else {
+				throw new Error('Connection Adapter not found!');
+			}
+		} else {
+			await this._connectionAdapters.forEach( a => a.connect());
+		}
 		return Promise.resolve();
 	}
 
@@ -105,9 +113,17 @@ export class ConnectionHandler extends (EventEmitter as new() => ConnectionEmitt
 	 * Disconnect Connection Adapter
 	 * @returns {Promise<void>}
 	 */
-	public async disconnect(): Promise<void> {
-		if(!this._connectionAdapter) throw new Error('No Connection Adapter available!');
-		await this._connectionAdapter.disconnect();
+	public async disconnect(specificConnectionAdapterId?:string): Promise<void> {
+		if (specificConnectionAdapterId){
+			const adapter = this._connectionAdapters.find(adapter => adapter.id === specificConnectionAdapterId);
+			if (adapter){
+				await adapter.disconnect();
+			} else {
+				throw new Error('Connection Adapter not found!');
+			}
+		} else {
+			await this._connectionAdapters.forEach( a => a.disconnect());
+		}
 		return Promise.resolve();
 	}
 
@@ -115,8 +131,8 @@ export class ConnectionHandler extends (EventEmitter as new() => ConnectionEmitt
 	 * Indicator if this Connection Adapter has an active connection
 	 * @returns {boolean}
 	 */
-	public connectionIsEstablished(): boolean {
-		return this._connectionAdapter? this._connectionAdapter.isConnected() : false;
+	public connected(): boolean {
+		return this._connectionAdapters.some(a => a.connected);
 	}
 
 	/**
@@ -124,7 +140,8 @@ export class ConnectionHandler extends (EventEmitter as new() => ConnectionEmitt
 	 * @returns {Promise<DataValue | undefined>}
 	 */
 	public async readDataItemValue(ciData: CIData):  Promise<DataValue | undefined> {
-		return this._connectionAdapter?.readNode(ciData);
+		// TODO: extend ciData with Endpoint identifier
+		return this._connectionAdapters[0].readNode(ciData);
 	}
 
 	/**
@@ -132,7 +149,7 @@ export class ConnectionHandler extends (EventEmitter as new() => ConnectionEmitt
 	 * @returns {Promise<DataValue | undefined>}
 	 */
 	public async writeDataItemValue(ciData: CIData, value: number | string | boolean): Promise<void> {
-		return this._connectionAdapter?.writeNode(ciData, value);
+		return this._connectionAdapters[0].writeNode(ciData, value);
 	}
 
 	/**
@@ -165,4 +182,7 @@ export class ConnectionHandler extends (EventEmitter as new() => ConnectionEmitt
 		this.monitoredDataItems.clear();
 	}
 
+	public changeEndpointConfig(options: OpcUaConnectionSettings) {
+		// TODO: should find endpoint, should replace old
+	}
 }

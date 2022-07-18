@@ -29,6 +29,7 @@ import {FeedbackMonitoring, FeedbackMonitoringRuntime} from '../../../../baseFun
 import {AnaDrv, AnaDrvRuntime} from '../AnaDrv';
 import {DataItemFactory, getDataItemModel} from '../../../../dataItem/DataItemFactory';
 import {ConnectionHandler} from '../../../../../connectionHandler/ConnectionHandler';
+import {keys} from 'ts-transformer-keys';
 
 export type MonAnaDrvRuntime = AnaDrvRuntime & FeedbackMonitoringRuntime & {
 	RpmErr: DataItem<number>;
@@ -42,22 +43,23 @@ export type MonAnaDrvRuntime = AnaDrvRuntime & FeedbackMonitoringRuntime & {
 };
 
 export class MonAnaDrv extends AnaDrv {
-	public readonly communication!: MonAnaDrvRuntime;
-	public readonly feedbackMonitoring: FeedbackMonitoring;
 
-	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+	public readonly dataItems!: MonAnaDrvRuntime;
+
+	public feedbackMonitoring!: FeedbackMonitoring;
+
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false) {
 		super(options, connectionHandler);
 
-		this.feedbackMonitoring = new FeedbackMonitoring(options, connectionHandler);
+		if (initial) {
+						const keyList = keys<typeof this.dataItems>();
+			this.initializeDataItems(options, keyList);
+			this.initializeBaseFunctions();
+		}	
+	}
 
-		this.communication.RpmErr = DataItemFactory.create(getDataItemModel(options, 'RpmErr'), connectionHandler);
-
-		this.communication.RpmAHEn = DataItemFactory.create(getDataItemModel(options, 'RpmAHEn'), connectionHandler);
-		this.communication.RpmAHLim = DataItemFactory.create(getDataItemModel(options, 'RpmAHLim'), connectionHandler);
-		this.communication.RpmAHAct = DataItemFactory.create(getDataItemModel(options, 'RpmAHAct'), connectionHandler);
-
-		this.communication.RpmALEn = DataItemFactory.create(getDataItemModel(options, 'RpmALEn'), connectionHandler);
-		this.communication.RpmALLim = DataItemFactory.create(getDataItemModel(options, 'RpmALLim'), connectionHandler);
-		this.communication.RpmALAct = DataItemFactory.create(getDataItemModel(options, 'RpmALAct'), connectionHandler);
+	protected initializeBaseFunctions() {
+		super.initializeBaseFunctions();
+		this.feedbackMonitoring = new FeedbackMonitoring(this.dataItems);
 	}
 }

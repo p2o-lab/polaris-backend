@@ -32,6 +32,7 @@ import {ServiceSourceMode} from '@p2olab/polaris-interface';
 import {ServiceSourceModeRuntime} from './ServiceSourceModeController';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
 import {DataItemAccessLevel} from '@p2olab/pimad-interface';
+import {getEndpointDataModel} from '../../../connectionHandler/ConnectionHandler.mockup';
 
 
 chai.use(chaiAsPromised);
@@ -45,7 +46,7 @@ describe('ServiceSourceModeMockup', () => {
 
         beforeEach(async()=>{
             mockupServer = new MockupServer();
-            await mockupServer.initialize();
+			await mockupServer.initialize();
         });
 
         it('should create ServiceSourceModeMockup', async () => {
@@ -91,12 +92,13 @@ describe('ServiceSourceModeMockup', () => {
         beforeEach(async function () {
             this.timeout(10000);
             mockupServer = new MockupServer();
-            await mockupServer.initialize();
+			await mockupServer.initialize();
+            
             mockup = new ServiceSourceModeMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
             await mockupServer.start();
             connectionHandler= new ConnectionHandler();
-            connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+            connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
             await connectionHandler.connect();
         });
 
@@ -151,13 +153,14 @@ describe('ServiceSourceModeMockup', () => {
         beforeEach(async function () {
             this.timeout(5000);
             mockupServer = new MockupServer();
-            await mockupServer.initialize();
+			await mockupServer.initialize();
+            
             mockup = new ServiceSourceModeMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
             mockup.srcChannel= true;
             await mockupServer.start();
             connectionHandler= new ConnectionHandler();
-            connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+            connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
             await connectionHandler.connect();
         });
 

@@ -32,6 +32,7 @@ import {MockupServer} from '../../../../../../_utils';
 import {DataAssemblyFactory} from '../../../../DataAssemblyFactory';
 import {getMonBinDrvDataAssemblyModel, MonBinDrvMockup} from './MonBinDrv.mockup';
 import {ConnectionHandler} from '../../../../../connectionHandler/ConnectionHandler';
+import {getEndpointDataModel} from '../../../../../connectionHandler/ConnectionHandler.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -60,11 +61,12 @@ describe('MonBinDrv', () => {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
+
 			const monBinDrvMockup = new MonBinDrvMockup( mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			options = monBinDrvMockup.getDataAssemblyModel();
 			await mockupServer.start();
 			connectionHandler= new ConnectionHandler();
-			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
 			await connectionHandler.connect();
 
 			dataAssembly = DataAssemblyFactory.create(options, connectionHandler) as MonBinDrv;
@@ -80,50 +82,50 @@ describe('MonBinDrv', () => {
 		});
 
 		it('should subscribe successfully', async () => {
-			expect((dataAssembly).communication.OSLevel.value).equal(0);
-			expect((dataAssembly).communication.WQC.value).equal(0);
+			expect((dataAssembly).dataItems.OSLevel.value).equal(0);
+			expect((dataAssembly).dataItems.WQC.value).equal(0);
 
-			expect((dataAssembly).communication.StateChannel.value).equal(false);
-			expect((dataAssembly).communication.StateOffAut.value).equal(false);
-			expect((dataAssembly).communication.StateOpAut.value).equal(false);
-			expect((dataAssembly).communication.StateAutAut.value).equal(false);
-			expect((dataAssembly).communication.StateOffOp.value).equal(false);
-			expect((dataAssembly).communication.StateOpOp.value).equal(false);
-			expect((dataAssembly).communication.StateAutOp.value).equal(false);
-			expect((dataAssembly).communication.StateOpAct.value).equal(false);
-			expect((dataAssembly).communication.StateAutAct.value).equal(false);
-			expect((dataAssembly).communication.StateOffAct.value).equal(true);
+			expect((dataAssembly).dataItems.StateChannel.value).equal(false);
+			expect((dataAssembly).dataItems.StateOffAut.value).equal(false);
+			expect((dataAssembly).dataItems.StateOpAut.value).equal(false);
+			expect((dataAssembly).dataItems.StateAutAut.value).equal(false);
+			expect((dataAssembly).dataItems.StateOffOp.value).equal(false);
+			expect((dataAssembly).dataItems.StateOpOp.value).equal(false);
+			expect((dataAssembly).dataItems.StateAutOp.value).equal(false);
+			expect((dataAssembly).dataItems.StateOpAct.value).equal(false);
+			expect((dataAssembly).dataItems.StateAutAct.value).equal(false);
+			expect((dataAssembly).dataItems.StateOffAct.value).equal(true);
 
-			expect(dataAssembly.communication.ResetOp.value).equal(false);
-			expect(dataAssembly.communication.ResetAut.value).equal(false);
+			expect(dataAssembly.dataItems.ResetOp.value).equal(false);
+			expect(dataAssembly.dataItems.ResetAut.value).equal(false);
 
-			expect(dataAssembly.communication.PermEn.value).equal(false);
-			expect(dataAssembly.communication.Permit.value).equal(false);
-			expect(dataAssembly.communication.IntlEn.value).equal(false);
-			expect(dataAssembly.communication.Interlock.value).equal(false);
-			expect(dataAssembly.communication.ProtEn.value).equal(false);
-			expect(dataAssembly.communication.Protect.value).equal(false);
+			expect(dataAssembly.dataItems.PermEn.value).equal(false);
+			expect(dataAssembly.dataItems.Permit.value).equal(false);
+			expect(dataAssembly.dataItems.IntlEn.value).equal(false);
+			expect(dataAssembly.dataItems.Interlock.value).equal(false);
+			expect(dataAssembly.dataItems.ProtEn.value).equal(false);
+			expect(dataAssembly.dataItems.Protect.value).equal(false);
 
-			expect(dataAssembly.communication.SafePos.value).equal(false);
-			expect(dataAssembly.communication.SafePosAct.value).equal(false);
+			expect(dataAssembly.dataItems.SafePos.value).equal(false);
+			expect(dataAssembly.dataItems.SafePosAct.value).equal(false);
 
-			expect(dataAssembly.communication.FwdAut.value).equal(false);
-			expect(dataAssembly.communication.FwdCtrl.value).equal(false);
-			expect(dataAssembly.communication.FwdEn.value).equal(false);
-			expect(dataAssembly.communication.FwdFbk.value).equal(false);
-			expect(dataAssembly.communication.FwdFbkCalc.value).equal(false);
-			expect(dataAssembly.communication.FwdOp.value).equal(false);
+			expect(dataAssembly.dataItems.FwdAut.value).equal(false);
+			expect(dataAssembly.dataItems.FwdCtrl.value).equal(false);
+			expect(dataAssembly.dataItems.FwdEn.value).equal(false);
+			expect(dataAssembly.dataItems.FwdFbk.value).equal(false);
+			expect(dataAssembly.dataItems.FwdFbkCalc.value).equal(false);
+			expect(dataAssembly.dataItems.FwdOp.value).equal(false);
 
-			expect(dataAssembly.communication.RevAut.value).equal(false);
-			expect(dataAssembly.communication.RevCtrl.value).equal(false);
-			expect(dataAssembly.communication.RevEn.value).equal(false);
-			expect(dataAssembly.communication.RevFbk.value).equal(false);
-			expect(dataAssembly.communication.RevFbkCalc.value).equal(false);
-			expect(dataAssembly.communication.RevOp.value).equal(false);
+			expect(dataAssembly.dataItems.RevAut.value).equal(false);
+			expect(dataAssembly.dataItems.RevCtrl.value).equal(false);
+			expect(dataAssembly.dataItems.RevEn.value).equal(false);
+			expect(dataAssembly.dataItems.RevFbk.value).equal(false);
+			expect(dataAssembly.dataItems.RevFbkCalc.value).equal(false);
+			expect(dataAssembly.dataItems.RevOp.value).equal(false);
 
-			expect(dataAssembly.communication.StopAut.value).equal(false);
-			expect(dataAssembly.communication.StopOp.value).equal(false);
-			expect(dataAssembly.communication.Trip.value).equal(false);
+			expect(dataAssembly.dataItems.StopAut.value).equal(false);
+			expect(dataAssembly.dataItems.StopOp.value).equal(false);
+			expect(dataAssembly.dataItems.Trip.value).equal(false);
 		}).timeout(4000);
 	});
 });

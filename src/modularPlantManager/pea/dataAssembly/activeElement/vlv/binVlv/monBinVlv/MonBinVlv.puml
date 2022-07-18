@@ -27,7 +27,7 @@
 'https://plantuml.com/class-diagram
 
 class MonBinVlv{
-  + readonly communication!: MonBinVlvRuntime
+  + readonly dataItems!: MonBinVlvRuntime
   + readonly feedbackMonitoring: FeedbackMonitoring
 }
 

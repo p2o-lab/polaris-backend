@@ -29,6 +29,7 @@ import {MockupServer} from '../../../../_utils';
 import {getResetDataItemModel, ResetMockup} from './Reset.mockup';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
 import {DataItemAccessLevel} from '@p2olab/pimad-interface';
+import {getEndpointDataModel} from '../../../connectionHandler/ConnectionHandler.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -41,7 +42,8 @@ describe('ResetMockup', () => {
 
         beforeEach(async()=>{
             mockupServer = new MockupServer();
-            await mockupServer.initialize();
+			await mockupServer.initialize();
+            
         });
 
         it('should create ResetMockup', async () => {
@@ -77,11 +79,11 @@ describe('ResetMockup', () => {
         beforeEach(async function () {
             this.timeout(10000);
             mockupServer = new MockupServer();
-            await mockupServer.initialize();
+			await mockupServer.initialize();
             new ResetMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
             await mockupServer.start();
             connectionHandler= new ConnectionHandler();
-            connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+            connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
             await connectionHandler.connect();
         });
 

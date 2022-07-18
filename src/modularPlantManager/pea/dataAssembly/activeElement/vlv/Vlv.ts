@@ -29,6 +29,7 @@ import {Interlock, InterlockRuntime, OpMode, OpModeRuntime, Reset, ResetRuntime}
 import {ActiveElement, ActiveElementRuntime} from '../ActiveElement';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
 import {DataItemFactory, getDataItemModel} from '../../dataItem/DataItemFactory';
+import {keys} from 'ts-transformer-keys';
 
 export type VlvRuntime = ActiveElementRuntime & OpModeRuntime & InterlockRuntime & ResetRuntime & {
 	SafePos: DataItem<boolean>;
@@ -47,30 +48,27 @@ export type VlvRuntime = ActiveElementRuntime & OpModeRuntime & InterlockRuntime
 };
 
 export class Vlv extends ActiveElement {
-	public readonly communication!: VlvRuntime;
-	public readonly reset: Reset;
-	public readonly interlock: Interlock;
-	public readonly opMode: OpMode;
 
-	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+	public readonly dataItems!: VlvRuntime;
+
+	public reset!: Reset;
+	public interlock!: Interlock;
+	public opMode!: OpMode;
+
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false) {
 		super(options, connectionHandler);
 
-		this.reset = new Reset(options, connectionHandler);
-		this.interlock = new Interlock(options, connectionHandler);
-		this.opMode = new OpMode(options, connectionHandler);
+		if (initial) {
+			const keyList = keys<typeof this.dataItems>();
+			this.initializeDataItems(options, keyList);
+			this.initializeBaseFunctions();
+		}	
+	}
 
-		this.communication.SafePos = DataItemFactory.create<boolean>(getDataItemModel(options, 'SafePos'), connectionHandler);
-		this.communication.SafePosEn = DataItemFactory.create<boolean>(getDataItemModel(options, 'SafePosEn'), connectionHandler);
-		this.communication.SafePosAct = DataItemFactory.create<boolean>(getDataItemModel(options, 'SafePosAct'), connectionHandler);
-
-		this.communication.OpenAut = DataItemFactory.create<boolean>(getDataItemModel(options, 'OpenAut'), connectionHandler);
-		this.communication.OpenFbk = DataItemFactory.create<boolean>(getDataItemModel(options, 'OpenFbk'), connectionHandler);
-		this.communication.OpenFbkCalc = DataItemFactory.create<boolean>(getDataItemModel(options, 'OpenFbkCalc'), connectionHandler);
-		this.communication.OpenOp = DataItemFactory.create<boolean>(getDataItemModel(options, 'OpenOp'), connectionHandler);
-
-		this.communication.CloseAut = DataItemFactory.create<boolean>(getDataItemModel(options, 'CloseAut'), connectionHandler);
-		this.communication.CloseFbk = DataItemFactory.create<boolean>(getDataItemModel(options, 'CloseFbk'), connectionHandler);
-		this.communication.CloseFbkCalc = DataItemFactory.create<boolean>(getDataItemModel(options, 'CloseFbkCalc'), connectionHandler);
-		this.communication.CloseOp = DataItemFactory.create<boolean>(getDataItemModel(options, 'CloseOp'), connectionHandler);
+	protected initializeBaseFunctions() {
+		super.initializeBaseFunctions();
+		this.reset = new Reset(this.dataItems);
+		this.interlock = new Interlock(this.dataItems);
+		this.opMode = new OpMode(this.dataItems);
 	}
 }

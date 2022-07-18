@@ -27,7 +27,7 @@ import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {DataItem} from '../../dataItem/DataItem';
 import {IndicatorElement, IndicatorElementRuntime} from '../IndicatorElement';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
-import {DataItemFactory, getDataItemModel} from '../../dataItem/DataItemFactory';
+import {keys} from 'ts-transformer-keys';
 
 export type StringViewRuntime = IndicatorElementRuntime & {
 	Text: DataItem<string>;
@@ -35,18 +35,27 @@ export type StringViewRuntime = IndicatorElementRuntime & {
 
 export class StringView extends IndicatorElement {
 
-	public readonly communication!: StringViewRuntime;
+	public readonly dataItems!: StringViewRuntime;
 
-	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false) {
 		super(options, connectionHandler);
-		this.communication.Text = DataItemFactory.create(getDataItemModel(options, 'Text'), connectionHandler);
 
-		this.defaultReadDataItem = this.communication.Text;
+		if (initial) {
+			const keyList = keys<typeof this.dataItems>();
+			this.initializeDataItems(options, keyList);
+			this.initializeBaseFunctions();
+		}	
+
+		this.defaultReadDataItem = this.dataItems.Text;
 		this.defaultReadDataItemType = 'string';
 	}
 
+	protected initializeBaseFunctions() {
+		super.initializeBaseFunctions();
+	}
+
 	get Text(): string | undefined {
-		return this.communication.Text.value;
+		return this.dataItems.Text.value;
 	}
 
 }

@@ -32,7 +32,7 @@ import {
 import {OperationElement, OperationElementRuntime} from '../../OperationElement';
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
-import {DataItemFactory, getDataItemModel} from '../../../dataItem/DataItemFactory';
+import {keys} from 'ts-transformer-keys';
 
 export type AnaManRuntime =
 	OperationElementRuntime & UnitSettingsRuntime
@@ -46,27 +46,33 @@ export type AnaManRuntime =
 
 export class AnaMan extends OperationElement {
 
-	public readonly communication!: AnaManRuntime;
-	public readonly scaleSettings: ScaleSettings;
-	public readonly unitSettings: UnitSettings;
-	public readonly valueLimitation: ValueLimitation;
+	public readonly dataItems!: AnaManRuntime;
+
+	public scaleSettings!: ScaleSettings;
+	public unitSettings!: UnitSettings;
+	public valueLimitation!: ValueLimitation;
 
 
-	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false) {
 		super(options, connectionHandler);
 
-		this.communication.VOut = DataItemFactory.create<number>(getDataItemModel(options, 'VOut'), connectionHandler);
-		this.communication.VRbk = DataItemFactory.create<number>(getDataItemModel(options, 'VRbk'), connectionHandler);
-		this.communication.VFbk = DataItemFactory.create<number>(getDataItemModel(options, 'VFbk'), connectionHandler);
-		this.communication.VMan = DataItemFactory.create<number>(getDataItemModel(options, 'VMan'), connectionHandler);
+		if (initial) {
+			const keyList = keys<typeof this.dataItems>();
+			this.initializeDataItems(options, keyList);
+			this.initializeBaseFunctions();
+		}
 
-		this.unitSettings = new UnitSettings(options, connectionHandler);
-		this.scaleSettings = new ScaleSettings(options, connectionHandler);
-		this.valueLimitation = new ValueLimitation(options, connectionHandler);
-
-		this.defaultReadDataItem = this.communication.VOut;
+		this.defaultReadDataItem = this.dataItems.VOut;
 		this.defaultReadDataItemType = 'number';
-		this.defaultWriteDataItem = this.communication.VMan;
+
+		this.defaultWriteDataItem = this.dataItems.VMan;
 		this.defaultWriteDataItemType = 'number';
+	}
+
+	protected initializeBaseFunctions() {
+		super.initializeBaseFunctions();
+		this.unitSettings = new UnitSettings(this.dataItems);
+		this.scaleSettings = new ScaleSettings(this.dataItems);
+		this.valueLimitation = new ValueLimitation(this.dataItems);
 	}
 }

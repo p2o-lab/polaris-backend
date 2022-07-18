@@ -24,9 +24,6 @@
  */
 
 import {DataItem} from '../../dataItem/DataItem';
-import {DataAssemblyModel} from '@p2olab/pimad-interface';
-import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
-import {DataItemFactory, getDataItemModel} from '../../dataItem/DataItemFactory';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {EventEmitter} from 'events';
 
@@ -45,13 +42,11 @@ export interface ValueLimitationEvents {
 type ValueLimitationEventEmitter = StrictEventEmitter<EventEmitter, ValueLimitationEvents>;
 
 export class ValueLimitation extends (EventEmitter as new () => ValueLimitationEventEmitter) {
-	VMin: DataItem<number>;
-	VMax: DataItem<number>;
+	public readonly dataItems!: ValueLimitationRuntime;
 
-	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+	constructor(requiredDataItems: Required<ValueLimitationRuntime>) {
 		super();
 
-		this.VMax = DataItemFactory.create(getDataItemModel(options, 'VMax'), connectionHandler);
-		this.VMin = DataItemFactory.create(getDataItemModel(options, 'VMin'), connectionHandler);
+		this.dataItems = requiredDataItems;
 	}
 }

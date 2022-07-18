@@ -29,7 +29,7 @@
 !include binVlv/BinVlv.puml
 
 class Vlv{
-    + readonly communication!: VlvRuntime
+    + readonly dataItems!: VlvRuntime
     + readonly reset: Reset
     + readonly interlock: Interlock
     + readonly opMode: OpMode

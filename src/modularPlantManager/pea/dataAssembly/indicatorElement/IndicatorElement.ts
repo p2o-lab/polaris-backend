@@ -29,16 +29,29 @@ import {DataAssembly, DataAssemblyDataItems} from '../DataAssembly';
 import {WQC} from '../baseFunction';
 import {ConnectionHandler} from '../../connectionHandler/ConnectionHandler';
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
+import {keys} from 'ts-transformer-keys';
 
 export type IndicatorElementRuntime = DataAssemblyDataItems & WQCRuntime
 
 export class IndicatorElement extends DataAssembly {
-	public readonly communication!: IndicatorElementRuntime;
-	public readonly wqc: WQC;
 
-	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
-		super(options);
-		this.wqc = new WQC(options, connectionHandler);
+	public readonly dataItems!: IndicatorElementRuntime;
+
+	public wqc!: WQC;
+
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false) {
+		super(options, connectionHandler);
+
+		if (initial) {
+			const keyList = keys<typeof this.dataItems>();
+			this.initializeDataItems(options, keyList);
+			this.initializeBaseFunctions();
+		}	
+	}
+
+	protected initializeBaseFunctions() {
+		super.initializeBaseFunctions();
+		this.wqc = new WQC(this.dataItems);
 	}
 
 	public toJson(): ParameterInterface {

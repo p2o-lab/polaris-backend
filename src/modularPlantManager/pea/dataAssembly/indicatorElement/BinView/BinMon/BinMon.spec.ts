@@ -31,6 +31,7 @@ import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {MockupServer} from '../../../../../_utils';
 import {BinMonMockup, getBinMonDataAssemblyModel} from './BinMon.mockup';
 import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
+import {getEndpointDataModel} from '../../../../connectionHandler/ConnectionHandler.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -47,18 +48,18 @@ describe('BinMon', () => {
 		it('should create BinMon', async () => {
 			const dataAssembly: BinMon = new BinMon(options, connectionHandler);
 
-			expect(dataAssembly.communication.TagName).to.not.equal(undefined);
-			expect(dataAssembly.communication.TagDescription).to.not.equal(undefined);
+			expect(dataAssembly.dataItems.TagName).to.not.equal(undefined);
+			expect(dataAssembly.dataItems.TagDescription).to.not.equal(undefined);
 			
-			expect(dataAssembly.communication.WQC).to.not.equal(undefined);
-			expect(dataAssembly.communication.V).to.not.equal(undefined);
-			expect(dataAssembly.communication.VState0).to.not.equal(undefined);
-			expect(dataAssembly.communication.VState1).to.not.equal(undefined);
-			expect(dataAssembly.communication.OSLevel).to.not.equal(undefined);
-			expect(dataAssembly.communication.VFlutEn).to.not.equal(undefined);
-			expect(dataAssembly.communication.VFlutTi).to.not.equal(undefined);
-			expect(dataAssembly.communication.VFlutCnt).to.not.equal(undefined);
-			expect(dataAssembly.communication.VFlutAct).to.not.equal(undefined);
+			expect(dataAssembly.dataItems.WQC).to.not.equal(undefined);
+			expect(dataAssembly.dataItems.V).to.not.equal(undefined);
+			expect(dataAssembly.dataItems.VState0).to.not.equal(undefined);
+			expect(dataAssembly.dataItems.VState1).to.not.equal(undefined);
+			expect(dataAssembly.dataItems.OSLevel).to.not.equal(undefined);
+			expect(dataAssembly.dataItems.VFlutEn).to.not.equal(undefined);
+			expect(dataAssembly.dataItems.VFlutTi).to.not.equal(undefined);
+			expect(dataAssembly.dataItems.VFlutCnt).to.not.equal(undefined);
+			expect(dataAssembly.dataItems.VFlutAct).to.not.equal(undefined);
 		});
 	});
 	describe('dynamic', () => {
@@ -68,12 +69,11 @@ describe('BinMon', () => {
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
-			await mockupServer.initialize();
 			const binMonMockup = new BinMonMockup( mockupServer.nameSpace, mockupServer.rootObject,'Variable');
 			options = binMonMockup.getDataAssemblyModel();
 			await mockupServer.start();
 			connectionHandler= new ConnectionHandler();
-			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
 			await connectionHandler.connect();
 		});
 
@@ -90,15 +90,15 @@ describe('BinMon', () => {
 			await connectionHandler.connect();
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 
-			expect(dataAssembly.communication.WQC.value).equal(0);
-			expect(dataAssembly.communication.V.value).equal(false);
-			expect(dataAssembly.communication.VState0.value).equal('state0_active');
-			expect(dataAssembly.communication.VState1.value).equal('state1_active');
+			expect(dataAssembly.dataItems.WQC.value).equal(0);
+			expect(dataAssembly.dataItems.V.value).equal(false);
+			expect(dataAssembly.dataItems.VState0.value).equal('state0_active');
+			expect(dataAssembly.dataItems.VState1.value).equal('state1_active');
 
-			expect(dataAssembly.communication.VFlutEn.value).equal(false);
-			expect(dataAssembly.communication.VFlutAct.value).equal(false);
-			expect(dataAssembly.communication.VFlutTi.value).equal(0);
-			expect(dataAssembly.communication.VFlutCnt.value).equal(0);
+			expect(dataAssembly.dataItems.VFlutEn.value).equal(false);
+			expect(dataAssembly.dataItems.VFlutAct.value).equal(false);
+			expect(dataAssembly.dataItems.VFlutTi.value).equal(0);
+			expect(dataAssembly.dataItems.VFlutCnt.value).equal(0);
 		}).timeout(4000);
 	});
 });

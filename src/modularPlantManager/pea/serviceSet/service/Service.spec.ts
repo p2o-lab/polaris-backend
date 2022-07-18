@@ -253,6 +253,7 @@ describe('Service', () => {
 		it('set Parameter', async () => {
 			const mockupServer = new MockupServer();
 			await mockupServer.initialize();
+			
 
 			new AnaServParamMockup(mockupServer.nameSpace, mockupServer.rootObject, 'TestService.AnaConfParam_TestService_updateRate');
 			new AnaServParamMockup(mockupServer.nameSpace, mockupServer.rootObject, 'TestService.AnaProcParam_TestService_factor');
@@ -287,13 +288,13 @@ describe('Service', () => {
 			curProcedure = service.currentProcedure;
 			expect(curProcedure).to.not.be.undefined;
 			const paramOptions: ParameterOptions = {value: 5, name: 'AnaProcParam_TestService_factor'};
-			expect((procedure?.parameters[0] as AnaServParam).communication.VExt.value).to.equal(0);
+			expect((procedure?.parameters[0] as AnaServParam).dataItems.VExt.value).to.equal(0);
 
 			await service.setParameters([paramOptions], [pea]);
 
 			await new Promise((resolve => service.serviceControl.on('parameterChanged', resolve)));
 
-			expect((procedure?.parameters[0] as AnaServParam).communication.VExt.value).to.equal(5);
+			expect((procedure?.parameters[0] as AnaServParam).dataItems.VExt.value).to.equal(5);
 			await pea.disconnectAndUnsubscribe();
 			await mockupServer.shutdown();
 		}).timeout(10000);

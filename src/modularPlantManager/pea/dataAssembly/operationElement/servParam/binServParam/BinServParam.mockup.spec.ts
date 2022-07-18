@@ -29,6 +29,7 @@ import {BinServParamMockup, getBinServParamDataAssemblyModel, getBinServParamDat
 import {MockupServer} from '../../../../../_utils';
 import {DataAssemblyModel, DataItemAccessLevel} from '@p2olab/pimad-interface';
 import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
+import {getEndpointDataModel} from '../../../../connectionHandler/ConnectionHandler.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -42,7 +43,6 @@ describe('BinServParamMockup', () => {
         beforeEach(async function () {
             this.timeout(4000);
             mockupServer = new MockupServer();
-            await mockupServer.initialize();
         });
 
         it('should create BinServParamMockup', () => {
@@ -110,11 +110,11 @@ describe('BinServParamMockup', () => {
         beforeEach(async function () {
             this.timeout(5000);
             mockupServer = new MockupServer();
-            await mockupServer.initialize();
+            
             new BinServParamMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
             await mockupServer.start();
             connectionHandler= new ConnectionHandler();
-            connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+            connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
             await connectionHandler.connect();
         });
 

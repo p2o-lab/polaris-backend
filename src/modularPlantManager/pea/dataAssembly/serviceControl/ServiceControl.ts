@@ -25,7 +25,7 @@
 
 import {DataItem} from '../dataItem/DataItem';
 import {
-	DataAssembly, DataAssemblyDataItems, OpModeRuntime, OSLevel, WQCRuntime
+	DataAssembly, DataAssemblyDataItems, OpModeRuntime, OSLevel, OSLevelRuntime, WQCRuntime
 } from '../index';
 import {OperationMode, ServiceSourceMode} from '@p2olab/polaris-interface';
 import {WQC} from '../baseFunction';
@@ -41,9 +41,9 @@ import {catService} from '../../../../logging';
 import {ServiceOpMode} from '../baseFunction/serviceOpMode/ServiceOpMode';
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {ConnectionHandler} from '../../connectionHandler/ConnectionHandler';
-import {DataItemFactory, getDataItemModel} from '../dataItem/DataItemFactory';
+import {keys} from 'ts-transformer-keys';
 
-export type ServiceControlRuntime = DataAssemblyDataItems & OpModeRuntime & ServiceSourceModeRuntime & WQCRuntime & {
+export type ServiceControlRuntime = DataAssemblyDataItems & OpModeRuntime & OSLevelRuntime & ServiceSourceModeRuntime & WQCRuntime & {
 	CommandOp: DataItem<number>;
 	CommandInt: DataItem<number>;
 	CommandExt: DataItem<number>;
@@ -82,54 +82,50 @@ type ServiceControlEmitter = StrictEventEmitter<EventEmitter, ServiceControlEven
 
 
 export class ServiceControl extends DataAssembly {
-	public readonly communication!: ServiceControlRuntime;
-	public readonly wqc: WQC;
-	public readonly opMode: ServiceOpMode;
-	public readonly osLevel: OSLevel;
-	public readonly serviceSourceMode: ServiceSourceModeController;
+
+	public readonly dataItems!: ServiceControlRuntime;
 	public readonly eventEmitter!: ServiceControlEmitter;
+
+	public opMode!: ServiceOpMode;
+	public osLevel!: OSLevel;
+	public serviceSourceMode!: ServiceSourceModeController;
+	public wqc!: WQC;
+
 	private readonly logger: Category = catService;
 
-	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
-		super(options);
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false) {
+		super(options, connectionHandler);
 
-		this.wqc = new WQC(options, connectionHandler);
-		this.opMode = new ServiceOpMode(options, connectionHandler);
-		this.osLevel = new OSLevel(options, connectionHandler);
-		this.serviceSourceMode = new ServiceSourceModeController(options, connectionHandler);
 		this.eventEmitter = new EventEmitter();
 
-		this.communication.CommandOp = DataItemFactory.create(getDataItemModel(options, 'CommandOp'), connectionHandler);
-		this.communication.CommandInt = DataItemFactory.create(getDataItemModel(options, 'CommandInt'), connectionHandler);
-		this.communication.CommandExt = DataItemFactory.create(getDataItemModel(options, 'CommandExt'), connectionHandler);
-		this.communication.CommandEn = DataItemFactory.create(getDataItemModel(options, 'CommandEn'), connectionHandler);
-		this.communication.StateCur = DataItemFactory.create(getDataItemModel(options, 'StateCur'), connectionHandler);
+		if (initial) {
+			const keyList = keys<typeof this.dataItems>();
+			this.initializeDataItems(options, keyList);
+			this.initializeBaseFunctions();
+		}	
 
-		this.communication.ProcedureOp = DataItemFactory.create(getDataItemModel(options, 'ProcedureOp'), connectionHandler);
-		this.communication.ProcedureExt = DataItemFactory.create(getDataItemModel(options, 'ProcedureExt'), connectionHandler);
-		this.communication.ProcedureInt = DataItemFactory.create(getDataItemModel(options, 'ProcedureInt'), connectionHandler);
-		this.communication.ProcedureCur = DataItemFactory.create(getDataItemModel(options, 'ProcedureCur'), connectionHandler);
-		this.communication.ProcedureReq = DataItemFactory.create(getDataItemModel(options, 'ProcedureReq'), connectionHandler);
-
-		this.communication.InteractQuestionID = DataItemFactory.create(getDataItemModel(options, 'InteractQuestionID'), connectionHandler);
-		this.communication.InteractAnswerID = DataItemFactory.create(getDataItemModel(options, 'InteractAnswerID'), connectionHandler);
-		this.communication.PosTextID = DataItemFactory.create(getDataItemModel(options, 'PosTextID'), connectionHandler);
-
-		this.defaultReadDataItem = this.communication.StateCur;
+		this.defaultReadDataItem = this.dataItems.StateCur;
 		this.defaultReadDataItemType = 'number';
-
-		this.defaultWriteDataItem = this.communication.CommandExt;
+		this.defaultWriteDataItem = this.dataItems.CommandExt;
 		this.defaultWriteDataItemType = 'number';
 
 		this.subscribeToChanges().then();
 	}
 
+	protected initializeBaseFunctions() {
+		super.initializeBaseFunctions();
+		this.wqc = new WQC(this.dataItems);
+		this.opMode = new ServiceOpMode(this.dataItems);
+		this.osLevel = new OSLevel(this.dataItems);
+		this.serviceSourceMode = new ServiceSourceModeController(this.dataItems);
+	}
+
 	currentProcedure(): number | undefined {
-		return this.communication.ProcedureCur.value;
+		return this.dataItems.ProcedureCur.value;
 	}
 
 	requestedProcedure(): number | undefined {
-		return this.communication.ProcedureReq.value;
+		return this.dataItems.ProcedureReq.value;
 	}
 
 	/**
@@ -155,28 +151,28 @@ export class ServiceControl extends DataAssembly {
 			this.logger.debug(`OSLevel changed: ${JSON.stringify(data)}`);
 			this.emit('osLevel', data);
 		});
-		this.communication.ProcedureCur.on('changed', (data) => {
+		this.dataItems.ProcedureCur.on('changed', (data) => {
 			this.logger.debug(`Procedure changed: ${JSON.stringify(data.value)}`);
 			this.emit('procedure', {
-				requestedProcedure: this.communication.ProcedureReq.value,
-				currentProcedure: this.communication.ProcedureCur.value
+				requestedProcedure: this.dataItems.ProcedureReq.value,
+				currentProcedure: this.dataItems.ProcedureCur.value
 			});
 		});
-		this.communication.ProcedureReq.on('changed', (data) => {
+		this.dataItems.ProcedureReq.on('changed', (data) => {
 			this.logger.debug(`Procedure changed: ${JSON.stringify(data.value)}`);
 			this.emit('procedure', {
-				requestedProcedure: this.communication.ProcedureReq.value,
-				currentProcedure: this.communication.ProcedureCur.value
+				requestedProcedure: this.dataItems.ProcedureReq.value,
+				currentProcedure: this.dataItems.ProcedureCur.value
 			});
 		});
-		this.communication.StateCur.on('changed', () => {
-			this.emit('state', this.communication.StateCur.value);
+		this.dataItems.StateCur.on('changed', () => {
+			this.emit('state', this.dataItems.StateCur.value);
 		});
-		this.communication.InteractQuestionID.on('changed', () => {
-			this.emit('question', this.communication.InteractQuestionID.value);
+		this.dataItems.InteractQuestionID.on('changed', () => {
+			this.emit('question', this.dataItems.InteractQuestionID.value);
 		});
-		this.communication.CommandEn.on('changed', () => {
-			this.emit('commandEn', this.communication.CommandEn.value);
+		this.dataItems.CommandEn.on('changed', () => {
+			this.emit('commandEn', this.dataItems.CommandEn.value);
 		});
 	}
 }

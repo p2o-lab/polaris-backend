@@ -32,7 +32,7 @@
 !include ../../../baseFunction/valueLimitation/ValueLimitation.puml
 
 class AnaMan{
-    + readonly communication!: AnaManRuntime
+    + readonly dataItems!: AnaManRuntime
     + readonly scaleSettings: ScaleSettings
     + readonly unitSettings: UnitSettings
     + readonly valueLimitation: ValueLimitation

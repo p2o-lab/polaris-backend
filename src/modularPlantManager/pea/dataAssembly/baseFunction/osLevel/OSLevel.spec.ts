@@ -25,38 +25,36 @@
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {OSLevel} from './OSLevel';
 import {MockupServer} from '../../../../_utils';
 import {OSLevelMockup} from './OSLevel.mockup';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
 import {getBinMonDataAssemblyModel} from '../../indicatorElement/BinView/BinMon/BinMon.mockup';
+import {DataAssemblyFactory} from '../../DataAssemblyFactory';
+import {BinMonRuntime} from '../../indicatorElement';
+import {getEndpointDataModel} from '../../../connectionHandler/ConnectionHandler.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('OSLevel', () => {
 
-	let options: DataAssemblyModel;
+	const connectionHandler = new ConnectionHandler();
+	const referenceDataAssemblyModel = getBinMonDataAssemblyModel(2, 'Variable', 'Variable');
+	const referenceDataAssembly = DataAssemblyFactory.create(referenceDataAssemblyModel, connectionHandler);
 
 	describe('static', () => {
 
-		options = getBinMonDataAssemblyModel(2, 'Variable', 'Variable');
-		let osLevelObject: OSLevel;
-		let da: any;
+		let baseFunction: OSLevel;
 
 		beforeEach(()=>{
-			const connectionHandler = new ConnectionHandler();
-			da = new OSLevel(options, connectionHandler);
+			baseFunction = new OSLevel(referenceDataAssembly.dataItems as BinMonRuntime);
 		});
 
 		it('should create OSLevel', async () => {
-			expect(osLevelObject.osLevel).to.equal(0);
-			expect(da.communication.OSLevel).to.not.be.undefined;
-		});
+			expect(baseFunction).to.not.be.undefined;
+			expect(baseFunction.osLevel).to.equal(0);
 
-		it('getter', async () => {
-			expect(osLevelObject.osLevel).to.equal(0);
 		});
 
 	});
@@ -72,7 +70,7 @@ describe('OSLevel', () => {
 			new OSLevelMockup( mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			await mockupServer.start();
 			connectionHandler = new ConnectionHandler();
-			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
 			await connectionHandler.connect();
 		});
 
@@ -84,10 +82,10 @@ describe('OSLevel', () => {
 
 		it('should subscribe successfully', async () => {
 
-			const dataAssembly = new OSLevel(options, connectionHandler);
+			const baseFunction = new OSLevel(referenceDataAssembly.dataItems as BinMonRuntime);
 			await connectionHandler.connect();
-			await new Promise((resolve => dataAssembly.on('changed', resolve)));
-			expect(dataAssembly.osLevel).to.equal(0);
+			await new Promise((resolve => baseFunction.on('changed', resolve)));
+			expect(baseFunction.osLevel).to.equal(0);
 		}).timeout(5000);
 	});
 });

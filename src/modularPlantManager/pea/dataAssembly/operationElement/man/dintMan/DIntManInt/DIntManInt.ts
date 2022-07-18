@@ -31,7 +31,7 @@ import {
 import {DIntMan, DIntManRuntime} from '../DIntMan';
 import {DataItem} from '../../../../dataItem/DataItem';
 import {ConnectionHandler} from '../../../../../connectionHandler/ConnectionHandler';
-import {DataItemFactory, getDataItemModel} from '../../../../dataItem/DataItemFactory';
+import {keys} from 'ts-transformer-keys';
 
 export type DIntManIntRuntime = DIntManRuntime & SourceModeRuntime & WQCRuntime & {
 	VInt: DataItem<number>;
@@ -39,16 +39,24 @@ export type DIntManIntRuntime = DIntManRuntime & SourceModeRuntime & WQCRuntime 
 
 export class DIntManInt extends DIntMan {
 
-	public readonly communication!: DIntManIntRuntime;
-	public readonly sourceMode: SourceModeController;
-	public readonly wqc: WQC;
+	public readonly dataItems!: DIntManIntRuntime;
 
-	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+	public sourceMode!: SourceModeController;
+	public wqc!: WQC;
+
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false) {
 		super(options, connectionHandler);
 
-		this.sourceMode = new SourceModeController(options, connectionHandler);
-		this.wqc = new WQC(options, connectionHandler);
+		if (initial) {
+			const keyList = keys<typeof this.dataItems>();
+			this.initializeDataItems(options, keyList);
+			this.initializeBaseFunctions();
+		}	
+	}
 
-		this.communication.VInt = DataItemFactory.create(getDataItemModel(options, 'VInt'), connectionHandler);
+	protected initializeBaseFunctions() {
+		super.initializeBaseFunctions();
+		this.sourceMode = new SourceModeController(this.dataItems);
+		this.wqc = new WQC(this.dataItems);
 	}
 }

@@ -23,9 +23,8 @@
  * SOFTWARE.
  */
 
-/**
- * extend constructor via function
- * see https://basarat.gitbooks.io/typescript/docs/types/mixins.html
- */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type Constructor<T = Record<string, never>> = new (...args: any[]) => T;
+import {Endpoint} from '@p2olab/pimad-interface';
+
+export function getEndpointDataModel(url: string): Endpoint {
+	return {dataType: 'xs:string', defaultValue: url, description: '', name: 'Endpoint', pimadIdentifier: '', value: url};
+}

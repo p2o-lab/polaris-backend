@@ -29,7 +29,7 @@
 !include binDrv/BinDrv.puml
 
 class Drv{
-    + readonly communication!: DrvRuntime
+    + readonly dataItems!: DrvRuntime
     + readonly reset: Reset
     + readonly interlock: Interlock
     + readonly opMode: OpMode

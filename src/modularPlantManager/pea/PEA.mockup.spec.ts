@@ -36,6 +36,7 @@ describe('PEATestServer', () => {
 
 	beforeEach(async () => {
 		mockupServer = new MockupServer();
+		await mockupServer.initialize();
 		await mockupServer.start();
 	});
 

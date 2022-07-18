@@ -24,14 +24,10 @@
  */
 
 import {DataItem} from '../../dataItem/DataItem';
-import {DataAssemblyDataItems} from '../../DataAssembly';
-import {DataAssemblyModel} from '@p2olab/pimad-interface';
-import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
-import {DataItemFactory, getDataItemModel} from '../../dataItem/DataItemFactory';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {EventEmitter} from 'events';
 
-export interface ScaleSettingsRuntime extends DataAssemblyDataItems {
+export interface ScaleSettingsRuntime {
 	VSclMin: DataItem<number>;
 	VSclMax: DataItem<number>;
 }
@@ -49,13 +45,13 @@ export interface ScaleSettingsEvents {
 type ScaleSettingsEmitter = StrictEventEmitter<EventEmitter, ScaleSettingsEvents>;
 
 export class ScaleSettings extends (EventEmitter as new () => ScaleSettingsEmitter) {
-	VSclMin: DataItem<number>;
-	VSclMax: DataItem<number>;
 
-		constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
-			super();
+	public readonly dataItems!: ScaleSettingsRuntime;
 
-			this.VSclMax = DataItemFactory.create(getDataItemModel(options, 'VSclMax'), connectionHandler);
-			this.VSclMin = DataItemFactory.create(getDataItemModel(options, 'VSclMin'), connectionHandler);
+	constructor(requiredDataItems: Required<ScaleSettingsRuntime>) {
+		super();
+
+		this.dataItems = requiredDataItems;
+
 		}
 }

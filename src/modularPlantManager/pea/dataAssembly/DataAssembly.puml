@@ -39,7 +39,7 @@
 class DataAssembly{
     + //readonly// name: string
     + //readonly// metaModelRef: string
-    + //readonly// communication!: string
+    + //readonly// dataItems!: string
     + //readonly// connection: OpcUaConnection
     + //readonly// tagName: string;
     + //readonly// tagDescription: string;

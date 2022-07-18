@@ -30,16 +30,28 @@ import {
 } from '../BinVlv';
 import {FeedbackMonitoring} from '../../../../baseFunction';
 import {ConnectionHandler} from '../../../../../connectionHandler/ConnectionHandler';
+import {keys} from 'ts-transformer-keys';
 
 export type MonBinVlvRuntime = BinVlvRuntime & FeedbackMonitoringRuntime;
 
 export class MonBinVlv extends BinVlv {
-	public readonly communication!: MonBinVlvRuntime;
-	public readonly feedBackMonitoring: FeedbackMonitoring;
 
-	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+	public readonly dataItems!: MonBinVlvRuntime;
+
+	public feedBackMonitoring!: FeedbackMonitoring;
+
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false) {
 		super(options, connectionHandler);
 
-		this.feedBackMonitoring = new FeedbackMonitoring(options, connectionHandler);
+		if (initial) {
+			const keyList = keys<typeof this.dataItems>();
+			this.initializeDataItems(options, keyList);
+			this.initializeBaseFunctions();
+		}	
+	}
+
+	protected initializeBaseFunctions() {
+		super.initializeBaseFunctions();
+		this.feedBackMonitoring = new FeedbackMonitoring(this.dataItems);
 	}
 }

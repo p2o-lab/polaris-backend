@@ -33,6 +33,7 @@ import {EventEmitter} from 'events';
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
 import {DataItemFactory, getDataItemModel} from '../../dataItem/DataItemFactory';
+import {UnitSettingsRuntime} from '../unitSettings/UnitSettings';
 
 export type ServiceOpModeRuntime = DataAssemblyDataItems & {
 	StateChannel: DataItem<boolean>;
@@ -50,7 +51,7 @@ export type ServiceOpModeRuntime = DataAssemblyDataItems & {
 /**
  * Events emitted by [[ServiceOpMode]]
  */
-export interface ServiceOpModeEvents extends BaseServiceEvents {
+export interface ServiceOpModeEvents {
 	changed: {
 		opMode: OperationMode;
 		stateChannel: boolean;
@@ -60,46 +61,27 @@ export interface ServiceOpModeEvents extends BaseServiceEvents {
 type ServiceOpModeEmitter = StrictEventEmitter<EventEmitter, ServiceOpModeEvents>;
 
 export class ServiceOpMode extends (EventEmitter as new () => ServiceOpModeEmitter) {
-	StateChannel: DataItem<boolean>;
-	StateOffAut: DataItem<boolean>;
-	StateOpAut: DataItem<boolean>;
-	StateAutAut: DataItem<boolean>;
-	StateOffOp: DataItem<boolean>;
-	StateOpOp: DataItem<boolean>;
-	StateAutOp: DataItem<boolean>;
-	StateOpAct: DataItem<boolean>;
-	StateAutAct: DataItem<boolean>;
-	StateOffAct: DataItem<boolean>;
 
-	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+	public readonly dataItems!: ServiceOpModeRuntime;
+
+	constructor(requiredDataItems: Required<ServiceOpModeRuntime>) {
 		super();
 
-		this.StateChannel = DataItemFactory.create(getDataItemModel(options, 'StateChannel'), connectionHandler);
+		this.dataItems = requiredDataItems;
 
-		this.StateOffAut = DataItemFactory.create(getDataItemModel(options, 'StateOffAut'), connectionHandler);
-		this.StateOpAut = DataItemFactory.create(getDataItemModel(options, 'StateOpAut'), connectionHandler);
-		this.StateAutAut = DataItemFactory.create(getDataItemModel(options, 'StateAutAut'), connectionHandler);
 
-		this.StateOffOp = DataItemFactory.create(getDataItemModel(options, 'StateOffOp'), connectionHandler);
-		this.StateOpOp = DataItemFactory.create(getDataItemModel(options, 'StateOpOp'), connectionHandler);
-		this.StateAutOp = DataItemFactory.create(getDataItemModel(options, 'StateAutOp'), connectionHandler);
-
-		this.StateOffAct = DataItemFactory.create(getDataItemModel(options, 'StateOffAct'), connectionHandler);
-		this.StateOpAct = DataItemFactory.create(getDataItemModel(options, 'StateOpAct'), connectionHandler);
-		this.StateAutAct = DataItemFactory.create(getDataItemModel(options, 'StateAutAct'), connectionHandler);
-
-		this.StateChannel.on('changed', () => {
-			this.emit('changed', {opMode: this.getServiceOperationMode(), stateChannel: this.StateChannel.value});
+		this.dataItems.StateChannel.on('changed', () => {
+			this.emit('changed', {opMode: this.getServiceOperationMode(), stateChannel: this.dataItems.StateChannel.value});
 		});
 		// TODO: Always two of them will change in parallel --> Smart way to just emit one event?
-		this.StateOffAct.on('changed', () => {
-			this.emit('changed', {opMode: this.getServiceOperationMode(), stateChannel: this.StateChannel.value});
+		this.dataItems.StateOffAct.on('changed', () => {
+			this.emit('changed', {opMode: this.getServiceOperationMode(), stateChannel: this.dataItems.StateChannel.value});
 		});
-		this.StateOpAct.on('changed', () => {
-			this.emit('changed', {opMode: this.getServiceOperationMode(), stateChannel: this.StateChannel.value});
+		this.dataItems.StateOpAct.on('changed', () => {
+			this.emit('changed', {opMode: this.getServiceOperationMode(), stateChannel: this.dataItems.StateChannel.value});
 		});
-		this.StateAutAct.on('changed', () => {
-			this.emit('changed', {opMode: this.getServiceOperationMode(), stateChannel: this.StateChannel.value});
+		this.dataItems.StateAutAct.on('changed', () => {
+			this.emit('changed', {opMode: this.getServiceOperationMode(), stateChannel: this.dataItems.StateChannel.value});
 		});
 	}
 
@@ -185,24 +167,24 @@ export class ServiceOpMode extends (EventEmitter as new () => ServiceOpModeEmitt
 	private async writeOpMode(opMode: OperationMode): Promise<void> {
 		catDataAssembly.debug(`Write opMode: ${opMode}`);
 		if (opMode === OperationMode.Automatic) {
-			await this.StateAutOp.write(true);
+			await this.dataItems.StateAutOp.write(true);
 		} else if (opMode === OperationMode.Operator) {
-			await this.StateOpOp.write(true);
+			await this.dataItems.StateOpOp.write(true);
 		} else if (opMode === OperationMode.Offline) {
-			await this.StateOffOp.write(true);
+			await this.dataItems.StateOffOp.write(true);
 		}
 		catDataAssembly.debug('Setting opMode successfully');
 	}
 
 	public isOfflineState(): boolean {
-		return this.StateOffAct.value;
+		return this.dataItems.StateOffAct.value;
 	}
 
 	public isAutomaticState(): boolean {
-		return this.StateAutAct.value;
+		return this.dataItems.StateAutAct.value;
 	}
 
 	public isOperatorState(): boolean {
-		return this.StateOpAct.value === true;
+		return this.dataItems.StateOpAct.value;
 	}
 }

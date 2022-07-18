@@ -30,29 +30,37 @@ import {
 	InputElement, InputElementRuntime,
 } from '../../InputElement';
 import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
-import {DataItemFactory, getDataItemModel} from '../../../dataItem/DataItemFactory';
+import {keys} from 'ts-transformer-keys';
 
 export type DIntProcessValueInRuntime = InputElementRuntime & UnitSettingsRuntime & ScaleSettingsRuntime & {
 	VExt: DataItem<number>;
 };
 
 export class DIntProcessValueIn extends InputElement {
-	public readonly communication!: DIntProcessValueInRuntime;
-	private readonly scaleSettings: ScaleSettings;
-	private readonly unitSettings: UnitSettings;
 
-	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+	public readonly dataItems!: DIntProcessValueInRuntime;
+
+	public scaleSettings!: ScaleSettings;
+	public unitSettings!: UnitSettings;
+
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false) {
 		super(options, connectionHandler);
 
-		this.unitSettings = new UnitSettings(options, connectionHandler);
-		this.scaleSettings = new ScaleSettings(options, connectionHandler);
+		if (initial) {
+			const keyList = keys<typeof this.dataItems>();
+			this.initializeDataItems(options, keyList);
+			this.initializeBaseFunctions();
+		}
 
-		this.communication.VExt = DataItemFactory.create(getDataItemModel(options, 'VExt'), connectionHandler);
-
-		this.defaultReadDataItem = this.communication.VExt;
+		this.defaultReadDataItem = this.dataItems.VExt;
 		this.defaultReadDataItemType = 'number';
-
-		this.defaultWriteDataItem = this.communication.VExt;
+		this.defaultWriteDataItem = this.dataItems.VExt;
 		this.defaultWriteDataItemType = 'number';
+	}
+
+	protected initializeBaseFunctions() {
+		super.initializeBaseFunctions();
+		this.unitSettings = new UnitSettings(this.dataItems);
+		this.scaleSettings = new ScaleSettings(this.dataItems);
 	}
 }

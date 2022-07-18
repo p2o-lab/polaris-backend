@@ -42,7 +42,6 @@ describe('AnaMonMockup', () => {
         beforeEach(async function () {
             this.timeout(4000);
             mockupServer = new MockupServer();
-            await mockupServer.initialize();
         });
 
         it('should create AnaMonMockup', async () => {

@@ -67,7 +67,7 @@ export class Service extends BaseService{
 		this._lastStatusChange = new Date();
 		this.logger = catService;
 
-		this.serviceControl = new ServiceControl(serviceOptions.dataAssembly, connectionHandler);
+		this.serviceControl = new ServiceControl(serviceOptions.dataAssembly, connectionHandler, true);
 
 		this.procedures = serviceOptions.procedures
 			.map((option) => new Procedure(option, connectionHandler));
@@ -84,15 +84,15 @@ export class Service extends BaseService{
 	}
 
 	public get commandEnable(): CommandEnableInfo {
-		return controlEnableToJson(this.serviceControl.communication.CommandEn.value as ServiceControlEnable);
+		return controlEnableToJson(this.serviceControl.dataItems.CommandEn.value as ServiceControlEnable);
 	}
 
 	public get state(): ServiceState {
-		return this.serviceControl.communication.StateCur.value as ServiceState;
+		return this.serviceControl.dataItems.StateCur.value as ServiceState;
 	}
 
 	public get lastStateCurChange(): Date | undefined {
-		return this.serviceControl.communication.StateCur.lastChange;
+		return this.serviceControl.dataItems.StateCur.lastChange;
 	}
 
 	public get currentProcedureId(): number | undefined {
@@ -307,7 +307,7 @@ export class Service extends BaseService{
 	public async requestProcedureAutomatic(id: number): Promise<void> {
 		if(this.validProcedureId(id) && this.serviceControl.opMode.isAutomaticState() && this.serviceControl.serviceSourceMode.isExtSource()){
 			this.logger.debug(`[${this.qualifiedName}] request procedure: ${id}`);
-		await (this.serviceControl.communication.ProcedureExt as DynamicDataItem<number>).write(id);
+		await (this.serviceControl.dataItems.ProcedureExt as DynamicDataItem<number>).write(id);
 		} else {
 			this.logger.debug(`[${this.qualifiedName}] cant set procedure: ${id}. Expected a valid procedure id, automatic external mode`);
 		}
@@ -316,7 +316,7 @@ export class Service extends BaseService{
 	public async requestProcedureOperator(id: number): Promise<void> {
 		if(this.validProcedureId(id) && this.serviceControl.opMode.isOperatorState() && this.serviceControl.osLevel.osLevel>0){
 			this.logger.debug(`[${this.qualifiedName}] request procedure: ${id}`);
-			await (this.serviceControl.communication.ProcedureOp as DynamicDataItem<number>).write(id);
+			await (this.serviceControl.dataItems.ProcedureOp as DynamicDataItem<number>).write(id);
 		} else {
 			this.logger.debug(`[${this.qualifiedName}] cant set procedure: ${id}. Expected a valid procedure id and operator mode`);
 		}
@@ -359,7 +359,7 @@ export class Service extends BaseService{
 		this.logger.debug(`[${this.qualifiedName}] Send command ${ServiceMtpCommand[command]}`);
 		await this.requestOpMode(OperationMode.Automatic);
 
-		await (this.serviceControl.communication.CommandExt as DynamicDataItem<number>).write(command);
+		await (this.serviceControl.dataItems.CommandExt as DynamicDataItem<number>).write(command);
 		this.logger.trace(`[${this.qualifiedName}] Command ${ServiceMtpCommand[command]} written`);
 	}
 

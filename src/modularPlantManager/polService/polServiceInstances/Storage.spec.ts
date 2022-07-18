@@ -40,13 +40,13 @@ describe('Storage', () => {
 		expect(params[0]).to.have.property('name', 'storage');
 		expect(params[0]).to.have.property('value', undefined);
 
-		s1.setParameters([{name: 'storage', value: 2}]);
+		await s1.setParameters([{name: 'storage', value: 2}]);
 		params = s1.json().procedures[0].parameters;
 		expect(params).to.have.lengthOf(1);
 		expect(params[0]).to.have.property('name', 'storage');
 		expect(params[0]).to.have.property('value', 2);
 
-		s1.setParameters([{name: 'storage', value: 'teststring'}]);
+		await s1.setParameters([{name: 'storage', value: 'teststring'}]);
 		params = s1.json().procedures[0].parameters;
 		expect(params).to.have.lengthOf(1);
 		expect(params[0]).to.have.property('name', 'storage');

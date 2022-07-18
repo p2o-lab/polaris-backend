@@ -27,7 +27,7 @@ import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {OperationElement, OperationElementRuntime} from '../../OperationElement';
 import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
 import {DataItem} from '../../../dataItem/DataItem';
-import {DataItemFactory, getDataItemModel} from '../../../dataItem/DataItemFactory';
+import {keys} from 'ts-transformer-keys';
 
 export type BinManRuntime = OperationElementRuntime & {
 	VMan: DataItem<boolean>;
@@ -40,23 +40,24 @@ export type BinManRuntime = OperationElementRuntime & {
 
 export class BinMan extends OperationElement {
 
-	public communication!: BinManRuntime;
+	public dataItems!: BinManRuntime;
 
-	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false) {
 		super(options, connectionHandler);
 
-		this.communication.VMan = DataItemFactory.create(getDataItemModel(options, 'VMan'), connectionHandler);
-		this.communication.VRbk = DataItemFactory.create(getDataItemModel(options, 'VRbk'), connectionHandler);
-		this.communication.VFbk = DataItemFactory.create(getDataItemModel(options, 'VFbk'), connectionHandler);
+		if (initial) {
+			const keyList = keys<typeof this.dataItems>();
+			this.initializeDataItems(options, keyList);
+			this.initializeBaseFunctions();
+		}
 
-		this.communication.VOut = DataItemFactory.create(getDataItemModel(options, 'VOut'), connectionHandler);
-		this.communication.VState0 = DataItemFactory.create(getDataItemModel(options, 'VState0'), connectionHandler);
-		this.communication.VState1 = DataItemFactory.create(getDataItemModel(options, 'VState1'), connectionHandler);
-
-		this.defaultReadDataItem = this.communication.VOut;
+		this.defaultReadDataItem = this.dataItems.VOut;
 		this.defaultReadDataItemType = 'boolean';
-		this.defaultWriteDataItem = this.communication.VMan;
+		this.defaultWriteDataItem = this.dataItems.VMan;
 		this.defaultWriteDataItemType = 'boolean';
 	}
 
+	protected initializeBaseFunctions() {
+		super.initializeBaseFunctions();
+	}
 }

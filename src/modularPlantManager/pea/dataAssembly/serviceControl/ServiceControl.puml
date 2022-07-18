@@ -29,7 +29,7 @@
 !include ../baseFunction/opMode/OpMode.puml
 !include ../baseFunction/serviceSourceMode/ServiceSourceModeController.puml
 class ServiceControl{
-    + readonly communication!: ServiceControlRuntime
+    + readonly dataItems!: ServiceControlRuntime
     + readonly wqc: WQC
     + readonly opMode: OpMode
     + readonly serviceSourceMode: ServiceSourceModeController

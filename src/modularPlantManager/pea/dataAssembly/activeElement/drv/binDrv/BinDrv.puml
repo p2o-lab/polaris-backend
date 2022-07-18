@@ -28,7 +28,7 @@
 !include monBinDrv/MonBinDrv.puml
 
 class BinDrv{
-	+ readonly communication!: BinDrvRuntime
+	+ readonly dataItems!: BinDrvRuntime
 }
 
 BinDrv *- BinDrvSpec

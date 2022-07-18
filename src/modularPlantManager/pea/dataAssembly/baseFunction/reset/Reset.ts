@@ -24,16 +24,10 @@
  */
 
 import {DataItem} from '../../dataItem/DataItem';
-import {DataAssemblyDataItems} from '../../DataAssembly';
-import {DataAssemblyModel} from '@p2olab/pimad-interface';
-import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
-import {DataItemFactory, getDataItemModel} from '../../dataItem/DataItemFactory';
 import {EventEmitter} from 'events';
-import {BaseServiceEvents} from '../../../serviceSet';
-import {OperationMode} from '@p2olab/polaris-interface';
 import StrictEventEmitter from 'strict-event-emitter-types';
 
-export interface ResetRuntime extends DataAssemblyDataItems {
+export interface ResetRuntime {
 	ResetOp: DataItem<boolean>;
 	ResetAut: DataItem<boolean>;
 }
@@ -51,13 +45,12 @@ export interface ResetEvents {
 type ResetEmitter = StrictEventEmitter<EventEmitter, ResetEvents>;
 
 export class Reset extends (EventEmitter as new () => ResetEmitter) {
-	ResetOp: DataItem<boolean>;
-	ResetAut: DataItem<boolean>;
 
-	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+	public readonly dataItems!: ResetRuntime;
+
+	constructor(requiredDataItems: Required<ResetRuntime>) {
 		super();
 
-		this.ResetOp = DataItemFactory.create(getDataItemModel(options, 'ResetOp'), connectionHandler);
-		this.ResetAut = DataItemFactory.create(getDataItemModel(options, 'ResetAut'), connectionHandler);
+		this.dataItems = requiredDataItems;
 	}
 }

@@ -25,12 +25,13 @@
 
 import {ModularPlantManager} from '../modularPlantManager';
 import {Server} from './server';
+import {PEAProvider} from '../peaProvider/PEAProvider';
 
 describe('src/server', () => {
 
 	it('should start the server and close it after a while', async () => {
 
-		const appServer = new Server(new ModularPlantManager());
+		const appServer = new Server(new ModularPlantManager(), new PEAProvider());
 		appServer.startHttpServer(3000);
 
 		await appServer.initSocketServer();

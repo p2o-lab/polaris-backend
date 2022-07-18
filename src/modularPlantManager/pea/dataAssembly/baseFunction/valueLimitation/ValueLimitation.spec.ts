@@ -26,27 +26,31 @@
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {ValueLimitation} from './ValueLimitation';
 import {MockupServer} from '../../../../_utils';
 import {ValueLimitationMockup} from './ValueLimitation.mockup';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
 import {getDIntManDataAssemblyModel} from '../../operationElement/man/dintMan/DIntMan.mockup';
+import {DataAssemblyFactory} from '../../DataAssemblyFactory';
+import {DIntManRuntime} from '../../operationElement';
+import {getEndpointDataModel} from '../../../connectionHandler/ConnectionHandler.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('ValueLimitation', () => {
 
-	const options = getDIntManDataAssemblyModel(2, 'Variable', 'Variable');
+	const connectionHandler = new ConnectionHandler();
+	const referenceDataAssemblyModel = getDIntManDataAssemblyModel(2, 'Variable', 'Variable');
+	const referenceDataAssembly = DataAssemblyFactory.create(referenceDataAssemblyModel, connectionHandler);
 
 	describe('static', () => {
-		const connectionHandler = new ConnectionHandler();
+
 		it('should create ValueLimitation',  () => {
-			const da = new ValueLimitation(options, connectionHandler);
-			expect(da).to.not.be.undefined;
-			expect(da.VMin).to.not.be.undefined;
-			expect(da.VMax).to.not.be.undefined;
+			const baseFunction = new ValueLimitation(referenceDataAssembly.dataItems as DIntManRuntime);
+			expect(baseFunction).to.not.be.undefined;
+			expect(baseFunction.dataItems.VMin).to.not.be.undefined;
+			expect(baseFunction.dataItems.VMax).to.not.be.undefined;
 		});
 	});
 	describe('dynamic', () => {
@@ -60,7 +64,7 @@ describe('ValueLimitation', () => {
 			new ValueLimitationMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable', 'Ana');
 			await mockupServer.start();
 			connectionHandler= new ConnectionHandler();
-			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
 			await connectionHandler.connect();
 		});
 
@@ -72,11 +76,11 @@ describe('ValueLimitation', () => {
 
 		it('should subscribe successfully', async () => {
 
-			const dataAssembly = new ValueLimitation(options, connectionHandler);
+			const baseFunction = new ValueLimitation(referenceDataAssembly.dataItems as DIntManRuntime);
 			await connectionHandler.connect();
-			await new Promise((resolve => dataAssembly.on('changed', resolve)));
-			expect(dataAssembly.VMax.value).to.equal(0);
-			expect(dataAssembly.VMin.value).to.equal(0);
+			await new Promise((resolve => baseFunction.on('changed', resolve)));
+			expect(baseFunction.dataItems.VMax.value).to.equal(0);
+			expect(baseFunction.dataItems.VMin.value).to.equal(0);
 		}).timeout(5000);
 	});
 });

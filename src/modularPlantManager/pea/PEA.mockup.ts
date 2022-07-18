@@ -30,7 +30,7 @@ import {PEAModel} from '@p2olab/pimad-interface';
 
 
 export function getEmptyPEAModel(): PEAModel {
-	return {dataAssemblies: [], dataModel: '', endpoint: [], feas: [], name: '', pimadIdentifier: '', services: []};
+	return {dataAssemblies: [], dataModel: '', endpoints: [], feas: [], name: '', pimadIdentifier: '', services: []};
 }
 
 export function getPEAMockupReferenceJSON(): object {
@@ -78,10 +78,10 @@ export class PEAMockup {
 
 	constructor() {
 		this.mockupServer = new MockupServer();
-		this.mockupServer.initialize().then();
 	}
 
 	public async startSimulation(): Promise<void> {
+		await this.mockupServer.initialize();
 		await this.mockupServer.start();
 		this.services.forEach((service) => service.startSimulation());
 	}

@@ -27,7 +27,7 @@
 'https://plantuml.com/class-diagram
 
 class BinProcessValueIn{
-	+ readonly communication!: BinProcessValueInRuntime
+	+ readonly dataItems!: BinProcessValueInRuntime
 }
 
 BinProcessValueIn *- BinProcessValueInSpec

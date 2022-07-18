@@ -29,27 +29,35 @@ import {ScaleSettings, ScaleSettingsRuntime, UnitSettingsRuntime, UnitSettings} 
 import {IndicatorElement, IndicatorElementRuntime} from '../IndicatorElement';
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
-import {DataItemFactory, getDataItemModel} from '../../dataItem/DataItemFactory';
+import {keys} from 'ts-transformer-keys';
 
 export type AnaViewRuntime = IndicatorElementRuntime & UnitSettingsRuntime & ScaleSettingsRuntime & {
 	V: DataItem<number>;
 };
 
 export class AnaView extends IndicatorElement {
-	public readonly communication!: AnaViewRuntime;
-	private readonly scaleSettings: ScaleSettings;
-	private readonly unitSettings: UnitSettings;
 
-	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+	public readonly dataItems!: AnaViewRuntime;
+
+	public scaleSettings!: ScaleSettings;
+	public unitSettings!: UnitSettings;
+
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false) {
 		super(options, connectionHandler);
 
-		this.unitSettings = new UnitSettings(options, connectionHandler);
-		this.scaleSettings = new ScaleSettings(options, connectionHandler);
+		if (initial) {
+			const keyList = keys<typeof this.dataItems>();
+			this.initializeDataItems(options, keyList);
+			this.initializeBaseFunctions();
+		}	
 
-		this.communication.V = DataItemFactory.create<number>(getDataItemModel(options, 'V'), connectionHandler);
-
-		this.defaultReadDataItem = this.communication.V;
+		this.defaultReadDataItem = this.dataItems.V;
 		this.defaultReadDataItemType = 'number';
 	}
 
+	protected initializeBaseFunctions() {
+		super.initializeBaseFunctions();
+		this.unitSettings = new UnitSettings(this.dataItems);
+		this.scaleSettings = new ScaleSettings(this.dataItems);
+	}
 }

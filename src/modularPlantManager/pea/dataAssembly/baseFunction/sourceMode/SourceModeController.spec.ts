@@ -32,29 +32,31 @@ import {MockupServer} from '../../../../_utils';
 import {SourceModeMockup} from './SourceMode.mockup';
 import {SourceModeController} from './SourceModeController';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
-import {DataAssemblyModel} from '@p2olab/pimad-interface';
-import {getBinManDataAssemblyModel} from '../../operationElement/man/binMan/BinMan.mockup';
+import {DataAssemblyFactory} from '../../DataAssemblyFactory';
+import {getAnaDrvDataAssemblyModel} from '../../activeElement/drv/anaDrv/AnaDrv.mockup';
+import {AnaDrvRuntime} from '../../activeElement';
+import {getEndpointDataModel} from '../../../connectionHandler/ConnectionHandler.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('SourceModeController', () => {
 
-	const options = getBinManDataAssemblyModel(2, 'Variable', 'Variable');
+	const connectionHandler = new ConnectionHandler();
+	const referenceDataAssemblyModel = getAnaDrvDataAssemblyModel(2, 'Variable', 'Variable');
+	const referenceDataAssembly = DataAssemblyFactory.create(referenceDataAssemblyModel, connectionHandler);
 
 	describe('static', () => {
 
-		const connectionHandler = new ConnectionHandler();
-
 		it('should create SourceModeController', async () => {
-			const da = new SourceModeController(options, connectionHandler);
-			expect(da.SrcChannel).to.be.not.undefined;
-			expect(da.SrcManAut).to.be.not.undefined;
-			expect(da.SrcIntAut).to.be.not.undefined;
-			expect(da.SrcIntOp).to.be.not.undefined;
-			expect(da.SrcManOp).to.be.not.undefined;
-			expect(da.SrcIntAct).to.be.not.undefined;
-			expect(da.SrcManAct).to.be.not.undefined;
+			const baseFunction = new SourceModeController(referenceDataAssembly.dataItems as AnaDrvRuntime);
+			expect(baseFunction.dataItems.SrcChannel).to.be.not.undefined;
+			expect(baseFunction.dataItems.SrcManAut).to.be.not.undefined;
+			expect(baseFunction.dataItems.SrcIntAut).to.be.not.undefined;
+			expect(baseFunction.dataItems.SrcIntOp).to.be.not.undefined;
+			expect(baseFunction.dataItems.SrcManOp).to.be.not.undefined;
+			expect(baseFunction.dataItems.SrcIntAct).to.be.not.undefined;
+			expect(baseFunction.dataItems.SrcManAct).to.be.not.undefined;
 		});
 
 	});
@@ -74,7 +76,7 @@ describe('SourceModeController', () => {
 			new SourceModeMockup(mockupServer.nameSpace, mockupNode,'Variable');
 			await mockupServer.start();
 			connectionHandler= new ConnectionHandler();
-			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
 		});
 
 		afterEach(async function () {
@@ -85,18 +87,18 @@ describe('SourceModeController', () => {
 
 		it('should subscribe successfully', async () => {
 
-			const dataAssembly = new SourceModeController(options, connectionHandler);
+			const baseFunction = new SourceModeController(referenceDataAssembly.dataItems as AnaDrvRuntime);
 
 			await connectionHandler.connect();
-			await new Promise((resolve => dataAssembly.on('changed', resolve)));
+			await new Promise((resolve => baseFunction.on('changed', resolve)));
 			
-			expect(dataAssembly.SrcChannel.value).equal(false);
-			expect(dataAssembly.SrcManAut.value).equal(false);
-			expect(dataAssembly.SrcIntAut.value).equal(false);
-			expect(dataAssembly.SrcIntOp.value).equal(false);
-			expect(dataAssembly.SrcManOp.value).equal(false);
-			expect(dataAssembly.SrcIntAct.value).equal(true);
-			expect(dataAssembly.SrcManAct.value).equal(false);
+			expect(baseFunction.dataItems.SrcChannel.value).equal(false);
+			expect(baseFunction.dataItems.SrcManAut.value).equal(false);
+			expect(baseFunction.dataItems.SrcIntAut.value).equal(false);
+			expect(baseFunction.dataItems.SrcIntOp.value).equal(false);
+			expect(baseFunction.dataItems.SrcManOp.value).equal(false);
+			expect(baseFunction.dataItems.SrcIntAct.value).equal(true);
+			expect(baseFunction.dataItems.SrcManAct.value).equal(false);
 		}).timeout(5000);
 	});
 
@@ -105,11 +107,12 @@ describe('SourceModeController', () => {
 		let connectionHandler: ConnectionHandler;
 		let mockup: SourceModeMockup;
 		let sourceMode: SourceModeController;
-		let dataAssembly: any;
+		let baseFunction: any;
 
 		beforeEach(async function () {
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
+			
 			const mockupNode = (mockupServer.nameSpace).addObject({
 				organizedBy: mockupServer.rootObject,
 				browseName: 'Variable',
@@ -122,12 +125,12 @@ describe('SourceModeController', () => {
 			await mockupServer.start();
 
 			connectionHandler= new ConnectionHandler();
-			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
-			dataAssembly = new SourceModeController(options, connectionHandler);
+			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
+			baseFunction = new SourceModeController(this.dataItems);
 			await connectionHandler.connect();
-			await dataAssembly.subscribe();
+			await baseFunction.subscribe();
 			await connectionHandler.connect();
-			await new Promise((resolve => dataAssembly.on('changed', resolve)));
+			await new Promise((resolve => baseFunction.on('changed', resolve)));
 		});
 		
 		afterEach(async function () {
@@ -147,8 +150,8 @@ describe('SourceModeController', () => {
 
 		it('setToManualSourceMode(), nothing should happen', async () => {
 			await sourceMode.setToManualSourceMode();
-			expect(dataAssembly.SrcManAct.value).to.be.true;
-			expect(dataAssembly.SrcIntAct.value).to.be.false;
+			expect(baseFunction.dataItems.SrcManAct.value).to.be.true;
+			expect(baseFunction.dataItems.SrcIntAct.value).to.be.false;
 		});
 
 		it('waitForSourceModeToPassSpecificTest, promise should resolve instantly', async () => {
@@ -156,7 +159,7 @@ describe('SourceModeController', () => {
 		});
 
 		it('waitForSourceModeToPassSpecificTest, promise should resolve after a while', async () => {
-			await dataAssembly.SrcIntOp.write(true);
+			await baseFunction.dataItems.SrcIntOp.write(true);
 			await sourceMode.waitForSourceModeToPassSpecificTest(SourceMode.Intern);
 		}).timeout(4000);
 
@@ -171,11 +174,12 @@ describe('SourceModeController', () => {
 		let mockupServer: MockupServer;
 		let connectionHandler: ConnectionHandler;
 		let sourceMode: SourceModeController;
-		let dataAssembly: any;
+		let baseFunction: any;
 
 		beforeEach(async function () {
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
+			
 			const mockupNode = (mockupServer.nameSpace).addObject({
 				organizedBy: mockupServer.rootObject,
 				browseName: 'Variable',
@@ -184,12 +188,12 @@ describe('SourceModeController', () => {
 			await mockupServer.start();
 
 			connectionHandler= new ConnectionHandler();
-			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
-			dataAssembly = new SourceModeController(options, connectionHandler);
+			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
+			baseFunction = new SourceModeController(this.dataItems);
 			await connectionHandler.connect();
-			await dataAssembly.subscribe();
+			await baseFunction.subscribe();
 			await connectionHandler.connect();
-			await new Promise((resolve => dataAssembly.on('changed', resolve)));
+			await new Promise((resolve => baseFunction.on('changed', resolve)));
 		});
 
 		afterEach(async function () {
@@ -208,12 +212,12 @@ describe('SourceModeController', () => {
 		});
 
 		it('waitForSourceModeToPassSpecificTest, promise should resolve instantly', async () => {
-			dataAssembly.SrcManAct.value = true;
+			baseFunction.dataItems.SrcManAct.value = true;
 			await sourceMode.waitForSourceModeToPassSpecificTest(SourceMode.Manual);
 		});
 
 		it('waitForSourceModeToPassSpecificTest, promise should resolve after a while', async () => {
-			await dataAssembly.SrcManOp.write(true);
+			await baseFunction.dataItems.SrcManOp.write(true);
 			await sourceMode.waitForSourceModeToPassSpecificTest(SourceMode.Manual);
 		}).timeout(4000);
 
@@ -224,8 +228,8 @@ describe('SourceModeController', () => {
 
 		it('setToManualSourceMode()', async () => {
 			await sourceMode.setToManualSourceMode();
-			expect(dataAssembly.SrcManAct.value).to.be.true;
-			expect(dataAssembly.SrcIntAct.value).to.be.false;
+			expect(baseFunction.dataItems.SrcManAct.value).to.be.true;
+			expect(baseFunction.dataItems.SrcIntAct.value).to.be.false;
 		}).timeout(4000);
 	});
 

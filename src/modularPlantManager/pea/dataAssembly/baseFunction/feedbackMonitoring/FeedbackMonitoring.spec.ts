@@ -25,34 +25,34 @@
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {FeedbackMonitoring} from './FeedbackMonitoring';
 import {MockupServer} from '../../../../_utils';
 import {FeedbackMonitoringMockup} from './FeedbackMonitoring.mockup';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
 import {getMonBinVlvDataAssemblyModel} from '../../activeElement/vlv/binVlv/monBinVlv/MonBinVlv.mockup';
+import {DataAssemblyFactory} from '../../DataAssemblyFactory';
+import {MonBinVlvRuntime} from '../../activeElement';
+import {getEndpointDataModel} from '../../../connectionHandler/ConnectionHandler.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('FeedbackMonitoring', () => {
 
-	let options: DataAssemblyModel;
+	const connectionHandler = new ConnectionHandler();
+	const referenceDataAssemblyModel = getMonBinVlvDataAssemblyModel(2, 'Variable', 'Variable');
+	const referenceDataAssembly = DataAssemblyFactory.create(referenceDataAssemblyModel, connectionHandler);
 
 	describe('static', () => {
 
-		const connectionHandler = new ConnectionHandler();
-
 		it('should create FeedbackMonitoring', () => {
-
-			options = getMonBinVlvDataAssemblyModel(2, 'Variable', 'Variable');
-			const dataAssembly = new FeedbackMonitoring(options, connectionHandler);
-			expect(dataAssembly.MonEn).to.not.to.undefined;
-			expect(dataAssembly.MonSafePos).to.not.to.undefined;
-			expect(dataAssembly.MonStatErr).to.not.to.undefined;
-			expect(dataAssembly.MonDynErr).to.not.to.undefined;
-			expect(dataAssembly.MonStatTi).to.not.to.undefined;
-			expect(dataAssembly.MonDynTi).to.not.to.undefined;
+			const baseFunction = new FeedbackMonitoring(referenceDataAssembly.dataItems as MonBinVlvRuntime);
+			expect(baseFunction.dataItems.MonEn).to.not.to.undefined;
+			expect(baseFunction.dataItems.MonSafePos).to.not.to.undefined;
+			expect(baseFunction.dataItems.MonStatErr).to.not.to.undefined;
+			expect(baseFunction.dataItems.MonDynErr).to.not.to.undefined;
+			expect(baseFunction.dataItems.MonStatTi).to.not.to.undefined;
+			expect(baseFunction.dataItems.MonDynTi).to.not.to.undefined;
 		});
 	});
 	describe('dynamic', () => {
@@ -63,10 +63,11 @@ describe('FeedbackMonitoring', () => {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
+
 			new FeedbackMonitoringMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			await mockupServer.start();
 			connectionHandler= new ConnectionHandler();
-			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
 			await connectionHandler.connect();
 		});
 
@@ -78,17 +79,15 @@ describe('FeedbackMonitoring', () => {
 
 		it('should subscribe successfully', async () => {
 
-			const dataAssembly = new FeedbackMonitoring(options, connectionHandler) as any;
-			await dataAssembly.subscribe();
+			const baseFunction = new FeedbackMonitoring(referenceDataAssembly.dataItems as MonBinVlvRuntime);
 			await connectionHandler.connect();
-			await new Promise((resolve => dataAssembly.on('changed', resolve)));
-
-			expect(dataAssembly.MonEn.value).equal(false);
-			expect(dataAssembly.MonSafePos.value).equal(false);
-			expect(dataAssembly.MonStatErr.value).equal(false);
-			expect(dataAssembly.MonDynErr.value).equal(false);
-			expect(dataAssembly.MonStatTi.value).equal(0);
-			expect(dataAssembly.MonDynTi.value).equal(0);
+			await new Promise((resolve => baseFunction.on('changed', resolve)));
+			expect(baseFunction.dataItems.MonEn.value).equal(false);
+			expect(baseFunction.dataItems.MonSafePos.value).equal(false);
+			expect(baseFunction.dataItems.MonStatErr.value).equal(false);
+			expect(baseFunction.dataItems.MonDynErr.value).equal(false);
+			expect(baseFunction.dataItems.MonStatTi.value).equal(0);
+			expect(baseFunction.dataItems.MonDynTi.value).equal(0);
 		}).timeout(5000);
 	});
 });

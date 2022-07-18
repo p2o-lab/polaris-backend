@@ -26,9 +26,7 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../_utils';
-import {getStringViewDataItemModel, getStringViewOptions, StringViewMockup} from './StringView.mockup';
-import {DataAssemblyModel} from '@p2olab/pimad-interface';
-import {StringViewRuntime} from './StringView';
+import {getStringViewDataAssemblyModel, getStringViewDataItemModel, StringViewMockup} from './StringView.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -41,7 +39,7 @@ describe('StringViewMockup', () => {
 
         beforeEach(async()=>{
             mockupServer = new MockupServer();
-            await mockupServer.initialize();
+            
         });
 
         it('should create StringViewMockup', async () => {
@@ -56,7 +54,7 @@ describe('StringViewMockup', () => {
         });
 
         it('static DataAssemblyModel', () => {
-            const options = getStringViewOptions(1, 'Test') as DataAssemblyModel;
+            const options = getStringViewDataAssemblyModel(1, 'Test');
             expect(Object.keys(options.dataItems).length).to.equal(4);
         });
 

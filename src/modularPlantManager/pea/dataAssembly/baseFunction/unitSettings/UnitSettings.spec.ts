@@ -30,23 +30,26 @@ import {MockupServer} from '../../../../_utils';
 import {UnitSettingsMockup} from './UnitSettings.mockup';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
 import {getDIntManDataAssemblyModel} from '../../operationElement/man/dintMan/DIntMan.mockup';
+import {DataAssemblyFactory} from '../../DataAssemblyFactory';
+import {DIntManRuntime} from '../../operationElement';
+import {getEndpointDataModel} from '../../../connectionHandler/ConnectionHandler.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('UnitSettings', () => {
 
-	const options = getDIntManDataAssemblyModel(2, 'Variable', 'Variable');
+	const connectionHandler = new ConnectionHandler();
+	const referenceDataAssemblyModel = getDIntManDataAssemblyModel(2, 'Variable', 'Variable');
+	const referenceDataAssembly = DataAssemblyFactory.create(referenceDataAssemblyModel, connectionHandler);
 
 	describe('static', () => {
 
-		const connectionHandler = new ConnectionHandler();
-
 		it('should create UnitSettings',  () => {
-			const da = new UnitSettings(options, connectionHandler);
-			expect(da).to.not.be.undefined;
-			expect(da.VUnit).to.not.be.undefined;
-			expect(da.Unit).to.be.empty;
+			const baseFunction = new UnitSettings(referenceDataAssembly.dataItems as DIntManRuntime);
+			expect(baseFunction).to.not.be.undefined;
+			expect(baseFunction.dataItems.VUnit).to.not.be.undefined;
+			expect(baseFunction.Unit).to.be.empty;
 		});
 	});
 
@@ -62,7 +65,7 @@ describe('UnitSettings', () => {
 			new UnitSettingsMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			await mockupServer.start();
 			connectionHandler= new ConnectionHandler();
-			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
 			await connectionHandler.connect();
 		});
 
@@ -74,11 +77,11 @@ describe('UnitSettings', () => {
 
 		it('should subscribe successfully', async () => {
 
-			const dataAssembly = new UnitSettings(options, connectionHandler);
+			const baseFunction = new UnitSettings(referenceDataAssembly.dataItems as DIntManRuntime);
 			await connectionHandler.connect();
-			await new Promise((resolve => dataAssembly.on('changed', resolve)));
+			await new Promise((resolve => baseFunction.on('changed', resolve)));
 
-			expect(dataAssembly.VUnit.value).to.equal(0);
+			expect(baseFunction.dataItems.VUnit.value).to.equal(0);
 		}).timeout(5000);
 	});
 });

@@ -28,7 +28,7 @@ import {DataItem} from '../../../dataItem/DataItem';
 import {BinView, BinViewRuntime} from '../BinView';
 import {OSLevel, OSLevelRuntime} from '../../../baseFunction';
 import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
-import {DataItemFactory, getDataItemModel} from '../../../dataItem/DataItemFactory';
+import {keys} from 'ts-transformer-keys';
 
 export type BinMonRuntime = BinViewRuntime & OSLevelRuntime & {
 	VFlutTi: DataItem<number>;
@@ -39,17 +39,22 @@ export type BinMonRuntime = BinViewRuntime & OSLevelRuntime & {
 
 export class BinMon extends BinView {
 
-	public readonly communication!: BinMonRuntime;
-	public readonly osLevel: OSLevel;
+	public readonly dataItems!: BinMonRuntime;
 
-	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+	public osLevel!: OSLevel;
+
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false) {
 		super(options, connectionHandler);
 
-		this.osLevel = new OSLevel(options, connectionHandler);
+		if (initial) {
+			const keyList = keys<typeof this.dataItems>();
+			this.initializeDataItems(options, keyList);
+			this.initializeBaseFunctions();
+		}	
+	}
 
-		this.communication.VFlutTi = DataItemFactory.create(getDataItemModel(options, 'VFlutTi'), connectionHandler);
-		this.communication.VFlutEn = DataItemFactory.create(getDataItemModel(options, 'VFlutEn'), connectionHandler);
-		this.communication.VFlutCnt = DataItemFactory.create(getDataItemModel(options, 'VFlutCnt'), connectionHandler);
-		this.communication.VFlutAct = DataItemFactory.create(getDataItemModel(options, 'VFlutAct'), connectionHandler);
+	protected initializeBaseFunctions() {
+		super.initializeBaseFunctions();
+		this.osLevel = new OSLevel(this.dataItems);
 	}
 }

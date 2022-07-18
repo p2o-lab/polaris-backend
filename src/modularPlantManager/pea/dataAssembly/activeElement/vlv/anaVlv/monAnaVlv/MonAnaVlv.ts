@@ -28,8 +28,8 @@ import {DataItem} from '../../../../dataItem/DataItem';
 import {FeedbackMonitoringRuntime} from '../../../../baseFunction';
 import {AnaVlv, AnaVlvRuntime} from '../AnaVlv';
 import {FeedbackMonitoring} from '../../../../baseFunction';
-import {DataItemFactory, getDataItemModel} from '../../../../dataItem/DataItemFactory';
 import {ConnectionHandler} from '../../../../../connectionHandler/ConnectionHandler';
+import {keys} from 'ts-transformer-keys';
 
 export type MonAnaVlvRuntime = AnaVlvRuntime & FeedbackMonitoringRuntime & {
 	PosReachedFbk: DataItem<boolean>;
@@ -39,17 +39,22 @@ export type MonAnaVlvRuntime = AnaVlvRuntime & FeedbackMonitoringRuntime & {
 };
 
 export class MonAnaVlv extends AnaVlv {
-	public readonly communication!: MonAnaVlvRuntime;
-	feedBackMonitoring: FeedbackMonitoring;
+	public readonly dataItems!: MonAnaVlvRuntime;
 
-	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+	public feedBackMonitoring!: FeedbackMonitoring;
+
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false) {
 		super(options, connectionHandler);
 
-		this.feedBackMonitoring = new FeedbackMonitoring(options, connectionHandler);
+		if (initial) {
+			const keyList = keys<typeof this.dataItems>();
+			this.initializeDataItems(options, keyList);
+			this.initializeBaseFunctions();
+		}	
+	}
 
-		this.communication.PosReachedFbk = DataItemFactory.create(getDataItemModel(options, 'PosReachedFbk'), connectionHandler);
-		this.communication.PosTolerance = DataItemFactory.create(getDataItemModel(options, 'PosTolerance'), connectionHandler);
-		this.communication.MonPosTi = DataItemFactory.create(getDataItemModel(options, 'MonPosTi'), connectionHandler);
-		this.communication.MonPosErr = DataItemFactory.create(getDataItemModel(options, 'MonPosErr'), connectionHandler);
+	protected initializeBaseFunctions() {
+		super.initializeBaseFunctions();
+		this.feedBackMonitoring = new FeedbackMonitoring(this.dataItems);
 	}
 }

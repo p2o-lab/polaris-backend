@@ -31,28 +31,30 @@ import {InterlockMockup} from './Interlock.mockup';
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
 import {getMonBinVlvDataAssemblyModel} from '../../activeElement/vlv/binVlv/monBinVlv/MonBinVlv.mockup';
+import {DataAssemblyFactory} from '../../DataAssemblyFactory';
+import {MonBinVlvRuntime} from '../../activeElement';
+import {getEndpointDataModel} from '../../../connectionHandler/ConnectionHandler.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('Interlock', () => {
 
-	let options: DataAssemblyModel;
+	const connectionHandler = new ConnectionHandler();
+	const referenceDataAssemblyModel = getMonBinVlvDataAssemblyModel(2, 'Variable', 'Variable');
+	const referenceDataAssembly = DataAssemblyFactory.create(referenceDataAssemblyModel, connectionHandler);
 
 	describe('static', () => {
 
-		const connectionHandler = new ConnectionHandler();
-		options = getMonBinVlvDataAssemblyModel(2, 'Variable', 'Variable');
-
 		it('should create Interlock', () => {
-			const dataAssembly = new Interlock(options, connectionHandler);
+			const dataAssembly = new Interlock(referenceDataAssembly.dataItems as MonBinVlvRuntime);
 			expect(dataAssembly).to.not.to.undefined;
-			expect(dataAssembly.PermEn).to.not.to.undefined;
-			expect(dataAssembly.Permit).to.not.to.undefined;
-			expect(dataAssembly.IntlEn).to.not.to.undefined;
-			expect(dataAssembly.Interlock).to.not.to.undefined;
-			expect(dataAssembly.ProtEn).to.not.to.undefined;
-			expect(dataAssembly.Protect).to.not.to.undefined;
+			expect(dataAssembly.dataItems.PermEn).to.not.to.undefined;
+			expect(dataAssembly.dataItems.Permit).to.not.to.undefined;
+			expect(dataAssembly.dataItems.IntlEn).to.not.to.undefined;
+			expect(dataAssembly.dataItems.Interlock).to.not.to.undefined;
+			expect(dataAssembly.dataItems.ProtEn).to.not.to.undefined;
+			expect(dataAssembly.dataItems.Protect).to.not.to.undefined;
 		});
 	});
 
@@ -64,10 +66,11 @@ describe('Interlock', () => {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
+
 			new InterlockMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			await mockupServer.start();
 			connectionHandler = new ConnectionHandler();
-			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
 			await connectionHandler.connect();
 		});
 
@@ -79,16 +82,16 @@ describe('Interlock', () => {
 
 		it('should subscribe successfully', async () => {
 
-			const dataAssembly = new Interlock(options, connectionHandler);
+			const dataAssembly = new Interlock(referenceDataAssembly.dataItems as MonBinVlvRuntime);
 			await connectionHandler.connect();
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 
-			expect(dataAssembly.PermEn.value).equal(false);
-			expect(dataAssembly.Permit.value).equal(false);
-			expect(dataAssembly.IntlEn.value).equal(false);
-			expect(dataAssembly.Interlock.value).equal(false);
-			expect(dataAssembly.ProtEn.value).equal(false);
-			expect(dataAssembly.Protect.value).equal(false);
+			expect(dataAssembly.dataItems.PermEn.value).equal(false);
+			expect(dataAssembly.dataItems.Permit.value).equal(false);
+			expect(dataAssembly.dataItems.IntlEn.value).equal(false);
+			expect(dataAssembly.dataItems.Interlock.value).equal(false);
+			expect(dataAssembly.dataItems.ProtEn.value).equal(false);
+			expect(dataAssembly.dataItems.Protect.value).equal(false);
 		}).timeout(5000);
 	});
 });

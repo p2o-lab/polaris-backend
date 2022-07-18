@@ -28,16 +28,28 @@ import {FeedbackMonitoringRuntime} from '../../../../baseFunction';
 import {BinDrv, BinDrvRuntime} from '../BinDrv';
 import {FeedbackMonitoring} from '../../../../baseFunction';
 import {ConnectionHandler} from '../../../../../connectionHandler/ConnectionHandler';
+import {keys} from 'ts-transformer-keys';
 
 export type MonBinDrvRuntime = BinDrvRuntime & FeedbackMonitoringRuntime;
 
 export class MonBinDrv extends BinDrv {
-	public readonly communication!: MonBinDrvRuntime;
-	feedBackMonitoring: FeedbackMonitoring;
 
-	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+	public readonly dataItems!: MonBinDrvRuntime;
+
+	public feedBackMonitoring!: FeedbackMonitoring;
+
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false) {
 		super(options, connectionHandler);
 
-		this.feedBackMonitoring = new FeedbackMonitoring(options, connectionHandler);
+		if (initial) {
+			const keyList = keys<typeof this.dataItems>();
+			this.initializeDataItems(options, keyList);
+			this.initializeBaseFunctions();
+		}	
+	}
+
+	protected initializeBaseFunctions() {
+		super.initializeBaseFunctions();
+		this.feedBackMonitoring = new FeedbackMonitoring(this.dataItems);
 	}
 }

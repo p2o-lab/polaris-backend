@@ -29,8 +29,9 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {MockupServer} from '../../../../_utils';
-import {getStringViewOptions, StringViewMockup} from './StringView.mockup';
+import {getStringViewDataAssemblyModel, StringViewMockup} from './StringView.mockup';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
+import {getEndpointDataModel} from '../../../connectionHandler/ConnectionHandler.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -42,15 +43,15 @@ describe('StringView', () => {
 	describe('static', () => {
 
 		const connectionHandler = new ConnectionHandler();
-		options = getStringViewOptions(2, 'Variable', 'Variable') as DataAssemblyModel;
+		options = getStringViewDataAssemblyModel(2, 'Variable', 'Variable');
 
 		it('should create StringView', async () => {
 
-			const dataAssembly: StringView = new StringView(options, connectionHandler);
-			expect(dataAssembly.communication.TagName).to.not.equal(undefined);
-			expect(dataAssembly.communication.TagDescription).to.not.equal(undefined);
-			expect(dataAssembly.communication.WQC).to.not.equal(undefined);
-			expect(dataAssembly.communication.Text).to.not.equal(undefined);
+			const dataAssembly: StringView = new StringView(options, connectionHandler, true);
+			expect(dataAssembly.dataItems.TagName).to.not.equal(undefined);
+			expect(dataAssembly.dataItems.TagDescription).to.not.equal(undefined);
+			expect(dataAssembly.dataItems.WQC).to.not.equal(undefined);
+			expect(dataAssembly.dataItems.Text).to.not.equal(undefined);
 		});
 	});
 	describe('dynamic', () => {
@@ -60,12 +61,12 @@ describe('StringView', () => {
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
-			await mockupServer.initialize();
+			
 			const stringViewMockup = new StringViewMockup( mockupServer.nameSpace, mockupServer.rootObject,'Variable');
 			options = stringViewMockup.getDataAssemblyModel();
 			await mockupServer.start();
 			connectionHandler= new ConnectionHandler();
-			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
 			await connectionHandler.connect();
 		});
 
@@ -81,8 +82,8 @@ describe('StringView', () => {
 			await connectionHandler.connect();
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 
-			expect(dataAssembly.communication.WQC.value).equal(0);
-			expect(dataAssembly.communication.Text.value).equal('dummyText');
+			expect(dataAssembly.dataItems.WQC.value).equal(0);
+			expect(dataAssembly.dataItems.Text.value).equal('dummyText');
 		}).timeout(4000);
 
 		it('get Text', async () => {

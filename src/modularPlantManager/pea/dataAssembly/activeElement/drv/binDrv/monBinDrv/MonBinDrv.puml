@@ -27,7 +27,7 @@
 'https://plantuml.com/class-diagram
 
 class MonBinDrv{
-   + readonly communication!: MonBinDrvRuntime
+   + readonly dataItems!: MonBinDrvRuntime
    + readonly feedbackMonitoring: FeedbackMonitoring
 }
 MonBinDrv *- MonBinDrvSpec

@@ -29,7 +29,7 @@ import * as net from 'net';
 import {AddressSpace, Namespace, UAObject} from 'node-opcua';
 import {catMockupServer} from '../../../logging';
 import {PEAOptions} from '@p2olab/polaris-interface';
-import {IDProvider} from '../idProvider/IDProvider';
+import {IDProvider} from '../idProvider';
 
 function validateUser(username: string, password: string): boolean {
 	catMockupServer.info(`Try to login with ${username}:${password}`);
@@ -48,7 +48,6 @@ export class MockupServer {
 	private namespace: Namespace | undefined = undefined;
 	private rootComponent: UAObject | undefined = undefined;
 	private readonly port: number;
-	private testNumber = 0;
 
 	constructor(port = 4334) {
 		this.port = port;

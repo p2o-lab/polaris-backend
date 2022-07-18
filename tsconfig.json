@@ -18,7 +18,8 @@
     "plugins": [
       {
         "name": "tslint-language-service"
-      }
+      },
+      { "transform": "ts-transformer-keys/transformer" }
     ]
   },
   "include": [

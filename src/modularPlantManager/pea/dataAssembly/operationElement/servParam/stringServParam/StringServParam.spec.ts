@@ -32,6 +32,7 @@ import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {DataAssemblyFactory} from '../../../DataAssemblyFactory';
 import {getStringServParamDataAssemblyModel, StringServParamMockup} from './StringServParam.mockup';
 import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
+import {getEndpointDataModel} from '../../../../connectionHandler/ConnectionHandler.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -50,13 +51,13 @@ describe('StringServParam', () => {
 			expect(dataAssembly.serviceSourceMode).to.not.be.undefined;
 			expect(dataAssembly.serviceOpMode).to.not.be.undefined;
 			// expect(dataAssembly.wqc).to.not.be.undefined;
-			expect(dataAssembly.communication.Sync).to.not.be.undefined;
-			expect(dataAssembly.communication.VExt).to.not.be.undefined;
-			expect(dataAssembly.communication.VOp).to.not.be.undefined;
-			expect(dataAssembly.communication.VInt).to.not.be.undefined;
-			expect(dataAssembly.communication.VReq).to.not.be.undefined;
-			expect(dataAssembly.communication.VOut).to.not.be.undefined;
-			expect(dataAssembly.communication.VFbk).to.not.be.undefined;
+			expect(dataAssembly.dataItems.Sync).to.not.be.undefined;
+			expect(dataAssembly.dataItems.VExt).to.not.be.undefined;
+			expect(dataAssembly.dataItems.VOp).to.not.be.undefined;
+			expect(dataAssembly.dataItems.VInt).to.not.be.undefined;
+			expect(dataAssembly.dataItems.VReq).to.not.be.undefined;
+			expect(dataAssembly.dataItems.VOut).to.not.be.undefined;
+			expect(dataAssembly.dataItems.VFbk).to.not.be.undefined;
 		});
 	});
 	describe('dynamic', () => {
@@ -66,12 +67,11 @@ describe('StringServParam', () => {
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
-			await mockupServer.initialize();
 			const stringServParamMockup = new StringServParamMockup(mockupServer.nameSpace, mockupServer.rootObject,'Variable');
 			options = stringServParamMockup.getDataAssemblyModel();
 			await mockupServer.start();
 			connectionHandler= new ConnectionHandler();
-			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
 			await connectionHandler.connect();
 		});
 
@@ -88,35 +88,35 @@ describe('StringServParam', () => {
 			await connectionHandler.connect();
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 			
-			// expect(dataAssembly.communication.WQC.value).equal(0);
+			// expect(dataAssembly.dataItems.WQC.value).equal(0);
 
-			expect((dataAssembly).communication.StateChannel.value).equal(false);
-			expect((dataAssembly).communication.StateOffAut.value).equal(false);
-			expect((dataAssembly).communication.StateOpAut.value).equal(false);
-			expect((dataAssembly).communication.StateAutAut.value).equal(false);
-			expect((dataAssembly).communication.StateOffOp.value).equal(false);
-			expect((dataAssembly).communication.StateOpOp.value).equal(false);
-			expect((dataAssembly).communication.StateAutOp.value).equal(false);
-			expect((dataAssembly).communication.StateOpAct.value).equal(false);
-			expect((dataAssembly).communication.StateAutAct.value).equal(false);
-			expect((dataAssembly).communication.StateOffAct.value).equal(true);
+			expect((dataAssembly).dataItems.StateChannel.value).equal(false);
+			expect((dataAssembly).dataItems.StateOffAut.value).equal(false);
+			expect((dataAssembly).dataItems.StateOpAut.value).equal(false);
+			expect((dataAssembly).dataItems.StateAutAut.value).equal(false);
+			expect((dataAssembly).dataItems.StateOffOp.value).equal(false);
+			expect((dataAssembly).dataItems.StateOpOp.value).equal(false);
+			expect((dataAssembly).dataItems.StateAutOp.value).equal(false);
+			expect((dataAssembly).dataItems.StateOpAct.value).equal(false);
+			expect((dataAssembly).dataItems.StateAutAct.value).equal(false);
+			expect((dataAssembly).dataItems.StateOffAct.value).equal(true);
 
-			expect(dataAssembly.communication.SrcChannel.value).equal(false);
-			expect(dataAssembly.communication.SrcExtAut.value).equal(false);
-			expect(dataAssembly.communication.SrcIntAut.value).equal(false);
-			expect(dataAssembly.communication.SrcIntOp.value).equal(false);
-			expect(dataAssembly.communication.SrcExtOp.value).equal(false);
-			expect(dataAssembly.communication.SrcIntAct.value).equal(true);
-			expect(dataAssembly.communication.SrcExtAct.value).equal(false);
+			expect(dataAssembly.dataItems.SrcChannel.value).equal(false);
+			expect(dataAssembly.dataItems.SrcExtAut.value).equal(false);
+			expect(dataAssembly.dataItems.SrcIntAut.value).equal(false);
+			expect(dataAssembly.dataItems.SrcIntOp.value).equal(false);
+			expect(dataAssembly.dataItems.SrcExtOp.value).equal(false);
+			expect(dataAssembly.dataItems.SrcIntAct.value).equal(true);
+			expect(dataAssembly.dataItems.SrcExtAct.value).equal(false);
 
-			expect(dataAssembly.communication.Sync.value).equal(false);
+			expect(dataAssembly.dataItems.Sync.value).equal(false);
 
-			expect(dataAssembly.communication.VExt.value).equal('');
-			expect(dataAssembly.communication.VOp.value).equal('');
-			expect(dataAssembly.communication.VInt.value).equal('');
-			expect(dataAssembly.communication.VReq.value).equal('');
-			expect(dataAssembly.communication.VOut.value).equal('');
-			expect(dataAssembly.communication.VFbk.value).equal('');
+			expect(dataAssembly.dataItems.VExt.value).equal('');
+			expect(dataAssembly.dataItems.VOp.value).equal('');
+			expect(dataAssembly.dataItems.VInt.value).equal('');
+			expect(dataAssembly.dataItems.VReq.value).equal('');
+			expect(dataAssembly.dataItems.VOut.value).equal('');
+			expect(dataAssembly.dataItems.VFbk.value).equal('');
 		}).timeout(4000);
 	});
 });

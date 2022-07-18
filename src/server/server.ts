@@ -34,6 +34,7 @@ import * as http from 'http';
 import * as WebSocket from 'ws';
 import {AddressInfo} from 'ws';
 import {catServer} from '../logging';
+import {PEAProvider} from '../peaProvider/PEAProvider';
 
 export class Server {
 
@@ -42,9 +43,9 @@ export class Server {
 	private httpServer?: http.Server;
 	private interval?: NodeJS.Timeout;
 
-	constructor(manager: ModularPlantManager) {
+	constructor(manager: ModularPlantManager, peaProvider: PEAProvider) {
 		this.app = express();
-		Middleware.init(this.app, manager);
+		Middleware.init(this.app, manager, peaProvider);
 		Routes.init(this.app);
 
 		manager.on('notify', (notification) => {

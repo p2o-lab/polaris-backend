@@ -32,6 +32,7 @@ import {DIntProcessValueInMockup, getDIntProcessValueInDataAssemblyModel} from '
 import {DIntProcessValueIn} from './DIntProcessValueIn';
 import {DataAssemblyFactory} from '../../../DataAssemblyFactory';
 import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
+import {getEndpointDataModel} from '../../../../connectionHandler/ConnectionHandler.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -48,10 +49,10 @@ describe('DIntProcessValueIn', () => {
 		it('should create DIntProcessValueIn', async () => {
 			const dataAssembly = DataAssemblyFactory.create(options, connectionHandler) as DIntProcessValueIn;
 			expect(dataAssembly).to.be.not.undefined;
-			expect(dataAssembly.communication.VExt).to.be.not.undefined;
-			expect(dataAssembly.communication.VSclMax).to.be.not.undefined;
-			expect(dataAssembly.communication.VSclMin).to.be.not.undefined;
-			expect(dataAssembly.communication.VUnit).to.be.not.undefined;
+			expect(dataAssembly.dataItems.VExt).to.be.not.undefined;
+			expect(dataAssembly.dataItems.VSclMax).to.be.not.undefined;
+			expect(dataAssembly.dataItems.VSclMin).to.be.not.undefined;
+			expect(dataAssembly.dataItems.VUnit).to.be.not.undefined;
 		});
 	});
 	describe('dynamic', () => {
@@ -69,7 +70,7 @@ describe('DIntProcessValueIn', () => {
 			options = dIntProcessValueInMockup.getDataAssemblyModel();
 			await mockupServer.start();
 			connectionHandler= new ConnectionHandler();
-			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
 			await connectionHandler.connect();
 
 			dataAssembly = DataAssemblyFactory.create(options, connectionHandler) as DIntProcessValueIn;
@@ -85,10 +86,10 @@ describe('DIntProcessValueIn', () => {
 		});
 
 		it('should subscribe successfully', async () => {
-			expect(dataAssembly.communication.VExt.value).equal(0);
-			expect(dataAssembly.communication.VUnit.value).equal(0);
-			expect(dataAssembly.communication.VSclMin.value).equal(0);
-			expect(dataAssembly.communication.VSclMax.value).equal(1);
+			expect(dataAssembly.dataItems.VExt.value).equal(0);
+			expect(dataAssembly.dataItems.VUnit.value).equal(0);
+			expect(dataAssembly.dataItems.VSclMin.value).equal(0);
+			expect(dataAssembly.dataItems.VSclMax.value).equal(1);
 		}).timeout(4000);
 
 		it('setparameter', async () => {

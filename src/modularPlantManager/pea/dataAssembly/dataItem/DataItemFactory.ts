@@ -26,14 +26,8 @@
 import {DataItem, OpcUaDataItem, StaticDataItem} from './DataItem';
 import {catDataItem} from '../../../../logging';
 import {ConnectionHandler} from '../../connectionHandler/ConnectionHandler';
-import {DataAssemblyModel, DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+import {DataAssemblyModel, DataItemModel} from '@p2olab/pimad-interface';
 
-
-export interface DataItemOptions {
-	type: 'number' | 'string' | 'boolean';
-	defaultValue?: number | string | boolean;
-	access: DataItemAccessLevel;
-}
 
 export function getCollectionProperty<T, K extends keyof T>(obj: T, key: K): T[K] {
 	return obj[key];
@@ -67,6 +61,6 @@ export class DataItemFactory implements DataItemFactory{
 
 export function getDataItemModel(options: DataAssemblyModel, dataItemModelName: string): DataItemModel {
 	const result = options.dataItems.find(item => item.name === dataItemModelName);
-	if(!result) throw new Error(`DataAssemblyModel ${options.pimadIdentifier} does not contain DataItemModel named ${dataItemModelName}!`);
+	if(!result) throw new Error(`DataAssemblyModel does not contain DataItemModel named ${dataItemModelName}!`);
 	return result;
 }

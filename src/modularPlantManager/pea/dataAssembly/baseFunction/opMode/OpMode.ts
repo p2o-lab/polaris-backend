@@ -25,14 +25,10 @@
 
 import {OperationMode} from '@p2olab/polaris-interface';
 import {DataItem} from '../../dataItem/DataItem';
-import {DataAssemblyDataItems} from '../../DataAssembly';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {EventEmitter} from 'events';
-import {DataAssemblyModel} from '@p2olab/pimad-interface';
-import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
-import {DataItemFactory, getDataItemModel} from '../../dataItem/DataItemFactory';
 
-export type OpModeRuntime = DataAssemblyDataItems & {
+export type OpModeRuntime = {
 	StateChannel: DataItem<boolean>;
 	StateOffAut: DataItem<boolean>;
 	StateOpAut: DataItem<boolean>;
@@ -58,45 +54,27 @@ export interface OpModeEvents {
 type OpModeEmitter = StrictEventEmitter<EventEmitter, OpModeEvents>;
 
 export class OpMode extends (EventEmitter as new() => OpModeEmitter) {
-	StateChannel: DataItem<boolean>;
-	StateOffAut: DataItem<boolean>;
-	StateOpAut: DataItem<boolean>;
-	StateAutAut: DataItem<boolean>;
-	StateOffOp: DataItem<boolean>;
-	StateOpOp: DataItem<boolean>;
-	StateAutOp: DataItem<boolean>;
-	StateOpAct: DataItem<boolean>;
-	StateAutAct: DataItem<boolean>;
-	StateOffAct: DataItem<boolean>;
 
-	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+	public readonly dataItems!: OpModeRuntime;
+
+	constructor(requiredDataItems: Required<OpModeRuntime>) {
 		super();
-		this.StateChannel = DataItemFactory.create(getDataItemModel(options, 'StateChannel'), connectionHandler);
 
-		this.StateOffAut = DataItemFactory.create(getDataItemModel(options, 'StateOffAut'), connectionHandler);
-		this.StateOpAut = DataItemFactory.create(getDataItemModel(options, 'StateOpAut'), connectionHandler);
-		this.StateAutAut = DataItemFactory.create(getDataItemModel(options, 'StateAutAut'), connectionHandler);
+		this.dataItems = requiredDataItems;
 
-		this.StateOffOp = DataItemFactory.create(getDataItemModel(options, 'StateOffOp'), connectionHandler);
-		this.StateOpOp = DataItemFactory.create(getDataItemModel(options, 'StateOpOp'), connectionHandler);
-		this.StateAutOp = DataItemFactory.create(getDataItemModel(options, 'StateAutOp'), connectionHandler);
 
-		this.StateOffAct = DataItemFactory.create(getDataItemModel(options, 'StateOffAct'), connectionHandler);
-		this.StateOpAct = DataItemFactory.create(getDataItemModel(options, 'StateOpAct'), connectionHandler);
-		this.StateAutAct = DataItemFactory.create(getDataItemModel(options, 'StateAutAct'), connectionHandler);
-
-		this.StateChannel.on('changed', () => {
-			this.emit('changed', {opMode: this.getOperationMode(), stateChannel: this.StateChannel.value});
+		this.dataItems.StateChannel.on('changed', () => {
+			this.emit('changed', {opMode: this.getOperationMode(), stateChannel: this.dataItems.StateChannel.value});
 		});
 		// TODO: Always two of them will change in parallel --> Smart way to just emit one event?
-		this.StateOffAct.on('changed', () => {
-			this.emit('changed', {opMode: this.getOperationMode(), stateChannel: this.StateChannel.value});
+		this.dataItems.StateOffAct.on('changed', () => {
+			this.emit('changed', {opMode: this.getOperationMode(), stateChannel: this.dataItems.StateChannel.value});
 		});
-		this.StateOpAct.on('changed', () => {
-			this.emit('changed', {opMode: this.getOperationMode(), stateChannel: this.StateChannel.value});
+		this.dataItems.StateOpAct.on('changed', () => {
+			this.emit('changed', {opMode: this.getOperationMode(), stateChannel: this.dataItems.StateChannel.value});
 		});
-		this.StateAutAct.on('changed', () => {
-			this.emit('changed', {opMode: this.getOperationMode(), stateChannel: this.StateChannel.value});
+		this.dataItems.StateAutAct.on('changed', () => {
+			this.emit('changed', {opMode: this.getOperationMode(), stateChannel: this.dataItems.StateChannel.value});
 		});
 	}
 
@@ -144,12 +122,12 @@ export class OpMode extends (EventEmitter as new() => OpModeEmitter) {
 	 */
 	public async setToAutomaticOperationMode(): Promise<void> {
 		if (this.isOfflineState()) {
-			this.writeOpMode(OperationMode.Operator);
+			this.writeOpMode(OperationMode.Operator).then();
 			await this.waitForOpModeToPassSpecificTest(OperationMode.Operator);
 		}
 
 		if (this.isOperatorState()) {
-			this.writeOpMode(OperationMode.Automatic);
+			this.writeOpMode(OperationMode.Automatic).then();
 			await this.waitForOpModeToPassSpecificTest(OperationMode.Automatic);
 		}
 	}
@@ -160,7 +138,7 @@ export class OpMode extends (EventEmitter as new() => OpModeEmitter) {
 	 */
 	public async setToOperatorOperationMode(): Promise<void> {
 		if (!this.isOperatorState()) {
-			this.writeOpMode(OperationMode.Operator);
+			this.writeOpMode(OperationMode.Operator).then();
 			await this.waitForOpModeToPassSpecificTest(OperationMode.Operator);
 		}
 	}
@@ -171,35 +149,35 @@ export class OpMode extends (EventEmitter as new() => OpModeEmitter) {
 	 */
 	public async setToOfflineOperationMode(): Promise<void> {
 		if (this.isAutomaticState()) {
-			this.writeOpMode(OperationMode.Operator);
+			this.writeOpMode(OperationMode.Operator).then();
 			await this.waitForOpModeToPassSpecificTest(OperationMode.Operator);
 		}
 
 		if (this.isOperatorState()) {
-			this.writeOpMode(OperationMode.Offline);
+			this.writeOpMode(OperationMode.Offline).then();
 			await this.waitForOpModeToPassSpecificTest(OperationMode.Offline);
 		}
 	}
 
 	public async writeOpMode(opMode: OperationMode): Promise<void> {
 		if (opMode === OperationMode.Automatic) {
-			await this.StateAutOp.write(true);
+			await this.dataItems.StateAutOp.write(true);
 		} else if (opMode === OperationMode.Operator) {
-			await this.StateOpOp.write(true);
+			await this.dataItems.StateOpOp.write(true);
 		} else if (opMode === OperationMode.Offline) {
-			await this.StateOffOp.write(true);
+			await this.dataItems.StateOffOp.write(true);
 		}
 	}
 
 	public isOfflineState(): boolean {
-		return this.StateOffAct.value;
+		return this.dataItems.StateOffAct.value;
 	}
 
 	public isAutomaticState(): boolean {
-		return this.StateAutAct.value;
+		return this.dataItems.StateAutAct.value;
 	}
 
 	public isOperatorState(): boolean {
-		return this.StateOpAct.value;
+		return this.dataItems.StateOpAct.value;
 	}
 }

@@ -31,6 +31,7 @@ import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {MockupServer} from '../../../../_utils';
 import {DIntViewMockup, getDIntViewDataAssemblyModel} from './DIntView.mockup';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
+import {getEndpointDataModel} from '../../../connectionHandler/ConnectionHandler.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -46,13 +47,13 @@ describe('DIntView', () => {
 
 		it('should create DIntView', async () => {
 			const dataAssembly: DIntView = new DIntView(options, connectionHandler);
-			expect(dataAssembly.communication.TagName).to.not.equal(undefined);
-			expect(dataAssembly.communication.TagDescription).to.not.equal(undefined);
-			expect(dataAssembly.communication.V).to.not.equal(undefined);
-			expect(dataAssembly.communication.WQC).to.not.equal(undefined);
-			expect(dataAssembly.communication.VSclMax).to.not.equal(undefined);
-			expect(dataAssembly.communication.VSclMin).to.not.equal(undefined);
-			expect(dataAssembly.communication.VUnit).to.not.equal(undefined);
+			expect(dataAssembly.dataItems.TagName).to.not.equal(undefined);
+			expect(dataAssembly.dataItems.TagDescription).to.not.equal(undefined);
+			expect(dataAssembly.dataItems.V).to.not.equal(undefined);
+			expect(dataAssembly.dataItems.WQC).to.not.equal(undefined);
+			expect(dataAssembly.dataItems.VSclMax).to.not.equal(undefined);
+			expect(dataAssembly.dataItems.VSclMin).to.not.equal(undefined);
+			expect(dataAssembly.dataItems.VUnit).to.not.equal(undefined);
 		});
 
 	});
@@ -63,12 +64,11 @@ describe('DIntView', () => {
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
-			await mockupServer.initialize();
 			const dIntViewMockup = new DIntViewMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			options = dIntViewMockup.getDataAssemblyModel();
 			await mockupServer.start();
 			connectionHandler= new ConnectionHandler();
-			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
 			await connectionHandler.connect();
 		});
 
@@ -85,11 +85,11 @@ describe('DIntView', () => {
 			await connectionHandler.connect();
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 
-			expect(dataAssembly.communication.WQC.value).equal(0);
-			expect(dataAssembly.communication.V.value).equal(0);
-			expect(dataAssembly.communication.VUnit.value).equal(0);
-			expect(dataAssembly.communication.VSclMax.value).equal(0);
-			expect(dataAssembly.communication.VSclMin.value).equal(0);
+			expect(dataAssembly.dataItems.WQC.value).equal(0);
+			expect(dataAssembly.dataItems.V.value).equal(0);
+			expect(dataAssembly.dataItems.VUnit.value).equal(0);
+			expect(dataAssembly.dataItems.VSclMax.value).equal(0);
+			expect(dataAssembly.dataItems.VSclMin.value).equal(0);
 		}).timeout(4000);
 	});
 });

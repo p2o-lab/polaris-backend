@@ -31,7 +31,7 @@
 interface AnaMonRuntime
 
 class AnaMon{
-    + communication!: AnaMonRuntime
+    + dataItems!: AnaMonRuntime
     + limitMonitoring: LimitMonitoring
     + osLevel: OSLevel
 }

@@ -29,7 +29,7 @@
 !include ../../../baseFunction/unitSettings/UnitSettings.puml
 
 class DIntProcessValueIn{
-    + readonly communication!: DIntProcessValueInRuntime
+    + readonly dataItems!: DIntProcessValueInRuntime
     - readonly scaleSettings: ScaleSettings
     - readonly unitSettings: UnitSettings
 }

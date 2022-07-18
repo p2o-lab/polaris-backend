@@ -25,18 +25,12 @@
 
 import {DataItem} from '../../dataItem/DataItem';
 import {UnitCollection} from './UnitCollection';
-import {DataAssemblyModel} from '@p2olab/pimad-interface';
-import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
-import {DataItemFactory, getDataItemModel} from '../../dataItem/DataItemFactory';
-import {BaseServiceEvents} from '../../../serviceSet';
-import {SourceMode} from '@p2olab/polaris-interface';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {EventEmitter} from 'events';
 
 export type UnitSettingsRuntime = {
 	VUnit: DataItem<number>;
 }
-
 
 /**
  * Events emitted by [[UnitSettings]]
@@ -48,16 +42,16 @@ type UnitSettingsEventEmitter = StrictEventEmitter<EventEmitter, UnitSettingsEve
 
 
 export class UnitSettings extends (EventEmitter as new () => UnitSettingsEventEmitter){
-	VUnit: DataItem<number>;
+	public readonly dataItems!: UnitSettingsRuntime;
 
-	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+	constructor(requiredDataItems: Required<UnitSettingsRuntime>) {
 		super();
 
-		this.VUnit = DataItemFactory.create(getDataItemModel(options, 'VUnit'), connectionHandler);
+		this.dataItems = requiredDataItems;
 	}
 
 	get Unit(): string {
-		const unit = UnitCollection.find((item) => item.value === this.VUnit.value);
+		const unit = UnitCollection.find((item) => item.value === this.dataItems.VUnit.value);
 		return unit ? unit.unit : '';
 	}
 }

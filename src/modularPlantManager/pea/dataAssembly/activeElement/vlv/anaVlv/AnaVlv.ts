@@ -28,7 +28,7 @@ import {Vlv, VlvRuntime} from '../Vlv';
 import {SourceModeController, SourceModeRuntime} from '../../../baseFunction';
 import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
 import {DataItem} from '../../../dataItem/DataItem';
-import {DataItemFactory, getDataItemModel} from '../../../dataItem/DataItemFactory';
+import {keys} from 'ts-transformer-keys';
 
 export type AnaVlvRuntime = VlvRuntime & SourceModeRuntime & {
 	Pos: DataItem<number>;
@@ -48,27 +48,23 @@ export type AnaVlvRuntime = VlvRuntime & SourceModeRuntime & {
 };
 
 export class AnaVlv extends Vlv {
-	public readonly communication!: AnaVlvRuntime;
-	sourceMode: SourceModeController;
 
-	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+	public readonly dataItems!: AnaVlvRuntime;
+
+	public sourceMode!: SourceModeController;
+
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false) {
 		super(options, connectionHandler);
 
-		this.sourceMode = new SourceModeController(options, connectionHandler);
+		if (initial) {
+			const keyList = keys<typeof this.dataItems>();
+			this.initializeDataItems(options, keyList);
+			this.initializeBaseFunctions();
+		}	
+	}
 
-		this.communication.Pos = DataItemFactory.create(getDataItemModel(options, 'Pos'), connectionHandler);
-		this.communication.PosFbk = DataItemFactory.create(getDataItemModel(options, 'PosFbk'), connectionHandler);
-		this.communication.PosFbkCalc = DataItemFactory.create(getDataItemModel(options, 'PosFbkCalc'), connectionHandler);
-		this.communication.PosRbk = DataItemFactory.create(getDataItemModel(options, 'PosRbk'), connectionHandler);
-		this.communication.PosInt = DataItemFactory.create(getDataItemModel(options, 'PosInt'), connectionHandler);
-		this.communication.PosMan = DataItemFactory.create(getDataItemModel(options, 'PosMan'), connectionHandler);
-		this.communication.PosUnit = DataItemFactory.create(getDataItemModel(options, 'PosUnit'), connectionHandler);
-		this.communication.PosSclMin = DataItemFactory.create(getDataItemModel(options, 'PosSclMin'), connectionHandler);
-		this.communication.PosSclMax = DataItemFactory.create(getDataItemModel(options, 'PosSclMax'), connectionHandler);
-		this.communication.PosMin = DataItemFactory.create(getDataItemModel(options, 'PosMin'), connectionHandler);
-		this.communication.PosMax = DataItemFactory.create(getDataItemModel(options, 'PosMax'), connectionHandler);
-
-		this.communication.OpenAct = DataItemFactory.create(getDataItemModel(options, 'OpenAct'), connectionHandler);
-		this.communication.CloseAct = DataItemFactory.create(getDataItemModel(options, 'CloseAct'), connectionHandler);
+	protected initializeBaseFunctions() {
+		super.initializeBaseFunctions();
+		this.sourceMode = new SourceModeController(this.dataItems);
 	}
 }

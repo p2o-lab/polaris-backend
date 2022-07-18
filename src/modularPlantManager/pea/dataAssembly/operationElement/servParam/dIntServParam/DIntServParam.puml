@@ -30,7 +30,7 @@
 !include ../../../baseFunction/valueLimitation/ValueLimitation.puml
 
 class DIntServParam{
-    + readonly communication!: DIntServParamRuntime
+    + readonly dataItems!: DIntServParamRuntime
     + readonly scaleSettings: ScaleSettings
     + readonly unitSettings: UnitSettings
     + readonly valueLimitation: ValueLimitation

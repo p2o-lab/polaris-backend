@@ -111,15 +111,14 @@ export class Timer extends POLService {
 	}
 
 	protected async onHolding(): Promise<void> {
-		this.onStopping();
+		await this.onStopping();
 	}
 
-	protected async onCompleting(): Promise<void> {
-		this.onStopping();
+	protected async onCompleting(): Promise<void> {await this.onStopping();
 	}
 
 	protected async onAborting(): Promise<void> {
-		this.onStopping();
+		await this.onStopping();
 	}
 
 	protected async onStopping(): Promise<void> {

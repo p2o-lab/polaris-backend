@@ -27,7 +27,7 @@ import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {DataItem} from '../../dataItem/DataItem';
 import {IndicatorElement, IndicatorElementRuntime} from '../IndicatorElement';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
-import {DataItemFactory, getDataItemModel} from '../../dataItem/DataItemFactory';
+import {keys} from 'ts-transformer-keys';
 
 export type BinViewRuntime = IndicatorElementRuntime & {
 	V: DataItem<boolean>;
@@ -36,15 +36,23 @@ export type BinViewRuntime = IndicatorElementRuntime & {
 };
 
 export class BinView extends IndicatorElement {
-	public readonly communication!: BinViewRuntime;
 
-	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+	public readonly dataItems!: BinViewRuntime;
+
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false) {
 		super(options, connectionHandler);
-		this.communication.V = DataItemFactory.create(getDataItemModel(options, 'V'), connectionHandler);
-		this.communication.VState0 = DataItemFactory.create(getDataItemModel(options, 'VState0'), connectionHandler);
-		this.communication.VState1 = DataItemFactory.create(getDataItemModel(options, 'VState1'), connectionHandler);
 
-		this.defaultReadDataItem = this.communication.V;
+		if (initial) {
+			const keyList = keys<typeof this.dataItems>();
+			this.initializeDataItems(options, keyList);
+			this.initializeBaseFunctions();
+		}	
+
+		this.defaultReadDataItem = this.dataItems.V;
 		this.defaultReadDataItemType = 'boolean';
+	}
+
+	protected initializeBaseFunctions() {
+		super.initializeBaseFunctions();
 	}
 }

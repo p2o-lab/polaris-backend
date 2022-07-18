@@ -30,6 +30,7 @@ import {BinManMockup, getBinManDataAssemblyModel, getBinManDataItemModel} from '
 import {DataItemAccessLevel} from '@p2olab/pimad-interface';
 import {BinManRuntime} from './BinMan';
 import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
+import {getEndpointDataModel} from '../../../../connectionHandler/ConnectionHandler.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -43,7 +44,6 @@ describe('BinManMockup', () => {
         beforeEach(async function () {
             this.timeout(4000);
             mockupServer = new MockupServer();
-            await mockupServer.initialize();
         });
 
         it('should create BinManMockup', async () => {
@@ -104,11 +104,11 @@ describe('BinManMockup', () => {
         beforeEach(async function () {
             this.timeout(5000);
             mockupServer = new MockupServer();
-            await mockupServer.initialize();
+            
             new BinManMockup(mockupServer.nameSpace, mockupServer.rootObject,'Variable');
             await mockupServer.start();
             connectionHandler= new ConnectionHandler();
-            connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+            connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
             await connectionHandler.connect();
         });
 

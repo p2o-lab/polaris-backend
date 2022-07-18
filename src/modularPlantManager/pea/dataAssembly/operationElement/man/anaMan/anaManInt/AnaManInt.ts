@@ -30,7 +30,7 @@ import {SourceModeController, SourceModeRuntime,
 import {AnaMan, AnaManRuntime} from '../AnaMan';
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {ConnectionHandler} from '../../../../../connectionHandler/ConnectionHandler';
-import {DataItemFactory, getDataItemModel} from '../../../../dataItem/DataItemFactory';
+import {keys} from 'ts-transformer-keys';
 
 export type AnaManIntRuntime = AnaManRuntime & SourceModeRuntime & WQCRuntime & {
 	VInt: DataItem<number>;
@@ -38,17 +38,24 @@ export type AnaManIntRuntime = AnaManRuntime & SourceModeRuntime & WQCRuntime & 
 
 export class AnaManInt extends AnaMan {
 
-	public readonly communication!: AnaManIntRuntime;
-	public readonly sourceMode: SourceModeController;
-	public readonly wqc: WQC;
+	public readonly dataItems!: AnaManIntRuntime;
 
-	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+	public sourceMode!: SourceModeController;
+	public wqc!: WQC;
+
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false) {
 		super(options, connectionHandler);
 
-		this.wqc = new WQC(options, connectionHandler);
+		if (initial) {
+			const keyList = keys<typeof this.dataItems>();
+			this.initializeDataItems(options, keyList);
+			this.initializeBaseFunctions();
+		}	
+	}
 
-		this.sourceMode = new SourceModeController(options, connectionHandler);
-
-		this.communication.VInt = DataItemFactory.create<number>(getDataItemModel(options, 'VInt'), connectionHandler);
+	protected initializeBaseFunctions() {
+		super.initializeBaseFunctions();
+		this.sourceMode = new SourceModeController(this.dataItems);
+		this.wqc = new WQC(this.dataItems);
 	}
 }

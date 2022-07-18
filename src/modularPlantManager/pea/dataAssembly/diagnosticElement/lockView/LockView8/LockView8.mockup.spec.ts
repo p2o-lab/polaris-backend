@@ -39,7 +39,6 @@ describe('LockView8Mockup', () => {
         let mockupServer: MockupServer;
         beforeEach(async()=>{
             mockupServer = new MockupServer();
-            await mockupServer.initialize();
         });
 
         it('should create LockView8Mockup', async () => {

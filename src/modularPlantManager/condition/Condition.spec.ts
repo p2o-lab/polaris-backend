@@ -38,6 +38,7 @@ import {ServiceMtpCommand} from '../pea/serviceSet/service/enum';
 import {ConnectionHandler} from '../pea/connectionHandler/ConnectionHandler';
 import {Endpoint, PEAModel, ProcedureModel, ServiceModel} from '@p2olab/pimad-interface';
 import {getEmptyPEAModel} from '../pea/PEA.mockup';
+import {getEndpointDataModel} from '../pea/connectionHandler/ConnectionHandler.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -177,13 +178,12 @@ describe('with MockupServer containing a PEAController', () => {
 		beforeEach(async function () {
 			this.timeout(10000);
 			mockupServer = new MockupServer();
-			await mockupServer.initialize();
 			anaViewMockup = new AnaViewMockup(mockupServer.nameSpace, mockupServer.rootObject,'Variable');
 			serviceControlMockup = new ServiceControlMockup(mockupServer.nameSpace, mockupServer.rootObject,'Service1');
 			healthStateViewMockup = new HealthStateViewMockup(mockupServer.nameSpace, mockupServer.rootObject,'Procedure1');
 			await mockupServer.start();
 			connectionHandler = new ConnectionHandler();
-			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
 			await connectionHandler.connect();
 
 			const procedureModel: ProcedureModel = {
@@ -214,7 +214,7 @@ describe('with MockupServer containing a PEAController', () => {
 			const peaModel: PEAModel = getEmptyPEAModel();
 			peaModel.name = 'PEATestServer';
 			peaModel.pimadIdentifier = 'PEATestServer';
-			peaModel.endpoint.push({defaultValue: mockupServer.endpoint, value: mockupServer.endpoint} as Endpoint);
+			peaModel.endpoints.push({defaultValue: mockupServer.endpoint, value: mockupServer.endpoint} as Endpoint);
 			peaModel.dataAssemblies.push(anaViewMockup.getDataAssemblyModel());
 			peaModel.services.push(serviceModel);
 

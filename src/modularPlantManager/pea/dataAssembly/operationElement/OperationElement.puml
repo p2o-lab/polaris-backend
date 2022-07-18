@@ -33,7 +33,7 @@
 
 class OperationElement{
 
-    + readonly communication!: InputElementRuntime
+    + readonly dataItems!: InputElementRuntime
     + parameterRequest: Parameter | undefined
     + requestedValue = ''
 

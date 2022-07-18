@@ -42,7 +42,6 @@ describe('OperationElementMockup', () => {
         beforeEach(async function (){
             this.timeout(5000);
             mockupServer = new MockupServer();
-            await mockupServer.initialize();
         });
 
         it('should create OperationElementMockup', async () => {

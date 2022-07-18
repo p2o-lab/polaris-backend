@@ -27,7 +27,7 @@
 'https://plantuml.com/class-diagram
 
 class StringView{
-    + readonly communication!: StringViewRuntime
+    + readonly dataItems!: StringViewRuntime
     + Text(): string | undefined
 }
 StringView *- StringViewSpec

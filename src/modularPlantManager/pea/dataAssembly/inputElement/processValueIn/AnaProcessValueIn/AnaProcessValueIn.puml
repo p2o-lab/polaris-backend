@@ -29,7 +29,7 @@
 !include ../../../baseFunction/unitSettings/UnitSettings.puml
 
 class AnaProcessValueIn{
-    + readonly communication!: AnaProcessValueInRuntime
+    + readonly dataItems!: AnaProcessValueInRuntime
     - readonly scaleSettings: ScaleSettings
     - readonly unitSettings: UnitSettings
 }

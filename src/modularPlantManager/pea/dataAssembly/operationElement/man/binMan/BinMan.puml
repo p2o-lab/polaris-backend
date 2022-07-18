@@ -28,7 +28,7 @@
 !include binManInt/BinManInt.puml
 
 class BinMan{
-    + readonly communication!: BinManRuntime
+    + readonly dataItems!: BinManRuntime
 }
 
 BinMan *- BinManSpec

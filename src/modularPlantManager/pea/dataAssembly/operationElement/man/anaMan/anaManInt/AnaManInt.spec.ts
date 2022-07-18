@@ -31,6 +31,7 @@ import {DataAssemblyFactory} from '../../../../DataAssemblyFactory';
 import {MockupServer} from '../../../../../../_utils';
 import {AnaManIntMockup, getAnaManIntDataAssemblyModel} from './AnaManInt.mockup';
 import {ConnectionHandler} from '../../../../../connectionHandler/ConnectionHandler';
+import {getEndpointDataModel} from '../../../../../connectionHandler/ConnectionHandler.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -48,7 +49,7 @@ describe('AnaManInt', () => {
 
 			const dataAssembly: AnaManInt = DataAssemblyFactory.create(options, connectionHandler) as AnaManInt;
 			expect(dataAssembly.sourceMode).to.be.not.undefined;
-			expect(dataAssembly.communication.VInt).to.not.equal(undefined);
+			expect(dataAssembly.dataItems.VInt).to.not.equal(undefined);
 			expect(dataAssembly.wqc).to.not.equal(undefined);
 		});
 	});
@@ -59,12 +60,11 @@ describe('AnaManInt', () => {
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
-			await mockupServer.initialize();
 			const anaManIntMockup = new AnaManIntMockup(mockupServer.nameSpace, mockupServer.rootObject,'Variable');
 			options = anaManIntMockup.getDataAssemblyModel();
 			await mockupServer.start();
 			connectionHandler= new ConnectionHandler();
-			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
 			await connectionHandler.connect();
 		});
 
@@ -81,26 +81,26 @@ describe('AnaManInt', () => {
 			await connectionHandler.connect();
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 
-			expect(dataAssembly.communication.OSLevel.value).to.equal(0);
-			expect(dataAssembly.communication.VOut.value).to.equal(0);
-			expect(dataAssembly.communication.VMan.value).to.equal(0);
-			expect(dataAssembly.communication.VRbk.value).to.equal(0);
-			expect(dataAssembly.communication.VFbk.value).to.equal(0);
-			expect(dataAssembly.communication.VUnit.value).equal(0);
-			expect(dataAssembly.communication.VSclMin.value).equal(0);
-			expect(dataAssembly.communication.VSclMax.value).equal(0);
-			expect(dataAssembly.communication.VMin.value).equal(0);
-			expect(dataAssembly.communication.VMax.value).equal(0);
-			expect(dataAssembly.communication.WQC.value).to.equal(0);
-			expect(dataAssembly.communication.VInt.value).to.equal(0);
-			expect(dataAssembly.communication.VMan.value).to.equal(0);
-			expect(dataAssembly.communication.SrcChannel.value).equal(false);
-			expect(dataAssembly.communication.SrcManAut.value).equal(false);
-			expect(dataAssembly.communication.SrcIntAut.value).equal(false);
-			expect(dataAssembly.communication.SrcIntOp.value).equal(false);
-			expect(dataAssembly.communication.SrcManOp.value).equal(false);
-			expect(dataAssembly.communication.SrcIntAct.value).equal(true);
-			expect(dataAssembly.communication.SrcManAct.value).equal(false);
+			expect(dataAssembly.dataItems.OSLevel.value).to.equal(0);
+			expect(dataAssembly.dataItems.VOut.value).to.equal(0);
+			expect(dataAssembly.dataItems.VMan.value).to.equal(0);
+			expect(dataAssembly.dataItems.VRbk.value).to.equal(0);
+			expect(dataAssembly.dataItems.VFbk.value).to.equal(0);
+			expect(dataAssembly.dataItems.VUnit.value).equal(0);
+			expect(dataAssembly.dataItems.VSclMin.value).equal(0);
+			expect(dataAssembly.dataItems.VSclMax.value).equal(0);
+			expect(dataAssembly.dataItems.VMin.value).equal(0);
+			expect(dataAssembly.dataItems.VMax.value).equal(0);
+			expect(dataAssembly.dataItems.WQC.value).to.equal(0);
+			expect(dataAssembly.dataItems.VInt.value).to.equal(0);
+			expect(dataAssembly.dataItems.VMan.value).to.equal(0);
+			expect(dataAssembly.dataItems.SrcChannel.value).equal(false);
+			expect(dataAssembly.dataItems.SrcManAut.value).equal(false);
+			expect(dataAssembly.dataItems.SrcIntAut.value).equal(false);
+			expect(dataAssembly.dataItems.SrcIntOp.value).equal(false);
+			expect(dataAssembly.dataItems.SrcManOp.value).equal(false);
+			expect(dataAssembly.dataItems.SrcIntAct.value).equal(true);
+			expect(dataAssembly.dataItems.SrcManAct.value).equal(false);
 		}).timeout(4000);
 	});
 });

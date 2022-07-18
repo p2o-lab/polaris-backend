@@ -30,6 +30,7 @@ import {getOpModeDataItemModel, OpModeMockup} from './OpMode.mockup';
 import {OperationMode} from '@p2olab/polaris-interface';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
 import {DataItemAccessLevel} from '@p2olab/pimad-interface';
+import {getEndpointDataModel} from '../../../connectionHandler/ConnectionHandler.mockup';
 
 
 chai.use(chaiAsPromised);
@@ -43,7 +44,8 @@ describe('OpModeMockup', () => {
 
         beforeEach(async () => {
             mockupServer = new MockupServer();
-            await mockupServer.initialize();
+			await mockupServer.initialize();
+
         });
 
         it('should create OpModeMockup', async () => {
@@ -112,12 +114,13 @@ describe('OpModeMockup', () => {
         beforeEach(async function () {
             this.timeout(10000);
             mockupServer = new MockupServer();
-            await mockupServer.initialize();
+			await mockupServer.initialize();
+
             mockup = new OpModeMockup(mockupServer.nameSpace,
                 mockupServer.rootObject, 'Variable');
             await mockupServer.start();
             connectionHandler= new ConnectionHandler();
-            connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+            connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
             await connectionHandler.connect();
         });
         afterEach(async () => {

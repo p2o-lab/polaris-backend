@@ -28,7 +28,7 @@
 !include monAnaVlv/MonAnaVlv.puml
 
 class AnaVlv{
-	+ readonly communication!: AnaVlvRuntime
+	+ readonly dataItems!: AnaVlvRuntime
 	+ sourceMode: SourceModeController
 }
 

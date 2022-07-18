@@ -33,7 +33,7 @@ import {
 import {ActiveElement, ActiveElementRuntime} from '../ActiveElement';
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
-import { DataItemFactory, getDataItemModel } from '../../dataItem/DataItemFactory';
+import {keys} from 'ts-transformer-keys';
 
 export type DrvRuntime = ActiveElementRuntime & OpModeRuntime & InterlockRuntime & ResetRuntime & {
 	SafePos: DataItem<boolean>;
@@ -60,37 +60,25 @@ export type DrvRuntime = ActiveElementRuntime & OpModeRuntime & InterlockRuntime
 
 export class Drv extends ActiveElement {
 
-	public readonly communication!: DrvRuntime;
-	public readonly reset: Reset;
-	public readonly interlock: Interlock;
-	public readonly opMode: OpMode;
+	public readonly dataItems!: DrvRuntime;
 
-	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+	public reset!: Reset;
+	public interlock!: Interlock;
+	public opMode!: OpMode;
+
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false) {
 		super(options, connectionHandler);
 
-		this.reset = new Reset(options, connectionHandler);
-		this.interlock = new Interlock(options, connectionHandler);
-		this.opMode = new OpMode(options, connectionHandler);
-
-		this.communication.SafePos = DataItemFactory.create(getDataItemModel(options, 'SafePos'), connectionHandler);
-		this.communication.SafePosAct = DataItemFactory.create(getDataItemModel(options, 'SafePosAct'), connectionHandler);
-
-		this.communication.FwdAut = DataItemFactory.create(getDataItemModel(options, 'FwdAut'), connectionHandler);
-		this.communication.FwdCtrl = DataItemFactory.create(getDataItemModel(options, 'FwdCtrl'), connectionHandler);
-		this.communication.FwdEn = DataItemFactory.create(getDataItemModel(options, 'FwdEn'), connectionHandler);
-		this.communication.FwdFbk = DataItemFactory.create(getDataItemModel(options, 'FwdFbk'), connectionHandler);
-		this.communication.FwdFbkCalc = DataItemFactory.create(getDataItemModel(options, 'FwdFbkCalc'), connectionHandler);
-		this.communication.FwdOp = DataItemFactory.create(getDataItemModel(options, 'FwdOp'), connectionHandler);
-
-		this.communication.RevAut = DataItemFactory.create(getDataItemModel(options, 'RevAut'), connectionHandler);
-		this.communication.RevCtrl = DataItemFactory.create(getDataItemModel(options, 'RevCtrl'), connectionHandler);
-		this.communication.RevEn = DataItemFactory.create(getDataItemModel(options, 'RevEn'), connectionHandler);
-		this.communication.RevFbk = DataItemFactory.create(getDataItemModel(options, 'RevFbk'), connectionHandler);
-		this.communication.RevFbkCalc = DataItemFactory.create(getDataItemModel(options, 'RevFbkCalc'), connectionHandler);
-		this.communication.RevOp = DataItemFactory.create(getDataItemModel(options, 'RevOp'), connectionHandler);
-
-		this.communication.StopAut = DataItemFactory.create(getDataItemModel(options, 'StopAut'), connectionHandler);
-		this.communication.StopOp = DataItemFactory.create(getDataItemModel(options, 'StopOp'), connectionHandler);
-		this.communication.Trip = DataItemFactory.create(getDataItemModel(options, 'Trip'), connectionHandler);
+		if (initial) {
+			const keyList = keys<typeof this.dataItems>();
+			this.initializeDataItems(options, keyList);
+			this.initializeBaseFunctions();
+		}	
+	}
+	protected initializeBaseFunctions() {
+		super.initializeBaseFunctions();
+		this.reset = new Reset(this.dataItems);
+		this.interlock = new Interlock(this.dataItems);
+		this.opMode = new OpMode(this.dataItems);
 	}
 }

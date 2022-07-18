@@ -29,9 +29,10 @@ import * as cors from 'cors';
 import * as express from 'express';
 import {NextFunction, Request, Response} from 'express';
 import {catMiddleware} from '../logging';
+import {PEAProvider} from '../peaProvider/PEAProvider';
 
 export default class Middleware {
-	public static init(app: express.Application, manager: ModularPlantManager): void {
+	public static init(app: express.Application, manager: ModularPlantManager, peaProvider: PEAProvider): void {
 
 		// express middleware
 		app.use(express.json({limit: '10mb'}));
@@ -57,6 +58,7 @@ export default class Middleware {
 
 		// Provide manager in all requests
 		app.set('manager', manager);
+		app.set('peaProvider', peaProvider);
 		// Logging all requests
 		app.use((req: Request, res: Response, next: NextFunction) => {
 			catMiddleware.info(`${req.method} ${req.url}`);

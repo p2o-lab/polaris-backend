@@ -27,7 +27,7 @@
 'https://plantuml.com/class-diagram
 
 class DIntMon{
-    + communication!: AnaMonRuntime
+    + dataItems!: AnaMonRuntime
     + readonly osLevel: OSLevel
 }
 DIntMon *- DIntMonSpec

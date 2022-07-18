@@ -30,7 +30,7 @@
 !include ./drv/Drv.puml
 
 class ActiveElement{
-    + readonly communication!: IndicatorElementRuntime
+    + readonly dataItems!: IndicatorElementRuntime
     + readonly osLevel: OSLevel;
     + readonly wqc: WQC
 }

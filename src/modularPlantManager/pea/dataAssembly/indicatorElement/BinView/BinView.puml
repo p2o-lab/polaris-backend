@@ -27,7 +27,7 @@
 'https://plantuml.com/class-diagram
 !include BinMon/BinMon.puml
 class BinView{
-    + readonly communication!: BinViewRuntime
+    + readonly dataItems!: BinViewRuntime
 
 }
 

@@ -29,6 +29,7 @@ import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../_utils';
 import {ConnectionHandler} from './ConnectionHandler';
 import {DataItemAccessLevel} from '@p2olab/pimad-interface';
+import {getEndpointDataModel} from './ConnectionHandler.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -38,14 +39,14 @@ describe('OpcUaConnection', () => {
 
 	it('should reject connecting to a server with too high port', async () => {
 		const connectionHandler = new ConnectionHandler();
-		connectionHandler.setupConnectionAdapter({endpointUrl: 'opc.tcp://127.0.0.1:44447777'});
+		connectionHandler.initializeConnectionAdapters([getEndpointDataModel('opc.tcp://127.0.0.1:44447777')]);
 		expect(connectionHandler.connectionEstablished).to.equal(false);
 		await expect(connectionHandler.connect()).to.be.rejected;
 	});
 
 	it('should reject connecting to a server with not existing endpoint', async () => {
 		const connectionHandler = new ConnectionHandler();
-		connectionHandler.setupConnectionAdapter({endpointUrl: ''});
+		connectionHandler.initializeConnectionAdapters([getEndpointDataModel('')]);
 		expect(connectionHandler.connectionEstablished).to.equal(false);
 		await expect(connectionHandler.connect()).to.be.rejected;
 		expect(connectionHandler.connectionEstablished).to.equal(false);
@@ -55,10 +56,11 @@ describe('OpcUaConnection', () => {
 	it('should connect to a opc ua test server and recognize a shutdown of this server', async () => {
 
 		const mockupServer = new MockupServer();
+			await mockupServer.initialize();
 		await mockupServer.start();
 
 		const connectionHandler = new ConnectionHandler();
-        connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+        connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
 
 		expect(connectionHandler.connectionEstablished).to.equal(false);
 		await connectionHandler.connect();
@@ -80,6 +82,7 @@ describe('OpcUaConnection', () => {
 
 		before(async () => {
 			mockupServer = new MockupServer();
+			await mockupServer.initialize();
 			await mockupServer.start();
 			mockupServerNamespace = mockupServer.nameSpaceUri;
 		});
@@ -93,7 +96,7 @@ describe('OpcUaConnection', () => {
 
 		it('should add and remove Nodes to connectionHandler for monitoring', async () => {
 			const connectionHandler = new ConnectionHandler();
-			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
 			await connectionHandler.connect();
 			connectionHandler.addDataItemToMonitoring({nodeId: {identifier: 'trigger', namespaceIndex: mockupServerNamespace, access: DataItemAccessLevel.ReadWrite}});
 			expect(connectionHandler.monitoredDataItemsCount()).to.equal(1);
@@ -108,7 +111,7 @@ describe('OpcUaConnection', () => {
 		it('should connect to MockupServer, read an opc item and disconnect', async () => {
 
 			const connectionHandler = new ConnectionHandler();
-			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
 			expect(connectionHandler.connectionEstablished).to.equal(false);
 
 			await connectionHandler.connect();
@@ -121,7 +124,7 @@ describe('OpcUaConnection', () => {
 
 		it('should connect to a opc ua test server, subscribe to one opc ua item and disconnect', async () => {
 			const connectionHandler = new ConnectionHandler();
-			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
 			expect(connectionHandler.connectionEstablished).to.equal(false);
 
 			await connectionHandler.connect();
@@ -135,7 +138,7 @@ describe('OpcUaConnection', () => {
 
 		it('should work after reconnection', async () => {
 			const connectionHandler = new ConnectionHandler();
-			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
 			await connectionHandler.connect();
 
 			const eventName1 = connectionHandler.addDataItemToMonitoring({nodeId: {identifier: 'trigger', namespaceIndex: mockupServerNamespace, access: DataItemAccessLevel.ReadWrite}});
@@ -156,7 +159,7 @@ describe('OpcUaConnection', () => {
 
 		it('should not add same nodeId, invalid namespace should throw, should listen to multiple items', async () => {
 			const connectionHandler = new ConnectionHandler();
-			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
 			expect(connectionHandler.connectionEstablished).to.equal(false);
 
 			await connectionHandler.connect();
@@ -187,7 +190,7 @@ describe('OpcUaConnection', () => {
 
 		it('should connect with username and password', async () => {
 			const connectionHandler = new ConnectionHandler();
-			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
 			await connectionHandler.connect();
 			await connectionHandler.disconnect();
 		});

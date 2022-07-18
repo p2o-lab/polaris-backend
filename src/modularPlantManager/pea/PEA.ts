@@ -177,7 +177,7 @@ export class PEA extends (EventEmitter as new() => PEAEmitter) {
 		this.connectionHandler = new ConnectionHandler()
 			.on('connected', () => this.emit('connected'))
 			.on('disconnected', () => this.emit('disconnected'));
-		this.connectionHandler.setupConnectionAdapter({endpointUrl: options.endpoint[0].value});
+		this.connectionHandler.initializeConnectionAdapters(options.endpoints);
 
 
 		if (options.services) {
@@ -206,7 +206,7 @@ export class PEA extends (EventEmitter as new() => PEAEmitter) {
 	 * @param options {OpcUaConnectionSettings}
 	 */
 	public updateConnection(options: OpcUaConnectionSettings): void{
-		this.connectionHandler.setupConnectionAdapter(options);
+		this.connectionHandler.changeEndpointConfig(options);
 
 	}
 
@@ -261,7 +261,7 @@ export class PEA extends (EventEmitter as new() => PEAEmitter) {
 			id: this.id,
 			pimadIdentifier: this.pimadIdentifier,
 			description: '',
-			endpoint: this.options.endpoint.toString(),
+			endpoint: this.options.endpoints[0].value.toString(),
 			hmiUrl: '',
 			connected: this.isConnected(),
 			services: this.getServiceStates(),
@@ -281,7 +281,7 @@ export class PEA extends (EventEmitter as new() => PEAEmitter) {
 	/**
 	 * get current connectionHandlersettings of PEA
 	 */
-	public getCurrentConnectionSettings(): OpcUaConnectionInfo | undefined {
+	public getCurrentConnectionSettings(): OpcUaConnectionInfo[] {
 		return this.connectionHandler.connectionAdapterInfo;
 	}
 

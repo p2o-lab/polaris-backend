@@ -29,7 +29,7 @@
 !include ../../../../baseFunction/sourceMode/SourceModeController.puml
 !include ../../../../baseFunction/wqc/WQC.puml
 class AnaManInt{
-    + readonly communication!: AnaManIntRuntime
+    + readonly dataItems!: AnaManIntRuntime
     + readonly sourceMode: SourceModeController
     + readonly wqc: WQC
 }

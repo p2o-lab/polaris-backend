@@ -32,6 +32,7 @@ import {AnaMan} from './AnaMan';
 import {DataAssemblyFactory} from '../../../DataAssemblyFactory';
 import {AnaManMockup, getAnaManDataAssemblyModel} from './AnaMan.mockup';
 import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
+import {getEndpointDataModel} from '../../../../connectionHandler/ConnectionHandler.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -47,16 +48,16 @@ describe('AnaMan', () => {
 
 		it('should create AnaMan',  () => {
 			const dataAssembly = DataAssemblyFactory.create(options, connectionHandler) as AnaMan;
-			expect(dataAssembly.communication.VOut).to.not.equal(undefined);
+			expect(dataAssembly.dataItems.VOut).to.not.equal(undefined);
 			expect(dataAssembly.scaleSettings).to.not.be.undefined;
 			expect(dataAssembly.unitSettings).to.not.be.undefined;
 			expect(dataAssembly.valueLimitation).to.not.be.undefined;
-			expect(dataAssembly.communication.VMan).to.not.equal(undefined);
-			expect(dataAssembly.communication.VRbk).to.not.equal(undefined);
-			expect(dataAssembly.communication.VFbk).to.not.equal(undefined);
-			expect(dataAssembly.defaultReadDataItem).equal(dataAssembly.communication.VOut);
+			expect(dataAssembly.dataItems.VMan).to.not.equal(undefined);
+			expect(dataAssembly.dataItems.VRbk).to.not.equal(undefined);
+			expect(dataAssembly.dataItems.VFbk).to.not.equal(undefined);
+			expect(dataAssembly.defaultReadDataItem).equal(dataAssembly.dataItems.VOut);
 			expect(dataAssembly.defaultReadDataItemType).to.equal('number');
-			expect(dataAssembly.defaultWriteDataItem).equal(dataAssembly.communication.VMan);
+			expect(dataAssembly.defaultWriteDataItem).equal(dataAssembly.dataItems.VMan);
 			expect(dataAssembly.defaultWriteDataItemType).to.equal('number');
 		});
 	});
@@ -69,12 +70,11 @@ describe('AnaMan', () => {
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
-			await mockupServer.initialize();
 			const anaManMockup = new AnaManMockup(mockupServer.nameSpace, mockupServer.rootObject,'Variable');
 			options = anaManMockup.getDataAssemblyModel();
 			await mockupServer.start();
 			connectionHandler = new ConnectionHandler();
-			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
 			await connectionHandler.connect();
 		});
 
@@ -91,16 +91,16 @@ describe('AnaMan', () => {
 			await connectionHandler.connect();
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 
-			expect(dataAssembly.communication.OSLevel.value).to.equal(0);
-			expect(dataAssembly.communication.VOut.value).to.equal(0);
-			expect(dataAssembly.communication.VMan.value).to.equal(0);
-			expect(dataAssembly.communication.VRbk.value).to.equal(0);
-			expect(dataAssembly.communication.VFbk.value).to.equal(0);
-			expect(dataAssembly.communication.VUnit.value).equal(0);
-			expect(dataAssembly.communication.VSclMin.value).equal(0);
-			expect(dataAssembly.communication.VSclMax.value).equal(0);
-			expect(dataAssembly.communication.VMin.value).equal(0);
-			expect(dataAssembly.communication.VMax.value).equal(0);
+			expect(dataAssembly.dataItems.OSLevel.value).to.equal(0);
+			expect(dataAssembly.dataItems.VOut.value).to.equal(0);
+			expect(dataAssembly.dataItems.VMan.value).to.equal(0);
+			expect(dataAssembly.dataItems.VRbk.value).to.equal(0);
+			expect(dataAssembly.dataItems.VFbk.value).to.equal(0);
+			expect(dataAssembly.dataItems.VUnit.value).equal(0);
+			expect(dataAssembly.dataItems.VSclMin.value).equal(0);
+			expect(dataAssembly.dataItems.VSclMax.value).equal(0);
+			expect(dataAssembly.dataItems.VMin.value).equal(0);
+			expect(dataAssembly.dataItems.VMax.value).equal(0);
 		}).timeout(4000);
 	});
 });

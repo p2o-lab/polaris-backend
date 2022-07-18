@@ -31,6 +31,7 @@ import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {MockupServer} from '../../../../_utils';
 import {getHealthStateViewDataAssemblyModel, HealthStateViewMockup} from './HealthStateView.mockup';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
+import {getEndpointDataModel} from '../../../connectionHandler/ConnectionHandler.mockup';
 
 
 chai.use(chaiAsPromised);
@@ -48,7 +49,7 @@ describe('HealthStateView', () => {
 		it('should create HealthStateView', async () => {
 			const dataAssembly = new HealthStateView(options, emptyOPCUAConnection);
 			expect(dataAssembly).to.be.not.undefined;
-			expect(dataAssembly.communication).to.be.not.undefined;
+			expect(dataAssembly.dataItems).to.be.not.undefined;
 			expect(dataAssembly.wqc).to.be.not.undefined;
 		});
 
@@ -60,11 +61,10 @@ describe('HealthStateView', () => {
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
-			await mockupServer.initialize();
 			const healthStateViewMockup = new HealthStateViewMockup( mockupServer.nameSpace, mockupServer.rootObject,'Variable');
 			options = healthStateViewMockup.getDataAssemblyModel();await mockupServer.start();
 			connectionHandler = new ConnectionHandler();
-			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
 			await connectionHandler.connect();
 		});
 
@@ -81,7 +81,7 @@ describe('HealthStateView', () => {
 			await connectionHandler.connect();
 			await new Promise((resolve)=> dataAssembly.on('changed', resolve));
 
-			expect(dataAssembly.communication.WQC.value).equal(0);
+			expect(dataAssembly.dataItems.WQC.value).equal(0);
 		}).timeout(4000);
 	});
 });

@@ -29,6 +29,7 @@ import {MockupServer} from '../../../../_utils';
 import {FeedbackMonitoringMockup, getFeedbackMonitoringDataItemModel} from './FeedbackMonitoring.mockup';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
 import {DataItemAccessLevel} from '@p2olab/pimad-interface';
+import {getEndpointDataModel} from '../../../connectionHandler/ConnectionHandler.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -38,7 +39,8 @@ describe('FeedbackMonitoringMockup', () => {
         let mockupServer: MockupServer;
         beforeEach(async()=>{
             mockupServer = new MockupServer();
-            await mockupServer.initialize();
+			await mockupServer.initialize();
+
         });
 
         it('should create FeedbackMonitoringMockup', async () => {
@@ -75,11 +77,12 @@ describe('FeedbackMonitoringMockup', () => {
         beforeEach(async function () {
             this.timeout(5000);
             mockupServer = new MockupServer();
-            await mockupServer.initialize();
+			await mockupServer.initialize();
+
             new FeedbackMonitoringMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
             await mockupServer.start();
             connectionHandler= new ConnectionHandler();
-            connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+            connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
             await connectionHandler.connect();
         });
 

@@ -34,21 +34,34 @@ import {PEA} from '../../PEA';
 import {ParameterRequest} from '../ParameterRequest';
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {ConnectionHandler} from '../../connectionHandler/ConnectionHandler';
+import {keys} from 'ts-transformer-keys';
 
 export type InputElementRuntime = WQCRuntime & DataAssemblyDataItems ;
 
 export class InputElement extends DataAssembly {
-	public readonly communication!: InputElementRuntime;
+
+	public readonly dataItems!: InputElementRuntime;
+
 	public parameterRequest: ParameterRequest | undefined;
 	public requestedValue = '';
 
-	wqc: WQC;
+	public wqc!: WQC;
 
-	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
-		super(options);
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false) {
+		super(options, connectionHandler);
 
-		this.wqc = new WQC(options, connectionHandler);
+		if (initial) {
+			const keyList = keys<typeof this.dataItems>();
+			this.initializeDataItems(options, keyList);
+			this.initializeBaseFunctions();
+		}
 	}
+
+	protected initializeBaseFunctions() {
+		super.initializeBaseFunctions();
+		this.wqc = new WQC(this.dataItems);
+	}
+
 	/**
 	 * Set parameter on PEAController
 	 * @param paramValue
@@ -56,8 +69,8 @@ export class InputElement extends DataAssembly {
 	 */
 	public async setParameter(paramValue: string | number | boolean, variable?: string): Promise<void> {
 		const dataItem: DataItem<any> | undefined = (variable) ?
-			//this.communication[variable as keyof InputElementRuntime] : this.defaultWriteDataItem;
-			(this.communication as any)[variable] : this.defaultWriteDataItem;
+			//this.dataItems[variable as keyof InputElementRuntime] : this.defaultWriteDataItem;
+			(this.dataItems as any)[variable] : this.defaultWriteDataItem;
 		catDataAssembly.debug(`Set Parameter: ${this.name} (${variable}) -> ${JSON.stringify(paramValue)}`);
 		await (dataItem as DynamicDataItem<any>)?.write(paramValue);
 	}

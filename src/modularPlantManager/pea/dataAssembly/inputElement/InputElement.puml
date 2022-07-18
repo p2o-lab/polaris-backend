@@ -30,7 +30,7 @@
 !include processValueIn/DIntProcessValueIn/DIntProcessValueIn.puml
 !include ../../../recipe/step/operation/Parameter.puml
 class InputElement{
-    + readonly communication!: InputElementRuntime
+    + readonly dataItems!: InputElementRuntime
     + parameterRequest: Parameter | undefined
     + requestedValue = ''
 }

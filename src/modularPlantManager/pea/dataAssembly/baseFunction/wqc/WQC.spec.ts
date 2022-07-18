@@ -27,42 +27,37 @@
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {DataAssemblyModel} from '@p2olab/pimad-interface';
-import {BinMon} from '../../indicatorElement';
+import {AnaViewRuntime, BinMon} from '../../indicatorElement';
 import {DataAssembly} from '../../DataAssembly';
 import {WQC} from './WQC';
 import {MockupServer} from '../../../../_utils';
 import {WQCMockup} from './WQC.mockup';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
 import {getAnaViewDataAssemblyModel} from '../../indicatorElement/AnaView/AnaView.mockup';
+import {DataAssemblyFactory} from '../../DataAssemblyFactory';
+import {getEndpointDataModel} from '../../../connectionHandler/ConnectionHandler.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('WQC', () => {
 
-	const options: DataAssemblyModel = getAnaViewDataAssemblyModel(2, 'Variable');
-
+	const connectionHandler = new ConnectionHandler();
+	const referenceDataAssemblyModel = getAnaViewDataAssemblyModel(2, 'Variable', 'Variable');
+	const referenceDataAssembly = DataAssemblyFactory.create(referenceDataAssemblyModel, connectionHandler);
 
 	describe('static WQC', () => {
 
-		const staticWQCDataAssemblyModel = Object.assign({}, options);
-		staticWQCDataAssemblyModel.dataItems = {...staticWQCDataAssemblyModel.dataItems, ...{WQC: {value: '255'}}} as any;
 		let wqcObject: WQC;
 		let da: DataAssembly;
-		let connectionHandler: ConnectionHandler;
-
-		beforeEach(()=>{
-			connectionHandler = new ConnectionHandler();
-		});
 
 		it('should create WQC', async () => {
-			wqcObject = new WQC(options, connectionHandler);
-			expect((da as BinMon).communication.WQC).to.be.exist;
+			wqcObject = new WQC(referenceDataAssembly.dataItems as AnaViewRuntime);
+			expect((da as BinMon).dataItems.WQC).to.be.exist;
 		});
 
 		it('getter', async () => {
-			wqcObject = new WQC(options, connectionHandler);
+			wqcObject = new WQC(referenceDataAssembly.dataItems as AnaViewRuntime);
 			expect(wqcObject.WQC).to.equal(255);
 		});
 	});
@@ -71,19 +66,14 @@ describe('WQC', () => {
 
 		let wqcObject: WQC;
 		let da: DataAssembly;
-		let connectionHandler: ConnectionHandler;
-
-		beforeEach(()=>{
-			connectionHandler = new ConnectionHandler();
-		});
 
 		it('should create WQC', async () => {
-			wqcObject = new WQC(options, connectionHandler);
-			expect((da as BinMon).communication.WQC).to.exist;
+			wqcObject = new WQC(referenceDataAssembly.dataItems as AnaViewRuntime);
+			expect((da as BinMon).dataItems.WQC).to.exist;
 		});
 
 		it('getter', async () => {
-			wqcObject = new WQC(options, connectionHandler);
+			wqcObject = new WQC(referenceDataAssembly.dataItems as AnaViewRuntime);
 			expect(wqcObject.WQC).to.equal(0);
 		});
 	});
@@ -100,7 +90,7 @@ describe('WQC', () => {
 			new WQCMockup( mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			await mockupServer.start();
 			connectionHandler= new ConnectionHandler();
-			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
 			await connectionHandler.connect();
 		});
 
@@ -111,7 +101,7 @@ describe('WQC', () => {
 		});
 
 		it('should subscribe successfully', async () => {
-			const dataAssembly = new WQC(options, connectionHandler);
+			const dataAssembly = new WQC(referenceDataAssembly.dataItems as AnaViewRuntime);
 			await connectionHandler.connect();
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 			expect(dataAssembly.WQC).to.equal(0);

@@ -41,7 +41,6 @@ describe('HealthStateViewMockup', () => {
 
         beforeEach(async()=>{
             mockupServer = new MockupServer();
-            await mockupServer.initialize();
         });
 
         it('should create HealthStateViewMockup', async () => {

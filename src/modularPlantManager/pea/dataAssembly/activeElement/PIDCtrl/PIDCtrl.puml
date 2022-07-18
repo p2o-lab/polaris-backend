@@ -27,7 +27,7 @@
 'https://plantuml.com/class-diagram
 
 class PIDCtrl{
-    + readonly communication!: PIDCtrlRuntime
+    + readonly dataItems!: PIDCtrlRuntime
     + sourceMode: SourceModeController
     + opMode: OpMode
 }

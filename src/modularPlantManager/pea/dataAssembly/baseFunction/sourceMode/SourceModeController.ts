@@ -32,6 +32,7 @@ import {EventEmitter} from 'events';
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
 import {DataItemFactory, getDataItemModel} from '../../dataItem/DataItemFactory';
+import {WQCRuntime} from '../wqc/WQC';
 
 export type SourceModeRuntime = {
 	SrcChannel: DataItem<boolean>;
@@ -46,7 +47,7 @@ export type SourceModeRuntime = {
 /**
  * Events emitted by [[SourceMode]]
  */
-export interface SourceModeEvents extends BaseServiceEvents {
+export interface SourceModeEvents {
 	changed: {
 		sourceMode: SourceMode;
 		sourceChannel: boolean;
@@ -55,35 +56,24 @@ export interface SourceModeEvents extends BaseServiceEvents {
 type SourceModeEmitter = StrictEventEmitter<EventEmitter, SourceModeEvents>;
 
 export class SourceModeController extends (EventEmitter as new () => SourceModeEmitter) {
-	SrcChannel: DataItem<boolean>;
-	SrcIntAct: DataItem<boolean>;
-	SrcIntAut: DataItem<boolean>;
-	SrcIntOp: DataItem<boolean>;
-	SrcManAct: DataItem<boolean>;
-	SrcManAut: DataItem<boolean>;
-	SrcManOp: DataItem<boolean>;
 
-	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+	public readonly dataItems!: SourceModeRuntime;
+
+	constructor(requiredDataItems: Required<SourceModeRuntime>) {
 		super();
 
-		this.SrcChannel = DataItemFactory.create(getDataItemModel(options, 'SrcChannel'), connectionHandler);
-		this.SrcManAut = DataItemFactory.create(getDataItemModel(options, 'SrcManAut'), connectionHandler);
-		this.SrcIntAut = DataItemFactory.create(getDataItemModel(options, 'SrcIntAut'), connectionHandler);
-		this.SrcManOp = DataItemFactory.create(getDataItemModel(options, 'SrcManOp'), connectionHandler);
-		this.SrcIntOp = DataItemFactory.create(getDataItemModel(options, 'SrcIntOp'), connectionHandler);
-		this.SrcManAct = DataItemFactory.create(getDataItemModel(options, 'SrcManAct'), connectionHandler);
-		this.SrcIntAct = DataItemFactory.create(getDataItemModel(options, 'SrcIntAct'), connectionHandler);
+		this.dataItems = requiredDataItems;
 
-		this.SrcChannel.on('changed', () => {
-			this.emit('changed', {sourceMode: this.getSourceMode(), sourceChannel: this.SrcChannel.value});
+		this.dataItems.SrcChannel.on('changed', () => {
+			this.emit('changed', {sourceMode: this.getSourceMode(), sourceChannel: this.dataItems.SrcChannel.value});
 		});
 		// TODO: Always two of them will change in parallel --> Smart way to just emit one event?
 		// Even if there are just inverted options both can be 0 initially, to not miss a change both were added here
-		this.SrcIntAct.on('changed', () => {
-			this.emit('changed', {sourceMode: this.getSourceMode(), sourceChannel: this.SrcChannel.value});
+		this.dataItems.SrcIntAct.on('changed', () => {
+			this.emit('changed', {sourceMode: this.getSourceMode(), sourceChannel: this.dataItems.SrcChannel.value});
 		});
-		this.SrcManAct.on('changed', () => {
-			this.emit('changed', {sourceMode: this.getSourceMode(), sourceChannel: this.SrcChannel.value});
+		this.dataItems.SrcManAct.on('changed', () => {
+			this.emit('changed', {sourceMode: this.getSourceMode(), sourceChannel: this.dataItems.SrcChannel.value});
 		});
 	}
 
@@ -151,19 +141,19 @@ export class SourceModeController extends (EventEmitter as new () => SourceModeE
 	private async writeSourceMode(sourceMode: SourceMode): Promise<void> {
 		catDataAssembly.debug(`Write SourceMode: ${sourceMode}`);
 		if (sourceMode === SourceMode.Manual) {
-			await this.SrcManOp.write(true);
+			await this.dataItems.SrcManOp.write(true);
 		} else if (sourceMode === SourceMode.Intern) {
-			await this.SrcIntOp.write(true);
+			await this.dataItems.SrcIntOp.write(true);
 		}
 		catDataAssembly.debug('Set SourceMode successfully');
 	}
 
 	public isManualSourceMode(): boolean {
-		return this.SrcManAct?.value === true;
+		return this.dataItems.SrcManAct?.value === true;
 	}
 
 	public isInternalSourceMode(): boolean {
-		return this.SrcIntAct?.value === true;
+		return this.dataItems.SrcIntAct?.value === true;
 	}
 
 }

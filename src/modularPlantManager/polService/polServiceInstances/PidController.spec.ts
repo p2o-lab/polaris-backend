@@ -209,15 +209,15 @@ describe('POLService', () => {
 			const timer = new Timer('t1');
 			expect(timer.state).to.equal(ServiceState.IDLE);
 
-			timer.start();
+			timer.start().then();
 			await timer.waitForStateChangeWithTimeout('EXECUTE');
 			expect(timer.state).to.equal(ServiceState.EXECUTE);
 
-			timer.restart();
+			timer.restart().then();
 			await timer.waitForStateChangeWithTimeout('EXECUTE');
 			expect(timer.state).to.equal(ServiceState.EXECUTE);
 
-			timer.abort();
+			timer.abort().then();
 			await timer.waitForStateChangeWithTimeout('ABORTED');
 			expect(timer.state).to.equal(ServiceState.ABORTED);
 
@@ -234,7 +234,7 @@ describe('POLService', () => {
 				unhold: false
 			});
 
-			timer.reset();
+			timer.reset().then();
 			await timer.waitForStateChangeWithTimeout('IDLE');
 			expect(timer.state).to.equal(ServiceState.IDLE);
 		});
@@ -280,13 +280,13 @@ describe('POLService', () => {
 			expect(params[0]).to.have.property('name', 'storage');
 			expect(params[0]).to.have.property('value', undefined);
 
-			s1.setParameters([{name: 'storage', value: 2}]);
+			await s1.setParameters([{name: 'storage', value: 2}]);
 			params = s1.json().procedures[0].parameters;
 			expect(params).to.have.lengthOf(1);
 			expect(params[0]).to.have.property('name', 'storage');
 			expect(params[0]).to.have.property('value', 2);
 
-			s1.setParameters([{name: 'storage', value: 'testing'}]);
+			await s1.setParameters([{name: 'storage', value: 'testing'}]);
 			params = s1.json().procedures[0].parameters;
 			expect(params).to.have.lengthOf(1);
 			expect(params[0]).to.have.property('name', 'storage');
@@ -308,7 +308,7 @@ describe('POLService', () => {
 			expect(params[0]).to.have.property('name', 'function');
 			expect(params[0]).to.have.property('value', 'sin(t)');
 
-			f1.setParameters([{name: 'function', value: '2*t'}]);
+			await f1.setParameters([{name: 'function', value: '2*t'}]);
 			params = f1.json().procedures[0].parameters;
 			expect(params[0]).to.have.property('name', 'function');
 			expect(params[0]).to.have.property('value', '2*t');

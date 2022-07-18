@@ -27,8 +27,8 @@ import {Drv, DrvRuntime} from '../Drv';
 import {SourceModeController, SourceModeRuntime} from '../../../baseFunction';
 import {DataItem} from '../../../dataItem/DataItem';
 import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
-import {DataItemFactory, getDataItemModel} from '../../../dataItem/DataItemFactory';
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
+import {keys} from 'ts-transformer-keys';
 
 export type AnaDrvRuntime = DrvRuntime & SourceModeRuntime & {
 	RpmSclMax: DataItem<number>;
@@ -50,33 +50,27 @@ export type AnaDrvRuntime = DrvRuntime & SourceModeRuntime & {
 
 export class AnaDrv extends Drv {
 
-	public readonly communication!: AnaDrvRuntime;
-	readonly sourceMode: SourceModeController;
+	public readonly dataItems!: AnaDrvRuntime;
 
-	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+	public sourceMode!: SourceModeController;
+
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false) {
 		super(options, connectionHandler);
 
-		this.sourceMode = new SourceModeController(options, connectionHandler);
+		if (initial) {
+			const keyList = keys<typeof this.dataItems>();
+			this.initializeDataItems(options, keyList);
+			this.initializeBaseFunctions();
+		}
 
-		this.communication.RpmSclMax = DataItemFactory.create<number>(getDataItemModel(options,'RpmSclMax'), connectionHandler);
-		this.communication.RpmSclMin = DataItemFactory.create<number>(getDataItemModel(options,'RpmSclMin'), connectionHandler);
-
-		this.communication.RpmUnit = DataItemFactory.create<number>(getDataItemModel(options,'RpmUnit'), connectionHandler);
-
-		this.communication.RpmMin = DataItemFactory.create<number>(getDataItemModel(options,'RpmMin'), connectionHandler);
-		this.communication.RpmMax = DataItemFactory.create<number>(getDataItemModel(options,'RpmMax'), connectionHandler);
-
-		this.communication.RpmInt = DataItemFactory.create<number>(getDataItemModel(options,'RpmInt'), connectionHandler);
-		this.communication.RpmMan = DataItemFactory.create<number>(getDataItemModel(options,'RpmMan'), connectionHandler);
-
-		this.communication.Rpm = DataItemFactory.create<number>(getDataItemModel(options,'Rpm'), connectionHandler);
-		this.communication.RpmFbk = DataItemFactory.create<number>(getDataItemModel(options,'RpmFbk'), connectionHandler);
-		this.communication.RpmFbkCalc = DataItemFactory.create<boolean>(getDataItemModel(options,'RpmFbkCalc'), connectionHandler);
-		this.communication.RpmRbk = DataItemFactory.create<number>(getDataItemModel(options,'RpmRbk'), connectionHandler);
-
-		this.defaultReadDataItem = this.communication.RpmFbk;
+		this.defaultReadDataItem = this.dataItems.RpmFbk;
 		this.defaultReadDataItemType = 'number';
-		this.defaultWriteDataItem = this.communication.RpmMan;
+		this.defaultWriteDataItem = this.dataItems.RpmMan;
 		this.defaultWriteDataItemType = 'number';
+	}
+
+	protected initializeBaseFunctions() {
+		super.initializeBaseFunctions();
+		this.sourceMode = new SourceModeController(this.dataItems);
 	}
 }

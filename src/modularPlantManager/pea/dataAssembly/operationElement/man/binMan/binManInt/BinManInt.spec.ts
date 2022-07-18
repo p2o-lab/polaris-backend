@@ -31,6 +31,7 @@ import {DataAssemblyFactory} from '../../../../DataAssemblyFactory';
 import {MockupServer} from '../../../../../../_utils';
 import {BinManIntMockup, getBinManIntDataAssemblyModel} from './BinManInt.mockup';
 import {ConnectionHandler} from '../../../../../connectionHandler/ConnectionHandler';
+import {getEndpointDataModel} from '../../../../../connectionHandler/ConnectionHandler.mockup';
 
 
 chai.use(chaiAsPromised);
@@ -48,7 +49,7 @@ describe('BinManInt', () => {
 		it('should create BinManInt',  () => {
 			const dataAssembly: BinManInt = DataAssemblyFactory.create(options, connectionHandler) as BinManInt;
 			expect(dataAssembly.sourceMode).to.be.not.undefined;
-			expect(dataAssembly.communication.VInt).to.not.equal(undefined);
+			expect(dataAssembly.dataItems.VInt).to.not.equal(undefined);
 			expect(dataAssembly.wqc).to.not.equal(undefined);
 		});
 	});
@@ -59,12 +60,11 @@ describe('BinManInt', () => {
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
-			await mockupServer.initialize();
 			const binManIntMockup = new BinManIntMockup(mockupServer.nameSpace,	mockupServer.rootObject,'Variable');
 			options = binManIntMockup.getDataAssemblyModel();
 			await mockupServer.start();
 			connectionHandler= new ConnectionHandler();
-			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
 			await connectionHandler.connect();
 		});
 
@@ -81,23 +81,23 @@ describe('BinManInt', () => {
 			await connectionHandler.connect();
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 
-			expect(dataAssembly.communication.OSLevel.value).to.equal(0);
-			expect(dataAssembly.communication.VOut.value).to.equal(false);
-			expect(dataAssembly.communication.VMan.value).to.equal(false);
-			expect(dataAssembly.communication.VRbk.value).to.equal(false);
-			expect(dataAssembly.communication.VFbk.value).to.equal(false);
-			expect(dataAssembly.communication.VState0.value).to.equal('off');
-			expect(dataAssembly.communication.VState1.value).to.equal('on');
-			expect(dataAssembly.communication.WQC.value).to.equal(0);
-			expect(dataAssembly.communication.VInt.value).to.equal(false);
-			expect(dataAssembly.communication.VMan.value).to.equal(false);
-			expect(dataAssembly.communication.SrcChannel.value).equal(false);
-			expect(dataAssembly.communication.SrcManAut.value).equal(false);
-			expect(dataAssembly.communication.SrcIntAut.value).equal(false);
-			expect(dataAssembly.communication.SrcIntOp.value).equal(false);
-			expect(dataAssembly.communication.SrcManOp.value).equal(false);
-			expect(dataAssembly.communication.SrcIntAct.value).equal(true);
-			expect(dataAssembly.communication.SrcManAct.value).equal(false);
+			expect(dataAssembly.dataItems.OSLevel.value).to.equal(0);
+			expect(dataAssembly.dataItems.VOut.value).to.equal(false);
+			expect(dataAssembly.dataItems.VMan.value).to.equal(false);
+			expect(dataAssembly.dataItems.VRbk.value).to.equal(false);
+			expect(dataAssembly.dataItems.VFbk.value).to.equal(false);
+			expect(dataAssembly.dataItems.VState0.value).to.equal('off');
+			expect(dataAssembly.dataItems.VState1.value).to.equal('on');
+			expect(dataAssembly.dataItems.WQC.value).to.equal(0);
+			expect(dataAssembly.dataItems.VInt.value).to.equal(false);
+			expect(dataAssembly.dataItems.VMan.value).to.equal(false);
+			expect(dataAssembly.dataItems.SrcChannel.value).equal(false);
+			expect(dataAssembly.dataItems.SrcManAut.value).equal(false);
+			expect(dataAssembly.dataItems.SrcIntAut.value).equal(false);
+			expect(dataAssembly.dataItems.SrcIntOp.value).equal(false);
+			expect(dataAssembly.dataItems.SrcManOp.value).equal(false);
+			expect(dataAssembly.dataItems.SrcIntAct.value).equal(true);
+			expect(dataAssembly.dataItems.SrcManAct.value).equal(false);
 		}).timeout(4000);
 	});
 });

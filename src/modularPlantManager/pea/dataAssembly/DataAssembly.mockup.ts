@@ -37,7 +37,6 @@ function getDataAssemblySpecificDataItemModels(tagName?: string, tagDescription?
     tagNameDataItem.name = 'TagName';
     tagNameDataItem.defaultValue = tagName || IDProvider.generateIdentifier();
     tagNameDataItem.value = tagName || IDProvider.generateIdentifier();
-    result.push(getEmptyDataItemModel());
     result.push(tagNameDataItem);
 
     const tagDescriptionDataItem = getEmptyDataItemModel();

@@ -24,16 +24,11 @@
  */
 
 import {DataItem} from '../../dataItem/DataItem';
-import {DataAssemblyDataItems} from '../../DataAssembly';
-import {DataAssemblyModel} from '@p2olab/pimad-interface';
-import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
-import {DataItemFactory, getDataItemModel} from '../../dataItem/DataItemFactory';
 import {EventEmitter} from 'events';
 import {BaseServiceEvents} from '../../../serviceSet';
-import {OperationMode} from '@p2olab/polaris-interface';
 import StrictEventEmitter from 'strict-event-emitter-types';
 
-export type InterlockRuntime = DataAssemblyDataItems & {
+export type InterlockRuntime = {
 	PermEn: DataItem<boolean>;
 	Permit: DataItem<boolean>;
 	IntlEn: DataItem<boolean>;
@@ -43,7 +38,7 @@ export type InterlockRuntime = DataAssemblyDataItems & {
 };
 
 /**
- * Events emitted by [[OpMode]]
+ * Events emitted by [[Interlock]]
  */
 export interface InterlockEvents extends BaseServiceEvents {
 	changed: string;
@@ -52,21 +47,12 @@ export interface InterlockEvents extends BaseServiceEvents {
 type InterlockEmitter = StrictEventEmitter<EventEmitter, InterlockEvents>;
 
 export class Interlock extends (EventEmitter as new() => InterlockEmitter) {
-	PermEn: DataItem<boolean>;
-	Permit: DataItem<boolean>;
-	IntlEn: DataItem<boolean>;
-	Interlock: DataItem<boolean>;
-	ProtEn: DataItem<boolean>;
-	Protect: DataItem<boolean>;
 
-	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+	public readonly dataItems!: InterlockRuntime;
+
+	constructor(requiredDataItems: Required<InterlockRuntime>) {
 		super();
 
-		this.PermEn = DataItemFactory.create(getDataItemModel(options, 'PermEn'), connectionHandler);
-		this.Permit = DataItemFactory.create(getDataItemModel(options, 'Permit'), connectionHandler);
-		this.IntlEn = DataItemFactory.create(getDataItemModel(options, 'IntlEn'), connectionHandler);
-		this.Interlock = DataItemFactory.create(getDataItemModel(options, 'Interlock'), connectionHandler);
-		this.ProtEn = DataItemFactory.create(getDataItemModel(options, 'ProtEn'), connectionHandler);
-		this.Protect = DataItemFactory.create(getDataItemModel(options, 'Protect'), connectionHandler);
+		this.dataItems = requiredDataItems;
 	}
 }

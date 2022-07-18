@@ -32,6 +32,7 @@ import {BinProcessValueInMockup, getBinProcessValueInDataAssembly} from './BinPr
 import {DataAssemblyFactory} from '../../../DataAssemblyFactory';
 import {BinProcessValueIn} from './BinProcessValueIn';
 import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
+import {getEndpointDataModel} from '../../../../connectionHandler/ConnectionHandler.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -50,9 +51,9 @@ describe('BinProcessValueIn', () => {
 			const dataAssembly = DataAssemblyFactory.create(options, connectionHandler) as BinProcessValueIn;
 
 			expect(dataAssembly).to.be.not.undefined;
-			expect(dataAssembly.communication.VExt).to.be.not.undefined;
-			expect(dataAssembly.communication.VState0).to.be.not.undefined;
-			expect(dataAssembly.communication.VState1).to.be.not.undefined;
+			expect(dataAssembly.dataItems.VExt).to.be.not.undefined;
+			expect(dataAssembly.dataItems.VState0).to.be.not.undefined;
+			expect(dataAssembly.dataItems.VState1).to.be.not.undefined;
 		});
 	});
 	describe('dynamic', () => {
@@ -68,7 +69,7 @@ describe('BinProcessValueIn', () => {
 			options = binProcessValueInMockup.getDataAssemblyModel();
 			await mockupServer.start();
 			connectionHandler= new ConnectionHandler();
-			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
 			await connectionHandler.connect();
 		});
 
@@ -84,9 +85,9 @@ describe('BinProcessValueIn', () => {
 			await connectionHandler.connect();
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 
-			expect(dataAssembly.communication.VExt.value).equal(false);
-			expect(dataAssembly.communication.VState0.value).equal('state0_active');
-			expect(dataAssembly.communication.VState1.value).equal('state1_active');
+			expect(dataAssembly.dataItems.VExt.value).equal(false);
+			expect(dataAssembly.dataItems.VState0.value).equal('state0_active');
+			expect(dataAssembly.dataItems.VState1.value).equal('state1_active');
 		}).timeout(4000);
 
 		it('set Parameter', async () => {
@@ -102,9 +103,9 @@ describe('BinProcessValueIn', () => {
 			expect(binProcessValueInMockup.vExt).equal(true);
 
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
-			expect(dataAssembly.communication.VExt.value).equal(true);
-			expect(dataAssembly.communication.VState0.value).equal('test');
-			expect(dataAssembly.communication.VState1.value).equal('test');
+			expect(dataAssembly.dataItems.VExt.value).equal(true);
+			expect(dataAssembly.dataItems.VState0.value).equal('test');
+			expect(dataAssembly.dataItems.VState1.value).equal('test');
 		}).timeout(8000);
 
 	});

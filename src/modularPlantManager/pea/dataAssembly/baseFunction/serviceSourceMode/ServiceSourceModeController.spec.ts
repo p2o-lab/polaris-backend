@@ -32,28 +32,31 @@ import {MockupServer} from '../../../../_utils';
 import {ServiceSourceModeMockup} from './ServiceSourceMode.mockup';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
 import {getAnaServParamDataAssemblyModel} from '../../operationElement/servParam/anaServParam/AnaServParam.mockup';
+import {DataAssemblyFactory} from '../../DataAssemblyFactory';
+import {AnaServParamRuntime} from '../../operationElement';
+import {getEndpointDataModel} from '../../../connectionHandler/ConnectionHandler.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('ServiceSourceMode', () => {
 
-	const options = getAnaServParamDataAssemblyModel(2, 'Variable', 'Variable');
+	const connectionHandler = new ConnectionHandler();
+	const referenceDataAssemblyModel = getAnaServParamDataAssemblyModel(2, 'Variable', 'Variable');
+	const referenceDataAssembly = DataAssemblyFactory.create(referenceDataAssemblyModel, connectionHandler);
 
 	describe('static', () => {
 
-		const connectionHandler = new ConnectionHandler();
-
 		it('should create ServiceSourceMode', () => {
-			const da = new ServiceSourceModeController(options, connectionHandler);
-			expect(da).to.not.be.undefined;
-			expect(da.SrcChannel).to.not.be.undefined;
-			expect(da.SrcExtAut).to.not.be.undefined;
-			expect(da.SrcIntAut).to.not.be.undefined;
-			expect(da.SrcIntOp).to.not.be.undefined;
-			expect(da.SrcExtOp).to.not.be.undefined;
-			expect(da.SrcIntAct).to.not.be.undefined;
-			expect(da.SrcExtAct).to.not.be.undefined;
+			const baseFunction = new ServiceSourceModeController(referenceDataAssembly.dataItems as AnaServParamRuntime);
+			expect(baseFunction).to.not.be.undefined;
+			expect(baseFunction.dataItems.SrcChannel).to.not.be.undefined;
+			expect(baseFunction.dataItems.SrcExtAut).to.not.be.undefined;
+			expect(baseFunction.dataItems.SrcIntAut).to.not.be.undefined;
+			expect(baseFunction.dataItems.SrcIntOp).to.not.be.undefined;
+			expect(baseFunction.dataItems.SrcExtOp).to.not.be.undefined;
+			expect(baseFunction.dataItems.SrcIntAct).to.not.be.undefined;
+			expect(baseFunction.dataItems.SrcExtAct).to.not.be.undefined;
 		});
 	});
 
@@ -69,7 +72,7 @@ describe('ServiceSourceMode', () => {
 			new ServiceSourceModeMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			await mockupServer.start();
 			connectionHandler= new ConnectionHandler();
-			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
 			await connectionHandler.connect();
 		});
 
@@ -81,17 +84,17 @@ describe('ServiceSourceMode', () => {
 
 		it('should subscribe successfully', async () => {
 
-			const dataAssembly = new ServiceSourceModeController(options, connectionHandler);
+			const baseFunction = new ServiceSourceModeController(referenceDataAssembly.dataItems as AnaServParamRuntime);
 			await connectionHandler.connect();
-			await new Promise((resolve => dataAssembly.on('changed', resolve)));
+			await new Promise((resolve => baseFunction.on('changed', resolve)));
 
-			expect(dataAssembly.SrcChannel.value).equal(false);
-			expect(dataAssembly.SrcExtAut.value).equal(false);
-			expect(dataAssembly.SrcIntAut.value).equal(false);
-			expect(dataAssembly.SrcIntOp.value).equal(false);
-			expect(dataAssembly.SrcExtOp.value).equal(false);
-			expect(dataAssembly.SrcIntAct.value).equal(true);
-			expect(dataAssembly.SrcExtAct.value).equal(false);
+			expect(baseFunction.dataItems.SrcChannel.value).equal(false);
+			expect(baseFunction.dataItems.SrcExtAut.value).equal(false);
+			expect(baseFunction.dataItems.SrcIntAut.value).equal(false);
+			expect(baseFunction.dataItems.SrcIntOp.value).equal(false);
+			expect(baseFunction.dataItems.SrcExtOp.value).equal(false);
+			expect(baseFunction.dataItems.SrcIntAct.value).equal(true);
+			expect(baseFunction.dataItems.SrcExtAct.value).equal(false);
 		}).timeout(5000);
 	});
 
@@ -100,20 +103,21 @@ describe('ServiceSourceMode', () => {
 		let connectionHandler: ConnectionHandler;
 		let mockup: ServiceSourceModeMockup;
 		let serviceSourceModeController: ServiceSourceModeController;
-		let dataAssembly: any;
+		let baseFunction: any;
 
 		beforeEach(async function () {
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
+			
 			mockup = new ServiceSourceModeMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			await mockupServer.start();
 			connectionHandler= new ConnectionHandler();
-			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
-			dataAssembly = new ServiceSourceModeController(options, connectionHandler);
+			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
+			baseFunction = new ServiceSourceModeController(this.dataItems);
 			await connectionHandler.connect();
-			await dataAssembly.subscribe();
+			await baseFunction.subscribe();
 			await connectionHandler.connect();
-			await new Promise((resolve => dataAssembly.on('changed', resolve)));
+			await new Promise((resolve => baseFunction.on('changed', resolve)));
 		});
 
 		afterEach(async function () {
@@ -143,10 +147,11 @@ describe('ServiceSourceMode', () => {
 		let connectionHandler: ConnectionHandler;
 		let mockup: ServiceSourceModeMockup;
 		let serviceSourceModeController: ServiceSourceModeController;
-		let dataAssembly: any;
+		let baseFunction: any;
 		beforeEach(async function () {
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
+			
 			const mockupNode = (mockupServer.nameSpace).addObject({
 				organizedBy: mockupServer.rootObject,
 				browseName: 'Variable',
@@ -159,12 +164,12 @@ describe('ServiceSourceMode', () => {
 			await mockupServer.start();
 
 			connectionHandler= new ConnectionHandler();
-			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
-			dataAssembly = new ServiceSourceModeController(options, connectionHandler);
+			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
+			baseFunction = new ServiceSourceModeController(this.dataItems);
 			await connectionHandler.connect();
-			await dataAssembly.subscribe();
+			await baseFunction.subscribe();
 			await connectionHandler.connect();
-			await new Promise((resolve => dataAssembly.on('changed', resolve)));
+			await new Promise((resolve => baseFunction.on('changed', resolve)));
 		});
 
 		afterEach(async function () {
@@ -183,18 +188,18 @@ describe('ServiceSourceMode', () => {
 		});
 
 		it('waitForServiceSourceModeToPassSpecificTest, promise should resolve instantly', async () => {
-			dataAssembly.SrcExtAct.value = true;
+			baseFunction.SrcExtAct.value = true;
 			await serviceSourceModeController.waitForServiceSourceModeToPassSpecificTest(ServiceSourceMode.Extern);
 		});
 
 		it('waitForServiceSourceModeToPassSpecificTest, promise should resolve after a while', async () => {
-			await dataAssembly.SrcExtOp.write(true);
+			await baseFunction.SrcExtOp.write(true);
 			await serviceSourceModeController.waitForServiceSourceModeToPassSpecificTest(ServiceSourceMode.Extern);
 		}).timeout(4000);
 
 		it('waitForServiceSourceModeToPassSpecificTest, timeout', async () => {
-			expect(dataAssembly.SrcExtAct.value).to.be.false;
-			expect(dataAssembly.SrcIntAct.value).to.be.true;
+			expect(baseFunction.SrcExtAct.value).to.be.false;
+			expect(baseFunction.SrcIntAct.value).to.be.true;
 			return expect(serviceSourceModeController.waitForServiceSourceModeToPassSpecificTest(ServiceSourceMode.Extern)).to.be
 				.rejectedWith('Timeout: ServiceSourceMode did not change');
 		}).timeout(4000);
@@ -203,13 +208,13 @@ describe('ServiceSourceMode', () => {
 			await serviceSourceModeController.setToExternalServiceSourceMode();
 			expect(mockup.srcExtAct).to.be.true;
 			expect(mockup.srcIntAct).to.be.false;
-			expect(dataAssembly.SrcExtAct.value).to.be.true;
-			expect(dataAssembly.SrcIntAct.value).to.be.false;
+			expect(baseFunction.SrcExtAct.value).to.be.true;
+			expect(baseFunction.SrcIntAct.value).to.be.false;
 			await serviceSourceModeController.setToInternalServiceSourceMode();
 			expect(mockup.srcExtAct).to.be.false;
 			expect(mockup.srcIntAct).to.be.true;
-			expect(dataAssembly.SrcExtAct.value).to.be.false;
-			expect(dataAssembly.SrcIntAct.value).to.be.true;
+			expect(baseFunction.SrcExtAct.value).to.be.false;
+			expect(baseFunction.SrcIntAct.value).to.be.true;
 		}).timeout(4000);
 	});
 });

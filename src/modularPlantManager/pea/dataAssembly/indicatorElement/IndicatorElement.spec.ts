@@ -30,6 +30,7 @@ import {IndicatorElement} from './IndicatorElement';
 import {MockupServer} from '../../../_utils';
 import {getIndicatorElementDataAssemblyModel, IndicatorElementMockup} from './IndicatorElement.mockup';
 import {ConnectionHandler} from '../../connectionHandler/ConnectionHandler';
+import {getEndpointDataModel} from '../../connectionHandler/ConnectionHandler.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -45,7 +46,7 @@ describe('IndicatorElement', () => {
 
 		it('should create IndicatorElement', () => {
 			const dataAssembly = new IndicatorElement(options, connectionHandler) ;
-			expect(dataAssembly.communication.WQC).to.not.be.undefined;
+			expect(dataAssembly.dataItems.WQC).to.not.be.undefined;
 			expect(dataAssembly.wqc.WQC).to.equal(0);
 		});
 	});
@@ -62,7 +63,7 @@ describe('IndicatorElement', () => {
 			options = indicatorElementMockup.getDataAssemblyModel();
 			await mockupServer.start();
 			connectionHandler= new ConnectionHandler();
-			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
 			await connectionHandler.connect();
 		});
 
@@ -79,7 +80,7 @@ describe('IndicatorElement', () => {
 			await connectionHandler.connect();
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 
-			expect(dataAssembly.communication.WQC.value).equal(0);
+			expect(dataAssembly.dataItems.WQC.value).equal(0);
 		}).timeout(4000);
 	});
 });

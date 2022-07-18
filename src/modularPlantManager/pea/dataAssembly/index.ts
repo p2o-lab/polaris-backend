@@ -23,7 +23,6 @@
  * SOFTWARE.
  */
  
-export * from './baseFunction/_helper';
 export * from './activeElement';
 export * from './baseFunction';
 export * from './diagnosticElement';

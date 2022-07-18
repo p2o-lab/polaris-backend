@@ -30,6 +30,7 @@ import {MockupServer} from '../../../../../../_utils';
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {MonAnaVlvRuntime} from './MonAnaVlv';
 import {ConnectionHandler} from '../../../../../connectionHandler/ConnectionHandler';
+import {getEndpointDataModel} from '../../../../../connectionHandler/ConnectionHandler.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -42,7 +43,8 @@ describe('MonAnaVlvMockup', () => {
 
         beforeEach(async()=>{
             mockupServer = new MockupServer();
-            await mockupServer.initialize();
+			await mockupServer.initialize();
+
         });
 
         it('should create MonAnaVlvMockup', async () => {
@@ -79,11 +81,12 @@ describe('MonAnaVlvMockup', () => {
         beforeEach(async function () {
             this.timeout(5000);
             mockupServer = new MockupServer();
-            await mockupServer.initialize();
+			await mockupServer.initialize();
+
             new MonAnaVlvMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
             await mockupServer.start();
             connectionHandler= new ConnectionHandler();
-            connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+            connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
             await connectionHandler.connect();
         });
 

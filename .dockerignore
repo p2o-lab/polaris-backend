@@ -6,17 +6,11 @@
 build
 apidoc
 coverage
-dist
-
 # Docker configuration
 Dockerfile
-Makefile
-docker-compose.yml
-
 # NPM dependencies
 node_modules
 
 # Other
 .idea
 .nyc_output
-.vscode

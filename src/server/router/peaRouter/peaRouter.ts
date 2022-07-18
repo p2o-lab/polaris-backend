@@ -28,6 +28,7 @@ import {Request, Response, Router} from 'express';
 import * as asyncHandler from 'express-async-handler';
 import {catServer} from '../../../logging';
 import {OperationMode, ServiceCommand, ServiceSourceMode} from '@p2olab/polaris-interface';
+import {PEAProvider} from '../../../peaProvider/PEAProvider';
 
 export const peaRouter: Router = Router();
 
@@ -37,16 +38,25 @@ export const peaRouter: Router = Router();
  * @apiName PostPEA
  * @apiGroup PEAController
  */
-peaRouter.post('/loadPEA', async (req, res) => {
-	catServer.info('Load PEAController via PiMAd');
+peaRouter.post('/addPEA', async (req, res) => {
+	catServer.info('Add PEA via PiMAd');
 	const manager: ModularPlantManager = req.app.get('manager');
+	const peaProvider: PEAProvider = req.app.get('peaProvider');
 	try {
-		if (!req.body.id && !req.body.peaModel) {
-			res.status(400).send('Error: Insufficient body content.');
+		if (req.body.id && !req.body.peaModel) {
+			const pea = await peaProvider.getPEAFromPiMAd(req.body.id);
+			if (!pea) {
+				res.status(400).send('Error: PEA not found content.');
+			} else {
+				await manager.addPEA(pea);
+				res.status(200).send('"Success!"');
+			}
+		} else if (!req.body.id && req.body.peaModel) {
+			await manager.addPEA(req.body.peaModel);
+			res.status(200).send('"Success!"');
+		} else {
+			res.status(400).send('Error: Bad body content.');
 		}
-
-		await manager.addPEA(req.body.id);
-		res.status(200).send('"Success!"');
 	} catch (error) {
 		let message;
 		if (error instanceof Error) message = error.message;

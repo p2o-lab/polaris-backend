@@ -29,9 +29,9 @@ import {
 	OpMode, OpModeRuntime,
 	SourceModeController, SourceModeRuntime
 } from '../../baseFunction';
-import {DataItemFactory, getDataItemModel} from '../../dataItem/DataItemFactory';
 import {ActiveElement, ActiveElementRuntime} from '../ActiveElement';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
+import {keys} from 'ts-transformer-keys';
 
 export type PIDCtrlRuntime = ActiveElementRuntime & OpModeRuntime & SourceModeRuntime & {
 	PV: DataItem<number>;
@@ -64,48 +64,30 @@ export type PIDCtrlRuntime = ActiveElementRuntime & OpModeRuntime & SourceModeRu
 };
 
 export class PIDCtrl extends ActiveElement {
-	public readonly communication!: PIDCtrlRuntime;
-	sourceMode: SourceModeController;
-	opMode: OpMode;
 
-	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+	public readonly dataItems!: PIDCtrlRuntime;
+
+	public sourceMode!: SourceModeController;
+	public opMode!: OpMode;
+
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false) {
 		super(options, connectionHandler);
 
-		this.sourceMode = new SourceModeController(options, connectionHandler);
-		this.opMode = new OpMode(options, connectionHandler);
+		if (initial) {
+			const keyList = keys<typeof this.dataItems>();
+			this.initializeDataItems(options, keyList);
+			this.initializeBaseFunctions();
+		}	
 
-		this.communication.PV = DataItemFactory.create(getDataItemModel(options, 'PV'), connectionHandler);
-		this.communication.PVSclMin = DataItemFactory.create(getDataItemModel(options, 'PVSclMin'), connectionHandler);
-		this.communication.PVSclMax = DataItemFactory.create(getDataItemModel(options, 'PVSclMax'), connectionHandler);
-		this.communication.PVUnit = DataItemFactory.create(getDataItemModel(options, 'PVUnit'), connectionHandler);
-
-		this.communication.SPMan = DataItemFactory.create(getDataItemModel(options, 'SPMan'), connectionHandler);
-		this.communication.SPInt = DataItemFactory.create(getDataItemModel(options, 'SPInt'), connectionHandler);
-		this.communication.SPSclMin = DataItemFactory.create(getDataItemModel(options, 'SPSclMin'), connectionHandler);
-		this.communication.SPSclMax = DataItemFactory.create(getDataItemModel(options, 'SPSclMax'), connectionHandler);
-		this.communication.SPUnit = DataItemFactory.create(getDataItemModel(options, 'SPUnit'), connectionHandler);
-		this.communication.SPIntMin = DataItemFactory.create(getDataItemModel(options, 'SPIntMin'), connectionHandler);
-		this.communication.SPIntMax = DataItemFactory.create(getDataItemModel(options, 'SPIntMax'), connectionHandler);
-		this.communication.SPManMin = DataItemFactory.create(getDataItemModel(options, 'SPManMin'), connectionHandler);
-		this.communication.SPManMax = DataItemFactory.create(getDataItemModel(options, 'SPManMax'), connectionHandler);
-		this.communication.SP = DataItemFactory.create(getDataItemModel(options, 'SP'), connectionHandler);
-
-		this.communication.MVMan = DataItemFactory.create(getDataItemModel(options, 'MVMan'), connectionHandler);
-		this.communication.MV = DataItemFactory.create(getDataItemModel(options, 'MV'), connectionHandler);
-		this.communication.MVSclMin = DataItemFactory.create(getDataItemModel(options, 'MVSclMin'), connectionHandler);
-		this.communication.MVSclMax = DataItemFactory.create(getDataItemModel(options, 'MVSclMax'), connectionHandler);
-		this.communication.MVUnit = DataItemFactory.create(getDataItemModel(options, 'MVUnit'), connectionHandler);
-		this.communication.MVMin = DataItemFactory.create(getDataItemModel(options, 'MVMin'), connectionHandler);
-		this.communication.MVMax = DataItemFactory.create(getDataItemModel(options, 'MVMax'), connectionHandler);
-
-		this.communication.P = DataItemFactory.create(getDataItemModel(options, 'P'), connectionHandler);
-		this.communication.Ti = DataItemFactory.create(getDataItemModel(options, 'Ti'), connectionHandler);
-		this.communication.Td = DataItemFactory.create(getDataItemModel(options, 'Td'), connectionHandler);
-
-		this.defaultReadDataItem = this.communication.PV;
+		this.defaultReadDataItem = this.dataItems.PV;
 		this.defaultReadDataItemType = 'number';
-
-		this.defaultWriteDataItem = this.communication.SPMan;
+		this.defaultWriteDataItem = this.dataItems.SPMan;
 		this.defaultWriteDataItemType = 'number';
+	}
+
+	protected initializeBaseFunctions() {
+		super.initializeBaseFunctions();
+		this.sourceMode = new SourceModeController(this.dataItems);
+		this.opMode = new OpMode(this.dataItems);
 	}
 }

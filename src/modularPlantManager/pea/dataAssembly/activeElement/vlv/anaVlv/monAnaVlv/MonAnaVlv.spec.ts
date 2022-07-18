@@ -30,6 +30,7 @@ import {MockupServer} from '../../../../../../_utils';
 import {getMonAnaVlvDataAssemblyModel, MonAnaVlvMockup} from './MonAnaVlv.mockup';
 import {MonAnaVlv} from './MonAnaVlv';
 import {ConnectionHandler} from '../../../../../connectionHandler/ConnectionHandler';
+import {getEndpointDataModel} from '../../../../../connectionHandler/ConnectionHandler.mockup';
 
 
 chai.use(chaiAsPromised);
@@ -49,10 +50,10 @@ describe('MonAnaVlv', () => {
 			const dataAssembly = new MonAnaVlv(options, connectionHandler);
 			expect(dataAssembly).to.not.be.undefined;
 			expect(dataAssembly.feedBackMonitoring).to.not.be.undefined;
-			expect(dataAssembly.communication.PosReachedFbk).to.not.be.undefined;
-			expect(dataAssembly.communication.PosTolerance).to.not.be.undefined;
-			expect(dataAssembly.communication.MonPosTi).to.not.be.undefined;
-			expect(dataAssembly.communication.MonPosErr).to.not.be.undefined;
+			expect(dataAssembly.dataItems.PosReachedFbk).to.not.be.undefined;
+			expect(dataAssembly.dataItems.PosTolerance).to.not.be.undefined;
+			expect(dataAssembly.dataItems.MonPosTi).to.not.be.undefined;
+			expect(dataAssembly.dataItems.MonPosErr).to.not.be.undefined;
 		});
 	});
 
@@ -64,11 +65,12 @@ describe('MonAnaVlv', () => {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
+
 			const monAnaVlvMockup = new MonAnaVlvMockup( mockupServer.nameSpace, mockupServer.rootObject,'Variable');
 			options = monAnaVlvMockup.getDataAssemblyModel();
 			await mockupServer.start();
 			connectionHandler= new ConnectionHandler();
-			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
 			await connectionHandler.connect();
 		});
 
@@ -85,67 +87,67 @@ describe('MonAnaVlv', () => {
 			await connectionHandler.connect();
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 
-			expect(dataAssembly.communication.OSLevel.value).equal(0);
-			expect(dataAssembly.communication.WQC.value).equal(0);
+			expect(dataAssembly.dataItems.OSLevel.value).equal(0);
+			expect(dataAssembly.dataItems.WQC.value).equal(0);
 
-			expect(dataAssembly.communication.PermEn.value).equal(false);
-			expect(dataAssembly.communication.Permit.value).equal(false);
-			expect(dataAssembly.communication.IntlEn.value).equal(false);
-			expect(dataAssembly.communication.Interlock.value).equal(false);
-			expect(dataAssembly.communication.ProtEn.value).equal(false);
-			expect(dataAssembly.communication.Protect.value).equal(false);
+			expect(dataAssembly.dataItems.PermEn.value).equal(false);
+			expect(dataAssembly.dataItems.Permit.value).equal(false);
+			expect(dataAssembly.dataItems.IntlEn.value).equal(false);
+			expect(dataAssembly.dataItems.Interlock.value).equal(false);
+			expect(dataAssembly.dataItems.ProtEn.value).equal(false);
+			expect(dataAssembly.dataItems.Protect.value).equal(false);
 
-			expect(dataAssembly.communication.ResetAut.value).equal(false);
-			expect(dataAssembly.communication.ResetOp.value).equal(false);
+			expect(dataAssembly.dataItems.ResetAut.value).equal(false);
+			expect(dataAssembly.dataItems.ResetOp.value).equal(false);
 
-			expect(dataAssembly.communication.StateChannel.value).equal(false);
-			expect(dataAssembly.communication.StateOffAut.value).equal(false);
-			expect(dataAssembly.communication.StateOpAut.value).equal(false);
-			expect(dataAssembly.communication.StateAutAut.value).equal(false);
-			expect(dataAssembly.communication.StateOffOp.value).equal(false);
-			expect(dataAssembly.communication.StateOpOp.value).equal(false);
-			expect(dataAssembly.communication.StateAutOp.value).equal(false);
-			expect(dataAssembly.communication.StateOpAct.value).equal(false);
-			expect(dataAssembly.communication.StateAutAct.value).equal(false);
-			expect(dataAssembly.communication.StateOffAct.value).equal(true);
+			expect(dataAssembly.dataItems.StateChannel.value).equal(false);
+			expect(dataAssembly.dataItems.StateOffAut.value).equal(false);
+			expect(dataAssembly.dataItems.StateOpAut.value).equal(false);
+			expect(dataAssembly.dataItems.StateAutAut.value).equal(false);
+			expect(dataAssembly.dataItems.StateOffOp.value).equal(false);
+			expect(dataAssembly.dataItems.StateOpOp.value).equal(false);
+			expect(dataAssembly.dataItems.StateAutOp.value).equal(false);
+			expect(dataAssembly.dataItems.StateOpAct.value).equal(false);
+			expect(dataAssembly.dataItems.StateAutAct.value).equal(false);
+			expect(dataAssembly.dataItems.StateOffAct.value).equal(true);
 
-			expect(dataAssembly.communication.SafePos.value).equal(false);
-			expect(dataAssembly.communication.SafePosEn.value).equal(false);
-			expect(dataAssembly.communication.SafePosAct.value).equal(false);
-			expect(dataAssembly.communication.OpenAut.value).equal(false);
-			expect(dataAssembly.communication.OpenFbk.value).equal(false);
-			expect(dataAssembly.communication.OpenFbkCalc.value).equal(false);
-			expect(dataAssembly.communication.OpenOp.value).equal(false);
-			expect(dataAssembly.communication.CloseAut.value).equal(false);
-			expect(dataAssembly.communication.CloseFbk.value).equal(false);
-			expect(dataAssembly.communication.CloseFbkCalc.value).equal(false);
-			expect(dataAssembly.communication.CloseOp.value).equal(false);
+			expect(dataAssembly.dataItems.SafePos.value).equal(false);
+			expect(dataAssembly.dataItems.SafePosEn.value).equal(false);
+			expect(dataAssembly.dataItems.SafePosAct.value).equal(false);
+			expect(dataAssembly.dataItems.OpenAut.value).equal(false);
+			expect(dataAssembly.dataItems.OpenFbk.value).equal(false);
+			expect(dataAssembly.dataItems.OpenFbkCalc.value).equal(false);
+			expect(dataAssembly.dataItems.OpenOp.value).equal(false);
+			expect(dataAssembly.dataItems.CloseAut.value).equal(false);
+			expect(dataAssembly.dataItems.CloseFbk.value).equal(false);
+			expect(dataAssembly.dataItems.CloseFbkCalc.value).equal(false);
+			expect(dataAssembly.dataItems.CloseOp.value).equal(false);
 
-			expect(dataAssembly.communication.Pos.value).equal(0);
-			expect(dataAssembly.communication.PosFbk.value).equal(0);
-			expect(dataAssembly.communication.PosFbkCalc.value).equal(false);
-			expect(dataAssembly.communication.PosRbk.value).equal(0);
-			expect(dataAssembly.communication.PosInt.value).equal(0);
-			expect(dataAssembly.communication.PosMan.value).equal(0);
-			expect(dataAssembly.communication.PosUnit.value).equal(0);
-			expect(dataAssembly.communication.PosSclMax.value).equal(0);
-			expect(dataAssembly.communication.PosSclMin.value).equal(0);
-			expect(dataAssembly.communication.PosMin.value).equal(0);
-			expect(dataAssembly.communication.PosMax.value).equal(0);
-			expect(dataAssembly.communication.OpenAct.value).equal(false);
-			expect(dataAssembly.communication.CloseAct.value).equal(false);
+			expect(dataAssembly.dataItems.Pos.value).equal(0);
+			expect(dataAssembly.dataItems.PosFbk.value).equal(0);
+			expect(dataAssembly.dataItems.PosFbkCalc.value).equal(false);
+			expect(dataAssembly.dataItems.PosRbk.value).equal(0);
+			expect(dataAssembly.dataItems.PosInt.value).equal(0);
+			expect(dataAssembly.dataItems.PosMan.value).equal(0);
+			expect(dataAssembly.dataItems.PosUnit.value).equal(0);
+			expect(dataAssembly.dataItems.PosSclMax.value).equal(0);
+			expect(dataAssembly.dataItems.PosSclMin.value).equal(0);
+			expect(dataAssembly.dataItems.PosMin.value).equal(0);
+			expect(dataAssembly.dataItems.PosMax.value).equal(0);
+			expect(dataAssembly.dataItems.OpenAct.value).equal(false);
+			expect(dataAssembly.dataItems.CloseAct.value).equal(false);
 
-			expect(dataAssembly.communication.MonEn.value).equal(false);
-			expect(dataAssembly.communication.MonSafePos.value).equal(false);
-			expect(dataAssembly.communication.MonStatErr.value).equal(false);
-			expect(dataAssembly.communication.MonDynErr.value).equal(false);
-			expect(dataAssembly.communication.MonStatTi.value).equal(0);
-			expect(dataAssembly.communication.MonDynTi.value).equal(0);
+			expect(dataAssembly.dataItems.MonEn.value).equal(false);
+			expect(dataAssembly.dataItems.MonSafePos.value).equal(false);
+			expect(dataAssembly.dataItems.MonStatErr.value).equal(false);
+			expect(dataAssembly.dataItems.MonDynErr.value).equal(false);
+			expect(dataAssembly.dataItems.MonStatTi.value).equal(0);
+			expect(dataAssembly.dataItems.MonDynTi.value).equal(0);
 
-			expect(dataAssembly.communication.PosReachedFbk.value).equal(false);
-			expect(dataAssembly.communication.PosTolerance.value).equal(0);
-			expect(dataAssembly.communication.MonPosTi.value).equal(0);
-			expect(dataAssembly.communication.MonPosErr.value).equal(false);
+			expect(dataAssembly.dataItems.PosReachedFbk.value).equal(false);
+			expect(dataAssembly.dataItems.PosTolerance.value).equal(0);
+			expect(dataAssembly.dataItems.MonPosTi.value).equal(0);
+			expect(dataAssembly.dataItems.MonPosErr.value).equal(false);
 
 		}).timeout(5000);
 	});

@@ -49,7 +49,7 @@ playerRouter.get('/', async (req: Request, res: Response) => {
  */
 playerRouter.post('/start', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
-	manager.player.start();
+	await manager.player.start();
 	res.json(manager.player.json());
 }));
 

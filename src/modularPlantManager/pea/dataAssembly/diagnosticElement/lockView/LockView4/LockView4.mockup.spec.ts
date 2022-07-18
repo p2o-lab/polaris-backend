@@ -39,7 +39,6 @@ describe('LockView4Mockup', () => {
 
         beforeEach(async()=>{
             mockupServer = new MockupServer();
-            await mockupServer.initialize();
         });
 
         it('should create LockView4Mockup', async () => {

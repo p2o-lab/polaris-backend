@@ -30,6 +30,7 @@ import {getServiceControlDataAssemblyModel, getServiceControlDataItemModel, Serv
 import {OperationMode, ServiceSourceMode} from '@p2olab/polaris-interface';
 import {ConnectionHandler} from '../../connectionHandler/ConnectionHandler';
 import {DataItemAccessLevel} from '@p2olab/pimad-interface';
+import {getEndpointDataModel} from '../../connectionHandler/ConnectionHandler.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -42,7 +43,8 @@ describe('ServiceControlMockup', () => {
 
         beforeEach(async()=>{
             mockupServer = new MockupServer();
-            await mockupServer.initialize();
+			await mockupServer.initialize();
+            
         });
 
         it('should create ServiceControlMockup', async () => {
@@ -81,12 +83,11 @@ describe('ServiceControlMockup', () => {
         beforeEach(async function () {
             this.timeout(5000);
             mockupServer = new MockupServer();
-            await mockupServer.initialize();
             mockup = new ServiceControlMockup(mockupServer.nameSpace, mockupServer.rootObject, mockupName);
             await mockupServer.start();
 
             connectionHandler= new ConnectionHandler();
-            connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+            connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
             await connectionHandler.connect();
         });
 

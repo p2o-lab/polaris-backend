@@ -29,7 +29,7 @@
 !include lockView/LockView4/Lockview4.puml
 
 class DiagnosticElement{
-    + readonly communication!: DiagnosticElementRuntime
+    + readonly dataItems!: DiagnosticElementRuntime
     + readonly wqc: WQC
 }
 

@@ -30,6 +30,7 @@ import {MockupServer} from '../../../../../_utils';
 import {LockView16} from './LockView16';
 import {getLockView16DataAssemblyModel, LockView16Mockup} from './LockView16.mockup';
 import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
+import {getEndpointDataModel} from '../../../../connectionHandler/ConnectionHandler.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -46,7 +47,7 @@ describe('LockView16', () => {
 		it('should create LockView16', async () => {
 			const dataAssembly = new LockView16(options, emptyOPCUAConnection);
 			expect(dataAssembly).to.be.not.undefined;
-			expect(dataAssembly.communication).to.be.not.undefined;
+			expect(dataAssembly.dataItems).to.be.not.undefined;
 			expect(dataAssembly.wqc).to.be.not.undefined;
 		});
 
@@ -58,12 +59,11 @@ describe('LockView16', () => {
 		beforeEach(async function () {
 			this.timeout(8000);
 			mockupServer = new MockupServer();
-			await mockupServer.initialize();
 			const lockView16Mockup =new LockView16Mockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			options = lockView16Mockup.getDataAssemblyModel();
 			await mockupServer.start();
 			connectionHandler = new ConnectionHandler();
-			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
 			await connectionHandler.connect();
 		});
 
@@ -78,108 +78,108 @@ describe('LockView16', () => {
 			const dataAssembly = new LockView16(options, connectionHandler);
 			await dataAssembly.subscribe();
 			await connectionHandler.connect();
-			await new Promise((resolve => dataAssembly.In16Txt.on('changed', resolve)));
+			await new Promise((resolve => dataAssembly.dataItems.In16Txt.on('changed', resolve)));
 			
 			expect(dataAssembly.wqc.WQC).equal(0);
-			expect(dataAssembly.Logic.value).equal(false);
-			expect(dataAssembly.Out.value).equal(false);
-			expect(dataAssembly.OutQC.value).equal(0);
+			expect(dataAssembly.dataItems.Logic.value).equal(false);
+			expect(dataAssembly.dataItems.Out.value).equal(false);
+			expect(dataAssembly.dataItems.OutQC.value).equal(0);
 
-			expect(dataAssembly.In1En.value).equal(false);
-			expect(dataAssembly.In1.value).equal(false);
-			expect(dataAssembly.In1QC.value).equal(0);
-			expect(dataAssembly.In1Inv.value).equal(false);
-			expect(dataAssembly.In1Txt.value).equal('testText');
+			expect(dataAssembly.dataItems.In1En.value).equal(false);
+			expect(dataAssembly.dataItems.In1.value).equal(false);
+			expect(dataAssembly.dataItems.In1QC.value).equal(0);
+			expect(dataAssembly.dataItems.In1Inv.value).equal(false);
+			expect(dataAssembly.dataItems.In1Txt.value).equal('testText');
 
-			expect(dataAssembly.In2En.value).equal(false);
-			expect(dataAssembly.In2.value).equal(false);
-			expect(dataAssembly.In2QC.value).equal(0);
-			expect(dataAssembly.In2Inv.value).equal(false);
-			expect(dataAssembly.In2Txt.value).equal('testText');
+			expect(dataAssembly.dataItems.In2En.value).equal(false);
+			expect(dataAssembly.dataItems.In2.value).equal(false);
+			expect(dataAssembly.dataItems.In2QC.value).equal(0);
+			expect(dataAssembly.dataItems.In2Inv.value).equal(false);
+			expect(dataAssembly.dataItems.In2Txt.value).equal('testText');
 
-			expect(dataAssembly.In3En.value).equal(false);
-			expect(dataAssembly.In3.value).equal(false);
-			expect(dataAssembly.In3QC.value).equal(0);
-			expect(dataAssembly.In3Inv.value).equal(false);
-			expect(dataAssembly.In3Txt.value).equal('testText');
+			expect(dataAssembly.dataItems.In3En.value).equal(false);
+			expect(dataAssembly.dataItems.In3.value).equal(false);
+			expect(dataAssembly.dataItems.In3QC.value).equal(0);
+			expect(dataAssembly.dataItems.In3Inv.value).equal(false);
+			expect(dataAssembly.dataItems.In3Txt.value).equal('testText');
 
-			expect(dataAssembly.In4En.value).equal(false);
-			expect(dataAssembly.In4.value).equal(false);
-			expect(dataAssembly.In4QC.value).equal(0);
-			expect(dataAssembly.In4Inv.value).equal(false);
-			expect(dataAssembly.In4Txt.value).equal('testText');
+			expect(dataAssembly.dataItems.In4En.value).equal(false);
+			expect(dataAssembly.dataItems.In4.value).equal(false);
+			expect(dataAssembly.dataItems.In4QC.value).equal(0);
+			expect(dataAssembly.dataItems.In4Inv.value).equal(false);
+			expect(dataAssembly.dataItems.In4Txt.value).equal('testText');
 
-			expect(dataAssembly.In5En.value).equal(false);
-			expect(dataAssembly.In5.value).equal(false);
-			expect(dataAssembly.In5QC.value).equal(0);
-			expect(dataAssembly.In5Inv.value).equal(false);
-			expect(dataAssembly.In5Txt.value).equal('testText');
+			expect(dataAssembly.dataItems.In5En.value).equal(false);
+			expect(dataAssembly.dataItems.In5.value).equal(false);
+			expect(dataAssembly.dataItems.In5QC.value).equal(0);
+			expect(dataAssembly.dataItems.In5Inv.value).equal(false);
+			expect(dataAssembly.dataItems.In5Txt.value).equal('testText');
 
-			expect(dataAssembly.In6En.value).equal(false);
-			expect(dataAssembly.In6.value).equal(false);
-			expect(dataAssembly.In6QC.value).equal(0);
-			expect(dataAssembly.In6Inv.value).equal(false);
-			expect(dataAssembly.In6Txt.value).equal('testText');
+			expect(dataAssembly.dataItems.In6En.value).equal(false);
+			expect(dataAssembly.dataItems.In6.value).equal(false);
+			expect(dataAssembly.dataItems.In6QC.value).equal(0);
+			expect(dataAssembly.dataItems.In6Inv.value).equal(false);
+			expect(dataAssembly.dataItems.In6Txt.value).equal('testText');
 
-			expect(dataAssembly.In7En.value).equal(false);
-			expect(dataAssembly.In7.value).equal(false);
-			expect(dataAssembly.In7QC.value).equal(0);
-			expect(dataAssembly.In7Inv.value).equal(false);
-			expect(dataAssembly.In7Txt.value).equal('testText');
+			expect(dataAssembly.dataItems.In7En.value).equal(false);
+			expect(dataAssembly.dataItems.In7.value).equal(false);
+			expect(dataAssembly.dataItems.In7QC.value).equal(0);
+			expect(dataAssembly.dataItems.In7Inv.value).equal(false);
+			expect(dataAssembly.dataItems.In7Txt.value).equal('testText');
 
-			expect(dataAssembly.In8En.value).equal(false);
-			expect(dataAssembly.In8.value).equal(false);
-			expect(dataAssembly.In8QC.value).equal(0);
-			expect(dataAssembly.In8Inv.value).equal(false);
-			expect(dataAssembly.In8Txt.value).equal('testText');
+			expect(dataAssembly.dataItems.In8En.value).equal(false);
+			expect(dataAssembly.dataItems.In8.value).equal(false);
+			expect(dataAssembly.dataItems.In8QC.value).equal(0);
+			expect(dataAssembly.dataItems.In8Inv.value).equal(false);
+			expect(dataAssembly.dataItems.In8Txt.value).equal('testText');
 
-			expect(dataAssembly.In9En.value).equal(false);
-			expect(dataAssembly.In9.value).equal(false);
-			expect(dataAssembly.In9QC.value).equal(0);
-			expect(dataAssembly.In9Inv.value).equal(false);
-			expect(dataAssembly.In9Txt.value).equal('testText');
+			expect(dataAssembly.dataItems.In9En.value).equal(false);
+			expect(dataAssembly.dataItems.In9.value).equal(false);
+			expect(dataAssembly.dataItems.In9QC.value).equal(0);
+			expect(dataAssembly.dataItems.In9Inv.value).equal(false);
+			expect(dataAssembly.dataItems.In9Txt.value).equal('testText');
 
-			expect(dataAssembly.In10En.value).equal(false);
-			expect(dataAssembly.In10.value).equal(false);
-			expect(dataAssembly.In10QC.value).equal(0);
-			expect(dataAssembly.In10Inv.value).equal(false);
-			expect(dataAssembly.In10Txt.value).equal('testText');
+			expect(dataAssembly.dataItems.In10En.value).equal(false);
+			expect(dataAssembly.dataItems.In10.value).equal(false);
+			expect(dataAssembly.dataItems.In10QC.value).equal(0);
+			expect(dataAssembly.dataItems.In10Inv.value).equal(false);
+			expect(dataAssembly.dataItems.In10Txt.value).equal('testText');
 
-			expect(dataAssembly.In11En.value).equal(false);
-			expect(dataAssembly.In11.value).equal(false);
-			expect(dataAssembly.In11QC.value).equal(0);
-			expect(dataAssembly.In11Inv.value).equal(false);
-			expect(dataAssembly.In11Txt.value).equal('testText');
+			expect(dataAssembly.dataItems.In11En.value).equal(false);
+			expect(dataAssembly.dataItems.In11.value).equal(false);
+			expect(dataAssembly.dataItems.In11QC.value).equal(0);
+			expect(dataAssembly.dataItems.In11Inv.value).equal(false);
+			expect(dataAssembly.dataItems.In11Txt.value).equal('testText');
 
-			expect(dataAssembly.In12En.value).equal(false);
-			expect(dataAssembly.In12.value).equal(false);
-			expect(dataAssembly.In12QC.value).equal(0);
-			expect(dataAssembly.In12Inv.value).equal(false);
-			expect(dataAssembly.In12Txt.value).equal('testText');
+			expect(dataAssembly.dataItems.In12En.value).equal(false);
+			expect(dataAssembly.dataItems.In12.value).equal(false);
+			expect(dataAssembly.dataItems.In12QC.value).equal(0);
+			expect(dataAssembly.dataItems.In12Inv.value).equal(false);
+			expect(dataAssembly.dataItems.In12Txt.value).equal('testText');
 
-			expect(dataAssembly.In13En.value).equal(false);
-			expect(dataAssembly.In13.value).equal(false);
-			expect(dataAssembly.In13QC.value).equal(0);
-			expect(dataAssembly.In13Inv.value).equal(false);
-			expect(dataAssembly.In13Txt.value).equal('testText');
+			expect(dataAssembly.dataItems.In13En.value).equal(false);
+			expect(dataAssembly.dataItems.In13.value).equal(false);
+			expect(dataAssembly.dataItems.In13QC.value).equal(0);
+			expect(dataAssembly.dataItems.In13Inv.value).equal(false);
+			expect(dataAssembly.dataItems.In13Txt.value).equal('testText');
 
-			expect(dataAssembly.In14En.value).equal(false);
-			expect(dataAssembly.In14.value).equal(false);
-			expect(dataAssembly.In14QC.value).equal(0);
-			expect(dataAssembly.In14Inv.value).equal(false);
-			expect(dataAssembly.In14Txt.value).equal('testText');
+			expect(dataAssembly.dataItems.In14En.value).equal(false);
+			expect(dataAssembly.dataItems.In14.value).equal(false);
+			expect(dataAssembly.dataItems.In14QC.value).equal(0);
+			expect(dataAssembly.dataItems.In14Inv.value).equal(false);
+			expect(dataAssembly.dataItems.In14Txt.value).equal('testText');
 
-			expect(dataAssembly.In15En.value).equal(false);
-			expect(dataAssembly.In15.value).equal(false);
-			expect(dataAssembly.In15QC.value).equal(0);
-			expect(dataAssembly.In15Inv.value).equal(false);
-			expect(dataAssembly.In15Txt.value).equal('testText');
+			expect(dataAssembly.dataItems.In15En.value).equal(false);
+			expect(dataAssembly.dataItems.In15.value).equal(false);
+			expect(dataAssembly.dataItems.In15QC.value).equal(0);
+			expect(dataAssembly.dataItems.In15Inv.value).equal(false);
+			expect(dataAssembly.dataItems.In15Txt.value).equal('testText');
 
-			expect(dataAssembly.In16En.value).equal(false);
-			expect(dataAssembly.In16.value).equal(false);
-			expect(dataAssembly.In16QC.value).equal(0);
-			expect(dataAssembly.In16Inv.value).equal(false);
-			expect(dataAssembly.In16Txt.value).equal('testText');
+			expect(dataAssembly.dataItems.In16En.value).equal(false);
+			expect(dataAssembly.dataItems.In16.value).equal(false);
+			expect(dataAssembly.dataItems.In16QC.value).equal(0);
+			expect(dataAssembly.dataItems.In16Inv.value).equal(false);
+			expect(dataAssembly.dataItems.In16Txt.value).equal('testText');
 		}).timeout(8000);
 	});
 });

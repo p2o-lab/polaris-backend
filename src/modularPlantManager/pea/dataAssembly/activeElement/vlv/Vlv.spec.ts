@@ -32,6 +32,7 @@ import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {MockupServer} from '../../../../_utils';
 import {getVlvDataAssemblyModel, VlvMockup} from './Vlv.mockup';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
+import {getEndpointDataModel} from '../../../connectionHandler/ConnectionHandler.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -55,17 +56,17 @@ describe('Vlv', () => {
 			expect(dataAssembly.opMode).to.be.not.undefined;
 			expect(dataAssembly.interlock).to.be.not.undefined;
 
-			expect(dataAssembly.communication.SafePos).to.be.not.undefined;
-			expect(dataAssembly.communication.SafePosEn).to.be.not.undefined;
-			expect(dataAssembly.communication.SafePosAct).to.be.not.undefined;
-			expect(dataAssembly.communication.OpenAut).to.be.not.undefined;
-			expect(dataAssembly.communication.OpenFbk).to.be.not.undefined;
-			expect(dataAssembly.communication.OpenFbkCalc).to.be.not.undefined;
-			expect(dataAssembly.communication.OpenOp).to.be.not.undefined;
-			expect(dataAssembly.communication.CloseAut).to.be.not.undefined;
-			expect(dataAssembly.communication.CloseFbk).to.be.not.undefined;
-			expect(dataAssembly.communication.CloseFbkCalc).to.be.not.undefined;
-			expect(dataAssembly.communication.CloseOp).to.be.not.undefined;
+			expect(dataAssembly.dataItems.SafePos).to.be.not.undefined;
+			expect(dataAssembly.dataItems.SafePosEn).to.be.not.undefined;
+			expect(dataAssembly.dataItems.SafePosAct).to.be.not.undefined;
+			expect(dataAssembly.dataItems.OpenAut).to.be.not.undefined;
+			expect(dataAssembly.dataItems.OpenFbk).to.be.not.undefined;
+			expect(dataAssembly.dataItems.OpenFbkCalc).to.be.not.undefined;
+			expect(dataAssembly.dataItems.OpenOp).to.be.not.undefined;
+			expect(dataAssembly.dataItems.CloseAut).to.be.not.undefined;
+			expect(dataAssembly.dataItems.CloseFbk).to.be.not.undefined;
+			expect(dataAssembly.dataItems.CloseFbkCalc).to.be.not.undefined;
+			expect(dataAssembly.dataItems.CloseOp).to.be.not.undefined;
 		});
 	});
 
@@ -77,11 +78,12 @@ describe('Vlv', () => {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
+
 			const vlvMockup = new VlvMockup( mockupServer.nameSpace, mockupServer.rootObject,'Variable');
 			options = vlvMockup.getDataAssemblyModel();
 			await mockupServer.start();
 			connectionHandler= new ConnectionHandler();
-			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
 			await connectionHandler.connect();
 		});
 
@@ -98,41 +100,41 @@ describe('Vlv', () => {
 			await connectionHandler.connect();
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 
-			expect(dataAssembly.communication.OSLevel.value).equal(0);
-			expect(dataAssembly.communication.WQC.value).equal(0);
+			expect(dataAssembly.dataItems.OSLevel.value).equal(0);
+			expect(dataAssembly.dataItems.WQC.value).equal(0);
 
-			expect(dataAssembly.communication.PermEn.value).equal(false);
-			expect(dataAssembly.communication.Permit.value).equal(false);
-			expect(dataAssembly.communication.IntlEn.value).equal(false);
-			expect(dataAssembly.communication.Interlock.value).equal(false);
-			expect(dataAssembly.communication.ProtEn.value).equal(false);
-			expect(dataAssembly.communication.Protect.value).equal(false);
+			expect(dataAssembly.dataItems.PermEn.value).equal(false);
+			expect(dataAssembly.dataItems.Permit.value).equal(false);
+			expect(dataAssembly.dataItems.IntlEn.value).equal(false);
+			expect(dataAssembly.dataItems.Interlock.value).equal(false);
+			expect(dataAssembly.dataItems.ProtEn.value).equal(false);
+			expect(dataAssembly.dataItems.Protect.value).equal(false);
 
-			expect(dataAssembly.communication.ResetAut.value).equal(false);
-			expect(dataAssembly.communication.ResetOp.value).equal(false);
+			expect(dataAssembly.dataItems.ResetAut.value).equal(false);
+			expect(dataAssembly.dataItems.ResetOp.value).equal(false);
 
-			expect(dataAssembly.communication.StateChannel.value).equal(false);
-			expect(dataAssembly.communication.StateOffAut.value).equal(false);
-			expect(dataAssembly.communication.StateOpAut.value).equal(false);
-			expect(dataAssembly.communication.StateAutAut.value).equal(false);
-			expect(dataAssembly.communication.StateOffOp.value).equal(false);
-			expect(dataAssembly.communication.StateOpOp.value).equal(false);
-			expect(dataAssembly.communication.StateAutOp.value).equal(false);
-			expect(dataAssembly.communication.StateOpAct.value).equal(false);
-			expect(dataAssembly.communication.StateAutAct.value).equal(false);
-			expect(dataAssembly.communication.StateOffAct.value).equal(true);
+			expect(dataAssembly.dataItems.StateChannel.value).equal(false);
+			expect(dataAssembly.dataItems.StateOffAut.value).equal(false);
+			expect(dataAssembly.dataItems.StateOpAut.value).equal(false);
+			expect(dataAssembly.dataItems.StateAutAut.value).equal(false);
+			expect(dataAssembly.dataItems.StateOffOp.value).equal(false);
+			expect(dataAssembly.dataItems.StateOpOp.value).equal(false);
+			expect(dataAssembly.dataItems.StateAutOp.value).equal(false);
+			expect(dataAssembly.dataItems.StateOpAct.value).equal(false);
+			expect(dataAssembly.dataItems.StateAutAct.value).equal(false);
+			expect(dataAssembly.dataItems.StateOffAct.value).equal(true);
 
-			expect(dataAssembly.communication.SafePos.value).equal(false);
-			expect(dataAssembly.communication.SafePosEn.value).equal(false);
-			expect(dataAssembly.communication.SafePosAct.value).equal(false);
-			expect(dataAssembly.communication.OpenAut.value).equal(false);
-			expect(dataAssembly.communication.OpenFbk.value).equal(false);
-			expect(dataAssembly.communication.OpenFbkCalc.value).equal(false);
-			expect(dataAssembly.communication.OpenOp.value).equal(false);
-			expect(dataAssembly.communication.CloseAut.value).equal(false);
-			expect(dataAssembly.communication.CloseFbk.value).equal(false);
-			expect(dataAssembly.communication.CloseFbkCalc.value).equal(false);
-			expect(dataAssembly.communication.CloseOp.value).equal(false);
+			expect(dataAssembly.dataItems.SafePos.value).equal(false);
+			expect(dataAssembly.dataItems.SafePosEn.value).equal(false);
+			expect(dataAssembly.dataItems.SafePosAct.value).equal(false);
+			expect(dataAssembly.dataItems.OpenAut.value).equal(false);
+			expect(dataAssembly.dataItems.OpenFbk.value).equal(false);
+			expect(dataAssembly.dataItems.OpenFbkCalc.value).equal(false);
+			expect(dataAssembly.dataItems.OpenOp.value).equal(false);
+			expect(dataAssembly.dataItems.CloseAut.value).equal(false);
+			expect(dataAssembly.dataItems.CloseFbk.value).equal(false);
+			expect(dataAssembly.dataItems.CloseFbkCalc.value).equal(false);
+			expect(dataAssembly.dataItems.CloseOp.value).equal(false);
 		}).timeout(5000);
 	});
 });

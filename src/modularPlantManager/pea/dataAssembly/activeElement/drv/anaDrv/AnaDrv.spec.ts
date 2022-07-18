@@ -45,21 +45,21 @@ describe('AnaDrv', () => {
 			const dataAssembly = new AnaDrv(dataAssemblyModel, connectionHandler);
 			expect(dataAssembly.sourceMode).to.not.be.undefined;
 
-			expect(dataAssembly.communication.RpmSclMax).to.not.be.undefined;
-			expect(dataAssembly.communication.RpmSclMin).to.not.be.undefined;
+			expect(dataAssembly.dataItems.RpmSclMax).to.not.be.undefined;
+			expect(dataAssembly.dataItems.RpmSclMin).to.not.be.undefined;
 
-			expect(dataAssembly.communication.RpmUnit).to.not.be.undefined;
+			expect(dataAssembly.dataItems.RpmUnit).to.not.be.undefined;
 
-			expect(dataAssembly.communication.RpmMin).to.not.be.undefined;
-			expect(dataAssembly.communication.RpmMax).to.not.be.undefined;
+			expect(dataAssembly.dataItems.RpmMin).to.not.be.undefined;
+			expect(dataAssembly.dataItems.RpmMax).to.not.be.undefined;
 
-			expect(dataAssembly.communication.RpmInt).to.not.be.undefined;
-			expect(dataAssembly.communication.RpmMan).to.not.be.undefined;
-			expect(dataAssembly.communication.Rpm).to.not.be.undefined;
+			expect(dataAssembly.dataItems.RpmInt).to.not.be.undefined;
+			expect(dataAssembly.dataItems.RpmMan).to.not.be.undefined;
+			expect(dataAssembly.dataItems.Rpm).to.not.be.undefined;
 
-			expect(dataAssembly.communication.RpmFbk).to.not.be.undefined;
-			expect(dataAssembly.communication.RpmFbkCalc).to.not.be.undefined;
-			expect(dataAssembly.communication.RpmRbk).to.not.be.undefined;
+			expect(dataAssembly.dataItems.RpmFbk).to.not.be.undefined;
+			expect(dataAssembly.dataItems.RpmFbkCalc).to.not.be.undefined;
+			expect(dataAssembly.dataItems.RpmRbk).to.not.be.undefined;
 		});
 	});
 });

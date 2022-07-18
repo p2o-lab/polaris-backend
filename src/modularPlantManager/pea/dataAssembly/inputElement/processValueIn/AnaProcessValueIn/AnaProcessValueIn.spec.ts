@@ -32,6 +32,7 @@ import {MockupServer} from '../../../../../_utils';
 import {AnaProcessValueInMockup, getAnaProcessValueInDataAssemblyModel} from './AnaProcessValueIn.mockup';
 import {DataAssemblyFactory} from '../../../DataAssemblyFactory';
 import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
+import {getEndpointDataModel} from '../../../../connectionHandler/ConnectionHandler.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -48,10 +49,10 @@ describe('AnaProcessValueIn', () => {
 		it('should create AnaProcessValueIn', async () => {
 			const dataAssembly = DataAssemblyFactory.create(options, connectionHandler) as AnaProcessValueIn;
 			expect(dataAssembly).to.be.not.undefined;
-			expect(dataAssembly.communication.VExt).to.be.not.undefined;
-			expect(dataAssembly.communication.VSclMax).to.be.not.undefined;
-			expect(dataAssembly.communication.VSclMin).to.be.not.undefined;
-			expect(dataAssembly.communication.VUnit).to.be.not.undefined;
+			expect(dataAssembly.dataItems.VExt).to.be.not.undefined;
+			expect(dataAssembly.dataItems.VSclMax).to.be.not.undefined;
+			expect(dataAssembly.dataItems.VSclMin).to.be.not.undefined;
+			expect(dataAssembly.dataItems.VUnit).to.be.not.undefined;
 		});
 	});
 
@@ -69,7 +70,7 @@ describe('AnaProcessValueIn', () => {
 			options = anaProcessValueInMockup.getDataAssemblyModel();
 			await mockupServer.start();
 			connectionHandler= new ConnectionHandler();
-			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
 			await connectionHandler.connect();
 		});
 
@@ -86,10 +87,10 @@ describe('AnaProcessValueIn', () => {
 			await connectionHandler.connect();
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 
-			expect(dataAssembly.communication.VExt.value).equal(0);
-			expect(dataAssembly.communication.VUnit.value).equal(0);
-			expect(dataAssembly.communication.VSclMin.value).equal(0);
-			expect(dataAssembly.communication.VSclMax.value).equal(1);
+			expect(dataAssembly.dataItems.VExt.value).equal(0);
+			expect(dataAssembly.dataItems.VUnit.value).equal(0);
+			expect(dataAssembly.dataItems.VSclMin.value).equal(0);
+			expect(dataAssembly.dataItems.VSclMax.value).equal(1);
 
 		}).timeout(4000);
 
@@ -103,7 +104,7 @@ describe('AnaProcessValueIn', () => {
 			await dataAssembly.setParameter(1,'VExt');
 			expect(anaProcessValueInMockup.vExt).equal(1);
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
-			expect(dataAssembly.communication.VExt.value).equal(1);
+			expect(dataAssembly.dataItems.VExt.value).equal(1);
 
 		}).timeout(4000);
 	});

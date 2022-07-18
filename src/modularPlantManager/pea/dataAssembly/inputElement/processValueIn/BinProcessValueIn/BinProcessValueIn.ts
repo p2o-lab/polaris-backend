@@ -27,7 +27,7 @@ import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {DataItem} from '../../../dataItem/DataItem';
 import {InputElement, InputElementRuntime} from '../../InputElement';
 import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
-import {DataItemFactory, getDataItemModel} from '../../../dataItem/DataItemFactory';
+import {keys} from 'ts-transformer-keys';
 
 export type BinProcessValueInRuntime = InputElementRuntime & {
 	VExt: DataItem<boolean>;
@@ -36,19 +36,26 @@ export type BinProcessValueInRuntime = InputElementRuntime & {
 };
 
 export class BinProcessValueIn extends InputElement {
-	public readonly communication!: BinProcessValueInRuntime;
 
-	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler) {
+	public readonly dataItems!: BinProcessValueInRuntime;
+
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false) {
 		super(options, connectionHandler);
-		this.communication.VExt = DataItemFactory.create(getDataItemModel(options, 'VExt'), connectionHandler);
-		this.communication.VState0 = DataItemFactory.create(getDataItemModel(options, 'VState0'), connectionHandler);
-		this.communication.VState1 = DataItemFactory.create(getDataItemModel(options, 'VState1'), connectionHandler);
 
-		this.defaultReadDataItem = this.communication.VExt;
+		if (initial) {
+			const keyList = keys<typeof this.dataItems>();
+			this.initializeDataItems(options, keyList);
+			this.initializeBaseFunctions();
+		}	
+
+		this.defaultReadDataItem = this.dataItems.VExt;
 		this.defaultReadDataItemType = 'boolean';
-
+		this.defaultWriteDataItem = this.dataItems.VExt;
 		this.defaultWriteDataItemType = 'boolean';
-		this.defaultWriteDataItem = this.communication.VExt;
+	}
+
+	protected initializeBaseFunctions() {
+		super.initializeBaseFunctions();
 	}
 
 }

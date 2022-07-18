@@ -32,6 +32,7 @@ import * as commandLineArgs from 'command-line-args';
 import * as commandLineUsage from 'command-line-usage';
 import * as fs from 'fs';
 import {catPEA} from './logging';
+import {PEAProvider} from './peaProvider/PEAProvider';
 
 const optionDefinitions = [
 	{
@@ -117,7 +118,8 @@ if (options) {
 		console.log(commandLineUsage(sections));
 	} else {
 		const manager = new ModularPlantManager();
-		const appServer = new Server(manager);
+		const provider = new PEAProvider();
+		const appServer = new Server(manager, provider);
 
 		const port = serverHandlers.normalizePort(process.env.PORT || 3000);
 		appServer.startHttpServer(port);

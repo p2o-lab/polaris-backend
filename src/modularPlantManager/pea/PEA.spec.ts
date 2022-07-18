@@ -55,9 +55,9 @@ describe('PEAController', () => {
 
 		beforeEach(async () => {
 			mockupServer = new MockupServer();
+			await mockupServer.initialize();
 			pea = new PEA(peaModel as unknown as PEAModel);
 			service = pea.services[0];
-			await mockupServer.initialize();
 			new AnaViewMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			new ServiceControlMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Trigonometry');
 			await mockupServer.start();
@@ -77,8 +77,8 @@ describe('PEAController', () => {
 			it('should fail to subscribe, missing variable on mockupServer',  async() => {
 				await mockupServer.shutdown();
 				mockupServer = new MockupServer();
-				pea = new PEA(peaModel as unknown as PEAModel);
 				await mockupServer.initialize();
+				pea = new PEA(peaModel as unknown as PEAModel);
 				new AnaViewMockup(mockupServer.nameSpace,
 					mockupServer.rootObject, 'Variable', true);
 				new ServiceControlMockup(mockupServer.nameSpace,
@@ -90,8 +90,8 @@ describe('PEAController', () => {
 
 			it('should fail to connect, invalid endpoint URL',  async() => {
 				const faultyPEAModel = peaModel as unknown as PEAModel;
-				faultyPEAModel.endpoint[0].value = 'wrongUrl';
-				faultyPEAModel.endpoint[0].defaultValue = 'wrongUrl';
+				faultyPEAModel.endpoints[0].value = 'wrongUrl';
+				faultyPEAModel.endpoints[0].defaultValue = 'wrongUrl';
 				const pea = new PEA(faultyPEAModel as unknown as PEAModel);
 				return expect(pea.connectAndSubscribe()).to.be.rejectedWith('Invalid endpoint url wrongUrl');
 			});

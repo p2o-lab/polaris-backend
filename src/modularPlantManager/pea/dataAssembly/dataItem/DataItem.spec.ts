@@ -31,6 +31,7 @@ import {ConnectionHandler} from '../../connectionHandler/ConnectionHandler';
 import {OpcUaDataItem} from './DataItem';
 import {DataItemFactory} from './DataItemFactory';
 import {getEmptyCIDataModel, getEmptyDataItemModel} from './DataItem.mockup';
+import {getEndpointDataModel} from '../../connectionHandler/ConnectionHandler.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -112,10 +113,10 @@ describe('DataItem', () => {
 			before(async function () {
 				this.timeout(5000);
 				mockupServer = new MockupServer();
-				await mockupServer.initialize();
+			await mockupServer.initialize();
 				await mockupServer.start();
 				connectionHandler= new ConnectionHandler();
-				connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+				connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
 				await connectionHandler.connect();
 			});
 

@@ -41,7 +41,6 @@ describe('BinManIntMockup', () => {
 
         beforeEach(async()=>{
             mockupServer = new MockupServer();
-            await mockupServer.initialize();
         });
 
         it('should create BinManIntMockup', async () => {

@@ -24,12 +24,14 @@
  */
 
 import {DataAssemblyOptions, ParameterInterface} from '@p2olab/polaris-interface';
-import {DataItem, OpcUaDataItem} from '../connectionHandler';
+import {DataItem} from './dataItem/DataItem';
 
 import {EventEmitter} from 'events';
 import {catDataAssembly} from '../../../logging';
 import {DataItemFactory, getDataItemModel} from './dataItem/DataItemFactory';
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
+import {keys} from 'ts-transformer-keys';
+import {ConnectionHandler} from '../connectionHandler/ConnectionHandler';
 
 
 export interface DataAssemblyDataItems {
@@ -41,6 +43,7 @@ export class DataAssembly extends EventEmitter {
 
 	public readonly name: string;
 	public readonly metaModelRef: string;
+	public readonly connectionHandler: ConnectionHandler;
 
 	public subscriptionActive: boolean;
 	public options: DataAssemblyModel;
@@ -52,15 +55,32 @@ export class DataAssembly extends EventEmitter {
 
 	public dataItems!: DataAssemblyDataItems;
 
-	constructor(options: DataAssemblyModel) {
+	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false) {
 		super();
+
 		this.options = options;
 		this.name = options.name;
 		this.metaModelRef = options.metaModelRef;
 		this.subscriptionActive = false;
+		this.connectionHandler = connectionHandler;
 
-		this.dataItems.TagName = DataItemFactory.create(getDataItemModel(options, 'TagName'));
-		this.dataItems.TagDescription = DataItemFactory.create(getDataItemModel(options, 'TagDescription'));
+		if (initial) {
+			const keyList = keys<typeof this.dataItems>();
+			this.initializeDataItems(options, keyList);
+			this.initializeBaseFunctions();
+		}	
+	}
+
+	protected initializeDataItems(options:DataAssemblyModel, keyList: string[]){
+		this.dataItems = <typeof this.dataItems>{};
+		keyList.forEach(k => {
+			const resolvedOptions = getDataItemModel(options, k);
+			this.dataItems[k as keyof typeof this.dataItems] = DataItemFactory.create(resolvedOptions, this.connectionHandler);
+		});
+	}
+
+	protected initializeBaseFunctions() {
+		catDataAssembly.debug('Initializing DataItems');
 	}
 
 	/**

@@ -30,6 +30,7 @@ import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {MockupServer} from '../../../../_utils';
 import {BinViewMockup, getBinViewDataAssemblyModel} from './BinView.mockup';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
+import {getEndpointDataModel} from '../../../connectionHandler/ConnectionHandler.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -43,12 +44,12 @@ describe('BinView', () => {
 		it('should create BinView', async () => {
 			const dataAssembly: BinView = new BinView(options, connectionHandler);
 
-			expect(dataAssembly.communication.TagName).to.not.equal(undefined);
-			expect(dataAssembly.communication.TagDescription).to.not.equal(undefined);
-			expect(dataAssembly.communication.WQC).to.not.equal(undefined);
-			expect(dataAssembly.communication.V).to.not.equal(undefined);
-			expect(dataAssembly.communication.VState0).to.not.equal(undefined);
-			expect(dataAssembly.communication.VState1).to.not.equal(undefined);
+			expect(dataAssembly.dataItems.TagName).to.not.equal(undefined);
+			expect(dataAssembly.dataItems.TagDescription).to.not.equal(undefined);
+			expect(dataAssembly.dataItems.WQC).to.not.equal(undefined);
+			expect(dataAssembly.dataItems.V).to.not.equal(undefined);
+			expect(dataAssembly.dataItems.VState0).to.not.equal(undefined);
+			expect(dataAssembly.dataItems.VState1).to.not.equal(undefined);
 		});
 
 	});
@@ -59,11 +60,10 @@ describe('BinView', () => {
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
-			await mockupServer.initialize();
 			new BinViewMockup( mockupServer.nameSpace, mockupServer.rootObject,'Variable');
 			await mockupServer.start();
 			connectionHandler= new ConnectionHandler();
-			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
 			await connectionHandler.connect();
 		});
 
@@ -80,10 +80,10 @@ describe('BinView', () => {
 			await connectionHandler.connect();
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 
-			expect(dataAssembly.communication.WQC.value).equal(0);
-			expect(dataAssembly.communication.V.value).equal(false);
-			expect(dataAssembly.communication.VState0.value).equal('state0_active');
-			expect(dataAssembly.communication.VState1.value).equal('state1_active');
+			expect(dataAssembly.dataItems.WQC.value).equal(0);
+			expect(dataAssembly.dataItems.V.value).equal(false);
+			expect(dataAssembly.dataItems.VState0.value).equal('state0_active');
+			expect(dataAssembly.dataItems.VState1.value).equal('state1_active');
 
 		}).timeout(4000);
 	});

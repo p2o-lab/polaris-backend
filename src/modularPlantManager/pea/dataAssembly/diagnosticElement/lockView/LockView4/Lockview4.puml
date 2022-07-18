@@ -28,7 +28,7 @@
 !include ../Lockview8/LockView8.puml
 
 class LockView4{
-	+ readonly communication!: LockView4Runtime;
+	+ readonly dataItems!: LockView4Runtime;
 }
 LockView4 *- LockView4Runtime
 

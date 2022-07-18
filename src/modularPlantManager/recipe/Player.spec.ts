@@ -64,7 +64,7 @@ describe('Player', () => {
 			const player = new Player();
 			player.enqueue(recipe);
 
-			player.start();
+			await player.start();
 			await new Promise<void>((resolve) => player.once('completed', resolve));
 
 			await pea.disconnectAndUnsubscribe();
@@ -92,7 +92,7 @@ describe('Player', () => {
 
 			expect(service.state).to.equal(ServiceState.IDLE);
 
-			player.start();
+			await player.start();
 			expect(player.status).to.equal(RecipeState.running);
 			await service.waitForStateChangeWithTimeout('STARTING', 2000);
 			await service.waitForStateChangeWithTimeout('EXECUTE');
@@ -136,7 +136,7 @@ describe('Player', () => {
 			player.enqueue(recipe);
 			player.enqueue(recipe);
 
-			player.start();
+			await player.start();
 			expect(player.status).to.equal(RecipeState.running);
 			await service.waitForStateChangeWithTimeout('STARTING');
 			await service.waitForStateChangeWithTimeout('EXECUTE');
@@ -182,17 +182,17 @@ describe('Player', () => {
 
 			expect(service.state).to.equal(ServiceState.IDLE);
 
-			player.start();
+			player.start().then();
 			expect(player.status).to.equal(RecipeState.running);
 			await service.waitForStateChangeWithTimeout('STARTING', 2000);
 			await service.waitForStateChangeWithTimeout('EXECUTE');
 
-			player.pause();
+			player.pause().then();
 			await service.waitForStateChangeWithTimeout('PAUSING');
 			await service.waitForStateChangeWithTimeout('PAUSED');
 			expect(player.status).to.equal(RecipeState.paused);
 
-			player.start();
+			player.start().then();
 			await service.waitForStateChangeWithTimeout('RESUMING');
 			await service.waitForStateChangeWithTimeout('EXECUTE');
 			expect(service.state).to.equal(ServiceState.EXECUTE);

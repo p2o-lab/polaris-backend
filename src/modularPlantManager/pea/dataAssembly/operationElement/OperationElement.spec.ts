@@ -30,6 +30,7 @@ import {MockupServer} from '../../../_utils';
 import {getOperationElementDataAssemblyModel, OperationElementMockup} from './OperationElement.mockup';
 import {OperationElement} from './OperationElement';
 import {ConnectionHandler} from '../../connectionHandler/ConnectionHandler';
+import {getEndpointDataModel} from '../../connectionHandler/ConnectionHandler.mockup';
 
 
 chai.use(chaiAsPromised);
@@ -46,10 +47,10 @@ describe('OperationElement', () => {
 
 		it('should create OperationElement', () => {
 
-			const dataAssembly: OperationElement = new OperationElement(options, connectionHandler);
+			const dataAssembly: OperationElement = new OperationElement(options, connectionHandler, true);
 			expect(dataAssembly).to.be.not.undefined;
 			expect(dataAssembly.osLevel).to.be.not.undefined;
-			expect(dataAssembly.communication).to.be.not.undefined;
+			expect(dataAssembly.dataItems).to.be.not.undefined;
 		});
 	});
 
@@ -60,12 +61,11 @@ describe('OperationElement', () => {
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
-			await mockupServer.initialize();
 			const operationElementMockup = new OperationElementMockup(	mockupServer.nameSpace,	mockupServer.rootObject,'Variable');
 			options = operationElementMockup.getDataAssemblyModel();
 			await mockupServer.start();
 			connectionHandler= new ConnectionHandler();
-			connectionHandler.setupConnectionAdapter({endpointUrl: mockupServer.endpoint});
+			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
 			await connectionHandler.connect();
 		});
 
@@ -81,7 +81,7 @@ describe('OperationElement', () => {
 			await dataAssembly.subscribe();
 			await connectionHandler.connect();
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
-			expect(dataAssembly.communication.OSLevel.value).equal(0);
+			expect(dataAssembly.dataItems.OSLevel.value).equal(0);
 		}).timeout(4000);
 	});
 

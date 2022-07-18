@@ -18,7 +18,7 @@
   ],
   "scripts": {
     "apidoc": "npm run clrApiDoc && apidoc -i src/server/ -o apidoc",
-    "build": "tsc",
+    "build": "ttsc",
     "clrApiDoc": "run-script-os",
     "clrApiDoc:linux": "rm -rf apidoc",
     "clrApiDoc:win32": "(IF EXIST apidoc (rd /s /q apidoc))",
@@ -35,6 +35,7 @@
     "doc": "npm run apidoc && npm run typedoc",
     "lint": "eslint -f pretty --ext .ts src",
     "prebuild": "npm run clrBuild",
+    "prepare": "ts-patch install -s",
     "start": "ts-node ./src/index.ts",
     "test": "nyc mocha --exit --require ts-node/register --recursive \"./src/**/*.spec.ts\"",
     "typedoc": "npm run clrTypeDoc && typedoc --mode file --module commonjs --out typedoc/ --target ES2017 --excludePrivate --readme none src/"
@@ -43,7 +44,7 @@
     "polaris-backend": "./bin/polaris-backend"
   },
   "dependencies": {
-    "@p2olab/pimad-interface": "0.0.1-alpha04",
+    "@p2olab/pimad-interface": "0.0.1-alpha05",
     "@p2olab/pimad-types": "1.0.1-alpha1.0",
     "@p2olab/polaris-interface": "3.0.0-alpha20",
     "@types/promise-timeout": "^1.3.0",
@@ -64,6 +65,8 @@
     "promise-timeout": "^1.3.0",
     "run-script-os": "^1.1.1",
     "timeout-as-promise": "^1.0.0",
+    "ts-patch": "^2.0.1",
+    "ts-transformer-keys": "^0.4.3",
     "typescript-logging": "^1.0.0",
     "uuid": "^8.1.0",
     "winston-transport": "^4.4.2",
@@ -96,7 +99,7 @@
     "nyc": "^15.1.0",
     "strict-event-emitter-types": "^2.0.0",
     "supertest": "^6.2.1",
-    "ts-node": "^10.4.0",
+    "ts-node": "^10.8.1",
     "typedoc": "^0.22.10",
     "typescript": "^4.5.4",
     "xstate": "^4.23.1"

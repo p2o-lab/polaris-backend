@@ -105,6 +105,6 @@ export class DataAssemblyFactory {
 			type = DataAssembly;
 		}
 
-		return new type(options, connectionHandler);
+		return new type(options, connectionHandler, true);
 	}
 }
