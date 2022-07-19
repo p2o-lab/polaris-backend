@@ -56,7 +56,7 @@ class DataAssembly{
     + dataItems!: DataAssemblyDataItems;
 
     # initializeDataItems(options:DataAssemblyModel, keyList: string[])
-    # protected initializeBaseFunctions()
+    # initializeBaseFunctions()
 
     + DataAssembly(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false)
 	+ async subscribe(): Promise<Void>
