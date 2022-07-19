@@ -36,16 +36,11 @@
 !include ./dataItem/DataItem.puml
 
 
-interface DataAssemblyDataItems {
-	+ TagName: DataItem<string>;
-	+ TagDescription: DataItem<string>;
-}
 
 class DataAssembly{
     + //readonly// name: string
     + //readonly// metaModelRef: string
     + //readonly// connectionHandler: ConnectionHandler;
-
 
     + subscriptionActive: boolean
     + options: DataAssemblyModel
@@ -69,7 +64,7 @@ class DataAssembly{
 	+ toJson(): ParameterInterface
 }
 
-DataAssemblyDataItems <-- DataAssembly
+
 DataAssembly <|-- ActiveElement
 DataAssembly <|-- DiagnosticElement
 DataAssembly <|-- IndicatorElement
