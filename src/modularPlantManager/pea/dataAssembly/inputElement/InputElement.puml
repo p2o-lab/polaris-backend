@@ -25,24 +25,28 @@
  
 @startuml
 'https://plantuml.com/class-diagram
-!include processValueIn/AnaProcessValueIn/AnaProcessValueIn.puml
-!include processValueIn/BinProcessValueIn/BinProcessValueIn.puml
-!include processValueIn/DIntProcessValueIn/DIntProcessValueIn.puml
-!include ../../../recipe/step/operation/Parameter.puml
+!include ../DataAssembly.puml
+
 class InputElement{
     + readonly dataItems!: InputElementRuntime
-    + parameterRequest: Parameter | undefined
+    + parameterRequest: ParameterRequest | undefined
     + requestedValue = ''
+    + wqc!: WQC
+
+    + InputElement(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false)
+    # initializeBaseFunctions()
+    + async setParameter(paramValue: string | number | boolean, variable?: string): Promise<void>
+    + async setValue(p: ParameterOptions, peas: PEA[]): Promise<void>
+    + toJson(): ParameterInterface
 }
 
 InputElement *- InputElementSpec
 InputElementSpec ..> InputElementMockup : <<use>>
 InputElement *- InputElementMockup
 
-InputElement *- Parameter
+InputElement *- ParameterRequest
 InputElement *- InputElementRuntime
-
-
+InputElement *- WQC
 
 InputElement <|-- AnaProcessValueIn
 InputElement <|-- BinProcessValueIn
