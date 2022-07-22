@@ -25,23 +25,28 @@
  
 @startuml
 'https://plantuml.com/class-diagram
-!include ./servParam/ServParam.puml
-!include man/anaMan/AnaMan.puml
-!include man/binMan/BinMan.puml
-!include man/dintMan/DIntMan.puml
-!include ../../../recipe/step/operation/Parameter.puml
+!include ../DataAssembly.puml
 
 class OperationElement{
 
-    + readonly dataItems!: InputElementRuntime
-    + parameterRequest: Parameter | undefined
+    + dataItems!: OperationElementRuntime
+    + parameterRequest: ParameterRequest | undefined
     + requestedValue = ''
+
+    + OperationElement(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false)
+    # initializeBaseFunctions()
+    + async setParameter(paramValue: number | string, variable?: string): Promise<void>
+    + async setValue(p: ParameterOptions, peas: PEA[]): Promise<void>
+    + toJson(): ParameterInterface
 
 }
 
 OperationElement *- OperationElementSpec
 OperationElementSpec ..> OperationElementMockup : <<use>>
 OperationElement *- OperationElementMockup
+
+OperationElement *- OperationElementRuntime
+OperationElement *- ParameterRequest
 
 OperationElement <|-- ServParam
 OperationElement <|-- AnaMan
