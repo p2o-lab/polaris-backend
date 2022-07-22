@@ -25,16 +25,6 @@
  
 @startuml
 'https://plantuml.com/class-diagram
-!include ServiceControl/ServiceControl.puml
-!include ./activeElement/ActiveElement.puml
-!include ./DiagnosticElement/DiagnosticElement.puml
-!include ./IndicatorElement/indicatorElement.puml
-!include ./InputElement/inputElement.puml
-!include ./OperationElement/operationElement.puml
-!include ./baseFunction/serviceOpMode/ServiceOpMode.puml
-!include ./baseFunction/wqc/WQC.puml
-!include ./dataItem/DataItem.puml
-
 
 
 class DataAssembly{
@@ -71,11 +61,10 @@ DataAssembly <|-- IndicatorElement
 DataAssembly <|-- InputElement
 DataAssembly <|-- OperationElement
 DataAssembly <|-- ServiceControl
-DataAssembly <|-- ServiceOpMode
-DataAssembly <|-- wqc
 DataAssembly *-- "0..2" DataItem
 DataAssembly *-- "1" DataAssemblyDataItems
 DataAssembly *-- "1" ConnectionHandler
+DataAssembly *-- "1" DataAssemblyModel
 
 
 
