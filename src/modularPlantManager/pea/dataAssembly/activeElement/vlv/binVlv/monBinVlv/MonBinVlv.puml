@@ -25,15 +25,20 @@
  
 @startuml
 'https://plantuml.com/class-diagram
+!include ../BinVlv.puml
 
 class MonBinVlv{
   + readonly dataItems!: MonBinVlvRuntime
-  + readonly feedbackMonitoring: FeedbackMonitoring
+  + feedbackMonitoring: FeedbackMonitoring
+
+  + MonBinVlv(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false)
+  # initializeBaseFunctions()
 }
 
 MonBinVlv *- MonBinVlvSpec
 MonBinVlvSpec ..> MonBinVlvMockup : <<use>>
 MonBinVlv *- MonBinVlvMockup
 MonBinVlv *- MonBinVlvRuntime
+MonBinVlv *- FeedbackMonitoring
 
 @enduml

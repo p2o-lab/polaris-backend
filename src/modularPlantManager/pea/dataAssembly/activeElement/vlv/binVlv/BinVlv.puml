@@ -25,10 +25,16 @@
  
 @startuml
 'https://plantuml.com/class-diagram
-!include monBinVlv/MonBinVlv.puml
+!include ../Vlv.puml
 
+interface BinVlvRuntime{
+    + Ctrl: DataItem<boolean>;
+}
 class BinVlv{
 	+ readonly dataItems!: BinVlvRuntime;
+
+	+ BinVlv(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false)
+	# initializeBaseFunctions()
 }
 
 BinVlv *- BinVlvSpec

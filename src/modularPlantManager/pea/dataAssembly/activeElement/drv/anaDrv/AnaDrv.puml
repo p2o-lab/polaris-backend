@@ -25,11 +25,28 @@
  
 @startuml
 'https://plantuml.com/class-diagram
-!include monAnaDrv/MonAnaDrv.puml
+!include ../Drv.puml
+
+interface AnaDrvRuntime{
+	+ RpmSclMax: DataItem<number>;
+	+ RpmSclMin: DataItem<number>;
+	+ RpmUnit: DataItem<number>;
+	+ RpmMin: DataItem<number>;
+	+ RpmMax: DataItem<number>;
+	+ RpmInt: DataItem<number>;
+	+ RpmMan: DataItem<number>;
+	+ Rpm: DataItem<number>;
+	+ RpmFbk: DataItem<number>;
+	+ RpmFbkCalc: DataItem<boolean>;
+	+ RpmRbk: DataItem<number>;
+}
 
 class AnaDrv{
     + readonly dataItems!: AnaDrvRuntime
-    + readonly sourceMode: SourceModeController
+    + sourceMode: SourceModeController
+
+    + AnaDrv(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false)
+    # initializeBaseFunctions()
 }
 
 AnaDrv *- AnaDrvSpec

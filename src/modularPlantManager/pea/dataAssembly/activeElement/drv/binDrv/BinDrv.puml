@@ -25,10 +25,13 @@
  
 @startuml
 'https://plantuml.com/class-diagram
-!include monBinDrv/MonBinDrv.puml
+!include ../Drv.puml
 
 class BinDrv{
 	+ readonly dataItems!: BinDrvRuntime
+
+	+ BinDrv(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false)
+	# initializeBaseFunctions()
 }
 
 BinDrv *- BinDrvSpec
