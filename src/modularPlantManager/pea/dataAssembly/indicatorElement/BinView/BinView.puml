@@ -25,9 +25,19 @@
  
 @startuml
 'https://plantuml.com/class-diagram
-!include BinMon/BinMon.puml
+!include ../IndicatorElement.puml
+
+interface BinViewRuntime{
+    + V: DataItem<boolean>;
+    + VState0: DataItem<string>;
+    + VState1: DataItem<string>;
+}
+
 class BinView{
     + readonly dataItems!: BinViewRuntime
+
+    + BinView(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false)
+    # initializeBaseFunctions()
 
 }
 

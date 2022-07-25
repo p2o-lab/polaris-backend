@@ -25,10 +25,18 @@
  
 @startuml
 'https://plantuml.com/class-diagram
+!include ../IndicatorElement.puml
+interface StringViewRuntime{
+    + Text: DataItem<string>;
+}
 
 class StringView{
     + readonly dataItems!: StringViewRuntime
-    + Text(): string | undefined
+
+    + StringView(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false)
+    # initializeBaseFunctions()
+    + get Text(): string | undefined
+
 }
 StringView *- StringViewSpec
 StringViewSpec ..> StringViewMockup : <<use>>
