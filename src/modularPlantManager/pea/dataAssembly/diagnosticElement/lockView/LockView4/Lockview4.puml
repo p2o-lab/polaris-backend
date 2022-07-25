@@ -25,10 +25,40 @@
  
 @startuml
 'https://plantuml.com/class-diagram
-!include ../Lockview8/LockView8.puml
+!include ../../DiagnosticElement.puml
+
+interface  LockView4Runtime{
+    + Logic: DataItem<boolean>;
+	+ Out: DataItem<boolean>;
+	+ OutQC: DataItem<number>;
+	+ In1En: DataItem<boolean>;
+	+ In1: DataItem<boolean>;
+	+ In1QC: DataItem<number>;
+	+ In1Inv: DataItem<boolean>;
+	+ In1Txt: DataItem<string>;
+	+ In2En: DataItem<boolean>;
+	+ In2: DataItem<boolean>;
+	+ In2QC: DataItem<number>;
+	+ In2Inv: DataItem<boolean>;
+	+ In2Txt: DataItem<string>;
+	+ In3En: DataItem<boolean>;
+	+ In3: DataItem<boolean>;
+	+ In3QC: DataItem<number>;
+	+ In3Inv: DataItem<boolean>;
+	+ In3Txt: DataItem<string>;
+	+ In4En: DataItem<boolean>;
+	+ In4: DataItem<boolean>;
+	+ In4QC: DataItem<number>;
+	+ In4Inv: DataItem<boolean>;
+	+ In4Txt: DataItem<string>;
+
+}
 
 class LockView4{
 	+ readonly dataItems!: LockView4Runtime;
+
+	+ LockView(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false)
+	# initializeBaseFunctions()
 }
 LockView4 *- LockView4Runtime
 
