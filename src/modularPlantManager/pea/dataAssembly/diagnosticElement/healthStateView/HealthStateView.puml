@@ -25,11 +25,15 @@
  
 @startuml
 'https://plantuml.com/class-diagram
+!include ../DiagnosticElement.puml
 
 interface HealthStateViewRuntime
 
 class HealthStateView{
 	+ readonly dataItems!: HealthStateViewRuntime;
+
+	+ HealthStateView(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false)
+	# initializeBaseFunctions()
 
 }
 
