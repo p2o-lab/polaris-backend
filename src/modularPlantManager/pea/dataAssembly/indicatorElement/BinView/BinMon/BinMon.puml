@@ -25,12 +25,22 @@
  
 @startuml
 'https://plantuml.com/class-diagram
-
+!include ../BinView.puml
 !include ../../../baseFunction/osLevel/OSLevel.puml
+
+interface BinMonRuntime{
+    + VFlutTi: DataItem<number>;
+    + VFlutEn: DataItem<boolean>;
+    + VFlutCnt: DataItem<number>;
+    + VFlutAct: DataItem<boolean>;
+}
 
 class BinMon{
 	+ readonly dataItems!: BinMonRuntime;
-	+ readonly osLevel: OSLevel;
+	+ osLevel: OSLevel;
+
+	+ BinMon(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false)
+	# initializeBaseFunctions()
 }
 
 
@@ -39,7 +49,6 @@ BinMonSpec ..> BinMonMockup : <<use>>
 BinMon *- BinMonMockup
 BinMon *- "1" BinMonRuntime
 BinMon *- "1" OSLevel
-
 
 
 @enduml

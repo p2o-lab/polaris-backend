@@ -25,14 +25,22 @@
  
 @startuml
 'https://plantuml.com/class-diagram
-!include AnaMon/AnaMon.puml
+'!include AnaMon/AnaMon.puml
 !include ../../baseFunction/scaleSettings/ScaleSettings.puml
 !include ../../baseFunction/unitSettings/UnitSettings.puml
+!include ../IndicatorElement.puml
+
+interface AnaViewRuntime{
+    + V: DataItem<number>;
+}
 
 class AnaView{
     + readonly dataItems!: AnaViewRuntime
-    - readonly scaleSettings: ScaleSettings
-    - readonly unitSettings: UnitSettings
+    + scaleSettings: ScaleSettings
+    + unitSettings: UnitSettings
+
+    + AnaView(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false)
+    # initializeBaseFunctions()
 }
 AnaView *- AnaViewSpec
 AnaViewSpec ..> AnaViewMockup : <<use>>
