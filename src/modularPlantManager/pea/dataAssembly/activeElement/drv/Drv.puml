@@ -25,19 +25,26 @@
  
 @startuml
 'https://plantuml.com/class-diagram
-!include anaDrv/AnaDrv.puml
-!include binDrv/BinDrv.puml
+!include ../activeElement.puml
 
 class Drv{
     + readonly dataItems!: DrvRuntime
-    + readonly reset: Reset
-    + readonly interlock: Interlock
-    + readonly opMode: OpMode
+    + reset: Reset
+    + interlock: Interlock
+    + opMode: OpMode
+
+    + Drv(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false)
+    # initializeBaseFunctions()
 }
 
 Drv *- DrvSpec
 DrvSpec ..> DrvMockup : <<use>>
 Drv *- DrvMockup
+
+Drv *- DrvRuntime
+Drv *- Reset
+Drv *- Interlock
+Drv *- OpMode
 
 Drv <|-- AnaDrv
 Drv <|-- BinDrv

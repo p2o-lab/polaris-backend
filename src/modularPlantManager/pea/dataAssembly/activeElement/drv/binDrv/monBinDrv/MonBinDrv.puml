@@ -25,10 +25,14 @@
  
 @startuml
 'https://plantuml.com/class-diagram
+!include ../BinDrv.puml
 
 class MonBinDrv{
    + readonly dataItems!: MonBinDrvRuntime
-   + readonly feedbackMonitoring: FeedbackMonitoring
+   + feedbackMonitoring: FeedbackMonitoring
+
+   + MonBinDrv(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false)
+   # initializeBaseFunctions()
 }
 MonBinDrv *- MonBinDrvSpec
 MonBinDrvSpec ..> MonBinDrvMockup : <<use>>
