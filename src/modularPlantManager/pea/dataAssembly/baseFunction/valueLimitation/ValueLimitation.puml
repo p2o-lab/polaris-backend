@@ -32,8 +32,8 @@ interface ValueLimitationRuntime {
 }
 
 class ValueLimitation{
-    - dAController: any
-    - initialize(): void
+    + readonly dataItems: ValueLimitationRuntime
+    + ValueLimitation(requiredDataItems: Required<ValueLimitationRuntime>)
 }
 
 ValueLimitationRuntime <-- ValueLimitation

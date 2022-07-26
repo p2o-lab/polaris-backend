@@ -36,8 +36,9 @@ interface InterlockRuntime{
 }
 
 class Interlock{
-    - dAController: any
-    - initialize(): void
+    + readonly dataItems!: InterlockRuntime
+
+    + Interlock(requiredDataItems: Required<InterlockRuntime>)
 }
 
 InterlockRuntime <-- Interlock

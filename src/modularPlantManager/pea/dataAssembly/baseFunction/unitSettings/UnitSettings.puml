@@ -31,8 +31,8 @@ interface UnitSettingsRuntime{
 }
 
 class UnitSettings{
-    - dAController: any
-    - initialize(): void
+    + readonly dataItems: UnitSettingsRuntime
+    + UnitSettings(requiredDataItems: Required<UnitSettingsRuntime>)
     + Unit(): string
 }
 

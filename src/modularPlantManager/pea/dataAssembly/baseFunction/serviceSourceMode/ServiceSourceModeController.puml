@@ -43,14 +43,14 @@ Extern
 
 
 class ServiceSourceModeController{
-    - dAController: any
-    - initialize(): void
+    + readonly dataItems: ServiceSourceModeRuntime
+    + ServiceSourceModeController(requiredDataItems: Required<ServiceSourceModeRuntime>)
     + getServiceSourceMode(): ServiceSourceMode
     + isServiceSourceMode(expectedServiceSourceMode: ServiceSourceMode): boolean
     + async waitForServiceSourceModeToPassSpecificTest(expectedServiceSourceMode: ServiceSourceMode): Promise<unknown>
     + async setToExternalServiceSourceMode(): Promise<void>
     + async setToInternalServiceSourceMode(): Promise<void>
-    + async writeServiceSourceMode(serviceSourceMode: ServiceSourceMode): Promise<void>
+    - async writeServiceSourceMode(serviceSourceMode: ServiceSourceMode): Promise<void>
     + isExtSource(): boolean
     + isIntSource(): boolean
 }

@@ -42,8 +42,8 @@ enum SourceMode {
 }
 
 class SourceModeController{
-    - dAController: any
-    - initialize(): void
+    + readonly dataItems: SourceModeRuntime
+    + SourceModeController(requiredDataItems: Required<SourceModeRuntime>)
     - async writeSourceMode(sourceMode: SourceMode): Promise<void>
     + getSourceMode(): SourceMode
     + isSourceMode(expectedSourceMode: SourceMode): boolean
