@@ -25,15 +25,29 @@
  
 @startuml
 'https://plantuml.com/class-diagram
+!include ../ServParam.puml
 !include ../../../baseFunction/scaleSettings/ScaleSettings.puml
 !include ../../../baseFunction/unitSettings/UnitSettings.puml
 !include ../../../baseFunction/valueLimitation/ValueLimitation.puml
 
+interface DIntServParamRuntime{
+	+ VExt: DataItem<number>
+	+ VOp: DataItem<number>
+	+ VInt: DataItem<number>
+	+ VReq: DataItem<number>
+	+ VOut: DataItem<number>
+	+ VFbk: DataItem<number>
+
+}
+
 class DIntServParam{
     + readonly dataItems!: DIntServParamRuntime
-    + readonly scaleSettings: ScaleSettings
-    + readonly unitSettings: UnitSettings
-    + readonly valueLimitation: ValueLimitation
+    + scaleSettings: ScaleSettings
+    + unitSettings: UnitSettings
+    + valueLimitation: ValueLimitation
+
+    + DIntServParam(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false)
+    # initializeBaseFunctions()
 }
 DIntServParam *- DIntServParamSpec
 DIntServParamSpec ..> DIntServParamMockup : <<use>>

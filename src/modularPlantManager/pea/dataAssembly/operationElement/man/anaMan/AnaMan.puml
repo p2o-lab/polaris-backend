@@ -25,17 +25,27 @@
  
 @startuml
 'https://plantuml.com/class-diagram
-!include anaManInt/AnaManInt.puml
+!include ../../OperationElement.puml
 
 !include ../../../baseFunction/scaleSettings/ScaleSettings.puml
 !include ../../../baseFunction/unitSettings/UnitSettings.puml
 !include ../../../baseFunction/valueLimitation/ValueLimitation.puml
 
+interface AnaManRuntime {
+    + VOut: DataItem<number>
+	+ VRbk: DataItem<number>
+	+ VFbk: DataItem<number>
+	+ VMan: DataItem<number>
+}
+
 class AnaMan{
     + readonly dataItems!: AnaManRuntime
-    + readonly scaleSettings: ScaleSettings
-    + readonly unitSettings: UnitSettings
-    + readonly valueLimitation: ValueLimitation
+    + scaleSettings: ScaleSettings
+    + unitSettings: UnitSettings
+    + valueLimitation: ValueLimitation
+
+    + AnaMan(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false)
+    # initializeBaseFunctions()
 }
 
 AnaMan *- AnaManSpec

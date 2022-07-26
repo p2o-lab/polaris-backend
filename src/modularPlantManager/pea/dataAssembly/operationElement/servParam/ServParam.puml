@@ -25,20 +25,24 @@
  
 @startuml
 'https://plantuml.com/class-diagram
-!include anaServParam/AnaServParam.puml
-!include binServParam/BinServParam.puml
-!include dIntServParam/DIntServParam.puml
-!include stringServParam/StringServParam.puml
+!include ../OperationElement.puml
 
 !include ../../baseFunction/serviceSourceMode/ServiceSourceModeController.puml
 !include ../../baseFunction/opMode/OpMode.puml
 !include ../../baseFunction/wqc/WQC.puml
 
+interface ServParamRuntime{
+    + Sync: DataItem<boolean>
+}
+
 class ServParam{
     + readonly dataItems!: ServParamRuntime
-    + readonly serviceSourceMode: ServiceSourceModeController
-    + readonly serviceOpMode: OpMode
-    + readonly wqc: WQC
+    + serviceSourceMode: ServiceSourceModeController
+    + serviceOpMode: OpMode
+
+    + ServParam(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false)
+    # initializeBaseFunctions()
+
 }
 
 ServParam *- ServParamSpec
@@ -48,7 +52,6 @@ ServParam *- ServParamMockup
 ServParam *- ServParamRuntime
 ServParam *- ServiceSourceModeController
 ServParam *- OpMode
-ServParam *- WQC
 
 
 ServParam <|-- AnaServParam
