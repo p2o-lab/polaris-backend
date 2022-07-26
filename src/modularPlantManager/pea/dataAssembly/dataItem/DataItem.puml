@@ -26,30 +26,75 @@
 @startuml
 'https://plantuml.com/class-diagram
 
-abstract class ADataItem{
-    + dataType!: string
-    + value: T | undefined = undefined
-    + timestamp!: Date
-    + access: 'read' | 'write' = 'read'
+interface DataItem{
+    + changedAfterCreation: boolean
+	+ readonly createdTimestamp: Date
+	+ defaultValue: T
+	+ lastChange: Date
+	+ value: T
+	+ read():Promise<T>
+	+ write(value: T): Promise<void>
+}
 
+interface DataItemEmitter{
+    + type FalseY = undefined | null
+    + const parseBoolean
+}
+
+abstract class ADataItem{
+    + readonly id = IDProvider.generateIdentifier
+    # _defaultValue: T
+    # _value: T
+    # _lastChange: Date = new Date
+    + readonly createdTimestamp = new Date
 	# logger: Category = catDataItem
 
-    + abstract async subscribe(samplingInterval: number): Promise<any>
+	+ get defaultValue(): T
+	+ get lastChange(): Date
+	+ get changedAfterCreation(): boolean
+	+ get value(): T
+	+ ADataItem(options: DataItemModel)
+	+ get Type(): string
+
     + abstract write(value: string | number | boolean): Promise<void>
+    + abstract read(): Promise<T>
+
+    -  getInitialValue<T extends string | number | boolean>(defaultValue?: string): T
+
 }
 DataItemEmitter <|-- DataItem
 
-class OpcUaDataItem{
-	+ namespaceIndex = ''
-	+ nodeId = ''
-	- connection!: OpcUaConnection
-
-    + static createFromOptions<type extends number | string | boolean>(options: OpcUaNodeOptions, connection: OpcUaConnection, access: 'read' | 'write', type: 'number' | 'string' | 'boolean' = 'string'): OpcUaDataItem<type>
-    + async subscribe(): Promise<OpcUaDataItem<T>>
-    + async write(value: number | string | boolean): Promise<void>
-    + async read(): Promise<T | undefined>
+class StaticDataItem{
+    + StaticDataItemoptions: DataItemModel)
+    + read(): Promise<T>
+    + write<T>(value: T): Promise<void>
 }
+ADataItem<|-- StaticDataItem
 
-ADataItem<|-- OpcUaDataItem
+abstract class DynamicDataItem{
+       # readonly ciData: CIData
+       # readonly connectionHandler: ConnectionHandler
+       # eventReference = ''
+
+       # DynamicDataItem(options: DataItemModel, connectionHandler: ConnectionHandler)
+       # addToMonitoring(): void
+       # stopMonitoring(): void
+
+}
+DynamicDataItem *- CIData
+DynamicDataItem *- ConnectionHandler
+ADataItem<|-- DynamicDataItem
+
+class OpcUaDataItem{
+	- access: DataItemAccessLevel;
+	-readonly dataType: string
+
+	+ OpcUaDataItemoptions: DataItemModel, connectionHandler: ConnectionHandler)
+    + async write<T extends number | string | boolean>(value: T): Promise<void>
+    + async read()(): Promise<T>
+}
+OpcUaDataItem *- DataItemAccessLevel
+DynamicDataItem <|-- OpcUaDataItem
+
 
 @enduml
