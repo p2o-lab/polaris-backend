@@ -40,18 +40,18 @@ interface ServiceOpModeRuntime{
 }
 
 class ServiceOpMode{
-    - dAController: any
-    - initialize(): void
-    - writeOpMode(opMode: OperationMode): Promise<void>
+    + readonly dataItems!: ServiceOpModeRuntime
+
+    + ServiceOpMode(requiredDataItems: Required<ServiceOpModeRuntime>)
     + getServiceOperationMode(): OperationMode
     + isServiceOpMode(expectedOpMode: OperationMode): boolean
-    + waitForServiceOpModeToPassSpecificTest(expectedOpMode: OperationMode): Promise<void>
-    + setToAutomaticOperationMode(): Promise<void>
-    + setToOperatorOperationMode(): Promise<void>
-    + setToOfflineOperationMode(): Promise<void>
-    + isOfflineState(): boolean
-    + isOperatorState(): boolean
+    + async waitForServiceOpModeToPassSpecificTest(expectedOpMode: OperationMode): Promise<void>
+    + async setToAutomaticOperationMode(): Promise<void>
+    + async setToOperatorOperationMode(): Promise<void>
+    + async setToOfflineOperationMode(): Promise<void>
+    - async writeOpMode(opMode: OperationMode): Promise<void>
     + isAutomaticState(): boolean
+    + isOperatorState(): boolean
 }
 
 ServiceOpModeRuntime <-- ServiceOpMode

@@ -31,9 +31,9 @@ interface WQCRuntime {
 }
 
 class WQC{
-    - dAController: any
-    - initialize(): void
-    + WQC: number
+    - readonly dataItems!: WQCRuntime
+    + WQC(requiredDataItems: Required<WQCRuntime>)
+    + get WQC(): number
 }
 
 WQCRuntime <-- WQC

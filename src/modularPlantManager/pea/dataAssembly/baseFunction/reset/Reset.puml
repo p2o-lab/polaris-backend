@@ -32,8 +32,8 @@ interface ResetRuntime{
 }
 
 class Reset{
-    - dAController: any
-    - initialize(): void
+    + readonly dataItems!: ResetRuntime
+    + Reset(requiredDataItems: Required<ResetRuntime>)
 }
 
 ResetRuntime <-- Reset
