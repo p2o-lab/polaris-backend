@@ -29,24 +29,17 @@
 !include ../../../baseFunction/scaleSettings/ScaleSettings.puml
 !include ../../../baseFunction/unitSettings/UnitSettings.puml
 
-interface AnaProcessValueInRuntime{
-    + VExt: DataItem<number>
-}
 
 class AnaProcessValueIn{
-    + readonly dataItems!: AnaProcessValueInRuntime
-    + scaleSettings: ScaleSettings
+    + readonly dataItems!: AnaProcessValueInDataItems
+    + scaleSettings: ScaleSettings<number>
     + unitSettings: UnitSettings
 
     + AnaProcessValueIn(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false)
     # initializeBaseFunctions()
 }
 
-AnaProcessValueIn *- AnaProcessValueInSpec
-AnaProcessValueInSpec ..> AnaProcessValueInMockup : <<use>>
-AnaProcessValueIn *- AnaProcessValueInMockup
-
-AnaProcessValueIn *- AnaProcessValueInRuntime
+AnaProcessValueIn *- AnaProcessValueInDataItems
 AnaProcessValueIn *- ScaleSettings
 AnaProcessValueIn *- UnitSettings
 
