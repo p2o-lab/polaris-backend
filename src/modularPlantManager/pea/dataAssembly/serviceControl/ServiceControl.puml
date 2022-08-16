@@ -27,25 +27,10 @@
 'https://plantuml.com/class-diagram
 !include ../DataAssembly.puml
 
-interface ServiceControlRuntime{
-        +CommandOp: DataItem<number>;
-    	+CommandInt: DataItem<number>;
-    	+CommandExt: DataItem<number>;
-    	+CommandEn: DataItem<number>;
-    	+StateCur: DataItem<number>;
-        +ProcedureOp: DataItem<number>;
-    	+ProcedureExt: DataItem<number>;
-    	+ProcedureInt: DataItem<number>;
-    	+ProcedureCur: DataItem<number>;
-    	+ProcedureReq: DataItem<number>;
-    	+InteractQuestionID: DataItem<number>;
-    	+InteractAnswerID: DataItem<number>;
-    	+PosTextID: DataItem<number>;
-}
 
 
 class ServiceControl{
-    + readonly dataItems!: ServiceControlRuntime
+    + readonly dataItems!: ServiceControlDataItems
     + readonly eventEmitter!: ServiceControlEmitter
     + opMode!: ServiceOpMode
     + osLevel!: OSLevel
@@ -62,11 +47,7 @@ class ServiceControl{
 
 }
 
-ServiceControl *- ServiceControlSpec
-ServiceControlSpec ..> ServiceControlMockup : <<use>>
-ServiceControl *- ServiceControlMockup
-
-ServiceControl <-- ServiceControlRuntime
+ServiceControl <-- ServiceControlDataItems
 ServiceControl *- ServiceControlEmitter
 ServiceControl *- WQC
 ServiceControl *- ServiceOpMode
