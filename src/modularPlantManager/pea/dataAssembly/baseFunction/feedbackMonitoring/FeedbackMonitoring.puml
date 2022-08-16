@@ -26,23 +26,13 @@
 @startuml
 'https://plantuml.com/class-diagram
 
-interface FeedbackMonitoringRuntime{
-	+ MonEn: DataItem<boolean>
-	+ MonSafePos: DataItem<boolean>
-	+ MonStatErr: DataItem<boolean>
-	+ MonDynErr: DataItem<boolean>
-	+ MonStatTi: DataItem<number>
-	+ MonDynTi: DataItem<number>
-}
 
 class FeedbackMonitoring{
-    + readonly dataItems!: FeedbackMonitoringRuntime;
+    + readonly dataItems!: FeedbackMonitoringDataItems;
 
-    +FeedbackMonitoring(requiredDataItems: Required<FeedbackMonitoringRuntime>)
+    +FeedbackMonitoring(requiredDataItems: Required<FeedbackMonitoringDataItems>)
 }
 
-FeedbackMonitoringRuntime <-- FeedbackMonitoring
-FeedbackMonitoringSpec --> FeedbackMonitoring : <<uses>>
-FeedbackMonitoringSpec --> FeedbackMonitoringMockup : <<uses>>
+FeedbackMonitoringDataItems <-- FeedbackMonitoring
 
 @enduml

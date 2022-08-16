@@ -26,23 +26,13 @@
 @startuml
 'https://plantuml.com/class-diagram
 
-interface InterlockRuntime{
-	+ PermEn: DataItem<boolean>
-	+ Permit: DataItem<boolean>
-	+ IntlEn: DataItem<boolean>
-	+ Interlock: DataItem<boolean>
-	+ ProtEn: DataItem<boolean>
-	+ Protect: DataItem<boolean>
-}
 
 class Interlock{
-    + readonly dataItems!: InterlockRuntime
+    + readonly dataItems!: InterlockDataItems
 
-    + Interlock(requiredDataItems: Required<InterlockRuntime>)
+    + Interlock(requiredDataItems: Required<InterlockDataItems>)
 }
 
-InterlockRuntime <-- Interlock
-InterlockSpec --> Interlock : <<uses>>
-InterlockSpec --> InterlockMockup : <<uses>>
+InterlockDataItems <-- Interlock
 
 @enduml

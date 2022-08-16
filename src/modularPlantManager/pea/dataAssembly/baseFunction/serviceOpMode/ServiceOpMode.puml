@@ -26,23 +26,10 @@
 @startuml
 'https://plantuml.com/class-diagram
 
-interface ServiceOpModeRuntime{
-	+ StateChannel: DataItem<boolean>
-	+ StateOffAut: DataItem<boolean>
-	+ StateOpAut: DataItem<boolean>
-	+ StateAutAut: DataItem<boolean>
-	+ StateOffOp: DataItem<boolean>
-	+ StateOpOp: DataItem<boolean>
-	+ StateAutOp: DataItem<boolean>
-	+ StateOpAct: DataItem<boolean>
-	+ StateAutAct: DataItem<boolean>
-	+ StateOffAct: DataItem<boolean>
-}
-
 class ServiceOpMode{
-    + readonly dataItems!: ServiceOpModeRuntime
+    + readonly dataItems!: ServiceOperationModeDataItems
 
-    + ServiceOpMode(requiredDataItems: Required<ServiceOpModeRuntime>)
+    + ServiceOpMode(requiredDataItems: Required<ServiceOperationModeDataItems>)
     + getServiceOperationMode(): OperationMode
     + isServiceOpMode(expectedOpMode: OperationMode): boolean
     + async waitForServiceOpModeToPassSpecificTest(expectedOpMode: OperationMode): Promise<void>
@@ -54,8 +41,6 @@ class ServiceOpMode{
     + isOperatorState(): boolean
 }
 
-ServiceOpModeRuntime <-- ServiceOpMode
-ServiceOpModeSpec --> ServiceOpMode : <<uses>>
-ServiceOpModeSpec --> ServiceOpModeMockup : <<uses>>
+ServiceOperationModeDataItems <-- ServiceOpMode
 
 @enduml

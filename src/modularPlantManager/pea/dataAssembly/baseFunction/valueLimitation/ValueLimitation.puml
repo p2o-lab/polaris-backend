@@ -26,18 +26,11 @@
 @startuml
 'https://plantuml.com/class-diagram
 
-interface ValueLimitationRuntime {
-	+ VMin: DataItem<number>
-	+ VMax: DataItem<number>
-}
-
 class ValueLimitation{
-    + readonly dataItems: ValueLimitationRuntime
-    + ValueLimitation(requiredDataItems: Required<ValueLimitationRuntime>)
+    + readonly dataItems: VValueLimitationDataItems<T>
+    + ValueLimitation(requiredDataItems: Required<VValueLimitationDataItems<T>>)
 }
 
-ValueLimitationRuntime <-- ValueLimitation
-ValueLimitationSpec --> ValueLimitation : <<uses>>
-ValueLimitationSpec --> ValueLimitationMockup : <<uses>>
+VValueLimitationDataItems <-- ValueLimitation
 
 @enduml

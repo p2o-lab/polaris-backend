@@ -26,17 +26,12 @@
 @startuml
 'https://plantuml.com/class-diagram
 
-interface WQCRuntime {
-    + WQC: DataItem<number>;
-}
-
 class WQC{
-    - readonly dataItems!: WQCRuntime
-    + WQC(requiredDataItems: Required<WQCRuntime>)
+    - readonly dataItems!: WQCDataItems
+    + WQC(requiredDataItems: Required<WQCDataItems>)
     + get WQC(): number
 }
 
-WQCRuntime <-- WQC
-WQCSpec --> WQC : <<uses>>
-WQCSpec --> WQCMockup : <<uses>>
+WQCDataItems <-- WQC
+
 @enduml

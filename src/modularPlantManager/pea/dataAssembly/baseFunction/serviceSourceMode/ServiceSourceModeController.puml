@@ -26,15 +26,6 @@
 @startuml
 'https://plantuml.com/class-diagram
 
-interface ServiceSourceModeRuntime{
-    SrcChannel: DataItem<boolean>
-	SrcIntAct: DataItem<boolean>
-	SrcIntAut: DataItem<boolean>
-	SrcIntOp: DataItem<boolean>
-	SrcExtAct: DataItem<boolean>
-	SrcExtAut: DataItem<boolean>
-	SrcExtOp: DataItem<boolean>
-}
 
 enum ServiceSourceMode{
 Intern
@@ -43,8 +34,8 @@ Extern
 
 
 class ServiceSourceModeController{
-    + readonly dataItems: ServiceSourceModeRuntime
-    + ServiceSourceModeController(requiredDataItems: Required<ServiceSourceModeRuntime>)
+    + readonly dataItems: ServiceSourceModeDataItems
+    + ServiceSourceModeController(requiredDataItems: Required<ServiceSourceModeDataItems>)
     + getServiceSourceMode(): ServiceSourceMode
     + isServiceSourceMode(expectedServiceSourceMode: ServiceSourceMode): boolean
     + async waitForServiceSourceModeToPassSpecificTest(expectedServiceSourceMode: ServiceSourceMode): Promise<unknown>
@@ -56,7 +47,6 @@ class ServiceSourceModeController{
 }
 
 ServiceSourceMode <-- ServiceSourceModeController
-ServiceSourceModeRuntime <-- ServiceSourceModeController
-ServiceSourceModeSpec --> ServiceSourceModeController : <<uses>>
-ServiceSourceModeSpec --> ServiceSourceModeMockup : <<uses>>
+ServiceSourceModeDataItems <-- ServiceSourceModeController
+
 @enduml

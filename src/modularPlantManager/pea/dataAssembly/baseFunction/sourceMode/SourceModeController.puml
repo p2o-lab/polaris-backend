@@ -26,24 +26,14 @@
 @startuml
 'https://plantuml.com/class-diagram
 
-interface SourceModeRuntime{
-	+ SrcChannel: DataItem<boolean>
-	+ SrcIntAct: DataItem<boolean>
-	+ SrcIntAut: DataItem<boolean>
-	+ SrcIntOp: DataItem<boolean>
-	+ SrcManAct: DataItem<boolean>
-	+ SrcManAut: DataItem<boolean>
-	+ SrcManOp: DataItem<boolean>
-}
-
 enum SourceMode {
     Internal
     Manual
 }
 
 class SourceModeController{
-    + readonly dataItems: SourceModeRuntime
-    + SourceModeController(requiredDataItems: Required<SourceModeRuntime>)
+    + readonly dataItems: SourceModeDataItems
+    + SourceModeController(requiredDataItems: Required<SourceModeDataItems>)
     - async writeSourceMode(sourceMode: SourceMode): Promise<void>
     + getSourceMode(): SourceMode
     + isSourceMode(expectedSourceMode: SourceMode): boolean
@@ -56,7 +46,6 @@ class SourceModeController{
 }
 
 SourceMode <-- SourceModeController
-SourceModeRuntime <-- SourceModeController
-SourceModeSpec --> SourceModeController : <<uses>>
-SourceModeSpec --> SourceModeMockup : <<uses>>
+SourceModeDataItems <-- SourceModeController
+
 @enduml
