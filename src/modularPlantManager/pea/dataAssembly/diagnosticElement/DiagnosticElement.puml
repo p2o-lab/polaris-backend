@@ -28,18 +28,14 @@
 !include ../DataAssembly.puml
 
 class DiagnosticElement{
-    + readonly dataItems !: DiagnosticElementRuntime
+    + readonly dataItems !: DiagnosticElementDataItems
     + wqc !: WQC
 
     + DiagnosticElement(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false)
     # initializeBaseFunctions()
 }
 
-DiagnosticElement *- DiagnosticElementSpec
-DiagnosticElementSpec ..> DiagnosticElementMockup : <<use>>
-DiagnosticElement *- DiagnosticElementMockup
-
-DiagnosticElement *- DiagnosticElementRuntime
+DiagnosticElement *- DiagnosticElementDataItems
 DiagnosticElement *- WQC
 
 DiagnosticElement <|-- LockView4
