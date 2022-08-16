@@ -27,28 +27,16 @@
 'https://plantuml.com/class-diagram
 !include ../AnaDrv.puml
 
-interface MonAnaDrvRuntime {
-    + RpmErr: DataItem<number>;
-	+ RpmAHEn: DataItem<boolean>;
-	+ RpmAHLim: DataItem<number>;
-	+ RpmAHAct: DataItem<boolean>;
-	+ RpmALEn: DataItem<boolean>;
-	+ RpmALLim: DataItem<number>;
-	+ RpmALAct: DataItem<boolean>;
-}
 
 class MonAnaDrv{
-    + readonly dataItems!: MonAnaDrvRuntime
+    + readonly dataItems!: MonAnaDrvDataItems
     + feedbackMonitoring: FeedbackMonitoring
 
     + MonAnaDrv(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false)
     # initializeBaseFunctions()
 }
 
-MonAnaDrv *- MonAnaDrvSpec
-MonAnaDrvSpec ..> MonAnaDrvMockup : <<use>>
-MonAnaDrv *- MonAnaDrvMockup
 
-MonAnaDrv *- "1" MonAnaDrvRuntime
+MonAnaDrv *- "1" MonAnaDrvDataItems
 MonAnaDrv *- "1" FeedbackMonitoring
 @enduml

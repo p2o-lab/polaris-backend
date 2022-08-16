@@ -27,35 +27,8 @@
 'https://plantuml.com/class-diagram
 !include ../activeElement.puml
 
-interface PIDCtrlRuntime {
-        +PV: DataItem<number>;
-    	+PVSclMin: DataItem<number>;
-    	+PVSclMax: DataItem<number>;
-    	+PVUnit: DataItem<number>;
-    	+SPMan: DataItem<number>;
-    	+SPInt: DataItem<number>;
-    	+SPSclMin: DataItem<number>;
-    	+SPSclMax: DataItem<number>;
-    	+SPUnit: DataItem<number>;
-    	+SPIntMin: DataItem<number>;
-    	+SPIntMax: DataItem<number>;
-    	+SPManMin: DataItem<number>;
-    	+SPManMax: DataItem<number>;
-    	+SP: DataItem<number>;
-        +MVMan: DataItem<number>;
-    	+MV: DataItem<number>;
-    	+MVSclMin: DataItem<number>;
-    	+MVSclMax: DataItem<number>;
-    	+MVUnit: DataItem<number>;
-    	+MVMin: DataItem<number>;
-    	+MVMax: DataItem<number>;
-    	+P: DataItem<number>;
-    	+Ti: DataItem<number>;
-    	+Td: DataItem<number>;
-}
-
 class PIDCtrl{
-    + readonly dataItems!: PIDCtrlRuntime
+    + readonly dataItems!: PIDCtrlDataItems
     + sourceMode: SourceModeController
     + opMode: OpMode
 
@@ -63,14 +36,9 @@ class PIDCtrl{
     # initializeBaseFunctions()
 }
 
-PIDCtrl *- PIDCtrlSpec
-PIDCtrlSpec ..> PIDCtrlMockup : <<use>>
-PIDCtrl *- PIDCtrlMockup
-PIDCtrl *- PIDCtrlRuntime
+PIDCtrl *- PIDCtrlDataItems
 PIDCtrl *- SourceModeController
 PIDCtrl *- OpMode
-
-
 
 
 @enduml

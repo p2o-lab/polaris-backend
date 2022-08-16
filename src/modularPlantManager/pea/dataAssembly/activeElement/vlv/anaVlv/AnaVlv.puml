@@ -27,23 +27,8 @@
 'https://plantuml.com/class-diagram
 !include ../Vlv.puml
 
-interface AnaVlvRuntime{
-    + Pos: DataItem<number>;
-    + PosFbk: DataItem<number>;
-    + PosFbkCalc: DataItem<boolean>;
-    + PosRbk: DataItem<number>;
-    + PosInt: DataItem<number>;
-    + PosMan: DataItem<number>;
-    + PosUnit: DataItem<number>;
-    + PosSclMin: DataItem<number>;
-    + PosSclMax: DataItem<number>;
-    + PosMin: DataItem<number>;
-    + PosMax: DataItem<number>;
-    + OpenAct: DataItem<boolean>;
-    + CloseAct: DataItem<boolean>;
-}
 class AnaVlv{
-	+ readonly dataItems!: AnaVlvRuntime
+	+ readonly dataItems!: AnaVlvDataItems
 	+ sourceMode: SourceModeController
 
 	+ AnaVlv(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false)
@@ -51,10 +36,7 @@ class AnaVlv{
 
 }
 
-AnaVlv *- AnaVlvSpec
-AnaVlvSpec ..> AnaVlvMockup : <<use>>
-AnaVlv *- AnaVlvMockup
-AnaVlv *- AnaVlvRuntime
+AnaVlv *- AnaVlvDataItems
 AnaVlv *- SourceModeController
 
 AnaVlv <|-- MonAnaVlv

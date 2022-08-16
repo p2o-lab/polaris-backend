@@ -28,16 +28,13 @@
 !include ../Drv.puml
 
 class BinDrv{
-	+ readonly dataItems!: BinDrvRuntime
+	+ readonly dataItems!: BinDrvDataItems
 
 	+ BinDrv(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false)
 	# initializeBaseFunctions()
 }
 
-BinDrv *- BinDrvSpec
-BinDrvSpec ..> BinDrvMockup : <<use>>
-BinDrv *- BinDrvMockup
-BinDrv *- BinDrvRuntime
+BinDrv *- BinDrvDataItems
 
 BinDrv <|-- MonBinDrv
 

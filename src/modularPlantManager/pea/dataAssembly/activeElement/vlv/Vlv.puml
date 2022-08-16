@@ -27,21 +27,8 @@
 'https://plantuml.com/class-diagram
 !include ../activeElement.puml
 
-interface VlvRuntime{
-    SafePos: DataItem<boolean>;
-    +SafePosEn: DataItem<boolean>;
-    +SafePosAct: DataItem<boolean>;
-    +OpenAut: DataItem<boolean>;
-    +OpenFbk: DataItem<boolean>;
-    +OpenFbkCalc: DataItem<boolean>;
-    +OpenOp: DataItem<boolean>;
-    +CloseAut: DataItem<boolean>;
-    +CloseFbk: DataItem<boolean>;
-    +CloseFbkCalc: DataItem<boolean>;
-    +CloseOp: DataItem<boolean>;
-}
 class Vlv{
-    + readonly dataItems!: VlvRuntime
+    + readonly dataItems!: VlvDataItems
     + reset!: Reset
     + interlock!: Interlock
     + opMode!: OpMode
@@ -50,10 +37,7 @@ class Vlv{
     # initializeBaseFunctions()
 }
 
-Vlv *- VlvSpec
-VlvSpec ..> VlvMockup : <<use>>
-Vlv *- VlvMockup
-Vlv *- VlvRuntime
+Vlv *- VlvDataItems
 Vlv *- Reset
 Vlv *- Interlock
 Vlv *- OpMode
