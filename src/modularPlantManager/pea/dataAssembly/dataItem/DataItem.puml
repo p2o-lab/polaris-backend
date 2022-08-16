@@ -26,7 +26,7 @@
 @startuml
 'https://plantuml.com/class-diagram
 
-interface DataItem{
+interface BaseDataItem{
     + changedAfterCreation: boolean
 	+ readonly createdTimestamp: Date
 	+ defaultValue: T
@@ -36,10 +36,6 @@ interface DataItem{
 	+ write(value: T): Promise<void>
 }
 
-interface DataItemEmitter{
-    + type FalseY = undefined | null
-    + const parseBoolean
-}
 
 abstract class ADataItem{
     + readonly id = IDProvider.generateIdentifier
@@ -47,25 +43,27 @@ abstract class ADataItem{
     # _value: T
     # _lastChange: Date = new Date
     + readonly createdTimestamp = new Date
+    + readonly access: Access = Access.NoAccess
+    # _dataType: 'string' | 'number' | 'boolean'
 	# logger: Category = catDataItem
 
 	+ get defaultValue(): T
 	+ get lastChange(): Date
 	+ get changedAfterCreation(): boolean
 	+ get value(): T
-	+ ADataItem(options: DataItemModel)
+	+ ADataItem(options: DataItemModel, dataType: 'string' | 'number' | 'boolean')
 	+ get Type(): string
 
-    + abstract write(value: string | number | boolean): Promise<void>
+    + abstract write(value: T): Promise<void>
     + abstract read(): Promise<T>
 
-    -  getInitialValue<T extends string | number | boolean>(defaultValue?: string): T
+    -  getInitialValue(defaultValue?: string): T
 
 }
 DataItemEmitter <|-- DataItem
 
 class StaticDataItem{
-    + StaticDataItemoptions: DataItemModel)
+    + StaticDataItem(options: DataItemModel, dataType: 'string' | 'number' | 'boolean')
     + read(): Promise<T>
     + write<T>(value: T): Promise<void>
 }
@@ -76,8 +74,8 @@ abstract class DynamicDataItem{
        # readonly connectionHandler: ConnectionHandler
        # eventReference = ''
 
-       # DynamicDataItem(options: DataItemModel, connectionHandler: ConnectionHandler)
-       # addToMonitoring(): void
+       # DynamicDataItem(options: DataItemModel, dataType: 'string' | 'number' | 'boolean', connectionHandler: ConnectionHandler)
+       - addToMonitoring(): void
        # stopMonitoring(): void
 
 }
@@ -86,10 +84,10 @@ DynamicDataItem *- ConnectionHandler
 ADataItem<|-- DynamicDataItem
 
 class OpcUaDataItem{
-	- access: DataItemAccessLevel;
-	-readonly dataType: string
+	- readonly dataType: string
+	+ readonly access: Access
 
-	+ OpcUaDataItemoptions: DataItemModel, connectionHandler: ConnectionHandler)
+	+ OpcUaData(options: DataItemModel, dataType: 'string' | 'number' | 'boolean', connectionHandler: ConnectionHandler)
     + async write<T extends number | string | boolean>(value: T): Promise<void>
     + async read()(): Promise<T>
 }

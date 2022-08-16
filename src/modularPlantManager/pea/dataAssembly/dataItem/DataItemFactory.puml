@@ -26,7 +26,7 @@
 'https://plantuml.com/class-diagram
 
 class DataItemFactory{
-   + static create<T extends string | number | boolean>(options: DataItemModel, connectionHandler?: ConnectionHandler): DataItem<T>
+   + static create<T extends string | number | boolean>(options: DataItemFactoryOptions): BaseDataItem<T>
 }
 
 DataItemFactory "<<create>>"..> DataItem
