@@ -28,18 +28,15 @@
 !include ../DintView.puml
 
 class DIntMon{
-    + dataItems: AnaMonRuntime
+    + dataItems: DIntMonDataItems
     + osLevel: OSLevel
-    + limitMonitoring: LimitMonitoring
+    + limitMonitoring: LimitMonitoring<number>
 
     + DIntMonoptions: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false)
     # initializeBaseFunctions()
 }
-DIntMon *- DIntMonSpec
-DIntMonSpec ..> DIntMonMockup : <<use>>
-DIntMon *- DIntMonMockup
 
-DIntMon *-- "1" AnaMonRuntime
+DIntMon *-- "1" DIntMonDataItems
 DIntMon *-- "1" OSLevel
 DIntMon *-- "1" LimitMonitoring
 @enduml

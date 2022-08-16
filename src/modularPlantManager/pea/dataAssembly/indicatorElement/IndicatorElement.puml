@@ -28,7 +28,7 @@
 !include ../DataAssembly.puml
 
 class IndicatorElement{
-    + readonly dataItems!: IndicatorElementRuntime
+    + readonly dataItems!: IndicatorElementDataItems
     + wqc!: WQC
 
     + IndicatorElement(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false)
@@ -36,11 +36,8 @@ class IndicatorElement{
     # initializeBaseFunctions()
 }
 
-IndicatorElement *- IndicatorElementSpec
-IndicatorElementSpec ..> IndicatorElementMockup : <<use>>
-IndicatorElement *- IndicatorElementMockup
 
-IndicatorElement *- "1" IndicatorElementRuntime
+IndicatorElement *- "1" IndicatorElementDataItems
 IndicatorElement *- WQC
 
 IndicatorElement <|-- AnaView
