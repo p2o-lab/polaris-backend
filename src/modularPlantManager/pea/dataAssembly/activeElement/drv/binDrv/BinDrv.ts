@@ -24,15 +24,15 @@
  */
 
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
-import {Drv, DrvRuntime} from '../Drv';
+import {Drv} from '../Drv';
 import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
 import {keys} from 'ts-transformer-keys';
+import {BinDrvDataItems} from '@p2olab/pimad-types';
 
-export type BinDrvRuntime = DrvRuntime;
 
 export class BinDrv extends Drv {
 
-	public readonly dataItems!: BinDrvRuntime;
+	public readonly dataItems!: BinDrvDataItems;
 
 	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false) {
 		super(options, connectionHandler);

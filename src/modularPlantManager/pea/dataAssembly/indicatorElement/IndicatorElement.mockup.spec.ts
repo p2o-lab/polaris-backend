@@ -27,8 +27,6 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {getIndicatorElementDataAssemblyModel, getIndicatorElementDataItemModel, IndicatorElementMockup} from './IndicatorElement.mockup';
 import {MockupServer} from '../../../_utils';
-import {DataAssemblyModel} from '@p2olab/pimad-interface';
-import {IndicatorElementRuntime} from './IndicatorElement';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -41,6 +39,7 @@ describe('IndicatorElementMockup', () => {
 
         beforeEach(async()=>{
             mockupServer = new MockupServer();
+			await mockupServer.initialize();
         });
 
         it('should create IndicatorElementMockup', async () => {

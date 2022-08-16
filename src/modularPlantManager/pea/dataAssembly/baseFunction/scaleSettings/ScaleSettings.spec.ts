@@ -31,8 +31,8 @@ import {ScaleSettingMockup} from './ScaleSetting.mockup';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
 import {getDIntManDataAssemblyModel} from '../../operationElement/man/dintMan/DIntMan.mockup';
 import {DataAssemblyFactory} from '../../DataAssemblyFactory';
-import {DIntManRuntime} from '../../operationElement';
 import {getEndpointDataModel} from '../../../connectionHandler/ConnectionHandler.mockup';
+import {DIntManDataItems} from '@p2olab/pimad-types';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -46,7 +46,7 @@ describe('ScaleSettings', () => {
 	describe('static', () => {
 
 		it('should create ScaleSettings', async () => {
-			const baseFunction = new ScaleSettings(referenceDataAssembly.dataItems as DIntManRuntime);
+			const baseFunction = new ScaleSettings(referenceDataAssembly.dataItems as DIntManDataItems);
 			expect(baseFunction).to.not.be.undefined;
 			expect(baseFunction.dataItems.VSclMax).to.not.be.undefined;
 			expect(baseFunction.dataItems.VSclMin).to.not.be.undefined;
@@ -56,6 +56,7 @@ describe('ScaleSettings', () => {
 
 		let mockupServer: MockupServer;
 		let connectionHandler: ConnectionHandler;
+		let adapterId: string;
 
 		beforeEach(async function () {
 			this.timeout(4000);
@@ -63,9 +64,8 @@ describe('ScaleSettings', () => {
 			await mockupServer.initialize();
 			new ScaleSettingMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable', 'Ana');
 			await mockupServer.start();
-			connectionHandler= new ConnectionHandler();
-			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
-			await connectionHandler.connect();
+			connectionHandler = new ConnectionHandler();
+			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
 		});
 
 		afterEach(async function () {
@@ -76,8 +76,8 @@ describe('ScaleSettings', () => {
 
 		it('should subscribe successfully', async () => {
 
-			const baseFunction = new ScaleSettings(referenceDataAssembly.dataItems as DIntManRuntime);
-			await connectionHandler.connect();
+			const baseFunction = new ScaleSettings(referenceDataAssembly.dataItems as DIntManDataItems);
+			await connectionHandler.connect(adapterId);
 			await new Promise((resolve => baseFunction.on('changed', resolve)));
 			expect(baseFunction.dataItems.VSclMin.value).equal(0);
 			expect(baseFunction.dataItems.VSclMax.value).equal(0);

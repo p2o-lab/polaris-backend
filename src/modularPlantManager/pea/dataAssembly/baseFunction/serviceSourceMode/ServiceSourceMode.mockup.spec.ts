@@ -29,10 +29,9 @@ import {MockupServer} from '../../../../_utils';
 import {getServiceSourceModeDataItemModel, ServiceSourceModeMockup} from './ServiceSourceMode.mockup';
 
 import {ServiceSourceMode} from '@p2olab/polaris-interface';
-import {ServiceSourceModeRuntime} from './ServiceSourceModeController';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
-import {DataItemAccessLevel} from '@p2olab/pimad-interface';
 import {getEndpointDataModel} from '../../../connectionHandler/ConnectionHandler.mockup';
+import {Access} from '@p2olab/pimad-types';
 
 
 chai.use(chaiAsPromised);
@@ -88,18 +87,16 @@ describe('ServiceSourceModeMockup', () => {
         let mockupServer: MockupServer;
         let mockup: ServiceSourceModeMockup;
         let connectionHandler: ConnectionHandler;
+        let adapterId: string;
 
         beforeEach(async function () {
             this.timeout(10000);
             mockupServer = new MockupServer();
 			await mockupServer.initialize();
-            
-            mockup = new ServiceSourceModeMockup(mockupServer.nameSpace,
-                mockupServer.rootObject, 'Variable');
+            mockup = new ServiceSourceModeMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
             await mockupServer.start();
-            connectionHandler= new ConnectionHandler();
-            connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
-            await connectionHandler.connect();
+            connectionHandler = new ConnectionHandler();
+            adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
         });
 
         afterEach(async () => {
@@ -108,8 +105,8 @@ describe('ServiceSourceModeMockup', () => {
         });
 
         it('set and get SrcExtOp', async () => {
-            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.SrcExtOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, true);
-            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.SrcExtOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.SrcExtOp', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}}, true);
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.SrcExtOp', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(false));
             expect(mockup.srcIntAct).to.false;
             expect(mockup.srcExtAct).to.true;
@@ -118,8 +115,8 @@ describe('ServiceSourceModeMockup', () => {
 
         it('set and get SrcIntOp', async () => {
             mockup.srcMode= ServiceSourceMode.Extern;
-            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.SrcIntOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, true);
-            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.SrcIntOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.SrcIntOp', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}}, true);
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.SrcIntOp', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(false));
             expect(mockup.srcIntAct).to.true;
             expect(mockup.srcExtAct).to.false;
@@ -127,16 +124,16 @@ describe('ServiceSourceModeMockup', () => {
         }).timeout(3000);
 
         it('set and get SrcExtOp, write false, nothing should change', async () => {
-            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.SrcExtOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, false);
-            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.SrcExtOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.SrcExtOp', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}}, false);
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.SrcExtOp', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(false));
             expect(mockup.srcIntAct).to.true;
             expect(mockup.srcExtAct).to.false;
         }).timeout(3000);
 
         it('set and get SrcIntOp, write false, nothing should change', async () => {
-            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.SrcIntOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, false);
-            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.SrcIntOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.SrcIntOp', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}}, false);
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.SrcIntOp', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(false));
             expect(mockup.srcIntAct).to.true;
             expect(mockup.srcExtAct).to.false;
@@ -149,19 +146,17 @@ describe('ServiceSourceModeMockup', () => {
         let mockupServer: MockupServer;
         let mockup: ServiceSourceModeMockup;
         let connectionHandler: ConnectionHandler;
+        let adapterId: string;
 
         beforeEach(async function () {
             this.timeout(5000);
             mockupServer = new MockupServer();
 			await mockupServer.initialize();
-            
-            mockup = new ServiceSourceModeMockup(mockupServer.nameSpace,
-                mockupServer.rootObject, 'Variable');
+            mockup = new ServiceSourceModeMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
             mockup.srcChannel= true;
             await mockupServer.start();
-            connectionHandler= new ConnectionHandler();
-            connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
-            await connectionHandler.connect();
+            connectionHandler = new ConnectionHandler();
+            adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
         });
 
         afterEach(async () => {
@@ -170,16 +165,16 @@ describe('ServiceSourceModeMockup', () => {
         });
 
         it('set and get SrcExtOp, nothing should change', async () => {
-            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.SrcExtOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, true);
-            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.SrcExtOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.SrcExtOp', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}}, true);
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.SrcExtOp', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(false));
             expect(mockup.srcIntAct).to.true;
             expect(mockup.srcExtAct).to.false;
         }).timeout(3000);
 
         it('set and get SrcIntOp, nothing should change', async () => {
-            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.SrcIntOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, true);
-            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.SrcIntOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.SrcIntOp', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}}, true);
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.SrcIntOp', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(false));
             expect(mockup.srcIntAct).to.true;
             expect(mockup.srcExtAct).to.false;

@@ -27,8 +27,6 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../../_utils';
 import {AnaMonMockup, getAnaMonDataAssemblyModel, getAnaMonDataItemModel} from './AnaMon.mockup';
-import {DataAssemblyModel} from '@p2olab/pimad-interface';
-import {AnaMonRuntime} from './AnaMon';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -42,6 +40,7 @@ describe('AnaMonMockup', () => {
         beforeEach(async function () {
             this.timeout(4000);
             mockupServer = new MockupServer();
+			await mockupServer.initialize();
         });
 
         it('should create AnaMonMockup', async () => {

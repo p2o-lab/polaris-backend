@@ -31,8 +31,9 @@ import Timeout = NodeJS.Timeout;
 
 import {getIndicatorElementDataItemModel, IndicatorElementMockup} from '../IndicatorElement.mockup';
 import {getDataAssemblyModel} from '../../DataAssembly.mockup';
-import {DataAssemblyModel, DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+import {DataAssemblyModel, DataItemModel} from '@p2olab/pimad-interface';
 import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../dataItem/DataItem.mockup';
+import {Access} from '@p2olab/pimad-types';
 
 const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/AnaView';
 
@@ -43,7 +44,7 @@ function getAnaViewSpecificDataItemModels(namespace: number, objectBrowseName: s
 	dataItem.name = 'V';
 	dataItem.dataType = 'Float';
 	const ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.V`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;

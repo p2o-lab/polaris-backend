@@ -45,15 +45,17 @@ describe('IndicatorElement', () => {
 		options = getIndicatorElementDataAssemblyModel(2, 'Variable', 'Variable');
 
 		it('should create IndicatorElement', () => {
-			const dataAssembly = new IndicatorElement(options, connectionHandler) ;
+			const dataAssembly = new IndicatorElement(options, connectionHandler, true) ;
 			expect(dataAssembly.dataItems.WQC).to.not.be.undefined;
 			expect(dataAssembly.wqc.WQC).to.equal(0);
 		});
 	});
 
 	describe('dynamic', () => {
+
 		let mockupServer: MockupServer;
 		let connectionHandler: ConnectionHandler;
+		let adapterId: string;
 
 		beforeEach(async function () {
 			this.timeout(4000);
@@ -62,9 +64,8 @@ describe('IndicatorElement', () => {
 			const indicatorElementMockup = new IndicatorElementMockup(mockupServer.nameSpace, mockupServer.rootObject,'Variable');
 			options = indicatorElementMockup.getDataAssemblyModel();
 			await mockupServer.start();
-			connectionHandler= new ConnectionHandler();
-			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
-			await connectionHandler.connect();
+			connectionHandler = new ConnectionHandler();
+			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
 		});
 
 		afterEach(async function () {
@@ -75,9 +76,9 @@ describe('IndicatorElement', () => {
 
 		it('should subscribe successfully', async () => {
 
-			const dataAssembly = new IndicatorElement(options, connectionHandler);
+			const dataAssembly = new IndicatorElement(options, connectionHandler, true);
 			await dataAssembly.subscribe();
-			await connectionHandler.connect();
+			await connectionHandler.connect(adapterId);
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 
 			expect(dataAssembly.dataItems.WQC.value).equal(0);

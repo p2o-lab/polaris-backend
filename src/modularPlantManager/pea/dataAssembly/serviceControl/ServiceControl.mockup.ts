@@ -30,10 +30,11 @@ import {getWQCDataItemModel, WQCMockup} from '../baseFunction/wqc/WQC.mockup';
 import {getOSLevelDataItemModel, OSLevelMockup} from '../baseFunction/osLevel/OSLevel.mockup';
 import {DataAssemblyMockup, getDataAssemblyModel} from '../DataAssembly.mockup';
 import {MtpStateMachine, UserDefinedActions, UserDefinedGuard} from '../../stateMachine/MtpStateMachine';
-import {DataAssemblyModel, DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+import {DataAssemblyModel, DataItemModel} from '@p2olab/pimad-interface';
 
 import {getServiceOpModeDataItemModel, ServiceOpModeMockup} from '../baseFunction/serviceOpMode/ServiceOpMode.mockup';
 import {getEmptyCIDataModel, getEmptyDataItemModel} from '../dataItem/DataItem.mockup';
+import {Access} from '@p2olab/pimad-types';
 
 const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/ServiceControl';
 
@@ -44,7 +45,7 @@ function getServiceControlSpecificDataItemModels(namespace: number, objectBrowse
 	dataItem.name = 'CommandOp';
 	dataItem.dataType = 'UInt32';
 	let ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.CommandOp`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -54,7 +55,7 @@ function getServiceControlSpecificDataItemModels(namespace: number, objectBrowse
 	dataItem.name = 'CommandInt';
 	dataItem.dataType = 'UInt32';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.CommandInt`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -64,7 +65,7 @@ function getServiceControlSpecificDataItemModels(namespace: number, objectBrowse
 	dataItem.name = 'CommandExt';
 	dataItem.dataType = 'UInt32';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.CommandExt`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -74,7 +75,7 @@ function getServiceControlSpecificDataItemModels(namespace: number, objectBrowse
 	dataItem.name = 'CommandEn';
 	dataItem.dataType = 'UInt32';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.CommandEn`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -84,7 +85,7 @@ function getServiceControlSpecificDataItemModels(namespace: number, objectBrowse
 	dataItem.name = 'StateCur';
 	dataItem.dataType = 'UInt32';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.StateCur`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -94,7 +95,7 @@ function getServiceControlSpecificDataItemModels(namespace: number, objectBrowse
 	dataItem.name = 'ProcedureOp';
 	dataItem.dataType = 'UInt32';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.ProcedureOp`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -104,7 +105,7 @@ function getServiceControlSpecificDataItemModels(namespace: number, objectBrowse
 	dataItem.name = 'ProcedureExt';
 	dataItem.dataType = 'UInt32';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.ProcedureExt`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -114,7 +115,7 @@ function getServiceControlSpecificDataItemModels(namespace: number, objectBrowse
 	dataItem.name = 'ProcedureInt';
 	dataItem.dataType = 'UInt32';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.ProcedureInt`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -124,7 +125,7 @@ function getServiceControlSpecificDataItemModels(namespace: number, objectBrowse
 	dataItem.name = 'ProcedureCur';
 	dataItem.dataType = 'UInt32';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.ProcedureCur`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -134,7 +135,7 @@ function getServiceControlSpecificDataItemModels(namespace: number, objectBrowse
 	dataItem.name = 'ProcedureReq';
 	dataItem.dataType = 'UInt32';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.ProcedureReq`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -144,7 +145,7 @@ function getServiceControlSpecificDataItemModels(namespace: number, objectBrowse
 	dataItem.name = 'InteractQuestionID';
 	dataItem.dataType = 'UInt32';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.InteractQuestionID`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -154,7 +155,7 @@ function getServiceControlSpecificDataItemModels(namespace: number, objectBrowse
 	dataItem.name = 'InteractAnswerID';
 	dataItem.dataType = 'UInt32';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.InteractAnswerID`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -164,7 +165,7 @@ function getServiceControlSpecificDataItemModels(namespace: number, objectBrowse
 	dataItem.name = 'PosTextID';
 	dataItem.dataType = 'UInt32';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.PosTextID`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;

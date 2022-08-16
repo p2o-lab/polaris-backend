@@ -24,17 +24,17 @@
  */
 
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
-import {AnaViewRuntime} from '../AnaView/AnaView';
 import {IndicatorElement} from '../IndicatorElement';
 import {ScaleSettings, UnitSettings} from '../../baseFunction';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
 import {keys} from 'ts-transformer-keys';
+import {DIntViewDataItems, MTPDataTypes} from '@p2olab/pimad-types';
 
 export class DIntView extends IndicatorElement {
 
-	public readonly dataItems!: AnaViewRuntime;
+	public readonly dataItems!: DIntViewDataItems;
 
-	public scaleSettings!: ScaleSettings;
+	public scaleSettings!: ScaleSettings<number>;
 	public unitSettings!: UnitSettings;
 
 	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false) {

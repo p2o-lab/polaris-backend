@@ -28,12 +28,11 @@ import * as chaiAsPromised from 'chai-as-promised';
 import {Interlock} from './Interlock';
 import {MockupServer} from '../../../../_utils';
 import {InterlockMockup} from './Interlock.mockup';
-import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
 import {getMonBinVlvDataAssemblyModel} from '../../activeElement/vlv/binVlv/monBinVlv/MonBinVlv.mockup';
 import {DataAssemblyFactory} from '../../DataAssemblyFactory';
-import {MonBinVlvRuntime} from '../../activeElement';
 import {getEndpointDataModel} from '../../../connectionHandler/ConnectionHandler.mockup';
+import {MonBinVlvDataItems} from '@p2olab/pimad-types';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -47,7 +46,7 @@ describe('Interlock', () => {
 	describe('static', () => {
 
 		it('should create Interlock', () => {
-			const dataAssembly = new Interlock(referenceDataAssembly.dataItems as MonBinVlvRuntime);
+			const dataAssembly = new Interlock(referenceDataAssembly.dataItems as MonBinVlvDataItems);
 			expect(dataAssembly).to.not.to.undefined;
 			expect(dataAssembly.dataItems.PermEn).to.not.to.undefined;
 			expect(dataAssembly.dataItems.Permit).to.not.to.undefined;
@@ -59,19 +58,19 @@ describe('Interlock', () => {
 	});
 
 	describe('dynamic', () => {
+
 		let mockupServer: MockupServer;
 		let connectionHandler: ConnectionHandler;
+		let adapterId: string;
 
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-
 			new InterlockMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			await mockupServer.start();
 			connectionHandler = new ConnectionHandler();
-			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
-			await connectionHandler.connect();
+			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
 		});
 
 		afterEach(async function () {
@@ -82,9 +81,8 @@ describe('Interlock', () => {
 
 		it('should subscribe successfully', async () => {
 
-			const dataAssembly = new Interlock(referenceDataAssembly.dataItems as MonBinVlvRuntime);
-			await connectionHandler.connect();
-			await new Promise((resolve => dataAssembly.on('changed', resolve)));
+			const dataAssembly = new Interlock(referenceDataAssembly.dataItems as MonBinVlvDataItems);
+			await connectionHandler.connect(adapterId);
 
 			expect(dataAssembly.dataItems.PermEn.value).equal(false);
 			expect(dataAssembly.dataItems.Permit.value).equal(false);

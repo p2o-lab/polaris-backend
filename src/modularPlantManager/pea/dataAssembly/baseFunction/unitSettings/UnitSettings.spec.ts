@@ -31,8 +31,8 @@ import {UnitSettingsMockup} from './UnitSettings.mockup';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
 import {getDIntManDataAssemblyModel} from '../../operationElement/man/dintMan/DIntMan.mockup';
 import {DataAssemblyFactory} from '../../DataAssemblyFactory';
-import {DIntManRuntime} from '../../operationElement';
 import {getEndpointDataModel} from '../../../connectionHandler/ConnectionHandler.mockup';
+import {DIntManDataItems} from '@p2olab/pimad-types';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -46,7 +46,7 @@ describe('UnitSettings', () => {
 	describe('static', () => {
 
 		it('should create UnitSettings',  () => {
-			const baseFunction = new UnitSettings(referenceDataAssembly.dataItems as DIntManRuntime);
+			const baseFunction = new UnitSettings(referenceDataAssembly.dataItems as DIntManDataItems);
 			expect(baseFunction).to.not.be.undefined;
 			expect(baseFunction.dataItems.VUnit).to.not.be.undefined;
 			expect(baseFunction.Unit).to.be.empty;
@@ -57,6 +57,7 @@ describe('UnitSettings', () => {
 
 		let mockupServer: MockupServer;
 		let connectionHandler: ConnectionHandler;
+		let adapterId: string;
 
 		beforeEach(async function () {
 			this.timeout(4000);
@@ -64,9 +65,8 @@ describe('UnitSettings', () => {
 			await mockupServer.initialize();
 			new UnitSettingsMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			await mockupServer.start();
-			connectionHandler= new ConnectionHandler();
-			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
-			await connectionHandler.connect();
+			connectionHandler = new ConnectionHandler();
+			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
 		});
 
 		afterEach(async function () {
@@ -77,8 +77,8 @@ describe('UnitSettings', () => {
 
 		it('should subscribe successfully', async () => {
 
-			const baseFunction = new UnitSettings(referenceDataAssembly.dataItems as DIntManRuntime);
-			await connectionHandler.connect();
+			const baseFunction = new UnitSettings(referenceDataAssembly.dataItems as DIntManDataItems);
+			await connectionHandler.connect(adapterId);
 			await new Promise((resolve => baseFunction.on('changed', resolve)));
 
 			expect(baseFunction.dataItems.VUnit.value).to.equal(0);

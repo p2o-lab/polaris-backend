@@ -113,7 +113,7 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 		if (pea.isProtected()) {
 			throw new Error(`PEA ${identifier} can not be deleted since it is protected.`);
 		}
-		await pea.disconnectAndUnsubscribe()
+		await pea.disconnect()
 			.catch((err) => catManager.warn('Something wrong while disconnecting from PEAController: ' + err.toString()));
 
 		catManager.debug(`Deleting pea ${identifier} ...`);

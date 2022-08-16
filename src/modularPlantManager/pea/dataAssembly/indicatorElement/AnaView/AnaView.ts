@@ -23,23 +23,19 @@
  * SOFTWARE.
  */
 
-
-import {DataItem} from '../../dataItem/DataItem';
-import {ScaleSettings, ScaleSettingsRuntime, UnitSettingsRuntime, UnitSettings} from '../../baseFunction';
-import {IndicatorElement, IndicatorElementRuntime} from '../IndicatorElement';
+import {ScaleSettings, UnitSettings} from '../../baseFunction';
+import {IndicatorElement} from '../IndicatorElement';
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
 import {keys} from 'ts-transformer-keys';
+import {AnaViewDataItems, MTPDataTypes} from '@p2olab/pimad-types';
 
-export type AnaViewRuntime = IndicatorElementRuntime & UnitSettingsRuntime & ScaleSettingsRuntime & {
-	V: DataItem<number>;
-};
 
 export class AnaView extends IndicatorElement {
 
-	public readonly dataItems!: AnaViewRuntime;
+	public readonly dataItems!: AnaViewDataItems;
 
-	public scaleSettings!: ScaleSettings;
+	public scaleSettings!: ScaleSettings<number>;
 	public unitSettings!: UnitSettings;
 
 	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false) {

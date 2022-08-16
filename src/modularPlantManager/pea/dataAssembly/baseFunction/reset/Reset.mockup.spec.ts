@@ -28,8 +28,8 @@ import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../_utils';
 import {getResetDataItemModel, ResetMockup} from './Reset.mockup';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
-import {DataItemAccessLevel} from '@p2olab/pimad-interface';
 import {getEndpointDataModel} from '../../../connectionHandler/ConnectionHandler.mockup';
+import {Access} from '@p2olab/pimad-types';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -43,7 +43,6 @@ describe('ResetMockup', () => {
         beforeEach(async()=>{
             mockupServer = new MockupServer();
 			await mockupServer.initialize();
-            
         });
 
         it('should create ResetMockup', async () => {
@@ -75,6 +74,7 @@ describe('ResetMockup', () => {
 
         let mockupServer: MockupServer;
         let connectionHandler: ConnectionHandler;
+        let adapterId: string;
 
         beforeEach(async function () {
             this.timeout(10000);
@@ -82,9 +82,8 @@ describe('ResetMockup', () => {
 			await mockupServer.initialize();
             new ResetMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
             await mockupServer.start();
-            connectionHandler= new ConnectionHandler();
-            connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
-            await connectionHandler.connect();
+            connectionHandler = new ConnectionHandler();
+            adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
         });
 
         afterEach(async () => {
@@ -93,8 +92,8 @@ describe('ResetMockup', () => {
         });
 
         it('set and get ResetOp', async () => {
-            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.ResetOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, true);
-            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.ResetOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.ResetOp', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}}, true);
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.ResetOp', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(true));
         }).timeout(2000);
 

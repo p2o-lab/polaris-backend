@@ -27,10 +27,9 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DIntServParamMockup, getDIntServParamDataAssemblyModel, getDIntServParamDataItemModel} from './DIntServParam.mockup';
 import {MockupServer} from '../../../../../_utils';
-import {DataAssemblyModel, DataItemAccessLevel} from '@p2olab/pimad-interface';
-import {DIntServParamRuntime} from './DIntServParam';
 import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
 import {getEndpointDataModel} from '../../../../connectionHandler/ConnectionHandler.mockup';
+import {Access} from '@p2olab/pimad-types';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -43,6 +42,7 @@ describe('DIntServParamMockup', () => {
 
         beforeEach(async()=>{
             mockupServer = new MockupServer();
+            await mockupServer.initialize();
         });
 
         it('should create DIntServParamMockup',  () => {
@@ -101,16 +101,17 @@ describe('DIntServParamMockup', () => {
 
         let mockupServer: MockupServer;
         let connectionHandler: ConnectionHandler;
+        let adapterId: string;
 
         beforeEach(async function () {
             this.timeout(5000);
             mockupServer = new MockupServer();
-            
+            await mockupServer.initialize();
             new DIntServParamMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
             await mockupServer.start();
-            connectionHandler= new ConnectionHandler();
-            connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
-            await connectionHandler.connect();
+            connectionHandler = new ConnectionHandler();
+            adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
+            await connectionHandler.connect(adapterId);
         });
 
         afterEach(async () => {
@@ -119,14 +120,14 @@ describe('DIntServParamMockup', () => {
         });
 
         it('set and get VExt', async () => {
-            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.VExt', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, 1);
-            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.VExt', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.VExt', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}}, 1);
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.VExt', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(1));
         }).timeout(3000);
 
         it('set and get VOp', async () => {
-            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.VOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, 1);
-            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.VOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.VOp', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}}, 1);
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.VOp', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(1));
         }).timeout(3000);
     });
@@ -135,31 +136,33 @@ describe('DIntServParamMockup', () => {
 
         let mockupServer: MockupServer;
         let connectionHandler: ConnectionHandler;
+        let adapterId: string;
 
         beforeEach(async function(){
             this.timeout(10000);
             mockupServer = new MockupServer();
-            
+            await mockupServer.initialize();
             new DIntServParamMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
             await mockupServer.start();
-            connectionHandler= new ConnectionHandler();
-            connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
-            await connectionHandler.connect();
+            connectionHandler = new ConnectionHandler();
+            adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
+            await connectionHandler.connect(adapterId);
         });
+
         afterEach(async () => {
             await connectionHandler.disconnect();
             await mockupServer.shutdown();
         });
 
         it('set VExt',async()=>{
-            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.VExt', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}},1);
-            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.VExt', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.VExt', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}},1);
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.VExt', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}})
                 .then((dataValue)=>expect((dataValue)?.value.value).to.equal(1));
         }).timeout(10000);
 
         it('set VOp',async()=>{
-            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.VOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}},1);
-            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.VOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.VOp', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}},1);
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.VOp', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}})
                 .then((dataValue)=>expect((dataValue)?.value.value).to.equal(1));
         }).timeout(10000);
     });

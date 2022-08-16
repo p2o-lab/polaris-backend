@@ -27,8 +27,6 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../_utils';
 import {DIntViewMockup, getDIntViewDataAssemblyModel, getDIntViewDataItemModel} from './DIntView.mockup';
-import {DataAssemblyModel} from '@p2olab/pimad-interface';
-import {AnaViewRuntime} from '../AnaView/AnaView';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -41,6 +39,7 @@ describe('DIntViewMockup', () => {
 
         beforeEach(async()=>{
             mockupServer = new MockupServer();
+			await mockupServer.initialize();
         });
 
         it('should create DIntViewMockup', async () => {

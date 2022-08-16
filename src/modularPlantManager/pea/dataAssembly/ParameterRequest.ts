@@ -31,7 +31,6 @@ import {Category} from 'typescript-logging';
 import {catParameter, catScopeItem} from '../../../logging';
 import {DataAssembly} from './DataAssembly';
 import {PEA} from '../PEA';
-import {DataItem} from './dataItem/DataItem';
 import {Procedure, Service} from '../serviceSet';
 import {ServiceState} from '../serviceSet/service/enum';
 
@@ -40,6 +39,8 @@ const assign = require('assign-deep');
 import {ScopeOptions} from '@p2olab/polaris-interface';
 
 import {Expression, Parser} from 'expr-eval';
+import {BaseDataItem} from './dataItem/DataItem';
+import {MTPDataTypes} from '@p2olab/pimad-types';
 
 class ScopeItem {
 
@@ -48,15 +49,15 @@ class ScopeItem {
 	public readonly dataAssembly: DataAssembly;
 	public readonly pea: PEA;
 	public readonly variableName: string;
-	public readonly dataItem: DataItem<any>;
+	public readonly dataItem: BaseDataItem<string |number| boolean>;
 
 	constructor(name: string, pea: PEA, dataAssembly: DataAssembly, variableName = '') {
 		this.name = name;
 		this.pea = pea;
 		this.dataAssembly = dataAssembly;
 		this.variableName = variableName;
-		this.dataItem = this.dataAssembly.dataItems[variableName as keyof typeof dataAssembly.dataItems] ||
-			this.dataAssembly.defaultReadDataItem;
+		this.dataItem = (this.dataAssembly.dataItems[variableName as keyof typeof dataAssembly.dataItems] ||
+			this.dataAssembly.defaultReadDataItem) as BaseDataItem<any>;
 	}
 
 	/**
@@ -196,7 +197,7 @@ class ScopeItem {
 			const a: any = {};
 			a[current] = previous;
 			return a;
-		}, value);
+		}, value) as unknown as object;
 	}
 
 }

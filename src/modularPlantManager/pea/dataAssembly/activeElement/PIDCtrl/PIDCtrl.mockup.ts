@@ -28,9 +28,10 @@ import {getOpModeDataItemModel, OpModeMockup} from '../../baseFunction/opMode/Op
 import {getSourceModeDataItemModel, SourceModeMockup} from '../../baseFunction/sourceMode/SourceMode.mockup';
 import {ActiveElementMockup, getActiveElementDataItemModel} from '../ActiveElement.mockup';
 
-import {DataAssemblyModel, DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+import {DataAssemblyModel, DataItemModel} from '@p2olab/pimad-interface';
 import {getDataAssemblyModel} from '../../DataAssembly.mockup';
 import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../dataItem/DataItem.mockup';
+import { Access } from '@p2olab/pimad-types';
 
 const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/ActiveElement/PIDCtrl';
 
@@ -42,7 +43,7 @@ function getPIDCtrlSpecificDataItemModels(namespace: number, objectBrowseName: s
 	dataItem.name = 'PV';
 	dataItem.dataType = 'Float';
 	let ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.PV`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -52,7 +53,7 @@ function getPIDCtrlSpecificDataItemModels(namespace: number, objectBrowseName: s
 	dataItem.name = 'PVSclMin';
 	dataItem.dataType = 'Float';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.PVSclMin`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -62,7 +63,7 @@ function getPIDCtrlSpecificDataItemModels(namespace: number, objectBrowseName: s
 	dataItem.name = 'PVSclMax';
 	dataItem.dataType = 'Float';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.PVSclMax`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -72,7 +73,7 @@ function getPIDCtrlSpecificDataItemModels(namespace: number, objectBrowseName: s
 	dataItem.name = 'PVUnit';
 	dataItem.dataType = 'Int16';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.PVUnit`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -82,7 +83,7 @@ function getPIDCtrlSpecificDataItemModels(namespace: number, objectBrowseName: s
 	dataItem.name = 'SP';
 	dataItem.dataType = 'Float';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.SP`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -92,7 +93,7 @@ function getPIDCtrlSpecificDataItemModels(namespace: number, objectBrowseName: s
 	dataItem.name = 'SPSclMin';
 	dataItem.dataType = 'Float';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.SPSclMin`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -102,7 +103,7 @@ function getPIDCtrlSpecificDataItemModels(namespace: number, objectBrowseName: s
 	dataItem.name = 'SPSclMax';
 	dataItem.dataType = 'Float';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.SPSclMax`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -112,7 +113,7 @@ function getPIDCtrlSpecificDataItemModels(namespace: number, objectBrowseName: s
 	dataItem.name = 'SPUnit';
 	dataItem.dataType = 'Int16';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.SPUnit`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -122,7 +123,7 @@ function getPIDCtrlSpecificDataItemModels(namespace: number, objectBrowseName: s
 	dataItem.name = 'SPMan';
 	dataItem.dataType = 'Float';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.SPMan`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -132,7 +133,7 @@ function getPIDCtrlSpecificDataItemModels(namespace: number, objectBrowseName: s
 	dataItem.name = 'SPManMin';
 	dataItem.dataType = 'Float';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.SPManMin`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -142,7 +143,7 @@ function getPIDCtrlSpecificDataItemModels(namespace: number, objectBrowseName: s
 	dataItem.name = 'SPManMax';
 	dataItem.dataType = 'Float';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.SPManMax`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -152,7 +153,7 @@ function getPIDCtrlSpecificDataItemModels(namespace: number, objectBrowseName: s
 	dataItem.name = 'SPInt';
 	dataItem.dataType = 'Float';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.SPInt`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -162,7 +163,7 @@ function getPIDCtrlSpecificDataItemModels(namespace: number, objectBrowseName: s
 	dataItem.name = 'SPIntMin';
 	dataItem.dataType = 'Float';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.SPIntMin`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -172,7 +173,7 @@ function getPIDCtrlSpecificDataItemModels(namespace: number, objectBrowseName: s
 	dataItem.name = 'SPIntMax';
 	dataItem.dataType = 'Float';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.SPIntMax`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -182,7 +183,7 @@ function getPIDCtrlSpecificDataItemModels(namespace: number, objectBrowseName: s
 	dataItem.name = 'MV';
 	dataItem.dataType = 'Float';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.MV`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -192,7 +193,7 @@ function getPIDCtrlSpecificDataItemModels(namespace: number, objectBrowseName: s
 	dataItem.name = 'MVMan';
 	dataItem.dataType = 'Float';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.MVMan`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -202,7 +203,7 @@ function getPIDCtrlSpecificDataItemModels(namespace: number, objectBrowseName: s
 	dataItem.name = 'MVSclMin';
 	dataItem.dataType = 'Float';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.MVSclMin`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -212,7 +213,7 @@ function getPIDCtrlSpecificDataItemModels(namespace: number, objectBrowseName: s
 	dataItem.name = 'MVSclMax';
 	dataItem.dataType = 'Float';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.MVSclMax`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -222,7 +223,7 @@ function getPIDCtrlSpecificDataItemModels(namespace: number, objectBrowseName: s
 	dataItem.name = 'MVUnit';
 	dataItem.dataType = 'Int16';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.MVUnit`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -232,7 +233,7 @@ function getPIDCtrlSpecificDataItemModels(namespace: number, objectBrowseName: s
 	dataItem.name = 'MVMin';
 	dataItem.dataType = 'Float';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.MVMin`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -242,7 +243,7 @@ function getPIDCtrlSpecificDataItemModels(namespace: number, objectBrowseName: s
 	dataItem.name = 'MVMax';
 	dataItem.dataType = 'Float';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.MVMax`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -252,7 +253,7 @@ function getPIDCtrlSpecificDataItemModels(namespace: number, objectBrowseName: s
 	dataItem.name = 'P';
 	dataItem.dataType = 'Float';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.P`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -262,7 +263,7 @@ function getPIDCtrlSpecificDataItemModels(namespace: number, objectBrowseName: s
 	dataItem.name = 'Ti';
 	dataItem.dataType = 'Float';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.Ti`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -272,7 +273,7 @@ function getPIDCtrlSpecificDataItemModels(namespace: number, objectBrowseName: s
 	dataItem.name = 'Td';
 	dataItem.dataType = 'Float';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.Td`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;

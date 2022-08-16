@@ -29,8 +29,9 @@ import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 
 import {getOperationElementDataItemModel, OperationElementMockup} from '../../OperationElement.mockup';
 import {getDataAssemblyModel} from '../../../DataAssembly.mockup';
-import {DataAssemblyModel, DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+import {DataAssemblyModel, DataItemModel} from '@p2olab/pimad-interface';
 import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../../dataItem/DataItem.mockup';
+import {Access} from '@p2olab/pimad-types';
 
 const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/OperationElement/BinMan';
 
@@ -41,7 +42,7 @@ function getBinManSpecificDataItemModels(namespace: number, objectBrowseName: st
 	dataItem.name = 'VOut';
 	dataItem.dataType = 'Boolean';
 	let ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.VOut`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -51,7 +52,7 @@ function getBinManSpecificDataItemModels(namespace: number, objectBrowseName: st
 	dataItem.name = 'VState0';
 	dataItem.dataType = 'Boolean';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.VState0`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -61,7 +62,7 @@ function getBinManSpecificDataItemModels(namespace: number, objectBrowseName: st
 	dataItem.name = 'VState1';
 	dataItem.dataType = 'Boolean';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.VState1`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -71,7 +72,7 @@ function getBinManSpecificDataItemModels(namespace: number, objectBrowseName: st
 	dataItem.name = 'VMan';
 	dataItem.dataType = 'Boolean';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.VMan`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -81,7 +82,7 @@ function getBinManSpecificDataItemModels(namespace: number, objectBrowseName: st
 	dataItem.name = 'VRbk';
 	dataItem.dataType = 'Boolean';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.VRbk`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -91,7 +92,7 @@ function getBinManSpecificDataItemModels(namespace: number, objectBrowseName: st
 	dataItem.name = 'VFbk';
 	dataItem.dataType = 'Boolean';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.VFbk`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;

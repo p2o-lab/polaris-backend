@@ -23,14 +23,10 @@
  * SOFTWARE.
  */
 
-import {DataItem} from '../../dataItem/DataItem';
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
+import {ResetDataItems} from '@p2olab/pimad-types';
 
-export interface ResetRuntime {
-	ResetOp: DataItem<boolean>;
-	ResetAut: DataItem<boolean>;
-}
 
 /**
  * Events emitted by [[Reset]]
@@ -46,9 +42,9 @@ type ResetEmitter = StrictEventEmitter<EventEmitter, ResetEvents>;
 
 export class Reset extends (EventEmitter as new () => ResetEmitter) {
 
-	public readonly dataItems!: ResetRuntime;
+	public readonly dataItems!: ResetDataItems;
 
-	constructor(requiredDataItems: Required<ResetRuntime>) {
+	constructor(requiredDataItems: Required<ResetDataItems>) {
 		super();
 
 		this.dataItems = requiredDataItems;

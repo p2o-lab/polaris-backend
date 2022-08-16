@@ -27,10 +27,9 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {BinProcessValueInMockup, getBinProcessValueInDataAssembly, getBinProcessValueInDataItemModel} from './BinProcessValueIn.mockup';
 import {MockupServer} from '../../../../../_utils';
-import {DataAssemblyModel, DataItemAccessLevel} from '@p2olab/pimad-interface';
-import {BinProcessValueInRuntime} from './BinProcessValueIn';
 import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
 import {getEndpointDataModel} from '../../../../connectionHandler/ConnectionHandler.mockup';
+import {Access} from '@p2olab/pimad-types';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -75,17 +74,16 @@ describe('BinProcessValueInMockup', () => {
 
         let mockupServer: MockupServer;
         let connectionHandler: ConnectionHandler;
+        let adapterId: string;
 
         beforeEach(async function () {
             this.timeout(5000);
             mockupServer = new MockupServer();
 			await mockupServer.initialize();
-            
             new BinProcessValueInMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
             await mockupServer.start();
-            connectionHandler= new ConnectionHandler();
-            connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
-            await connectionHandler.connect();
+            connectionHandler = new ConnectionHandler();
+            adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
         });
 
         afterEach(async () => {
@@ -94,20 +92,20 @@ describe('BinProcessValueInMockup', () => {
         });
 
         it('set and get VExt', async () => {
-            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.VExt', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, true);
-            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.VExt', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.VExt', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}}, true);
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.VExt', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(true));
         }).timeout(3000);
 
         it('set and get VState0', async () => {
-            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.VState0', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, 'state0_inactive');
-            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.VState0', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.VState0', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}}, 'state0_inactive');
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.VState0', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal('state0_inactive'));
         }).timeout(3000);
 
         it('set and get VState1', async () => {
-            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.VState1', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, 'state1_inactive');
-            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.VState1', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.VState1', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}}, 'state1_inactive');
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.VState1', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal('state1_inactive'));
         }).timeout(3000);
     });

@@ -27,8 +27,9 @@ import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 import {getInputElementDataItemModel, InputElementMockup} from '../../InputElement.mockup';
 
 import {getDataAssemblyModel} from '../../../DataAssembly.mockup';
-import {DataAssemblyModel, DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+import {DataAssemblyModel, DataItemModel} from '@p2olab/pimad-interface';
 import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../../dataItem/DataItem.mockup';
+import {Access} from '@p2olab/pimad-types';
 
 const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/InputElement/BinProcessValueIn';
 
@@ -39,7 +40,7 @@ function getBinProcessValueInSpecificDataItemModels(namespace: number, objectBro
 	dataItem.name = 'VExt';
 	dataItem.dataType = 'Boolean';
 	let ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.VExt`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -49,7 +50,7 @@ function getBinProcessValueInSpecificDataItemModels(namespace: number, objectBro
 	dataItem.name = 'VState0';
 	dataItem.dataType = 'String';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.VState0`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -59,7 +60,7 @@ function getBinProcessValueInSpecificDataItemModels(namespace: number, objectBro
 	dataItem.name = 'VState1';
 	dataItem.dataType = 'String';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.VState1`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;

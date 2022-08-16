@@ -39,8 +39,9 @@ import {
 
 import {getOperationElementDataItemModel, OperationElementMockup} from '../../OperationElement.mockup';
 import {getDataAssemblyModel} from '../../../DataAssembly.mockup';
-import {DataAssemblyModel, DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+import {DataAssemblyModel, DataItemModel} from '@p2olab/pimad-interface';
 import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../../dataItem/DataItem.mockup';
+import {Access} from '@p2olab/pimad-types';
 
 const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/OperationElement/DIntMan';
 
@@ -51,7 +52,7 @@ function getDIntManSpecificDataItemModels(namespace: number, objectBrowseName: s
 	dataItem.name = 'VOut';
 	dataItem.dataType = 'Int32';
 	let ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.VOut`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -61,7 +62,7 @@ function getDIntManSpecificDataItemModels(namespace: number, objectBrowseName: s
 	dataItem.name = 'VMan';
 	dataItem.dataType = 'Int32';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.VMan`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -71,7 +72,7 @@ function getDIntManSpecificDataItemModels(namespace: number, objectBrowseName: s
 	dataItem.name = 'VRbk';
 	dataItem.dataType = 'Int32';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.VRbk`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -81,7 +82,7 @@ function getDIntManSpecificDataItemModels(namespace: number, objectBrowseName: s
 	dataItem.name = 'VFbk';
 	dataItem.dataType = 'Int32';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.VFbk`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;

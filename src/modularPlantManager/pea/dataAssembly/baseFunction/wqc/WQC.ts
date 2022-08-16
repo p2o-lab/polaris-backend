@@ -23,13 +23,11 @@
  * SOFTWARE.
  */
 
-import {DataItem} from '../../dataItem/DataItem';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {EventEmitter} from 'events';
+import {WQCDataItems} from '@p2olab/pimad-types';
+import {OpcUaDataItem} from '../../dataItem/DataItem';
 
-export type WQCRuntime = {
-	WQC: DataItem<number>;
-}
 
 /**
  * Events emitted by [[WQC]]
@@ -42,12 +40,13 @@ type WQCEmitter = StrictEventEmitter<EventEmitter, WQCEvents>;
 
 export class WQC extends (EventEmitter as new () => WQCEmitter) {
 
-	private readonly dataItems!: WQCRuntime;
+	private readonly dataItems!: WQCDataItems;
 
-	constructor(requiredDataItems: Required<WQCRuntime>) {
+	constructor(requiredDataItems: Required<WQCDataItems>) {
 		super();
 		this.dataItems = requiredDataItems;
 
+		if (this.dataItems.WQC instanceof OpcUaDataItem)
 		this.dataItems.WQC.on('changed', () => {
 			this.emit('changed', this.WQC);
 		});

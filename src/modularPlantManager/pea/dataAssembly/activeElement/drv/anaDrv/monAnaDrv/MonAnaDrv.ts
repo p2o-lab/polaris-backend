@@ -24,27 +24,15 @@
  */
 
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
-import {DataItem} from '../../../../dataItem/DataItem';
-import {FeedbackMonitoring, FeedbackMonitoringRuntime} from '../../../../baseFunction';
-import {AnaDrv, AnaDrvRuntime} from '../AnaDrv';
-import {DataItemFactory, getDataItemModel} from '../../../../dataItem/DataItemFactory';
+import {FeedbackMonitoring} from '../../../../baseFunction';
+import {AnaDrv} from '../AnaDrv';
 import {ConnectionHandler} from '../../../../../connectionHandler/ConnectionHandler';
 import {keys} from 'ts-transformer-keys';
-
-export type MonAnaDrvRuntime = AnaDrvRuntime & FeedbackMonitoringRuntime & {
-	RpmErr: DataItem<number>;
-
-	RpmAHEn: DataItem<boolean>;
-	RpmAHLim: DataItem<number>;
-	RpmAHAct: DataItem<boolean>;
-	RpmALEn: DataItem<boolean>;
-	RpmALLim: DataItem<number>;
-	RpmALAct: DataItem<boolean>;
-};
+import {MonAnaDrvDataItems} from '@p2olab/pimad-types';
 
 export class MonAnaDrv extends AnaDrv {
 
-	public readonly dataItems!: MonAnaDrvRuntime;
+	public readonly dataItems!: MonAnaDrvDataItems;
 
 	public feedbackMonitoring!: FeedbackMonitoring;
 

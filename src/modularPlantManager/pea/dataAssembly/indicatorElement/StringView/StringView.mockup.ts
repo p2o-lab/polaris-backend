@@ -25,10 +25,11 @@
 
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
 import {getIndicatorElementDataItemModel, IndicatorElementMockup} from '../IndicatorElement.mockup';
-import {DataAssemblyModel, DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+import {DataAssemblyModel, DataItemModel} from '@p2olab/pimad-interface';
 
 import {getDataAssemblyModel} from '../../DataAssembly.mockup';
 import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../dataItem/DataItem.mockup';
+import {Access} from '@p2olab/pimad-types';
 
 const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/StringView';
 
@@ -39,7 +40,7 @@ function getStringViewSpecificDataItemModels(namespace: number, objectBrowseName
 	dataItem.name = 'Text';
 	dataItem.dataType = 'String';
 	const ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.Text`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;

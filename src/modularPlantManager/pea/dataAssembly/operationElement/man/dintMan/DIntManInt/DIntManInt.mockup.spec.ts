@@ -27,8 +27,6 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../../../_utils';
 import {DIntManIntMockup, getDIntManIntDataAssemblyModel, getDIntManIntDataItemModel} from './DIntManInt.mockup';
-import {DataAssemblyModel} from '@p2olab/pimad-interface';
-import {DIntManIntRuntime} from './DIntManInt';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -41,6 +39,7 @@ describe('DIntManIntMockup', () => {
 
         beforeEach(async()=>{
             mockupServer = new MockupServer();
+            await mockupServer.initialize();
         });
 
         it('should create DIntManIntMockup', async () => {

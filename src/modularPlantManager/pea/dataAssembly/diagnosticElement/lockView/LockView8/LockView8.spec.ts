@@ -31,6 +31,8 @@ import {LockView8} from './LockView8';
 import {getLockView8DataAssemblyModel, LockView8Mockup} from './LockView8.mockup';
 import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
 import {getEndpointDataModel} from '../../../../connectionHandler/ConnectionHandler.mockup';
+import {BaseDataItem} from '../../../dataItem/DataItem';
+import {MTPDataTypes} from '@p2olab/pimad-types';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -45,7 +47,7 @@ describe('LockView8', () => {
 		options = getLockView8DataAssemblyModel(2, 'Variable', 'Variable');
 
 		it('should create LockView8', async () => {
-			const dataAssembly = new LockView8(options, connectionHandler);
+			const dataAssembly = new LockView8(options, connectionHandler, true);
 			expect(dataAssembly).to.be.not.undefined;
 			expect(dataAssembly.dataItems).to.be.not.undefined;
 			expect(dataAssembly.wqc).to.be.not.undefined;
@@ -53,8 +55,10 @@ describe('LockView8', () => {
 
 	});
 	describe('dynamic', () => {
+
 		let mockupServer: MockupServer;
 		let connectionHandler: ConnectionHandler;
+		let adapterId: string;
 
 		beforeEach(async function () {
 			this.timeout(8000);
@@ -63,8 +67,8 @@ describe('LockView8', () => {
 			options = lockView8Mockup.getDataAssemblyModel();
 			await mockupServer.start();
 			connectionHandler = new ConnectionHandler();
-			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
-			await connectionHandler.connect();
+			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
+			await connectionHandler.connect(adapterId);
 		});
 
 		afterEach(async function () {
@@ -75,10 +79,10 @@ describe('LockView8', () => {
 
 		it('should subscribe successfully', async () => {
 
-			const dataAssembly = new LockView8(options, connectionHandler);
+			const dataAssembly = new LockView8(options, connectionHandler, true);
 			await dataAssembly.subscribe();
-			await connectionHandler.connect();
-			await new Promise((resolve => dataAssembly.dataItems.In8Txt.on('changed', resolve)));
+			await connectionHandler.connect(adapterId);
+			await new Promise((resolve => (dataAssembly.dataItems.In8Txt as BaseDataItem<string>).on('changed', resolve)));
 
 			expect(dataAssembly.wqc.WQC).equal(0);
 			expect(dataAssembly.dataItems.Logic.value).equal(false);

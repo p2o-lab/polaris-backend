@@ -46,7 +46,7 @@ describe('DIntMon', () => {
 		options = getDIntMonDataAssemblyModel(2, 'Variable', 'Variable');
 
 		it('should create DIntMon', async () => {
-			const dataAssembly: DIntMon = new DIntMon(options, connectionHandler);
+			const dataAssembly: DIntMon = new DIntMon(options, connectionHandler,true);
 
 			expect(dataAssembly.dataItems.TagName).to.not.equal(undefined);
 			expect(dataAssembly.dataItems.TagDescription).to.not.equal(undefined);
@@ -84,18 +84,21 @@ describe('DIntMon', () => {
 		});
 	});
 	describe('dynamic', () => {
+
 		let mockupServer: MockupServer;
 		let connectionHandler: ConnectionHandler;
+		let adapterId: string;
 
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
+			await mockupServer.initialize();
 			const dIntMonMockup = new DIntMonMockup( mockupServer.nameSpace, mockupServer.rootObject,'Variable');
 			options = dIntMonMockup.getDataAssemblyModel();
 			await mockupServer.start();
-			connectionHandler= new ConnectionHandler();
-			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
-			await connectionHandler.connect();
+			connectionHandler = new ConnectionHandler();
+			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
+			await connectionHandler.connect(adapterId);
 		});
 
 		afterEach(async function () {
@@ -106,9 +109,9 @@ describe('DIntMon', () => {
 
 		it('should subscribe successfully', async () => {
 
-			const dataAssembly = new DIntMon(options, connectionHandler);
+			const dataAssembly = new DIntMon(options, connectionHandler, true);
 			await dataAssembly.subscribe();
-			await connectionHandler.connect();
+			await connectionHandler.connect(adapterId);
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 
 			expect(dataAssembly.dataItems.V.value).equal(0);

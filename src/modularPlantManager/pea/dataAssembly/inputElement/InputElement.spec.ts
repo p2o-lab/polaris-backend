@@ -44,7 +44,7 @@ describe('InputElement', () => {
 
 		it('should create InputElement', async () => {
 
-			const dataAssembly = new InputElement(options, connectionHandler);
+			const dataAssembly = new InputElement(options, connectionHandler, true);
 
 			expect(dataAssembly).to.be.not.undefined;
 			expect(dataAssembly.dataItems).to.be.not.undefined;

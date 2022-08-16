@@ -27,8 +27,6 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {getMonBinDrvDataAssemblyModel, getMonBinDrvDataItemModel, MonBinDrvMockup} from './MonBinDrv.mockup';
 import {MockupServer} from '../../../../../../_utils';
-import {DataAssemblyModel} from '@p2olab/pimad-interface';
-import {MonBinDrvRuntime} from './MonBinDrv';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -42,7 +40,6 @@ describe('MonBinDrvMockup', () => {
         beforeEach(async()=>{
             mockupServer = new MockupServer();
 			await mockupServer.initialize();
-
         });
 
         it('should create MonBinDrvMockup', async () => {

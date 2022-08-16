@@ -63,18 +63,21 @@ describe('AnaServParam', () => {
 	});
 
 	describe('dynamic', () => {
+
 		let mockupServer: MockupServer;
 		let connectionHandler: ConnectionHandler;
+		let adapterId: string;
 
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
+			await mockupServer.initialize();
 			const anaServParamMockup = new AnaServParamMockup( mockupServer.nameSpace, mockupServer.rootObject,'Variable');
 			options = anaServParamMockup.getDataAssemblyModel();
 			await mockupServer.start();
 			connectionHandler = new ConnectionHandler();
-			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
-			await connectionHandler.connect();
+			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
+			await connectionHandler.connect(adapterId);
 		});
 
 		afterEach(async function () {
@@ -87,7 +90,7 @@ describe('AnaServParam', () => {
 
 			const dataAssembly = DataAssemblyFactory.create(options, connectionHandler) as AnaServParam;
 			await dataAssembly.subscribe();
-			await connectionHandler.connect();
+			await connectionHandler.connect(adapterId);
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 
 			// expect(dataAssembly.dataItems.WQC.value).equal(0);

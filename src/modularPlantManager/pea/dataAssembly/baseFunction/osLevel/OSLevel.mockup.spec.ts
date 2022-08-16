@@ -28,8 +28,8 @@ import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../_utils';
 import {getOSLevelDataItemModel, OSLevelMockup} from './OSLevel.mockup';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
-import {DataItemAccessLevel} from '@p2olab/pimad-interface';
 import {getEndpointDataModel} from '../../../connectionHandler/ConnectionHandler.mockup';
+import {Access} from '@p2olab/pimad-types';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -74,19 +74,19 @@ describe('OSLevelMockup', () => {
         let mockupServer: MockupServer;
         let mockup: OSLevelMockup;
         let connectionHandler: ConnectionHandler;
+        let adapterId: string;
 
         beforeEach(async function () {
             this.timeout(10000);
             mockupServer = new MockupServer();
 			await mockupServer.initialize();
-
-            mockup = new OSLevelMockup(mockupServer.nameSpace,
-                mockupServer.rootObject, 'Variable');
+            mockup = new OSLevelMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
             await mockupServer.start();
-            connectionHandler= new ConnectionHandler();
-            connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
-            await connectionHandler.connect();
+            connectionHandler = new ConnectionHandler();
+            adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
+            await connectionHandler.connect(adapterId);
         });
+
         afterEach(async () => {
             await connectionHandler.disconnect();
             await mockupServer.shutdown();
@@ -94,10 +94,10 @@ describe('OSLevelMockup', () => {
 
         it('set and get OsLevel', async () => {
             mockup.osLevel = 12;
-            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.OSLevel', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.OSLevel', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(12));
-            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.OSLevel', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, 1);
-            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.OSLevel', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.OSLevel', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}}, 1);
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.OSLevel', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(1));
             expect(mockup.osLevel).to.equal(1);
         }).timeout(2000);

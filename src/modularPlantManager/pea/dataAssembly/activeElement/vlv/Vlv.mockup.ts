@@ -28,10 +28,11 @@ import {getOpModeDataItemModel, OpModeMockup} from '../../baseFunction/opMode/Op
 import {getInterlockDataItemModel, InterlockMockup} from '../../baseFunction/interlock/Interlock.mockup';
 import {getResetDataItemModel, ResetMockup} from '../../baseFunction/reset/Reset.mockup';
 import {ActiveElementMockup, getActiveElementDataItemModel} from '../ActiveElement.mockup';
-import {DataAssemblyModel, DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+import {DataAssemblyModel, DataItemModel} from '@p2olab/pimad-interface';
 
 import {getDataAssemblyModel} from '../../DataAssembly.mockup';
 import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../dataItem/DataItem.mockup';
+import {Access} from '@p2olab/pimad-types';
 
 const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/ActiveElement';
 
@@ -42,7 +43,7 @@ function getVlvSpecificDataItemModels(namespace: number, objectBrowseName: strin
 	dataItem.name = 'SafePos';
 	dataItem.dataType = 'Boolean';
 	let ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.SafePos`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -52,7 +53,7 @@ function getVlvSpecificDataItemModels(namespace: number, objectBrowseName: strin
 	dataItem.name = 'SafePosEn';
 	dataItem.dataType = 'Boolean';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.SafePosEn`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -62,7 +63,7 @@ function getVlvSpecificDataItemModels(namespace: number, objectBrowseName: strin
 	dataItem.name = 'SafePosAct';
 	dataItem.dataType = 'Boolean';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.SafePosAct`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -72,7 +73,7 @@ function getVlvSpecificDataItemModels(namespace: number, objectBrowseName: strin
 	dataItem.name = 'OpenAut';
 	dataItem.dataType = 'Boolean';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.OpenAut`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -82,7 +83,7 @@ function getVlvSpecificDataItemModels(namespace: number, objectBrowseName: strin
 	dataItem.name = 'OpenFbk';
 	dataItem.dataType = 'Boolean';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.OpenFbk`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -92,7 +93,7 @@ function getVlvSpecificDataItemModels(namespace: number, objectBrowseName: strin
 	dataItem.name = 'OpenFbkCalc';
 	dataItem.dataType = 'Boolean';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.OpenFbkCalc`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -102,7 +103,7 @@ function getVlvSpecificDataItemModels(namespace: number, objectBrowseName: strin
 	dataItem.name = 'OpenOp';
 	dataItem.dataType = 'Boolean';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.OpenOp`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -112,7 +113,7 @@ function getVlvSpecificDataItemModels(namespace: number, objectBrowseName: strin
 	dataItem.name = 'CloseAut';
 	dataItem.dataType = 'Boolean';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.CloseAut`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -122,7 +123,7 @@ function getVlvSpecificDataItemModels(namespace: number, objectBrowseName: strin
 	dataItem.name = 'CloseFbk';
 	dataItem.dataType = 'Boolean';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.CloseFbk`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -132,7 +133,7 @@ function getVlvSpecificDataItemModels(namespace: number, objectBrowseName: strin
 	dataItem.name = 'CloseFbkCalc';
 	dataItem.dataType = 'Boolean';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.CloseFbkCalc`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -142,7 +143,7 @@ function getVlvSpecificDataItemModels(namespace: number, objectBrowseName: strin
 	dataItem.name = 'CloseOp';
 	dataItem.dataType = 'Boolean';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.CloseOp`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;

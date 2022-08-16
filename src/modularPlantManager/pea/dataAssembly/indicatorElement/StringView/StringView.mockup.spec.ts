@@ -39,7 +39,7 @@ describe('StringViewMockup', () => {
 
         beforeEach(async()=>{
             mockupServer = new MockupServer();
-            
+			await mockupServer.initialize();
         });
 
         it('should create StringViewMockup', async () => {

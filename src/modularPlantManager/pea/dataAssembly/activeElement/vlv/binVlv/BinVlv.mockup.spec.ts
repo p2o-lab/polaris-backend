@@ -27,9 +27,6 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {BinVlvMockup, getBinVlvDataAssemblyModel, getBinVlvDataItemModel} from './BinVlv.mockup';
 import {MockupServer} from '../../../../../_utils';
-import {DataAssemblyModel} from '@p2olab/pimad-interface';
-import {BinVlvRuntime} from './BinVlv';
-
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
@@ -42,7 +39,6 @@ describe('BinVlvMockup', () => {
         beforeEach(async()=>{
             mockupServer = new MockupServer();
 			await mockupServer.initialize();
-
         });
 
         it('should create BinBinVlvMockup', async () => {

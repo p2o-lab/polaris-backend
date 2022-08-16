@@ -23,22 +23,19 @@
  * SOFTWARE.
  */
 
-import {DataItem} from '../../../dataItem/DataItem';
-import {ScaleSettings, ScaleSettingsRuntime, UnitSettingsRuntime, UnitSettings} from '../../../baseFunction';
-import {InputElement, InputElementRuntime} from '../../';
+import {ScaleSettings, UnitSettings} from '../../../baseFunction';
+import {InputElement} from '../../';
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
 import {keys} from 'ts-transformer-keys';
+import {AnaProcessValueInDataItems, MTPDataTypes} from '@p2olab/pimad-types';
 
-export type AnaProcessValueInRuntime = InputElementRuntime & UnitSettingsRuntime & ScaleSettingsRuntime & {
-	VExt: DataItem<number>;
-};
 
 export class AnaProcessValueIn extends InputElement {
 
-	public readonly dataItems!: AnaProcessValueInRuntime;
+	public readonly dataItems!: AnaProcessValueInDataItems;
 
-	public scaleSettings!: ScaleSettings;
+	public scaleSettings!: ScaleSettings<number>;
 	public unitSettings!: UnitSettings;
 
 	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false) {

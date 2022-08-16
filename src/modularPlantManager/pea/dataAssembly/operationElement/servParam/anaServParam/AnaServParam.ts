@@ -24,35 +24,23 @@
  */
 
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
-import {DataItem} from '../../../dataItem/DataItem';
-import {ServParam, ServParamRuntime} from '../ServParam';
+import {ServParam} from '../ServParam';
 import {
 	ScaleSettings,
-	ScaleSettingsRuntime,
-	UnitSettingsRuntime,
 	UnitSettings,
-	ValueLimitation,
-	ValueLimitationRuntime
+	ValueLimitation
 } from '../../../baseFunction';
 import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
 import {keys} from 'ts-transformer-keys';
-
-export type AnaServParamRuntime = ServParamRuntime & ScaleSettingsRuntime & UnitSettingsRuntime & ValueLimitationRuntime & {
-	VExt: DataItem<number>;
-	VOp: DataItem<number>;
-	VInt: DataItem<number>;
-	VReq: DataItem<number>;
-	VOut: DataItem<number>;
-	VFbk: DataItem<number>;
-};
+import {AnaServParamDataItems, MTPDataTypes} from '@p2olab/pimad-types';
 
 export class AnaServParam extends ServParam {
 
-	public readonly dataItems!: AnaServParamRuntime;
+	public readonly dataItems!: AnaServParamDataItems;
 
-	public scaleSettings!: ScaleSettings;
+	public scaleSettings!: ScaleSettings<number>;
 	public unitSettings!: UnitSettings;
-	public valueLimitation!: ValueLimitation;
+	public valueLimitation!: ValueLimitation<number>;
 
 	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false) {
 		super(options, connectionHandler);

@@ -24,8 +24,9 @@
  */
 
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
-import {DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+import {DataItemModel} from '@p2olab/pimad-interface';
 import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../dataItem/DataItem.mockup';
+import {Access} from '@p2olab/pimad-types';
 
 
 function getUnitSettingsSpecificDataItemModels(namespace: number, objectBrowseName: string): DataItemModel[] {
@@ -35,7 +36,7 @@ function getUnitSettingsSpecificDataItemModels(namespace: number, objectBrowseNa
   dataItem.name = 'VUnit';
   dataItem.dataType = 'Int16';
   const ciOptions = getEmptyCIDataModel();
-  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.access = Access.ReadWriteAccess;
   ciOptions.nodeId.identifier = `${objectBrowseName}.VUnit`;
   ciOptions.nodeId.namespaceIndex = `${namespace}`;
   dataItem.cIData = ciOptions;

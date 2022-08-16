@@ -31,8 +31,8 @@ import {FeedbackMonitoringMockup} from './FeedbackMonitoring.mockup';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
 import {getMonBinVlvDataAssemblyModel} from '../../activeElement/vlv/binVlv/monBinVlv/MonBinVlv.mockup';
 import {DataAssemblyFactory} from '../../DataAssemblyFactory';
-import {MonBinVlvRuntime} from '../../activeElement';
 import {getEndpointDataModel} from '../../../connectionHandler/ConnectionHandler.mockup';
+import {MonBinVlvDataItems} from '@p2olab/pimad-types';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -46,7 +46,7 @@ describe('FeedbackMonitoring', () => {
 	describe('static', () => {
 
 		it('should create FeedbackMonitoring', () => {
-			const baseFunction = new FeedbackMonitoring(referenceDataAssembly.dataItems as MonBinVlvRuntime);
+			const baseFunction = new FeedbackMonitoring(referenceDataAssembly.dataItems as MonBinVlvDataItems);
 			expect(baseFunction.dataItems.MonEn).to.not.to.undefined;
 			expect(baseFunction.dataItems.MonSafePos).to.not.to.undefined;
 			expect(baseFunction.dataItems.MonStatErr).to.not.to.undefined;
@@ -56,19 +56,19 @@ describe('FeedbackMonitoring', () => {
 		});
 	});
 	describe('dynamic', () => {
+
 		let mockupServer: MockupServer;
 		let connectionHandler: ConnectionHandler;
+		let adapterId: string;
 
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-
 			new FeedbackMonitoringMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			await mockupServer.start();
-			connectionHandler= new ConnectionHandler();
-			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
-			await connectionHandler.connect();
+			connectionHandler = new ConnectionHandler();
+			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
 		});
 
 		afterEach(async function () {
@@ -79,8 +79,8 @@ describe('FeedbackMonitoring', () => {
 
 		it('should subscribe successfully', async () => {
 
-			const baseFunction = new FeedbackMonitoring(referenceDataAssembly.dataItems as MonBinVlvRuntime);
-			await connectionHandler.connect();
+			const baseFunction = new FeedbackMonitoring(referenceDataAssembly.dataItems as MonBinVlvDataItems);
+			await connectionHandler.connect(adapterId);
 			await new Promise((resolve => baseFunction.on('changed', resolve)));
 			expect(baseFunction.dataItems.MonEn.value).equal(false);
 			expect(baseFunction.dataItems.MonSafePos.value).equal(false);

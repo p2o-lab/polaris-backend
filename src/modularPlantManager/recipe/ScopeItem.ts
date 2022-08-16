@@ -25,11 +25,11 @@
 
 import {ScopeOptions} from '@p2olab/polaris-interface';
 import {PEA, Procedure, Service} from '../pea';
-import {DataItem} from '../pea/connectionHandler';
 import {DataAssembly, ServiceState} from '../pea/dataAssembly';
 
 import {Expression, Parser} from 'expr-eval';
 import {catScopeItem} from '../../logging';
+import {DataItem} from '@p2olab/pimad-types';
 
 export class ScopeItem {
 

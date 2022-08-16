@@ -24,22 +24,16 @@
  */
 
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
-import {DataItem} from '../../../dataItem/DataItem';
-import {BinView, BinViewRuntime} from '../BinView';
-import {OSLevel, OSLevelRuntime} from '../../../baseFunction';
+import {BinView} from '../BinView';
+import {OSLevel} from '../../../baseFunction';
 import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
 import {keys} from 'ts-transformer-keys';
+import {BinMonDataItems} from '@p2olab/pimad-types';
 
-export type BinMonRuntime = BinViewRuntime & OSLevelRuntime & {
-	VFlutTi: DataItem<number>;
-	VFlutEn: DataItem<boolean>;
-	VFlutCnt: DataItem<number>;
-	VFlutAct: DataItem<boolean>;
-};
 
 export class BinMon extends BinView {
 
-	public readonly dataItems!: BinMonRuntime;
+	public readonly dataItems!: BinMonDataItems;
 
 	public osLevel!: OSLevel;
 

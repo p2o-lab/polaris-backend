@@ -22,15 +22,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
- 
+
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {AnaManMockup, getAnaManDataAssemblyModel, getAnaManDataItemModel} from './AnaMan.mockup';
 import {MockupServer} from '../../../../../_utils';
-import {DataAssemblyModel, DataItemAccessLevel} from '@p2olab/pimad-interface';
-import {AnaManRuntime} from './AnaMan';
 import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
 import {getEndpointDataModel} from '../../../../connectionHandler/ConnectionHandler.mockup';
+import {Access} from '@p2olab/pimad-types';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -44,6 +43,7 @@ describe('AnaManMockup', () => {
         beforeEach(async function () {
             this.timeout(4000);
             mockupServer = new MockupServer();
+            await mockupServer.initialize();
         });
 
         it('should create AnaManMockup',  () => {
@@ -100,15 +100,17 @@ describe('AnaManMockup', () => {
 
         let mockupServer: MockupServer;
         let connectionHandler: ConnectionHandler;
+        let adapterId: string;
 
         beforeEach(async function () {
             this.timeout(5000);
             mockupServer = new MockupServer();
+            await mockupServer.initialize();
             new AnaManMockup(mockupServer.nameSpace, mockupServer.rootObject,'Variable');
             await mockupServer.start();
             connectionHandler = new ConnectionHandler();
-            connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
-            await connectionHandler.connect();
+            adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
+            await connectionHandler.connect(adapterId);
         });
 
         afterEach(async () => {
@@ -117,8 +119,8 @@ describe('AnaManMockup', () => {
         });
 
         it('set and get VMan', async () => {
-            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.VMan', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.Write}}, 1.1);
-            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.VMan', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.Read}})
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.VMan', namespaceIndex: mockupServer.nameSpaceUri, access: Access.WriteAccess}}, 1.1);
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.VMan', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadAccess}})
                 .then((dataValue) => expect(dataValue?.value.value).to.equal(1.1));
         }).timeout(3000);
     });

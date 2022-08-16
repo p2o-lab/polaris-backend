@@ -24,18 +24,14 @@
 */
 
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
-import {DataItem} from '../../../dataItem/DataItem';
-import {Vlv, VlvRuntime} from '../Vlv';
+import {Vlv} from '../Vlv';
 import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
 import {keys} from 'ts-transformer-keys';
-
-export type BinVlvRuntime = VlvRuntime & {
-	Ctrl: DataItem<boolean>;
-};
+import {BinVlvDataItems} from '@p2olab/pimad-types';
 
 export class BinVlv extends Vlv {
 
-	public readonly dataItems!: BinVlvRuntime;
+	public readonly dataItems!: BinVlvDataItems;
 
 	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false) {
 		super(options, connectionHandler);

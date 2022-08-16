@@ -24,15 +24,14 @@
  */
 
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
-import {DiagnosticElement, DiagnosticElementRuntime} from '../DiagnosticElement';
+import {DiagnosticElement} from '../DiagnosticElement';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
 import {keys} from 'ts-transformer-keys';
-
-export type HealthStateViewRuntime = DiagnosticElementRuntime;
+import {HealthStateViewDataItems} from '@p2olab/pimad-types';
 
 export class HealthStateView extends DiagnosticElement {
 
-	public readonly dataItems!: HealthStateViewRuntime;
+	public readonly dataItems!: HealthStateViewDataItems;
 
 	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false) {
 		super(options, connectionHandler);

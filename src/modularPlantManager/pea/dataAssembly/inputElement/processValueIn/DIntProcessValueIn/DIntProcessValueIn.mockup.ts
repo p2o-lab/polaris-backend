@@ -27,10 +27,11 @@ import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 import {getScaleSettingsDataItemModel, ScaleSettingMockup} from '../../../baseFunction/scaleSettings/ScaleSetting.mockup';
 import {getUnitSettingsDataItemModel, UnitSettingsMockup} from '../../../baseFunction/unitSettings/UnitSettings.mockup';
 import {getInputElementDataItemModel, InputElementMockup} from '../../InputElement.mockup';
-import {DataAssemblyModel, DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+import {DataAssemblyModel, DataItemModel} from '@p2olab/pimad-interface';
 
 import {getDataAssemblyModel} from '../../../DataAssembly.mockup';
 import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../../dataItem/DataItem.mockup';
+import {Access} from '@p2olab/pimad-types';
 
 const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/InputElement/DIntProcessValueIn';
 
@@ -41,7 +42,7 @@ function getDIntProcessValueInSpecificDataItemModels(namespace: number, objectBr
 	dataItem.name = 'VExt';
 	dataItem.dataType = 'Int32';
 	const ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.VExt`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;

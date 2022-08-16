@@ -46,7 +46,7 @@ describe('BinDrv', () => {
 		options = getBinDrvDataAssemblyModel(2, 'Variable', 'Variable');
 
 		it('should create BinDrv',  () => {
-			const dataAssembly = new BinDrv(options, connectionHandler);
+			const dataAssembly = new BinDrv(options, connectionHandler, true);
 
 			expect(dataAssembly.reset).to.be.not.undefined;
 			expect(dataAssembly.interlock).to.be.not.undefined;
@@ -78,25 +78,24 @@ describe('BinDrv', () => {
 	});
 
 	describe('dynamic', () => {
+
 		let mockupServer: MockupServer;
 		let connectionHandler: ConnectionHandler;
 		let dataAssembly: BinDrv;
+		let adapterId: string;
 
 		beforeEach(async function () {
 			this.timeout(10000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-
 			const binDrvMockup = new BinDrvMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			options = binDrvMockup.getDataAssemblyModel();
 			await mockupServer.start();
 			connectionHandler = new ConnectionHandler();
-			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
-			await connectionHandler.connect();
-
-			dataAssembly = new BinDrv(options, connectionHandler);
+			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
+			dataAssembly = new BinDrv(options, connectionHandler, true);
 			await dataAssembly.subscribe();
-			await connectionHandler.connect();
+			await connectionHandler.connect(adapterId);
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 		});
 

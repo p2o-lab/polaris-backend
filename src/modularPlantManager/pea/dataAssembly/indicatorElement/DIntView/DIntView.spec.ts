@@ -46,7 +46,7 @@ describe('DIntView', () => {
 		options = getDIntViewDataAssemblyModel(2, 'Variable', 'Variable');
 
 		it('should create DIntView', async () => {
-			const dataAssembly: DIntView = new DIntView(options, connectionHandler);
+			const dataAssembly: DIntView = new DIntView(options, connectionHandler, true);
 			expect(dataAssembly.dataItems.TagName).to.not.equal(undefined);
 			expect(dataAssembly.dataItems.TagDescription).to.not.equal(undefined);
 			expect(dataAssembly.dataItems.V).to.not.equal(undefined);
@@ -58,18 +58,21 @@ describe('DIntView', () => {
 
 	});
 	describe('dynamic', () => {
+
 		let mockupServer: MockupServer;
 		let connectionHandler: ConnectionHandler;
+		let adapterId: string;
 
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
+			await mockupServer.initialize();
 			const dIntViewMockup = new DIntViewMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			options = dIntViewMockup.getDataAssemblyModel();
 			await mockupServer.start();
-			connectionHandler= new ConnectionHandler();
-			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
-			await connectionHandler.connect();
+			connectionHandler = new ConnectionHandler();
+			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
+			await connectionHandler.connect(adapterId);
 		});
 
 		afterEach(async function () {
@@ -80,9 +83,9 @@ describe('DIntView', () => {
 
 		it('should subscribe successfully', async () => {
 
-			const dataAssembly: DIntView = new DIntView(options, connectionHandler);
+			const dataAssembly: DIntView = new DIntView(options, connectionHandler, true);
 			await dataAssembly.subscribe();
-			await connectionHandler.connect();
+			await connectionHandler.connect(adapterId);
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 
 			expect(dataAssembly.dataItems.WQC.value).equal(0);

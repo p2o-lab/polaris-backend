@@ -56,10 +56,12 @@ describe('DIntProcessValueIn', () => {
 		});
 	});
 	describe('dynamic', () => {
+
 		let mockupServer: MockupServer;
 		let connectionHandler: ConnectionHandler;
 		let dIntProcessValueInMockup: DIntProcessValueInMockup;
 		let dataAssembly: DIntProcessValueIn;
+		let adapterId: string;
 
 		beforeEach(async function () {
 			this.timeout(4000);
@@ -69,13 +71,11 @@ describe('DIntProcessValueIn', () => {
 			dIntProcessValueInMockup.scaleSettings.vSclMax= 1;
 			options = dIntProcessValueInMockup.getDataAssemblyModel();
 			await mockupServer.start();
-			connectionHandler= new ConnectionHandler();
-			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
-			await connectionHandler.connect();
-
+			connectionHandler = new ConnectionHandler();
+			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
 			dataAssembly = DataAssemblyFactory.create(options, connectionHandler) as DIntProcessValueIn;
 			await dataAssembly.subscribe();
-			await connectionHandler.connect();
+			await connectionHandler.connect(adapterId);
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 		});
 

@@ -31,8 +31,8 @@ import {OSLevelMockup} from './OSLevel.mockup';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
 import {getBinMonDataAssemblyModel} from '../../indicatorElement/BinView/BinMon/BinMon.mockup';
 import {DataAssemblyFactory} from '../../DataAssemblyFactory';
-import {BinMonRuntime} from '../../indicatorElement';
 import {getEndpointDataModel} from '../../../connectionHandler/ConnectionHandler.mockup';
+import {BinMonDataItems} from '@p2olab/pimad-types';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -48,7 +48,7 @@ describe('OSLevel', () => {
 		let baseFunction: OSLevel;
 
 		beforeEach(()=>{
-			baseFunction = new OSLevel(referenceDataAssembly.dataItems as BinMonRuntime);
+			baseFunction = new OSLevel(referenceDataAssembly.dataItems as BinMonDataItems);
 		});
 
 		it('should create OSLevel', async () => {
@@ -62,6 +62,7 @@ describe('OSLevel', () => {
 
 		let mockupServer: MockupServer;
 		let connectionHandler: ConnectionHandler;
+		let adapterId: string;
 
 		beforeEach(async function () {
 			this.timeout(4000);
@@ -70,8 +71,8 @@ describe('OSLevel', () => {
 			new OSLevelMockup( mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			await mockupServer.start();
 			connectionHandler = new ConnectionHandler();
-			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
-			await connectionHandler.connect();
+			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
+			await connectionHandler.connect(adapterId);
 		});
 
 		afterEach(async function () {
@@ -82,8 +83,8 @@ describe('OSLevel', () => {
 
 		it('should subscribe successfully', async () => {
 
-			const baseFunction = new OSLevel(referenceDataAssembly.dataItems as BinMonRuntime);
-			await connectionHandler.connect();
+			const baseFunction = new OSLevel(referenceDataAssembly.dataItems as BinMonDataItems);
+			await connectionHandler.connect(adapterId);
 			await new Promise((resolve => baseFunction.on('changed', resolve)));
 			expect(baseFunction.osLevel).to.equal(0);
 		}).timeout(5000);

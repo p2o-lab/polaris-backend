@@ -55,18 +55,21 @@ describe('OperationElement', () => {
 	});
 
 	describe('dynamic', () => {
+
 		let mockupServer: MockupServer;
 		let connectionHandler: ConnectionHandler;
+		let adapterId: string;
 
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
+			await mockupServer.initialize();
 			const operationElementMockup = new OperationElementMockup(	mockupServer.nameSpace,	mockupServer.rootObject,'Variable');
 			options = operationElementMockup.getDataAssemblyModel();
 			await mockupServer.start();
-			connectionHandler= new ConnectionHandler();
-			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
-			await connectionHandler.connect();
+			connectionHandler = new ConnectionHandler();
+			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
+			await connectionHandler.connect(adapterId);
 		});
 
 		afterEach(async function () {
@@ -77,9 +80,9 @@ describe('OperationElement', () => {
 
 		it('should subscribe successfully', async () => {
 
-			const dataAssembly = new OperationElement(options, connectionHandler);
+			const dataAssembly = new OperationElement(options, connectionHandler, true);
 			await dataAssembly.subscribe();
-			await connectionHandler.connect();
+			await connectionHandler.connect(adapterId);
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 			expect(dataAssembly.dataItems.OSLevel.value).equal(0);
 		}).timeout(4000);

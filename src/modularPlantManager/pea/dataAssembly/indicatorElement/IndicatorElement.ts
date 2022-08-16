@@ -24,18 +24,16 @@
  */
 
 import {ParameterInterface} from '@p2olab/polaris-interface';
-import {WQCRuntime} from '../baseFunction';
-import {DataAssembly, DataAssemblyDataItems} from '../DataAssembly';
+import {DataAssembly} from '../DataAssembly';
 import {WQC} from '../baseFunction';
 import {ConnectionHandler} from '../../connectionHandler/ConnectionHandler';
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {keys} from 'ts-transformer-keys';
-
-export type IndicatorElementRuntime = DataAssemblyDataItems & WQCRuntime
+import {IndicatorElementDataItems} from '@p2olab/pimad-types';
 
 export class IndicatorElement extends DataAssembly {
 
-	public readonly dataItems!: IndicatorElementRuntime;
+	public readonly dataItems!: IndicatorElementDataItems;
 
 	public wqc!: WQC;
 

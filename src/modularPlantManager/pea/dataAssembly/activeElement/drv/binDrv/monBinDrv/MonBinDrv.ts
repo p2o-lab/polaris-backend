@@ -24,17 +24,15 @@
  */
 
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
-import {FeedbackMonitoringRuntime} from '../../../../baseFunction';
-import {BinDrv, BinDrvRuntime} from '../BinDrv';
+import {BinDrv} from '../BinDrv';
 import {FeedbackMonitoring} from '../../../../baseFunction';
 import {ConnectionHandler} from '../../../../../connectionHandler/ConnectionHandler';
 import {keys} from 'ts-transformer-keys';
-
-export type MonBinDrvRuntime = BinDrvRuntime & FeedbackMonitoringRuntime;
+import {MonBinDrvDataItems} from '@p2olab/pimad-types';
 
 export class MonBinDrv extends BinDrv {
 
-	public readonly dataItems!: MonBinDrvRuntime;
+	public readonly dataItems!: MonBinDrvDataItems;
 
 	public feedBackMonitoring!: FeedbackMonitoring;
 

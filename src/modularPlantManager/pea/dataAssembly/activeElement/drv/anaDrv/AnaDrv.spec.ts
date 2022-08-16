@@ -29,21 +29,45 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
-import {getAnaDrvDataAssemblyModel} from './AnaDrv.mockup';
+import {AnaDrvMockup, getAnaDrvDataAssemblyModel} from './AnaDrv.mockup';
+import {MockupServer} from '../../../../../_utils';
+import {Drv} from '../Drv';
+import {DrvMockup} from '../Drv.mockup';
+import {getEndpointDataModel} from '../../../../connectionHandler/ConnectionHandler.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('AnaDrv', () => {
 
-	describe('', () => {
+	let options: DataAssemblyModel;
+
+	describe('static', () => {
 
 		const connectionHandler = new ConnectionHandler();
 
 		it('should create AnaDrv',  () => {
 			const dataAssemblyModel: DataAssemblyModel = getAnaDrvDataAssemblyModel(2, 'Variable', 'Variable');
-			const dataAssembly = new AnaDrv(dataAssemblyModel, connectionHandler);
+			const dataAssembly = new AnaDrv(dataAssemblyModel, connectionHandler, true);
 			expect(dataAssembly.sourceMode).to.not.be.undefined;
+
+			expect(dataAssembly.dataItems.FwdAut).to.be.not.undefined;
+			expect(dataAssembly.dataItems.FwdCtrl).to.be.not.undefined;
+			expect(dataAssembly.dataItems.FwdEn).to.be.not.undefined;
+			expect(dataAssembly.dataItems.FwdFbk).to.be.not.undefined;
+			expect(dataAssembly.dataItems.FwdFbkCalc).to.be.not.undefined;
+			expect(dataAssembly.dataItems.FwdOp).to.be.not.undefined;
+
+			expect(dataAssembly.dataItems.RevAut).to.be.not.undefined;
+			expect(dataAssembly.dataItems.RevCtrl).to.be.not.undefined;
+			expect(dataAssembly.dataItems.RevEn).to.be.not.undefined;
+			expect(dataAssembly.dataItems.RevFbk).to.be.not.undefined;
+			expect(dataAssembly.dataItems.RevFbkCalc).to.be.not.undefined;
+			expect(dataAssembly.dataItems.RevOp).to.be.not.undefined;
+
+			expect(dataAssembly.dataItems.StopAut).to.be.not.undefined;
+			expect(dataAssembly.dataItems.StopOp).to.be.not.undefined;
+			expect(dataAssembly.dataItems.Trip).to.be.not.undefined;
 
 			expect(dataAssembly.dataItems.RpmSclMax).to.not.be.undefined;
 			expect(dataAssembly.dataItems.RpmSclMin).to.not.be.undefined;
@@ -61,5 +85,79 @@ describe('AnaDrv', () => {
 			expect(dataAssembly.dataItems.RpmFbkCalc).to.not.be.undefined;
 			expect(dataAssembly.dataItems.RpmRbk).to.not.be.undefined;
 		});
+	});
+
+	describe('dynamic', () => {
+
+		let mockupServer: MockupServer;
+		let connectionHandler: ConnectionHandler;
+		let dataAssembly: AnaDrv;
+		let adapterId: string;
+
+		beforeEach(async function () {
+			this.timeout(10000);
+			mockupServer = new MockupServer();
+			await mockupServer.initialize();
+			const anaDrvMockup = new AnaDrvMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
+			options = anaDrvMockup.getDataAssemblyModel();
+			await mockupServer.start();
+			connectionHandler = new ConnectionHandler();
+			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
+			dataAssembly = new AnaDrv(options, connectionHandler, true);
+			await dataAssembly.subscribe();
+		});
+
+		afterEach(async function () {
+			this.timeout(4000);
+			await connectionHandler.disconnect();
+			await mockupServer.shutdown();
+		});
+
+		it('should subscribe successfully', async () => {
+			expect((dataAssembly).dataItems.OSLevel.value).equal(0);
+			expect((dataAssembly).dataItems.WQC.value).equal(0);
+
+			expect((dataAssembly).dataItems.StateChannel.value).equal(false);
+			expect((dataAssembly).dataItems.StateOffAut.value).equal(false);
+			expect((dataAssembly).dataItems.StateOpAut.value).equal(false);
+			expect((dataAssembly).dataItems.StateAutAut.value).equal(false);
+			expect((dataAssembly).dataItems.StateOffOp.value).equal(false);
+			expect((dataAssembly).dataItems.StateOpOp.value).equal(false);
+			expect((dataAssembly).dataItems.StateAutOp.value).equal(false);
+			expect((dataAssembly).dataItems.StateOpAct.value).equal(false);
+			expect((dataAssembly).dataItems.StateAutAct.value).equal(false);
+			expect((dataAssembly).dataItems.StateOffAct.value).equal(true);
+
+			expect(dataAssembly.dataItems.ResetOp.value).equal(false);
+			expect(dataAssembly.dataItems.ResetAut.value).equal(false);
+
+			expect(dataAssembly.dataItems.PermEn.value).equal(false);
+			expect(dataAssembly.dataItems.Permit.value).equal(false);
+			expect(dataAssembly.dataItems.IntlEn.value).equal(false);
+			expect(dataAssembly.dataItems.Interlock.value).equal(false);
+			expect(dataAssembly.dataItems.ProtEn.value).equal(false);
+			expect(dataAssembly.dataItems.Protect.value).equal(false);
+
+			expect(dataAssembly.dataItems.SafePos.value).equal(false);
+			expect(dataAssembly.dataItems.SafePosAct.value).equal(false);
+
+			expect(dataAssembly.dataItems.FwdAut.value).equal(false);
+			expect(dataAssembly.dataItems.FwdCtrl.value).equal(false);
+			expect(dataAssembly.dataItems.FwdEn.value).equal(false);
+			expect(dataAssembly.dataItems.FwdFbk.value).equal(false);
+			expect(dataAssembly.dataItems.FwdFbkCalc.value).equal(false);
+			expect(dataAssembly.dataItems.FwdOp.value).equal(false);
+
+			expect(dataAssembly.dataItems.RevAut.value).equal(false);
+			expect(dataAssembly.dataItems.RevCtrl.value).equal(false);
+			expect(dataAssembly.dataItems.RevEn.value).equal(false);
+			expect(dataAssembly.dataItems.RevFbk.value).equal(false);
+			expect(dataAssembly.dataItems.RevFbkCalc.value).equal(false);
+			expect(dataAssembly.dataItems.RevOp.value).equal(false);
+
+			expect(dataAssembly.dataItems.StopAut.value).equal(false);
+			expect(dataAssembly.dataItems.StopOp.value).equal(false);
+			expect(dataAssembly.dataItems.Trip.value).equal(false);
+		}).timeout(4000);
 	});
 });

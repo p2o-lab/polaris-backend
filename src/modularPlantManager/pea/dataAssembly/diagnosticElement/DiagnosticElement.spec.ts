@@ -46,7 +46,7 @@ describe('DiagnosticElement', () => {
 		options = getDiagnosticElementDataAssemblyModel(2, 'Variable', 'Variable');
 
 		it('should create DiagnosticElement', async () => {
-			const dataAssembly = new DiagnosticElement(options, emptyOPCUAConnection);
+			const dataAssembly = new DiagnosticElement(options, emptyOPCUAConnection, true);
 
 			expect(dataAssembly).to.be.not.undefined;
 			expect(dataAssembly.dataItems).to.be.not.undefined;
@@ -54,18 +54,20 @@ describe('DiagnosticElement', () => {
 		});
 	});
 	describe('dynamic', () => {
+
 		let mockupServer: MockupServer;
 		let connectionHandler: ConnectionHandler;
+		let adapterId: string;
 
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
-			const diagnosticElementMockup = new DiagnosticElementMockup( mockupServer.nameSpace, mockupServer.rootObject,'Variable');
+			await mockupServer.initialize();
+			const diagnosticElementMockup = new DiagnosticElementMockup(mockupServer.nameSpace, mockupServer.rootObject,'Variable');
 			options = diagnosticElementMockup.getDataAssemblyModel();
 			await mockupServer.start();
-			connectionHandler= new ConnectionHandler();
-			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
-			await connectionHandler.connect();
+			connectionHandler = new ConnectionHandler();
+			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
 		});
 
 		afterEach(async function () {
@@ -76,9 +78,9 @@ describe('DiagnosticElement', () => {
 
 		it('should subscribe successfully', async () => {
 
-			const dataAssembly = new DiagnosticElement(options, connectionHandler);
+			const dataAssembly = new DiagnosticElement(options, connectionHandler, true);
 			await dataAssembly.subscribe();
-			await connectionHandler.connect();
+			await connectionHandler.connect(adapterId);
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 
 			expect(dataAssembly.dataItems.WQC.value).equal(0);

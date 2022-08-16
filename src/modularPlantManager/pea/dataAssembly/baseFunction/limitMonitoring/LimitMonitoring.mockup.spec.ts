@@ -27,10 +27,9 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../_utils';
 import {getLimitMonitoringDataItemModel, LimitMonitoringMockup} from './LimitMonitoring.mockup';
-import {LimitMonitoringRuntime} from './LimitMonitoring';
-import { ConnectionHandler } from 'src/modularPlantManager/pea/connectionHandler/ConnectionHandler';
-import {DataItemAccessLevel} from '@p2olab/pimad-interface';
+import {ConnectionHandler} from 'src/modularPlantManager/pea/connectionHandler/ConnectionHandler';
 import {getEndpointDataModel} from '../../../connectionHandler/ConnectionHandler.mockup';
+import {Access} from '@p2olab/pimad-types';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -44,7 +43,6 @@ describe('LimitMonitoringMockup', () => {
 		beforeEach(async () => {
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-
 		});
 
 		describe('DIntLimitMonitoring', () => {
@@ -175,56 +173,56 @@ describe('LimitMonitoringMockup', () => {
 
 			let mockupServer: MockupServer;
 			let connectionHandler: ConnectionHandler;
+			let adapterId: string;
 
 			beforeEach(async function () {
 				this.timeout(5000);
 				mockupServer = new MockupServer();
-			await mockupServer.initialize();
-
+				await mockupServer.initialize();
 				new LimitMonitoringMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable', 'Ana');
 				await mockupServer.start();
-				connectionHandler= new ConnectionHandler();
-				connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
-				await connectionHandler.connect();
+				connectionHandler = new ConnectionHandler();
+				adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
 			});
+
 			afterEach(async () => {
 				await connectionHandler.disconnect();
 				await mockupServer.shutdown();
 			});
 
 			it('set and get VAHLim', async () => {
-				await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.VAHLim', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, 1);
-				await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.VAHLim', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
+				await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.VAHLim', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}}, 1);
+				await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.VAHLim', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}})
 					.then((dataValue) => expect((dataValue)?.value.value).to.equal(1));
 			}).timeout(2000);
 
 			it('set and get VWHLim', async () => {
-				await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.VWHLim', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, 1);
-				await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.VWHLim', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
+				await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.VWHLim', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}}, 1);
+				await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.VWHLim', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}})
 					.then((dataValue) => expect((dataValue)?.value.value).to.equal(1));
 			}).timeout(2000);
 
 			it('set and get VTHLim', async () => {
-				await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.VTHLim', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, 1);
-				await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.VTHLim', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
+				await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.VTHLim', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}}, 1);
+				await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.VTHLim', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}})
 					.then((dataValue) => expect((dataValue)?.value.value).to.equal(1));
 			}).timeout(2000);
 
 			it('set and get VTLLim', async () => {
-				await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.VTLLim', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, 1);
-				await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.VTLLim', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
+				await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.VTLLim', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}}, 1);
+				await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.VTLLim', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}})
 					.then((dataValue) => expect((dataValue)?.value.value).to.equal(1));
 			}).timeout(2000);
 
 			it('set and get VALLim', async () => {
-				await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.VALLim', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, 1);
-				await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.VALLim', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
+				await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.VALLim', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}}, 1);
+				await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.VALLim', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}})
 					.then((dataValue) => expect((dataValue)?.value.value).to.equal(1));
 			}).timeout(2000);
 
 			it('set and get VWLLim', async () => {
-				await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.VWLLim', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, 1);
-				await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.VWLLim', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
+				await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.VWLLim', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}}, 1);
+				await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.VWLLim', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}})
 					.then((dataValue) => expect((dataValue)?.value.value).to.equal(1));
 			}).timeout(2000);
 
@@ -235,55 +233,56 @@ describe('LimitMonitoringMockup', () => {
 
 			let mockupServer: MockupServer;
 			let connectionHandler: ConnectionHandler;
+			let adapterId: string;
+
 			beforeEach(async function () {
 				this.timeout(5000);
 				mockupServer = new MockupServer();
-			await mockupServer.initialize();
-
+				await mockupServer.initialize();
 				new LimitMonitoringMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable', 'DInt');
 				await mockupServer.start();
-				connectionHandler= new ConnectionHandler();
-				connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
-				await connectionHandler.connect();
+				connectionHandler = new ConnectionHandler();
+				adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
 			});
+
 			afterEach(async () => {
 				await connectionHandler.disconnect();
 				await mockupServer.shutdown();
 			});
 
 			it('set and get VAHLim', async () => {
-				await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.RpmMan', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, 1);
-				await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.RpmMan', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
+				await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.RpmMan', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}}, 1);
+				await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.RpmMan', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}})
 					.then((dataValue) => expect((dataValue)?.value.value).to.equal(1));
 			}).timeout(2000);
 
 			it('set and get VWHLim', async () => {
-				await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.RpmMan', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, 1);
-				await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.RpmMan', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
+				await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.RpmMan', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}}, 1);
+				await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.RpmMan', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}})
 					.then((dataValue) => expect((dataValue)?.value.value).to.equal(1));
 			}).timeout(2000);
 
 			it('set and get VTHLim', async () => {
-				await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.RpmMan', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, 1);
-				await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.RpmMan', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
+				await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.RpmMan', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}}, 1);
+				await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.RpmMan', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}})
 					.then((dataValue) => expect((dataValue)?.value.value).to.equal(1));
 			}).timeout(2000);
 
 			it('set and get VTLLim', async () => {
-				await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.RpmMan', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, 1);
-				await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.RpmMan', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
+				await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.RpmMan', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}}, 1);
+				await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.RpmMan', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}})
 					.then((dataValue) => expect((dataValue)?.value.value).to.equal(1));
 			}).timeout(2000);
 
 			it('set and get VALLim', async () => {
-				await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.RpmMan', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, 1);
-				await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.RpmMan', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
+				await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.RpmMan', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}}, 1);
+				await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.RpmMan', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}})
 					.then((dataValue) => expect((dataValue)?.value.value).to.equal(1));
 			}).timeout(2000);
 
 			it('set and get VWLLim', async () => {
-				await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.RpmMan', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, 1);
-				await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.RpmMan', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
+				await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.RpmMan', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}}, 1);
+				await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.RpmMan', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}})
 					.then((dataValue) => expect((dataValue)?.value.value).to.equal(1));
 			}).timeout(2000);
 		});

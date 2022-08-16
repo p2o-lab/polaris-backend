@@ -160,17 +160,43 @@ peaRouter.get('/:peaId/getConnectionSettings', (req: Request, res: Response) => 
 });
 
 /**
- * @api {post} /:peaId/updateConnectionSettings
+ * @api {post} /:peaId/initializeConnection
+ * @apiName InitializeConnection
+ * @apiGroup PEAController
+ * @apiParam {string} peaId
+ */
+peaRouter.post('/:peaId/initializeConnection', async (req: Request, res: Response) => {
+	const manager: ModularPlantManager = req.app.get('manager');
+	try {
+		const peaController = manager.findPEAController(req.params.peaId);
+		if (peaController) {
+			await peaController.initializeConnection();
+			res.status(200).send();
+		} else {
+			res.status(404).send(`Error: PEA with id ${req.params.peaId} not found`);
+		}
+	} catch (error) {
+		let message;
+		if (error instanceof Error) message = error.message;
+		else message = String(error);
+		console.log(message);
+		res.status(500).send(message);
+	}
+});
+
+
+/**
+ * @api {post} /:peaId/connection/:handlerId/update
  * @apiName PostConnectionSettings
  * @apiGroup PEAController
- * @apiParam {ConnectionSettingsOptions} options
+ * @apiParam {OpcUaEndpointSettings} options
  */
-peaRouter.post('/:peaId/updateConnectionSettings', asyncHandler(async (req: Request, res: Response) => {
+peaRouter.post('/:peaId/connection/:handlerId/update', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
 	try{
 		const peaController = manager.findPEAController(req.params.peaId);
 		if (peaController){
-			peaController.updateConnection(req.body);
+			peaController.updateConnectionAdapter(req.params.handlerId, req.body);
 			res.status(200).send('Successfully updated the connection settings!');
 		} else {
 			res.status(404).send(`Error: PEA with id ${req.params.peaId} not found`);
@@ -219,7 +245,7 @@ peaRouter.post('/:peaId/connect', asyncHandler(async (req: Request, res: Respons
 	try{
 		const peaController = manager.findPEAController(req.params.peaId);
 		if (peaController){
-			await peaController.connectAndSubscribe();
+			await peaController.connect();
 			res.status(200).send({peaId: peaController.id, status: 'Successfully connected'});
 		} else {
 			res.status(404).send(`Error: PEA with id ${req.params.peaId} not found`);
@@ -244,7 +270,7 @@ peaRouter.post('/:peaId/disconnect', asyncHandler(async (req: Request, res: Resp
 	try {
 		const peaController = manager.findPEAController(req.params.peaId);
 		if (peaController){
-			await peaController.disconnectAndUnsubscribe();
+			await peaController.disconnect();
 			res.status(200).send({peaId: peaController.id, status: 'Successfully disconnected'});
 		} else {
 			res.status(404).send(`Error: PEA with id ${req.params.peaId} not found`);

@@ -24,20 +24,14 @@
  */
 
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
-import {DataItem} from '../../../dataItem/DataItem';
-import {InputElement, InputElementRuntime} from '../../InputElement';
+import {InputElement} from '../../InputElement';
 import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
 import {keys} from 'ts-transformer-keys';
-
-export type BinProcessValueInRuntime = InputElementRuntime & {
-	VExt: DataItem<boolean>;
-	VState0: DataItem<boolean>;
-	VState1: DataItem<boolean>;
-};
+import {BinProcessValueInDataItems} from '@p2olab/pimad-types';
 
 export class BinProcessValueIn extends InputElement {
 
-	public readonly dataItems!: BinProcessValueInRuntime;
+	public readonly dataItems!: BinProcessValueInDataItems;
 
 	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false) {
 		super(options, connectionHandler);

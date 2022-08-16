@@ -31,14 +31,10 @@ import {
 	ClientSubscription,
 	coerceNodeId,
 	DataValue,
-	MessageSecurityMode,
 	MonitoringMode,
 	NodeId,
 	OPCUAClient,
-	SecurityPolicy,
 	TimestampsToReturn,
-	UserIdentityInfo,
-	UserIdentityInfoUserName,
 	UserTokenType,
 	Variant,
 	VariantArrayType
@@ -47,11 +43,22 @@ import {timeout} from 'promise-timeout';
 import {ClientMonitoredItemGroup} from 'node-opcua-client/source/client_monitored_item_group';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Category} from 'typescript-logging';
-import {OpcUaAuthenticationSettings, OpcUaAuthenticationType, OpcUaConnectionInfo, OpcUaConnectionSettings, OpcUaMessageSecurityModes, OpcUaSecurityPolicies, OpcUaSecuritySettings} from '@p2olab/polaris-interface';
 import {DataType} from 'node-opcua-client';
 import {IDProvider} from '../../../_utils';
 import {catOpcUA} from '../../../../logging';
 import {CIData} from '@p2olab/pimad-interface';
+import {OpcUaAdapterInfo, OpcUaEndpointInfo, OpcUaEndpointSetting, OpcUaUserSetting} from '@p2olab/polaris-interface';
+
+interface EndpointInfo {
+	endpointUrl: string;
+	securityMode?: string;
+	securityPolicy?: string;
+}
+
+export interface OpcUaConnectionAdapterOptions {
+	endpoint?: string;
+	name?: string;
+}
 
 
 /**
@@ -84,23 +91,23 @@ type OpcUaConnectionAdapterEmitter = StrictEventEmitter<EventEmitter, OpcUaConne
 
 export class OpcUaAdapter extends (EventEmitter as new() => OpcUaConnectionAdapterEmitter) {
 
-	public readonly id: string = IDProvider.generateIdentifier();
+	public readonly id = IDProvider.generateIdentifier();
+	public readonly name: string = 'OpcUaAdapter';
 	private readonly logger: Category = catOpcUA;
 
-	private _adapterConfig: OpcUaConnectionSettings;
+	// Endpoint related topics
+	private _endpoint: string | undefined;
+	private currentEndpointId: string | undefined;
+	private availableEndpoints: Map<string, EndpointInfo> = new Map<string, EndpointInfo>();
 
-	private readonly endpoint: string;
-	private userIdentitySetting!: UserIdentityInfo;
-	private securityMode: OpcUaMessageSecurityModes = OpcUaMessageSecurityModes.None;
-	private securityPolicy: OpcUaSecurityPolicies = OpcUaSecurityPolicies.None;
-
+	// OpcUa connection related topics
 	private namespaceArray: string[] = [];
 	private session: ClientSession | undefined;
 	private client: OPCUAClient | undefined;
 	private subscription: ClientSubscription | undefined;
+	private monitoringActive = false;
 
 	private readonly nodes: Map<string, CIData> = new Map<string, CIData>();
-
 	private dataItemNodeMapping: Map<string, NodeId> = new Map<string, NodeId>();
 	private nodeDataTypeMapping: Map<NodeId, DataType> = new Map<NodeId, DataType>();
 
@@ -112,119 +119,96 @@ export class OpcUaAdapter extends (EventEmitter as new() => OpcUaConnectionAdapt
 		return !!this.client && !!this.session;
 	}
 
-	constructor(adapterConfig: OpcUaConnectionSettings) {
-		super();
-		this._adapterConfig = adapterConfig;
-		if(this.validEndPointUrl(adapterConfig.endpointUrl)){
-			this.endpoint = adapterConfig.endpointUrl;
+	get endpoint(): string | undefined {
+		return this._endpoint;
+	}
+
+	set endpoint(value: string | undefined) {
+		if (value && this.validEndPointUrl(value)) {
+			this._endpoint = value;
 		} else {
-			throw new Error('Found invalid endpoint configuration.');
-		}
-
-		adapterConfig.authenticationSettings? this.setAuthenticationSettings(adapterConfig.authenticationSettings) : this.setAuthenticationSettingAnonymous();
-
-		const securitySettings = adapterConfig.securitySettings;
-		if (securitySettings) {
-			this.setSecuritySettings(securitySettings);
+			this._endpoint = undefined;
 		}
 
 	}
 
-	public get settingsInfo(): OpcUaConnectionInfo {
-		return {
-			endpointUrl: this._adapterConfig.endpointUrl,
-			connected: this.connected,
-			monitoredItemsCount: this.monitoredNodesCount(),
-			securitySettings: {
-				securityPolicy: OpcUaSecurityPolicies[this.securityPolicy],
-				securityMode: OpcUaMessageSecurityModes[this.securityMode],
-			},
-			authenticationSettings: this.authenticationSettingsInfo,
-		};
-	}
-
-	private get authenticationSettingsInfo(): OpcUaAuthenticationType {
-		let info;
-		switch (this.userIdentitySetting.type) {
-			case UserTokenType.Certificate:
-				info = OpcUaAuthenticationType.Certificate;
-				break;
-			case UserTokenType.UserName:
-				info = OpcUaAuthenticationType.UserName;
-				break;
-			case UserTokenType.Anonymous:
-				info = OpcUaAuthenticationType.Anonymous;
-				break;
-			default:
-				info = OpcUaAuthenticationType.Anonymous;
-				break;
-		}
-		return info;
-	}
-
-	/**
-	 * Set SecuritySettings of connection
-	 */
-	public setSecuritySettings(newSettings: OpcUaSecuritySettings): void {
-		this.securityMode = newSettings.securityMode;
-		this.securityPolicy = newSettings.securityPolicy;
-	}
-
-
-	/**
-	 * Set AuthenticationSettings of connection
-	 */
-	private setAuthenticationSettings(newSettings: OpcUaAuthenticationSettings): void {
-		const userCredentials = newSettings.userCredentials;
-		if (userCredentials) {
-			this.setAuthenticationSettingUserName(userCredentials.userName, userCredentials.password);
-		} else{
-			this.setAuthenticationSettingAnonymous();
+	constructor(options?: OpcUaConnectionAdapterOptions) {
+		super();
+		if (options) {
+			this.endpoint = options.endpoint;
+			if (options.name) {
+				this.name = options.name;
+			}
 		}
 	}
 
-	/**
-	 * Set UserIdentity to Anonymous
-	 */
-	private setAuthenticationSettingAnonymous(): void {
-		this.userIdentitySetting = {type: UserTokenType.Anonymous};
+
+	public async initialize(options?: OpcUaConnectionAdapterOptions): Promise<void> {
+		if (options) {
+			this.endpoint = options.endpoint;
+		}
+		await this.updateAvailableEndpoints();
+	}
+
+	async update(options: OpcUaConnectionAdapterOptions,) {
+		await this.disconnect();
+		await this.initialize(options);
+	}
+
+	private async updateAvailableEndpoints(): Promise<void> {
+		const endpointUrl = this.endpoint;
+		if (!endpointUrl) throw new Error('Can not resolve endpoints without initial endpoint!');
+		const client = OPCUAClient.create({});
+		await client.connect(endpointUrl).catch((e)=>console.log(e));
+		const endpoints = await client.getEndpoints();
+		const reducedEndpoints: EndpointInfo[] = endpoints.map(endpoint => ({
+			endpointUrl: (endpoint.endpointUrl || '').toString(),
+			securityMode: endpoint.securityMode.toString(),
+			securityPolicy: endpoint.securityPolicyUri?.toString(),
+		}));
+		await client.disconnect();
+		reducedEndpoints.forEach((eP) => {
+			this.availableEndpoints.set(IDProvider.generateIdentifier(), eP);
+		});
 	}
 
 
-	/**
-	 * Applies the current session UserIdentity
-	 * @returns {Promise<void>}
-	 */
-	private setAuthenticationSettingUserName(username: string, password: string): void {
-		this.userIdentitySetting =
-			{
-				type: UserTokenType.UserName,
-				userName: username,
-				password: password
-			} as UserIdentityInfoUserName;
+	private getSecurityMode(): string | undefined {
+		if (this.currentEndpointId) {
+			const endpointInfo = this.availableEndpoints.get(this.currentEndpointId);
+			if (!endpointInfo) return undefined;
+			return endpointInfo.securityMode;
+		}
+		return undefined;
 	}
+
+	private getSecurityPolicy(): string | undefined {
+		if (this.currentEndpointId) {
+			const endpointInfo = this.availableEndpoints.get(this.currentEndpointId);
+			if (!endpointInfo) return undefined;
+			return endpointInfo.securityPolicy;
+		}
+		return undefined;
+	}
+
 
 	/**
 	 * Open connection to server and establish session
 	 * @returns {Promise<void>}
 	 */
-	public async connect(): Promise<void> {
+	public async connect(endpointConfig: OpcUaEndpointSetting): Promise<void> {
 		if (this.connected) {
 			this.logger.debug(`[${this.id}] Already connected`);
 		} else {
+			this.currentEndpointId = endpointConfig.endpointId;
 			this.createClient();
 			await this.connectClient();
-			await this.createSession();
+			await this.createSession(endpointConfig.userSettings);
 			await this.readNameSpaceArray();
 			this.logger.info(`[${this.id}] Successfully connected`);
 			this.emit('connected');
 		}
 		return Promise.resolve();
-	}
-
-	public async reconnect(): Promise<void> {
-		if(this.connected)await this.disconnect();
-		await this.connect();
 	}
 
 	/**
@@ -245,19 +229,20 @@ export class OpcUaAdapter extends (EventEmitter as new() => OpcUaConnectionAdapt
 	 * read the value of provided NodeID information
 	 * @returns {Promise<DataValue | undefined>}
 	 */
-	public async readNode(ciData: CIData):  Promise<DataValue | undefined> {
-		if (!this.connected){
+	public async readNode(ciData: CIData): Promise<DataValue | undefined> {
+		if (!this.connected) {
 			return undefined;
 		}
 		const resolvedID = this.resolveNodeId(ciData);
-		return this.session?.read({nodeId: resolvedID });
+		const result = await this.session?.read({nodeId: resolvedID});
+		return result;
 	}
 
 	private async getBuiltInDataType(nodeId: NodeId): Promise<undefined | DataType> {
-		if (!this.connected){
+		if (!this.connected) {
 			return undefined;
 		}
-		if (!this.session){
+		if (!this.session) {
 			return undefined;
 		}
 		return this.session.getBuiltInDataType(nodeId);
@@ -312,11 +297,12 @@ export class OpcUaAdapter extends (EventEmitter as new() => OpcUaConnectionAdapt
 	public addDataItemToMonitoring(ciData: CIData, identifier?: string): string {
 		let monitoredItemKey = '';
 		const existingMonitoredItemKey: undefined | string = this.findAlreadyMonitoredNode(ciData);
-		if(!existingMonitoredItemKey){
+		if (!existingMonitoredItemKey) {
 			monitoredItemKey = identifier || IDProvider.generateIdentifier();
 			this.nodes.set(monitoredItemKey, ciData);
 		} else {
 			monitoredItemKey = existingMonitoredItemKey;
+			this.nodes.set(monitoredItemKey, ciData);
 		}
 		return monitoredItemKey;
 	}
@@ -324,7 +310,7 @@ export class OpcUaAdapter extends (EventEmitter as new() => OpcUaConnectionAdapt
 	private findAlreadyMonitoredNode(ciData: CIData): string | undefined {
 		let monitoredNodeKey: string | undefined = undefined;
 		for (const [key, value] of this.nodes) {
-			if (value.nodeId.identifier === ciData.nodeId.identifier && value.nodeId.namespaceIndex === ciData.nodeId.namespaceIndex){
+			if (value.nodeId.identifier === ciData.nodeId.identifier && value.nodeId.namespaceIndex === ciData.nodeId.namespaceIndex) {
 				monitoredNodeKey = key;
 			}
 		}
@@ -340,12 +326,12 @@ export class OpcUaAdapter extends (EventEmitter as new() => OpcUaConnectionAdapt
 	}
 
 	public async startMonitoring(samplingInterval = 100): Promise<void> {
-		const options = Array.from(this.nodes.values()).map((ciData: CIData) => {
-			return {
-				nodeId: this.resolveNodeId(ciData),
+		const options: {nodeId: NodeId, attributeId: AttributeIds}[] = [];
+		this.nodes.forEach((value, key) =>
+			options.push({
+				nodeId: this.resolveNodeId(value, key),
 				attributeId: AttributeIds.Value
-			};
-		});
+			}));
 		if (!this.subscription){
 			await this.createSubscription();
 		}
@@ -359,17 +345,24 @@ export class OpcUaAdapter extends (EventEmitter as new() => OpcUaConnectionAdapt
 				}, TimestampsToReturn.Both);
 
 			monitoredItemGroup.on('changed', (monitoredItem: ClientMonitoredItemBase, dataValue: DataValue) => {
-				this.logger.trace(`[${this.id}] ${monitoredItem.itemToMonitor.nodeId.toString()} changed to ${dataValue}`);
+				this.logger.trace(`[Adapter ${this.id}] ${monitoredItem.itemToMonitor.nodeId.toString()} changed to ${dataValue}`);
+				let dataItemOrigin = monitoredItem.itemToMonitor.nodeId.toString();
+				for (const [key, value] of this.dataItemNodeMapping.entries()) {
+					if (value.toString() == dataItemOrigin) {
+						dataItemOrigin = key;
+						break;
+					}
+				}
 				this.emit('monitoredNodeChanged',
 					{
-						monitoredNodeId: monitoredItem.itemToMonitor.nodeId.toString(),
+						monitoredNodeId: dataItemOrigin || '',
 						value: dataValue.value.value,
 						dataType: DataType[dataValue.value.dataType],
 						timestamp: dataValue.value.value.serverTimestamp || new Date()
 					});
 			});
-
 			await monitoredItemGroup.setMonitoringMode(MonitoringMode.Reporting);
+			this.monitoringActive = true;
 		}
 	}
 
@@ -378,8 +371,8 @@ export class OpcUaAdapter extends (EventEmitter as new() => OpcUaConnectionAdapt
 			this.client.removeAllListeners('close')
 				.removeAllListeners('connection_lost');
 		}
+		this.monitoringActive = false;
 	}
-
 
 	public monitoredNodesCount(): number {
 		return this.nodes.size;
@@ -387,14 +380,6 @@ export class OpcUaAdapter extends (EventEmitter as new() => OpcUaConnectionAdapt
 
 	public clearMonitoredNodes(): void{
 		this.nodes.clear();
-	}
-
-	private getNodeOpcUaMessageSecurityMode(): MessageSecurityMode{
-		return MessageSecurityMode[OpcUaMessageSecurityModes[this.securityMode] as keyof typeof MessageSecurityMode];
-	}
-
-	private getNodeOpcUaSecurityPolicy(): SecurityPolicy{
-		return SecurityPolicy[OpcUaSecurityPolicies[this.securityPolicy] as keyof typeof SecurityPolicy];
 	}
 
 	private createClient(): void {
@@ -406,19 +391,17 @@ export class OpcUaAdapter extends (EventEmitter as new() => OpcUaConnectionAdapt
 		this.client = OPCUAClient.create({
 				applicationName: 'NodeOPCUA-Client',
 				endpointMustExist: false,
-				securityMode: this.getNodeOpcUaMessageSecurityMode(),
-				securityPolicy: this.getNodeOpcUaSecurityPolicy(),
+				securityMode: this.getSecurityMode(),
+				securityPolicy: this.getSecurityPolicy(),
 				connectionStrategy: connectionStrategy,
 			})
 			.on('close', async () => {
 				this.logger.info(`[${this.id}] Connection closed to OPC UA server`);
 				await this.disconnect();
-				this.emit('disconnected');
 			})
 			.on('connection_lost', async () => {
 				this.logger.info(`[${this.id}] Connection lost to OPC UA server`);
 				await this.disconnect();
-				this.emit('disconnected');
 			})
 			.on('timed_out_request', () => {
 				this.logger.warn(`[${this.id}] timed out request - retrying connection`);
@@ -426,25 +409,42 @@ export class OpcUaAdapter extends (EventEmitter as new() => OpcUaConnectionAdapt
 	}
 
 	private async connectClient(): Promise<void> {
+		this.logger.info(`[${this.id}] start connecting`);
 		if (!this.client) {
 			throw new Error('Client must exist');
 		}
-		this.logger.info(`[${this.id}] start connect via endpoint: ${this.endpoint}`);
-		await timeout(this.client.connect(this.endpoint!), 2000);
-		this.logger.info(`[${this.id}] connected via endpoint: ${this.endpoint}`);
+		if (!this.currentEndpointId) {
+			throw new Error('No endpoint specified');
+		}
+		const endpoint = this.availableEndpoints.get(this.currentEndpointId);
+		if (!endpoint) {
+			throw new Error('No endpoint found!');
+		}
+		await this.client.connect(endpoint.endpointUrl);
+		this.logger.info(`[${this.id}] connected via endpoint: ${endpoint.endpointUrl}`);
 	}
 
 	private async disconnectClient(): Promise<void> {
 		if (this.client) {
 			await timeout(this.client.disconnect(), 1000);
+			this.emit('disconnected');
 		}
 	}
 
-	private async createSession(): Promise<void> {
+	private async createSession(userIdentityOptions?: OpcUaUserSetting): Promise<void> {
 		if (!this.client) {
 			throw new Error('Client should exist');
 		}
-		this.session = await this.client.createSession(this.userIdentitySetting);
+		if (userIdentityOptions) {
+			this.session = await this.client.createSession({
+				type: UserTokenType.UserName,
+				userName: userIdentityOptions.user,
+				password: userIdentityOptions.password
+			});
+		} else {
+			this.session = await this.client.createSession({type: UserTokenType.Anonymous});
+		}
+
 		this.logger.debug(`session created (#${this.session.sessionId})`);
 	}
 
@@ -571,7 +571,28 @@ export class OpcUaAdapter extends (EventEmitter as new() => OpcUaConnectionAdapt
 	private validEndPointUrl(endpointUrl: string): boolean {
 		if(endpointUrl.length === 0) return false;
 		const url = new URL(endpointUrl);
-		if(parseInt(url.port) > 65535) return false;
-		return true;
+		return parseInt(url.port) <= 65535;
+	}
+
+	public getAdapterInfo(): OpcUaAdapterInfo{
+		const endpoints: OpcUaEndpointInfo[] = [];
+		this.availableEndpoints.forEach((value, key) => {
+			endpoints.push({
+				endpointUrl: value.endpointUrl,
+				id: key,
+				securityMode: UserTokenType[value.securityMode as keyof typeof UserTokenType].toString(),
+				securityPolicy: value.securityPolicy?.split('#').pop()
+			});
+		});
+		return {
+			type: 'OpcUa',
+			connected: this.connected,
+			currentEndpointId: this.currentEndpointId,
+			endpoints: endpoints,
+			id: this.id,
+			monitoredItemsCount: this.monitoredNodesCount(),
+			monitoringActive: this.monitoringActive,
+			name: this.name
+		};
 	}
 }

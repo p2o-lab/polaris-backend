@@ -23,30 +23,9 @@
  * SOFTWARE.
  */
 
-import {DataItem} from '../../dataItem/DataItem';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {EventEmitter} from 'events';
-
-export type LimitMonitoringRuntime = {
-	VAHEn: DataItem<boolean>;
-	VAHLim: DataItem<number>;
-	VAHAct: DataItem<boolean>;
-	VWHEn: DataItem<boolean>;
-	VWHLim: DataItem<number>;
-	VWHAct: DataItem<boolean>;
-	VTHEn: DataItem<boolean>;
-	VTHLim: DataItem<number>;
-	VTHAct: DataItem<boolean>;
-	VALEn: DataItem<boolean>;
-	VALLim: DataItem<number>;
-	VALAct: DataItem<boolean>;
-	VWLEn: DataItem<boolean>;
-	VWLLim: DataItem<number>;
-	VWLAct: DataItem<boolean>;
-	VTLEn: DataItem<boolean>;
-	VTLLim: DataItem<number>;
-	VTLAct: DataItem<boolean>;
-};
+import {MTPDataTypes, VLimitMonitoringDataItems} from '@p2olab/pimad-types';
 
 /**
  * Events emitted by [[LimitMonitoring]]
@@ -57,11 +36,11 @@ export interface LimitMonitoringEvents {
 
 type LimitMonitoringEmitter = StrictEventEmitter<EventEmitter, LimitMonitoringEvents>;
 
-export class LimitMonitoring extends (EventEmitter as new() => LimitMonitoringEmitter) {
+export class LimitMonitoring<T extends string | number | boolean> extends (EventEmitter as new() => LimitMonitoringEmitter) {
 
-	public readonly dataItems!: LimitMonitoringRuntime;
+	public readonly dataItems!: VLimitMonitoringDataItems<T>;
 
-	constructor(requiredDataItems: Required<LimitMonitoringRuntime>) {
+	constructor(requiredDataItems: Required<VLimitMonitoringDataItems<T>>) {
 		super();
 
 		this.dataItems = requiredDataItems;

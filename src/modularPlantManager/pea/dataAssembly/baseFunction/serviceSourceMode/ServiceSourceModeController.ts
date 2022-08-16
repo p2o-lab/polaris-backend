@@ -24,20 +24,11 @@
  */
 
 import {ServiceSourceMode} from '@p2olab/polaris-interface';
-import {DataItem} from '../../dataItem/DataItem';
 import {catDataAssembly} from '../../../../../logging';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {EventEmitter} from 'events';
-
-export interface ServiceSourceModeRuntime {
-	SrcChannel: DataItem<boolean>;
-	SrcIntAct: DataItem<boolean>;
-	SrcIntAut: DataItem<boolean>;
-	SrcIntOp: DataItem<boolean>;
-	SrcExtAct: DataItem<boolean>;
-	SrcExtAut: DataItem<boolean>;
-	SrcExtOp: DataItem<boolean>;
-}
+import {MTPDataTypes, ServiceSourceModeDataItems} from '@p2olab/pimad-types';
+import {BaseDataItem} from '../../dataItem/DataItem';
 
 /**
  * Events emitted by [[ServiceSourceMode]]
@@ -52,23 +43,23 @@ type ServiceSourceModeEmitter = StrictEventEmitter<EventEmitter, ServiceSourceMo
 
 export class ServiceSourceModeController extends (EventEmitter as new() => ServiceSourceModeEmitter){
 
-	public readonly dataItems!: ServiceSourceModeRuntime;
+	public readonly dataItems!: ServiceSourceModeDataItems;
 
-	constructor(requiredDataItems: Required<ServiceSourceModeRuntime>) {
+	constructor(requiredDataItems: Required<ServiceSourceModeDataItems>) {
 		super();
 
 		this.dataItems = requiredDataItems;
 
 
-		this.dataItems.SrcChannel.on('changed', () => {
+		(this.dataItems.SrcChannel as BaseDataItem<boolean>).on('changed', () => {
 			this.emit('changed', {serviceSourceMode: this.getServiceSourceMode(), sourceChannel: this.dataItems.SrcChannel.value});
 		});
 		// TODO: Always two of them will change in parallel --> Smart way to just emit one event?
 		// Even if there are just inverted options both can be 0 initially, to not miss a change both were added here
-		this.dataItems.SrcIntAct.on('changed', () => {
+		(this.dataItems.SrcIntAct as BaseDataItem<boolean>).on('changed', () => {
 			this.emit('changed', {serviceSourceMode: this.getServiceSourceMode(), sourceChannel: this.dataItems.SrcChannel.value});
 		});
-		this.dataItems.SrcExtAct.on('changed', () => {
+		(this.dataItems.SrcExtAct as BaseDataItem<boolean>).on('changed', () => {
 			this.emit('changed', {serviceSourceMode: this.getServiceSourceMode(), sourceChannel: this.dataItems.SrcChannel.value});
 		});
 	}
@@ -138,9 +129,9 @@ export class ServiceSourceModeController extends (EventEmitter as new() => Servi
 	private async writeServiceSourceMode(serviceSourceMode: ServiceSourceMode): Promise<void> {
 		catDataAssembly.debug(`Write serviceSourceMode: ${serviceSourceMode}`);
 		if (serviceSourceMode === ServiceSourceMode.Extern) {
-			await this.dataItems.SrcExtOp.write(true);
+			await (this.dataItems.SrcExtOp as BaseDataItem<boolean>).write(true);
 		} else if (serviceSourceMode === ServiceSourceMode.Intern) {
-			await this.dataItems.SrcIntOp.write(true);
+			await (this.dataItems.SrcIntOp as BaseDataItem<boolean>).write(true);
 		}
 		catDataAssembly.debug('Set serviceSourceMode');
 	}

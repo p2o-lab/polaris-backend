@@ -55,19 +55,20 @@ describe('StringView', () => {
 		});
 	});
 	describe('dynamic', () => {
+
 		let mockupServer: MockupServer;
 		let connectionHandler: ConnectionHandler;
+		let adapterId: string;
 
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
-			
+			await mockupServer.initialize();
 			const stringViewMockup = new StringViewMockup( mockupServer.nameSpace, mockupServer.rootObject,'Variable');
 			options = stringViewMockup.getDataAssemblyModel();
 			await mockupServer.start();
-			connectionHandler= new ConnectionHandler();
-			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
-			await connectionHandler.connect();
+			connectionHandler = new ConnectionHandler();
+			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
 		});
 
 		afterEach(async function () {
@@ -77,9 +78,9 @@ describe('StringView', () => {
 		});
 
 		it('should subscribe successfully', async () => {
-			const dataAssembly: StringView = new StringView(options, connectionHandler);
+			const dataAssembly: StringView = new StringView(options, connectionHandler, true);
 			await dataAssembly.subscribe();
-			await connectionHandler.connect();
+			await connectionHandler.connect(adapterId);
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 
 			expect(dataAssembly.dataItems.WQC.value).equal(0);
@@ -87,9 +88,9 @@ describe('StringView', () => {
 		}).timeout(4000);
 
 		it('get Text', async () => {
-			const dataAssembly: StringView = new StringView(options, connectionHandler);
+			const dataAssembly: StringView = new StringView(options, connectionHandler, true);
 			await dataAssembly.subscribe();
-			await connectionHandler.connect();
+			await connectionHandler.connect(adapterId);
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 			expect(dataAssembly.Text).to.equal('dummyText');
 		}).timeout(4000);

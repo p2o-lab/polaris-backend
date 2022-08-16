@@ -23,7 +23,6 @@
  * SOFTWARE.
  */
 
-import {OpcUaConnectionSettings} from '@p2olab/polaris-interface';
 import {ModularPlantManager, PEA} from '../../../modularPlantManager';
 import {Server} from '../../server';
 
@@ -32,10 +31,11 @@ import {MockupServer} from '../../../modularPlantManager/_utils';
 import {AnaViewMockup} from '../../../modularPlantManager/pea/dataAssembly/indicatorElement/AnaView/AnaView.mockup';
 import {ServiceControlMockup} from '../../../modularPlantManager/pea/dataAssembly/serviceControl/ServiceControl.mockup';
 import {expect} from 'chai';
-import {Endpoint, PEAModel} from '@p2olab/pimad-interface';
+import { PEAModel} from '@p2olab/pimad-interface';
 import * as peaModelFileContent from 'src/modularPlantManager/peaModel.spec.json';
 import {getEmptyPEAModel} from '../../../modularPlantManager/pea/PEA.mockup';
 import {PEAProvider} from '../../../peaProvider/PEAProvider';
+import {OpcUaEndpointSetting} from '@p2olab/polaris-interface';
 
 const peaModel = peaModelFileContent as unknown as PEAModel;
 
@@ -170,7 +170,7 @@ describe('PEARoutes', () => {
 					authenticationSettings: 'Anonymous'
 				});
 
-			const options: OpcUaConnectionSettings = {endpointUrl: 'localhost:4334'};
+			const options: OpcUaEndpointSetting = {endpointId: 'localhost:4334'};
 			await request(app).post(`/api/pea/${peaController.id}/updateConnectionSettings`)
 				.send(options)
 				.expect(200)
@@ -188,7 +188,7 @@ describe('PEARoutes', () => {
 		});
 
 		it('updateServerSettings should fail with invalid peaId', async () => {
-			const options: OpcUaConnectionSettings = {endpointUrl: 'localhost:4334'};
+			const options: OpcUaEndpointSetting = {endpointId: 'localhost:4334'};
 			await request(app).post('/api/pea/xyz/updateConnectionSettings')
 				.send(options)
 				.expect(404)

@@ -24,40 +24,14 @@
  */
 
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
-import {DataItem} from '../../../dataItem/DataItem';
-import {LockView4, LockView4Runtime} from '../LockView4';
+import {LockView4} from '../LockView4';
 import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
 import {keys} from 'ts-transformer-keys';
-
-export type LockView8Runtime = LockView4Runtime & {
-	In5En: DataItem<boolean>;
-	In5: DataItem<boolean>;
-	In5QC: DataItem<number>;
-	In5Inv: DataItem<boolean>;
-	In5Txt: DataItem<string>;
-
-	In6En: DataItem<boolean>;
-	In6: DataItem<boolean>;
-	In6QC: DataItem<number>;
-	In6Inv: DataItem<boolean>;
-	In6Txt: DataItem<string>;
-
-	In7En: DataItem<boolean>;
-	In7: DataItem<boolean>;
-	In7QC: DataItem<number>;
-	In7Inv: DataItem<boolean>;
-	In7Txt: DataItem<string>;
-
-	In8En: DataItem<boolean>;
-	In8: DataItem<boolean>;
-	In8QC: DataItem<number>;
-	In8Inv: DataItem<boolean>;
-	In8Txt: DataItem<string>;
-};
+import {LockView8DataItems} from '@p2olab/pimad-types';
 
 export class LockView8 extends LockView4 {
 
-	public readonly dataItems!: LockView8Runtime;
+	public readonly dataItems!: LockView8DataItems;
 
 	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false) {
 		super(options, connectionHandler);

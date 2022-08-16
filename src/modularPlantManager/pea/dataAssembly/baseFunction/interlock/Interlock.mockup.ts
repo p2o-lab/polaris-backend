@@ -23,9 +23,10 @@
  * SOFTWARE.
  */
 
-import {DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+import {DataItemModel} from '@p2olab/pimad-interface';
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
 import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../dataItem/DataItem.mockup';
+import {Access} from '@p2olab/pimad-types';
 
 
 function getInterlockSpecificDataItemModels(namespace: number, objectBrowseName: string): DataItemModel[] {
@@ -35,7 +36,7 @@ function getInterlockSpecificDataItemModels(namespace: number, objectBrowseName:
   dataItem.name = 'PermEn';
   dataItem.dataType = 'Boolean';
   let ciOptions = getEmptyCIDataModel();
-  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.access = Access.ReadWriteAccess;
   ciOptions.nodeId.identifier = `${objectBrowseName}.PermEn`;
   ciOptions.nodeId.namespaceIndex = `${namespace}`;
   dataItem.cIData = ciOptions;
@@ -45,7 +46,7 @@ function getInterlockSpecificDataItemModels(namespace: number, objectBrowseName:
   dataItem.name = 'Permit';
   dataItem.dataType = 'Boolean';
   ciOptions = getEmptyCIDataModel();
-  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.access = Access.ReadWriteAccess;
   ciOptions.nodeId.identifier = `${objectBrowseName}.Permit`;
   ciOptions.nodeId.namespaceIndex = `${namespace}`;
   dataItem.cIData = ciOptions;
@@ -55,7 +56,7 @@ function getInterlockSpecificDataItemModels(namespace: number, objectBrowseName:
   dataItem.name = 'IntlEn';
   dataItem.dataType = 'Boolean';
   ciOptions = getEmptyCIDataModel();
-  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.access = Access.ReadWriteAccess;
   ciOptions.nodeId.identifier = `${objectBrowseName}.IntlEn`;
   ciOptions.nodeId.namespaceIndex = `${namespace}`;
   dataItem.cIData = ciOptions;
@@ -65,7 +66,7 @@ function getInterlockSpecificDataItemModels(namespace: number, objectBrowseName:
   dataItem.name = 'Interlock';
   dataItem.dataType = 'Boolean';
   ciOptions = getEmptyCIDataModel();
-  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.access = Access.ReadWriteAccess;
   ciOptions.nodeId.identifier = `${objectBrowseName}.Interlock`;
   ciOptions.nodeId.namespaceIndex = `${namespace}`;
   dataItem.cIData = ciOptions;
@@ -75,7 +76,7 @@ function getInterlockSpecificDataItemModels(namespace: number, objectBrowseName:
   dataItem.name = 'ProtEn';
   dataItem.dataType = 'Boolean';
   ciOptions = getEmptyCIDataModel();
-  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.access = Access.ReadWriteAccess;
   ciOptions.nodeId.identifier = `${objectBrowseName}.ProtEn`;
   ciOptions.nodeId.namespaceIndex = `${namespace}`;
   dataItem.cIData = ciOptions;
@@ -85,7 +86,7 @@ function getInterlockSpecificDataItemModels(namespace: number, objectBrowseName:
   dataItem.name = 'Protect';
   dataItem.dataType = 'Boolean';
   ciOptions = getEmptyCIDataModel();
-  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.access = Access.ReadWriteAccess;
   ciOptions.nodeId.identifier = `${objectBrowseName}.Protect`;
   ciOptions.nodeId.namespaceIndex = `${namespace}`;
   dataItem.cIData = ciOptions;

@@ -27,8 +27,6 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {getLockView8DataAssemblyModel, getLockView8DataItemModel, LockView8Mockup} from './LockView8.mockup';
 import {MockupServer} from '../../../../../_utils';
-import {DataAssemblyModel} from '@p2olab/pimad-interface';
-import {LockView8Runtime} from './LockView8';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -36,7 +34,9 @@ const expect = chai.expect;
 describe('LockView8Mockup', () => {
 
     describe('static', () => {
+
         let mockupServer: MockupServer;
+
         beforeEach(async()=>{
             mockupServer = new MockupServer();
         });

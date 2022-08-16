@@ -27,8 +27,6 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {getOperationElementDataAssemblyModel, getOperationElementDataItemModel, OperationElementMockup} from './OperationElement.mockup';
 import {MockupServer} from '../../../_utils';
-import {DataAssemblyModel} from '@p2olab/pimad-interface';
-import {OperationElementRuntime} from './OperationElement';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -42,6 +40,7 @@ describe('OperationElementMockup', () => {
         beforeEach(async function (){
             this.timeout(5000);
             mockupServer = new MockupServer();
+            await mockupServer.initialize();
         });
 
         it('should create OperationElementMockup', async () => {

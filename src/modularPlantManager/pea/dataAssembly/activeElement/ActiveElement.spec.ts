@@ -44,7 +44,7 @@ describe('ActiveElement', () => {
 		it('should create ActiveElement', () => {
 			const connectionHandler = new ConnectionHandler();
 			dataAssemblyModel = getActiveElementOptions(2, 'Variable', 'Variable') as DataAssemblyModel;
-			const dataAssembly = new ActiveElement(dataAssemblyModel, connectionHandler);
+			const dataAssembly = new ActiveElement(dataAssemblyModel, connectionHandler, true);
 			expect(dataAssembly).to.be.not.undefined;
 			expect(dataAssembly.wqc).to.be.not.undefined;
 			expect(dataAssembly.osLevel).to.not.be.undefined;
@@ -55,6 +55,7 @@ describe('ActiveElement', () => {
 
 		let mockupServer: MockupServer;
 		let connectionHandler: ConnectionHandler;
+		let adapterId: string;
 
 		beforeEach(async function () {
 			this.timeout(4000);
@@ -64,7 +65,7 @@ describe('ActiveElement', () => {
 			dataAssemblyModel = mockup.getDataAssemblyModel();
 			await mockupServer.start();
 			connectionHandler = new ConnectionHandler();
-			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
+			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
 		});
 
 		afterEach(async function () {
@@ -74,10 +75,9 @@ describe('ActiveElement', () => {
 		});
 
 		it('should subscribe successfully', async () => {
-
-			const dataAssembly = new ActiveElement(dataAssemblyModel, connectionHandler);
+			const dataAssembly = new ActiveElement(dataAssemblyModel, connectionHandler, true);
 			await dataAssembly.subscribe();
-			await connectionHandler.connect();
+			await connectionHandler.connect(adapterId);
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 
 			expect(dataAssembly.wqc.WQC).equal(0);

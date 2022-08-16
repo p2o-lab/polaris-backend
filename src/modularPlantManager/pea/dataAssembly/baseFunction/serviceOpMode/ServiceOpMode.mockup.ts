@@ -25,8 +25,9 @@
 
 import {OperationMode} from '@p2olab/polaris-interface';
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+import {DataItemModel} from '@p2olab/pimad-interface';
 import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../dataItem/DataItem.mockup';
+import {Access} from '@p2olab/pimad-types';
 
 
 function getServiceOpModeSpecificDataItemModels(namespace: number, objectBrowseName: string): DataItemModel[] {
@@ -36,7 +37,7 @@ function getServiceOpModeSpecificDataItemModels(namespace: number, objectBrowseN
 	dataItem.name = 'StateChannel';
 	dataItem.dataType = 'Boolean';
 	let ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.StateChannel`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -46,7 +47,7 @@ function getServiceOpModeSpecificDataItemModels(namespace: number, objectBrowseN
 	dataItem.name = 'StateOffAut';
 	dataItem.dataType = 'Boolean';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.StateOffAut`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -56,7 +57,7 @@ function getServiceOpModeSpecificDataItemModels(namespace: number, objectBrowseN
 	dataItem.name = 'StateOpAut';
 	dataItem.dataType = 'Boolean';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.StateOpAut`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -66,7 +67,7 @@ function getServiceOpModeSpecificDataItemModels(namespace: number, objectBrowseN
 	dataItem.name = 'StateAutAut';
 	dataItem.dataType = 'Boolean';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.StateAutAut`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -76,7 +77,7 @@ function getServiceOpModeSpecificDataItemModels(namespace: number, objectBrowseN
 	dataItem.name = 'StateOffOp';
 	dataItem.dataType = 'Boolean';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.StateOffOp`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -86,7 +87,7 @@ function getServiceOpModeSpecificDataItemModels(namespace: number, objectBrowseN
 	dataItem.name = 'StateOpOp';
 	dataItem.dataType = 'Boolean';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.StateOpOp`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -96,7 +97,7 @@ function getServiceOpModeSpecificDataItemModels(namespace: number, objectBrowseN
 	dataItem.name = 'StateAutOp';
 	dataItem.dataType = 'Boolean';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.StateAutOp`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -106,7 +107,7 @@ function getServiceOpModeSpecificDataItemModels(namespace: number, objectBrowseN
 	dataItem.name = 'StateOpAct';
 	dataItem.dataType = 'Boolean';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.StateOpAct`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -116,7 +117,7 @@ function getServiceOpModeSpecificDataItemModels(namespace: number, objectBrowseN
 	dataItem.name = 'StateAutAct';
 	dataItem.dataType = 'Boolean';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.StateAutAct`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -126,7 +127,7 @@ function getServiceOpModeSpecificDataItemModels(namespace: number, objectBrowseN
 	dataItem.name = 'StateOffAct';
 	dataItem.dataType = 'Boolean';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.StateOffAct`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;

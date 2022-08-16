@@ -23,16 +23,10 @@
  * SOFTWARE.
  */
 
-import {DataItem} from '../dataItem/DataItem';
-import {
-	DataAssembly, DataAssemblyDataItems, OpModeRuntime, OSLevel, OSLevelRuntime, WQCRuntime
-} from '../index';
+import {DataAssembly, OSLevel} from '../index';
 import {OperationMode, ServiceSourceMode} from '@p2olab/polaris-interface';
 import {WQC} from '../baseFunction';
-import {
-	ServiceSourceModeController,
-	ServiceSourceModeRuntime
-} from '../baseFunction/serviceSourceMode/ServiceSourceModeController';
+import {ServiceSourceModeController} from '../baseFunction/serviceSourceMode/ServiceSourceModeController';
 import {BaseServiceEvents} from '../../serviceSet';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {EventEmitter} from 'events';
@@ -42,24 +36,8 @@ import {ServiceOpMode} from '../baseFunction/serviceOpMode/ServiceOpMode';
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {ConnectionHandler} from '../../connectionHandler/ConnectionHandler';
 import {keys} from 'ts-transformer-keys';
-
-export type ServiceControlRuntime = DataAssemblyDataItems & OpModeRuntime & OSLevelRuntime & ServiceSourceModeRuntime & WQCRuntime & {
-	CommandOp: DataItem<number>;
-	CommandInt: DataItem<number>;
-	CommandExt: DataItem<number>;
-	CommandEn: DataItem<number>;
-	StateCur: DataItem<number>;
-
-	ProcedureOp: DataItem<number>;
-	ProcedureExt: DataItem<number>;
-	ProcedureInt: DataItem<number>;
-	ProcedureCur: DataItem<number>;
-	ProcedureReq: DataItem<number>;
-
-	InteractQuestionID: DataItem<number>;
-	InteractAnswerID: DataItem<number>;
-	PosTextID: DataItem<number>;
-};
+import {MTPDataTypes, ServiceControlDataItems} from '@p2olab/pimad-types';
+import {BaseDataItem} from '../dataItem/DataItem';
 
 /**
  * Events emitted by [[ServiceControl]]
@@ -83,7 +61,7 @@ type ServiceControlEmitter = StrictEventEmitter<EventEmitter, ServiceControlEven
 
 export class ServiceControl extends DataAssembly {
 
-	public readonly dataItems!: ServiceControlRuntime;
+	public readonly dataItems!: ServiceControlDataItems;
 	public readonly eventEmitter!: ServiceControlEmitter;
 
 	public opMode!: ServiceOpMode;
@@ -137,42 +115,42 @@ export class ServiceControl extends DataAssembly {
 
 		this.wqc.on('changed', (data) => {
 			this.logger.debug(`WQC changed: ${JSON.stringify(data)}`);
-			this.emit('wqc', data);
+			this.eventEmitter.emit('wqc', data);
 		});
 		this.opMode.on('changed', (data) => {
 			this.logger.debug(`OpMode changed: ${JSON.stringify(data)}`);
-			this.emit('opMode', data);
+			this.eventEmitter.emit('opMode', data.opMode);
 		});
 		this.serviceSourceMode.on('changed', (data) => {
 			this.logger.debug(`ServiceSourceMode changed: ${JSON.stringify(data.serviceSourceMode)}`);
-			this.emit('serviceSourceMode', data.serviceSourceMode);
+			this.eventEmitter.emit('serviceSourceMode', data.serviceSourceMode);
 		});
 		this.osLevel.on('changed', (data) => {
 			this.logger.debug(`OSLevel changed: ${JSON.stringify(data)}`);
-			this.emit('osLevel', data);
+			this.eventEmitter.emit('osLevel', data);
 		});
-		this.dataItems.ProcedureCur.on('changed', (data) => {
+		(this.dataItems.ProcedureCur as BaseDataItem<number>).on('changed', (data) => {
 			this.logger.debug(`Procedure changed: ${JSON.stringify(data.value)}`);
-			this.emit('procedure', {
+			this.eventEmitter.emit('procedure', {
 				requestedProcedure: this.dataItems.ProcedureReq.value,
 				currentProcedure: this.dataItems.ProcedureCur.value
 			});
 		});
-		this.dataItems.ProcedureReq.on('changed', (data) => {
+		(this.dataItems.ProcedureReq as BaseDataItem<number>).on('changed', (data) => {
 			this.logger.debug(`Procedure changed: ${JSON.stringify(data.value)}`);
-			this.emit('procedure', {
+			this.eventEmitter.emit('procedure', {
 				requestedProcedure: this.dataItems.ProcedureReq.value,
 				currentProcedure: this.dataItems.ProcedureCur.value
 			});
 		});
-		this.dataItems.StateCur.on('changed', () => {
-			this.emit('state', this.dataItems.StateCur.value);
+		(this.dataItems.StateCur as BaseDataItem<number>).on('changed', () => {
+			this.eventEmitter.emit('state', this.dataItems.StateCur.value);
 		});
-		this.dataItems.InteractQuestionID.on('changed', () => {
-			this.emit('question', this.dataItems.InteractQuestionID.value);
+		(this.dataItems.InteractQuestionID as BaseDataItem<number>).on('changed', () => {
+			this.eventEmitter.emit('question', this.dataItems.InteractQuestionID.value);
 		});
-		this.dataItems.CommandEn.on('changed', () => {
-			this.emit('commandEn', this.dataItems.CommandEn.value);
+		(this.dataItems.CommandEn as BaseDataItem<number>).on('changed', () => {
+			this.eventEmitter.emit('commandEn', this.dataItems.CommandEn.value);
 		});
 	}
 }

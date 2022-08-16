@@ -24,22 +24,27 @@
  */
 
 import {DataAssemblyOptions, ParameterInterface} from '@p2olab/polaris-interface';
-import {DataItem} from './dataItem/DataItem';
-
 import {EventEmitter} from 'events';
 import {catDataAssembly} from '../../../logging';
 import {DataItemFactory, getDataItemModel} from './dataItem/DataItemFactory';
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {keys} from 'ts-transformer-keys';
 import {ConnectionHandler} from '../connectionHandler/ConnectionHandler';
+import StrictEventEmitter from 'strict-event-emitter-types';
+import {DataAssemblyDataItems, DataItem, POLDataType} from '@p2olab/pimad-types';
+import {BaseDataItem} from './dataItem/DataItem';
 
 
-export interface DataAssemblyDataItems {
-	TagName: DataItem<string>;
-	TagDescription: DataItem<string>;
+/**
+ * Events emitted by [[DataAssembly]]
+ */
+export interface DataAssemblyEvents {
+	changed: {key: string, dataItem: DataItem<any>};
 }
 
-export class DataAssembly extends EventEmitter {
+type DataAssemblyEmitter = StrictEventEmitter<EventEmitter, DataAssemblyEvents>;
+
+export class DataAssembly extends (EventEmitter as new()=> DataAssemblyEmitter) {
 
 	public readonly name: string;
 	public readonly metaModelRef: string;
@@ -68,14 +73,30 @@ export class DataAssembly extends EventEmitter {
 			const keyList = keys<typeof this.dataItems>();
 			this.initializeDataItems(options, keyList);
 			this.initializeBaseFunctions();
-		}	
+		}
+		this.subscribe().then();
 	}
 
 	protected initializeDataItems(options:DataAssemblyModel, keyList: string[]){
 		this.dataItems = <typeof this.dataItems>{};
 		keyList.forEach(k => {
+			let dataType: string = POLDataType[k as keyof typeof POLDataType];
+			if (dataType === 'context'){
+				if (this.metaModelRef.includes('Bin')){
+					dataType = 'boolean';
+				} else if (this.metaModelRef.includes('String')){
+					dataType = 'string';
+				} else {
+					dataType = 'number';
+				}
+			}
 			const resolvedOptions = getDataItemModel(options, k);
-			this.dataItems[k as keyof typeof this.dataItems] = DataItemFactory.create(resolvedOptions, this.connectionHandler);
+			this.dataItems[k as keyof typeof this.dataItems] = DataItemFactory.create(
+				{
+					dataItemModel: resolvedOptions,
+					dataType: 'string',
+					connectionHandler: this.connectionHandler
+				});
 		});
 	}
 
@@ -90,19 +111,19 @@ export class DataAssembly extends EventEmitter {
 	 */
 	public async subscribe(): Promise<void> {
 		if (!this.subscriptionActive) {
-			catDataAssembly.info(`Subscribe to ${this.name} ` +
-				`with variables ${Object.keys(this.dataItems)}`);
+			catDataAssembly.debug(`Subscribe to DataItems ${Object.keys(this.dataItems)}`);
 			await Promise.all(
 				Object.entries(this.dataItems).map(([key, dataItem]: [string, DataItem<any>]) => {
-					dataItem.on('changed', () => {
+					(dataItem as BaseDataItem<any>).on('changed', () => {
 						catDataAssembly.trace(`Emit ${this.name}.${key} = ${dataItem.value}`);
-						this.emit(key, dataItem);
-						this.emit('changed');
+						this.emit('changed', {key: key, dataItem: dataItem});
 					});
 				}));
-		}
 			this.subscriptionActive = true;
-			catDataAssembly.info(`successfully subscribed to all variables from ${this.name}`);
+			catDataAssembly.debug('Successfully subscribed to all DataItems');
+		} else {
+			catDataAssembly.info('Bad Nothing to do! Subscription is already active!');
+		}
 	}
 
 	/**
@@ -114,7 +135,7 @@ export class DataAssembly extends EventEmitter {
 		Object.values(this.dataItems)
 			.filter((dataItem) => dataItem !== undefined)
 			.forEach((dataItem) => {
-				dataItem.removeAllListeners('changed');
+				(dataItem as BaseDataItem<any>).removeAllListeners('changed');
 			});
 	}
 
@@ -130,7 +151,7 @@ export class DataAssembly extends EventEmitter {
 	 * Getter of the timestamp from last change of the default ReadDataItem
 	 */
 	public getLastDefaultReadValueUpdate(): Date | undefined {
-		return this.defaultReadDataItem?.lastChange;
+		return (this.defaultReadDataItem as BaseDataItem<any>).lastChange;
 	}
 
 	/**
@@ -144,7 +165,7 @@ export class DataAssembly extends EventEmitter {
 	 * Getter of the timestamp from last change of the default WriteDataItem
 	 */
 	public getLastDefaultWriteValueUpdate(): Date | undefined {
-		return this.defaultWriteDataItem?.lastChange;
+		return (this.defaultWriteDataItem as BaseDataItem<any>)?.lastChange;
 	}
 
 	public toDataAssemblyOptionsJson(): DataAssemblyOptions {

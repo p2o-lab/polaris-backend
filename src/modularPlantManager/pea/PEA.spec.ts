@@ -64,14 +64,14 @@ describe('PEAController', () => {
 		});
 
 		afterEach(async () => {
-			await pea.disconnectAndUnsubscribe();
+			await pea.disconnect();
 			await mockupServer.shutdown();
 		});
 
 		context('connect, subscribe',()=>{
 
 			it('should connect and subscribe',  async() => {
-				return expect(pea.connectAndSubscribe()).to.not.be.rejected;
+				return expect(pea.connect()).to.not.be.rejected;
 			});
 
 			it('should fail to subscribe, missing variable on mockupServer',  async() => {
@@ -84,7 +84,7 @@ describe('PEAController', () => {
 				new ServiceControlMockup(mockupServer.nameSpace,
 					mockupServer.rootObject, 'Trigonometry');
 				await mockupServer.start();
-				return expect(pea.connectAndSubscribe()).to.be.rejectedWith('Timeout: Could not subscribe to Variable.V');
+				return expect(pea.connect()).to.be.rejectedWith('Timeout: Could not subscribe to Variable.V');
 			}).timeout(5000);
 
 
@@ -93,22 +93,22 @@ describe('PEAController', () => {
 				faultyPEAModel.endpoints[0].value = 'wrongUrl';
 				faultyPEAModel.endpoints[0].defaultValue = 'wrongUrl';
 				const pea = new PEA(faultyPEAModel as unknown as PEAModel);
-				return expect(pea.connectAndSubscribe()).to.be.rejectedWith('Invalid endpoint url wrongUrl');
+				return expect(pea.connect()).to.be.rejectedWith('Invalid endpoint url wrongUrl');
 			});
 
 			it('should fail to connect, server down',  async() => {
 				await mockupServer.shutdown();
 				const faultyPEAOptions = { ...peaModel };
 				const pea = new PEA(faultyPEAOptions as unknown as PEAModel);
-				return expect(pea.connectAndSubscribe()).to.be.rejectedWith(
+				return expect(pea.connect()).to.be.rejectedWith(
 					'The connectionHandlercannot be established with server opc.tcp://localhost:4334 .\n' +
 					'Please check that the server is up and running or your network configuration.\n' +
 					'Err = (connect ECONNREFUSED 127.0.0.1:4334)');
 			});
 
 			it('should disconnect and unsubscribe',  async() => {
-				await pea.connectAndSubscribe();
-				await pea.disconnectAndUnsubscribe();
+				await pea.connect();
+				await pea.disconnect();
 			});
 
 		}).timeout(8000);
@@ -116,39 +116,39 @@ describe('PEAController', () => {
 		context('control Services',async ()=> {
 
 			it('should stopAllServices()',  async() => {
-				await pea.connectAndSubscribe();
+				await pea.connect();
 				await service.executeCommand(ServiceCommand.start);
 				await pea.stopAllServices();
 				expect(service.state).to.equal(ServiceState.STOPPED);
 			});
 
 			it('should fail to stopAllServices(), command not executable',async() => {
-				await pea.connectAndSubscribe();
+				await pea.connect();
 				await pea.stopAllServices();
 				return expect(pea.stopAllServices()).to.be.rejectedWith('Command is not executable');
 			});
 
 			it('should abortAllServices()',  async() => {
-				await pea.connectAndSubscribe();
+				await pea.connect();
 				await service.executeCommand(ServiceCommand.start);
 				await pea.abortAllServices();
 				expect(service.state).to.equal(ServiceState.ABORTED);
 			});
 
 			it('should pause()',  async() => {
-				await pea.connectAndSubscribe();
+				await pea.connect();
 				await service.executeCommand(ServiceCommand.start);
 				await pea.pauseAllServices();
 				expect(service.state).to.equal(ServiceState.PAUSED);
 			});
 
 			it('should fail to pause(), command not executable',  async() => {
-				await pea.connectAndSubscribe();
+				await pea.connect();
 				return expect(pea.pauseAllServices()).to.be.rejectedWith('Command is not executable');
 			});
 
 			it('should resume()', async() => {
-				await pea.connectAndSubscribe();
+				await pea.connect();
 				await service.executeCommand(ServiceCommand.start);
 				await service.executeCommand(ServiceCommand.pause);
 				await pea.pauseAllServices();
@@ -156,7 +156,7 @@ describe('PEAController', () => {
 			}).timeout(10000);
 
 			it('should fail to resume(), command not executable',  async() => {
-				await pea.connectAndSubscribe();
+				await pea.connect();
 				return expect(pea.resumeAllServices()).to.be.rejectedWith('Command is not executable');
 			});
 		});

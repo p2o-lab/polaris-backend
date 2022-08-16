@@ -23,44 +23,16 @@
  * SOFTWARE.
  */
 
-
-import {DataItem} from '../../dataItem/DataItem';
-import {
-	Interlock, InterlockRuntime,
-	OpMode, OpModeRuntime,
-	Reset, ResetRuntime
-} from '../../baseFunction';
-import {ActiveElement, ActiveElementRuntime} from '../ActiveElement';
+import {Interlock, OpMode, Reset} from '../../baseFunction';
+import {ActiveElement} from '../ActiveElement';
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
 import {keys} from 'ts-transformer-keys';
-
-export type DrvRuntime = ActiveElementRuntime & OpModeRuntime & InterlockRuntime & ResetRuntime & {
-	SafePos: DataItem<boolean>;
-	SafePosAct: DataItem<boolean>;
-
-	FwdAut: DataItem<boolean>;
-	FwdCtrl: DataItem<boolean>;
-	FwdEn: DataItem<boolean>;
-	FwdFbk: DataItem<boolean>;
-	FwdFbkCalc: DataItem<boolean>;
-	FwdOp: DataItem<boolean>;
-
-	RevAut: DataItem<boolean>;
-	RevCtrl: DataItem<boolean>;
-	RevEn: DataItem<boolean>;
-	RevFbk: DataItem<boolean>;
-	RevFbkCalc: DataItem<boolean>;
-	RevOp: DataItem<boolean>;
-
-	StopAut: DataItem<boolean>;
-	StopOp: DataItem<boolean>;
-	Trip: DataItem<boolean>;
-};
+import {ActiveElementVlvDrvCommonDataItems} from '@p2olab/pimad-types';
 
 export class Drv extends ActiveElement {
 
-	public readonly dataItems!: DrvRuntime;
+	public readonly dataItems!: ActiveElementVlvDrvCommonDataItems;
 
 	public reset!: Reset;
 	public interlock!: Interlock;

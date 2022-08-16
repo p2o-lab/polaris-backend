@@ -24,48 +24,16 @@
  */
 
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
-import {DataItem} from '../../dataItem/DataItem';
-import {
-	OpMode, OpModeRuntime,
-	SourceModeController, SourceModeRuntime
-} from '../../baseFunction';
-import {ActiveElement, ActiveElementRuntime} from '../ActiveElement';
+import {OpMode,	SourceModeController} from '../../baseFunction';
+import {ActiveElement} from '../ActiveElement';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
 import {keys} from 'ts-transformer-keys';
+import {PIDCtrlDataItems} from '@p2olab/pimad-types';
 
-export type PIDCtrlRuntime = ActiveElementRuntime & OpModeRuntime & SourceModeRuntime & {
-	PV: DataItem<number>;
-	PVSclMin: DataItem<number>;
-	PVSclMax: DataItem<number>;
-	PVUnit: DataItem<number>;
-
-	SPMan: DataItem<number>;
-	SPInt: DataItem<number>;
-	SPSclMin: DataItem<number>;
-	SPSclMax: DataItem<number>;
-	SPUnit: DataItem<number>;
-	SPIntMin: DataItem<number>;
-	SPIntMax: DataItem<number>;
-	SPManMin: DataItem<number>;
-	SPManMax: DataItem<number>;
-	SP: DataItem<number>;
-
-	MVMan: DataItem<number>;
-	MV: DataItem<number>;
-	MVSclMin: DataItem<number>;
-	MVSclMax: DataItem<number>;
-	MVUnit: DataItem<number>;
-	MVMin: DataItem<number>;
-	MVMax: DataItem<number>;
-
-	P: DataItem<number>;
-	Ti: DataItem<number>;
-	Td: DataItem<number>;
-};
 
 export class PIDCtrl extends ActiveElement {
 
-	public readonly dataItems!: PIDCtrlRuntime;
+	public readonly dataItems!: PIDCtrlDataItems;
 
 	public sourceMode!: SourceModeController;
 	public opMode!: OpMode;

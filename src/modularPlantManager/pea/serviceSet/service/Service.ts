@@ -24,7 +24,7 @@
  */
 
 import {CommandEnableInfo, DataAssemblyOptions, OperationMode, ParameterInterface, ParameterOptions, ServiceCommand, ServiceInterface, ServiceOptions, ServiceSourceMode} from '@p2olab/polaris-interface';
-import {DynamicDataItem} from '../../connectionHandler';
+import {BaseDataItem, DynamicDataItem} from '../../connectionHandler';
 import {controlEnableToJson, DataAssemblyFactory, InputElement, ServiceControl, ServiceControlEnable, ServiceMtpCommand, ServiceState, ServParam} from '../../dataAssembly';
 
 import {Category} from 'typescript-logging';
@@ -33,7 +33,8 @@ import {BaseService} from './BaseService';
 import {Procedure} from './procedure/Procedure';
 import {catService} from '../../../../logging';
 import {ConnectionHandler} from '../../connectionHandler/ConnectionHandler';
-import {DataAssemblyModel, ServiceModel} from '@p2olab/pimad-interface';
+import {ServiceModel} from '@p2olab/pimad-interface';
+import {MTPDataTypes} from '@p2olab/pimad-types';
 
 
 /**
@@ -92,7 +93,7 @@ export class Service extends BaseService{
 	}
 
 	public get lastStateCurChange(): Date | undefined {
-		return this.serviceControl.dataItems.StateCur.lastChange;
+		return (this.serviceControl.dataItems.StateCur as BaseDataItem<number>).lastChange;
 	}
 
 	public get currentProcedureId(): number | undefined {
@@ -133,8 +134,8 @@ export class Service extends BaseService{
 	 * via events and log messages
 	 */
 	public async subscribeToChanges(): Promise<void> {
-		this.logger.info(`[${this.qualifiedName}] Subscribe to changes`);
-		this.serviceControl
+		this.logger.debug(`[${this.qualifiedName}] Subscribing to changes`);
+		this.serviceControl.eventEmitter
 			.on('commandEn', () => {
 				this.logger.debug(`[${this.qualifiedName}] ControlEnable changed: ` +
 					`${JSON.stringify(this.commandEnable)}`);
@@ -155,7 +156,7 @@ export class Service extends BaseService{
 					`${data}`);
 				this.emit('osLevel', data);
 			})
-			.on('Procedure', () => {
+			.on('procedure', () => {
 				this.logger.debug(`[${this.qualifiedName}] Procedure changed:`);
 				this.emit('procedure',
 					{
@@ -163,7 +164,7 @@ export class Service extends BaseService{
 						currentProcedure: this.serviceControl.currentProcedure()
 					});
 			})
-			.on('StateCur', () => {
+			.on('state', () => {
 				this.logger.debug(`[${this.qualifiedName}] State changed: ` +
 					`${ServiceState[this.state]}`);
 				this.emit('state', this.state);

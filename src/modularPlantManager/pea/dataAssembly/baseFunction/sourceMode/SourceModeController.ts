@@ -24,25 +24,11 @@
  */
 
 import {SourceMode} from '@p2olab/polaris-interface';
-import {DataItem} from '../../dataItem/DataItem';
 import {catDataAssembly} from '../../../../../logging';
-import {BaseServiceEvents} from '../../../serviceSet';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {EventEmitter} from 'events';
-import {DataAssemblyModel} from '@p2olab/pimad-interface';
-import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
-import {DataItemFactory, getDataItemModel} from '../../dataItem/DataItemFactory';
-import {WQCRuntime} from '../wqc/WQC';
-
-export type SourceModeRuntime = {
-	SrcChannel: DataItem<boolean>;
-	SrcIntAct: DataItem<boolean>;
-	SrcIntAut: DataItem<boolean>;
-	SrcIntOp: DataItem<boolean>;
-	SrcManAct: DataItem<boolean>;
-	SrcManAut: DataItem<boolean>;
-	SrcManOp: DataItem<boolean>;
-}
+import {MTPDataTypes, SourceModeDataItems} from '@p2olab/pimad-types';
+import {BaseDataItem} from '../../dataItem/DataItem';
 
 /**
  * Events emitted by [[SourceMode]]
@@ -57,22 +43,22 @@ type SourceModeEmitter = StrictEventEmitter<EventEmitter, SourceModeEvents>;
 
 export class SourceModeController extends (EventEmitter as new () => SourceModeEmitter) {
 
-	public readonly dataItems!: SourceModeRuntime;
+	public readonly dataItems!: SourceModeDataItems;
 
-	constructor(requiredDataItems: Required<SourceModeRuntime>) {
+	constructor(requiredDataItems: Required<SourceModeDataItems>) {
 		super();
 
 		this.dataItems = requiredDataItems;
 
-		this.dataItems.SrcChannel.on('changed', () => {
+		(this.dataItems.SrcChannel as BaseDataItem<boolean>).on('changed', () => {
 			this.emit('changed', {sourceMode: this.getSourceMode(), sourceChannel: this.dataItems.SrcChannel.value});
 		});
 		// TODO: Always two of them will change in parallel --> Smart way to just emit one event?
 		// Even if there are just inverted options both can be 0 initially, to not miss a change both were added here
-		this.dataItems.SrcIntAct.on('changed', () => {
+		(this.dataItems.SrcIntAct as BaseDataItem<boolean>).on('changed', () => {
 			this.emit('changed', {sourceMode: this.getSourceMode(), sourceChannel: this.dataItems.SrcChannel.value});
 		});
-		this.dataItems.SrcManAct.on('changed', () => {
+		(this.dataItems.SrcManAct as BaseDataItem<boolean>).on('changed', () => {
 			this.emit('changed', {sourceMode: this.getSourceMode(), sourceChannel: this.dataItems.SrcChannel.value});
 		});
 	}
@@ -141,9 +127,9 @@ export class SourceModeController extends (EventEmitter as new () => SourceModeE
 	private async writeSourceMode(sourceMode: SourceMode): Promise<void> {
 		catDataAssembly.debug(`Write SourceMode: ${sourceMode}`);
 		if (sourceMode === SourceMode.Manual) {
-			await this.dataItems.SrcManOp.write(true);
+			await (this.dataItems.SrcManOp as BaseDataItem<boolean>).write(true);
 		} else if (sourceMode === SourceMode.Intern) {
-			await this.dataItems.SrcIntOp.write(true);
+			await (this.dataItems.SrcIntOp as BaseDataItem<boolean>).write(true);
 		}
 		catDataAssembly.debug('Set SourceMode successfully');
 	}

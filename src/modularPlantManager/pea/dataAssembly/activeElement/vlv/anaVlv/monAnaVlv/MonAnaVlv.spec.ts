@@ -47,7 +47,7 @@ describe('MonAnaVlv', () => {
 
 		it('should create MonAnaMonAnaVlv', () => {
 
-			const dataAssembly = new MonAnaVlv(options, connectionHandler);
+			const dataAssembly = new MonAnaVlv(options, connectionHandler, true);
 			expect(dataAssembly).to.not.be.undefined;
 			expect(dataAssembly.feedBackMonitoring).to.not.be.undefined;
 			expect(dataAssembly.dataItems.PosReachedFbk).to.not.be.undefined;
@@ -58,20 +58,20 @@ describe('MonAnaVlv', () => {
 	});
 
 	describe('dynamic', () => {
+
 		let mockupServer: MockupServer;
 		let connectionHandler: ConnectionHandler;
+		let adapterId: string;
 
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-
 			const monAnaVlvMockup = new MonAnaVlvMockup( mockupServer.nameSpace, mockupServer.rootObject,'Variable');
 			options = monAnaVlvMockup.getDataAssemblyModel();
 			await mockupServer.start();
-			connectionHandler= new ConnectionHandler();
-			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
-			await connectionHandler.connect();
+			connectionHandler = new ConnectionHandler();
+			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
 		});
 
 		afterEach(async function () {
@@ -84,7 +84,7 @@ describe('MonAnaVlv', () => {
 
 			const dataAssembly = new MonAnaVlv(options, connectionHandler);
 			await dataAssembly.subscribe();
-			await connectionHandler.connect();
+			await connectionHandler.connect(adapterId);
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 
 			expect(dataAssembly.dataItems.OSLevel.value).equal(0);

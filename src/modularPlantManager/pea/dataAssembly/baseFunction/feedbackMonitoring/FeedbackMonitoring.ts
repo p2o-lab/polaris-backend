@@ -23,18 +23,9 @@
  * SOFTWARE.
  */
 
-import {DataItem} from '../../dataItem/DataItem';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {EventEmitter} from 'events';
-
-export interface FeedbackMonitoringRuntime {
-	MonEn: DataItem<boolean>;
-	MonSafePos: DataItem<boolean>;
-	MonStatErr: DataItem<boolean>;
-	MonDynErr: DataItem<boolean>;
-	MonStatTi: DataItem<number>;
-	MonDynTi: DataItem<number>;
-}
+import {FeedbackMonitoringDataItems} from '@p2olab/pimad-types';
 
 /**
  * Events emitted by [[FeedbackMonitoring]]
@@ -47,9 +38,9 @@ type FeedbackMonitoringEmitter = StrictEventEmitter<EventEmitter, FeedbackMonito
 
 export class FeedbackMonitoring extends (EventEmitter as new() => FeedbackMonitoringEmitter) {
 
-	public readonly dataItems!: FeedbackMonitoringRuntime;
+	public readonly dataItems!: FeedbackMonitoringDataItems;
 
-	constructor(requiredDataItems: Required<FeedbackMonitoringRuntime>) {
+	constructor(requiredDataItems: Required<FeedbackMonitoringDataItems>) {
 		super();
 
 		this.dataItems = requiredDataItems;

@@ -25,15 +25,14 @@
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {LimitMonitoring} from './LimitMonitoring';
 import {MockupServer} from '../../../../_utils';
 import {LimitMonitoringMockup} from './LimitMonitoring.mockup';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
 import {getAnaMonDataAssemblyModel} from '../../indicatorElement/AnaView/AnaMon/AnaMon.mockup';
 import {DataAssemblyFactory} from '../../DataAssemblyFactory';
-import {AnaMonRuntime} from '../../indicatorElement';
 import {getEndpointDataModel} from '../../../connectionHandler/ConnectionHandler.mockup';
+import {AnaMonDataItems} from '@p2olab/pimad-types';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -49,7 +48,7 @@ describe('LimitMonitoring', () => {
 
 		it('should create LimitMonitoring', async () => {
 
-			const limitMonitoring = new LimitMonitoring(referenceDataAssembly.dataItems as AnaMonRuntime);
+			const limitMonitoring = new LimitMonitoring(referenceDataAssembly.dataItems as AnaMonDataItems);
 
 			expect(limitMonitoring).to.not.be.undefined;
 
@@ -83,17 +82,16 @@ describe('LimitMonitoring', () => {
 
 		let mockupServer: MockupServer;
 		let connectionHandler: ConnectionHandler;
+		let adapterId: string;
 
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-
 			new LimitMonitoringMockup( mockupServer.nameSpace, mockupServer.rootObject, 'Variable', 'Ana');
 			await mockupServer.start();
-			connectionHandler= new ConnectionHandler();
-			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
-			await connectionHandler.connect();
+			connectionHandler = new ConnectionHandler();
+			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
 		});
 
 		afterEach(async function () {
@@ -104,8 +102,8 @@ describe('LimitMonitoring', () => {
 
 		it('should subscribe successfully', async () => {
 
-			const limitMonitoring = new LimitMonitoring(referenceDataAssembly.dataItems as AnaMonRuntime);
-			await connectionHandler.connect();
+			const limitMonitoring = new LimitMonitoring(referenceDataAssembly.dataItems as AnaMonDataItems);
+			await connectionHandler.connect(adapterId);
 			await new Promise((resolve => limitMonitoring.on('changed', resolve)));
 			
 			expect(limitMonitoring.dataItems.VAHEn.value).to.equal(false);

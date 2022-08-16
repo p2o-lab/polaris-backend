@@ -24,33 +24,19 @@
  */
 
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
-import {DataItem} from '../../../dataItem/DataItem';
-import {
-	ScaleSettings, ScaleSettingsRuntime,
-	UnitSettingsRuntime, UnitSettings,
-	ValueLimitation, ValueLimitationRuntime
-} from '../../../baseFunction';
-import {OperationElement, OperationElementRuntime} from '../../OperationElement';
+import {ScaleSettings, UnitSettings, ValueLimitation} from '../../../baseFunction';
+import {OperationElement} from '../../OperationElement';
 import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
 import {keys} from 'ts-transformer-keys';
-
-export type DIntManRuntime =
-	OperationElementRuntime & UnitSettingsRuntime
-	& ValueLimitationRuntime & ScaleSettingsRuntime
-	& {
-	VOut: DataItem<number>;
-	VRbk: DataItem<number>;
-	VFbk: DataItem<number>;
-	VMan: DataItem<number>;
-};
+import {DIntManDataItems} from '@p2olab/pimad-types';
 
 export class DIntMan extends OperationElement {
 
-	public readonly dataItems!: DIntManRuntime;
+	public readonly dataItems!: DIntManDataItems;
 
-	public scaleSettings!: ScaleSettings;
+	public scaleSettings!: ScaleSettings<number>;
 	public unitSettings!: UnitSettings;
-	public valueLimitation!: ValueLimitation;
+	public valueLimitation!: ValueLimitation<number>;
 
 	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false) {
 		super(options, connectionHandler);

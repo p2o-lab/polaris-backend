@@ -27,10 +27,9 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../../_utils';
 import {BinManMockup, getBinManDataAssemblyModel, getBinManDataItemModel} from './BinMan.mockup';
-import {DataItemAccessLevel} from '@p2olab/pimad-interface';
-import {BinManRuntime} from './BinMan';
 import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
 import {getEndpointDataModel} from '../../../../connectionHandler/ConnectionHandler.mockup';
+import {Access} from '@p2olab/pimad-types';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -44,6 +43,7 @@ describe('BinManMockup', () => {
         beforeEach(async function () {
             this.timeout(4000);
             mockupServer = new MockupServer();
+            await mockupServer.initialize();
         });
 
         it('should create BinManMockup', async () => {
@@ -100,16 +100,17 @@ describe('BinManMockup', () => {
 
         let mockupServer: MockupServer;
         let connectionHandler: ConnectionHandler;
+        let adapterId: string;
 
         beforeEach(async function () {
             this.timeout(5000);
             mockupServer = new MockupServer();
-            
+            await mockupServer.initialize();
             new BinManMockup(mockupServer.nameSpace, mockupServer.rootObject,'Variable');
             await mockupServer.start();
-            connectionHandler= new ConnectionHandler();
-            connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
-            await connectionHandler.connect();
+            connectionHandler = new ConnectionHandler();
+            adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
+            await connectionHandler.connect(adapterId);
         });
 
         afterEach(async () => {
@@ -118,8 +119,8 @@ describe('BinManMockup', () => {
         });
 
         it('set and get VMan', async () => {
-            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.VMan', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, true);
-            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.VMan', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.VMan', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}}, true);
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.VMan', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(true));
         }).timeout(3000);
     });

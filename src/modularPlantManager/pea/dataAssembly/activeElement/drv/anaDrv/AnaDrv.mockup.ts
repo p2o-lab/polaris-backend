@@ -28,8 +28,9 @@ import {getSourceModeDataItemModel, SourceModeMockup} from '../../../baseFunctio
 import {DrvMockup, getDrvDataItemModel} from '../Drv.mockup';
 
 import {getDataAssemblyModel} from '../../../DataAssembly.mockup';
-import {DataAssemblyModel, DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+import {DataAssemblyModel, DataItemModel} from '@p2olab/pimad-interface';
 import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../../dataItem/DataItem.mockup';
+import {Access} from '@p2olab/pimad-types';
 
 const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/ActiveElement/AnaDrv';
 
@@ -39,7 +40,7 @@ function getAnaDrvSpecificDataItemModels(namespace: string | number, objectBrows
 	dataItem.name = 'RpmSclMax';
 	dataItem.dataType = 'Float';
 	let ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.RpmSclMax`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -49,7 +50,7 @@ function getAnaDrvSpecificDataItemModels(namespace: string | number, objectBrows
 	dataItem.name = 'RpmSclMin';
 	dataItem.dataType = 'Float';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.RpmSclMin`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -59,7 +60,7 @@ function getAnaDrvSpecificDataItemModels(namespace: string | number, objectBrows
 	dataItem.name = 'RpmUnit';
 	dataItem.dataType = 'Int16';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.RpmUnit`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -69,7 +70,7 @@ function getAnaDrvSpecificDataItemModels(namespace: string | number, objectBrows
 	dataItem.name = 'RpmMax';
 	dataItem.dataType = 'Float';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.RpmMax`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -79,7 +80,7 @@ function getAnaDrvSpecificDataItemModels(namespace: string | number, objectBrows
 	dataItem.name = 'RpmMin';
 	dataItem.dataType = 'Float';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.RpmMin`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -89,7 +90,7 @@ function getAnaDrvSpecificDataItemModels(namespace: string | number, objectBrows
 	dataItem.name = 'RpmInt';
 	dataItem.dataType = 'Float';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.RpmInt`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -99,7 +100,7 @@ function getAnaDrvSpecificDataItemModels(namespace: string | number, objectBrows
 	dataItem.name = 'RpmMan';
 	dataItem.dataType = 'Float';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.RpmMan`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -109,7 +110,7 @@ function getAnaDrvSpecificDataItemModels(namespace: string | number, objectBrows
 	dataItem.name = 'Rpm';
 	dataItem.dataType = 'Float';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.Rpm`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -119,7 +120,7 @@ function getAnaDrvSpecificDataItemModels(namespace: string | number, objectBrows
 	dataItem.name = 'RpmFbk';
 	dataItem.dataType = 'Float';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.RpmFbk`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -129,7 +130,7 @@ function getAnaDrvSpecificDataItemModels(namespace: string | number, objectBrows
 	dataItem.name = 'RpmFbkCalc';
 	dataItem.dataType = 'Boolean';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.RpmFbkCalc`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -139,7 +140,7 @@ function getAnaDrvSpecificDataItemModels(namespace: string | number, objectBrows
 	dataItem.name = 'RpmRbk';
 	dataItem.dataType = 'Float';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.RpmRbk`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;

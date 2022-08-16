@@ -23,28 +23,17 @@
  * SOFTWARE.
  */
 
-import {DataItem} from '../../dataItem/DataItem';
-import {
-	OpMode, OpModeRuntime,
-} from '../../baseFunction';
-import {
-	OperationElement, OperationElementRuntime,
-} from '../OperationElement';
-import {
-	ServiceSourceModeController,
-	ServiceSourceModeRuntime
-} from '../../baseFunction/serviceSourceMode/ServiceSourceModeController';
+import {OpMode} from '../../baseFunction';
+import {OperationElement} from '../OperationElement';
+import {	ServiceSourceModeController} from '../../baseFunction/serviceSourceMode/ServiceSourceModeController';
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
 import {keys} from 'ts-transformer-keys';
-
-export type ServParamRuntime = OperationElementRuntime & OpModeRuntime & ServiceSourceModeRuntime & {
-	Sync: DataItem<boolean>;
-};
+import {ServParamDataItems} from '@p2olab/pimad-types';
 
 export class ServParam extends OperationElement {
 
-	public readonly dataItems!: ServParamRuntime;
+	public readonly dataItems!: ServParamDataItems;
 
 	public serviceOpMode!: OpMode;
 	public serviceSourceMode!: ServiceSourceModeController;

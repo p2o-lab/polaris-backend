@@ -27,7 +27,6 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../_utils';
 import {ActiveElementMockup, getActiveElementDataItemModel, getActiveElementOptions} from './ActiveElement.mockup';
-import {ActiveElementRuntime} from './ActiveElement';
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
 
 chai.use(chaiAsPromised);

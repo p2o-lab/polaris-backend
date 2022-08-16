@@ -47,10 +47,12 @@ const expect = chai.expect;
 describe('ExpressionCondition', () => {
 
 	describe('with MockupServer', () => {
+
 		let mockupServer: MockupServer;
 		let connectionHandler: ConnectionHandler;
 		let pea: PEA;
 		let anaViewMockup: AnaViewMockup;
+		let adapterId: string;
 
 		beforeEach(async function () {
 			this.timeout(10000);
@@ -58,9 +60,8 @@ describe('ExpressionCondition', () => {
 			anaViewMockup = new AnaViewMockup(mockupServer.nameSpace, mockupServer.rootObject,'Variable');
 			await mockupServer.start();
 			connectionHandler = new ConnectionHandler();
-			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
-			await connectionHandler.connect();
-
+			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
+			await connectionHandler.connect(adapterId);
 			const peaModel: PEAModel = getEmptyPEAModel();
 			peaModel.name = 'PEATestServer';
 			peaModel.pimadIdentifier = 'PEATestServer';
@@ -68,12 +69,12 @@ describe('ExpressionCondition', () => {
 			peaModel.dataAssemblies.push(anaViewMockup.getDataAssemblyModel());
 
 			pea = new PEA(peaModel);
-			await pea.connectAndSubscribe();
+			await pea.connect();
 		});
 
 		afterEach(async () => {
 			if(pea) {
-				await pea.disconnectAndUnsubscribe();
+				await pea.disconnect();
 			}
 			await mockupServer.shutdown();
 		});

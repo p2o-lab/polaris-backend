@@ -47,7 +47,7 @@ describe('BinMan', () => {
 
 		it('should create BinMan', () => {
 
-			const dataAssembly = new BinMan(options, connectionHandler);
+			const dataAssembly = new BinMan(options, connectionHandler, true);
 			expect(dataAssembly.dataItems.VOut).to.not.equal(undefined);
 			expect(dataAssembly.dataItems.VState0).to.not.equal(undefined);
 			expect(dataAssembly.dataItems.VState1).to.not.equal(undefined);
@@ -62,18 +62,21 @@ describe('BinMan', () => {
 		});
 	});
 	describe('dynamic', () => {
+
 		let mockupServer: MockupServer;
 		let connectionHandler: ConnectionHandler;
+		let adapterId: string;
 
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
+			await mockupServer.initialize();
 			const binManMockup = new BinManMockup(mockupServer.nameSpace, mockupServer.rootObject,'Variable');
 			options = binManMockup.getDataAssemblyModel();
 			await mockupServer.start();
-			connectionHandler= new ConnectionHandler();
-			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
-			await connectionHandler.connect();
+			connectionHandler = new ConnectionHandler();
+			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
+			await connectionHandler.connect(adapterId);
 		});
 
 		afterEach(async function () {
@@ -86,7 +89,7 @@ describe('BinMan', () => {
 
 			const dataAssembly = DataAssemblyFactory.create(options, connectionHandler) as BinMan;
 			await dataAssembly.subscribe();
-			await connectionHandler.connect();
+			await connectionHandler.connect(adapterId);
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 
 			expect(dataAssembly.dataItems.OSLevel.value).to.equal(0);

@@ -57,9 +57,11 @@ describe('BinProcessValueIn', () => {
 		});
 	});
 	describe('dynamic', () => {
+
 		let mockupServer: MockupServer;
 		let connectionHandler: ConnectionHandler;
 		let binProcessValueInMockup: BinProcessValueInMockup;
+		let adapterId: string;
 
 		beforeEach(async function () {
 			this.timeout(4000);
@@ -68,9 +70,8 @@ describe('BinProcessValueIn', () => {
 			binProcessValueInMockup = new BinProcessValueInMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			options = binProcessValueInMockup.getDataAssemblyModel();
 			await mockupServer.start();
-			connectionHandler= new ConnectionHandler();
-			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
-			await connectionHandler.connect();
+			connectionHandler = new ConnectionHandler();
+			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
 		});
 
 		afterEach(async function () {
@@ -80,9 +81,9 @@ describe('BinProcessValueIn', () => {
 		});
 
 		it('should subscribe successfully', async () => {
-			const dataAssembly = new BinProcessValueIn(options, connectionHandler);
+			const dataAssembly = new BinProcessValueIn(options, connectionHandler, true);
 			await dataAssembly.subscribe();
-			await connectionHandler.connect();
+			await connectionHandler.connect(adapterId);
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 
 			expect(dataAssembly.dataItems.VExt.value).equal(false);
@@ -91,9 +92,9 @@ describe('BinProcessValueIn', () => {
 		}).timeout(4000);
 
 		it('set Parameter', async () => {
-			const dataAssembly = new BinProcessValueIn(options, connectionHandler);
+			const dataAssembly = new BinProcessValueIn(options, connectionHandler, true);
 			await dataAssembly.subscribe();
-			await connectionHandler.connect();
+			await connectionHandler.connect(adapterId);
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 
 			await dataAssembly.setParameter(true,'VExt');

@@ -27,10 +27,11 @@ import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 import {getScaleSettingsDataItemModel, ScaleSettingMockup} from '../../../baseFunction/scaleSettings/ScaleSetting.mockup';
 import {getUnitSettingsDataItemModel, UnitSettingsMockup} from '../../../baseFunction/unitSettings/UnitSettings.mockup';
 import {getInputElementDataItemModel, InputElementMockup} from '../../InputElement.mockup';
-import {DataAssemblyModel, DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+import {DataAssemblyModel, DataItemModel} from '@p2olab/pimad-interface';
 
 import {getDataAssemblyModel} from '../../../DataAssembly.mockup';
 import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../../dataItem/DataItem.mockup';
+import {Access} from '@p2olab/pimad-types';
 
 const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/InputElement/AnaProcessValueIn';
 
@@ -40,7 +41,7 @@ function getAnaProcessValueInSpecificDataItemModels(namespace: number, objectBro
 	dataItem.name = 'VExt';
 	dataItem.dataType = 'Float';
 	const ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.VExt`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -60,9 +61,9 @@ export function getAnaProcessValueInDataItemModel(namespace: number, objectBrows
 
 export function getAnaProcessValueInDataAssemblyModel(namespace: number, objectBrowseName: string, name?: string, tagName?: string, tagDescription?: string): DataAssemblyModel {
 	const options = getDataAssemblyModel(metaModelReference, name, tagName, tagDescription);
-	options.dataItems = {
+	options.dataItems = [
 		...options.dataItems,
-		...getAnaProcessValueInDataItemModel(namespace, objectBrowseName)};
+		...getAnaProcessValueInDataItemModel(namespace, objectBrowseName)];
 	return options;
 }
 

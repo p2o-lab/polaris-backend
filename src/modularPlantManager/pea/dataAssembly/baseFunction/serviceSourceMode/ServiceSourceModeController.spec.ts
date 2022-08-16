@@ -33,8 +33,8 @@ import {ServiceSourceModeMockup} from './ServiceSourceMode.mockup';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
 import {getAnaServParamDataAssemblyModel} from '../../operationElement/servParam/anaServParam/AnaServParam.mockup';
 import {DataAssemblyFactory} from '../../DataAssemblyFactory';
-import {AnaServParamRuntime} from '../../operationElement';
 import {getEndpointDataModel} from '../../../connectionHandler/ConnectionHandler.mockup';
+import {AnaServParamDataItems} from '@p2olab/pimad-types';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -48,7 +48,7 @@ describe('ServiceSourceMode', () => {
 	describe('static', () => {
 
 		it('should create ServiceSourceMode', () => {
-			const baseFunction = new ServiceSourceModeController(referenceDataAssembly.dataItems as AnaServParamRuntime);
+			const baseFunction = new ServiceSourceModeController(referenceDataAssembly.dataItems as AnaServParamDataItems);
 			expect(baseFunction).to.not.be.undefined;
 			expect(baseFunction.dataItems.SrcChannel).to.not.be.undefined;
 			expect(baseFunction.dataItems.SrcExtAut).to.not.be.undefined;
@@ -64,6 +64,7 @@ describe('ServiceSourceMode', () => {
 
 		let mockupServer: MockupServer;
 		let connectionHandler: ConnectionHandler;
+		let adapterId: string;
 
 		beforeEach(async function () {
 			this.timeout(5000);
@@ -71,9 +72,8 @@ describe('ServiceSourceMode', () => {
 			await mockupServer.initialize();
 			new ServiceSourceModeMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			await mockupServer.start();
-			connectionHandler= new ConnectionHandler();
-			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
-			await connectionHandler.connect();
+			connectionHandler = new ConnectionHandler();
+			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
 		});
 
 		afterEach(async function () {
@@ -84,8 +84,8 @@ describe('ServiceSourceMode', () => {
 
 		it('should subscribe successfully', async () => {
 
-			const baseFunction = new ServiceSourceModeController(referenceDataAssembly.dataItems as AnaServParamRuntime);
-			await connectionHandler.connect();
+			const baseFunction = new ServiceSourceModeController(referenceDataAssembly.dataItems as AnaServParamDataItems);
+			await connectionHandler.connect(adapterId);
 			await new Promise((resolve => baseFunction.on('changed', resolve)));
 
 			expect(baseFunction.dataItems.SrcChannel.value).equal(false);
@@ -104,19 +104,18 @@ describe('ServiceSourceMode', () => {
 		let mockup: ServiceSourceModeMockup;
 		let serviceSourceModeController: ServiceSourceModeController;
 		let baseFunction: any;
+		let adapterId: string;
 
 		beforeEach(async function () {
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			
 			mockup = new ServiceSourceModeMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			await mockupServer.start();
-			connectionHandler= new ConnectionHandler();
-			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
+			connectionHandler = new ConnectionHandler();
+			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
 			baseFunction = new ServiceSourceModeController(this.dataItems);
-			await connectionHandler.connect();
 			await baseFunction.subscribe();
-			await connectionHandler.connect();
+			await connectionHandler.connect(adapterId);
 			await new Promise((resolve => baseFunction.on('changed', resolve)));
 		});
 
@@ -143,11 +142,14 @@ describe('ServiceSourceMode', () => {
 	});
 
 	describe('dynamic functions, Intern on', async () => {
+
 		let mockupServer: MockupServer;
 		let connectionHandler: ConnectionHandler;
 		let mockup: ServiceSourceModeMockup;
 		let serviceSourceModeController: ServiceSourceModeController;
 		let baseFunction: any;
+		let adapterId: string;
+
 		beforeEach(async function () {
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
@@ -162,13 +164,11 @@ describe('ServiceSourceMode', () => {
 				'Variable');
 			mockup.srcMode= ServiceSourceMode.Intern;
 			await mockupServer.start();
-
-			connectionHandler= new ConnectionHandler();
-			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
+			connectionHandler = new ConnectionHandler();
+			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
 			baseFunction = new ServiceSourceModeController(this.dataItems);
-			await connectionHandler.connect();
 			await baseFunction.subscribe();
-			await connectionHandler.connect();
+			await connectionHandler.connect(adapterId);
 			await new Promise((resolve => baseFunction.on('changed', resolve)));
 		});
 

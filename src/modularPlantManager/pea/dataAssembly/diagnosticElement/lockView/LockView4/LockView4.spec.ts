@@ -32,6 +32,7 @@ import {MockupServer} from '../../../../../_utils';
 import {getLockView4DataAssemblyModel, LockView4Mockup} from './LockView4.mockup';
 import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
 import {getEndpointDataModel} from '../../../../connectionHandler/ConnectionHandler.mockup';
+import {BaseDataItem} from '../../../dataItem/DataItem';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -46,7 +47,7 @@ describe('LockView4', () => {
 		options = getLockView4DataAssemblyModel(2, 'Variable', 'Variable') as DataAssemblyModel;
 
 		it('should create LockView4', async () => {
-			const dataAssembly = new LockView4(options, emptyOPCUAConnection);
+			const dataAssembly = new LockView4(options, emptyOPCUAConnection, true);
 			expect(dataAssembly).to.be.not.undefined;
 			expect(dataAssembly.dataItems).to.be.not.undefined;
 			expect(dataAssembly.wqc).to.be.not.undefined;
@@ -54,8 +55,10 @@ describe('LockView4', () => {
 
 	});
 	describe('dynamic', () => {
+
 		let mockupServer: MockupServer;
 		let connectionHandler: ConnectionHandler;
+		let adapterId: string;
 
 		beforeEach(async function () {
 			this.timeout(4000);
@@ -63,9 +66,9 @@ describe('LockView4', () => {
 			const lockView4Mockup = new LockView4Mockup( mockupServer.nameSpace, mockupServer.rootObject,'Variable');
 			options = lockView4Mockup.getDataAssemblyModel();
 			await mockupServer.start();
-			connectionHandler= new ConnectionHandler();
-			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
-			await connectionHandler.connect();
+			connectionHandler = new ConnectionHandler();
+			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
+			await connectionHandler.connect(adapterId);
 		});
 
 		afterEach(async function () {
@@ -76,10 +79,10 @@ describe('LockView4', () => {
 
 		it('should subscribe successfully', async () => {
 
-			const dataAssembly = new LockView4(options, connectionHandler);
+			const dataAssembly = new LockView4(options, connectionHandler, true);
 			await dataAssembly.subscribe();
-			await connectionHandler.connect();
-			await new Promise((resolve => dataAssembly.dataItems.In4Txt.on('changed', resolve)));
+			await connectionHandler.connect(adapterId);
+			await new Promise((resolve => (dataAssembly.dataItems.In4Txt as BaseDataItem<any>).on('changed', resolve)));
 
 			expect(dataAssembly.wqc.WQC).equal(0);
 			expect(dataAssembly.dataItems.Logic.value).equal(false);

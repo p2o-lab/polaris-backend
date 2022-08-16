@@ -28,8 +28,9 @@ import {getOSLevelDataItemModel, OSLevelMockup} from '../../../baseFunction/osLe
 import {BinViewMockup, getBinViewDataItemModel} from '../BinView.mockup';
 
 import {getDataAssemblyModel} from '../../../DataAssembly.mockup';
-import {DataAssemblyModel, DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+import {DataAssemblyModel, DataItemModel} from '@p2olab/pimad-interface';
 import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../../dataItem/DataItem.mockup';
+import {Access} from '@p2olab/pimad-types';
 
 const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/IndicatorElement/BinView/BinMon';
 
@@ -40,7 +41,7 @@ function getBinMonSpecificDataItemModels(namespace: number, objectBrowseName: st
 	dataItem.name = 'VFlutEn';
 	dataItem.dataType = 'Boolean';
 	let ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.VFlutEn`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -50,7 +51,7 @@ function getBinMonSpecificDataItemModels(namespace: number, objectBrowseName: st
 	dataItem.name = 'VFlutTi';
 	dataItem.dataType = 'Float';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.VFlutTi`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -60,7 +61,7 @@ function getBinMonSpecificDataItemModels(namespace: number, objectBrowseName: st
 	dataItem.name = 'VFlutCnt';
 	dataItem.dataType = 'Int16';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.VFlutCnt`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -70,7 +71,7 @@ function getBinMonSpecificDataItemModels(namespace: number, objectBrowseName: st
 	dataItem.name = 'VFlutAct';
 	dataItem.dataType = 'Boolean';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.VFlutAct`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;

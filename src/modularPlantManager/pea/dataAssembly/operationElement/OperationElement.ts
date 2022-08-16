@@ -24,9 +24,8 @@
  */
 
 import {ParameterInterface, ParameterOptions} from '@p2olab/polaris-interface';
-import {DataItem, DynamicDataItem} from '../dataItem/DataItem';
-import {OSLevelRuntime} from '../baseFunction';
-import {DataAssemblyDataItems, DataAssembly} from '../DataAssembly';
+import {DynamicDataItem} from '../dataItem/DataItem';
+import {DataAssembly} from '../DataAssembly';
 import {PEA} from '../../PEA';
 import {catDataAssembly} from '../../../../logging';
 import {OSLevel} from '../baseFunction';
@@ -34,12 +33,12 @@ import {ParameterRequest} from '../ParameterRequest';
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {ConnectionHandler} from '../../connectionHandler/ConnectionHandler';
 import {keys} from 'ts-transformer-keys';
+import {DataItem, OperationElementDataItems} from '@p2olab/pimad-types';
 
-export type OperationElementRuntime = DataAssemblyDataItems & OSLevelRuntime
 
 export class OperationElement extends DataAssembly {
 
-	public dataItems!: OperationElementRuntime;
+	public dataItems!: OperationElementDataItems;
 
 	// TODO: This creates a circular dependency as parameter also imports OperationElement
 	public parameterRequest: ParameterRequest | undefined;
@@ -70,7 +69,7 @@ export class OperationElement extends DataAssembly {
 	 */
 	public async setParameter(paramValue: number | string, variable?: string): Promise<void> {
 		const dataItem: DataItem<number | string> | undefined = (variable) ?
-			this.dataItems[variable as keyof OperationElementRuntime] : this.defaultWriteDataItem;
+			this.dataItems[variable as keyof OperationElementDataItems] : this.defaultWriteDataItem;
 		catDataAssembly.debug(`Set Parameter: ${this.name} (${variable}) -> ${JSON.stringify(paramValue)}`);
 		await (dataItem as DynamicDataItem<any>)?.write(paramValue);
 	}

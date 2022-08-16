@@ -25,10 +25,11 @@
 
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
 import {getLockView4DataItemModel, LockView4Mockup} from '../LockView4/LockView4.mockup';
-import {CIData, DataAssemblyModel, DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+import {CIData, DataAssemblyModel, DataItemModel} from '@p2olab/pimad-interface';
 
 import {getDataAssemblyModel} from '../../../DataAssembly.mockup';
 import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../../dataItem/DataItem.mockup';
+import { Access } from '@p2olab/pimad-types';
 
 
 const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/DiagnosticElement/LockView8';
@@ -40,7 +41,7 @@ function getLockView8SpecificDataItemModels(namespace: number, objectBrowseName:
 	dataItem.name = 'In5En';
 	dataItem.dataType = 'Boolean';
 	let ciOptions: CIData = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.In5En`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -50,7 +51,7 @@ function getLockView8SpecificDataItemModels(namespace: number, objectBrowseName:
 	dataItem.name = 'In5';
 	dataItem.dataType = 'Boolean';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.In5`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -60,7 +61,7 @@ function getLockView8SpecificDataItemModels(namespace: number, objectBrowseName:
 	dataItem.name = 'In5QC';
 	dataItem.dataType = 'Byte';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.In5QC`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -70,7 +71,7 @@ function getLockView8SpecificDataItemModels(namespace: number, objectBrowseName:
 	dataItem.name = 'In5Inv';
 	dataItem.dataType = 'Boolean';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.In5Inv`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -80,7 +81,7 @@ function getLockView8SpecificDataItemModels(namespace: number, objectBrowseName:
 	dataItem.name = 'In5Txt';
 	dataItem.dataType = 'String';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.In5Inv`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -90,7 +91,7 @@ function getLockView8SpecificDataItemModels(namespace: number, objectBrowseName:
 	dataItem.name = 'In6En';
 	dataItem.dataType = 'Boolean';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.In6En`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -100,7 +101,7 @@ function getLockView8SpecificDataItemModels(namespace: number, objectBrowseName:
 	dataItem.name = 'In6';
 	dataItem.dataType = 'Boolean';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.In6`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -110,7 +111,7 @@ function getLockView8SpecificDataItemModels(namespace: number, objectBrowseName:
 	dataItem.name = 'In6QC';
 	dataItem.dataType = 'Byte';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.In6QC`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -120,7 +121,7 @@ function getLockView8SpecificDataItemModels(namespace: number, objectBrowseName:
 	dataItem.name = 'In6Inv';
 	dataItem.dataType = 'Boolean';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.In6Inv`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -130,7 +131,7 @@ function getLockView8SpecificDataItemModels(namespace: number, objectBrowseName:
 	dataItem.name = 'In6Txt';
 	dataItem.dataType = 'String';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.In6Inv`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -140,7 +141,7 @@ function getLockView8SpecificDataItemModels(namespace: number, objectBrowseName:
 	dataItem.name = 'In7En';
 	dataItem.dataType = 'Boolean';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.In7En`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -150,7 +151,7 @@ function getLockView8SpecificDataItemModels(namespace: number, objectBrowseName:
 	dataItem.name = 'In7';
 	dataItem.dataType = 'Boolean';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.In7`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -160,7 +161,7 @@ function getLockView8SpecificDataItemModels(namespace: number, objectBrowseName:
 	dataItem.name = 'In7QC';
 	dataItem.dataType = 'Byte';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.In7QC`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -170,7 +171,7 @@ function getLockView8SpecificDataItemModels(namespace: number, objectBrowseName:
 	dataItem.name = 'In7Inv';
 	dataItem.dataType = 'Boolean';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.In7Inv`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -180,7 +181,7 @@ function getLockView8SpecificDataItemModels(namespace: number, objectBrowseName:
 	dataItem.name = 'In7Txt';
 	dataItem.dataType = 'String';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.In7Inv`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -190,7 +191,7 @@ function getLockView8SpecificDataItemModels(namespace: number, objectBrowseName:
 	dataItem.name = 'In8En';
 	dataItem.dataType = 'Boolean';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.In8En`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -200,7 +201,7 @@ function getLockView8SpecificDataItemModels(namespace: number, objectBrowseName:
 	dataItem.name = 'In8';
 	dataItem.dataType = 'Boolean';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.In8`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -210,7 +211,7 @@ function getLockView8SpecificDataItemModels(namespace: number, objectBrowseName:
 	dataItem.name = 'In8QC';
 	dataItem.dataType = 'Byte';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.In8QC`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -220,7 +221,7 @@ function getLockView8SpecificDataItemModels(namespace: number, objectBrowseName:
 	dataItem.name = 'In8Inv';
 	dataItem.dataType = 'Boolean';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.In8Inv`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -230,7 +231,7 @@ function getLockView8SpecificDataItemModels(namespace: number, objectBrowseName:
 	dataItem.name = 'In8Txt';
 	dataItem.dataType = 'String';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.In8Inv`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;

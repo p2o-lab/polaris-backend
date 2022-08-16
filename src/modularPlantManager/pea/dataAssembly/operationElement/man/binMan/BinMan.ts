@@ -24,23 +24,14 @@
  */
 
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
-import {OperationElement, OperationElementRuntime} from '../../OperationElement';
+import {OperationElement} from '../../OperationElement';
 import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
-import {DataItem} from '../../../dataItem/DataItem';
 import {keys} from 'ts-transformer-keys';
-
-export type BinManRuntime = OperationElementRuntime & {
-	VMan: DataItem<boolean>;
-	VRbk: DataItem<boolean>;
-	VFbk: DataItem<boolean>;
-	VOut: DataItem<boolean>;
-	VState0: DataItem<string>;
-	VState1: DataItem<string>;
-};
+import {BinManDataItems} from '@p2olab/pimad-types';
 
 export class BinMan extends OperationElement {
 
-	public dataItems!: BinManRuntime;
+	public dataItems!: BinManDataItems;
 
 	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false) {
 		super(options, connectionHandler);

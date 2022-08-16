@@ -25,8 +25,9 @@
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
 import {SourceMode} from '@p2olab/polaris-interface';
-import {DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+import {DataItemModel} from '@p2olab/pimad-interface';
 import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../dataItem/DataItem.mockup';
+import {Access} from '@p2olab/pimad-types';
 
 function getSourceModeSpecificDataItemModels(namespace: number, objectBrowseName: string): DataItemModel[] {
 
@@ -35,7 +36,7 @@ function getSourceModeSpecificDataItemModels(namespace: number, objectBrowseName
   dataItem.name = 'SrcChannel';
   dataItem.dataType = 'Boolean';
   let ciOptions = getEmptyCIDataModel();
-  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.access = Access.ReadWriteAccess;
   ciOptions.nodeId.identifier = `${objectBrowseName}.SrcChannel`;
   ciOptions.nodeId.namespaceIndex = `${namespace}`;
   dataItem.cIData = ciOptions;
@@ -45,7 +46,7 @@ function getSourceModeSpecificDataItemModels(namespace: number, objectBrowseName
   dataItem.name = 'SrcIntAct';
   dataItem.dataType = 'Boolean';
   ciOptions = getEmptyCIDataModel();
-  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.access = Access.ReadWriteAccess;
   ciOptions.nodeId.identifier = `${objectBrowseName}.SrcIntAct`;
   ciOptions.nodeId.namespaceIndex = `${namespace}`;
   dataItem.cIData = ciOptions;
@@ -55,7 +56,7 @@ function getSourceModeSpecificDataItemModels(namespace: number, objectBrowseName
   dataItem.name = 'SrcIntAut';
   dataItem.dataType = 'Boolean';
   ciOptions = getEmptyCIDataModel();
-  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.access = Access.ReadWriteAccess;
   ciOptions.nodeId.identifier = `${objectBrowseName}.SrcIntAut`;
   ciOptions.nodeId.namespaceIndex = `${namespace}`;
   dataItem.cIData = ciOptions;
@@ -65,7 +66,7 @@ function getSourceModeSpecificDataItemModels(namespace: number, objectBrowseName
   dataItem.name = 'SrcIntOp';
   dataItem.dataType = 'Boolean';
   ciOptions = getEmptyCIDataModel();
-  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.access = Access.ReadWriteAccess;
   ciOptions.nodeId.identifier = `${objectBrowseName}.SrcIntOp`;
   ciOptions.nodeId.namespaceIndex = `${namespace}`;
   dataItem.cIData = ciOptions;
@@ -75,7 +76,7 @@ function getSourceModeSpecificDataItemModels(namespace: number, objectBrowseName
   dataItem.name = 'SrcManAct';
   dataItem.dataType = 'Boolean';
   ciOptions = getEmptyCIDataModel();
-  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.access = Access.ReadWriteAccess;
   ciOptions.nodeId.identifier = `${objectBrowseName}.SrcManAct`;
   ciOptions.nodeId.namespaceIndex = `${namespace}`;
   dataItem.cIData = ciOptions;
@@ -85,7 +86,7 @@ function getSourceModeSpecificDataItemModels(namespace: number, objectBrowseName
   dataItem.name = 'SrcManAut';
   dataItem.dataType = 'Boolean';
   ciOptions = getEmptyCIDataModel();
-  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.access = Access.ReadWriteAccess;
   ciOptions.nodeId.identifier = `${objectBrowseName}.SrcManAut`;
   ciOptions.nodeId.namespaceIndex = `${namespace}`;
   dataItem.cIData = ciOptions;
@@ -95,7 +96,7 @@ function getSourceModeSpecificDataItemModels(namespace: number, objectBrowseName
   dataItem.name = 'SrcManOp';
   dataItem.dataType = 'Boolean';
   ciOptions = getEmptyCIDataModel();
-  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.access = Access.ReadWriteAccess;
   ciOptions.nodeId.identifier = `${objectBrowseName}.SrcManOp`;
   ciOptions.nodeId.namespaceIndex = `${namespace}`;
   dataItem.cIData = ciOptions;

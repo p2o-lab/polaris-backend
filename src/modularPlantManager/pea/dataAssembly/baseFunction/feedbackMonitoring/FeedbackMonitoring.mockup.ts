@@ -24,8 +24,9 @@
  */
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+import {DataItemModel} from '@p2olab/pimad-interface';
 import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../dataItem/DataItem.mockup';
+import {Access} from '@p2olab/pimad-types';
 
 
 function getFeedbackMonitoringSpecificDataItemModels(namespace: number, objectBrowseName: string): DataItemModel[] {
@@ -35,7 +36,7 @@ function getFeedbackMonitoringSpecificDataItemModels(namespace: number, objectBr
   dataItem.name = 'MonEn';
   dataItem.dataType = 'Boolean';
   let ciOptions = getEmptyCIDataModel();
-  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.access = Access.ReadWriteAccess;
   ciOptions.nodeId.identifier = `${objectBrowseName}.MonEn`;
   ciOptions.nodeId.namespaceIndex = `${namespace}`;
   dataItem.cIData = ciOptions;
@@ -45,7 +46,7 @@ function getFeedbackMonitoringSpecificDataItemModels(namespace: number, objectBr
   dataItem.name = 'MonSafePos';
   dataItem.dataType = 'Boolean';
   ciOptions = getEmptyCIDataModel();
-  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.access = Access.ReadWriteAccess;
   ciOptions.nodeId.identifier = `${objectBrowseName}.MonSafePos`;
   ciOptions.nodeId.namespaceIndex = `${namespace}`;
   dataItem.cIData = ciOptions;
@@ -55,7 +56,7 @@ function getFeedbackMonitoringSpecificDataItemModels(namespace: number, objectBr
   dataItem.name = 'MonStatErr';
   dataItem.dataType = 'Boolean';
   ciOptions = getEmptyCIDataModel();
-  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.access = Access.ReadWriteAccess;
   ciOptions.nodeId.identifier = `${objectBrowseName}.MonStatErr`;
   ciOptions.nodeId.namespaceIndex = `${namespace}`;
   dataItem.cIData = ciOptions;
@@ -65,7 +66,7 @@ function getFeedbackMonitoringSpecificDataItemModels(namespace: number, objectBr
   dataItem.name = 'MonDynErr';
   dataItem.dataType = 'Boolean';
   ciOptions = getEmptyCIDataModel();
-  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.access = Access.ReadWriteAccess;
   ciOptions.nodeId.identifier = `${objectBrowseName}.MonDynErr`;
   ciOptions.nodeId.namespaceIndex = `${namespace}`;
   dataItem.cIData = ciOptions;
@@ -75,7 +76,7 @@ function getFeedbackMonitoringSpecificDataItemModels(namespace: number, objectBr
   dataItem.name = 'MonStatTi';
   dataItem.dataType = 'Float';
   ciOptions = getEmptyCIDataModel();
-  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.access = Access.ReadWriteAccess;
   ciOptions.nodeId.identifier = `${objectBrowseName}.MonStatTi`;
   ciOptions.nodeId.namespaceIndex = `${namespace}`;
   dataItem.cIData = ciOptions;
@@ -85,7 +86,7 @@ function getFeedbackMonitoringSpecificDataItemModels(namespace: number, objectBr
   dataItem.name = 'MonDynTi';
   dataItem.dataType = 'Float';
   ciOptions = getEmptyCIDataModel();
-  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.access = Access.ReadWriteAccess;
   ciOptions.nodeId.identifier = `${objectBrowseName}.MonDynTi`;
   ciOptions.nodeId.namespaceIndex = `${namespace}`;
   dataItem.cIData = ciOptions;

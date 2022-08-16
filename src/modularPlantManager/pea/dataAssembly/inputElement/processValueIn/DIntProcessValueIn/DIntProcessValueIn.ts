@@ -24,23 +24,17 @@
  */
 
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
-import {DataItem} from '../../../dataItem/DataItem';
-import {ScaleSettings, ScaleSettingsRuntime, UnitSettingsRuntime, UnitSettings} from '../../../baseFunction';
-import {
-	InputElement, InputElementRuntime,
-} from '../../InputElement';
+import {ScaleSettings, UnitSettings} from '../../../baseFunction';
+import {InputElement} from '../../InputElement';
 import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
 import {keys} from 'ts-transformer-keys';
-
-export type DIntProcessValueInRuntime = InputElementRuntime & UnitSettingsRuntime & ScaleSettingsRuntime & {
-	VExt: DataItem<number>;
-};
+import {DIntProcessValueInDataItems, MTPDataTypes} from '@p2olab/pimad-types';
 
 export class DIntProcessValueIn extends InputElement {
 
-	public readonly dataItems!: DIntProcessValueInRuntime;
+	public readonly dataItems!: DIntProcessValueInDataItems;
 
-	public scaleSettings!: ScaleSettings;
+	public scaleSettings!: ScaleSettings<number>;
 	public unitSettings!: UnitSettings;
 
 	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false) {

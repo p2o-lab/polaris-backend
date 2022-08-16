@@ -27,8 +27,6 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../_utils';
 import {getHealthStateViewDataAssemblyModel, getHealthStateViewDataItemModel, HealthStateViewMockup} from './HealthStateView.mockup';
-import {DataAssemblyModel} from '@p2olab/pimad-interface';
-import {HealthStateViewRuntime} from './HealthStateView';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;

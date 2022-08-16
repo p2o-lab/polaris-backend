@@ -26,7 +26,7 @@
 // eslint-disable-next-line no-undef
 import Timeout = NodeJS.Timeout;
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {DataAssemblyModel, DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+import {DataAssemblyModel, DataItemModel} from '@p2olab/pimad-interface';
 
 import {getUnitSettingsDataItemModel, UnitSettingsMockup} from '../../../baseFunction/unitSettings/UnitSettings.mockup';
 import {getScaleSettingsDataItemModel, ScaleSettingMockup} from '../../../baseFunction/scaleSettings/ScaleSetting.mockup';
@@ -34,6 +34,7 @@ import {getValueLimitationDataItemModel, ValueLimitationMockup} from '../../../b
 import {getOperationElementDataItemModel, OperationElementMockup} from '../../OperationElement.mockup';
 import {getDataAssemblyModel} from '../../../DataAssembly.mockup';
 import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../../dataItem/DataItem.mockup';
+import {Access} from '@p2olab/pimad-types';
 
 const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/OperationElement/AnaMan';
 
@@ -43,7 +44,7 @@ function getAnaManSpecificDataItemModels(namespace: number, objectBrowseName: st
 	dataItem.name = 'VOut';
 	dataItem.dataType = 'Float';
 	let ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.VOut`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -53,7 +54,7 @@ function getAnaManSpecificDataItemModels(namespace: number, objectBrowseName: st
 	dataItem.name = 'VMan';
 	dataItem.dataType = 'Float';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.VMan`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -63,7 +64,7 @@ function getAnaManSpecificDataItemModels(namespace: number, objectBrowseName: st
 	dataItem.name = 'VRbk';
 	dataItem.dataType = 'Float';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.VRbk`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -73,7 +74,7 @@ function getAnaManSpecificDataItemModels(namespace: number, objectBrowseName: st
 	dataItem.name = 'VFbk';
 	dataItem.dataType = 'Float';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.VFbk`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;

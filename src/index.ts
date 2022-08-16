@@ -133,7 +133,7 @@ if (options) {
 				manager.addPEA(peasOptions).then();
 			});
 			manager.peas.forEach((p) =>
-				p.connectAndSubscribe()
+				p.connect()
 					.catch((reason) =>
 						catPEA.warn(`Could not connect to PEA ${p.id}: ${reason}`)
 					)

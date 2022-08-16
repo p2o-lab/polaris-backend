@@ -40,11 +40,12 @@ import StrictEventEmitter from 'strict-event-emitter-types';
 import {Procedure} from './procedure/Procedure';
 import {catService} from '../../../../logging';
 import {IDProvider} from '../../../_utils';
+import {DataAssemblyEvents} from '../../dataAssembly';
 
 /**
  * Events emitted by [[BaseService]]
  */
-export interface BaseServiceEvents {
+export interface BaseServiceEvents extends DataAssemblyEvents {
 	/**
 	 * Notify when the [[Service] changes its state
 	 * @event state

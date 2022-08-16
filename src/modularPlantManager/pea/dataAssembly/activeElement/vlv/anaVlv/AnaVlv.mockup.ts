@@ -28,8 +28,9 @@ import {getSourceModeDataItemModel, SourceModeMockup} from '../../../baseFunctio
 import {getVlvDataItemModel, VlvMockup} from '../Vlv.mockup';
 
 import {getDataAssemblyModel} from '../../../DataAssembly.mockup';
-import {DataAssemblyModel, DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+import {DataAssemblyModel, DataItemModel} from '@p2olab/pimad-interface';
 import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../../dataItem/DataItem.mockup';
+import {Access} from '@p2olab/pimad-types';
 
 const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/ActiveElement/AnaVlv';
 
@@ -40,7 +41,7 @@ function getAnaVlvSpecificDataItemModels(namespace: number, objectBrowseName: st
 	dataItem.name = 'Pos';
 	dataItem.dataType = 'Float';
 	let ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.Pos`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -50,7 +51,7 @@ function getAnaVlvSpecificDataItemModels(namespace: number, objectBrowseName: st
 	dataItem.name = 'PosFbk';
 	dataItem.dataType = 'Float';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.PosFbk`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -60,7 +61,7 @@ function getAnaVlvSpecificDataItemModels(namespace: number, objectBrowseName: st
 	dataItem.name = 'PosFbkCalc';
 	dataItem.dataType = 'Boolean';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.PosFbkCalc`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -70,7 +71,7 @@ function getAnaVlvSpecificDataItemModels(namespace: number, objectBrowseName: st
 	dataItem.name = 'PosRbk';
 	dataItem.dataType = 'Float';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.PosRbk`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -80,7 +81,7 @@ function getAnaVlvSpecificDataItemModels(namespace: number, objectBrowseName: st
 	dataItem.name = 'PosInt';
 	dataItem.dataType = 'Float';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.PosInt`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -90,7 +91,7 @@ function getAnaVlvSpecificDataItemModels(namespace: number, objectBrowseName: st
 	dataItem.name = 'PosMan';
 	dataItem.dataType = 'Float';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.PosMan`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -100,7 +101,7 @@ function getAnaVlvSpecificDataItemModels(namespace: number, objectBrowseName: st
 	dataItem.name = 'PosUnit';
 	dataItem.dataType = 'Int16';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.PosUnit`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -110,7 +111,7 @@ function getAnaVlvSpecificDataItemModels(namespace: number, objectBrowseName: st
 	dataItem.name = 'PosSclMin';
 	dataItem.dataType = 'Float';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.PosSclMin`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -120,7 +121,7 @@ function getAnaVlvSpecificDataItemModels(namespace: number, objectBrowseName: st
 	dataItem.name = 'PosSclMax';
 	dataItem.dataType = 'Float';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.PosSclMax`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -130,7 +131,7 @@ function getAnaVlvSpecificDataItemModels(namespace: number, objectBrowseName: st
 	dataItem.name = 'PosMin';
 	dataItem.dataType = 'Float';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.PosMin`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -140,7 +141,7 @@ function getAnaVlvSpecificDataItemModels(namespace: number, objectBrowseName: st
 	dataItem.name = 'PosMax';
 	dataItem.dataType = 'Float';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.PosMax`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -150,7 +151,7 @@ function getAnaVlvSpecificDataItemModels(namespace: number, objectBrowseName: st
 	dataItem.name = 'OpenAct';
 	dataItem.dataType = 'Boolean';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.OpenAct`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -160,7 +161,7 @@ function getAnaVlvSpecificDataItemModels(namespace: number, objectBrowseName: st
 	dataItem.name = 'CloseAct';
 	dataItem.dataType = 'Boolean';
 	ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.CloseAct`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;

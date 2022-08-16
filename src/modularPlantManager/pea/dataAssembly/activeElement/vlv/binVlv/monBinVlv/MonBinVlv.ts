@@ -24,19 +24,15 @@
 */
 
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
-import {FeedbackMonitoringRuntime} from '../../../../baseFunction';
-import {
-	BinVlv, BinVlvRuntime
-} from '../BinVlv';
+import {BinVlv} from '../BinVlv';
 import {FeedbackMonitoring} from '../../../../baseFunction';
 import {ConnectionHandler} from '../../../../../connectionHandler/ConnectionHandler';
 import {keys} from 'ts-transformer-keys';
-
-export type MonBinVlvRuntime = BinVlvRuntime & FeedbackMonitoringRuntime;
+import {MonBinVlvDataItems} from '@p2olab/pimad-types';
 
 export class MonBinVlv extends BinVlv {
 
-	public readonly dataItems!: MonBinVlvRuntime;
+	public readonly dataItems!: MonBinVlvDataItems;
 
 	public feedBackMonitoring!: FeedbackMonitoring;
 

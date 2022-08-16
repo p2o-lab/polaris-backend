@@ -33,6 +33,7 @@ import {MockupServer} from '../../../../../../_utils';
 import {getMonAnaDrvDataAssemblyModel, MonAnaDrvMockup} from './MonAnaDrv.mockup';
 import {ConnectionHandler} from '../../../../../connectionHandler/ConnectionHandler';
 import {getEndpointDataModel} from '../../../../../connectionHandler/ConnectionHandler.mockup';
+import {toURI} from 'node-opcua';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -47,7 +48,7 @@ describe('MonAnaDrv', () => {
 		options = getMonAnaDrvDataAssemblyModel(2, 'Variable', 'Variable');
 
 		it('should create MonAnaDrv',  () => {
-			const dataAssembly = new MonAnaDrv(options, connectionHandler);
+			const dataAssembly = new MonAnaDrv(options, connectionHandler, true);
 			expect(dataAssembly.feedbackMonitoring).to.not.be.undefined;
 			expect(dataAssembly.sourceMode).to.not.be.undefined;
 
@@ -63,20 +64,20 @@ describe('MonAnaDrv', () => {
 		});
 	});
 	describe('dynamic', () => {
+
 		let mockupServer: MockupServer;
 		let connectionHandler: ConnectionHandler;
+		let adapterId: string;
 
 		beforeEach(async function () {
 			this.timeout(10000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-
 			const monAnaDrvMockup =new MonAnaDrvMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			options = monAnaDrvMockup.getDataAssemblyModel();
 			await mockupServer.start();
 			connectionHandler = new ConnectionHandler();
-			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
-			await connectionHandler.connect();
+			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
 		});
 
 		afterEach(async function () {
@@ -86,9 +87,9 @@ describe('MonAnaDrv', () => {
 		});
 
 		it('should subscribe successfully', async () => {
-			const dataAssembly = new MonAnaDrv(options, connectionHandler);
+			const dataAssembly = new MonAnaDrv(options, connectionHandler, true);
 			await dataAssembly.subscribe();
-			await connectionHandler.connect();
+			await connectionHandler.connect(adapterId);
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 			
 			expect((dataAssembly).dataItems.OSLevel.value).equal(0);

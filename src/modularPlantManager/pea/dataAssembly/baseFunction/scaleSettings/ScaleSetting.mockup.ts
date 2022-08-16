@@ -24,8 +24,9 @@
  */
 
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
-import {DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+import {DataItemModel} from '@p2olab/pimad-interface';
 import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../dataItem/DataItem.mockup';
+import {Access} from '@p2olab/pimad-types';
 
 function getScaleSettingsSpecificDataItemModels<T extends 'Ana' | 'DInt'>(namespace: number, objectBrowseName: string, type: T): DataItemModel[] {
 
@@ -34,7 +35,7 @@ function getScaleSettingsSpecificDataItemModels<T extends 'Ana' | 'DInt'>(namesp
   dataItem.name = 'VSclMin';
   dataItem.dataType = (type === 'Ana')? 'Float': 'Int32';
   let ciOptions = getEmptyCIDataModel();
-  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.access = Access.ReadWriteAccess;
   ciOptions.nodeId.identifier = `${objectBrowseName}.VSclMin`;
   ciOptions.nodeId.namespaceIndex = `${namespace}`;
   dataItem.cIData = ciOptions;
@@ -44,7 +45,7 @@ function getScaleSettingsSpecificDataItemModels<T extends 'Ana' | 'DInt'>(namesp
   dataItem.name = 'VSclMax';
   dataItem.dataType = (type === 'Ana')? 'Float': 'Int32';
   ciOptions = getEmptyCIDataModel();
-  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.access = Access.ReadWriteAccess;
   ciOptions.nodeId.identifier = `${objectBrowseName}.VSclMax`;
   ciOptions.nodeId.namespaceIndex = `${namespace}`;
   dataItem.cIData = ciOptions;

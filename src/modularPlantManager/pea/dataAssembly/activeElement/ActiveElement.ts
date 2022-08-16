@@ -23,17 +23,17 @@
  * SOFTWARE.
  */
 
-import {OSLevel, OSLevelRuntime, WQC, WQCRuntime} from '../baseFunction';
-import {DataAssembly, DataAssemblyDataItems} from '../DataAssembly';
+import {OSLevel, WQC} from '../baseFunction';
+import {DataAssembly} from '../DataAssembly';
 import {ConnectionHandler} from '../../connectionHandler/ConnectionHandler';
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {keys} from 'ts-transformer-keys';
+import {ActiveElementDataItems} from '@p2olab/pimad-types';
 
-export type ActiveElementRuntime = DataAssemblyDataItems & WQCRuntime & OSLevelRuntime;
 
 export class ActiveElement extends DataAssembly {
 
-	public dataItems!: ActiveElementRuntime;
+	public dataItems!: ActiveElementDataItems;
 
 	public osLevel!: OSLevel;
 	public wqc!: WQC;

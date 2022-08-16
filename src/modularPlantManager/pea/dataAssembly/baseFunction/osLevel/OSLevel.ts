@@ -25,11 +25,8 @@
 
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {EventEmitter} from 'events';
-import {DataItem} from '../../dataItem/DataItem';
-
-export interface OSLevelRuntime {
-	OSLevel: DataItem<number>;
-}
+import {MTPDataTypes, OSLevelDataItems} from '@p2olab/pimad-types';
+import {BaseDataItem} from '../../dataItem/DataItem';
 
 /**
  * Events emitted by [[OSLevel]]
@@ -42,14 +39,14 @@ type OSLevelEmitter = StrictEventEmitter<EventEmitter, OSLevelEvents>;
 
 export class OSLevel extends (EventEmitter as new()=> OSLevelEmitter){
 
-	private readonly dataItems!: OSLevelRuntime;
+	private readonly dataItems!: OSLevelDataItems;
 
-	constructor(requiredDataItems: Required<OSLevelRuntime>) {
+	constructor(requiredDataItems: Required<OSLevelDataItems>) {
 		super();
 
 		this.dataItems = requiredDataItems;
 
-		this.dataItems.OSLevel.on('changed', () => {
+		(this.dataItems.OSLevel as BaseDataItem<number>).on('changed', () => {
 			this.emit('changed', this.osLevel);
 		});
 	}
@@ -59,6 +56,6 @@ export class OSLevel extends (EventEmitter as new()=> OSLevelEmitter){
 	}
 
 	set osLevel(value: number) {
-		if (Number.isInteger(value) && value >= 0) this.dataItems.OSLevel.write(value).then();
+		if (Number.isInteger(value) && value >= 0) (this.dataItems.OSLevel as BaseDataItem<number>).write(value).then();
 	}
 }

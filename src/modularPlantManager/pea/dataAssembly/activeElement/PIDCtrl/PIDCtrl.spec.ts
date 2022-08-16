@@ -89,19 +89,20 @@ describe('PIDCtrl', () => {
 	});
 
 	describe('dynamic', () => {
+
 		let mockupServer: MockupServer;
 		let connectionHandler: ConnectionHandler;
+		let adapterId: string;
 
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
-
+			await mockupServer.initialize();
 			const pidCtrlMockup =new PIDCtrlMockup( mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			options = pidCtrlMockup.getDataAssemblyModel();
 			await mockupServer.start();
 			connectionHandler = new ConnectionHandler();
-			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
-			await connectionHandler.connect();
+			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
 		});
 
 		afterEach(async function () {
@@ -114,7 +115,7 @@ describe('PIDCtrl', () => {
 
 			const dataAssembly = new PIDCtrl(options, connectionHandler);
 			await dataAssembly.subscribe();
-			await connectionHandler.connect();
+			await connectionHandler.connect(adapterId);
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 
 			expect(dataAssembly.dataItems.OSLevel.value).equal(0);

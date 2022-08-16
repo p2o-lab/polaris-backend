@@ -56,16 +56,18 @@ describe('AnaManInt', () => {
 	describe('dynamic', () => {
 		let mockupServer: MockupServer;
 		let connectionHandler: ConnectionHandler;
+		let adapterId: string;
 
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
+			await mockupServer.initialize();
 			const anaManIntMockup = new AnaManIntMockup(mockupServer.nameSpace, mockupServer.rootObject,'Variable');
 			options = anaManIntMockup.getDataAssemblyModel();
 			await mockupServer.start();
 			connectionHandler= new ConnectionHandler();
-			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
-			await connectionHandler.connect();
+			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
+
 		});
 
 		afterEach(async function () {
@@ -78,7 +80,7 @@ describe('AnaManInt', () => {
 
 			const dataAssembly = DataAssemblyFactory.create(options, connectionHandler) as AnaManInt;
 			await dataAssembly.subscribe();
-			await connectionHandler.connect();
+			await connectionHandler.connect(adapterId);
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 
 			expect(dataAssembly.dataItems.OSLevel.value).to.equal(0);

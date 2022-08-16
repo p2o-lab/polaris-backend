@@ -24,26 +24,14 @@
  */
 
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
-import {DataItem} from '../../../dataItem/DataItem';
-import {ServParam, ServParamRuntime} from '../ServParam';
+import {ServParam} from '../ServParam';
 import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
 import {keys} from 'ts-transformer-keys';
-
-export type BinServParamRuntime = ServParamRuntime & {
-	VExt: DataItem<boolean>;
-	VOp: DataItem<boolean>;
-	VInt: DataItem<boolean>;
-	VReq: DataItem<boolean>;
-	VOut: DataItem<boolean>;
-	VFbk: DataItem<boolean>;
-
-	VState0: DataItem<string>;
-	VState1: DataItem<string>;
-};
+import {BinServParamDataItems} from '@p2olab/pimad-types';
 
 export class BinServParam extends ServParam {
 
-	public readonly dataItems!: BinServParamRuntime;
+	public readonly dataItems!: BinServParamDataItems;
 
 	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false) {
 		super(options, connectionHandler);

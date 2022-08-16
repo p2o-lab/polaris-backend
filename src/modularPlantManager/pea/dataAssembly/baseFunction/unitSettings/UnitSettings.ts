@@ -23,14 +23,10 @@
  * SOFTWARE.
  */
 
-import {DataItem} from '../../dataItem/DataItem';
 import {UnitCollection} from './UnitCollection';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {EventEmitter} from 'events';
-
-export type UnitSettingsRuntime = {
-	VUnit: DataItem<number>;
-}
+import {VUnitDataItems} from '@p2olab/pimad-types';
 
 /**
  * Events emitted by [[UnitSettings]]
@@ -42,9 +38,9 @@ type UnitSettingsEventEmitter = StrictEventEmitter<EventEmitter, UnitSettingsEve
 
 
 export class UnitSettings extends (EventEmitter as new () => UnitSettingsEventEmitter){
-	public readonly dataItems!: UnitSettingsRuntime;
+	public readonly dataItems!: VUnitDataItems;
 
-	constructor(requiredDataItems: Required<UnitSettingsRuntime>) {
+	constructor(requiredDataItems: Required<VUnitDataItems>) {
 		super();
 
 		this.dataItems = requiredDataItems;

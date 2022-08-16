@@ -23,10 +23,11 @@
  * SOFTWARE.
  */
 
-import {DataItem, OpcUaDataItem, StaticDataItem} from './DataItem';
+import {BaseDataItem, OpcUaDataItem, StaticDataItem} from './DataItem';
 import {catDataItem} from '../../../../logging';
 import {ConnectionHandler} from '../../connectionHandler/ConnectionHandler';
 import {DataAssemblyModel, DataItemModel} from '@p2olab/pimad-interface';
+import {MTPDataTypes} from '@p2olab/pimad-types';
 
 
 export function getCollectionProperty<T, K extends keyof T>(obj: T, key: K): T[K] {
@@ -34,22 +35,28 @@ export function getCollectionProperty<T, K extends keyof T>(obj: T, key: K): T[K
 }
 
 export interface DataItemFactory {
-	create<T extends string | number | boolean>(options: DataItemModel, connectionHandler?: ConnectionHandler): DataItem<T>;
+	create<T extends string | number | boolean, K extends MTPDataTypes>(options: DataItemModel, connectionHandler?: ConnectionHandler): BaseDataItem<T>;
+}
+
+export interface DataItemFactoryOptions {
+	dataItemModel: DataItemModel,
+	dataType: 'string' | 'boolean' | 'number',
+	connectionHandler?: ConnectionHandler
 }
 
 
 export class DataItemFactory implements DataItemFactory{
 
 	
-	static create<T extends string | number | boolean>(options: DataItemModel, connectionHandler?: ConnectionHandler): DataItem<T> {
-		let result: DataItem<T>;
+	static create<T extends string | number | boolean>(options: DataItemFactoryOptions): BaseDataItem<T> {
+		let result: BaseDataItem<T>;
 
 		catDataItem.trace('Create DataItem');
 		
-		if (options.cIData && connectionHandler) {
-			result = new OpcUaDataItem<T>(options, connectionHandler);
+		if (options.dataItemModel.cIData && options.connectionHandler) {
+			result = new OpcUaDataItem<T>(options.dataItemModel, options.dataType, options.connectionHandler);
 		} else {
-			result = new StaticDataItem<T>(options);
+			result = new StaticDataItem<T>(options.dataItemModel, options.dataType);
 
 		}
 		if(!result){

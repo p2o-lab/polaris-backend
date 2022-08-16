@@ -48,30 +48,29 @@ describe('MonBinDrv', () => {
 		it('should create MonBinDrv',() => {
 
 			const connectionHandler = new ConnectionHandler();
-			const dataAssembly = new MonBinDrv(options, connectionHandler);
+			const dataAssembly = new MonBinDrv(options, connectionHandler, true);
 			expect(dataAssembly.feedBackMonitoring).to.be.not.undefined;
 		});
 	});
 	describe('dynamic', () => {
+
 		let mockupServer: MockupServer;
 		let connectionHandler: ConnectionHandler;
 		let dataAssembly: MonBinDrv;
+		let adapterId: string;
 
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-
 			const monBinDrvMockup = new MonBinDrvMockup( mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			options = monBinDrvMockup.getDataAssemblyModel();
 			await mockupServer.start();
-			connectionHandler= new ConnectionHandler();
-			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
-			await connectionHandler.connect();
-
+			connectionHandler = new ConnectionHandler();
+			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
 			dataAssembly = DataAssemblyFactory.create(options, connectionHandler) as MonBinDrv;
 			await dataAssembly.subscribe();
-			await connectionHandler.connect();
+			await connectionHandler.connect(adapterId);
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 		});
 

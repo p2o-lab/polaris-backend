@@ -26,13 +26,11 @@
 import {EventEmitter} from 'events';
 import {DataValue} from 'node-opcua';
 import StrictEventEmitter from 'strict-event-emitter-types';
-import {Category} from 'typescript-logging';
 import {IDProvider} from '../../_utils';
 
-import {OpcUaConnectionInfo, OpcUaConnectionSettings} from '@p2olab/polaris-interface';
-import {OpcUaAdapter} from './connectionAdapter';
+import {OpcUaAdapter, OpcUaConnectionAdapterOptions} from './connectionAdapter';
 import {CIData, Endpoint} from '@p2olab/pimad-interface';
-import {catConnection} from '../../../logging';
+import {ConnectionHandlerInfo, OpcUaAdapterInfo, OpcUaEndpointSetting} from '@p2olab/polaris-interface';
 
 
 /**
@@ -66,9 +64,7 @@ type ConnectionEmitter = StrictEventEmitter<EventEmitter, ConnectionEvents>;
 export class ConnectionHandler extends (EventEmitter as new() => ConnectionEmitter) {
 
 	public readonly id: string = IDProvider.generateIdentifier();
-	private readonly logger: Category = catConnection;
 
-	private _endpoints: Endpoint[] = [];
 	public connectionEstablished = false;
 	private _connectionAdapters: OpcUaAdapter[] = [];
 
@@ -81,30 +77,82 @@ export class ConnectionHandler extends (EventEmitter as new() => ConnectionEmitt
 	}
 
 
-	public initializeConnectionAdapters(endpoints: Endpoint[]): void {
-		const newAdapter = new OpcUaAdapter({endpointUrl: endpoints[0].value});
-		this._connectionAdapters.push(newAdapter) ;
+	public addConnectionAdapter(endpoint: Endpoint): string {
+			const newAdapter = new OpcUaAdapter({endpoint: endpoint.value});
+			this._connectionAdapters.push(newAdapter) ;
+			return newAdapter.id;
 	}
 
 
-	public get connectionAdapterInfo(): OpcUaConnectionInfo[] {
-		return this._connectionAdapters.map(adapter => adapter.settingsInfo);
+	public get connectionAdapterInfo(): ConnectionHandlerInfo {
+		return {
+			adapterInfo: this._connectionAdapters.map(adapter => adapter.getAdapterInfo()),
+			id: this.id,
+			name: 'GenericConnectionHandler'
+		};
 	}
 
 	/**
 	 * Connect Connection Adapter
 	 * @returns {Promise<void>}
 	 */
-	public async connect(specificConnectionAdapterId?:string): Promise<void> {
-		if (specificConnectionAdapterId){
-			const adapter = this._connectionAdapters.find(adapter => adapter.id === specificConnectionAdapterId);
+	public async connect(adapterId?: string, endpointConfig?: OpcUaEndpointSetting): Promise<void> {
+		if (adapterId){
+			const adapter = this._connectionAdapters.find(adapter => adapter.id === adapterId);
 			if (adapter){
-				await adapter.connect();
+				if (endpointConfig) {
+					await adapter.connect(endpointConfig);
+				} else {
+					let adapterInfo = adapter.getAdapterInfo();
+					if (adapterInfo.endpoints.length === 0) {
+						await this.initializeAdapter(adapterId);
+					}
+					adapterInfo = adapter.getAdapterInfo();
+					if (adapterInfo.endpoints.length === 0) {
+						throw new Error('Connection Adapter not found!');
+					}
+					const endpointInfo = (adapterInfo as OpcUaAdapterInfo).endpoints[0];
+					adapter.on('monitoredNodeChanged', (data: any) => {
+						console.log(`[${this.id}] ${data.monitoredNodeId} changed to ${data.value}`);
+						this.emit('monitoredDataItemChanged', {
+							monitoredDataItemId: data.monitoredNodeId,
+							value: data.value,
+							dataType: data.dataType,
+							timestamp: data.timestamp,
+						});
+					});
+					this.monitoredDataItems.forEach((value, key) => adapter.addDataItemToMonitoring(value, key));
+					await adapter.connect({endpointId: endpointInfo.id});
+					this.emit('connected');
+					await adapter.startMonitoring();
+				}
 			} else {
 				throw new Error('Connection Adapter not found!');
 			}
 		} else {
-			await this._connectionAdapters.forEach( a => a.connect());
+			for (const a of this._connectionAdapters) {
+				let adapterInfo = a.getAdapterInfo();
+				if (adapterInfo.endpoints.length === 0) {
+					await this.initializeAdapter(a.id);
+				}
+				adapterInfo = a.getAdapterInfo();
+				if (adapterInfo.endpoints.length === 0) {
+					throw new Error('Connection Adapter not found!');
+				}
+				const endpointInfo = (adapterInfo as OpcUaAdapterInfo).endpoints[0];
+				a.on('monitoredNodeChanged', (data: any) => {
+					this.emit('monitoredDataItemChanged', {
+						monitoredDataItemId: data.monitoredNodeId,
+						value: data.value,
+						dataType: data.dataType,
+						timestamp: data.timestamp,
+					});
+				});
+				this.monitoredDataItems.forEach((value, key) => a.addDataItemToMonitoring(value, key));
+				await a.connect({endpointId: endpointInfo.id});
+				this.emit('connected');
+				await a.startMonitoring();
+			}
 		}
 		return Promise.resolve();
 	}
@@ -113,16 +161,18 @@ export class ConnectionHandler extends (EventEmitter as new() => ConnectionEmitt
 	 * Disconnect Connection Adapter
 	 * @returns {Promise<void>}
 	 */
-	public async disconnect(specificConnectionAdapterId?:string): Promise<void> {
-		if (specificConnectionAdapterId){
-			const adapter = this._connectionAdapters.find(adapter => adapter.id === specificConnectionAdapterId);
+	public async disconnect(adapterId?:string): Promise<void> {
+		if (adapterId){
+			const adapter = this._connectionAdapters.find(adapter => adapter.id === adapterId);
 			if (adapter){
 				await adapter.disconnect();
+				this.emit('disconnected');
 			} else {
 				throw new Error('Connection Adapter not found!');
 			}
 		} else {
 			await this._connectionAdapters.forEach( a => a.disconnect());
+			this.emit('disconnected');
 		}
 		return Promise.resolve();
 	}
@@ -182,7 +232,23 @@ export class ConnectionHandler extends (EventEmitter as new() => ConnectionEmitt
 		this.monitoredDataItems.clear();
 	}
 
-	public changeEndpointConfig(options: OpcUaConnectionSettings) {
-		// TODO: should find endpoint, should replace old
+	public async initializeAdapter(adapterId?: string, options?: OpcUaConnectionAdapterOptions): Promise<void> {
+		if (adapterId) {
+			const resolvedAdapter = this._connectionAdapters.find(adapter => adapter.id === adapterId);
+			if (!resolvedAdapter) throw new Error('Specified adapter can not be found');
+			await resolvedAdapter.initialize(options);
+		} else {
+			for (const a of this._connectionAdapters) {
+				await a.initialize();
+			}
+		}
+	}
+
+	public async updateConnectionAdapter(adapterId: string, options: OpcUaEndpointSetting) {
+		const resolvedAdapter = this._connectionAdapters.find(adapter => adapter.id === adapterId);
+		if (resolvedAdapter) {
+			await resolvedAdapter.disconnect();
+			await resolvedAdapter.connect(options);
+		}
 	}
 }

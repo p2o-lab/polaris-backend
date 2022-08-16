@@ -24,18 +24,15 @@
  */
 
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
-import {OSLevelRuntime, WQC, WQCRuntime} from '../baseFunction';
-import {
-	DataAssemblyDataItems, DataAssembly,
-} from '../DataAssembly';
+import {WQC} from '../baseFunction';
+import {DataAssembly} from '../DataAssembly';
 import {ConnectionHandler} from '../../connectionHandler/ConnectionHandler';
 import {keys} from 'ts-transformer-keys';
-
-export type DiagnosticElementRuntime = DataAssemblyDataItems & WQCRuntime & OSLevelRuntime;
+import {DiagnosticElementDataItems} from '@p2olab/pimad-types';
 
 export class DiagnosticElement extends DataAssembly {
 
-	public readonly dataItems!: DiagnosticElementRuntime;
+	public readonly dataItems!: DiagnosticElementDataItems;
 
 	public wqc!: WQC;
 

@@ -23,36 +23,14 @@
  * SOFTWARE.
  */
 
-import {DataItem} from '../../dataItem/DataItem';
-import {EventEmitter} from 'events';
-import {BaseServiceEvents} from '../../../serviceSet';
-import StrictEventEmitter from 'strict-event-emitter-types';
 
-export type InterlockRuntime = {
-	PermEn: DataItem<boolean>;
-	Permit: DataItem<boolean>;
-	IntlEn: DataItem<boolean>;
-	Interlock: DataItem<boolean>;
-	ProtEn: DataItem<boolean>;
-	Protect: DataItem<boolean>;
-};
+import {InterlockDataItems} from '@p2olab/pimad-types';
 
-/**
- * Events emitted by [[Interlock]]
- */
-export interface InterlockEvents extends BaseServiceEvents {
-	changed: string;
-}
+export class Interlock {
 
-type InterlockEmitter = StrictEventEmitter<EventEmitter, InterlockEvents>;
+	public readonly dataItems!: InterlockDataItems;
 
-export class Interlock extends (EventEmitter as new() => InterlockEmitter) {
-
-	public readonly dataItems!: InterlockRuntime;
-
-	constructor(requiredDataItems: Required<InterlockRuntime>) {
-		super();
-
+	constructor(requiredDataItems: Required<InterlockDataItems>) {
 		this.dataItems = requiredDataItems;
 	}
 }

@@ -27,8 +27,6 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {BinDrvMockup, getBinDrvDataAssemblyModel, getBinDrvDataItemModel} from './BinDrv.mockup';
 import {MockupServer} from '../../../../../_utils';
-import {DataAssemblyModel} from '@p2olab/pimad-interface';
-import {BinDrvRuntime} from './BinDrv';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -43,7 +41,6 @@ describe('BinDrvMockup', () => {
             this.timeout(4000);
             mockupServer = new MockupServer();
 			await mockupServer.initialize();
-
         });
 
         it('should create BinDrvMockup', async () => {

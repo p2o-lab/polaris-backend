@@ -48,7 +48,7 @@ describe('ServParam', () => {
 
 		it('should create ServParam', () => {
 
-			const dataAssembly = new ServParam(options, connectionHandler) as ServParam;
+			const dataAssembly = new ServParam(options, connectionHandler, true);
 			expect(dataAssembly.serviceSourceMode).to.not.be.undefined;
 			expect(dataAssembly.serviceOpMode).to.not.be.undefined;
 			// expect(dataAssembly.wqc).to.not.be.undefined;
@@ -56,18 +56,21 @@ describe('ServParam', () => {
 		});
 	});
 	describe('dynamic', () => {
+
 		let mockupServer: MockupServer;
 		let connectionHandler: ConnectionHandler;
+		let adapterId: string;
 
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
+			await mockupServer.initialize();
 			const servParamMockup = new ServParamMockup(mockupServer.nameSpace,	mockupServer.rootObject,'Variable');
 			options = servParamMockup.getDataAssemblyModel();
 			await mockupServer.start();
-			connectionHandler= new ConnectionHandler();
-			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
-			await connectionHandler.connect();
+			connectionHandler = new ConnectionHandler();
+			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
+			await connectionHandler.connect(adapterId);
 		});
 
 		afterEach(async function () {
@@ -78,9 +81,9 @@ describe('ServParam', () => {
 
 		it('should subscribe successfully', async () => {
 
-			const dataAssembly: ServParam = new ServParam(options, connectionHandler);
+			const dataAssembly: ServParam = new ServParam(options, connectionHandler, true);
 			await dataAssembly.subscribe();
-			await connectionHandler.connect();
+			await connectionHandler.connect(adapterId);
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 			
 			// expect(dataAssembly.dataItems.WQC.value).equal(0);

@@ -27,19 +27,19 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../_utils';
 import {getInterlockDataItemModel, InterlockMockup} from './Interlock.mockup';
-import {InterlockRuntime} from './Interlock';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('InterlockMockup', () => {
+
     describe('static', () => {
+
         let mockupServer: MockupServer;
 
         beforeEach(async()=>{
             mockupServer = new MockupServer();
 			await mockupServer.initialize();
-
         });
 
         it('should create InterlockMockup', async () => {

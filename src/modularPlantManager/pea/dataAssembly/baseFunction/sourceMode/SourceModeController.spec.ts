@@ -34,8 +34,8 @@ import {SourceModeController} from './SourceModeController';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
 import {DataAssemblyFactory} from '../../DataAssemblyFactory';
 import {getAnaDrvDataAssemblyModel} from '../../activeElement/drv/anaDrv/AnaDrv.mockup';
-import {AnaDrvRuntime} from '../../activeElement';
 import {getEndpointDataModel} from '../../../connectionHandler/ConnectionHandler.mockup';
+import {AnaDrvDataItems} from '@p2olab/pimad-types';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -49,7 +49,7 @@ describe('SourceModeController', () => {
 	describe('static', () => {
 
 		it('should create SourceModeController', async () => {
-			const baseFunction = new SourceModeController(referenceDataAssembly.dataItems as AnaDrvRuntime);
+			const baseFunction = new SourceModeController(referenceDataAssembly.dataItems as AnaDrvDataItems);
 			expect(baseFunction.dataItems.SrcChannel).to.be.not.undefined;
 			expect(baseFunction.dataItems.SrcManAut).to.be.not.undefined;
 			expect(baseFunction.dataItems.SrcIntAut).to.be.not.undefined;
@@ -65,6 +65,7 @@ describe('SourceModeController', () => {
 
 		let mockupServer: MockupServer;
 		let connectionHandler: ConnectionHandler;
+		let adapterId: string;
 
 		beforeEach(async function () {
 			mockupServer = new MockupServer();
@@ -75,8 +76,8 @@ describe('SourceModeController', () => {
 			});
 			new SourceModeMockup(mockupServer.nameSpace, mockupNode,'Variable');
 			await mockupServer.start();
-			connectionHandler= new ConnectionHandler();
-			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
+			connectionHandler = new ConnectionHandler();
+			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
 		});
 
 		afterEach(async function () {
@@ -87,9 +88,9 @@ describe('SourceModeController', () => {
 
 		it('should subscribe successfully', async () => {
 
-			const baseFunction = new SourceModeController(referenceDataAssembly.dataItems as AnaDrvRuntime);
+			const baseFunction = new SourceModeController(referenceDataAssembly.dataItems as AnaDrvDataItems);
 
-			await connectionHandler.connect();
+			await connectionHandler.connect(adapterId);
 			await new Promise((resolve => baseFunction.on('changed', resolve)));
 			
 			expect(baseFunction.dataItems.SrcChannel.value).equal(false);
@@ -103,16 +104,17 @@ describe('SourceModeController', () => {
 	});
 
 	describe('dynamic functions, manual', async () => {
+
 		let mockupServer: MockupServer;
 		let connectionHandler: ConnectionHandler;
 		let mockup: SourceModeMockup;
 		let sourceMode: SourceModeController;
 		let baseFunction: any;
+		let adapterId: string;
 
 		beforeEach(async function () {
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			
 			const mockupNode = (mockupServer.nameSpace).addObject({
 				organizedBy: mockupServer.rootObject,
 				browseName: 'Variable',
@@ -123,13 +125,11 @@ describe('SourceModeController', () => {
 				'Variable');
 			mockup.srcMode = SourceMode.Manual;
 			await mockupServer.start();
-
-			connectionHandler= new ConnectionHandler();
-			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
+			connectionHandler = new ConnectionHandler();
+			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
 			baseFunction = new SourceModeController(this.dataItems);
-			await connectionHandler.connect();
 			await baseFunction.subscribe();
-			await connectionHandler.connect();
+			await connectionHandler.connect(adapterId);
 			await new Promise((resolve => baseFunction.on('changed', resolve)));
 		});
 		
@@ -175,24 +175,22 @@ describe('SourceModeController', () => {
 		let connectionHandler: ConnectionHandler;
 		let sourceMode: SourceModeController;
 		let baseFunction: any;
+		let adapterId: string;
 
 		beforeEach(async function () {
 			mockupServer = new MockupServer();
 			await mockupServer.initialize();
-			
 			const mockupNode = (mockupServer.nameSpace).addObject({
 				organizedBy: mockupServer.rootObject,
 				browseName: 'Variable',
 			});
 			new SourceModeMockup(mockupServer.nameSpace, mockupNode, 'Variable');
 			await mockupServer.start();
-
-			connectionHandler= new ConnectionHandler();
-			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
+			connectionHandler = new ConnectionHandler();
+			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
 			baseFunction = new SourceModeController(this.dataItems);
-			await connectionHandler.connect();
 			await baseFunction.subscribe();
-			await connectionHandler.connect();
+			await connectionHandler.connect(adapterId);
 			await new Promise((resolve => baseFunction.on('changed', resolve)));
 		});
 

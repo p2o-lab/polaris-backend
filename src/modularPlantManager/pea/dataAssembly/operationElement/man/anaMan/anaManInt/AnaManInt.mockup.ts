@@ -33,8 +33,9 @@ import {getWQCDataItemModel, WQCMockup} from '../../../../baseFunction/wqc/WQC.m
 import {AnaManMockup, getAnaManDataItemModel} from '../AnaMan.mockup';
 
 import {getDataAssemblyModel} from '../../../../DataAssembly.mockup';
-import {DataAssemblyModel, DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+import {DataAssemblyModel, DataItemModel} from '@p2olab/pimad-interface';
 import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../../../dataItem/DataItem.mockup';
+import {Access} from '@p2olab/pimad-types';
 
 const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/OperationElement/AnaMan/AnaManInt';
 
@@ -45,7 +46,7 @@ function getAnaManIntSpecificDataItemModels(namespace: number, objectBrowseName:
 	dataItem.name = 'VInt';
 	dataItem.dataType = 'Float';
 	const ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.VInt`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;

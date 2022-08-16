@@ -45,7 +45,7 @@ describe('AnaView', () => {
 		options = getAnaViewDataAssemblyModel(2, 'Variable', 'Variable');
 
 		it('should create AnaView', async () => {
-			const dataAssembly: AnaView = new AnaView(options, connectionHandler);
+			const dataAssembly: AnaView = new AnaView(options, connectionHandler, true);
 			expect(dataAssembly.dataItems.V).to.not.equal(undefined);
 			expect(dataAssembly.dataItems.WQC).to.not.equal(undefined);
 			expect(dataAssembly.dataItems.VSclMax).to.not.equal(undefined);
@@ -57,18 +57,20 @@ describe('AnaView', () => {
 	});
 
 	describe('dynamic', () => {
+
 		let mockupServer: MockupServer;
 		let connectionHandler: ConnectionHandler;
+		let adapterId: string;
 
 		beforeEach(async function () {
 			this.timeout(5000);
 			mockupServer = new MockupServer();
+			await mockupServer.initialize();
 			const anaViewMockup = new AnaViewMockup(mockupServer.nameSpace, mockupServer.rootObject,'Variable');
 			options = anaViewMockup.getDataAssemblyModel();
 			await mockupServer.start();
 			connectionHandler = new ConnectionHandler();
-			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
-			await connectionHandler.connect();
+			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
 		});
 
 		afterEach(async function () {
@@ -79,9 +81,9 @@ describe('AnaView', () => {
 
 		it('should subscribe successfully', async () => {
 
-			const dataAssembly: AnaView = new AnaView(options, connectionHandler);
+			const dataAssembly: AnaView = new AnaView(options, connectionHandler, true);
 			await dataAssembly.subscribe();
-			await connectionHandler.connect();
+			await connectionHandler.connect(adapterId);
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 
 			expect(dataAssembly.dataItems.V.value).equal(0);

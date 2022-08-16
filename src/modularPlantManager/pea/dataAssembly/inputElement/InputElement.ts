@@ -26,21 +26,20 @@
 import {
 	ParameterInterface, ParameterOptions,
 } from '@p2olab/polaris-interface';
-import {DataItem, DynamicDataItem} from '../dataItem/DataItem';
-import {WQC, WQCRuntime} from '../baseFunction';
-import {DataAssembly, DataAssemblyDataItems} from '../DataAssembly';
+import {BaseDataItem, DynamicDataItem} from '../dataItem/DataItem';
+import {WQC} from '../baseFunction';
+import {DataAssembly} from '../DataAssembly';
 import {catDataAssembly} from '../../../../logging';
 import {PEA} from '../../PEA';
 import {ParameterRequest} from '../ParameterRequest';
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {ConnectionHandler} from '../../connectionHandler/ConnectionHandler';
 import {keys} from 'ts-transformer-keys';
-
-export type InputElementRuntime = WQCRuntime & DataAssemblyDataItems ;
+import {InputElementDataItems} from '@p2olab/pimad-types';
 
 export class InputElement extends DataAssembly {
 
-	public readonly dataItems!: InputElementRuntime;
+	public readonly dataItems!: InputElementDataItems;
 
 	public parameterRequest: ParameterRequest | undefined;
 	public requestedValue = '';
@@ -68,7 +67,7 @@ export class InputElement extends DataAssembly {
 	 * @param {string} variable
 	 */
 	public async setParameter(paramValue: string | number | boolean, variable?: string): Promise<void> {
-		const dataItem: DataItem<any> | undefined = (variable) ?
+		const dataItem: BaseDataItem<any> | undefined = (variable) ?
 			//this.dataItems[variable as keyof InputElementRuntime] : this.defaultWriteDataItem;
 			(this.dataItems as any)[variable] : this.defaultWriteDataItem;
 		catDataAssembly.debug(`Set Parameter: ${this.name} (${variable}) -> ${JSON.stringify(paramValue)}`);

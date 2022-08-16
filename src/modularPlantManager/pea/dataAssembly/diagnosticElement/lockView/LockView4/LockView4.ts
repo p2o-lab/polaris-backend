@@ -24,44 +24,14 @@
  */
 
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
-import {DiagnosticElement, DiagnosticElementRuntime} from '../../DiagnosticElement';
-import {DataItem} from '../../../dataItem/DataItem';
+import {DiagnosticElement} from '../../DiagnosticElement';
 import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
 import {keys} from 'ts-transformer-keys';
-
-export type LockView4Runtime = DiagnosticElementRuntime & {
-	Logic: DataItem<boolean>; // False = AND; TRUE = OR;
-	Out: DataItem<boolean>;
-	OutQC: DataItem<number>;
-
-	In1En: DataItem<boolean>;
-	In1: DataItem<boolean>;
-	In1QC: DataItem<number>;
-	In1Inv: DataItem<boolean>;
-	In1Txt: DataItem<string>;
-
-	In2En: DataItem<boolean>;
-	In2: DataItem<boolean>;
-	In2QC: DataItem<number>;
-	In2Inv: DataItem<boolean>;
-	In2Txt: DataItem<string>;
-
-	In3En: DataItem<boolean>;
-	In3: DataItem<boolean>;
-	In3QC: DataItem<number>;
-	In3Inv: DataItem<boolean>;
-	In3Txt: DataItem<string>;
-
-	In4En: DataItem<boolean>;
-	In4: DataItem<boolean>;
-	In4QC: DataItem<number>;
-	In4Inv: DataItem<boolean>;
-	In4Txt: DataItem<string>;
-};
+import {LockView4DataItems} from '@p2olab/pimad-types';
 
 export class LockView4 extends DiagnosticElement {
 
-	public readonly dataItems!: LockView4Runtime;
+	public readonly dataItems!: LockView4DataItems;
 
 	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false) {
 		super(options, connectionHandler);

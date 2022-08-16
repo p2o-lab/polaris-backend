@@ -23,34 +23,16 @@
  * SOFTWARE.
  */
 
-import {Drv, DrvRuntime} from '../Drv';
-import {SourceModeController, SourceModeRuntime} from '../../../baseFunction';
-import {DataItem} from '../../../dataItem/DataItem';
+import {Drv} from '../Drv';
+import {SourceModeController} from '../../../baseFunction';
 import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {keys} from 'ts-transformer-keys';
-
-export type AnaDrvRuntime = DrvRuntime & SourceModeRuntime & {
-	RpmSclMax: DataItem<number>;
-	RpmSclMin: DataItem<number>;
-
-	RpmUnit: DataItem<number>;
-
-	RpmMin: DataItem<number>;
-	RpmMax: DataItem<number>;
-
-	RpmInt: DataItem<number>;
-	RpmMan: DataItem<number>;
-
-	Rpm: DataItem<number>;
-	RpmFbk: DataItem<number>;
-	RpmFbkCalc: DataItem<boolean>;
-	RpmRbk: DataItem<number>;
-};
+import {AnaDrvDataItems} from '@p2olab/pimad-types';
 
 export class AnaDrv extends Drv {
 
-	public readonly dataItems!: AnaDrvRuntime;
+	public readonly dataItems!: AnaDrvDataItems;
 
 	public sourceMode!: SourceModeController;
 

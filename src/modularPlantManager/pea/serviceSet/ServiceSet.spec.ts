@@ -113,11 +113,11 @@ describe('ServiceSet', () => {
 			await peaServer.startSimulation();
 			pea = new PEA(peaModelReference);
 			service = pea.services[0];
-			await pea.connectAndSubscribe();
+			await pea.connect();
 		});
 
 		afterEach(async () => {
-			await pea.disconnectAndUnsubscribe();
+			await pea.disconnect();
 			await peaServer.stopSimulation();
 		});
 

@@ -35,7 +35,9 @@ const expect = chai.expect;
 describe('DiagnosticElementMockup', () => {
 
     describe('static', () => {
+
         let mockupServer: MockupServer;
+
         beforeEach(async()=>{
             mockupServer = new MockupServer();
         });

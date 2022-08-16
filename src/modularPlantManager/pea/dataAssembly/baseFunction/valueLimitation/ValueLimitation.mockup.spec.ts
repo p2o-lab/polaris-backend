@@ -27,7 +27,6 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../_utils';
 import {getValueLimitationDataItemModel, ValueLimitationMockup} from './ValueLimitation.mockup';
-import {ValueLimitationRuntime} from './ValueLimitation';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;

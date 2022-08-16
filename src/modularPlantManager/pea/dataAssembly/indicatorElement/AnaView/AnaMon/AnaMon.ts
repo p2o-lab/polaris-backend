@@ -23,24 +23,18 @@
  * SOFTWARE.
  */
 
-import {AnaView, AnaViewRuntime} from '../AnaView';
-import {
-    LimitMonitoring,
-    LimitMonitoringRuntime,
-    OSLevel,
-    OSLevelRuntime
-} from '../../../baseFunction';
+import {AnaView} from '../AnaView';
+import {LimitMonitoring, OSLevel} from '../../../baseFunction';
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
 import {keys} from 'ts-transformer-keys';
-
-export type AnaMonRuntime = AnaViewRuntime & LimitMonitoringRuntime & OSLevelRuntime
+import {AnaMonDataItems} from '@p2olab/pimad-types';
 
 export class AnaMon extends AnaView {
 
-    public dataItems!: AnaMonRuntime;
+    public dataItems!: AnaMonDataItems;
 
-    public limitMonitoring!: LimitMonitoring;
+    public limitMonitoring!: LimitMonitoring<number>;
     public osLevel!: OSLevel;
 
     constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false) {

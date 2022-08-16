@@ -124,11 +124,11 @@ describe('Service', () => {
 
 			pea = new PEA(peaModel as unknown as PEAModel);
 			service = pea.services[0];
-			await pea.connectAndSubscribe();
+			await pea.connect();
 		});
 
 		afterEach(async () => {
-			await pea.disconnectAndUnsubscribe();
+			await pea.disconnect();
 			if(mockupServer) await mockupServer.shutdown();
 		});
 
@@ -264,7 +264,7 @@ describe('Service', () => {
 
 			await mockupServer.start();
 			const pea = new PEA(peaModelServices as unknown as PEAModel);
-			await pea.connectAndSubscribe();
+			await pea.connect();
 
 			const serviceId = pea.findServiceId('TestService');
 			if (!serviceId) {
@@ -283,7 +283,7 @@ describe('Service', () => {
 
 			await service.start();
 
-			await new Promise((resolve => service.serviceControl.on('state', resolve)));
+			await new Promise((resolve => service.on('state', resolve)));
 
 			curProcedure = service.currentProcedure;
 			expect(curProcedure).to.not.be.undefined;
@@ -292,10 +292,10 @@ describe('Service', () => {
 
 			await service.setParameters([paramOptions], [pea]);
 
-			await new Promise((resolve => service.serviceControl.on('parameterChanged', resolve)));
+			await new Promise((resolve => service.on('parameterChanged', resolve)));
 
 			expect((procedure?.parameters[0] as AnaServParam).dataItems.VExt.value).to.equal(5);
-			await pea.disconnectAndUnsubscribe();
+			await pea.disconnect();
 			await mockupServer.shutdown();
 		}).timeout(10000);
 	});

@@ -24,32 +24,15 @@
 */
 
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
-import {Vlv, VlvRuntime} from '../Vlv';
-import {SourceModeController, SourceModeRuntime} from '../../../baseFunction';
+import {Vlv} from '../Vlv';
+import {SourceModeController} from '../../../baseFunction';
 import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
-import {DataItem} from '../../../dataItem/DataItem';
 import {keys} from 'ts-transformer-keys';
-
-export type AnaVlvRuntime = VlvRuntime & SourceModeRuntime & {
-	Pos: DataItem<number>;
-	PosFbk: DataItem<number>;
-	PosFbkCalc: DataItem<boolean>;
-	PosRbk: DataItem<number>;
-	PosInt: DataItem<number>;
-	PosMan: DataItem<number>;
-	PosUnit: DataItem<number>;
-	PosSclMin: DataItem<number>;
-	PosSclMax: DataItem<number>;
-	PosMin: DataItem<number>;
-	PosMax: DataItem<number>;
-
-	OpenAct: DataItem<boolean>;
-	CloseAct: DataItem<boolean>;
-};
+import {AnaVlvDataItems} from '@p2olab/pimad-types';
 
 export class AnaVlv extends Vlv {
 
-	public readonly dataItems!: AnaVlvRuntime;
+	public readonly dataItems!: AnaVlvDataItems;
 
 	public sourceMode!: SourceModeController;
 

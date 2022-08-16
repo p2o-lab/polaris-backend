@@ -31,8 +31,8 @@ import {ResetMockup} from './Reset.mockup';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
 import {getMonBinVlvDataAssemblyModel} from '../../activeElement/vlv/binVlv/monBinVlv/MonBinVlv.mockup';
 import {DataAssemblyFactory} from '../../DataAssemblyFactory';
-import {MonBinVlvRuntime} from '../../activeElement';
 import {getEndpointDataModel} from '../../../connectionHandler/ConnectionHandler.mockup';
+import {MonBinVlvDataItems} from '@p2olab/pimad-types';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -46,15 +46,17 @@ describe('Reset', () => {
 	describe('static', () => {
 
 		it('should create Reset',  () => {
-			const dataAssembly = new Reset(referenceDataAssembly.dataItems as MonBinVlvRuntime); //this will set dataItems dataAssemblies
+			const dataAssembly = new Reset(referenceDataAssembly.dataItems as MonBinVlvDataItems); //this will set dataItems dataAssemblies
 			expect(dataAssembly).to.not.to.undefined;
 			expect(dataAssembly.dataItems.ResetAut).to.not.to.undefined;
 			expect(dataAssembly.dataItems.ResetOp).to.not.to.undefined;
 		});
 	});
 	describe('dynamic', () => {
+
 		let mockupServer: MockupServer;
 		let connectionHandler: ConnectionHandler;
+		let adapterId: string;
 
 		beforeEach(async function () {
 			this.timeout(4000);
@@ -62,9 +64,8 @@ describe('Reset', () => {
 			await mockupServer.initialize();
 			new ResetMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
 			await mockupServer.start();
-			connectionHandler= new ConnectionHandler();
-			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
-			await connectionHandler.connect();
+			connectionHandler = new ConnectionHandler();
+			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
 		});
 
 		afterEach(async function () {
@@ -74,9 +75,8 @@ describe('Reset', () => {
 		});
 
 		it('should subscribe successfully', async () => {
-
-			const dataAssembly = new Reset(referenceDataAssembly.dataItems as MonBinVlvRuntime);
-			await connectionHandler.connect();
+			const dataAssembly = new Reset(referenceDataAssembly.dataItems as MonBinVlvDataItems);
+			await connectionHandler.connect(adapterId);
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 			expect(dataAssembly.dataItems.ResetAut.value).to.be.false;
 			expect(dataAssembly.dataItems.ResetOp.value).to.be.false;

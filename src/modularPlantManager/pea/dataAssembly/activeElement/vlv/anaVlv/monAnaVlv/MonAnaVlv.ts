@@ -24,22 +24,15 @@
 */
 
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
-import {DataItem} from '../../../../dataItem/DataItem';
-import {FeedbackMonitoringRuntime} from '../../../../baseFunction';
-import {AnaVlv, AnaVlvRuntime} from '../AnaVlv';
+import {AnaVlv} from '../AnaVlv';
 import {FeedbackMonitoring} from '../../../../baseFunction';
 import {ConnectionHandler} from '../../../../../connectionHandler/ConnectionHandler';
 import {keys} from 'ts-transformer-keys';
-
-export type MonAnaVlvRuntime = AnaVlvRuntime & FeedbackMonitoringRuntime & {
-	PosReachedFbk: DataItem<boolean>;
-	PosTolerance: DataItem<number>;
-	MonPosTi: DataItem<number>;
-	MonPosErr: DataItem<boolean>;
-};
+import {MonAnaVlvDataItems} from '@p2olab/pimad-types';
 
 export class MonAnaVlv extends AnaVlv {
-	public readonly dataItems!: MonAnaVlvRuntime;
+
+	public readonly dataItems!: MonAnaVlvDataItems;
 
 	public feedBackMonitoring!: FeedbackMonitoring;
 

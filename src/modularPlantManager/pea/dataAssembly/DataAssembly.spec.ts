@@ -29,6 +29,8 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {getDataAssemblyModel, getEmptyDataAssemblyModel} from './DataAssembly.mockup';
 import {ConnectionHandler} from '../connectionHandler/ConnectionHandler';
+import {BaseDataItem} from './dataItem/DataItem';
+import {MTPDataTypes} from '@p2olab/pimad-types';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -42,10 +44,10 @@ describe('DataAssembly', () => {
             expect(() => {
                 const newDataAssemblyModel = getDataAssemblyModel('name', undefined, 'test', 'test' );
                 const dataAssembly = new DataAssembly(newDataAssemblyModel, connectionHandler, true);
-                dataAssembly.dataItems.TagName.read().then(function(data){
+                (dataAssembly.dataItems.TagName as BaseDataItem<string>).read().then(function(data){
                     expect(data).to.equal('test');
                 });
-                dataAssembly.dataItems.TagName.read().then(function(data){
+                (dataAssembly.dataItems.TagName as BaseDataItem<string>).read().then(function(data){
                     expect(data).to.equal('test');
                 });
             }).to.not.throw();

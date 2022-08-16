@@ -23,14 +23,9 @@
  * SOFTWARE.
  */
 
-import {DataItem} from '../../dataItem/DataItem';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {EventEmitter} from 'events';
-
-export type ValueLimitationRuntime = {
-	VMin: DataItem<number>;
-	VMax: DataItem<number>;
-};
+import {VValueLimitationDataItems} from '@p2olab/pimad-types';
 
 /**
  * Events emitted by [[ValueLimitation]]
@@ -41,10 +36,10 @@ export interface ValueLimitationEvents {
 
 type ValueLimitationEventEmitter = StrictEventEmitter<EventEmitter, ValueLimitationEvents>;
 
-export class ValueLimitation extends (EventEmitter as new () => ValueLimitationEventEmitter) {
-	public readonly dataItems!: ValueLimitationRuntime;
+export class ValueLimitation<T extends string | number | boolean> extends (EventEmitter as new () => ValueLimitationEventEmitter) {
+	public readonly dataItems!: VValueLimitationDataItems<T>;
 
-	constructor(requiredDataItems: Required<ValueLimitationRuntime>) {
+	constructor(requiredDataItems: Required<VValueLimitationDataItems<T>>) {
 		super();
 
 		this.dataItems = requiredDataItems;

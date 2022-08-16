@@ -24,64 +24,14 @@
  */
 
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
-import {DataItem} from '../../../dataItem/DataItem';
-import {LockView8, LockView8Runtime} from '../LockView8';
+import {LockView8} from '../LockView8';
 import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
 import {keys} from 'ts-transformer-keys';
-
-export type LockView16Runtime = LockView8Runtime & {
-	In9En: DataItem<boolean>;
-	In9: DataItem<boolean>;
-	In9QC: DataItem<number>;
-	In9Inv: DataItem<boolean>;
-	In9Txt: DataItem<string>;
-
-	In10En: DataItem<boolean>;
-	In10: DataItem<boolean>;
-	In10QC: DataItem<number>;
-	In10Inv: DataItem<boolean>;
-	In10Txt: DataItem<string>;
-
-	In11En: DataItem<boolean>;
-	In11: DataItem<boolean>;
-	In11QC: DataItem<number>;
-	In11Inv: DataItem<boolean>;
-	In11Txt: DataItem<string>;
-
-	In12En: DataItem<boolean>;
-	In12: DataItem<boolean>;
-	In12QC: DataItem<number>;
-	In12Inv: DataItem<boolean>;
-	In12Txt: DataItem<string>;
-
-	In13En: DataItem<boolean>;
-	In13: DataItem<boolean>;
-	In13QC: DataItem<number>;
-	In13Inv: DataItem<boolean>;
-	In13Txt: DataItem<string>;
-
-	In14En: DataItem<boolean>;
-	In14: DataItem<boolean>;
-	In14QC: DataItem<number>;
-	In14Inv: DataItem<boolean>;
-	In14Txt: DataItem<string>;
-
-	In15En: DataItem<boolean>;
-	In15: DataItem<boolean>;
-	In15QC: DataItem<number>;
-	In15Inv: DataItem<boolean>;
-	In15Txt: DataItem<string>;
-
-	In16En: DataItem<boolean>;
-	In16: DataItem<boolean>;
-	In16QC: DataItem<number>;
-	In16Inv: DataItem<boolean>;
-	In16Txt: DataItem<string>;
-};
+import {LockView16DataItems} from '@p2olab/pimad-types';
 
 export class LockView16  extends LockView8 {
 
-	public readonly dataItems!: LockView16Runtime;
+	public readonly dataItems!: LockView16DataItems;
 
 	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false) {
 		super(options, connectionHandler);

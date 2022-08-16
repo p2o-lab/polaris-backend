@@ -28,19 +28,21 @@ import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../_utils';
 import {FeedbackMonitoringMockup, getFeedbackMonitoringDataItemModel} from './FeedbackMonitoring.mockup';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
-import {DataItemAccessLevel} from '@p2olab/pimad-interface';
 import {getEndpointDataModel} from '../../../connectionHandler/ConnectionHandler.mockup';
+import {Access} from '@p2olab/pimad-types';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('FeedbackMonitoringMockup', () => {
+
     describe('static', () => {
+
         let mockupServer: MockupServer;
+
         beforeEach(async()=>{
             mockupServer = new MockupServer();
 			await mockupServer.initialize();
-
         });
 
         it('should create FeedbackMonitoringMockup', async () => {
@@ -73,17 +75,16 @@ describe('FeedbackMonitoringMockup', () => {
 
         let mockupServer: MockupServer;
         let connectionHandler: ConnectionHandler;
+        let adapterId: string;
 
         beforeEach(async function () {
             this.timeout(5000);
             mockupServer = new MockupServer();
 			await mockupServer.initialize();
-
             new FeedbackMonitoringMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
             await mockupServer.start();
-            connectionHandler= new ConnectionHandler();
-            connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
-            await connectionHandler.connect();
+            connectionHandler = new ConnectionHandler();
+            adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
         });
 
         afterEach(async () => {
@@ -92,33 +93,33 @@ describe('FeedbackMonitoringMockup', () => {
         });
 
         it('set and get MonEn', async () => {
-            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.MonEn', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, true);
-            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.MonEn', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.MonEn', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}}, true);
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.MonEn', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(true));
         }).timeout(5000);
 
         it('get MonSafePos', async () => {
-            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.MonSafePos', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.MonSafePos', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(false));
         }).timeout(5000);
 
         it('get MonStatErr', async () => {
-            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.MonStatErr', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.MonStatErr', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(false));
         }).timeout(5000);
 
         it('get MonDynErr', async () => {
-            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.MonDynErr', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.MonDynErr', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(false));
         }).timeout(5000);
 
         it('get MonStatTi', async () => {
-            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.MonStatTi', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.MonStatTi', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(0));
         }).timeout(5000);
 
         it('get MonDynTi', async () => {
-            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.MonDynTi', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.MonDynTi', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(0));
         }).timeout(5000);
 

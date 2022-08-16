@@ -46,7 +46,7 @@ describe('AnaMon', () => {
 		options = getAnaMonDataAssemblyModel(2, 'Variable', 'Variable') as DataAssemblyModel;
 
 		it('should create AnaMon', async () => {
-			const dataAssembly: AnaMon = new AnaMon(options, connectionHandler);
+			const dataAssembly: AnaMon = new AnaMon(options, connectionHandler,true);
 			expect(dataAssembly.dataItems.TagName).to.not.equal(undefined);
 			expect(dataAssembly.dataItems.TagDescription).to.not.equal(undefined);
 			expect(dataAssembly.dataItems.V).to.not.equal(undefined);
@@ -82,18 +82,20 @@ describe('AnaMon', () => {
 		});
 	});
 	describe('dynamic', () => {
+
 		let mockupServer: MockupServer;
 		let connectionHandler: ConnectionHandler;
+		let adapterId: string;
 
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
+			await mockupServer.initialize();
 			const anaMonMockup = new AnaMonMockup(mockupServer.nameSpace, mockupServer.rootObject,'Variable');
 			options = anaMonMockup.getDataAssemblyModel();
 			await mockupServer.start();
 			connectionHandler = new ConnectionHandler();
-			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
-			await connectionHandler.connect();
+			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
 		});
 
 		afterEach(async function () {
@@ -104,9 +106,9 @@ describe('AnaMon', () => {
 
 		it('should subscribe successfully', async () => {
 
-			const dataAssembly = new AnaMon(options, connectionHandler);
+			const dataAssembly = new AnaMon(options, connectionHandler, true);
 			await dataAssembly.subscribe();
-			await connectionHandler.connect();
+			await connectionHandler.connect(adapterId);
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 
 			expect(dataAssembly.dataItems.V.value).equal(0);

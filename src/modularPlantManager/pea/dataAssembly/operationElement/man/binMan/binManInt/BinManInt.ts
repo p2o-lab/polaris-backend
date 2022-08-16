@@ -24,19 +24,15 @@
  */
 
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
-import {DataItem} from '../../../../dataItem/DataItem';
-import {SourceModeController, SourceModeRuntime, WQC, WQCRuntime} from '../../../../baseFunction';
-import {BinMan, BinManRuntime} from '../BinMan';
+import {SourceModeController, WQC} from '../../../../baseFunction';
+import {BinMan} from '../BinMan';
 import {ConnectionHandler} from '../../../../../connectionHandler/ConnectionHandler';
 import {keys} from 'ts-transformer-keys';
-
-export type BinManIntRuntime = BinManRuntime & SourceModeRuntime & WQCRuntime & {
-	VInt: DataItem<boolean>;
-};
+import {BinManIntDataItems} from '@p2olab/pimad-types';
 
 export class BinManInt extends BinMan {
 
-	public dataItems!: BinManIntRuntime;
+	public dataItems!: BinManIntDataItems;
 
 	public sourceMode!: SourceModeController;
 	public wqc!: WQC;

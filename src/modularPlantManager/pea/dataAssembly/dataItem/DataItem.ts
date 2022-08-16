@@ -27,13 +27,13 @@ import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Category} from 'typescript-logging';
 import {catDataItem} from '../../../../logging';
-import {CIData, DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
-
+import {CIData, DataItemModel} from '@p2olab/pimad-interface';
 import {ConnectionHandler} from '../../connectionHandler/ConnectionHandler';
 import {IDProvider} from '../../../_utils';
+import {Access, DataItem, MTPDataTypes} from '@p2olab/pimad-types';
 
 
-export interface DataItem<T extends string | number | boolean> extends DataItemEmitter{
+export interface BaseDataItem<T extends string | number | boolean> extends DataItemEmitter, DataItem<T>{
 	changedAfterCreation: boolean;
 	readonly createdTimestamp: Date;
 	defaultValue: T;
@@ -63,13 +63,15 @@ const parseBoolean = (val: string | boolean | number | FalseY): boolean => {
 	return s == 'true' || s == '1';
 };
 
-export abstract class ADataItem<T extends string | number | boolean> extends (EventEmitter as new() => DataItemEmitter) implements DataItem<T>{
+export abstract class ADataItem<T extends string | number | boolean> extends (EventEmitter as new() => DataItemEmitter) implements BaseDataItem<T>{
 
 	public readonly id = IDProvider.generateIdentifier();
 	protected _defaultValue: T;
 	protected _value: T;
 	protected _lastChange: Date = new Date();
 	readonly createdTimestamp = new Date();
+	public readonly access: Access = Access.NoAccess;
+	protected _dataType: 'string' | 'number' | 'boolean';
 
 	protected logger: Category = catDataItem;
 
@@ -89,11 +91,12 @@ export abstract class ADataItem<T extends string | number | boolean> extends (Ev
 		return this._value;
 	}
 
-	constructor(options: DataItemModel) {
+	constructor(options: DataItemModel, dataType: 'string' | 'number' | 'boolean') {
 		super();
 
-		this._defaultValue = this.getInitialValue<T>(options.defaultValue);
-		this._value = this.getInitialValue<T>(options.value);
+		this._dataType = dataType;
+		this._defaultValue = this.getInitialValue(options.defaultValue);
+		this._value = this.getInitialValue(options.value || options.defaultValue);
 	}
 
 	/**
@@ -105,12 +108,11 @@ export abstract class ADataItem<T extends string | number | boolean> extends (Ev
 	}
 
 	public abstract read(): Promise<T>;
-	public abstract write<T extends number | string | boolean>(value: T): Promise<void>;
+	public abstract write(value: T): Promise<void>;
 
-	private getInitialValue<T extends string | number | boolean>(defaultValue?: string): T {
+	private getInitialValue(defaultValue?: string): T {
 		let parsedValue: T;
-
-		switch ((typeof this.value).toString()) {
+		switch (this._dataType) {
 			case 'number':
 				parsedValue = +(defaultValue || 0) as T;
 				break;
@@ -135,8 +137,8 @@ export abstract class ADataItem<T extends string | number | boolean> extends (Ev
 
 export class StaticDataItem<T extends string | number | boolean> extends ADataItem<T>{
 
-	constructor(options: DataItemModel) {
-		super(options);
+	constructor(options: DataItemModel, dataType: 'string' | 'number' | 'boolean') {
+		super(options, dataType);
 	}
 
 	read(): Promise<T> {
@@ -154,8 +156,8 @@ export abstract class DynamicDataItem<T extends string | number | boolean> exten
 	protected readonly connectionHandler: ConnectionHandler;
 	protected eventReference = '';
 
-	protected constructor(options: DataItemModel, connectionHandler: ConnectionHandler) {
-		super(options);
+	protected constructor(options: DataItemModel, dataType: 'string' | 'number' | 'boolean', connectionHandler: ConnectionHandler) {
+		super(options, dataType);
 
 		if (!options.cIData) throw new Error('DynamicDataItem creation failed. Please provide CIData.');
 
@@ -164,7 +166,7 @@ export abstract class DynamicDataItem<T extends string | number | boolean> exten
 		this.addToMonitoring();
 	}
 
-	protected addToMonitoring(): void {
+	private addToMonitoring(): void {
 		this.eventReference = this.connectionHandler.addDataItemToMonitoring(this.ciData);
 		this.connectionHandler.on('monitoredDataItemChanged',
 			(data) => {
@@ -183,13 +185,13 @@ export abstract class DynamicDataItem<T extends string | number | boolean> exten
 
 export class OpcUaDataItem<T extends string | number | boolean> extends DynamicDataItem<T> {
 
-	private access: DataItemAccessLevel;
 	private readonly dataType: string;
+	public readonly access: Access;
 
-	constructor(options: DataItemModel, connectionHandler: ConnectionHandler) {
-		super(options, connectionHandler);
+	constructor(options: DataItemModel, dataType: 'string' | 'number' | 'boolean', connectionHandler: ConnectionHandler) {
+		super(options, dataType, connectionHandler);
 
-		this.access = options.cIData?.nodeId.access || DataItemAccessLevel.ReadWrite;
+		this.access = options.cIData?.nodeId.access || Access.ReadWriteAccess;
 		this.dataType = options.dataType;
 	}
 

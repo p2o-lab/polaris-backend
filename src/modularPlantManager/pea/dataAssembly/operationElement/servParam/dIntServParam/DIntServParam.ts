@@ -24,36 +24,19 @@
  */
 
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
-import {DataItem} from '../../../dataItem/DataItem';
-import {ServParam, ServParamRuntime} from '../ServParam';
-import {
-	ScaleSettings,
-	ScaleSettingsRuntime,
-	UnitSettingsRuntime,
-	UnitSettings,
-	ValueLimitation,
-	ValueLimitationRuntime
-} from '../../../baseFunction';
+import {ServParam} from '../ServParam';
+import {ScaleSettings, UnitSettings, ValueLimitation} from '../../../baseFunction';
 import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
-import {DataItemFactory, getDataItemModel} from '../../../dataItem/DataItemFactory';
 import {keys} from 'ts-transformer-keys';
-
-export type DIntServParamRuntime = ServParamRuntime & ScaleSettingsRuntime & UnitSettingsRuntime & ValueLimitationRuntime &{
-	VExt: DataItem<number>;
-	VOp: DataItem<number>;
-	VInt: DataItem<number>;
-	VReq: DataItem<number>;
-	VOut: DataItem<number>;
-	VFbk: DataItem<number>;
-};
+import {DIntServParamDataItems} from '@p2olab/pimad-types';
 
 export class DIntServParam extends ServParam {
 
-	public readonly dataItems!: DIntServParamRuntime;
+	public readonly dataItems!: DIntServParamDataItems;
 
-	public scaleSettings!: ScaleSettings;
+	public scaleSettings!: ScaleSettings<number>;
 	public unitSettings!: UnitSettings;
-	public valueLimitation!: ValueLimitation;
+	public valueLimitation!: ValueLimitation<number>;
 
 	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false) {
 		super(options, connectionHandler);

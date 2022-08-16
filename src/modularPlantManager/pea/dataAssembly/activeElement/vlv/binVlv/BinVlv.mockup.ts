@@ -25,10 +25,10 @@
 
 import {DataType, Namespace, UAObject, Variant} from 'node-opcua';
 import {getVlvDataItemModel, VlvMockup} from '../Vlv.mockup';
-import {DataAssemblyModel, DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
-
+import {DataAssemblyModel, DataItemModel} from '@p2olab/pimad-interface';
 import {getDataAssemblyModel} from '../../../DataAssembly.mockup';
 import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../../dataItem/DataItem.mockup';
+import {Access} from '@p2olab/pimad-types';
 
 
 const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/ActiveElement/BinVlv';
@@ -40,7 +40,7 @@ function getBinVlvSpecificDataItemModels(namespace: number, objectBrowseName: st
 	dataItem.name = 'Ctrl';
 	dataItem.dataType = 'Boolean';
 	const ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.Ctrl`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;

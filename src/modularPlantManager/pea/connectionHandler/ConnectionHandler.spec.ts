@@ -24,31 +24,29 @@
  */
 
 
+import { Access } from '@p2olab/pimad-types';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../_utils';
 import {ConnectionHandler} from './ConnectionHandler';
-import {DataItemAccessLevel} from '@p2olab/pimad-interface';
 import {getEndpointDataModel} from './ConnectionHandler.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 
-describe('OpcUaConnection', () => {
+describe('ConnectionHandler', () => {
 
 	it('should reject connecting to a server with too high port', async () => {
 		const connectionHandler = new ConnectionHandler();
-		connectionHandler.initializeConnectionAdapters([getEndpointDataModel('opc.tcp://127.0.0.1:44447777')]);
-		expect(connectionHandler.connectionEstablished).to.equal(false);
-		await expect(connectionHandler.connect()).to.be.rejected;
+		await expect(connectionHandler.addConnectionAdapter(getEndpointDataModel('opc.tcp://127.0.0.1:44447777'))).to.throw;
 	});
 
 	it('should reject connecting to a server with not existing endpoint', async () => {
 		const connectionHandler = new ConnectionHandler();
-		connectionHandler.initializeConnectionAdapters([getEndpointDataModel('')]);
+		const adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(''));
 		expect(connectionHandler.connectionEstablished).to.equal(false);
-		await expect(connectionHandler.connect()).to.be.rejected;
+		await expect(connectionHandler.connect(adapterId)).to.be.rejected;
 		expect(connectionHandler.connectionEstablished).to.equal(false);
 	}).timeout(5000);
 
@@ -58,12 +56,10 @@ describe('OpcUaConnection', () => {
 		const mockupServer = new MockupServer();
 			await mockupServer.initialize();
 		await mockupServer.start();
-
 		const connectionHandler = new ConnectionHandler();
-        connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
-
+		const adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
 		expect(connectionHandler.connectionEstablished).to.equal(false);
-		await connectionHandler.connect();
+		await connectionHandler.connect(adapterId);
 		expect(connectionHandler.connectionEstablished).to.equal(true);
 
 		await new Promise<void>((resolve) => {
@@ -77,8 +73,10 @@ describe('OpcUaConnection', () => {
 
 
 	describe('with test server', () => {
+
 		let mockupServer: MockupServer;
 		let mockupServerNamespace = '';
+		let adapterId: string;
 
 		before(async () => {
 			mockupServer = new MockupServer();
@@ -93,14 +91,13 @@ describe('OpcUaConnection', () => {
 			}
 		});
 
-
 		it('should add and remove Nodes to connectionHandler for monitoring', async () => {
 			const connectionHandler = new ConnectionHandler();
-			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
-			await connectionHandler.connect();
-			connectionHandler.addDataItemToMonitoring({nodeId: {identifier: 'trigger', namespaceIndex: mockupServerNamespace, access: DataItemAccessLevel.ReadWrite}});
+			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
+			await connectionHandler.connect(adapterId);
+			connectionHandler.addDataItemToMonitoring({nodeId: {identifier: 'trigger', namespaceIndex: mockupServerNamespace, access: Access.ReadWriteAccess}});
 			expect(connectionHandler.monitoredDataItemsCount()).to.equal(1);
-			connectionHandler.addDataItemToMonitoring({nodeId: {identifier: 'trigger1', namespaceIndex: mockupServerNamespace, access: DataItemAccessLevel.ReadWrite}});
+			connectionHandler.addDataItemToMonitoring({nodeId: {identifier: 'trigger1', namespaceIndex: mockupServerNamespace, access: Access.ReadWriteAccess}});
 			expect(connectionHandler.monitoredDataItemsCount()).to.equal(2);
 			connectionHandler.clearMonitoredDataItems();
 			expect(connectionHandler.monitoredDataItemsCount()).to.equal(0);
@@ -111,26 +108,26 @@ describe('OpcUaConnection', () => {
 		it('should connect to MockupServer, read an opc item and disconnect', async () => {
 
 			const connectionHandler = new ConnectionHandler();
-			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
+			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
 			expect(connectionHandler.connectionEstablished).to.equal(false);
 
-			await connectionHandler.connect();
+			await connectionHandler.connect(adapterId);
 			expect(connectionHandler.connectionEstablished).to.equal(true);
 
-			await connectionHandler.readDataItemValue({nodeId: {identifier: 'trigger', namespaceIndex: mockupServerNamespace, access: DataItemAccessLevel.ReadWrite}})
+			await connectionHandler.readDataItemValue({nodeId: {identifier: 'trigger', namespaceIndex: mockupServerNamespace, access: Access.ReadWriteAccess}})
 				.then((result) => expect(result?.value.value).to.equal(false));
 			await connectionHandler.disconnect();
 		});
 
 		it('should connect to a opc ua test server, subscribe to one opc ua item and disconnect', async () => {
 			const connectionHandler = new ConnectionHandler();
-			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
+			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
 			expect(connectionHandler.connectionEstablished).to.equal(false);
 
-			await connectionHandler.connect();
+			await connectionHandler.connect(adapterId);
 
-			connectionHandler.addDataItemToMonitoring({nodeId: {identifier: 'trigger', namespaceIndex: mockupServerNamespace, access: DataItemAccessLevel.ReadWrite}});
-			await connectionHandler.connect();
+			connectionHandler.addDataItemToMonitoring({nodeId: {identifier: 'trigger', namespaceIndex: mockupServerNamespace, access: Access.ReadWriteAccess}});
+			await connectionHandler.connect(adapterId);
 			await new Promise(resolve => connectionHandler.on('monitoredDataItemChanged', resolve));
 
 			await connectionHandler.disconnect();
@@ -138,60 +135,60 @@ describe('OpcUaConnection', () => {
 
 		it('should work after reconnection', async () => {
 			const connectionHandler = new ConnectionHandler();
-			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
-			await connectionHandler.connect();
+			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
+			await connectionHandler.connect(adapterId);
 
-			const eventName1 = connectionHandler.addDataItemToMonitoring({nodeId: {identifier: 'trigger', namespaceIndex: mockupServerNamespace, access: DataItemAccessLevel.ReadWrite}});
+			const eventName1 = connectionHandler.addDataItemToMonitoring({nodeId: {identifier: 'trigger', namespaceIndex: mockupServerNamespace, access: Access.ReadWriteAccess}});
 			expect(connectionHandler.monitoredDataItemsCount()).to.equal(1);
-			await connectionHandler.connect();
+			await connectionHandler.connect(adapterId);
 			await new Promise(resolve => connectionHandler.on('monitoredDataItemChanged', resolve));
 			await connectionHandler.disconnect();
 
 			expect(connectionHandler.monitoredDataItemsCount()).to.equal(1);
-			await connectionHandler.connect();
+			await connectionHandler.connect(adapterId);
 
-			const eventName2 = connectionHandler.addDataItemToMonitoring({nodeId: {identifier: 'trigger', namespaceIndex: mockupServerNamespace, access: DataItemAccessLevel.ReadWrite}});
+			const eventName2 = connectionHandler.addDataItemToMonitoring({nodeId: {identifier: 'trigger', namespaceIndex: mockupServerNamespace, access: Access.ReadWriteAccess}});
 			expect(eventName1).to.equal(eventName2);
-			await connectionHandler.connect();
+			await connectionHandler.connect(adapterId);
 			await new Promise((resolve) => connectionHandler.on('monitoredDataItemChanged', resolve));
 			expect(connectionHandler.monitoredDataItemsCount()).to.equal(1);
 		}).timeout(4000);
 
 		it('should not add same nodeId, invalid namespace should throw, should listen to multiple items', async () => {
 			const connectionHandler = new ConnectionHandler();
-			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
+			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
 			expect(connectionHandler.connectionEstablished).to.equal(false);
 
-			await connectionHandler.connect();
+			await connectionHandler.connect(adapterId);
 			expect(connectionHandler.connectionEstablished).to.equal(true);
 
-			connectionHandler.addDataItemToMonitoring({nodeId: {identifier: 'trigger', namespaceIndex: mockupServerNamespace, access: DataItemAccessLevel.ReadWrite}});
+			connectionHandler.addDataItemToMonitoring({nodeId: {identifier: 'trigger', namespaceIndex: mockupServerNamespace, access: Access.ReadWriteAccess}});
 			expect(connectionHandler.monitoredDataItemsCount()).equals(1);
 
-			connectionHandler.addDataItemToMonitoring({nodeId: {identifier: 'trigger1', namespaceIndex: mockupServerNamespace, access: DataItemAccessLevel.ReadWrite}});
+			connectionHandler.addDataItemToMonitoring({nodeId: {identifier: 'trigger1', namespaceIndex: mockupServerNamespace, access: Access.ReadWriteAccess}});
 			expect(connectionHandler.monitoredDataItemsCount()).equals(1);
 
-			connectionHandler.addDataItemToMonitoring({nodeId: {identifier: 'nonexisting', namespaceIndex: mockupServerNamespace, access: DataItemAccessLevel.ReadWrite}});
+			connectionHandler.addDataItemToMonitoring({nodeId: {identifier: 'nonexisting', namespaceIndex: mockupServerNamespace, access: Access.ReadWriteAccess}});
 
 			expect(connectionHandler.monitoredDataItemsCount()).equals(2);
 
 			const invalidUrn = 'urn:nan';
 			expect(() => connectionHandler.addDataItemToMonitoring(
-				{nodeId: {identifier: 'nonexistant', namespaceIndex: invalidUrn, access: DataItemAccessLevel.ReadWrite}}))
+				{nodeId: {identifier: 'nonexistant', namespaceIndex: invalidUrn, access: Access.ReadWriteAccess}}))
 				.to.throw(`Failed to resolve namespace ${invalidUrn}!`);
 			expect(connectionHandler.monitoredDataItemsCount()).equals(2);
 
-			connectionHandler.addDataItemToMonitoring({nodeId: {identifier: 'Service1.OpMode', namespaceIndex: mockupServerNamespace, access: DataItemAccessLevel.ReadWrite}});
+			connectionHandler.addDataItemToMonitoring({nodeId: {identifier: 'Service1.OpMode', namespaceIndex: mockupServerNamespace, access: Access.ReadWriteAccess}});
 			expect(connectionHandler.monitoredDataItemsCount()).equals(3);
-			await connectionHandler.connect();
+			await connectionHandler.connect(adapterId);
 			await connectionHandler.disconnect();
 
 		}).timeout(5000);
 
 		it('should connect with username and password', async () => {
 			const connectionHandler = new ConnectionHandler();
-			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
-			await connectionHandler.connect();
+			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
+			await connectionHandler.connect(adapterId);
 			await connectionHandler.disconnect();
 		});
 

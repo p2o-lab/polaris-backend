@@ -47,7 +47,7 @@ describe('HealthStateView', () => {
 		options = getHealthStateViewDataAssemblyModel(2, 'Variable', 'Variable');
 
 		it('should create HealthStateView', async () => {
-			const dataAssembly = new HealthStateView(options, emptyOPCUAConnection);
+			const dataAssembly = new HealthStateView(options, emptyOPCUAConnection, true);
 			expect(dataAssembly).to.be.not.undefined;
 			expect(dataAssembly.dataItems).to.be.not.undefined;
 			expect(dataAssembly.wqc).to.be.not.undefined;
@@ -57,6 +57,7 @@ describe('HealthStateView', () => {
 	describe('dynamic', () => {
 		let mockupServer: MockupServer;
 		let connectionHandler: ConnectionHandler;
+		let adapterId: string;
 
 		beforeEach(async function () {
 			this.timeout(4000);
@@ -64,8 +65,8 @@ describe('HealthStateView', () => {
 			const healthStateViewMockup = new HealthStateViewMockup( mockupServer.nameSpace, mockupServer.rootObject,'Variable');
 			options = healthStateViewMockup.getDataAssemblyModel();await mockupServer.start();
 			connectionHandler = new ConnectionHandler();
-			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
-			await connectionHandler.connect();
+			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
+			await connectionHandler.connect(adapterId);
 		});
 
 		afterEach(async function () {
@@ -76,9 +77,9 @@ describe('HealthStateView', () => {
 
 		it('should subscribe successfully', async () => {
 
-			const dataAssembly = new HealthStateView(options, connectionHandler);
+			const dataAssembly = new HealthStateView(options, connectionHandler, true);
 			await dataAssembly.subscribe();
-			await connectionHandler.connect();
+			await connectionHandler.connect(adapterId);
 			await new Promise((resolve)=> dataAssembly.on('changed', resolve));
 
 			expect(dataAssembly.dataItems.WQC.value).equal(0);

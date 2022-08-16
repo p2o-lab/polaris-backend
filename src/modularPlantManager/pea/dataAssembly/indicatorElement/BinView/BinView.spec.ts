@@ -42,7 +42,7 @@ describe('BinView', () => {
 	describe('static', () => {
 		const connectionHandler = new ConnectionHandler();
 		it('should create BinView', async () => {
-			const dataAssembly: BinView = new BinView(options, connectionHandler);
+			const dataAssembly: BinView = new BinView(options, connectionHandler, true);
 
 			expect(dataAssembly.dataItems.TagName).to.not.equal(undefined);
 			expect(dataAssembly.dataItems.TagDescription).to.not.equal(undefined);
@@ -54,17 +54,20 @@ describe('BinView', () => {
 
 	});
 	describe('dynamic', () => {
+
 		let mockupServer: MockupServer;
 		let connectionHandler: ConnectionHandler;
+		let adapterId: string;
 
 		beforeEach(async function () {
 			this.timeout(4000);
 			mockupServer = new MockupServer();
+			await mockupServer.initialize();
 			new BinViewMockup( mockupServer.nameSpace, mockupServer.rootObject,'Variable');
 			await mockupServer.start();
-			connectionHandler= new ConnectionHandler();
-			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
-			await connectionHandler.connect();
+			connectionHandler = new ConnectionHandler();
+			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
+			await connectionHandler.connect(adapterId);
 		});
 
 		afterEach(async function () {
@@ -75,9 +78,9 @@ describe('BinView', () => {
 
 		it('should subscribe successfully', async () => {
 
-			const dataAssembly: BinView = new BinView(options, connectionHandler);
+			const dataAssembly: BinView = new BinView(options, connectionHandler, true);
 			await dataAssembly.subscribe();
-			await connectionHandler.connect();
+			await connectionHandler.connect(adapterId);
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 
 			expect(dataAssembly.dataItems.WQC.value).equal(0);

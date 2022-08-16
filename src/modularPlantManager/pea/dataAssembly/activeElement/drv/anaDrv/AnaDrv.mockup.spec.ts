@@ -28,11 +28,9 @@ import * as chaiAsPromised from 'chai-as-promised';
 
 import {AnaDrvMockup, getAnaDrvDataAssemblyModel, getAnaDrvDataItemModel} from './AnaDrv.mockup';
 import {MockupServer} from '../../../../../_utils';
-import {DataAssemblyModel} from '@p2olab/pimad-interface';
-import {AnaDrvRuntime} from './AnaDrv';
 import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
-import {DataItemAccessLevel} from '@p2olab/pimad-interface';
 import {getEndpointDataModel} from '../../../../connectionHandler/ConnectionHandler.mockup';
+import {Access} from '@p2olab/pimad-types';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -83,8 +81,8 @@ describe('AnaDrvMockup', () => {
             new AnaDrvMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
             await mockupServer.start();
             connectionHandler = new ConnectionHandler();
-            connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
-            await connectionHandler.connect();
+            const resultID = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
+            await connectionHandler.connect(resultID);
         });
 
         afterEach(async () => {
@@ -98,11 +96,11 @@ describe('AnaDrvMockup', () => {
                         {
                             identifier: 'Variable.RpmMan',
                             namespaceIndex: mockupServer.nameSpaceUri,
-                            access: DataItemAccessLevel.ReadWrite
+                            access: Access.ReadWriteAccess
                         }
                        },
                 1.1);
-            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.RpmMan', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.RpmMan', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}})
                 .then((dataValue) => expect(dataValue?.value.value).to.equal(1.1));
         }).timeout(3000);
     });

@@ -174,6 +174,7 @@ describe('with MockupServer containing a PEAController', () => {
 	let anaViewMockup: AnaViewMockup;
 	let serviceControlMockup: ServiceControlMockup;
 	let healthStateViewMockup: HealthStateViewMockup;
+	let adapterId: string;
 
 		beforeEach(async function () {
 			this.timeout(10000);
@@ -183,9 +184,8 @@ describe('with MockupServer containing a PEAController', () => {
 			healthStateViewMockup = new HealthStateViewMockup(mockupServer.nameSpace, mockupServer.rootObject,'Procedure1');
 			await mockupServer.start();
 			connectionHandler = new ConnectionHandler();
-			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
-			await connectionHandler.connect();
-
+			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
+			await connectionHandler.connect(adapterId);
 			const procedureModel: ProcedureModel = {
 				dataSourceIdentifier: '',
 				metaModelRef: 'MTPServiceSUCLib/ServiceProcedure',
@@ -219,12 +219,12 @@ describe('with MockupServer containing a PEAController', () => {
 			peaModel.services.push(serviceModel);
 
 			pea = new PEA(peaModel);
-			await pea.connectAndSubscribe();
+			await pea.connect();
 		});
 
 		afterEach(async () => {
 			if(pea) {
-				await pea.disconnectAndUnsubscribe();
+				await pea.disconnect();
 			}
 			await mockupServer.shutdown();
 		});

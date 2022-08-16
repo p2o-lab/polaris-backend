@@ -31,7 +31,7 @@ import {Petrinet, PetrinetOptions} from './petrinet';
 
 import {Category} from 'typescript-logging';
 import {catAggregatedService} from '../../../../logging';
-import {PEA} from '../../../pea/PEA';
+import {PEA} from '../../../pea';
 
 export interface AggregatedServiceOptions extends POLServiceOptions {
 	type: 'aggregatedService';

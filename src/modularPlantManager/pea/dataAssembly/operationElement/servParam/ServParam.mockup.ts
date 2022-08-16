@@ -29,10 +29,11 @@ import {getServiceSourceModeDataItemModel, ServiceSourceModeMockup} from '../../
 import {getWQCDataItemModel, WQCMockup} from '../../baseFunction/wqc/WQC.mockup';
 import {getOpModeDataItemModel, OpModeMockup} from '../../baseFunction/opMode/OpMode.mockup';
 import {getOperationElementDataItemModel, OperationElementMockup} from '../OperationElement.mockup';
-import {DataAssemblyModel, DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+import {DataAssemblyModel, DataItemModel} from '@p2olab/pimad-interface';
 
 import {getDataAssemblyModel} from '../../DataAssembly.mockup';
 import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../dataItem/DataItem.mockup';
+import {Access} from '@p2olab/pimad-types';
 
 const metaModelReference = 'MTPDataObjectSUCLib/DataAssembly/OperationElement/ServParam';
 
@@ -43,7 +44,7 @@ function getServParamSpecificDataItemModel(namespace: number, objectBrowseName: 
 	dataItem.name = 'Sync';
 	dataItem.dataType = 'Boolean';
 	const ciOptions = getEmptyCIDataModel();
-	ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+	ciOptions.nodeId.access = Access.ReadWriteAccess;
 	ciOptions.nodeId.identifier = `${objectBrowseName}.Sync`;
 	ciOptions.nodeId.namespaceIndex = `${namespace}`;
 	dataItem.cIData = ciOptions;
@@ -53,13 +54,13 @@ function getServParamSpecificDataItemModel(namespace: number, objectBrowseName: 
 }
 
 export function getServParamDataItemModel(namespace: number, objectBrowseName: string): DataItemModel[] {
-	return ({
+	return ([
 			...getOperationElementDataItemModel(namespace, objectBrowseName),
 			...getWQCDataItemModel(namespace, objectBrowseName),
 			...getOpModeDataItemModel(namespace, objectBrowseName),
 			...getServiceSourceModeDataItemModel(namespace, objectBrowseName),
 			...getServParamSpecificDataItemModel(namespace, objectBrowseName),
-		}
+		]
 	);
 }
 

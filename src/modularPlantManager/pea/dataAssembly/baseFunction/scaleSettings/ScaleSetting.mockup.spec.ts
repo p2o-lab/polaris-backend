@@ -27,7 +27,6 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../_utils';
 import {getScaleSettingsDataItemModel, ScaleSettingMockup} from './ScaleSetting.mockup';
-import {ScaleSettingsRuntime} from './ScaleSettings';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;

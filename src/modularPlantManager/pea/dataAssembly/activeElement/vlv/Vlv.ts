@@ -24,32 +24,15 @@
  */
 
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
-import {DataItem} from '../../dataItem/DataItem';
-import {Interlock, InterlockRuntime, OpMode, OpModeRuntime, Reset, ResetRuntime} from '../../baseFunction';
-import {ActiveElement, ActiveElementRuntime} from '../ActiveElement';
+import {Interlock, OpMode, Reset} from '../../baseFunction';
+import {ActiveElement} from '../ActiveElement';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
-import {DataItemFactory, getDataItemModel} from '../../dataItem/DataItemFactory';
 import {keys} from 'ts-transformer-keys';
-
-export type VlvRuntime = ActiveElementRuntime & OpModeRuntime & InterlockRuntime & ResetRuntime & {
-	SafePos: DataItem<boolean>;
-	SafePosEn: DataItem<boolean>;
-	SafePosAct: DataItem<boolean>;
-
-	OpenAut: DataItem<boolean>;
-	OpenFbk: DataItem<boolean>;
-	OpenFbkCalc: DataItem<boolean>;
-	OpenOp: DataItem<boolean>;
-
-	CloseAut: DataItem<boolean>;
-	CloseFbk: DataItem<boolean>;
-	CloseFbkCalc: DataItem<boolean>;
-	CloseOp: DataItem<boolean>;
-};
+import {VlvDataItems} from '@p2olab/pimad-types';
 
 export class Vlv extends ActiveElement {
 
-	public readonly dataItems!: VlvRuntime;
+	public readonly dataItems!: VlvDataItems;
 
 	public reset!: Reset;
 	public interlock!: Interlock;

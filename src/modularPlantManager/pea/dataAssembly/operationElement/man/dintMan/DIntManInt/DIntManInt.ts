@@ -24,22 +24,15 @@
  */
 
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
-import {
-	SourceModeController, SourceModeRuntime,
-	WQC, WQCRuntime
-} from '../../../../baseFunction';
-import {DIntMan, DIntManRuntime} from '../DIntMan';
-import {DataItem} from '../../../../dataItem/DataItem';
+import {SourceModeController, WQC} from '../../../../baseFunction';
+import {DIntMan} from '../DIntMan';
 import {ConnectionHandler} from '../../../../../connectionHandler/ConnectionHandler';
 import {keys} from 'ts-transformer-keys';
-
-export type DIntManIntRuntime = DIntManRuntime & SourceModeRuntime & WQCRuntime & {
-	VInt: DataItem<number>;
-};
+import {DIntManIntDataItems} from '@p2olab/pimad-types';
 
 export class DIntManInt extends DIntMan {
 
-	public readonly dataItems!: DIntManIntRuntime;
+	public readonly dataItems!: DIntManIntDataItems;
 
 	public sourceMode!: SourceModeController;
 	public wqc!: WQC;

@@ -24,18 +24,16 @@
  */
 
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
-import {DataItem} from '../../dataItem/DataItem';
-import {IndicatorElement, IndicatorElementRuntime} from '../IndicatorElement';
+import {IndicatorElement} from '../IndicatorElement';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
 import {keys} from 'ts-transformer-keys';
+import {MTPDataTypes, StringViewDataItems} from '@p2olab/pimad-types';
+import {BaseDataItem} from '../../dataItem/DataItem';
 
-export type StringViewRuntime = IndicatorElementRuntime & {
-	Text: DataItem<string>;
-};
 
 export class StringView extends IndicatorElement {
 
-	public readonly dataItems!: StringViewRuntime;
+	public readonly dataItems!: StringViewDataItems;
 
 	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false) {
 		super(options, connectionHandler);
@@ -44,7 +42,9 @@ export class StringView extends IndicatorElement {
 			const keyList = keys<typeof this.dataItems>();
 			this.initializeDataItems(options, keyList);
 			this.initializeBaseFunctions();
-		}	
+		}
+
+		(this.dataItems.WQC as BaseDataItem<number>).on('changed', (data) => {});
 
 		this.defaultReadDataItem = this.dataItems.Text;
 		this.defaultReadDataItemType = 'string';

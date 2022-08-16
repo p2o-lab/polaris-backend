@@ -24,22 +24,10 @@
  */
 
 import {OperationMode} from '@p2olab/polaris-interface';
-import {DataItem} from '../../dataItem/DataItem';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {EventEmitter} from 'events';
-
-export type OpModeRuntime = {
-	StateChannel: DataItem<boolean>;
-	StateOffAut: DataItem<boolean>;
-	StateOpAut: DataItem<boolean>;
-	StateAutAut: DataItem<boolean>;
-	StateOffOp: DataItem<boolean>;
-	StateOpOp: DataItem<boolean>;
-	StateAutOp: DataItem<boolean>;
-	StateOpAct: DataItem<boolean>;
-	StateAutAct: DataItem<boolean>;
-	StateOffAct: DataItem<boolean>;
-};
+import {MTPDataTypes, OperationModeDataItems} from '@p2olab/pimad-types';
+import {BaseDataItem} from '../../dataItem/DataItem';
 
 /**
  * Events emitted by [[OpMode]]
@@ -55,25 +43,25 @@ type OpModeEmitter = StrictEventEmitter<EventEmitter, OpModeEvents>;
 
 export class OpMode extends (EventEmitter as new() => OpModeEmitter) {
 
-	public readonly dataItems!: OpModeRuntime;
+	public readonly dataItems!: OperationModeDataItems;
 
-	constructor(requiredDataItems: Required<OpModeRuntime>) {
+	constructor(requiredDataItems: Required<OperationModeDataItems>) {
 		super();
 
 		this.dataItems = requiredDataItems;
 
 
-		this.dataItems.StateChannel.on('changed', () => {
+		(this.dataItems.StateChannel as BaseDataItem<boolean>).on('changed', () => {
 			this.emit('changed', {opMode: this.getOperationMode(), stateChannel: this.dataItems.StateChannel.value});
 		});
 		// TODO: Always two of them will change in parallel --> Smart way to just emit one event?
-		this.dataItems.StateOffAct.on('changed', () => {
+		(this.dataItems.StateOffAct as BaseDataItem<boolean>).on('changed', () => {
 			this.emit('changed', {opMode: this.getOperationMode(), stateChannel: this.dataItems.StateChannel.value});
 		});
-		this.dataItems.StateOpAct.on('changed', () => {
+		(this.dataItems.StateOpAct as BaseDataItem<boolean>).on('changed', () => {
 			this.emit('changed', {opMode: this.getOperationMode(), stateChannel: this.dataItems.StateChannel.value});
 		});
-		this.dataItems.StateAutAct.on('changed', () => {
+		(this.dataItems.StateAutAct as BaseDataItem<boolean>).on('changed', () => {
 			this.emit('changed', {opMode: this.getOperationMode(), stateChannel: this.dataItems.StateChannel.value});
 		});
 	}
@@ -161,11 +149,11 @@ export class OpMode extends (EventEmitter as new() => OpModeEmitter) {
 
 	public async writeOpMode(opMode: OperationMode): Promise<void> {
 		if (opMode === OperationMode.Automatic) {
-			await this.dataItems.StateAutOp.write(true);
+			await (this.dataItems.StateAutOp as BaseDataItem<boolean>).write(true);
 		} else if (opMode === OperationMode.Operator) {
-			await this.dataItems.StateOpOp.write(true);
+			await (this.dataItems.StateOpOp as BaseDataItem<boolean>).write(true);
 		} else if (opMode === OperationMode.Offline) {
-			await this.dataItems.StateOffOp.write(true);
+			await (this.dataItems.StateOffOp as BaseDataItem<boolean>).write(true);
 		}
 	}
 

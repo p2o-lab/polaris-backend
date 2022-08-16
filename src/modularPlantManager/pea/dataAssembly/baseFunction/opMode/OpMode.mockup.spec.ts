@@ -29,8 +29,8 @@ import {MockupServer} from '../../../../_utils';
 import {getOpModeDataItemModel, OpModeMockup} from './OpMode.mockup';
 import {OperationMode} from '@p2olab/polaris-interface';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
-import {DataItemAccessLevel} from '@p2olab/pimad-interface';
 import {getEndpointDataModel} from '../../../connectionHandler/ConnectionHandler.mockup';
+import { Access } from '@p2olab/pimad-types';
 
 
 chai.use(chaiAsPromised);
@@ -45,7 +45,6 @@ describe('OpModeMockup', () => {
         beforeEach(async () => {
             mockupServer = new MockupServer();
 			await mockupServer.initialize();
-
         });
 
         it('should create OpModeMockup', async () => {
@@ -111,18 +110,18 @@ describe('OpModeMockup', () => {
         let mockupServer: MockupServer;
         let mockup: OpModeMockup;
         let connectionHandler: ConnectionHandler;
+        let adapterId: string;
+
         beforeEach(async function () {
             this.timeout(10000);
             mockupServer = new MockupServer();
 			await mockupServer.initialize();
-
-            mockup = new OpModeMockup(mockupServer.nameSpace,
-                mockupServer.rootObject, 'Variable');
+            mockup = new OpModeMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
             await mockupServer.start();
-            connectionHandler= new ConnectionHandler();
-            connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
-            await connectionHandler.connect();
+            connectionHandler = new ConnectionHandler();
+            adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
         });
+
         afterEach(async () => {
             await connectionHandler.disconnect();
             await mockupServer.shutdown();
@@ -130,46 +129,46 @@ describe('OpModeMockup', () => {
 
         it('set and get StateOffOp', async () => {
             mockup.opMode = OperationMode.Operator;
-            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.StateOffOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, true);
-            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.StateOffOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.StateOffOp', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}}, true);
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.StateOffOp', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(false));
             expect(mockup.opMode).to.equal(OperationMode.Offline);
         }).timeout(2000);
 
         it('set and get StateOpOp', async () => {
-            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.StateOpOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, true);
-            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.StateOpOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.StateOpOp', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}}, true);
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.StateOpOp', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(false));
             expect(mockup.opMode).to.equal(OperationMode.Operator);
         }).timeout(2000);
 
         it('set and get StateAutOp', async () => {
             mockup.opMode = OperationMode.Operator;
-            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.StateAutOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, true);
-            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.StateAutOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.StateAutOp', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}}, true);
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.StateAutOp', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(false));
             expect(mockup.opMode).to.equal(OperationMode.Automatic);
         }).timeout(2000);
 
         it('set and get StateOffOp, write false', async () => {
             mockup.opMode = OperationMode.Operator;
-            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.StateOffOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, false);
-            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.StateOffOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.StateOffOp', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}}, false);
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.StateOffOp', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(false));
             expect(mockup.opMode).to.equal(OperationMode.Operator);
         }).timeout(2000);
 
         it('set and get StateOpOp, write false', async () => {
-            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.StateOpOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, false);
-            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.StateOpOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.StateOpOp', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}}, false);
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.StateOpOp', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(false));
             expect(mockup.opMode).to.equal(OperationMode.Offline);
         }).timeout(2000);
 
         it('set and get StateAutOp, write false', async () => {
             mockup.opMode = OperationMode.Operator;
-            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.StateAutOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}}, false);
-            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.StateAutOp', namespaceIndex: mockupServer.nameSpaceUri, access: DataItemAccessLevel.ReadWrite}})
+            await connectionHandler.writeDataItemValue({nodeId: {identifier: 'Variable.StateAutOp', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}}, false);
+            await connectionHandler.readDataItemValue({nodeId: {identifier: 'Variable.StateAutOp', namespaceIndex: mockupServer.nameSpaceUri, access: Access.ReadWriteAccess}})
                 .then((dataValue) => expect((dataValue)?.value.value).to.equal(false));
             expect(mockup.opMode).to.equal(OperationMode.Operator);
         }).timeout(2000);

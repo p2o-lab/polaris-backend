@@ -48,7 +48,7 @@ describe('ServiceControl', () => {
 		options = getServiceControlDataAssemblyModel(2, 'Variable', 'Variable');
 
 		it('should create ServiceControl', async () => {
-			const dataAssembly = new ServiceControl(options, connectionHandler);
+			const dataAssembly = new ServiceControl(options, connectionHandler, true);
 			expect(dataAssembly.opMode).to.not.equal(undefined);
 			expect(dataAssembly.serviceSourceMode).to.not.equal(undefined);
 
@@ -71,8 +71,10 @@ describe('ServiceControl', () => {
 
 
 	describe('dynamic', () => {
+
 		let mockupServer: MockupServer;
 		let connectionHandler: ConnectionHandler;
+		let adapterId: string;
 
 		beforeEach(async function () {
 			this.timeout(4000);
@@ -81,9 +83,8 @@ describe('ServiceControl', () => {
 			const serviceControlMockup =new ServiceControlMockup(mockupServer.nameSpace, mockupServer.rootObject,'Variable');
 			options = serviceControlMockup.getDataAssemblyModel();
 			await mockupServer.start();
-			connectionHandler= new ConnectionHandler();
-			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
-			await connectionHandler.connect();
+			connectionHandler = new ConnectionHandler();
+			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
 		});
 
 		afterEach(async function () {
@@ -94,9 +95,9 @@ describe('ServiceControl', () => {
 
 		it('should subscribe successfully', async () => {
 
-			const dataAssembly = new ServiceControl(options, connectionHandler);
+			const dataAssembly = new ServiceControl(options, connectionHandler, true);
 			await dataAssembly.subscribe();
-			await connectionHandler.connect();
+			await connectionHandler.connect(adapterId);
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 
 			expect(dataAssembly.dataItems.WQC.value).equal(0);

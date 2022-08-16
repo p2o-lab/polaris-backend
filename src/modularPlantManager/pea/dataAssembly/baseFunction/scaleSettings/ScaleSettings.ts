@@ -23,14 +23,9 @@
  * SOFTWARE.
  */
 
-import {DataItem} from '../../dataItem/DataItem';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {EventEmitter} from 'events';
-
-export interface ScaleSettingsRuntime {
-	VSclMin: DataItem<number>;
-	VSclMax: DataItem<number>;
-}
+import {MTPDataTypes, VScaleSettingDataItems} from '@p2olab/pimad-types';
 
 /**
  * Events emitted by [[ScaleSettings]]
@@ -44,11 +39,11 @@ export interface ScaleSettingsEvents {
 
 type ScaleSettingsEmitter = StrictEventEmitter<EventEmitter, ScaleSettingsEvents>;
 
-export class ScaleSettings extends (EventEmitter as new () => ScaleSettingsEmitter) {
+export class ScaleSettings<T extends string | number | boolean> extends (EventEmitter as new () => ScaleSettingsEmitter) {
 
-	public readonly dataItems!: ScaleSettingsRuntime;
+	public readonly dataItems!: VScaleSettingDataItems<T>;
 
-	constructor(requiredDataItems: Required<ScaleSettingsRuntime>) {
+	constructor(requiredDataItems: Required<VScaleSettingDataItems<T>>) {
 		super();
 
 		this.dataItems = requiredDataItems;

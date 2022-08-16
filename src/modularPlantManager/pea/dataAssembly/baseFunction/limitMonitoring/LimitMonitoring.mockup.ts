@@ -24,8 +24,9 @@
  */
 
 import {DataType, Namespace, StatusCodes, UAObject, Variant} from 'node-opcua';
-import {DataItemAccessLevel, DataItemModel} from '@p2olab/pimad-interface';
+import {DataItemModel} from '@p2olab/pimad-interface';
 import {getEmptyCIDataModel, getEmptyDataItemModel} from '../../dataItem/DataItem.mockup';
+import {Access} from '@p2olab/pimad-types';
 
 function getLimitMonitoringSpecificDataItemModels<T extends 'Ana' | 'DInt'>(namespace: number, objectBrowseName: string, type: T): DataItemModel[] {
 
@@ -34,7 +35,7 @@ function getLimitMonitoringSpecificDataItemModels<T extends 'Ana' | 'DInt'>(name
   dataItem.name = 'VAHEn';
   dataItem.dataType = 'Boolean';
   let ciOptions = getEmptyCIDataModel();
-  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.access = Access.ReadWriteAccess;
   ciOptions.nodeId.identifier = `${objectBrowseName}.VAHEn`;
   ciOptions.nodeId.namespaceIndex = `${namespace}`;
   dataItem.cIData = ciOptions;
@@ -44,7 +45,7 @@ function getLimitMonitoringSpecificDataItemModels<T extends 'Ana' | 'DInt'>(name
   dataItem.name = 'VAHLim';
   dataItem.dataType = (type === 'Ana')? 'Float': 'Int32';
   ciOptions = getEmptyCIDataModel();
-  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.access = Access.ReadWriteAccess;
   ciOptions.nodeId.identifier = `${objectBrowseName}.VAHLim`;
   ciOptions.nodeId.namespaceIndex = `${namespace}`;
   dataItem.cIData = ciOptions;
@@ -54,7 +55,7 @@ function getLimitMonitoringSpecificDataItemModels<T extends 'Ana' | 'DInt'>(name
   dataItem.name = 'VAHAct';
   dataItem.dataType = 'Boolean';
   ciOptions = getEmptyCIDataModel();
-  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.access = Access.ReadWriteAccess;
   ciOptions.nodeId.identifier = `${objectBrowseName}.VAHAct`;
   ciOptions.nodeId.namespaceIndex = `${namespace}`;
   dataItem.cIData = ciOptions;
@@ -65,7 +66,7 @@ function getLimitMonitoringSpecificDataItemModels<T extends 'Ana' | 'DInt'>(name
   dataItem.name = 'VWHEn';
   dataItem.dataType = 'Boolean';
   ciOptions = getEmptyCIDataModel();
-  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.access = Access.ReadWriteAccess;
   ciOptions.nodeId.identifier = `${objectBrowseName}.VWHEn`;
   ciOptions.nodeId.namespaceIndex = `${namespace}`;
   dataItem.cIData = ciOptions;
@@ -75,7 +76,7 @@ function getLimitMonitoringSpecificDataItemModels<T extends 'Ana' | 'DInt'>(name
   dataItem.name = 'VWHLim';
   dataItem.dataType = (type === 'Ana')? 'Float': 'Int32';
   ciOptions = getEmptyCIDataModel();
-  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.access = Access.ReadWriteAccess;
   ciOptions.nodeId.identifier = `${objectBrowseName}.VWHLim`;
   ciOptions.nodeId.namespaceIndex = `${namespace}`;
   dataItem.cIData = ciOptions;
@@ -85,7 +86,7 @@ function getLimitMonitoringSpecificDataItemModels<T extends 'Ana' | 'DInt'>(name
   dataItem.name = 'VWHAct';
   dataItem.dataType = 'Boolean';
   ciOptions = getEmptyCIDataModel();
-  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.access = Access.ReadWriteAccess;
   ciOptions.nodeId.identifier = `${objectBrowseName}.VWHAct`;
   ciOptions.nodeId.namespaceIndex = `${namespace}`;
   dataItem.cIData = ciOptions;
@@ -96,7 +97,7 @@ function getLimitMonitoringSpecificDataItemModels<T extends 'Ana' | 'DInt'>(name
   dataItem.name = 'VTHEn';
   dataItem.dataType = 'Boolean';
   ciOptions = getEmptyCIDataModel();
-  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.access = Access.ReadWriteAccess;
   ciOptions.nodeId.identifier = `${objectBrowseName}.VTHEn`;
   ciOptions.nodeId.namespaceIndex = `${namespace}`;
   dataItem.cIData = ciOptions;
@@ -106,7 +107,7 @@ function getLimitMonitoringSpecificDataItemModels<T extends 'Ana' | 'DInt'>(name
   dataItem.name = 'VTHLim';
   dataItem.dataType = (type === 'Ana')? 'Float': 'Int32';
   ciOptions = getEmptyCIDataModel();
-  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.access = Access.ReadWriteAccess;
   ciOptions.nodeId.identifier = `${objectBrowseName}.VTHLim`;
   ciOptions.nodeId.namespaceIndex = `${namespace}`;
   dataItem.cIData = ciOptions;
@@ -116,7 +117,7 @@ function getLimitMonitoringSpecificDataItemModels<T extends 'Ana' | 'DInt'>(name
   dataItem.name = 'VTHAct';
   dataItem.dataType = 'Boolean';
   ciOptions = getEmptyCIDataModel();
-  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.access = Access.ReadWriteAccess;
   ciOptions.nodeId.identifier = `${objectBrowseName}.VTHAct`;
   ciOptions.nodeId.namespaceIndex = `${namespace}`;
   dataItem.cIData = ciOptions;
@@ -127,7 +128,7 @@ function getLimitMonitoringSpecificDataItemModels<T extends 'Ana' | 'DInt'>(name
   dataItem.name = 'VALEn';
   dataItem.dataType = 'Boolean';
   ciOptions = getEmptyCIDataModel();
-  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.access = Access.ReadWriteAccess;
   ciOptions.nodeId.identifier = `${objectBrowseName}.VALEn`;
   ciOptions.nodeId.namespaceIndex = `${namespace}`;
   dataItem.cIData = ciOptions;
@@ -137,7 +138,7 @@ function getLimitMonitoringSpecificDataItemModels<T extends 'Ana' | 'DInt'>(name
   dataItem.name = 'VALLim';
   dataItem.dataType = (type === 'Ana')? 'Float': 'Int32';
   ciOptions = getEmptyCIDataModel();
-  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.access = Access.ReadWriteAccess;
   ciOptions.nodeId.identifier = `${objectBrowseName}.VALLim`;
   ciOptions.nodeId.namespaceIndex = `${namespace}`;
   dataItem.cIData = ciOptions;
@@ -147,7 +148,7 @@ function getLimitMonitoringSpecificDataItemModels<T extends 'Ana' | 'DInt'>(name
   dataItem.name = 'VALAct';
   dataItem.dataType = 'Boolean';
   ciOptions = getEmptyCIDataModel();
-  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.access = Access.ReadWriteAccess;
   ciOptions.nodeId.identifier = `${objectBrowseName}.VALAct`;
   ciOptions.nodeId.namespaceIndex = `${namespace}`;
   dataItem.cIData = ciOptions;
@@ -158,7 +159,7 @@ function getLimitMonitoringSpecificDataItemModels<T extends 'Ana' | 'DInt'>(name
   dataItem.name = 'VWLEn';
   dataItem.dataType = 'Boolean';
   ciOptions = getEmptyCIDataModel();
-  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.access = Access.ReadWriteAccess;
   ciOptions.nodeId.identifier = `${objectBrowseName}.VWLEn`;
   ciOptions.nodeId.namespaceIndex = `${namespace}`;
   dataItem.cIData = ciOptions;
@@ -168,7 +169,7 @@ function getLimitMonitoringSpecificDataItemModels<T extends 'Ana' | 'DInt'>(name
   dataItem.name = 'VWLLim';
   dataItem.dataType = (type === 'Ana')? 'Float': 'Int32';
   ciOptions = getEmptyCIDataModel();
-  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.access = Access.ReadWriteAccess;
   ciOptions.nodeId.identifier = `${objectBrowseName}.VWLLim`;
   ciOptions.nodeId.namespaceIndex = `${namespace}`;
   dataItem.cIData = ciOptions;
@@ -178,7 +179,7 @@ function getLimitMonitoringSpecificDataItemModels<T extends 'Ana' | 'DInt'>(name
   dataItem.name = 'VWLAct';
   dataItem.dataType = 'Boolean';
   ciOptions = getEmptyCIDataModel();
-  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.access = Access.ReadWriteAccess;
   ciOptions.nodeId.identifier = `${objectBrowseName}.VWLAct`;
   ciOptions.nodeId.namespaceIndex = `${namespace}`;
   dataItem.cIData = ciOptions;
@@ -189,7 +190,7 @@ function getLimitMonitoringSpecificDataItemModels<T extends 'Ana' | 'DInt'>(name
   dataItem.name = 'VTLEn';
   dataItem.dataType = 'Boolean';
   ciOptions = getEmptyCIDataModel();
-  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.access = Access.ReadWriteAccess;
   ciOptions.nodeId.identifier = `${objectBrowseName}.VTLEn`;
   ciOptions.nodeId.namespaceIndex = `${namespace}`;
   dataItem.cIData = ciOptions;
@@ -199,7 +200,7 @@ function getLimitMonitoringSpecificDataItemModels<T extends 'Ana' | 'DInt'>(name
   dataItem.name = 'VTLLim';
   dataItem.dataType = (type === 'Ana')? 'Float': 'Int32';
   ciOptions = getEmptyCIDataModel();
-  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.access = Access.ReadWriteAccess;
   ciOptions.nodeId.identifier = `${objectBrowseName}.VTLLim`;
   ciOptions.nodeId.namespaceIndex = `${namespace}`;
   dataItem.cIData = ciOptions;
@@ -209,7 +210,7 @@ function getLimitMonitoringSpecificDataItemModels<T extends 'Ana' | 'DInt'>(name
   dataItem.name = 'VTLAct';
   dataItem.dataType = 'Boolean';
   ciOptions = getEmptyCIDataModel();
-  ciOptions.nodeId.access = DataItemAccessLevel.ReadWrite;
+  ciOptions.nodeId.access = Access.ReadWriteAccess;
   ciOptions.nodeId.identifier = `${objectBrowseName}.VTLAct`;
   ciOptions.nodeId.namespaceIndex = `${namespace}`;
   dataItem.cIData = ciOptions;

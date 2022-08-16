@@ -23,7 +23,8 @@
  * SOFTWARE.
  */
 
-import {CIData, DataItemAccessLevel, DataItemModel, NodeId} from '@p2olab/pimad-interface';
+import {CIData, DataItemModel, NodeId} from '@p2olab/pimad-interface';
+import {Access} from '@p2olab/pimad-types';
 
 export function getEmptyDataItemModel(): DataItemModel {
 	return {dataSourceIdentifier: '', dataType: '', defaultValue: '', description: '', metaModelRef: '', name: '', pimadIdentifier: '', value: ''};
@@ -34,5 +35,5 @@ export function getEmptyCIDataModel(): CIData {
 }
 
 export function getEmptyNodeIdModel(): NodeId {
-	return {access: DataItemAccessLevel.ReadWrite, identifier: '', namespaceIndex: ''};
+	return {access: Access.ReadWriteAccess, identifier: '', namespaceIndex: ''};
 }

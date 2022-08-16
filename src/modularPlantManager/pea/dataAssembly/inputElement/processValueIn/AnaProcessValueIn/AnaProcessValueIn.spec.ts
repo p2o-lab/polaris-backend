@@ -57,9 +57,11 @@ describe('AnaProcessValueIn', () => {
 	});
 
 	describe('dynamic', () => {
+
 		let mockupServer: MockupServer;
 		let connectionHandler: ConnectionHandler;
 		let anaProcessValueInMockup: AnaProcessValueInMockup;
+		let adapterId: string;
 
 		beforeEach(async function () {
 			this.timeout(4000);
@@ -69,9 +71,8 @@ describe('AnaProcessValueIn', () => {
 			anaProcessValueInMockup.scaleSettings.vSclMax= 1;
 			options = anaProcessValueInMockup.getDataAssemblyModel();
 			await mockupServer.start();
-			connectionHandler= new ConnectionHandler();
-			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
-			await connectionHandler.connect();
+			connectionHandler = new ConnectionHandler();
+			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
 		});
 
 		afterEach(async function () {
@@ -84,21 +85,19 @@ describe('AnaProcessValueIn', () => {
 
 			const dataAssembly = DataAssemblyFactory.create(options, connectionHandler) as AnaProcessValueIn;
 			await dataAssembly.subscribe();
-			await connectionHandler.connect();
+			await connectionHandler.connect(adapterId);
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
-
 			expect(dataAssembly.dataItems.VExt.value).equal(0);
 			expect(dataAssembly.dataItems.VUnit.value).equal(0);
 			expect(dataAssembly.dataItems.VSclMin.value).equal(0);
 			expect(dataAssembly.dataItems.VSclMax.value).equal(1);
-
 		}).timeout(4000);
 
-		it('setparameter', async () => {
+		it('setParameter', async () => {
 
 			const dataAssembly = DataAssemblyFactory.create(options, connectionHandler) as AnaProcessValueIn;
 			await dataAssembly.subscribe();
-			await connectionHandler.connect();
+			await connectionHandler.connect(adapterId);
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 
 			await dataAssembly.setParameter(1,'VExt');

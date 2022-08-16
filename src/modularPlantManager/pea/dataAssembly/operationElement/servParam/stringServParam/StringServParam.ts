@@ -24,23 +24,14 @@
  */
 
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
-import {DataItem} from '../../../dataItem/DataItem';
-import {ServParam, ServParamRuntime} from '../ServParam';
+import {ServParam} from '../ServParam';
 import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
 import {keys} from 'ts-transformer-keys';
-
-export type StringServParamRuntime = ServParamRuntime & {
-	VExt: DataItem<string>;
-	VOp: DataItem<string>;
-	VInt: DataItem<string>;
-	VReq: DataItem<string>;
-	VOut: DataItem<string>;
-	VFbk: DataItem<string>;
-};
+import {StringServParamDataItems} from '@p2olab/pimad-types';
 
 export class StringServParam extends ServParam {
 
-	public readonly dataItems!: StringServParamRuntime;
+	public readonly dataItems!: StringServParamDataItems;
 
 	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false) {
 		super(options, connectionHandler);

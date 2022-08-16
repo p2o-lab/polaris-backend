@@ -25,17 +25,17 @@
 
 import {DIntView} from '../DIntView';
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
-import {AnaMonRuntime} from '../../AnaView/AnaMon/AnaMon';
 import {LimitMonitoring, OSLevel} from '../../../baseFunction';
 import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
 import {keys} from 'ts-transformer-keys';
+import {DIntMonDataItems} from '@p2olab/pimad-types';
 
 export class DIntMon extends DIntView {
 
-    public dataItems!: AnaMonRuntime;
+    public dataItems!: DIntMonDataItems;
 
     public osLevel!: OSLevel;
-    public limitMonitoring!: LimitMonitoring;
+    public limitMonitoring!: LimitMonitoring<number>;
 
     constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false) {
         super(options, connectionHandler);

@@ -148,7 +148,7 @@ export class Recipe extends (EventEmitter as new() => RecipeEmitter) {
 	 */
 	public connectPEAs(): Promise<void[] | void> {
 		let promise;
-		const tasks = Array.from(this.peaSet).map((p) => p.connectAndSubscribe());
+		const tasks = Array.from(this.peaSet).map((p) => p.connect());
 		if (tasks.length > 0) {
 			promise = Promise.all(tasks);
 		} else {

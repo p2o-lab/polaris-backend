@@ -23,22 +23,17 @@
  * SOFTWARE.
  */
 
-import {DataItem} from '../../../../dataItem/DataItem';
-import {SourceModeController, SourceModeRuntime,
-	WQC, WQCRuntime
-} from '../../../../baseFunction';
-import {AnaMan, AnaManRuntime} from '../AnaMan';
+import {SourceModeController, WQC} from '../../../../baseFunction';
+import {AnaMan} from '../AnaMan';
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {ConnectionHandler} from '../../../../../connectionHandler/ConnectionHandler';
 import {keys} from 'ts-transformer-keys';
+import {AnaManIntDataItems} from '@p2olab/pimad-types';
 
-export type AnaManIntRuntime = AnaManRuntime & SourceModeRuntime & WQCRuntime & {
-	VInt: DataItem<number>;
-};
 
 export class AnaManInt extends AnaMan {
 
-	public readonly dataItems!: AnaManIntRuntime;
+	public readonly dataItems!: AnaManIntDataItems;
 
 	public sourceMode!: SourceModeController;
 	public wqc!: WQC;

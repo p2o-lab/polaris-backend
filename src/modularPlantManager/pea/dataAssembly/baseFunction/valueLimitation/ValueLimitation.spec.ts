@@ -32,8 +32,8 @@ import {ValueLimitationMockup} from './ValueLimitation.mockup';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
 import {getDIntManDataAssemblyModel} from '../../operationElement/man/dintMan/DIntMan.mockup';
 import {DataAssemblyFactory} from '../../DataAssemblyFactory';
-import {DIntManRuntime} from '../../operationElement';
 import {getEndpointDataModel} from '../../../connectionHandler/ConnectionHandler.mockup';
+import {DIntManDataItems} from '@p2olab/pimad-types';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -47,15 +47,17 @@ describe('ValueLimitation', () => {
 	describe('static', () => {
 
 		it('should create ValueLimitation',  () => {
-			const baseFunction = new ValueLimitation(referenceDataAssembly.dataItems as DIntManRuntime);
+			const baseFunction = new ValueLimitation(referenceDataAssembly.dataItems as DIntManDataItems);
 			expect(baseFunction).to.not.be.undefined;
 			expect(baseFunction.dataItems.VMin).to.not.be.undefined;
 			expect(baseFunction.dataItems.VMax).to.not.be.undefined;
 		});
 	});
 	describe('dynamic', () => {
+
 		let mockupServer: MockupServer;
 		let connectionHandler: ConnectionHandler;
+		let adapterId: string;
 
 		beforeEach(async function () {
 			this.timeout(4000);
@@ -63,9 +65,8 @@ describe('ValueLimitation', () => {
 			await mockupServer.initialize();
 			new ValueLimitationMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable', 'Ana');
 			await mockupServer.start();
-			connectionHandler= new ConnectionHandler();
-			connectionHandler.initializeConnectionAdapters([getEndpointDataModel(mockupServer.endpoint)]);
-			await connectionHandler.connect();
+			connectionHandler = new ConnectionHandler();
+			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
 		});
 
 		afterEach(async function () {
@@ -76,8 +77,8 @@ describe('ValueLimitation', () => {
 
 		it('should subscribe successfully', async () => {
 
-			const baseFunction = new ValueLimitation(referenceDataAssembly.dataItems as DIntManRuntime);
-			await connectionHandler.connect();
+			const baseFunction = new ValueLimitation(referenceDataAssembly.dataItems as DIntManDataItems);
+			await connectionHandler.connect(adapterId);
 			await new Promise((resolve => baseFunction.on('changed', resolve)));
 			expect(baseFunction.dataItems.VMax.value).to.equal(0);
 			expect(baseFunction.dataItems.VMin.value).to.equal(0);

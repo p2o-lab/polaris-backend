@@ -24,29 +24,11 @@
  */
 
 import {OperationMode} from '@p2olab/polaris-interface';
-import {DataItem} from '../../dataItem/DataItem';
-import {DataAssemblyDataItems} from '../../DataAssembly';
+import {BaseDataItem} from '../../dataItem/DataItem';
 import {catDataAssembly} from '../../../../../logging';
-import {BaseServiceEvents} from '../../../serviceSet';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {EventEmitter} from 'events';
-import {DataAssemblyModel} from '@p2olab/pimad-interface';
-import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
-import {DataItemFactory, getDataItemModel} from '../../dataItem/DataItemFactory';
-import {UnitSettingsRuntime} from '../unitSettings/UnitSettings';
-
-export type ServiceOpModeRuntime = DataAssemblyDataItems & {
-	StateChannel: DataItem<boolean>;
-	StateOffAut: DataItem<boolean>;
-	StateOpAut: DataItem<boolean>;
-	StateAutAut: DataItem<boolean>;
-	StateOffOp: DataItem<boolean>;
-	StateOpOp: DataItem<boolean>;
-	StateAutOp: DataItem<boolean>;
-	StateOpAct: DataItem<boolean>;
-	StateAutAct: DataItem<boolean>;
-	StateOffAct: DataItem<boolean>;
-};
+import {MTPDataTypes, ServiceOperationModeDataItems} from '@p2olab/pimad-types';
 
 /**
  * Events emitted by [[ServiceOpMode]]
@@ -62,25 +44,25 @@ type ServiceOpModeEmitter = StrictEventEmitter<EventEmitter, ServiceOpModeEvents
 
 export class ServiceOpMode extends (EventEmitter as new () => ServiceOpModeEmitter) {
 
-	public readonly dataItems!: ServiceOpModeRuntime;
+	public readonly dataItems!: ServiceOperationModeDataItems;
 
-	constructor(requiredDataItems: Required<ServiceOpModeRuntime>) {
+	constructor(requiredDataItems: Required<ServiceOperationModeDataItems>) {
 		super();
 
 		this.dataItems = requiredDataItems;
 
 
-		this.dataItems.StateChannel.on('changed', () => {
+		(this.dataItems.StateChannel as BaseDataItem<boolean>).on('changed', () => {
 			this.emit('changed', {opMode: this.getServiceOperationMode(), stateChannel: this.dataItems.StateChannel.value});
 		});
 		// TODO: Always two of them will change in parallel --> Smart way to just emit one event?
-		this.dataItems.StateOffAct.on('changed', () => {
+		(this.dataItems.StateOffAct as BaseDataItem<boolean>).on('changed', () => {
 			this.emit('changed', {opMode: this.getServiceOperationMode(), stateChannel: this.dataItems.StateChannel.value});
 		});
-		this.dataItems.StateOpAct.on('changed', () => {
+		(this.dataItems.StateOpAct as BaseDataItem<boolean>).on('changed', () => {
 			this.emit('changed', {opMode: this.getServiceOperationMode(), stateChannel: this.dataItems.StateChannel.value});
 		});
-		this.dataItems.StateAutAct.on('changed', () => {
+		(this.dataItems.StateAutAct as BaseDataItem<boolean>).on('changed', () => {
 			this.emit('changed', {opMode: this.getServiceOperationMode(), stateChannel: this.dataItems.StateChannel.value});
 		});
 	}
@@ -167,11 +149,11 @@ export class ServiceOpMode extends (EventEmitter as new () => ServiceOpModeEmitt
 	private async writeOpMode(opMode: OperationMode): Promise<void> {
 		catDataAssembly.debug(`Write opMode: ${opMode}`);
 		if (opMode === OperationMode.Automatic) {
-			await this.dataItems.StateAutOp.write(true);
+			await (this.dataItems.StateAutOp as BaseDataItem<boolean>).write(true);
 		} else if (opMode === OperationMode.Operator) {
-			await this.dataItems.StateOpOp.write(true);
+			await (this.dataItems.StateOpOp as BaseDataItem<boolean>).write(true);
 		} else if (opMode === OperationMode.Offline) {
-			await this.dataItems.StateOffOp.write(true);
+			await (this.dataItems.StateOffOp as BaseDataItem<boolean>).write(true);
 		}
 		catDataAssembly.debug('Setting opMode successfully');
 	}
