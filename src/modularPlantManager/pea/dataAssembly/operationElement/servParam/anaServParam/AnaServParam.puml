@@ -30,26 +30,15 @@
 !include ../../../baseFunction/unitSettings/UnitSettings.puml
 !include ../../../baseFunction/valueLimitation/ValueLimitation.puml
 
-interface AnaServParamRuntime{
-    + VExt: DataItem<number>
-    + VOp: DataItem<number>
-    + VInt: DataItem<number>
-    + VReq: DataItem<number>
-    + VOut: DataItem<number>
-    + VFbk: DataItem<number>
-}
 
 class AnaServParam{
-    + readonly dataItems!: AnaServParamRuntime
-    + scaleSettings: ScaleSettings
+    + readonly dataItems!: AnaServParamDataItems
+    + scaleSettings: ScaleSettings<number>
     + unitSettings: UnitSettings
-    + valueLimitation: ValueLimitation
+    + valueLimitation: ValueLimitation<number>
 }
-AnaServParam *- AnaServParamSpec
-AnaServParamSpec ..> AnaServParamMockup : <<use>>
-AnaServParam *- AnaServParamMockup
 
-AnaServParam *- AnaServParamRuntime
+AnaServParam *- AnaServParamDataItems
 AnaServParam *- ScaleSettings
 AnaServParam *- UnitSettings
 AnaServParam *- ValueLimitation

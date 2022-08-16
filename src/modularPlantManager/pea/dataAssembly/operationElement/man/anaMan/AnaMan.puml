@@ -31,29 +31,20 @@
 !include ../../../baseFunction/unitSettings/UnitSettings.puml
 !include ../../../baseFunction/valueLimitation/ValueLimitation.puml
 
-interface AnaManRuntime {
-    + VOut: DataItem<number>
-	+ VRbk: DataItem<number>
-	+ VFbk: DataItem<number>
-	+ VMan: DataItem<number>
-}
 
 class AnaMan{
-    + readonly dataItems!: AnaManRuntime
-    + scaleSettings: ScaleSettings
+    + readonly dataItems!: AnaManDataItems
+    + scaleSettings: ScaleSettings<number>
     + unitSettings: UnitSettings
-    + valueLimitation: ValueLimitation
+    + valueLimitation: ValueLimitation<number>
 
     + AnaMan(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false)
     # initializeBaseFunctions()
 }
 
-AnaMan *- AnaManSpec
-AnaManSpec ..> AnaManMockup : <<use>>
-AnaMan *- AnaManMockup
 AnaMan <|-- AnaManInt
 
-AnaMan *- AnaManRuntime
+AnaMan *- AnaManDataItems
 AnaMan *- ScaleSettings
 AnaMan *- UnitSettings
 AnaMan *- ValueLimitation

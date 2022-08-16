@@ -29,12 +29,8 @@
 !include ../../../../baseFunction/sourceMode/SourceModeController.puml
 !include ../../../../baseFunction/wqc/WQC.puml
 
-interface DIntManIntRuntime{
-    + VInt: DataItem<number>
-}
-
 class DIntManInt{
-    + readonly dataItems!: DIntManIntRuntime
+    + readonly dataItems!: DIntManIntDataItems
     + sourceMode: SourceModeController
     + wqc: WQC
 
@@ -42,11 +38,8 @@ class DIntManInt{
     # initializeBaseFunctions()
 }
 
-DIntManInt *- DIntManIntSpec
-DIntManIntSpec ..> DIntManIntMockup : <<use>>
-DIntManInt *- DIntManIntMockup
 
-DIntManInt *- DIntManIntRuntime
+DIntManInt *- DIntManIntDataItems
 DIntManInt *- WQC
 DIntManInt *- SourceModeController
 

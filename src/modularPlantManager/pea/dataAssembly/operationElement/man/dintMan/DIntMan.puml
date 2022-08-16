@@ -30,28 +30,17 @@
 !include ../../../baseFunction/unitSettings/UnitSettings.puml
 !include ../../../baseFunction/valueLimitation/ValueLimitation.puml
 
-interface DIntManRuntime{
-	+ VOut: DataItem<number>
-	+ VRbk: DataItem<number>
-	+ VFbk: DataItem<number>
-	+ VMan: DataItem<number>
-}
-
 class DIntMan{
-    + readonly dataItems!: DIntManRuntime
-    + scaleSettings: ScaleSettings
+    + readonly dataItems!: DIntManDataItems
+    + scaleSettings: ScaleSettings<number>
     + unitSettings: UnitSettings
-    + valueLimitation: ValueLimitation
+    + valueLimitation: ValueLimitation<number>
 
     + DIntMan(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false)
     # initializeBaseFunctions()
 }
 
-DIntMan *- DIntManSpec
-DIntManSpec ..> DIntManMockup : <<use>>
-DIntMan *- DIntManMockup
-
-DIntMan *- DIntManRuntime
+DIntMan *- DIntManDataItems
 DIntMan *- ScaleSettings
 DIntMan *- UnitSettings
 DIntMan *- ValueLimitation

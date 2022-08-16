@@ -30,30 +30,17 @@
 !include ../../../baseFunction/unitSettings/UnitSettings.puml
 !include ../../../baseFunction/valueLimitation/ValueLimitation.puml
 
-interface DIntServParamRuntime{
-	+ VExt: DataItem<number>
-	+ VOp: DataItem<number>
-	+ VInt: DataItem<number>
-	+ VReq: DataItem<number>
-	+ VOut: DataItem<number>
-	+ VFbk: DataItem<number>
-
-}
-
 class DIntServParam{
-    + readonly dataItems!: DIntServParamRuntime
-    + scaleSettings: ScaleSettings
+    + readonly dataItems!: DIntServParamDataItems
+    + scaleSettings: ScaleSettings<number>
     + unitSettings: UnitSettings
-    + valueLimitation: ValueLimitation
+    + valueLimitation: ValueLimitation<number>
 
     + DIntServParam(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false)
     # initializeBaseFunctions()
 }
-DIntServParam *- DIntServParamSpec
-DIntServParamSpec ..> DIntServParamMockup : <<use>>
-DIntServParam *- DIntServParamMockup
 
-DIntServParam *- DIntServParamRuntime
+DIntServParam *- DIntServParamDataItems
 DIntServParam *- ScaleSettings
 DIntServParam *- UnitSettings
 DIntServParam *- ValueLimitation

@@ -31,12 +31,9 @@
 !include ../../baseFunction/opMode/OpMode.puml
 !include ../../baseFunction/wqc/WQC.puml
 
-interface ServParamRuntime{
-    + Sync: DataItem<boolean>
-}
 
 class ServParam{
-    + readonly dataItems!: ServParamRuntime
+    + readonly dataItems!: ServParamDataItems
     + serviceSourceMode: ServiceSourceModeController
     + serviceOpMode: OpMode
 
@@ -45,14 +42,9 @@ class ServParam{
 
 }
 
-ServParam *- ServParamSpec
-ServParamSpec ..> ServParamMockup : <<use>>
-ServParam *- ServParamMockup
-
-ServParam *- ServParamRuntime
+ServParam *- ServParamDataItems
 ServParam *- ServiceSourceModeController
 ServParam *- OpMode
-
 
 ServParam <|-- AnaServParam
 ServParam <|-- BinServParam
